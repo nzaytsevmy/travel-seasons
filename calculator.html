@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ru" prefix="og: https://ogp.me/ns#">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор бюджета — TravelTribe</title>
+<meta name="description" content="Калькулятор стоимости путешествия из Москвы: живые цены Aviasales, курс ЦБ РФ, отель и питание для 24 направлений мира.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://traveltribe.ru/calculator.html">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://traveltribe.ru/calculator.html">
+<meta property="og:title" content="Калькулятор бюджета путешествия — TravelTribe">
+<meta property="og:description" content="Живые цены Aviasales + курс ЦБ РФ. Перелёт из Москвы, отель и питание для 24 направлений.">
+<meta property="og:image" content="https://traveltribe.ru/og-image.png">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0d1117;
+  --surface: #161b22;
+  --border:  #21262d;
+  --border2: #2a3a50;
+  --text:    #e6edf3;
+  --muted:   #8b949e;
+  --accent:  #f0883e;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Manrope', sans-serif; min-height: 100vh; padding-bottom: 4rem; }
+a { text-decoration: none; color: inherit; }
+
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(13,17,23,0.88); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 60px;
+}
+.logo { font-family: 'DM Serif Display', serif; font-size: 1.3rem; font-style: italic; color: var(--accent); }
+.logo span { color: var(--text); font-style: normal; }
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a { color: var(--muted); font-size: 0.82rem; font-weight: 500; transition: color 0.15s; }
+.nav-links a:hover { color: var(--text); }
+.nav-links a.active { color: var(--accent); }
+.nav-cta { background: var(--accent); color: #0d1117; font-size: 0.78rem; font-weight: 700; padding: 0.45rem 1.1rem; border-radius: 6px; }
+@media (max-width: 640px) { .nav-links { display: none; } }
+
+.page { max-width: 900px; margin: 0 auto; padding: 3rem 1.5rem; }
+header { margin-bottom: 2.5rem; }
+header h1 { font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 400; letter-spacing: -0.01em; }
+header h1 em { color: var(--accent); font-style: italic; }
+header p { color: var(--muted); font-size: 0.8rem; font-family: 'DM Mono', monospace; letter-spacing: 0.05em; margin-top: 0.4rem; }
+
+.calc { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; }
+.calc-form { display: flex; flex-wrap: wrap; gap: 1.4rem; margin-bottom: 2rem; align-items: flex-start; }
+.calc-field { display: flex; flex-direction: column; gap: 0.5rem; }
+.calc-field > label { color: var(--muted); font-size: 0.7rem; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; }
+.calc-select {
+  background: var(--bg); border: 1px solid var(--border); color: var(--text);
+  font-family: 'Manrope', sans-serif; font-size: 0.82rem;
+  padding: 0.55rem 0.9rem; border-radius: 6px; outline: none; cursor: pointer; min-width: 260px;
+}
+.calc-select:focus { border-color: var(--accent); }
+.calc-input {
+  background: var(--bg); border: 1px solid var(--border); color: var(--text);
+  font-family: 'DM Mono', monospace; font-size: 0.95rem;
+  padding: 0.55rem 0.9rem; border-radius: 6px; outline: none; width: 100px; text-align: center;
+}
+.calc-input:focus { border-color: var(--accent); }
+.btn-group { display: flex; gap: 0.3rem; }
+.btn-group button {
+  background: var(--bg); border: 1px solid var(--border); color: var(--muted);
+  font-family: 'DM Mono', monospace; font-size: 0.72rem; font-weight: 600;
+  padding: 0.5rem 0.8rem; border-radius: 5px; cursor: pointer; transition: all 0.15s;
+}
+.btn-group button.active { background: var(--accent); border-color: var(--accent); color: #0d1117; }
+.btn-group button:hover:not(.active) { border-color: var(--muted); color: var(--text); }
+.check-group { display: flex; flex-direction: column; gap: 0.45rem; }
+.check-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text); cursor: pointer; }
+.check-item input { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
+
+.calc-result { border-top: 1px solid var(--border); padding-top: 1.8rem; }
+.calc-total { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
+.calc-label { color: var(--muted); font-size: 0.72rem; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; }
+.calc-amount { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 5vw, 3rem); color: var(--accent); letter-spacing: -0.02em; font-style: italic; }
+.calc-breakdown { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-bottom: 1rem; }
+.breakdown-item {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+  padding: 0.8rem 1.1rem; display: flex; flex-direction: column; gap: 0.25rem; min-width: 140px;
+}
+.breakdown-item span:first-child { color: var(--muted); font-size: 0.65rem; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; }
+.breakdown-item span:last-child { color: var(--text); font-size: 0.9rem; font-weight: 600; font-family: 'DM Mono', monospace; }
+.calc-note { color: var(--muted); font-size: 0.67rem; font-family: 'DM Mono', monospace; line-height: 1.6; }
+
+@media (max-width: 600px) {
+  .calc { padding: 1.2rem 1rem; }
+  .calc-select { min-width: 100%; }
+  .btn-group button { padding: 0.4rem 0.55rem; font-size: 0.68rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Travel<span>Tribe</span></a>
+  <div class="nav-links">
+    <a href="index.html">Главная</a>
+    <a href="seasons.html">Сезоны</a>
+    <a href="calculator.html" class="active">Калькулятор</a>
+    <a href="https://github.com/nzaytsevmy/travel-seasons" target="_blank">GitHub</a>
+  </div>
+  <a class="nav-cta" href="https://t.me/traveltriberu" target="_blank">Telegram →</a>
+</nav>
+
+<div class="page">
+  <header>
+    <h1>Калькулятор <em>бюджета</em></h1>
+    <p>// перелёт из Москвы · живые цены Aviasales · курс ЦБ РФ</p>
+  </header>
+
+  <div class="calc">
+    <div class="calc-form">
+      <div class="calc-field" style="flex:1;min-width:240px">
+        <label>Регион</label>
+        <select class="calc-select" id="calcRegion"></select>
+      </div>
+      <div class="calc-field">
+        <label>Дней</label>
+        <input class="calc-input" type="number" id="calcDays" min="1" max="90" value="7">
+      </div>
+      <div class="calc-field">
+        <label>Уровень</label>
+        <div class="btn-group" id="levelGroup">
+          <button class="active" data-lvl="0">$ Бюджет</button>
+          <button data-lvl="1">$$ Комфорт</button>
+          <button data-lvl="2">$$$ Люкс</button>
+        </div>
+      </div>
+      <div class="calc-field">
+        <label>Включить</label>
+        <div class="check-group">
+          <label class="check-item"><input type="checkbox" id="chkFlight" checked> Перелёт</label>
+          <label class="check-item"><input type="checkbox" id="chkHotel" checked> Проживание</label>
+          <label class="check-item"><input type="checkbox" id="chkFood" checked> Питание</label>
+        </div>
+      </div>
+      <div class="calc-field">
+        <label>Валюта</label>
+        <div class="btn-group" id="currGroup">
+          <button class="active" data-cur="rub">₽</button>
+          <button data-cur="usd">$</button>
+        </div>
+      </div>
+    </div>
+    <div class="calc-result">
+      <div class="calc-total">
+        <span class="calc-label">Итого на поездку</span>
+        <span class="calc-amount" id="calcTotal">—</span>
+      </div>
+      <div class="calc-breakdown">
+        <div class="breakdown-item"><span>Перелёт</span><span id="bFlight">—</span></div>
+        <div class="breakdown-item"><span>Проживание / ночь</span><span id="bHotel">—</span></div>
+        <div class="breakdown-item"><span>Питание / день</span><span id="bFood">—</span></div>
+      </div>
+      <p class="calc-note"><span id="calcRateLabel">1 $ = 90 ₽ · загрузка курса...</span> &nbsp;·&nbsp; ✈ = реальная цена Aviasales &nbsp;·&nbsp; ~ = оценка &nbsp;·&nbsp; Отель и питание — ориентировочно.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const PRICES = [
+  { name: 'Австралия — Восток (Сидней, Мельбурн)', iata: 'SYD', flight: [700,1100,2500], hotel: [40,120,350], food: [30,70,180] },
+  { name: 'Австралия — Север (Дарвин, Какаду)',     iata: 'DRW', flight: [800,1200,2800], hotel: [35,100,320], food: [28,65,170] },
+  { name: 'Бали & Lombok',                           iata: 'DPS', flight: [400,650,1500],  hotel: [20,70,250],  food: [10,30,100] },
+  { name: 'Суматра & Калимантан',                    iata: 'MES', flight: [450,700,1600],  hotel: [15,50,180],  food: [8,25,80]   },
+  { name: 'Раджа-Ампат',                             iata: 'SOQ', flight: [600,950,2100],  hotel: [60,160,550], food: [20,55,160] },
+  { name: 'Кения (сафари)',                          iata: 'NBO', flight: [600,900,2000],  hotel: [50,150,500], food: [15,50,180] },
+  { name: 'ЮАР (Кейптаун + Крюгер)',                iata: 'CPT', flight: [700,1000,2200], hotel: [35,100,300], food: [20,55,160] },
+  { name: 'ОАЭ (Дубай, Абу-Даби)',                  iata: 'DXB', flight: [200,380,950],   hotel: [60,180,600], food: [30,80,250] },
+  { name: 'Япония (Токио, Киото, Осака)',            iata: 'TYO', flight: [500,800,1800],  hotel: [40,120,400], food: [25,70,200] },
+  { name: 'Южная Корея (Сеул, Пусан)',              iata: 'SEL', flight: [450,720,1650],  hotel: [35,100,300], food: [20,55,160] },
+  { name: 'Грузия (Тбилиси, Батуми)',               iata: 'TBS', flight: [100,200,500],   hotel: [20,60,200],  food: [10,30,100] },
+  { name: 'Кыргызстан (Ош, горы)',                  iata: 'OSS', flight: [150,280,620],   hotel: [15,40,120],  food: [8,20,70]   },
+  { name: 'Узбекистан (Самарканд, Бухара)',         iata: 'TAS', flight: [150,270,600],   hotel: [20,55,180],  food: [8,25,80]   },
+  { name: 'Таджикистан (Памир)',                     iata: 'DYU', flight: [200,370,750],   hotel: [15,40,120],  food: [8,22,70]   },
+  { name: 'Казахстан (Алматы, каньоны)',            iata: 'ALA', flight: [100,190,430],   hotel: [20,60,200],  food: [10,30,100] },
+  { name: 'Швейцария (Альпы)',                       iata: 'ZRH', flight: [400,660,1600],  hotel: [80,220,700], food: [40,100,300] },
+  { name: 'Северная Италия (Озёра, Доломиты)',      iata: 'MXP', flight: [350,570,1450],  hotel: [70,180,500], food: [30,80,250] },
+  { name: 'Канада — Горы (Банф, Джаспер)',          iata: 'YYC', flight: [650,1020,2350], hotel: [60,180,500], food: [30,80,250] },
+  { name: 'Канада — Восток (Квебек, Монреаль)',     iata: 'YUL', flight: [600,970,2250],  hotel: [55,160,450], food: [28,75,230] },
+  { name: 'Мексика (Юкатан, Канкун)',               iata: 'CUN', flight: [550,870,2050],  hotel: [30,90,300],  food: [15,40,130] },
+  { name: 'Гватемала & Белиз',                       iata: 'GUA', flight: [650,980,2150],  hotel: [25,70,200],  food: [12,35,110] },
+  { name: 'Коста-Рика & Панама',                    iata: 'SJO', flight: [700,1050,2250], hotel: [35,100,320], food: [18,50,150] },
+  { name: 'Чилийская Патагония',                    iata: 'PUQ', flight: [800,1250,2700], hotel: [50,140,400], food: [25,70,200] },
+  { name: 'Чилийские фьорды',                       iata: 'SCL', flight: [800,1250,2700], hotel: [45,120,350], food: [22,65,190] },
+];
+
+let RUB = 90, calcLevel = 0, calcCurrency = 'rub';
+let liveFlight = undefined, currentIata = '';
+let priceMap = null;
+
+async function fetchRate() {
+  try {
+    const r = await fetch('https://open.er-api.com/v6/latest/USD');
+    const d = await r.json();
+    if (d.result === 'success' && d.rates && d.rates.RUB) {
+      RUB = d.rates.RUB;
+      const el = document.getElementById('calcRateLabel');
+      if (el) el.textContent = '1 $ = ' + RUB.toFixed(2) + ' ₽ · ЦБ РФ';
+      renderCalc();
+    }
+  } catch(e) {}
+}
+
+async function fetchFlightUsd(iata) {
+  if (!priceMap) {
+    try {
+      const r = await fetch('prices.json');
+      const d = await r.json();
+      priceMap = d.prices || {};
+    } catch(e) { priceMap = {}; }
+  }
+  return priceMap[iata] || false;
+}
+
+function fmt(usd) {
+  if (!usd) return '—';
+  return calcCurrency === 'rub'
+    ? Math.round(usd * RUB).toLocaleString('ru-RU') + ' ₽'
+    : Math.round(usd).toLocaleString('en-US') + ' $';
+}
+
+function renderCalc() {
+  const pi = parseInt(calcSel.value);
+  const days = Math.max(1, parseInt(document.getElementById('calcDays').value) || 7);
+  const iF = document.getElementById('chkFlight').checked;
+  const iH = document.getElementById('chkHotel').checked;
+  const iD = document.getElementById('chkFood').checked;
+  const p = PRICES[pi];
+  let flightUsd, flightDisplay;
+  if (!iF) { flightUsd = 0; flightDisplay = '—'; }
+  else if (liveFlight === null) { flightUsd = p.flight[calcLevel]; flightDisplay = '...'; }
+  else if (liveFlight) { flightUsd = liveFlight; flightDisplay = fmt(liveFlight) + ' ✈'; }
+  else { flightUsd = p.flight[calcLevel]; flightDisplay = fmt(p.flight[calcLevel]) + ' ~'; }
+  const total = (iF ? flightUsd : 0) + (iH ? p.hotel[calcLevel] : 0) * days + (iD ? p.food[calcLevel] : 0) * days;
+  document.getElementById('calcTotal').textContent = total > 0 ? fmt(total) : '—';
+  document.getElementById('bFlight').textContent = flightDisplay;
+  document.getElementById('bHotel').textContent  = iH ? fmt(p.hotel[calcLevel]) : '—';
+  document.getElementById('bFood').textContent   = iD ? fmt(p.food[calcLevel]) : '—';
+}
+
+async function onRegionChange() {
+  const pi = parseInt(calcSel.value);
+  const iata = PRICES[pi].iata;
+  currentIata = iata; liveFlight = null; renderCalc();
+  const price = await fetchFlightUsd(iata);
+  if (currentIata !== iata) return;
+  liveFlight = price ?? false; renderCalc();
+}
+
+const calcSel = document.getElementById('calcRegion');
+PRICES.forEach((p, i) => {
+  const o = document.createElement('option');
+  o.value = i; o.textContent = p.name; calcSel.appendChild(o);
+});
+
+calcSel.addEventListener('change', onRegionChange);
+document.getElementById('calcDays').addEventListener('input', renderCalc);
+['chkFlight','chkHotel','chkFood'].forEach(id =>
+  document.getElementById(id).addEventListener('change', renderCalc));
+document.getElementById('levelGroup').addEventListener('click', e => {
+  const btn = e.target.closest('[data-lvl]');
+  if (!btn) return;
+  calcLevel = +btn.dataset.lvl;
+  document.querySelectorAll('#levelGroup button').forEach(b => b.classList.toggle('active', b === btn));
+  renderCalc();
+});
+document.getElementById('currGroup').addEventListener('click', e => {
+  const btn = e.target.closest('[data-cur]');
+  if (!btn) return;
+  calcCurrency = btn.dataset.cur;
+  document.querySelectorAll('#currGroup button').forEach(b => b.classList.toggle('active', b === btn));
+  renderCalc();
+});
+
+fetchRate();
+onRegionChange();
+</script>
+</body>
+</html>

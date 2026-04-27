@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="ru" prefix="og: https://ogp.me/ns#">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сезоны для путешествий — куда и когда | TravelTribe</title>
+<meta name="description" content="Интерактивная таблица: 24 направления мира, лучшее время для поездки, виза и бюджет для россиян. Калькулятор стоимости перелёта из Москвы.">
+<meta name="keywords" content="когда ехать, лучшее время для путешествий, сезоны туризм, виза для россиян, бюджет путешествий, Бали, Япония, Грузия, Африка, Европа, Азия 2026">
+<meta name="author" content="TravelTribe · Никита Зайцев">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://traveltribe.ru">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://traveltribe.ru">
+<meta property="og:site_name" content="TravelTribe">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:title" content="Сезоны для путешествий — когда и куда из России">
+<meta property="og:description" content="Интерактивная таблица: 24 направления мира, лучшее время, виза и бюджет для россиян. Калькулятор перелёта из Москвы.">
+<meta property="og:image" content="https://traveltribe.ru/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Таблица сезонов для путешествий — 24 региона мира">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@traveltriberu">
+<meta name="twitter:title" content="Сезоны для путешествий — когда и куда из России">
+<meta name="twitter:description" content="Интерактивная таблица: 24 направления мира, лучшее время, виза и бюджет для россиян. Калькулятор перелёта из Москвы.">
+<meta name="twitter:image" content="https://traveltribe.ru/og-image.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "TravelTribe — Сезоны для путешествий",
+  "url": "https://traveltribe.ru",
+  "description": "Интерактивная таблица лучшего времени для путешествий: 24 направления, виза для россиян, бюджет и калькулятор стоимости поездки от Москвы.",
+  "inLanguage": "ru-RU",
+  "author": {
+    "@type": "Person",
+    "name": "Никита Зайцев",
+    "url": "https://t.me/traveltriberu"
+  },
+  "about": {
+    "@type": "ItemList",
+    "name": "Лучшие направления для путешествий из России",
+    "description": "24 региона мира с анализом сезонности, визовых требований и бюджета для путешественников из России",
+    "numberOfItems": 24
+  }
+}
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #21262d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #f0883e;
+    --peak: #2ea043;
+    --good: #388bfd;
+    --ok: #d29922;
+    --bad: #f85149;
+    --off: #30363d;
+    --peak-light: rgba(46,160,67,0.15);
+    --good-light: rgba(56,139,253,0.15);
+    --ok-light: rgba(210,153,34,0.15);
+    --bad-light: rgba(248,81,73,0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; -webkit-touch-callout: none; user-select: none; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    min-height: 100vh;
+    padding: 0 1rem 4rem;
+  }
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,17,23,0.88); backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 60px;
+    margin: 0 -1rem;
+  }
+  .logo { font-family: 'DM Serif Display', serif; font-size: 1.3rem; font-style: italic; color: var(--accent); text-decoration: none; }
+  .logo span { color: var(--text); font-style: normal; }
+  .nav-links { display: flex; gap: 2rem; }
+  .nav-links a { color: var(--muted); font-size: 0.82rem; font-weight: 500; transition: color 0.15s; text-decoration: none; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active { color: var(--accent); }
+  .nav-cta { background: var(--accent); color: #0d1117; font-size: 0.78rem; font-weight: 700; padding: 0.45rem 1.1rem; border-radius: 6px; text-decoration: none; }
+  @media (max-width: 640px) { .nav-links { display: none; } }
+  header {
+    max-width: 1400px;
+    margin: 0 auto 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  h1 em { color: var(--accent); font-style: italic; }
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+  .controls {
+    max-width: 1400px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+  }
+  .controls-label {
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-right: 0.4rem;
+  }
+  .month-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .month-btn:hover { border-color: var(--accent); color: var(--text); }
+  .month-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0d1117;
+    font-weight: 600;
+  }
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.35rem 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-left: 0.5rem;
+  }
+  .reset-btn:hover { border-color: var(--muted); color: var(--text); }
+  .legend {
+    max-width: 1400px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .table-wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    overflow: auto;
+    max-height: calc(100vh - 220px);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 900px; }
+  thead tr:first-child th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #0f1318;
+    border-bottom: 1px solid var(--border);
+    padding: 0.8rem 0.6rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  thead tr:first-child th:first-child { text-align: left; padding-left: 1.2rem; min-width: 200px; }
+  .month-header { text-align: center; min-width: 52px; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+  .group-header td {
+    background: var(--surface);
+    color: var(--accent);
+    font-family: 'DM Serif Display', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    padding: 0.7rem 1.2rem;
+    border-bottom: 1px solid var(--border);
+    font-style: italic;
+  }
+  .region-cell {
+    padding: 0.7rem 1rem 0.7rem 1.2rem;
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.8rem;
+    line-height: 1.3;
+    min-width: 120px;
+    max-width: 140px;
+    vertical-align: middle;
+    position: sticky;
+    left: 0;
+    background: var(--bg);
+    z-index: 2;
+  }
+  .group-header td { position: sticky; left: 0; }
+  thead tr:first-child th:first-child { position: sticky; left: 0; z-index: 11; background: #0f1318; min-width: 120px; max-width: 140px; }
+  .region-sub {
+    color: var(--muted);
+    font-size: 0.68rem;
+    font-weight: 400;
+    font-family: 'DM Mono', monospace;
+    display: block;
+    margin-top: 0.15rem;
+  }
+  .tags { display: flex; gap: 0.3rem; margin-top: 0.35rem; flex-wrap: wrap; }
+  .tag {
+    font-size: 0.58rem;
+    font-family: 'DM Mono', monospace;
+    padding: 0.12rem 0.4rem;
+    border-radius: 3px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+  .tag-free  { background: rgba(46,160,67,0.15);  color: #2ea043; border: 1px solid rgba(46,160,67,0.3); }
+  .tag-evisa { background: rgba(56,139,253,0.15); color: #388bfd; border: 1px solid rgba(56,139,253,0.3); }
+  .tag-visa  { background: rgba(248,81,73,0.12);  color: #f85149; border: 1px solid rgba(248,81,73,0.3); }
+  .tag-low   { background: rgba(46,160,67,0.15);  color: #2ea043; border: 1px solid rgba(46,160,67,0.3); }
+  .tag-mid   { background: rgba(210,153,34,0.15); color: #d29922; border: 1px solid rgba(210,153,34,0.3); }
+  .tag-high  { background: rgba(248,81,73,0.12);  color: #f85149; border: 1px solid rgba(248,81,73,0.3); }
+  .cell { text-align: center; vertical-align: middle; padding: 0.7rem 0.3rem; position: relative; cursor: default; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+    transition: transform 0.15s;
+    will-change: transform;
+  }
+  .cell:hover .badge { transform: scale(1.2); }
+  .peak .badge { background: var(--peak-light); color: var(--peak); border: 1px solid rgba(46,160,67,0.3); }
+  .good .badge { background: var(--good-light); color: var(--good); border: 1px solid rgba(56,139,253,0.3); }
+  .ok   .badge { background: var(--ok-light);   color: var(--ok);   border: 1px solid rgba(210,153,34,0.3); }
+  .bad  .badge { background: var(--bad-light);  color: var(--bad);  border: 1px solid rgba(248,81,73,0.3); }
+  .off  .badge { background: transparent; color: var(--border); border: 1px solid var(--border); }
+  .cell.col-highlight { background: rgba(240,136,62,0.05); }
+  .month-header.col-highlight { background: rgba(240,136,62,0.1); color: var(--accent) !important; }
+  #tooltip {
+    position: fixed;
+    background: #1c2128;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 400;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    z-index: 1000;
+    pointer-events: none;
+    max-width: 220px;
+    white-space: normal;
+    text-align: left;
+    line-height: 1.4;
+    display: none;
+  }
+  tbody tr td.cell.dimmed { opacity: 0.25; }
+  footer {
+    max-width: 1400px;
+    margin: 1.5rem auto 0;
+    color: var(--muted);
+    font-size: 0.7rem;
+    font-family: 'DM Mono', monospace;
+    line-height: 1.8;
+  }
+  .mission {
+    max-width: 1400px;
+    margin: 0 auto 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .mission-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+  .pill-os  { color: var(--accent); border-color: rgba(240,136,62,0.3); background: rgba(240,136,62,0.07); }
+  .pill-free{ color: var(--peak);   border-color: rgba(46,160,67,0.3);  background: rgba(46,160,67,0.07); }
+  .pill-uni { color: var(--good);   border-color: rgba(56,139,253,0.3); background: rgba(56,139,253,0.07); }
+  .mission-sep { color: var(--border); font-family: 'DM Mono', monospace; font-size: 0.7rem; }
+  .footer-contribute {
+    max-width: 1400px;
+    margin: 2rem auto 0;
+    padding: 1.2rem 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .footer-contribute p { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--muted); line-height: 1.6; }
+  .footer-contribute p strong { color: var(--text); }
+  .contribute-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    border: 1px solid rgba(240,136,62,0.4);
+    background: rgba(240,136,62,0.08);
+    padding: 0.45rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .contribute-btn:hover { background: rgba(240,136,62,0.15); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Travel<span>Tribe</span></a>
+  <div class="nav-links">
+    <a href="index.html">Главная</a>
+    <a href="seasons.html" class="active">Сезоны</a>
+    <a href="calculator.html">Калькулятор</a>
+    <a href="https://github.com/nzaytsevmy/travel-seasons" target="_blank">GitHub</a>
+  </div>
+  <a class="nav-cta" href="https://t.me/traveltriberu" target="_blank">Telegram →</a>
+</nav>
+
+<header>
+  <h1>Сезоны для <em>путешествий</em></h1>
+  <p class="subtitle">// 24 региона мира · виза и бюджет для россиян · живые цены Aviasales</p>
+</header>
+
+<div class="mission">
+  <span class="mission-pill pill-os">⊹ Open Source</span>
+  <span class="mission-pill pill-free">✓ Бесплатно навсегда</span>
+  <span class="mission-pill pill-uni">◈ Только уникальные фичи</span>
+  <span class="mission-sep">·</span>
+  <span style="font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--muted)">Проект о путешествиях по всему миру — добавляй направления на GitHub</span>
+</div>
+
+<div class="controls">
+  <span class="controls-label">Месяц →</span>
+  <button class="month-btn" data-month="0">Янв</button>
+  <button class="month-btn" data-month="1">Фев</button>
+  <button class="month-btn" data-month="2">Мар</button>
+  <button class="month-btn" data-month="3">Апр</button>
+  <button class="month-btn" data-month="4">Май</button>
+  <button class="month-btn" data-month="5">Июн</button>
+  <button class="month-btn" data-month="6">Июл</button>
+  <button class="month-btn" data-month="7">Авг</button>
+  <button class="month-btn" data-month="8">Сен</button>
+  <button class="month-btn" data-month="9">Окт</button>
+  <button class="month-btn" data-month="10">Ноя</button>
+  <button class="month-btn" data-month="11">Дек</button>
+  <button class="reset-btn" id="resetBtn">Сброс</button>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="dot" style="background:var(--peak)"></div> Пик сезона</div>
+  <div class="legend-item"><div class="dot" style="background:var(--good)"></div> Хорошо</div>
+  <div class="legend-item"><div class="dot" style="background:var(--ok)"></div> Нормально / переходный</div>
+  <div class="legend-item"><div class="dot" style="background:var(--bad)"></div> Плохо / не рекомендуется</div>
+  <div class="legend-item"><div class="dot" style="background:var(--border)"></div> Закрытый / нет смысла</div>
+  <div class="legend-item"><span class="tag tag-free">Без визы</span></div>
+  <div class="legend-item"><span class="tag tag-evisa">eVisa</span></div>
+  <div class="legend-item"><span class="tag tag-visa">Виза</span></div>
+  <div class="legend-item"><span class="tag tag-low">$ Дёшево</span></div>
+  <div class="legend-item"><span class="tag tag-mid">$$ Средне</span></div>
+  <div class="legend-item"><span class="tag tag-high">$$$ Дорого</span></div>
+</div>
+
+<div id="tooltip"></div>
+<div class="table-wrap">
+  <table id="mainTable">
+    <thead>
+      <tr>
+        <th>Регион</th>
+        <th class="month-header">ЯНВ</th>
+        <th class="month-header">ФЕВ</th>
+        <th class="month-header">МАР</th>
+        <th class="month-header">АПР</th>
+        <th class="month-header">МАЙ</th>
+        <th class="month-header">ИЮН</th>
+        <th class="month-header">ИЮЛ</th>
+        <th class="month-header">АВГ</th>
+        <th class="month-header">СЕН</th>
+        <th class="month-header">ОКТ</th>
+        <th class="month-header">НОЯ</th>
+        <th class="month-header">ДЕК</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<footer>
+  * Пик = идеальные условия · Хорошо = отличные условия, меньше толп · Нормально = возможно, но есть нюансы · Плохо = дожди/жара/холод критичны<br>
+  * Виза и бюджет актуальны для россиян на 2026 год. eVisa = онлайн без посещения консульства.<br>
+  * Бюджет: $ до ~$1500/нед · $$ $1500–3000/нед · $$$ от $3000/нед (перелёт + проживание + еда)
+</footer>
+
+<div class="footer-contribute">
+  <p>
+    <strong>Open Source проект о путешествиях.</strong> Знаешь направление которого здесь нет?<br>
+    Добавь регион, фичу или исправь данные — любой вклад приветствуется.
+  </p>
+  <a class="contribute-btn" href="https://github.com/nzaytsevmy/travel-seasons" target="_blank">→ Contribute on GitHub</a>
+</div>
+
+
+<script>
+const CLASSES = { P: 'peak', G: 'good', O: 'ok', B: 'bad', X: 'off' };
+const LABELS  = { P: '●', G: '●', O: '●', B: '●', X: '·' };
+const VISA_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза' };
+const VISA_CLASS = { free: 'tag-free', evisa: 'tag-evisa', required: 'tag-visa' };
+const BUDGET_LABEL = { low: '$ Дёшево', mid: '$$ Средне', high: '$$$ Дорого' };
+const BUDGET_CLASS = { low: 'tag-low', mid: 'tag-mid', high: 'tag-high' };
+
+const data = [
+  { group: '🌏 Австралия & Океания' },
+  {
+    region: 'Австралия', sub: 'Восток: Сидней, Мельбурн', visa: 'evisa', budget: 'high',
+    r: ['G','G','G','G','O','O','P','P','G','G','O','O'],
+    t: ['Жарко, пляжный сезон на юге. ОК для городов','Лучший месяц для пляжей: тепло без жары','Начало осени, очень комфортно для городов','Мягкая осень, идеально для Мельбурна','Прохладно, хорошо для хайкинга','Прохладная зима, мало туристов','Зимний пик: горнолыжный сезон Снежных гор','Зима, ясно, хорошо для природы','Весна, цветение — отличное время','Тепло, до туристического сезона','Жарковато начинает, хорошо для юга','Начало лета, жарко на севере']
+  },
+  {
+    region: 'Австралия', sub: 'Север: Дарвин, Какаду', visa: 'evisa', budget: 'high',
+    r: ['P','P','O','B','B','B','B','B','B','O','O','G'],
+    t: ['Сухой сезон (Dry Season) — идеал для Какаду','Лучшее время, низкая влажность, дикая природа','Конец сухого, начинает теплеть','Начало влажного сезона. Жарко+влажно','Сезон дождей. Дороги закрыты, москиты','Разгар сезона дождей','Разгар сезона дождей','Сезон дождей','Сезон дождей, часть дорог закрыта','Переходный, начинает подсыхать','Становится суше, тепло','Сухой сезон начинается, хорошо']
+  },
+  { group: '🏝️ Индонезия' },
+  {
+    region: 'Бали & Lombok', sub: 'Нуса Тенггара', visa: 'evisa', budget: 'low',
+    r: ['O','O','O','G','P','P','P','P','P','G','O','O'],
+    t: ['Влажный сезон, дожди после обеда','Влажный сезон, но Убуд зелёный и красивый','Переходный период, дожди уменьшаются','Начало сухого сезона, хорошо','Сухой сезон, ветер для серфинга (Улувату)','Пик: сухо, солнечно, много туристов','Пик: сухо, прохладно ночью, переполнено','Пик: идеально, меньше дождей','Сухой сезон продолжается, отличный выбор','Начало влажного сезона, терпимо','Влажный сезон, дожди усиливаются','Влажный сезон, но новогодний пик']
+  },
+  {
+    region: 'Суматра & Калимантан', sub: 'Орангутаны, джунгли', visa: 'evisa', budget: 'low',
+    r: ['G','G','O','O','O','G','P','P','G','O','B','B'],
+    t: ['Относительно сухо, хорошо для Букит Лаванг','Хорошее время для треккинга с орангутанами','Начало влажного сезона на Суматре','Переменно, дожди есть','Лучше на Калимантане, ОК','Суше, хорошо для обоих островов','Самый сухой период — пик для джунглей','Отличное время для треккинга','Хорошо, до дождей','Начало сезона дождей','Сильные дожди, реки разливаются','Сильные дожди']
+  },
+  {
+    region: 'Раджа-Ампат', sub: 'Папуа Барат, дайвинг', visa: 'evisa', budget: 'high',
+    r: ['O','O','P','P','P','O','O','O','G','P','P','O'],
+    t: ['Дожди, волны с запада. Условия хуже','Улучшается, но ещё нестабильно','Пик дайвинга: море спокойно, видимость отличная','Пик: идеально для снорклинга и дайвинга','Отличный сезон, меньше туристов','Начинает меняться, волны нарастают','Муссон с запада, волны, условия хуже','Переходный период, ОК','Улучшается, хорошая видимость','Пик восточного сезона: спокойно и чисто','Хороший период дайвинга','Нарастают западные волны']
+  },
+  { group: '🌍 Африка' },
+  {
+    region: 'Кения', sub: 'Масаи Мара, Найроби, сафари', visa: 'evisa', budget: 'high',
+    r: ['G','G','O','B','B','P','P','P','P','G','O','G'],
+    t: ['Сухой сезон: сафари хорошо, мало дождей','Отличный месяц: сухо, животные у водопоев','Длинные дожди начинаются, сафари сложнее','Разгар длинных дождей, дороги размывает','Дожди продолжаются, не лучшее время','Начало великой миграции гну в Масаи Мара','Пик миграции — сотни тысяч гну и зебр','Пик: переправы через Мару — самое зрелищное','Миграция ещё идёт, отличное время','Дожди стихают, животные возвращаются на юг','Короткие дожди, но сафари ещё возможно','Сухой сезон: хорошее время для сафари']
+  },
+  {
+    region: 'ЮАР', sub: 'Кейптаун + Крюгер', visa: 'free', budget: 'mid',
+    r: ['P','P','G','G','O','O','O','O','G','G','G','P'],
+    t: ['Кейптаун: разгар лета, пляжи, +28°C. Крюгер: сезон дождей','Лучший месяц для Кейптауна: тепло, сухо, красиво','Начало осени, комфортно для обоих регионов','Хорошо: Кейптаун остывает, Крюгер становится суше','Крюгер: начало сухого сезона, животных видно лучше','Крюгер: сухой сезон, животные у воды. Кейптаун прохладный','Пик сухого сезона в Крюгере — лучшее время для сафари','Сухо в Крюгере, отлично. Кейптаун холодный','Весна в Кейптауне: цветение фынбоша, Крюгер хорош','Отличное время: оба региона на пике','Кейптаун тёплый, Крюгер — начало дождей','Кейптаун: лето начинается, пляжный сезон']
+  },
+  { group: '🕌 Ближний Восток' },
+  {
+    region: 'ОАЭ', sub: 'Дубай, Абу-Даби', visa: 'free', budget: 'high',
+    r: ['P','P','G','G','O','B','B','B','B','G','P','P'],
+    t: ['Пик: +24°C, пляжи, достопримечательности — идеально','Лучший месяц: комфортно, мало туристов','Тепло +28°C, ещё комфортно','Жарче +32°C, но терпимо в тени','Жара нарастает +38°C, только торговые центры','Пекло +42°C, на улице невозможно','Жара +43°C, только для шоппинга в AC','Чуть спадает, но всё ещё +41°C','Жара уходит, +37°C — переходный период','Отлично: +32°C, пляжи снова доступны','Пик: идеальная температура +27°C','Отличный месяц: +23°C, праздничный Дубай']
+  },
+  { group: '🗾 Азия' },
+  {
+    region: 'Япония', sub: 'Токио, Киото, Осака', visa: 'required', budget: 'mid',
+    r: ['O','O','P','P','G','O','O','B','G','P','P','O'],
+    t: ['Холодно, но мало туристов. Онсэны и зима','Конец зимы, начинают цвести сливы','Сакура! Пик туризма, но невероятно красиво','Пик сакуры и тепло +18°C — лучший месяц','Зелень, тепло, до жары и дождей','Сезон дождей (цую), влажно и пасмурно','Жарко и влажно +33°C, тайфуны начинаются','Самый жаркий: +35°C, тайфуны, влажность','Тайфуны стихают, тепло +27°C, хорошо','Алые листья (момидзи) — пик осени, толпы','Листопад продолжается, чуть меньше людей','Холодно, иллюминация и зимняя атмосфера']
+  },
+  {
+    region: 'Южная Корея', sub: 'Сеул, Пусан, Чеджудо', visa: 'evisa', budget: 'mid',
+    r: ['O','O','G','P','P','O','B','O','G','P','G','O'],
+    t: ['Морозы -5°C, мало туристов, горнолыжный сезон','Холодно, но цветут сливы к концу месяца','Весна: тепло +12°C, первые сакуры','Пик: сакура + тепло +18°C — самое красивое','Отлично: +23°C, зелено, до дождей','Начало сезона дождей (чангма), влажно','Разгар дождей и жары +32°C, влажность 80%','Дожди стихают, жарко, фестивали','Отлично: +24°C, осенние листья начинаются','Пик осени: алые клёны, +18°C — лучший месяц','Прохладно, осень заканчивается','Холодно, зимняя атмосфера']
+  },
+  {
+    region: 'Грузия', sub: 'Тбилиси, Батуми, Казбеги', visa: 'free', budget: 'low',
+    r: ['O','O','G','G','P','P','G','G','P','P','O','O'],
+    t: ['Холодно в горах, Тбилиси ок, мало туристов','Тбилиси: первые признаки весны','Весна: тепло +15°C, горы ещё снежные','Отличное время: цветение, Батуми просыпается','Пик весны: всё открыто, горы доступны','Жарко в Тбилиси +32°C, Казбеги идеален','Жаркий, но горы спасают. Много туристов','Хорошо, жара чуть спадает, вино созревает','Пик осени: виноградный сезон, Рача, хайкинг','Золотая осень, Казбеги красивый, меньше людей','Холодает, горные дороги закрываются','Зима: Гудаури (лыжи), Тбилиси с атмосферой']
+  },
+  { group: '🏔️ Центральная Азия' },
+  {
+    region: 'Кыргызстан', sub: 'Юг: Ош, Сары-Таш, Алайская долина', visa: 'free', budget: 'low',
+    r: ['X','X','O','O','G','P','P','P','G','O','X','X'],
+    t: ['Морозы, перевалы закрыты, ничего не работает','Зима, дороги на юг закрыты','Теплеет, но перевалы ещё опасны','Переходный: зелень, снег на вершинах','Хорошо: юрточные лагеря открываются','Пик: пастбища зелёные, перевалы открыты','Лучший месяц: тепло, горы доступны','Пик: фестивали, горы, треккинг','Отличное время, меньше людей, золотая осень','Холодает, перевалы закрываются','Зима приходит','Глубокая зима']
+  },
+  {
+    region: 'Узбекистан', sub: 'Самарканд, Бухара, Хива', visa: 'free', budget: 'low',
+    r: ['O','O','G','P','P','O','B','B','G','P','G','O'],
+    t: ['Холодно (+3..8°C), туристов мало, зато дёшево','Холодно, но меньше туристов','Весна: цветение, тепло — идеально','Пик весны: +20-25°C, самое красивое время','Хорошо, но начинает теплеть сильно','Жарко (+35°C+), терпимо рано утром','Жара до +42°C. Экстремально, не рекомендуется','Жара спадает, но ещё +38°C','Отлично: +25-28°C, виноград, дыни','Лучший осенний пик: золото и +22°C','Прохладно, хорошо для тех кто не любит толпы','Холодно, зимний режим']
+  },
+  {
+    region: 'Таджикистан', sub: 'Памирский тракт, Душанбе', visa: 'evisa', budget: 'low',
+    r: ['X','X','O','O','G','P','P','G','G','O','X','X'],
+    t: ['Памир закрыт полностью. Только Душанбе','Зима на Памире. Нет смысла','Перевалы начинают открываться к концу месяца','Переходный: долины ОК, горы ещё снежные','Памирский тракт открывается, хорошо','Пик: все перевалы открыты, природа зелёная','Лучший месяц: Ваханский коридор, M41 тракт','Отлично, начало спада туристов','Золотая осень в горах, комфортно','Перевалы закрываются, холодает','Памир закрыт','Памир недоступен']
+  },
+  {
+    region: 'Казахстан', sub: 'Алматы, Чарынский каньон, степи', visa: 'free', budget: 'low',
+    r: ['X','X','O','G','P','G','G','G','P','G','O','X'],
+    t: ['Морозы -20°C и ниже. Только для любителей зимы','Мороз, но горнолыжный сезон (Шымбулак)','Переходный: теплеет, каньоны доступны','Отличная весна: тюльпаны в степях, +15-20°C','Пик весны: зелёные горы, прогулки','Жарко в степях, но горы комфортны','Лето: горы хороши, степи жаркие','Хорошо для гор и озёр (Кольсай, Каинды)','Золотая осень — лучшее время для Алматы','Тепло, красиво, мало туристов','Холодает быстро','Зима приходит']
+  },
+  { group: '🏔️ Европа' },
+  {
+    region: 'Швейцария', sub: 'Альпы: Церматт, Интерлакен, Люцерн', visa: 'required', budget: 'high',
+    r: ['G','G','O','O','G','P','P','P','P','G','O','G'],
+    t: ['Горнолыжный пик: снег отличный, виды фантастические','Лучший лыжный месяц: снег, солнце','Конец сезона, весна в долинах','Межсезонье: часть канаток закрыта','Открываются летние маршруты, цветы','Летний пик: хайкинг, озёра, зелень','Разгар лета: жара в долинах (+30°C), идеал в горах','Идеально для хайкинга, меньше людей','Золотая осень, первый снег на вершинах','Осень в долинах, хайкинг ещё возможен','Межсезонье, часть курортов готовится к зиме','Начало лыжного сезона, Рождественские ярмарки']
+  },
+  {
+    region: 'Северная Италия', sub: 'Озёра (Комо, Гарда), Доломиты, Венеция', visa: 'required', budget: 'mid',
+    r: ['O','O','O','G','G','P','P','P','P','G','O','O'],
+    t: ['Холодно, туристов мало. Венеция без толп','Холодно, но Карнавал в Венеции!','Теплеет, озёра ещё прохладные','Весна на озёрах: цветы, +18°C','Отлично: тепло, зелено, до жары','Пик: озёра прогрелись, Доломиты открыты','Жарко (+32°C на озёрах), много туристов','Пик туризма, жарко, но море/озёра хороши','Лучший месяц: тепло, меньше людей, виноград','Золотая осень, сбор винограда, комфортно','Прохладно, осенние дожди','Холодно, рождественская атмосфера']
+  },
+  { group: '🍁 Северная Америка' },
+  {
+    region: 'Канада', sub: 'Банф, Джаспер (горы)', visa: 'required', budget: 'high',
+    r: ['G','G','O','O','G','P','P','P','G','O','X','G'],
+    t: ['Горнолыжный пик: Lake Louise, Sunshine Village','Отличное катание, меньше людей чем в декабре','Конец лыжного сезона, переходный','Межсезонье: тает снег, дороги ещё закрыты','Парки открываются, природа просыпается','Летний пик: хайкинг, озёра, медведи!','Лучший месяц: всё открыто, тепло','Отлично для природы, чуть меньше людей','Золотая осень в Скалистых горах — красиво','Холодает, первый снег','Закрываются маршруты, ещё нет снега','Начало лыжного сезона']
+  },
+  {
+    region: 'Канада', sub: 'Квебек, Онтарио (восток)', visa: 'required', budget: 'high',
+    r: ['O','O','O','G','G','P','P','P','P','G','O','O'],
+    t: ['Зима: холодно, зимние активности, Монреаль','Зима, зимний карнавал в Квебек-Сити','Конец зимы, первые признаки весны','Весна, цветение, прогулки','Отлично: тепло, зелено','Летний пик: пляжи на реках, Ниагара','Жаркое лето, фестивали','Хорошо, меньше народа к концу','Лучший месяц: золотая осень (foliage) — культовая','Золотая осень продолжается, +15°C','Холодает, листва опала','Зима приходит, рождественский Квебек']
+  },
+  { group: '🌿 Центральная Америка & Мексика' },
+  {
+    region: 'Мексика', sub: 'Юкатан, Канкун, Мехико', visa: 'free', budget: 'mid',
+    r: ['P','P','P','G','G','O','O','O','O','G','G','P'],
+    t: ['Пик: сухо, тепло +28°C, идеально для пляжей и руин','Лучший месяц: мало туристов из Европы, прекрасно','Отлично: сухой сезон, карнавалы','Жарче, но сухо. Хорошо для руин майя','Жара нарастает, конец сухого сезона','Начало сезона дождей, дожди после обеда','Сезон дождей и ураганов. Пляжи ОК утром','Пик сезона ураганов, жара+влажность','Сезон дождей, ураганы возможны','Дожди уменьшаются. Día de los Muertos!','Сухой сезон начинается, хорошо','Пик: сухо, прохладнее, праздничная атмосфера']
+  },
+  {
+    region: 'Гватемала & Белиз', sub: 'Тикаль, Антигуа, Карибы', visa: 'free', budget: 'low',
+    r: ['P','P','P','G','O','O','B','B','B','O','G','P'],
+    t: ['Пик: сухо, Тикаль доступен, Антигуа прекрасна','Отличный сухой сезон','Сухо, хорошо. Семейная неделя — многолюдно','Заканчивается сухой сезон','Начало дождей, ещё терпимо','Дожди ежедневно, джунгли зелёные','Интенсивные дожди, риск ураганов на Белизе','Разгар сезона дождей','Сезон дождей, ураганы','Дожди стихают, Тикаль возможен','Улучшение, хорошее время для Антигуа','Пик: всё открыто, сухо, туристы']
+  },
+  {
+    region: 'Коста-Рика & Панама', sub: 'Природа, пляжи обоих побережий', visa: 'free', budget: 'mid',
+    r: ['P','P','P','G','O','O','O','B','O','O','O','G'],
+    t: ['Сухой сезон: Тихоокеанское побережье идеально','Лучший месяц: оба побережья хороши','Отлично, особенно Гуанакасте','Конец сухого сезона, Карибы начинают открываться','Начало дождей на Тихом океане. Карибы ОК','Зелёная сезона: водопады полные, дешевле','Тихий океан дождливый, Карибы сухие!','Самый дождливый, но Карибы могут быть сухими','Улучшение, национальные парки хороши','Конец сезона дождей на Тихом океане','Переходный период, терпимо','Начало сухого сезона, новогодний пик']
+  },
+  { group: '🏔️ Южная Америка — Патагония' },
+  {
+    region: 'Чилийская Патагония', sub: 'Торрес-дель-Пайне, Пуэрто-Наталес', visa: 'free', budget: 'high',
+    r: ['G','G','P','G','O','X','X','O','G','P','G','G'],
+    t: ['Разгар лета: длинный день, тепло, многолюдно','Отличное лето, чуть меньше людей','Лучший месяц: солнечно, умеренный ветер','Начало осени: золото, малолюдно','Поздняя осень: холодает, короткий день','Зима: парк почти закрыт, темно','Зима, очень мало работает','Конец зимы, парк открывается','Ранняя весна: первые цветы, хорошая видимость','Весенний пик: умеренно, животные активны','Начало лета: тепло, ветрено','Летний сезон в разгаре, многолюдно']
+  },
+  {
+    region: 'Чилийские фьорды', sub: 'Каррера, Чилоэ, Айсен', visa: 'free', budget: 'mid',
+    r: ['G','G','G','G','O','O','O','O','G','G','G','G'],
+    t: ['Лето: паром доступен, мраморные пещеры','Отличное лето, длинный день','Начало осени, дожди минимальны','Переходный, дожди начинаются','Дожди чаще, туманно, но красиво','Зимние дожди, но уединённо и дёшево','Дожди, туманы — аутентичная атмосфера фьордов','Начинает улучшаться','Осень: красный/жёлтый лес + фьорды','Хорошая видимость, осень, меньше туристов','Начало лета на юге Чили','Летний сезон, хорошая погода']
+  }
+];
+
+let activeMonth = null;
+
+function buildTable() {
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  data.forEach(row => {
+    if (row.group) {
+      const tr = document.createElement('tr');
+      tr.className = 'group-header';
+      tr.innerHTML = `<td colspan="13">${row.group}</td>`;
+      tbody.appendChild(tr);
+      return;
+    }
+    const tr = document.createElement('tr');
+    const tags = `<div class="tags"><span class="tag ${VISA_CLASS[row.visa]}">${VISA_LABEL[row.visa]}</span><span class="tag ${BUDGET_CLASS[row.budget]}">${BUDGET_LABEL[row.budget]}</span></div>`;
+    let html = `<td class="region-cell">${row.region}<span class="region-sub">${row.sub}</span>${tags}</td>`;
+    for (let m = 0; m < 12; m++) {
+      const cls = CLASSES[row.r[m]];
+      const tip = row.t[m];
+      const dimmed = activeMonth !== null && activeMonth !== m ? ' dimmed' : '';
+      const colHighlight = activeMonth === m ? ' col-highlight' : '';
+      html += `<td class="cell ${cls}${dimmed}${colHighlight}" data-tip="${tip}"><span class="badge">${LABELS[row.r[m]]}</span></td>`;
+    }
+    tr.innerHTML = html;
+    tbody.appendChild(tr);
+  });
+  document.querySelectorAll('.month-header').forEach((th, i) => {
+    th.classList.toggle('col-highlight', activeMonth === i);
+  });
+}
+
+document.querySelectorAll('.month-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const m = parseInt(btn.dataset.month);
+    if (activeMonth === m) {
+      activeMonth = null;
+      btn.classList.remove('active');
+    } else {
+      document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeMonth = m;
+    }
+    buildTable();
+  });
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  activeMonth = null;
+  document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+  buildTable();
+});
+
+buildTable();
+
+// Tooltip
+const tooltip = document.getElementById('tooltip');
+
+function showTooltip(el, text) {
+  const r = el.getBoundingClientRect();
+  tooltip.textContent = text;
+  tooltip.style.display = 'block';
+  const tw = tooltip.offsetWidth;
+  let left = r.left + r.width / 2 - tw / 2;
+  left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+  const top = r.top - tooltip.offsetHeight - 8;
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = (top < 8 ? r.bottom + 8 : top) + 'px';
+}
+
+function hideTooltip() { tooltip.style.display = 'none'; }
+
+document.addEventListener('mouseover', e => {
+  const cell = e.target.closest('[data-tip]');
+  if (cell) showTooltip(cell, cell.dataset.tip); else hideTooltip();
+});
+
+let lastTapped = null;
+document.addEventListener('touchstart', e => {
+  const cell = e.target.closest('[data-tip]');
+  if (cell) {
+    e.preventDefault();
+    if (lastTapped === cell) { hideTooltip(); lastTapped = null; return; }
+    showTooltip(cell, cell.dataset.tip);
+    lastTapped = cell;
+  } else {
+    hideTooltip();
+    lastTapped = null;
+  }
+}, { passive: false });
+
+</script>
+</body>
+</html>
