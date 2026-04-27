@@ -9,6 +9,7 @@ for iata in IATAS:
     try:
         r = requests.get(
             f"https://api.travelpayouts.com/v1/prices/cheap?origin=MOW&destination={iata}&currency=usd&token={TOKEN}",
+            headers={"User-Agent": "curl/8.7.1", "Accept": "*/*"},
             timeout=10
         )
         d = r.json()
