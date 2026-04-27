@@ -23,7 +23,7 @@
     --ok-light: rgba(210,153,34,0.15);
     --bad-light: rgba(248,81,73,0.12);
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
+  * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; -webkit-touch-callout: none; user-select: none; }
   body {
     background: var(--bg);
     color: var(--text);
@@ -205,12 +205,8 @@
   .off  .badge { background: transparent; color: var(--border); border: 1px solid var(--border); }
   .cell.col-highlight { background: rgba(240,136,62,0.05); }
   .month-header.col-highlight { background: rgba(240,136,62,0.1); color: var(--accent) !important; }
-  .cell[data-tip]:hover::after {
-    content: attr(data-tip);
-    position: absolute;
-    bottom: calc(100% + 6px);
-    left: 50%;
-    transform: translateX(-50%);
+  #tooltip {
+    position: fixed;
     background: #1c2128;
     border: 1px solid var(--border);
     color: var(--text);
@@ -219,12 +215,13 @@
     font-weight: 400;
     padding: 0.4rem 0.6rem;
     border-radius: 6px;
-    z-index: 100;
+    z-index: 1000;
     pointer-events: none;
     max-width: 220px;
     white-space: normal;
     text-align: left;
     line-height: 1.4;
+    display: none;
   }
   tbody tr td.cell.dimmed { opacity: 0.25; }
   footer {
@@ -275,6 +272,7 @@
   <div class="legend-item"><span class="tag tag-high">$$$ Дорого</span></div>
 </div>
 
+<div id="tooltip"></div>
 <div class="table-wrap">
   <table id="mainTable">
     <thead>
@@ -498,6 +496,42 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 });
 
 buildTable();
+
+// Tooltip
+const tooltip = document.getElementById('tooltip');
+
+function showTooltip(el, text) {
+  const r = el.getBoundingClientRect();
+  tooltip.textContent = text;
+  tooltip.style.display = 'block';
+  const tw = tooltip.offsetWidth;
+  let left = r.left + r.width / 2 - tw / 2;
+  left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+  const top = r.top - tooltip.offsetHeight - 8;
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = (top < 8 ? r.bottom + 8 : top) + 'px';
+}
+
+function hideTooltip() { tooltip.style.display = 'none'; }
+
+document.addEventListener('mouseover', e => {
+  const cell = e.target.closest('[data-tip]');
+  if (cell) showTooltip(cell, cell.dataset.tip); else hideTooltip();
+});
+
+let lastTapped = null;
+document.addEventListener('touchstart', e => {
+  const cell = e.target.closest('[data-tip]');
+  if (cell) {
+    e.preventDefault();
+    if (lastTapped === cell) { hideTooltip(); lastTapped = null; return; }
+    showTooltip(cell, cell.dataset.tip);
+    lastTapped = cell;
+  } else {
+    hideTooltip();
+    lastTapped = null;
+  }
+}, { passive: false });
 </script>
 </body>
 </html>
