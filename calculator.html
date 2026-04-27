@@ -53,11 +53,25 @@ header p { color: var(--muted); font-size: 0.8rem; font-family: 'DM Mono', monos
 .calc-field { display: flex; flex-direction: column; gap: 0.5rem; }
 .calc-field > label { color: var(--muted); font-size: 0.7rem; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; }
 .calc-select {
-  background: var(--bg); border: 1px solid var(--border); color: var(--text);
-  font-family: 'Manrope', sans-serif; font-size: 0.82rem;
-  padding: 0.55rem 0.9rem; border-radius: 6px; outline: none; cursor: pointer; min-width: 260px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.82rem;
+  padding: 0.65rem 2.6rem 0.65rem 1rem;
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  min-width: 260px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23f0883e' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  transition: border-color 0.15s, background-color 0.15s;
 }
-.calc-select:focus { border-color: var(--accent); }
+.calc-select:hover { border-color: var(--muted); }
+.calc-select:focus { border-color: var(--accent); background-color: rgba(240,136,62,0.05); }
 .calc-input {
   background: var(--bg); border: 1px solid var(--border); color: var(--text);
   font-family: 'DM Mono', monospace; font-size: 0.95rem;
