@@ -23,7 +23,7 @@
     --ok-light: rgba(210,153,34,0.15);
     --bad-light: rgba(248,81,73,0.12);
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
   body {
     background: var(--bg);
     color: var(--text);
@@ -195,6 +195,7 @@
     font-weight: 700;
     font-family: 'DM Mono', monospace;
     transition: transform 0.15s;
+    will-change: transform;
   }
   .cell:hover .badge { transform: scale(1.2); }
   .peak .badge { background: var(--peak-light); color: var(--peak); border: 1px solid rgba(46,160,67,0.3); }
