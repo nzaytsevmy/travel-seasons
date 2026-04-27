@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сезоны для путешествий</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #21262d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #f0883e;
+    --peak: #2ea043;
+    --good: #388bfd;
+    --ok: #d29922;
+    --bad: #f85149;
+    --off: #30363d;
+    --peak-light: rgba(46,160,67,0.15);
+    --good-light: rgba(56,139,253,0.15);
+    --ok-light: rgba(210,153,34,0.15);
+    --bad-light: rgba(248,81,73,0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+  header {
+    max-width: 1400px;
+    margin: 0 auto 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  h1 em { color: var(--accent); font-style: italic; }
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+  .controls {
+    max-width: 1400px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+  }
+  .controls-label {
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-right: 0.4rem;
+  }
+  .month-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.35rem 0.7rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .month-btn:hover { border-color: var(--accent); color: var(--text); }
+  .month-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0d1117;
+    font-weight: 600;
+  }
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.35rem 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-left: 0.5rem;
+  }
+  .reset-btn:hover { border-color: var(--muted); color: var(--text); }
+  .legend {
+    max-width: 1400px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .table-wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 900px; }
+  thead { position: sticky; top: 0; z-index: 10; }
+  thead tr:first-child th {
+    background: #0f1318;
+    border-bottom: 1px solid var(--border);
+    padding: 0.8rem 0.6rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  thead tr:first-child th:first-child { text-align: left; padding-left: 1.2rem; min-width: 180px; }
+  .month-header { text-align: center; min-width: 52px; }
+  .month-header.highlighted { color: var(--accent) !important; background: rgba(240,136,62,0.08); }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+  .group-header td {
+    background: var(--surface);
+    color: var(--accent);
+    font-family: 'DM Serif Display', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    padding: 0.7rem 1.2rem;
+    border-bottom: 1px solid var(--border);
+    font-style: italic;
+  }
+  .region-cell {
+    padding: 0.7rem 1rem 0.7rem 1.2rem;
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.8rem;
+    line-height: 1.3;
+    min-width: 180px;
+    vertical-align: middle;
+  }
+  .region-sub {
+    color: var(--muted);
+    font-size: 0.68rem;
+    font-weight: 400;
+    font-family: 'DM Mono', monospace;
+    display: block;
+    margin-top: 0.15rem;
+  }
+  .cell { text-align: center; vertical-align: middle; padding: 0.7rem 0.3rem; position: relative; cursor: default; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0;
+    transition: transform 0.15s;
+  }
+  .cell:hover .badge { transform: scale(1.2); }
+  .peak .badge { background: var(--peak-light); color: var(--peak); border: 1px solid rgba(46,160,67,0.3); }
+  .good .badge { background: var(--good-light); color: var(--good); border: 1px solid rgba(56,139,253,0.3); }
+  .ok   .badge { background: var(--ok-light);   color: var(--ok);   border: 1px solid rgba(210,153,34,0.3); }
+  .bad  .badge { background: var(--bad-light);  color: var(--bad);  border: 1px solid rgba(248,81,73,0.3); }
+  .off  .badge { background: transparent; color: var(--border); border: 1px solid var(--border); }
+  .cell.col-highlight { background: rgba(240,136,62,0.05); }
+  .month-header.col-highlight { background: rgba(240,136,62,0.1); color: var(--accent) !important; }
+  .cell[data-tip] { position: relative; }
+  .cell[data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1c2128;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 400;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    z-index: 100;
+    pointer-events: none;
+    max-width: 220px;
+    white-space: normal;
+    text-align: left;
+    line-height: 1.4;
+  }
+  tbody tr td.cell.dimmed { opacity: 0.25; }
+  footer {
+    max-width: 1400px;
+    margin: 1.5rem auto 0;
+    color: var(--muted);
+    font-size: 0.7rem;
+    font-family: 'DM Mono', monospace;
+    line-height: 1.8;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Сезоны для <em>путешествий</em></h1>
+  <p class="subtitle">// 12 регионов мира · кликни на месяц чтобы выделить</p>
+</header>
+
+<div class="controls">
+  <span class="controls-label">Месяц →</span>
+  <button class="month-btn" data-month="0">Янв</button>
+  <button class="month-btn" data-month="1">Фев</button>
+  <button class="month-btn" data-month="2">Мар</button>
+  <button class="month-btn" data-month="3">Апр</button>
+  <button class="month-btn" data-month="4">Май</button>
+  <button class="month-btn" data-month="5">Июн</button>
+  <button class="month-btn" data-month="6">Июл</button>
+  <button class="month-btn" data-month="7">Авг</button>
+  <button class="month-btn" data-month="8">Сен</button>
+  <button class="month-btn" data-month="9">Окт</button>
+  <button class="month-btn" data-month="10">Ноя</button>
+  <button class="month-btn" data-month="11">Дек</button>
+  <button class="reset-btn" id="resetBtn">Сброс</button>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="dot" style="background:var(--peak)"></div> Пик сезона</div>
+  <div class="legend-item"><div class="dot" style="background:var(--good)"></div> Хорошо</div>
+  <div class="legend-item"><div class="dot" style="background:var(--ok)"></div> Нормально / переходный</div>
+  <div class="legend-item"><div class="dot" style="background:var(--bad)"></div> Плохо / не рекомендуется</div>
+  <div class="legend-item"><div class="dot" style="background:var(--border)"></div> Закрытый / нет смысла</div>
+</div>
+
+<div class="table-wrap">
+  <table id="mainTable">
+    <thead>
+      <tr>
+        <th>Регион</th>
+        <th class="month-header">ЯНВ</th>
+        <th class="month-header">ФЕВ</th>
+        <th class="month-header">МАР</th>
+        <th class="month-header">АПР</th>
+        <th class="month-header">МАЙ</th>
+        <th class="month-header">ИЮН</th>
+        <th class="month-header">ИЮЛ</th>
+        <th class="month-header">АВГ</th>
+        <th class="month-header">СЕН</th>
+        <th class="month-header">ОКТ</th>
+        <th class="month-header">НОЯ</th>
+        <th class="month-header">ДЕК</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<footer>
+  * Пик = идеальные условия, туристов много · Хорошо = отличные условия, меньше толп · Нормально = возможно, но есть нюансы · Плохо = дожди/жара/холод критичны<br>
+  * Индонезия: климат сильно различается между островами — Бали/Ломбок, Суматра/Калимантан, Раджа-Ампат имеют разный сезон дождей<br>
+  * Канада: охватывает Скалистые горы (Банф/Джаспер) + Квебек/Онтарио; летом юг, зимой горнолыжный
+</footer>
+
+<script>
+const CLASSES = { P: 'peak', G: 'good', O: 'ok', B: 'bad', X: 'off' };
+const LABELS  = { P: '●', G: '●', O: '●', B: '●', X: '·' };
+
+const data = [
+  { group: '🌏 Австралия & Океания' },
+  { region: 'Австралия', sub: 'Восток: Сидней, Мельбурн', r: ['G','G','G','G','O','O','P','P','G','G','O','O'], t: ['Жарко, пляжный сезон на юге. ОК для городов','Лучший месяц для пляжей: тепло без жары','Начало осени, очень комфортно для городов','Мягкая осень, идеально для Мельбурна','Прохладно, хорошо для хайкинга','Прохладная зима, мало туристов','Зимний пик: горнолыжный сезон Снежных гор','Зима, ясно, хорошо для природы','Весна, цветение — отличное время','Тепло, до туристического сезона','Жарковато начинает, хорошо для юга','Начало лета, жарко на севере'] },
+  { region: 'Австралия', sub: 'Север: Дарвин, Какаду', r: ['P','P','O','B','B','B','B','B','B','O','O','G'], t: ['Сухой сезон (Dry Season) — идеал для Какаду','Лучшее время, низкая влажность, дикая природа','Конец сухого, начинает теплеть','Начало влажного сезона. Жарко+влажно','Сезон дождей. Дороги закрыты, москиты','Разгар сезона дождей','Разгар сезона дождей','Сезон дождей','Сезон дождей, часть дорог закрыта','Переходный, начинает подсыхать','Становится суше, тепло','Сухой сезон начинается, хорошо'] },
+  { group: '🏝️ Индонезия' },
+  { region: 'Бали & Lombok', sub: 'Нуса Тенггара', r: ['O','O','O','G','P','P','P','P','P','G','O','O'], t: ['Влажный сезон, дожди после обеда','Влажный сезон, но Убуд зелёный и красивый','Переходный период, дожди уменьшаются','Начало сухого сезона, хорошо','Сухой сезон, ветер для серфинга (Улувату)','Пик: сухо, солнечно, много туристов','Пик: сухо, прохладно ночью, переполнено','Пик: идеально, меньше дождей','Сухой сезон продолжается, отличный выбор','Начало влажного сезона, терпимо','Влажный сезон, дожди усиливаются','Влажный сезон, но новогодний пик'] },
+  { region: 'Суматра & Калимантан', sub: 'Орангутаны, джунгли', r: ['G','G','O','O','O','G','P','P','G','O','B','B'], t: ['Относительно сухо, хорошо для Букит Лаванг','Хорошее время для треккинга с орангутанами','Начало влажного сезона на Суматре','Переменно, дожди есть','Лучше на Калимантане, ОК','Суше, хорошо для обоих островов','Самый сухой период — пик для джунглей','Отличное время для треккинга','Хорошо, до дождей','Начало сезона дождей','Сильные дожди, реки разливаются','Сильные дожди'] },
+  { region: 'Раджа-Ампат', sub: 'Папуа Барат, дайвинг', r: ['O','O','P','P','P','O','O','O','G','P','P','O'], t: ['Дожди, волны с запада. Условия хуже','Улучшается, но ещё нестабильно','Пик дайвинга: море спокойно, видимость отличная','Пик: идеально для снорклинга и дайвинга','Отличный сезон, меньше туристов','Начинает меняться, волны нарастают','Муссон с запада, волны, условия хуже','Переходный период, ОК','Улучшается, хорошая видимость','Пик восточного сезона: спокойно и чисто','Хороший период дайвинга','Нарастают западные волны'] },
+  { group: '🏔️ Центральная Азия' },
+  { region: 'Кыргызстан', sub: 'Юг: Ош, Сары-Таш, Алайская долина', r: ['X','X','O','O','G','P','P','P','G','O','X','X'], t: ['Морозы, перевалы закрыты, ничего не работает','Зима, дороги на юг закрыты','Теплеет, но перевалы ещё опасны','Переходный: зелень, снег на вершинах','Хорошо: юрточные лагеря открываются','Пик: пастбища зелёные, перевалы открыты','Лучший месяц: тепло, горы доступны','Пик: фестивали, горы, треккинг','Отличное время, меньше людей, золотая осень','Холодает, перевалы закрываются','Зима приходит','Глубокая зима'] },
+  { region: 'Узбекистан', sub: 'Самарканд, Бухара, Хива', r: ['O','O','G','P','P','O','B','B','G','P','G','O'], t: ['Холодно (+3..8°C), туристов мало, зато дёшево','Холодно, но меньше туристов','Весна: цветение, тепло — идеально','Пик весны: +20-25°C, самое красивое время','Хорошо, но начинает теплеть сильно','Жарко (+35°C+), терпимо рано утром','Жара до +42°C. Экстремально, не рекомендуется','Жара спадает, но ещё +38°C','Отлично: +25-28°C, виноград, дыни','Лучший осенний пик: золото и +22°C','Прохладно, хорошо для тех кто не любит толпы','Холодно, зимний режим'] },
+  { region: 'Таджикистан', sub: 'Памирский тракт, Душанбе', r: ['X','X','O','O','G','P','P','G','G','O','X','X'], t: ['Памир закрыт полностью. Только Душанбе','Зима на Памире. Нет смысла','Перевалы начинают открываться к концу месяца','Переходный: долины ОК, горы ещё снежные','Памирский тракт открывается, хорошо','Пик: все перевалы открыты, природа зелёная','Лучший месяц: Ваханский коридор, M41 тракт','Отлично, начало спада туристов','Золотая осень в горах, комфортно','Перевалы закрываются, холодает','Памир закрыт','Памир недоступен'] },
+  { region: 'Казахстан', sub: 'Алматы, Чарынский каньон, степи', r: ['X','X','O','G','P','G','G','G','P','G','O','X'], t: ['Морозы -20°C и ниже. Только для любителей зимы','Мороз, но горнолыжный сезон (Шымбулак)','Переходный: теплеет, каньоны доступны','Отличная весна: тюльпаны в степях, +15-20°C','Пик весны: зелёные горы, прогулки','Жарко в степях, но горы комфортны','Лето: горы хороши, степи жаркие','Хорошо для гор и озёр (Кольсай, Каинды)','Золотая осень — лучшее время для Алматы','Тепло, красиво, мало туристов','Холодает быстро','Зима приходит'] },
+  { group: '🏔️ Европа' },
+  { region: 'Швейцария', sub: 'Альпы: Церматт, Интерлакен, Люцерн', r: ['G','G','O','O','G','P','P','P','P','G','O','G'], t: ['Горнолыжный пик: снег отличный, виды фантастические','Лучший лыжный месяц: снег, солнце','Конец сезона, весна в долинах','Межсезонье: часть канаток закрыта','Открываются летние маршруты, цветы','Летний пик: хайкинг, озёра, зелень','Разгар лета: жара в долинах (+30°C), идеал в горах','Идеально для хайкинга, меньше людей','Золотая осень, первый снег на вершинах','Осень в долинах, хайкинг ещё возможен','Межсезонье, часть курортов готовится к зиме','Начало лыжного сезона, Рождественские ярмарки'] },
+  { region: 'Северная Италия', sub: 'Озёра (Комо, Гарда), Доломиты, Венеция', r: ['O','O','O','G','G','P','P','P','P','G','O','O'], t: ['Холодно, туристов мало. Венеция без толп','Холодно, но Карнавал в Венеции!','Теплеет, озёра ещё прохладные','Весна на озёрах: цветы, +18°C','Отлично: тепло, зелено, до жары','Пик: озёра прогрелись, Доломиты открыты','Жарко (+32°C на озёрах), много туристов','Пик туризма, жарко, но море/озёра хороши','Лучший месяц: тепло, меньше людей, виноград','Золотая осень, сбор винограда, комфортно','Прохладно, осенние дожди','Холодно, рождественская атмосфера'] },
+  { group: '🍁 Северная Америка' },
+  { region: 'Канада', sub: 'Банф, Джаспер (горы)', r: ['G','G','O','O','G','P','P','P','G','O','X','G'], t: ['Горнолыжный пик: Lake Louise, Sunshine Village','Отличное катание, меньше людей чем в декабре','Конец лыжного сезона, переходный','Межсезонье: тает снег, дороги ещё закрыты','Парки открываются, природа просыпается','Летний пик: хайкинг, озёра, медведи!','Лучший месяц: всё открыто, тепло','Отлично для природы, чуть меньше людей','Золотая осень в Скалистых горах — красиво','Холодает, первый снег','Закрываются маршруты, ещё нет снега','Начало лыжного сезона'] },
+  { region: 'Канада', sub: 'Квебек, Онтарио (восток)', r: ['O','O','O','G','G','P','P','P','P','G','O','O'], t: ['Зима: холодно, зимние активности, Монреаль','Зима, зимний карнавал в Квебек-Сити','Конец зимы, первые признаки весны','Весна, цветение, прогулки','Отлично: тепло, зелено','Летний пик: пляжи на реках, Ниагара','Жаркое лето, фестивали','Хорошо, меньше народа к концу','Лучший месяц: золотая осень (foliage) — культовая','Золотая осень продолжается, +15°C','Холодает, листва опала','Зима приходит, рождественский Квебек'] },
+  { group: '🌿 Центральная Америка & Мексика' },
+  { region: 'Мексика', sub: 'Юкатан, Канкун, Мехико', r: ['P','P','P','G','G','O','O','O','O','G','G','P'], t: ['Пик: сухо, тепло +28°C, идеально для пляжей и руин','Лучший месяц: мало туристов из Европы, прекрасно','Отлично: сухой сезон, карнавалы','Жарче, но сухо. Хорошо для руин майя','Жара нарастает, конец сухого сезона','Начало сезона дождей, дожди после обеда','Сезон дождей и ураганов. Пляжи ОК утром','Пик сезона ураганов, жара+влажность','Сезон дождей, ураганы возможны','Дожди уменьшаются. Día de los Muertos!','Сухой сезон начинается, хорошо','Пик: сухо, прохладнее, праздничная атмосфера'] },
+  { region: 'Гватемала & Белиз', sub: 'Тикаль, Антигуа, Карибы', r: ['P','P','P','G','O','O','B','B','B','O','G','P'], t: ['Пик: сухо, Тикаль доступен, Антигуа прекрасна','Отличный сухой сезон','Сухо, хорошо. Семейная неделя — многолюдно','Заканчивается сухой сезон','Начало дождей, ещё терпимо','Дожди ежедневно, джунгли зелёные','Интенсивные дожди, риск ураганов на Белизе','Разгар сезона дождей','Сезон дождей, ураганы','Дожди стихают, Тикаль возможен','Улучшение, хорошее время для Антигуа','Пик: всё открыто, сухо, туристы'] },
+  { region: 'Коста-Рика & Панама', sub: 'Природа, пляжи обоих побережий', r: ['P','P','P','G','O','O','O','B','O','O','O','G'], t: ['Сухой сезон: Тихоокеанское побережье идеально','Лучший месяц: оба побережья хороши','Отлично, особенно Гуанакасте','Конец сухого сезона, Карибы начинают открываться','Начало дождей на Тихом океане. Карибы ОК','Зелёная сезона: водопады полные, дешевле','Тихий океан дождливый, Карибы сухие!','Самый дождливый, но Карибы могут быть сухими','Улучшение, национальные парки хороши','Конец сезона дождей на Тихом океане','Переходный период, терпимо','Начало сухого сезона, новогодний пик'] },
+  { group: '🏔️ Южная Америка — Патагония' },
+  { region: 'Чилийская Патагония', sub: 'Торрес-дель-Пайне, Пуэрто-Наталес', r: ['G','G','P','G','O','X','X','O','G','P','G','G'], t: ['Разгар лета: длинный день, тепло, многолюдно','Отличное лето, чуть меньше людей','Лучший месяц: солнечно, умеренный ветер','Начало осени: золото, малолюдно','Поздняя осень: холодает, короткий день','Зима: парк почти закрыт, темно','Зима, очень мало работает','Конец зимы, парк открывается','Ранняя весна: первые цветы, хорошая видимость','Весенний пик: умеренно, животные активны','Начало лета: тепло, ветрено','Летний сезон в разгаре, многолюдно'] },
+  { region: 'Чилийские фьорды', sub: 'Каррера, Чилоэ, Айсен', r: ['G','G','G','G','O','O','O','O','G','G','G','G'], t: ['Лето: паром доступен, мраморные пещеры','Отличное лето, длинный день','Начало осени, дожди минимальны','Переходный, дожди начинаются','Дожди чаще, туманно, но красиво','Зимние дожди, но уединённо и дёшево','Дожди, туманы — аутентичная атмосфера фьордов','Начинает улучшаться','Осень: красный/жёлтый лес + фьорды','Хорошая видимость, осень, меньше туристов','Начало лета на юге Чили','Летний сезон, хорошая погода'] }
+];
+
+let activeMonth = null;
+
+function buildTable() {
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  data.forEach(row => {
+    if (row.group) {
+      const tr = document.createElement('tr');
+      tr.className = 'group-header';
+      tr.innerHTML = `<td colspan="13">${row.group}</td>`;
+      tbody.appendChild(tr);
+      return;
+    }
+    const tr = document.createElement('tr');
+    let html = `<td class="region-cell">${row.region}<span class="region-sub">${row.sub}</span></td>`;
+    for (let m = 0; m < 12; m++) {
+      const cls = CLASSES[row.r[m]];
+      const tip = row.t[m];
+      const dimmed = activeMonth !== null && activeMonth !== m ? ' dimmed' : '';
+      const colHighlight = activeMonth === m ? ' col-highlight' : '';
+      html += `<td class="cell ${cls}${dimmed}${colHighlight}" data-tip="${tip}"><span class="badge">${LABELS[row.r[m]]}</span></td>`;
+    }
+    tr.innerHTML = html;
+    tbody.appendChild(tr);
+  });
+  document.querySelectorAll('.month-header').forEach((th, i) => {
+    th.classList.toggle('col-highlight', activeMonth === i);
+  });
+}
+
+document.querySelectorAll('.month-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const m = parseInt(btn.dataset.month);
+    if (activeMonth === m) {
+      activeMonth = null;
+      btn.classList.remove('active');
+    } else {
+      document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeMonth = m;
+    }
+    buildTable();
+  });
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  activeMonth = null;
+  document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+  buildTable();
+});
+
+buildTable();
+</script>
+</body>
+</html>
