@@ -5,13 +5,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Калькулятор бюджета — TravelTribe</title>
 <meta name="description" content="Калькулятор стоимости путешествия из Москвы: актуальные цены на перелёт, курс ЦБ РФ, отель и питание для 24 направлений мира.">
+<meta name="keywords" content="калькулятор бюджета путешествия, стоимость перелёта из Москвы, цены на отели, бюджет туриста 2026">
+<meta name="author" content="TravelTribe · Никита Зайцев">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://traveltribe.ru/calculator.html">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://traveltribe.ru/calculator.html">
+<meta property="og:site_name" content="TravelTribe">
+<meta property="og:locale" content="ru_RU">
 <meta property="og:title" content="Калькулятор бюджета путешествия — TravelTribe">
 <meta property="og:description" content="Актуальные цены на перелёт + курс ЦБ РФ. Перелёт из Москвы, отель и питание для 24 направлений.">
 <meta property="og:image" content="https://traveltribe.ru/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Калькулятор бюджета путешествия — TravelTribe">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@traveltriberu">
+<meta name="twitter:title" content="Калькулятор бюджета путешествия — TravelTribe">
+<meta name="twitter:description" content="Считай бюджет поездки: перелёт из Москвы, отель и питание для 24 направлений мира.">
+<meta name="twitter:image" content="https://traveltribe.ru/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Калькулятор бюджета путешествия",
+  "url": "https://traveltribe.ru/calculator.html",
+  "description": "Интерактивный калькулятор стоимости путешествия из Москвы: перелёт, отель и питание для 24 направлений мира.",
+  "inLanguage": "ru-RU",
+  "applicationCategory": "TravelApplication",
+  "isPartOf": { "@type": "WebSite", "url": "https://traveltribe.ru", "name": "TravelTribe" },
+  "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://t.me/traveltriberu" }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -25,7 +52,9 @@
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--text); font-family: 'Manrope', sans-serif; min-height: 100vh; padding-bottom: 4rem; }
+h1, h2, h3 { text-wrap: balance; }
 a { text-decoration: none; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 
 nav {
   position: sticky; top: 0; z-index: 100;
@@ -115,9 +144,14 @@ header p { color: var(--muted); font-size: 0.8rem; font-family: 'DM Mono', monos
 .calc-note { color: var(--muted); font-size: 0.67rem; font-family: 'DM Mono', monospace; line-height: 1.6; }
 
 @media (max-width: 600px) {
+  .page { padding: 1.5rem 1rem 2rem; }
   .calc { padding: 1.2rem 1rem; }
-  .calc-select { min-width: 100%; }
+  .calc-form { gap: 1rem; }
+  .calc-select { min-width: 100%; width: 100%; }
   .btn-group button { padding: 0.4rem 0.55rem; font-size: 0.68rem; }
+  .calc-breakdown { flex-direction: column; }
+  .breakdown-item { min-width: unset; }
+  .step-btn { width: 44px; height: 44px; }
 }
 </style>
 </head>
@@ -144,14 +178,14 @@ header p { color: var(--muted); font-size: 0.8rem; font-family: 'DM Mono', monos
     <div class="calc-form">
       <div class="calc-field" style="flex:1;min-width:240px">
         <label>Регион</label>
-        <select class="calc-select" id="calcRegion"></select>
+        <select class="calc-select" id="calcRegion" aria-label="Выберите регион для расчёта бюджета"></select>
       </div>
       <div class="calc-field">
         <label>Дней</label>
         <div class="stepper">
-          <button class="step-btn" id="daysDown">−</button>
-          <span class="step-val" id="calcDaysDisplay">7</span>
-          <button class="step-btn" id="daysUp">+</button>
+          <button class="step-btn" id="daysDown" aria-label="Уменьшить количество дней">−</button>
+          <span class="step-val" id="calcDaysDisplay" aria-live="polite">7</span>
+          <button class="step-btn" id="daysUp" aria-label="Увеличить количество дней">+</button>
           <input type="hidden" id="calcDays" value="7">
         </div>
       </div>

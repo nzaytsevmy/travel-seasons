@@ -1,6 +1,8 @@
 import os, json, time, requests
 
-TOKEN = os.environ.get("TP_TOKEN", "b6085c316d4667a868718b755abcf5ec")
+TOKEN = os.environ.get("TP_TOKEN")
+if not TOKEN:
+    raise RuntimeError("TP_TOKEN environment variable is not set")
 IATAS = ["SYD","DRW","DPS","MES","SOQ","NBO","CPT","DXB","TYO","SEL",
          "TBS","OSS","TAS","DYU","ALA","ZRH","MXP","YYC","YUL","CUN","GUA","SJO","PUQ","SCL"]
 
