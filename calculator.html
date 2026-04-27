@@ -72,12 +72,23 @@ header p { color: var(--muted); font-size: 0.8rem; font-family: 'DM Mono', monos
 }
 .calc-select:hover { border-color: var(--muted); }
 .calc-select:focus { border-color: var(--accent); background-color: rgba(240,136,62,0.05); }
-.calc-input {
-  background: var(--bg); border: 1px solid var(--border); color: var(--text);
-  font-family: 'DM Mono', monospace; font-size: 0.95rem;
-  padding: 0.55rem 0.9rem; border-radius: 6px; outline: none; width: 100px; text-align: center;
+.stepper {
+  display: flex; align-items: center;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  transition: border-color 0.15s;
 }
-.calc-input:focus { border-color: var(--accent); }
+.stepper:focus-within { border-color: var(--accent); }
+.step-btn {
+  background: transparent; border: none; color: var(--muted);
+  font-size: 1.2rem; width: 38px; height: 40px; cursor: pointer;
+  font-family: 'DM Mono', monospace; line-height: 1;
+  transition: color 0.15s, background 0.15s;
+}
+.step-btn:hover { color: var(--accent); background: rgba(240,136,62,0.08); }
+.step-val {
+  font-family: 'DM Mono', monospace; font-size: 0.92rem;
+  color: var(--text); min-width: 44px; text-align: center;
+}
 .btn-group { display: flex; gap: 0.3rem; }
 .btn-group button {
   background: var(--bg); border: 1px solid var(--border); color: var(--muted);
@@ -137,7 +148,12 @@ header p { color: var(--muted); font-size: 0.8rem; font-family: 'DM Mono', monos
       </div>
       <div class="calc-field">
         <label>Дней</label>
-        <input class="calc-input" type="number" id="calcDays" min="1" max="90" value="7">
+        <div class="stepper">
+          <button class="step-btn" id="daysDown">−</button>
+          <span class="step-val" id="calcDaysDisplay">7</span>
+          <button class="step-btn" id="daysUp">+</button>
+          <input type="hidden" id="calcDays" value="7">
+        </div>
       </div>
       <div class="calc-field">
         <label>Уровень</label>
@@ -243,7 +259,7 @@ function fmt(usd) {
 
 function renderCalc() {
   const pi = parseInt(calcSel.value);
-  const days = Math.max(1, parseInt(document.getElementById('calcDays').value) || 7);
+  const days = Math.max(1, parseInt(document.getElementById('calcDays').value) || 1);
   const iF = document.getElementById('chkFlight').checked;
   const iH = document.getElementById('chkHotel').checked;
   const iD = document.getElementById('chkFood').checked;
@@ -276,7 +292,14 @@ PRICES.forEach((p, i) => {
 });
 
 calcSel.addEventListener('change', onRegionChange);
-document.getElementById('calcDays').addEventListener('input', renderCalc);
+function setDays(n) {
+  n = Math.min(90, Math.max(1, n));
+  document.getElementById('calcDays').value = n;
+  document.getElementById('calcDaysDisplay').textContent = n;
+  renderCalc();
+}
+document.getElementById('daysDown').addEventListener('click', () => setDays(parseInt(document.getElementById('calcDays').value) - 1));
+document.getElementById('daysUp').addEventListener('click', () => setDays(parseInt(document.getElementById('calcDays').value) + 1));
 ['chkFlight','chkHotel','chkFood'].forEach(id =>
   document.getElementById(id).addEventListener('change', renderCalc));
 document.getElementById('levelGroup').addEventListener('click', e => {
