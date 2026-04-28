@@ -356,7 +356,7 @@ tbody tr td.cell.dimmed { opacity: 0.25; }
 @media (max-width: 700px) {
   body { padding-bottom: 3rem; }
 
-  /* Fix 5: кнопки месяцев липнут под nav при скролле */
+  /* Fix 5: кнопки месяцев фиксируются под навом при скролле */
   .controls {
     position: sticky;
     top: 64px;
@@ -369,14 +369,13 @@ tbody tr td.cell.dimmed { opacity: 0.25; }
   }
   .legend { margin-top: 1rem; }
 
-  /* Таблица скроллится внутри контейнера → sticky заголовки работают */
+  /* Таблица скроллится внутри своего контейнера — sticky заголовки работают */
   .table-wrap {
     margin: 0;
     border-radius: 0;
     border-left: none;
     border-right: none;
-    max-height: calc(100vh - 230px);
-    overflow: auto;
+    max-height: calc(100vh - 220px);
   }
   thead tr:first-child th { top: 0; }
 
