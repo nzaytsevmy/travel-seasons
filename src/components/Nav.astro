@@ -15,21 +15,22 @@ const { active } = Astro.props;
   </div>
 </nav>
 
-<script>
-  const btn = document.getElementById('themeToggle');
-  if (btn) {
+<script is:inline>
+  (function () {
+    var btn = document.getElementById('themeToggle');
+    if (!btn) return;
     function syncIcon() {
-      const light = document.documentElement.classList.contains('light-theme');
+      var light = document.documentElement.classList.contains('light-theme');
       btn.textContent = light ? '☀' : '☾';
       btn.setAttribute('aria-label', light ? 'Тёмная тема' : 'Светлая тема');
     }
     syncIcon();
-    btn.addEventListener('click', () => {
-      const light = document.documentElement.classList.toggle('light-theme');
+    btn.addEventListener('click', function () {
+      var light = document.documentElement.classList.toggle('light-theme');
       localStorage.setItem('theme', light ? 'light' : 'dark');
       syncIcon();
     });
-  }
+  })();
 </script>
 
 <style>
