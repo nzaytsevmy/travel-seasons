@@ -28,9 +28,9 @@ const FONTS_URL = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:i
 <head>
   <meta charset="UTF-8" />
 
-  <!-- FOUC protection: apply theme class before first paint -->
+  <!-- FOUC: apply saved theme before first paint, no flash -->
   <script is:inline>
-    (function(){
+    (function () {
       var t = localStorage.getItem('theme');
       if (t === 'light' || (!t && window.matchMedia('(prefers-color-scheme: light)').matches)) {
         document.documentElement.classList.add('light-theme');
@@ -84,5 +84,33 @@ const FONTS_URL = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:i
   </noscript>
 
   <slot />
+
+  <!-- Theme toggle — runs after DOM is ready, re-runs on astro:page-load for View Transitions -->
+  <script is:inline>
+    function _initThemeToggle() {
+      var btn = document.getElementById('themeToggle');
+      if (!btn || btn._themeReady) return;
+      btn._themeReady = true;
+
+      function syncIcon() {
+        var light = document.documentElement.classList.contains('light-theme');
+        btn.textContent = light ? '☀' : '☾';
+        btn.setAttribute('aria-label', light ? 'Тёмная тема' : 'Светлая тема');
+      }
+
+      syncIcon();
+
+      btn.addEventListener('click', function () {
+        var light = document.documentElement.classList.toggle('light-theme');
+        localStorage.setItem('theme', light ? 'light' : 'dark');
+        syncIcon();
+      });
+    }
+
+    // Fires on initial load (DOM is already ready at end of body)
+    _initThemeToggle();
+    // Re-fires after each View Transitions navigation
+    document.addEventListener('astro:page-load', _initThemeToggle);
+  </script>
 </body>
 </html>

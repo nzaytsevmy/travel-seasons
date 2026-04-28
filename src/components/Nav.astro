@@ -15,23 +15,6 @@ const { active } = Astro.props;
   </div>
 </nav>
 
-<script is:inline>
-  (function () {
-    var btn = document.getElementById('themeToggle');
-    if (!btn) return;
-    function syncIcon() {
-      var light = document.documentElement.classList.contains('light-theme');
-      btn.textContent = light ? '☀' : '☾';
-      btn.setAttribute('aria-label', light ? 'Тёмная тема' : 'Светлая тема');
-    }
-    syncIcon();
-    btn.addEventListener('click', function () {
-      var light = document.documentElement.classList.toggle('light-theme');
-      localStorage.setItem('theme', light ? 'light' : 'dark');
-      syncIcon();
-    });
-  })();
-</script>
 
 <style>
   .nav-right {
