@@ -45,7 +45,7 @@ const ldJson = {
   <div class="mission">
     <span class="mission-pill pill-os">⊹ Open Source</span>
     <span class="mission-pill pill-free">✓ Бесплатно навсегда</span>
-    <span class="mission-pill pill-uni">◈ Только уникальные фичи</span>
+    <span class="mission-pill pill-uni">◈ Без воды и рекламы</span>
     <span class="mission-sep">·</span>
     <span style="font-size:0.75rem;color:var(--text-dim)">Проект о путешествиях по всему миру — добавляй направления на GitHub</span>
   </div>
@@ -355,7 +355,42 @@ tbody tr td.cell.dimmed { opacity: 0.25; }
 
 @media (max-width: 700px) {
   body { padding-bottom: 3rem; }
-  .table-wrap { margin: 0; border-radius: 0; border-left: none; border-right: none; max-height: none; }
+
+  /* Fix 5: кнопки месяцев липнут под nav при скролле */
+  .controls {
+    position: sticky;
+    top: 64px;
+    z-index: 80;
+    background: var(--bg);
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 0;
+  }
+  .legend { margin-top: 1rem; }
+
+  /* Таблица скроллится внутри контейнера → sticky заголовки работают */
+  .table-wrap {
+    margin: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    max-height: calc(100vh - 230px);
+    overflow: auto;
+  }
+  thead tr:first-child th { top: 0; }
+
+  /* Fix 4: уже левая колонка */
+  .region-cell {
+    min-width: 150px;
+    max-width: 165px;
+    padding: 0.6rem 0.5rem 0.6rem 0.75rem;
+    font-size: 0.78rem;
+  }
+  .region-sub { font-size: 0.63rem; }
+  .tags { gap: 0.2rem; margin-top: 0.4rem; }
+  .tag { font-size: 0.55rem; padding: 0.1rem 0.3rem; }
+
   .month-btn { padding: 0.45rem 0.65rem; font-size: 0.72rem; min-height: 36px; }
   .footer-contribute { margin-top: 2rem; padding: 1.5rem; }
 }
