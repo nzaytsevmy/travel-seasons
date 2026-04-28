@@ -1,0 +1,362 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { data } from '../data/regions.js';
+
+const VISA_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза' };
+const VISA_CLASS = { free: 'tag-free', evisa: 'tag-evisa', required: 'tag-visa' };
+const BUDGET_LABEL = { low: '$ Дёшево', mid: '$$ Средне', high: '$$$ Дорого' };
+const BUDGET_CLASS = { low: 'tag-low', mid: 'tag-mid', high: 'tag-high' };
+const CLASSES = { P: 'peak', G: 'good', O: 'ok', B: 'bad', X: 'off' };
+const LABELS  = { P: '●', G: '●', O: '●', B: '●', X: '·' };
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "TravelTribe — Сезоны для путешествий",
+  "url": "https://traveltribe.ru",
+  "description": "Интерактивная таблица лучшего времени для путешествий: 24 направления, виза для россиян, бюджет и калькулятор стоимости поездки от Москвы.",
+  "inLanguage": "ru-RU",
+  "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://t.me/traveltriberu" },
+  "about": {
+    "@type": "ItemList",
+    "name": "Лучшие направления для путешествий из России",
+    "description": "24 региона мира с анализом сезонности, визовых требований и бюджета для путешественников из России",
+    "numberOfItems": 24
+  }
+};
+---
+<Layout
+  title="Сезоны для путешествий — куда и когда | TravelTribe"
+  description="Интерактивная таблица: 24 направления мира, лучшее время для поездки, виза и бюджет для россиян. Калькулятор стоимости перелёта из Москвы."
+  canonical="https://traveltribe.ru/seasons"
+  ogTitle="Сезоны для путешествий — когда и куда из России"
+  ogDescription="Интерактивная таблица: 24 направления мира, лучшее время, виза и бюджет для россиян. Калькулятор перелёта из Москвы."
+  ldJson={ldJson}
+>
+  <Nav active="seasons" />
+
+  <header>
+    <h1>Сезоны для <em>путешествий</em></h1>
+    <p class="subtitle">// 24 региона мира · виза и бюджет для россиян · актуальные цены</p>
+  </header>
+
+  <div class="mission">
+    <span class="mission-pill pill-os">⊹ Open Source</span>
+    <span class="mission-pill pill-free">✓ Бесплатно навсегда</span>
+    <span class="mission-pill pill-uni">◈ Только уникальные фичи</span>
+    <span class="mission-sep">·</span>
+    <span style="font-size:0.75rem;color:var(--text-dim)">Проект о путешествиях по всему миру — добавляй направления на GitHub</span>
+  </div>
+
+  <div class="controls">
+    <span class="controls-label">Месяц →</span>
+    <button class="month-btn" data-month="0" aria-pressed="false">Янв</button>
+    <button class="month-btn" data-month="1" aria-pressed="false">Фев</button>
+    <button class="month-btn" data-month="2" aria-pressed="false">Мар</button>
+    <button class="month-btn" data-month="3" aria-pressed="false">Апр</button>
+    <button class="month-btn" data-month="4" aria-pressed="false">Май</button>
+    <button class="month-btn" data-month="5" aria-pressed="false">Июн</button>
+    <button class="month-btn" data-month="6" aria-pressed="false">Июл</button>
+    <button class="month-btn" data-month="7" aria-pressed="false">Авг</button>
+    <button class="month-btn" data-month="8" aria-pressed="false">Сен</button>
+    <button class="month-btn" data-month="9" aria-pressed="false">Окт</button>
+    <button class="month-btn" data-month="10" aria-pressed="false">Ноя</button>
+    <button class="month-btn" data-month="11" aria-pressed="false">Дек</button>
+    <button class="reset-btn" id="resetBtn" aria-label="Сбросить фильтр месяца">Сброс</button>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="dot" style="background:var(--peak)"></div> Пик сезона</div>
+    <div class="legend-item"><div class="dot" style="background:var(--good)"></div> Хорошо</div>
+    <div class="legend-item"><div class="dot" style="background:var(--ok)"></div> Нормально / переходный</div>
+    <div class="legend-item"><div class="dot" style="background:var(--bad)"></div> Плохо / не рекомендуется</div>
+    <div class="legend-item"><div class="dot" style="background:var(--off)"></div> Закрытый / нет смысла</div>
+    <div class="legend-item"><span class="tag tag-free">Без визы</span></div>
+    <div class="legend-item"><span class="tag tag-evisa">eVisa</span></div>
+    <div class="legend-item"><span class="tag tag-visa">Виза</span></div>
+    <div class="legend-item"><span class="tag tag-low">$ Дёшево</span></div>
+    <div class="legend-item"><span class="tag tag-mid">$$ Средне</span></div>
+    <div class="legend-item"><span class="tag tag-high">$$$ Дорого</span></div>
+  </div>
+
+  <div id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <div class="table-wrap" role="region" aria-label="Таблица сезонности по регионам">
+    <table id="mainTable">
+      <caption class="visually-hidden">Сезоны для путешествий — 24 региона мира</caption>
+      <thead>
+        <tr>
+          <th scope="col">Регион</th>
+          <th scope="col" class="month-header">ЯНВ</th>
+          <th scope="col" class="month-header">ФЕВ</th>
+          <th scope="col" class="month-header">МАР</th>
+          <th scope="col" class="month-header">АПР</th>
+          <th scope="col" class="month-header">МАЙ</th>
+          <th scope="col" class="month-header">ИЮН</th>
+          <th scope="col" class="month-header">ИЮЛ</th>
+          <th scope="col" class="month-header">АВГ</th>
+          <th scope="col" class="month-header">СЕН</th>
+          <th scope="col" class="month-header">ОКТ</th>
+          <th scope="col" class="month-header">НОЯ</th>
+          <th scope="col" class="month-header">ДЕК</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        {data.map(row => row.group ? (
+          <tr class="group-header">
+            <td colspan="13">{row.group}</td>
+          </tr>
+        ) : (
+          <tr>
+            <td class="region-cell">
+              {row.region}
+              <span class="region-sub">{row.sub}</span>
+              <div class="tags">
+                <span class={`tag ${VISA_CLASS[row.visa]}`}>{VISA_LABEL[row.visa]}</span>
+                <span class={`tag ${BUDGET_CLASS[row.budget]}`}>{BUDGET_LABEL[row.budget]}</span>
+              </div>
+            </td>
+            {row.r.map((code, i) => (
+              <td class={`cell ${CLASSES[code]}`} data-tip={row.t[i]}>
+                <span class="badge">{LABELS[code]}</span>
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <footer class="table-footer">
+    * Пик = идеальные условия · Хорошо = отличные условия, меньше толп · Нормально = возможно, но есть нюансы · Плохо = дожди/жара/холод критичны<br />
+    * Виза и бюджет актуальны для россиян на 2026 год. eVisa = онлайн без посещения консульства.<br />
+    * Бюджет: $ до ~$1500/нед · $$ $1500–3000/нед · $$$ от $3000/нед (перелёт + проживание + еда)
+  </footer>
+
+  <div class="footer-contribute">
+    <p>
+      <strong>Open Source проект о путешествиях.</strong> Знаешь направление которого здесь нет?<br />
+      Добавь регион, фичу или исправь данные — любой вклад приветствуется.
+    </p>
+    <a class="contribute-btn" href="https://github.com/nzaytsevmy/traveltribe-feedback" target="_blank" rel="noopener">→ Contribute on GitHub</a>
+  </div>
+
+  <Footer />
+</Layout>
+
+<script>
+const CLASSES = { P: 'peak', G: 'good', O: 'ok', B: 'bad', X: 'off' };
+let activeMonth = null;
+
+function applyFilter() {
+  const cells = document.querySelectorAll('td.cell');
+  const headers = document.querySelectorAll('.month-header');
+
+  cells.forEach(cell => {
+    const colIdx = Array.from(cell.parentElement.children).indexOf(cell) - 1;
+    if (activeMonth === null) {
+      cell.classList.remove('dimmed', 'col-highlight');
+    } else {
+      cell.classList.toggle('dimmed', colIdx !== activeMonth);
+      cell.classList.toggle('col-highlight', colIdx === activeMonth);
+    }
+  });
+
+  headers.forEach((th, i) => {
+    th.classList.toggle('col-highlight', activeMonth === i);
+  });
+}
+
+document.querySelectorAll('.month-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const m = parseInt(btn.dataset.month);
+    if (activeMonth === m) {
+      activeMonth = null;
+      btn.classList.remove('active');
+      btn.setAttribute('aria-pressed', 'false');
+    } else {
+      document.querySelectorAll('.month-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
+      activeMonth = m;
+    }
+    applyFilter();
+  });
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  activeMonth = null;
+  document.querySelectorAll('.month-btn').forEach(b => {
+    b.classList.remove('active');
+    b.setAttribute('aria-pressed', 'false');
+  });
+  applyFilter();
+});
+
+// Tooltip
+const tooltip = document.getElementById('tooltip');
+
+function showTooltip(el, text) {
+  const r = el.getBoundingClientRect();
+  tooltip.textContent = text;
+  tooltip.style.display = 'block';
+  const tw = tooltip.offsetWidth;
+  let left = r.left + r.width / 2 - tw / 2;
+  left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+  const top = r.top - tooltip.offsetHeight - 8;
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = (top < 8 ? r.bottom + 8 : top) + 'px';
+}
+
+function hideTooltip() { tooltip.style.display = 'none'; }
+
+document.addEventListener('mouseover', e => {
+  const cell = e.target.closest('[data-tip]');
+  if (cell) showTooltip(cell, cell.dataset.tip); else hideTooltip();
+});
+
+let lastTapped = null;
+document.addEventListener('touchstart', e => {
+  const cell = e.target.closest('[data-tip]');
+  if (cell) {
+    e.preventDefault();
+    if (lastTapped === cell) { hideTooltip(); lastTapped = null; return; }
+    showTooltip(cell, cell.dataset.tip);
+    lastTapped = cell;
+  } else {
+    hideTooltip();
+    lastTapped = null;
+  }
+}, { passive: false });
+</script>
+
+<style>
+header {
+  max-width: 1400px; margin: 0 auto 2.5rem; padding: 2rem clamp(1rem, 4vw, 3rem) 0;
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+h1 { font-family: var(--ff-display); font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 300; letter-spacing: -0.01em; line-height: 1.1; }
+h1 em { color: var(--gold); font-style: italic; }
+.subtitle { color: var(--gold-dim); font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; margin-top: 0.5rem; }
+
+.mission { max-width: 1400px; margin: 0 auto 2.5rem; padding: 0 clamp(1rem, 4vw, 3rem); display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; }
+.mission-pill {
+  display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.68rem;
+  letter-spacing: 0.06em; padding: 0.28rem 0.7rem; border-radius: 20px; border: 1px solid;
+  text-transform: uppercase;
+}
+.pill-os   { color: var(--gold); border-color: rgba(201,151,58,0.3); background: rgba(201,151,58,0.07); }
+.pill-free { color: var(--peak); border-color: rgba(34,197,94,0.3);  background: rgba(34,197,94,0.07); }
+.pill-uni  { color: var(--good); border-color: rgba(74,158,255,0.3); background: rgba(74,158,255,0.07); }
+.mission-sep { color: var(--gold-dim); font-size: 0.8rem; }
+
+.controls { max-width: 1400px; margin: 0 auto 2rem; padding: 0 clamp(1rem, 4vw, 3rem); display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.controls-label { color: var(--gold-dim); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; margin-right: 0.8rem; }
+.month-btn, .reset-btn {
+  background: transparent; border: 1px solid var(--line); color: var(--text-dim);
+  font-family: var(--ff-body); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0.45rem 0.8rem; border-radius: 3px; cursor: pointer; transition: all 0.2s;
+}
+.month-btn:hover, .reset-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+.month-btn.active { background: var(--gold); border-color: var(--gold); color: #0c0a08; font-weight: 500; box-shadow: 0 0 10px var(--gold-glow); }
+.reset-btn { margin-left: 0.5rem; }
+.month-btn:focus-visible, .reset-btn:focus-visible { outline-offset: 3px; }
+
+.legend { max-width: 1400px; margin: 0 auto 1.5rem; padding: 0 clamp(1rem, 4vw, 3rem); display: flex; flex-wrap: wrap; gap: 1.2rem; }
+.legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: var(--text-dim); }
+.dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 5px currentColor; }
+
+.table-wrap {
+  max-width: 1400px; margin: 0 auto; overflow: auto; max-height: calc(100vh - 220px);
+  border: 1px solid var(--line); border-radius: 4px; background: var(--bg2); position: relative; z-index: 1;
+}
+table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 900px; }
+
+thead tr:first-child th {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--bg3); border-bottom: 1px solid var(--line);
+  padding: 1rem 0.6rem; font-weight: 400; font-size: 0.65rem;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint);
+}
+thead tr:first-child th:first-child { text-align: left; padding-left: 1.2rem; min-width: 240px; position: sticky; left: 0; z-index: 11; border-right: 1px solid var(--line); }
+.month-header { text-align: center; min-width: 52px; border-left: 1px dashed rgba(201,151,58,0.05); }
+
+tbody tr { border-bottom: 1px solid var(--line); transition: background 0.15s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: rgba(201,151,58,0.03); }
+
+.group-header td {
+  background: var(--bg3); color: var(--gold); font-family: var(--ff-display);
+  font-size: 1.2rem; padding: 0.8rem 1.2rem; font-style: italic; position: sticky; left: 0;
+  border-bottom: 1px solid var(--line); border-top: 1px solid var(--line);
+}
+
+.region-cell {
+  padding: 0.8rem 1rem 0.8rem 1.2rem; color: var(--text); font-weight: 400; line-height: 1.3;
+  min-width: 240px; max-width: 260px; vertical-align: middle; position: sticky; left: 0;
+  background: var(--bg2); z-index: 2; border-right: 1px solid var(--line);
+}
+.region-sub { color: var(--text-faint); font-size: 0.72rem; display: block; margin-top: 0.2rem; }
+
+.tags { display: flex; gap: 0.4rem; margin-top: 0.6rem; flex-wrap: wrap; }
+
+.cell { text-align: center; vertical-align: middle; padding: 0.7rem 0.3rem; position: relative; cursor: default; border-left: 1px dashed rgba(201,151,58,0.05); }
+.badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 3px; font-size: 0.6rem; font-weight: 500;
+  transition: transform 0.15s; will-change: transform;
+}
+.cell:hover .badge { transform: scale(1.2); }
+
+.peak .badge { background: var(--peak-light); color: var(--peak); border: 1px solid rgba(34,197,94,0.3); }
+.good .badge { background: var(--good-light); color: var(--good); border: 1px solid rgba(74,158,255,0.3); }
+.ok   .badge { background: var(--ok-light);   color: var(--ok);   border: 1px solid rgba(245,158,11,0.3); }
+.bad  .badge { background: var(--bad-light);  color: var(--bad);  border: 1px solid rgba(239,68,68,0.3); }
+.off  .badge { background: transparent; color: var(--off); border: 1px dashed var(--line); }
+
+.cell.col-highlight { background: rgba(201,151,58,0.05); }
+.month-header.col-highlight { background: rgba(201,151,58,0.1); color: var(--gold) !important; }
+tbody tr td.cell.dimmed { opacity: 0.25; }
+
+#tooltip {
+  position: fixed; background: var(--bg3); border: 1px solid var(--line); color: var(--text-dim);
+  font-size: 0.75rem; padding: 0.6rem 0.8rem; border-radius: 3px; z-index: 1000; pointer-events: none;
+  max-width: 220px; white-space: normal; text-align: left; line-height: 1.5; display: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.table-footer {
+  max-width: 1400px; margin: 2rem auto 0; padding: 0 clamp(1rem, 4vw, 3rem);
+  color: var(--text-faint); font-size: 0.75rem; line-height: 1.8;
+}
+.footer-contribute {
+  max-width: 1400px; margin: 3rem auto 0; padding: 2rem 2.5rem;
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 4px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;
+  position: relative; overflow: hidden;
+}
+.footer-contribute::before {
+  content: ""; position: absolute; top: -1px; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+.footer-contribute p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; max-width: 600px; }
+.footer-contribute p strong { color: var(--text); font-weight: 400; font-family: var(--ff-display); font-size: 1.4rem; display: block; margin-bottom: 0.3rem; }
+.contribute-btn {
+  font-size: 0.78rem; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--gold); border: 1px solid rgba(201,151,58,0.35); background: rgba(201,151,58,0.08);
+  padding: 10px 20px; border-radius: 3px; white-space: nowrap; transition: background 0.2s, box-shadow 0.2s;
+}
+.contribute-btn:hover { background: var(--gold-glow); box-shadow: 0 0 18px var(--gold-glow); }
+
+@media (max-width: 700px) {
+  body { padding-bottom: 3rem; }
+  .table-wrap { margin: 0; border-radius: 0; border-left: none; border-right: none; max-height: none; }
+  .month-btn { padding: 0.45rem 0.65rem; font-size: 0.72rem; min-height: 36px; }
+  .footer-contribute { margin-top: 2rem; padding: 1.5rem; }
+}
+</style>
