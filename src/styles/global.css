@@ -101,8 +101,8 @@ body::before {
   pointer-events: none;
   z-index: -1;
 }
-/* Force browsers to repaint the grid gradient on theme switch */
-html.light-theme body::before {
+/* Force Safari/WebKit to repaint body::before grid — direct selector on body */
+body.light-theme::before {
   background-image:
     linear-gradient(var(--line) 1px, transparent 1px),
     linear-gradient(90deg, var(--line) 1px, transparent 1px);
