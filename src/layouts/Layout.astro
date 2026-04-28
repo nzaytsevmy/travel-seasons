@@ -102,6 +102,7 @@ const FONTS_URL = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:i
 
       btn.addEventListener('click', function () {
         var light = document.documentElement.classList.toggle('light-theme');
+        void document.documentElement.offsetHeight; // force reflow — makes Chrome/Safari repaint body bg
         localStorage.setItem('theme', light ? 'light' : 'dark');
         syncIcon();
       });
