@@ -4,6 +4,9 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://traveltribe.ru',
+  image: {
+    domains: ['images.unsplash.com'],
+  },
   integrations: [
     partytown({ config: { forward: ['ym'] } }),
     sitemap(),
