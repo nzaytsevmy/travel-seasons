@@ -48,7 +48,7 @@
   --border2: #2a3a50;
   --text:    #e6edf3;
   --muted:   #8b949e;
-  --accent:  #e3e200;
+  --accent:  #d4cf5a;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--text); font-family: 'Manrope', sans-serif; min-height: 100vh; padding-bottom: 4rem; }
@@ -94,13 +94,13 @@ header p { color: var(--muted); font-size: 0.8rem; font-family: 'DM Mono', monos
   min-width: 260px;
   appearance: none;
   -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23e3e200' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23d4cf5a' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 1rem center;
   transition: border-color 0.15s, background-color 0.15s;
 }
 .calc-select:hover { border-color: var(--muted); }
-.calc-select:focus { border-color: var(--accent); background-color: rgba(227,226,0,0.05); }
+.calc-select:focus { border-color: var(--accent); background-color: rgba(212,207,90,0.05); }
 .stepper {
   display: flex; align-items: center;
   background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
@@ -113,7 +113,7 @@ header p { color: var(--muted); font-size: 0.8rem; font-family: 'DM Mono', monos
   font-family: 'DM Mono', monospace; line-height: 1;
   transition: color 0.15s, background 0.15s;
 }
-.step-btn:hover { color: var(--accent); background: rgba(227,226,0,0.08); }
+.step-btn:hover { color: var(--accent); background: rgba(212,207,90,0.08); }
 .step-val {
   font-family: 'DM Mono', monospace; font-size: 0.92rem;
   color: var(--text); min-width: 44px; text-align: center;
@@ -126,9 +126,6 @@ header p { color: var(--muted); font-size: 0.8rem; font-family: 'DM Mono', monos
 }
 .btn-group button.active { background: var(--accent); border-color: var(--accent); color: #0d1117; }
 .btn-group button:hover:not(.active) { border-color: var(--muted); color: var(--text); }
-.check-group { display: flex; flex-direction: column; gap: 0.45rem; }
-.check-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-family: 'DM Mono', monospace; color: var(--text); cursor: pointer; letter-spacing: 0.03em; }
-.check-item input { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
 
 .calc-result { border-top: 1px solid var(--border); padding-top: 1.8rem; }
 .calc-total { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
@@ -195,14 +192,6 @@ header p { color: var(--muted); font-size: 0.8rem; font-family: 'DM Mono', monos
           <button class="active" data-lvl="0">$ Бюджет</button>
           <button data-lvl="1">$$ Комфорт</button>
           <button data-lvl="2">$$$ Люкс</button>
-        </div>
-      </div>
-      <div class="calc-field">
-        <label>Включить</label>
-        <div class="check-group">
-          <label class="check-item"><input type="checkbox" id="chkFlight" checked> Перелёт</label>
-          <label class="check-item"><input type="checkbox" id="chkHotel" checked> Проживание</label>
-          <label class="check-item"><input type="checkbox" id="chkFood" checked> Питание</label>
         </div>
       </div>
       <div class="calc-field">
@@ -294,20 +283,16 @@ function fmt(usd) {
 function renderCalc() {
   const pi = parseInt(calcSel.value);
   const days = Math.max(1, parseInt(document.getElementById('calcDays').value) || 1);
-  const iF = document.getElementById('chkFlight').checked;
-  const iH = document.getElementById('chkHotel').checked;
-  const iD = document.getElementById('chkFood').checked;
   const p = PRICES[pi];
   let flightUsd, flightDisplay;
-  if (!iF) { flightUsd = 0; flightDisplay = '—'; }
-  else if (liveFlight === null) { flightUsd = p.flight[calcLevel]; flightDisplay = '...'; }
+  if (liveFlight === null) { flightUsd = p.flight[calcLevel]; flightDisplay = '...'; }
   else if (liveFlight) { flightUsd = liveFlight; flightDisplay = fmt(liveFlight) + ' ✈'; }
   else { flightUsd = p.flight[calcLevel]; flightDisplay = fmt(p.flight[calcLevel]) + ' ~'; }
-  const total = (iF ? flightUsd : 0) + (iH ? p.hotel[calcLevel] : 0) * days + (iD ? p.food[calcLevel] : 0) * days;
+  const total = flightUsd + p.hotel[calcLevel] * days + p.food[calcLevel] * days;
   document.getElementById('calcTotal').textContent = total > 0 ? fmt(total) : '—';
   document.getElementById('bFlight').textContent = flightDisplay;
-  document.getElementById('bHotel').textContent  = iH ? fmt(p.hotel[calcLevel]) : '—';
-  document.getElementById('bFood').textContent   = iD ? fmt(p.food[calcLevel]) : '—';
+  document.getElementById('bHotel').textContent  = fmt(p.hotel[calcLevel]);
+  document.getElementById('bFood').textContent   = fmt(p.food[calcLevel]);
 }
 
 async function onRegionChange() {
@@ -334,8 +319,6 @@ function setDays(n) {
 }
 document.getElementById('daysDown').addEventListener('click', () => setDays(parseInt(document.getElementById('calcDays').value) - 1));
 document.getElementById('daysUp').addEventListener('click', () => setDays(parseInt(document.getElementById('calcDays').value) + 1));
-['chkFlight','chkHotel','chkFood'].forEach(id =>
-  document.getElementById(id).addEventListener('change', renderCalc));
 document.getElementById('levelGroup').addEventListener('click', e => {
   const btn = e.target.closest('[data-lvl]');
   if (!btn) return;

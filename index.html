@@ -32,8 +32,8 @@
   --border2: #2a3a50;
   --text:    #e8eef6;
   --muted:   #6b7a8d;
-  --accent:  #e3e200;
-  --accent2: #e3e200;
+  --accent:  #d4cf5a;
+  --accent2: #d4cf5a;
   --blue:    #4a9eff;
   --green:   #22c55e;
   --yellow:  #f59e0b;
@@ -76,7 +76,7 @@ nav {
 .hero-bg {
   position: absolute; inset: 0;
   background:
-    radial-gradient(ellipse 70% 60% at 65% 35%, rgba(227,226,0,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 60% at 65% 35%, rgba(212,207,90,0.08) 0%, transparent 60%),
     radial-gradient(ellipse 50% 70% at 20% 75%, rgba(74,158,255,0.05) 0%, transparent 50%);
 }
 .hero-grid {
@@ -89,8 +89,8 @@ nav {
 .hero-tag {
   display: inline-flex; align-items: center; gap: 0.5rem;
   font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--accent); border: 1px solid rgba(227,226,0,0.3);
-  background: rgba(227,226,0,0.08); padding: 0.3rem 0.85rem; border-radius: 20px;
+  color: var(--accent); border: 1px solid rgba(212,207,90,0.3);
+  background: rgba(212,207,90,0.08); padding: 0.3rem 0.85rem; border-radius: 20px;
   margin-bottom: 1.8rem;
 }
 .hero h1 {
@@ -132,7 +132,7 @@ nav {
   font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.06em;
   padding: 0.28rem 0.7rem; border-radius: 20px; border: 1px solid;
 }
-.pill-os   { color: var(--accent); border-color: rgba(227,226,0,0.3); background: rgba(227,226,0,0.07); }
+.pill-os   { color: var(--accent); border-color: rgba(212,207,90,0.3); background: rgba(212,207,90,0.07); }
 .pill-free { color: var(--green);  border-color: rgba(34,197,94,0.3);  background: rgba(34,197,94,0.07); }
 .pill-uni  { color: var(--blue);   border-color: rgba(74,158,255,0.3); background: rgba(74,158,255,0.07); }
 
@@ -156,6 +156,7 @@ nav {
   display: flex; align-items: flex-end; padding: 0.8rem;
 }
 .card-thumb-bg { position: absolute; inset: 0; background-size: cover; background-position: center; }
+.card-thumb-bg img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .card-thumb-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(8,12,20,0.85) 0%, transparent 60%); }
 .card-badge {
   position: relative; font-family: 'DM Mono', monospace; font-size: 0.62rem;
@@ -203,11 +204,11 @@ nav {
 .contribute-text p { color: var(--muted); font-size: 0.83rem; line-height: 1.6; max-width: 480px; }
 .contribute-btn {
   font-family: 'DM Mono', monospace; font-size: 0.78rem; font-weight: 600;
-  color: var(--accent); border: 1px solid rgba(227,226,0,0.4);
-  background: rgba(227,226,0,0.08); padding: 0.6rem 1.4rem;
+  color: var(--accent); border: 1px solid rgba(212,207,90,0.4);
+  background: rgba(212,207,90,0.08); padding: 0.6rem 1.4rem;
   border-radius: 7px; white-space: nowrap; transition: background 0.15s;
 }
-.contribute-btn:hover { background: rgba(227,226,0,0.15); }
+.contribute-btn:hover { background: rgba(212,207,90,0.15); }
 
 /* DIVIDER */
 .divider { border: none; border-top: 1px solid var(--border); margin: 0 2rem; }
@@ -270,7 +271,9 @@ footer {
   <div class="cards">
     <a href="seasons.html" class="card">
       <div class="card-thumb">
-        <div class="card-thumb-bg" style="background:linear-gradient(135deg,#0a1628,#1a2d1a)"></div>
+        <div class="card-thumb-bg" style="background:linear-gradient(135deg,#0a1628,#1a2d1a)">
+          <img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=300&fit=crop&q=80" alt="Япония" loading="lazy" onerror="this.style.display='none'">
+        </div>
         <div class="card-thumb-overlay"></div>
         <span class="card-badge">Азия</span>
       </div>
@@ -292,7 +295,9 @@ footer {
 
     <a href="seasons.html" class="card">
       <div class="card-thumb">
-        <div class="card-thumb-bg" style="background:linear-gradient(135deg,#1a0e0a,#2a1a0a)"></div>
+        <div class="card-thumb-bg" style="background:linear-gradient(135deg,#1a0e0a,#2a1a0a)">
+          <img src="https://images.unsplash.com/photo-1565008576549-57569a49371d?w=600&h=300&fit=crop&q=80" alt="Грузия" loading="lazy" onerror="this.style.display='none'">
+        </div>
         <div class="card-thumb-overlay"></div>
         <span class="card-badge">Кавказ</span>
       </div>
@@ -314,7 +319,9 @@ footer {
 
     <a href="seasons.html" class="card">
       <div class="card-thumb">
-        <div class="card-thumb-bg" style="background:linear-gradient(135deg,#0a1a10,#0d2818)"></div>
+        <div class="card-thumb-bg" style="background:linear-gradient(135deg,#0a1a10,#0d2818)">
+          <img src="https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=600&h=300&fit=crop&q=80" alt="ЮАР" loading="lazy" onerror="this.style.display='none'">
+        </div>
         <div class="card-thumb-overlay"></div>
         <span class="card-badge">Африка</span>
       </div>
