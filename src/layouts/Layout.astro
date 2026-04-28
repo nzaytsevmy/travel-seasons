@@ -34,6 +34,7 @@ const FONTS_URL = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:i
       var t = localStorage.getItem('theme');
       if (t === 'light' || (!t && window.matchMedia('(prefers-color-scheme: light)').matches)) {
         document.documentElement.classList.add('light-theme');
+        document.body && document.body.classList.add('light-theme');
       }
     })();
   </script>
@@ -102,7 +103,11 @@ const FONTS_URL = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:i
 
       btn.addEventListener('click', function () {
         var light = document.documentElement.classList.toggle('light-theme');
-        void document.documentElement.offsetHeight; // force reflow — makes Chrome/Safari repaint body bg
+        document.body.classList.toggle('light-theme', light);
+        // Safari WebKit repaint hack: body::before не перерисовывается без этого
+        document.body.style.display = 'none';
+        void document.body.offsetHeight;
+        document.body.style.display = '';
         localStorage.setItem('theme', light ? 'light' : 'dark');
         syncIcon();
       });
