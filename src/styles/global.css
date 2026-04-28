@@ -32,6 +32,9 @@
   /* card image overlay & badge — hardcoded prevented theme switching, now vars */
   --card-overlay:   rgba(12, 10, 8, 0.82);
   --card-badge-bg:  rgba(12, 10, 8, 0.72);
+  /* hero radial glow — dark theme values */
+  --hero-glow-1:    oklch(0.74 0.11 68 / 0.08);
+  --hero-glow-2:    oklch(0.74 0.11 68 / 0.04);
 }
 
 /* ─── LIGHT THEME ─── */
@@ -55,6 +58,9 @@
   --nav-to:      oklch(0.97 0.008 80 / 0);
   --card-overlay:   rgba(12, 10, 8, 0.45);
   --card-badge-bg:  rgba(248, 242, 226, 0.92);
+  /* hero radial glow — light theme values */
+  --hero-glow-1:    oklch(0.46 0.12 68 / 0.12);
+  --hero-glow-2:    oklch(0.46 0.12 68 / 0.06);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -94,6 +100,12 @@ body::before {
   background-size: 60px 60px;
   pointer-events: none;
   z-index: -1;
+}
+/* Force browsers to repaint the grid gradient on theme switch */
+html.light-theme body::before {
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
 }
 
 h1, h2, h3 { text-wrap: balance; }
