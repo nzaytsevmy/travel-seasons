@@ -6,7 +6,12 @@ if not TOKEN:
 IATAS = ["SYD","DRW","DPS","MES","SOQ","NBO","CPT","DXB","TYO","SEL",
          "TBS","OSS","TAS","DYU","ALA","ZRH","MXP","YYC","YUL","CUN","GUA","SJO","PUQ","SCL"]
 
-prices = {}
+try:
+    with open("prices.json") as f:
+        prices = json.load(f).get("prices", {})
+except (FileNotFoundError, json.JSONDecodeError):
+    prices = {}
+
 for iata in IATAS:
     try:
         r = requests.get(

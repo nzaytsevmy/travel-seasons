@@ -1,0 +1,365 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "TravelTribe",
+  "url": "https://traveltribe.ru",
+  "description": "Бесплатный open source сервис для путешественников: сезоны, виза, бюджет для 24 направлений мира",
+  "inLanguage": "ru-RU",
+  "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://t.me/traveltriberu" }
+};
+---
+<Layout
+  title="TravelTribe — Сезоны, бюджет и виза для путешествий из России"
+  description="Бесплатный open source сервис для путешественников из России: таблица сезонов, виза, бюджет и калькулятор перелёта для 24 направлений мира."
+  canonical="https://traveltribe.ru"
+  ogTitle="TravelTribe — Куда ехать и когда"
+  ogDescription="Бесплатный open source сервис: таблица сезонов, виза и бюджет для 24 направлений. Калькулятор перелёта из Москвы."
+  ldJson={ldJson}
+>
+  <Nav active="home" />
+
+  <main>
+    <div class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <div class="hero-tag">// Open Source · Бесплатно навсегда</div>
+        <h1>Куда ехать<br>и <em>когда</em></h1>
+        <p class="hero-sub">Интерактивный инструмент для путешественников из России — виза, сезоны, бюджет и живые цены для 24 направлений мира.</p>
+        <div class="hero-actions">
+          <a class="btn-primary" href="/seasons">Открыть таблицу сезонов</a>
+          <a class="btn-ghost" href="/calculator">Калькулятор бюджета</a>
+        </div>
+        <div class="hero-stats">
+          <div><div class="stat-val">24</div><div class="stat-label">Региона мира</div></div>
+          <div><div class="stat-val">12</div><div class="stat-label">Месяцев</div></div>
+          <div><div class="stat-val">0 ₽</div><div class="stat-label">Стоимость</div></div>
+          <div><div class="stat-val">2026</div><div class="stat-label">Актуально</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pills-row">
+      <span class="pill pill-os">⊹ Open Source</span>
+      <span class="pill pill-free">✓ Бесплатно навсегда</span>
+      <span class="pill pill-uni">◈ Только уникальные фичи</span>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="section">
+      <div class="section-label" id="trending-label">// Популярные сейчас</div>
+      <h2 class="section-title">Куда летят <em>сейчас</em></h2>
+      <p class="section-sub" id="trending-sub"></p>
+
+      <div class="cards">
+        <a href="/seasons" class="card">
+          <div class="card-thumb">
+            <div class="card-thumb-bg" style="background:linear-gradient(135deg,#0a1628,#1a2d1a)">
+              <img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=300&fit=crop&q=80" alt="Япония" loading="lazy" onerror="this.style.display='none'" />
+            </div>
+            <div class="card-thumb-overlay"></div>
+            <span class="card-badge">Азия</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Япония</div>
+            <div class="card-sub">Токио, Киото, Осака</div>
+            <div class="card-tags"><span class="tag tag-visa">Виза</span><span class="tag tag-mid">$$ Средне</span></div>
+            <div class="season-bar">
+              <div class="s s-O"></div><div class="s s-O"></div><div class="s s-P"></div><div class="s s-P"></div>
+              <div class="s s-G"></div><div class="s s-O"></div><div class="s s-O"></div><div class="s s-B"></div>
+              <div class="s s-G"></div><div class="s s-P"></div><div class="s s-P"></div><div class="s s-O"></div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="card-price">От <strong>45 000 ₽</strong></div>
+            <div class="card-arrow">→</div>
+          </div>
+        </a>
+
+        <a href="/seasons" class="card">
+          <div class="card-thumb">
+            <div class="card-thumb-bg" style="background:linear-gradient(135deg,#1a0e0a,#2a1a0a)">
+              <img src="https://images.unsplash.com/photo-1565008576549-57569a49371d?w=600&h=300&fit=crop&q=80" alt="Грузия" loading="lazy" onerror="this.style.display='none'" />
+            </div>
+            <div class="card-thumb-overlay"></div>
+            <span class="card-badge">Кавказ</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Грузия</div>
+            <div class="card-sub">Тбилиси, Батуми, Казбеги</div>
+            <div class="card-tags"><span class="tag tag-free">Без визы</span><span class="tag tag-low">$ Дёшево</span></div>
+            <div class="season-bar">
+              <div class="s s-O"></div><div class="s s-O"></div><div class="s s-G"></div><div class="s s-G"></div>
+              <div class="s s-P"></div><div class="s s-P"></div><div class="s s-G"></div><div class="s s-G"></div>
+              <div class="s s-P"></div><div class="s s-P"></div><div class="s s-O"></div><div class="s s-O"></div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="card-price">От <strong>9 000 ₽</strong></div>
+            <div class="card-arrow">→</div>
+          </div>
+        </a>
+
+        <a href="/seasons" class="card">
+          <div class="card-thumb">
+            <div class="card-thumb-bg" style="background:linear-gradient(135deg,#0a1a10,#0d2818)">
+              <img src="https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=600&h=300&fit=crop&q=80" alt="ЮАР" loading="lazy" onerror="this.style.display='none'" />
+            </div>
+            <div class="card-thumb-overlay"></div>
+            <span class="card-badge">Африка</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">ЮАР</div>
+            <div class="card-sub">Кейптаун + Крюгер</div>
+            <div class="card-tags"><span class="tag tag-free">Без визы</span><span class="tag tag-mid">$$ Средне</span></div>
+            <div class="season-bar">
+              <div class="s s-P"></div><div class="s s-P"></div><div class="s s-G"></div><div class="s s-G"></div>
+              <div class="s s-O"></div><div class="s s-O"></div><div class="s s-O"></div><div class="s s-O"></div>
+              <div class="s s-G"></div><div class="s s-G"></div><div class="s s-G"></div><div class="s s-P"></div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="card-price">От <strong>63 000 ₽</strong></div>
+            <div class="card-arrow">→</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="section">
+      <div class="section-label">// Инструменты</div>
+      <h2 class="section-title">Всё для <em>планирования</em></h2>
+      <p class="section-sub">Только то, чего нет на других сайтах.</p>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">🗓</div>
+          <div class="feature-title">Таблица сезонов</div>
+          <div class="feature-desc">24 региона × 12 месяцев. Фильтр по месяцу, виза и бюджет для каждого направления.</div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">💰</div>
+          <div class="feature-title">Калькулятор бюджета</div>
+          <div class="feature-desc">Живые цены Aviasales + курс ЦБ РФ. Перелёт, отель, еда — выбираешь что считать.</div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🛂</div>
+          <div class="feature-title">Визовый статус</div>
+          <div class="feature-desc">Без визы, eVisa или виза — актуально для россиян на 2026 год.</div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">📱</div>
+          <div class="feature-title">Telegram-канал</div>
+          <div class="feature-desc">Личный опыт, маршруты и лайфхаки — @traveltriberu.</div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="section">
+      <div class="contribute">
+        <div class="contribute-text">
+          <h3>Добавь своё <em>направление</em></h3>
+          <p>Знаешь регион которого здесь нет? Проект открытый — добавь данные, исправь ошибку или предложи фичу. Любой вклад приветствуется.</p>
+        </div>
+        <a class="contribute-btn" href="https://github.com/nzaytsevmy/traveltribe-feedback" target="_blank" rel="noopener">→ Contribute on GitHub</a>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+(function() {
+  const MONTHS_RU = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+  const SPOTS = [
+    'Таиланда, ОАЭ и Мальдив',
+    'ОАЭ, Шри-Ланки и Кубы',
+    'Иордании, Марокко и Вьетнама',
+    'Японии, Грузии и ЮАР',
+    'Японии, Греции и Италии',
+    'Исландии, Армении и Норвегии',
+    'Хорватии, Черногории и Греции',
+    'Мальты, Грузии и Турции',
+    'ЮАР, Марокко и Грузии',
+    'Бали, Японии и Египта',
+    'ОАЭ, Вьетнама и Мальдив',
+    'Таиланда, Шри-Ланки и Мальдив'
+  ];
+  const m = new Date().getMonth();
+  const label = document.getElementById('trending-label');
+  const sub = document.getElementById('trending-sub');
+  if (label) label.textContent = '// Популярные сейчас · ' + MONTHS_RU[m];
+  if (sub) sub.textContent = MONTHS_RU[m].charAt(0).toUpperCase() + MONTHS_RU[m].slice(1) + ' — лучшее время для ' + SPOTS[m] + '.';
+})();
+</script>
+
+<style>
+/* ─── HERO ─── */
+.hero {
+  min-height: calc(100vh - 64px);
+  display: grid; place-items: center;
+  position: relative; overflow: hidden;
+  padding: 4rem 2rem;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 65% 35%, oklch(0.74 0.11 68 / 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 70% at 20% 75%, oklch(0.74 0.11 68 / 0.04) 0%, transparent 50%);
+}
+.hero-content { position: relative; text-align: center; max-width: 820px; z-index: 1; }
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold); border: 1px solid rgba(201,151,58,0.3);
+  background: rgba(201,151,58,0.08); padding: 0.3rem 0.85rem; border-radius: 20px;
+  margin-bottom: 1.8rem;
+}
+.hero h1 {
+  font-family: var(--ff-display);
+  font-size: clamp(3rem, 7vw, 6.5rem);
+  font-weight: 300; line-height: 1.0; letter-spacing: -0.01em;
+  margin-bottom: 1.4rem;
+}
+.hero h1 em { color: var(--gold); font-style: italic; }
+.hero-sub { color: var(--text-dim); font-size: clamp(0.9rem, 1.5vw, 1.05rem); line-height: 1.7; max-width: 500px; margin: 0 auto 2.2rem; }
+.hero-actions { display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3.5rem; }
+.btn-primary {
+  background: var(--gold); color: #0c0a08; font-weight: 500;
+  padding: 13px 28px; border-radius: 3px; font-size: 0.85rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  transition: box-shadow 0.25s; border: none; cursor: pointer;
+  font-family: var(--ff-body);
+}
+.btn-primary:hover { box-shadow: 0 0 28px var(--gold-glow), 0 0 60px var(--gold-glow); }
+.btn-ghost {
+  background: transparent; color: var(--gold); font-weight: 400;
+  padding: 13px 28px; border-radius: 3px; font-size: 0.85rem;
+  border: 1px solid rgba(201,151,58,0.35);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  transition: background 0.2s, box-shadow 0.2s; cursor: pointer;
+  font-family: var(--ff-body);
+}
+.btn-ghost:hover { background: var(--gold-glow); box-shadow: 0 0 18px var(--gold-glow); }
+.hero-stats {
+  display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap;
+  padding-top: 2rem; border-top: 1px solid var(--line);
+}
+.stat-val { font-family: var(--ff-display); font-size: 2.4rem; color: var(--gold); font-weight: 300; line-height: 1; }
+.stat-label { font-size: 0.62rem; color: var(--text-faint); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.3rem; }
+
+/* ─── PILLS ─── */
+.pills-row {
+  max-width: 1200px; margin: 0 auto;
+  padding: 0 2rem 3rem;
+  display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center;
+  position: relative; z-index: 1;
+}
+.pill {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.68rem; letter-spacing: 0.06em;
+  padding: 0.28rem 0.7rem; border-radius: 20px; border: 1px solid;
+}
+.pill-os   { color: var(--gold);   border-color: rgba(201,151,58,0.3); background: rgba(201,151,58,0.07); }
+.pill-free { color: var(--green);  border-color: rgba(34,197,94,0.3);  background: rgba(34,197,94,0.07); }
+.pill-uni  { color: var(--blue);   border-color: rgba(74,158,255,0.3); background: rgba(74,158,255,0.07); }
+
+/* ─── SECTION ─── */
+.section { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem 5rem; position: relative; z-index: 1; }
+.section-label { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.6rem; }
+.section-title { font-family: var(--ff-display); font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 300; letter-spacing: -0.01em; margin-bottom: 0.4rem; line-height: 1.15; }
+.section-title em { color: var(--gold); font-style: italic; }
+.section-sub { color: var(--text-dim); font-size: 0.88rem; line-height: 1.7; max-width: 440px; margin-bottom: 2rem; }
+
+/* ─── CARDS ─── */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px; background: var(--line); }
+.card {
+  background: var(--bg); overflow: hidden;
+  transition: background 0.25s; cursor: pointer; position: relative;
+}
+.card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  opacity: 0; transition: opacity 0.3s; z-index: 1;
+}
+.card:hover { background: var(--bg3); }
+.card:hover::before { opacity: 1; }
+.card-thumb {
+  height: 140px; position: relative;
+  display: flex; align-items: flex-end; padding: 0.8rem; overflow: hidden;
+}
+.card-thumb-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform 0.4s ease; }
+.card:hover .card-thumb-bg { transform: scale(1.04); }
+.card-thumb-bg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card-thumb-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(12,10,8,0.85) 0%, transparent 60%); }
+.card-badge {
+  position: relative; font-size: 0.62rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  background: rgba(12,10,8,0.75); border: 1px solid rgba(201,151,58,0.25);
+  color: var(--text-dim); padding: 0.22rem 0.55rem; border-radius: 2px;
+  backdrop-filter: blur(8px);
+}
+.card-body { padding: 1.1rem; }
+.card-title { font-family: var(--ff-display); font-size: 1.4rem; font-weight: 400; margin-bottom: 0.15rem; line-height: 1.2; }
+.card-sub { color: var(--text-faint); font-size: 0.72rem; margin-bottom: 0.9rem; letter-spacing: 0.04em; }
+.card-tags { display: flex; gap: 0.35rem; flex-wrap: wrap; margin-bottom: 0.9rem; }
+.season-bar { display: flex; gap: 2px; }
+.s { flex: 1; height: 5px; border-radius: 2px; }
+.s-P { background: #22c55e; } .s-G { background: #4a9eff; }
+.s-O { background: #f59e0b; } .s-B { background: #ef4444; } .s-X { background: rgba(201,151,58,0.15); }
+.card-footer { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1.1rem; border-top: 1px solid var(--line); }
+.card-price { font-size: 0.75rem; color: var(--text-dim); }
+.card-price strong { color: var(--text); font-size: 0.88rem; }
+.card-arrow { color: var(--text-faint); transition: transform 0.15s, color 0.15s; }
+.card:hover .card-arrow { transform: translateX(3px); color: var(--gold); }
+
+/* ─── FEATURES ─── */
+.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background: var(--line); }
+.feature {
+  background: var(--bg); padding: 1.6rem;
+  transition: background 0.25s; position: relative; overflow: hidden;
+}
+.feature::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  opacity: 0; transition: opacity 0.3s;
+}
+.feature:hover { background: var(--bg3); }
+.feature:hover::before { opacity: 1; }
+.feature-icon { font-size: 1.5rem; margin-bottom: 0.8rem; }
+.feature-title { font-family: var(--ff-display); font-size: 1.15rem; font-weight: 400; margin-bottom: 0.35rem; }
+.feature-desc { color: var(--text-dim); font-size: 0.78rem; line-height: 1.6; }
+
+/* ─── CONTRIBUTE ─── */
+.contribute {
+  background: var(--bg2); border: 1px solid var(--line);
+  border-radius: 3px; padding: 2rem 2.5rem;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;
+  position: relative; overflow: hidden;
+}
+.contribute::before {
+  content: ""; position: absolute; top: -1px; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+.contribute-text h3 { font-family: var(--ff-display); font-size: 1.8rem; font-weight: 300; margin-bottom: 0.4rem; line-height: 1.2; }
+.contribute-text h3 em { color: var(--gold); font-style: italic; }
+.contribute-text p { color: var(--text-dim); font-size: 0.83rem; line-height: 1.6; max-width: 480px; }
+.contribute-btn {
+  font-size: 0.78rem; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--gold); border: 1px solid rgba(201,151,58,0.35);
+  background: rgba(201,151,58,0.08); padding: 10px 20px;
+  border-radius: 3px; white-space: nowrap; transition: background 0.2s, box-shadow 0.2s;
+}
+.contribute-btn:hover { background: var(--gold-glow); box-shadow: 0 0 18px var(--gold-glow); }
+
+.divider { border: none; border-top: 1px solid var(--line); margin: 0 2rem; }
+</style>

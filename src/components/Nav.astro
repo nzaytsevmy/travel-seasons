@@ -1,0 +1,13 @@
+---
+const { active } = Astro.props;
+---
+<nav>
+  <a href="/" class="logo">Travel<span>Tribe</span></a>
+  <div class="nav-links">
+    <a href="/" class={active === 'home' ? 'active' : ''}>Главная</a>
+    <a href="/seasons" class={active === 'seasons' ? 'active' : ''}>Сезоны</a>
+    <a href="/calculator" class={active === 'calculator' ? 'active' : ''}>Калькулятор</a>
+    <a href="https://github.com/nzaytsevmy/traveltribe-feedback" target="_blank" rel="noopener">GitHub</a>
+  </div>
+  <a class="nav-cta" href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram →</a>
+</nav>

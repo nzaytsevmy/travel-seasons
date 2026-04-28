@@ -1,0 +1,283 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { PRICES } from '../data/prices.js';
+
+const groups = {};
+PRICES.forEach((p, i) => {
+  if (!groups[p.g]) groups[p.g] = [];
+  groups[p.g].push({ i, name: p.name });
+});
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Калькулятор бюджета путешествия",
+  "url": "https://traveltribe.ru/calculator",
+  "description": "Интерактивный калькулятор стоимости путешествия из Москвы: перелёт, отель и питание для 24 направлений мира.",
+  "inLanguage": "ru-RU",
+  "applicationCategory": "TravelApplication",
+  "isPartOf": { "@type": "WebSite", "url": "https://traveltribe.ru", "name": "TravelTribe" },
+  "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://t.me/traveltriberu" }
+};
+---
+<Layout
+  title="Калькулятор бюджета — TravelTribe"
+  description="Калькулятор стоимости путешествия из Москвы: актуальные цены на перелёт, курс ЦБ РФ, отель и питание для 24 направлений мира."
+  canonical="https://traveltribe.ru/calculator"
+  ogTitle="Калькулятор бюджета путешествия — TravelTribe"
+  ogDescription="Актуальные цены на перелёт + курс ЦБ РФ. Перелёт из Москвы, отель и питание для 24 направлений."
+  ogType="website"
+  ldJson={ldJson}
+>
+  <Nav active="calculator" />
+
+  <main>
+    <div class="page">
+      <header>
+        <h1>Калькулятор <em>бюджета</em></h1>
+        <p>// перелёт из Москвы · актуальные цены · курс ЦБ РФ</p>
+      </header>
+
+      <div class="calc">
+        <div class="calc-form">
+          <div class="calc-field" style="flex:1;min-width:240px">
+            <label>Регион</label>
+            <select class="calc-select" id="calcRegion" aria-label="Выберите регион для расчёта бюджета">
+              {Object.entries(groups).map(([label, items]) => (
+                <optgroup label={label}>
+                  {items.map(({ i, name }) => (
+                    <option value={i}>{name}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
+          <div class="calc-field">
+            <label>Дней</label>
+            <div class="stepper">
+              <button class="step-btn" id="daysDown" aria-label="Уменьшить количество дней">−</button>
+              <span class="step-val" id="calcDaysDisplay" aria-live="polite">7</span>
+              <button class="step-btn" id="daysUp" aria-label="Увеличить количество дней">+</button>
+              <input type="hidden" id="calcDays" value="7" />
+            </div>
+          </div>
+          <div class="calc-field">
+            <label>Уровень</label>
+            <div class="btn-group" id="levelGroup" role="group" aria-label="Уровень комфорта">
+              <button class="active" data-lvl="0" aria-pressed="true">$ Бюджет</button>
+              <button data-lvl="1" aria-pressed="false">$$ Комфорт</button>
+              <button data-lvl="2" aria-pressed="false">$$$ Люкс</button>
+            </div>
+          </div>
+          <div class="calc-field">
+            <label>Валюта</label>
+            <div class="btn-group" id="currGroup" role="group" aria-label="Валюта">
+              <button class="active" data-cur="rub" aria-pressed="true">₽</button>
+              <button data-cur="usd" aria-pressed="false">$</button>
+            </div>
+          </div>
+        </div>
+        <div class="calc-result">
+          <div class="calc-total">
+            <span class="calc-label">Итого на поездку</span>
+            <span class="calc-amount" id="calcTotal">—</span>
+          </div>
+          <div class="calc-breakdown">
+            <div class="breakdown-item"><span>Перелёт</span><span id="bFlight">—</span></div>
+            <div class="breakdown-item"><span>Проживание / ночь</span><span id="bHotel">—</span></div>
+            <div class="breakdown-item"><span>Питание / день</span><span id="bFood">—</span></div>
+          </div>
+          <p class="calc-note"><span id="calcRateLabel">1 $ = 90 ₽ · загрузка курса...</span> &nbsp;·&nbsp; Отель и питание — ориентировочно.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script define:vars={{ PRICES }}>
+let RUB = 90, calcLevel = 0, calcCurrency = 'rub';
+let liveFlight = undefined, currentIata = '';
+let priceMap = null;
+
+const calcSel = document.getElementById('calcRegion');
+
+async function fetchRate() {
+  try {
+    const r = await fetch('https://open.er-api.com/v6/latest/USD');
+    const d = await r.json();
+    if (d.result === 'success' && d.rates && d.rates.RUB) {
+      RUB = d.rates.RUB;
+      const el = document.getElementById('calcRateLabel');
+      if (el) el.textContent = '1 $ = ' + RUB.toFixed(2) + ' ₽ · ЦБ РФ';
+      renderCalc();
+    }
+  } catch(e) {
+    const el = document.getElementById('calcRateLabel');
+    if (el) el.textContent = '1 $ ≈ 90 ₽ · курс не загружен, используем примерный';
+  }
+}
+
+async function fetchFlightUsd(iata) {
+  if (!priceMap) {
+    try {
+      const r = await fetch('/prices.json');
+      const d = await r.json();
+      priceMap = d.prices || {};
+    } catch(e) { priceMap = {}; }
+  }
+  return priceMap[iata] || false;
+}
+
+function fmt(usd) {
+  if (!usd) return '—';
+  return calcCurrency === 'rub'
+    ? Math.round(usd * RUB).toLocaleString('ru-RU') + ' ₽'
+    : Math.round(usd).toLocaleString('en-US') + ' $';
+}
+
+function renderCalc() {
+  const pi = parseInt(calcSel.value);
+  const days = Math.max(1, parseInt(document.getElementById('calcDays').value) || 1);
+  const p = PRICES[pi];
+  let flightUsd, flightDisplay;
+  if (liveFlight === null) { flightUsd = p.flight[calcLevel]; flightDisplay = '...'; }
+  else if (liveFlight) { flightUsd = liveFlight; flightDisplay = fmt(liveFlight) + ' ✈'; }
+  else { flightUsd = p.flight[calcLevel]; flightDisplay = fmt(p.flight[calcLevel]) + ' ~'; }
+  const total = flightUsd + p.hotel[calcLevel] * days + p.food[calcLevel] * days;
+  document.getElementById('calcTotal').textContent = total > 0 ? fmt(total) : '—';
+  document.getElementById('bFlight').textContent = flightDisplay;
+  document.getElementById('bHotel').textContent  = fmt(p.hotel[calcLevel]);
+  document.getElementById('bFood').textContent   = fmt(p.food[calcLevel]);
+}
+
+async function onRegionChange() {
+  const pi = parseInt(calcSel.value);
+  const iata = PRICES[pi].iata;
+  currentIata = iata; liveFlight = null; renderCalc();
+  const price = await fetchFlightUsd(iata);
+  if (currentIata !== iata) return;
+  liveFlight = price ?? false; renderCalc();
+}
+
+calcSel.addEventListener('change', onRegionChange);
+
+function setDays(n) {
+  n = Math.min(90, Math.max(1, n));
+  document.getElementById('calcDays').value = n;
+  document.getElementById('calcDaysDisplay').textContent = n;
+  renderCalc();
+}
+document.getElementById('daysDown').addEventListener('click', () => setDays(parseInt(document.getElementById('calcDays').value) - 1));
+document.getElementById('daysUp').addEventListener('click', () => setDays(parseInt(document.getElementById('calcDays').value) + 1));
+
+document.getElementById('levelGroup').addEventListener('click', e => {
+  const btn = e.target.closest('[data-lvl]');
+  if (!btn) return;
+  calcLevel = +btn.dataset.lvl;
+  document.querySelectorAll('#levelGroup button').forEach(b => {
+    b.classList.toggle('active', b === btn);
+    b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+  });
+  renderCalc();
+});
+
+document.getElementById('currGroup').addEventListener('click', e => {
+  const btn = e.target.closest('[data-cur]');
+  if (!btn) return;
+  calcCurrency = btn.dataset.cur;
+  document.querySelectorAll('#currGroup button').forEach(b => {
+    b.classList.toggle('active', b === btn);
+    b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+  });
+  renderCalc();
+});
+
+fetchRate();
+onRegionChange();
+</script>
+
+<style>
+.page { max-width: 900px; margin: 0 auto; padding: 5rem 1.5rem 3rem; position: relative; z-index: 1; }
+header { margin-bottom: 3.5rem; text-align: center; }
+header h1 { font-family: var(--ff-display); font-size: clamp(2.8rem, 5vw, 4.5rem); font-weight: 300; letter-spacing: -0.01em; line-height: 1.1; }
+header h1 em { color: var(--gold); font-style: italic; }
+header p { color: var(--gold-dim); font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; margin-top: 1rem; }
+
+.calc {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 4px;
+  padding: 3rem; position: relative; overflow: hidden;
+}
+.calc::before {
+  content: ""; position: absolute; top: -1px; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+
+.calc-form { display: flex; flex-wrap: wrap; gap: 2rem; margin-bottom: 3rem; align-items: flex-start; }
+.calc-field { display: flex; flex-direction: column; gap: 0.8rem; }
+.calc-field > label { color: var(--text-faint); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; }
+
+.calc-select {
+  background: var(--bg); border: 1px solid var(--line); color: var(--text);
+  font-family: var(--ff-body); font-size: 0.9rem;
+  padding: 0.75rem 2.6rem 0.75rem 1rem; border-radius: 3px; outline: none; cursor: pointer;
+  min-width: 280px; appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c9973a' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 1rem center;
+  transition: all 0.2s;
+}
+.calc-select:hover { border-color: var(--gold-dim); }
+.calc-select:focus { border-color: var(--gold); background-color: var(--bg3); box-shadow: 0 0 10px var(--gold-glow); }
+
+.stepper {
+  display: flex; align-items: center; background: var(--bg); border: 1px solid var(--line);
+  border-radius: 3px; overflow: hidden; transition: all 0.2s;
+}
+.stepper:focus-within { border-color: var(--gold); box-shadow: 0 0 10px var(--gold-glow); }
+.step-btn {
+  background: transparent; border: none; color: var(--text-dim);
+  font-size: 1.2rem; width: 42px; height: 42px; cursor: pointer;
+  font-family: var(--ff-body); line-height: 1; transition: all 0.2s;
+}
+.step-btn:hover { color: var(--gold); background: var(--gold-glow); }
+.step-val { font-size: 0.95rem; color: var(--text); min-width: 44px; text-align: center; font-variant-numeric: tabular-nums; }
+
+.btn-group { display: flex; gap: 4px; background: var(--bg); padding: 4px; border: 1px solid var(--line); border-radius: 4px; }
+.btn-group button {
+  background: transparent; border: 1px solid transparent; color: var(--text-dim);
+  font-family: var(--ff-body); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0.6rem 1rem; border-radius: 2px; cursor: pointer; transition: all 0.2s;
+}
+.btn-group button.active { background: var(--gold); color: #0c0a08; font-weight: 500; box-shadow: 0 0 10px var(--gold-glow); }
+.btn-group button:hover:not(.active) { color: var(--text); }
+
+.calc-result { border-top: 1px solid var(--line); padding-top: 2.5rem; }
+.calc-total { display: flex; align-items: baseline; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.calc-label { color: var(--gold-dim); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.calc-amount { font-family: var(--ff-display); font-size: clamp(3rem, 6vw, 4.5rem); color: var(--gold); font-weight: 300; line-height: 1; font-variant-numeric: tabular-nums; }
+
+.calc-breakdown { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
+.breakdown-item {
+  background: var(--bg3); border: 1px solid var(--line); border-radius: 3px;
+  padding: 1rem 1.2rem; display: flex; flex-direction: column; gap: 0.4rem; min-width: 160px;
+  transition: background 0.25s;
+}
+.breakdown-item:hover { background: rgba(201,151,58,0.05); }
+.breakdown-item span:first-child { color: var(--text-faint); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.breakdown-item span:last-child { color: var(--text); font-size: 1.1rem; font-weight: 400; font-variant-numeric: tabular-nums; }
+
+.calc-note { color: var(--text-faint); font-size: 0.75rem; line-height: 1.6; border-top: 1px dashed var(--line); padding-top: 1rem; }
+#calcRateLabel { color: var(--text-dim); }
+
+@media (max-width: 600px) {
+  .calc { padding: 1.5rem; }
+  .calc-form { gap: 1.5rem; }
+  .calc-select { min-width: 100%; width: 100%; }
+  .btn-group button { padding: 0.5rem 0.6rem; font-size: 0.7rem; }
+  .calc-breakdown { flex-direction: column; }
+  .breakdown-item { min-width: unset; }
+}
+</style>
