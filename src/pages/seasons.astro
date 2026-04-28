@@ -356,38 +356,46 @@ tbody tr td.cell.dimmed { opacity: 0.25; }
 @media (max-width: 700px) {
   body { padding-bottom: 3rem; }
 
-  /* Fix 5: кнопки месяцев фиксируются под навом при скролле */
+  /* Кнопки месяцев: sticky полоска, горизонтальный скролл, без переноса */
   .controls {
     position: sticky;
     top: 64px;
     z-index: 80;
     background: var(--bg);
-    padding-top: 0.6rem;
-    padding-bottom: 0.6rem;
     border-bottom: 1px solid var(--line);
     margin-bottom: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.5rem 1rem;
+    gap: 0.35rem;
   }
+  .controls::-webkit-scrollbar { display: none; }
+  .controls-label, .month-btn, .reset-btn { flex-shrink: 0; }
   .legend { margin-top: 1rem; }
 
-  /* Таблица скроллится внутри своего контейнера — sticky заголовки работают */
+  /* Таблица: горизонтальный скролл не переключает кнопки */
   .table-wrap {
     margin: 0;
     border-radius: 0;
     border-left: none;
     border-right: none;
-    max-height: calc(100vh - 220px);
+    max-height: calc(100vh - 200px);
+    overscroll-behavior: contain;
   }
   thead tr:first-child th { top: 0; }
 
-  /* Fix 4: уже левая колонка */
+  /* Узкая левая колонка — переопределяем th и td */
+  thead tr:first-child th:first-child { min-width: 110px; }
   .region-cell {
-    min-width: 150px;
-    max-width: 165px;
-    padding: 0.6rem 0.5rem 0.6rem 0.75rem;
-    font-size: 0.78rem;
+    min-width: 110px;
+    max-width: 120px;
+    padding: 0.6rem 0.4rem 0.6rem 0.6rem;
+    font-size: 0.75rem;
   }
-  .region-sub { font-size: 0.63rem; }
-  .tags { gap: 0.2rem; margin-top: 0.4rem; }
+  .region-sub { font-size: 0.62rem; }
+  .tags { gap: 0.2rem; margin-top: 0.35rem; }
   .tag { font-size: 0.55rem; padding: 0.1rem 0.3rem; }
 
   .month-btn { padding: 0.45rem 0.65rem; font-size: 0.72rem; min-height: 36px; }
