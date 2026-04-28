@@ -9,5 +9,33 @@ const { active } = Astro.props;
     <a href="/calculator" class={active === 'calculator' ? 'active' : ''}>Калькулятор</a>
     <a href="https://github.com/nzaytsevmy/traveltribe-feedback" target="_blank" rel="noopener">GitHub</a>
   </div>
-  <a class="nav-cta" href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram →</a>
+  <div class="nav-right">
+    <button id="themeToggle" class="theme-btn" aria-label="Переключить тему">☾</button>
+    <a class="nav-cta" href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram →</a>
+  </div>
 </nav>
+
+<script>
+  const btn = document.getElementById('themeToggle');
+  if (btn) {
+    function syncIcon() {
+      const light = document.documentElement.classList.contains('light-theme');
+      btn.textContent = light ? '☀' : '☾';
+      btn.setAttribute('aria-label', light ? 'Тёмная тема' : 'Светлая тема');
+    }
+    syncIcon();
+    btn.addEventListener('click', () => {
+      const light = document.documentElement.classList.toggle('light-theme');
+      localStorage.setItem('theme', light ? 'light' : 'dark');
+      syncIcon();
+    });
+  }
+</script>
+
+<style>
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+</style>
