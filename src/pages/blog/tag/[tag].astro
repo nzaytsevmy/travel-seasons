@@ -1,25 +1,39 @@
 ---
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
-import Layout from '../../layouts/Layout.astro';
-import Nav from '../../components/Nav.astro';
-import Footer from '../../components/Footer.astro';
+import Layout from '../../../layouts/Layout.astro';
+import Nav from '../../../components/Nav.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import Footer from '../../../components/Footer.astro';
 
-const posts = (await getCollection('blog')).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-);
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  const tagSet = new Set(posts.flatMap(p => p.data.tags));
+  return [...tagSet].map(tag => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: posts
+        .filter(p => p.data.tags.includes(tag))
+        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+    },
+  }));
+}
+
+const { tag, posts } = Astro.props;
 ---
 <Layout
-  title="Блог TravelTribe — опыт и маршруты"
-  description="Личный опыт поездок: Япония, Африка, Бали, Новая Зеландия. Цены, маршруты, лайфхаки для путешественников из России."
-  canonical="https://traveltribe.ru/blog"
+  title={`${tag} — Блог TravelTribe`}
+  description={`Статьи по теме «${tag}»: опыт поездок, цены, маршруты и лайфхаки.`}
+  canonical={`https://traveltribe.ru/blog/tag/${tag}`}
 >
-  <Nav />
+  <Nav active="blog" />
+  <Breadcrumbs crumbs={[{ label: 'Блог', href: '/blog' }, { label: tag }]} />
   <main class="blog-wrap">
     <header class="blog-header">
-      <div class="hero-tag">// Личный опыт</div>
-      <h1>Блог <em>путешественника</em></h1>
-      <p class="blog-lead">Реальные поездки, живые цены, без воды.</p>
+      <div class="hero-tag">// Тег</div>
+      <h1>{tag}</h1>
+      <p class="blog-lead">{posts.length} {posts.length === 1 ? 'статья' : posts.length < 5 ? 'статьи' : 'статей'}</p>
     </header>
 
     <div class="posts">
@@ -38,7 +52,9 @@ const posts = (await getCollection('blog')).sort(
           </div>
           <div class="post-body">
             <div class="post-tags">
-              {post.data.tags.map(t => <a href={`/blog/tag/${t}`} class="ptag">{t}</a>)}
+              {post.data.tags.map(t => (
+                <a href={`/blog/tag/${t}`} class="ptag">{t}</a>
+              ))}
             </div>
             <h2 class="post-title">{post.data.title}</h2>
             <p class="post-desc">{post.data.description}</p>
@@ -54,16 +70,15 @@ const posts = (await getCollection('blog')).sort(
 </Layout>
 
 <style>
-.blog-wrap { max-width: 900px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+.blog-wrap { max-width: 900px; margin: 0 auto; padding: 2rem 2rem 5rem; }
 .blog-header { margin-bottom: 3rem; }
 .hero-tag {
   display: inline-flex; font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
   color: var(--gold); border: 1px solid rgba(201,151,58,0.3);
   background: rgba(201,151,58,0.08); padding: 0.3rem 0.85rem; border-radius: 20px; margin-bottom: 1.2rem;
 }
-.blog-header h1 { font-family: var(--ff-display); font-size: clamp(2.5rem,5vw,4rem); font-weight: 300; line-height: 1.1; }
-.blog-header h1 em { color: var(--gold); font-style: italic; }
-.blog-lead { color: var(--text-dim); font-size: 0.95rem; margin-top: 0.5rem; }
+.blog-header h1 { font-family: var(--ff-display); font-size: clamp(2rem,4vw,3rem); font-weight: 300; line-height: 1.1; }
+.blog-lead { color: var(--text-dim); font-size: 0.85rem; margin-top: 0.5rem; }
 
 .posts { display: flex; flex-direction: column; gap: 1px; background: var(--line); }
 
@@ -76,7 +91,12 @@ const posts = (await getCollection('blog')).sort(
 
 .post-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
 .post-tags { display: flex; gap: 0.35rem; flex-wrap: wrap; }
-.ptag { font-size: 0.6rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(201,151,58,0.3); padding: 0.15rem 0.45rem; border-radius: 2px; }
+.ptag {
+  font-size: 0.6rem; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--gold); border: 1px solid rgba(201,151,58,0.3);
+  padding: 0.15rem 0.45rem; border-radius: 2px;
+}
+.ptag:hover { background: rgba(201,151,58,0.12); }
 .post-title { font-family: var(--ff-display); font-size: 1.4rem; font-weight: 400; line-height: 1.2; }
 .post-desc { color: var(--text-dim); font-size: 0.82rem; line-height: 1.6; flex: 1; }
 .post-meta { font-size: 0.65rem; color: var(--text-faint); letter-spacing: 0.04em; margin-top: auto; }
