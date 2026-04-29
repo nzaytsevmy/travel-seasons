@@ -21,14 +21,20 @@ export async function getStaticPaths() {
 }
 
 const { tag, posts } = Astro.props;
+
+function readingTime(body: string) {
+  return Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
+}
 ---
 <Layout
   title={`${tag} — Блог TravelTribe`}
   description={`Статьи по теме «${tag}»: опыт поездок, цены, маршруты и лайфхаки.`}
   canonical={`https://traveltribe.ru/blog/tag/${tag}`}
 >
+  <script is:inline>document.body.classList.add('blog-index')</script>
   <Nav active="blog" />
   <Breadcrumbs crumbs={[{ label: 'Блог', href: '/blog' }, { label: tag }]} />
+
   <main class="blog-wrap">
     <header class="blog-header">
       <div class="hero-tag">// Тег</div>
@@ -36,17 +42,17 @@ const { tag, posts } = Astro.props;
       <p class="blog-lead">{posts.length} {posts.length === 1 ? 'статья' : posts.length < 5 ? 'статьи' : 'статей'}</p>
     </header>
 
-    <div class="posts">
+    <div class="posts-grid">
       {posts.map(post => (
         <a href={`/blog/${post.slug}`} class="post-card">
           <div class="post-thumb">
             <Image
               src={post.data.coverImage}
               alt={post.data.title}
-              width={800}
-              height={420}
+              width={600}
+              height={340}
               format="webp"
-              quality={60}
+              quality={80}
               loading="lazy"
             />
           </div>
@@ -59,50 +65,66 @@ const { tag, posts } = Astro.props;
             <h2 class="post-title">{post.data.title}</h2>
             <p class="post-desc">{post.data.description}</p>
             <div class="post-meta">
-              {post.data.pubDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+              <span>{post.data.pubDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+              <span class="meta-sep">·</span>
+              <span>{readingTime(post.body)} мин</span>
             </div>
           </div>
         </a>
       ))}
     </div>
   </main>
+
   <Footer />
 </Layout>
 
 <style>
-.blog-wrap { max-width: 900px; margin: 0 auto; padding: 2rem 2rem 5rem; }
-.blog-header { margin-bottom: 3rem; }
+.blog-wrap { max-width: 960px; margin: 0 auto; padding: 2.5rem 2rem 6rem; }
+
+.blog-header { margin-bottom: 2.5rem; }
 .hero-tag {
-  display: inline-flex; font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+  display: inline-flex; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
   color: var(--gold); border: 1px solid rgba(201,151,58,0.3);
-  background: rgba(201,151,58,0.08); padding: 0.3rem 0.85rem; border-radius: 20px; margin-bottom: 1.2rem;
+  background: rgba(201,151,58,0.08); padding: 0.28rem 0.8rem; border-radius: 20px; margin-bottom: 1rem;
 }
 .blog-header h1 { font-family: var(--ff-display); font-size: clamp(2rem,4vw,3rem); font-weight: 300; line-height: 1.1; }
-.blog-lead { color: var(--text-dim); font-size: 0.85rem; margin-top: 0.5rem; }
+.blog-lead { color: var(--text-dim); font-size: 0.9rem; margin-top: 0.4rem; }
 
-.posts { display: flex; flex-direction: column; gap: 1px; background: var(--line); }
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
 
-.post-card { display: grid; grid-template-columns: 280px 1fr; background: var(--bg); }
-.post-card:hover { background: var(--bg3); }
+.post-card { display: flex; flex-direction: column; background: var(--bg); transition: background 0.2s; }
+.post-card:hover { background: var(--bg2); }
 
-.post-thumb { overflow: hidden; min-height: 200px; }
+.post-thumb { overflow: hidden; aspect-ratio: 16/9; }
 .post-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
 .post-card:hover .post-thumb img { transform: scale(1.04); }
 
-.post-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
-.post-tags { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+.post-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.45rem; flex: 1; }
+.post-tags { display: flex; gap: 0.3rem; flex-wrap: wrap; }
 .ptag {
-  font-size: 0.6rem; letter-spacing: 0.05em; text-transform: uppercase;
+  font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--gold); border: 1px solid rgba(201,151,58,0.3);
-  padding: 0.15rem 0.45rem; border-radius: 2px;
+  padding: 0.12rem 0.4rem; border-radius: 2px;
 }
 .ptag:hover { background: rgba(201,151,58,0.12); }
-.post-title { font-family: var(--ff-display); font-size: 1.4rem; font-weight: 400; line-height: 1.2; }
-.post-desc { color: var(--text-dim); font-size: 0.82rem; line-height: 1.6; flex: 1; }
-.post-meta { font-size: 0.65rem; color: var(--text-faint); letter-spacing: 0.04em; margin-top: auto; }
+.post-title { font-family: var(--ff-display); font-size: 1.15rem; font-weight: 400; line-height: 1.25; }
+.post-desc { color: var(--text-dim); font-size: 0.8rem; line-height: 1.6; flex: 1; }
+.post-meta {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.63rem; color: var(--text-faint); letter-spacing: 0.03em;
+  margin-top: auto; padding-top: 0.5rem;
+}
+.meta-sep { color: var(--gold-dim); }
 
-@media (max-width: 640px) {
-  .post-card { grid-template-columns: 1fr; }
-  .post-thumb { height: 200px; }
+@media (max-width: 680px) {
+  .posts-grid { grid-template-columns: 1fr; }
 }
 </style>
