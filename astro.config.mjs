@@ -4,6 +4,9 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://traveltribe.ru',
+  build: {
+    inlineStylesheets: 'always',
+  },
   image: {
     domains: ['images.unsplash.com'],
   },
