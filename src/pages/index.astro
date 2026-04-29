@@ -14,6 +14,17 @@ const ldJson = {
   "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://t.me/traveltriberu" }
 };
 
+const MONTHS_RU = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+const SPOTS = [
+  'Таиланда, ОАЭ и Мальдив','ОАЭ, Шри-Ланки и Кубы','Иордании, Марокко и Вьетнама',
+  'Японии, Грузии и ЮАР','Японии, Греции и Италии','Исландии, Армении и Норвегии',
+  'Хорватии, Черногории и Греции','Мальты, Грузии и Турции','ЮАР, Марокко и Грузии',
+  'Бали, Японии и Египта','ОАЭ, Вьетнама и Мальдив','Таиланда, Шри-Ланки и Мальдив'
+];
+const m = new Date().getMonth();
+const trendingLabel = '// Популярные сейчас · ' + MONTHS_RU[m];
+const trendingSub = MONTHS_RU[m].charAt(0).toUpperCase() + MONTHS_RU[m].slice(1) + ' — лучшее время для ' + SPOTS[m] + '.';
+
 const cards = [
   {
     title: 'Япония',
@@ -89,9 +100,9 @@ const cards = [
     <hr class="divider" />
 
     <div class="section">
-      <div class="section-label" id="trending-label">// Популярные сейчас</div>
+      <div class="section-label">{trendingLabel}</div>
       <h2 class="section-title">Куда летят <em>сейчас</em></h2>
-      <p class="section-sub" id="trending-sub"></p>
+      <p class="section-sub">{trendingSub}</p>
 
       <div class="cards">
         {cards.map(c => <Card {...c} href="/seasons" />)}
@@ -144,22 +155,6 @@ const cards = [
   <Footer />
 </Layout>
 
-<script>
-(function() {
-  const MONTHS_RU = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
-  const SPOTS = [
-    'Таиланда, ОАЭ и Мальдив','ОАЭ, Шри-Ланки и Кубы','Иордании, Марокко и Вьетнама',
-    'Японии, Грузии и ЮАР','Японии, Греции и Италии','Исландии, Армении и Норвегии',
-    'Хорватии, Черногории и Греции','Мальты, Грузии и Турции','ЮАР, Марокко и Грузии',
-    'Бали, Японии и Египта','ОАЭ, Вьетнама и Мальдив','Таиланда, Шри-Ланки и Мальдив'
-  ];
-  const m = new Date().getMonth();
-  const label = document.getElementById('trending-label');
-  const sub   = document.getElementById('trending-sub');
-  if (label) label.textContent = '// Популярные сейчас · ' + MONTHS_RU[m];
-  if (sub)   sub.textContent   = MONTHS_RU[m].charAt(0).toUpperCase() + MONTHS_RU[m].slice(1) + ' — лучшее время для ' + SPOTS[m] + '.';
-})();
-</script>
 
 <style>
 /* ─── HERO ─── */
