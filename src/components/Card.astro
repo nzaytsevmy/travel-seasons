@@ -39,7 +39,7 @@ const BAR_CLASS: Record<string, string> = { P:'s-P', G:'s-G', O:'s-O', B:'s-B', 
     <div class="card-thumb-img">
       <Image
         src={imageUrl}
-        alt={imageAlt}
+        alt={imageAlt || title}
         width={600}
         height={300}
         format="webp"
@@ -92,7 +92,7 @@ const BAR_CLASS: Record<string, string> = { P:'s-P', G:'s-G', O:'s-O', B:'s-B', 
   transition: transform 0.4s ease;
 }
 .card:hover .card-thumb-img { transform: scale(1.04); }
-.card-thumb-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card-thumb-img img { width: 100%; height: 100%; object-fit: cover; display: block; aspect-ratio: 2/1; }
 
 /* KEY FIX: overlay and badge now use CSS variables — respond to .light-theme toggle */
 .card-thumb-overlay {
