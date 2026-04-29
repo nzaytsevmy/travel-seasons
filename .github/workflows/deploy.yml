@@ -27,7 +27,7 @@ jobs:
       - name: Check dist contents
         run: ls -R dist
 
-      - name: Deploy to Cloudflare (Debug Mode)
+      - name: Deploy to Cloudflare
         run: npx wrangler pages deploy dist --project-name=travel-seasons
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
