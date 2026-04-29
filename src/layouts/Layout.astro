@@ -8,6 +8,7 @@ interface Props {
   ogTitle?: string;
   ogDescription?: string;
   ogType?: string;
+  ogImage?: string;
   ldJson?: object;
   preloadImage?: string;
 }
@@ -19,9 +20,12 @@ const {
   ogTitle = title,
   ogDescription = description,
   ogType = 'website',
+  ogImage,
   ldJson,
   preloadImage,
 } = Astro.props;
+
+const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-image.png';
 
 const FONTS_URL = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700;800&display=optional';
 ---
@@ -57,13 +61,13 @@ const FONTS_URL = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400
   <meta property="og:locale" content="ru_RU" />
   <meta property="og:title" content={ogTitle} />
   <meta property="og:description" content={ogDescription} />
-  <meta property="og:image" content="https://traveltribe.ru/og-image.png" />
+  <meta property="og:image" content={OG_IMAGE} />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@traveltriberu" />
-  <meta name="twitter:image" content="https://traveltribe.ru/og-image.png" />
+  <meta name="twitter:image" content={OG_IMAGE} />
 
   {ldJson && <script type="application/ld+json" set:html={JSON.stringify(ldJson)} />}
 
