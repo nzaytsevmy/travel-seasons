@@ -3,86 +3,241 @@ import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import Nav from '../../components/Nav.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Footer from '../../components/Footer.astro';
 
-const posts = (await getCollection('blog')).sort(
+const allPosts = (await getCollection('blog')).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
+
+const featured = allPosts[0];
+const rest = allPosts.slice(1);
+
+function readingTime(body: string) {
+  return Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
+}
+
+const allTags = [...new Set(allPosts.flatMap(p => p.data.tags))];
 ---
 <Layout
   title="Блог TravelTribe — опыт и маршруты"
   description="Личный опыт поездок: Япония, Африка, Бали, Новая Зеландия. Цены, маршруты, лайфхаки для путешественников из России."
   canonical="https://traveltribe.ru/blog"
 >
-  <Nav />
+  <script is:inline>document.body.classList.add('blog-index')</script>
+  <Nav active="blog" />
+  <Breadcrumbs crumbs={[{ label: 'Блог' }]} />
+
   <main class="blog-wrap">
     <header class="blog-header">
       <div class="hero-tag">// Личный опыт</div>
       <h1>Блог <em>путешественника</em></h1>
-      <p class="blog-lead">Реальные поездки, живые цены, без воды.</p>
+      <p class="blog-lead">Реальные поездки, живые цены, без воды. {allPosts.length} {allPosts.length === 1 ? 'статья' : allPosts.length < 5 ? 'статьи' : 'статей'}.</p>
     </header>
 
-    <div class="posts">
-      {posts.map(post => (
-        <a href={`/blog/${post.slug}`} class="post-card">
-          <div class="post-thumb">
+    {allTags.length > 0 && (
+      <div class="tag-filter" role="navigation" aria-label="Фильтр по тегам">
+        {allTags.map(tag => (
+          <a href={`/blog/tag/${tag}`} class="tag-pill">{tag}</a>
+        ))}
+      </div>
+    )}
+
+    {featured && (
+      <section class="featured-section">
+        <div class="section-label">// Свежее</div>
+        <a href={`/blog/${featured.slug}`} class="featured-card">
+          <div class="featured-img">
             <Image
-              src={post.data.coverImage}
-              alt={post.data.title}
-              width={800}
-              height={420}
+              src={featured.data.coverImage}
+              alt={featured.data.title}
+              width={860}
+              height={480}
               format="webp"
-              quality={60}
-              loading="lazy"
+              quality={70}
+              loading="eager"
+              fetchpriority="high"
             />
+            <div class="featured-overlay"></div>
           </div>
-          <div class="post-body">
+          <div class="featured-body">
             <div class="post-tags">
-              {post.data.tags.map(t => <a href={`/blog/tag/${t}`} class="ptag">{t}</a>)}
+              {featured.data.tags.map(t => (
+                <span class="ptag">{t}</span>
+              ))}
             </div>
-            <h2 class="post-title">{post.data.title}</h2>
-            <p class="post-desc">{post.data.description}</p>
+            <h2 class="featured-title">{featured.data.title}</h2>
+            <p class="featured-desc">{featured.data.description}</p>
             <div class="post-meta">
-              {post.data.pubDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+              <span>{featured.data.pubDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+              <span class="meta-sep">·</span>
+              <span>{readingTime(featured.body)} мин</span>
             </div>
+            <span class="featured-cta">Читать →</span>
           </div>
         </a>
-      ))}
-    </div>
+      </section>
+    )}
+
+    {rest.length > 0 && (
+      <section class="more-section">
+        <div class="section-label">// Ещё статьи</div>
+        <div class="posts-grid">
+          {rest.map(post => (
+            <a href={`/blog/${post.slug}`} class="post-card">
+              <div class="post-thumb">
+                <Image
+                  src={post.data.coverImage}
+                  alt={post.data.title}
+                  width={600}
+                  height={340}
+                  format="webp"
+                  quality={60}
+                  loading="lazy"
+                />
+              </div>
+              <div class="post-body">
+                <div class="post-tags">
+                  {post.data.tags.map(t => <span class="ptag">{t}</span>)}
+                </div>
+                <h3 class="post-title">{post.data.title}</h3>
+                <p class="post-desc">{post.data.description}</p>
+                <div class="post-meta">
+                  <span>{post.data.pubDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                  <span class="meta-sep">·</span>
+                  <span>{readingTime(post.body)} мин</span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
   </main>
+
   <Footer />
 </Layout>
 
 <style>
-.blog-wrap { max-width: 900px; margin: 0 auto; padding: 3rem 2rem 5rem; }
-.blog-header { margin-bottom: 3rem; }
+/* ── Layout ── */
+.blog-wrap { max-width: 960px; margin: 0 auto; padding: 2.5rem 2rem 6rem; }
+
+/* ── Header ── */
+.blog-header { margin-bottom: 2rem; }
 .hero-tag {
-  display: inline-flex; font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+  display: inline-flex; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
   color: var(--gold); border: 1px solid rgba(201,151,58,0.3);
-  background: rgba(201,151,58,0.08); padding: 0.3rem 0.85rem; border-radius: 20px; margin-bottom: 1.2rem;
+  background: rgba(201,151,58,0.08); padding: 0.28rem 0.8rem; border-radius: 20px; margin-bottom: 1rem;
 }
-.blog-header h1 { font-family: var(--ff-display); font-size: clamp(2.5rem,5vw,4rem); font-weight: 300; line-height: 1.1; }
+.blog-header h1 {
+  font-family: var(--ff-display); font-size: clamp(2.2rem,5vw,3.6rem);
+  font-weight: 300; line-height: 1.1; margin-bottom: 0.4rem;
+}
 .blog-header h1 em { color: var(--gold); font-style: italic; }
-.blog-lead { color: var(--text-dim); font-size: 0.95rem; margin-top: 0.5rem; }
+.blog-lead { color: var(--text-dim); font-size: 0.9rem; }
 
-.posts { display: flex; flex-direction: column; gap: 1px; background: var(--line); }
+/* ── Tag filter ── */
+.tag-filter {
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+.tag-pill {
+  font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-dim); border: 1px solid var(--line);
+  padding: 0.3rem 0.75rem; border-radius: 20px;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.tag-pill:hover { color: var(--gold); border-color: rgba(201,151,58,0.5); background: rgba(201,151,58,0.07); }
 
-.post-card { display: grid; grid-template-columns: 280px 1fr; background: var(--bg); }
-.post-card:hover { background: var(--bg3); }
+/* ── Section labels ── */
+.section-label {
+  font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--gold-dim); margin-bottom: 1rem;
+}
 
-.post-thumb { overflow: hidden; min-height: 200px; }
+/* ── Featured card ── */
+.featured-section { margin-bottom: 3rem; }
+.featured-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: border-color 0.25s;
+}
+.featured-card:hover { border-color: rgba(201,151,58,0.4); }
+
+.featured-img { position: relative; overflow: hidden; min-height: 320px; }
+.featured-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
+.featured-card:hover .featured-img img { transform: scale(1.03); }
+.featured-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to right, transparent 70%, var(--bg) 100%);
+  pointer-events: none;
+}
+
+.featured-body {
+  padding: 2.5rem 2rem;
+  display: flex; flex-direction: column; gap: 0.75rem;
+  background: var(--bg2);
+}
+.featured-title {
+  font-family: var(--ff-display);
+  font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+  font-weight: 400; line-height: 1.2;
+}
+.featured-desc { color: var(--text-dim); font-size: 0.88rem; line-height: 1.65; flex: 1; }
+.featured-cta {
+  display: inline-block; margin-top: 0.5rem;
+  font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gold); transition: letter-spacing 0.2s;
+}
+.featured-card:hover .featured-cta { letter-spacing: 0.16em; }
+
+/* ── More posts grid ── */
+.more-section { }
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.post-card { display: flex; flex-direction: column; background: var(--bg); transition: background 0.2s; }
+.post-card:hover { background: var(--bg2); }
+
+.post-thumb { overflow: hidden; aspect-ratio: 16/9; }
 .post-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
 .post-card:hover .post-thumb img { transform: scale(1.04); }
 
-.post-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
-.post-tags { display: flex; gap: 0.35rem; flex-wrap: wrap; }
-.ptag { font-size: 0.6rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(201,151,58,0.3); padding: 0.15rem 0.45rem; border-radius: 2px; }
-.post-title { font-family: var(--ff-display); font-size: 1.4rem; font-weight: 400; line-height: 1.2; }
-.post-desc { color: var(--text-dim); font-size: 0.82rem; line-height: 1.6; flex: 1; }
-.post-meta { font-size: 0.65rem; color: var(--text-faint); letter-spacing: 0.04em; margin-top: auto; }
+.post-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.45rem; flex: 1; }
 
-@media (max-width: 640px) {
-  .post-card { grid-template-columns: 1fr; }
-  .post-thumb { height: 200px; }
+/* ── Shared ── */
+.post-tags { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+.ptag {
+  font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--gold); border: 1px solid rgba(201,151,58,0.3);
+  padding: 0.12rem 0.4rem; border-radius: 2px;
+}
+.post-title { font-family: var(--ff-display); font-size: 1.15rem; font-weight: 400; line-height: 1.25; }
+.post-desc { color: var(--text-dim); font-size: 0.8rem; line-height: 1.6; flex: 1; }
+.post-meta {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.63rem; color: var(--text-faint); letter-spacing: 0.03em; margin-top: auto; padding-top: 0.5rem;
+}
+.meta-sep { color: var(--gold-dim); }
+
+/* ── Mobile ── */
+@media (max-width: 680px) {
+  .featured-card { grid-template-columns: 1fr; }
+  .featured-img { min-height: 220px; }
+  .featured-overlay { background: linear-gradient(to bottom, transparent 70%, var(--bg) 100%); }
+  .featured-body { padding: 1.5rem; }
+  .posts-grid { grid-template-columns: 1fr; }
 }
 </style>
