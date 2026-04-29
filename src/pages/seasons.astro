@@ -135,6 +135,29 @@ const ldJson = {
     * Бюджет: $ до ~$1500/нед · $$ $1500–3000/нед · $$$ от $3000/нед (перелёт + проживание + еда)
   </footer>
 
+  <section class="faq" aria-label="Методология">
+    <h2>Как читать таблицу</h2>
+    <dl>
+      <div>
+        <dt><span class="dot dot-peak">●</span> Пик сезона</dt>
+        <dd>Идеальные погодные условия, лучшее время для поездки. Высокий туристический сезон — бронируйте заранее.</dd>
+      </div>
+      <div>
+        <dt><span class="dot dot-good">●</span> Хорошо</dt>
+        <dd>Отличные условия с меньшим потоком туристов. Часто выгоднее по ценам при сопоставимом комфорте.</dd>
+      </div>
+      <div>
+        <dt><span class="dot dot-ok">●</span> Нормально</dt>
+        <dd>Поехать можно, но есть нюансы: дожди, жара или высокая влажность. Уточняйте детали по конкретному региону.</dd>
+      </div>
+      <div>
+        <dt><span class="dot dot-bad">●</span> Плохо</dt>
+        <dd>Критичные погодные условия: сезон дождей, экстремальная жара или холод. Не рекомендуется без веской причины.</dd>
+      </div>
+    </dl>
+    <p class="faq-note">Виза и бюджет актуальны для граждан России на 2026 год. Всегда уточняйте визовые требования на сайте консульства перед покупкой билетов.</p>
+  </section>
+
   <div class="footer-contribute">
     <p>
       <strong>Open Source проект о путешествиях.</strong> Знаешь направление которого здесь нет?<br />
@@ -236,6 +259,26 @@ document.addEventListener('touchstart', e => {
 </script>
 
 <style>
+/* ─── FAQ / МЕТОДОЛОГИЯ ─── */
+.faq {
+  max-width: 1400px; margin: 0 auto; padding: 3rem clamp(1rem, 4vw, 3rem);
+  border-top: 1px solid var(--line);
+}
+.faq h2 {
+  font-family: var(--ff-display); font-size: 1.6rem; font-weight: 300;
+  color: var(--text); margin-bottom: 1.5rem;
+}
+.faq dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 1.5rem; }
+.faq dl > div { background: var(--bg2); border: 1px solid var(--line); padding: 1rem 1.2rem; border-radius: 3px; }
+.faq dt { font-size: 0.82rem; font-weight: 500; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem; }
+.faq dd { color: var(--text-dim); font-size: 0.78rem; line-height: 1.6; margin: 0; }
+.dot { font-size: 1rem; }
+.dot-peak { color: #22c55e; }
+.dot-good { color: #4a9eff; }
+.dot-ok   { color: #f59e0b; }
+.dot-bad  { color: #ef4444; }
+.faq-note { font-size: 0.75rem; color: var(--text-faint); line-height: 1.6; }
+
 header {
   max-width: 1400px; margin: 0 auto 2.5rem; padding: 2rem clamp(1rem, 4vw, 3rem) 0;
   display: flex; flex-direction: column; gap: 0.5rem;
