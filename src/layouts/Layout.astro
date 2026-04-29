@@ -9,6 +9,7 @@ interface Props {
   ogDescription?: string;
   ogType?: string;
   ldJson?: object;
+  preloadImage?: string;
 }
 
 const {
@@ -19,6 +20,7 @@ const {
   ogDescription = description,
   ogType = 'website',
   ldJson,
+  preloadImage,
 } = Astro.props;
 
 const FONTS_URL = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=optional';
@@ -62,6 +64,8 @@ const FONTS_URL = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:i
   <meta name="twitter:image" content="https://traveltribe.ru/og-image.png" />
 
   {ldJson && <script type="application/ld+json" set:html={JSON.stringify(ldJson)} />}
+
+  {preloadImage && <link rel="preload" as="image" href={preloadImage} />}
 
   <!-- Google Fonts — async, non-render-blocking -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
