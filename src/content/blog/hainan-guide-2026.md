@@ -2,7 +2,7 @@
 title: "Хайнань 2026: гайд без воды. Безвиз, настройка Alipay, VPN и цены"
 description: "Полная инструкция для поездки на остров Хайнань. Как платить через Alipay, работают ли карты UnionPay, как обойти блокировки интернета и реальные цены."
 pubDate: 2026-04-30
-coverImage: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?q=80&w=1200&auto=format&fit=crop"
+coverImage: "../../assets/blog/hainan.jpg"
 author: "TravelTribe"
 tags: ["Китай", "Хайнань", "Бюджет", "Виза", "Лайфхаки"]
 ---

@@ -2,7 +2,7 @@
 title: "Япония: гайд без воды. Виза, цены 2026, транспорт и правила выживания"
 description: "Максимально плотная выжимка фактов для поездки в Японию: реальный бюджет, сезоны, доставка багажа, транспортные карты, Tax Free и строгие запреты."
 pubDate: 2026-04-29
-coverImage: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1200&auto=format&fit=crop"
+coverImage: "../../assets/blog/japan-april.jpg"
 author: "TravelTribe"
 tags: ["Япония", "Гайды", "Бюджет", "Виза", "Факты"]
 ---

@@ -1,12 +1,12 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection, z, image } from 'astro:content';
 
 const blog = defineCollection({
   type: 'content',
-  schema: z.object({
+  schema: ({ image: img }) => z.object({
     title: z.string(),
     description: z.string(),
     pubDate: z.coerce.date(),
-    coverImage: z.string(),
+    coverImage: img(),
     author: z.string().default('Никита Зайцев'),
     tags: z.array(z.string()).default([]),
   }),
