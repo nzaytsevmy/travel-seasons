@@ -11,7 +11,7 @@
   --text:        oklch(0.92 0.015 70);
   --text-dim:    oklch(0.62 0.01 70);
   --text-faint:  oklch(0.38 0.01 70);
-  --ff-display:  "Cormorant Garamond", Georgia, serif;
+  --ff-display:  "DM Sans", system-ui, sans-serif;
   --ff-body:     "DM Sans", system-ui, sans-serif;
   --green:       #22c55e;
   --blue:        #4a9eff;
@@ -101,6 +101,8 @@ body::before {
   pointer-events: none;
   z-index: -1;
 }
+body.post-page::before { display: none; }
+
 /* Force Safari/WebKit to repaint body::before grid — direct selector on body */
 body.light-theme::before {
   background-image:
