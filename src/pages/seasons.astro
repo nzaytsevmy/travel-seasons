@@ -114,7 +114,10 @@ const ldJson = {
               {row.region}
               <span class="region-sub">{row.sub}</span>
               <div class="tags">
-                <span class={`tag ${VISA_CLASS[row.visa]}`}>{VISA_LABEL[row.visa]}</span>
+                {row.region === 'Япония'
+                  ? <a href="/blog/japan-visa-2026" class={`tag ${VISA_CLASS[row.visa]}`}>{VISA_LABEL[row.visa]}</a>
+                  : <span class={`tag ${VISA_CLASS[row.visa]}`}>{VISA_LABEL[row.visa]}</span>
+                }
                 <span class={`tag ${BUDGET_CLASS[row.budget]}`}>{BUDGET_LABEL[row.budget]}</span>
               </div>
             </td>
