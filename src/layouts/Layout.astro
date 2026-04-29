@@ -121,8 +121,9 @@ const FONTS_URL = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:i
       });
     }
 
-    // Fires on initial load (DOM is already ready at end of body)
-    _initThemeToggle();
+    // Defer init until browser is idle — avoids forced layout during first paint
+    var _ric = window.requestIdleCallback || function(cb) { setTimeout(cb, 0); };
+    _ric(_initThemeToggle);
     // Re-fires after each View Transitions navigation
     document.addEventListener('astro:page-load', _initThemeToggle);
   </script>
