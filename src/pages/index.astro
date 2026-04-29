@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import Card from '../components/Card.astro';
+import { getImage } from 'astro:assets';
 
 const ldJson = {
   "@context": "https://schema.org",
@@ -24,6 +25,14 @@ const SPOTS = [
 const m = new Date().getMonth();
 const trendingLabel = '// Популярные сейчас · ' + MONTHS_RU[m];
 const trendingSub = MONTHS_RU[m].charAt(0).toUpperCase() + MONTHS_RU[m].slice(1) + ' — лучшее время для ' + SPOTS[m] + '.';
+
+const firstCardImg = await getImage({
+  src: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=300&fit=crop&q=80',
+  width: 600,
+  height: 300,
+  format: 'webp',
+  quality: 60,
+});
 
 const cards = [
   {
@@ -68,6 +77,7 @@ const cards = [
   ogTitle="TravelTribe — Куда ехать и когда"
   ogDescription="Бесплатный open source сервис: таблица сезонов, виза и бюджет для 24 направлений. Калькулятор перелёта из Москвы."
   ldJson={ldJson}
+  preloadImage={firstCardImg.src}
 >
   <Nav active="home" />
 
@@ -105,7 +115,14 @@ const cards = [
       <p class="section-sub">{trendingSub}</p>
 
       <div class="cards">
-        {cards.map(c => <Card {...c} href="/seasons" />)}
+        {cards.map((c, i) => (
+          <Card
+            {...c}
+            href="/seasons"
+            loading={i === 0 ? 'eager' : 'lazy'}
+            fetchpriority={i === 0 ? 'high' : 'auto'}
+          />
+        ))}
       </div>
     </div>
 
