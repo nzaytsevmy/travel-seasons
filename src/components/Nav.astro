@@ -3,7 +3,7 @@ const { active } = Astro.props;
 ---
 <nav>
   <a href="/" class="logo">Travel<span>Tribe</span></a>
-  <div class="nav-links">
+  <div class="nav-links" id="navLinks">
     <a href="/" class={active === 'home' ? 'active' : ''}>Главная</a>
     <a href="/seasons" class={active === 'seasons' ? 'active' : ''}>Сезоны</a>
     <a href="/calculator" class={active === 'calculator' ? 'active' : ''}>Калькулятор</a>
@@ -13,14 +13,99 @@ const { active } = Astro.props;
   <div class="nav-right">
     <button id="themeToggle" class="theme-btn" aria-label="Переключить тему">☾</button>
     <a class="nav-cta" href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram →</a>
+    <button class="burger" id="burger" aria-label="Меню" aria-expanded="false" aria-controls="navLinks">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 
+<script is:inline>
+  (function () {
+    var burger = document.getElementById('burger');
+    var links = document.getElementById('navLinks');
+    if (!burger || !links || burger._ready) return;
+    burger._ready = true;
+    burger.addEventListener('click', function () {
+      var open = links.classList.toggle('is-open');
+      burger.classList.toggle('is-open', open);
+      burger.setAttribute('aria-expanded', String(open));
+    });
+    links.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () {
+        links.classList.remove('is-open');
+        burger.classList.remove('is-open');
+        burger.setAttribute('aria-expanded', 'false');
+      });
+    });
+  })();
+</script>
 
 <style>
   .nav-right {
     display: flex;
     align-items: center;
     gap: 12px;
+  }
+
+  /* ── Burger button ── */
+  .burger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 7px 9px;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+  }
+  .burger span {
+    display: block;
+    width: 16px;
+    height: 1px;
+    background: var(--text-dim);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  .burger.is-open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  .burger.is-open span:nth-child(2) { opacity: 0; }
+  .burger.is-open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    .burger { display: flex; }
+
+    /* Mobile dropdown */
+    .nav-links.is-open {
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      top: 64px;
+      left: 0;
+      right: 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+      padding: 1.2rem 1.5rem 1.5rem;
+      gap: 0;
+      z-index: 99;
+      animation: slideDown 0.2s ease;
+    }
+    .nav-links.is-open a {
+      padding: 0.85rem 0;
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--line);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .nav-links.is-open a:last-child { border-bottom: none; }
+    .nav-links.is-open a.active { color: var(--gold); }
+    .nav-links.is-open a:hover { color: var(--text); }
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 </style>
