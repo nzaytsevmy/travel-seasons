@@ -146,6 +146,56 @@ const cards = [
     <hr class="divider" />
 
     <div class="section">
+      <div class="section-label" id="calendarLabel">// Календарь поездок</div>
+      <h2 class="section-title">Куда поехать <em id="calendarMonth">по месяцам</em></h2>
+      <p class="section-sub" id="calendarSub">Выбери месяц — покажем где сейчас сезон, цены на перелёт и какая виза нужна. 12 страниц на каждый месяц года.</p>
+
+      <div class="calendar-promo">
+        <a href="/trips" class="calendar-promo-card calendar-promo-main" id="currentMonthCard">
+          <div class="cmp-tag">// Сейчас актуально</div>
+          <div class="cmp-title" id="cmpTitle">Куда поехать по месяцам</div>
+          <div class="cmp-desc" id="cmpDesc">Топ направлений с пиком сезона, актуальные цены, виза для россиян</div>
+          <span class="cmp-cta">Смотреть →</span>
+        </a>
+        <div class="calendar-promo-grid">
+          <a href="/trips/january" class="cm-pill">Янв</a>
+          <a href="/trips/february" class="cm-pill">Фев</a>
+          <a href="/trips/march" class="cm-pill">Мар</a>
+          <a href="/trips/april" class="cm-pill">Апр</a>
+          <a href="/trips/may" class="cm-pill">Май</a>
+          <a href="/trips/june" class="cm-pill">Июн</a>
+          <a href="/trips/july" class="cm-pill">Июл</a>
+          <a href="/trips/august" class="cm-pill">Авг</a>
+          <a href="/trips/september" class="cm-pill">Сен</a>
+          <a href="/trips/october" class="cm-pill">Окт</a>
+          <a href="/trips/november" class="cm-pill">Ноя</a>
+          <a href="/trips/december" class="cm-pill">Дек</a>
+        </div>
+      </div>
+
+      <script is:inline>
+        (function () {
+          var months = [
+            ['january','январе','Январь'],['february','феврале','Февраль'],['march','марте','Март'],
+            ['april','апреле','Апрель'],['may','мае','Май'],['june','июне','Июнь'],
+            ['july','июле','Июль'],['august','августе','Август'],['september','сентябре','Сентябрь'],
+            ['october','октябре','Октябрь'],['november','ноябре','Ноябрь'],['december','декабре','Декабрь']
+          ];
+          var idx = new Date().getMonth();
+          var m = months[idx];
+          var card = document.getElementById('currentMonthCard');
+          var title = document.getElementById('cmpTitle');
+          var month = document.getElementById('calendarMonth');
+          if (card) card.href = '/trips/' + m[0];
+          if (title) title.textContent = 'Куда поехать в ' + m[1];
+          if (month) month.textContent = 'в ' + m[1];
+        })();
+      </script>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="section">
       <div class="section-label">// Инструменты</div>
       <h2 class="section-title">Всё для <em>планирования</em></h2>
       <p class="section-sub">Только то, чего нет на других сайтах.</p>
@@ -265,6 +315,46 @@ html.light-theme .hero-bg {
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px; background: var(--line); }
 
 /* ─── FEATURES ─── */
+/* ─── CALENDAR PROMO ─── */
+.calendar-promo {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+.calendar-promo-card {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 4px;
+  padding: 1.8rem; display: flex; flex-direction: column; gap: 0.6rem;
+  position: relative; overflow: hidden;
+  transition: border-color 0.25s ease, transform 0.2s ease;
+}
+.calendar-promo-card:hover { border-color: var(--gold-dim); transform: translateY(-2px); }
+.calendar-promo-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.35;
+}
+.cmp-tag { font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
+.cmp-title { font-family: var(--ff-body); font-size: 1.4rem; font-weight: 700; letter-spacing: -0.01em; color: var(--text); }
+.cmp-desc { color: var(--text-dim); font-size: 0.88rem; line-height: 1.55; flex: 1; }
+.cmp-cta { font-size: 0.78rem; color: var(--gold); letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; margin-top: 0.4rem; }
+
+.calendar-promo-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;
+  align-content: start;
+}
+.cm-pill {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 3px;
+  padding: 0.85rem 0.5rem; font-size: 0.8rem; color: var(--text-dim);
+  letter-spacing: 0.04em; font-weight: 500;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.cm-pill:hover { border-color: var(--gold-dim); color: var(--gold); background: var(--bg3); }
+
+@media (max-width: 720px) {
+  .calendar-promo { grid-template-columns: 1fr; gap: 1rem; }
+  .calendar-promo-grid { grid-template-columns: repeat(6, 1fr); }
+}
+
 .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background: var(--line); }
 .feature { background: var(--bg); padding: 1.6rem; position: relative; overflow: hidden; }
 .feature::before {
