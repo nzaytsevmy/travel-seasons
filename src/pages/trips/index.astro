@@ -1,0 +1,170 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { data as regions } from '../../data/regions.js';
+
+const MONTHS = [
+  { slug: 'january',   name: 'январь',   short: 'Янв', en: 'January' },
+  { slug: 'february',  name: 'февраль',  short: 'Фев', en: 'February' },
+  { slug: 'march',     name: 'март',     short: 'Мар', en: 'March' },
+  { slug: 'april',     name: 'апрель',   short: 'Апр', en: 'April' },
+  { slug: 'may',       name: 'май',      short: 'Май', en: 'May' },
+  { slug: 'june',      name: 'июнь',     short: 'Июн', en: 'June' },
+  { slug: 'july',      name: 'июль',     short: 'Июл', en: 'July' },
+  { slug: 'august',    name: 'август',   short: 'Авг', en: 'August' },
+  { slug: 'september', name: 'сентябрь', short: 'Сен', en: 'September' },
+  { slug: 'october',   name: 'октябрь',  short: 'Окт', en: 'October' },
+  { slug: 'november',  name: 'ноябрь',   short: 'Ноя', en: 'November' },
+  { slug: 'december',  name: 'декабрь',  short: 'Дек', en: 'December' },
+];
+
+const directions = regions.filter(r => !r.group);
+
+// For each month: top 3 peak destinations
+const monthSummary = MONTHS.map((m, i) => {
+  const peak = directions.filter(d => d.r[i] === 'P').slice(0, 3).map(d => d.region);
+  const good = directions.filter(d => d.r[i] === 'G').length;
+  const totalGood = directions.filter(d => d.r[i] === 'P' || d.r[i] === 'G').length;
+  return { ...m, peak, good, totalGood };
+});
+
+const url = 'https://traveltribe.ru/trips';
+const title = 'Куда поехать по месяцам 2026 — календарь поездок | TravelTribe';
+const description = 'Календарь поездок 2026: где сезон в каждом месяце года для россиян. 39 направлений, актуальные цены, виза и бюджет — выбери свой месяц.';
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${url}#webpage`,
+      "url": url,
+      "name": title,
+      "description": description,
+      "inLanguage": "ru-RU",
+      "isPartOf": { "@id": "https://traveltribe.ru/#website" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Календарь поездок", "item": url }
+      ]
+    },
+    {
+      "@type": "ItemList",
+      "name": "Месяцы для путешествий 2026",
+      "numberOfItems": 12,
+      "itemListElement": MONTHS.map((m, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "name": `Куда поехать в ${m.name}`,
+        "url": `https://traveltribe.ru/trips/${m.slug}`
+      }))
+    }
+  ]
+};
+---
+<Layout
+  title={title}
+  description={description}
+  canonical={url}
+  ogTitle="Календарь поездок 2026 — куда лететь по месяцам"
+  ogDescription={description}
+  ldJson={ldJson}
+>
+  <Nav active="trips" />
+  <Breadcrumbs crumbs={[{ label: 'Календарь поездок' }]} />
+
+  <main class="cal-wrap">
+    <header class="cal-header">
+      <div class="hero-tag">// Календарь · 12 месяцев</div>
+      <h1>Куда поехать <em>по месяцам</em></h1>
+      <p class="cal-sub">У тебя отпуск в марте? Или хочешь спланировать декабрь? Выбери месяц — покажем где сезон, цены на перелёт и какая виза нужна.</p>
+    </header>
+
+    <div class="months-grid">
+      {monthSummary.map((m) => (
+        <a href={`/trips/${m.slug}`} class="month-card">
+          <div class="month-card-head">
+            <h2>{m.name.charAt(0).toUpperCase() + m.name.slice(1)}</h2>
+            <span class="month-count">{m.totalGood} направлений</span>
+          </div>
+          <ul class="month-peak">
+            {m.peak.map(p => (
+              <li>{p}</li>
+            ))}
+          </ul>
+          <span class="month-cta">Смотреть →</span>
+        </a>
+      ))}
+    </div>
+
+    <section class="cal-cta">
+      <h2>Что ещё посмотреть</h2>
+      <ul class="cta-list">
+        <li>📊 <a href="/seasons">Полная таблица сезонов</a> — 39 направлений × 12 месяцев в одной интерактивной таблице</li>
+        <li>💸 <a href="/calculator">Калькулятор бюджета</a> — посчитай поездку с актуальным курсом ЦБ РФ</li>
+        <li>🇪🇺 <a href="/blog/schengen-visa-2026">Шенгенская виза 2026</a> — куда дают, где меньше отказов</li>
+        <li>🇨🇳 <a href="/blog/hainan-guide-2026">Хайнань без визы</a> — гайд по Китаю с безвизом до 14.09.2026</li>
+        <li>🇯🇵 <a href="/blog/japan-guide-2026">Япония 2026</a> — полный гайд по поездке</li>
+      </ul>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.cal-wrap { max-width: 1200px; margin: 0 auto; padding: 0 1.2rem 5rem; }
+.cal-header { text-align: center; padding: 3rem 0 2.5rem; }
+.hero-tag { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+.cal-header h1 { font-family: var(--ff-body); font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1rem; }
+.cal-header h1 em { color: var(--gold); font-style: italic; }
+.cal-sub { color: var(--text-dim); font-size: 0.95rem; max-width: 640px; margin: 0 auto; line-height: 1.6; }
+
+.months-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
+.month-card {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 4px;
+  padding: 1.4rem; display: flex; flex-direction: column; gap: 0.8rem;
+  transition: transform 0.2s ease, border-color 0.25s ease;
+}
+.month-card:hover { transform: translateY(-3px); border-color: var(--gold-dim); }
+
+.month-card-head { display: flex; justify-content: space-between; align-items: baseline; }
+.month-card h2 { font-family: var(--ff-body); font-size: 1.4rem; font-weight: 700; letter-spacing: -0.01em; color: var(--text); }
+.month-count { font-size: 0.7rem; color: var(--text-faint); letter-spacing: 0.04em; }
+
+.month-peak { list-style: none; padding: 0; flex: 1; }
+.month-peak li {
+  font-size: 0.78rem; color: var(--text-dim); padding: 0.3rem 0;
+  border-bottom: 1px solid var(--line); position: relative; padding-left: 1.2rem;
+}
+.month-peak li::before {
+  content: '🔥'; position: absolute; left: 0; top: 0.3rem; font-size: 0.7rem;
+}
+.month-peak li:last-child { border-bottom: none; }
+
+.month-cta {
+  font-size: 0.78rem; color: var(--gold); letter-spacing: 0.06em;
+  text-transform: uppercase; font-weight: 500; margin-top: auto;
+}
+
+.cal-cta { background: var(--bg2); border: 1px solid var(--line); border-radius: 4px; padding: 1.5rem; margin-top: 2rem; }
+.cal-cta h2 { font-family: var(--ff-body); font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; }
+.cta-list { list-style: none; padding: 0; }
+.cta-list li { padding: 0.5rem 0; font-size: 0.95rem; color: var(--text-dim); border-bottom: 1px solid var(--line); }
+.cta-list li:last-child { border-bottom: none; }
+.cta-list a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.4); text-underline-offset: 3px; }
+.cta-list a:hover { text-decoration-color: var(--gold); }
+
+@media (max-width: 600px) {
+  .cal-header { padding: 2rem 0 1.5rem; }
+  .months-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .month-card { padding: 1rem; }
+  .month-card h2 { font-size: 1.1rem; }
+  .month-peak li { font-size: 0.72rem; }
+}
+</style>
