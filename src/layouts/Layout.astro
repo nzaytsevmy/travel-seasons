@@ -9,6 +9,7 @@ interface Props {
   ogDescription?: string;
   ogType?: string;
   ogImage?: string;
+  ogImageAlt?: string;
   ldJson?: object;
   preloadImage?: string;
 }
@@ -21,11 +22,12 @@ const {
   ogDescription = description,
   ogType = 'website',
   ogImage,
+  ogImageAlt = 'TravelTribe — куда поехать: сезоны, визы и бюджет для 39 направлений',
   ldJson,
   preloadImage,
 } = Astro.props;
 
-const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-image.png';
+const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-image.png?v=2';
 
 const FONTS_URL = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700;800&display=optional';
 ---
@@ -49,6 +51,7 @@ const FONTS_URL = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/manifest.json" />
   <title>{title}</title>
   <meta name="description" content={description} />
@@ -63,14 +66,19 @@ const FONTS_URL = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400
   <meta property="og:title" content={ogTitle} />
   <meta property="og:description" content={ogDescription} />
   <meta property="og:image" content={OG_IMAGE} />
+  <meta property="og:image:secure_url" content={OG_IMAGE} />
+  <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content={ogImageAlt} />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@traveltriberu" />
+  <meta name="twitter:creator" content="@traveltriberu" />
   <meta name="twitter:title" content={ogTitle} />
   <meta name="twitter:description" content={ogDescription} />
   <meta name="twitter:image" content={OG_IMAGE} />
+  <meta name="twitter:image:alt" content={ogImageAlt} />
   <meta name="theme-color" content="#0c0a08" media="(prefers-color-scheme: dark)" />
   <meta name="theme-color" content="#f8f5ef" media="(prefers-color-scheme: light)" />
 
