@@ -12,14 +12,27 @@ PRICES.forEach((p, i) => {
 
 const ldJson = {
   "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Калькулятор бюджета путешествия",
-  "url": "https://traveltribe.ru/calculator",
-  "description": "Интерактивный калькулятор стоимости путешествия из Москвы: перелёт, отель и питание для 24 направлений мира.",
-  "inLanguage": "ru-RU",
-  "applicationCategory": "TravelApplication",
-  "isPartOf": { "@type": "WebSite", "url": "https://traveltribe.ru", "name": "TravelTribe" },
-  "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://t.me/traveltriberu" }
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Калькулятор бюджета путешествия",
+      "url": "https://traveltribe.ru/calculator",
+      "description": "Интерактивный калькулятор стоимости путешествия из Москвы: перелёт, отель и питание для 24 направлений мира.",
+      "inLanguage": "ru-RU",
+      "applicationCategory": "TravelApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "RUB" },
+      "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+      "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://t.me/traveltriberu" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Калькулятор", "item": "https://traveltribe.ru/calculator/" }
+      ]
+    }
+  ]
 };
 ---
 <Layout
@@ -252,6 +265,7 @@ header p { color: var(--gold-dim); font-size: 0.72rem; letter-spacing: 0.18em; t
   padding: 0.6rem 1rem; border-radius: 2px; cursor: pointer; transition: all 0.2s;
 }
 .btn-group button.active { background: var(--gold); color: #0c0a08; font-weight: 500; box-shadow: 0 0 10px var(--gold-glow); }
+:global(html.light-theme) .btn-group button.active { color: #fff; }
 .btn-group button:hover:not(.active) { color: var(--text); }
 
 .calc-result { border-top: 1px solid var(--line); padding-top: 2.5rem; }
