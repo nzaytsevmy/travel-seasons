@@ -18,11 +18,41 @@ function readingTime(body: string) {
 }
 
 const allTags = [...new Set(allPosts.flatMap(p => p.data.tags))];
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Blog",
+      "@id": "https://traveltribe.ru/blog/#blog",
+      "url": "https://traveltribe.ru/blog",
+      "name": "Блог TravelTribe",
+      "description": "Личный опыт поездок: Япония, Африка, Бали, Новая Зеландия. Цены, маршруты, лайфхаки.",
+      "inLanguage": "ru-RU",
+      "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+      "blogPost": allPosts.map(p => ({
+        "@type": "BlogPosting",
+        "headline": p.data.title,
+        "url": `https://traveltribe.ru/blog/${p.slug}`,
+        "datePublished": p.data.pubDate.toISOString(),
+        "author": { "@type": "Person", "name": p.data.author }
+      }))
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Блог", "item": "https://traveltribe.ru/blog/" }
+      ]
+    }
+  ]
+};
 ---
 <Layout
   title="Блог TravelTribe — опыт и маршруты"
   description="Личный опыт поездок: Япония, Африка, Бали, Новая Зеландия. Цены, маршруты, лайфхаки для путешественников из России."
   canonical="https://traveltribe.ru/blog"
+  ldJson={ldJson}
 >
   <script is:inline>document.body.classList.add('blog-index')</script>
   <Nav active="blog" />

@@ -13,18 +13,32 @@ const LABELS  = { P: '●', G: '●', O: '●', B: '●', X: '·' };
 
 const ldJson = {
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "TravelTribe — Сезоны для путешествий",
-  "url": "https://traveltribe.ru",
-  "description": "Интерактивная таблица лучшего времени для путешествий: 24 направления, виза для россиян, бюджет и калькулятор стоимости поездки от Москвы.",
-  "inLanguage": "ru-RU",
-  "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://t.me/traveltriberu" },
-  "about": {
-    "@type": "ItemList",
-    "name": "Лучшие направления для путешествий из России",
-    "description": "24 региона мира с анализом сезонности, визовых требований и бюджета для путешественников из России",
-    "numberOfItems": 24
-  }
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://traveltribe.ru/seasons/#webpage",
+      "url": "https://traveltribe.ru/seasons",
+      "name": "Сезоны для путешествий — куда и когда | TravelTribe",
+      "description": "Интерактивная таблица лучшего времени для путешествий: 24 направления, виза для россиян, бюджет и калькулятор стоимости поездки из Москвы.",
+      "inLanguage": "ru-RU",
+      "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+      "mainEntity": { "@id": "https://traveltribe.ru/seasons/#destinations" }
+    },
+    {
+      "@type": "ItemList",
+      "@id": "https://traveltribe.ru/seasons/#destinations",
+      "name": "Лучшие направления для путешествий из России",
+      "description": "24 региона мира с анализом сезонности, визовых требований и бюджета для путешественников из России",
+      "numberOfItems": 24
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Сезоны", "item": "https://traveltribe.ru/seasons/" }
+      ]
+    }
+  ]
 };
 ---
 <Layout
@@ -37,6 +51,7 @@ const ldJson = {
 >
   <Nav active="seasons" />
 
+  <main>
   <header>
     <h1>Сезоны для <em>путешествий</em></h1>
     <p class="subtitle">// 24 региона мира · виза и бюджет для россиян · актуальные цены</p>
@@ -168,6 +183,7 @@ const ldJson = {
     </p>
     <a class="contribute-btn" href="https://github.com/nzaytsevmy/traveltribe-feedback" target="_blank" rel="noopener">→ Contribute on GitHub</a>
   </div>
+  </main>
 
   <Footer />
 </Layout>
@@ -297,8 +313,8 @@ h1 em { color: var(--gold); font-style: italic; }
   text-transform: uppercase;
 }
 .pill-os   { color: var(--gold); border-color: rgba(201,151,58,0.3); background: rgba(201,151,58,0.07); }
-.pill-free { color: var(--peak); border-color: rgba(34,197,94,0.3);  background: rgba(34,197,94,0.07); }
-.pill-uni  { color: var(--good); border-color: rgba(74,158,255,0.3); background: rgba(74,158,255,0.07); }
+.pill-free { color: var(--peak-text); border-color: rgba(34,197,94,0.3);  background: rgba(34,197,94,0.07); }
+.pill-uni  { color: var(--good-text); border-color: rgba(74,158,255,0.3); background: rgba(74,158,255,0.07); }
 .mission-sep { color: var(--gold-dim); font-size: 0.8rem; }
 
 .controls { max-width: 1400px; margin: 0 auto 2rem; padding: 0 clamp(1rem, 4vw, 3rem); display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }

@@ -68,7 +68,11 @@ const FONTS_URL = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@traveltriberu" />
+  <meta name="twitter:title" content={ogTitle} />
+  <meta name="twitter:description" content={ogDescription} />
   <meta name="twitter:image" content={OG_IMAGE} />
+  <meta name="theme-color" content="#0c0a08" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#f8f5ef" media="(prefers-color-scheme: light)" />
 
   {ldJson && <script type="application/ld+json" set:html={JSON.stringify(ldJson)} />}
 

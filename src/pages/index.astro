@@ -7,12 +7,29 @@ import { getImage } from 'astro:assets';
 
 const ldJson = {
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "TravelTribe",
-  "url": "https://traveltribe.ru",
-  "description": "Бесплатный open source сервис для путешественников: сезоны, виза, бюджет для 24 направлений мира",
-  "inLanguage": "ru-RU",
-  "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://t.me/traveltriberu" }
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://traveltribe.ru/#website",
+      "name": "TravelTribe",
+      "url": "https://traveltribe.ru",
+      "description": "Бесплатный open source сервис для путешественников: сезоны, виза, бюджет для 24 направлений мира",
+      "inLanguage": "ru-RU",
+      "publisher": { "@id": "https://traveltribe.ru/#org" }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://traveltribe.ru/#org",
+      "name": "TravelTribe",
+      "url": "https://traveltribe.ru",
+      "logo": "https://traveltribe.ru/og-image.png",
+      "founder": { "@type": "Person", "name": "Никита Зайцев", "url": "https://t.me/traveltriberu" },
+      "sameAs": [
+        "https://t.me/traveltriberu",
+        "https://github.com/nzaytsevmy/travel-seasons"
+      ]
+    }
+  ]
 };
 
 const MONTHS_RU = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
@@ -234,8 +251,8 @@ html.light-theme .hero-bg {
 }
 .pill { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.68rem; letter-spacing: 0.06em; padding: 0.28rem 0.7rem; border-radius: 20px; border: 1px solid; }
 .pill-os   { color: var(--gold);  border-color: rgba(201,151,58,0.3); background: rgba(201,151,58,0.07); }
-.pill-free { color: var(--green); border-color: rgba(34,197,94,0.3);  background: rgba(34,197,94,0.07);  }
-.pill-uni  { color: var(--blue);  border-color: rgba(74,158,255,0.3); background: rgba(74,158,255,0.07); }
+.pill-free { color: var(--peak-text); border-color: rgba(34,197,94,0.3);  background: rgba(34,197,94,0.07);  }
+.pill-uni  { color: var(--good-text); border-color: rgba(74,158,255,0.3); background: rgba(74,158,255,0.07); }
 
 /* ─── SECTION ─── */
 .section { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem 5rem; position: relative; z-index: 1; }
