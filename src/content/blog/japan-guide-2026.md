@@ -77,6 +77,8 @@ tags: ["Япония", "Бюджет", "Виза", "Транспорт"]
 * **Средний ($100–180):** Mitsui Garden Hotels, Dormy Inn (с онсэном на крыше!), Hotel Gracery (с Годзиллой в Шиндзюку).
 * **Премиум ($300+):** Park Hyatt Tokyo, Mandarin Oriental, Peninsula, Aman Tokyo.
 
+**Где бронировать.** Booking из РФ почти мёртв. Я беру через [Ostrovok](https://ostrovok.tpk.mx/w4cAS1wZ) — принимает Visa/MC/МИР, японские отели в каталоге все, плюс программа Guru со скидками до 40%. Подходит и для брони под визу.
+
 ---
 
 ## 💰 Бюджет, деньги и Tax Free
@@ -199,4 +201,4 @@ Visa/Mastercard российских банков — нет. JCB и UnionPay н
 
 *Актуально на: 30 апреля 2026. Цены, требования к визе и правила ввоза проверены по официальным источникам — [посольство Японии в РФ](https://www.ru.emb-japan.go.jp/itpr_ru/visa.html) и [Минздрав Японии](https://www.mhlw.go.jp/english/topics/import/index.html). Курс йены — [ЦБ РФ](https://www.cbr.ru/).*
 
-*Часть ссылок партнёрские (Aviasales, Airalo). Цена для тебя не меняется — мы получаем небольшую комиссию.*
+*Часть ссылок партнёрские (Aviasales, Airalo, Ostrovok). Цена для тебя не меняется — мы получаем небольшую комиссию.*
