@@ -77,9 +77,14 @@ const ldJson = {
         <div class="post-tags">
           {post.data.tags.map(t => <a href={`/blog/tag/${t}/`} class="ptag">{t}</a>)}
         </div>
-        <time class="post-date">
+        <time class="post-date" datetime={post.data.pubDate.toISOString()}>
           {post.data.pubDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
         </time>
+        {post.data.updatedDate && post.data.updatedDate.valueOf() !== post.data.pubDate.valueOf() && (
+          <time class="post-updated" datetime={post.data.updatedDate.toISOString()}>
+            · обновлено {post.data.updatedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+          </time>
+        )}
       </div>
 
       <h1>{post.data.title}</h1>
@@ -88,6 +93,13 @@ const ldJson = {
       <div class="prose">
         <Content />
       </div>
+
+      <aside class="author-bio" aria-label="Об авторе">
+        <div class="bio-avatar" aria-hidden="true">НЗ</div>
+        <div class="bio-text">
+          <strong>Никита Зайцев</strong> — был на всех 7 континентах, включая Антарктиду, посетил 60+ стран. В блоге — реальные цены 2026, личный опыт поездок и без воды. Рассказываю про путешествия в <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram-канале @traveltriberu</a>.
+        </div>
+      </aside>
 
       <div class="post-footer">
         <a href="/blog/" class="back-link">← Все статьи</a>
@@ -111,6 +123,26 @@ const ldJson = {
 .ptag { font-size: 0.6rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(201,151,58,0.3); padding: 0.15rem 0.45rem; border-radius: 2px; }
 .ptag:hover { background: rgba(201,151,58,0.12); }
 .post-date { font-size: 0.7rem; color: var(--text-faint); letter-spacing: 0.04em; }
+.post-updated { font-size: 0.7rem; color: var(--gold-dim); letter-spacing: 0.04em; margin-left: 0.4rem; }
+.author-bio {
+  display: flex; gap: 1rem; align-items: flex-start;
+  margin-top: 3rem; padding: 1.4rem;
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 4px;
+}
+.bio-avatar {
+  flex: 0 0 auto;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dim) 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-body); font-size: 0.85rem; font-weight: 700;
+  color: var(--bg); letter-spacing: 0.04em;
+}
+.bio-text { font-size: 0.85rem; line-height: 1.7; color: var(--text-dim); }
+.bio-text strong { color: var(--text); font-weight: 600; }
+.bio-text a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+@media (max-width: 600px) {
+  .author-bio { flex-direction: column; padding: 1rem; gap: 0.7rem; }
+}
 
 h1 { font-family: var(--ff-body); font-size: clamp(2rem,4vw,3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1rem; text-align: center; }
 .post-author { font-size: 0.85rem; color: var(--text-faint); margin-bottom: 3rem; text-align: center; }
@@ -118,10 +150,12 @@ h1 { font-family: var(--ff-body); font-size: clamp(2rem,4vw,3rem); font-weight: 
 
 .prose { color: var(--text); line-height: 1.85; font-size: 1rem; }
 .prose :global(h2) {
-  font-family: var(--ff-body); font-size: 1.3rem; font-weight: 700;
-  color: var(--text); line-height: 1.2; letter-spacing: -0.02em;
-  margin: 3rem 0 1rem; padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--line);
+  font-family: var(--ff-body); font-size: 1.5rem; font-weight: 700;
+  color: var(--text); line-height: 1.3; letter-spacing: -0.02em;
+  margin: 2rem 0 1.5rem; text-align: center;
+}
+.prose :global(h2) :global(.emoji), .prose :global(h2)::first-letter {
+  display: inline-block;
 }
 .prose :global(p) { margin-bottom: 1.2rem; color: var(--text-dim); }
 .prose :global(strong) { color: var(--text); font-weight: 500; }
