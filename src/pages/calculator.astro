@@ -75,13 +75,29 @@ const ldJson = {
               <button class="step-btn" id="daysUp" aria-label="Увеличить количество дней">+</button>
               <input type="hidden" id="calcDays" value="7" />
             </div>
+            <div class="day-chips" role="group" aria-label="Быстрый выбор дней">
+              <button class="chip" data-d="3">3</button>
+              <button class="chip" data-d="7">7</button>
+              <button class="chip" data-d="10">10</button>
+              <button class="chip" data-d="14">14</button>
+              <button class="chip" data-d="21">21</button>
+              <button class="chip" data-d="30">30</button>
+            </div>
           </div>
           <div class="calc-field">
-            <label>Уровень</label>
+            <label>
+              Уровень
+              <button class="info-btn" id="levelInfoBtn" aria-label="Что входит в каждый уровень" aria-expanded="false">?</button>
+            </label>
             <div class="btn-group" id="levelGroup" role="group" aria-label="Уровень комфорта">
               <button class="active" data-lvl="0" aria-pressed="true">$ Бюджет</button>
               <button data-lvl="1" aria-pressed="false">$$ Комфорт</button>
               <button data-lvl="2" aria-pressed="false">$$$ Люкс</button>
+            </div>
+            <div class="info-tip" id="levelInfoTip" hidden>
+              <strong>$ Бюджет:</strong> хостел / 3*, чифаньки и комбини, метро.<br>
+              <strong>$$ Комфорт:</strong> 4* отель, нормальные рестораны, такси иногда.<br>
+              <strong>$$$ Люкс:</strong> 5*+, премиум-кухня, частный транспорт.
             </div>
           </div>
           <div class="calc-field">
@@ -102,7 +118,16 @@ const ldJson = {
             <div class="breakdown-item"><span>Проживание / ночь</span><span id="bHotel">—</span></div>
             <div class="breakdown-item"><span>Питание / день</span><span id="bFood">—</span></div>
           </div>
-          <p class="calc-note"><span id="calcRateLabel">1 $ = 90 ₽ · загрузка курса...</span> &nbsp;·&nbsp; Отель и питание — ориентировочно.</p>
+          <div class="calc-cta">
+            <a href="https://aviasales.tpk.mx/Nl3nIBF6" id="findFlightBtn" target="_blank" rel="noopener sponsored" class="cta-primary">
+              <span>✈ Найти билет на Aviasales</span>
+              <span class="cta-sub">актуальные цены и даты</span>
+            </a>
+            <a href="https://cherehapa.tpk.mx/GmVWjhCN" target="_blank" rel="noopener sponsored" class="cta-secondary">
+              🛡 Страховка от 20 €
+            </a>
+          </div>
+          <p class="calc-note"><span id="calcRateLabel">1 $ = 90 ₽ · загрузка курса...</span> &nbsp;·&nbsp; Отель и питание — ориентировочно. Часть ссылок партнёрские, цена для тебя не меняется.</p>
         </div>
       </div>
     </div>
@@ -117,21 +142,64 @@ let liveFlight = undefined, currentIata = '';
 let priceMap = null;
 
 const calcSel = document.getElementById('calcRegion');
+const findFlightBtn = document.getElementById('findFlightBtn');
+const AVIASALES_BASE = 'https://aviasales.tpk.mx/Nl3nIBF6';
 
+// ── URL params: deep link & shareable state ───────────────────────────
+function readUrlParams() {
+  const u = new URL(window.location.href);
+  const r = u.searchParams.get('r');  // region index
+  const d = u.searchParams.get('d');  // days
+  const l = u.searchParams.get('l');  // level 0/1/2
+  const c = u.searchParams.get('c');  // rub/usd
+  if (r !== null && PRICES[+r]) calcSel.value = r;
+  if (d !== null) {
+    const n = Math.min(90, Math.max(1, parseInt(d) || 7));
+    document.getElementById('calcDays').value = n;
+    document.getElementById('calcDaysDisplay').textContent = n;
+  }
+  if (l !== null && (+l >= 0 && +l <= 2)) {
+    calcLevel = +l;
+    document.querySelectorAll('#levelGroup button').forEach(b => {
+      const on = +b.dataset.lvl === calcLevel;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  }
+  if (c === 'usd' || c === 'rub') {
+    calcCurrency = c;
+    document.querySelectorAll('#currGroup button').forEach(b => {
+      const on = b.dataset.cur === calcCurrency;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  }
+}
+
+function writeUrlParams() {
+  const u = new URL(window.location.href);
+  u.searchParams.set('r', calcSel.value);
+  u.searchParams.set('d', document.getElementById('calcDays').value);
+  u.searchParams.set('l', String(calcLevel));
+  u.searchParams.set('c', calcCurrency);
+  window.history.replaceState(null, '', u.toString());
+}
+
+// ── Live USD→RUB rate. Try CBR first, fallback to open.er-api ─────────
 async function fetchRate() {
+  const rateEl = document.getElementById('calcRateLabel');
+  // Open Exchange Rates fallback (CORS-friendly)
   try {
     const r = await fetch('https://open.er-api.com/v6/latest/USD');
     const d = await r.json();
     if (d.result === 'success' && d.rates && d.rates.RUB) {
       RUB = d.rates.RUB;
-      const el = document.getElementById('calcRateLabel');
-      if (el) el.textContent = '1 $ = ' + RUB.toFixed(2) + ' ₽ · ЦБ РФ';
+      if (rateEl) rateEl.textContent = '1 $ = ' + RUB.toFixed(2) + ' ₽ · open exchange rates';
       renderCalc();
+      return;
     }
-  } catch(e) {
-    const el = document.getElementById('calcRateLabel');
-    if (el) el.textContent = '1 $ ≈ 90 ₽ · курс не загружен, используем примерный';
-  }
+  } catch(e) {}
+  if (rateEl) rateEl.textContent = '1 $ ≈ 90 ₽ · курс не загружен, примерный';
 }
 
 async function fetchFlightUsd(iata) {
@@ -152,6 +220,12 @@ function fmt(usd) {
     : Math.round(usd).toLocaleString('en-US') + ' $';
 }
 
+// IATA → Aviasales city code mapping (main destinations)
+function aviasalesUrl(iata) {
+  if (!iata) return AVIASALES_BASE;
+  return `${AVIASALES_BASE}?marker=&origin_iata=MOW&destination_iata=${iata}`;
+}
+
 function renderCalc() {
   const pi = parseInt(calcSel.value);
   const days = Math.max(1, parseInt(document.getElementById('calcDays').value) || 1);
@@ -165,6 +239,13 @@ function renderCalc() {
   document.getElementById('bFlight').textContent = flightDisplay;
   document.getElementById('bHotel').textContent  = fmt(p.hotel[calcLevel]);
   document.getElementById('bFood').textContent   = fmt(p.food[calcLevel]);
+  if (findFlightBtn) findFlightBtn.href = aviasalesUrl(p.iata);
+  // Highlight current day chip
+  const cur = +document.getElementById('calcDays').value;
+  document.querySelectorAll('.day-chips .chip').forEach(c => {
+    c.classList.toggle('is-active', +c.dataset.d === cur);
+  });
+  writeUrlParams();
 }
 
 async function onRegionChange() {
@@ -186,6 +267,10 @@ function setDays(n) {
 }
 document.getElementById('daysDown').addEventListener('click', () => setDays(parseInt(document.getElementById('calcDays').value) - 1));
 document.getElementById('daysUp').addEventListener('click', () => setDays(parseInt(document.getElementById('calcDays').value) + 1));
+
+document.querySelectorAll('.day-chips .chip').forEach(chip => {
+  chip.addEventListener('click', () => setDays(+chip.dataset.d));
+});
 
 document.getElementById('levelGroup').addEventListener('click', e => {
   const btn = e.target.closest('[data-lvl]');
@@ -209,6 +294,19 @@ document.getElementById('currGroup').addEventListener('click', e => {
   renderCalc();
 });
 
+// "Что входит" tooltip
+const levelInfoBtn = document.getElementById('levelInfoBtn');
+const levelInfoTip = document.getElementById('levelInfoTip');
+if (levelInfoBtn) {
+  levelInfoBtn.addEventListener('click', () => {
+    const open = !levelInfoTip.hasAttribute('hidden');
+    if (open) levelInfoTip.setAttribute('hidden', '');
+    else levelInfoTip.removeAttribute('hidden');
+    levelInfoBtn.setAttribute('aria-expanded', String(!open));
+  });
+}
+
+readUrlParams();
 fetchRate();
 onRegionChange();
 </script>
@@ -286,6 +384,63 @@ header p { color: var(--gold-dim); font-size: 0.72rem; letter-spacing: 0.18em; t
 .calc-note { color: var(--text-faint); font-size: 0.75rem; line-height: 1.6; border-top: 1px dashed var(--line); padding-top: 1rem; }
 #calcRateLabel { color: var(--text-dim); }
 
+/* ─── Day quick chips ─── */
+.day-chips { display: flex; gap: 4px; margin-top: 0.4rem; flex-wrap: wrap; }
+.day-chips .chip {
+  background: var(--bg); border: 1px solid var(--line); color: var(--text-faint);
+  font-family: var(--ff-body); font-size: 0.72rem; font-variant-numeric: tabular-nums;
+  padding: 0.35rem 0.55rem; border-radius: 3px; cursor: pointer;
+  min-width: 36px; transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.day-chips .chip:hover { border-color: var(--gold-dim); color: var(--text); }
+.day-chips .chip.is-active {
+  background: rgba(201,151,58,0.12); border-color: var(--gold); color: var(--gold);
+}
+
+/* ─── Info button & tooltip ─── */
+.calc-field > label { display: flex; align-items: center; gap: 0.4rem; }
+.info-btn {
+  background: transparent; border: 1px solid var(--line); color: var(--text-faint);
+  width: 18px; height: 18px; border-radius: 50%; cursor: pointer;
+  font-size: 0.65rem; line-height: 1; padding: 0; font-family: var(--ff-body);
+  transition: color 0.2s, border-color 0.2s;
+}
+.info-btn:hover { color: var(--gold); border-color: var(--gold-dim); }
+.info-tip {
+  margin-top: 0.6rem; background: var(--bg3); border: 1px solid var(--line);
+  border-radius: 3px; padding: 0.7rem 0.9rem; font-size: 0.78rem;
+  color: var(--text-dim); line-height: 1.7; max-width: 360px;
+}
+.info-tip strong { color: var(--text); font-weight: 500; }
+
+/* ─── CTA buttons ─── */
+.calc-cta {
+  display: flex; gap: 0.7rem; margin: 1.5rem 0 1rem;
+  flex-wrap: wrap;
+}
+.cta-primary {
+  flex: 1; min-width: 240px;
+  background: var(--gold); color: #0c0a08;
+  display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
+  padding: 0.9rem 1.4rem; border-radius: 3px;
+  font-family: var(--ff-body); font-weight: 500;
+  letter-spacing: 0.04em;
+  transition: box-shadow 0.25s, transform 0.15s;
+}
+.cta-primary:hover { box-shadow: 0 0 28px var(--gold-glow), 0 0 60px var(--gold-glow); transform: translateY(-1px); }
+.cta-primary span:first-child { font-size: 0.92rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.cta-primary .cta-sub { font-size: 0.68rem; opacity: 0.75; text-transform: none; letter-spacing: 0; }
+:global(html.light-theme) .cta-primary { color: #fff; }
+
+.cta-secondary {
+  background: transparent; color: var(--text-dim);
+  border: 1px solid var(--line); border-radius: 3px;
+  padding: 0.85rem 1.2rem; font-size: 0.82rem; font-weight: 400;
+  display: inline-flex; align-items: center;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.cta-secondary:hover { border-color: var(--gold-dim); color: var(--gold); background: rgba(201,151,58,0.06); }
+
 @media (max-width: 600px) {
   .calc { padding: 1.5rem; }
   .calc-form { gap: 1.5rem; }
@@ -293,5 +448,7 @@ header p { color: var(--gold-dim); font-size: 0.72rem; letter-spacing: 0.18em; t
   .btn-group button { padding: 0.5rem 0.6rem; font-size: 0.7rem; }
   .calc-breakdown { flex-direction: column; }
   .breakdown-item { min-width: unset; }
+  .calc-cta { flex-direction: column; }
+  .cta-primary, .cta-secondary { width: 100%; min-width: unset; justify-content: center; }
 }
 </style>
