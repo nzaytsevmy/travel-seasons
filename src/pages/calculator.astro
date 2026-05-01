@@ -119,7 +119,7 @@ const ldJson = {
             <div class="breakdown-item"><span>Питание / день</span><span id="bFood">—</span></div>
           </div>
           <div class="calc-cta">
-            <a href="https://aviasales.tpk.mx/Nl3nIBF6?locale=ru&market=ru&currency=rub" id="findFlightBtn" target="_blank" rel="noopener sponsored" class="cta-primary">
+            <a href="https://www.aviasales.ru/?marker=546042.Zz66f13c16ff6b488883a4127-546042&market=ru" id="findFlightBtn" target="_blank" rel="noopener sponsored" class="cta-primary">
               <span>✈ Найти билет на Aviasales</span>
               <span class="cta-sub">актуальные цены и даты</span>
             </a>
@@ -143,7 +143,8 @@ let priceMap = null;
 
 const calcSel = document.getElementById('calcRegion');
 const findFlightBtn = document.getElementById('findFlightBtn');
-const AVIASALES_BASE = 'https://aviasales.tpk.mx/Nl3nIBF6';
+const AVIASALES_MARKER = '546042.Zz66f13c16ff6b488883a4127-546042';
+const AVIASALES_BASE = `https://www.aviasales.ru/?marker=${AVIASALES_MARKER}&market=ru`;
 
 // ── URL params: deep link & shareable state ───────────────────────────
 function readUrlParams() {
@@ -220,11 +221,10 @@ function fmt(usd) {
     : Math.round(usd).toLocaleString('en-US') + ' $';
 }
 
-// IATA → Aviasales deep link, force Russian locale + RUB
+// Aviasales URL with marker; if iata given, prefill origin/destination
 function aviasalesUrl(iata) {
-  const base = `${AVIASALES_BASE}?locale=ru&market=ru&currency=rub`;
-  if (!iata) return base;
-  return `${base}&origin_iata=MOW&destination_iata=${iata}`;
+  if (!iata) return AVIASALES_BASE;
+  return `${AVIASALES_BASE}&origin_iata=MOW&destination_iata=${iata}`;
 }
 
 function renderCalc() {
