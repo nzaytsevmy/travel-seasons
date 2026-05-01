@@ -13,7 +13,7 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await post.render();
-const url = `https://traveltribe.ru/blog/${post.slug}`;
+const url = `https://traveltribe.ru/blog/${post.slug}/`;
 const coverUrl = typeof post.data.coverImage === 'string' ? post.data.coverImage : `https://traveltribe.ru${post.data.coverImage.src}`;
 const ldJson = {
   "@context": "https://schema.org",
@@ -27,7 +27,7 @@ const ldJson = {
       "author": { "@type": "Person", "name": post.data.author, "url": "https://t.me/traveltriberu" },
       "datePublished": post.data.pubDate.toISOString(),
       "dateModified": (post.data.updatedDate ?? post.data.pubDate).toISOString(),
-      "publisher": { "@type": "Organization", "name": "TravelTribe", "url": "https://traveltribe.ru" },
+      "publisher": { "@type": "Organization", "name": "TravelTribe", "url": "https://traveltribe.ru/" },
       "mainEntityOfPage": { "@type": "WebPage", "@id": url },
       "inLanguage": "ru-RU",
       "keywords": post.data.tags.join(', ')
@@ -44,7 +44,7 @@ const ldJson = {
 };
 ---
 <Layout
-  title={`${post.data.title} · TravelTribe`}
+  title={post.data.title}
   description={post.data.description}
   canonical={url}
   ogType="article"
@@ -56,7 +56,7 @@ const ldJson = {
 >
   <script is:inline>document.body.classList.add('post-page')</script>
   <Nav active="blog" />
-  <Breadcrumbs crumbs={[{ label: 'Блог', href: '/blog' }, { label: post.data.title }]} />
+  <Breadcrumbs crumbs={[{ label: 'Блог', href: '/blog/' }, { label: post.data.title }]} />
   <main class="post-wrap">
     <div class="post-cover">
       <Image
@@ -75,7 +75,7 @@ const ldJson = {
     <article class="post-content">
       <div class="post-meta-top">
         <div class="post-tags">
-          {post.data.tags.map(t => <a href={`/blog/tag/${t}`} class="ptag">{t}</a>)}
+          {post.data.tags.map(t => <a href={`/blog/tag/${t}/`} class="ptag">{t}</a>)}
         </div>
         <time class="post-date">
           {post.data.pubDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -90,7 +90,7 @@ const ldJson = {
       </div>
 
       <div class="post-footer">
-        <a href="/blog" class="back-link">← Все статьи</a>
+        <a href="/blog/" class="back-link">← Все статьи</a>
       </div>
     </article>
   </main>

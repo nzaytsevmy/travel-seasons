@@ -28,12 +28,12 @@ function readingTime(body: string) {
 ---
 <Layout
   title={`${tag} — Блог TravelTribe`}
-  description={`Статьи по теме «${tag}»: опыт поездок, цены, маршруты и лайфхаки.`}
-  canonical={`https://traveltribe.ru/blog/tag/${tag}`}
+  description={`Все статьи блога TravelTribe по теме «${tag}»: личный опыт поездок, актуальные цены 2026, маршруты, визы и проверенные лайфхаки для российских путешественников.`}
+  canonical={`https://traveltribe.ru/blog/tag/${tag}/`}
 >
   <script is:inline>document.body.classList.add('blog-index')</script>
   <Nav active="blog" />
-  <Breadcrumbs crumbs={[{ label: 'Блог', href: '/blog' }, { label: tag }]} />
+  <Breadcrumbs crumbs={[{ label: 'Блог', href: '/blog/' }, { label: tag }]} />
 
   <main class="blog-wrap">
     <header class="blog-header">
@@ -44,7 +44,7 @@ function readingTime(body: string) {
 
     <div class="posts-grid">
       {posts.map(post => (
-        <a href={`/blog/${post.slug}`} class="post-card">
+        <a href={`/blog/${post.slug}/`} class="post-card">
           <div class="post-thumb">
             <Image
               src={post.data.coverImage}
@@ -59,7 +59,7 @@ function readingTime(body: string) {
           <div class="post-body">
             <div class="post-tags">
               {post.data.tags.map(t => (
-                <a href={`/blog/tag/${t}`} class="ptag">{t}</a>
+                <a href={`/blog/tag/${t}/`} class="ptag">{t}</a>
               ))}
             </div>
             <h2 class="post-title">{post.data.title}</h2>

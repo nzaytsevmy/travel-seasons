@@ -5,6 +5,7 @@ import mdx from '@astrojs/mdx';
 
 export default defineConfig({
   site: 'https://traveltribe.ru',
+  trailingSlash: 'always',
   build: {
     inlineStylesheets: 'always',
   },
