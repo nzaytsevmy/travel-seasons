@@ -4,11 +4,11 @@ const { active } = Astro.props;
 <nav class="site-nav">
   <a href="/" class="logo">Travel<span>Tribe</span></a>
   <div class="nav-links" id="navLinks">
-    <a href="/" class={active === 'home' ? 'active' : ''}>Главная</a>
-    <a href="/seasons/" class={active === 'seasons' ? 'active' : ''}>Сезоны</a>
-    <a href="/trips/" class={active === 'trips' ? 'active' : ''}>Календарь</a>
-    <a href="/calculator/" class={active === 'calculator' ? 'active' : ''}>Калькулятор</a>
-    <a href="/blog/" class={active === 'blog' ? 'active' : ''}>Блог</a>
+    <a href="/" class={active === 'home' ? 'active' : ''} aria-current={active === 'home' ? 'page' : undefined}>Главная</a>
+    <a href="/seasons/" class={active === 'seasons' ? 'active' : ''} aria-current={active === 'seasons' ? 'page' : undefined}>Сезоны</a>
+    <a href="/trips/" class={active === 'trips' ? 'active' : ''} aria-current={active === 'trips' ? 'page' : undefined}>Календарь</a>
+    <a href="/calculator/" class={active === 'calculator' ? 'active' : ''} aria-current={active === 'calculator' ? 'page' : undefined}>Калькулятор</a>
+    <a href="/blog/" class={active === 'blog' ? 'active' : ''} aria-current={active === 'blog' ? 'page' : undefined}>Блог</a>
     <a href="https://t.me/traveltriberu" target="_blank" rel="noopener" class="mobile-only-link">Telegram</a>
     <a href="https://github.com/nzaytsevmy/traveltribe-feedback" target="_blank" rel="noopener">GitHub</a>
   </div>

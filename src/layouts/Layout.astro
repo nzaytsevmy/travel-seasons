@@ -12,6 +12,7 @@ interface Props {
   ogImageAlt?: string;
   ldJson?: object;
   preloadImage?: string;
+  noindex?: boolean;
 }
 
 const {
@@ -25,6 +26,7 @@ const {
   ogImageAlt = 'TravelTribe — куда поехать: сезоны, визы и бюджет для 39 направлений',
   ldJson,
   preloadImage,
+  noindex = false,
 } = Astro.props;
 
 const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-image.png?v=2';
@@ -48,6 +50,9 @@ const FONTS_URL = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400
   </script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
@@ -55,8 +60,10 @@ const FONTS_URL = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400
   <link rel="manifest" href="/manifest.json" />
   <title>{title}</title>
   <meta name="description" content={description} />
-  <meta name="robots" content="index, follow" />
+  <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1'} />
   <link rel="canonical" href={canonical} />
+  <link rel="author" href="https://traveltribe.ru/about/" />
+  <link rel="me" href="https://t.me/traveltriberu" />
   <link rel="alternate" type="application/rss+xml" title="TravelTribe RSS" href="/rss.xml" />
 
   <meta property="og:type" content={ogType} />
@@ -93,6 +100,10 @@ const FONTS_URL = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400
   <link rel="stylesheet" href={FONTS_URL} media="print" onload="this.media='all'" />
   <noscript><link rel="stylesheet" href={FONTS_URL} /></noscript>
 
+  <!-- Yandex Metrica — early connection so off-thread script load is faster -->
+  <link rel="preconnect" href="https://mc.yandex.ru" crossorigin />
+  <link rel="dns-prefetch" href="https://mc.yandex.ru" />
+
   <!-- Ahrefs Web Analytics -->
   <script src="https://analytics.ahrefs.com/analytics.js" data-key="Vlc0xmPDRP3Rn1BkiDfn2A" async></script>
 
@@ -107,6 +118,9 @@ const FONTS_URL = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400
   </script>
 </head>
 <body>
+  <!-- Skip-link for keyboard / screen reader users -->
+  <a href="#main" class="skip-link">Перейти к контенту</a>
+
   <!-- Yandex Metrika noscript fallback -->
   <noscript>
     <div><img src="https://mc.yandex.ru/watch/95832375" style="position:absolute; left:-9999px;" alt="Яндекс Метрика — счётчик посещаемости" /></div>
