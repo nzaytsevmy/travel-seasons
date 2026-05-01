@@ -220,10 +220,10 @@ function fmt(usd) {
     : Math.round(usd).toLocaleString('en-US') + ' $';
 }
 
-// IATA → Aviasales city code mapping (main destinations)
+// IATA → Aviasales deep link (marker already in tpk.mx slug)
 function aviasalesUrl(iata) {
   if (!iata) return AVIASALES_BASE;
-  return `${AVIASALES_BASE}?marker=&origin_iata=MOW&destination_iata=${iata}`;
+  return `${AVIASALES_BASE}?origin_iata=MOW&destination_iata=${iata}`;
 }
 
 function renderCalc() {
