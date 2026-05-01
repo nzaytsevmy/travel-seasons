@@ -119,7 +119,7 @@ const ldJson = {
             <div class="breakdown-item"><span>Питание / день</span><span id="bFood">—</span></div>
           </div>
           <div class="calc-cta">
-            <a href="https://aviasales.tpk.mx/Nl3nIBF6" id="findFlightBtn" target="_blank" rel="noopener sponsored" class="cta-primary">
+            <a href="https://aviasales.tpk.mx/Nl3nIBF6?locale=ru&market=ru&currency=rub" id="findFlightBtn" target="_blank" rel="noopener sponsored" class="cta-primary">
               <span>✈ Найти билет на Aviasales</span>
               <span class="cta-sub">актуальные цены и даты</span>
             </a>
@@ -220,10 +220,11 @@ function fmt(usd) {
     : Math.round(usd).toLocaleString('en-US') + ' $';
 }
 
-// IATA → Aviasales deep link (marker already in tpk.mx slug)
+// IATA → Aviasales deep link, force Russian locale + RUB
 function aviasalesUrl(iata) {
-  if (!iata) return AVIASALES_BASE;
-  return `${AVIASALES_BASE}?origin_iata=MOW&destination_iata=${iata}`;
+  const base = `${AVIASALES_BASE}?locale=ru&market=ru&currency=rub`;
+  if (!iata) return base;
+  return `${base}&origin_iata=MOW&destination_iata=${iata}`;
 }
 
 function renderCalc() {
