@@ -90,9 +90,9 @@ const cheapest = [...enriched].filter(d => d.flight).sort((a, b) => a.flight - b
 const visaFree = enriched.filter(d => d.visa === 'free').slice(0, 5);
 
 // SEO
-const title = `Куда поехать в ${M.name} 2026 — топ направлений | TravelTribe`;
+const title = `Куда поехать в ${M.name} 2026 — топ направлений`;
 const description = `Куда лететь в ${M.name} 2026: ${peak.length} направлений с пиком сезона, актуальные цены на перелёт из Москвы, виза для россиян, бюджет на день. Без воды.`;
-const url = `https://traveltribe.ru/trips/${month}`;
+const url = `https://traveltribe.ru/trips/${month}/`;
 
 const ldJson = {
   "@context": "https://schema.org",
@@ -164,7 +164,7 @@ const ldJson = {
 >
   <Nav active="trips" />
   <Breadcrumbs crumbs={[
-    { label: 'Календарь', href: '/trips' },
+    { label: 'Календарь', href: '/trips/' },
     { label: M.nameNom }
   ]} />
 
@@ -284,9 +284,9 @@ const ldJson = {
     <section class="trips-cta">
       <h2>Что делать дальше</h2>
       <ul class="cta-list">
-        <li>📅 <a href="/trips">Календарь на все 12 месяцев</a> — выбери другой месяц</li>
-        <li>📊 <a href="/seasons">Полная таблица сезонов</a> — все 39 направлений × 12 месяцев</li>
-        <li>💸 <a href="/calculator">Калькулятор бюджета</a> — посчитай поездку с актуальным курсом</li>
+        <li>📅 <a href="/trips/">Календарь на все 12 месяцев</a> — выбери другой месяц</li>
+        <li>📊 <a href="/seasons/">Полная таблица сезонов</a> — все 39 направлений × 12 месяцев</li>
+        <li>💸 <a href="/calculator/">Калькулятор бюджета</a> — посчитай поездку с актуальным курсом</li>
         <li>📲 <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> — оперативные обновления по визам и направлениям</li>
       </ul>
     </section>
@@ -296,7 +296,7 @@ const ldJson = {
       <div class="month-pills">
         {MONTHS.map((m, i) => (
           <a
-            href={`/trips/${m.slug}`}
+            href={`/trips/${m.slug}/`}
             class={`month-pill ${m.slug === month ? 'active' : ''}`}
             aria-current={m.slug === month ? 'page' : undefined}
           >

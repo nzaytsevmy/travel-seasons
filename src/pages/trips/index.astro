@@ -30,8 +30,8 @@ const monthSummary = MONTHS.map((m, i) => {
   return { ...m, peak, good, totalGood };
 });
 
-const url = 'https://traveltribe.ru/trips';
-const title = 'Куда поехать по месяцам 2026 — календарь поездок | TravelTribe';
+const url = 'https://traveltribe.ru/trips/';
+const title = 'Куда поехать по месяцам 2026 — календарь';
 const description = 'Календарь поездок 2026: где сезон в каждом месяце года для россиян. 39 направлений, актуальные цены, виза и бюджет — выбери свой месяц.';
 
 const ldJson = {
@@ -61,7 +61,7 @@ const ldJson = {
         "@type": "ListItem",
         "position": i + 1,
         "name": `Куда поехать в ${m.name}`,
-        "url": `https://traveltribe.ru/trips/${m.slug}`
+        "url": `https://traveltribe.ru/trips/${m.slug}/`
       }))
     }
   ]
@@ -87,7 +87,7 @@ const ldJson = {
 
     <div class="months-grid">
       {monthSummary.map((m) => (
-        <a href={`/trips/${m.slug}`} class="month-card">
+        <a href={`/trips/${m.slug}/`} class="month-card">
           <div class="month-card-head">
             <h2>{m.name.charAt(0).toUpperCase() + m.name.slice(1)}</h2>
             <span class="month-count">{m.totalGood} направлений</span>
@@ -105,11 +105,11 @@ const ldJson = {
     <section class="cal-cta">
       <h2>Что ещё посмотреть</h2>
       <ul class="cta-list">
-        <li>📊 <a href="/seasons">Полная таблица сезонов</a> — 39 направлений × 12 месяцев в одной интерактивной таблице</li>
-        <li>💸 <a href="/calculator">Калькулятор бюджета</a> — посчитай поездку с актуальным курсом ЦБ РФ</li>
-        <li>🇪🇺 <a href="/blog/schengen-visa-2026">Шенгенская виза 2026</a> — куда дают, где меньше отказов</li>
-        <li>🇨🇳 <a href="/blog/hainan-guide-2026">Хайнань без визы</a> — гайд по Китаю с безвизом до 14.09.2026</li>
-        <li>🇯🇵 <a href="/blog/japan-guide-2026">Япония 2026</a> — полный гайд по поездке</li>
+        <li>📊 <a href="/seasons/">Полная таблица сезонов</a> — 39 направлений × 12 месяцев в одной интерактивной таблице</li>
+        <li>💸 <a href="/calculator/">Калькулятор бюджета</a> — посчитай поездку с актуальным курсом ЦБ РФ</li>
+        <li>🇪🇺 <a href="/blog/schengen-visa-2026/">Шенгенская виза 2026</a> — куда дают, где меньше отказов</li>
+        <li>🇨🇳 <a href="/blog/hainan-guide-2026/">Хайнань без визы</a> — гайд по Китаю с безвизом до 14.09.2026</li>
+        <li>🇯🇵 <a href="/blog/japan-guide-2026/">Япония 2026</a> — полный гайд по поездке</li>
       </ul>
     </section>
   </main>

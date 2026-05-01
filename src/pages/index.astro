@@ -12,7 +12,7 @@ const ldJson = {
       "@type": "WebSite",
       "@id": "https://traveltribe.ru/#website",
       "name": "TravelTribe",
-      "url": "https://traveltribe.ru",
+      "url": "https://traveltribe.ru/",
       "description": "Бесплатный open source сервис для путешественников: сезоны, виза, бюджет для 39 направлений мира",
       "inLanguage": "ru-RU",
       "publisher": { "@id": "https://traveltribe.ru/#org" }
@@ -21,7 +21,7 @@ const ldJson = {
       "@type": "Organization",
       "@id": "https://traveltribe.ru/#org",
       "name": "TravelTribe",
-      "url": "https://traveltribe.ru",
+      "url": "https://traveltribe.ru/",
       "logo": "https://traveltribe.ru/og-image.png",
       "founder": { "@type": "Person", "name": "Никита Зайцев", "url": "https://t.me/traveltriberu" },
       "sameAs": [
@@ -88,9 +88,9 @@ const cards = [
 ];
 ---
 <Layout
-  title="TravelTribe — Сезоны, бюджет и виза для путешествий из России"
+  title="TravelTribe — сезоны, бюджет, виза для россиян"
   description="Бесплатный open source сервис для путешественников из России: таблица сезонов, виза, бюджет и калькулятор перелёта для 39 направлений мира."
-  canonical="https://traveltribe.ru"
+  canonical="https://traveltribe.ru/"
   ogTitle="TravelTribe — Куда ехать и когда"
   ogDescription="Бесплатный open source сервис: таблица сезонов, виза и бюджет для 39 направлений. Калькулятор перелёта из Москвы."
   ldJson={ldJson}
@@ -106,8 +106,8 @@ const cards = [
         <h1>Куда поехать: <em>сезоны,<br>визы и бюджет</em></h1>
         <p class="hero-sub">Интерактивный инструмент для путешественников из России — виза, сезоны, бюджет и живые цены для 39 направлений мира.</p>
         <div class="hero-actions">
-          <a class="btn-primary" href="/seasons">Открыть таблицу сезонов</a>
-          <a class="btn-ghost" href="/calculator">Калькулятор бюджета</a>
+          <a class="btn-primary" href="/seasons/">Открыть таблицу сезонов</a>
+          <a class="btn-ghost" href="/calculator/">Калькулятор бюджета</a>
         </div>
         <div class="hero-stats">
           <div><div class="stat-val">39</div><div class="stat-label">Регионов мира</div></div>
@@ -135,7 +135,7 @@ const cards = [
         {cards.map((c, i) => (
           <Card
             {...c}
-            href="/seasons"
+            href="/seasons/"
             loading={i === 0 ? 'eager' : 'lazy'}
             fetchpriority={i === 0 ? 'high' : 'auto'}
           />
@@ -151,25 +151,25 @@ const cards = [
       <p class="section-sub" id="calendarSub">Выбери месяц — покажем где сейчас сезон, цены на перелёт и какая виза нужна. 12 страниц на каждый месяц года.</p>
 
       <div class="calendar-promo">
-        <a href="/trips" class="calendar-promo-card calendar-promo-main" id="currentMonthCard">
+        <a href="/trips/" class="calendar-promo-card calendar-promo-main" id="currentMonthCard">
           <div class="cmp-tag">// Сейчас актуально</div>
           <div class="cmp-title" id="cmpTitle">Куда поехать по месяцам</div>
           <div class="cmp-desc" id="cmpDesc">Топ направлений с пиком сезона, актуальные цены, виза для россиян</div>
           <span class="cmp-cta">Смотреть →</span>
         </a>
         <div class="calendar-promo-grid">
-          <a href="/trips/january" class="cm-pill">Янв</a>
-          <a href="/trips/february" class="cm-pill">Фев</a>
-          <a href="/trips/march" class="cm-pill">Мар</a>
-          <a href="/trips/april" class="cm-pill">Апр</a>
-          <a href="/trips/may" class="cm-pill">Май</a>
-          <a href="/trips/june" class="cm-pill">Июн</a>
-          <a href="/trips/july" class="cm-pill">Июл</a>
-          <a href="/trips/august" class="cm-pill">Авг</a>
-          <a href="/trips/september" class="cm-pill">Сен</a>
-          <a href="/trips/october" class="cm-pill">Окт</a>
-          <a href="/trips/november" class="cm-pill">Ноя</a>
-          <a href="/trips/december" class="cm-pill">Дек</a>
+          <a href="/trips/january/" class="cm-pill">Янв</a>
+          <a href="/trips/february/" class="cm-pill">Фев</a>
+          <a href="/trips/march/" class="cm-pill">Мар</a>
+          <a href="/trips/april/" class="cm-pill">Апр</a>
+          <a href="/trips/may/" class="cm-pill">Май</a>
+          <a href="/trips/june/" class="cm-pill">Июн</a>
+          <a href="/trips/july/" class="cm-pill">Июл</a>
+          <a href="/trips/august/" class="cm-pill">Авг</a>
+          <a href="/trips/september/" class="cm-pill">Сен</a>
+          <a href="/trips/october/" class="cm-pill">Окт</a>
+          <a href="/trips/november/" class="cm-pill">Ноя</a>
+          <a href="/trips/december/" class="cm-pill">Дек</a>
         </div>
       </div>
 
@@ -186,7 +186,7 @@ const cards = [
           var card = document.getElementById('currentMonthCard');
           var title = document.getElementById('cmpTitle');
           var month = document.getElementById('calendarMonth');
-          if (card) card.href = '/trips/' + m[0];
+          if (card) card.href = '/trips/' + m[0] + '/';
           if (title) title.textContent = 'Куда поехать в ' + m[1];
           if (month) month.textContent = 'в ' + m[1];
         })();

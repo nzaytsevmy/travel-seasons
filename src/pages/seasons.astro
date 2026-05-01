@@ -17,7 +17,7 @@ const ldJson = {
     {
       "@type": "WebPage",
       "@id": "https://traveltribe.ru/seasons/#webpage",
-      "url": "https://traveltribe.ru/seasons",
+      "url": "https://traveltribe.ru/seasons/",
       "name": "Сезоны для путешествий — куда и когда | TravelTribe",
       "description": "Интерактивная таблица лучшего времени для путешествий: 39 направлений, виза для россиян, бюджет и калькулятор стоимости поездки из Москвы.",
       "inLanguage": "ru-RU",
@@ -42,9 +42,9 @@ const ldJson = {
 };
 ---
 <Layout
-  title="Сезоны для путешествий — куда и когда | TravelTribe"
+  title="Сезоны для путешествий 2026 — куда и когда"
   description="Интерактивная таблица: 39 направлений мира, лучшее время для поездки, виза и бюджет для россиян. Калькулятор стоимости перелёта из Москвы."
-  canonical="https://traveltribe.ru/seasons"
+  canonical="https://traveltribe.ru/seasons/"
   ogTitle="Сезоны для путешествий — когда и куда из России"
   ogDescription="Интерактивная таблица: 39 направлений мира, лучшее время, виза и бюджет для россиян. Калькулятор перелёта из Москвы."
   ldJson={ldJson}
@@ -130,7 +130,7 @@ const ldJson = {
               <span class="region-sub">{row.sub}</span>
               <div class="tags">
                 {row.region === 'Япония'
-                  ? <a href="/blog/japan-visa-2026" class={`tag ${VISA_CLASS[row.visa]}`}>{VISA_LABEL[row.visa]}</a>
+                  ? <a href="/blog/japan-visa-2026/" class={`tag ${VISA_CLASS[row.visa]}`}>{VISA_LABEL[row.visa]}</a>
                   : <span class={`tag ${VISA_CLASS[row.visa]}`}>{VISA_LABEL[row.visa]}</span>
                 }
                 <span class={`tag ${BUDGET_CLASS[row.budget]}`}>{BUDGET_LABEL[row.budget]}</span>
