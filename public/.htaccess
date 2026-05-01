@@ -1,0 +1,7 @@
+# Custom 404 page
+ErrorDocument 404 /404.html
+
+# Backup: 301 редирект www → без www (на случай если UI-настройка ISPmanager отвалится)
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^www\.traveltribe\.ru$ [NC]
+RewriteRule ^(.*)$ https://traveltribe.ru/$1 [R=301,L]
