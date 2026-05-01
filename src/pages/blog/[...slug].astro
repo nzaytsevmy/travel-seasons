@@ -72,8 +72,8 @@ const ldJson = {
       <Image
         src={post.data.coverImage}
         alt={post.data.title}
-        width={1200}
-        height={500}
+        widths={[400, 800, 1200]}
+        sizes="(max-width: 760px) 100vw, 1200px"
         format="webp"
         quality={70}
         loading="eager"

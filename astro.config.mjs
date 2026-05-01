@@ -7,7 +7,7 @@ export default defineConfig({
   site: 'https://traveltribe.ru',
   trailingSlash: 'always',
   build: {
-    inlineStylesheets: 'always',
+    inlineStylesheets: 'auto',
   },
   image: {
     domains: ['images.unsplash.com'],
