@@ -9,7 +9,6 @@ const { active } = Astro.props;
     <a href="/trips/" class={active === 'trips' ? 'active' : ''} aria-current={active === 'trips' ? 'page' : undefined}>Календарь</a>
     <a href="/calculator/" class={active === 'calculator' ? 'active' : ''} aria-current={active === 'calculator' ? 'page' : undefined}>Калькулятор</a>
     <a href="/blog/" class={active === 'blog' ? 'active' : ''} aria-current={active === 'blog' ? 'page' : undefined}>Блог</a>
-    <a href="https://t.me/traveltriberu" target="_blank" rel="noopener" class="mobile-only-link">Telegram</a>
     <a href="https://github.com/nzaytsevmy/traveltribe-feedback" target="_blank" rel="noopener">GitHub</a>
   </div>
   <div class="nav-right">
@@ -49,8 +48,6 @@ const { active } = Astro.props;
     gap: 12px;
     flex-wrap: nowrap;
   }
-  /* Mobile-only link inside burger menu (Telegram) */
-  .mobile-only-link { display: none; }
 
   /* ── Burger button ── */
   .burger {
@@ -110,7 +107,6 @@ const { active } = Astro.props;
     .nav-links.is-open a:last-child { border-bottom: none; }
     .nav-links.is-open a.active { color: var(--gold); }
     .nav-links.is-open a:hover { color: var(--text); }
-    .nav-links.is-open .mobile-only-link { display: block; color: var(--gold); }
   }
 
   @keyframes slideDown {

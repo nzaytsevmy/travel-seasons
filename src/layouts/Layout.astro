@@ -30,8 +30,6 @@ const {
 } = Astro.props;
 
 const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-image.png?v=2';
-
-const FONTS_URL = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700;800&display=optional';
 ---
 <!DOCTYPE html>
 <html lang="ru" prefix="og: https://ogp.me/ns#">
@@ -92,13 +90,6 @@ const FONTS_URL = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400
   {ldJson && <script type="application/ld+json" set:html={JSON.stringify(ldJson)} />}
 
   {preloadImage && <link rel="preload" as="image" href={preloadImage} />}
-
-  <!-- Google Fonts — async, non-render-blocking -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preload" as="style" href={FONTS_URL} />
-  <link rel="stylesheet" href={FONTS_URL} media="print" onload="this.media='all'" />
-  <noscript><link rel="stylesheet" href={FONTS_URL} /></noscript>
 
   <!-- Yandex Metrica — early connection so off-thread script load is faster -->
   <link rel="preconnect" href="https://mc.yandex.ru" crossorigin />
