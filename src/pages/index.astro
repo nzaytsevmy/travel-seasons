@@ -2,8 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import Card from '../components/Card.astro';
-import { getImage } from 'astro:assets';
+import { data as regions } from '../data/regions.js';
+import { PRICES } from '../data/prices.js';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const ldJson = {
   "@context": "https://schema.org",
@@ -32,60 +34,67 @@ const ldJson = {
   ]
 };
 
-const MONTHS_RU = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
-const SPOTS = [
-  'Таиланда, ОАЭ и Мальдив','ОАЭ, Шри-Ланки и Кубы','Иордании, Марокко и Вьетнама',
-  'Японии, Грузии и ЮАР','Японии, Греции и Италии','Исландии, Армении и Норвегии',
-  'Хорватии, Черногории и Греции','Мальты, Грузии и Турции','ЮАР, Марокко и Грузии',
-  'Бали, Японии и Египта','ОАЭ, Вьетнама и Мальдив','Таиланда, Шри-Ланки и Мальдив'
+const MONTHS = [
+  { slug: 'january',   name: 'январе',   nameNom: 'Январь'   },
+  { slug: 'february',  name: 'феврале',  nameNom: 'Февраль'  },
+  { slug: 'march',     name: 'марте',    nameNom: 'Март'     },
+  { slug: 'april',     name: 'апреле',   nameNom: 'Апрель'   },
+  { slug: 'may',       name: 'мае',      nameNom: 'Май'      },
+  { slug: 'june',      name: 'июне',     nameNom: 'Июнь'     },
+  { slug: 'july',      name: 'июле',     nameNom: 'Июль'     },
+  { slug: 'august',    name: 'августе',  nameNom: 'Август'   },
+  { slug: 'september', name: 'сентябре', nameNom: 'Сентябрь' },
+  { slug: 'october',   name: 'октябре',  nameNom: 'Октябрь'  },
+  { slug: 'november',  name: 'ноябре',   nameNom: 'Ноябрь'   },
+  { slug: 'december',  name: 'декабре',  nameNom: 'Декабрь'  },
 ];
-const m = new Date().getMonth();
-const trendingLabel = '// Популярные сейчас · ' + MONTHS_RU[m];
-const trendingSub = MONTHS_RU[m].charAt(0).toUpperCase() + MONTHS_RU[m].slice(1) + ' — лучшее время для ' + SPOTS[m] + '.';
+const monthIdx = new Date().getMonth();
+const currentMonth = MONTHS[monthIdx];
 
-const firstCardImg = await getImage({
-  src: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=300&fit=crop&q=80',
-  width: 400,
-  height: 200,
-  format: 'webp',
-  quality: 60,
-});
+const VISA_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза' };
+const VISA_CLASS = { free: 'tag-free', evisa: 'tag-evisa', required: 'tag-visa' };
+const BUDGET_LABEL = { low: '$', mid: '$$', high: '$$$' };
 
-const cards = [
-  {
-    title: 'Япония',
-    sub: 'Токио, Киото, Осака',
-    badge: 'Азия',
-    visa: 'required' as const,
-    budget: 'mid' as const,
-    seasonBar: ['O','O','P','P','G','O','O','B','G','P','P','O'],
-    price: '45 000 ₽',
-    imageUrl: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&h=300&fit=crop&q=80',
-    imageAlt: 'Япония',
-  },
-  {
-    title: 'Грузия',
-    sub: 'Тбилиси, Батуми, Казбеги',
-    badge: 'Кавказ',
-    visa: 'free' as const,
-    budget: 'low' as const,
-    seasonBar: ['O','O','G','G','P','P','G','G','P','P','O','O'],
-    price: '9 000 ₽',
-    imageUrl: 'https://images.unsplash.com/photo-1565008576549-57569a49371d?w=600&h=300&fit=crop&q=80',
-    imageAlt: 'Грузия',
-  },
-  {
-    title: 'ЮАР',
-    sub: 'Кейптаун + Крюгер',
-    badge: 'Африка',
-    visa: 'free' as const,
-    budget: 'mid' as const,
-    seasonBar: ['P','P','G','G','O','O','O','O','G','G','G','P'],
-    price: '63 000 ₽',
-    imageUrl: 'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=600&h=300&fit=crop&q=80',
-    imageAlt: 'ЮАР',
-  },
-];
+// Build directions list with their group label
+const directions: any[] = [];
+let groupLabel = '';
+for (const r of regions) {
+  if ((r as any).group) {
+    groupLabel = (r as any).group.replace(/^[^\s]+\s/, '');
+  } else {
+    directions.push({ ...r, group: groupLabel });
+  }
+}
+
+// Match regions to PRICES by name fragment to get IATA + flight
+let livePrices: Record<string, number> = {};
+try {
+  const pjson = JSON.parse(fs.readFileSync(path.resolve('./public/prices.json'), 'utf8'));
+  livePrices = pjson.prices || {};
+} catch (e) { /* fallback to estimates */ }
+
+function findPrice(d: any) {
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-zа-я0-9]/gi, '');
+  const dn = norm(d.region) + norm(d.sub);
+  return PRICES.find((p: any) => {
+    const pn = norm(p.name);
+    return dn.includes(norm(p.name.split(' ')[0])) || pn.includes(norm(d.region));
+  });
+}
+
+// Top 6 peak destinations for current month, sorted by cheapest flight
+const peakNow = directions
+  .filter(d => d.r[monthIdx] === 'P')
+  .map(d => {
+    const price = findPrice(d);
+    const liveFlight = price?.iata && livePrices[price.iata];
+    return {
+      ...d,
+      flight: (liveFlight || price?.flight?.[0]) as number | undefined,
+    };
+  })
+  .sort((a, b) => (a.flight || 9999) - (b.flight || 9999))
+  .slice(0, 6);
 ---
 <Layout
   title="TravelTribe — сезоны, бюджет, виза для россиян"
@@ -94,7 +103,6 @@ const cards = [
   ogTitle="TravelTribe — Куда ехать и когда"
   ogDescription="Бесплатный open source сервис: таблица сезонов, виза и бюджет для 39 направлений. Калькулятор перелёта из Москвы."
   ldJson={ldJson}
-  preloadImage={firstCardImg.src}
 >
   <Nav active="home" />
 
@@ -127,70 +135,44 @@ const cards = [
     <hr class="divider" />
 
     <div class="section">
-      <div class="section-label">{trendingLabel}</div>
-      <h2 class="section-title">Куда летят <em>сейчас</em></h2>
-      <p class="section-sub">{trendingSub}</p>
+      <div class="section-label">// Календарь · {currentMonth.nameNom} 2026</div>
+      <h2 class="section-title">Куда поехать <em>в {currentMonth.name}</em></h2>
+      <p class="section-sub">Топ-{peakNow.length} направлений с пиком сезона прямо сейчас. Реальные цены на перелёт из Москвы, виза для россиян, бюджет на день.</p>
 
-      <div class="cards">
-        {cards.map((c, i) => (
-          <Card
-            {...c}
-            href="/seasons/"
-            loading={i === 0 ? 'eager' : 'lazy'}
-            fetchpriority={i === 0 ? 'high' : 'auto'}
-          />
+      <div class="trending-grid">
+        {peakNow.map((d) => (
+          <a href="/seasons/" class="trending-card">
+            <div class="tc-head">
+              <div class="tc-region">{d.group}</div>
+              <div class="tc-peak">🔥 Пик</div>
+            </div>
+            <h3 class="tc-title">{d.region}</h3>
+            <p class="tc-sub">{d.sub}</p>
+            <div class="tc-tags">
+              <span class={`tag ${VISA_CLASS[d.visa]}`}>{VISA_LABEL[d.visa]}</span>
+              <span class="tc-budget">{BUDGET_LABEL[d.budget]}</span>
+            </div>
+            <div class="tc-bar" aria-hidden="true">
+              {d.r.map((s: string, i: number) => (
+                <div class={`tc-mo s-${s} ${i === monthIdx ? 'is-current' : ''}`} aria-hidden="true"></div>
+              ))}
+            </div>
+            <div class="tc-footer">
+              <span class="tc-price">{d.flight ? `от $${d.flight}` : 'цены уточняй'}</span>
+              <span class="tc-arrow">→</span>
+            </div>
+          </a>
         ))}
       </div>
-    </div>
 
-    <hr class="divider" />
-
-    <div class="section">
-      <div class="section-label" id="calendarLabel">// Календарь поездок</div>
-      <h2 class="section-title">Куда поехать <em id="calendarMonth">по месяцам</em></h2>
-      <p class="section-sub" id="calendarSub">Выбери месяц — покажем где сейчас сезон, цены на перелёт и какая виза нужна. 12 страниц на каждый месяц года.</p>
-
-      <div class="calendar-promo">
-        <a href="/trips/" class="calendar-promo-card calendar-promo-main" id="currentMonthCard">
-          <div class="cmp-tag">// Сейчас актуально</div>
-          <div class="cmp-title" id="cmpTitle">Куда поехать по месяцам</div>
-          <div class="cmp-desc" id="cmpDesc">Топ направлений с пиком сезона, актуальные цены, виза для россиян</div>
-          <span class="cmp-cta">Смотреть →</span>
-        </a>
+      <div class="month-pills-wrap">
+        <div class="month-pills-label">Или выбери другой месяц:</div>
         <div class="calendar-promo-grid">
-          <a href="/trips/january/" class="cm-pill">Янв</a>
-          <a href="/trips/february/" class="cm-pill">Фев</a>
-          <a href="/trips/march/" class="cm-pill">Мар</a>
-          <a href="/trips/april/" class="cm-pill">Апр</a>
-          <a href="/trips/may/" class="cm-pill">Май</a>
-          <a href="/trips/june/" class="cm-pill">Июн</a>
-          <a href="/trips/july/" class="cm-pill">Июл</a>
-          <a href="/trips/august/" class="cm-pill">Авг</a>
-          <a href="/trips/september/" class="cm-pill">Сен</a>
-          <a href="/trips/october/" class="cm-pill">Окт</a>
-          <a href="/trips/november/" class="cm-pill">Ноя</a>
-          <a href="/trips/december/" class="cm-pill">Дек</a>
+          {MONTHS.map((m) => (
+            <a href={`/trips/${m.slug}/`} class={`cm-pill ${m.slug === currentMonth.slug ? 'is-current' : ''}`}>{m.nameNom.slice(0,3)}</a>
+          ))}
         </div>
       </div>
-
-      <script is:inline>
-        (function () {
-          var months = [
-            ['january','январе','Январь'],['february','феврале','Февраль'],['march','марте','Март'],
-            ['april','апреле','Апрель'],['may','мае','Май'],['june','июне','Июнь'],
-            ['july','июле','Июль'],['august','августе','Август'],['september','сентябре','Сентябрь'],
-            ['october','октябре','Октябрь'],['november','ноябре','Ноябрь'],['december','декабре','Декабрь']
-          ];
-          var idx = new Date().getMonth();
-          var m = months[idx];
-          var card = document.getElementById('currentMonthCard');
-          var title = document.getElementById('cmpTitle');
-          var month = document.getElementById('calendarMonth');
-          if (card) card.href = '/trips/' + m[0] + '/';
-          if (title) title.textContent = 'Куда поехать в ' + m[1];
-          if (month) month.textContent = 'в ' + m[1];
-        })();
-      </script>
     </div>
 
     <hr class="divider" />
@@ -311,47 +293,105 @@ html.light-theme .hero-bg {
 .section-title em { color: var(--gold); font-style: italic; }
 .section-sub { color: var(--text-dim); font-size: 0.88rem; line-height: 1.7; max-width: 440px; margin-bottom: 2rem; }
 
-/* ─── CARDS GRID ─── */
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px; background: var(--line); }
-
-/* ─── FEATURES ─── */
-/* ─── CALENDAR PROMO ─── */
-.calendar-promo {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
-  margin-top: 1.5rem;
+/* ─── TRENDING GRID (peak now) ─── */
+.trending-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--line);
+  border: 1px solid var(--line); border-radius: 4px;
+  overflow: hidden; margin-top: 1.5rem;
 }
-.calendar-promo-card {
-  background: var(--bg2); border: 1px solid var(--line); border-radius: 4px;
-  padding: 1.8rem; display: flex; flex-direction: column; gap: 0.6rem;
+.trending-card {
+  background: var(--bg); padding: 1.4rem 1.3rem 1.1rem;
+  display: flex; flex-direction: column; gap: 0.5rem;
   position: relative; overflow: hidden;
-  transition: border-color 0.25s ease, transform 0.2s ease;
+  transition: background 0.25s ease;
 }
-.calendar-promo-card:hover { border-color: var(--gold-dim); transform: translateY(-2px); }
-.calendar-promo-card::before {
-  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  opacity: 0.35;
+.trending-card:hover { background: var(--bg3); }
+.trending-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  opacity: 0; transition: opacity 0.3s ease;
 }
-.cmp-tag { font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
-.cmp-title { font-family: var(--ff-body); font-size: 1.4rem; font-weight: 700; letter-spacing: -0.01em; color: var(--text); }
-.cmp-desc { color: var(--text-dim); font-size: 0.88rem; line-height: 1.55; flex: 1; }
-.cmp-cta { font-size: 0.78rem; color: var(--gold); letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; margin-top: 0.4rem; }
+.trending-card:hover::before { opacity: 1; }
 
+.tc-head { display: flex; justify-content: space-between; align-items: center; }
+.tc-region {
+  font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-faint);
+}
+.tc-peak {
+  font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--peak-text); font-weight: 500;
+}
+.tc-title {
+  font-family: var(--ff-display); font-size: 1.6rem; font-weight: 400;
+  line-height: 1.15; margin: 0.2rem 0 0;
+}
+.tc-sub {
+  color: var(--text-faint); font-size: 0.74rem;
+  letter-spacing: 0.02em; margin: 0 0 0.5rem;
+}
+.tc-tags { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.3rem; }
+.tc-budget {
+  font-size: 0.7rem; color: var(--gold); font-weight: 500;
+  padding: 0.18rem 0.4rem; border: 1px solid rgba(201,151,58,0.25);
+  border-radius: 2px; background: rgba(201,151,58,0.06);
+}
+
+.tc-bar { display: flex; gap: 2px; margin: 0.3rem 0 0.4rem; }
+.tc-mo {
+  flex: 1; height: 6px; border-radius: 2px;
+  position: relative;
+}
+.tc-mo.is-current {
+  outline: 2px solid var(--gold); outline-offset: 1px; border-radius: 2px;
+}
+
+.tc-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: auto; padding-top: 0.6rem; border-top: 1px solid var(--line);
+}
+.tc-price { font-size: 0.78rem; color: var(--text); font-weight: 500; }
+.tc-arrow { color: var(--text-faint); transition: transform 0.15s ease, color 0.25s ease; }
+.trending-card:hover .tc-arrow { transform: translateX(3px); color: var(--gold); }
+
+/* Reuse season bar colors from Card.astro */
+.tc-mo.s-P { background: #22c55e; }
+.tc-mo.s-G { background: #4a9eff; }
+.tc-mo.s-O { background: #f59e0b; }
+.tc-mo.s-B { background: #ef4444; }
+.tc-mo.s-X { background: rgba(201,151,58,0.15); }
+
+@media (max-width: 900px) {
+  .trending-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 540px) {
+  .trending-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── MONTH PILLS (compact selector under trending) ─── */
+.month-pills-wrap { margin-top: 2.5rem; }
+.month-pills-label {
+  font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-faint); margin-bottom: 0.7rem;
+}
 .calendar-promo-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;
-  align-content: start;
+  display: grid; grid-template-columns: repeat(12, 1fr); gap: 0.4rem;
 }
 .cm-pill {
   display: flex; align-items: center; justify-content: center;
   background: var(--bg2); border: 1px solid var(--line); border-radius: 3px;
-  padding: 0.85rem 0.5rem; font-size: 0.8rem; color: var(--text-dim);
+  padding: 0.7rem 0.4rem; font-size: 0.78rem; color: var(--text-dim);
   letter-spacing: 0.04em; font-weight: 500;
   transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
 }
 .cm-pill:hover { border-color: var(--gold-dim); color: var(--gold); background: var(--bg3); }
+.cm-pill.is-current {
+  border-color: var(--gold); color: var(--gold);
+  background: rgba(201,151,58,0.08);
+}
 
 @media (max-width: 720px) {
-  .calendar-promo { grid-template-columns: 1fr; gap: 1rem; }
   .calendar-promo-grid { grid-template-columns: repeat(6, 1fr); }
 }
 
