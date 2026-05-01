@@ -7,10 +7,11 @@ import Footer from '../components/Footer.astro';
   title="404 — Направление не найдено · TravelTribe"
   description="Страница не найдена. Вернитесь на главную TravelTribe."
   canonical="https://traveltribe.ru/404/"
+  noindex={true}
 >
   <Nav />
 
-  <main>
+  <main id="main">
     <div class="hero">
       <div class="hero-bg"></div>
       <div class="hero-content">
@@ -21,6 +22,17 @@ import Footer from '../components/Footer.astro';
           <a class="btn-primary" href="/">Вернуться на главную</a>
           <a class="btn-ghost" href="/seasons/">Таблица сезонов</a>
         </div>
+
+        <nav class="lost-links" aria-label="Куда пойти">
+          <span class="lost-label">Или сразу к нужному:</span>
+          <a href="/calculator/">Калькулятор бюджета</a>
+          <span class="lost-sep">·</span>
+          <a href="/trips/">Календарь по месяцам</a>
+          <span class="lost-sep">·</span>
+          <a href="/blog/">Блог</a>
+          <span class="lost-sep">·</span>
+          <a href="/about/">О проекте</a>
+        </nav>
       </div>
     </div>
   </main>
@@ -76,4 +88,14 @@ html.light-theme .hero-bg {
   cursor: pointer; font-family: var(--ff-body);
 }
 .btn-ghost:hover { background: var(--gold-glow); box-shadow: 0 0 18px var(--gold-glow); }
+
+.lost-links {
+  margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--line);
+  display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; align-items: center;
+  font-size: 0.78rem; color: var(--text-faint);
+}
+.lost-label { letter-spacing: 0.04em; margin-right: 0.4rem; }
+.lost-links a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.4); text-underline-offset: 3px; }
+.lost-links a:hover { text-decoration-color: var(--gold); }
+.lost-sep { color: var(--gold-dim); opacity: 0.6; }
 </style>

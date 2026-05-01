@@ -15,22 +15,32 @@ const { post } = Astro.props;
 const { Content } = await post.render();
 const url = `https://traveltribe.ru/blog/${post.slug}/`;
 const coverUrl = typeof post.data.coverImage === 'string' ? post.data.coverImage : `https://traveltribe.ru${post.data.coverImage.src}`;
+const wordCount = post.body.trim().split(/\s+/).length;
 const ldJson = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "BlogPosting",
       "@id": `${url}#article`,
+      "isPartOf": { "@id": "https://traveltribe.ru/blog/#blog" },
       "headline": post.data.title,
       "description": post.data.description,
       "image": coverUrl,
-      "author": { "@type": "Person", "name": post.data.author, "url": "https://t.me/traveltriberu" },
+      "author": {
+        "@type": "Person",
+        "name": post.data.author,
+        "url": "https://traveltribe.ru/about/",
+        "sameAs": ["https://t.me/traveltriberu", "https://github.com/nzaytsevmy"]
+      },
       "datePublished": post.data.pubDate.toISOString(),
       "dateModified": (post.data.updatedDate ?? post.data.pubDate).toISOString(),
-      "publisher": { "@type": "Organization", "name": "TravelTribe", "url": "https://traveltribe.ru/" },
+      "publisher": { "@id": "https://traveltribe.ru/#org" },
       "mainEntityOfPage": { "@type": "WebPage", "@id": url },
       "inLanguage": "ru-RU",
-      "keywords": post.data.tags.join(', ')
+      "wordCount": wordCount,
+      "articleSection": post.data.tags[0] ?? "Travel",
+      "keywords": post.data.tags.join(', '),
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".prose p:first-of-type"] }
     },
     {
       "@type": "BreadcrumbList",
@@ -57,7 +67,7 @@ const ldJson = {
   <script is:inline>document.body.classList.add('post-page')</script>
   <Nav active="blog" />
   <Breadcrumbs crumbs={[{ label: 'Блог', href: '/blog/' }, { label: post.data.title }]} />
-  <main class="post-wrap">
+  <main id="main" class="post-wrap">
     <div class="post-cover">
       <Image
         src={post.data.coverImage}

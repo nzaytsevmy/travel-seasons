@@ -25,17 +25,54 @@ const { tag, posts } = Astro.props;
 function readingTime(body: string) {
   return Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
 }
+
+const tagUrl = `https://traveltribe.ru/blog/tag/${tag}/`;
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": `${tagUrl}#page`,
+      "url": tagUrl,
+      "name": `${tag} — Блог TravelTribe`,
+      "description": `Все статьи блога TravelTribe по теме «${tag}».`,
+      "inLanguage": "ru-RU",
+      "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+      "mainEntity": { "@id": `${tagUrl}#list` }
+    },
+    {
+      "@type": "ItemList",
+      "@id": `${tagUrl}#list`,
+      "numberOfItems": posts.length,
+      "itemListElement": posts.map((p, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "url": `https://traveltribe.ru/blog/${p.slug}/`,
+        "name": p.data.title
+      }))
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Блог", "item": "https://traveltribe.ru/blog/" },
+        { "@type": "ListItem", "position": 3, "name": tag, "item": tagUrl }
+      ]
+    }
+  ]
+};
 ---
 <Layout
   title={`${tag} — Блог TravelTribe`}
   description={`Все статьи блога TravelTribe по теме «${tag}»: личный опыт поездок, актуальные цены 2026, маршруты, визы и проверенные лайфхаки для российских путешественников.`}
   canonical={`https://traveltribe.ru/blog/tag/${tag}/`}
+  ldJson={ldJson}
 >
   <script is:inline>document.body.classList.add('blog-index')</script>
   <Nav active="blog" />
   <Breadcrumbs crumbs={[{ label: 'Блог', href: '/blog/' }, { label: tag }]} />
 
-  <main class="blog-wrap">
+  <main id="main" class="blog-wrap">
     <header class="blog-header">
       <div class="hero-tag">// Тег</div>
       <h1>{tag}</h1>
