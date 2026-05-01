@@ -112,7 +112,7 @@ const ldJson = {
     {rest.length > 0 && (
       <section class="more-section">
         <div class="section-label">// Ещё статьи</div>
-        <div class="posts-grid">
+        <div class="posts-grid" data-count={rest.length + (rest.length % 2 === 0 ? 0 : 1)}>
           {rest.map(post => (
             <a href={`/blog/${post.slug}/`} class="post-card">
               <div class="post-thumb">
@@ -140,6 +140,16 @@ const ldJson = {
               </div>
             </a>
           ))}
+          {rest.length % 2 !== 0 && (
+            <a href="https://t.me/traveltriberu" target="_blank" rel="noopener" class="post-card promo-card">
+              <div class="promo-inner">
+                <div class="promo-icon" aria-hidden="true">📲</div>
+                <h3 class="promo-title">Подпишись на @traveltriberu</h3>
+                <p class="promo-desc">Личные истории из поездок, оперативные обновления по визам и спонтанные разборы стран. Без воды.</p>
+                <span class="promo-cta">Открыть в Telegram →</span>
+              </div>
+            </a>
+          )}
         </div>
       </section>
     )}
@@ -262,6 +272,37 @@ const ldJson = {
 }
 .meta-sep { color: var(--gold-dim); }
 
+/* ── Promo card (filler when post count is odd) ── */
+.promo-card {
+  background: linear-gradient(135deg, rgba(201,151,58,0.08) 0%, var(--bg2) 60%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 2rem 1.5rem;
+  position: relative; overflow: hidden;
+  transition: background 0.25s, border-color 0.25s;
+}
+.promo-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.4;
+}
+.promo-card:hover { background: linear-gradient(135deg, rgba(201,151,58,0.14) 0%, var(--bg3) 60%); }
+.promo-inner {
+  text-align: center; max-width: 320px;
+  display: flex; flex-direction: column; gap: 0.7rem; align-items: center;
+}
+.promo-icon { font-size: 2rem; line-height: 1; }
+.promo-title {
+  font-family: var(--ff-display); font-size: 1.3rem; font-weight: 400; line-height: 1.25;
+  color: var(--text);
+}
+.promo-desc { color: var(--text-dim); font-size: 0.82rem; line-height: 1.6; }
+.promo-cta {
+  font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gold); transition: letter-spacing 0.2s;
+  margin-top: 0.4rem;
+}
+.promo-card:hover .promo-cta { letter-spacing: 0.16em; }
+
 /* ── Mobile ── */
 @media (max-width: 680px) {
   .featured-card { grid-template-columns: 1fr; }
@@ -269,5 +310,6 @@ const ldJson = {
   .featured-overlay { background: linear-gradient(to bottom, transparent 70%, var(--bg) 100%); }
   .featured-body { padding: 1.5rem; }
   .posts-grid { grid-template-columns: 1fr; }
+  .promo-card { padding: 2.5rem 1.5rem; }
 }
 </style>
