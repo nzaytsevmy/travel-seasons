@@ -1,5 +1,4 @@
 import { defineConfig } from 'astro/config';
-import partytown from '@astrojs/partytown';
 import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
 
@@ -14,7 +13,6 @@ export default defineConfig({
   },
   integrations: [
     mdx(),
-    partytown({ config: { forward: ['ym'] } }),
     sitemap({
       filter: (page) => !page.includes('/404'),
       changefreq: 'weekly',
