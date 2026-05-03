@@ -16,7 +16,64 @@ const { Content } = await post.render();
 const url = `https://traveltribe.ru/blog/${post.slug}/`;
 const coverUrl = typeof post.data.coverImage === 'string' ? post.data.coverImage : `https://traveltribe.ru${post.data.coverImage.src}`;
 const wordCount = post.body.trim().split(/\s+/).length;
-const ldJson = {
+
+function stripMd(s: string): string {
+  return s
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function extractFAQs(body: string): Array<{ q: string; a: string }> {
+  const sectionMatch = body.match(/\n##\s+[^\n]*FAQ[^\n]*\n([\s\S]*?)(?=\n##\s|\n---\s*\n)/);
+  if (!sectionMatch) return [];
+  const block = sectionMatch[1];
+
+  const h3Count = (block.match(/^###\s+/gm) || []).length;
+  const boldCount = (block.match(/^\*\*[^\n*]+\*\*\s*$/gm) || []).length;
+
+  let mode: 'h3' | 'bold' | null = null;
+  if (h3Count >= 2) mode = 'h3';
+  else if (boldCount >= 2) mode = 'bold';
+  else return [];
+
+  const matchQ = (line: string): string | null => {
+    if (mode === 'h3') {
+      const m = line.match(/^###\s+(.+?)\s*$/);
+      return m ? m[1].trim() : null;
+    }
+    const m = line.match(/^\*\*([^\n*]+?)\*\*\s*$/);
+    return m ? m[1].trim() : null;
+  };
+
+  const groups: Array<{ q: string; a: string[] }> = [];
+  let current: { q: string; a: string[] } | null = null;
+  for (const line of block.split('\n')) {
+    const q = matchQ(line);
+    if (q) {
+      if (current) groups.push(current);
+      current = { q, a: [] };
+    } else if (current) {
+      current.a.push(line);
+    }
+  }
+  if (current) groups.push(current);
+
+  return groups
+    .map(g => ({
+      q: g.q.replace(/\?*$/, '?').replace(/\?+/, '?'),
+      a: stripMd(g.a.join('\n').trim())
+    }))
+    .filter(g => g.q && g.a);
+}
+
+const faqs = extractFAQs(post.body);
+
+const ldJson: any = {
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -52,6 +109,18 @@ const ldJson = {
     }
   ]
 };
+
+if (faqs.length >= 2) {
+  ldJson["@graph"].push({
+    "@type": "FAQPage",
+    "@id": `${url}#faq`,
+    "mainEntity": faqs.map(f => ({
+      "@type": "Question",
+      "name": f.q,
+      "acceptedAnswer": { "@type": "Answer", "text": f.a }
+    }))
+  });
+}
 ---
 <Layout
   title={post.data.title}
