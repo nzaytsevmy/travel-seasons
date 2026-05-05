@@ -14,7 +14,7 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
-      filter: (page) => !page.includes('/404'),
+      filter: (page) => !page.includes('/404') && !page.includes('/blog/tag/'),
       changefreq: 'weekly',
       priority: 0.7,
       lastmod: new Date(),
