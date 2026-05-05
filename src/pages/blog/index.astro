@@ -249,15 +249,18 @@ const ldJson = {
 .posts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 1px;
-  background: var(--line);
+  gap: 1.25rem;
+}
+
+.post-card {
+  display: flex; flex-direction: column;
+  background: var(--bg);
   border: 1px solid var(--line);
   border-radius: 4px;
   overflow: hidden;
+  transition: background 0.2s, border-color 0.2s;
 }
-
-.post-card { display: flex; flex-direction: column; background: var(--bg); transition: background 0.2s; }
-.post-card:hover { background: var(--bg2); }
+.post-card:hover { background: var(--bg2); border-color: rgba(201,151,58,0.4); }
 
 .post-thumb { overflow: hidden; aspect-ratio: 16/9; }
 .post-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
