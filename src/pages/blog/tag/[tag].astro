@@ -97,7 +97,7 @@ const ldJson = {
           <div class="post-body">
             <div class="post-tags">
               {post.data.tags.map(t => (
-                <a href={`/blog/tag/${t}/`} class="ptag">{t}</a>
+                <span class="ptag">{t}</span>
               ))}
             </div>
             <h2 class="post-title">{post.data.title}</h2>
@@ -152,7 +152,6 @@ const ldJson = {
   color: var(--gold); border: 1px solid rgba(201,151,58,0.3);
   padding: 0.12rem 0.4rem; border-radius: 2px;
 }
-.ptag:hover { background: rgba(201,151,58,0.12); }
 .post-title { font-family: var(--ff-display); font-size: 1.15rem; font-weight: 400; line-height: 1.25; }
 .post-desc { color: var(--text-dim); font-size: 0.8rem; line-height: 1.6; flex: 1; }
 .post-meta {
