@@ -201,15 +201,16 @@ const ldJson = {
 .featured-section { margin-bottom: 3rem; }
 .featured-card {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.1fr 1fr;
   border: 1px solid var(--line);
   border-radius: 4px;
   overflow: hidden;
   transition: border-color 0.25s;
+  max-height: 440px;
 }
 .featured-card:hover { border-color: rgba(201,151,58,0.4); }
 
-.featured-img { position: relative; overflow: hidden; min-height: 320px; }
+.featured-img { position: relative; overflow: hidden; }
 .featured-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
 .featured-card:hover .featured-img img { transform: scale(1.03); }
 .featured-overlay {
@@ -219,16 +220,23 @@ const ldJson = {
 }
 
 .featured-body {
-  padding: 2.5rem 2rem;
-  display: flex; flex-direction: column; gap: 0.75rem;
+  padding: 1.75rem 1.6rem;
+  display: flex; flex-direction: column; gap: 0.6rem;
   background: var(--bg2);
+  overflow: hidden;
 }
 .featured-title {
   font-family: var(--ff-display);
-  font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+  font-size: clamp(1.3rem, 2.2vw, 1.7rem);
   font-weight: 400; line-height: 1.2;
 }
-.featured-desc { color: var(--text-dim); font-size: 0.88rem; line-height: 1.65; flex: 1; }
+.featured-desc {
+  color: var(--text-dim); font-size: 0.85rem; line-height: 1.55; flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 .featured-cta {
   display: inline-block; margin-top: 0.5rem;
   font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
@@ -305,10 +313,11 @@ const ldJson = {
 
 /* ── Mobile ── */
 @media (max-width: 680px) {
-  .featured-card { grid-template-columns: 1fr; }
-  .featured-img { min-height: 220px; }
+  .featured-card { grid-template-columns: 1fr; max-height: none; }
+  .featured-img { aspect-ratio: 16/10; }
   .featured-overlay { background: linear-gradient(to bottom, transparent 70%, var(--bg) 100%); }
   .featured-body { padding: 1.5rem; }
+  .featured-desc { -webkit-line-clamp: unset; display: block; }
   .posts-grid { grid-template-columns: 1fr; }
   .promo-card { padding: 2.5rem 1.5rem; }
 }
