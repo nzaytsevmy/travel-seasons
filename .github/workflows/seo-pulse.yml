@@ -1,0 +1,32 @@
+name: SEO Pulse
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Каждый понедельник 06:00 UTC = 09:00 МСК
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  pulse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate SEO pulse report
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: |
+          python3 .github/scripts/seo_pulse.py
+
+      - name: Commit report
+        run: |
+          git config user.name "seo-pulse-bot"
+          git config user.email "seo-pulse@traveltribe.ru"
+          git add seo-pulse/
+          if ! git diff --cached --quiet; then
+            git commit -m "seo-pulse: $(date -u +%Y-%m-%d) report"
+            git push
+          fi
