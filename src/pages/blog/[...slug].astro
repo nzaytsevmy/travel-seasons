@@ -5,6 +5,7 @@ import Layout from '../../layouts/Layout.astro';
 import Nav from '../../components/Nav.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Footer from '../../components/Footer.astro';
+import authorPhoto from '../../assets/author/nikita.jpg';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -85,8 +86,12 @@ const ldJson: any = {
       "image": coverUrl,
       "author": {
         "@type": "Person",
+        "@id": "https://traveltribe.ru/about/#person",
         "name": post.data.author,
         "url": "https://traveltribe.ru/about/",
+        "image": "https://traveltribe.ru/og-image.png",
+        "jobTitle": "Travel writer",
+        "knowsAbout": ["Путешествия", "Визы", "Travel-бюджет", "Сезоны", "Фотография"],
         "sameAs": ["https://t.me/traveltriberu", "https://github.com/nzaytsevmy"]
       },
       "datePublished": post.data.pubDate.toISOString(),
@@ -97,7 +102,9 @@ const ldJson: any = {
       "wordCount": wordCount,
       "articleSection": post.data.tags[0] ?? "Travel",
       "keywords": post.data.tags.join(', '),
-      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".prose blockquote:first-of-type", ".prose p:first-of-type"] }
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".prose blockquote:first-of-type", ".prose p:first-of-type"] },
+      ...(post.data.tripPlace ? { "contentLocation": { "@type": "Place", "name": post.data.tripPlace } } : {}),
+      ...(post.data.tripDate ? { "dateCreated": post.data.tripDate } : {})
     },
     {
       "@type": "BreadcrumbList",
@@ -167,16 +174,35 @@ if (faqs.length >= 2) {
       </div>
 
       <h1>{post.data.title}</h1>
-      <p class="post-author">Никита Зайцев · <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a></p>
+      <p class="post-author">
+        <a href="/about/" class="author-link">
+          <Image src={authorPhoto} alt="Никита Зайцев" width={28} height={28} format="webp" quality={75} class="author-mini" />
+          <span>Никита Зайцев</span>
+        </a>
+        · <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>
+      </p>
+
+      {post.data.tripDate && post.data.tripPlace && (
+        <p class="trip-marker">
+          <span class="trip-icon" aria-hidden="true">✓</span>
+          Был лично в {post.data.tripPlace} — {post.data.tripDate}
+        </p>
+      )}
+
+      {post.data.sourceType === 'compilation' && (
+        <aside class="source-disclaimer" role="note">
+          <strong>Как написан этот пост.</strong> Это обзор по официальным источникам — сайтам консульств, статистике, форумам туристов. Лично эту визу/маршрут я в 2026 не оформлял, но сверил факты на актуальность. Если вы только что прошли — поправьте через <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram-канал</a>, обновлю.
+        </aside>
+      )}
 
       <div class="prose">
         <Content />
       </div>
 
       <aside class="author-bio" aria-label="Об авторе">
-        <div class="bio-avatar" aria-hidden="true">НЗ</div>
+        <Image src={authorPhoto} alt="Никита Зайцев — автор TravelTribe" width={96} height={96} format="webp" quality={80} class="bio-avatar-img" />
         <div class="bio-text">
-          <strong>Никита Зайцев</strong> — был на всех 7 континентах, включая Антарктиду, посетил 60+ стран. В блоге — реальные цены 2026, личный опыт поездок и без воды. Рассказываю про путешествия в <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram-канале @traveltriberu</a>.
+          <strong>Никита Зайцев</strong> — был на всех 7 континентах, включая Антарктиду, посетил 60+ стран. В блоге — реальные цены 2026, личный опыт поездок и без воды. Рассказываю про путешествия в <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram-канале @traveltriberu</a>. <a href="/about/">Подробнее об авторе →</a>
         </div>
       </aside>
 
@@ -208,13 +234,11 @@ if (faqs.length >= 2) {
   margin-top: 3rem; padding: 1.4rem;
   background: var(--bg2); border: 1px solid var(--line); border-radius: 4px;
 }
-.bio-avatar {
+.bio-avatar-img {
   flex: 0 0 auto;
-  width: 48px; height: 48px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dim) 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--ff-body); font-size: 0.85rem; font-weight: 700;
-  color: var(--bg); letter-spacing: 0.04em;
+  width: 72px; height: 72px; border-radius: 50%;
+  object-fit: cover; object-position: center 30%;
+  border: 2px solid rgba(201,151,58,0.4);
 }
 .bio-text { font-size: 0.85rem; line-height: 1.7; color: var(--text-dim); }
 .bio-text strong { color: var(--text); font-weight: 600; }
@@ -224,8 +248,28 @@ if (faqs.length >= 2) {
 }
 
 h1 { font-family: var(--ff-body); font-size: clamp(2rem,4vw,3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1rem; text-align: center; }
-.post-author { font-size: 0.85rem; color: var(--text-faint); margin-bottom: 3rem; text-align: center; }
+.post-author { font-size: 0.85rem; color: var(--text-faint); margin-bottom: 1.5rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 0.4rem; flex-wrap: wrap; }
 .post-author a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+.post-author .author-link { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--text); text-decoration: none; }
+.post-author .author-link:hover span { color: var(--gold); }
+.author-mini { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; object-position: center 30%; border: 1px solid rgba(201,151,58,0.4); }
+
+.trip-marker {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-size: 0.78rem; color: var(--gold);
+  background: rgba(201,151,58,0.08); border: 1px solid rgba(201,151,58,0.25);
+  padding: 0.4rem 0.85rem; border-radius: 999px;
+  margin: 0 auto 2.5rem; width: fit-content;
+}
+.trip-marker .trip-icon { font-weight: 700; color: var(--gold); }
+
+.source-disclaimer {
+  font-size: 0.85rem; line-height: 1.65; color: var(--text-dim);
+  background: var(--bg2); border-left: 3px solid var(--gold-dim);
+  padding: 1rem 1.2rem; margin: 0 0 2.5rem; border-radius: 2px;
+}
+.source-disclaimer strong { color: var(--text); }
+.source-disclaimer a { color: var(--gold); }
 
 .prose { color: var(--text); line-height: 1.85; font-size: 1rem; }
 .prose :global(h2) {

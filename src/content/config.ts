@@ -10,6 +10,9 @@ const blog = defineCollection({
     coverImage: img(),
     author: z.string().default('Никита Зайцев'),
     tags: z.array(z.string()).default([]),
+    tripDate: z.string().optional(),
+    tripPlace: z.string().optional(),
+    sourceType: z.enum(['personal', 'compilation', 'hybrid']).default('hybrid'),
   }),
 });
 

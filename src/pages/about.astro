@@ -1,7 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import authorPhoto from '../assets/author/nikita.jpg';
 
 const ldJson = {
   "@context": "https://schema.org",
@@ -9,11 +11,34 @@ const ldJson = {
     {
       "@type": "AboutPage",
       "url": "https://traveltribe.ru/about/",
-      "name": "О проекте TravelTribe",
-      "description": "TravelTribe — open source инструмент для путешественников из России. Методология, источники данных, автор.",
+      "name": "О проекте TravelTribe и авторе",
+      "description": "TravelTribe — авторский тревел-блог Никиты Зайцева о путешествиях из России. Методология, источники данных, опыт автора.",
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
-      "about": { "@id": "https://traveltribe.ru/#org" }
+      "about": { "@id": "https://traveltribe.ru/about/#person" },
+      "mainEntity": { "@id": "https://traveltribe.ru/about/#person" }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://traveltribe.ru/about/#person",
+      "name": "Никита Зайцев",
+      "alternateName": "Nikita Zaytsev",
+      "url": "https://traveltribe.ru/about/",
+      "image": "https://traveltribe.ru/og-image.png",
+      "jobTitle": "Travel writer · Product Manager",
+      "description": "Путешественник, был на всех 7 континентах, посетил 60+ стран. Автор Telegram-канала @traveltriberu о путешествиях из России.",
+      "knowsAbout": [
+        "Путешествия из России",
+        "Визы и пограничные правила",
+        "Travel-бюджет и сезоны",
+        "Тревел-фотография",
+        "Африка", "Япония", "Новая Зеландия", "Австралия", "Антарктида", "США", "Бали"
+      ],
+      "nationality": { "@type": "Country", "name": "Россия" },
+      "sameAs": [
+        "https://t.me/traveltriberu",
+        "https://github.com/nzaytsevmy"
+      ]
     },
     {
       "@type": "BreadcrumbList",
@@ -26,40 +51,75 @@ const ldJson = {
 };
 ---
 <Layout
-  title="О проекте TravelTribe — методология и данные"
-  description="TravelTribe — open source инструмент для путешественников из России. Как считается бюджет, откуда берутся цены и кто стоит за проектом."
+  title="Об авторе и проекте TravelTribe — Никита Зайцев"
+  description="Никита Зайцев — был на всех 7 континентах, посетил 60+ стран. Автор тревел-блога TravelTribe и Telegram-канала @traveltriberu. Методология, источники данных, контакты."
   canonical="https://traveltribe.ru/about/"
-  ogTitle="О проекте TravelTribe"
-  ogDescription="Open source инструмент для путешественников. Методология, источники данных, автор."
+  ogTitle="Об авторе и проекте TravelTribe"
+  ogDescription="Никита Зайцев — 7 континентов, 60+ стран. Авторский блог о путешествиях из России."
   ldJson={ldJson}
 >
-  <Nav />
+  <Nav active="about" />
 
   <main id="main" class="about-wrap">
     <header class="about-header">
-      <div class="hero-tag">// Open Source · Бесплатно навсегда</div>
-      <h1>О <em>проекте</em></h1>
+      <div class="hero-tag">// Об авторе</div>
+      <div class="author-hero">
+        <Image
+          src={authorPhoto}
+          alt="Никита Зайцев в Фусими, Япония, ноябрь 2023"
+          width={220}
+          height={220}
+          format="webp"
+          quality={82}
+          loading="eager"
+          class="author-photo"
+        />
+        <div class="author-intro">
+          <h1>Никита <em>Зайцев</em></h1>
+          <p class="author-tagline">Travel-блогер · 7 континентов · 60+ стран · 13 лет в продуктах</p>
+          <ul class="author-cred" aria-label="Социальные ссылки">
+            <li><a href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram @traveltriberu</a></li>
+            <li><a href="https://github.com/nzaytsevmy" target="_blank" rel="noopener">GitHub</a></li>
+            <li><a href="mailto:nzaytsev.my@gmail.com">nzaytsev.my@gmail.com</a></li>
+          </ul>
+        </div>
+      </div>
     </header>
 
     <div class="about-body">
       <section>
-        <h2>Что это</h2>
-        <p>TravelTribe — бесплатный open source инструмент для путешественников из России. Помогает понять <strong>когда ехать</strong>, нужна ли виза, в какой бюджет вписаться и во сколько обойдётся перелёт из Москвы. Никакой рекламы, никакой подписки — только данные.</p>
+        <h2>Кто пишет</h2>
+        <p>Меня зовут Никита, мне 35. По профессии — Product Manager, 13+ лет в финтехе и интернет-продуктах. Путешествия — не работа, а главное хобби: на момент мая 2026 — побывал на всех 7 континентах (включая Антарктиду), в 60+ странах. Часть поездок — длинные, по 2-4 недели; часть — короткие точечные за конкретным опытом (горные гориллы, южное сияние, момидзи в Киото).</p>
+      </section>
+
+      <section>
+        <h2>Что в блоге</h2>
+        <p>Я делю посты на две категории и явно помечаю их в начале:</p>
+        <ul class="post-types">
+          <li><strong>Личные отчёты</strong> — пишу там, где был сам. Конкретные сцены, цены из чека, фото с поездки. Маркер «<span class="trip-marker-inline">✓ Был лично</span>» под заголовком.</li>
+          <li><strong>Обзоры по источникам</strong> — компиляции по визам, погранпорядкам, ценам новых направлений. Источники: сайты консульств, статистика, форумы туристов. Помечаю явно: «как написан этот пост». Если вы только что были — поправьте через Telegram, обновлю.</li>
+        </ul>
+        <p>Это честно по двум причинам: (1) я не могу физически быть в 39 направлениях каждый сезон; (2) Google и Яндекс в 2026 ценят прозрачность авторства выше идеальной картинки.</p>
       </section>
 
       <section>
         <h2>Как считается бюджет</h2>
-        <p>Бюджет на карточках и в таблице — ориентировочная стоимость недели на одного человека: перелёт + проживание + питание. Категории: <strong>$</strong> — до ~$1 500/нед, <strong>$$</strong> — $1 500–3 000/нед, <strong>$$$</strong> — от $3 000/нед. Цены усреднены по высокому и низкому сезону и обновляются вручную по открытым источникам.</p>
+        <p>На карточках и в таблице — ориентировочная стоимость недели на одного: перелёт + проживание + питание. Категории: <strong>$</strong> — до ~$1 500/нед, <strong>$$</strong> — $1 500–3 000/нед, <strong>$$$</strong> — от $3 000/нед. Цены усреднены по высокому и низкому сезону, обновляются вручную в <code>prices.json</code>.</p>
       </section>
 
       <section>
         <h2>Источники данных</h2>
-        <p>Цены на перелёты берутся из агрегаторов (Aviasales, Google Flights) и обновляются в файле <code>prices.json</code> несколько раз в год. Курс валют — по данным ЦБ РФ на момент последнего обновления. Визовая информация актуальна на 2026 год для граждан России — всегда уточняйте на сайте консульства перед поездкой.</p>
+        <p>Цены на перелёты — из агрегаторов (Aviasales, Google Flights). Курс валют — ЦБ РФ на дату обновления. Визовая информация — сайты консульств и официальная статистика, актуальна на 2026 год для граждан России. <strong>Перед поездкой всегда проверяйте на сайте консульства</strong> — правила меняются быстрее, чем я успеваю обновлять.</p>
       </section>
 
       <section>
-        <h2>Автор</h2>
-        <p>Проект ведёт <strong>Никита Зайцев</strong> — путешественник, продакт-менеджер и автор Telegram-канала <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>. Личный опыт поездок в Африку, Японию, Новую Зеландию, Австралию, США и Бали. Исходный код открыт на <a href="https://github.com/nzaytsevmy/travel-seasons" target="_blank" rel="noopener">GitHub</a> — принимаем PR и предложения по новым направлениям.</p>
+        <h2>Open Source</h2>
+        <p>Сайт построен на Astro, исходный код открыт на <a href="https://github.com/nzaytsevmy/travel-seasons" target="_blank" rel="noopener">GitHub</a>. Принимаются PR с правками визовой информации, цен, новыми направлениями. Никакой рекламы, никакой подписки, никакого сбора персональных данных кроме обязательной аналитики (Я.Метрика + Ahrefs).</p>
+      </section>
+
+      <section>
+        <h2>Контакт</h2>
+        <p>Telegram: <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> — основной канал, там пишу про текущие поездки. Email для серьёзных вопросов: <a href="mailto:nzaytsev.my@gmail.com">nzaytsev.my@gmail.com</a>.</p>
       </section>
     </div>
   </main>
@@ -68,7 +128,7 @@ const ldJson = {
 </Layout>
 
 <style>
-.about-wrap { max-width: 720px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+.about-wrap { max-width: 760px; margin: 0 auto; padding: 3rem 2rem 5rem; }
 
 .about-header { margin-bottom: 3rem; }
 .hero-tag {
@@ -76,13 +136,42 @@ const ldJson = {
   font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
   color: var(--gold); border: 1px solid rgba(201,151,58,0.3);
   background: rgba(201,151,58,0.08); padding: 0.3rem 0.85rem; border-radius: 20px;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1.5rem;
 }
-.about-header h1 {
-  font-family: var(--ff-display); font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 300; line-height: 1.1;
+
+.author-hero {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 2rem;
+  align-items: center;
 }
-.about-header h1 em { color: var(--gold); font-style: italic; }
+.author-photo {
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 30%;
+  border: 3px solid rgba(201,151,58,0.4);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+.author-intro h1 {
+  font-family: var(--ff-display); font-size: clamp(2.4rem, 5vw, 3.6rem);
+  font-weight: 300; line-height: 1.05;
+  margin-bottom: 0.6rem;
+}
+.author-intro h1 em { color: var(--gold); font-style: italic; }
+.author-tagline {
+  font-size: 0.95rem; color: var(--text-dim);
+  margin-bottom: 1rem;
+}
+.author-cred { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.88rem; }
+.author-cred a { color: var(--gold); border-bottom: 1px solid rgba(201,151,58,0.3); }
+.author-cred a:hover { border-color: var(--gold); }
+
+@media (max-width: 600px) {
+  .author-hero { grid-template-columns: 1fr; text-align: center; gap: 1.2rem; }
+  .author-photo { width: 160px; height: 160px; margin: 0 auto; }
+  .author-cred { align-items: center; }
+}
 
 .about-body { display: flex; flex-direction: column; gap: 2.5rem; }
 
@@ -98,5 +187,16 @@ section a:hover { border-color: var(--gold); }
 code {
   font-size: 0.82rem; background: var(--bg2); border: 1px solid var(--line);
   padding: 0.1rem 0.4rem; border-radius: 3px; color: var(--text-dim);
+}
+
+.post-types { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.8rem; margin: 1rem 0 1.2rem; }
+.post-types li { color: var(--text-dim); line-height: 1.7; padding-left: 1.2rem; position: relative; font-size: 0.95rem; }
+.post-types li::before { content: '—'; position: absolute; left: 0; color: var(--gold); }
+.post-types strong { color: var(--text); font-weight: 600; }
+.trip-marker-inline {
+  display: inline-block;
+  font-size: 0.78rem; color: var(--gold);
+  background: rgba(201,151,58,0.1); border: 1px solid rgba(201,151,58,0.25);
+  padding: 0.1rem 0.5rem; border-radius: 999px;
 }
 </style>
