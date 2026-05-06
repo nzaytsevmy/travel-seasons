@@ -1,7 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import authorPhoto from '../assets/author/nikita.jpg';
 import { data as regions } from '../data/regions.js';
 import { PRICES } from '../data/prices.js';
 import fs from 'node:fs';
@@ -131,6 +133,27 @@ const peakNow = directions
       <span class="pill pill-free">✓ Бесплатно навсегда</span>
       <span class="pill pill-uni">◈ Без воды и рекламы</span>
     </div>
+
+    <hr class="divider" />
+
+    <aside class="author-strip" aria-label="Об авторе блога">
+      <a href="/about/" class="author-strip-link">
+        <Image
+          src={authorPhoto}
+          alt="Никита Зайцев — автор блога TravelTribe"
+          width={88}
+          height={88}
+          format="webp"
+          quality={82}
+          loading="lazy"
+          class="author-strip-photo"
+        />
+        <div class="author-strip-text">
+          <div class="author-strip-name">Никита Зайцев <span class="author-strip-arrow">→</span></div>
+          <div class="author-strip-cred">7 континентов · 60+ стран · 13 лет в продуктах · <span>авторский блог, без рекламы</span></div>
+        </div>
+      </a>
+    </aside>
 
     <hr class="divider" />
 
@@ -429,4 +452,35 @@ html.light-theme .hero-bg {
 .contribute-btn:hover { background: var(--gold-glow); box-shadow: 0 0 18px var(--gold-glow); }
 
 .divider { border: none; border-top: 1px solid var(--line); margin: 0 2rem; }
+
+.author-strip { max-width: 760px; margin: 1.5rem auto; padding: 0 2rem; }
+.author-strip-link {
+  display: flex; align-items: center; gap: 1.1rem;
+  padding: 1rem 1.2rem;
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 6px;
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.author-strip-link:hover { border-color: rgba(201,151,58,0.5); transform: translateY(-1px); }
+.author-strip-photo {
+  width: 64px; height: 64px; border-radius: 50%;
+  object-fit: cover; object-position: center 30%;
+  border: 2px solid rgba(201,151,58,0.4);
+  flex: 0 0 auto;
+}
+.author-strip-text { flex: 1; min-width: 0; }
+.author-strip-name {
+  font-size: 1rem; color: var(--text); font-weight: 600;
+  margin-bottom: 0.25rem;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.author-strip-arrow { color: var(--gold); font-weight: 400; transition: transform 0.15s ease; }
+.author-strip-link:hover .author-strip-arrow { transform: translateX(3px); }
+.author-strip-cred { font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; }
+.author-strip-cred span { color: var(--gold-dim); }
+@media (max-width: 600px) {
+  .author-strip-photo { width: 56px; height: 56px; }
+  .author-strip-name { font-size: 0.95rem; }
+  .author-strip-cred { font-size: 0.78rem; }
+}
 </style>
