@@ -97,7 +97,7 @@ const ldJson: any = {
       "wordCount": wordCount,
       "articleSection": post.data.tags[0] ?? "Travel",
       "keywords": post.data.tags.join(', '),
-      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".prose p:first-of-type"] }
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".prose blockquote:first-of-type", ".prose p:first-of-type"] }
     },
     {
       "@type": "BreadcrumbList",
