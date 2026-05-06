@@ -403,6 +403,10 @@ const ldJson = {
     cursor: pointer;
     transition: all 0.15s ease;
   }
+  :global(html.light-theme) .chip {
+    border-color: rgba(60, 50, 30, 0.22);
+    color: oklch(0.28 0.02 70);
+  }
   .chip:hover { color: var(--text); border-color: var(--gold-dim); }
   .chip.is-active {
     background: var(--gold-glow);
