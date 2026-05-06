@@ -13,6 +13,7 @@ const blog = defineCollection({
     tripDate: z.string().optional(),
     tripPlace: z.string().optional(),
     sourceType: z.enum(['personal', 'compilation', 'hybrid']).default('hybrid'),
+    coverPosition: z.string().default('center'),
   }),
 });
 
