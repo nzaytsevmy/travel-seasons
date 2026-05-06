@@ -1,0 +1,386 @@
+// Где принимают карты МИР, UnionPay (российских банков) и зарубежные Visa/MC.
+// Источники: gogov.ru, vc.ru, finance.mail.ru, RIA, travel.yandex.ru — апрель-май 2026.
+// Статусы:
+//   "yes"     — работает повсеместно
+//   "partial" — работает с оговорками (часть банков/банкоматов/городов)
+//   "limited" — работает в единичных местах
+//   "no"      — не работает
+// При обновлении меняй updated.
+
+export const lastGlobalUpdate = "2026-05-06";
+
+export const regionLabels = {
+  postSoviet: "Постсоветские",
+  asia: "Азия",
+  middleEast: "Ближний Восток",
+  africa: "Африка",
+  europe: "Европа",
+  americas: "Америка",
+  oceania: "Океания",
+};
+
+export const countries = [
+  // ───── Постсоветские ─────
+  {
+    code: "BY", name: "Беларусь", flag: "🇧🇾", region: "postSoviet",
+    mir: { status: "yes", note: "Полная интеграция. Все банки и банкоматы." },
+    unionpay: { status: "yes", note: "Принимают повсеместно." },
+    foreign: { status: "partial", note: "Работают, но многие банки настороженно относятся к россиянам." },
+    pick: "МИР Сбер/ВТБ — главный выбор. Foreign — план Б.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "AB", name: "Абхазия", flag: "🏳️", region: "postSoviet",
+    mir: { status: "yes", note: "Полная инфраструктура, все банкоматы." },
+    unionpay: { status: "no", note: "Инфраструктуры нет." },
+    foreign: { status: "no", note: "Visa/MC не работают." },
+    pick: "Только МИР или наличные ₽.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "AM", name: "Армения", flag: "🇦🇲", region: "postSoviet",
+    mir: { status: "partial", note: "С 30 марта 2024 — только в банкоматах ВТБ Армения. В магазинах и кафе не принимают." },
+    unionpay: { status: "no", note: "Российские UnionPay не принимают." },
+    foreign: { status: "yes", note: "Visa/MC иностранных банков работают везде." },
+    pick: "Foreign карта, наличные $/₽ обмен в банке. МИР для снятия в банкомате ВТБ.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "AZ", name: "Азербайджан", flag: "🇦🇿", region: "postSoviet",
+    mir: { status: "limited", note: "Только в банкоматах ВТБ Азербайджан. В магазинах не принимают." },
+    unionpay: { status: "no", note: "Российские UnionPay не работают." },
+    foreign: { status: "yes", note: "Visa/MC работают повсеместно." },
+    pick: "Foreign карта + немного $ налом.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "KZ", name: "Казахстан", flag: "🇰🇿", region: "postSoviet",
+    mir: { status: "limited", note: "Обслуживает только ВТБ Казахстан и только снятие наличных. Расплатиться картой нельзя." },
+    unionpay: { status: "partial", note: "Некоторые банкоматы и магазины крупных сетей." },
+    foreign: { status: "yes", note: "Visa/MC работают повсеместно." },
+    pick: "Foreign карта или наличные $/₽. МИР — последний вариант.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "UZ", name: "Узбекистан", flag: "🇺🇿", region: "postSoviet",
+    mir: { status: "no", note: "С 23 сентября 2022 — UZCARD прекратил приём." },
+    unionpay: { status: "partial", note: "Принимают в крупных торговых сетях и банкоматах основных банков." },
+    foreign: { status: "yes", note: "Visa/MC работают повсеместно." },
+    pick: "Foreign карта или $ налом + UnionPay РСХБ как страховка.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "KG", name: "Кыргызстан", flag: "🇰🇬", region: "postSoviet",
+    mir: { status: "yes", note: "Принимают в банкоматах и POS большинства банков." },
+    unionpay: { status: "partial", note: "В крупных магазинах и банкоматах основных банков." },
+    foreign: { status: "yes", note: "Visa/MC работают." },
+    pick: "МИР отлично работает. Foreign карта — на всякий.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "TJ", name: "Таджикистан", flag: "🇹🇯", region: "postSoviet",
+    mir: { status: "yes", note: "Амонатбонк и Dushanbe City Bank — банкоматы и POS. Многие кафе и магазины." },
+    unionpay: { status: "partial", note: "В банкоматах крупных банков." },
+    foreign: { status: "yes", note: "Visa/MC работают в крупных городах." },
+    pick: "МИР Амонатбонк/DCB. Foreign — на всякий.",
+    updated: "2026-05-06",
+  },
+
+  // ───── Азия ─────
+  {
+    code: "TH", name: "Таиланд", flag: "🇹🇭", region: "asia",
+    mir: { status: "no", note: "Не работает. Переговоры идут несколько лет, статуса нет." },
+    unionpay: { status: "yes", note: "Принимают практически везде. Снятие в SCB, Bangkok Bank, Kasikorn — комиссия 220 бат." },
+    foreign: { status: "yes", note: "Visa/MC работают повсеместно." },
+    pick: "UnionPay РСХБ для оплат + foreign карта или $ налом для подстраховки.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "VN", name: "Вьетнам", flag: "🇻🇳", region: "asia",
+    mir: { status: "limited", note: "Только в торговых точках банка VRB — около 350 терминалов в стране." },
+    unionpay: { status: "yes", note: "Принимают широко в туристических зонах и крупных городах." },
+    foreign: { status: "yes", note: "Visa/MC работают повсеместно." },
+    pick: "UnionPay РСХБ + foreign. МИР игнорируем.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "ID", name: "Индонезия (Бали)", flag: "🇮🇩", region: "asia",
+    mir: { status: "no", note: "Переговоры идут с 2023, запуска не было." },
+    unionpay: { status: "partial", note: "В крупных сетях и отелях принимают, но не повсеместно. Снятие в банкоматах BCA/Mandiri." },
+    foreign: { status: "yes", note: "Visa/MC работают везде, включая warung'и." },
+    pick: "Foreign карта обязательна. UnionPay РСХБ как бэкап для крупных трат.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "LK", name: "Шри-Ланка", flag: "🇱🇰", region: "asia",
+    mir: { status: "no", note: "Переговоры идут, запуска нет." },
+    unionpay: { status: "partial", note: "В крупных отелях и магазинах. Снятие в банкоматах Commercial Bank, Sampath Bank." },
+    foreign: { status: "yes", note: "Visa/MC работают." },
+    pick: "Foreign карта + наличные $ для обмена в авторизованных пунктах.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "KH", name: "Камбоджа", flag: "🇰🇭", region: "asia",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "yes", note: "Принимают практически везде, особенно в туристических зонах." },
+    foreign: { status: "yes", note: "Visa/MC работают, в Камбодже в обиходе $ США наличными." },
+    pick: "Можно вообще без карты — $ налом. UnionPay для подстраховки.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "MY", name: "Малайзия", flag: "🇲🇾", region: "asia",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "yes", note: "Принимают широко. Снятие в банкоматах Maybank, CIMB." },
+    foreign: { status: "yes", note: "Visa/MC повсеместно." },
+    pick: "UnionPay РСХБ + foreign карта.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "SG", name: "Сингапур", flag: "🇸🇬", region: "asia",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "no", note: "Российские UnionPay в Сингапуре не принимают." },
+    foreign: { status: "yes", note: "Visa/MC работают везде." },
+    pick: "Только foreign карта Visa/MC. Без неё ехать смысла мало.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "JP", name: "Япония", flag: "🇯🇵", region: "asia",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "no", note: "Карты UnionPay РСХБ в Японии заблокированы." },
+    foreign: { status: "yes", note: "Visa/MC работают, в провинции часто только наличные ¥." },
+    pick: "Foreign карта Visa/MC + наличные ¥. UnionPay не помогает.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "CN", name: "Китай", flag: "🇨🇳", region: "asia",
+    mir: { status: "no", note: "Переговоры много лет, запуска нет." },
+    unionpay: { status: "partial", note: "Карты РСХБ работают нестабильно, временами блокируют. Лучше приложение Alipay/WeChat Pay с привязкой UnionPay." },
+    foreign: { status: "yes", note: "Visa/MC принимают в отелях/туристических местах. У местных — почти везде Alipay/WeChat." },
+    pick: "WeChat Pay/Alipay c UnionPay-картой + foreign Visa/MC. Налом не отделаешься.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "IN", name: "Индия", flag: "🇮🇳", region: "asia",
+    mir: { status: "no", note: "Переговоры идут с 2022, запуска не было." },
+    unionpay: { status: "no", note: "Российские UnionPay не работают." },
+    foreign: { status: "yes", note: "Visa/MC работают." },
+    pick: "Foreign карта + $ налом для обмена в авторизованных пунктах.",
+    updated: "2026-05-06",
+  },
+
+  // ───── Ближний Восток ─────
+  {
+    code: "TR", name: "Турция", flag: "🇹🇷", region: "middleEast",
+    mir: { status: "no", note: "Приостановлено с сентября 2022. В марте 2025 турецкая сторона обещала возобновить — на май 2026 ничего не изменилось." },
+    unionpay: { status: "partial", note: "Принимают примерно в половине терминалов. Снятие в İşbank, Ziraat. Карты Газпромбанка не работают." },
+    foreign: { status: "yes", note: "Visa/MC работают повсеместно. $ налом легко меняется на лиру." },
+    pick: "Foreign карта или $ налом. UnionPay РСХБ — как бэкап на 30-50% точек.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "AE", name: "ОАЭ", flag: "🇦🇪", region: "middleEast",
+    mir: { status: "no", note: "Пилотный проект анонсирован, запуска не было." },
+    unionpay: { status: "partial", note: "Принимают, но российские карты работают нестабильно." },
+    foreign: { status: "yes", note: "Visa/MC принимают везде, AED легко снять налом." },
+    pick: "Foreign карта обязательна. UnionPay не надёжен.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "IR", name: "Иран", flag: "🇮🇷", region: "middleEast",
+    mir: { status: "yes", note: "С мая 2025 МИР работает полноценно — в банкоматах и POS большинства банков." },
+    unionpay: { status: "no", note: "Не принимают." },
+    foreign: { status: "no", note: "Visa/MC заблокированы санкциями." },
+    pick: "МИР — основной инструмент. $ налом для безопасности.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "IL", name: "Израиль", flag: "🇮🇱", region: "middleEast",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "no", note: "Российские UnionPay не принимают." },
+    foreign: { status: "yes", note: "Visa/MC работают повсеместно." },
+    pick: "Только foreign карта.",
+    updated: "2026-05-06",
+  },
+
+  // ───── Африка ─────
+  {
+    code: "EG", name: "Египет", flag: "🇪🇬", region: "africa",
+    mir: { status: "no", note: "Несмотря на устаревшие списки — в 2026 не принимают. Переговоры продолжаются." },
+    unionpay: { status: "partial", note: "В крупных отелях и торговых сетях. Не повсеместно." },
+    foreign: { status: "yes", note: "Visa/MC работают, $ налом меняется в банках." },
+    pick: "Foreign карта или $ налом + UnionPay РСХБ для крупных трат.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "MA", name: "Марокко", flag: "🇲🇦", region: "africa",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "limited", note: "Только в крупных международных сетях." },
+    foreign: { status: "yes", note: "Visa/MC работают." },
+    pick: "Foreign карта обязательна.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "TN", name: "Тунис", flag: "🇹🇳", region: "africa",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "no", note: "Не работает." },
+    foreign: { status: "yes", note: "Visa/MC работают в туристических зонах." },
+    pick: "Только foreign карта или € налом.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "KE", name: "Кения", flag: "🇰🇪", region: "africa",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "no", note: "Не принимают." },
+    foreign: { status: "yes", note: "Visa/MC + M-Pesa мобильные платежи." },
+    pick: "Foreign карта + $ налом.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "TZ", name: "Танзания", flag: "🇹🇿", region: "africa",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "no", note: "Не принимают." },
+    foreign: { status: "yes", note: "Visa/MC в отелях и крупных городах. $ налом универсально." },
+    pick: "Foreign карта + $ налом обязательно.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "UG", name: "Уганда", flag: "🇺🇬", region: "africa",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "no", note: "Не принимают." },
+    foreign: { status: "yes", note: "Visa/MC только в столице и на сафари. Большая часть страны — налом." },
+    pick: "Foreign карта + $ налом обязательно.",
+    updated: "2026-05-06",
+  },
+
+  // ───── Европа ─────
+  {
+    code: "RS", name: "Сербия", flag: "🇷🇸", region: "europe",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "limited", note: "Карты UnionPay РСХБ работают точечно, в Европе официально заблокированы с июля 2025." },
+    foreign: { status: "yes", note: "Visa/MC работают повсеместно." },
+    pick: "Foreign карта обязательна. UnionPay не рассчитывайте.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "ME", name: "Черногория", flag: "🇲🇪", region: "europe",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "no", note: "Не работает." },
+    foreign: { status: "yes", note: "Visa/MC работают." },
+    pick: "Только foreign карта.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "CY", name: "Кипр", flag: "🇨🇾", region: "europe",
+    mir: { status: "no", note: "Не работает с 2022." },
+    unionpay: { status: "no", note: "Российские UnionPay не принимают." },
+    foreign: { status: "yes", note: "Visa/MC работают повсеместно." },
+    pick: "Только foreign карта или € налом.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "EU", name: "Страны ЕС", flag: "🇪🇺", region: "europe",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "no", note: "С июля 2025 карты UnionPay РСХБ полностью заблокированы в ЕС." },
+    foreign: { status: "yes", note: "Visa/MC любых иностранных банков." },
+    pick: "Только foreign карта Visa/MC. Российские карты бесполезны.",
+    updated: "2026-05-06",
+  },
+
+  // ───── Америка ─────
+  {
+    code: "CU", name: "Куба", flag: "🇨🇺", region: "americas",
+    mir: { status: "yes", note: "Около 20 тыс. точек принимают МИР. Власти обязывают расширять покрытие." },
+    unionpay: { status: "no", note: "Не принимают." },
+    foreign: { status: "no", note: "Visa/MC заблокированы санкциями США." },
+    pick: "МИР — единственная рабочая карта. + $/€ налом.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "VE", name: "Венесуэла", flag: "🇻🇪", region: "americas",
+    mir: { status: "partial", note: "Banco de Venezuela принимает в туристических зонах: столичный округ, Маргарита, Боливар." },
+    unionpay: { status: "no", note: "Не принимают." },
+    foreign: { status: "limited", note: "Visa/MC работают точечно из-за санкционных проблем страны." },
+    pick: "МИР через Banco de Venezuela + $ налом.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "BR", name: "Бразилия", flag: "🇧🇷", region: "americas",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "no", note: "Российские UnionPay не принимают." },
+    foreign: { status: "yes", note: "Visa/MC + локальный Pix для местных." },
+    pick: "Foreign карта обязательна.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "AR", name: "Аргентина", flag: "🇦🇷", region: "americas",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "no", note: "Не принимают." },
+    foreign: { status: "yes", note: "Visa/MC работают. $ налом по \"голубому\" курсу выгоднее." },
+    pick: "Foreign карта + $ налом для обмена по неформальному курсу.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "PE", name: "Перу", flag: "🇵🇪", region: "americas",
+    mir: { status: "no", note: "Переговоры идут, запуска нет." },
+    unionpay: { status: "no", note: "Не принимают." },
+    foreign: { status: "yes", note: "Visa/MC в крупных городах и туристических местах." },
+    pick: "Foreign карта + $ налом.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "MX", name: "Мексика", flag: "🇲🇽", region: "americas",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "no", note: "Не принимают." },
+    foreign: { status: "yes", note: "Visa/MC работают." },
+    pick: "Foreign карта.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "DO", name: "Доминикана", flag: "🇩🇴", region: "americas",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "no", note: "Не принимают." },
+    foreign: { status: "yes", note: "Visa/MC работают повсеместно." },
+    pick: "Foreign карта + $ налом.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "US", name: "США", flag: "🇺🇸", region: "americas",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "no", note: "Не принимают." },
+    foreign: { status: "yes", note: "Visa/MC работают везде." },
+    pick: "Только foreign карта Visa/MC.",
+    updated: "2026-05-06",
+  },
+
+  // ───── Океания ─────
+  {
+    code: "AU", name: "Австралия", flag: "🇦🇺", region: "oceania",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "no", note: "Не принимают." },
+    foreign: { status: "yes", note: "Visa/MC работают." },
+    pick: "Только foreign карта.",
+    updated: "2026-05-06",
+  },
+  {
+    code: "NZ", name: "Новая Зеландия", flag: "🇳🇿", region: "oceania",
+    mir: { status: "no", note: "Не работает." },
+    unionpay: { status: "no", note: "Не принимают." },
+    foreign: { status: "yes", note: "Visa/MC работают." },
+    pick: "Только foreign карта.",
+    updated: "2026-05-06",
+  },
+];
+
+export const issuingBanks = {
+  unionpay: [
+    { name: "Россельхозбанк (РСХБ)", note: "Бесплатный выпуск. Под санкциями — в ЕС не работает с июля 2025." },
+    { name: "АТБ (Азиатско-Тихоокеанский банк)", note: "Стабильнее в Юго-Восточной Азии." },
+    { name: "Примсоцбанк", note: "Альтернатива РСХБ для Дальнего Востока." },
+  ],
+  mir: [
+    { name: "Сбербанк, ВТБ, Газпромбанк", note: "Любая карта МИР российского банка работает там, где принимают МИР." },
+  ],
+  foreign: [
+    { name: "Карта банка ЕС/Грузии/Армении/Казахстана/Сербии/UAE", note: "Открывают на месте при наличии ВНЖ или подтверждения адреса. Самые популярные — Bank of Georgia, Tinkoff Black Kazakhstan, ADCB UAE, Bank Zurmont (Сербия)." },
+  ],
+};
