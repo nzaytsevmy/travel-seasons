@@ -1,0 +1,683 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { countries, regionLabels, lastGlobalUpdate, issuingBanks } from '../data/cards-countries.js';
+
+const url = 'https://traveltribe.ru/cards/';
+const title = 'Где работает карта МИР, UnionPay и зарубежные карты — май 2026';
+const description = 'Актуальная карта 40 стран: где принимают МИР, UnionPay российских банков и Visa/MC иностранных банков. Май 2026, источники прилагаются.';
+
+const formattedDate = new Date(lastGlobalUpdate).toLocaleDateString('ru-RU', {
+  day: 'numeric', month: 'long', year: 'numeric'
+});
+
+const statusLabel = {
+  yes: 'Работает',
+  partial: 'Частично',
+  limited: 'Точечно',
+  no: 'Не работает',
+};
+
+const statusOrder = { yes: 4, partial: 3, limited: 2, no: 1 };
+const sorted = [...countries].sort((a, b) => {
+  const score = c => statusOrder[c.mir.status] * 100 + statusOrder[c.unionpay.status] * 10 + statusOrder[c.foreign.status];
+  return score(b) - score(a);
+});
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${url}#webpage`,
+      "url": url,
+      "name": title,
+      "description": description,
+      "inLanguage": "ru-RU",
+      "datePublished": `${lastGlobalUpdate}T00:00:00+03:00`,
+      "dateModified": `${lastGlobalUpdate}T00:00:00+03:00`,
+      "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".cards-hero__lede"] }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Карты за границей", "item": url }
+      ]
+    },
+    {
+      "@type": "ItemList",
+      "name": "Страны и статус карт",
+      "numberOfItems": countries.length,
+      "itemListElement": countries.map((c, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "name": c.name
+      }))
+    }
+  ]
+};
+---
+<Layout title={title} description={description} canonical={url} ldJson={ldJson}>
+  <Nav active="cards" />
+  <Breadcrumbs crumbs={[{ label: 'Карты за границей' }]} />
+
+  <main id="main" class="cards-wrap">
+    <header class="cards-hero">
+      <div class="cards-hero__eyebrow">Обновлено · {formattedDate}</div>
+      <h1>Карты за границей в&nbsp;2026</h1>
+      <p class="cards-hero__lede">
+        Где сейчас принимают <strong>МИР</strong>, <strong>UnionPay</strong> российских банков
+        и <strong>Visa&nbsp;/ Mastercard</strong> иностранных банков. {countries.length}&nbsp;стран,
+        источники в&nbsp;каждой карточке.
+      </p>
+
+      <div class="cards-legend">
+        <div class="cards-legend__group">
+          <span class="dot dot-yes"></span><span>Работает повсеместно</span>
+        </div>
+        <div class="cards-legend__group">
+          <span class="dot dot-partial"></span><span>Частично — часть банков/мест</span>
+        </div>
+        <div class="cards-legend__group">
+          <span class="dot dot-limited"></span><span>Точечно — единичные точки</span>
+        </div>
+        <div class="cards-legend__group">
+          <span class="dot dot-no"></span><span>Не работает</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="cards-controls">
+      <input
+        type="search"
+        id="cardsSearch"
+        placeholder="Найти страну…"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <div class="cards-filters" role="tablist" aria-label="Фильтр по региону">
+        <button class="chip is-active" data-region="all" type="button">Все</button>
+        {Object.entries(regionLabels).map(([key, label]) => (
+          <button class="chip" data-region={key} type="button">{label}</button>
+        ))}
+      </div>
+      <div class="cards-filters cards-filters--system" aria-label="Фильтр по системе">
+        <button class="chip chip--sys" data-system="all" type="button">Любая</button>
+        <button class="chip chip--sys" data-system="mir" type="button">МИР</button>
+        <button class="chip chip--sys" data-system="unionpay" type="button">UnionPay</button>
+        <button class="chip chip--sys" data-system="foreign" type="button">Visa/MC</button>
+      </div>
+    </section>
+
+    <section class="cards-grid" id="cardsGrid">
+      {sorted.map(c => (
+        <article
+          class="ccard"
+          data-name={c.name.toLowerCase()}
+          data-region={c.region}
+          data-mir={c.mir.status}
+          data-unionpay={c.unionpay.status}
+          data-foreign={c.foreign.status}
+        >
+          <details>
+            <summary>
+              <div class="ccard__head">
+                <span class="ccard__flag" aria-hidden="true">{c.flag}</span>
+                <h2 class="ccard__name">{c.name}</h2>
+                <span class="ccard__region">{regionLabels[c.region]}</span>
+                <span class="ccard__chev" aria-hidden="true">⌃</span>
+              </div>
+
+              <ul class="ccard__rows" aria-label="Статусы платёжных систем">
+                <li class="ccard__row">
+                  <span class="sys">МИР</span>
+                  <span class={`status status-${c.mir.status}`}>
+                    <span class="dot"></span>{statusLabel[c.mir.status]}
+                  </span>
+                </li>
+                <li class="ccard__row">
+                  <span class="sys">UnionPay</span>
+                  <span class={`status status-${c.unionpay.status}`}>
+                    <span class="dot"></span>{statusLabel[c.unionpay.status]}
+                  </span>
+                </li>
+                <li class="ccard__row">
+                  <span class="sys">Visa&nbsp;/ MC</span>
+                  <span class={`status status-${c.foreign.status}`}>
+                    <span class="dot"></span>{statusLabel[c.foreign.status]}
+                  </span>
+                </li>
+              </ul>
+
+              <p class="ccard__pick"><span>→</span> {c.pick}</p>
+            </summary>
+
+            <div class="ccard__body">
+              <div class="ccard__detail">
+                <h3>МИР</h3><p>{c.mir.note}</p>
+              </div>
+              <div class="ccard__detail">
+                <h3>UnionPay (российские банки)</h3><p>{c.unionpay.note}</p>
+              </div>
+              <div class="ccard__detail">
+                <h3>Visa / Mastercard (иностранные банки)</h3><p>{c.foreign.note}</p>
+              </div>
+              <p class="ccard__updated">Обновлено: {new Date(c.updated).toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric' })}</p>
+            </div>
+          </details>
+        </article>
+      ))}
+      <p id="cardsEmpty" class="cards-empty" hidden>По запросу ничего не нашлось.</p>
+    </section>
+
+    <section class="cards-banks">
+      <h2>Что выпустить, чтобы это работало</h2>
+      <div class="banks-grid">
+        <div class="bank-block">
+          <h3>UnionPay</h3>
+          <ul>
+            {issuingBanks.unionpay.map(b => (
+              <li><strong>{b.name}.</strong> {b.note}</li>
+            ))}
+          </ul>
+        </div>
+        <div class="bank-block">
+          <h3>МИР</h3>
+          <ul>
+            {issuingBanks.mir.map(b => (
+              <li><strong>{b.name}.</strong> {b.note}</li>
+            ))}
+          </ul>
+        </div>
+        <div class="bank-block">
+          <h3>Foreign Visa / MC</h3>
+          <ul>
+            {issuingBanks.foreign.map(b => (
+              <li><strong>{b.name}.</strong> {b.note}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="cards-rules">
+      <h2>Базовые правила 2026 для россиян</h2>
+      <ol>
+        <li><strong>Никогда не везите только одну карту.</strong> Минимум — две разные системы (UnionPay РСХБ + foreign Visa/MC) или карта + наличные.</li>
+        <li><strong>Booking, Airbnb, Agoda</strong> не оплачиваются с российских карт ни одной системы. Для броней нужна foreign карта или сервис-посредник.</li>
+        <li><strong>Налом везите $/€</strong> — банкноты от 50&nbsp;и&nbsp;100, чистые, без потертостей. Старые серии и поврежденные купюры в Азии и Африке не примут.</li>
+        <li><strong>Лимит вывоза наличных</strong> — до $10&nbsp;000 (или эквивалент) без декларации. Свыше — обязательно декларация на таможне.</li>
+        <li><strong>UnionPay РСХБ</strong> бесплатный, выпускается за&nbsp;1&nbsp;день. На сегодня — лучшая «вторая» карта для&nbsp;Юго-Восточной Азии.</li>
+        <li><strong>Foreign карта</strong> — Bank of Georgia (за час в Тбилиси), казахстанские банки (нужен&nbsp;ИИН) или сербские. Без ВНЖ европейские банки россиянам не открывают с 2024.</li>
+      </ol>
+    </section>
+
+    <footer class="cards-footer">
+      <p>
+        Данные актуальны на&nbsp;<strong>{formattedDate}</strong>. Ситуация меняется быстро —
+        перед поездкой проверяйте актуальность через ваш банк.
+      </p>
+      <p>
+        Заметили устаревшую информацию или новый рабочий банк? Напишите в&nbsp;
+        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram-канал</a> —
+        обновим.
+      </p>
+    </footer>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script is:inline>
+(function () {
+  var search = document.getElementById('cardsSearch');
+  var grid = document.getElementById('cardsGrid');
+  var empty = document.getElementById('cardsEmpty');
+  var regionChips = document.querySelectorAll('.cards-filters [data-region]');
+  var sysChips = document.querySelectorAll('.cards-filters [data-system]');
+  var cards = grid ? grid.querySelectorAll('.ccard') : [];
+
+  var state = { q: '', region: 'all', system: 'all' };
+
+  function isOk(card) {
+    if (state.q) {
+      var name = card.getAttribute('data-name') || '';
+      if (name.indexOf(state.q) === -1) return false;
+    }
+    if (state.region !== 'all' && card.getAttribute('data-region') !== state.region) return false;
+    if (state.system !== 'all') {
+      var s = card.getAttribute('data-' + state.system);
+      if (s === 'no') return false;
+    }
+    return true;
+  }
+
+  function apply() {
+    var visible = 0;
+    cards.forEach(function (c) {
+      var ok = isOk(c);
+      c.hidden = !ok;
+      if (ok) visible++;
+    });
+    if (empty) empty.hidden = visible !== 0;
+  }
+
+  if (search) {
+    search.addEventListener('input', function (e) {
+      state.q = (e.target.value || '').trim().toLowerCase();
+      apply();
+    });
+  }
+
+  regionChips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      regionChips.forEach(function (c) { c.classList.remove('is-active'); });
+      chip.classList.add('is-active');
+      state.region = chip.getAttribute('data-region');
+      apply();
+    });
+  });
+
+  sysChips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      sysChips.forEach(function (c) { c.classList.remove('is-active'); });
+      chip.classList.add('is-active');
+      state.system = chip.getAttribute('data-system');
+      apply();
+    });
+  });
+
+  // first sys chip "Любая" active by default
+  if (sysChips[0]) sysChips[0].classList.add('is-active');
+})();
+</script>
+
+<style>
+  .cards-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem 5rem;
+  }
+
+  /* ── Hero ── */
+  .cards-hero {
+    text-align: center;
+    padding: 2.5rem 0 2rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 2rem;
+  }
+  .cards-hero__eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 1rem;
+  }
+  .cards-hero h1 {
+    font-family: var(--ff-body);
+    font-size: clamp(2rem, 4.5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin: 0 0 1rem;
+  }
+  .cards-hero__lede {
+    font-size: 1.05rem;
+    color: var(--text-dim);
+    max-width: 640px;
+    margin: 0 auto 1.8rem;
+    line-height: 1.6;
+  }
+  .cards-hero__lede strong { color: var(--text); font-weight: 600; }
+
+  .cards-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    justify-content: center;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+  .cards-legend__group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+  .dot-yes     { background: var(--green); box-shadow: 0 0 8px rgba(34, 197, 94, 0.5); }
+  .dot-partial { background: var(--yellow); }
+  .dot-limited { background: #e87a3a; }
+  .dot-no      { background: var(--red); opacity: 0.7; }
+
+  /* ── Controls ── */
+  .cards-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-bottom: 2rem;
+  }
+  #cardsSearch {
+    width: 100%;
+    padding: 0.85rem 1.1rem;
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: var(--ff-body);
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  #cardsSearch::placeholder { color: var(--text-faint); }
+  #cardsSearch:focus {
+    outline: none;
+    border-color: var(--gold-dim);
+    background: var(--bg3);
+  }
+
+  .cards-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .chip {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    padding: 0.4rem 0.85rem;
+    border-radius: 99px;
+    font-family: var(--ff-body);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .chip:hover { color: var(--text); border-color: var(--gold-dim); }
+  .chip.is-active {
+    background: var(--gold-glow);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .chip--sys.is-active {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--text-dim);
+  }
+
+  /* ── Grid ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1rem;
+    margin-bottom: 4rem;
+  }
+  .cards-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--text-faint);
+    padding: 3rem 0;
+    font-size: 0.95rem;
+  }
+
+  /* ── Card ── */
+  .ccard {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .ccard:hover {
+    border-color: rgba(201, 151, 58, 0.35);
+    transform: translateY(-1px);
+  }
+  .ccard details { width: 100%; }
+  .ccard summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 1.1rem 1.1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .ccard summary::-webkit-details-marker { display: none; }
+
+  .ccard__head {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .ccard__flag {
+    font-size: 1.6rem;
+    line-height: 1;
+    flex: 0 0 auto;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+  }
+  .ccard__name {
+    font-family: var(--ff-body);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    margin: 0;
+    flex: 1;
+    line-height: 1.2;
+  }
+  .ccard__region {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    border: 1px solid var(--line);
+    padding: 0.2rem 0.45rem;
+    border-radius: 2px;
+    flex: 0 0 auto;
+  }
+  .ccard__chev {
+    color: var(--gold-dim);
+    font-size: 0.85rem;
+    transition: transform 0.2s ease;
+    flex: 0 0 auto;
+    transform: rotate(180deg);
+  }
+  .ccard details[open] .ccard__chev { transform: rotate(0deg); }
+
+  .ccard__rows {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.32rem;
+  }
+  .ccard__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+  }
+  .sys {
+    color: var(--text-faint);
+    letter-spacing: 0.04em;
+  }
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 500;
+    font-size: 0.82rem;
+  }
+  .status .dot { width: 7px; height: 7px; }
+  .status-yes     { color: var(--green); }
+  .status-yes .dot { background: var(--green); }
+  .status-partial { color: var(--yellow); }
+  .status-partial .dot { background: var(--yellow); }
+  .status-limited { color: #e87a3a; }
+  .status-limited .dot { background: #e87a3a; }
+  .status-no      { color: var(--text-faint); }
+  .status-no .dot { background: var(--red); opacity: 0.55; }
+
+  .ccard__pick {
+    margin: 0;
+    padding-top: 0.7rem;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-dim);
+  }
+  .ccard__pick span {
+    color: var(--gold);
+    font-weight: 700;
+    margin-right: 0.35rem;
+  }
+
+  .ccard__body {
+    padding: 0 1.1rem 1.1rem;
+    border-top: 1px solid var(--line);
+    margin-top: 0.6rem;
+    padding-top: 1rem;
+  }
+  .ccard__detail { margin-bottom: 0.85rem; }
+  .ccard__detail h3 {
+    font-family: var(--ff-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 0.35rem;
+  }
+  .ccard__detail p {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--text-dim);
+  }
+  .ccard__updated {
+    margin: 1rem 0 0;
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Banks block ── */
+  .cards-banks { margin-bottom: 4rem; }
+  .cards-banks h2,
+  .cards-rules h2 {
+    font-family: var(--ff-body);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 1.5rem;
+    text-align: center;
+    letter-spacing: -0.02em;
+  }
+  .banks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  .bank-block {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 1.2rem;
+  }
+  .bank-block h3 {
+    font-family: var(--ff-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 0.85rem;
+  }
+  .bank-block ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .bank-block li {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--text-dim);
+  }
+  .bank-block strong { color: var(--text); font-weight: 600; }
+
+  /* ── Rules ── */
+  .cards-rules { margin-bottom: 4rem; }
+  .cards-rules ol {
+    counter-reset: rule;
+    list-style: none;
+    padding: 0;
+    max-width: 760px;
+    margin: 0 auto;
+    display: grid;
+    gap: 0.9rem;
+  }
+  .cards-rules li {
+    counter-increment: rule;
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--gold);
+    border-radius: 4px;
+    padding: 1rem 1.2rem 1rem 3rem;
+    position: relative;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--text-dim);
+  }
+  .cards-rules li::before {
+    content: counter(rule);
+    position: absolute;
+    left: 1.1rem;
+    top: 1rem;
+    color: var(--gold);
+    font-family: var(--ff-body);
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .cards-rules strong { color: var(--text); font-weight: 600; }
+
+  /* ── Footer disclaimer ── */
+  .cards-footer {
+    text-align: center;
+    border-top: 1px solid var(--line);
+    padding: 2rem 0 0;
+    color: var(--text-faint);
+    font-size: 0.85rem;
+    line-height: 1.7;
+  }
+  .cards-footer p { margin: 0 0 0.6rem; }
+  .cards-footer strong { color: var(--text-dim); }
+  .cards-footer a {
+    color: var(--gold);
+    text-decoration: underline;
+    text-decoration-color: rgba(201, 151, 58, 0.5);
+    text-underline-offset: 3px;
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 600px) {
+    .cards-wrap { padding: 0.5rem 1rem 4rem; }
+    .cards-hero { padding: 1.5rem 0 1.5rem; }
+    .cards-hero__lede { font-size: 0.95rem; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .ccard summary { padding: 1rem; }
+    .ccard__name { font-size: 0.98rem; }
+    .ccard__region { font-size: 0.58rem; padding: 0.15rem 0.35rem; }
+  }
+</style>
+</Layout>
