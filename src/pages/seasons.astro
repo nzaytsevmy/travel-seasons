@@ -3,6 +3,9 @@ import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { data } from '../data/regions.js';
+import { regionMeta } from '../data/regions-meta.js';
+import { regionsRich } from '../data/regions-rich.js';
+import pricesData from '../data/prices-cache.json';
 
 const VISA_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза' };
 const VISA_CLASS = { free: 'tag-free', evisa: 'tag-evisa', required: 'tag-visa' };
@@ -10,7 +13,66 @@ const BUDGET_LABEL = { low: '$ Дёшево', mid: '$$ Средне', high: '$$$
 const BUDGET_CLASS = { low: 'tag-low', mid: 'tag-mid', high: 'tag-high' };
 const CLASSES = { P: 'peak', G: 'good', O: 'ok', B: 'bad', X: 'off' };
 const LABELS  = { P: '●', G: '●', O: '●', B: '●', X: '·' };
+const RANK    = { P: 4, G: 3, O: 2, B: 1, X: 0 };
 
+const MONTH_NAMES = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const MONTH_NAMES_LOCATIVE = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
+
+// Текущий месяц (для подсветки и default-фокуса)
+const now = new Date();
+const currentMonth = now.getMonth();
+
+// Хелпер: best/worst месяцы для строки
+function findBestWorst(r) {
+  let bestIdx = -1, worstIdx = -1, bestRank = -1, worstRank = 99;
+  r.forEach((code, i) => {
+    const v = RANK[code];
+    if (v > bestRank) { bestRank = v; bestIdx = i; }
+    if (v < worstRank) { worstRank = v; worstIdx = i; }
+  });
+  return { bestIdx, worstIdx };
+}
+
+// 12 месяцев вперёд для мапинга ячейка → YYYY-MM (для prices)
+function priceMonthFor(monthIdx) {
+  const target = (currentMonth + ((monthIdx - currentMonth + 12) % 12));
+  const year = now.getFullYear() + (target < currentMonth ? 1 : 0);
+  // target overflow → next year
+  const realMonth = target % 12;
+  const realYear = year + Math.floor(target / 12);
+  return `${realYear}-${String(realMonth + 1).padStart(2, '0')}`;
+}
+
+// Простая версия: 0=янв, цена нужна на ближайший такой месяц
+function nearestPriceKey(monthIdx) {
+  const targetYear = monthIdx >= currentMonth ? now.getFullYear() : now.getFullYear() + 1;
+  return `${targetYear}-${String(monthIdx + 1).padStart(2, '0')}`;
+}
+
+// Aviasales deep-link для месяца: формат MOW{DD}{MM}{IATA}1 (1 пассажир)
+const AVIASALES_MARKER = '546042.Zz66f13c16ff6b488883a4127-546042';
+function aviasalesUrl(iata, monthIdx) {
+  if (!iata) return null;
+  const yr = monthIdx >= currentMonth ? now.getFullYear() : now.getFullYear() + 1;
+  const mm = String(monthIdx + 1).padStart(2, '0');
+  // Середина месяца
+  return `https://www.aviasales.ru/search/MOW15${mm}${iata}1?marker=${AVIASALES_MARKER}`;
+}
+
+// Подготовка данных для рендера: для каждого региона предвычисляем enriched-объект
+const enrichedRows = data.map(row => {
+  if (row.group) return row;
+  const meta = regionMeta[row.sub] || { slug: '', iata: null, blogSlug: null };
+  const rich = regionsRich[meta.slug] || { events: Array(12).fill(null), notes: Array(12).fill(null), negatives: Array(12).fill(null) };
+  const { bestIdx, worstIdx } = findBestWorst(row.r);
+  const prices = meta.iata && pricesData.prices && pricesData.prices[meta.iata] ? pricesData.prices[meta.iata] : {};
+  return { ...row, meta, rich, bestIdx, worstIdx, prices };
+});
+
+// Все НЕ-group строки для TouristDestination Schema
+const destinationRows = enrichedRows.filter(r => !r.group);
+
+// JSON-LD: WebPage + ItemList + 39 TouristDestination + FAQPage + Breadcrumbs
 const ldJson = {
   "@context": "https://schema.org",
   "@graph": [
@@ -18,8 +80,8 @@ const ldJson = {
       "@type": "WebPage",
       "@id": "https://traveltribe.ru/seasons/#webpage",
       "url": "https://traveltribe.ru/seasons/",
-      "name": "Сезоны для путешествий — куда и когда | TravelTribe",
-      "description": "Интерактивная таблица лучшего времени для путешествий: 39 направлений, виза для россиян, бюджет и калькулятор стоимости поездки из Москвы.",
+      "name": "Сезоны для путешествий 2026 — куда и когда из России | TravelTribe",
+      "description": "Интерактивная таблица: 39 направлений мира, лучшее время для поездки, виза, бюджет и реальные цены билетов из Москвы. Для путешественников из России.",
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "mainEntity": { "@id": "https://traveltribe.ru/seasons/#destinations" }
@@ -27,9 +89,58 @@ const ldJson = {
     {
       "@type": "ItemList",
       "@id": "https://traveltribe.ru/seasons/#destinations",
-      "name": "Лучшие направления для путешествий из России",
+      "name": "Лучшие направления для путешествий из России — сезонность 2026",
       "description": "39 регионов мира с анализом сезонности, визовых требований и бюджета для путешественников из России",
-      "numberOfItems": 39
+      "numberOfItems": destinationRows.length,
+      "itemListElement": destinationRows.slice(0, 39).map((r, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "item": {
+          "@type": "TouristDestination",
+          "@id": `https://traveltribe.ru/seasons/#${r.meta.slug}`,
+          "name": `${r.region} — ${r.sub}`,
+          "description": `Лучшее время для поездки в ${r.region}: ${MONTH_NAMES[r.bestIdx]}. ${r.t[r.bestIdx]}`,
+          "touristType": ["Russian travelers"],
+          ...(r.meta.blogSlug ? { "url": `https://traveltribe.ru/blog/${r.meta.blogSlug}/` } : {})
+        }
+      }))
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Когда лучше ехать в путешествие из России в 2026 году?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Зависит от направления. Для пляжного отдыха зимой — Бали (апрель–октябрь), Таиланд (ноябрь–февраль), Доминикана (декабрь–апрель). Летом без визы — Грузия, Армения, Турция, Узбекистан, Казахстан. Осенью — Япония (момидзи в ноябре), Канада (foliage в Квебеке в октябре), Чили (март)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Куда поехать без визы из России в 2026?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Без визы: Турция, Грузия, Армения, Узбекистан, Казахстан, Кыргызстан, ОАЭ, Таиланд, Вьетнам, Мальдивы, ЮАР, Марокко, Куба, Доминикана, Мексика, Чили. С eVisa онлайн: Индонезия (Бали), Шри-Ланка, Индия (Гоа), Кения, Египет, Корея."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Сколько стоит билет из Москвы в популярные страны?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "По данным Aviasales на актуальный месяц из таблицы: Стамбул от 21 000 ₽, Ташкент от 15 000 ₽, Алматы от 28 000 ₽, Бангкок от 43 000 ₽, Дубай от 30 000 ₽, Токио от 55 000 ₽, Гавана от 150 000 ₽. Цены обновляются ежедневно — кликните на ячейку нужного месяца, чтобы увидеть свежий минимум и перейти к билетам."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Как пользоваться таблицей сезонов?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Каждая ячейка — оценка месяца для конкретного региона: пик (зелёный), хорошо (синий), нормально (жёлтый), плохо (красный), закрыто (пунктир). Кликните на ячейку — откроется панель с описанием погоды, событиями, личными пометками и ценой билета. Используйте поиск и фильтр по месяцу, чтобы быстро найти направление."
+          }
+        }
+      ]
     },
     {
       "@type": "BreadcrumbList",
@@ -40,13 +151,17 @@ const ldJson = {
     }
   ]
 };
+
+const pricesUpdatedAt = pricesData.updatedAt
+  ? new Date(pricesData.updatedAt).toLocaleDateString('ru-RU')
+  : null;
 ---
 <Layout
-  title="Сезоны для путешествий 2026 — куда и когда"
-  description="Интерактивная таблица: 39 направлений мира, лучшее время для поездки, виза и бюджет для россиян. Калькулятор стоимости перелёта из Москвы."
+  title="Сезоны для путешествий 2026 — куда и когда из России"
+  description="Интерактивная таблица: 39 направлений, лучшее время, виза, бюджет и реальные цены билетов из Москвы. Кликни на месяц — погода, события, личные пометки и ссылка на билет."
   canonical="https://traveltribe.ru/seasons/"
-  ogTitle="Сезоны для путешествий — когда и куда из России"
-  ogDescription="Интерактивная таблица: 39 направлений мира, лучшее время, виза и бюджет для россиян. Калькулятор перелёта из Москвы."
+  ogTitle="Сезоны для путешествий из России — 39 направлений и цены"
+  ogDescription="Таблица сезонности: где сейчас комфортно, когда лететь дёшево, какие события в каком месяце. Реальные цены Aviasales."
   ldJson={ldJson}
 >
   <Nav active="seasons" />
@@ -54,7 +169,7 @@ const ldJson = {
   <main id="main">
   <header>
     <h1>Сезоны для <em>путешествий</em></h1>
-    <p class="subtitle">// 39 регионов мира · виза и бюджет для россиян · актуальные цены</p>
+    <p class="subtitle">// 39 регионов · виза, бюджет и цены билетов · обновлено {pricesUpdatedAt ?? '—'}</p>
   </header>
 
   <div class="mission">
@@ -62,10 +177,18 @@ const ldJson = {
     <span class="mission-pill pill-free">✓ Бесплатно навсегда</span>
     <span class="mission-pill pill-uni">◈ Без воды и рекламы</span>
     <span class="mission-sep">·</span>
-    <span style="font-size:0.75rem;color:var(--text-dim)">Проект о путешествиях по всему миру — добавляй направления на GitHub</span>
+    <span style="font-size:0.75rem;color:var(--text-dim)">Кликни на месяц — открой полную карточку</span>
   </div>
 
   <div class="controls">
+    <input
+      id="search"
+      type="search"
+      class="search-input"
+      placeholder="Поиск страны или города…"
+      aria-label="Поиск по таблице"
+      autocomplete="off"
+    />
     <span class="controls-label">Месяц →</span>
     <button class="month-btn" data-month="0" aria-pressed="false">Янв</button>
     <button class="month-btn" data-month="1" aria-pressed="false">Фев</button>
@@ -79,24 +202,18 @@ const ldJson = {
     <button class="month-btn" data-month="9" aria-pressed="false">Окт</button>
     <button class="month-btn" data-month="10" aria-pressed="false">Ноя</button>
     <button class="month-btn" data-month="11" aria-pressed="false">Дек</button>
-    <button class="reset-btn" id="resetBtn" aria-label="Сбросить фильтр месяца">Сброс</button>
+    <button class="reset-btn" id="resetBtn" aria-label="Сбросить фильтры">Сброс</button>
   </div>
 
   <div class="legend">
     <div class="legend-item"><div class="dot" style="background:var(--peak)"></div> Пик сезона</div>
     <div class="legend-item"><div class="dot" style="background:var(--good)"></div> Хорошо</div>
-    <div class="legend-item"><div class="dot" style="background:var(--ok)"></div> Нормально / переходный</div>
-    <div class="legend-item"><div class="dot" style="background:var(--bad)"></div> Плохо / не рекомендуется</div>
-    <div class="legend-item"><div class="dot" style="background:var(--off)"></div> Закрытый / нет смысла</div>
-    <div class="legend-item"><span class="tag tag-free">Без визы</span></div>
-    <div class="legend-item"><span class="tag tag-evisa">eVisa</span></div>
-    <div class="legend-item"><span class="tag tag-visa">Виза</span></div>
-    <div class="legend-item"><span class="tag tag-low">$ Дёшево</span></div>
-    <div class="legend-item"><span class="tag tag-mid">$$ Средне</span></div>
-    <div class="legend-item"><span class="tag tag-high">$$$ Дорого</span></div>
+    <div class="legend-item"><div class="dot" style="background:var(--ok)"></div> Нормально</div>
+    <div class="legend-item"><div class="dot" style="background:var(--bad)"></div> Плохо</div>
+    <div class="legend-item"><div class="dot" style="background:var(--off)"></div> Закрыт</div>
+    <div class="legend-item"><span class="best-mark">★</span> Лучший месяц</div>
+    <div class="legend-item"><span class="worst-mark">✕</span> Худший месяц</div>
   </div>
-
-  <div id="tooltip" role="tooltip" aria-hidden="true"></div>
 
   <div class="table-wrap" role="region" aria-label="Таблица сезонности по регионам">
     <table id="mainTable">
@@ -104,53 +221,82 @@ const ldJson = {
       <thead>
         <tr>
           <th scope="col">Регион</th>
-          <th scope="col" class="month-header">ЯНВ</th>
-          <th scope="col" class="month-header">ФЕВ</th>
-          <th scope="col" class="month-header">МАР</th>
-          <th scope="col" class="month-header">АПР</th>
-          <th scope="col" class="month-header">МАЙ</th>
-          <th scope="col" class="month-header">ИЮН</th>
-          <th scope="col" class="month-header">ИЮЛ</th>
-          <th scope="col" class="month-header">АВГ</th>
-          <th scope="col" class="month-header">СЕН</th>
-          <th scope="col" class="month-header">ОКТ</th>
-          <th scope="col" class="month-header">НОЯ</th>
-          <th scope="col" class="month-header">ДЕК</th>
+          {MONTH_NAMES.map((_, i) => (
+            <th
+              scope="col"
+              class={`month-header${i === currentMonth ? ' is-current' : ''}`}
+              data-month={i}
+            >{['ЯНВ','ФЕВ','МАР','АПР','МАЙ','ИЮН','ИЮЛ','АВГ','СЕН','ОКТ','НОЯ','ДЕК'][i]}</th>
+          ))}
         </tr>
       </thead>
       <tbody id="tbody">
-        {data.map(row => row.group ? (
+        {enrichedRows.map(row => row.group ? (
           <tr class="group-header">
             <td colspan="13">{row.group}</td>
           </tr>
         ) : (
-          <tr>
+          <tr data-region={row.region.toLowerCase()} data-sub={row.sub.toLowerCase()} data-slug={row.meta.slug}>
             <td class="region-cell">
-              {row.region}
+              {row.meta.blogSlug ? (
+                <a href={`/blog/${row.meta.blogSlug}/`} class="region-link">{row.region}</a>
+              ) : (
+                <span>{row.region}</span>
+              )}
               <span class="region-sub">{row.sub}</span>
               <div class="tags">
-                {row.region === 'Япония'
-                  ? <a href="/blog/japan-visa-2026/" class={`tag ${VISA_CLASS[row.visa]}`}>{VISA_LABEL[row.visa]}</a>
-                  : <span class={`tag ${VISA_CLASS[row.visa]}`}>{VISA_LABEL[row.visa]}</span>
-                }
+                <span class={`tag ${VISA_CLASS[row.visa]}`}>{VISA_LABEL[row.visa]}</span>
                 <span class={`tag ${BUDGET_CLASS[row.budget]}`}>{BUDGET_LABEL[row.budget]}</span>
               </div>
             </td>
-            {row.r.map((code, i) => (
-              <td class={`cell ${CLASSES[code]}`} data-tip={row.t[i]}>
-                <span class="badge">{LABELS[code]}</span>
-              </td>
-            ))}
+            {row.r.map((code, i) => {
+              const isBest = i === row.bestIdx;
+              const isWorst = i === row.worstIdx;
+              const priceKey = nearestPriceKey(i);
+              const price = row.prices[priceKey] ?? null;
+              return (
+                <td
+                  class={`cell ${CLASSES[code]}${isBest ? ' is-best' : ''}${isWorst ? ' is-worst' : ''}${i === currentMonth ? ' is-current-month' : ''}`}
+                  data-month={i}
+                  data-region={row.region}
+                  data-sub={row.sub}
+                  data-slug={row.meta.slug}
+                  data-text={row.t[i] ?? ''}
+                  data-event={row.rich.events[i] ?? ''}
+                  data-note={row.rich.notes[i] ?? ''}
+                  data-negative={row.rich.negatives[i] ?? ''}
+                  data-iata={row.meta.iata ?? ''}
+                  data-blog={row.meta.blogSlug ?? ''}
+                  data-price={price ?? ''}
+                  data-visa={row.visa}
+                  data-budget={row.budget}
+                  tabindex="0"
+                  role="button"
+                  aria-label={`${row.region}, ${MONTH_NAMES[i]}: ${row.t[i]}`}
+                >
+                  <span class="badge">{LABELS[code]}</span>
+                  {isBest && <span class="best-mark" aria-hidden="true">★</span>}
+                  {isWorst && <span class="worst-mark" aria-hidden="true">✕</span>}
+                  {price && <span class="price-mini" aria-hidden="true">{Math.round(price / 1000)}к</span>}
+                </td>
+              );
+            })}
           </tr>
         ))}
       </tbody>
     </table>
+    <p class="empty-state" id="emptyState" hidden>Ничего не найдено. Попробуй другой запрос или сбрось фильтры.</p>
   </div>
 
+  <p class="climate-disclaimer">
+    Данные по погоде — обобщение наблюдений 2020–2025. Классические сезоны дождей и муссонов <strong>сдвинулись на 2–3 недели</strong> относительно «учебников» 2010-х. Цены — реальные минимумы на one-way рейсы из Москвы по данным Aviasales, обновляются ежедневно.
+  </p>
+
   <footer class="table-footer">
-    * Пик = идеальные условия · Хорошо = отличные условия, меньше толп · Нормально = возможно, но есть нюансы · Плохо = дожди/жара/холод критичны<br />
-    * Виза и бюджет актуальны для россиян на 2026 год. eVisa = онлайн без посещения консульства.<br />
-    * Бюджет: $ до ~$1500/нед · $$ $1500–3000/нед · $$$ от $3000/нед (перелёт + проживание + еда)
+    * Пик = идеальные условия · Хорошо = отлично, меньше толп · Нормально = можно, есть нюансы · Плохо = дожди/жара/холод критичны · Закрыт = инфраструктура не работает<br />
+    * Виза и бюджет — для россиян на 2026 год. eVisa = онлайн без посещения консульства<br />
+    * Бюджет: $ до ~$1500/нед · $$ $1500–3000/нед · $$$ от $3000/нед (перелёт + проживание + еда)<br />
+    * ★ — лучший месяц по строке · ✕ — худший · цены в углу = тысяч рублей за one-way из MOW
   </footer>
 
   <section class="faq" aria-label="Методология">
@@ -166,13 +312,19 @@ const ldJson = {
       </div>
       <div>
         <dt><span class="dot dot-ok">●</span> Нормально</dt>
-        <dd>Поехать можно, но есть нюансы: дожди, жара или высокая влажность. Уточняйте детали по конкретному региону.</dd>
+        <dd>Поехать можно, но есть нюансы: дожди, жара или влажность. Уточняйте детали по конкретному региону.</dd>
       </div>
       <div>
         <dt><span class="dot dot-bad">●</span> Плохо</dt>
-        <dd>Критичные погодные условия: сезон дождей, экстремальная жара или холод. Не рекомендуется без веской причины.</dd>
+        <dd>Критичные условия: сезон дождей, экстремальная жара или холод. Не рекомендуется без веской причины.</dd>
       </div>
     </dl>
+    <h2 style="margin-top:2rem">Когда лучше ехать в путешествие из России в 2026?</h2>
+    <p>Зависит от направления и того, что ты ищешь. Для <strong>пляжного отдыха зимой</strong> (декабрь–февраль) лучшие варианты — Таиланд, Бали (апрель–октябрь сухой сезон), Доминикана, Мальдивы, ОАЭ, Куба. <strong>Летом без визы</strong> — Грузия, Армения, Турция, Узбекистан, Казахстан, Кыргызстан. <strong>Осенью</strong> — Япония (момидзи в ноябре), Канада (foliage в Квебеке в октябре), Чили (март–апрель в Патагонии). <strong>Весной</strong> — Узбекистан в апреле, цветение сакуры в Японии и Корее.</p>
+
+    <h2 style="margin-top:1.5rem">Куда поехать без визы или с eVisa?</h2>
+    <p><strong>Без визы для россиян:</strong> Турция, Грузия, Армения, Узбекистан, Казахстан, Кыргызстан, ОАЭ, Таиланд, Вьетнам, Мальдивы, ЮАР, Марокко, Куба, Доминикана, Мексика, Чили, Швейцария по Шенгену.<br /><strong>С eVisa онлайн:</strong> Индонезия (Бали), Шри-Ланка, Индия (Гоа), Кения, Египет, Южная Корея, Таджикистан.<br /><strong>Стандартная виза:</strong> Япония, страны Шенгена, Канада, Австралия.</p>
+
     <p class="faq-note">Виза и бюджет актуальны для граждан России на 2026 год. Всегда уточняйте визовые требования на сайте консульства перед покупкой билетов.</p>
   </section>
 
@@ -185,19 +337,75 @@ const ldJson = {
   </div>
   </main>
 
+  <!-- Side-panel (desktop) / Bottom-sheet (mobile) — открывается по клику на ячейку -->
+  <div id="panelOverlay" class="panel-overlay" aria-hidden="true"></div>
+  <aside id="cellPanel" class="cell-panel" role="dialog" aria-modal="false" aria-labelledby="panelTitle" aria-hidden="true">
+    <header class="panel-header">
+      <div>
+        <h2 id="panelTitle"></h2>
+        <p id="panelMeta"></p>
+      </div>
+      <button id="panelClose" class="panel-close" aria-label="Закрыть">×</button>
+    </header>
+    <div class="panel-body">
+      <div id="panelStatus" class="panel-status"></div>
+      <p id="panelText" class="panel-text"></p>
+      <div id="panelEvent" class="panel-block panel-event" hidden>
+        <span class="panel-block-label">Событие месяца</span>
+        <p id="panelEventText"></p>
+      </div>
+      <div id="panelNote" class="panel-block panel-note" hidden>
+        <span class="panel-block-label">Личная пометка Никиты</span>
+        <p id="panelNoteText"></p>
+      </div>
+      <div id="panelNegative" class="panel-block panel-negative" hidden>
+        <span class="panel-block-label">Что важно знать</span>
+        <p id="panelNegativeText"></p>
+      </div>
+      <div id="panelPrice" class="panel-block panel-price" hidden>
+        <span class="panel-block-label">Билет из Москвы</span>
+        <p id="panelPriceText"></p>
+      </div>
+    </div>
+    <footer class="panel-footer">
+      <a id="panelAviasales" class="panel-cta panel-cta-primary" href="#" target="_blank" rel="noopener sponsored">Найти билет на Aviasales</a>
+      <a id="panelBlog" class="panel-cta panel-cta-secondary" href="#" hidden>Гид по стране →</a>
+      <button id="panelShare" class="panel-cta panel-cta-secondary" type="button">Поделиться</button>
+    </footer>
+  </aside>
+
   <Footer />
 </Layout>
 
 <script>
-const CLASSES = { P: 'peak', G: 'good', O: 'ok', B: 'bad', X: 'off' };
+const MONTH_NAMES = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const MONTH_NAMES_LOCATIVE = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
+
 let activeMonth = null;
+let activeQuery = '';
+let panelOpen = false;
 
 function applyFilter() {
+  const rows = document.querySelectorAll('#tbody tr:not(.group-header)');
   const cells = document.querySelectorAll('td.cell');
   const headers = document.querySelectorAll('.month-header');
+  const groupHeaders = document.querySelectorAll('#tbody tr.group-header');
+  let visibleCount = 0;
+
+  rows.forEach(row => {
+    const region = (row.dataset.region || '').toLowerCase();
+    const sub = (row.dataset.sub || '').toLowerCase();
+    const matchesQuery = !activeQuery || region.includes(activeQuery) || sub.includes(activeQuery);
+    if (matchesQuery) {
+      row.removeAttribute('hidden');
+      visibleCount++;
+    } else {
+      row.setAttribute('hidden', '');
+    }
+  });
 
   cells.forEach(cell => {
-    const colIdx = Array.from(cell.parentElement.children).indexOf(cell) - 1;
+    const colIdx = parseInt(cell.dataset.month, 10);
     if (activeMonth === null) {
       cell.classList.remove('dimmed', 'col-highlight');
     } else {
@@ -209,11 +417,25 @@ function applyFilter() {
   headers.forEach((th, i) => {
     th.classList.toggle('col-highlight', activeMonth === i);
   });
+
+  // Скрываем group headers без видимых строк под ними
+  groupHeaders.forEach(gh => {
+    let next = gh.nextElementSibling;
+    let hasVisible = false;
+    while (next && !next.classList.contains('group-header')) {
+      if (!next.hasAttribute('hidden')) { hasVisible = true; break; }
+      next = next.nextElementSibling;
+    }
+    gh.toggleAttribute('hidden', !hasVisible);
+  });
+
+  document.getElementById('emptyState').toggleAttribute('hidden', visibleCount > 0);
 }
 
+// Кнопки месяцев
 document.querySelectorAll('.month-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    const m = parseInt(btn.dataset.month);
+    const m = parseInt(btn.dataset.month, 10);
     if (activeMonth === m) {
       activeMonth = null;
       btn.classList.remove('active');
@@ -227,71 +449,362 @@ document.querySelectorAll('.month-btn').forEach(btn => {
       btn.setAttribute('aria-pressed', 'true');
       activeMonth = m;
     }
+    syncUrl();
     applyFilter();
   });
 });
 
+// Reset
 document.getElementById('resetBtn').addEventListener('click', () => {
   activeMonth = null;
+  activeQuery = '';
+  document.getElementById('search').value = '';
   document.querySelectorAll('.month-btn').forEach(b => {
     b.classList.remove('active');
     b.setAttribute('aria-pressed', 'false');
   });
+  syncUrl();
   applyFilter();
 });
 
-// Tooltip
-const tooltip = document.getElementById('tooltip');
-
-function showTooltip(el, text) {
-  const r = el.getBoundingClientRect();
-  tooltip.textContent = text;
-  tooltip.style.display = 'block';
-  const tw = tooltip.offsetWidth;
-  let left = r.left + r.width / 2 - tw / 2;
-  left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
-  const top = r.top - tooltip.offsetHeight - 8;
-  tooltip.style.left = left + 'px';
-  tooltip.style.top = (top < 8 ? r.bottom + 8 : top) + 'px';
-}
-
-function hideTooltip() { tooltip.style.display = 'none'; }
-
-document.addEventListener('mouseover', e => {
-  const cell = e.target.closest('[data-tip]');
-  if (cell) showTooltip(cell, cell.dataset.tip); else hideTooltip();
+// Search
+const searchInput = document.getElementById('search');
+let searchTimer = null;
+searchInput.addEventListener('input', e => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    activeQuery = e.target.value.trim().toLowerCase();
+    syncUrl();
+    applyFilter();
+  }, 100);
 });
 
-let lastTapped = null;
-document.addEventListener('touchstart', e => {
-  const cell = e.target.closest('[data-tip]');
-  if (cell) {
-    e.preventDefault();
-    if (lastTapped === cell) { hideTooltip(); lastTapped = null; return; }
-    showTooltip(cell, cell.dataset.tip);
-    lastTapped = cell;
+// Hover на ячейке — подсвечиваем колонку (визуальный сигнал)
+document.querySelectorAll('td.cell').forEach(cell => {
+  cell.addEventListener('mouseenter', () => {
+    if (activeMonth !== null) return;
+    const m = parseInt(cell.dataset.month, 10);
+    document.querySelectorAll('.month-header').forEach((th, i) => {
+      th.classList.toggle('hover-col', i === m);
+    });
+  });
+  cell.addEventListener('mouseleave', () => {
+    document.querySelectorAll('.month-header.hover-col').forEach(th => th.classList.remove('hover-col'));
+  });
+});
+
+// Side-panel open
+function openPanel(cell) {
+  const monthIdx = parseInt(cell.dataset.month, 10);
+  const region = cell.dataset.region;
+  const sub = cell.dataset.sub;
+  const text = cell.dataset.text;
+  const event = cell.dataset.event;
+  const note = cell.dataset.note;
+  const negative = cell.dataset.negative;
+  const iata = cell.dataset.iata;
+  const blog = cell.dataset.blog;
+  const price = cell.dataset.price;
+  const visa = cell.dataset.visa;
+  const budget = cell.dataset.budget;
+  const slug = cell.dataset.slug;
+  const isBest = cell.classList.contains('is-best');
+  const isWorst = cell.classList.contains('is-worst');
+
+  document.getElementById('panelTitle').textContent = `${region} в ${MONTH_NAMES_LOCATIVE[monthIdx]}`;
+  document.getElementById('panelMeta').textContent = sub;
+
+  // Status badge
+  const status = document.getElementById('panelStatus');
+  let statusText = '';
+  if (cell.classList.contains('peak')) statusText = '● Пик сезона';
+  else if (cell.classList.contains('good')) statusText = '● Хорошо';
+  else if (cell.classList.contains('ok')) statusText = '● Нормально';
+  else if (cell.classList.contains('bad')) statusText = '● Плохо';
+  else if (cell.classList.contains('off')) statusText = '· Закрыт / нет смысла';
+  if (isBest) statusText += ' · ★ Лучший месяц по году';
+  if (isWorst && !isBest) statusText += ' · ✕ Худший месяц по году';
+  status.textContent = statusText;
+  status.className = 'panel-status';
+  if (cell.classList.contains('peak')) status.classList.add('s-peak');
+  else if (cell.classList.contains('good')) status.classList.add('s-good');
+  else if (cell.classList.contains('ok')) status.classList.add('s-ok');
+  else if (cell.classList.contains('bad')) status.classList.add('s-bad');
+  else if (cell.classList.contains('off')) status.classList.add('s-off');
+
+  document.getElementById('panelText').textContent = text;
+
+  toggleBlock('panelEvent', 'panelEventText', event);
+  toggleBlock('panelNote', 'panelNoteText', note);
+  toggleBlock('panelNegative', 'panelNegativeText', negative);
+
+  // Price
+  const priceBlock = document.getElementById('panelPrice');
+  const priceText = document.getElementById('panelPriceText');
+  if (price) {
+    const priceN = parseInt(price, 10);
+    const fmt = priceN.toLocaleString('ru-RU');
+    priceText.innerHTML = `от <strong>${fmt} ₽</strong> в одну сторону · обновлено ежедневно`;
+    priceBlock.removeAttribute('hidden');
   } else {
-    hideTooltip();
-    lastTapped = null;
+    priceBlock.setAttribute('hidden', '');
   }
-}, { passive: false });
+
+  // Aviasales
+  const avBtn = document.getElementById('panelAviasales');
+  if (iata) {
+    const yr = monthIdx >= new Date().getMonth() ? new Date().getFullYear() : new Date().getFullYear() + 1;
+    const mm = String(monthIdx + 1).padStart(2, '0');
+    avBtn.href = `https://www.aviasales.ru/search/MOW15${mm}${iata}1?marker=546042.Zz66f13c16ff6b488883a4127-546042`;
+    avBtn.removeAttribute('hidden');
+  } else {
+    avBtn.setAttribute('hidden', '');
+  }
+
+  // Blog link
+  const blogBtn = document.getElementById('panelBlog');
+  if (blog) {
+    blogBtn.href = `/blog/${blog}/`;
+    blogBtn.removeAttribute('hidden');
+  } else {
+    blogBtn.setAttribute('hidden', '');
+  }
+
+  // Show panel
+  document.getElementById('cellPanel').setAttribute('aria-hidden', 'false');
+  document.getElementById('cellPanel').classList.add('is-open');
+  document.getElementById('panelOverlay').classList.add('is-open');
+  document.body.classList.add('panel-open');
+  panelOpen = true;
+
+  // URL state
+  syncUrl(slug, monthIdx);
+}
+
+function toggleBlock(blockId, textId, content) {
+  const block = document.getElementById(blockId);
+  if (content && content.trim()) {
+    document.getElementById(textId).textContent = content;
+    block.removeAttribute('hidden');
+  } else {
+    block.setAttribute('hidden', '');
+  }
+}
+
+function closePanel() {
+  document.getElementById('cellPanel').setAttribute('aria-hidden', 'true');
+  document.getElementById('cellPanel').classList.remove('is-open');
+  document.getElementById('panelOverlay').classList.remove('is-open');
+  document.body.classList.remove('panel-open');
+  panelOpen = false;
+  syncUrl();
+}
+
+document.getElementById('panelClose').addEventListener('click', closePanel);
+document.getElementById('panelOverlay').addEventListener('click', closePanel);
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && panelOpen) closePanel();
+});
+
+// Cell click / keyboard activation
+document.querySelectorAll('td.cell').forEach(cell => {
+  cell.addEventListener('click', () => openPanel(cell));
+  cell.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openPanel(cell);
+    }
+  });
+});
+
+// Share button
+document.getElementById('panelShare').addEventListener('click', async () => {
+  const url = window.location.href;
+  if (navigator.share) {
+    try { await navigator.share({ title: document.getElementById('panelTitle').textContent, url }); } catch (e) {}
+  } else if (navigator.clipboard) {
+    try {
+      await navigator.clipboard.writeText(url);
+      const btn = document.getElementById('panelShare');
+      const original = btn.textContent;
+      btn.textContent = 'Скопировано ✓';
+      setTimeout(() => { btn.textContent = original; }, 1500);
+    } catch (e) {}
+  }
+});
+
+// URL state
+function syncUrl(slug, monthIdx) {
+  const params = new URLSearchParams();
+  if (activeMonth !== null) params.set('month', String(activeMonth + 1));
+  if (activeQuery) params.set('q', activeQuery);
+  if (slug !== undefined && monthIdx !== undefined) {
+    params.set('country', slug);
+    params.set('m', String(monthIdx + 1));
+  }
+  const qs = params.toString();
+  const newUrl = qs ? `?${qs}` : window.location.pathname;
+  history.replaceState(null, '', newUrl);
+}
+
+// Restore state from URL on load
+function restoreFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const month = params.get('month');
+  const q = params.get('q');
+  const country = params.get('country');
+  const m = params.get('m');
+
+  if (month) {
+    const idx = parseInt(month, 10) - 1;
+    const btn = document.querySelector(`.month-btn[data-month="${idx}"]`);
+    if (btn) btn.click();
+  }
+  if (q) {
+    searchInput.value = q;
+    activeQuery = q.toLowerCase();
+    applyFilter();
+  }
+  if (country && m) {
+    const idx = parseInt(m, 10) - 1;
+    const cell = document.querySelector(`td.cell[data-slug="${country}"][data-month="${idx}"]`);
+    if (cell) {
+      cell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => openPanel(cell), 300);
+    }
+  }
+}
+
+restoreFromUrl();
 </script>
 
 <style>
-/* ─── FAQ / МЕТОДОЛОГИЯ ─── */
-.faq {
-  max-width: 1400px; margin: 0 auto; padding: 3rem clamp(1rem, 4vw, 3rem);
-  border-top: 1px solid var(--line);
+.controls {
+  max-width: 1400px; margin: 0 auto 2rem; padding: 0 clamp(1rem, 4vw, 3rem);
+  display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;
 }
-.faq h2 {
-  font-family: var(--ff-display); font-size: 1.6rem; font-weight: 300;
-  color: var(--text); margin-bottom: 1.5rem;
+.search-input {
+  background: var(--bg2); border: 1px solid var(--line); color: var(--text);
+  font-family: var(--ff-body); font-size: 0.85rem;
+  padding: 0.5rem 0.9rem; border-radius: 3px; min-width: 240px;
+  transition: border-color 0.2s;
 }
+.search-input:focus { outline: none; border-color: var(--gold-dim); }
+.search-input::placeholder { color: var(--text-faint); }
+.controls-label { color: var(--gold-dim); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; margin: 0 0.4rem 0 0.8rem; }
+.month-btn, .reset-btn {
+  background: transparent; border: 1px solid var(--line); color: var(--text-dim);
+  font-family: var(--ff-body); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0.45rem 0.8rem; border-radius: 3px; cursor: pointer; transition: all 0.2s;
+}
+.month-btn:hover, .reset-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+.month-btn.active { background: var(--gold); border-color: var(--gold); color: #0c0a08; font-weight: 500; box-shadow: 0 0 10px var(--gold-glow); }
+.reset-btn { margin-left: 0.5rem; }
+
+.legend { max-width: 1400px; margin: 0 auto 1.5rem; padding: 0 clamp(1rem, 4vw, 3rem); display: flex; flex-wrap: wrap; gap: 1.2rem; }
+.legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: var(--text-dim); }
+.dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 5px currentColor; }
+
+.best-mark { color: var(--peak); font-size: 0.85rem; line-height: 1; }
+.worst-mark { color: var(--bad); font-size: 0.85rem; line-height: 1; }
+
+.table-wrap {
+  max-width: 1400px; margin: 0 auto; overflow: auto; max-height: calc(100vh - 220px);
+  border: 1px solid var(--line); border-radius: 4px; background: var(--bg2); position: relative; z-index: 1;
+}
+table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 900px; }
+
+thead tr:first-child th {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--bg3); border-bottom: 1px solid var(--line);
+  padding: 1rem 0.6rem; font-weight: 400; font-size: 0.65rem;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint);
+  cursor: default;
+}
+thead tr:first-child th:first-child { text-align: left; padding-left: 1.2rem; min-width: 240px; position: sticky; left: 0; z-index: 11; border-right: 1px solid var(--line); }
+.month-header { text-align: center; min-width: 56px; border-left: 1px dashed rgba(201,151,58,0.05); transition: background 0.15s, color 0.15s; }
+.month-header.is-current { color: var(--gold) !important; background: rgba(201,151,58,0.08); }
+.month-header.is-current::after { content: ' •'; color: var(--gold); }
+.month-header.hover-col { background: rgba(201,151,58,0.06); color: var(--gold-dim); }
+
+tbody tr { border-bottom: 1px solid var(--line); transition: background 0.15s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: rgba(201,151,58,0.03); }
+
+.group-header td {
+  background: var(--bg3); color: var(--gold); font-family: var(--ff-display);
+  font-size: 1.2rem; padding: 0.8rem 1.2rem; font-style: italic; position: sticky; left: 0;
+  border-bottom: 1px solid var(--line); border-top: 1px solid var(--line);
+}
+
+.region-cell {
+  padding: 0.8rem 1rem 0.8rem 1.2rem; color: var(--text); font-weight: 400; line-height: 1.3;
+  min-width: 240px; max-width: 260px; vertical-align: middle; position: sticky; left: 0;
+  background: var(--bg2); z-index: 2; border-right: 1px solid var(--line);
+}
+.region-link { color: var(--text); border-bottom: 1px dashed rgba(201,151,58,0.4); transition: color 0.2s, border-color 0.2s; }
+.region-link:hover { color: var(--gold); border-color: var(--gold); }
+.region-sub { color: var(--text-faint); font-size: 0.72rem; display: block; margin-top: 0.2rem; }
+.tags { display: flex; gap: 0.4rem; margin-top: 0.6rem; flex-wrap: wrap; }
+
+.cell {
+  text-align: center; vertical-align: middle; padding: 0.7rem 0.3rem;
+  position: relative; cursor: pointer; border-left: 1px dashed rgba(201,151,58,0.05);
+  transition: background 0.15s;
+}
+.cell:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+.cell.is-current-month { background: rgba(201,151,58,0.04); }
+.cell .badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 3px; font-size: 0.6rem; font-weight: 500;
+  transition: transform 0.15s; will-change: transform;
+}
+.cell:hover .badge { transform: scale(1.2); }
+
+.peak .badge { background: var(--peak-light); color: var(--peak); border: 1px solid rgba(34,197,94,0.3); }
+.good .badge { background: var(--good-light); color: var(--good); border: 1px solid rgba(74,158,255,0.3); }
+.ok   .badge { background: var(--ok-light);   color: var(--ok);   border: 1px solid rgba(245,158,11,0.3); }
+.bad  .badge { background: var(--bad-light);  color: var(--bad);  border: 1px solid rgba(239,68,68,0.3); }
+.off  .badge { background: transparent; color: var(--off); border: 1px dashed var(--line); }
+
+/* Best/worst корона на ячейке */
+.cell.is-best .badge { box-shadow: 0 0 0 2px var(--peak), 0 0 10px rgba(34,197,94,0.4); }
+.cell.is-worst .badge { box-shadow: 0 0 0 1px var(--bad); opacity: 0.85; }
+.cell .best-mark, .cell .worst-mark {
+  position: absolute; top: 2px; right: 4px; font-size: 0.55rem; line-height: 1; pointer-events: none;
+}
+.cell .price-mini {
+  position: absolute; bottom: 2px; right: 4px; font-size: 0.52rem; color: var(--text-faint);
+  pointer-events: none; opacity: 0.85; letter-spacing: -0.02em;
+}
+
+.cell.col-highlight { background: rgba(201,151,58,0.05); }
+.month-header.col-highlight { background: rgba(201,151,58,0.1); color: var(--gold) !important; }
+tbody tr td.cell.dimmed { opacity: 0.25; }
+
+.empty-state { padding: 3rem 1.5rem; text-align: center; color: var(--text-faint); font-size: 0.85rem; }
+
+.climate-disclaimer {
+  max-width: 1400px; margin: 1.5rem auto 0; padding: 1rem clamp(1rem, 4vw, 3rem);
+  font-size: 0.78rem; color: var(--text-dim); line-height: 1.7;
+  border-left: 2px solid var(--gold-dim); background: rgba(201,151,58,0.04);
+}
+.climate-disclaimer strong { color: var(--gold); font-weight: 500; }
+
+.table-footer {
+  max-width: 1400px; margin: 1.5rem auto 0; padding: 0 clamp(1rem, 4vw, 3rem);
+  color: var(--text-faint); font-size: 0.75rem; line-height: 1.8;
+}
+
+/* ─── FAQ ─── */
+.faq { max-width: 1400px; margin: 0 auto; padding: 3rem clamp(1rem, 4vw, 3rem); border-top: 1px solid var(--line); }
+.faq h2 { font-family: var(--ff-display); font-size: 1.6rem; font-weight: 300; color: var(--text); margin-bottom: 1.5rem; }
 .faq dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 1.5rem; }
 .faq dl > div { background: var(--bg2); border: 1px solid var(--line); padding: 1rem 1.2rem; border-radius: 3px; }
 .faq dt { font-size: 0.82rem; font-weight: 500; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem; }
 .faq dd { color: var(--text-dim); font-size: 0.78rem; line-height: 1.6; margin: 0; }
-.dot { font-size: 1rem; }
+.faq p { color: var(--text-dim); font-size: 0.85rem; line-height: 1.7; margin-bottom: 1rem; }
+.faq p strong { color: var(--text); font-weight: 500; }
 .dot-peak { color: #22c55e; }
 .dot-good { color: #4a9eff; }
 .dot-ok   { color: #f59e0b; }
@@ -317,95 +830,13 @@ h1 em { color: var(--gold); font-style: italic; }
 .pill-uni  { color: var(--good-text); border-color: rgba(74,158,255,0.3); background: rgba(74,158,255,0.07); }
 .mission-sep { color: var(--gold-dim); font-size: 0.8rem; }
 
-.controls { max-width: 1400px; margin: 0 auto 2rem; padding: 0 clamp(1rem, 4vw, 3rem); display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
-.controls-label { color: var(--gold-dim); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; margin-right: 0.8rem; }
-.month-btn, .reset-btn {
-  background: transparent; border: 1px solid var(--line); color: var(--text-dim);
-  font-family: var(--ff-body); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase;
-  padding: 0.45rem 0.8rem; border-radius: 3px; cursor: pointer; transition: all 0.2s;
-}
-.month-btn:hover, .reset-btn:hover { border-color: var(--gold-dim); color: var(--text); }
-.month-btn.active { background: var(--gold); border-color: var(--gold); color: #0c0a08; font-weight: 500; box-shadow: 0 0 10px var(--gold-glow); }
-.reset-btn { margin-left: 0.5rem; }
-.month-btn:focus-visible, .reset-btn:focus-visible { outline-offset: 3px; }
-
-.legend { max-width: 1400px; margin: 0 auto 1.5rem; padding: 0 clamp(1rem, 4vw, 3rem); display: flex; flex-wrap: wrap; gap: 1.2rem; }
-.legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: var(--text-dim); }
-.dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 5px currentColor; }
-
-.table-wrap {
-  max-width: 1400px; margin: 0 auto; overflow: auto; max-height: calc(100vh - 220px);
-  border: 1px solid var(--line); border-radius: 4px; background: var(--bg2); position: relative; z-index: 1;
-}
-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 900px; }
-
-thead tr:first-child th {
-  position: sticky; top: 0; z-index: 10;
-  background: var(--bg3); border-bottom: 1px solid var(--line);
-  padding: 1rem 0.6rem; font-weight: 400; font-size: 0.65rem;
-  letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint);
-}
-thead tr:first-child th:first-child { text-align: left; padding-left: 1.2rem; min-width: 240px; position: sticky; left: 0; z-index: 11; border-right: 1px solid var(--line); }
-.month-header { text-align: center; min-width: 52px; border-left: 1px dashed rgba(201,151,58,0.05); }
-
-tbody tr { border-bottom: 1px solid var(--line); transition: background 0.15s; }
-tbody tr:last-child { border-bottom: none; }
-tbody tr:hover { background: rgba(201,151,58,0.03); }
-
-.group-header td {
-  background: var(--bg3); color: var(--gold); font-family: var(--ff-display);
-  font-size: 1.2rem; padding: 0.8rem 1.2rem; font-style: italic; position: sticky; left: 0;
-  border-bottom: 1px solid var(--line); border-top: 1px solid var(--line);
-}
-
-.region-cell {
-  padding: 0.8rem 1rem 0.8rem 1.2rem; color: var(--text); font-weight: 400; line-height: 1.3;
-  min-width: 240px; max-width: 260px; vertical-align: middle; position: sticky; left: 0;
-  background: var(--bg2); z-index: 2; border-right: 1px solid var(--line);
-}
-.region-sub { color: var(--text-faint); font-size: 0.72rem; display: block; margin-top: 0.2rem; }
-
-.tags { display: flex; gap: 0.4rem; margin-top: 0.6rem; flex-wrap: wrap; }
-
-.cell { text-align: center; vertical-align: middle; padding: 0.7rem 0.3rem; position: relative; cursor: default; border-left: 1px dashed rgba(201,151,58,0.05); }
-.badge {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 28px; height: 28px; border-radius: 3px; font-size: 0.6rem; font-weight: 500;
-  transition: transform 0.15s; will-change: transform;
-}
-.cell:hover .badge { transform: scale(1.2); }
-
-.peak .badge { background: var(--peak-light); color: var(--peak); border: 1px solid rgba(34,197,94,0.3); }
-.good .badge { background: var(--good-light); color: var(--good); border: 1px solid rgba(74,158,255,0.3); }
-.ok   .badge { background: var(--ok-light);   color: var(--ok);   border: 1px solid rgba(245,158,11,0.3); }
-.bad  .badge { background: var(--bad-light);  color: var(--bad);  border: 1px solid rgba(239,68,68,0.3); }
-.off  .badge { background: transparent; color: var(--off); border: 1px dashed var(--line); }
-
-.cell.col-highlight { background: rgba(201,151,58,0.05); }
-.month-header.col-highlight { background: rgba(201,151,58,0.1); color: var(--gold) !important; }
-tbody tr td.cell.dimmed { opacity: 0.25; }
-
-#tooltip {
-  position: fixed; background: var(--bg3); border: 1px solid var(--line); color: var(--text-dim);
-  font-size: 0.75rem; padding: 0.6rem 0.8rem; border-radius: 3px; z-index: 1000; pointer-events: none;
-  max-width: 220px; white-space: normal; text-align: left; line-height: 1.5; display: none;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-}
-
-.table-footer {
-  max-width: 1400px; margin: 2rem auto 0; padding: 0 clamp(1rem, 4vw, 3rem);
-  color: var(--text-faint); font-size: 0.75rem; line-height: 1.8;
-}
 .footer-contribute {
   max-width: 1400px; margin: 3rem auto 0; padding: 2rem 2.5rem;
   background: var(--bg2); border: 1px solid var(--line); border-radius: 4px;
   display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;
   position: relative; overflow: hidden;
 }
-.footer-contribute::before {
-  content: ""; position: absolute; top: -1px; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
-}
+.footer-contribute::before { content: ""; position: absolute; top: -1px; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim), transparent); }
 .footer-contribute p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; max-width: 600px; }
 .footer-contribute p strong { color: var(--text); font-weight: 400; font-family: var(--ff-display); font-size: 1.4rem; display: block; margin-bottom: 0.3rem; }
 .contribute-btn {
@@ -415,52 +846,126 @@ tbody tr td.cell.dimmed { opacity: 0.25; }
 }
 .contribute-btn:hover { background: var(--gold-glow); box-shadow: 0 0 18px var(--gold-glow); }
 
+/* ─── Side-panel (desktop) / Bottom-sheet (mobile) ─── */
+.panel-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 998;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.panel-overlay.is-open { opacity: 1; pointer-events: auto; }
+:global(body.panel-open) { overflow: hidden; }
+
+.cell-panel {
+  position: fixed; top: 0; right: 0; bottom: 0; width: clamp(360px, 36vw, 480px);
+  background: var(--bg2); border-left: 1px solid var(--line); z-index: 999;
+  transform: translateX(100%); transition: transform 0.25s ease;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.cell-panel.is-open { transform: translateX(0); }
+
+.panel-header {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+  padding: 1.5rem 1.5rem 1rem; border-bottom: 1px solid var(--line);
+}
+.panel-header h2 { font-family: var(--ff-display); font-size: 1.4rem; font-weight: 400; color: var(--text); line-height: 1.2; margin: 0; }
+.panel-header p { color: var(--text-faint); font-size: 0.78rem; margin: 0.4rem 0 0; }
+.panel-close {
+  background: transparent; border: 1px solid var(--line); color: var(--text-dim);
+  width: 32px; height: 32px; border-radius: 3px; cursor: pointer;
+  font-size: 1.4rem; line-height: 1; padding: 0; flex-shrink: 0;
+  transition: all 0.2s;
+}
+.panel-close:hover { border-color: var(--gold-dim); color: var(--text); }
+
+.panel-body {
+  flex: 1; overflow-y: auto; padding: 1.2rem 1.5rem;
+  display: flex; flex-direction: column; gap: 1rem;
+}
+.panel-status {
+  display: inline-block; align-self: flex-start;
+  font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0.3rem 0.7rem; border-radius: 20px; border: 1px solid;
+}
+.s-peak { color: var(--peak); border-color: rgba(34,197,94,0.4); background: rgba(34,197,94,0.08); }
+.s-good { color: var(--good); border-color: rgba(74,158,255,0.4); background: rgba(74,158,255,0.08); }
+.s-ok   { color: var(--ok);   border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.08); }
+.s-bad  { color: var(--bad);  border-color: rgba(239,68,68,0.4);  background: rgba(239,68,68,0.08); }
+.s-off  { color: var(--off);  border-color: var(--line); }
+
+.panel-text { color: var(--text); font-size: 0.92rem; line-height: 1.6; margin: 0; }
+
+.panel-block {
+  border-left: 2px solid; padding: 0.6rem 0 0.6rem 0.9rem;
+  display: flex; flex-direction: column; gap: 0.3rem;
+}
+.panel-block[hidden] { display: none; }
+.panel-cta[hidden] { display: none; }
+.panel-block-label { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); }
+.panel-block p { color: var(--text-dim); font-size: 0.85rem; line-height: 1.55; margin: 0; }
+.panel-block p strong { color: var(--text); font-weight: 500; }
+.panel-event { border-left-color: var(--good); }
+.panel-note { border-left-color: var(--gold); }
+.panel-note p { color: var(--text); font-style: italic; }
+.panel-negative { border-left-color: var(--bad); }
+.panel-price { border-left-color: var(--peak); }
+
+.panel-footer {
+  display: flex; flex-direction: column; gap: 0.5rem;
+  padding: 1rem 1.5rem 1.5rem; border-top: 1px solid var(--line);
+}
+.panel-cta {
+  display: block; text-align: center; padding: 0.8rem 1.2rem;
+  border-radius: 3px; font-size: 0.85rem; letter-spacing: 0.04em;
+  text-decoration: none; transition: all 0.2s; cursor: pointer;
+  font-family: var(--ff-body); border: 1px solid;
+}
+.panel-cta-primary {
+  background: var(--gold); color: #0c0a08; border-color: var(--gold);
+  font-weight: 500;
+}
+.panel-cta-primary:hover { box-shadow: 0 0 20px var(--gold-glow); }
+.panel-cta-secondary {
+  background: transparent; color: var(--text-dim); border-color: var(--line);
+}
+.panel-cta-secondary:hover { color: var(--text); border-color: var(--gold-dim); }
+
 @media (max-width: 700px) {
   body { padding-bottom: 3rem; }
 
-  /* Кнопки месяцев: sticky полоска, горизонтальный скролл, без переноса */
   .controls {
-    position: sticky;
-    top: 64px;
-    z-index: 80;
-    background: var(--bg);
-    border-bottom: 1px solid var(--line);
-    margin-bottom: 0;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    padding: 0.5rem 1rem;
-    gap: 0.35rem;
+    position: sticky; top: 64px; z-index: 80; background: var(--bg);
+    border-bottom: 1px solid var(--line); margin-bottom: 0;
+    flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+    padding: 0.5rem 1rem; gap: 0.35rem;
   }
   .controls::-webkit-scrollbar { display: none; }
   .controls-label, .month-btn, .reset-btn { flex-shrink: 0; }
-  .legend { margin-top: 1rem; }
+  .search-input { min-width: 140px; max-width: 200px; flex-shrink: 0; }
+  .legend { margin-top: 1rem; gap: 0.7rem; }
 
-  /* Таблица: горизонтальный скролл не переключает кнопки */
-  .table-wrap {
-    margin: 0;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-    max-height: calc(100vh - 200px);
-    overscroll-behavior: contain;
-  }
+  .table-wrap { margin: 0; border-radius: 0; border-left: none; border-right: none; max-height: calc(100vh - 200px); overscroll-behavior: contain; }
   thead tr:first-child th { top: 0; }
-
-  /* Узкая левая колонка — переопределяем th и td */
   thead tr:first-child th:first-child { min-width: 110px; }
-  .region-cell {
-    min-width: 110px;
-    max-width: 120px;
-    padding: 0.6rem 0.4rem 0.6rem 0.6rem;
-    font-size: 0.75rem;
-  }
+  .region-cell { min-width: 110px; max-width: 120px; padding: 0.6rem 0.4rem 0.6rem 0.6rem; font-size: 0.75rem; }
   .region-sub { font-size: 0.62rem; }
   .tags { gap: 0.2rem; margin-top: 0.35rem; }
   .tag { font-size: 0.55rem; padding: 0.1rem 0.3rem; }
-
   .month-btn { padding: 0.45rem 0.65rem; font-size: 0.72rem; min-height: 36px; }
   .footer-contribute { margin-top: 2rem; padding: 1.5rem; }
+
+  /* Mobile: bottom-sheet */
+  .cell-panel {
+    top: auto; left: 0; right: 0; bottom: 0; width: 100%; max-height: 85vh;
+    border-left: none; border-top: 1px solid var(--line);
+    border-radius: 16px 16px 0 0;
+    transform: translateY(100%);
+  }
+  .cell-panel.is-open { transform: translateY(0); }
+  .panel-header { padding: 1rem 1rem 0.8rem; }
+  .panel-header h2 { font-size: 1.2rem; }
+  .panel-body { padding: 1rem 1rem; }
+  .panel-footer { padding: 0.8rem 1rem 1.2rem; }
+
+  .price-mini { font-size: 0.5rem; bottom: 1px; right: 2px; }
+  .cell .best-mark, .cell .worst-mark { top: 1px; right: 2px; font-size: 0.5rem; }
 }
 </style>
