@@ -21,6 +21,7 @@ jobs:
       - name: Fetch prices from Travelpayouts
         env:
           TRAVELPAYOUTS_TOKEN: ${{ secrets.TRAVELPAYOUTS_TOKEN }}
+          TP_TOKEN: ${{ secrets.TP_TOKEN }}
         run: node scripts/fetch-prices.mjs
       - name: Commit and push if changed
         run: |

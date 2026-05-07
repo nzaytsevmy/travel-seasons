@@ -11,9 +11,10 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(__dirname, '../src/data/prices-cache.json');
 
-const TOKEN = process.env.TRAVELPAYOUTS_TOKEN;
+// Поддерживаем оба имени переменной для обратной совместимости со старым GHA secret TP_TOKEN
+const TOKEN = process.env.TRAVELPAYOUTS_TOKEN || process.env.TP_TOKEN;
 if (!TOKEN) {
-  console.error('TRAVELPAYOUTS_TOKEN не найден. Запускай: node --env-file=.env scripts/fetch-prices.mjs');
+  console.error('TRAVELPAYOUTS_TOKEN (или TP_TOKEN) не найден. Запускай: node --env-file=.env scripts/fetch-prices.mjs');
   process.exit(1);
 }
 
