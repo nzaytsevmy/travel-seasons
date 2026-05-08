@@ -1,1 +1,12 @@
 ErrorDocument 404 /404.html
+
+RewriteEngine On
+
+# Force non-www → non-www, сразу на HTTPS (один хоп, без http-промежутка)
+RewriteCond %{HTTP_HOST} ^www\.traveltribe\.ru$ [NC]
+RewriteRule ^(.*)$ https://traveltribe.ru/$1 [R=301,L]
+
+# Force HTTPS если кто-то пришёл по http
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP_HOST} ^traveltribe\.ru$ [NC]
+RewriteRule ^(.*)$ https://traveltribe.ru/$1 [R=301,L]
