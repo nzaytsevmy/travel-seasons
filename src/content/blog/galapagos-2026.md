@@ -4,6 +4,7 @@ description: "Был на Галапагосах в 2025: голубоногие
 pubDate: 2026-05-08
 updatedDate: 2026-05-08
 coverImage: "../../assets/blog/galapagos.jpg"
+coverPosition: "center 22%"
 author: "Никита Зайцев"
 tags: ["Галапагосы", "Эквадор", "Природа", "Южная Америка", "2026"]
 sourceType: "personal"
