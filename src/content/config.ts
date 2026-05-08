@@ -14,6 +14,7 @@ const blog = defineCollection({
     tripPlace: z.string().optional(),
     sourceType: z.enum(['personal', 'compilation', 'hybrid']).default('hybrid'),
     coverPosition: z.string().default('center'),
+    coverPositionCard: z.string().default('center'),
   }),
 });
 
