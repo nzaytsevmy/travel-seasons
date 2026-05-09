@@ -111,28 +111,30 @@ const ldJson = {
 
     <section class="hub-section">
       <h2>Сколько стоит — три класса в 2026</h2>
-      <table class="hub-table">
-        <thead>
-          <tr><th>Класс</th><th>Бюджет под ключ</th><th>Что включено</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Эконом</strong></td>
-            <td><strong>750 000–950 000 ₽</strong></td>
-            <td>Ноябрь / март, MV Ushuaia или Ocean Nova, нижняя палуба, перелёт эконом</td>
-          </tr>
-          <tr>
-            <td><strong>Стандарт</strong></td>
-            <td><strong>1 100 000–1 400 000 ₽</strong></td>
-            <td>Декабрь–февраль, Swan Hellenic / Quark, каюта с окном</td>
-          </tr>
-          <tr>
-            <td><strong>Премиум</strong></td>
-            <td><strong>2 500 000–4 500 000+ ₽</strong></td>
-            <td>Ponant, Silversea, балкон, бизнес-перелёт, личный бутлер</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-wrap">
+        <table class="hub-table">
+          <thead>
+            <tr><th>Класс</th><th>Бюджет под ключ</th><th>Что включено</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Эконом</strong></td>
+              <td><strong>750&nbsp;000–950&nbsp;000&nbsp;₽</strong></td>
+              <td>Ноябрь / март, MV Ushuaia или Ocean Nova, нижняя палуба, перелёт эконом</td>
+            </tr>
+            <tr>
+              <td><strong>Стандарт</strong></td>
+              <td><strong>1&nbsp;100&nbsp;000–1&nbsp;400&nbsp;000&nbsp;₽</strong></td>
+              <td>Декабрь–февраль, Swan Hellenic / Quark, каюта с окном</td>
+            </tr>
+            <tr>
+              <td><strong>Премиум</strong></td>
+              <td><strong>2&nbsp;500&nbsp;000–4&nbsp;500&nbsp;000+&nbsp;₽</strong></td>
+              <td>Ponant, Silversea, балкон, бизнес-перелёт, личный бутлер</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <p class="hub-note">Все варианты «тур в Антарктиду цена дешево» дешевле 700k ₽ — это либо непонимание что покупают, либо мошенники. <a href="/blog/antarctica-cruise-2026/#сколько-стоит-круиз-в-антарктиду--реальный-бюджет-под-ключ">Детальная разбивка бюджета по статьям →</a></p>
     </section>
 
@@ -239,27 +241,7 @@ const ldJson = {
 .hub-list li { color: var(--text-dim); line-height: 1.75; margin-bottom: 0.55rem; font-size: 0.95rem; }
 .hub-list li strong { color: var(--text); }
 
-.hub-table {
-  width: 100%; border-collapse: collapse;
-  background: var(--bg2); border: 1px solid var(--line); border-radius: 4px; overflow: hidden;
-  margin: 1rem 0 1.2rem; font-size: 0.92rem;
-}
-.hub-table thead { background: rgba(201,151,58,0.08); }
-.hub-table th {
-  text-align: left; font-weight: 600; color: var(--text);
-  padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--gold-dim);
-  letter-spacing: 0.02em;
-}
-.hub-table td {
-  padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--line);
-  color: var(--text-dim); vertical-align: top;
-}
-.hub-table tbody tr:last-child td { border-bottom: none; }
-.hub-table td strong { color: var(--text); }
-@media (max-width: 600px) {
-  .hub-table { font-size: 0.82rem; }
-  .hub-table th, .hub-table td { padding: 0.55rem 0.6rem; }
-}
+/* .hub-table stylized globally in src/styles/global.css */
 
 .hub-note { font-size: 0.85rem; color: var(--text-faint); }
 

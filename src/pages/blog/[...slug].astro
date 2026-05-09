@@ -300,32 +300,7 @@ h1 { font-family: var(--ff-body); font-size: clamp(2rem,4vw,3rem); font-weight: 
   margin: 2rem auto;
   border-radius: 6px;
 }
-.prose :global(table) {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1.5rem 0 2rem;
-  font-size: 0.92rem;
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  overflow: hidden;
-}
-.prose :global(thead) { background: rgba(201,151,58,0.08); }
-.prose :global(th) {
-  text-align: left; font-weight: 600; color: var(--text);
-  padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--gold-dim);
-  letter-spacing: 0.02em;
-}
-.prose :global(td) {
-  padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--line);
-  color: var(--text-dim); vertical-align: top;
-}
-.prose :global(tbody tr:last-child td) { border-bottom: none; }
-.prose :global(td strong) { color: var(--text); }
-@media (max-width: 600px) {
-  .prose :global(table) { font-size: 0.82rem; }
-  .prose :global(th), .prose :global(td) { padding: 0.5rem 0.55rem; }
-}
+/* Tables styled globally in src/styles/global.css under .prose .table-wrap */
 .prose :global(hr) {
   border: none; margin: 2.5rem 0; position: relative;
   text-align: center; height: 1px; overflow: visible;

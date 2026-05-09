@@ -127,14 +127,16 @@ const ldJson = {
 
     <section class="hub-section">
       <h2>Бюджет — реальные цифры 2026</h2>
-      <table class="hub-table">
-        <thead><tr><th>Уровень</th><th>На день</th><th>Что включает</th></tr></thead>
-        <tbody>
-          <tr><td><strong>Эконом</strong></td><td><strong>$50–80</strong></td><td>Хостел / капсула, чифаньки и комбини, IC-карта</td></tr>
-          <tr><td><strong>Комфорт</strong></td><td><strong>$150–250</strong></td><td>3* отель / бизнес-отель, нормальные рестораны, такси периодически</td></tr>
-          <tr><td><strong>Премиум</strong></td><td><strong>$300+</strong></td><td>4–5*, кайсэки, рёкан с онсэном, частный транспорт</td></tr>
-        </tbody>
-      </table>
+      <div class="table-wrap">
+        <table class="hub-table">
+          <thead><tr><th>Уровень</th><th>На день</th><th>Что включает</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Эконом</strong></td><td><strong>$50–80</strong></td><td>Хостел / капсула, чифаньки и комбини, IC-карта</td></tr>
+            <tr><td><strong>Комфорт</strong></td><td><strong>$150–250</strong></td><td>3* отель / бизнес-отель, нормальные рестораны, такси периодически</td></tr>
+            <tr><td><strong>Премиум</strong></td><td><strong>$300+</strong></td><td>4–5*, кайсэки, рёкан с онсэном, частный транспорт</td></tr>
+          </tbody>
+        </table>
+      </div>
       <p>Перелёт Москва ↔ Токио с пересадкой: <strong>$500–900</strong> в обычные даты, <strong>$1100–1500</strong> на Golden Week. Иена в 2026 слабая (~7 ¥/₽), что делает Японию доступнее обычного. <a href="/calculator/">Калькулятор бюджета</a> — точная сумма под твои даты.</p>
     </section>
 
@@ -226,26 +228,7 @@ const ldJson = {
 .hub-list li { color: var(--text-dim); line-height: 1.75; margin-bottom: 0.55rem; font-size: 0.95rem; }
 .hub-list li strong { color: var(--text); }
 
-.hub-table {
-  width: 100%; border-collapse: collapse;
-  background: var(--bg2); border: 1px solid var(--line); border-radius: 4px; overflow: hidden;
-  margin: 1rem 0 1.2rem; font-size: 0.92rem;
-}
-.hub-table thead { background: rgba(201,151,58,0.08); }
-.hub-table th {
-  text-align: left; font-weight: 600; color: var(--text);
-  padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--gold-dim);
-}
-.hub-table td {
-  padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--line);
-  color: var(--text-dim); vertical-align: top;
-}
-.hub-table tbody tr:last-child td { border-bottom: none; }
-.hub-table td strong { color: var(--text); }
-@media (max-width: 600px) {
-  .hub-table { font-size: 0.82rem; }
-  .hub-table th, .hub-table td { padding: 0.55rem 0.6rem; }
-}
+/* .hub-table stylized globally in src/styles/global.css */
 
 .hub-note { font-size: 0.85rem; color: var(--text-faint); }
 
