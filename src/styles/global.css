@@ -239,3 +239,103 @@ html.light-theme .btn-primary { color: #fff; }
   /* Calculator — breakdown labels */
   .breakdown-item span:first-child { font-size: 0.78rem !important; }
 }
+
+/* ───────── Data tables (2026 baseline) ─────────
+   Applied site-wide to .prose / .hub tables in posts and hub-pages.
+   /seasons/ table has its own scoped layout — these rules don't reach it. */
+
+/* Wrapper auto-injected by rehype-table-wrap for markdown tables.
+   Allows horizontal scroll on narrow viewports without breaking the column. */
+:where(.prose, .hub-wrap) .table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1.6rem 0 2rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--bg2);
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-dim) var(--bg2);
+}
+:where(.prose, .hub-wrap) .table-wrap::-webkit-scrollbar { height: 6px; }
+:where(.prose, .hub-wrap) .table-wrap::-webkit-scrollbar-thumb {
+  background: var(--gold-dim); border-radius: 3px;
+}
+:where(.prose, .hub-wrap) .table-wrap::-webkit-scrollbar-track { background: var(--bg2); }
+
+/* The table itself — sits flush inside .table-wrap, no own border (wrapper has it) */
+:where(.prose, .hub-wrap) .table-wrap > table,
+.hub-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  font-size: 0.92rem;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  table-layout: auto;
+}
+
+/* Lining + tabular numerals so prices align column-perfectly */
+:where(.prose, .hub-wrap) .table-wrap th,
+:where(.prose, .hub-wrap) .table-wrap td,
+.hub-table th,
+.hub-table td {
+  font-variant-numeric: tabular-nums lining-nums;
+  vertical-align: top;
+}
+
+/* Prevent prices/ranges from breaking — supplements the NBSP transform */
+:where(.prose, .hub-wrap) .table-wrap td strong,
+.hub-table td strong {
+  white-space: nowrap;
+}
+
+/* Header row */
+:where(.prose, .hub-wrap) .table-wrap thead,
+.hub-table thead {
+  background: rgba(201,151,58,0.08);
+}
+:where(.prose, .hub-wrap) .table-wrap th,
+.hub-table th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--text);
+  padding: 0.75rem 0.95rem;
+  border-bottom: 1px solid var(--gold-dim);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+/* Body cells */
+:where(.prose, .hub-wrap) .table-wrap td,
+.hub-table td {
+  padding: 0.7rem 0.95rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-dim);
+}
+:where(.prose, .hub-wrap) .table-wrap tbody tr:last-child td,
+.hub-table tbody tr:last-child td { border-bottom: none; }
+
+/* Subtle hover for readability on dense tables */
+:where(.prose, .hub-wrap) .table-wrap tbody tr,
+.hub-table tbody tr {
+  transition: background 0.15s ease;
+}
+:where(.prose, .hub-wrap) .table-wrap tbody tr:hover,
+.hub-table tbody tr:hover { background: rgba(201,151,58,0.04); }
+
+/* td strong stays bright for emphasised values */
+:where(.prose, .hub-wrap) .table-wrap td strong,
+.hub-table td strong { color: var(--text); }
+
+/* Mobile: tighten padding, shrink font slightly */
+@media (max-width: 600px) {
+  :where(.prose, .hub-wrap) .table-wrap > table,
+  .hub-table { font-size: 0.84rem; }
+  :where(.prose, .hub-wrap) .table-wrap th,
+  :where(.prose, .hub-wrap) .table-wrap td,
+  .hub-table th,
+  .hub-table td {
+    padding: 0.55rem 0.6rem;
+  }
+}

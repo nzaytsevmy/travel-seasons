@@ -1,6 +1,8 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
+import remarkNumerals from './tools/remark-numerals.mjs';
+import rehypeTableWrap from './tools/rehype-table-wrap.mjs';
 
 export default defineConfig({
   site: 'https://traveltribe.ru',
@@ -10,6 +12,10 @@ export default defineConfig({
   },
   image: {
     domains: ['images.unsplash.com'],
+  },
+  markdown: {
+    remarkPlugins: [remarkNumerals],
+    rehypePlugins: [rehypeTableWrap],
   },
   integrations: [
     mdx(),
