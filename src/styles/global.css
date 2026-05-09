@@ -217,3 +217,25 @@ footer {
 
 /* Light theme button override — gold bg is too dark for #0c0a08 text (contrast 2.7) */
 html.light-theme .btn-primary { color: #fff; }
+
+/* ─── MOBILE READABILITY ─── Yandex Mobile-Friendly требует ≥12px на мобайле.
+   Десктоп оставляем как было — мелкие декоративные размеры там читаются нормально.
+   Декоративные элементы внутри таблицы /seasons (.price-mini, .best-mark и т.д.) — aria-hidden,
+   их Яндекс не считает текстом. */
+@media (max-width: 768px) {
+  /* Универсальные общие компоненты */
+  .tag             { font-size: 0.78rem; padding: 0.2rem 0.5rem; }
+  .card-badge      { font-size: 0.78rem; }
+  .card-sub        { font-size: 0.8rem;  }
+  .card-price      { font-size: 0.82rem; }
+  .footer-note     { font-size: 0.78rem; }
+  .breadcrumbs ol  { font-size: 0.8rem;  }
+  /* Главная — статы и пилюли в hero */
+  .stat-label      { font-size: 0.78rem !important; }
+  .section-label   { font-size: 0.78rem !important; }
+  .pill            { font-size: 0.78rem !important; }
+  /* Blog post — теги статьи */
+  .ptag            { font-size: 0.78rem !important; padding: 0.2rem 0.5rem !important; }
+  /* Calculator — breakdown labels */
+  .breakdown-item span:first-child { font-size: 0.78rem !important; }
+}
