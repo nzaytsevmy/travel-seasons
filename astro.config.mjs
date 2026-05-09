@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
+import pagefind from 'astro-pagefind';
 import remarkNumerals from './tools/remark-numerals.mjs';
 import rehypeTableWrap from './tools/rehype-table-wrap.mjs';
 
@@ -13,12 +14,17 @@ export default defineConfig({
   image: {
     domains: ['images.unsplash.com'],
   },
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: 'viewport',
+  },
   markdown: {
     remarkPlugins: [remarkNumerals],
     rehypePlugins: [rehypeTableWrap],
   },
   integrations: [
     mdx(),
+    pagefind(),
     sitemap({
       filter: (page) => !page.includes('/404') && !page.includes('/blog/tag/') && !page.includes('sitemap-images'),
       changefreq: 'weekly',
