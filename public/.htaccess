@@ -10,3 +10,29 @@ RewriteRule ^(.*)$ https://traveltribe.ru/$1 [R=301,L]
 RewriteCond %{HTTPS} off
 RewriteCond %{HTTP_HOST} ^traveltribe\.ru$ [NC]
 RewriteRule ^(.*)$ https://traveltribe.ru/$1 [R=301,L]
+
+# ─── SECURITY HEADERS ───
+# Если REG.RU shared имеет mod_headers — applies. Если нет — секция игнорируется без ошибок.
+<IfModule mod_headers.c>
+  # Усиление HSTS: includeSubDomains + 2 года + preload (можно подавать на hstspreload.org)
+  Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+
+  # Защита от clickjacking (iframe-прокладок)
+  Header always set X-Frame-Options "SAMEORIGIN"
+
+  # Запрет MIME-sniffing
+  Header always set X-Content-Type-Options "nosniff"
+
+  # Контроль реферера: не утекаем полный URL на сторонние домены
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Permissions-Policy: явный отказ от всех опасных API (geolocation, camera и т.д.)
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), accelerometer=(), gyroscope=()"
+
+  # Cross-Origin изоляция (мягкие настройки — не ломают analytics iframe Метрики)
+  Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
+  Header always set Cross-Origin-Resource-Policy "same-site"
+
+  # Скрыть версию nginx из server header (если REG.RU позволяет)
+  Header unset X-Powered-By
+</IfModule>
