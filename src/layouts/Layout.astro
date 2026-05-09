@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   title: string;
@@ -91,6 +92,8 @@ const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-image.png?v=2';
 
   {preloadImage && <link rel="preload" as="image" href={preloadImage} />}
 
+  <ClientRouter />
+
   <!-- Ahrefs Web Analytics (privacy-first, cookie-free) -->
   <script src="https://analytics.ahrefs.com/analytics.js" data-key="Vlc0xmPDRP3Rn1BkiDfn2A" async></script>
 
@@ -105,6 +108,18 @@ const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-image.png?v=2';
   </script>
   <noscript><div><img src="https://mc.yandex.ru/watch/95832375" style="position:absolute; left:-9999px;" alt="Yandex Metrika" aria-hidden="true" /></div></noscript>
   <!-- /Yandex.Metrika counter -->
+
+  <!-- Re-fire Y.Metrika hit on every SPA navigation (ClientRouter doesn't trigger it automatically) -->
+  <script is:inline>
+    document.addEventListener('astro:page-load', function () {
+      if (typeof window.ym === 'function') {
+        window.ym(95832375, 'hit', location.href, {
+          title: document.title,
+          referer: document.referrer,
+        });
+      }
+    });
+  </script>
 </head>
 <body>
   <!-- Skip-link for keyboard / screen reader users -->

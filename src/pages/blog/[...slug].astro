@@ -16,6 +16,7 @@ const { post } = Astro.props;
 const { Content } = await post.render();
 const url = `https://traveltribe.ru/blog/${post.slug}/`;
 const coverUrl = typeof post.data.coverImage === 'string' ? post.data.coverImage : `https://traveltribe.ru${post.data.coverImage.src}`;
+const ogImageUrl = `https://traveltribe.ru/og/${post.slug}.png`;
 const wordCount = post.body.trim().split(/\s+/).length;
 
 function stripMd(s: string): string {
@@ -136,7 +137,7 @@ if (faqs.length >= 2) {
   ogType="article"
   ogTitle={post.data.title}
   ogDescription={post.data.description}
-  ogImage={coverUrl}
+  ogImage={ogImageUrl}
   ogImageAlt={post.data.title}
   ldJson={ldJson}
 >
