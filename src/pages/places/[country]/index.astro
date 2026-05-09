@@ -1,0 +1,208 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Nav from '../../../components/Nav.astro';
+import Footer from '../../../components/Footer.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import PlaceCard from '../../../components/PlaceCard.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const all = await getCollection('places');
+  const slugs = Array.from(new Set(all.map(p => p.data.countrySlug)));
+  return slugs.map(slug => {
+    const places = all.filter(p => p.data.countrySlug === slug);
+    return {
+      params: { country: slug },
+      props: { country: places[0].data.country, slug, places },
+    };
+  });
+}
+
+const GUIDE_FOR_COUNTRY: Record<string, { url: string; title: string }> = {
+  uganda: { url: '/blog/uganda-safari-2026/', title: 'Уганда 2026: гориллы Бвинди и сафари' },
+  indonesia: { url: '/blog/bali-guide-2026/', title: 'Бали 2026: гайд для россиян' },
+  japan: { url: '/blog/japan-guide-2026/', title: 'Япония 2026: гайд без воды' },
+  ecuador: { url: '/blog/galapagos-2026/', title: 'Галапагосы 2026: что я видел' },
+  'new-zealand': { url: '/blog/aurora-new-zealand-2026/', title: 'Южное сияние в Новой Зеландии 2026' },
+  antarctica: { url: '/blog/antarctica-cruise-2026/', title: 'Круиз в Антарктиду 2026' },
+  china: { url: '/blog/hainan-guide-2026/', title: 'Хайнань 2026: безвиз и Alipay' },
+};
+
+// Предложный падеж для "в [странa]"
+const COUNTRY_LOC: Record<string, string> = {
+  uganda: 'Уганде',
+  indonesia: 'Индонезии',
+  japan: 'Японии',
+  ecuador: 'Эквадоре',
+  'new-zealand': 'Новой Зеландии',
+  antarctica: 'Антарктиде',
+  china: 'Китае',
+  argentina: 'Аргентине',
+  spain: 'Испании',
+  france: 'Франции',
+  netherlands: 'Нидерландах',
+  germany: 'Германии',
+  colombia: 'Колумбии',
+};
+
+const { country, slug, places } = Astro.props;
+const countryLoc = COUNTRY_LOC[slug] ?? country;
+
+// Сортируем: visited first, потом по имени
+const sorted = [...places].sort((a, b) => {
+  if (a.data.visited !== b.data.visited) return a.data.visited ? -1 : 1;
+  return a.data.name.localeCompare(b.data.name, 'ru');
+});
+
+const visitedCount = places.filter(p => p.data.visited).length;
+const guide = GUIDE_FOR_COUNTRY[slug];
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": `Места в ${countryLoc}`,
+  "description": `${places.length} мест в ${countryLoc}: ${visitedCount} проверены лично, остальное — по фактуре главного гайда.`,
+  "url": `https://traveltribe.ru/places/${slug}/`,
+  "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+      { "@type": "ListItem", "position": 2, "name": "Места", "item": "https://traveltribe.ru/places/" },
+      { "@type": "ListItem", "position": 3, "name": country, "item": `https://traveltribe.ru/places/${slug}/` }
+    ]
+  },
+  "mainEntity": {
+    "@type": "ItemList",
+    "numberOfItems": places.length,
+    "itemListElement": sorted.slice(0, 30).map((p, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "name": p.data.name,
+      "url": `https://traveltribe.ru/places/${slug}/${p.slug.split('/').pop()}/`
+    }))
+  }
+};
+---
+
+<Layout
+  title={`Места в ${countryLoc} — ${places.length} точек на карте · TravelTribe`}
+  description={`Каталог мест в ${countryLoc}: ${places.length} точек, ${visitedCount} проверены лично. Цены 2026, маршруты, фактура из первых рук.`}
+  canonical={`https://traveltribe.ru/places/${slug}/`}
+  ldJson={ldJson}
+>
+  <Nav active="places" />
+  <Breadcrumbs crumbs={[
+    { label: 'Места', href: '/places/' },
+    { label: country }
+  ]} />
+
+  <main id="main" class="country-hub">
+    <header class="hero">
+      <div class="eyebrow">Атлас · {places.length} {places.length === 1 ? 'место' : places.length < 5 ? 'места' : 'мест'}</div>
+      <h1>{country}</h1>
+      <p class="lede">
+        {visitedCount > 0
+          ? `${visitedCount} мест из ${places.length} — был лично, с фотографиями и фактурой с местности.`
+          : `${places.length} ключевых точек страны — фактура из главного гайда и проверенных источников.`}
+      </p>
+      {guide && (
+        <a class="guide-link" href={guide.url}>
+          Главный гайд: {guide.title} →
+        </a>
+      )}
+    </header>
+
+    <section class="grid">
+      {sorted.map((p, i) => {
+        const placeSlug = p.slug.split('/').pop();
+        const isLarge = i === 0 && p.data.visited && !!p.data.quote;
+        return (
+          <div class={isLarge ? 'g-large' : 'g-cell'}>
+            <PlaceCard
+              href={`/places/${slug}/${placeSlug}/`}
+              name={p.data.name}
+              country={p.data.country}
+              type={p.data.type}
+              visited={p.data.visited}
+              quote={p.data.quote}
+              factsLine={p.data.factsLine}
+              large={isLarge}
+            />
+          </div>
+        );
+      })}
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .country-hub {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem 4rem;
+  }
+  .hero {
+    padding: 2rem 0 3rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 2.5rem;
+  }
+  .eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+  .hero h1 {
+    font-family: var(--ff-display);
+    font-size: clamp(2.6rem, 6vw, 4.8rem);
+    font-weight: 500;
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+    margin: 0 0 1rem;
+  }
+  .lede {
+    font-size: 1rem;
+    color: var(--text-dim);
+    max-width: 60ch;
+    line-height: 1.55;
+    margin: 0 0 1.4rem;
+  }
+  .guide-link {
+    display: inline-block;
+    color: var(--gold);
+    border-bottom: 1px solid var(--gold-dim);
+    padding-bottom: 2px;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+  }
+  .guide-link:hover { border-bottom-color: var(--gold); }
+
+  /* Asymmetric grid: large cell takes 2 columns on desktop */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .g-cell, .g-large {
+    background: var(--bg);
+  }
+  .g-large {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  @media (max-width: 920px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .g-large { grid-column: span 2; grid-row: auto; }
+  }
+  @media (max-width: 560px) {
+    .grid { grid-template-columns: 1fr; }
+    .g-large { grid-column: span 1; }
+  }
+</style>

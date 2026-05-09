@@ -1,0 +1,152 @@
+---
+interface Props {
+  href: string;
+  name: string;
+  country: string;
+  type: string;
+  visited: boolean;
+  quote?: string;
+  factsLine?: string;
+  large?: boolean;
+}
+
+const TYPE_LABEL: Record<string, string> = {
+  park: 'Нац. парк',
+  mountain: 'Гора',
+  beach: 'Пляж',
+  temple: 'Храм',
+  district: 'Район',
+  city: 'Город',
+  island: 'Остров',
+  waterfall: 'Водопад',
+  lake: 'Озеро',
+  sight: 'Точка',
+  lodge: 'Лодж',
+  route: 'Маршрут',
+  port: 'Порт',
+  airport: 'Аэропорт',
+  region: 'Регион',
+};
+
+const { href, name, country, type, visited, quote, factsLine, large = false } = Astro.props;
+---
+
+<a href={href} class={`place-card ${large ? 'is-large' : ''}`}>
+  <div class="pc-head">
+    <span class="pc-type">{TYPE_LABEL[type] ?? type}</span>
+    {visited && <span class="pc-visited" title="Был лично">●</span>}
+  </div>
+  <h3 class="pc-name">{name}</h3>
+  <div class="pc-country">{country}</div>
+  {quote && <p class="pc-quote">«{quote}»</p>}
+  {!quote && factsLine && <p class="pc-facts">{factsLine}</p>}
+  <div class="pc-foot">
+    <span class="pc-arrow" aria-hidden="true">→</span>
+  </div>
+</a>
+
+<style>
+  .place-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1.4rem 1.4rem 1.1rem;
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    position: relative;
+    min-height: 200px;
+    overflow: hidden;
+  }
+  .place-card::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+    background: var(--gold);
+    transform: scaleY(0); transform-origin: top;
+    transition: transform 0.3s ease;
+  }
+  .place-card:hover { background: var(--bg3); }
+  .place-card:hover::before { transform: scaleY(1); }
+
+  .is-large { min-height: 280px; padding: 1.8rem 1.8rem 1.4rem; }
+
+  .pc-head {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-faint);
+  }
+  .pc-type {
+    background: var(--bg3); padding: 0.25rem 0.5rem;
+    border: 1px solid var(--line); color: var(--text-dim);
+  }
+  .pc-visited { color: var(--gold); font-size: 0.9rem; line-height: 1; }
+
+  .pc-name {
+    font-family: var(--ff-display);
+    font-size: 1.4rem;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.005em;
+    margin: 0.1rem 0 0;
+    color: var(--text);
+  }
+  .is-large .pc-name { font-size: 2rem; }
+
+  .pc-country {
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .pc-quote {
+    margin: 0.4rem 0 0;
+    font-style: italic;
+    color: var(--text-dim);
+    font-size: 0.84rem;
+    line-height: 1.5;
+    border-left: 2px solid var(--gold-dim);
+    padding-left: 0.7rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+  }
+  .is-large .pc-quote {
+    font-size: 0.95rem;
+    -webkit-line-clamp: 6;
+  }
+
+  .pc-facts {
+    margin: 0.3rem 0 0;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    line-height: 1.5;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+
+  .pc-foot {
+    margin-top: auto;
+    padding-top: 0.6rem;
+    display: flex; justify-content: flex-end;
+  }
+  .pc-arrow {
+    color: var(--text-faint);
+    transition: transform 0.2s ease, color 0.2s ease;
+    font-size: 1.1rem;
+  }
+  .place-card:hover .pc-arrow {
+    color: var(--gold);
+    transform: translateX(4px);
+  }
+
+  @media (max-width: 640px) {
+    .place-card { min-height: 180px; padding: 1.1rem; }
+    .is-large { min-height: 220px; padding: 1.3rem; }
+    .pc-name { font-size: 1.2rem; }
+    .is-large .pc-name { font-size: 1.6rem; }
+  }
+</style>

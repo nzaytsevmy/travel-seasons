@@ -1,0 +1,374 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Nav from '../../../components/Nav.astro';
+import Footer from '../../../components/Footer.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import PlaceCard from '../../../components/PlaceCard.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const all = await getCollection('places');
+  return all.map(entry => {
+    const placeSlug = entry.slug.split('/').pop();
+    return {
+      params: { country: entry.data.countrySlug, slug: placeSlug },
+      props: { entry, all },
+    };
+  });
+}
+
+const TYPE_LABEL: Record<string, string> = {
+  park: 'Национальный парк',
+  mountain: 'Гора',
+  beach: 'Пляж',
+  temple: 'Храм',
+  district: 'Район',
+  city: 'Город',
+  island: 'Остров',
+  waterfall: 'Водопад',
+  lake: 'Озеро',
+  sight: 'Достопримечательность',
+  lodge: 'Лодж',
+  route: 'Маршрут',
+  port: 'Порт',
+  airport: 'Аэропорт',
+  region: 'Регион',
+};
+
+const GUIDE_FOR_COUNTRY: Record<string, { url: string; title: string }> = {
+  uganda: { url: '/blog/uganda-safari-2026/', title: 'Уганда 2026: гориллы Бвинди и сафари' },
+  indonesia: { url: '/blog/bali-guide-2026/', title: 'Бали 2026: гайд для россиян' },
+  japan: { url: '/blog/japan-guide-2026/', title: 'Япония 2026: гайд без воды' },
+  ecuador: { url: '/blog/galapagos-2026/', title: 'Галапагосы 2026: что я видел' },
+  'new-zealand': { url: '/blog/aurora-new-zealand-2026/', title: 'Южное сияние в Новой Зеландии' },
+  antarctica: { url: '/blog/antarctica-cruise-2026/', title: 'Круиз в Антарктиду 2026' },
+  china: { url: '/blog/hainan-guide-2026/', title: 'Хайнань 2026: безвиз и Alipay' },
+};
+
+const COUNTRY_LOC: Record<string, string> = {
+  uganda: 'Уганде',
+  indonesia: 'Индонезии',
+  japan: 'Японии',
+  ecuador: 'Эквадоре',
+  'new-zealand': 'Новой Зеландии',
+  antarctica: 'Антарктиде',
+  china: 'Китае',
+  argentina: 'Аргентине',
+  spain: 'Испании',
+  france: 'Франции',
+  netherlands: 'Нидерландах',
+  germany: 'Германии',
+  colombia: 'Колумбии',
+};
+
+const { entry, all } = Astro.props;
+const { Content } = await render(entry);
+const data = entry.data;
+const placeSlug = entry.slug.split('/').pop();
+const url = `https://traveltribe.ru/places/${data.countrySlug}/${placeSlug}/`;
+
+// 3 related places из той же страны
+const related = all
+  .filter(p => p.data.countrySlug === data.countrySlug && p.slug !== entry.slug)
+  .sort((a, b) => {
+    if (a.data.visited !== b.data.visited) return a.data.visited ? -1 : 1;
+    return 0;
+  })
+  .slice(0, 3);
+
+const guide = GUIDE_FOR_COUNTRY[data.countrySlug];
+const typeLabel = TYPE_LABEL[data.type] ?? data.type;
+
+const countryLoc = COUNTRY_LOC[data.countrySlug] ?? data.country;
+const description = data.factsLine
+  ? `${data.name} (${data.country}) — ${typeLabel.toLowerCase()}. ${data.factsLine}`
+  : `${data.name} в ${countryLoc} — ${typeLabel.toLowerCase()} из каталога TravelTribe.`;
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@type": data.visited ? "TouristAttraction" : "Place",
+  "name": data.name,
+  "alternateName": data.nameEn,
+  "description": description,
+  "url": url,
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": data.country
+  },
+  "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+  ...(data.coordinates ? {
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": data.coordinates.lat,
+      "longitude": data.coordinates.lng
+    }
+  } : {}),
+  ...(data.quote ? {
+    "review": {
+      "@type": "Review",
+      "author": { "@type": "Person", "name": "Никита Зайцев" },
+      "reviewBody": data.quote
+    }
+  } : {}),
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+      { "@type": "ListItem", "position": 2, "name": "Места", "item": "https://traveltribe.ru/places/" },
+      { "@type": "ListItem", "position": 3, "name": data.country, "item": `https://traveltribe.ru/places/${data.countrySlug}/` },
+      { "@type": "ListItem", "position": 4, "name": data.name, "item": url }
+    ]
+  }
+};
+---
+
+<Layout
+  title={`${data.name} (${data.country}) — ${typeLabel} · TravelTribe`}
+  description={description}
+  canonical={url}
+  ldJson={ldJson}
+  ogType="article"
+>
+  <Nav active="places" />
+  <Breadcrumbs crumbs={[
+    { label: 'Места', href: '/places/' },
+    { label: data.country, href: `/places/${data.countrySlug}/` },
+    { label: data.name }
+  ]} />
+
+  <main id="main" class="place-page">
+    <header class="hero">
+      <div class="meta-row">
+        <span class="type-badge">{typeLabel}</span>
+        {data.visited && <span class="visited-badge">● Был лично</span>}
+      </div>
+      <h1>{data.name}</h1>
+      <div class="sub">{data.country}</div>
+    </header>
+
+    {data.quote && (
+      <blockquote class="quote">
+        «{data.quote}»
+        <cite>— Никита Зайцев</cite>
+      </blockquote>
+    )}
+
+    {data.factsLine && (
+      <div class="facts-line">{data.factsLine}</div>
+    )}
+
+    {data.price && (
+      <div class="price-line">
+        <span class="price-label">Цена</span>
+        <span class="price-value">{data.price}</span>
+      </div>
+    )}
+
+    <article class="body">
+      <Content />
+    </article>
+
+    {guide && (
+      <aside class="guide-cta">
+        <div class="cta-eyebrow">Полный гайд по стране</div>
+        <a class="cta-link" href={guide.url}>
+          {guide.title}
+          <span class="cta-arrow" aria-hidden="true">→</span>
+        </a>
+      </aside>
+    )}
+
+    {related.length > 0 && (
+      <section class="related">
+        <h2>Ещё в {countryLoc}</h2>
+        <div class="related-grid">
+          {related.map(p => {
+            const rs = p.slug.split('/').pop();
+            return (
+              <PlaceCard
+                href={`/places/${data.countrySlug}/${rs}/`}
+                name={p.data.name}
+                country={p.data.country}
+                type={p.data.type}
+                visited={p.data.visited}
+                quote={p.data.quote}
+                factsLine={p.data.factsLine}
+              />
+            );
+          })}
+        </div>
+      </section>
+    )}
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .place-page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem 4rem;
+  }
+  .hero {
+    padding: 2rem 0 2.4rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 2rem;
+  }
+  .meta-row {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .type-badge {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    padding: 0.3rem 0.6rem;
+  }
+  .visited-badge { color: var(--gold); letter-spacing: 0.1em; }
+
+  .hero h1 {
+    font-family: var(--ff-display);
+    font-size: clamp(2.4rem, 5.5vw, 4rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.6rem;
+  }
+  .sub {
+    font-size: 0.85rem;
+    color: var(--text-faint);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .quote {
+    font-family: var(--ff-display);
+    font-size: 1.4rem;
+    line-height: 1.45;
+    color: var(--text);
+    font-style: italic;
+    border-left: 3px solid var(--gold);
+    padding: 0.4rem 0 0.4rem 1.4rem;
+    margin: 2rem 0;
+  }
+  .quote cite {
+    display: block;
+    margin-top: 0.8rem;
+    font-style: normal;
+    font-size: 0.78rem;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .facts-line {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    padding: 1rem 1.2rem;
+    margin: 1.6rem 0;
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .price-line {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px dashed var(--line);
+    margin-bottom: 1.6rem;
+  }
+  .price-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+  .price-value {
+    font-family: var(--ff-display);
+    font-size: 1.4rem;
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  .body {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .body :global(p) { margin: 0 0 1.2rem; }
+  .body :global(a) { color: var(--gold); border-bottom: 1px solid var(--gold-dim); }
+  .body :global(a:hover) { border-bottom-color: var(--gold); }
+  .body :global(blockquote) {
+    border-left: 2px solid var(--gold-dim);
+    padding-left: 1rem;
+    margin: 1.4rem 0;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  .guide-cta {
+    margin: 3rem 0 2rem;
+    padding: 1.6rem 1.8rem;
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--gold);
+  }
+  .cta-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 0.6rem;
+  }
+  .cta-link {
+    font-family: var(--ff-display);
+    font-size: 1.4rem;
+    line-height: 1.2;
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+  .cta-link:hover { color: var(--gold); }
+  .cta-arrow {
+    color: var(--gold);
+    font-size: 1.6rem;
+    transition: transform 0.2s ease;
+  }
+  .cta-link:hover .cta-arrow { transform: translateX(6px); }
+
+  .related {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+  .related h2 {
+    font-family: var(--ff-display);
+    font-size: 1.6rem;
+    font-weight: 500;
+    margin: 0 0 1.4rem;
+    letter-spacing: -0.01em;
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+
+  @media (max-width: 720px) {
+    .related-grid { grid-template-columns: 1fr; }
+    .quote { font-size: 1.15rem; padding-left: 1rem; }
+    .cta-link { font-size: 1.15rem; }
+  }
+</style>

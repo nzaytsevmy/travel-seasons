@@ -1,0 +1,142 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { getCollection } from 'astro:content';
+
+const all = await getCollection('places');
+
+// Group by countrySlug
+const byCountry = new Map<string, { country: string; slug: string; places: typeof all; visited: number }>();
+for (const p of all) {
+  const slug = p.data.countrySlug;
+  if (!byCountry.has(slug)) {
+    byCountry.set(slug, { country: p.data.country, slug, places: [], visited: 0 });
+  }
+  const c = byCountry.get(slug)!;
+  c.places.push(p);
+  if (p.data.visited) c.visited += 1;
+}
+
+const countries = Array.from(byCountry.values())
+  .sort((a, b) => b.places.length - a.places.length);
+
+const totalPlaces = all.length;
+const totalVisited = all.filter(p => p.data.visited).length;
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Места — TravelTribe",
+  "description": `Каталог из ${totalPlaces} мест в ${countries.length} странах с личным опытом путешествий.`,
+  "url": "https://traveltribe.ru/places/",
+  "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+      { "@type": "ListItem", "position": 2, "name": "Места", "item": "https://traveltribe.ru/places/" }
+    ]
+  }
+};
+---
+
+<Layout
+  title="Места — каталог из 148 точек по 13 странам · TravelTribe"
+  description={`Атлас из ${totalPlaces} мест в ${countries.length} странах: ${totalVisited} проверены лично. Парки, храмы, маршруты, города — с фактурой и ценами 2026.`}
+  canonical="https://traveltribe.ru/places/"
+  ldJson={ldJson}
+>
+  <Nav active="places" />
+  <Breadcrumbs crumbs={[{ label: 'Места' }]} />
+
+  <main id="main" class="places-index">
+    <header class="hero">
+      <h1>Атлас мест</h1>
+      <p class="lede">
+        {totalPlaces} точек в {countries.length} странах. {totalVisited} — был лично, остальное — фактура из 11 гайдов и 200+ отзывов.
+      </p>
+    </header>
+
+    <section class="countries">
+      {countries.map(c => (
+        <a class="country-row" href={`/places/${c.slug}/`}>
+          <div class="cr-name">
+            <span class="cr-title">{c.country}</span>
+            <span class="cr-meta">{c.places.length} {c.places.length === 1 ? 'место' : c.places.length < 5 ? 'места' : 'мест'} · был лично: {c.visited}</span>
+          </div>
+          <span class="cr-arrow" aria-hidden="true">→</span>
+        </a>
+      ))}
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .places-index {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem 4rem;
+  }
+  .hero {
+    padding: 2rem 0 3rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .hero h1 {
+    font-family: var(--ff-display);
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.8rem;
+  }
+  .lede {
+    font-size: 1.05rem;
+    color: var(--text-dim);
+    max-width: 56ch;
+    line-height: 1.55;
+  }
+  .countries {
+    display: flex;
+    flex-direction: column;
+  }
+  .country-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 1.6rem 0.5rem;
+    border-bottom: 1px solid var(--line);
+    color: var(--text);
+    transition: background 0.15s ease, padding 0.15s ease;
+  }
+  .country-row:hover {
+    background: var(--bg2);
+    padding-left: 1.2rem;
+  }
+  .country-row:hover .cr-arrow {
+    color: var(--gold);
+    transform: translateX(4px);
+  }
+  .cr-title {
+    font-family: var(--ff-display);
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    display: block;
+  }
+  .cr-meta {
+    font-size: 0.78rem;
+    color: var(--text-faint);
+    letter-spacing: 0.06em;
+    margin-top: 0.3rem;
+    display: block;
+  }
+  .cr-arrow {
+    font-size: 1.4rem;
+    color: var(--text-faint);
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+</style>
