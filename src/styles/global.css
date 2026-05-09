@@ -328,14 +328,99 @@ html.light-theme .btn-primary { color: #fff; }
 :where(.prose, .hub-wrap) .table-wrap td strong,
 .hub-table td strong { color: var(--text); }
 
-/* Mobile: tighten padding, shrink font slightly */
+/* Long descriptive cells wrap softly; numeric cells stay on one line */
+:where(.prose, .hub-wrap) .table-wrap td,
+.hub-table td { overflow-wrap: anywhere; }
+:where(.prose, .hub-wrap) .table-wrap td[align="right"],
+:where(.prose, .hub-wrap) .table-wrap th[align="right"],
+.hub-table td[align="right"],
+.hub-table th[align="right"] {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ───────── Mobile: stack each row as a card (Chris Coyier pattern) ─────────
+   <600px: header row hides visually (kept for a11y), every <td> stacks
+   vertically and shows its <th> label via data-label::before, set by
+   the rehype plugin from the table's <thead>. */
 @media (max-width: 600px) {
-  :where(.prose, .hub-wrap) .table-wrap > table,
-  .hub-table { font-size: 0.84rem; }
-  :where(.prose, .hub-wrap) .table-wrap th,
-  :where(.prose, .hub-wrap) .table-wrap td,
-  .hub-table th,
-  .hub-table td {
-    padding: 0.55rem 0.6rem;
+  /* Wrapper: drop scroll/border, table flows in normal document */
+  :where(.prose, .hub-wrap) .table-wrap {
+    overflow: visible;
+    border: 0;
+    background: transparent;
+    margin: 1.4rem 0 1.8rem;
   }
+
+  :where(.prose, .hub-wrap) .table-wrap > table,
+  .hub-table {
+    display: block;
+    width: 100%;
+    font-size: 0.92rem;
+  }
+
+  /* Hide column headers visually but keep them for screen readers */
+  :where(.prose, .hub-wrap) .table-wrap thead,
+  .hub-table thead {
+    position: absolute;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0; overflow: hidden;
+    clip: rect(0,0,0,0); border: 0;
+  }
+
+  :where(.prose, .hub-wrap) .table-wrap tbody,
+  .hub-table tbody { display: block; }
+
+  /* Each row becomes a card */
+  :where(.prose, .hub-wrap) .table-wrap tbody tr,
+  .hub-table tbody tr {
+    display: block;
+    margin-bottom: 0.85rem;
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  :where(.prose, .hub-wrap) .table-wrap tbody tr:last-child,
+  .hub-table tbody tr:last-child { margin-bottom: 0; }
+
+  /* Each cell — label on the left, value on the right, wrapping naturally */
+  :where(.prose, .hub-wrap) .table-wrap td,
+  .hub-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.6rem 0.85rem;
+    border-bottom: 1px solid var(--line);
+    text-align: right;
+    color: var(--text);
+  }
+  :where(.prose, .hub-wrap) .table-wrap td:last-child,
+  .hub-table td:last-child { border-bottom: none; }
+
+  /* Inject the column header on the left of each value */
+  :where(.prose, .hub-wrap) .table-wrap td::before,
+  .hub-table td::before {
+    content: attr(data-label);
+    flex: 0 0 auto;
+    max-width: 45%;
+    text-align: left;
+    color: var(--text-faint);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding-right: 0.5rem;
+  }
+  /* When a cell has no data-label (e.g. hand-written hub-table without it),
+     hide the empty pseudo and span the value full-width */
+  :where(.prose, .hub-wrap) .table-wrap td:not([data-label])::before,
+  .hub-table td:not([data-label])::before { content: none; }
+  :where(.prose, .hub-wrap) .table-wrap td:not([data-label]),
+  .hub-table td:not([data-label]) { justify-content: flex-start; text-align: left; }
+
+  /* Hover not useful on touch — disable */
+  :where(.prose, .hub-wrap) .table-wrap tbody tr:hover,
+  .hub-table tbody tr:hover { background: var(--bg2); }
 }
