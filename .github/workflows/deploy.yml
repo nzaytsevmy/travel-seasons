@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - uses: actions/setup-node@v4
         with:
@@ -32,3 +34,24 @@ jobs:
             -e "ssh -i ~/.ssh/deploy_key" \
             dist/ \
             u3502181@server290.hosting.reg.ru:/var/www/u3502181/data/www/traveltribe.ru/
+
+      - name: Collect changed files
+        id: changed
+        run: |
+          if git rev-parse HEAD~1 >/dev/null 2>&1; then
+            FILES=$(git diff --name-only HEAD~1 HEAD)
+          else
+            FILES=$(git show --pretty="" --name-only HEAD)
+          fi
+          {
+            echo 'files<<EOF'
+            echo "$FILES"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Ping IndexNow + Yandex recrawl
+        env:
+          CHANGED_FILES: ${{ steps.changed.outputs.files }}
+          YANDEX_OAUTH_TOKEN: ${{ secrets.YANDEX_OAUTH_TOKEN }}
+          YANDEX_USER_ID: ${{ secrets.YANDEX_USER_ID }}
+        run: python3 .github/scripts/seo_ping.py
