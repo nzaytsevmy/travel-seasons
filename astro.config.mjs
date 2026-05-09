@@ -26,7 +26,11 @@ export default defineConfig({
     mdx(),
     pagefind(),
     sitemap({
-      filter: (page) => !page.includes('/404') && !page.includes('/blog/tag/') && !page.includes('sitemap-images'),
+      filter: (page) => !page.includes('/404')
+        && !page.includes('/blog/tag/')
+        && !page.includes('sitemap-images')
+        && !page.includes('/og/')
+        && !page.includes('/pagefind/'),
       changefreq: 'weekly',
       priority: 0.7,
       lastmod: new Date(),
