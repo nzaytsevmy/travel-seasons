@@ -1,0 +1,314 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Footer from '../components/Footer.astro';
+
+const url = 'https://traveltribe.ru/antarctica/';
+
+const faqs = [
+  {
+    q: 'Сколько стоит круиз в Антарктиду из России в 2026?',
+    a: 'Под ключ из Москвы на одного человека: 750 000–950 000 ₽ эконом-класс (ноябрь/март, базовые корабли MV Ushuaia / Ocean Nova), 1 100 000–1 400 000 ₽ стандарт (декабрь–февраль, Quark/Swan Hellenic, каюта с окном), 2 500 000–4 500 000+ ₽ премиум (Ponant, Silversea, бизнес-перелёт). В сумму входит круиз 10–11 дней, перелёты с пересадкой, страховка $200k+, отель и экипировка.'
+  },
+  {
+    q: 'Сколько плыть до Антарктиды из России?',
+    a: 'Прямого морского пути из России нет. Маршрут: самолёт Москва → Буэнос-Айрес (~19–20 часов в воздухе с пересадкой), потом БА → Ушуая (3.5 часа), потом корабль через пролив Дрейка (~48 часов). От вылета из Москвы до первой высадки на материке — 5–6 суток с учётом стыковок и ночёвок. Сам морской переход Ушуая → Антарктический полуостров — 600 морских миль, 2 суток в одну сторону.'
+  },
+  {
+    q: 'Когда лучше ехать в Антарктиду?',
+    a: 'Сезон — ноябрь–март, южное лето. Ноябрь — пингвины строят гнёзда, цены на 25–30% ниже декабря, людей мало. Декабрь–январь — пик: птенцы вылупляются, солнце 24 часа, самые длинные дни, +5°C. Февраль — лучший месяц для китов (горбачи, синие, кашалоты). Март — закрытие сезона, цены падают, киты ещё в водах. С апреля по октябрь континент закрыт.'
+  },
+  {
+    q: 'Нужна ли виза в Аргентину для россиян?',
+    a: 'Нет. Аргентина — безвиз для россиян на 90 дней с 2009 года, в 2026 правило действует. Прилетел и въехал: загранпаспорт со сроком действия минимум 6 месяцев, обратный билет, бронь отеля на первые ночи. Никаких посольств, биометрии и ожидания. Это снимает основной барьер для антарктических круизов.'
+  },
+  {
+    q: 'Реально ли добраться до Антарктиды на небольшом корабле?',
+    a: 'Да, и именно на таких туда плавают. Стандартный антарктический круизник — 150–200 пассажиров (MV Ushuaia, Sea Spirit, Plancius). Правила IAATO запрещают высадку более 100 человек одновременно на одну точку, поэтому большие лайнеры на 2000 пассажиров туда не пускают. Самые маленькие — экспедиционные парусные яхты на 8–12 человек (Bark Europa, Selma) — ходят регулярно, но это $10–15k за место без сервиса крупного корабля.'
+  },
+  {
+    q: 'Можно ли попасть в Антарктиду без круиза?',
+    a: 'Да, два варианта. Чартерный самолёт из Чили (Антарктика XXI) — 2 часа от Пунта-Аренаса до острова Кинг-Джордж, 3–4 дня программа, ~$5 500 + перелёт из России. Без качки, но и без круиза по полуострову. Научные станции туристов не принимают.'
+  },
+  {
+    q: 'Когда открывается бронирование на сезон 2026/2027?',
+    a: 'Все крупные операторы (Quark, Swan Hellenic, Hurtigruten, Ponant) уже принимают брони на сезон ноябрь 2026 — март 2027. Лучшие каюты разлетаются за 6–9 месяцев. Стандартный депозит — 20–25%, остаток за 90 дней до выезда. Last minute скидки 20–40% доступны только на месте в Ушуае за 1–2 недели до посадки.'
+  }
+];
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": `${url}#collection`,
+      "url": url,
+      "name": "Антарктида 2026: круизы, цены, виза для россиян",
+      "description": "Полный обзор путешествий в Антарктиду из России в 2026: цены круизов 750k–4.5M ₽, маршрут через Буэнос-Айрес и Ушуая, виза, сезоны, безопасность.",
+      "inLanguage": "ru-RU",
+      "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+      "about": { "@type": "Place", "name": "Антарктида", "alternateName": "Антарктический полуостров" },
+      "mainEntity": {
+        "@type": "ItemList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "url": "https://traveltribe.ru/blog/antarctica-cruise-2026/",
+            "name": "Круиз в Антарктиду 2026: цена, маршрут, мой опыт под ключ"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "url": "https://traveltribe.ru/blog/aurora-new-zealand-2026/",
+            "name": "Южное сияние в Новой Зеландии 2026"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${url}#faq`,
+      "mainEntity": faqs.map(f => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": f.a }
+      }))
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Антарктида", "item": url }
+      ]
+    }
+  ]
+};
+---
+<Layout
+  title="Антарктида 2026: круиз из Москвы, цены, виза, сезоны — TravelTribe"
+  description="Путешествие в Антарктиду из России 2026: цены круиза от 750 000 ₽, маршрут через Буэнос-Айрес и Ушуая, виза в Аргентину не нужна, лучший сезон ноябрь–март. Личный опыт от автора, был в январе 2025."
+  canonical={url}
+  ogTitle="Антарктида 2026 — круизы из Москвы, цены, маршрут"
+  ogDescription="Сколько стоит круиз в Антарктиду из России в 2026. Цены 750k–4.5M ₽, виза не нужна, сезон ноябрь–март."
+  ogType="website"
+  ldJson={ldJson}
+>
+  <Nav active="blog" />
+  <Breadcrumbs crumbs={[{ label: 'Антарктида' }]} />
+
+  <main id="main" class="hub-wrap">
+    <header class="hub-header">
+      <div class="hub-tag">// Континент · Bucket list</div>
+      <h1>Антарктида <em>2026</em></h1>
+      <p class="hub-sub">Круиз из Москвы, цены, виза, сезоны — для российского путешественника. Был в январе 2025, маршрут под ключ.</p>
+    </header>
+
+    <section class="hub-tldr">
+      <strong>TL;DR:</strong> Цена круиза «под ключ из Москвы» — <strong>750 000–1 400 000 ₽</strong> на человека за 10–11 дней. Маршрут: <strong>Москва → Буэнос-Айрес → Ушуая → Антарктический полуостров</strong>. <strong>Виза в Аргентину не нужна</strong> (безвиз 90 дней). Сезон — <strong>ноябрь–март</strong>, оптимальный месяц февраль (киты + не пик цен). Бронировать на сезон 2026/27 уже сейчас, лучшие каюты разлетаются за 6–9 месяцев.
+    </section>
+
+    <section class="hub-section">
+      <h2>Сколько стоит — три класса в 2026</h2>
+      <table class="hub-table">
+        <thead>
+          <tr><th>Класс</th><th>Бюджет под ключ</th><th>Что включено</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Эконом</strong></td>
+            <td><strong>750 000–950 000 ₽</strong></td>
+            <td>Ноябрь / март, MV Ushuaia или Ocean Nova, нижняя палуба, перелёт эконом</td>
+          </tr>
+          <tr>
+            <td><strong>Стандарт</strong></td>
+            <td><strong>1 100 000–1 400 000 ₽</strong></td>
+            <td>Декабрь–февраль, Swan Hellenic / Quark, каюта с окном</td>
+          </tr>
+          <tr>
+            <td><strong>Премиум</strong></td>
+            <td><strong>2 500 000–4 500 000+ ₽</strong></td>
+            <td>Ponant, Silversea, балкон, бизнес-перелёт, личный бутлер</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="hub-note">Все варианты «тур в Антарктиду цена дешево» дешевле 700k ₽ — это либо непонимание что покупают, либо мошенники. <a href="/blog/antarctica-cruise-2026/#сколько-стоит-круиз-в-антарктиду--реальный-бюджет-под-ключ">Детальная разбивка бюджета по статьям →</a></p>
+    </section>
+
+    <section class="hub-section">
+      <h2>Когда ехать — расклад по месяцам</h2>
+      <ul class="hub-list">
+        <li><strong>Ноябрь</strong> — открытие сезона, нетронутые льды, пингвины строят гнёзда. Цены на 25–30% ниже декабря.</li>
+        <li><strong>Декабрь–январь</strong> — пик. Птенцы вылупляются, солнце 24 часа, самая мягкая погода. Самые высокие цены.</li>
+        <li><strong>Февраль</strong> — лучший месяц для китов (горбачи, синие, кашалоты, косатки). Льды красивые, цены чуть ниже января.</li>
+        <li><strong>Март</strong> — закрытие, цены падают на 20–30%, киты ещё в водах. Высадки могут срываться чаще из-за погоды.</li>
+        <li><strong>Апрель–октябрь</strong> — Антарктида закрыта. Льды, ветер, минус 40, никаких туристов.</li>
+      </ul>
+      <p class="hub-note"><a href="/seasons/">Таблица сезонов</a> — Антарктида и 38 других направлений с оптимальными окнами.</p>
+    </section>
+
+    <section class="hub-section">
+      <h2>Как добраться из России</h2>
+      <p>Прямых рейсов из России в Аргентину нет и не будет в обозримом будущем. Все варианты — через хаб с пересадкой:</p>
+      <ul class="hub-list">
+        <li><strong>Стамбул</strong> (Turkish Airlines) — самый частый маршрут, 19 часов в воздухе, <strong>62 000–90 000 ₽</strong> туда-обратно</li>
+        <li><strong>Дубай</strong> (Emirates) — 20 часов, <strong>70 000–110 000 ₽</strong>, можно бесплатно выйти в город при долгой стыковке</li>
+        <li><strong>Аддис-Абеба</strong> (Ethiopian Airlines) — 19 часов, <strong>65 000–85 000 ₽</strong>, экзотика</li>
+      </ul>
+      <p>Из Буэнос-Айреса до Ушуая — внутренний рейс Aerolíneas Argentinas, 3.5 часа, 8 000–12 000 ₽. Закладывайте минимум 1 ночь между перелётами в БА — иначе пропустите стыковочный, потеряете $400 и день.</p>
+    </section>
+
+    <section class="hub-section">
+      <h2>Виза и страховка</h2>
+      <p><strong>Виза в Аргентину для россиян не нужна</strong> — безвиз 90 дней с 2009 года. Условия: загранпаспорт со сроком действия минимум 6 месяцев, обратный билет, бронь отеля на первые ночи.</p>
+      <p><strong>Страховка обязательна — минимум $200 000 + эвакуация</strong>. Все круизные операторы проверяют на стойке регистрации, без неё на корабль не пустят. Эвакуация из Антарктики стоит реально дорого: один сломавшийся пассажир на моём корабле обошёлся страховой в $80 000. Цена страховки: ~$50–80 за круиз 10–12 дней. <a href="https://cherehapa.ru/?partnerId=43c9ad00" target="_blank" rel="noopener sponsored">Cherehapa</a> сравнивает 20 страховых, есть фильтр «круизы и Антарктика».</p>
+    </section>
+
+    <section class="hub-section">
+      <h2>Главный пост — личный опыт</h2>
+      <a href="/blog/antarctica-cruise-2026/" class="hub-card">
+        <div class="hub-card-tag">// Был лично · январь 2025</div>
+        <div class="hub-card-title">Круиз в Антарктиду 2026: цена, маршрут, мой опыт под ключ</div>
+        <div class="hub-card-desc">3500+ слов: реальные цены 2026, пролив Дрейка, голубой лёд, 4 вида пингвинов, что взять, российская станция Беллинсгаузен и история про папуанского пингвина в Тихом океане.</div>
+        <div class="hub-card-arrow">Читать полный пост →</div>
+      </a>
+    </section>
+
+    <section class="hub-section">
+      <h2>FAQ</h2>
+      <div class="hub-faq">
+        {faqs.map(f => (
+          <details class="hub-faq-item">
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <section class="hub-section">
+      <h2>Что почитать дальше</h2>
+      <ul class="hub-related">
+        <li><a href="/blog/aurora-new-zealand-2026/">Южное сияние в Новой Зеландии 2026</a> — следующий пункт bucket list, тоже южные широты, апрель–сентябрь</li>
+        <li><a href="/seasons/">Таблица сезонов</a> — оптимальные окна по 39 направлениям мира</li>
+        <li><a href="/calculator/">Калькулятор бюджета путешествия</a> — учтёт перелёт, проживание и курс ЦБ РФ</li>
+        <li><a href="/blog/">Блог</a> — личные отчёты и обзоры по странам</li>
+      </ul>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.hub-wrap { max-width: 760px; margin: 0 auto; padding: 0 2rem 5rem; }
+
+.hub-header { margin: 3rem 0 2.5rem; text-align: center; }
+.hub-tag {
+  display: inline-flex; align-items: center;
+  font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold); border: 1px solid rgba(201,151,58,0.3);
+  background: rgba(201,151,58,0.08); padding: 0.3rem 0.85rem; border-radius: 20px;
+  margin-bottom: 1.4rem;
+}
+.hub-header h1 {
+  font-family: var(--ff-display); font-size: clamp(2.6rem, 6vw, 4.5rem);
+  font-weight: 300; line-height: 1.05; letter-spacing: -0.01em;
+}
+.hub-header h1 em { color: var(--gold); font-style: italic; }
+.hub-sub { color: var(--text-dim); font-size: 1rem; line-height: 1.7; margin: 1rem auto 0; max-width: 560px; }
+
+.hub-tldr {
+  background: var(--bg2); border: 1px solid var(--line); border-left: 3px solid var(--gold);
+  padding: 1.2rem 1.4rem; border-radius: 4px;
+  font-size: 0.95rem; line-height: 1.7; color: var(--text-dim);
+  margin-bottom: 3rem;
+}
+.hub-tldr strong { color: var(--text); }
+
+.hub-section { margin-bottom: 3rem; }
+.hub-section h2 {
+  font-family: var(--ff-display); font-size: 1.6rem; font-weight: 400;
+  color: var(--gold); margin-bottom: 1.2rem; line-height: 1.2;
+}
+.hub-section p { color: var(--text-dim); line-height: 1.8; font-size: 0.95rem; margin-bottom: 1rem; }
+.hub-section a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+
+.hub-list { padding-left: 1.4rem; margin: 0.5rem 0 1rem; }
+.hub-list li { color: var(--text-dim); line-height: 1.75; margin-bottom: 0.55rem; font-size: 0.95rem; }
+.hub-list li strong { color: var(--text); }
+
+.hub-table {
+  width: 100%; border-collapse: collapse;
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 4px; overflow: hidden;
+  margin: 1rem 0 1.2rem; font-size: 0.92rem;
+}
+.hub-table thead { background: rgba(201,151,58,0.08); }
+.hub-table th {
+  text-align: left; font-weight: 600; color: var(--text);
+  padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--gold-dim);
+  letter-spacing: 0.02em;
+}
+.hub-table td {
+  padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--line);
+  color: var(--text-dim); vertical-align: top;
+}
+.hub-table tbody tr:last-child td { border-bottom: none; }
+.hub-table td strong { color: var(--text); }
+@media (max-width: 600px) {
+  .hub-table { font-size: 0.82rem; }
+  .hub-table th, .hub-table td { padding: 0.55rem 0.6rem; }
+}
+
+.hub-note { font-size: 0.85rem; color: var(--text-faint); }
+
+.hub-card {
+  display: block;
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 4px;
+  padding: 1.6rem 1.8rem;
+  text-decoration: none !important;
+  position: relative; overflow: hidden;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.hub-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.hub-card:hover { border-color: rgba(201,151,58,0.5); transform: translateY(-2px); }
+.hub-card:hover::before { opacity: 1; }
+.hub-card-tag {
+  font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 0.6rem;
+}
+.hub-card-title {
+  font-family: var(--ff-display); font-size: 1.4rem; font-weight: 400;
+  color: var(--text); line-height: 1.25; margin-bottom: 0.6rem;
+}
+.hub-card-desc { color: var(--text-dim); font-size: 0.88rem; line-height: 1.65; margin-bottom: 0.8rem; }
+.hub-card-arrow { color: var(--gold); font-size: 0.85rem; letter-spacing: 0.04em; }
+
+.hub-faq { display: flex; flex-direction: column; gap: 0.6rem; }
+.hub-faq-item {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 4px;
+  padding: 0; overflow: hidden;
+}
+.hub-faq-item summary {
+  font-weight: 500; color: var(--text); padding: 0.95rem 1.2rem;
+  cursor: pointer; font-size: 0.95rem; line-height: 1.5;
+  list-style: none; position: relative;
+}
+.hub-faq-item summary::after {
+  content: '+'; position: absolute; right: 1.2rem; top: 50%; transform: translateY(-50%);
+  color: var(--gold); font-size: 1.2rem; transition: transform 0.2s;
+}
+.hub-faq-item[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+.hub-faq-item p {
+  padding: 0 1.2rem 1.1rem; margin: 0;
+  color: var(--text-dim); line-height: 1.75; font-size: 0.92rem;
+}
+
+.hub-related { padding-left: 1.4rem; }
+.hub-related li { color: var(--text-dim); line-height: 1.75; margin-bottom: 0.5rem; font-size: 0.95rem; }
+</style>

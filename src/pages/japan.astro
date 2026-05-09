@@ -1,0 +1,301 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Footer from '../components/Footer.astro';
+
+const url = 'https://traveltribe.ru/japan/';
+
+const faqs = [
+  {
+    q: 'Когда лучше ехать в Японию в 2026?',
+    a: 'Оптимальные сезоны — октябрь–ноябрь (момидзи, красные клёны, +18°C, сухо) и конец марта — начало апреля (сакура, +15°C, но толпы и пик цен). Избегать: Золотая неделя 29 апреля — 6 мая (цены ×2.5–3, толпы), Обон (середина августа), сезон дождей цую (середина июня — середина июля), лета (+38°C, влажность 100%).'
+  },
+  {
+    q: 'Сколько стоит виза в Японию для россиян в 2026?',
+    a: 'Сама виза бесплатна (консульский сбор 0 ₽). Платится только сервисный сбор JVAC: 970 ₽ в Москве и СПб, до 2500 ₽ в региональных VFS. С февраля 2026 документы принимают только через JVAC под управлением VFS Global, посольство напрямую не работает с туристами. Срок 4–7 рабочих дней, отказы <5%, отели можно не выкупать заранее (новое правило с ноября 2024).'
+  },
+  {
+    q: 'Какой бюджет на поездку в Японию в 2026?',
+    a: 'Реальные диапазоны на день на одного: эконом — $50–80 (хостелы, чифаньки, общественный транспорт), комфорт — $150–250 (3* отели, нормальные рестораны, такси периодически), премиум — $300+ (4–5*, кайсэки, частный транспорт). Перелёт Москва → Токио с пересадкой $500–900 в обычные даты, $1100–1500 на Golden Week. Иена в 2026 слабая, что делает Японию доступнее обычного. Минимум 10 дней на Golden Route Токио — Хаконе — Киото — Осака.'
+  },
+  {
+    q: 'Когда Золотая неделя в Японии в 2026?',
+    a: 'С 29 апреля (среда) по 6 мая (среда) 2026 — 8 дней подряд. Это «Super Golden Week», случается раз в 5–7 лет благодаря удачному выпадению дней недели. Праздничные даты: 29 апреля (Showa Day), 3 мая (Constitution Memorial Day), 4 мая (Greenery Day), 5 мая (Children\'s Day), 6 мая (substitute holiday). 30 апреля и 1–2 мая — bridge-выходные. Цены ×2.5–3, толпы максимальные за год.'
+  },
+  {
+    q: 'Нужен ли JR Pass в 2026?',
+    a: 'Скорее нет. С октября 2023 цена JR Pass выросла на 70% (с 29 650 до 50 000 ¥ за 7 дней). Старая логика «всем брать» больше не работает. Считайте по конкретному маршруту: один билет Токио → Киото → Токио ~30 000 ¥, плюс местные поезда — JR Pass окупится только если планируете 4+ дальних переезда. Для стандартного маршрута Токио + Киото + Осака — выгоднее покупать билеты по отдельности через SmartEX или Klook.'
+  },
+  {
+    q: 'Есть ли прямые рейсы Россия — Япония в 2026?',
+    a: 'Нет. Прямых рейсов между Россией и Японией нет с марта 2022 и в обозримом будущем не будет. Все варианты — с пересадкой через Стамбул (Turkish), Дубай (Emirates), Доху (Qatar), Пекин/Шанхай (Air China, China Eastern), Сеул (Korean Air, Asiana). Время в пути 14–22 часа, цена $500–900 в обычные даты.'
+  },
+  {
+    q: 'Что нельзя ввозить в Японию из России?',
+    a: 'Главное — Корвалол, Валокордин (содержат фенобарбитал — это в Японии наркотик, депортация и запрет на въезд). Псевдоэфедрин (Sudafed, Actifed). Аддерол и амфетамин-содержащие. Из еды — мясо, сало, колбасу, мёд, цитрусовые. Свежие фрукты и овощи. Ограничения на алкоголь (3 бутылки) и сигареты (200 шт). Заполняйте таможенную декларацию честно — штрафы крупные.'
+  }
+];
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": `${url}#collection`,
+      "url": url,
+      "name": "Япония 2026: гайды, виза, сезоны для россиян",
+      "description": "Полный обзор поездок в Японию из России в 2026: бесплатная виза, бюджет $50–300/день, лучшие сезоны (момидзи и сакура), Золотая неделя, главные гайды.",
+      "inLanguage": "ru-RU",
+      "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+      "about": { "@type": "Country", "name": "Япония" },
+      "mainEntity": {
+        "@type": "ItemList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "url": "https://traveltribe.ru/blog/japan-guide-2026/", "name": "Япония 2026: гайд без воды для россиян" },
+          { "@type": "ListItem", "position": 2, "url": "https://traveltribe.ru/blog/japan-visa-2026/", "name": "Виза в Японию для россиян 2026: пошаговый гайд" },
+          { "@type": "ListItem", "position": 3, "url": "https://traveltribe.ru/blog/japan-golden-week-2026/", "name": "Золотая неделя в Японии 2026: даты, цены, стратегия" }
+        ]
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${url}#faq`,
+      "mainEntity": faqs.map(f => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": f.a }
+      }))
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Япония", "item": url }
+      ]
+    }
+  ]
+};
+---
+<Layout
+  title="Япония 2026: гайд, виза, сезоны, бюджет для россиян — TravelTribe"
+  description="Поездка в Японию из России в 2026: виза бесплатна (сервис JVAC 970 ₽), бюджет от $50/день, лучшие сезоны октябрь–ноябрь (момидзи) и конец марта (сакура). Главные гайды от автора."
+  canonical={url}
+  ogTitle="Япония 2026 — виза, сезоны, бюджет"
+  ogDescription="Виза бесплатна, бюджет от $50/день, момидзи в ноябре. Гайды, маршруты и FAQ."
+  ogType="website"
+  ldJson={ldJson}
+>
+  <Nav active="blog" />
+  <Breadcrumbs crumbs={[{ label: 'Япония' }]} />
+
+  <main id="main" class="hub-wrap">
+    <header class="hub-header">
+      <div class="hub-tag">// Страна · 60+ стран автора</div>
+      <h1>Япония <em>2026</em></h1>
+      <p class="hub-sub">Виза, сезоны, бюджет, маршруты — всё что нужно для первой поездки из России. Был в ноябре 2023, готовлю обновление 2026.</p>
+    </header>
+
+    <section class="hub-tldr">
+      <strong>TL;DR:</strong> Виза <strong>бесплатна</strong>, сервисный сбор JVAC <strong>970 ₽</strong>, отказов <5%. Лучший сезон — <strong>октябрь–ноябрь</strong> (момидзи). Избегать: <strong>Золотая неделя 29 апр — 6 мая 2026</strong>, Обон (середина августа), цую (июнь–июль). Бюджет: <strong>$50/день</strong> эконом, <strong>$150–250</strong> комфорт, <strong>$300+</strong> премиум. JR Pass с 2023 чаще не нужен. Минимум 10 дней на Golden Route Токио — Хаконе — Киото — Осака.
+    </section>
+
+    <section class="hub-section">
+      <h2>Сезоны — когда лететь</h2>
+      <ul class="hub-list">
+        <li><strong>Октябрь–ноябрь</strong> — момидзи (красные клёны), сухо, +18°C, идеальная погода. Мой выбор для первой поездки. Пик в Киото — середина-конец ноября.</li>
+        <li><strong>Конец марта — начало апреля</strong> — сакура. Пик туризма, отели бронируются за полгода, цены максимальные. Цветение 1–2 недели, зависит от широты.</li>
+        <li><strong>🚩 29 апреля — 6 мая 2026 (Golden Week)</strong> — избегать. Толпы, цены ×2.5–3, синкансены забиты.</li>
+        <li><strong>🚩 Середина июня — середина июля (цую)</strong> — сезон дождей, влажно.</li>
+        <li><strong>🚩 Июль–август</strong> — жара до +38°C, влажность 100%. Ехать только за восхождением на Фудзи (1 июля — 10 сентября) или летними фестивалями.</li>
+        <li><strong>🚩 Середина августа (Обон)</strong> — второй национальный отпуск, толпы и цены.</li>
+      </ul>
+      <p class="hub-note"><a href="/seasons/">Таблица сезонов</a> — Япония и 38 других направлений с оптимальными окнами.</p>
+    </section>
+
+    <section class="hub-section">
+      <h2>Виза для россиян в 2026</h2>
+      <ul class="hub-list">
+        <li><strong>Стоимость:</strong> виза бесплатна, сервисный сбор JVAC <strong>970 ₽</strong> (Москва, СПб), до 2500 ₽ в регионах</li>
+        <li><strong>Где подавать:</strong> JVAC под управлением VFS Global с 12 февраля 2026 (посольство больше не принимает напрямую)</li>
+        <li><strong>Срок:</strong> 4–7 рабочих дней, не ранее чем за 3 месяца до вылета</li>
+        <li><strong>Документы:</strong> загранпаспорт, фото <strong>4.5 × 4.5 см</strong> (не Шенген!), банковская выписка $100/день минимум $2000, авиабилеты, бронь отеля (с ноября 2024 — можно не выкупать)</li>
+        <li><strong>Отказы:</strong> &lt;5%, главная причина — неправильный формат фото или незаполненные поля анкеты</li>
+      </ul>
+      <p class="hub-note"><a href="/blog/japan-visa-2026/">Полный пошаговый гайд по визе →</a></p>
+    </section>
+
+    <section class="hub-section">
+      <h2>Бюджет — реальные цифры 2026</h2>
+      <table class="hub-table">
+        <thead><tr><th>Уровень</th><th>На день</th><th>Что включает</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Эконом</strong></td><td><strong>$50–80</strong></td><td>Хостел / капсула, чифаньки и комбини, IC-карта</td></tr>
+          <tr><td><strong>Комфорт</strong></td><td><strong>$150–250</strong></td><td>3* отель / бизнес-отель, нормальные рестораны, такси периодически</td></tr>
+          <tr><td><strong>Премиум</strong></td><td><strong>$300+</strong></td><td>4–5*, кайсэки, рёкан с онсэном, частный транспорт</td></tr>
+        </tbody>
+      </table>
+      <p>Перелёт Москва ↔ Токио с пересадкой: <strong>$500–900</strong> в обычные даты, <strong>$1100–1500</strong> на Golden Week. Иена в 2026 слабая (~7 ¥/₽), что делает Японию доступнее обычного. <a href="/calculator/">Калькулятор бюджета</a> — точная сумма под твои даты.</p>
+    </section>
+
+    <section class="hub-section">
+      <h2>Главные гайды</h2>
+      <div class="hub-cards">
+        <a href="/blog/japan-guide-2026/" class="hub-card">
+          <div class="hub-card-tag">// Главный гайд · ноябрь 2023</div>
+          <div class="hub-card-title">Япония 2026: гайд без воды для россиян</div>
+          <div class="hub-card-desc">Бюджет, аэропорты Токио, доставка багажа, IC-карты, Tax Free, что нельзя ввозить (Корвалол депортируют).</div>
+          <div class="hub-card-arrow">Читать →</div>
+        </a>
+        <a href="/blog/japan-visa-2026/" class="hub-card">
+          <div class="hub-card-tag">// Виза · обновлено</div>
+          <div class="hub-card-title">Виза в Японию для россиян 2026</div>
+          <div class="hub-card-desc">Пошагово через JVAC: документы, фото 4.5×4.5 (не Шенген), банковская выписка, неоплаченные брони — что изменилось в 2024–2026.</div>
+          <div class="hub-card-arrow">Читать →</div>
+        </a>
+        <a href="/blog/japan-golden-week-2026/" class="hub-card">
+          <div class="hub-card-tag">// Golden Week 2026</div>
+          <div class="hub-card-title">Золотая неделя в Японии 2026</div>
+          <div class="hub-card-desc">29 апреля — 6 мая, 8 дней подряд. Цены ×3, что закрыто, что работает, альтернативные даты, стратегия если уже купили билеты.</div>
+          <div class="hub-card-arrow">Читать →</div>
+        </a>
+      </div>
+    </section>
+
+    <section class="hub-section">
+      <h2>FAQ</h2>
+      <div class="hub-faq">
+        {faqs.map(f => (
+          <details class="hub-faq-item">
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <section class="hub-section">
+      <h2>Что почитать дальше</h2>
+      <ul class="hub-related">
+        <li><a href="/seasons/">Таблица сезонов</a> — 39 направлений мира, фильтр по месяцу и визе</li>
+        <li><a href="/calculator/">Калькулятор бюджета путешествия</a> — перелёт + проживание + питание</li>
+        <li><a href="/blog/aurora-new-zealand-2026/">Южное сияние в Новой Зеландии</a> — частый компаньон Японии через Сингапур</li>
+        <li><a href="/blog/">Все статьи блога</a> — личные отчёты по странам</li>
+      </ul>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.hub-wrap { max-width: 760px; margin: 0 auto; padding: 0 2rem 5rem; }
+
+.hub-header { margin: 3rem 0 2.5rem; text-align: center; }
+.hub-tag {
+  display: inline-flex; align-items: center;
+  font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold); border: 1px solid rgba(201,151,58,0.3);
+  background: rgba(201,151,58,0.08); padding: 0.3rem 0.85rem; border-radius: 20px;
+  margin-bottom: 1.4rem;
+}
+.hub-header h1 {
+  font-family: var(--ff-display); font-size: clamp(2.6rem, 6vw, 4.5rem);
+  font-weight: 300; line-height: 1.05; letter-spacing: -0.01em;
+}
+.hub-header h1 em { color: var(--gold); font-style: italic; }
+.hub-sub { color: var(--text-dim); font-size: 1rem; line-height: 1.7; margin: 1rem auto 0; max-width: 560px; }
+
+.hub-tldr {
+  background: var(--bg2); border: 1px solid var(--line); border-left: 3px solid var(--gold);
+  padding: 1.2rem 1.4rem; border-radius: 4px;
+  font-size: 0.95rem; line-height: 1.7; color: var(--text-dim);
+  margin-bottom: 3rem;
+}
+.hub-tldr strong { color: var(--text); }
+
+.hub-section { margin-bottom: 3rem; }
+.hub-section h2 {
+  font-family: var(--ff-display); font-size: 1.6rem; font-weight: 400;
+  color: var(--gold); margin-bottom: 1.2rem; line-height: 1.2;
+}
+.hub-section p { color: var(--text-dim); line-height: 1.8; font-size: 0.95rem; margin-bottom: 1rem; }
+.hub-section a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+
+.hub-list { padding-left: 1.4rem; margin: 0.5rem 0 1rem; }
+.hub-list li { color: var(--text-dim); line-height: 1.75; margin-bottom: 0.55rem; font-size: 0.95rem; }
+.hub-list li strong { color: var(--text); }
+
+.hub-table {
+  width: 100%; border-collapse: collapse;
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 4px; overflow: hidden;
+  margin: 1rem 0 1.2rem; font-size: 0.92rem;
+}
+.hub-table thead { background: rgba(201,151,58,0.08); }
+.hub-table th {
+  text-align: left; font-weight: 600; color: var(--text);
+  padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--gold-dim);
+}
+.hub-table td {
+  padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--line);
+  color: var(--text-dim); vertical-align: top;
+}
+.hub-table tbody tr:last-child td { border-bottom: none; }
+.hub-table td strong { color: var(--text); }
+@media (max-width: 600px) {
+  .hub-table { font-size: 0.82rem; }
+  .hub-table th, .hub-table td { padding: 0.55rem 0.6rem; }
+}
+
+.hub-note { font-size: 0.85rem; color: var(--text-faint); }
+
+.hub-cards { display: flex; flex-direction: column; gap: 1rem; }
+.hub-card {
+  display: block;
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 4px;
+  padding: 1.4rem 1.6rem;
+  text-decoration: none !important;
+  position: relative; overflow: hidden;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.hub-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.hub-card:hover { border-color: rgba(201,151,58,0.5); transform: translateY(-2px); }
+.hub-card:hover::before { opacity: 1; }
+.hub-card-tag {
+  font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 0.5rem;
+}
+.hub-card-title {
+  font-family: var(--ff-display); font-size: 1.25rem; font-weight: 400;
+  color: var(--text); line-height: 1.25; margin-bottom: 0.5rem;
+}
+.hub-card-desc { color: var(--text-dim); font-size: 0.86rem; line-height: 1.65; margin-bottom: 0.6rem; }
+.hub-card-arrow { color: var(--gold); font-size: 0.82rem; letter-spacing: 0.04em; }
+
+.hub-faq { display: flex; flex-direction: column; gap: 0.6rem; }
+.hub-faq-item {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 4px;
+  padding: 0; overflow: hidden;
+}
+.hub-faq-item summary {
+  font-weight: 500; color: var(--text); padding: 0.95rem 1.2rem;
+  cursor: pointer; font-size: 0.95rem; line-height: 1.5;
+  list-style: none; position: relative;
+}
+.hub-faq-item summary::after {
+  content: '+'; position: absolute; right: 1.2rem; top: 50%; transform: translateY(-50%);
+  color: var(--gold); font-size: 1.2rem; transition: transform 0.2s;
+}
+.hub-faq-item[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+.hub-faq-item p {
+  padding: 0 1.2rem 1.1rem; margin: 0;
+  color: var(--text-dim); line-height: 1.75; font-size: 0.92rem;
+}
+
+.hub-related { padding-left: 1.4rem; }
+.hub-related li { color: var(--text-dim); line-height: 1.75; margin-bottom: 0.5rem; font-size: 0.95rem; }
+</style>
