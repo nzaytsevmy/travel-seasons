@@ -5,17 +5,23 @@
 @import "@fontsource/dm-sans/700.css";
 @import "@fontsource/dm-sans/800.css";
 
+/* ─────────────────────────────────────────────────────────
+   THEME — light по умолчанию (travel-индустрия light-first:
+   Roadbook, Wander Lush, Anywhere We Roam, NatGeo, Outside).
+   Тёмная — opt-in через .dark-theme на <html>.
+   ───────────────────────────────────────────────────────── */
 :root {
-  --bg:          #0c0a08;
-  --bg2:         #131009;
-  --bg3:         #1a1610;
-  --line:        rgba(201, 151, 58, 0.15);
-  --gold:        oklch(0.74 0.11 68);
-  --gold-dim:    oklch(0.55 0.09 68);
-  --gold-glow:   oklch(0.74 0.11 68 / 0.18);
-  --text:        oklch(0.92 0.015 70);
-  --text-dim:    oklch(0.62 0.01 70);
-  --text-faint:  oklch(0.38 0.01 70);
+  /* Light cream background, warm dark text, gold accents */
+  --bg:          oklch(0.98 0.006 80);   /* warm cream #fbf8f1 */
+  --bg2:         oklch(0.95 0.006 80);   /* slightly darker for cards */
+  --bg3:         oklch(0.91 0.009 76);   /* hover/active surface */
+  --line:        rgba(160, 110, 20, 0.14);
+  --gold:        oklch(0.46 0.12 68);    /* burnished gold, WCAG AA on cream */
+  --gold-dim:    oklch(0.36 0.10 68);
+  --gold-glow:   oklch(0.46 0.12 68 / 0.14);
+  --text:        oklch(0.14 0.02 70);    /* warm near-black */
+  --text-dim:    oklch(0.38 0.015 70);
+  --text-faint:  oklch(0.50 0.012 70);
   --ff-display:  "DM Sans", system-ui, sans-serif;
   --ff-body:     "DM Sans", system-ui, sans-serif;
   --green:       #22c55e;
@@ -26,40 +32,7 @@
   --good:        #4a9eff;
   --ok:          #f59e0b;
   --bad:         #ef4444;
-  /* Accessible text variants — same hue, contrast-tuned per theme (WCAG AA on body bg) */
-  --peak-text:   #22c55e;
-  --good-text:   #4a9eff;
-  --ok-text:     #f59e0b;
-  --bad-text:    #ef4444;
-  --off:         rgba(201, 151, 58, 0.3);
-  --peak-light:  rgba(34, 197, 94, 0.12);
-  --good-light:  rgba(74, 158, 255, 0.12);
-  --ok-light:    rgba(245, 158, 11, 0.12);
-  --bad-light:   rgba(239, 68, 68, 0.12);
-  /* nav */
-  --nav-from:    rgba(12, 10, 8, 0.95);
-  --nav-to:      rgba(12, 10, 8, 0);
-  /* card image overlay & badge — hardcoded prevented theme switching, now vars */
-  --card-overlay:   rgba(12, 10, 8, 0.82);
-  --card-badge-bg:  rgba(12, 10, 8, 0.72);
-  /* hero radial glow — dark theme values */
-  --hero-glow-1:    oklch(0.74 0.11 68 / 0.08);
-  --hero-glow-2:    oklch(0.74 0.11 68 / 0.04);
-}
-
-/* ─── LIGHT THEME ─── */
-html.light-theme {
-  --bg:          oklch(0.97 0.008 80);
-  --bg2:         oklch(0.94 0.006 80);
-  --bg3:         oklch(0.90 0.009 76);
-  --line:        rgba(160, 110, 20, 0.12);
-  --gold:        oklch(0.46 0.12 68);
-  --gold-dim:    oklch(0.36 0.10 68);
-  --gold-glow:   oklch(0.46 0.12 68 / 0.15);
-  --text:        oklch(0.14 0.02 70);
-  --text-dim:    oklch(0.38 0.015 70);
-  --text-faint:  oklch(0.42 0.012 70);
-  /* Darker color variants for tags/pills on light bg — meet WCAG AA (≥4.5:1) */
+  /* Darker color variants for tags/pills on light bg — meet WCAG AA */
   --peak-text:   #0a5128;
   --good-text:   #1e63b8;
   --ok-text:     #7a4500;
@@ -69,13 +42,49 @@ html.light-theme {
   --good-light:  rgba(74, 158, 255, 0.18);
   --ok-light:    rgba(245, 158, 11, 0.18);
   --bad-light:   rgba(239, 68, 68, 0.15);
-  --nav-from:    oklch(0.97 0.008 80 / 0.97);
-  --nav-to:      oklch(0.97 0.008 80 / 0);
-  --card-overlay:   rgba(12, 10, 8, 0.45);
-  --card-badge-bg:  rgba(248, 242, 226, 0.92);
-  /* hero radial glow — light theme values */
+  --nav-from:    oklch(0.98 0.006 80 / 0.95);
+  --nav-to:      oklch(0.98 0.006 80 / 0);
+  --card-overlay:   rgba(12, 10, 8, 0.42);
+  --card-badge-bg:  rgba(251, 248, 241, 0.94);
   --hero-glow-1:    oklch(0.46 0.12 68 / 0.12);
-  --hero-glow-2:    oklch(0.46 0.12 68 / 0.06);
+  --hero-glow-2:    oklch(0.46 0.12 68 / 0.05);
+}
+
+/* ─── DARK THEME (opt-in) ─── */
+html.dark-theme,
+html.light-theme.dark-theme {  /* в случае двойного класса */
+  --bg:          #0c0a08;
+  --bg2:         #131009;
+  --bg3:         #1a1610;
+  --line:        rgba(201, 151, 58, 0.15);
+  --gold:        oklch(0.74 0.11 68);
+  --gold-dim:    oklch(0.55 0.09 68);
+  --gold-glow:   oklch(0.74 0.11 68 / 0.18);
+  --text:        oklch(0.92 0.015 70);
+  --text-dim:    oklch(0.62 0.01 70);
+  --text-faint:  oklch(0.38 0.01 70);
+  --peak-text:   #22c55e;
+  --good-text:   #4a9eff;
+  --ok-text:     #f59e0b;
+  --bad-text:    #ef4444;
+  --off:         rgba(201, 151, 58, 0.3);
+  --peak-light:  rgba(34, 197, 94, 0.12);
+  --good-light:  rgba(74, 158, 255, 0.12);
+  --ok-light:    rgba(245, 158, 11, 0.12);
+  --bad-light:   rgba(239, 68, 68, 0.12);
+  --nav-from:    rgba(12, 10, 8, 0.95);
+  --nav-to:      rgba(12, 10, 8, 0);
+  --card-overlay:   rgba(12, 10, 8, 0.82);
+  --card-badge-bg:  rgba(12, 10, 8, 0.72);
+  --hero-glow-1:    oklch(0.74 0.11 68 / 0.08);
+  --hero-glow-2:    oklch(0.74 0.11 68 / 0.04);
+}
+
+/* Backwards compat — старый класс light-theme ничего не делает,
+   потому что он = default. Оставлен чтобы не сломать toggle script
+   до его рефакторинга в следующем коммите. */
+html.light-theme:not(.dark-theme) {
+  /* explicit light = default, no overrides */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -120,7 +129,7 @@ body.post-page::before { display: none; }
 body.blog-index::before { opacity: 0.18; }
 
 /* Force Safari/WebKit to repaint body::before grid — direct selector on body */
-body.light-theme::before {
+body::before {
   background-image:
     linear-gradient(var(--line) 1px, transparent 1px),
     linear-gradient(90deg, var(--line) 1px, transparent 1px);
@@ -216,7 +225,7 @@ footer {
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
 /* Light theme button override — gold bg is too dark for #0c0a08 text (contrast 2.7) */
-html.light-theme .btn-primary { color: #fff; }
+.btn-primary { color: #fff; }
 
 /* ─── MOBILE READABILITY ─── Yandex Mobile-Friendly требует ≥12px на мобайле.
    Десктоп оставляем как было — мелкие декоративные размеры там читаются нормально.
@@ -482,8 +491,8 @@ html.light-theme .btn-primary { color: #fff; }
   .hub-table tbody tr:nth-child(even) td:first-child {
     background: linear-gradient(rgba(255,255,255,0.012), rgba(255,255,255,0.012)), var(--bg2);
   }
-  :global(html.light-theme) :where(.prose, .hub-wrap) .table-wrap tbody tr:nth-child(even) td:first-child,
-  :global(html.light-theme) .hub-table tbody tr:nth-child(even) td:first-child {
+  :global(html:not(.dark-theme)) :where(.prose, .hub-wrap) .table-wrap tbody tr:nth-child(even) td:first-child,
+  :global(html:not(.dark-theme)) .hub-table tbody tr:nth-child(even) td:first-child {
     background: linear-gradient(rgba(0,0,0,0.02), rgba(0,0,0,0.02)), var(--bg2);
   }
   /* Hover sticky cell */
@@ -500,8 +509,8 @@ html.light-theme .btn-primary { color: #fff; }
 .hub-table tbody tr:nth-child(even) {
   background: rgba(255,255,255,0.012);
 }
-:global(html.light-theme) :where(.prose, .hub-wrap) .table-wrap tbody tr:nth-child(even),
-:global(html.light-theme) .hub-table tbody tr:nth-child(even) {
+:global(html:not(.dark-theme)) :where(.prose, .hub-wrap) .table-wrap tbody tr:nth-child(even),
+:global(html:not(.dark-theme)) .hub-table tbody tr:nth-child(even) {
   background: rgba(0,0,0,0.02);
 }
 :where(.prose, .hub-wrap) .table-wrap tbody tr:hover,

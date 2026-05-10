@@ -163,7 +163,7 @@ const { active } = Astro.props;
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
   }
-  :global(html.light-theme) .search-overlay-bg { background: rgba(248, 245, 239, 0.9); }
+  :global(html:not(.dark-theme)) .search-overlay-bg { background: rgba(248, 245, 239, 0.9); }
   .search-overlay-panel {
     position: relative; z-index: 1;
     max-width: 720px; width: calc(100% - 2rem);
