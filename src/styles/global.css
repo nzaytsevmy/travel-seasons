@@ -391,149 +391,129 @@ footer {
    колонки между собой. /seasons/ имеет свой scoped layout — эти правила его
    не трогают. */
 
-/* Wrapper auto-injected by rehype-table-wrap.
-   Pattern из MDN Web Docs + GitHub Primer:
-   - overflow-x для горизонтального скролла
-   - scroll-shadow indicator справа (visual hint что есть ещё контент)
-   - position:sticky на первой колонке (label остаётся видна при скролле) */
+/* Tables — Linear/Stripe/Notion-style 2026 minimal layout.
+   Базируется на Tailwind Typography v0.5 prose-table baseline:
+   - Без card-обёртки (нет border + radius + bg вокруг таблицы)
+   - Тонкая 1px линия после thead и между строками
+   - Header: uppercase eyebrow type, маленький, text-faint, gold-акцент только bottom-border
+   - Hover row: subtle gold
+   - First column: font-weight 500 (semantic emphasis, не bold)
+   - Обёртка .table-wrap нужна только для overflow-x при узких viewport */
 :where(.prose, .hub-wrap) .table-wrap {
   position: relative;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  margin: 1.6rem 0 2rem;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--bg2);
+  margin: 2rem 0;
   scrollbar-width: thin;
   scrollbar-color: var(--gold-dim) transparent;
-  /* Scroll-shadow: тень-индикатор справа когда есть скрытый контент.
-     Срабатывает только при overflow (background-attachment local). */
-  background-image:
-    linear-gradient(to right, var(--bg2) 30%, rgba(28,24,17,0)),
-    linear-gradient(to right, rgba(28,24,17,0), var(--bg2) 70%),
-    radial-gradient(farthest-side at 0 50%, rgba(0,0,0,0.4), rgba(0,0,0,0)),
-    radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,0.4), rgba(0,0,0,0));
-  background-position: 0 0, 100% 0, 0 0, 100% 0;
-  background-repeat: no-repeat;
-  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
-  background-attachment: local, local, scroll, scroll;
 }
-:where(.prose, .hub-wrap) .table-wrap::-webkit-scrollbar { height: 8px; }
+:where(.prose, .hub-wrap) .table-wrap::-webkit-scrollbar { height: 6px; }
 :where(.prose, .hub-wrap) .table-wrap::-webkit-scrollbar-thumb {
-  background: var(--gold-dim); border-radius: 4px;
+  background: var(--gold-dim); border-radius: 3px;
 }
 :where(.prose, .hub-wrap) .table-wrap::-webkit-scrollbar-track { background: transparent; }
 
-/* The table itself */
+/* The table */
 :where(.prose, .hub-wrap) .table-wrap > table,
 .hub-table {
   width: 100%;
+  table-layout: auto;
   border-collapse: collapse;
   margin: 0;
-  font-size: 0.92rem;
-  line-height: 1.5;
+  font-size: 0.9rem;
+  line-height: 1.55;
   background: transparent;
   border: 0;
-  /* Even on narrow viewports keep readable column widths via min-width;
-     the wrapper handles scroll. */
-  min-width: 100%;
 }
 
-/* Numerals — equal-width digits, lining (no descenders) */
-:where(.prose, .hub-wrap) .table-wrap th,
-:where(.prose, .hub-wrap) .table-wrap td,
-.hub-table th,
-.hub-table td {
+/* All cells — tabular nums + sane wrap */
+:where(.prose, .hub-wrap) .table-wrap :is(th, td),
+.hub-table :is(th, td) {
   font-variant-numeric: tabular-nums lining-nums;
   vertical-align: top;
   text-wrap: pretty;
   word-break: normal;
   overflow-wrap: break-word;
-}
-
-/* Header row — Tailwind Prose pattern + наш золотой акцент */
-:where(.prose, .hub-wrap) .table-wrap thead,
-.hub-table thead {
-  background: rgba(201,151,58,0.08);
-}
-:where(.prose, .hub-wrap) .table-wrap th,
-.hub-table th {
   text-align: left;
-  font-weight: 600;
-  color: var(--text);
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--gold-dim);
-  white-space: nowrap;
+  padding: 0.7rem 0.85rem;
 }
 
-/* Body cells. На десктопе таблица помещается в контейнер целиком (без скролла).
-   min-width только на мобиле (<720px) — там есть скролл-shadow indicator. */
-:where(.prose, .hub-wrap) .table-wrap td,
-.hub-table td {
-  padding: 0.75rem 1rem;
+/* Header — Linear-style eyebrow */
+:where(.prose, .hub-wrap) .table-wrap thead th,
+.hub-table thead th {
+  font-family: var(--ff-display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-700, var(--gold-600, var(--gold)));
+  padding: 0.45rem 0.85rem 0.6rem;
   border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+  background: transparent;
+}
+
+/* Top-edge линия таблицы (Tailwind Prose: thead не имеет top-border, делаем его на table) */
+:where(.prose, .hub-wrap) .table-wrap > table,
+.hub-table {
+  border-top: 1px solid var(--line);
+}
+
+/* Body rows — единственная разделяющая линия между rows */
+:where(.prose, .hub-wrap) .table-wrap tbody tr,
+.hub-table tbody tr {
+  border-bottom: 1px solid var(--line);
+}
+:where(.prose, .hub-wrap) .table-wrap tbody tr:last-child,
+.hub-table tbody tr:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+/* Body cells — colors */
+:where(.prose, .hub-wrap) .table-wrap tbody td,
+.hub-table tbody td {
   color: var(--text-dim);
 }
-@media (max-width: 720px) {
-  :where(.prose, .hub-wrap) .table-wrap td,
-  .hub-table td,
-  :where(.prose, .hub-wrap) .table-wrap th,
-  .hub-table th {
-    min-width: 9rem;
-  }
+
+/* First column — semantic emphasis (имя строки) */
+:where(.prose, .hub-wrap) .table-wrap tbody td:first-child,
+.hub-table tbody td:first-child {
+  font-weight: 500;
+  color: var(--text);
 }
 
-/* MDN-style sticky first column on narrow viewports — label-колонка
-   остаётся видна при горизонтальном скролле, пользователь видит к какой
-   строке относится текущая видимая колонка. */
+/* Hover row — subtle gold */
+:where(.prose, .hub-wrap) .table-wrap tbody tr:hover,
+.hub-table tbody tr:hover {
+  background: rgba(201,151,58,0.04);
+}
+
+/* Mobile: padding меньше + sticky first col при скролле */
 @media (max-width: 720px) {
-  :where(.prose, .hub-wrap) .table-wrap th:first-child,
-  :where(.prose, .hub-wrap) .table-wrap td:first-child,
-  .hub-table th:first-child,
-  .hub-table td:first-child {
+  :where(.prose, .hub-wrap) .table-wrap > table,
+  .hub-table { font-size: 0.85rem; }
+  :where(.prose, .hub-wrap) .table-wrap :is(th, td),
+  .hub-table :is(th, td) {
+    padding: 0.55rem 0.7rem;
+    min-width: 8rem;
+  }
+  :where(.prose, .hub-wrap) .table-wrap tbody td:first-child,
+  :where(.prose, .hub-wrap) .table-wrap thead th:first-child,
+  .hub-table tbody td:first-child,
+  .hub-table thead th:first-child {
     position: sticky;
     left: 0;
     z-index: 2;
-    background: var(--bg2);
-    border-right: 1px solid var(--line);
-    box-shadow: 4px 0 6px -4px rgba(0,0,0,0.35);
-    min-width: 7rem;
+    background: var(--bg);
+    box-shadow: 4px 0 6px -4px rgba(0,0,0,0.18);
+    min-width: 6.5rem;
     max-width: 9rem;
   }
-  /* Header sticky cell наследует золотой фон */
-  :where(.prose, .hub-wrap) .table-wrap thead th:first-child,
-  .hub-table thead th:first-child {
-    background: linear-gradient(rgba(201,151,58,0.08), rgba(201,151,58,0.08)), var(--bg2);
-  }
-  /* Even-row sticky cell — синхронизировать с zebra */
-  :where(.prose, .hub-wrap) .table-wrap tbody tr:nth-child(even) td:first-child,
-  .hub-table tbody tr:nth-child(even) td:first-child {
-    background: linear-gradient(rgba(255,255,255,0.012), rgba(255,255,255,0.012)), var(--bg2);
-  }
-  :global(html:not(.dark-theme)) :where(.prose, .hub-wrap) .table-wrap tbody tr:nth-child(even) td:first-child,
-  :global(html:not(.dark-theme)) .hub-table tbody tr:nth-child(even) td:first-child {
-    background: linear-gradient(rgba(0,0,0,0.02), rgba(0,0,0,0.02)), var(--bg2);
-  }
-  /* Hover sticky cell */
   :where(.prose, .hub-wrap) .table-wrap tbody tr:hover td:first-child,
   .hub-table tbody tr:hover td:first-child {
-    background: linear-gradient(rgba(201,151,58,0.05), rgba(201,151,58,0.05)), var(--bg2);
+    background: linear-gradient(rgba(201,151,58,0.05), rgba(201,151,58,0.05)), var(--bg);
   }
 }
-:where(.prose, .hub-wrap) .table-wrap tbody tr:last-child td,
-.hub-table tbody tr:last-child td { border-bottom: none; }
-
-/* Zebra stripes — повышают читаемость на широких/multi-row таблицах */
-:where(.prose, .hub-wrap) .table-wrap tbody tr:nth-child(even),
-.hub-table tbody tr:nth-child(even) {
-  background: rgba(255,255,255,0.012);
-}
-:global(html:not(.dark-theme)) :where(.prose, .hub-wrap) .table-wrap tbody tr:nth-child(even),
-:global(html:not(.dark-theme)) .hub-table tbody tr:nth-child(even) {
-  background: rgba(0,0,0,0.02);
-}
-:where(.prose, .hub-wrap) .table-wrap tbody tr:hover,
-.hub-table tbody tr:hover { background: rgba(201,151,58,0.05); }
 
 /* Emphasised values stay bright. Перенос разрешён — числа уже защищены NBSP
    через remark-numerals плагин, а длинные bold-фразы должны wrap нормально. */
