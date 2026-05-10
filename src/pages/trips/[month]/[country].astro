@@ -143,6 +143,17 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
       </section>
     )}
 
+    {d.relatedPosts.length > 0 && (
+      <section class="season-block">
+        <h2>Подробные гайды {d.cases.loc}</h2>
+        <ul class="season-list">
+          {d.relatedPosts.map((p) => (
+            <li><a href={`/blog/${p.slug}/`}><strong>{p.title}</strong></a> — {p.kind === 'visa' ? 'про визу' : p.kind === 'season' ? 'про конкретный сезон' : 'личный опыт'}</li>
+          ))}
+        </ul>
+      </section>
+    )}
+
     <section class="season-block">
       <h2>{monthCap} 2026 — другие направления</h2>
       <p>Что ещё работает {m.prep === 'мае' ? 'в мае' : `в ${m.prep}`} 2026 — смотри <a href={`/trips/${m.slug}/`}>обзор всех направлений {m.prep}</a>.</p>
