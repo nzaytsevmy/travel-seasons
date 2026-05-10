@@ -238,15 +238,20 @@ if (faqs.length >= 2) {
   margin: 0 auto;
   padding: 2.4rem 1.4rem 0;
   overflow-wrap: break-word;
+  /* Custom property для full-bleed элементов внутри (figure-wide,
+     table-wide, pricing-cards). Безопасно в Safari/Chrome/Firefox 2026. */
+  --bleed: max((100vw - 720px) / 2 - 1.4rem, 0px);
 }
 
-/* Inline figures внутри статьи: full-bleed (1200px) при class="figure-wide" */
+/* Inline figures внутри статьи: full-bleed при class="figure-wide".
+   Используем CSS custom property --bleed (определена в .post-content) —
+   надёжный pattern для Safari/Chrome/Firefox без transform-hacks. */
 .prose :is(figure, img).figure-wide,
 .prose :is(figure, img).full-bleed {
-  width: min(96vw, 1200px);
-  max-width: none;
-  margin-left: 50%;
-  transform: translateX(-50%);
+  margin-left: calc(-1 * min(var(--bleed), 240px));
+  margin-right: calc(-1 * min(var(--bleed), 240px));
+  width: auto;
+  max-width: calc(100% + 2 * min(var(--bleed), 240px));
   margin-top: 2rem;
   margin-bottom: 2rem;
   border-radius: 8px;
@@ -262,37 +267,27 @@ if (faqs.length >= 2) {
   text-align: center;
 }
 
-/* PricingCards и другие composite-блоки: full-bleed чтобы 3 карточки
-   помещались в одну строку, не упираясь в 720px текстовой колонки */
+/* PricingCards: full-bleed через --bleed (без transform). Лимит 190px
+   с каждой стороны = max 1100px на десктопе при 720px text. */
 .prose :global(.pricing-cards) {
-  width: min(96vw, 1100px);
-  max-width: none;
-  margin-left: 50%;
-  transform: translateX(-50%);
+  margin-left: calc(-1 * min(var(--bleed), 190px));
+  margin-right: calc(-1 * min(var(--bleed), 190px));
   margin-top: 2rem;
   margin-bottom: 2.5rem;
 }
-@media (max-width: 880px) {
-  .prose :global(.pricing-cards) {
-    width: 100%;
-    margin-left: 0;
-    transform: none;
-  }
-}
 
 /* Wide-таблицы (4+ колонок) — гибридный pattern 2026:
-   - Desktop ≥881px: full-bleed 1000px чтобы все колонки умещались без сжатия
-   - Mobile ≤720px: card-stack (Chris Coyier) — каждая строка = карточка,
-     thead скрыта, на каждой td label из data-label атрибута (rehype-table-wrap) */
+   - Desktop ≥881px: full-bleed через --bleed (max 140px с каждой стороны,
+     итого таблица 720+280 = 1000px). Без transform — Safari-safe.
+   - Mobile ≤720px: card-stack (Chris Coyier) */
 .prose :global(.table-wrap.table-wide) {
   width: 100%;
   font-size: 0.9rem;
 }
 @media (min-width: 881px) {
   .prose :global(.table-wrap.table-wide) {
-    width: min(96vw, 1000px);
-    margin-left: 50%;
-    transform: translateX(-50%);
+    margin-left: calc(-1 * min(var(--bleed), 140px));
+    margin-right: calc(-1 * min(var(--bleed), 140px));
     margin-top: 2rem;
     margin-bottom: 2rem;
   }
