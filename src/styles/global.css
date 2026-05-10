@@ -187,12 +187,14 @@ a { text-decoration: none; color: inherit; }
 .logo-text { display: inline-flex; line-height: 1; }
 .logo-text-accent { color: var(--gold); font-style: normal; }
 .nav-links { display: flex; gap: 32px; align-items: center; }
-.nav-links > a,
-.nav-links > .nav-dropdown {
-  display: inline-flex; align-items: center;
-  height: 64px;
-  line-height: 1;
-  font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase;
+@media (min-width: 881px) {
+  .nav-links > a,
+  .nav-links > .nav-dropdown {
+    display: inline-flex; align-items: center;
+    height: 64px;
+    line-height: 1;
+    font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase;
+  }
 }
 .nav-links a { color: var(--text-dim); font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; }
 .nav-links a:hover { color: var(--text); }

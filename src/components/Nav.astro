@@ -416,15 +416,17 @@ const { active } = Astro.props;
     .nav-links.is-open > a.active { color: var(--gold); }
     .nav-links.is-open > a:hover { color: var(--text); }
 
-    /* Mobile dropdown — accordion expand */
+    /* Mobile dropdown — accordion expand. Reset desktop inline-flex/height. */
     .nav-links.is-open .nav-dropdown {
       width: 100%; display: block;
+      height: auto; line-height: inherit;
       border-bottom: 1px solid var(--line);
     }
     .nav-links.is-open .nav-dropdown:last-of-type { border-bottom: 1px solid var(--line); }
     .nav-links.is-open .nav-dropdown-trigger {
-      width: 100%; display: flex; justify-content: space-between;
+      width: 100%; display: flex; align-items: center; justify-content: space-between;
       padding: 0.85rem 0;
+      height: auto;
       font-size: 0.9rem;
       letter-spacing: 0.04em;
       text-transform: uppercase;
@@ -439,8 +441,19 @@ const { active } = Astro.props;
       padding: 0 0 0.7rem 0.6rem;
       opacity: 1; visibility: visible;
       display: none;
+      flex-direction: column;
     }
     .nav-links.is-open .nav-dropdown.is-open .nav-dropdown-menu { display: flex; }
+    .nav-links.is-open .nav-dropdown-menu a {
+      padding: 0.6rem 0.5rem;
+      border-radius: 4px;
+    }
+    .nav-links.is-open .nav-dropdown-menu a strong {
+      font-size: 0.85rem;
+    }
+    .nav-links.is-open .nav-dropdown-menu a span {
+      font-size: 0.7rem;
+    }
   }
 
   @keyframes slideDown {
