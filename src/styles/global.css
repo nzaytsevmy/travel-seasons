@@ -464,18 +464,21 @@ footer {
   white-space: nowrap;
 }
 
-/* Body cells — min-width гарантирует, что колонки не сжимаются до нечитаемого
-   состояния. Если суммарная ширина больше контейнера — wrapper включает скролл. */
+/* Body cells. На десктопе таблица помещается в контейнер целиком (без скролла).
+   min-width только на мобиле (<720px) — там есть скролл-shadow indicator. */
 :where(.prose, .hub-wrap) .table-wrap td,
 .hub-table td {
   padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--line);
   color: var(--text-dim);
-  min-width: 9rem;
 }
-:where(.prose, .hub-wrap) .table-wrap th,
-.hub-table th {
-  min-width: 9rem;
+@media (max-width: 720px) {
+  :where(.prose, .hub-wrap) .table-wrap td,
+  .hub-table td,
+  :where(.prose, .hub-wrap) .table-wrap th,
+  .hub-table th {
+    min-width: 9rem;
+  }
 }
 
 /* MDN-style sticky first column on narrow viewports — label-колонка
