@@ -174,14 +174,18 @@ a { text-decoration: none; color: inherit; }
   display: flex; align-items: center; justify-content: space-between; height: 64px;
 }
 .logo {
-  font-family: var(--ff-display); font-size: 1.35rem; font-weight: 500;
-  letter-spacing: 0.04em; color: var(--text); display: flex; align-items: center; gap: 10px;
+  font-family: var(--ff-display); font-size: 1.25rem; font-weight: 600;
+  letter-spacing: -0.005em; color: var(--text);
+  display: inline-flex; align-items: center; gap: 10px;
+  text-decoration: none;
 }
-.logo::before {
-  content: ""; display: block; width: 7px; height: 7px; border-radius: 50%;
-  background: var(--gold); box-shadow: 0 0 10px var(--gold);
+.logo-mark {
+  color: var(--gold); flex: 0 0 auto;
+  transition: transform var(--duration-base, 250ms) var(--ease-spring, ease);
 }
-.logo span { font-style: normal; }
+.logo:hover .logo-mark { transform: rotate(-12deg) scale(1.05); }
+.logo-text { display: inline-flex; line-height: 1; }
+.logo-text-accent { color: var(--gold); font-style: normal; }
 .nav-links { display: flex; gap: 32px; }
 .nav-links a { color: var(--text-dim); font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; }
 .nav-links a:hover { color: var(--text); }
