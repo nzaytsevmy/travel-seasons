@@ -3,6 +3,9 @@ import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
 import pagefind from 'astro-pagefind';
 import icon from 'astro-icon';
+import partytown from '@astrojs/partytown';
+import compress from 'astro-compress';
+import brokenLinks from 'astro-broken-links-checker';
 import remarkNumerals from './tools/remark-numerals.mjs';
 import rehypeTableWrap from './tools/rehype-table-wrap.mjs';
 import rehypeFaqAccordion from './tools/rehype-faq-accordion.mjs';
@@ -30,6 +33,27 @@ export default defineConfig({
     mdx(),
     pagefind(),
     icon({ include: { lucide: ['*'] } }),
+    // Partytown: Я.Метрика + Ahrefs в Web Worker, не main thread.
+    // Освобождает main thread на 200-400 ms (TBT/INP).
+    partytown({
+      config: {
+        forward: ['ym', 'dataLayer.push', 'gtag'],
+      },
+    }),
+    // astro-compress: минификация HTML/CSS/JS/SVG/JSON на build.
+    // -5-15% размер страниц.
+    compress({
+      CSS: true,
+      HTML: true,
+      JavaScript: true,
+      SVG: true,
+      Image: false,  // изображения уже сжаты через astro:assets (AVIF/WebP)
+    }),
+    // Broken links checker: фейлит build если ссылка ведёт на несуществующую страницу.
+    // На 800 страниц с программными ссылками — критично.
+    brokenLinks({
+      checkExternalLinks: false,  // не дёргать внешние API при build (slow + flaky)
+    }),
     sitemap({
       filter: (page) => !page.includes('/404')
         && !page.includes('/blog/tag/')
