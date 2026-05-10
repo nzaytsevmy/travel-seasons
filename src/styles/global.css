@@ -240,6 +240,125 @@ html.light-theme .btn-primary { color: #fff; }
   .breakdown-item span:first-child { font-size: 0.78rem !important; }
 }
 
+/* ───────── FAQ accordion (Linear / Vercel / Apple pattern) ─────────
+   Auto-injected by rehype-faq-accordion.mjs from markdown ## FAQ blocks,
+   plus used by hub-pages (/antarctica/, /japan/) via .hub-faq class. */
+
+.faq-block,
+.hub-faq {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1.5rem 0 2.5rem;
+}
+
+.faq-item,
+.hub-faq-item {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.faq-item:hover,
+.hub-faq-item:hover {
+  border-color: rgba(201,151,58,0.35);
+  background: var(--bg3, var(--bg2));
+}
+.faq-item[open],
+.hub-faq-item[open] {
+  border-color: rgba(201,151,58,0.5);
+  background: linear-gradient(180deg, rgba(201,151,58,0.04) 0%, var(--bg2) 100%);
+}
+
+.faq-q,
+.hub-faq-item summary {
+  list-style: none;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: var(--text);
+  padding: 1.05rem 3rem 1.05rem 1.3rem;
+  position: relative;
+  transition: color 0.15s ease;
+}
+.faq-q::-webkit-details-marker,
+.hub-faq-item summary::-webkit-details-marker { display: none; }
+
+.faq-q:hover,
+.hub-faq-item summary:hover { color: var(--gold); }
+.faq-item[open] .faq-q,
+.hub-faq-item[open] summary { color: var(--gold); }
+
+.faq-q:focus-visible,
+.hub-faq-item summary:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
+  border-radius: 6px;
+}
+
+/* +/− icon — minimal, золотой, animated rotation */
+.faq-q::after,
+.hub-faq-item summary::after {
+  content: '';
+  position: absolute;
+  right: 1.2rem;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  background-image:
+    linear-gradient(currentColor, currentColor),
+    linear-gradient(currentColor, currentColor);
+  background-size: 14px 1.5px, 1.5px 14px;
+  background-position: center, center;
+  background-repeat: no-repeat;
+  color: var(--gold);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-size 0.25s ease;
+}
+.faq-item[open] .faq-q::after,
+.hub-faq-item[open] summary::after {
+  transform: rotate(45deg);
+  background-size: 14px 1.5px, 1.5px 14px;
+}
+/* Scale to minus on hover when not open — micro hint */
+
+.faq-a {
+  padding: 0 1.3rem 1.2rem;
+  color: var(--text-dim);
+  font-size: 0.93rem;
+  line-height: 1.7;
+  border-top: 1px solid var(--line);
+  margin-top: 0;
+  padding-top: 1rem;
+}
+.faq-a > :first-child { margin-top: 0; }
+.faq-a > :last-child { margin-bottom: 0; }
+.faq-a p { margin: 0 0 0.7rem; }
+.faq-a p:last-child { margin-bottom: 0; }
+.faq-a strong { color: var(--text); }
+.faq-a a {
+  color: var(--gold);
+  text-decoration: underline;
+  text-decoration-color: rgba(201,151,58,0.5);
+  text-underline-offset: 3px;
+}
+.faq-a a:hover { text-decoration-color: var(--gold); }
+.faq-a ul, .faq-a ol { margin: 0.5rem 0; padding-left: 1.4rem; }
+
+/* Hub-faq backwards compatible — оставляем старые правила работающими через
+   те же базовые стили, но переопределяем .hub-faq-item p (старый стиль) */
+.hub-faq-item p {
+  padding: 0 1.3rem 1.1rem;
+  margin: 0;
+  color: var(--text-dim);
+  line-height: 1.75;
+  font-size: 0.93rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+}
+
 /* ───────── Data tables (Tailwind Typography baseline + tabular-nums) ─────────
    Применяется ко всем .prose / .hub markdown-таблицам.
    На узких экранах — горизонтальный скролл (как Stripe / MDN / GitHub docs),
