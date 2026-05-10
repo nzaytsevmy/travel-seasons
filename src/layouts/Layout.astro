@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   title: string;
@@ -97,19 +98,23 @@ const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-image.png?v=2';
   {preloadImage && <link rel="preload" as="image" href={preloadImage} />}
 
   <!-- Ahrefs Web Analytics (privacy-first, cookie-free) -->
-  <script src="https://analytics.ahrefs.com/analytics.js" data-key="Vlc0xmPDRP3Rn1BkiDfn2A" async></script>
+  <!-- Ahrefs Analytics в Partytown Web Worker (не блокирует main thread) -->
+  <script type="text/partytown" src="https://analytics.ahrefs.com/analytics.js" data-key="Vlc0xmPDRP3Rn1BkiDfn2A"></script>
 
-  <!-- Yandex.Metrika counter -->
-  <script is:inline>
+  <!-- Yandex.Metrika counter в Partytown Web Worker -->
+  <script type="text/partytown">
     (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
     m[i].l=1*new Date();
     for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
     k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
     (window, document,'script','https://mc.yandex.ru/metrika/tag.js', 'ym');
-    ym(95832375, 'init', {webvisor:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    ym(95832375, 'init', {webvisor:true, clickmap:true, accurateTrackBounce:true, trackLinks:true});
   </script>
   <noscript><div><img src="https://mc.yandex.ru/watch/95832375" style="position:absolute; left:-9999px;" alt="Yandex Metrika" aria-hidden="true" /></div></noscript>
   <!-- /Yandex.Metrika counter -->
+
+  <!-- View Transitions API — плавные переходы между страницами -->
+  <ClientRouter />
 </head>
 <body>
   <!-- Skip-link for keyboard / screen reader users -->

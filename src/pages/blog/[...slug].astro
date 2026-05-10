@@ -280,18 +280,10 @@ if (faqs.length >= 2) {
   }
 }
 
-/* Wide tables: ≥4 колонок rehype-table-wrap помечает .table-wide.
-   На десктопе раздвигаем за пределы 720px колонки (full-bleed),
-   чтобы все колонки влезли без горизонтального скролла. */
+/* Все таблицы остаются в ширине текстовой колонки 720px (визуальное
+   единство с текстом). На длинных таблицах включается горизонтальный
+   скролл — обычное journalism-решение. */
 .prose :global(.table-wrap.table-wide) {
-  width: min(96vw, 1200px);
-  max-width: none;
-  margin-left: 50%;
-  transform: translateX(-50%);
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-}
-.prose :global(.table-wrap.table-wide table) {
   width: 100%;
   font-size: 0.86rem;
 }
@@ -300,14 +292,6 @@ if (faqs.length >= 2) {
   white-space: normal;
   word-break: normal;
   overflow-wrap: anywhere;
-}
-@media (max-width: 880px) {
-  /* На мобиле возвращаем обычный поток + горизонтальный скролл (как до) */
-  .prose :global(.table-wrap.table-wide) {
-    width: 100%;
-    margin-left: 0;
-    transform: none;
-  }
 }
 
 .post-meta-top { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; max-width: 100%; }
