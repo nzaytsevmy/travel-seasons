@@ -105,6 +105,8 @@ html.light-theme:not(.dark-theme) {
   /* Overridden per-element where needed (hover transforms, opacity) */
 }
 
+html { overflow-x: hidden; }
+
 body {
   background-color: var(--bg);
   color: var(--text);
@@ -112,6 +114,7 @@ body {
   font-weight: 300;
   line-height: 1.65;
   min-height: 100vh;
+  overflow-x: hidden;  /* защита от мини-overflow на mobile, обходит Safari quirks с 100vw + padding */
   padding-bottom: 4rem;
   position: relative;
   touch-action: manipulation;

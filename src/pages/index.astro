@@ -436,6 +436,7 @@ const featuredImageUrl = featured ? (await getImage({
   min-height: clamp(440px, 70vh, 680px);
   border-bottom: 1px solid var(--line);
 }
+.hero-split > * { min-width: 0; }  /* CSS grid 1fr fix — prevent micro-overflow on narrow viewports */
 @media (max-width: 960px) {
   .hero-split { grid-template-columns: 1fr; }
 }
