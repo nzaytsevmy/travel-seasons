@@ -87,7 +87,7 @@ const ldJson = {
               quality={82}
               loading="eager"
               fetchpriority="high"
-              style={`object-position: ${featured.data.coverPositionCard};`}
+              style={`object-position: ${featured.data.coverPositionCard || featured.data.coverPosition || 'center'};`}
             />
             <div class="featured-overlay"></div>
           </div>
@@ -125,7 +125,7 @@ const ldJson = {
                   format="webp"
                   quality={80}
                   loading="lazy"
-                  style={`object-position: ${post.data.coverPositionCard};`}
+                  style={`object-position: ${post.data.coverPositionCard || post.data.coverPosition || 'center'};`}
                 />
               </div>
               <div class="post-body">
