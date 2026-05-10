@@ -1,0 +1,472 @@
+---
+// Краткий hub для каждой страны: /<slug>/
+// «Если коротко» — visa + сезоны + бюджет + связанные посты + FAQ.
+//
+// Pattern: /japan/ и /antarctica/ (вручную написанные premium hubs) служат
+// эталоном. Этот файл генерирует аналогичные страницы для всех остальных
+// направлений автоматически из DIRECTIONS data.
+//
+// URL conflicts: /japan/ и /antarctica/ — explicit static pages в Astro
+// перебивают dynamic [slug]. Они исключены из getStaticPaths.
+
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { Image } from 'astro:assets';
+import { DIRECTIONS, MONTHS } from '../data/directions.js';
+
+// Pre-import all destination photos (Vite needs static imports). glob lazy:
+const destPhotos = import.meta.glob('../assets/destinations/*.jpg', {
+  eager: true,
+  import: 'default',
+});
+
+export async function getStaticPaths() {
+  // Reserved slugs — те что уже есть как кастомные pages.
+  const reserved = new Set([
+    'japan', 'antarctica',
+    'blog', 'about', 'calculator', 'seasons', 'cards', 'trips', 'visa',
+    '404', 'rss.xml', 'sitemap-images.xml', 'dzen-rss.xml',
+  ]);
+  return DIRECTIONS
+    .filter(d => !reserved.has(d.slug))
+    .map(d => ({ params: { slug: d.slug }, props: { d } }));
+}
+
+const { d } = Astro.props;
+const url = `https://traveltribe.ru/${d.slug}/`;
+
+// Resolve cover photo if downloaded
+const coverPath = `../assets/destinations/${d.slug}.jpg`;
+const coverImage = destPhotos[coverPath];
+
+const VISA_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза обязательна' };
+const BUDGET_LABEL = {
+  low: '$ — до $80/день',
+  mid: '$$ — $80–250/день',
+  high: '$$$ — от $250/день',
+};
+const VISA_SUMMARY = {
+  free: `${d.cases.nom} даёт россиянам безвизовый въезд (обычно 30–90 дней по загранпаспорту).`,
+  evisa: `Для въезда ${d.cases.vP} россиянам нужна eVisa — оформляется онлайн до вылета, без посольства.`,
+  required: `Для поездки ${d.cases.vP} нужна полноценная виза. Оформляется через визовый центр или посольство.`,
+};
+
+// Best months for this destination
+const rank = { P: 4, G: 3, O: 2, B: 1, X: 0 };
+const monthsRanked = MONTHS
+  .map((m, i) => ({ ...m, status: d.r[i], text: d.t[i], rank: rank[d.r[i]] || 0 }));
+const bestMonths = monthsRanked.filter(m => m.rank >= 3).slice(0, 3);
+const worstMonths = monthsRanked.filter(m => m.rank <= 1).slice(0, 2);
+
+const flightFrom = d.price?.flight?.[0];
+const hotelFrom = d.price?.hotel?.[0];
+const foodFrom = d.price?.food?.[0];
+const weekTotal = flightFrom ? flightFrom + (hotelFrom || 0) * 7 + (foodFrom || 0) * 7 : null;
+
+// FAQ generated from data
+const faqs = [
+  {
+    q: `Нужна ли виза ${d.cases.vP} для россиян в 2026?`,
+    a: VISA_SUMMARY[d.visa],
+  },
+  {
+    q: `Сколько стоит поездка ${d.cases.vP} в 2026?`,
+    a: weekTotal
+      ? `Эконом-вариант на 7 дней — от $${weekTotal} на человека (перелёт из Москвы $${flightFrom}, проживание от $${hotelFrom}/ночь, питание от $${foodFrom}/день). Бюджет на день: ${BUDGET_LABEL[d.budget]}.`
+      : `Бюджет на день: ${BUDGET_LABEL[d.budget]}. Перелёт зависит от сезона и пересадок.`,
+  },
+  {
+    q: `Когда лучше ехать ${d.cases.vP}?`,
+    a: bestMonths.length
+      ? `Оптимальные месяцы: ${bestMonths.map(m => m.nom).join(', ')}. ${bestMonths[0]?.text || ''}`
+      : `${d.cases.nom} имеет переменчивые сезоны — смотри помесячный календарь ниже.`,
+  },
+];
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${url}#page`,
+      "url": url,
+      "name": `${d.cases.nom} 2026 — кратко: виза, сезоны, бюджет`,
+      "description": `Кратко всё что нужно ${d.cases.vP} — виза, лучшие месяцы, бюджет, главные гайды.`,
+      "inLanguage": "ru-RU",
+      "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+      "about": { "@type": "Country", "name": d.cases.nom },
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${url}#faq`,
+      "mainEntity": faqs.map(f => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": f.a }
+      }))
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": d.cases.nom, "item": url },
+      ]
+    }
+  ]
+};
+---
+<Layout
+  title={`${d.cases.nom} 2026: виза, сезоны, бюджет — кратко`}
+  description={`Всё нужное ${d.cases.vP} в 2026: ${VISA_LABEL[d.visa].toLowerCase()}, лучшие месяцы — ${bestMonths.map(m => m.nom).join(', ')}, бюджет от $${weekTotal || 'N/A'}/нед.`.slice(0, 155)}
+  canonical={url}
+  ogTitle={`${d.cases.nom} 2026 — кратко`}
+  ogDescription={`${VISA_LABEL[d.visa]} · бюджет ${BUDGET_LABEL[d.budget].split('—')[0].trim()} · лучшие месяцы: ${bestMonths.slice(0,2).map(m => m.nom).join(', ')}`}
+  ogType="article"
+  ldJson={ldJson}
+>
+  <Nav active="blog" />
+  <Breadcrumbs crumbs={[{ label: d.cases.nom }]} />
+
+  <main id="main" class="quick-wrap">
+    {/* HERO */}
+    {coverImage ? (
+      <section class="quick-hero quick-hero--photo">
+        <Image
+          src={coverImage}
+          alt={d.cases.nom}
+          widths={[640, 1024, 1600]}
+          sizes="100vw"
+          formats={['avif', 'webp']}
+          quality={72}
+          loading="eager"
+          fetchpriority="high"
+        />
+        <div class="quick-hero-overlay"></div>
+        <div class="quick-hero-content">
+          <div class="quick-hero-eyebrow">// {d.group} · если кратко</div>
+          <h1 class="quick-hero-title">{d.cases.nom} <span class="quick-hero-year">2026</span></h1>
+          <p class="quick-hero-sub">{d.region} — {d.sub}</p>
+        </div>
+      </section>
+    ) : (
+      <section class="quick-hero quick-hero--gradient" style={`--g1:${d.visual.g1}; --g2:${d.visual.g2};`}>
+        <span class="quick-hero-emoji" aria-hidden="true">{d.visual.emoji}</span>
+        <div class="quick-hero-content">
+          <div class="quick-hero-eyebrow">// {d.group} · если кратко</div>
+          <h1 class="quick-hero-title">{d.cases.nom} <span class="quick-hero-year">2026</span></h1>
+          <p class="quick-hero-sub">{d.region} — {d.sub}</p>
+        </div>
+      </section>
+    )}
+
+    {/* TLDR */}
+    <section class="quick-tldr">
+      <strong>Если коротко:</strong> {VISA_SUMMARY[d.visa]} Бюджет — <strong>{BUDGET_LABEL[d.budget]}</strong>. Лучшие месяцы: <strong>{bestMonths.slice(0, 3).map(m => m.nom).join(', ')}</strong>. {flightFrom && <>Перелёт из Москвы от <strong>${flightFrom}</strong>.</>} Подробности ниже + связанные посты с личным опытом.
+    </section>
+
+    {/* QUICK FACTS grid */}
+    <section class="quick-facts">
+      <div class="qf-card">
+        <div class="qf-label">Виза</div>
+        <div class="qf-value qf-value--lg">{VISA_LABEL[d.visa]}</div>
+        <a href={`/visa/${d.slug}/`} class="qf-link">Документы и сроки →</a>
+      </div>
+      <div class="qf-card">
+        <div class="qf-label">Бюджет</div>
+        <div class="qf-value qf-value--lg">{BUDGET_LABEL[d.budget].split('—')[0].trim()}</div>
+        {weekTotal && <div class="qf-value-sub">от ${weekTotal} за неделю</div>}
+        <a href="/calculator/" class="qf-link">Калькулятор поездки →</a>
+      </div>
+      <div class="qf-card">
+        <div class="qf-label">Лучшие месяцы</div>
+        <div class="qf-value">
+          {bestMonths.slice(0, 3).map((m) => (
+            <a href={`/trips/${m.slug}/${d.slug}/`} class="qf-month">{m.nom.charAt(0).toUpperCase() + m.nom.slice(1)}</a>
+          ))}
+        </div>
+        {worstMonths.length > 0 && (
+          <div class="qf-value-sub">Не лучшее время: {worstMonths.map(m => m.nom).join(', ')}</div>
+        )}
+      </div>
+      {flightFrom && (
+        <div class="qf-card">
+          <div class="qf-label">Перелёт от</div>
+          <div class="qf-value qf-value--lg">${flightFrom}</div>
+          <div class="qf-value-sub">в одну сторону, эконом</div>
+        </div>
+      )}
+    </section>
+
+    {/* MONTH CALENDAR — clickable */}
+    <section class="quick-block">
+      <h2>{d.cases.nom} по месяцам — стоит ли ехать</h2>
+      <div class="quick-months">
+        {monthsRanked.map((m) => {
+          const cls = m.status === 'P' ? 'peak' : m.status === 'G' ? 'good' : m.status === 'O' ? 'off' : m.status === 'B' ? 'bad' : 'closed';
+          const sym = m.status === 'P' ? '🔥' : m.status === 'G' ? '✅' : m.status === 'O' ? '🟡' : m.status === 'B' ? '⛔' : '❄️';
+          return (
+            <a href={`/trips/${m.slug}/${d.slug}/`} class={`qm qm--${cls}`}>
+              <span class="qm-name">{m.nom.charAt(0).toUpperCase() + m.nom.slice(1)}</span>
+              <span class="qm-status">{sym}</span>
+            </a>
+          );
+        })}
+      </div>
+    </section>
+
+    {/* RELATED POSTS */}
+    {d.relatedPosts.length > 0 && (
+      <section class="quick-block">
+        <h2>Подробные гайды {d.cases.loc}</h2>
+        <ul class="quick-related">
+          {d.relatedPosts.map((p) => (
+            <li>
+              <a href={`/blog/${p.slug}/`}>
+                <strong>{p.title}</strong>
+                <span>{p.kind === 'visa' ? 'про визу пошагово' : p.kind === 'season' ? 'про конкретный сезон' : 'личный опыт автора'}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {/* FAQ */}
+    <section class="quick-block">
+      <h2>FAQ</h2>
+      <div class="faq-block">
+        {faqs.map(f => (
+          <details class="faq-item">
+            <summary class="faq-q">{f.q}</summary>
+            <div class="faq-a"><p>{f.a}</p></div>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    {/* RELATED LINKS */}
+    <section class="quick-block">
+      <h2>Что почитать дальше</h2>
+      <ul class="quick-related-misc">
+        <li><a href="/seasons/">Сравнение всех 39 направлений по сезонам</a></li>
+        <li><a href="/calculator/">Калькулятор бюджета поездки</a></li>
+        <li><a href={`/trips/${MONTHS[new Date().getMonth()].slug}/${d.slug}/`}>{d.cases.nom} в {MONTHS[new Date().getMonth()].prep} 2026</a></li>
+        <li><a href={`/visa/${d.slug}/`}>Виза {d.cases.vP} — детально</a></li>
+        <li><a href="/countries/">Все страны на сайте</a></li>
+      </ul>
+    </section>
+
+    <p class="quick-updated">Актуально на: 10 мая 2026 · обновляется каждые 4–6 недель</p>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.quick-wrap { max-width: 760px; margin: 0 auto; padding: 0 var(--container-edge, 2rem) var(--space-16, 4rem); }
+
+/* HERO */
+.quick-hero {
+  position: relative;
+  margin: 0 calc(-1 * var(--container-edge, 2rem)) var(--space-8);
+  min-height: clamp(280px, 40vw, 420px);
+  overflow: hidden;
+  isolation: isolate;
+  display: flex; align-items: flex-end;
+}
+.quick-hero--photo img,
+.quick-hero--photo picture {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; z-index: -2;
+}
+.quick-hero-overlay {
+  position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.25) 60%, rgba(0,0,0,0.05) 100%);
+}
+.quick-hero--gradient {
+  background: linear-gradient(135deg, var(--g1) 0%, var(--g2) 100%);
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12);
+  flex-direction: column;
+}
+.quick-hero--gradient::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.4), transparent 50%);
+}
+.quick-hero-emoji {
+  font-size: clamp(5rem, 12vw, 8rem);
+  filter: drop-shadow(0 6px 18px rgba(0,0,0,0.18));
+  margin-bottom: var(--space-3);
+}
+.quick-hero-content {
+  position: relative; z-index: 1;
+  padding: var(--space-8) clamp(1.5rem, 4vw, 3rem);
+  width: 100%;
+  color: var(--quick-fg, #fff);
+}
+.quick-hero--photo .quick-hero-content { color: #fff; }
+.quick-hero--gradient .quick-hero-content { color: var(--text); padding: 0; text-align: center; }
+.quick-hero-eyebrow {
+  font-size: var(--text-xs); letter-spacing: var(--tracking-widest);
+  text-transform: uppercase; color: var(--gold-300, var(--gold));
+  margin-bottom: var(--space-3);
+}
+.quick-hero--gradient .quick-hero-eyebrow { color: rgba(0,0,0,0.55); }
+.quick-hero-title {
+  font-family: var(--ff-display);
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  margin: 0 0 var(--space-2);
+  text-wrap: balance;
+}
+.quick-hero--photo .quick-hero-title { text-shadow: 0 2px 14px rgba(0,0,0,0.4); }
+.quick-hero-year { font-style: italic; color: var(--gold-300); font-weight: 600; }
+.quick-hero--gradient .quick-hero-year { color: rgba(0,0,0,0.45); }
+.quick-hero-sub {
+  font-size: var(--text-base);
+  color: rgba(255,255,255,0.85);
+  margin: 0;
+}
+.quick-hero--gradient .quick-hero-sub { color: rgba(0,0,0,0.62); }
+
+/* TLDR */
+.quick-tldr {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold-600);
+  padding: 1.2rem 1.4rem;
+  border-radius: var(--radius-3);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--text-dim);
+  margin-bottom: var(--space-8);
+}
+.quick-tldr strong { color: var(--text); }
+
+/* FACTS GRID */
+.quick-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-10);
+}
+.qf-card {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-4);
+  padding: var(--space-5);
+  display: flex; flex-direction: column; gap: var(--space-1);
+}
+.qf-label {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: var(--space-1);
+}
+.qf-value {
+  font-size: var(--text-base);
+  color: var(--text);
+  font-weight: 500;
+  display: flex; flex-wrap: wrap; gap: var(--space-2);
+}
+.qf-value--lg {
+  font-family: var(--ff-display);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+}
+.qf-value-sub { font-size: var(--text-xs); color: var(--text-faint); margin-top: 2px; }
+.qf-month {
+  background: rgba(201,151,58,0.12);
+  color: var(--gold-700, var(--gold));
+  padding: 0.18rem 0.55rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-decoration: none;
+}
+.qf-month:hover { background: var(--gold-600); color: #fff; }
+.qf-link {
+  margin-top: auto; padding-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--gold-600);
+  text-decoration: underline; text-underline-offset: 3px;
+  text-decoration-color: rgba(201,151,58,0.4);
+}
+
+/* SECTIONS */
+.quick-block { margin-bottom: var(--space-10); }
+.quick-block h2 {
+  font-family: var(--ff-display);
+  font-size: var(--text-3xl);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  margin: 0 0 var(--space-5);
+  color: var(--text);
+}
+.quick-block a { color: var(--gold-600); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(201,151,58,0.4); }
+
+/* MONTH CALENDAR */
+.quick-months {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--space-2);
+}
+.qm {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.7rem 1rem;
+  background: var(--bg2); border: 1px solid var(--line);
+  border-radius: var(--radius-3);
+  text-decoration: none !important;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+.qm:hover { border-color: rgba(201,151,58,0.4); background: var(--bg3); transform: translateY(-1px); }
+.qm-name { color: var(--text); font-size: var(--text-sm); font-weight: 500; }
+.qm-status { font-size: 1rem; }
+.qm--peak { border-left-color: #22c55e; border-left-width: 3px; }
+.qm--good { border-left-color: #4a9eff; border-left-width: 3px; }
+.qm--off { border-left-color: #f59e0b; border-left-width: 3px; }
+.qm--bad { border-left-color: #ef4444; border-left-width: 3px; }
+.qm--closed { opacity: 0.6; }
+
+/* RELATED LINKS */
+.quick-related, .quick-related-misc { padding-left: 1.4rem; }
+.quick-related li, .quick-related-misc li {
+  color: var(--text-dim); line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-2);
+}
+.quick-related li a {
+  display: flex; flex-direction: column; gap: 2px;
+  text-decoration: none;
+}
+.quick-related li a strong {
+  color: var(--gold-600);
+  text-decoration: underline; text-decoration-color: rgba(201,151,58,0.4); text-underline-offset: 3px;
+}
+.quick-related li a span { color: var(--text-faint); font-size: var(--text-sm); }
+.quick-related li a:hover strong { color: var(--gold-500); }
+
+.quick-updated {
+  margin-top: var(--space-12);
+  font-size: var(--text-xs);
+  color: var(--text-faint);
+  text-align: center;
+  letter-spacing: var(--tracking-wide);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 600px) {
+  .quick-hero { min-height: 250px; }
+  .quick-block h2 { font-size: var(--text-2xl); }
+}
+</style>
