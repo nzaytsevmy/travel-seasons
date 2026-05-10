@@ -1,0 +1,147 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   TravelTribe Design Tokens
+   Inspired by Open Props (open-props.style) + Radix Colors + Tailwind v4.
+
+   Single source of truth for colors, spacing, typography, shadows, radii.
+   Existing semantic vars (--bg, --text, --gold) become aliases over these.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* ── Color scale ─── Gold (brand) ─── 50→900, OKLCH for perceptual evenness */
+  --gold-50:   oklch(0.97 0.020 75);   /* tint, near-white cream-gold */
+  --gold-100:  oklch(0.93 0.045 72);
+  --gold-200:  oklch(0.86 0.075 70);
+  --gold-300:  oklch(0.78 0.110 70);
+  --gold-400:  oklch(0.66 0.130 68);
+  --gold-500:  oklch(0.56 0.130 68);   /* primary on light bg */
+  --gold-600:  oklch(0.46 0.120 68);   /* link on light, primary brand */
+  --gold-700:  oklch(0.38 0.105 66);
+  --gold-800:  oklch(0.30 0.085 64);
+  --gold-900:  oklch(0.22 0.060 62);
+
+  /* ── Color scale ─── Warm gray (text + bg) */
+  --warm-50:   oklch(0.98 0.006 80);   /* page bg cream */
+  --warm-100:  oklch(0.95 0.006 80);   /* card bg */
+  --warm-150:  oklch(0.91 0.009 76);   /* hover surface */
+  --warm-200:  oklch(0.86 0.012 76);
+  --warm-300:  oklch(0.74 0.014 74);
+  --warm-400:  oklch(0.60 0.014 72);
+  --warm-500:  oklch(0.50 0.012 70);   /* faint text */
+  --warm-600:  oklch(0.38 0.015 70);   /* dim text */
+  --warm-700:  oklch(0.28 0.018 70);
+  --warm-800:  oklch(0.18 0.020 70);
+  --warm-900:  oklch(0.14 0.020 70);   /* body text near-black */
+
+  /* ── Semantic colors ─── status palette */
+  --color-peak:    #22c55e;   /* green — peak season */
+  --color-good:    #4a9eff;   /* blue — good season */
+  --color-ok:      #f59e0b;   /* amber — so-so */
+  --color-bad:     #ef4444;   /* red — bad / closed */
+
+  /* ── Spacing scale ─── 4-px grid (Open Props convention) */
+  --space-1:   0.25rem;   /*  4px */
+  --space-2:   0.5rem;    /*  8px */
+  --space-3:   0.75rem;   /* 12px */
+  --space-4:   1rem;      /* 16px */
+  --space-5:   1.25rem;   /* 20px */
+  --space-6:   1.5rem;    /* 24px */
+  --space-7:   1.75rem;   /* 28px */
+  --space-8:   2rem;      /* 32px */
+  --space-10:  2.5rem;    /* 40px */
+  --space-12:  3rem;      /* 48px */
+  --space-16:  4rem;      /* 64px */
+  --space-20:  5rem;      /* 80px */
+  --space-24:  6rem;      /* 96px */
+  --space-32:  8rem;      /* 128px */
+
+  /* ── Typography scale ─── modular, tight ratio (1.2 mobile → 1.25 desktop) */
+  --text-xs:   0.75rem;     /* 12px */
+  --text-sm:   0.875rem;    /* 14px */
+  --text-base: 1rem;        /* 16px */
+  --text-lg:   1.125rem;    /* 18px */
+  --text-xl:   1.25rem;     /* 20px */
+  --text-2xl:  1.5rem;      /* 24px */
+  --text-3xl:  1.875rem;    /* 30px */
+  --text-4xl:  2.25rem;     /* 36px */
+  --text-5xl:  clamp(2.4rem, 4vw, 3rem);     /* 38–48px */
+  --text-6xl:  clamp(3rem, 5vw, 4rem);       /* 48–64px */
+  --text-7xl:  clamp(3.5rem, 7vw, 6rem);     /* 56–96px */
+
+  /* ── Line heights */
+  --leading-none:    1;
+  --leading-tight:   1.15;
+  --leading-snug:    1.35;
+  --leading-normal:  1.55;
+  --leading-relaxed: 1.7;
+  --leading-loose:   1.85;
+
+  /* ── Letter spacing */
+  --tracking-tighter: -0.04em;
+  --tracking-tight:   -0.02em;
+  --tracking-normal:  0;
+  --tracking-wide:    0.04em;
+  --tracking-wider:   0.08em;
+  --tracking-widest:  0.16em;
+
+  /* ── Border radius */
+  --radius-1: 2px;     /* tags, pills */
+  --radius-2: 4px;     /* buttons, small cards */
+  --radius-3: 6px;     /* default surfaces */
+  --radius-4: 8px;     /* cards, modals */
+  --radius-5: 12px;    /* hero / featured */
+  --radius-pill: 999px;
+  --radius-circle: 50%;
+
+  /* ── Shadows (warm tinted, для cream бэкграунда) */
+  --shadow-sm:    0 1px 2px rgba(40, 25, 5, 0.06);
+  --shadow-md:    0 4px 12px -2px rgba(40, 25, 5, 0.08);
+  --shadow-lg:    0 14px 30px -16px rgba(40, 25, 5, 0.18);
+  --shadow-xl:    0 22px 50px -18px rgba(40, 25, 5, 0.25);
+  --shadow-glow-gold: 0 0 28px rgba(201, 151, 58, 0.18), 0 0 60px rgba(201, 151, 58, 0.10);
+
+  /* ── Animation */
+  --ease-out:     cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-in-out:  cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast:   150ms;
+  --duration-base:   250ms;
+  --duration-slow:   400ms;
+
+  /* ── Layout */
+  --container-prose: 760px;       /* blog content width */
+  --container-narrow: 720px;      /* visa / season pages */
+  --container-wide: 1200px;       /* home, seasons table */
+  --container-edge: 2rem;         /* page padding sides */
+
+  /* ── Z-index scale */
+  --z-base:    0;
+  --z-content: 1;
+  --z-sticky:  10;
+  --z-nav:     50;
+  --z-modal:   200;
+  --z-toast:   300;
+
+  /* ── Font families */
+  --ff-sans:   "DM Sans", system-ui, sans-serif;
+  --ff-display: "DM Sans", system-ui, sans-serif;
+  --ff-mono:   ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+/* ── Dark theme color overrides — поверх токенов */
+html.dark-theme {
+  --warm-50:   oklch(0.10 0.015 70);
+  --warm-100:  oklch(0.12 0.015 70);
+  --warm-150:  oklch(0.16 0.018 70);
+  --warm-200:  oklch(0.22 0.020 70);
+  --warm-300:  oklch(0.34 0.020 70);
+  --warm-400:  oklch(0.46 0.018 72);
+  --warm-500:  oklch(0.56 0.014 70);
+  --warm-600:  oklch(0.66 0.012 70);
+  --warm-700:  oklch(0.78 0.010 70);
+  --warm-800:  oklch(0.88 0.012 70);
+  --warm-900:  oklch(0.94 0.015 70);
+
+  --gold-300:  oklch(0.82 0.105 70);
+  --gold-500:  oklch(0.74 0.110 68);
+  --gold-600:  oklch(0.66 0.105 68);
+}
