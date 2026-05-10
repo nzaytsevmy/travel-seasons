@@ -262,6 +262,36 @@ if (faqs.length >= 2) {
   text-align: center;
 }
 
+/* Wide tables: ≥4 колонок rehype-table-wrap помечает .table-wide.
+   На десктопе раздвигаем за пределы 720px колонки (full-bleed),
+   чтобы все колонки влезли без горизонтального скролла. */
+.prose :global(.table-wrap.table-wide) {
+  width: min(96vw, 1200px);
+  max-width: none;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+.prose :global(.table-wrap.table-wide table) {
+  width: 100%;
+  font-size: 0.86rem;
+}
+.prose :global(.table-wrap.table-wide :is(th, td)) {
+  padding: 0.55rem 0.7rem;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 880px) {
+  /* На мобиле возвращаем обычный поток + горизонтальный скролл (как до) */
+  .prose :global(.table-wrap.table-wide) {
+    width: 100%;
+    margin-left: 0;
+    transform: none;
+  }
+}
+
 .post-meta-top { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; max-width: 100%; }
 .post-tags { display: flex; gap: 0.35rem; flex-wrap: wrap; justify-content: center; max-width: 100%; }
 .ptag { font-size: 0.6rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(201,151,58,0.3); padding: 0.15rem 0.45rem; border-radius: 2px; white-space: nowrap; }
