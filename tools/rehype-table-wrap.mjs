@@ -92,11 +92,21 @@ export default function rehypeTableWrap() {
         }
       }
 
-      // 3) Wrap in .table-wrap for the rare overflow case
+      // 3) Wrap in .table-wrap. Если колонок ≥4 — добавляем .table-wide,
+      // CSS делает таблицу full-bleed (за пределы 720px текстовой колонки)
+      // на десктопе, чтобы влезли все колонки без скролла.
+      // Считаем колонки и из thead (labels), и из первой <tr> в tbody — fallback.
+      let cols = labels.length;
+      if (!cols) {
+        const tb = findFirst(node, 'tbody');
+        const firstRow = tb ? findFirst(tb, 'tr') : null;
+        if (firstRow) cols = findAll(firstRow, 'td').length;
+      }
+      const wrapClasses = cols >= 4 ? ['table-wrap', 'table-wide'] : ['table-wrap'];
       const wrapper = {
         type: 'element',
         tagName: 'div',
-        properties: { className: ['table-wrap'] },
+        properties: { className: wrapClasses },
         children: [node],
       };
       parent.children[index] = wrapper;
