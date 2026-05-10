@@ -288,6 +288,12 @@ const { active } = Astro.props;
     cursor: pointer; line-height: 1;
     height: 100%;
     transition: color 0.15s;
+    /* Safari resets — иначе button получает default UA-стили */
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    width: auto;
+    box-sizing: border-box;
   }
   .nav-dropdown-trigger:hover,
   .nav-dropdown.active .nav-dropdown-trigger { color: var(--gold); }
@@ -392,22 +398,30 @@ const { active } = Astro.props;
 
     /* Mobile dropdown */
     .nav-links.is-open {
-      display: flex;
+      display: flex !important;
       flex-direction: column;
+      align-items: stretch;
       position: absolute;
       top: 64px;
       left: 0;
       right: 0;
+      width: 100%;
       background: var(--bg);
       border-bottom: 1px solid var(--line);
       padding: 1.2rem 1.5rem 1.5rem;
       gap: 0;
       z-index: 99;
       animation: slideDown 0.2s ease;
+      box-sizing: border-box;
     }
     .nav-links.is-open > a {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
       padding: 0.85rem 0;
+      height: auto; line-height: inherit;
       font-size: 0.9rem;
+      text-align: left;
       border-bottom: 1px solid var(--line);
       letter-spacing: 0.04em;
       text-transform: uppercase;
@@ -418,9 +432,13 @@ const { active } = Astro.props;
 
     /* Mobile dropdown — accordion expand. Reset desktop inline-flex/height. */
     .nav-links.is-open .nav-dropdown {
-      width: 100%; display: block;
+      width: 100%;
+      display: flex !important;
+      flex-direction: column;
+      align-items: stretch;
       height: auto; line-height: inherit;
       border-bottom: 1px solid var(--line);
+      box-sizing: border-box;
     }
     .nav-links.is-open .nav-dropdown:last-of-type { border-bottom: 1px solid var(--line); }
     .nav-links.is-open .nav-dropdown-trigger {
