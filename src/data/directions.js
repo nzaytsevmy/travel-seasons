@@ -1,0 +1,182 @@
+// Derived registry of all 39 destinations with stable slug, visa, budget, monthly
+// data, and prices. Built from data/regions.js + data/prices.js — single source
+// of truth for /visa/<slug>/ and /trips/<month>/<slug>/ programmatic pages.
+
+import { data as regions } from './regions.js';
+import { PRICES } from './prices.js';
+
+const TRANSLIT = {
+  'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z',
+  'и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r',
+  'с':'s','т':'t','у':'u','ф':'f','х':'kh','ц':'c','ч':'ch','ш':'sh','щ':'sch',
+  'ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya'
+};
+function slugify(s) {
+  return s.toLowerCase()
+    .split('').map(c => TRANSLIT[c] ?? c).join('')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
+// Manual slug overrides — built from actual region|sub keys in regions.js
+const SLUG_OVERRIDES = {
+  'Австралия|Восток: Сидней, Мельбурн': 'australia-east',
+  'Австралия|Север: Дарвин, Какаду': 'australia-north',
+  'Бали & Lombok|Нуса Тенггара': 'bali',
+  'Суматра & Калимантан|Орангутаны, джунгли': 'sumatra-kalimantan',
+  'Раджа-Ампат|Папуа Барат, дайвинг': 'raja-ampat',
+  'Кения|Масаи Мара, Найроби, сафари': 'kenya',
+  'ЮАР|Кейптаун + Крюгер': 'south-africa',
+  'ОАЭ|Дубай, Абу-Даби': 'uae',
+  'Турция|Анталья, Стамбул, Каппадокия': 'turkey',
+  'Египет|Хургада, Шарм-эль-Шейх, Каир': 'egypt',
+  'Марокко|Маракеш, Касабланка, Атлас': 'morocco',
+  'Япония|Токио, Киото, Осака': 'japan',
+  'Южная Корея|Сеул, Пусан, Чеджудо': 'south-korea',
+  'Таиланд|Пхукет, Самуи, Бангкок': 'thailand',
+  'Вьетнам|Нячанг, Фукуок, Хошимин, Ханой': 'vietnam',
+  'Индия (Гоа)|Север: Калангут, Юг: Палолем': 'india-goa',
+  'Шри-Ланка|Юг + Запад / Восток (муссоны)': 'sri-lanka',
+  'Мальдивы|Атоллы, дайвинг': 'maldives',
+  'Грузия|Тбилиси, Батуми, Казбеги': 'georgia',
+  'Армения|Ереван, Севан, Дилижан': 'armenia',
+  'Кыргызстан|Юг: Ош, Сары-Таш, Алайская долина': 'kyrgyzstan',
+  'Узбекистан|Самарканд, Бухара, Хива': 'uzbekistan',
+  'Таджикистан|Памирский тракт, Душанбе': 'tajikistan',
+  'Казахстан|Алматы, Чарынский каньон, степи': 'kazakhstan',
+  'Швейцария|Альпы: Церматт, Интерлакен, Люцерн': 'switzerland',
+  'Северная Италия|Озёра (Комо, Гарда), Доломиты, Венеция': 'italy-north',
+  'Италия (Центр/Юг)|Рим, Тоскана, Сицилия, Амальфи': 'italy-south',
+  'Испания|Барселона, Мадрид, Канары': 'spain',
+  'Греция|Афины, Крит, Санторини, Корфу': 'greece',
+  'Хорватия|Далмация: Дубровник, Сплит, острова': 'croatia',
+  'Канада|Банф, Джаспер (горы)': 'canada-rockies',
+  'Канада|Квебек, Онтарио (восток)': 'canada-east',
+  'Мексика|Юкатан, Канкун, Мехико': 'mexico',
+  'Куба|Варадеро, Гавана, Тринидад': 'cuba',
+  'Доминикана|Пунта-Кана, Самана, Санто-Доминго': 'dominican-republic',
+  'Гватемала & Белиз|Тикаль, Антигуа, Карибы': 'guatemala-belize',
+  'Коста-Рика & Панама|Природа, пляжи обоих побережий': 'costa-rica-panama',
+  'Чилийская Патагония|Торрес-дель-Пайне, Пуэрто-Наталес': 'chile-patagonia',
+  'Чилийские фьорды|Каррера, Чилоэ, Айсен': 'chile-fjords',
+};
+
+// Russian name in different cases (acc/prep) for natural headlines.
+// Default: noun is fed into templates as-is (nominative).
+// Fallback: same as nominative.
+const COUNTRY_CASES = {
+  'australia-east': { nom: 'Восточная Австралия', acc: 'Восточную Австралию', prep: 'Восточной Австралии', vP: 'в Восточную Австралию', loc: 'в Восточной Австралии' },
+  'australia-north': { nom: 'Северная Австралия', acc: 'Северную Австралию', prep: 'Северной Австралии', vP: 'на севере Австралии' , loc: 'на севере Австралии' },
+  'bali': { nom: 'Бали', acc: 'Бали', prep: 'Бали', vP: 'на Бали' , loc: 'на Бали' },
+  'sumatra-kalimantan': { nom: 'Суматра и Калимантан', acc: 'Суматру и Калимантан', prep: 'Суматре', vP: 'на Суматре' , loc: 'на Суматре' },
+  'raja-ampat': { nom: 'Раджа-Ампат', acc: 'Раджа-Ампат', prep: 'Раджа-Ампат', vP: 'в Раджа-Ампат' , loc: 'в Раджа-Ампат' },
+  'kenya': { nom: 'Кения', acc: 'Кению', prep: 'Кении', vP: 'в Кению' , loc: 'в Кении' },
+  'south-africa': { nom: 'ЮАР', acc: 'ЮАР', prep: 'ЮАР', vP: 'в ЮАР' , loc: 'в ЮАР' },
+  'uae': { nom: 'ОАЭ', acc: 'ОАЭ', prep: 'ОАЭ', vP: 'в ОАЭ' , loc: 'в ОАЭ' },
+  'turkey': { nom: 'Турция', acc: 'Турцию', prep: 'Турции', vP: 'в Турцию' , loc: 'в Турции' },
+  'egypt': { nom: 'Египет', acc: 'Египет', prep: 'Египте', vP: 'в Египет' , loc: 'в Египте' },
+  'morocco': { nom: 'Марокко', acc: 'Марокко', prep: 'Марокко', vP: 'в Марокко' , loc: 'в Марокко' },
+  'tanzania': { nom: 'Танзания', acc: 'Танзанию', prep: 'Танзании', vP: 'в Танзанию' , loc: 'в Танзании' },
+  'uganda': { nom: 'Уганда', acc: 'Уганду', prep: 'Уганде', vP: 'в Уганду' , loc: 'в Уганде' },
+  'namibia': { nom: 'Намибия', acc: 'Намибию', prep: 'Намибии', vP: 'в Намибию' , loc: 'в Намибии' },
+  'botswana': { nom: 'Ботсвана', acc: 'Ботсвану', prep: 'Ботсване', vP: 'в Ботсвану' , loc: 'в Ботсване' },
+  'japan': { nom: 'Япония', acc: 'Японию', prep: 'Японии', vP: 'в Японию' , loc: 'в Японии' },
+  'south-korea': { nom: 'Южная Корея', acc: 'Южную Корею', prep: 'Южной Корее', vP: 'в Южную Корею' , loc: 'в Южной Корее' },
+  'hainan': { nom: 'Хайнань', acc: 'Хайнань', prep: 'Хайнане', vP: 'на Хайнань' , loc: 'на Хайнане' },
+  'hong-kong': { nom: 'Гонконг', acc: 'Гонконг', prep: 'Гонконге', vP: 'в Гонконг' , loc: 'в Гонконге' },
+  'taiwan': { nom: 'Тайвань', acc: 'Тайвань', prep: 'Тайване', vP: 'на Тайвань' , loc: 'на Тайване' },
+  'vietnam': { nom: 'Вьетнам', acc: 'Вьетнам', prep: 'Вьетнаме', vP: 'во Вьетнам' , loc: 'во Вьетнаме' },
+  'thailand': { nom: 'Таиланд', acc: 'Таиланд', prep: 'Таиланде', vP: 'в Таиланд' , loc: 'в Таиланде' },
+  'cambodia': { nom: 'Камбоджа', acc: 'Камбоджу', prep: 'Камбодже', vP: 'в Камбоджу' , loc: 'в Камбодже' },
+  'india': { nom: 'Индия', acc: 'Индию', prep: 'Индии', vP: 'в Индию' , loc: 'в Индии' },
+  'sri-lanka': { nom: 'Шри-Ланка', acc: 'Шри-Ланку', prep: 'Шри-Ланке', vP: 'на Шри-Ланку' , loc: 'на Шри-Ланке' },
+  'maldives': { nom: 'Мальдивы', acc: 'Мальдивы', prep: 'Мальдивах', vP: 'на Мальдивы' , loc: 'на Мальдивах' },
+  'georgia': { nom: 'Грузия', acc: 'Грузию', prep: 'Грузии', vP: 'в Грузию' , loc: 'в Грузии' },
+  'uzbekistan': { nom: 'Узбекистан', acc: 'Узбекистан', prep: 'Узбекистане', vP: 'в Узбекистан' , loc: 'в Узбекистане' },
+  'armenia': { nom: 'Армения', acc: 'Армению', prep: 'Армении', vP: 'в Армению' , loc: 'в Армении' },
+  'kazakhstan': { nom: 'Казахстан', acc: 'Казахстан', prep: 'Казахстане', vP: 'в Казахстан' , loc: 'в Казахстане' },
+  'kyrgyzstan': { nom: 'Киргизия', acc: 'Киргизию', prep: 'Киргизии', vP: 'в Киргизию' , loc: 'в Киргизии' },
+  'brazil': { nom: 'Бразилия', acc: 'Бразилию', prep: 'Бразилии', vP: 'в Бразилию' , loc: 'в Бразилии' },
+  'peru': { nom: 'Перу', acc: 'Перу', prep: 'Перу', vP: 'в Перу' , loc: 'в Перу' },
+  'bolivia': { nom: 'Боливия', acc: 'Боливию', prep: 'Боливии', vP: 'в Боливию' , loc: 'в Боливии' },
+  'chile': { nom: 'Чили', acc: 'Чили', prep: 'Чили', vP: 'в Чили' , loc: 'в Чили' },
+  'argentina': { nom: 'Аргентина', acc: 'Аргентину', prep: 'Аргентине', vP: 'в Аргентину' , loc: 'в Аргентине' },
+  'ecuador': { nom: 'Эквадор', acc: 'Эквадор', prep: 'Эквадоре', vP: 'в Эквадор' , loc: 'в Эквадоре' },
+  'cuba': { nom: 'Куба', acc: 'Кубу', prep: 'Кубе', vP: 'на Кубу' , loc: 'на Кубе' },
+  'dominican-republic': { nom: 'Доминикана', acc: 'Доминикану', prep: 'Доминикане', vP: 'в Доминикану' , loc: 'в Доминикане' },
+  'mexico': { nom: 'Мексика', acc: 'Мексику', prep: 'Мексике', vP: 'в Мексику' , loc: 'в Мексике' },
+  'usa': { nom: 'США', acc: 'США', prep: 'США', vP: 'в США' , loc: 'в США' },
+  'new-zealand': { nom: 'Новая Зеландия', acc: 'Новую Зеландию', prep: 'Новой Зеландии', vP: 'в Новую Зеландию' , loc: 'в Новой Зеландии' },
+  'antarctica': { nom: 'Антарктида', acc: 'Антарктиду', prep: 'Антарктиде', vP: 'в Антарктиду' , loc: 'в Антарктиде' },
+  'iceland': { nom: 'Исландия', acc: 'Исландию', prep: 'Исландии', vP: 'в Исландию' , loc: 'в Исландии' },
+  'norway': { nom: 'Норвегия', acc: 'Норвегию', prep: 'Норвегии', vP: 'в Норвегию' , loc: 'в Норвегии' },
+  'japan-hokkaido': { nom: 'Хоккайдо', acc: 'Хоккайдо', prep: 'Хоккайдо', vP: 'на Хоккайдо' , loc: 'на Хоккайдо' },
+  'thailand-north': { nom: 'Север Таиланда', acc: 'Север Таиланда', prep: 'Севере Таиланда', vP: 'на север Таиланда' , loc: 'на севере Таиланда' },
+  // Updated/new keys
+  'india-goa': { nom: 'Гоа (Индия)', acc: 'Гоа', prep: 'Гоа', vP: 'на Гоа' , loc: 'на Гоа' },
+  'tajikistan': { nom: 'Таджикистан', acc: 'Таджикистан', prep: 'Таджикистане', vP: 'в Таджикистан' , loc: 'в Таджикистане' },
+  'switzerland': { nom: 'Швейцария', acc: 'Швейцарию', prep: 'Швейцарии', vP: 'в Швейцарию' , loc: 'в Швейцарии' },
+  'italy-north': { nom: 'Северная Италия', acc: 'Северную Италию', prep: 'Северной Италии', vP: 'на север Италии' , loc: 'на севере Италии' },
+  'italy-south': { nom: 'Италия (центр и юг)', acc: 'Италию', prep: 'Италии', vP: 'в Италию' , loc: 'в Италии' },
+  'spain': { nom: 'Испания', acc: 'Испанию', prep: 'Испании', vP: 'в Испанию' , loc: 'в Испании' },
+  'greece': { nom: 'Греция', acc: 'Грецию', prep: 'Греции', vP: 'в Грецию' , loc: 'в Греции' },
+  'croatia': { nom: 'Хорватия', acc: 'Хорватию', prep: 'Хорватии', vP: 'в Хорватию' , loc: 'в Хорватии' },
+  'canada-rockies': { nom: 'Канадские Скалистые горы', acc: 'Канадские Скалистые горы', prep: 'канадских Скалистых горах', vP: 'в Канадские Скалистые горы' , loc: 'в Канадских Скалистых горах' },
+  'canada-east': { nom: 'Восточная Канада', acc: 'Восточную Канаду', prep: 'Восточной Канаде', vP: 'в Восточную Канаду' , loc: 'в Восточной Канаде' },
+  'guatemala-belize': { nom: 'Гватемала и Белиз', acc: 'Гватемалу и Белиз', prep: 'Гватемале и Белизе', vP: 'в Гватемалу и Белиз' , loc: 'в Гватемале и Белизе' },
+  'costa-rica-panama': { nom: 'Коста-Рика и Панама', acc: 'Коста-Рику и Панаму', prep: 'Коста-Рике и Панаме', vP: 'в Коста-Рику и Панаму' , loc: 'в Коста-Рике и Панаме' },
+  'chile-patagonia': { nom: 'Чилийская Патагония', acc: 'Чилийскую Патагонию', prep: 'чилийской Патагонии', vP: 'в Чилийскую Патагонию' , loc: 'в Чилийской Патагонии' },
+  'chile-fjords': { nom: 'Чилийские фьорды', acc: 'Чилийские фьорды', prep: 'чилийских фьордах', vP: 'в Чилийские фьорды' , loc: 'в Чилийских фьордах' },
+};
+
+function findPrice(direction) {
+  const norm = (s) => (s || '').toLowerCase().replace(/[^a-zа-я0-9]/gi, '');
+  const dn = norm(direction.region) + norm(direction.sub);
+  return PRICES.find((p) => {
+    const pn = norm(p.name);
+    return dn.includes(norm(p.name.split(' ')[0])) || pn.includes(norm(direction.region));
+  });
+}
+
+let groupLabel = '';
+const enriched = [];
+for (const r of regions) {
+  if (r.group) {
+    groupLabel = r.group.replace(/^[^\s]+\s/, '');
+    continue;
+  }
+  const key = `${r.region}|${r.sub}`;
+  const slug = SLUG_OVERRIDES[key] || slugify(`${r.region}-${r.sub.split(',')[0]}`);
+  const cases = COUNTRY_CASES[slug] || { nom: r.region, acc: r.region, prep: r.region, vP: r.region };
+  const price = findPrice(r);
+  enriched.push({
+    slug,
+    region: r.region,
+    sub: r.sub,
+    visa: r.visa,
+    budget: r.budget,
+    r: r.r,
+    t: r.t,
+    group: groupLabel,
+    cases,
+    price: price || null,
+  });
+}
+
+export const DIRECTIONS = enriched;
+export function bySlug(slug) { return DIRECTIONS.find(d => d.slug === slug); }
+
+export const MONTHS = [
+  { slug: 'january',   nom: 'январь',   prep: 'январе',   gen: 'января'   },
+  { slug: 'february',  nom: 'февраль',  prep: 'феврале',  gen: 'февраля'  },
+  { slug: 'march',     nom: 'март',     prep: 'марте',    gen: 'марта'    },
+  { slug: 'april',     nom: 'апрель',   prep: 'апреле',   gen: 'апреля'   },
+  { slug: 'may',       nom: 'май',      prep: 'мае',      gen: 'мая'      },
+  { slug: 'june',      nom: 'июнь',     prep: 'июне',     gen: 'июня'     },
+  { slug: 'july',      nom: 'июль',     prep: 'июле',     gen: 'июля'     },
+  { slug: 'august',    nom: 'август',   prep: 'августе',  gen: 'августа'  },
+  { slug: 'september', nom: 'сентябрь', prep: 'сентябре', gen: 'сентября' },
+  { slug: 'october',   nom: 'октябрь',  prep: 'октябре',  gen: 'октября'  },
+  { slug: 'november',  nom: 'ноябрь',   prep: 'ноябре',   gen: 'ноября'   },
+  { slug: 'december',  nom: 'декабрь',  prep: 'декабре',  gen: 'декабря'  },
+];

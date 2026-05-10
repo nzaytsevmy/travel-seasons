@@ -1,0 +1,198 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Nav from '../../../components/Nav.astro';
+import Footer from '../../../components/Footer.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const m of MONTHS) {
+    for (const d of DIRECTIONS) {
+      paths.push({ params: { month: m.slug, country: d.slug }, props: { m, d } });
+    }
+  }
+  return paths;
+}
+
+const { m, d } = Astro.props;
+const url = `https://traveltribe.ru/trips/${m.slug}/${d.slug}/`;
+const monthIdx = MONTHS.findIndex((x) => x.slug === m.slug);
+const status = d.r[monthIdx];
+const text = d.t[monthIdx];
+
+const STATUS_LABEL = {
+  P: { tag: '🔥 Пик сезона', verdict: 'Лучший месяц для поездки', cls: 'peak' },
+  G: { tag: '✅ Хороший месяц', verdict: 'Отличное время — погода и цены работают', cls: 'good' },
+  O: { tag: '🟡 Так себе', verdict: 'Можно ехать, но есть месяцы получше', cls: 'off' },
+  B: { tag: '⛔ Не лучшее время', verdict: 'Лучше выбрать другой месяц', cls: 'bad' },
+  X: { tag: '❄️ Закрыто', verdict: 'Направление закрыто в этом месяце', cls: 'closed' },
+};
+const lbl = STATUS_LABEL[status] || STATUS_LABEL.O;
+
+const VISA_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза обязательна' };
+const BUDGET_LABEL = {
+  low: '$ — до $80/день',
+  mid: '$$ — $80–250/день',
+  high: '$$$ — от $250/день',
+};
+
+// Find best months for this destination (rank P > G > O)
+const rank = { P: 4, G: 3, O: 2, B: 1, X: 0 };
+const bestMonths = MONTHS
+  .map((x, i) => ({ ...x, status: d.r[i], rank: rank[d.r[i]] || 0 }))
+  .filter((x) => x.rank >= 3 && x.slug !== m.slug)
+  .slice(0, 4);
+
+const flightFrom = d.price?.flight?.[0];
+const hotelFrom = d.price?.hotel?.[0];
+const foodFrom = d.price?.food?.[0];
+const dailyFrom = (hotelFrom || 0) + (foodFrom || 0);
+const weekTotal = flightFrom ? flightFrom + dailyFrom * 7 : null;
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "@id": `${url}#article`,
+      "url": url,
+      "headline": `${d.cases.nom} в ${m.prep} 2026: погода, цены, виза`,
+      "description": `Стоит ли ехать ${d.cases.vP} в ${m.prep} 2026: погода, цены на перелёт и отель, виза для россиян. ${lbl.verdict}.`,
+      "inLanguage": "ru-RU",
+      "datePublished": "2026-05-10",
+      "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://traveltribe.ru/about/" },
+      "publisher": { "@id": "https://traveltribe.ru/#org" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Календарь", "item": "https://traveltribe.ru/trips/" },
+        { "@type": "ListItem", "position": 3, "name": m.nom.charAt(0).toUpperCase() + m.nom.slice(1), "item": `https://traveltribe.ru/trips/${m.slug}/` },
+        { "@type": "ListItem", "position": 4, "name": d.cases.nom, "item": url },
+      ]
+    }
+  ]
+};
+
+const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
+---
+<Layout
+  title={`${d.cases.nom} в ${m.prep} 2026: погода, цены, виза`}
+  description={`Стоит ли ехать ${d.cases.vP} в ${m.prep} 2026 — погода, цены, виза для россиян, бюджет на неделю. ${lbl.verdict}.`}
+  canonical={url}
+  ogTitle={`${d.cases.nom} в ${m.prep} 2026`}
+  ogDescription={`${lbl.tag}. ${text.slice(0, 130)}`}
+  ogType="article"
+  ldJson={ldJson}
+>
+  <Nav active="trips" />
+  <Breadcrumbs crumbs={[
+    { label: 'Календарь', href: '/trips/' },
+    { label: monthCap, href: `/trips/${m.slug}/` },
+    { label: d.cases.nom }
+  ]} />
+
+  <main id="main" class="season-wrap">
+    <header class="season-header">
+      <div class={`season-tag season-tag--${lbl.cls}`}>{lbl.tag}</div>
+      <h1>{d.cases.nom} <em>в {m.prep}</em> 2026</h1>
+      <p class="season-sub">{lbl.verdict}. {d.region} — {d.sub}.</p>
+    </header>
+
+    <section class="season-summary">
+      <p class="season-text">{text}</p>
+    </section>
+
+    <section class="season-block">
+      <h2>Кратко: формат поездки</h2>
+      <ul class="season-facts">
+        <li><strong>Виза:</strong> <a href={`/visa/${d.slug}/`}>{VISA_LABEL[d.visa]}</a></li>
+        <li><strong>Бюджет:</strong> {BUDGET_LABEL[d.budget]}</li>
+        {flightFrom && <li><strong>Перелёт из Москвы от:</strong> ${flightFrom} в одну сторону</li>}
+        {hotelFrom && <li><strong>Отель эконом от:</strong> ${hotelFrom}/ночь</li>}
+        {weekTotal && <li><strong>Бюджет на неделю эконом:</strong> от ${weekTotal} на человека</li>}
+      </ul>
+    </section>
+
+    {(status === 'P' || status === 'G') && (
+      <section class="season-block">
+        <h2>Что делать {d.cases.loc} в {m.prep}</h2>
+        <p>{m.prep.charAt(0).toUpperCase() + m.prep.slice(1)} 2026 — один из лучших месяцев для поездки {d.cases.vP}. Погода и цены сходятся в окне комфорта. Закладывайте 7–14 дней, бронировать минимум за 2 месяца до вылета — на пиковые даты места разлетаются быстро.</p>
+        <p>Сравнить с другими месяцами можно в <a href="/seasons/">таблице сезонов</a>, посчитать точный бюджет — в <a href="/calculator/">калькуляторе поездки</a>.</p>
+      </section>
+    )}
+
+    {(status === 'O' || status === 'B') && bestMonths.length > 0 && (
+      <section class="season-block">
+        <h2>Когда лучше ехать {d.cases.vP}</h2>
+        <p>{m.prep.charAt(0).toUpperCase() + m.prep.slice(1)} — не лучший месяц для этого направления. Оптимальные окна:</p>
+        <ul class="season-list">
+          {bestMonths.map((bm) => (
+            <li><a href={`/trips/${bm.slug}/${d.slug}/`}><strong>{bm.nom}</strong></a> — {bm.status === 'P' ? 'пик сезона' : 'хороший месяц'}</li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {status === 'X' && (
+      <section class="season-block">
+        <h2>Направление закрыто</h2>
+        <p>{d.cases.nom} в {m.prep} физически недоступна для туристов: либо погодные условия (зима в Антарктиде), либо все туры остановлены до сезона. Возвращайтесь к этому окну в подходящие месяцы — {bestMonths.map((bm) => bm.nom).join(', ')}.</p>
+      </section>
+    )}
+
+    <section class="season-block">
+      <h2>{monthCap} 2026 — другие направления</h2>
+      <p>Что ещё работает {m.prep === 'мае' ? 'в мае' : `в ${m.prep}`} 2026 — смотри <a href={`/trips/${m.slug}/`}>обзор всех направлений {m.prep}</a>.</p>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.season-wrap { max-width: 720px; margin: 0 auto; padding: 0 2rem 5rem; }
+
+.season-header { text-align: center; margin: 2.5rem 0 2rem; }
+.season-tag {
+  display: inline-flex; align-items: center;
+  font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+  border: 1px solid var(--line); padding: 0.3rem 0.85rem; border-radius: 20px;
+  margin-bottom: 1.2rem;
+}
+.season-tag--peak { color: #22c55e; border-color: rgba(34,197,94,0.4); background: rgba(34,197,94,0.07); }
+.season-tag--good { color: #4a9eff; border-color: rgba(74,158,255,0.4); background: rgba(74,158,255,0.07); }
+.season-tag--off  { color: #f59e0b; border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.07); }
+.season-tag--bad  { color: #ef4444; border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.07); }
+.season-tag--closed { color: var(--text-faint); }
+
+.season-header h1 {
+  font-family: var(--ff-display); font-size: clamp(2.2rem, 5vw, 3.6rem);
+  font-weight: 300; line-height: 1.1;
+}
+.season-header h1 em { color: var(--gold); font-style: italic; }
+.season-sub { color: var(--text-dim); font-size: 1rem; line-height: 1.7; margin: 1rem auto 0; max-width: 560px; }
+
+.season-summary {
+  background: var(--bg2); border-left: 3px solid var(--gold);
+  padding: 1.2rem 1.4rem; border-radius: 4px;
+  margin-bottom: 2.5rem;
+}
+.season-text { color: var(--text); line-height: 1.75; font-size: 1rem; margin: 0; }
+
+.season-block { margin-bottom: 2.5rem; }
+.season-block h2 {
+  font-family: var(--ff-display); font-size: 1.4rem; font-weight: 400;
+  color: var(--gold); margin-bottom: 1rem;
+}
+.season-block p { color: var(--text-dim); line-height: 1.8; font-size: 0.95rem; margin-bottom: 0.8rem; }
+.season-block a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+
+.season-facts, .season-list { padding-left: 1.4rem; }
+.season-facts li, .season-list li {
+  color: var(--text-dim); line-height: 1.8; margin-bottom: 0.45rem; font-size: 0.95rem;
+}
+.season-facts li strong, .season-list li strong { color: var(--text); }
+</style>
