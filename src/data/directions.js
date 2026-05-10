@@ -129,6 +129,45 @@ const COUNTRY_CASES = {
   'chile-fjords': { nom: 'Чилийские фьорды', acc: 'Чилийские фьорды', prep: 'чилийских фьордах', vP: 'в Чилийские фьорды' , loc: 'в Чилийских фьордах' },
 };
 
+// Map slug → array of related blog post slugs (which already exist in content/blog/).
+// Used by /visa/<slug>/ and /trips/<month>/<slug>/ to surface long-form content.
+// Add a new entry whenever you publish a new post for an existing direction.
+const RELATED_POSTS = {
+  'japan': [
+    { slug: 'japan-guide-2026', title: 'Япония 2026: гайд без воды', kind: 'guide' },
+    { slug: 'japan-visa-2026', title: 'Виза в Японию для россиян 2026', kind: 'visa' },
+    { slug: 'japan-golden-week-2026', title: 'Золотая неделя в Японии 2026', kind: 'season' },
+  ],
+  'antarctica': [
+    { slug: 'antarctica-cruise-2026', title: 'Круиз в Антарктиду 2026: цена, маршрут, мой опыт', kind: 'guide' },
+  ],
+  'bali': [
+    { slug: 'bali-guide-2026', title: 'Бали 2026: виза, цены, районы', kind: 'guide' },
+  ],
+  'hainan': [
+    { slug: 'hainan-guide-2026', title: 'Хайнань 2026: безвиз, Alipay, VPN, цены', kind: 'guide' },
+  ],
+  'uganda': [
+    { slug: 'uganda-safari-2026', title: 'Уганда 2026: гориллы Бвинди и сафари', kind: 'guide' },
+  ],
+  'ecuador': [
+    { slug: 'galapagos-2026', title: 'Галапагосы 2026: что я видел и сколько стоит', kind: 'guide' },
+  ],
+  'new-zealand': [
+    { slug: 'aurora-new-zealand-2026', title: 'Южное сияние в Новой Зеландии 2026', kind: 'guide' },
+  ],
+};
+
+// EU/Шенген hub — связываем все европейские направления с шенгенским гайдом
+const SCHENGEN_POSTS = [
+  { slug: 'schengen-visa-2026', title: 'Шенгенская виза 2026: куда дают', kind: 'visa' },
+  { slug: 'ees-shengen-2026', title: 'EES в Шенгене 2026: биометрия для россиян', kind: 'visa' },
+];
+const EUROPE_SLUGS = ['switzerland', 'italy-north', 'italy-south', 'spain', 'greece', 'croatia'];
+for (const slug of EUROPE_SLUGS) {
+  RELATED_POSTS[slug] = (RELATED_POSTS[slug] || []).concat(SCHENGEN_POSTS);
+}
+
 function findPrice(direction) {
   const norm = (s) => (s || '').toLowerCase().replace(/[^a-zа-я0-9]/gi, '');
   const dn = norm(direction.region) + norm(direction.sub);
@@ -160,6 +199,7 @@ for (const r of regions) {
     group: groupLabel,
     cases,
     price: price || null,
+    relatedPosts: RELATED_POSTS[slug] || [],
   });
 }
 

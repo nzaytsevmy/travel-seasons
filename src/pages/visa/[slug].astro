@@ -145,6 +145,17 @@ const hotelFrom = d.price?.hotel?.[0];
       </ul>
     </section>
 
+    {d.relatedPosts.length > 0 && (
+      <section class="visa-block">
+        <h2>Подробные гайды {d.cases.loc}</h2>
+        <ul class="visa-related">
+          {d.relatedPosts.map((p) => (
+            <li><a href={`/blog/${p.slug}/`}><strong>{p.title}</strong></a> — {p.kind === 'visa' ? 'детали по визе' : p.kind === 'season' ? 'про конкретный сезон' : 'личный опыт автора'}</li>
+          ))}
+        </ul>
+      </section>
+    )}
+
     <section class="visa-block">
       <h2>Связанные ресурсы</h2>
       <ul class="visa-related">
