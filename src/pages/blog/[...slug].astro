@@ -319,13 +319,14 @@ if (faqs.length >= 2) {
     line-height: 1.55;
   }
   .prose :global(.table-wrap.table-wide td::before) {
-    content: attr(data-label) ":\\00a0";
+    content: attr(data-label) ": ";
     font-size: 0.78rem;
     font-weight: 500;
     color: var(--text-faint);
     text-transform: none;
     letter-spacing: 0;
     margin-right: 0.3rem;
+    white-space: pre;
   }
   /* Первая строка-колонка таблицы (имя категории) — отдельный header card-блока:
      убираем data-label, оставляем text, делаем чуть крупнее. */
