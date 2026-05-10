@@ -14,6 +14,16 @@ const searchOptions = DIRECTIONS.map(d => ({
   region: d.region,
   sub: d.sub,
 }));
+
+// Сгруппировано по первой букве — для алфавитного listbox под input
+const sortedSearchOptions = [...searchOptions].sort((a, b) => a.label.localeCompare(b.label, 'ru'));
+const grouped = sortedSearchOptions.reduce<Record<string, typeof sortedSearchOptions>>((acc, o) => {
+  const letter = o.label.charAt(0).toUpperCase();
+  (acc[letter] ||= []).push(o);
+  return acc;
+}, {});
+const letters = Object.keys(grouped).sort((a, b) => a.localeCompare(b, 'ru'));
+
 const currentMonthSlug = MONTHS[new Date().getMonth()].slug;
 
 // ── Schema ───────────────────────────────────────────
@@ -109,7 +119,7 @@ const featuredImageUrl = featured ? (await getImage({
             Личные отчёты, актуальные визы, реальные цены 2026 для 52 направлений мира. То что работает прямо сейчас — без рекламы и партнёрских туров.
           </p>
 
-          <form class="hero-search" id="heroSearch" autocomplete="off" data-month={currentMonthSlug}>
+          <form class="hero-search" id="heroSearch" autocomplete="off" data-month={currentMonthSlug} role="search">
             <label for="hero-search-input" class="hero-search-label">Куда хочешь поехать?</label>
             <div class="hero-search-row">
               <svg class="hero-search-icon" viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
@@ -120,19 +130,41 @@ const featuredImageUrl = featured ? (await getImage({
                 name="q"
                 type="search"
                 placeholder="Япония, Бали, Грузия, Антарктида…"
-                list="hero-search-list"
                 class="hero-search-input"
+                role="combobox"
+                aria-expanded="false"
+                aria-controls="hero-search-list"
+                aria-autocomplete="list"
               />
               <button type="submit" class="hero-search-btn">
                 <span>Найти</span>
                 <span aria-hidden="true">→</span>
               </button>
             </div>
-            <datalist id="hero-search-list">
-              {searchOptions.map(o => (
-                <option value={o.label} data-slug={o.slug}>{o.region} — {o.sub}</option>
+            <div id="hero-search-list" class="hero-list" role="listbox" aria-label="Все направления по алфавиту">
+              {letters.map(letter => (
+                <div class="hero-list-group" data-letter={letter}>
+                  <div class="hero-list-letter" aria-hidden="true">{letter}</div>
+                  <ul class="hero-list-items">
+                    {grouped[letter].map(o => (
+                      <li>
+                        <a
+                          href={`/${o.slug}/`}
+                          class="hero-list-item"
+                          role="option"
+                          data-label={o.label.toLowerCase()}
+                          data-region={o.region.toLowerCase()}
+                        >
+                          <span class="hero-list-name">{o.label}</span>
+                          <span class="hero-list-region">{o.region}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ))}
-            </datalist>
+              <p class="hero-list-empty" hidden>Ничего не нашлось — попробуй другую страну или регион</p>
+            </div>
           </form>
           <div class="hero-intro-stats">
             <div><strong>52</strong><span>направления</span></div>
@@ -327,12 +359,54 @@ const featuredImageUrl = featured ? (await getImage({
 </Layout>
 
 <script is:inline define:vars={{ searchOptions, currentMonthSlug }}>
-  // Hero search: подбираем direction по тексту, редиректим на /trips/<month>/<slug>/
+  // Hero search: combobox с алфавитным listbox + live-фильтр + submit-фолбек
   const heroForm = document.getElementById('heroSearch');
   if (heroForm) {
+    const input = heroForm.querySelector('input[name="q"]');
+    const list  = document.getElementById('hero-search-list');
+    const items = list ? Array.from(list.querySelectorAll('.hero-list-item')) : [];
+    const groups = list ? Array.from(list.querySelectorAll('.hero-list-group')) : [];
+    const empty = list ? list.querySelector('.hero-list-empty') : null;
+
+    function open() {
+      if (!list) return;
+      list.classList.add('is-open');
+      input.setAttribute('aria-expanded', 'true');
+    }
+    function close() {
+      if (!list) return;
+      list.classList.remove('is-open');
+      input.setAttribute('aria-expanded', 'false');
+    }
+    function filter(q) {
+      const query = (q || '').trim().toLowerCase();
+      let visible = 0;
+      items.forEach(a => {
+        const label = a.dataset.label || '';
+        const region = a.dataset.region || '';
+        const match = !query || label.includes(query) || region.includes(query);
+        a.parentElement.hidden = !match;
+        if (match) visible++;
+      });
+      // Hide letter group if no items visible
+      groups.forEach(g => {
+        const has = Array.from(g.querySelectorAll('li')).some(li => !li.hidden);
+        g.hidden = !has;
+      });
+      if (empty) empty.hidden = visible !== 0;
+    }
+
+    input.addEventListener('focus', open);
+    input.addEventListener('input', () => { open(); filter(input.value); });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { close(); input.blur(); }
+    });
+    document.addEventListener('click', (e) => {
+      if (!heroForm.contains(e.target)) close();
+    });
+
     heroForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const input = heroForm.querySelector('input[name="q"]');
       const q = (input.value || '').trim().toLowerCase();
       if (!q) return;
 
@@ -344,13 +418,12 @@ const featuredImageUrl = featured ? (await getImage({
       );
 
       if (partial) {
-        window.location.href = `/trips/${currentMonthSlug}/${partial.slug}/`;
+        window.location.href = `/${partial.slug}/`;
       } else {
         window.location.href = `/seasons/?q=${encodeURIComponent(q)}`;
       }
     });
   }
-
 </script>
 
 <style>
@@ -420,8 +493,83 @@ const featuredImageUrl = featured ? (await getImage({
 }
 /* ─── Hero search bar (Skyscanner / Booking-style) ─── */
 .hero-search {
+  position: relative;
   margin: var(--space-6) 0 var(--space-7);
   display: flex; flex-direction: column; gap: var(--space-2);
+  max-width: 480px;
+}
+
+/* ── Алфавитный listbox под input ── */
+.hero-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: 360px;
+  overflow-y: auto;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md, 10px);
+  box-shadow: 0 18px 48px -12px rgba(0,0,0,0.18);
+  padding: 0.5rem 0;
+  z-index: 50;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.15s, transform 0.15s, visibility 0s linear 0.15s;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-dim) var(--bg2);
+}
+.hero-list.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+.hero-list-group { padding: 0; }
+.hero-list-letter {
+  position: sticky;
+  top: 0;
+  background: var(--bg2);
+  padding: 0.4rem 1rem 0.3rem;
+  font-family: var(--ff-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--gold-600);
+  border-bottom: 1px solid var(--line);
+  z-index: 1;
+}
+.hero-list-items {
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem 0;
+}
+.hero-list-items li { margin: 0; padding: 0; }
+.hero-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.55rem 1rem;
+  text-decoration: none;
+  color: var(--text);
+  transition: background 0.12s;
+}
+.hero-list-item:hover { background: rgba(201,151,58,0.08); }
+.hero-list-item:hover .hero-list-name { color: var(--gold); }
+.hero-list-name { font-size: 0.92rem; font-weight: 500; }
+.hero-list-region {
+  font-size: 0.74rem;
+  color: var(--text-faint);
+  letter-spacing: 0.02em;
+}
+.hero-list-empty {
+  margin: 0;
+  padding: 1rem 1.2rem;
+  font-size: 0.85rem;
+  color: var(--text-faint);
+  text-align: center;
 }
 .hero-search-label {
   font-size: var(--text-sm);
