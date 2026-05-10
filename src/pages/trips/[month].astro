@@ -5,6 +5,7 @@ import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { data as regions } from '../../data/regions.js';
 import { PRICES } from '../../data/prices.js';
+import { regionMeta } from '../../data/regions-meta.js';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -67,10 +68,12 @@ const enriched = directions.map(d => {
   const text = d.t[monthIdx];
   const price = findPrice(d);
   const liveFlight = price?.iata && livePrices[price.iata];
+  const meta = regionMeta[d.sub] || {};
   return {
     ...d,
     score,
     text,
+    slug: meta.slug || '',
     iata: price?.iata,
     flight: liveFlight || price?.flight?.[0],
     isLive: !!liveFlight,
@@ -181,7 +184,7 @@ const ldJson = {
         <p class="section-desc">Идеальная погода, всё открыто. Может быть многолюдно и дороже.</p>
         <div class="trips-grid">
           {peak.map(d => (
-            <article class={`trip-card score-${SCORE_CLASS[d.score]}`}>
+            <a href={d.slug ? `/trips/${month}/${d.slug}/` : '#'} class={`trip-card score-${SCORE_CLASS[d.score]}`}>
               <div class="trip-head">
                 <h3>{d.region}</h3>
                 <span class="score-pill">{SCORE_LABEL[d.score]}</span>
@@ -197,7 +200,8 @@ const ldJson = {
                   </span>
                 )}
               </div>
-            </article>
+              <span class="trip-card-arrow" aria-hidden="true">→</span>
+            </a>
           ))}
         </div>
       </section>
@@ -209,7 +213,7 @@ const ldJson = {
         <p class="section-desc">Комфортно, меньше туристов, ниже цены чем в пик.</p>
         <div class="trips-grid">
           {good.map(d => (
-            <article class={`trip-card score-${SCORE_CLASS[d.score]}`}>
+            <a href={d.slug ? `/trips/${month}/${d.slug}/` : '#'} class={`trip-card score-${SCORE_CLASS[d.score]}`}>
               <div class="trip-head">
                 <h3>{d.region}</h3>
                 <span class="score-pill">{SCORE_LABEL[d.score]}</span>
@@ -225,7 +229,8 @@ const ldJson = {
                   </span>
                 )}
               </div>
-            </article>
+              <span class="trip-card-arrow" aria-hidden="true">→</span>
+            </a>
           ))}
         </div>
       </section>
@@ -237,7 +242,7 @@ const ldJson = {
         <p class="section-desc">Сезон не идеальный, но если вы там по другим причинам — норм.</p>
         <div class="trips-grid">
           {ok.slice(0, 8).map(d => (
-            <article class={`trip-card score-${SCORE_CLASS[d.score]}`}>
+            <a href={d.slug ? `/trips/${month}/${d.slug}/` : '#'} class={`trip-card score-${SCORE_CLASS[d.score]}`}>
               <div class="trip-head">
                 <h3>{d.region}</h3>
                 <span class="score-pill">{SCORE_LABEL[d.score]}</span>
@@ -253,7 +258,8 @@ const ldJson = {
                   </span>
                 )}
               </div>
-            </article>
+              <span class="trip-card-arrow" aria-hidden="true">→</span>
+            </a>
           ))}
         </div>
       </section>
@@ -327,9 +333,20 @@ const ldJson = {
 .trip-card {
   background: var(--bg2); border: 1px solid var(--line); border-radius: 4px;
   padding: 1.2rem; position: relative; overflow: hidden;
-  transition: transform 0.2s ease, border-color 0.25s ease;
+  transition: transform 0.2s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  display: block; text-decoration: none; color: inherit;
 }
-.trip-card:hover { transform: translateY(-2px); border-color: var(--gold-dim); }
+.trip-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--gold-dim);
+  box-shadow: 0 8px 22px -10px rgba(0,0,0,0.18);
+}
+.trip-card-arrow {
+  position: absolute; top: 1.2rem; right: 1.2rem;
+  color: var(--gold); font-size: 1rem;
+  opacity: 0; transition: opacity 0.2s, transform 0.2s;
+}
+.trip-card:hover .trip-card-arrow { opacity: 1; transform: translateX(3px); }
 .trip-card.score-peak { border-left: 3px solid var(--peak); }
 .trip-card.score-good { border-left: 3px solid var(--good); }
 .trip-card.score-ok   { border-left: 3px solid var(--ok); }
