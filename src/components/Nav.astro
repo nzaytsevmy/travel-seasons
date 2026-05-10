@@ -2,7 +2,15 @@
 const { active } = Astro.props;
 ---
 <nav class="site-nav">
-  <a href="/" class="logo">Travel<span>Tribe</span></a>
+  <a href="/" class="logo" aria-label="TravelTribe — на главную">
+    <svg class="logo-mark" viewBox="0 0 24 24" fill="none" width="22" height="22" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.4" opacity="0.4"/>
+      <path d="M 2.5 13.5 Q 12 9 21.5 13.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="12" cy="9" r="1.6" fill="currentColor"/>
+      <path d="M 6 17 Q 12 14 18 17" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-dasharray="0.5 1.4" opacity="0.55"/>
+    </svg>
+    <span class="logo-text">Travel<span class="logo-text-accent">Tribe</span></span>
+  </a>
   <div class="nav-links" id="navLinks">
     <a href="/" class={active === 'home' ? 'active' : ''} aria-current={active === 'home' ? 'page' : undefined}>Главная</a>
     <a href="/seasons/" class={active === 'seasons' ? 'active' : ''} aria-current={active === 'seasons' ? 'page' : undefined}>Сезоны</a>
