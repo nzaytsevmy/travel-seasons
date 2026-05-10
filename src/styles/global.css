@@ -245,8 +245,11 @@ html.light-theme .btn-primary { color: #fff; }
    /seasons/ table has its own scoped layout — these rules don't reach it. */
 
 /* Wrapper auto-injected by rehype-table-wrap for markdown tables.
-   Allows horizontal scroll on narrow viewports without breaking the column. */
+   container-type: inline-size — позволяет таблице переключаться на card-stack
+   когда сам её КОНТЕЙНЕР узкий, не привязка к viewport. */
 :where(.prose, .hub-wrap) .table-wrap {
+  container-type: inline-size;
+  container-name: tablewrap;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   margin: 1.6rem 0 2rem;
@@ -328,9 +331,15 @@ html.light-theme .btn-primary { color: #fff; }
 :where(.prose, .hub-wrap) .table-wrap td strong,
 .hub-table td strong { color: var(--text); }
 
-/* Long descriptive cells wrap softly; numeric cells stay on one line */
+/* Long descriptive cells wrap по словам, не по символам.
+   text-wrap:pretty — балансирует строки, не оставляет «висячих» одиночных слов. */
 :where(.prose, .hub-wrap) .table-wrap td,
-.hub-table td { overflow-wrap: anywhere; }
+.hub-table td {
+  word-break: normal;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+  hyphens: auto;
+}
 :where(.prose, .hub-wrap) .table-wrap td[align="right"],
 :where(.prose, .hub-wrap) .table-wrap th[align="right"],
 .hub-table td[align="right"],
@@ -339,11 +348,15 @@ html.light-theme .btn-primary { color: #fff; }
   white-space: nowrap;
 }
 
-/* ───────── Mobile: stack each row as a card (Chris Coyier pattern) ─────────
-   <600px: header row hides visually (kept for a11y), every <td> stacks
-   vertically and shows its <th> label via data-label::before, set by
-   the rehype plugin from the table's <thead>. */
-@media (max-width: 600px) {
+/* ───────── Card-stack mode (Chris Coyier pattern) ─────────
+   Триггерится container query: когда сам контейнер таблицы <720px,
+   стек карточек автоматически. Это покрывает мобильный + десктоп где
+   у поста узкий main (760px max - 64px padding = ~700px реальной ширины
+   при 4+ колонках всё равно тесно). */
+
+/* Container-query версия — для современных браузеров (Chrome 105+, Safari 16+, FF 110+).
+   Все основные браузеры в 2026 поддерживают. */
+@container tablewrap (max-width: 720px) {
   /* Wrapper: drop scroll/border, table flows in normal document */
   :where(.prose, .hub-wrap) .table-wrap {
     overflow: visible;
