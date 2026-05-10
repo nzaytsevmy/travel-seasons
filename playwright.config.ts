@@ -10,6 +10,8 @@ export default defineConfig({
     baseURL: process.env.PREVIEW_URL || 'http://localhost:4322',
     screenshot: 'only-on-failure',
     video: 'off',
+    // Доп. защита: блокируем сторонние трекеры даже если попали в HTML
+    extraHTTPHeaders: { 'X-Playwright': '1' },
   },
   expect: {
     toHaveScreenshot: {

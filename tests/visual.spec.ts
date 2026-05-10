@@ -1,5 +1,11 @@
 import { test, expect } from '@playwright/test';
 
+// Блокируем сторонние трекеры на КАЖДОМ тесте — чтобы Playwright не накручивал
+// Я.Метрику и Ahrefs (визиты с localhost попадали в реальную статистику).
+test.beforeEach(async ({ page }) => {
+  await page.route(/mc\.yandex\.ru|analytics\.ahrefs\.com|googletagmanager|google-analytics/, route => route.abort());
+});
+
 // 8 ключевых страниц для visual regression.
 // Меняется любое — baseline снимок ловит diff.
 const PAGES = [

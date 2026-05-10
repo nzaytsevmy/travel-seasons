@@ -97,21 +97,37 @@ const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-image.png?v=2';
 
   {preloadImage && <link rel="preload" as="image" href={preloadImage} />}
 
-  <!-- Ahrefs Web Analytics (privacy-first, cookie-free) -->
-  <!-- Ahrefs Analytics в Partytown Web Worker (не блокирует main thread) -->
-  <script type="text/partytown" src="https://analytics.ahrefs.com/analytics.js" data-key="Vlc0xmPDRP3Rn1BkiDfn2A"></script>
+  <!-- Аналитика — только на production hostname (не на localhost / staging).
+       Иначе Playwright/preview сервер накручивает визиты в метрике. -->
+  <script is:inline>
+    (function () {
+      var h = window.location.hostname;
+      window.__analyticsEnabled = h === 'traveltribe.ru' || h === 'www.traveltribe.ru';
+    })();
+  </script>
 
-  <!-- Yandex.Metrika counter в Partytown Web Worker -->
-  <script type="text/partytown">
-    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-    m[i].l=1*new Date();
-    for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-    (window, document,'script','https://mc.yandex.ru/metrika/tag.js', 'ym');
-    ym(95832375, 'init', {webvisor:true, clickmap:true, accurateTrackBounce:true, trackLinks:true});
+  <!-- Ahrefs Analytics — только в production -->
+  <script type="text/partytown" is:inline>
+    if (window.__analyticsEnabled) {
+      var s = document.createElement('script');
+      s.src = 'https://analytics.ahrefs.com/analytics.js';
+      s.dataset.key = 'Vlc0xmPDRP3Rn1BkiDfn2A';
+      document.head.appendChild(s);
+    }
+  </script>
+
+  <!-- Yandex.Metrika — только в production (не на localhost) -->
+  <script type="text/partytown" is:inline>
+    if (window.__analyticsEnabled) {
+      (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+      m[i].l=1*new Date();
+      for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+      k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+      (window, document,'script','https://mc.yandex.ru/metrika/tag.js', 'ym');
+      ym(95832375, 'init', {webvisor:true, clickmap:true, accurateTrackBounce:true, trackLinks:true});
+    }
   </script>
   <noscript><div><img src="https://mc.yandex.ru/watch/95832375" style="position:absolute; left:-9999px;" alt="Yandex Metrika" aria-hidden="true" /></div></noscript>
-  <!-- /Yandex.Metrika counter -->
 
   <!-- View Transitions API — плавные переходы между страницами -->
   <ClientRouter />
