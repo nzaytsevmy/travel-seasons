@@ -4,6 +4,7 @@ import mdx from '@astrojs/mdx';
 import pagefind from 'astro-pagefind';
 import remarkNumerals from './tools/remark-numerals.mjs';
 import rehypeTableWrap from './tools/rehype-table-wrap.mjs';
+import rehypeFaqAccordion from './tools/rehype-faq-accordion.mjs';
 
 export default defineConfig({
   site: 'https://traveltribe.ru',
@@ -20,7 +21,7 @@ export default defineConfig({
   },
   markdown: {
     remarkPlugins: [remarkNumerals],
-    rehypePlugins: [rehypeTableWrap],
+    rehypePlugins: [rehypeTableWrap, rehypeFaqAccordion],
   },
   integrations: [
     mdx(),
