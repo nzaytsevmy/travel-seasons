@@ -279,45 +279,24 @@ const featuredImageUrl = featured ? (await getImage({
       </div>
     </section>
 
-    {/* ─── Newsletter signup — email + Telegram ─── */}
+    {/* ─── Newsletter — Telegram-канал (Email убран — в РФ Telegram > Email) ─── */}
     <section class="news-section">
       <div class="news-container">
         <div class="news-head">
-          <div class="section-eyebrow">// Подписаться</div>
-          <h2>Свежие истории — раз в 2 недели</h2>
-          <p>Email-дайджест: новые посты, апдейты виз, неочевидные открытия. Без воды и рекламы.</p>
+          <div class="section-eyebrow">// Telegram-канал</div>
+          <h2>Свежие истории и апдейты виз</h2>
+          <p>Личные истории из текущих поездок, оперативные апдейты виз и неочевидные открытия. Без воды и рекламы. Раз в 2-3 дня.</p>
         </div>
 
-        <form class="news-form" id="newsForm" autocomplete="off">
-          <label for="news-email" class="news-form-label">Email</label>
-          <div class="news-form-row">
-            <input
-              id="news-email"
-              name="email"
-              type="email"
-              placeholder="you@example.com"
-              required
-              class="news-form-input"
-            />
-            <button type="submit" class="news-form-btn">
-              <span>Подписаться</span>
-              <span aria-hidden="true">→</span>
-            </button>
-          </div>
-          <p class="news-form-hint" id="newsFormHint">Без спама. Можно отписаться одним кликом.</p>
-        </form>
-
-        <div class="news-or"><span>или</span></div>
-
-        <a class="news-tg" href="https://t.me/traveltriberu" target="_blank" rel="noopener">
+        <a class="news-tg-big" href="https://t.me/traveltriberu" target="_blank" rel="noopener">
           <span class="news-tg-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295l.213-3.053 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.643.135-.953l11.566-4.458c.538-.196 1.006.128.832.937z"/></svg>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295l.213-3.053 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.643.135-.953l11.566-4.458c.538-.196 1.006.128.832.937z"/></svg>
           </span>
           <span class="news-tg-text">
             <strong>@traveltriberu</strong>
-            <span>Telegram-канал — оперативно, спонтанно</span>
+            <span>Подписаться в Telegram</span>
           </span>
-          <span aria-hidden="true">→</span>
+          <span class="news-arrow" aria-hidden="true">→</span>
         </a>
       </div>
     </section>
@@ -372,33 +351,6 @@ const featuredImageUrl = featured ? (await getImage({
     });
   }
 
-  // Email subscribe form — placeholder, копит email в localStorage до интеграции
-  // c Sender.ru / Mailchimp. Когда подключим — заменить на fetch на API endpoint.
-  const newsForm = document.getElementById('newsForm');
-  if (newsForm) {
-    newsForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const input = newsForm.querySelector('input[type="email"]');
-      const hint = document.getElementById('newsFormHint');
-      const email = (input.value || '').trim();
-      if (!email || !email.includes('@')) {
-        hint.textContent = 'Введи правильный email';
-        hint.style.color = '#ef4444';
-        return;
-      }
-      // Append to local pending list
-      try {
-        const pending = JSON.parse(localStorage.getItem('subscribers') || '[]');
-        if (!pending.includes(email)) pending.push(email);
-        localStorage.setItem('subscribers', JSON.stringify(pending));
-      } catch (e) {}
-      hint.textContent = '✓ Спасибо! Первое письмо придёт в ближайшие 2 недели.';
-      hint.style.color = 'var(--gold-600)';
-      input.value = '';
-      input.disabled = true;
-      newsForm.querySelector('button[type="submit"]').disabled = true;
-    });
-  }
 </script>
 
 <style>
@@ -856,87 +808,38 @@ const featuredImageUrl = featured ? (await getImage({
   margin-left: auto; margin-right: auto;
 }
 
-/* Email form */
-.news-form { max-width: 460px; margin: 0 auto; }
-.news-form-label { display: block; font-size: var(--text-sm); font-weight: 600; color: var(--text-dim); text-align: left; margin-bottom: var(--space-2); }
-.news-form-row {
-  display: flex; align-items: center;
-  background: var(--bg);
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-pill);
-  padding: 4px 4px 4px 18px;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-.news-form-row:focus-within {
-  border-color: var(--gold-600);
-  box-shadow: 0 0 0 3px rgba(201,151,58,0.15);
-}
-.news-form-input {
-  flex: 1; min-width: 0;
-  padding: 0.85rem 0.5rem;
-  border: none; background: transparent; outline: none;
-  font-family: var(--ff-body); font-size: var(--text-base);
-  color: var(--text); font-weight: 500;
-}
-.news-form-input::placeholder { color: var(--text-faint); font-weight: 400; }
-.news-form-btn {
-  display: inline-flex; align-items: center; gap: 0.4rem;
-  padding: 0.7rem 1.3rem;
+/* Big Telegram CTA */
+.news-tg-big {
+  display: inline-flex; align-items: center; gap: var(--space-4);
+  padding: var(--space-4) var(--space-6);
   background: var(--gold-600);
-  color: #fff;
-  border: none; border-radius: var(--radius-pill);
-  font-family: var(--ff-body); font-size: var(--text-sm); font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
-  white-space: nowrap;
-}
-.news-form-btn:hover { background: var(--gold-500); }
-.news-form-btn:active { transform: scale(0.97); }
-.news-form-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
-.news-form-hint { margin-top: var(--space-2); font-size: var(--text-xs); color: var(--text-faint); text-align: left; }
-
-/* OR separator */
-.news-or {
-  display: flex; align-items: center;
-  margin: var(--space-6) 0;
-  color: var(--text-faint);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-widest);
-  text-transform: uppercase;
-}
-.news-or::before, .news-or::after {
-  content: ""; flex: 1; height: 1px; background: var(--line);
-}
-.news-or span { padding: 0 var(--space-3); }
-
-/* Telegram alt CTA */
-.news-tg {
-  display: inline-flex; align-items: center; gap: var(--space-3);
-  padding: var(--space-3) var(--space-5);
-  background: var(--bg);
-  border: 1.5px solid var(--line);
+  border: none;
   border-radius: var(--radius-pill);
-  color: var(--text);
+  color: #fff;
   text-decoration: none;
-  transition: border-color 0.15s, transform 0.15s;
-  max-width: 460px; width: 100%;
-  text-align: left;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(201,151,58,0.28), 0 1px 2px rgba(0,0,0,0.06);
+  max-width: 480px; width: 100%;
+  margin: 0 auto;
 }
-.news-tg:hover {
-  border-color: var(--gold-600);
-  transform: translateY(-1px);
+.news-tg-big:hover {
+  background: var(--gold-500);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(201,151,58,0.4);
 }
 .news-tg-icon {
-  width: 36px; height: 36px;
+  width: 44px; height: 44px;
   display: inline-flex; align-items: center; justify-content: center;
-  background: rgba(0, 136, 204, 0.12);
-  color: #0088cc;
+  background: rgba(255,255,255,0.18);
+  color: #fff;
   border-radius: 50%;
   flex: 0 0 auto;
 }
-.news-tg-text { display: flex; flex-direction: column; gap: 1px; flex: 1; }
-.news-tg-text strong { font-size: var(--text-base); font-weight: 600; color: var(--text); }
-.news-tg-text span { font-size: var(--text-xs); color: var(--text-faint); }
+.news-tg-text { display: flex; flex-direction: column; gap: 2px; flex: 1; text-align: left; }
+.news-tg-text strong { font-size: var(--text-lg); font-weight: 700; color: #fff; }
+.news-tg-text span { font-size: var(--text-sm); color: rgba(255,255,255,0.85); }
+.news-arrow { font-size: 1.3rem; transition: transform 0.15s; }
+.news-tg-big:hover .news-arrow { transform: translateX(4px); }
 
 /* ─── AUTHOR ─── */
 .author-section { padding: 0 0 var(--space-16); }
