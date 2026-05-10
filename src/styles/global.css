@@ -523,11 +523,11 @@ footer {
 :where(.prose, .hub-wrap) .table-wrap tbody tr:hover,
 .hub-table tbody tr:hover { background: rgba(201,151,58,0.05); }
 
-/* Emphasised values stay bright */
+/* Emphasised values stay bright. Перенос разрешён — числа уже защищены NBSP
+   через remark-numerals плагин, а длинные bold-фразы должны wrap нормально. */
 :where(.prose, .hub-wrap) .table-wrap td strong,
 .hub-table td strong {
   color: var(--text);
-  white-space: nowrap;
 }
 
 /* GFM alignment via colons in markdown delimiter row */
