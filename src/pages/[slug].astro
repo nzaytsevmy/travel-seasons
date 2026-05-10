@@ -15,6 +15,7 @@ import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { Image } from 'astro:assets';
 import { DIRECTIONS, MONTHS } from '../data/directions.js';
+import AviasalesWidget from '../components/post/AviasalesWidget.astro';
 
 // Pre-import all destination photos (Vite needs static imports). glob lazy:
 const destPhotos = import.meta.glob('../assets/destinations/*.jpg', {
@@ -245,6 +246,8 @@ const ldJson = {
         ))}
       </div>
     </section>
+
+    <AviasalesWidget title={`Найти билеты — ${d.cases.vP}`} subid={`hub-${d.slug}`} />
 
     {/* RELATED LINKS */}
     <section class="quick-block">

@@ -6,6 +6,7 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import authorPhoto from '../assets/author/nikita.jpg';
 import { DIRECTIONS, MONTHS } from '../data/directions.js';
+import { Icon } from 'astro-icon/components';
 
 // Search autocomplete data
 const searchOptions = DIRECTIONS.map(d => ({
@@ -288,22 +289,22 @@ const featuredImageUrl = featured ? (await getImage({
         <div class="section-eyebrow">// Инструменты</div>
         <div class="tools-grid">
           <a href="/seasons/" class="tool-card">
-            <span class="tool-icon">🗓</span>
+            <Icon name="lucide:calendar-days" class="tool-icon" />
             <strong>Таблица сезонов</strong>
-            <span>39 направлений × 12 месяцев. Когда лучше ехать.</span>
+            <span>52 направления × 12 месяцев. Когда лучше ехать.</span>
           </a>
           <a href="/calculator/" class="tool-card">
-            <span class="tool-icon">💸</span>
+            <Icon name="lucide:wallet" class="tool-icon" />
             <strong>Калькулятор бюджета</strong>
             <span>Перелёт + проживание + еда. Живой курс ЦБ.</span>
           </a>
           <a href="/trips/" class="tool-card">
-            <span class="tool-icon">🌍</span>
+            <Icon name="lucide:globe-2" class="tool-icon" />
             <strong>Календарь поездок</strong>
             <span>Что работает в каждом месяце 2026.</span>
           </a>
           <a href="/blog/" class="tool-card">
-            <span class="tool-icon">📓</span>
+            <Icon name="lucide:book-open" class="tool-icon" />
             <strong>Блог</strong>
             <span>Личные отчёты автора. {allPosts.length} статей.</span>
           </a>
@@ -918,7 +919,12 @@ const featuredImageUrl = featured ? (await getImage({
   transition: border-color var(--duration-fast), background var(--duration-fast);
 }
 .tool-card:hover { border-color: rgba(201,151,58,0.4); background: var(--bg3); }
-.tool-icon { font-size: 1.6rem; line-height: 1; }
+.tool-icon {
+  width: 28px; height: 28px;
+  color: var(--gold-600);
+  stroke-width: 1.5;
+  flex: 0 0 auto;
+}
 .tool-card strong { font-size: var(--text-base); font-weight: 600; }
 .tool-card span:last-child { font-size: var(--text-sm); color: var(--text-dim); line-height: var(--leading-normal); }
 
