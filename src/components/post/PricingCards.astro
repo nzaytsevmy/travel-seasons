@@ -1,0 +1,173 @@
+---
+// Premium pricing comparison cards. Pattern: Stripe / Linear / Vercel / Apple.
+// Use in MDX:
+//   <PricingCards tiers={[
+//     { tier: 'Эконом', price: '750 000–950 000 ₽', priceNote: 'март или ноябрь', emoji: '🟢',
+//       features: ['MV Ushuaia / Ocean Nova', 'Нижняя палуба', 'Перелёт эконом', 'Базовый круиз 10–11 дней'] },
+//     { tier: 'Стандарт', price: '1 100 000–1 400 000 ₽', priceNote: 'декабрь–февраль', emoji: '🟡',
+//       featured: true,
+//       features: ['Swan Hellenic / Quark', 'Каюта с окном', 'Хороший корабль', 'Одна ночь в БА'] },
+//     { tier: 'Премиум', price: '2 500 000–4 500 000+ ₽', priceNote: 'люкс-яхты', emoji: '🔴',
+//       features: ['Ponant Le Boreal / Silversea', 'Балкон', 'Личный бутлер', 'Бизнес-перелёт', 'Five Star Alliance'] },
+//   ]} />
+
+interface Tier {
+  tier: string;
+  price: string;
+  priceNote?: string;
+  emoji?: string;
+  featured?: boolean;
+  badge?: string;
+  features: string[];
+}
+
+interface Props {
+  tiers: Tier[];
+  caption?: string;
+}
+
+const { tiers, caption } = Astro.props;
+---
+<div class="pricing-cards" role="region" aria-label={caption || 'Тарифы'}>
+  {tiers.map((t) => (
+    <article class={`pc-card ${t.featured ? 'pc-card--featured' : ''}`}>
+      {(t.badge || t.featured) && (
+        <div class="pc-badge">{t.badge || 'Оптимальный выбор'}</div>
+      )}
+      <div class="pc-head">
+        {t.emoji && <span class="pc-emoji" aria-hidden="true">{t.emoji}</span>}
+        <span class="pc-tier">{t.tier}</span>
+      </div>
+      <div class="pc-price-wrap">
+        <div class="pc-price">{t.price}</div>
+        {t.priceNote && <div class="pc-price-note">{t.priceNote}</div>}
+      </div>
+      <ul class="pc-features">
+        {t.features.map((f) => (
+          <li>
+            <span class="pc-check" aria-hidden="true">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 8.5 6.5 12 13 4.5"></polyline>
+              </svg>
+            </span>
+            <span>{f}</span>
+          </li>
+        ))}
+      </ul>
+    </article>
+  ))}
+</div>
+
+<style>
+.pricing-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0 2.5rem;
+  container-type: inline-size;
+}
+
+.pc-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.6rem 1.4rem 1.5rem;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.pc-card:hover {
+  border-color: rgba(201,151,58,0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -18px rgba(0,0,0,0.5);
+}
+
+.pc-card--featured {
+  border-color: var(--gold);
+  background: linear-gradient(180deg, rgba(201,151,58,0.06) 0%, var(--bg2) 100%);
+  box-shadow: 0 0 0 1px var(--gold), 0 14px 40px -20px rgba(201,151,58,0.4);
+}
+.pc-card--featured:hover {
+  box-shadow: 0 0 0 1px var(--gold), 0 22px 50px -18px rgba(201,151,58,0.5);
+}
+
+.pc-badge {
+  position: absolute;
+  top: -10px; left: 50%; transform: translateX(-50%);
+  font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: #0c0a08;
+  background: var(--gold);
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+:global(html.light-theme) .pc-badge { color: #fff; }
+
+.pc-head {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--text-faint);
+}
+.pc-emoji { font-size: 0.9rem; }
+.pc-tier { font-weight: 600; color: var(--text-dim); }
+.pc-card--featured .pc-tier { color: var(--gold); }
+
+.pc-price-wrap {
+  display: flex; flex-direction: column; gap: 0.3rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.pc-price {
+  font-family: var(--ff-display);
+  font-size: clamp(1.5rem, 2.6vw, 1.9rem);
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums lining-nums;
+  text-wrap: balance;
+}
+.pc-card--featured .pc-price { color: var(--gold); }
+.pc-price-note {
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+.pc-features {
+  list-style: none;
+  padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 0.55rem;
+}
+.pc-features li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--text-dim);
+}
+.pc-check {
+  flex: 0 0 auto;
+  width: 18px; height: 18px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: rgba(201,151,58,0.12);
+  color: var(--gold);
+  margin-top: 1px;
+}
+.pc-card--featured .pc-check { background: rgba(201,151,58,0.22); }
+
+/* Mobile: одна колонка, full-width карточки */
+@container (max-width: 600px) {
+  .pricing-cards {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+  .pc-card { padding: 1.3rem 1.2rem 1.2rem; }
+  .pc-price { font-size: 1.5rem; }
+}
+</style>
