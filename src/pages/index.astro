@@ -5,6 +5,16 @@ import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import authorPhoto from '../assets/author/nikita.jpg';
+import { DIRECTIONS, MONTHS } from '../data/directions.js';
+
+// Search autocomplete data
+const searchOptions = DIRECTIONS.map(d => ({
+  label: d.cases.nom,
+  slug: d.slug,
+  region: d.region,
+  sub: d.sub,
+}));
+const currentMonthSlug = MONTHS[new Date().getMonth()].slug;
 
 // ── Schema ───────────────────────────────────────────
 const ldJson = {
@@ -47,14 +57,22 @@ function readingTime(body: string) {
   return Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
 }
 
-// ── Categories ─── 6 главных тематических направлений
+// ── Bento categories — featured destinations с cover photos из постов
+import antarcticaCover from '../assets/blog/antarctica-cruise.jpg';
+import japanCover      from '../assets/blog/japan-author-fushimi.jpg';
+import baliCover       from '../assets/blog/bali-guide.jpg';
+import galapagosCover  from '../assets/blog/galapagos.jpg';
+import auroraCover     from '../assets/blog/aurora-nz.jpg';
+import schengenCover   from '../assets/blog/schengen-visa.jpg';
+
 const CATEGORIES = [
-  { label: 'Антарктида',   href: '/antarctica/',           emoji: '🐧', accent: 'cool' },
-  { label: 'Япония',       href: '/japan/',                emoji: '🍁', accent: 'warm' },
-  { label: 'Виза',         href: '/blog/tag/Виза/',        emoji: '🛂', accent: 'sand' },
-  { label: 'Сезоны',       href: '/seasons/',              emoji: '🗓',  accent: 'sand' },
-  { label: 'Бюджет',       href: '/calculator/',           emoji: '💸', accent: 'warm' },
-  { label: 'Календарь',    href: '/trips/',                emoji: '🌍', accent: 'cool' },
+  // 2 large hero (top row), 4 medium (bottom)
+  { label: 'Антарктида',   sub: 'Круиз 2026',          href: '/antarctica/',                  cover: antarcticaCover, size: 'lg', objPos: 'center 65%' },
+  { label: 'Япония',       sub: 'Гайд + виза',         href: '/japan/',                       cover: japanCover,      size: 'lg', objPos: 'center 23%' },
+  { label: 'Бали',         sub: '6 районов · цены',    href: '/blog/bali-guide-2026/',        cover: baliCover,       size: 'md' },
+  { label: 'Галапагосы',   sub: 'Олуши + пингвины',    href: '/blog/galapagos-2026/',         cover: galapagosCover,  size: 'md' },
+  { label: 'Новая Зеландия', sub: 'Южное сияние',      href: '/blog/aurora-new-zealand-2026/', cover: auroraCover,    size: 'md' },
+  { label: 'Шенген',       sub: 'Виза 2026 · EES',     href: '/blog/schengen-visa-2026/',     cover: schengenCover,   size: 'md' },
 ];
 
 const MONTHS_RU = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
@@ -91,6 +109,32 @@ const featuredImageUrl = featured ? (await getImage({
           <p class="hero-intro-desc">
             Личные отчёты, актуальные визы, реальные цены 2026 для 39 направлений мира. То что работает прямо сейчас — без рекламы и партнёрских туров.
           </p>
+
+          <form class="hero-search" id="heroSearch" autocomplete="off" data-month={currentMonthSlug}>
+            <label for="hero-search-input" class="hero-search-label">Куда хочешь поехать?</label>
+            <div class="hero-search-row">
+              <svg class="hero-search-icon" viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                <circle cx="7" cy="7" r="5"></circle><line x1="11" y1="11" x2="14.5" y2="14.5"></line>
+              </svg>
+              <input
+                id="hero-search-input"
+                name="q"
+                type="search"
+                placeholder="Япония, Бали, Грузия, Антарктида…"
+                list="hero-search-list"
+                class="hero-search-input"
+              />
+              <button type="submit" class="hero-search-btn">
+                <span>Найти</span>
+                <span aria-hidden="true">→</span>
+              </button>
+            </div>
+            <datalist id="hero-search-list">
+              {searchOptions.map(o => (
+                <option value={o.label} data-slug={o.slug}>{o.region} — {o.sub}</option>
+              ))}
+            </datalist>
+          </form>
           <div class="hero-intro-stats">
             <div><strong>60+</strong><span>стран</span></div>
             <div><strong>7</strong><span>континентов</span></div>
@@ -133,16 +177,30 @@ const featuredImageUrl = featured ? (await getImage({
       </section>
     )}
 
-    {/* ─── Categories ─── */}
+    {/* ─── Categories Bento (Apple/Linear-style asymmetric grid с photo) ─── */}
     <section class="cat-section">
       <div class="cat-container">
-        <div class="section-eyebrow">Куда сейчас ехать в {currentMonthRu}</div>
-        <div class="cat-grid">
-          {CATEGORIES.map((c) => (
-            <a href={c.href} class={`cat-card cat-card--${c.accent}`}>
-              <span class="cat-emoji" aria-hidden="true">{c.emoji}</span>
-              <span class="cat-label">{c.label}</span>
-              <span class="cat-arrow" aria-hidden="true">→</span>
+        <div class="section-eyebrow">// Направления</div>
+        <h2 class="section-title">Куда поехать</h2>
+        <div class="bento-grid">
+          {CATEGORIES.map((c, i) => (
+            <a href={c.href} class={`bento-card bento-card--${c.size}`}>
+              <Image
+                src={c.cover}
+                alt={c.label}
+                widths={[400, 800, 1200]}
+                sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
+                formats={['avif', 'webp']}
+                quality={68}
+                loading={i < 2 ? 'eager' : 'lazy'}
+                style={`object-position: ${c.objPos || 'center'};`}
+              />
+              <div class="bento-overlay"></div>
+              <div class="bento-content">
+                <div class="bento-sub">{c.sub}</div>
+                <div class="bento-label">{c.label}</div>
+              </div>
+              <span class="bento-arrow" aria-hidden="true">→</span>
             </a>
           ))}
         </div>
@@ -262,6 +320,34 @@ const featuredImageUrl = featured ? (await getImage({
   <Footer />
 </Layout>
 
+<script is:inline define:vars={{ searchOptions, currentMonthSlug }}>
+  // Hero search: подбираем direction по тексту, редиректим на /trips/<month>/<slug>/
+  const form = document.getElementById('heroSearch');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = form.querySelector('input[name="q"]');
+      const q = (input.value || '').trim().toLowerCase();
+      if (!q) return;
+
+      // Try exact match first, then fuzzy match (substring on label/region/sub)
+      const exact = searchOptions.find(o => o.label.toLowerCase() === q);
+      const partial = exact || searchOptions.find(o =>
+        o.label.toLowerCase().includes(q) ||
+        o.region.toLowerCase().includes(q) ||
+        o.sub.toLowerCase().includes(q)
+      );
+
+      if (partial) {
+        window.location.href = `/trips/${currentMonthSlug}/${partial.slug}/`;
+      } else {
+        // Fallback — search overlay (Pagefind) with prefilled query
+        window.location.href = `/seasons/?q=${encodeURIComponent(q)}`;
+      }
+    });
+  }
+</script>
+
 <style>
 /* ─── HERO split: brand intro + featured story (Atlas Obscura / Outside pattern) ─── */
 .hero-split {
@@ -327,6 +413,59 @@ const featuredImageUrl = featured ? (await getImage({
   color: var(--text-faint);
   text-transform: uppercase;
 }
+/* ─── Hero search bar (Skyscanner / Booking-style) ─── */
+.hero-search {
+  margin: var(--space-6) 0 var(--space-7);
+  display: flex; flex-direction: column; gap: var(--space-2);
+}
+.hero-search-label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-dim);
+}
+.hero-search-row {
+  display: flex; align-items: center;
+  background: var(--bg2);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-pill);
+  padding: 4px 4px 4px 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  max-width: 480px;
+}
+.hero-search-row:focus-within {
+  border-color: var(--gold-600);
+  box-shadow: 0 0 0 3px rgba(201,151,58,0.15);
+}
+.hero-search-icon { color: var(--text-faint); flex: 0 0 auto; }
+.hero-search-input {
+  flex: 1; min-width: 0;
+  padding: 0.85rem 0.5rem;
+  border: none; background: transparent; outline: none;
+  font-family: var(--ff-body);
+  font-size: var(--text-base);
+  color: var(--text);
+  font-weight: 500;
+}
+.hero-search-input::placeholder { color: var(--text-faint); font-weight: 400; }
+.hero-search-input::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+.hero-search-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.7rem 1.3rem;
+  background: var(--gold-600);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--ff-body);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.hero-search-btn:hover { background: var(--gold-500); }
+.hero-search-btn:active { transform: scale(0.97); }
+.hero-search-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
 .hero-intro-cta { display: flex; gap: var(--space-3); flex-wrap: wrap; }
 .hero-btn-primary, .hero-btn-ghost {
   display: inline-flex; align-items: center;
@@ -426,34 +565,108 @@ const featuredImageUrl = featured ? (await getImage({
   margin: 0;
 }
 
-/* ─── CATEGORIES ─── */
-.cat-section { padding: var(--space-12) 0 var(--space-6); }
+/* ─── BENTO categories — Apple/Linear asymmetric grid с photo backgrounds ─── */
+.cat-section { padding: var(--space-12) 0 var(--space-12); }
 .cat-container { max-width: var(--container-wide, 1200px); margin: 0 auto; padding: 0 var(--container-edge, 2rem); }
-.cat-grid {
+.cat-section .section-title { margin-bottom: var(--space-6); }
+
+.bento-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(180px, 1fr);
   gap: var(--space-3);
-  margin-top: var(--space-4);
+  margin-top: var(--space-5);
 }
-.cat-card {
-  display: inline-flex; align-items: center; gap: var(--space-3);
-  padding: var(--space-4) var(--space-5);
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-3, 6px);
+.bento-card {
+  position: relative;
+  display: block;
   text-decoration: none;
-  color: var(--text);
-  transition: border-color var(--duration-fast), transform var(--duration-fast), background var(--duration-fast);
+  color: #fff;
+  border-radius: var(--radius-4, 8px);
+  overflow: hidden;
+  isolation: isolate;
+  min-height: 200px;
+  transition: transform var(--duration-base) var(--ease-out);
 }
-.cat-card:hover {
-  border-color: rgba(201,151,58,0.45);
-  transform: translateY(-1px);
-  background: var(--bg3);
+.bento-card:hover { transform: translateY(-3px); }
+.bento-card--lg { grid-column: span 2; grid-row: span 2; min-height: 360px; }
+.bento-card--md { grid-column: span 1; grid-row: span 1; }
+
+.bento-card img,
+.bento-card picture {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  transition: transform 0.6s var(--ease-out);
 }
-.cat-emoji { font-size: 1.4rem; line-height: 1; }
-.cat-label { flex: 1; font-weight: 500; font-size: var(--text-base); }
-.cat-arrow { color: var(--gold-600); font-size: 1.1rem; transition: transform var(--duration-fast); }
-.cat-card:hover .cat-arrow { transform: translateX(3px); }
+.bento-card:hover img { transform: scale(1.06); }
+
+.bento-overlay {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0.05) 100%);
+  transition: background 0.3s var(--ease-out);
+}
+.bento-card:hover .bento-overlay {
+  background:
+    linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.10) 100%);
+}
+
+.bento-content {
+  position: absolute;
+  left: var(--space-5); right: var(--space-5); bottom: var(--space-5);
+  display: flex; flex-direction: column; gap: 2px;
+  z-index: 1;
+}
+.bento-sub {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--gold-300, #e8c062);
+  margin-bottom: 2px;
+}
+.bento-label {
+  font-family: var(--ff-display);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+.bento-card--lg .bento-label { font-size: var(--text-4xl); }
+
+.bento-arrow {
+  position: absolute;
+  top: var(--space-4); right: var(--space-4);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 1.1rem;
+  transition: background var(--duration-fast), transform var(--duration-fast);
+  z-index: 2;
+}
+.bento-card:hover .bento-arrow {
+  background: var(--gold-600);
+  transform: translate(2px, -2px);
+}
+
+@media (max-width: 900px) {
+  .bento-grid { grid-template-columns: repeat(2, 1fr); }
+  .bento-card--lg { grid-column: span 2; grid-row: span 2; min-height: 320px; }
+  .bento-card--md { grid-column: span 1; }
+}
+@media (max-width: 540px) {
+  .bento-grid { grid-template-columns: 1fr; }
+  .bento-card,
+  .bento-card--lg,
+  .bento-card--md { grid-column: auto; grid-row: auto; min-height: 220px; }
+  .bento-card--lg { min-height: 320px; }
+}
 
 /* ─── LATEST POSTS ─── */
 .latest-section { padding: var(--space-12) 0; }
