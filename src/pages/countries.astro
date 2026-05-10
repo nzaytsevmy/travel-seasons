@@ -53,20 +53,21 @@ const ldJson = {
 };
 ---
 <Layout
-  title="Страны — все 39 направлений на TravelTribe 2026"
-  description="Полный список стран на сайте: виза, лучшие сезоны, бюджет, главные гайды. Если нужно — кратко всё что важно перед поездкой."
+  title="Кратко о странах — все направления TravelTribe 2026"
+  description="Полный список стран: виза, лучшие сезоны, бюджет на день, главные гайды. Кратко всё что важно перед поездкой."
   canonical={url}
-  ogTitle="Все страны TravelTribe — 39 направлений 2026"
+  ogTitle="Кратко о странах — TravelTribe"
   ogDescription="Виза, сезоны, бюджет для каждой страны — кратко"
   ldJson={ldJson}
 >
   <Nav active="countries" />
-  <Breadcrumbs crumbs={[{ label: 'Страны' }]} />
+  <Breadcrumbs crumbs={[{ label: 'Кратко о странах' }]} />
 
   <main id="main" class="countries-wrap">
     <header class="countries-header">
       <div class="section-eyebrow">// Все направления</div>
-      <h1>{DIRECTIONS.length} стран. <em>Кратко всё важное.</em></h1>
+      <h1>Кратко о <em>странах</em></h1>
+      <p class="countries-tagline">{DIRECTIONS.length} направлений · виза, сезоны, бюджет</p>
       <p class="countries-sub">Виза, сезоны, бюджет на день и главные гайды. Если нужно быстро решить «куда» — выбирай регион ниже.</p>
     </header>
 
@@ -138,6 +139,12 @@ const ldJson = {
   color: var(--text-dim);
   font-size: var(--text-lg);
   line-height: var(--leading-relaxed);
+}
+.countries-tagline {
+  margin-top: var(--space-3);
+  color: var(--text-faint);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
 }
 
 .countries-group { margin-bottom: var(--space-12); }

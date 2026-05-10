@@ -1,0 +1,202 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { Image } from 'astro:assets';
+import { DIRECTIONS } from '../../data/directions.js';
+
+const destPhotos = import.meta.glob('../../assets/destinations/*.jpg', { eager: true, import: 'default' });
+
+// Group by visa type for clearer scanning
+const byVisa = { free: [], evisa: [], required: [] };
+for (const d of DIRECTIONS) byVisa[d.visa].push(d);
+
+const VISA_TITLE = {
+  free: 'Без визы',
+  evisa: 'Электронная виза (eVisa)',
+  required: 'Виза обязательна',
+};
+const VISA_DESC = {
+  free: 'Достаточно загранпаспорта со сроком 6+ месяцев. На границе ставят штамп.',
+  evisa: 'Оформляется онлайн до вылета через сайт миграционной службы. $20–80, 1–3 дня.',
+  required: 'Полноценная виза через консульство или визовый центр. Биометрия, документы, $35–200+.',
+};
+
+const url = 'https://traveltribe.ru/visa/';
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": `${url}#page`,
+      "url": url,
+      "name": "Визы для россиян 2026 — все направления TravelTribe",
+      "description": `Визовая ситуация для россиян по ${DIRECTIONS.length} направлениям мира: безвиз, eVisa, обязательная виза. Документы, цены, сроки.`,
+      "inLanguage": "ru-RU",
+      "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Визы", "item": url },
+      ]
+    }
+  ]
+};
+---
+<Layout
+  title="Визы для россиян 2026 — все направления"
+  description={`Визовая ситуация для россиян по ${DIRECTIONS.length} направлениям: безвиз, eVisa, обязательная виза. Документы и цены.`}
+  canonical={url}
+  ogTitle="Визы для россиян 2026"
+  ogDescription={`${byVisa.free.length} безвиз · ${byVisa.evisa.length} eVisa · ${byVisa.required.length} требуют визу`}
+  ldJson={ldJson}
+>
+  <Nav active="blog" />
+  <Breadcrumbs crumbs={[{ label: 'Визы' }]} />
+
+  <main id="main" class="visa-list-wrap">
+    <header class="visa-list-header">
+      <div class="section-eyebrow">// Визы для россиян</div>
+      <h1>Где нужна <em>виза</em>, а где нет</h1>
+      <p class="visa-list-tagline">{DIRECTIONS.length} направлений · обновляется при изменении правил</p>
+      <div class="visa-list-stats">
+        <div><strong>{byVisa.free.length}</strong><span>без визы</span></div>
+        <div><strong>{byVisa.evisa.length}</strong><span>eVisa</span></div>
+        <div><strong>{byVisa.required.length}</strong><span>требуют визу</span></div>
+      </div>
+    </header>
+
+    {['free', 'evisa', 'required'].map((vt) => (
+      <section class={`visa-group visa-group--${vt}`}>
+        <h2>{VISA_TITLE[vt]}</h2>
+        <p class="visa-group-desc">{VISA_DESC[vt]}</p>
+        <div class="visa-list-grid">
+          {byVisa[vt].map((d) => {
+            const photo = destPhotos[`../../assets/destinations/${d.slug}.jpg`];
+            return (
+              <a href={`/visa/${d.slug}/`} class="visa-list-card">
+                <div class="vlc-media">
+                  {photo ? (
+                    <Image src={photo} alt={d.cases.nom} widths={[200, 400]} sizes="(max-width: 700px) 50vw, 25vw" formats={['avif', 'webp']} quality={68} loading="lazy" />
+                  ) : (
+                    <div class="vlc-emoji" style={`background: linear-gradient(135deg, ${d.visual.g1}, ${d.visual.g2})`}>{d.visual.emoji}</div>
+                  )}
+                </div>
+                <div class="vlc-name">{d.cases.nom}</div>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    ))}
+
+    <p class="visa-list-updated">Актуально на: 10 мая 2026 · обновляется каждые 4–6 недель</p>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.visa-list-wrap { max-width: var(--container-wide, 1200px); margin: 0 auto; padding: 0 var(--container-edge, 2rem) var(--space-16, 4rem); }
+
+.visa-list-header { text-align: center; margin: var(--space-10) 0 var(--space-12); }
+.section-eyebrow { font-size: var(--text-xs); letter-spacing: var(--tracking-widest); text-transform: uppercase; color: var(--gold-600); margin-bottom: var(--space-3); }
+.visa-list-header h1 {
+  font-family: var(--ff-display);
+  font-size: var(--text-6xl);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  margin: 0 auto;
+}
+.visa-list-header h1 em { color: var(--gold); font-style: italic; }
+.visa-list-tagline {
+  margin: var(--space-3) auto 0;
+  color: var(--text-faint);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+}
+.visa-list-stats {
+  display: flex; justify-content: center; gap: var(--space-8);
+  margin-top: var(--space-6);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  max-width: 600px; margin-left: auto; margin-right: auto;
+}
+.visa-list-stats > div { display: flex; flex-direction: column; gap: 2px; align-items: center; }
+.visa-list-stats strong {
+  font-family: var(--ff-display);
+  font-size: var(--text-3xl); font-weight: 700; color: var(--gold-600);
+}
+.visa-list-stats span {
+  font-size: var(--text-xs); color: var(--text-faint);
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+}
+
+.visa-group { margin-bottom: var(--space-12); }
+.visa-group h2 {
+  font-family: var(--ff-display);
+  font-size: var(--text-3xl);
+  font-weight: 600;
+  margin: 0 0 var(--space-2);
+  color: var(--text);
+}
+.visa-group--free h2 { color: var(--peak-text); }
+.visa-group--evisa h2 { color: var(--good-text); }
+.visa-group--required h2 { color: var(--gold-700, var(--gold)); }
+.visa-group-desc {
+  color: var(--text-dim); font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  margin: 0 0 var(--space-5);
+  max-width: 600px;
+}
+
+.visa-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-3);
+}
+.visa-list-card {
+  display: flex; flex-direction: column;
+  text-decoration: none; color: inherit;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-3);
+  overflow: hidden;
+  transition: transform var(--duration-fast), border-color var(--duration-fast), box-shadow var(--duration-base);
+}
+.visa-list-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(201,151,58,0.4);
+  box-shadow: var(--shadow-md);
+}
+.vlc-media { aspect-ratio: 16 / 11; overflow: hidden; }
+.vlc-media img, .vlc-media picture { width: 100%; height: 100%; object-fit: cover; display: block; }
+.vlc-emoji { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2.4rem; }
+.vlc-name {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text);
+  line-height: var(--leading-snug);
+}
+
+.visa-list-updated {
+  margin-top: var(--space-10);
+  font-size: var(--text-xs);
+  color: var(--text-faint);
+  text-align: center;
+  letter-spacing: var(--tracking-wide);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 600px) {
+  .visa-list-grid { grid-template-columns: repeat(2, 1fr); }
+  .visa-list-stats { gap: var(--space-5); }
+}
+</style>
