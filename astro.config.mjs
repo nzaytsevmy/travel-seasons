@@ -10,7 +10,9 @@ export default defineConfig({
   site: 'https://traveltribe.ru',
   trailingSlash: 'always',
   build: {
-    inlineStylesheets: 'auto',
+    // Все стили inline в HTML — убирает render-blocking CSS (164ms по GTmetrix).
+    // Trade-off: HTML +5-15KB, brotli сжимает до ~1-3KB. Net win.
+    inlineStylesheets: 'always',
   },
   image: {
     domains: ['images.unsplash.com'],

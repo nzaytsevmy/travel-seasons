@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
@@ -59,6 +59,14 @@ const CATEGORIES = [
 
 const MONTHS_RU = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
 const currentMonthRu = MONTHS_RU[new Date().getMonth()];
+
+// LCP candidate — featured cover. Preload через Layout prop.
+const featuredImageUrl = featured ? (await getImage({
+  src: featured.data.coverImage,
+  width: 1024,
+  format: 'webp',
+  quality: 72,
+})).src : undefined;
 ---
 <Layout
   title="TravelTribe — авторский тревел-блог из России"
@@ -67,6 +75,7 @@ const currentMonthRu = MONTHS_RU[new Date().getMonth()];
   ogTitle="TravelTribe — авторский тревел-блог из России"
   ogDescription="60+ стран, 7 континентов. Личные отчёты, реальные цены 2026, без воды и рекламы."
   ldJson={ldJson}
+  preloadImage={featuredImageUrl}
 >
   <Nav active="home" />
 
