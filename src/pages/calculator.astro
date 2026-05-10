@@ -402,7 +402,7 @@ header p { color: var(--gold-dim); font-size: 0.72rem; letter-spacing: 0.18em; t
   padding: 0.6rem 1rem; border-radius: 2px; cursor: pointer; transition: all 0.2s;
 }
 .btn-group button.active { background: var(--gold); color: #0c0a08; font-weight: 500; box-shadow: 0 0 10px var(--gold-glow); }
-:global(html.light-theme) .btn-group button.active { color: #fff; }
+:global(html:not(.dark-theme)) .btn-group button.active { color: #fff; }
 .btn-group button:hover:not(.active) { color: var(--text); }
 
 .calc-result { border-top: 1px solid var(--line); padding-top: 2.5rem; }
@@ -469,7 +469,7 @@ header p { color: var(--gold-dim); font-size: 0.72rem; letter-spacing: 0.18em; t
 .cta-primary:hover { box-shadow: 0 0 28px var(--gold-glow), 0 0 60px var(--gold-glow); transform: translateY(-1px); }
 .cta-primary span:first-child { font-size: 0.92rem; text-transform: uppercase; letter-spacing: 0.06em; }
 .cta-primary .cta-sub { font-size: 0.68rem; opacity: 0.75; text-transform: none; letter-spacing: 0; }
-:global(html.light-theme) .cta-primary { color: #fff; }
+:global(html:not(.dark-theme)) .cta-primary { color: #fff; }
 
 .cta-secondary {
   background: transparent; color: var(--text-dim);
