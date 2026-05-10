@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Footer from '../components/Footer.astro';
+import PricingCards from '../components/post/PricingCards.astro';
 
 const url = 'https://traveltribe.ru/japan/';
 
@@ -128,28 +129,46 @@ const ldJson = {
 
     <section class="hub-section">
       <h2>Бюджет — реальные цифры 2026</h2>
-      <div class="table-wrap">
-        <table class="hub-table">
-          <thead><tr><th>Уровень</th><th>На день</th><th>Что включает</th></tr></thead>
-          <tbody>
-            <tr>
-              <td data-label="Уровень"><strong>Эконом</strong></td>
-              <td data-label="На день"><strong>$50–80</strong></td>
-              <td data-label="Что включает">Хостел / капсула, чифаньки и комбини, IC-карта</td>
-            </tr>
-            <tr>
-              <td data-label="Уровень"><strong>Комфорт</strong></td>
-              <td data-label="На день"><strong>$150–250</strong></td>
-              <td data-label="Что включает">3* отель / бизнес-отель, нормальные рестораны, такси периодически</td>
-            </tr>
-            <tr>
-              <td data-label="Уровень"><strong>Премиум</strong></td>
-              <td data-label="На день"><strong>$300+</strong></td>
-              <td data-label="Что включает">4–5*, кайсэки, рёкан с онсэном, частный транспорт</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <PricingCards tiers={[
+        {
+          tier: 'Эконом',
+          emoji: '🟢',
+          price: '$50–80 / день',
+          priceNote: 'минимум на двоих',
+          features: [
+            'Хостел или капсульный отель',
+            'Чифаньки и конбини',
+            'IC-карта на метро',
+            'Базовая еда без рамена в очереди',
+          ],
+        },
+        {
+          tier: 'Комфорт',
+          emoji: '🟡',
+          price: '$150–250 / день',
+          priceNote: 'первый раз — оптимально',
+          featured: true,
+          badge: 'Большинство туристов',
+          features: [
+            '3★ отель или бизнес-отель',
+            'Нормальные рестораны',
+            'Такси по необходимости',
+            'Хотя бы одна ночь в рёкан',
+          ],
+        },
+        {
+          tier: 'Премиум',
+          emoji: '🔴',
+          price: '$300+ / день',
+          priceNote: 'без компромиссов',
+          features: [
+            '4–5★ или премиум рёкан',
+            'Кайсэки в Мишлен-ресторанах',
+            'Онсэн в горах + спа',
+            'Частный транспорт / гид',
+          ],
+        },
+      ]} />
       <p>Перелёт Москва ↔ Токио с пересадкой: <strong>$500–900</strong> в обычные даты, <strong>$1100–1500</strong> на Golden Week. Иена в 2026 слабая (~7 ¥/₽), что делает Японию доступнее обычного. <a href="/calculator/">Калькулятор бюджета</a> — точная сумма под твои даты.</p>
     </section>
 

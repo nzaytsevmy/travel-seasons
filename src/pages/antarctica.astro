@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Footer from '../components/Footer.astro';
+import PricingCards from '../components/post/PricingCards.astro';
 
 const url = 'https://traveltribe.ru/antarctica/';
 
@@ -124,30 +125,46 @@ const ldJson = {
 
     <section class="hub-section">
       <h2>Сколько стоит — три класса в 2026</h2>
-      <div class="table-wrap">
-        <table class="hub-table">
-          <thead>
-            <tr><th>Класс</th><th>Бюджет под ключ</th><th>Что включено</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td data-label="Класс"><strong>Эконом</strong></td>
-              <td data-label="Бюджет под ключ"><strong>750&nbsp;000–950&nbsp;000&nbsp;₽</strong></td>
-              <td data-label="Что включено">Ноябрь / март, MV Ushuaia или Ocean Nova, нижняя палуба, перелёт эконом</td>
-            </tr>
-            <tr>
-              <td data-label="Класс"><strong>Стандарт</strong></td>
-              <td data-label="Бюджет под ключ"><strong>1&nbsp;100&nbsp;000–1&nbsp;400&nbsp;000&nbsp;₽</strong></td>
-              <td data-label="Что включено">Декабрь–февраль, Swan Hellenic / Quark, каюта с окном</td>
-            </tr>
-            <tr>
-              <td data-label="Класс"><strong>Премиум</strong></td>
-              <td data-label="Бюджет под ключ"><strong>2&nbsp;500&nbsp;000–4&nbsp;500&nbsp;000+&nbsp;₽</strong></td>
-              <td data-label="Что включено">Ponant, Silversea, балкон, бизнес-перелёт, личный бутлер</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <PricingCards tiers={[
+        {
+          tier: 'Эконом',
+          emoji: '🟢',
+          price: '750 000–950 000 ₽',
+          priceNote: 'ноябрь / март',
+          features: [
+            'MV Ushuaia или Ocean Nova',
+            'Нижняя палуба',
+            'Перелёт эконом-классом',
+            'Базовый круиз 10–11 дней',
+          ],
+        },
+        {
+          tier: 'Стандарт',
+          emoji: '🟡',
+          price: '1 100 000–1 400 000 ₽',
+          priceNote: 'декабрь–февраль',
+          featured: true,
+          badge: 'Оптимум впечатлений',
+          features: [
+            'Swan Hellenic или Quark',
+            'Каюта с окном',
+            'Хороший корабль с СПА',
+            'Одна ночь в Буэнос-Айресе',
+          ],
+        },
+        {
+          tier: 'Премиум',
+          emoji: '🔴',
+          price: '2 500 000–4 500 000+ ₽',
+          priceNote: 'люкс-яхты',
+          features: [
+            'Ponant Le Boreal или Silversea',
+            'Каюта с балконом',
+            'Личный бутлер',
+            'Бизнес-класс перелёт',
+          ],
+        },
+      ]} />
       <p class="hub-note">Все варианты «тур в Антарктиду цена дешево» дешевле 700k ₽ — это либо непонимание что покупают, либо мошенники. <a href="/blog/antarctica-cruise-2026/#сколько-стоит-круиз-в-антарктиду--реальный-бюджет-под-ключ">Детальная разбивка бюджета по статьям →</a></p>
     </section>
 
