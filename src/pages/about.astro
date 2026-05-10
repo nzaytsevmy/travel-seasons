@@ -82,7 +82,7 @@ const ldJson = {
             <li><a href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram @traveltriberu</a></li>
             <li><a href="https://www.linkedin.com/in/nzaytsev/" target="_blank" rel="noopener">LinkedIn /in/nzaytsev</a></li>
             <li><a href="https://github.com/nzaytsevmy" target="_blank" rel="noopener">GitHub</a></li>
-            <li><a href="mailto:nzaytsev.my@gmail.com">nzaytsev.my@gmail.com</a></li>
+            <li><a class="email-link" href="#contact" data-u="nzaytsev.my" data-d="gmail.com">Email →</a></li>
           </ul>
         </div>
       </div>
@@ -121,7 +121,7 @@ const ldJson = {
 
       <section>
         <h2>Контакт</h2>
-        <p>Telegram: <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> — основной канал, там пишу про текущие поездки. Email для серьёзных вопросов: <a href="mailto:nzaytsev.my@gmail.com">nzaytsev.my@gmail.com</a>.</p>
+        <p>Telegram: <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> — основной канал, там пишу про текущие поездки. Email для серьёзных вопросов: <a class="email-link" href="#contact" data-u="nzaytsev.my" data-d="gmail.com">показать email</a>.</p>
       </section>
     </div>
   </main>
@@ -202,3 +202,29 @@ code {
   padding: 0.1rem 0.5rem; border-radius: 999px;
 }
 </style>
+
+<script is:inline>
+  // Email anti-scraper: собираем mailto и видимый текст на клиенте.
+  // Боты, не выполняющие JS, видят только "Email →" / "показать email" без адреса.
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('a.email-link').forEach(function (a) {
+      var u = a.getAttribute('data-u');
+      var d = a.getAttribute('data-d');
+      if (!u || !d) return;
+      var addr = u + '@' + d;
+      a.setAttribute('href', 'mailto:' + addr);
+      a.removeAttribute('data-u');
+      a.removeAttribute('data-d');
+      // Показываем адрес только при первом клике/hover (на десктопе) или сразу при touch
+      var revealed = false;
+      function reveal(e) {
+        if (revealed) return;
+        revealed = true;
+        a.textContent = addr;
+      }
+      a.addEventListener('mouseenter', reveal);
+      a.addEventListener('focus', reveal);
+      a.addEventListener('click', reveal);
+    });
+  });
+</script>
