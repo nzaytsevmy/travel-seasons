@@ -1,62 +1,66 @@
 ---
+import { Astronav, MenuItems, MenuIcon, Dropdown, DropdownItems } from 'astro-navbar';
 const { active } = Astro.props;
+const inHub = ['countries', 'visa', 'seasons', 'trips', 'cards'].includes(active);
 ---
-<nav class="site-nav">
-  <a href="/" class="logo" aria-label="TravelTribe — на главную">
-    <svg class="logo-mark" viewBox="0 0 24 24" fill="none" width="22" height="22" aria-hidden="true">
-      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.4" opacity="0.4"/>
-      <path d="M 2.5 13.5 Q 12 9 21.5 13.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-      <circle cx="12" cy="9" r="1.6" fill="currentColor"/>
-      <path d="M 6 17 Q 12 14 18 17" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-dasharray="0.5 1.4" opacity="0.55"/>
-    </svg>
-    <span class="logo-text">Travel<span class="logo-text-accent">Tribe</span></span>
-  </a>
-  <div class="nav-links" id="navLinks">
-    <a href="/" class={active === 'home' ? 'active' : ''} aria-current={active === 'home' ? 'page' : undefined}>Главная</a>
+<Astronav closeOnClick>
+  <nav class="site-nav">
+    <a href="/" class="logo" aria-label="TravelTribe — на главную">
+      <svg class="logo-mark" viewBox="0 0 24 24" fill="none" width="22" height="22" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.4" opacity="0.4"/>
+        <path d="M 2.5 13.5 Q 12 9 21.5 13.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="12" cy="9" r="1.6" fill="currentColor"/>
+        <path d="M 6 17 Q 12 14 18 17" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-dasharray="0.5 1.4" opacity="0.55"/>
+      </svg>
+      <span class="logo-text">Travel<span class="logo-text-accent">Tribe</span></span>
+    </a>
 
-    <div class={`nav-dropdown ${['countries', 'visa', 'seasons', 'trips', 'cards'].includes(active) ? 'active' : ''}`}>
-      <button class="nav-dropdown-trigger" type="button" aria-haspopup="true" aria-expanded="false">
-        Страны
-        <svg viewBox="0 0 12 7" width="10" height="6" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-          <path d="M1 1l5 5 5-5" stroke-linecap="round" stroke-linejoin="round"/>
+    <MenuItems class="nav-links hidden">
+      <a href="/" class={active === 'home' ? 'active' : ''} aria-current={active === 'home' ? 'page' : undefined}>Главная</a>
+
+      <Dropdown class={`nav-dropdown ${inHub ? 'active' : ''}`}>
+        <button type="button" class="nav-dropdown-trigger" aria-haspopup="true">
+          Страны
+          <svg class="caret" viewBox="0 0 12 7" width="10" height="6" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M1 1l5 5 5-5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <DropdownItems class="nav-dropdown-menu">
+          <a href="/countries/" class={active === 'countries' ? 'active' : ''}>
+            <strong>Кратко о странах</strong>
+            <span>52 направления — виза, сезоны, бюджет</span>
+          </a>
+          <a href="/visa/" class={active === 'visa' ? 'active' : ''}>
+            <strong>Визы для россиян</strong>
+            <span>Без визы / eVisa / обязательная — детально</span>
+          </a>
+          <a href="/seasons/" class={active === 'seasons' ? 'active' : ''}>
+            <strong>Сезоны</strong>
+            <span>Таблица 52×12 — когда лучше ехать</span>
+          </a>
+          <a href="/trips/" class={active === 'trips' ? 'active' : ''}>
+            <strong>Календарь поездок</strong>
+            <span>Что работает в каждом месяце 2026</span>
+          </a>
+        </DropdownItems>
+      </Dropdown>
+
+      <a href="/calculator/" class={active === 'calculator' ? 'active' : ''} aria-current={active === 'calculator' ? 'page' : undefined}>Калькулятор</a>
+      <a href="/blog/" class={active === 'blog' ? 'active' : ''} aria-current={active === 'blog' ? 'page' : undefined}>Блог</a>
+      <a class="nav-cta" href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram →</a>
+    </MenuItems>
+
+    <div class="nav-right">
+      <button id="searchToggle" class="theme-btn search-btn" aria-label="Поиск по сайту" aria-expanded="false" aria-controls="searchOverlay">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <circle cx="7" cy="7" r="5"></circle><line x1="11" y1="11" x2="14.5" y2="14.5"></line>
         </svg>
       </button>
-      <div class="nav-dropdown-menu" role="menu">
-        <a href="/countries/" role="menuitem" class={active === 'countries' ? 'active' : ''}>
-          <strong>Кратко о странах</strong>
-          <span>52 направления — виза, сезоны, бюджет</span>
-        </a>
-        <a href="/visa/" role="menuitem" class={active === 'visa' ? 'active' : ''}>
-          <strong>Визы для россиян</strong>
-          <span>Без визы / eVisa / обязательная — детально</span>
-        </a>
-        <a href="/seasons/" role="menuitem" class={active === 'seasons' ? 'active' : ''}>
-          <strong>Сезоны</strong>
-          <span>Таблица 52×12 — когда лучше ехать</span>
-        </a>
-        <a href="/trips/" role="menuitem" class={active === 'trips' ? 'active' : ''}>
-          <strong>Календарь поездок</strong>
-          <span>Что работает в каждом месяце 2026</span>
-        </a>
-      </div>
+      <button id="themeToggle" class="theme-btn" aria-label="Переключить тему">☾</button>
+      <MenuIcon class="burger-icon" />
     </div>
-
-    <a href="/calculator/" class={active === 'calculator' ? 'active' : ''} aria-current={active === 'calculator' ? 'page' : undefined}>Калькулятор</a>
-    <a href="/blog/" class={active === 'blog' ? 'active' : ''} aria-current={active === 'blog' ? 'page' : undefined}>Блог</a>
-  </div>
-  <div class="nav-right">
-    <button id="searchToggle" class="theme-btn search-btn" aria-label="Поиск по сайту" aria-expanded="false" aria-controls="searchOverlay">
-      <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-        <circle cx="7" cy="7" r="5"></circle><line x1="11" y1="11" x2="14.5" y2="14.5"></line>
-      </svg>
-    </button>
-    <button id="themeToggle" class="theme-btn" aria-label="Переключить тему">☾</button>
-    <a class="nav-cta" href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram →</a>
-    <button class="burger" id="burger" aria-label="Меню" aria-expanded="false" aria-controls="navLinks">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</nav>
+  </nav>
+</Astronav>
 
 <!-- Pagefind search overlay -->
 <div id="searchOverlay" class="search-overlay" hidden role="dialog" aria-modal="true" aria-label="Поиск по сайту">
@@ -73,54 +77,6 @@ const { active } = Astro.props;
 
 <script is:inline>
   (function () {
-    // ── Nav dropdown — hover на desktop, click on mobile ──
-    document.querySelectorAll('.nav-dropdown').forEach(function (dd) {
-      if (dd._ready) return;
-      dd._ready = true;
-      var trigger = dd.querySelector('.nav-dropdown-trigger');
-      var menu = dd.querySelector('.nav-dropdown-menu');
-      if (!trigger || !menu) return;
-      trigger.addEventListener('click', function (e) {
-        e.preventDefault();
-        var open = dd.classList.toggle('is-open');
-        trigger.setAttribute('aria-expanded', String(open));
-      });
-      // Close on outside click
-      document.addEventListener('click', function (e) {
-        if (!dd.contains(e.target)) {
-          dd.classList.remove('is-open');
-          trigger.setAttribute('aria-expanded', 'false');
-        }
-      });
-      // Close on Escape
-      dd.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-          dd.classList.remove('is-open');
-          trigger.setAttribute('aria-expanded', 'false');
-          trigger.focus();
-        }
-      });
-    });
-
-    var burger = document.getElementById('burger');
-    var links = document.getElementById('navLinks');
-    if (burger && links && !burger._ready) {
-      burger._ready = true;
-      burger.addEventListener('click', function () {
-        var open = links.classList.toggle('is-open');
-        burger.classList.toggle('is-open', open);
-        burger.setAttribute('aria-expanded', String(open));
-      });
-      links.querySelectorAll('a').forEach(function (a) {
-        a.addEventListener('click', function () {
-          links.classList.remove('is-open');
-          burger.classList.remove('is-open');
-          burger.setAttribute('aria-expanded', 'false');
-        });
-      });
-    }
-
-    // ── Pagefind search overlay ─────────────────────────────────────────
     var btn = document.getElementById('searchToggle');
     var overlay = document.getElementById('searchOverlay');
     if (!btn || !overlay || btn._ready) return;
@@ -152,7 +108,6 @@ const { active } = Astro.props;
       pagefindLoaded = true;
       loadCss('/pagefind/pagefind-ui.css');
       return loadScript('/pagefind/pagefind-ui.js').then(function () {
-        // Pagefind UI exposes itself as global PagefindUI
         if (typeof window.PagefindUI !== 'function') {
           throw new Error('PagefindUI global not found after load');
         }
@@ -252,7 +207,7 @@ const { active } = Astro.props;
     text-align: right; letter-spacing: 0.04em;
   }
 
-  /* Pagefind UI theming — match site palette */
+  /* Pagefind UI theming */
   :root {
     --pagefind-ui-scale: 0.9;
     --pagefind-ui-primary: var(--gold);
@@ -270,7 +225,6 @@ const { active } = Astro.props;
   .pagefind-ui .pagefind-ui__result-link:hover { color: var(--gold) !important; }
   .pagefind-ui .pagefind-ui__result-excerpt mark { background: rgba(201,151,58,0.25); color: var(--text); }
 
-  /* Search button in nav */
   .search-btn svg { display: block; }
   @media (max-width: 540px) {
     .search-overlay-panel { margin: 4vh 1rem 0; padding: 1rem 1rem 1.4rem; max-height: 92vh; }
@@ -278,58 +232,91 @@ const { active } = Astro.props;
 </style>
 
 <style>
-  /* ─── Nav dropdown ─── */
-  .nav-dropdown { position: relative; display: inline-flex; align-items: center; }
+  /* ───────────────────────────────────────────────────────────
+     Nav — на основе astro-navbar
+     state via library:
+       MenuItems  → .astronav-items / toggle .hidden
+       Dropdown   → <menu class="astronav-dropdown"> / .open
+       DropdownItems → .dropdown-toggle / toggle .hidden
+       MenuIcon   → #astronav-menu
+  ─────────────────────────────────────────────────────────── */
+
+  /* MenuItems wrapper — на desktop всегда виден, на mobile управляется .hidden */
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.6rem;
+    height: 100%;
+  }
+  .nav-links > a {
+    display: inline-flex;
+    align-items: center;
+    height: 64px;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.15s;
+  }
+  .nav-links > a:hover,
+  .nav-links > a.active { color: var(--gold); }
+  .nav-links > a.active { font-weight: 500; }
+  .nav-links > a.nav-cta {
+    height: auto;
+    padding: 0.5rem 0.95rem;
+    border: 1px solid var(--gold-dim);
+    border-radius: 3px;
+    color: var(--gold);
+    letter-spacing: 0.06em;
+  }
+  .nav-links > a.nav-cta:hover { background: rgba(201,151,58,0.1); }
+
+  /* Dropdown — <menu> reset + same height as siblings */
+  .nav-dropdown {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
   .nav-dropdown-trigger {
     display: inline-flex; align-items: center; gap: 5px;
-    background: none; border: none; padding: 0; margin: 0;
-    font-family: inherit; font-size: inherit; letter-spacing: inherit;
-    text-transform: inherit; color: var(--text-dim);
-    cursor: pointer; line-height: 1;
-    height: 100%;
+    background: none; border: none; margin: 0; padding: 0;
+    height: 64px;
+    font: inherit; color: var(--text-dim);
+    font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+    cursor: pointer;
     transition: color 0.15s;
-    /* Safari resets — иначе button получает default UA-стили */
     -webkit-appearance: none;
     appearance: none;
     -webkit-tap-highlight-color: transparent;
-    width: auto;
-    box-sizing: border-box;
   }
   .nav-dropdown-trigger:hover,
-  .nav-dropdown.active .nav-dropdown-trigger { color: var(--gold); }
-  .nav-dropdown-trigger svg { transition: transform 0.2s ease; }
-  .nav-dropdown.is-open .nav-dropdown-trigger svg,
-  .nav-dropdown:hover .nav-dropdown-trigger svg { transform: rotate(180deg); color: var(--gold); }
+  .nav-dropdown.active .nav-dropdown-trigger,
+  .nav-dropdown.open .nav-dropdown-trigger { color: var(--gold); }
+  .nav-dropdown-trigger .caret { transition: transform 0.2s ease; }
+  .nav-dropdown.open .nav-dropdown-trigger .caret { transform: rotate(180deg); }
 
+  /* DropdownItems — initial .hidden скрывает, toggle .hidden удаляется */
   .nav-dropdown-menu {
     position: absolute;
-    top: calc(100% + 12px); left: 50%;
-    transform: translateX(-50%) translateY(-6px);
+    top: calc(100% - 6px);
+    left: 50%;
+    transform: translateX(-50%);
     min-width: 280px;
     background: var(--bg2);
     border: 1px solid var(--line);
     border-radius: 8px;
     box-shadow: 0 14px 40px -10px rgba(0,0,0,0.25);
     padding: 0.4rem;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s;
-    display: flex; flex-direction: column;
+    flex-direction: column;
     z-index: 100;
   }
-  .nav-dropdown:hover .nav-dropdown-menu,
-  .nav-dropdown:focus-within .nav-dropdown-menu,
-  .nav-dropdown.is-open .nav-dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0);
-    transition-delay: 0s, 0s, 0s;
-  }
-  /* Bridge — hover не теряется при move-в-меню */
-  .nav-dropdown::before {
-    content: ""; position: absolute;
-    top: 100%; left: 0; right: 0; height: 12px;
-  }
+  .nav-dropdown-menu.hidden { display: none; }
+  .nav-dropdown-menu:not(.hidden) { display: flex; }
   .nav-dropdown-menu a {
     display: flex; flex-direction: column; gap: 2px;
     padding: 0.7rem 0.95rem;
@@ -338,12 +325,8 @@ const { active } = Astro.props;
     color: var(--text);
     transition: background 0.15s;
   }
-  .nav-dropdown-menu a:hover {
-    background: rgba(201,151,58,0.08);
-  }
-  .nav-dropdown-menu a.active {
-    background: rgba(201,151,58,0.12);
-  }
+  .nav-dropdown-menu a:hover { background: rgba(201,151,58,0.08); }
+  .nav-dropdown-menu a.active { background: rgba(201,151,58,0.12); }
   .nav-dropdown-menu a strong {
     font-size: 0.92rem; font-weight: 600;
     letter-spacing: 0; text-transform: none;
@@ -364,114 +347,104 @@ const { active } = Astro.props;
     flex-wrap: nowrap;
   }
 
-  /* ── Burger button ── */
-  .burger {
+  /* Burger — MenuIcon рендерит <button id="astronav-menu"> */
+  :global(#astronav-menu) {
     display: none;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
     background: none;
     border: 1px solid var(--line);
     border-radius: 3px;
-    padding: 7px 9px;
+    padding: 0;
     cursor: pointer;
     width: 36px;
     height: 36px;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
   }
-  .burger span {
-    display: block;
-    width: 16px;
-    height: 1px;
-    background: var(--text-dim);
-    transition: transform 0.2s ease, opacity 0.2s ease;
-  }
-  .burger.is-open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
-  .burger.is-open span:nth-child(2) { opacity: 0; }
-  .burger.is-open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+  :global(#astronav-menu svg) { width: 18px; height: 18px; display: block; }
+  :global(.astronav-toggle.hidden) { display: none !important; }
 
+  /* ── Desktop ≥881px ───────────────────────── */
+  @media (min-width: 881px) {
+    /* desktop: MenuItems всегда виден, .hidden от библиотеки игнорируется */
+    .nav-links.hidden { display: flex !important; }
+  }
+
+  /* ── Mobile ≤880px ────────────────────────── */
   @media (max-width: 880px) {
-    .nav-links { display: none; }
-    .burger { display: flex; }
-    /* Hide desktop Telegram CTA on mobile — it's in the burger menu */
-    :global(.nav-cta) { display: none; }
-    .nav-right { gap: 8px; }
+    :global(#astronav-menu) { display: inline-flex; }
 
-    /* Mobile dropdown */
-    .nav-links.is-open {
-      display: flex !important;
-      flex-direction: column;
-      align-items: stretch;
+    /* MenuItems: dropdown panel под navbar */
+    .nav-links {
       position: absolute;
       top: 64px;
       left: 0;
       right: 0;
       width: 100%;
-      background: var(--bg);
-      border-bottom: 1px solid var(--line);
-      padding: 1.2rem 1.5rem 1.5rem;
-      gap: 0;
-      z-index: 99;
-      animation: slideDown 0.2s ease;
-      box-sizing: border-box;
-    }
-    .nav-links.is-open > a {
-      display: block;
-      width: 100%;
-      box-sizing: border-box;
-      padding: 0.85rem 0;
-      height: auto; line-height: inherit;
-      font-size: 0.9rem;
-      text-align: left;
-      border-bottom: 1px solid var(--line);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-    }
-    .nav-links.is-open > a.active { color: var(--gold); }
-    .nav-links.is-open > a:hover { color: var(--text); }
-
-    /* Mobile dropdown — accordion expand. Reset desktop inline-flex/height. */
-    .nav-links.is-open .nav-dropdown {
-      width: 100%;
-      display: flex !important;
       flex-direction: column;
       align-items: stretch;
-      height: auto; line-height: inherit;
-      border-bottom: 1px solid var(--line);
-      box-sizing: border-box;
-    }
-    .nav-links.is-open .nav-dropdown:last-of-type { border-bottom: 1px solid var(--line); }
-    .nav-links.is-open .nav-dropdown-trigger {
-      width: 100%; display: flex; align-items: center; justify-content: space-between;
-      padding: 0.85rem 0;
+      gap: 0;
       height: auto;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+      padding: 1rem 1.5rem 1.2rem;
+      z-index: 99;
+      box-sizing: border-box;
+      animation: slideDown 0.2s ease;
+    }
+    .nav-links.hidden { display: none; }
+
+    .nav-links > a,
+    .nav-links .nav-dropdown,
+    .nav-links .nav-dropdown-trigger {
+      width: 100%;
+      height: auto;
+      padding: 0.85rem 0;
       font-size: 0.9rem;
       letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--text-dim);
+      text-align: left;
+      justify-content: flex-start;
     }
-    .nav-links.is-open .nav-dropdown-menu {
-      position: static; transform: none;
-      min-width: 0; width: 100%;
+    .nav-links > a {
+      display: block;
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-links > a.nav-cta {
+      margin-top: 0.6rem;
+      border: 1px solid var(--gold-dim);
+      border-radius: 3px;
+      padding: 0.7rem 1rem;
+      text-align: center;
+    }
+
+    /* Dropdown в mobile = accordion */
+    .nav-links .nav-dropdown {
+      flex-direction: column;
+      align-items: stretch;
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-links .nav-dropdown-trigger {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.85rem 0;
+    }
+    .nav-links .nav-dropdown-trigger .caret { margin-left: auto; }
+
+    .nav-links .nav-dropdown-menu {
+      position: static;
+      transform: none;
+      min-width: 0;
+      width: 100%;
       box-shadow: none;
       background: transparent;
       border: none;
       padding: 0 0 0.7rem 0.6rem;
-      opacity: 1; visibility: visible;
-      display: none;
-      flex-direction: column;
     }
-    .nav-links.is-open .nav-dropdown.is-open .nav-dropdown-menu { display: flex; }
-    .nav-links.is-open .nav-dropdown-menu a {
-      padding: 0.6rem 0.5rem;
-      border-radius: 4px;
-    }
-    .nav-links.is-open .nav-dropdown-menu a strong {
-      font-size: 0.85rem;
-    }
-    .nav-links.is-open .nav-dropdown-menu a span {
-      font-size: 0.7rem;
-    }
+    .nav-links .nav-dropdown-menu a { padding: 0.6rem 0.5rem; border-radius: 4px; }
+    .nav-links .nav-dropdown-menu a strong { font-size: 0.85rem; }
+    .nav-links .nav-dropdown-menu a span { font-size: 0.7rem; }
   }
 
   @keyframes slideDown {
