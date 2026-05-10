@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
 import pagefind from 'astro-pagefind';
+import icon from 'astro-icon';
 import remarkNumerals from './tools/remark-numerals.mjs';
 import rehypeTableWrap from './tools/rehype-table-wrap.mjs';
 import rehypeFaqAccordion from './tools/rehype-faq-accordion.mjs';
@@ -28,6 +29,7 @@ export default defineConfig({
   integrations: [
     mdx(),
     pagefind(),
+    icon({ include: { lucide: ['*'] } }),
     sitemap({
       filter: (page) => !page.includes('/404')
         && !page.includes('/blog/tag/')

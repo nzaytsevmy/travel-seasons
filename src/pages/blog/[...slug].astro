@@ -144,16 +144,16 @@ if (faqs.length >= 2) {
   <script is:inline>document.body.classList.add('post-page')</script>
   <Nav active="blog" />
   <Breadcrumbs crumbs={[{ label: 'Блог', href: '/blog/' }, { label: post.data.title }]} />
-  <main id="main" class="post-wrap">
+  <main id="main" class="post-page">
     <div class="post-cover">
       <Picture
         src={post.data.coverImage}
         alt={post.data.title}
-        widths={[400, 600, 800, 1200]}
-        sizes="(max-width: 760px) 100vw, 1200px"
+        widths={[640, 960, 1400, 1920]}
+        sizes="100vw"
         formats={['avif', 'webp']}
         fallbackFormat="jpg"
-        quality={62}
+        quality={68}
         loading="eager"
         fetchpriority="high"
         pictureAttributes={{ style: `display:block;` }}
@@ -219,14 +219,48 @@ if (faqs.length >= 2) {
 </Layout>
 
 <style>
-.post-wrap { max-width: 760px; margin: 0 auto; padding-bottom: 5rem; }
+/* TJ-style: cover full-bleed, текст 720px по центру, широкие figures внутри текста */
+.post-page { padding-bottom: 5rem; }
 
-.post-cover { position: relative; height: 420px; overflow: hidden; margin-bottom: 0; }
+.post-cover {
+  position: relative;
+  width: 100%;
+  height: clamp(360px, 56vh, 620px);
+  overflow: hidden;
+  margin-bottom: 0;
+}
 .post-cover picture { width: 100%; height: 100%; display: block; }
 .post-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .cover-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, var(--bg) 100%); }
 
-.post-content { padding: 2rem 2rem 0; max-width: 100%; overflow-wrap: break-word; }
+.post-content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.4rem 1.4rem 0;
+  overflow-wrap: break-word;
+}
+
+/* Inline figures внутри статьи: full-bleed (1200px) при class="figure-wide" */
+.prose :is(figure, img).figure-wide,
+.prose :is(figure, img).full-bleed {
+  width: min(96vw, 1200px);
+  max-width: none;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.prose figure.figure-wide img,
+.prose figure.full-bleed img { width: 100%; height: auto; display: block; border-radius: 0; }
+.prose figure.figure-wide figcaption,
+.prose figure.full-bleed figcaption {
+  padding: 0.6rem 0.2rem 0;
+  font-size: 0.85rem;
+  color: var(--text-faint);
+  text-align: center;
+}
 
 .post-meta-top { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; max-width: 100%; }
 .post-tags { display: flex; gap: 0.35rem; flex-wrap: wrap; justify-content: center; max-width: 100%; }

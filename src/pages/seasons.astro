@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import AviasalesWidget from '../components/post/AviasalesWidget.astro';
 import { data } from '../data/regions.js';
 import { regionMeta } from '../data/regions-meta.js';
 import { regionsRich } from '../data/regions-rich.js';
@@ -330,6 +331,8 @@ const pricesUpdatedAt = pricesData.updatedAt
 
     <p class="faq-note">Виза и бюджет актуальны для граждан России на 2026 год. Всегда уточняйте визовые требования на сайте консульства перед покупкой билетов.</p>
   </section>
+
+  <AviasalesWidget title="Найти билеты — куда планируешь поехать?" subid="seasons" />
 
   <div class="footer-contribute">
     <p>

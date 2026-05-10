@@ -1,0 +1,58 @@
+---
+// Aviasales / Travelpayouts white-label search form.
+// Marker — из src/data/affiliate.js. Embed загружается асинхронно с tp.media.
+//
+// Использование:
+//   <AviasalesWidget />
+//   <AviasalesWidget destination="DPS" title="Найти билеты на Бали" />
+import { TP_MARKER_SHORT } from '../../data/affiliate.js';
+
+interface Props {
+  destination?: string;       // IATA destination (опционально, например "DPS" для Бали)
+  origin?: string;            // IATA откуда. По умолчанию MOW (Москва)
+  title?: string;             // Заголовок над виджетом
+  subid?: string;             // Sub ID для трекинга по странице
+}
+const { destination = '', origin = 'MOW', title = 'Найти билеты', subid = '' } = Astro.props;
+
+const subidParam = subid ? `&sub_id=${encodeURIComponent(subid)}` : '';
+const tpSrc = `https://tp.media/content?currency=rub&trs=${TP_MARKER_SHORT}&shmarker=${TP_MARKER_SHORT}${subidParam}&search_host=search.aviasales.ru&locale=ru&powered_by=true&origin=${origin}&destination=${destination}&one_way=false&open_booking=true&border_radius=8&plain=true&promo_id=4032&color_button=%23c9973a&color_button_text=%23ffffff&color_borders=%23c9973a&color_text=%231f1b15&campaign_id=100`;
+const marker = TP_MARKER_SHORT;
+---
+
+{marker && (
+  <aside class="tp-widget" aria-label="Поиск билетов через Aviasales">
+    <h3 class="tp-widget-title">{title}</h3>
+    <div class="tp-widget-frame">
+      <script async src={tpSrc} charset="utf-8" is:inline></script>
+    </div>
+    <p class="tp-widget-disc">Партнёрская ссылка Aviasales. Цена для тебя не меняется.</p>
+  </aside>
+)}
+
+<style>
+  .tp-widget {
+    margin: 2.5rem 0;
+    padding: 1.4rem 1.4rem 1rem;
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+  .tp-widget-title {
+    font-family: var(--ff-display);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 0.85rem;
+    letter-spacing: -0.01em;
+  }
+  .tp-widget-frame {
+    min-height: 64px;
+  }
+  .tp-widget-disc {
+    margin: 0.8rem 0 0;
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    letter-spacing: 0.02em;
+  }
+</style>
