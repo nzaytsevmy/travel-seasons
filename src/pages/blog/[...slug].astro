@@ -262,6 +262,24 @@ if (faqs.length >= 2) {
   text-align: center;
 }
 
+/* PricingCards и другие composite-блоки: full-bleed чтобы 3 карточки
+   помещались в одну строку, не упираясь в 720px текстовой колонки */
+.prose :global(.pricing-cards) {
+  width: min(96vw, 1100px);
+  max-width: none;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  margin-top: 2rem;
+  margin-bottom: 2.5rem;
+}
+@media (max-width: 880px) {
+  .prose :global(.pricing-cards) {
+    width: 100%;
+    margin-left: 0;
+    transform: none;
+  }
+}
+
 /* Wide tables: ≥4 колонок rehype-table-wrap помечает .table-wide.
    На десктопе раздвигаем за пределы 720px колонки (full-bleed),
    чтобы все колонки влезли без горизонтального скролла. */
