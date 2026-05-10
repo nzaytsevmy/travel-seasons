@@ -3,9 +3,9 @@ title: "Галапагосы 2026: что я видел и сколько сто
 description: "Был на Галапагосах в 2025: голубоногие олуши, фрегаты, пингвины и вьюрок-вампир в полутора метрах. Виза для россиян, бюджет 2026, маршрут, нацпарк $200."
 pubDate: 2026-05-08
 updatedDate: 2026-05-08
-coverImage: "../../assets/blog/galapagos.jpg"
-coverPosition: "center 42%"
-coverPositionCard: "center 45%"
+coverImage: "./_images/galapagos/sealion-beach.jpg"
+coverPosition: "center 50%"
+coverPositionCard: "center 50%"
 author: "Никита Зайцев"
 tags: ["Галапагосы", "Эквадор", "Природа", "Южная Америка", "2026"]
 sourceType: "personal"

@@ -3,7 +3,9 @@ title: "Бали 2026: гайд для россиян — виза, цены, р
 description: "Бали для россиян в 2026: VOA $32, прямой Аэрофлот SU296 12 ч, лучшие районы, бюджет и реальные плюсы и минусы по отзывам туристов."
 pubDate: 2026-05-02
 updatedDate: 2026-05-08
-coverImage: "../../assets/blog/bali-guide.jpg"
+coverImage: "./_images/bali/nusa-penida-cliff.jpg"
+coverPosition: "center 50%"
+coverPositionCard: "center 50%"
 author: "Никита Зайцев"
 tags: ["Бали", "Индонезия", "Виза", "Гайд", "2026"]
 sourceType: "compilation"
