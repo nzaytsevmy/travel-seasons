@@ -5,7 +5,12 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "check:visual": "playwright test",
+    "check:visual:update": "playwright test --update-snapshots",
+    "check:visual:report": "playwright show-report tests/.html-report",
+    "check:css": "stylelint \"src/**/*.{css,astro}\" --ignore-path .gitignore || true",
+    "preview:test": "astro build && astro preview --port 4322"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.14",
@@ -24,5 +29,12 @@
     "satori": "^0.26.0",
     "satori-html": "^0.3.2",
     "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "lefthook": "^2.1.6",
+    "lint-staged": "^17.0.4",
+    "stylelint": "^17.11.0",
+    "stylelint-config-standard": "^40.0.0"
   }
 }
