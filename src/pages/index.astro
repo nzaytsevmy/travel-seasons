@@ -57,22 +57,21 @@ function readingTime(body: string) {
   return Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
 }
 
-// ── Bento categories — featured destinations с cover photos из постов
-import antarcticaCover from '../assets/blog/antarctica-cruise.jpg';
-import japanCover      from '../assets/blog/japan-author-fushimi.jpg';
-import baliCover       from '../assets/blog/bali-guide.jpg';
-import galapagosCover  from '../assets/blog/galapagos.jpg';
-import auroraCover     from '../assets/blog/aurora-nz.jpg';
-import schengenCover   from '../assets/blog/schengen-visa.jpg';
+// ── Bento categories — все ведут на /<slug>/ кратко-хабы (унифицировано)
+import antarcticaCover from '../assets/destinations/antarctica.jpg';
+import japanCover      from '../assets/destinations/japan.jpg';
+import baliCover       from '../assets/destinations/bali.jpg';
+import ecuadorCover    from '../assets/destinations/ecuador.jpg';
+import nzCover         from '../assets/destinations/new-zealand.jpg';
+import georgiaCover    from '../assets/destinations/georgia.jpg';
 
 const CATEGORIES = [
-  // 2 large hero (top row), 4 medium (bottom)
-  { label: 'Антарктида',   sub: 'Круиз 2026',          href: '/antarctica/',                  cover: antarcticaCover, size: 'lg', objPos: 'center 65%' },
-  { label: 'Япония',       sub: 'Гайд + виза',         href: '/japan/',                       cover: japanCover,      size: 'lg', objPos: 'center 23%' },
-  { label: 'Бали',         sub: '6 районов · цены',    href: '/blog/bali-guide-2026/',        cover: baliCover,       size: 'md' },
-  { label: 'Галапагосы',   sub: 'Олуши + пингвины',    href: '/blog/galapagos-2026/',         cover: galapagosCover,  size: 'md' },
-  { label: 'Новая Зеландия', sub: 'Южное сияние',      href: '/blog/aurora-new-zealand-2026/', cover: auroraCover,    size: 'md' },
-  { label: 'Шенген',       sub: 'Виза 2026 · EES',     href: '/blog/schengen-visa-2026/',     cover: schengenCover,   size: 'md' },
+  { label: 'Антарктида',     sub: 'Круиз · 750k–4.5M ₽',   href: '/antarctica/',  cover: antarcticaCover, size: 'lg' },
+  { label: 'Япония',         sub: 'Виза · сезоны · бюджет', href: '/japan/',       cover: japanCover,      size: 'lg' },
+  { label: 'Бали',           sub: '6 районов',              href: '/bali/',        cover: baliCover,       size: 'md' },
+  { label: 'Эквадор',        sub: 'Галапагосы',             href: '/ecuador/',     cover: ecuadorCover,    size: 'md' },
+  { label: 'Новая Зеландия', sub: 'Южное сияние',           href: '/new-zealand/', cover: nzCover,         size: 'md' },
+  { label: 'Грузия',         sub: 'Безвиз · от $50/день',   href: '/georgia/',     cover: georgiaCover,    size: 'md' },
 ];
 
 const MONTHS_RU = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
@@ -107,7 +106,7 @@ const featuredImageUrl = featured ? (await getImage({
             Реальные путешествия. <em>Без воды.</em>
           </h1>
           <p class="hero-intro-desc">
-            Личные отчёты, актуальные визы, реальные цены 2026 для 39 направлений мира. То что работает прямо сейчас — без рекламы и партнёрских туров.
+            Личные отчёты, актуальные визы, реальные цены 2026 для 52 направлений мира. То что работает прямо сейчас — без рекламы и партнёрских туров.
           </p>
 
           <form class="hero-search" id="heroSearch" autocomplete="off" data-month={currentMonthSlug}>
@@ -136,10 +135,10 @@ const featuredImageUrl = featured ? (await getImage({
             </datalist>
           </form>
           <div class="hero-intro-stats">
-            <div><strong>60+</strong><span>стран</span></div>
+            <div><strong>52</strong><span>направления</span></div>
             <div><strong>7</strong><span>континентов</span></div>
-            <div><strong>{allPosts.length}</strong><span>статей</span></div>
-            <div><strong>39</strong><span>направлений</span></div>
+            <div><strong>{allPosts.length}</strong><span>лонгрида</span></div>
+            <div><strong>800+</strong><span>страниц</span></div>
           </div>
           <div class="hero-intro-cta">
             <a href="/blog/" class="hero-btn-primary">Читать блог</a>
@@ -280,17 +279,45 @@ const featuredImageUrl = featured ? (await getImage({
       </div>
     </section>
 
-    {/* ─── Newsletter signup ─── */}
+    {/* ─── Newsletter signup — email + Telegram ─── */}
     <section class="news-section">
       <div class="news-container">
-        <div class="news-text">
-          <div class="section-eyebrow">// Telegram-канал</div>
-          <h2>@traveltriberu — личные истории и оперативные обновления</h2>
-          <p>Никита пишет про текущие поездки, апдейты по визам и неочевидные открытия. Без воды и рекламы. Раз в 2-3 дня.</p>
+        <div class="news-head">
+          <div class="section-eyebrow">// Подписаться</div>
+          <h2>Свежие истории — раз в 2 недели</h2>
+          <p>Email-дайджест: новые посты, апдейты виз, неочевидные открытия. Без воды и рекламы.</p>
         </div>
-        <a class="news-cta" href="https://t.me/traveltriberu" target="_blank" rel="noopener">
-          <span>Подписаться в Telegram</span>
-          <span class="news-arrow">→</span>
+
+        <form class="news-form" id="newsForm" autocomplete="off">
+          <label for="news-email" class="news-form-label">Email</label>
+          <div class="news-form-row">
+            <input
+              id="news-email"
+              name="email"
+              type="email"
+              placeholder="you@example.com"
+              required
+              class="news-form-input"
+            />
+            <button type="submit" class="news-form-btn">
+              <span>Подписаться</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+          <p class="news-form-hint" id="newsFormHint">Без спама. Можно отписаться одним кликом.</p>
+        </form>
+
+        <div class="news-or"><span>или</span></div>
+
+        <a class="news-tg" href="https://t.me/traveltriberu" target="_blank" rel="noopener">
+          <span class="news-tg-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295l.213-3.053 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.643.135-.953l11.566-4.458c.538-.196 1.006.128.832.937z"/></svg>
+          </span>
+          <span class="news-tg-text">
+            <strong>@traveltriberu</strong>
+            <span>Telegram-канал — оперативно, спонтанно</span>
+          </span>
+          <span aria-hidden="true">→</span>
         </a>
       </div>
     </section>
@@ -322,15 +349,14 @@ const featuredImageUrl = featured ? (await getImage({
 
 <script is:inline define:vars={{ searchOptions, currentMonthSlug }}>
   // Hero search: подбираем direction по тексту, редиректим на /trips/<month>/<slug>/
-  const form = document.getElementById('heroSearch');
-  if (form) {
-    form.addEventListener('submit', (e) => {
+  const heroForm = document.getElementById('heroSearch');
+  if (heroForm) {
+    heroForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const input = form.querySelector('input[name="q"]');
+      const input = heroForm.querySelector('input[name="q"]');
       const q = (input.value || '').trim().toLowerCase();
       if (!q) return;
 
-      // Try exact match first, then fuzzy match (substring on label/region/sub)
       const exact = searchOptions.find(o => o.label.toLowerCase() === q);
       const partial = exact || searchOptions.find(o =>
         o.label.toLowerCase().includes(q) ||
@@ -341,9 +367,36 @@ const featuredImageUrl = featured ? (await getImage({
       if (partial) {
         window.location.href = `/trips/${currentMonthSlug}/${partial.slug}/`;
       } else {
-        // Fallback — search overlay (Pagefind) with prefilled query
         window.location.href = `/seasons/?q=${encodeURIComponent(q)}`;
       }
+    });
+  }
+
+  // Email subscribe form — placeholder, копит email в localStorage до интеграции
+  // c Sender.ru / Mailchimp. Когда подключим — заменить на fetch на API endpoint.
+  const newsForm = document.getElementById('newsForm');
+  if (newsForm) {
+    newsForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = newsForm.querySelector('input[type="email"]');
+      const hint = document.getElementById('newsFormHint');
+      const email = (input.value || '').trim();
+      if (!email || !email.includes('@')) {
+        hint.textContent = 'Введи правильный email';
+        hint.style.color = '#ef4444';
+        return;
+      }
+      // Append to local pending list
+      try {
+        const pending = JSON.parse(localStorage.getItem('subscribers') || '[]');
+        if (!pending.includes(email)) pending.push(email);
+        localStorage.setItem('subscribers', JSON.stringify(pending));
+      } catch (e) {}
+      hint.textContent = '✓ Спасибо! Первое письмо придёт в ближайшие 2 недели.';
+      hint.style.color = 'var(--gold-600)';
+      input.value = '';
+      input.disabled = true;
+      newsForm.querySelector('button[type="submit"]').disabled = true;
     });
   }
 </script>
@@ -769,46 +822,121 @@ const featuredImageUrl = featured ? (await getImage({
 .tool-card strong { font-size: var(--text-base); font-weight: 600; }
 .tool-card span:last-child { font-size: var(--text-sm); color: var(--text-dim); line-height: var(--leading-normal); }
 
-/* ─── NEWSLETTER ─── */
+/* ─── NEWSLETTER (email + Telegram) ─── */
 .news-section {
   padding: var(--space-12) 0;
   background: linear-gradient(180deg, transparent, rgba(201,151,58,0.04));
 }
 .news-container {
-  max-width: 960px; margin: 0 auto;
-  padding: var(--space-10) var(--container-edge);
+  max-width: 720px; margin: 0 auto;
+  padding: var(--space-10) clamp(1.5rem, 4vw, 3rem);
   background: var(--bg2);
   border: 1px solid rgba(201,151,58,0.25);
   border-radius: var(--radius-4);
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-6);
   position: relative; overflow: hidden;
+  text-align: center;
 }
 .news-container::before {
   content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
   background: linear-gradient(90deg, transparent, var(--gold-500), transparent);
 }
-.news-text { flex: 1 1 300px; }
-.news-text h2 {
-  font-family: var(--ff-display); font-size: var(--text-2xl);
+.news-head { margin-bottom: var(--space-6); }
+.news-head h2 {
+  font-family: var(--ff-display); font-size: var(--text-3xl);
   font-weight: 600; line-height: var(--leading-snug);
-  margin: 0.4rem 0 var(--space-2);
+  margin: var(--space-3) 0 var(--space-2);
   text-wrap: balance;
 }
-.news-text p { font-size: var(--text-base); color: var(--text-dim); line-height: var(--leading-relaxed); margin: 0; max-width: 480px; }
-.news-cta {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  background: var(--gold-600); color: #fff;
-  font-weight: 600; font-size: var(--text-base);
-  padding: var(--space-3) var(--space-6);
-  border-radius: var(--radius-pill);
-  text-decoration: none;
-  white-space: nowrap;
-  box-shadow: var(--shadow-md);
-  transition: background var(--duration-fast), transform var(--duration-fast);
+.news-head p {
+  font-size: var(--text-base);
+  color: var(--text-dim);
+  line-height: var(--leading-relaxed);
+  margin: 0;
+  max-width: 460px;
+  margin-left: auto; margin-right: auto;
 }
-.news-cta:hover { background: var(--gold-500); transform: translateY(-1px); }
-.news-arrow { transition: transform var(--duration-fast); }
-.news-cta:hover .news-arrow { transform: translateX(3px); }
+
+/* Email form */
+.news-form { max-width: 460px; margin: 0 auto; }
+.news-form-label { display: block; font-size: var(--text-sm); font-weight: 600; color: var(--text-dim); text-align: left; margin-bottom: var(--space-2); }
+.news-form-row {
+  display: flex; align-items: center;
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-pill);
+  padding: 4px 4px 4px 18px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.news-form-row:focus-within {
+  border-color: var(--gold-600);
+  box-shadow: 0 0 0 3px rgba(201,151,58,0.15);
+}
+.news-form-input {
+  flex: 1; min-width: 0;
+  padding: 0.85rem 0.5rem;
+  border: none; background: transparent; outline: none;
+  font-family: var(--ff-body); font-size: var(--text-base);
+  color: var(--text); font-weight: 500;
+}
+.news-form-input::placeholder { color: var(--text-faint); font-weight: 400; }
+.news-form-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.7rem 1.3rem;
+  background: var(--gold-600);
+  color: #fff;
+  border: none; border-radius: var(--radius-pill);
+  font-family: var(--ff-body); font-size: var(--text-sm); font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+.news-form-btn:hover { background: var(--gold-500); }
+.news-form-btn:active { transform: scale(0.97); }
+.news-form-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.news-form-hint { margin-top: var(--space-2); font-size: var(--text-xs); color: var(--text-faint); text-align: left; }
+
+/* OR separator */
+.news-or {
+  display: flex; align-items: center;
+  margin: var(--space-6) 0;
+  color: var(--text-faint);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+}
+.news-or::before, .news-or::after {
+  content: ""; flex: 1; height: 1px; background: var(--line);
+}
+.news-or span { padding: 0 var(--space-3); }
+
+/* Telegram alt CTA */
+.news-tg {
+  display: inline-flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-pill);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.15s, transform 0.15s;
+  max-width: 460px; width: 100%;
+  text-align: left;
+}
+.news-tg:hover {
+  border-color: var(--gold-600);
+  transform: translateY(-1px);
+}
+.news-tg-icon {
+  width: 36px; height: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(0, 136, 204, 0.12);
+  color: #0088cc;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+.news-tg-text { display: flex; flex-direction: column; gap: 1px; flex: 1; }
+.news-tg-text strong { font-size: var(--text-base); font-weight: 600; color: var(--text); }
+.news-tg-text span { font-size: var(--text-xs); color: var(--text-faint); }
 
 /* ─── AUTHOR ─── */
 .author-section { padding: 0 0 var(--space-16); }
