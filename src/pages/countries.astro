@@ -1,0 +1,243 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { Image } from 'astro:assets';
+import { DIRECTIONS } from '../data/directions.js';
+
+const destPhotos = import.meta.glob('../assets/destinations/*.jpg', { eager: true, import: 'default' });
+
+// Sort by group, потом alphabet
+const grouped = {};
+for (const d of DIRECTIONS) {
+  if (!grouped[d.group]) grouped[d.group] = [];
+  grouped[d.group].push(d);
+}
+const groupOrder = Object.keys(grouped).sort();
+
+const VISA_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза' };
+const BUDGET_LABEL = { low: '$', mid: '$$', high: '$$$' };
+
+const url = 'https://traveltribe.ru/countries/';
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": `${url}#page`,
+      "url": url,
+      "name": "Все страны на TravelTribe — 39 направлений 2026",
+      "description": "Полный список 39 направлений: виза, лучшие сезоны, бюджет на день. Кратко всё что нужно знать перед поездкой.",
+      "inLanguage": "ru-RU",
+      "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+      "mainEntity": {
+        "@type": "ItemList",
+        "numberOfItems": DIRECTIONS.length,
+        "itemListElement": DIRECTIONS.map((d, i) => ({
+          "@type": "ListItem",
+          "position": i + 1,
+          "url": `https://traveltribe.ru/${d.slug}/`,
+          "name": d.cases.nom,
+        }))
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Страны", "item": url },
+      ]
+    }
+  ]
+};
+---
+<Layout
+  title="Страны — все 39 направлений на TravelTribe 2026"
+  description="Полный список стран на сайте: виза, лучшие сезоны, бюджет, главные гайды. Если нужно — кратко всё что важно перед поездкой."
+  canonical={url}
+  ogTitle="Все страны TravelTribe — 39 направлений 2026"
+  ogDescription="Виза, сезоны, бюджет для каждой страны — кратко"
+  ldJson={ldJson}
+>
+  <Nav active="countries" />
+  <Breadcrumbs crumbs={[{ label: 'Страны' }]} />
+
+  <main id="main" class="countries-wrap">
+    <header class="countries-header">
+      <div class="section-eyebrow">// Все направления</div>
+      <h1>{DIRECTIONS.length} стран. <em>Кратко всё важное.</em></h1>
+      <p class="countries-sub">Виза, сезоны, бюджет на день и главные гайды. Если нужно быстро решить «куда» — выбирай регион ниже.</p>
+    </header>
+
+    {groupOrder.map((group) => (
+      <section class="countries-group">
+        <h2 class="countries-group-title">{group}</h2>
+        <div class="countries-grid">
+          {grouped[group].map((d) => {
+            const photo = destPhotos[`../assets/destinations/${d.slug}.jpg`];
+            return (
+              <a href={`/${d.slug}/`} class="country-card">
+                <div class="cc-media">
+                  {photo ? (
+                    <Image
+                      src={photo}
+                      alt={d.cases.nom}
+                      widths={[300, 600]}
+                      sizes="(max-width: 700px) 50vw, 25vw"
+                      formats={['avif', 'webp']}
+                      quality={68}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div class="cc-emoji" style={`background: linear-gradient(135deg, ${d.visual.g1}, ${d.visual.g2})`}>
+                      <span aria-hidden="true">{d.visual.emoji}</span>
+                    </div>
+                  )}
+                  <div class="cc-overlay"></div>
+                </div>
+                <div class="cc-body">
+                  <div class="cc-name">{d.cases.nom}</div>
+                  <div class="cc-meta">
+                    <span class={`cc-tag cc-tag--${d.visa}`}>{VISA_LABEL[d.visa]}</span>
+                    <span class="cc-budget">{BUDGET_LABEL[d.budget]}</span>
+                  </div>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    ))}
+
+    <p class="countries-updated">Актуально на: 10 мая 2026 · {DIRECTIONS.length} направлений · обновляется каждые 4–6 недель</p>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.countries-wrap { max-width: var(--container-wide, 1200px); margin: 0 auto; padding: 0 var(--container-edge, 2rem) var(--space-16, 4rem); }
+
+.countries-header { text-align: center; margin: var(--space-10) 0 var(--space-12); }
+.section-eyebrow { font-size: var(--text-xs); letter-spacing: var(--tracking-widest); text-transform: uppercase; color: var(--gold-600); margin-bottom: var(--space-3); }
+.countries-header h1 {
+  font-family: var(--ff-display);
+  font-size: var(--text-6xl);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  margin: 0 auto;
+  max-width: 720px;
+  text-wrap: balance;
+}
+.countries-header h1 em { color: var(--gold); font-style: italic; font-weight: 600; }
+.countries-sub {
+  margin: var(--space-3) auto 0;
+  max-width: 560px;
+  color: var(--text-dim);
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+}
+
+.countries-group { margin-bottom: var(--space-12); }
+.countries-group-title {
+  font-family: var(--ff-display);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  margin: 0 0 var(--space-5);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+}
+.countries-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+
+.country-card {
+  display: flex; flex-direction: column;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-4, 8px);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: transform var(--duration-base), box-shadow var(--duration-base), border-color var(--duration-base);
+}
+.country-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(201,151,58,0.4);
+}
+.cc-media {
+  position: relative; aspect-ratio: 4 / 3;
+  background: var(--bg3);
+  overflow: hidden;
+}
+.cc-media img, .cc-media picture {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.5s var(--ease-out);
+}
+.country-card:hover .cc-media img { transform: scale(1.06); }
+.cc-emoji {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.18));
+}
+.cc-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.25) 0%, transparent 50%);
+}
+.cc-body {
+  padding: var(--space-3) var(--space-4);
+  display: flex; flex-direction: column; gap: var(--space-1);
+  flex: 1;
+}
+.cc-name {
+  font-family: var(--ff-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  color: var(--text);
+  text-wrap: balance;
+}
+.cc-meta {
+  display: flex; align-items: center; gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-2);
+}
+.cc-tag {
+  font-size: var(--text-xs);
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-1);
+  font-weight: 500;
+}
+.cc-tag--free { background: rgba(34, 197, 94, 0.15); color: var(--peak-text); }
+.cc-tag--evisa { background: rgba(74, 158, 255, 0.15); color: var(--good-text); }
+.cc-tag--required { background: rgba(201, 151, 58, 0.15); color: var(--gold-700, var(--gold)); }
+.cc-budget {
+  font-size: var(--text-sm);
+  color: var(--gold-600);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.countries-updated {
+  margin-top: var(--space-10);
+  font-size: var(--text-xs);
+  color: var(--text-faint);
+  text-align: center;
+  letter-spacing: var(--tracking-wide);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 600px) {
+  .countries-grid { grid-template-columns: repeat(2, 1fr); }
+  .countries-header h1 { font-size: var(--text-4xl); }
+}
+</style>
