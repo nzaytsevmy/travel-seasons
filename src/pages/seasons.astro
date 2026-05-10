@@ -238,8 +238,8 @@ const pricesUpdatedAt = pricesData.updatedAt
         ) : (
           <tr data-region={row.region.toLowerCase()} data-sub={row.sub.toLowerCase()} data-slug={row.meta.slug}>
             <td class="region-cell">
-              {row.meta.blogSlug ? (
-                <a href={`/blog/${row.meta.blogSlug}/`} class="region-link">{row.region}</a>
+              {row.meta.slug ? (
+                <a href={`/${row.meta.slug}/`} class="region-link">{row.region}</a>
               ) : (
                 <span>{row.region}</span>
               )}
