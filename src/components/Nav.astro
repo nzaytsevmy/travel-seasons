@@ -13,13 +13,36 @@ const { active } = Astro.props;
   </a>
   <div class="nav-links" id="navLinks">
     <a href="/" class={active === 'home' ? 'active' : ''} aria-current={active === 'home' ? 'page' : undefined}>Главная</a>
-    <a href="/countries/" class={active === 'countries' ? 'active' : ''} aria-current={active === 'countries' ? 'page' : undefined}>Кратко о странах</a>
-    <a href="/seasons/" class={active === 'seasons' ? 'active' : ''} aria-current={active === 'seasons' ? 'page' : undefined}>Сезоны</a>
-    <a href="/trips/" class={active === 'trips' ? 'active' : ''} aria-current={active === 'trips' ? 'page' : undefined}>Календарь</a>
+
+    <div class={`nav-dropdown ${['countries', 'visa', 'seasons', 'trips', 'cards'].includes(active) ? 'active' : ''}`}>
+      <button class="nav-dropdown-trigger" type="button" aria-haspopup="true" aria-expanded="false">
+        Страны
+        <svg viewBox="0 0 12 7" width="10" height="6" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <path d="M1 1l5 5 5-5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="nav-dropdown-menu" role="menu">
+        <a href="/countries/" role="menuitem" class={active === 'countries' ? 'active' : ''}>
+          <strong>Кратко о странах</strong>
+          <span>52 направления — виза, сезоны, бюджет</span>
+        </a>
+        <a href="/visa/" role="menuitem" class={active === 'visa' ? 'active' : ''}>
+          <strong>Визы для россиян</strong>
+          <span>Без визы / eVisa / обязательная — детально</span>
+        </a>
+        <a href="/seasons/" role="menuitem" class={active === 'seasons' ? 'active' : ''}>
+          <strong>Сезоны</strong>
+          <span>Таблица 52×12 — когда лучше ехать</span>
+        </a>
+        <a href="/trips/" role="menuitem" class={active === 'trips' ? 'active' : ''}>
+          <strong>Календарь поездок</strong>
+          <span>Что работает в каждом месяце 2026</span>
+        </a>
+      </div>
+    </div>
+
     <a href="/calculator/" class={active === 'calculator' ? 'active' : ''} aria-current={active === 'calculator' ? 'page' : undefined}>Калькулятор</a>
-    <a href="/cards/" class={active === 'cards' ? 'active' : ''} aria-current={active === 'cards' ? 'page' : undefined}>Карты</a>
     <a href="/blog/" class={active === 'blog' ? 'active' : ''} aria-current={active === 'blog' ? 'page' : undefined}>Блог</a>
-    <a href="https://github.com/nzaytsevmy/traveltribe-feedback" target="_blank" rel="noopener">GitHub</a>
   </div>
   <div class="nav-right">
     <button id="searchToggle" class="theme-btn search-btn" aria-label="Поиск по сайту" aria-expanded="false" aria-controls="searchOverlay">
@@ -50,6 +73,35 @@ const { active } = Astro.props;
 
 <script is:inline>
   (function () {
+    // ── Nav dropdown — hover на desktop, click on mobile ──
+    document.querySelectorAll('.nav-dropdown').forEach(function (dd) {
+      if (dd._ready) return;
+      dd._ready = true;
+      var trigger = dd.querySelector('.nav-dropdown-trigger');
+      var menu = dd.querySelector('.nav-dropdown-menu');
+      if (!trigger || !menu) return;
+      trigger.addEventListener('click', function (e) {
+        e.preventDefault();
+        var open = dd.classList.toggle('is-open');
+        trigger.setAttribute('aria-expanded', String(open));
+      });
+      // Close on outside click
+      document.addEventListener('click', function (e) {
+        if (!dd.contains(e.target)) {
+          dd.classList.remove('is-open');
+          trigger.setAttribute('aria-expanded', 'false');
+        }
+      });
+      // Close on Escape
+      dd.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          dd.classList.remove('is-open');
+          trigger.setAttribute('aria-expanded', 'false');
+          trigger.focus();
+        }
+      });
+    });
+
     var burger = document.getElementById('burger');
     var links = document.getElementById('navLinks');
     if (burger && links && !burger._ready) {
@@ -226,6 +278,78 @@ const { active } = Astro.props;
 </style>
 
 <style>
+  /* ─── Nav dropdown ─── */
+  .nav-dropdown { position: relative; display: inline-block; }
+  .nav-dropdown-trigger {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: none; border: none; padding: 0;
+    font-family: inherit; font-size: 0.82rem; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-dim);
+    cursor: pointer; line-height: inherit;
+    transition: color 0.15s;
+  }
+  .nav-dropdown-trigger:hover,
+  .nav-dropdown.active .nav-dropdown-trigger { color: var(--gold); }
+  .nav-dropdown-trigger svg { transition: transform 0.2s ease; }
+  .nav-dropdown.is-open .nav-dropdown-trigger svg,
+  .nav-dropdown:hover .nav-dropdown-trigger svg { transform: rotate(180deg); color: var(--gold); }
+
+  .nav-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 12px); left: 50%;
+    transform: translateX(-50%) translateY(-6px);
+    min-width: 280px;
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 0 14px 40px -10px rgba(0,0,0,0.25);
+    padding: 0.4rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s;
+    display: flex; flex-direction: column;
+    z-index: 100;
+  }
+  .nav-dropdown:hover .nav-dropdown-menu,
+  .nav-dropdown:focus-within .nav-dropdown-menu,
+  .nav-dropdown.is-open .nav-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+    transition-delay: 0s, 0s, 0s;
+  }
+  /* Bridge — hover не теряется при move-в-меню */
+  .nav-dropdown::before {
+    content: ""; position: absolute;
+    top: 100%; left: 0; right: 0; height: 12px;
+  }
+  .nav-dropdown-menu a {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 0.7rem 0.95rem;
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--text);
+    transition: background 0.15s;
+  }
+  .nav-dropdown-menu a:hover {
+    background: rgba(201,151,58,0.08);
+  }
+  .nav-dropdown-menu a.active {
+    background: rgba(201,151,58,0.12);
+  }
+  .nav-dropdown-menu a strong {
+    font-size: 0.92rem; font-weight: 600;
+    letter-spacing: 0; text-transform: none;
+    color: var(--text);
+  }
+  .nav-dropdown-menu a:hover strong { color: var(--gold); }
+  .nav-dropdown-menu a span {
+    font-size: 0.74rem;
+    color: var(--text-faint);
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+
   .nav-right {
     display: flex;
     align-items: center;
@@ -280,7 +404,7 @@ const { active } = Astro.props;
       z-index: 99;
       animation: slideDown 0.2s ease;
     }
-    .nav-links.is-open a {
+    .nav-links.is-open > a {
       padding: 0.85rem 0;
       font-size: 0.9rem;
       border-bottom: 1px solid var(--line);
@@ -288,9 +412,34 @@ const { active } = Astro.props;
       text-transform: uppercase;
       color: var(--text-dim);
     }
-    .nav-links.is-open a:last-child { border-bottom: none; }
-    .nav-links.is-open a.active { color: var(--gold); }
-    .nav-links.is-open a:hover { color: var(--text); }
+    .nav-links.is-open > a.active { color: var(--gold); }
+    .nav-links.is-open > a:hover { color: var(--text); }
+
+    /* Mobile dropdown — accordion expand */
+    .nav-links.is-open .nav-dropdown {
+      width: 100%; display: block;
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-links.is-open .nav-dropdown:last-of-type { border-bottom: 1px solid var(--line); }
+    .nav-links.is-open .nav-dropdown-trigger {
+      width: 100%; display: flex; justify-content: space-between;
+      padding: 0.85rem 0;
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .nav-links.is-open .nav-dropdown-menu {
+      position: static; transform: none;
+      min-width: 0; width: 100%;
+      box-shadow: none;
+      background: transparent;
+      border: none;
+      padding: 0 0 0.7rem 0.6rem;
+      opacity: 1; visibility: visible;
+      display: none;
+    }
+    .nav-links.is-open .nav-dropdown.is-open .nav-dropdown-menu { display: flex; }
   }
 
   @keyframes slideDown {
