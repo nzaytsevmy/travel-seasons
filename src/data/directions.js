@@ -168,6 +168,66 @@ for (const slug of EUROPE_SLUGS) {
   RELATED_POSTS[slug] = (RELATED_POSTS[slug] || []).concat(SCHENGEN_POSTS);
 }
 
+// Decorative emoji + gradient per slug, для programmatic page heroes
+// (пока нет реальных фото на каждое направление — позже заменяем на Image src).
+const DEST_VISUALS = {
+  'antarctica':       { emoji: '🐧', g1: '#dbeafe', g2: '#bfdbfe' },
+  'australia-east':   { emoji: '🦘', g1: '#fef3c7', g2: '#fde68a' },
+  'australia-north':  { emoji: '🐊', g1: '#fef3c7', g2: '#fcd34d' },
+  'bali':             { emoji: '🌴', g1: '#d1fae5', g2: '#a7f3d0' },
+  'brazil':           { emoji: '🦜', g1: '#fef3c7', g2: '#fde68a' },
+  'cambodia':         { emoji: '🛕', g1: '#fed7aa', g2: '#fdba74' },
+  'canada-east':      { emoji: '🍁', g1: '#fee2e2', g2: '#fecaca' },
+  'canada-rockies':   { emoji: '🏔️', g1: '#dbeafe', g2: '#bfdbfe' },
+  'chile':            { emoji: '🏜️', g1: '#fde68a', g2: '#fbbf24' },
+  'chile-fjords':     { emoji: '🌊', g1: '#cffafe', g2: '#a5f3fc' },
+  'chile-patagonia':  { emoji: '🏔️', g1: '#dbeafe', g2: '#cbd5e1' },
+  'costa-rica-panama':{ emoji: '🦥', g1: '#dcfce7', g2: '#bbf7d0' },
+  'croatia':          { emoji: '🏖️', g1: '#cffafe', g2: '#a5f3fc' },
+  'cuba':             { emoji: '🚗', g1: '#fed7aa', g2: '#fdba74' },
+  'dominican-republic':{emoji: '🏝️', g1: '#cffafe', g2: '#bbf7d0' },
+  'ecuador':          { emoji: '🐢', g1: '#dcfce7', g2: '#bbf7d0' },
+  'egypt':            { emoji: '🐪', g1: '#fef3c7', g2: '#fde68a' },
+  'georgia':          { emoji: '🍷', g1: '#fee2e2', g2: '#fecaca' },
+  'greece':           { emoji: '🏛️', g1: '#dbeafe', g2: '#bfdbfe' },
+  'guatemala-belize': { emoji: '🌋', g1: '#fed7aa', g2: '#fdba74' },
+  'hainan':           { emoji: '🥥', g1: '#cffafe', g2: '#a7f3d0' },
+  'hong-kong':        { emoji: '🌃', g1: '#fce7f3', g2: '#fbcfe8' },
+  'iceland':          { emoji: '🌋', g1: '#dbeafe', g2: '#bfdbfe' },
+  'india-goa':        { emoji: '🍛', g1: '#fed7aa', g2: '#fdba74' },
+  'india':            { emoji: '🕉️', g1: '#fed7aa', g2: '#fdba74' },
+  'italy-north':      { emoji: '⛰️', g1: '#dbeafe', g2: '#cbd5e1' },
+  'italy-south':      { emoji: '🍕', g1: '#fee2e2', g2: '#fecaca' },
+  'japan':            { emoji: '🍣', g1: '#fce7f3', g2: '#fbcfe8' },
+  'japan-hokkaido':   { emoji: '❄️', g1: '#dbeafe', g2: '#e0e7ff' },
+  'kazakhstan':       { emoji: '🏔️', g1: '#dbeafe', g2: '#cbd5e1' },
+  'kenya':            { emoji: '🦁', g1: '#fef3c7', g2: '#fde68a' },
+  'kyrgyzstan':       { emoji: '🐎', g1: '#dbeafe', g2: '#cbd5e1' },
+  'maldives':         { emoji: '🐠', g1: '#cffafe', g2: '#a5f3fc' },
+  'mexico':           { emoji: '🌶️', g1: '#fed7aa', g2: '#fdba74' },
+  'morocco':          { emoji: '🕌', g1: '#fed7aa', g2: '#fdba74' },
+  'new-zealand':      { emoji: '🥝', g1: '#dcfce7', g2: '#bbf7d0' },
+  'norway':           { emoji: '🌌', g1: '#dbeafe', g2: '#e0e7ff' },
+  'peru':             { emoji: '🦙', g1: '#fed7aa', g2: '#fdba74' },
+  'raja-ampat':       { emoji: '🐠', g1: '#cffafe', g2: '#a5f3fc' },
+  'south-africa':     { emoji: '🦓', g1: '#fef3c7', g2: '#fde68a' },
+  'south-korea':      { emoji: '🏯', g1: '#fce7f3', g2: '#fbcfe8' },
+  'spain':            { emoji: '💃', g1: '#fee2e2', g2: '#fecaca' },
+  'sri-lanka':        { emoji: '🐘', g1: '#dcfce7', g2: '#bbf7d0' },
+  'sumatra-kalimantan':{emoji: '🦧', g1: '#dcfce7', g2: '#bbf7d0' },
+  'switzerland':      { emoji: '🏔️', g1: '#dbeafe', g2: '#e0e7ff' },
+  'taiwan':           { emoji: '🍜', g1: '#fce7f3', g2: '#fbcfe8' },
+  'tajikistan':       { emoji: '🏔️', g1: '#dbeafe', g2: '#cbd5e1' },
+  'thailand':         { emoji: '🏝️', g1: '#cffafe', g2: '#a7f3d0' },
+  'thailand-north':   { emoji: '🐘', g1: '#dcfce7', g2: '#bbf7d0' },
+  'turkey':           { emoji: '🎈', g1: '#fed7aa', g2: '#fdba74' },
+  'uae':              { emoji: '🏙️', g1: '#fef3c7', g2: '#fde68a' },
+  'uganda':           { emoji: '🦍', g1: '#dcfce7', g2: '#bbf7d0' },
+  'usa':              { emoji: '🗽', g1: '#dbeafe', g2: '#bfdbfe' },
+  'uzbekistan':       { emoji: '🕌', g1: '#fed7aa', g2: '#fdba74' },
+  'vietnam':          { emoji: '🍜', g1: '#dcfce7', g2: '#bbf7d0' },
+};
+
 function findPrice(direction) {
   const norm = (s) => (s || '').toLowerCase().replace(/[^a-zа-я0-9]/gi, '');
   const dn = norm(direction.region) + norm(direction.sub);
@@ -200,6 +260,7 @@ for (const r of regions) {
     cases,
     price: price || null,
     relatedPosts: RELATED_POSTS[slug] || [],
+    visual: DEST_VISUALS[slug] || { emoji: '🌍', g1: '#fef3c7', g2: '#fde68a' },
   });
 }
 
