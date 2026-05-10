@@ -5,6 +5,7 @@ pubDate: 2026-05-08
 updatedDate: 2026-05-08
 coverImage: "../../assets/blog/galapagos.jpg"
 coverPosition: "center 42%"
+coverPositionCard: "center 30%"
 author: "Никита Зайцев"
 tags: ["Галапагосы", "Эквадор", "Природа", "Южная Америка", "2026"]
 sourceType: "personal"
