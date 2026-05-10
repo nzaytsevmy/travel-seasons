@@ -276,21 +276,15 @@ if (faqs.length >= 2) {
   margin-bottom: 2.5rem;
 }
 
-/* Wide-таблицы (4+ колонок) — гибридный pattern 2026:
-   - Desktop ≥881px: full-bleed через --bleed (max 140px с каждой стороны,
-     итого таблица 720+280 = 1000px). Без transform — Safari-safe.
-   - Mobile ≤720px: card-stack (Chris Coyier) */
+/* Wide-таблицы (4+ колонок) — в ширине текста (720px), как обычные.
+   На десктопе колонки распределяются по auto-layout, на мобиле card-stack.
+   Если в широкой таблице (6+ колонок) текст не помещается — горизонтальный
+   скролл через .table-wrap overflow-x: auto. */
 .prose :global(.table-wrap.table-wide) {
   width: 100%;
-  font-size: 0.9rem;
-}
-@media (min-width: 881px) {
-  .prose :global(.table-wrap.table-wide) {
-    margin-left: calc(-1 * min(var(--bleed), 140px));
-    margin-right: calc(-1 * min(var(--bleed), 140px));
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-  }
+  font-size: 0.88rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 }
 @media (max-width: 720px) {
   /* Card-stack: classic Chris Coyier pattern */
