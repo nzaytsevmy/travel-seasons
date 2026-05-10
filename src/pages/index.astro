@@ -1,14 +1,12 @@
 ---
+import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import authorPhoto from '../assets/author/nikita.jpg';
-import { data as regions } from '../data/regions.js';
-import { PRICES } from '../data/prices.js';
-import fs from 'node:fs';
-import path from 'node:path';
 
+// ── Schema ───────────────────────────────────────────
 const ldJson = {
   "@context": "https://schema.org",
   "@graph": [
@@ -17,470 +15,527 @@ const ldJson = {
       "@id": "https://traveltribe.ru/#website",
       "name": "TravelTribe",
       "url": "https://traveltribe.ru/",
-      "description": "Бесплатный open source сервис для путешественников: сезоны, виза, бюджет для 39 направлений мира",
+      "description": "Авторский тревел-блог из России: личные отчёты, визы, сезоны, бюджет 39 направлений мира",
       "inLanguage": "ru-RU",
-      "publisher": { "@id": "https://traveltribe.ru/#org" }
+      "publisher": { "@id": "https://traveltribe.ru/#org" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": { "@type": "EntryPoint", "urlTemplate": "https://traveltribe.ru/?s={search_term_string}" },
+        "query-input": "required name=search_term_string"
+      }
     },
     {
       "@type": "Organization",
       "@id": "https://traveltribe.ru/#org",
       "name": "TravelTribe",
       "url": "https://traveltribe.ru/",
-      "logo": "https://traveltribe.ru/og-image.png",
+      "logo": "https://traveltribe.ru/brand-mark.svg",
       "founder": { "@type": "Person", "name": "Никита Зайцев", "url": "https://t.me/traveltriberu" },
-      "sameAs": [
-        "https://t.me/traveltriberu",
-        "https://github.com/nzaytsevmy/travel-seasons"
-      ]
+      "sameAs": ["https://t.me/traveltriberu", "https://github.com/nzaytsevmy/travel-seasons"]
     }
   ]
 };
 
-const MONTHS = [
-  { slug: 'january',   name: 'январе',   nameNom: 'Январь'   },
-  { slug: 'february',  name: 'феврале',  nameNom: 'Февраль'  },
-  { slug: 'march',     name: 'марте',    nameNom: 'Март'     },
-  { slug: 'april',     name: 'апреле',   nameNom: 'Апрель'   },
-  { slug: 'may',       name: 'мае',      nameNom: 'Май'      },
-  { slug: 'june',      name: 'июне',     nameNom: 'Июнь'     },
-  { slug: 'july',      name: 'июле',     nameNom: 'Июль'     },
-  { slug: 'august',    name: 'августе',  nameNom: 'Август'   },
-  { slug: 'september', name: 'сентябре', nameNom: 'Сентябрь' },
-  { slug: 'october',   name: 'октябре',  nameNom: 'Октябрь'  },
-  { slug: 'november',  name: 'ноябре',   nameNom: 'Ноябрь'   },
-  { slug: 'december',  name: 'декабре',  nameNom: 'Декабрь'  },
+// ── Posts ─────────────────────────────────────────
+const allPosts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const featured = allPosts[0];
+const restPosts = allPosts.slice(1, 7);
+
+function readingTime(body: string) {
+  return Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
+}
+
+// ── Categories ─── 6 главных тематических направлений
+const CATEGORIES = [
+  { label: 'Антарктида',   href: '/antarctica/',           emoji: '🐧', accent: 'cool' },
+  { label: 'Япония',       href: '/japan/',                emoji: '🍁', accent: 'warm' },
+  { label: 'Виза',         href: '/blog/tag/Виза/',        emoji: '🛂', accent: 'sand' },
+  { label: 'Сезоны',       href: '/seasons/',              emoji: '🗓',  accent: 'sand' },
+  { label: 'Бюджет',       href: '/calculator/',           emoji: '💸', accent: 'warm' },
+  { label: 'Календарь',    href: '/trips/',                emoji: '🌍', accent: 'cool' },
 ];
-const monthIdx = new Date().getMonth();
-const currentMonth = MONTHS[monthIdx];
 
-const VISA_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза' };
-const VISA_CLASS = { free: 'tag-free', evisa: 'tag-evisa', required: 'tag-visa' };
-const BUDGET_LABEL = { low: '$', mid: '$$', high: '$$$' };
-
-// Build directions list with their group label
-const directions: any[] = [];
-let groupLabel = '';
-for (const r of regions) {
-  if ((r as any).group) {
-    groupLabel = (r as any).group.replace(/^[^\s]+\s/, '');
-  } else {
-    directions.push({ ...r, group: groupLabel });
-  }
-}
-
-// Match regions to PRICES by name fragment to get IATA + flight
-let livePrices: Record<string, number> = {};
-try {
-  const pjson = JSON.parse(fs.readFileSync(path.resolve('./public/prices.json'), 'utf8'));
-  livePrices = pjson.prices || {};
-} catch (e) { /* fallback to estimates */ }
-
-function findPrice(d: any) {
-  const norm = (s: string) => s.toLowerCase().replace(/[^a-zа-я0-9]/gi, '');
-  const dn = norm(d.region) + norm(d.sub);
-  return PRICES.find((p: any) => {
-    const pn = norm(p.name);
-    return dn.includes(norm(p.name.split(' ')[0])) || pn.includes(norm(d.region));
-  });
-}
-
-// Top 6 peak destinations for current month, sorted by cheapest flight
-const peakNow = directions
-  .filter(d => d.r[monthIdx] === 'P')
-  .map(d => {
-    const price = findPrice(d);
-    const liveFlight = price?.iata && livePrices[price.iata];
-    return {
-      ...d,
-      flight: (liveFlight || price?.flight?.[0]) as number | undefined,
-    };
-  })
-  .sort((a, b) => (a.flight || 9999) - (b.flight || 9999))
-  .slice(0, 6);
+const MONTHS_RU = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
+const currentMonthRu = MONTHS_RU[new Date().getMonth()];
 ---
 <Layout
-  title="TravelTribe — сезоны, бюджет, виза для россиян"
-  description="Бесплатный open source сервис для путешественников из России: таблица сезонов, виза, бюджет и калькулятор перелёта для 39 направлений мира."
+  title="TravelTribe — авторский тревел-блог из России"
+  description="Личные отчёты Никиты Зайцева о путешествиях. Визы, сезоны, реальные бюджеты для 39 направлений мира — Антарктида, Япония, Бали, Африка, Латам."
   canonical="https://traveltribe.ru/"
-  ogTitle="TravelTribe — Куда ехать и когда"
-  ogDescription="Бесплатный open source сервис: таблица сезонов, виза и бюджет для 39 направлений. Калькулятор перелёта из Москвы."
+  ogTitle="TravelTribe — авторский тревел-блог из России"
+  ogDescription="60+ стран, 7 континентов. Личные отчёты, реальные цены 2026, без воды и рекламы."
   ldJson={ldJson}
 >
   <Nav active="home" />
 
   <main id="main">
-    <div class="hero">
-      <div class="hero-bg"></div>
-      <div class="hero-content">
-        <div class="hero-tag">// Open Source · Бесплатно навсегда</div>
-        <h1>Куда поехать: <em>сезоны,<br>визы и бюджет</em></h1>
-        <p class="hero-sub">Интерактивный инструмент для путешественников из России — виза, сезоны, бюджет и живые цены для 39 направлений мира.</p>
-        <div class="hero-actions">
-          <a class="btn-primary" href="/seasons/">Открыть таблицу сезонов</a>
-          <a class="btn-ghost" href="/calculator/">Калькулятор бюджета</a>
+    {/* ─── HERO with featured story ─── */}
+    {featured && (
+      <section class="hero">
+        <div class="hero-image">
+          <Image
+            src={featured.data.coverImage}
+            alt={featured.data.title}
+            widths={[640, 1024, 1600, 2200]}
+            sizes="100vw"
+            formats={['avif', 'webp']}
+            fallbackFormat="jpg"
+            quality={72}
+            loading="eager"
+            fetchpriority="high"
+            style={`object-position: ${featured.data.coverPosition || 'center'};`}
+          />
+          <div class="hero-overlay"></div>
         </div>
-        <div class="hero-stats">
-          <div><div class="stat-val">39</div><div class="stat-label">Регионов мира</div></div>
-          <div><div class="stat-val">12</div><div class="stat-label">Месяцев</div></div>
-          <div><div class="stat-val">0 ₽</div><div class="stat-label">Стоимость</div></div>
-          <div><div class="stat-val">2026</div><div class="stat-label">Актуально</div></div>
+        <div class="hero-content">
+          <a class="hero-link" href={`/blog/${featured.slug}/`}>
+            <div class="hero-meta">
+              <span class="hero-tag">// Свежее · {featured.data.tags?.[0] || 'История'}</span>
+              {featured.data.sourceType === 'personal' && featured.data.tripPlace && (
+                <span class="hero-trip">✓ Был лично — {featured.data.tripPlace}</span>
+              )}
+            </div>
+            <h1 class="hero-title">{featured.data.title}</h1>
+            <p class="hero-desc">{featured.data.description}</p>
+            <div class="hero-cta">
+              <span>Читать историю</span>
+              <span class="hero-arrow">→</span>
+            </div>
+          </a>
+        </div>
+      </section>
+    )}
+
+    {/* ─── Categories ─── */}
+    <section class="cat-section">
+      <div class="cat-container">
+        <div class="section-eyebrow">Куда сейчас ехать в {currentMonthRu}</div>
+        <div class="cat-grid">
+          {CATEGORIES.map((c) => (
+            <a href={c.href} class={`cat-card cat-card--${c.accent}`}>
+              <span class="cat-emoji" aria-hidden="true">{c.emoji}</span>
+              <span class="cat-label">{c.label}</span>
+              <span class="cat-arrow" aria-hidden="true">→</span>
+            </a>
+          ))}
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="pills-row">
-      <span class="pill pill-os">⊹ Open Source</span>
-      <span class="pill pill-free">✓ Бесплатно навсегда</span>
-      <span class="pill pill-uni">◈ Без воды и рекламы</span>
-    </div>
+    {/* ─── Latest posts grid ─── */}
+    {restPosts.length > 0 && (
+      <section class="latest-section">
+        <div class="latest-container">
+          <header class="latest-header">
+            <div class="section-eyebrow">// Последние истории</div>
+            <h2 class="section-title">Свежие посты</h2>
+            <a href="/blog/" class="latest-all">Все статьи →</a>
+          </header>
+          <div class="latest-grid">
+            {restPosts.map((post) => (
+              <a href={`/blog/${post.slug}/`} class="latest-card">
+                <div class="latest-cover">
+                  <Image
+                    src={post.data.coverImage}
+                    alt={post.data.title}
+                    widths={[400, 720]}
+                    sizes="(max-width: 700px) 100vw, 33vw"
+                    formats={['avif', 'webp']}
+                    quality={68}
+                    loading="lazy"
+                    style={`object-position: ${post.data.coverPositionCard || post.data.coverPosition || 'center'};`}
+                  />
+                </div>
+                <div class="latest-body">
+                  <div class="latest-tags">
+                    {post.data.tags?.slice(0, 2).map((t) => (
+                      <span class="latest-tag">{t}</span>
+                    ))}
+                  </div>
+                  <h3 class="latest-title">{post.data.title}</h3>
+                  <p class="latest-desc">{post.data.description}</p>
+                  <div class="latest-meta">
+                    <span>{readingTime(post.body)} мин</span>
+                    {post.data.sourceType === 'personal' && <span class="latest-personal">· Был лично</span>}
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
 
-    <hr class="divider" />
+    {/* ─── Tools strip — calc + seasons + visa-map ─── */}
+    <section class="tools-section">
+      <div class="tools-container">
+        <div class="section-eyebrow">// Инструменты</div>
+        <div class="tools-grid">
+          <a href="/seasons/" class="tool-card">
+            <span class="tool-icon">🗓</span>
+            <strong>Таблица сезонов</strong>
+            <span>39 направлений × 12 месяцев. Когда лучше ехать.</span>
+          </a>
+          <a href="/calculator/" class="tool-card">
+            <span class="tool-icon">💸</span>
+            <strong>Калькулятор бюджета</strong>
+            <span>Перелёт + проживание + еда. Живой курс ЦБ.</span>
+          </a>
+          <a href="/trips/" class="tool-card">
+            <span class="tool-icon">🌍</span>
+            <strong>Календарь поездок</strong>
+            <span>Что работает в каждом месяце 2026.</span>
+          </a>
+          <a href="/blog/" class="tool-card">
+            <span class="tool-icon">📓</span>
+            <strong>Блог</strong>
+            <span>Личные отчёты автора. {allPosts.length} статей.</span>
+          </a>
+        </div>
+      </div>
+    </section>
 
-    <aside class="author-strip" aria-label="Об авторе блога">
-      <a href="/about/" class="author-strip-link">
+    {/* ─── Newsletter signup ─── */}
+    <section class="news-section">
+      <div class="news-container">
+        <div class="news-text">
+          <div class="section-eyebrow">// Telegram-канал</div>
+          <h2>@traveltriberu — личные истории и оперативные обновления</h2>
+          <p>Никита пишет про текущие поездки, апдейты по визам и неочевидные открытия. Без воды и рекламы. Раз в 2-3 дня.</p>
+        </div>
+        <a class="news-cta" href="https://t.me/traveltriberu" target="_blank" rel="noopener">
+          <span>Подписаться в Telegram</span>
+          <span class="news-arrow">→</span>
+        </a>
+      </div>
+    </section>
+
+    {/* ─── Author strip ─── */}
+    <section class="author-section">
+      <a href="/about/" class="author-strip">
         <Image
           src={authorPhoto}
-          alt="Никита Зайцев — автор блога TravelTribe"
+          alt="Никита Зайцев — автор TravelTribe"
           width={88}
           height={88}
           format="webp"
           quality={82}
           loading="lazy"
-          class="author-strip-photo"
+          class="author-photo"
         />
-        <div class="author-strip-text">
-          <div class="author-strip-name">Никита Зайцев <span class="author-strip-arrow">→</span></div>
-          <div class="author-strip-cred">7 континентов · 60+ стран · 13 лет в продуктах · <span>авторский блог, без рекламы</span></div>
+        <div class="author-text">
+          <strong>Никита Зайцев</strong>
+          <span>7 континентов · 60+ стран · 13 лет в продуктах · авторский блог без рекламы</span>
         </div>
+        <span class="author-arrow">→</span>
       </a>
-    </aside>
-
-    <hr class="divider" />
-
-    <div class="section">
-      <div class="section-label">// Календарь · {currentMonth.nameNom} 2026</div>
-      <h2 class="section-title">Куда поехать <em>в {currentMonth.name}</em></h2>
-      <p class="section-sub">Топ-{peakNow.length} направлений с пиком сезона прямо сейчас. Реальные цены на перелёт из Москвы, виза для россиян, бюджет на день.</p>
-
-      <div class="trending-grid">
-        {peakNow.map((d) => (
-          <a href="/seasons/" class="trending-card">
-            <div class="tc-head">
-              <div class="tc-region">{d.group}</div>
-              <div class="tc-peak">🔥 Пик</div>
-            </div>
-            <h3 class="tc-title">{d.region}</h3>
-            <p class="tc-sub">{d.sub}</p>
-            <div class="tc-tags">
-              <span class={`tag ${VISA_CLASS[d.visa]}`}>{VISA_LABEL[d.visa]}</span>
-              <span class="tc-budget">{BUDGET_LABEL[d.budget]}</span>
-            </div>
-            <div class="tc-bar" aria-hidden="true">
-              {d.r.map((s: string, i: number) => (
-                <div class={`tc-mo s-${s} ${i === monthIdx ? 'is-current' : ''}`} aria-hidden="true"></div>
-              ))}
-            </div>
-            <div class="tc-footer">
-              <span class="tc-price">{d.flight ? `от $${d.flight}` : 'цены уточняй'}</span>
-              <span class="tc-arrow">→</span>
-            </div>
-          </a>
-        ))}
-      </div>
-
-      <div class="month-pills-wrap">
-        <div class="month-pills-label">Или выбери другой месяц:</div>
-        <div class="calendar-promo-grid">
-          {MONTHS.map((m) => (
-            <a href={`/trips/${m.slug}/`} class={`cm-pill ${m.slug === currentMonth.slug ? 'is-current' : ''}`}>{m.nameNom.slice(0,3)}</a>
-          ))}
-        </div>
-      </div>
-    </div>
-
-    <hr class="divider" />
-
-    <div class="section">
-      <div class="section-label">// Инструменты</div>
-      <h2 class="section-title">Всё для <em>планирования</em></h2>
-      <p class="section-sub">Только то, чего нет на других сайтах.</p>
-      <div class="features">
-        <div class="feature">
-          <div class="feature-icon">🗓</div>
-          <div class="feature-title">Таблица сезонов</div>
-          <div class="feature-desc">39 регионов × 12 месяцев. Фильтр по месяцу, виза и бюджет для каждого направления.</div>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">💰</div>
-          <div class="feature-title">Калькулятор бюджета</div>
-          <div class="feature-desc">Живые цены Aviasales + курс ЦБ РФ. Перелёт, отель, еда — выбираешь что считать.</div>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">🛂</div>
-          <div class="feature-title">Визовый статус</div>
-          <div class="feature-desc">Без визы, eVisa или виза — актуально для россиян на 2026 год.</div>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">📱</div>
-          <div class="feature-title">Telegram-канал</div>
-          <div class="feature-desc">Личный опыт, маршруты и лайфхаки — @traveltriberu.</div>
-        </div>
-      </div>
-    </div>
-
-    <hr class="divider" />
-
-    <div class="section">
-      <div class="contribute">
-        <div class="contribute-text">
-          <h3>Добавь своё <em>направление</em></h3>
-          <p>Знаешь регион которого здесь нет? Проект открытый — добавь данные, исправь ошибку или предложи фичу. Любой вклад приветствуется.</p>
-        </div>
-        <a class="contribute-btn" href="https://github.com/nzaytsevmy/traveltribe-feedback" target="_blank" rel="noopener">→ Contribute on GitHub</a>
-      </div>
-    </div>
+    </section>
   </main>
 
   <Footer />
 </Layout>
 
-
 <style>
-/* ─── HERO ─── */
+/* ─── HERO — full-bleed cover photo + overlay text ─── */
 .hero {
-  min-height: calc(100vh - 64px); display: grid; place-items: center;
-  position: relative; overflow: hidden; padding: 4rem 2rem;
+  position: relative;
+  min-height: clamp(480px, 78vh, 760px);
+  margin-top: -64px;  /* slip under sticky nav */
+  display: grid;
+  align-items: end;
+  isolation: isolate;
+  overflow: hidden;
 }
-.hero-bg {
+.hero-image { position: absolute; inset: 0; z-index: -1; }
+.hero-image picture, .hero-image img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.hero-overlay {
   position: absolute; inset: 0;
   background:
-    radial-gradient(ellipse 70% 60% at 65% 35%, var(--hero-glow-1) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 70% at 20% 75%, var(--hero-glow-2) 0%, transparent 50%);
+    linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.15) 100%),
+    linear-gradient(to right, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0) 60%);
+  z-index: 1;
 }
-/* Force browsers to repaint radial gradient on theme switch */
-.hero-bg {
-  background:
-    radial-gradient(ellipse 70% 60% at 65% 35%, var(--hero-glow-1) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 70% at 20% 75%, var(--hero-glow-2) 0%, transparent 50%);
+.hero-content {
+  position: relative; z-index: 2;
+  max-width: 760px; margin: 0 auto;
+  padding: 0 var(--container-edge, 2rem) var(--space-12, 3rem);
+  width: 100%;
 }
-.hero-content { position: relative; text-align: center; max-width: 820px; z-index: 1; }
+.hero-link {
+  display: block; color: #fff; text-decoration: none;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+.hero-link:hover { transform: translateY(-2px); }
+.hero-link:hover .hero-arrow { transform: translateX(4px); }
+.hero-meta {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;
+  margin-bottom: var(--space-4, 1rem);
+}
 .hero-tag {
+  font-size: var(--text-sm, 0.875rem); letter-spacing: var(--tracking-widest);
+  text-transform: uppercase; color: var(--gold-300, #e8c062);
+}
+.hero-trip {
+  font-size: var(--text-sm); color: rgba(255,255,255,0.85);
+  border: 1px solid rgba(232,192,98,0.4);
+  background: rgba(232,192,98,0.12);
+  padding: 0.25rem 0.7rem; border-radius: var(--radius-pill);
+}
+.hero-title {
+  font-family: var(--ff-display);
+  font-size: var(--text-7xl);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: #fff;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.4);
+  margin: 0 0 var(--space-4, 1rem);
+  text-wrap: balance;
+}
+.hero-desc {
+  font-size: var(--text-lg); line-height: var(--leading-relaxed);
+  color: rgba(255,255,255,0.9); max-width: 560px;
+  margin: 0 0 var(--space-6, 1.5rem);
+}
+.hero-cta {
   display: inline-flex; align-items: center; gap: 0.5rem;
-  font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--gold); border: 1px solid rgba(201,151,58,0.3);
-  background: rgba(201,151,58,0.08); padding: 0.3rem 0.85rem; border-radius: 20px;
-  margin-bottom: 1.8rem;
+  font-size: var(--text-base); font-weight: 600; letter-spacing: var(--tracking-wide);
+  color: #fff; padding: 0.85rem 1.5rem;
+  background: var(--gold-600, #c9973a);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-md);
+  transition: background var(--duration-fast), box-shadow var(--duration-base);
 }
-.hero h1 {
-  font-family: var(--ff-display); font-size: clamp(3rem, 7vw, 6.5rem);
-  font-weight: 300; line-height: 1.0; letter-spacing: -0.01em; margin-bottom: 1.4rem;
-}
-.hero h1 em { color: var(--gold); font-style: italic; }
-.hero-sub { color: var(--text-dim); font-size: clamp(0.9rem, 1.5vw, 1.05rem); line-height: 1.7; max-width: 500px; margin: 0 auto 2.2rem; }
-.hero-actions { display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3.5rem; }
-.btn-primary {
-  background: var(--gold); color: #0c0a08; font-weight: 500;
-  padding: 13px 28px; border-radius: 3px; font-size: 0.85rem;
-  letter-spacing: 0.06em; text-transform: uppercase; border: none; cursor: pointer;
-  font-family: var(--ff-body); transition: box-shadow 0.25s;
-}
-.btn-primary:hover { box-shadow: 0 0 28px var(--gold-glow), 0 0 60px var(--gold-glow); }
-.btn-ghost {
-  background: transparent; color: var(--gold); font-weight: 400;
-  padding: 13px 28px; border-radius: 3px; font-size: 0.85rem;
-  border: 1px solid rgba(201,151,58,0.35); letter-spacing: 0.06em; text-transform: uppercase;
-  cursor: pointer; font-family: var(--ff-body);
-}
-.btn-ghost:hover { background: var(--gold-glow); box-shadow: 0 0 18px var(--gold-glow); }
-.hero-stats {
-  display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap;
-  padding-top: 2rem; border-top: 1px solid var(--line);
-}
-.stat-val { font-family: var(--ff-display); font-size: 2.4rem; color: var(--gold); font-weight: 300; line-height: 1; }
-.stat-label { font-size: 0.62rem; color: var(--text-faint); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.3rem; }
-
-/* ─── PILLS ─── */
-.pills-row {
-  max-width: 1200px; margin: 0 auto; padding: 0 2rem 3rem;
-  display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; position: relative; z-index: 1;
-}
-.pill { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.68rem; letter-spacing: 0.06em; padding: 0.28rem 0.7rem; border-radius: 20px; border: 1px solid; }
-.pill-os   { color: var(--gold);  border-color: rgba(201,151,58,0.3); background: rgba(201,151,58,0.07); }
-.pill-free { color: var(--peak-text); border-color: rgba(34,197,94,0.3);  background: rgba(34,197,94,0.07);  }
-.pill-uni  { color: var(--good-text); border-color: rgba(74,158,255,0.3); background: rgba(74,158,255,0.07); }
-
-/* ─── SECTION ─── */
-.section { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem 5rem; position: relative; z-index: 1; }
-.section-label { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.6rem; }
-.section-title { font-family: var(--ff-display); font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 300; letter-spacing: -0.01em; margin-bottom: 0.4rem; line-height: 1.15; }
-.section-title em { color: var(--gold); font-style: italic; }
-.section-sub { color: var(--text-dim); font-size: 0.88rem; line-height: 1.7; max-width: 440px; margin-bottom: 2rem; }
-
-/* ─── TRENDING GRID (peak now) ─── */
-.trending-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 1px; background: var(--line);
-  border: 1px solid var(--line); border-radius: 4px;
-  overflow: hidden; margin-top: 1.5rem;
-}
-.trending-card {
-  background: var(--bg); padding: 1.4rem 1.3rem 1.1rem;
-  display: flex; flex-direction: column; gap: 0.5rem;
-  position: relative; overflow: hidden;
-  transition: background 0.25s ease;
-}
-.trending-card:hover { background: var(--bg3); }
-.trending-card::before {
-  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
-  opacity: 0; transition: opacity 0.3s ease;
-}
-.trending-card:hover::before { opacity: 1; }
-
-.tc-head { display: flex; justify-content: space-between; align-items: center; }
-.tc-region {
-  font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--text-faint);
-}
-.tc-peak {
-  font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--peak-text); font-weight: 500;
-}
-.tc-title {
-  font-family: var(--ff-display); font-size: 1.6rem; font-weight: 400;
-  line-height: 1.15; margin: 0.2rem 0 0;
-}
-.tc-sub {
-  color: var(--text-faint); font-size: 0.74rem;
-  letter-spacing: 0.02em; margin: 0 0 0.5rem;
-}
-.tc-tags { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.3rem; }
-.tc-budget {
-  font-size: 0.7rem; color: var(--gold); font-weight: 500;
-  padding: 0.18rem 0.4rem; border: 1px solid rgba(201,151,58,0.25);
-  border-radius: 2px; background: rgba(201,151,58,0.06);
+.hero-cta:hover { background: var(--gold-500); box-shadow: var(--shadow-lg); }
+.hero-arrow {
+  display: inline-block;
+  transition: transform var(--duration-base) var(--ease-out);
 }
 
-.tc-bar { display: flex; gap: 2px; margin: 0.3rem 0 0.4rem; }
-.tc-mo {
-  flex: 1; height: 6px; border-radius: 2px;
-  position: relative;
+/* ─── SECTION primitives ─── */
+.section-eyebrow {
+  font-size: var(--text-xs); letter-spacing: var(--tracking-widest);
+  text-transform: uppercase; color: var(--gold-600);
+  margin-bottom: var(--space-3);
 }
-.tc-mo.is-current {
-  outline: 2px solid var(--gold); outline-offset: 1px; border-radius: 2px;
-}
-
-.tc-footer {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-top: auto; padding-top: 0.6rem; border-top: 1px solid var(--line);
-}
-.tc-price { font-size: 0.78rem; color: var(--text); font-weight: 500; }
-.tc-arrow { color: var(--text-faint); transition: transform 0.15s ease, color 0.25s ease; }
-.trending-card:hover .tc-arrow { transform: translateX(3px); color: var(--gold); }
-
-/* Reuse season bar colors from Card.astro */
-.tc-mo.s-P { background: #22c55e; }
-.tc-mo.s-G { background: #4a9eff; }
-.tc-mo.s-O { background: #f59e0b; }
-.tc-mo.s-B { background: #ef4444; }
-.tc-mo.s-X { background: rgba(201,151,58,0.15); }
-
-@media (max-width: 900px) {
-  .trending-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 540px) {
-  .trending-grid { grid-template-columns: 1fr; }
+.section-title {
+  font-family: var(--ff-display);
+  font-size: var(--text-4xl);
+  font-weight: 600; line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  margin: 0;
 }
 
-/* ─── MONTH PILLS (compact selector under trending) ─── */
-.month-pills-wrap { margin-top: 2.5rem; }
-.month-pills-label {
-  font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--text-faint); margin-bottom: 0.7rem;
+/* ─── CATEGORIES ─── */
+.cat-section { padding: var(--space-12) 0 var(--space-6); }
+.cat-container { max-width: var(--container-wide, 1200px); margin: 0 auto; padding: 0 var(--container-edge, 2rem); }
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-4);
 }
-.calendar-promo-grid {
-  display: grid; grid-template-columns: repeat(12, 1fr); gap: 0.4rem;
-}
-.cm-pill {
-  display: flex; align-items: center; justify-content: center;
-  background: var(--bg2); border: 1px solid var(--line); border-radius: 3px;
-  padding: 0.7rem 0.4rem; font-size: 0.78rem; color: var(--text-dim);
-  letter-spacing: 0.04em; font-weight: 500;
-  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
-}
-.cm-pill:hover { border-color: var(--gold-dim); color: var(--gold); background: var(--bg3); }
-.cm-pill.is-current {
-  border-color: var(--gold); color: var(--gold);
-  background: rgba(201,151,58,0.08);
-}
-
-@media (max-width: 720px) {
-  .calendar-promo-grid { grid-template-columns: repeat(6, 1fr); }
-}
-
-.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background: var(--line); }
-.feature { background: var(--bg); padding: 1.6rem; position: relative; overflow: hidden; }
-.feature::before {
-  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
-  opacity: 0; transition: opacity 0.3s;
-}
-.feature:hover { background: var(--bg3); }
-.feature:hover::before { opacity: 1; }
-.feature-icon { font-size: 1.5rem; margin-bottom: 0.8rem; }
-.feature-title { font-family: var(--ff-display); font-size: 1.15rem; font-weight: 400; margin-bottom: 0.35rem; }
-.feature-desc { color: var(--text-dim); font-size: 0.78rem; line-height: 1.6; }
-
-/* ─── CONTRIBUTE ─── */
-.contribute {
-  background: var(--bg2); border: 1px solid var(--line); border-radius: 3px;
-  padding: 2rem 2.5rem; display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 1.5rem; position: relative; overflow: hidden;
-}
-.contribute::before {
-  content: ""; position: absolute; top: -1px; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
-}
-.contribute-text h3 { font-family: var(--ff-display); font-size: 1.8rem; font-weight: 300; margin-bottom: 0.4rem; line-height: 1.2; }
-.contribute-text h3 em { color: var(--gold); font-style: italic; }
-.contribute-text p { color: var(--text-dim); font-size: 0.83rem; line-height: 1.6; max-width: 480px; }
-.contribute-btn {
-  font-size: 0.78rem; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--gold); border: 1px solid rgba(201,151,58,0.35);
-  background: rgba(201,151,58,0.08); padding: 10px 20px; border-radius: 3px; white-space: nowrap;
-}
-.contribute-btn:hover { background: var(--gold-glow); box-shadow: 0 0 18px var(--gold-glow); }
-
-.divider { border: none; border-top: 1px solid var(--line); margin: 0 2rem; }
-
-.author-strip { max-width: 760px; margin: 1.5rem auto; padding: 0 2rem; }
-.author-strip-link {
-  display: flex; align-items: center; gap: 1.1rem;
-  padding: 1rem 1.2rem;
-  background: var(--bg2); border: 1px solid var(--line); border-radius: 6px;
+.cat-card {
+  display: inline-flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-3, 6px);
   text-decoration: none;
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  color: var(--text);
+  transition: border-color var(--duration-fast), transform var(--duration-fast), background var(--duration-fast);
 }
-.author-strip-link:hover { border-color: rgba(201,151,58,0.5); transform: translateY(-1px); }
-.author-strip-photo {
-  width: 64px; height: 64px; border-radius: 50%;
-  object-fit: cover; object-position: center 30%;
+.cat-card:hover {
+  border-color: rgba(201,151,58,0.45);
+  transform: translateY(-1px);
+  background: var(--bg3);
+}
+.cat-emoji { font-size: 1.4rem; line-height: 1; }
+.cat-label { flex: 1; font-weight: 500; font-size: var(--text-base); }
+.cat-arrow { color: var(--gold-600); font-size: 1.1rem; transition: transform var(--duration-fast); }
+.cat-card:hover .cat-arrow { transform: translateX(3px); }
+
+/* ─── LATEST POSTS ─── */
+.latest-section { padding: var(--space-12) 0; }
+.latest-container { max-width: var(--container-wide); margin: 0 auto; padding: 0 var(--container-edge); }
+.latest-header {
+  display: flex; align-items: end; justify-content: space-between; gap: var(--space-4);
+  margin-bottom: var(--space-8);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+.latest-all {
+  font-size: var(--text-sm); letter-spacing: var(--tracking-wide);
+  color: var(--gold-600); text-decoration: none;
+  white-space: nowrap;
+}
+.latest-all:hover { color: var(--gold-500); }
+.latest-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-6);
+}
+.latest-card {
+  display: flex; flex-direction: column;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-4, 8px);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: transform var(--duration-base), box-shadow var(--duration-base), border-color var(--duration-base);
+}
+.latest-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(201,151,58,0.4);
+}
+.latest-cover {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--bg3);
+}
+.latest-cover img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+.latest-card:hover .latest-cover img { transform: scale(1.04); }
+.latest-body { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); flex: 1; }
+.latest-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.2rem; }
+.latest-tag {
+  font-size: var(--text-xs); letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--gold-600);
+  border: 1px solid rgba(201,151,58,0.3);
+  padding: 0.12rem 0.5rem;
+  border-radius: var(--radius-1);
+}
+.latest-title {
+  font-family: var(--ff-display);
+  font-size: var(--text-xl);
+  font-weight: 600; line-height: var(--leading-snug);
+  margin: 0;
+  text-wrap: balance;
+}
+.latest-desc {
+  font-size: var(--text-sm); color: var(--text-dim);
+  line-height: var(--leading-normal);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.latest-meta {
+  font-size: var(--text-xs); color: var(--text-faint);
+  letter-spacing: var(--tracking-wide);
+  margin-top: auto;
+}
+.latest-personal { color: var(--gold-600); }
+
+/* ─── TOOLS ─── */
+.tools-section { padding: var(--space-8) 0 var(--space-12); }
+.tools-container { max-width: var(--container-wide); margin: 0 auto; padding: 0 var(--container-edge); }
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+.tool-card {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-5);
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-3);
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color var(--duration-fast), background var(--duration-fast);
+}
+.tool-card:hover { border-color: rgba(201,151,58,0.4); background: var(--bg3); }
+.tool-icon { font-size: 1.6rem; line-height: 1; }
+.tool-card strong { font-size: var(--text-base); font-weight: 600; }
+.tool-card span:last-child { font-size: var(--text-sm); color: var(--text-dim); line-height: var(--leading-normal); }
+
+/* ─── NEWSLETTER ─── */
+.news-section {
+  padding: var(--space-12) 0;
+  background: linear-gradient(180deg, transparent, rgba(201,151,58,0.04));
+}
+.news-container {
+  max-width: 960px; margin: 0 auto;
+  padding: var(--space-10) var(--container-edge);
+  background: var(--bg2);
+  border: 1px solid rgba(201,151,58,0.25);
+  border-radius: var(--radius-4);
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-6);
+  position: relative; overflow: hidden;
+}
+.news-container::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-500), transparent);
+}
+.news-text { flex: 1 1 300px; }
+.news-text h2 {
+  font-family: var(--ff-display); font-size: var(--text-2xl);
+  font-weight: 600; line-height: var(--leading-snug);
+  margin: 0.4rem 0 var(--space-2);
+  text-wrap: balance;
+}
+.news-text p { font-size: var(--text-base); color: var(--text-dim); line-height: var(--leading-relaxed); margin: 0; max-width: 480px; }
+.news-cta {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--gold-600); color: #fff;
+  font-weight: 600; font-size: var(--text-base);
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+  transition: background var(--duration-fast), transform var(--duration-fast);
+}
+.news-cta:hover { background: var(--gold-500); transform: translateY(-1px); }
+.news-arrow { transition: transform var(--duration-fast); }
+.news-cta:hover .news-arrow { transform: translateX(3px); }
+
+/* ─── AUTHOR ─── */
+.author-section { padding: 0 0 var(--space-16); }
+.author-strip {
+  max-width: 720px; margin: 0 auto;
+  padding: var(--space-4) var(--space-5);
+  display: flex; align-items: center; gap: var(--space-4);
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-3);
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color var(--duration-fast), transform var(--duration-fast);
+  margin-left: var(--container-edge); margin-right: var(--container-edge);
+}
+@media (min-width: 760px) { .author-strip { margin-left: auto; margin-right: auto; } }
+.author-strip:hover { border-color: rgba(201,151,58,0.5); transform: translateY(-1px); }
+.author-photo {
+  width: 64px; height: 64px;
+  border-radius: 50%; object-fit: cover; object-position: center 30%;
   border: 2px solid rgba(201,151,58,0.4);
   flex: 0 0 auto;
 }
-.author-strip-text { flex: 1; min-width: 0; }
-.author-strip-name {
-  font-size: 1rem; color: var(--text); font-weight: 600;
-  margin-bottom: 0.25rem;
-  display: flex; align-items: center; gap: 0.4rem;
-}
-.author-strip-arrow { color: var(--gold); font-weight: 400; transition: transform 0.15s ease; }
-.author-strip-link:hover .author-strip-arrow { transform: translateX(3px); }
-.author-strip-cred { font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; }
-.author-strip-cred span { color: var(--gold-dim); }
+.author-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.15rem; }
+.author-text strong { font-size: var(--text-base); font-weight: 600; }
+.author-text span { font-size: var(--text-sm); color: var(--text-dim); }
+.author-arrow { color: var(--gold-600); font-size: 1.2rem; transition: transform var(--duration-fast); }
+.author-strip:hover .author-arrow { transform: translateX(3px); }
+
+/* ─── Mobile adjustments ─── */
 @media (max-width: 600px) {
-  .author-strip-photo { width: 56px; height: 56px; }
-  .author-strip-name { font-size: 0.95rem; }
-  .author-strip-cred { font-size: 0.78rem; }
+  .hero { min-height: 60vh; }
+  .hero-content { padding-bottom: var(--space-8); }
+  .hero-title { font-size: clamp(2.4rem, 9vw, 3.4rem); }
+  .latest-header { flex-direction: column; align-items: stretch; }
+  .news-container { padding: var(--space-6); }
+  .news-text h2 { font-size: var(--text-xl); }
 }
 </style>
