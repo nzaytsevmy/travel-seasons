@@ -280,18 +280,73 @@ if (faqs.length >= 2) {
   }
 }
 
-/* Все таблицы остаются в ширине текстовой колонки 720px (визуальное
-   единство с текстом). На длинных таблицах включается горизонтальный
-   скролл — обычное journalism-решение. */
+/* Wide-таблицы (4+ колонок) — гибридный pattern 2026:
+   - Desktop ≥881px: full-bleed 1000px чтобы все колонки умещались без сжатия
+   - Mobile ≤720px: card-stack (Chris Coyier) — каждая строка = карточка,
+     thead скрыта, на каждой td label из data-label атрибута (rehype-table-wrap) */
 .prose :global(.table-wrap.table-wide) {
   width: 100%;
-  font-size: 0.86rem;
+  font-size: 0.9rem;
 }
-.prose :global(.table-wrap.table-wide :is(th, td)) {
-  padding: 0.55rem 0.7rem;
-  white-space: normal;
-  word-break: normal;
-  overflow-wrap: anywhere;
+@media (min-width: 881px) {
+  .prose :global(.table-wrap.table-wide) {
+    width: min(96vw, 1000px);
+    margin-left: 50%;
+    transform: translateX(-50%);
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+}
+@media (max-width: 720px) {
+  /* Card-stack: classic Chris Coyier pattern */
+  .prose :global(.table-wrap.table-wide table),
+  .prose :global(.table-wrap.table-wide thead),
+  .prose :global(.table-wrap.table-wide tbody),
+  .prose :global(.table-wrap.table-wide tr),
+  .prose :global(.table-wrap.table-wide th),
+  .prose :global(.table-wrap.table-wide td) {
+    display: block;
+  }
+  .prose :global(.table-wrap.table-wide thead) {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  .prose :global(.table-wrap.table-wide tr) {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 0.8rem;
+    background: var(--bg2);
+  }
+  .prose :global(.table-wrap.table-wide td) {
+    display: grid;
+    grid-template-columns: 38% 1fr;
+    gap: 0.6rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px dashed var(--line);
+    min-width: 0;
+  }
+  .prose :global(.table-wrap.table-wide td:last-child) {
+    border-bottom: none;
+  }
+  .prose :global(.table-wrap.table-wide td::before) {
+    content: attr(data-label);
+    font-family: var(--ff-display);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--gold-700, var(--gold-600));
+    align-self: start;
+  }
+  .prose :global(.table-wrap.table-wide tbody td:first-child) {
+    font-weight: 600;
+    color: var(--text);
+  }
+  .prose :global(.table-wrap.table-wide tbody td:first-child::before) {
+    content: attr(data-label);
+  }
 }
 
 .post-meta-top { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; max-width: 100%; }
