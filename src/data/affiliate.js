@@ -9,4 +9,5 @@ export const TP_LINKS = {
   aviasales:  `https://www.aviasales.ru/?marker=${TP_MARKER_FULL}&market=ru`,
   ostrovok:   'https://ostrovok.tpk.mx/w4cAS1wZ',
   cherehapa:  'https://cherehapa.tpk.mx/GmVWjhCN',
+  tripster:   'https://tripster.tpk.mx/PJlXelJd',
 };
