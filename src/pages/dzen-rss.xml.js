@@ -1,8 +1,15 @@
 import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
 
-// Дзен-совместимый RSS feed для авто-импорта в Дзен-канал.
-// Документация: https://dzen.ru/help/ru/export-content/export.html
-// Обновляется при каждом деплое (новые материалы — за последние 7 дней попадают в Дзен).
+// Дзен-совместимый RSS feed (Native, не Турбо/Новости).
+// Документация: https://dzen.ru/help/ru/website/site-to-channel.html
+//
+// Обязательные элементы для Дзена:
+//   - title, link, guid, pubDate, description, enclosure
+//   - content:encoded (HTML)
+//   - <category> со специальными значениями: native (или native-draft),
+//     format-article (или format-post), index/noindex, comment-all/subscribers/none
+//   - Минимум 10 материалов, ≥3 за последний месяц, без UTM, картинки ≥700px
 
 const SITE = 'https://traveltribe.ru';
 
@@ -18,6 +25,14 @@ function escapeXml(s = '') {
 function mdToHtml(md) {
   let s = md;
 
+  // Убираем MDX-импорты (import X from 'Y') — они валидны в .mdx но в RSS текст
+  s = s.replace(/^import\s+.+from\s+['"][^'"]+['"];?\s*$/gm, '');
+  // Убираем JSX-компоненты <PricingCards tiers={...} /> и подобные
+  // Простая эвристика: блоки <Capitalized.../> или <Capitalized>...</Capitalized>
+  s = s.replace(/<[A-Z][a-zA-Z]*[\s\S]*?\/>/g, '');
+  s = s.replace(/<([A-Z][a-zA-Z]*)[^>]*>[\s\S]*?<\/\1>/g, '');
+  // Hr-разделители ---
+  s = s.replace(/^---\s*$/gm, '');
   const absUrl = (u) => {
     if (u.startsWith('http')) return u;
     let clean = u.replace(/^\.\//, '').replace(/^_images\//, '/_images/');
@@ -25,32 +40,24 @@ function mdToHtml(md) {
     return `${SITE}${clean}`;
   };
 
-  // картинки: оставляем только публичные/абсолютные URL.
-  // Локальные _images/ не доступны напрямую в dist (Astro оптимизирует в /_astro/*.webp с хешем),
-  // поэтому исключаем из RSS — cover показывается через <enclosure>, читатель идёт на сайт за полной версией.
+  // Inline-картинки: оставляем только публичные http URLs (Wikimedia и т.п.)
+  // Локальные _images/* выбрасываем — Astro их оптимизирует с hash, в RSS не передать.
+  // Статья в Дзене будет без inline-картинок, читатель идёт на сайт через CTA.
   s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_m, alt, src) => {
     if (src.startsWith('http')) return `<figure><img src="${src}" alt="${escapeXml(alt)}"/></figure>`;
     return '';
   });
 
-  // ссылки [text](url)
   s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, text, url) =>
     `<a href="${absUrl(url)}">${text}</a>`);
 
-  // заголовки
   s = s.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
   s = s.replace(/^### (.+)$/gm, '<h3>$1</h3>');
   s = s.replace(/^## (.+)$/gm, '<h2>$1</h2>');
   s = s.replace(/^# (.+)$/gm, '<h2>$1</h2>');
-
-  // bold/italic
   s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
   s = s.replace(/(?<![*\w])\*([^*\n]+)\*(?!\w)/g, '<em>$1</em>');
-
-  // blockquote (одностроковые > ...)
   s = s.replace(/^> (.+)$/gm, '<blockquote><p>$1</p></blockquote>');
-
-  // списки
   s = s.replace(/(?:^- .+(?:\n|$))+/gm, (m) => {
     const items = m.trim().split('\n').map(l => `<li>${l.replace(/^- /, '')}</li>`).join('');
     return `<ul>${items}</ul>`;
@@ -60,7 +67,7 @@ function mdToHtml(md) {
     return `<ol>${items}</ol>`;
   });
 
-  // параграфы из остальных строк
+  // Параграфы
   const lines = s.split('\n');
   const out = [];
   let buf = [];
@@ -76,7 +83,6 @@ function mdToHtml(md) {
     }
   }
   if (buf.length) out.push(`<p>${buf.join(' ')}</p>`);
-
   return out.join('\n');
 }
 
@@ -84,28 +90,46 @@ export async function GET() {
   const posts = (await getCollection('blog'))
     .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
-  const items = posts.map(post => {
+  const items = [];
+  for (const post of posts) {
     const link = `${SITE}/blog/${post.slug}/`;
-    const cover = typeof post.data.coverImage === 'string'
-      ? post.data.coverImage
-      : `${SITE}${post.data.coverImage.src}`;
+
+    // Cover: получаем оптимизированный URL через astro:assets.
+    // Дзен требует картинку ≥700px, JPEG/PNG/GIF.
+    let coverUrl;
+    if (typeof post.data.coverImage === 'string') {
+      coverUrl = post.data.coverImage.startsWith('http')
+        ? post.data.coverImage
+        : `${SITE}${post.data.coverImage}`;
+    } else {
+      const optimized = await getImage({
+        src: post.data.coverImage,
+        width: 1400,
+        format: 'jpeg',
+        quality: 82,
+      });
+      coverUrl = `${SITE}${optimized.src}`;
+    }
 
     const html = mdToHtml(post.body);
     const ctaHtml = `<p><a href="${link}">Читать полностью на TravelTribe →</a></p>`;
     const fullHtml = html + '\n' + ctaHtml;
 
-    return `    <item>
+    items.push(`    <item>
       <title>${escapeXml(post.data.title)}</title>
       <link>${link}</link>
+      <pdalink>${link}</pdalink>
       <guid isPermaLink="true">${link}</guid>
       <pubDate>${post.data.pubDate.toUTCString()}</pubDate>
-      <author>nzaytsev.my@gmail.com (${escapeXml(post.data.author)})</author>
       <description>${escapeXml(post.data.description)}</description>
-      <enclosure url="${cover}" type="image/jpeg"/>
-      ${post.data.tags.map(t => `<category>${escapeXml(t)}</category>`).join('\n      ')}
+      <enclosure url="${coverUrl}" type="image/jpeg"/>
+      <category>native</category>
+      <category>format-article</category>
+      <category>index</category>
+      <category>comment-all</category>
       <content:encoded><![CDATA[${fullHtml}]]></content:encoded>
-    </item>`;
-  }).join('\n');
+    </item>`);
+  }
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss xmlns:content="http://purl.org/rss/1.0/modules/content/"
@@ -119,9 +143,8 @@ export async function GET() {
     <description>Реальные поездки на 7 континентов. Япония, Африка, Бали, Антарктида, Латам. Цены 2026, маршруты, личный опыт.</description>
     <language>ru</language>
     <copyright>© Никита Зайцев</copyright>
-    <managingEditor>nzaytsev.my@gmail.com (Никита Зайцев)</managingEditor>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
-${items}
+${items.join('\n')}
   </channel>
 </rss>`;
 
