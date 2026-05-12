@@ -12,7 +12,9 @@ export const TP_LINKS = {
   ostrovok:   'https://ostrovok.tpk.mx/w4cAS1wZ',
   cherehapa:  'https://cherehapa.tpk.mx/GmVWjhCN',
   tripster:   'https://tripster.tpk.mx/PJlXelJd',
-  // Airalo (eSIM): direct партнёрский URL с u=airalo.com/ru (RU-локализация)
-  // + erid токен маркировки рекламы по 38-ФЗ РФ
+  // eSIM-провайдеры (оба ведут на RU-сайты).
+  // Airalo: direct партнёрский URL + erid (38-ФЗ маркировка рекламы РФ)
   airalo:     'https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_&u=https%3A%2F%2Fairalo.com%2Fru',
+  // Drimsim: direct URL с tracking id (через tpk.mx lang=ru не пробрасывается)
+  drimsim:    'https://drimsim.ru/?utm_travelpayouts_track_id=9681f36432214f3785fa2431a-546042',
 };

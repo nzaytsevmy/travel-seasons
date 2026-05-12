@@ -105,7 +105,7 @@ html.light-theme:not(.dark-theme) {
   /* Overridden per-element where needed (hover transforms, opacity) */
 }
 
-html { overflow-x: hidden; }
+html { overflow-x: clip; }  /* clip вместо hidden — не ломает position:sticky в Safari (баг WebKit) */
 
 body {
   background-color: var(--bg);
@@ -114,7 +114,7 @@ body {
   font-weight: 300;
   line-height: 1.65;
   min-height: 100vh;
-  overflow-x: hidden;  /* защита от мини-overflow на mobile, обходит Safari quirks с 100vw + padding */
+  overflow-x: clip;  /* clip вместо hidden — sticky-nav работает в Safari (clip с iOS 16+) */
   padding-bottom: 4rem;
   position: relative;
   touch-action: manipulation;
