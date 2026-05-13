@@ -129,6 +129,24 @@ if (faqs.length >= 2) {
     }))
   });
 }
+
+if (post.data.howto) {
+  const h = post.data.howto;
+  ldJson["@graph"].push({
+    "@type": "HowTo",
+    "@id": `${url}#howto`,
+    "name": h.name,
+    ...(h.description ? { "description": h.description } : {}),
+    ...(h.totalTime ? { "totalTime": h.totalTime } : {}),
+    ...(h.estimatedCost ? { "estimatedCost": { "@type": "MonetaryAmount", "currency": h.estimatedCost.currency, "value": h.estimatedCost.value } } : {}),
+    "step": h.steps.map((s, i) => ({
+      "@type": "HowToStep",
+      "position": i + 1,
+      "name": s.name,
+      "text": s.text,
+    })),
+  });
+}
 ---
 <Layout
   title={post.data.title}
