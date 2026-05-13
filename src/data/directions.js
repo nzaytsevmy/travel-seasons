@@ -1,4 +1,4 @@
-// Derived registry of all 39 destinations with stable slug, visa, budget, monthly
+// Derived registry of all 70 destinations with stable slug, visa, budget, monthly
 // data, and prices. Built from data/regions.js + data/prices.js — single source
 // of truth for /visa/<slug>/ and /trips/<month>/<slug>/ programmatic pages.
 
