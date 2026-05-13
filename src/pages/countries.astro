@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { Image } from 'astro:assets';
 import { DIRECTIONS } from '../data/directions.js';
+import { COORDS } from '../data/destination-coords.js';
 
 const destPhotos = import.meta.glob('../assets/destinations/*.jpg', { eager: true, import: 'default' });
 
@@ -47,6 +48,19 @@ const FEATURED_SLUGS = new Set([
   'georgia', 'thailand', 'peru', 'uae',
   'kenya', 'australia-east'
 ]);
+
+// Данные для Map view — серилизуем в JSON для client-side JS
+const mapPins = DIRECTIONS
+  .filter(d => COORDS[d.slug])
+  .map(d => ({
+    slug: d.slug,
+    name: d.cases.nom,
+    visa: d.visa,
+    budget: d.budget,
+    lat: COORDS[d.slug].lat,
+    lng: COORDS[d.slug].lng,
+    emoji: d.visual?.emoji || '📍',
+  }));
 
 const url = 'https://traveltribe.ru/countries/';
 const ldJson = {
@@ -103,13 +117,33 @@ const ldJson = {
         <button type="button" class="cstat" data-filter="evisa" role="tab"><strong>{stats.evisa}</strong><span>eVisa</span></button>
         <button type="button" class="cstat" data-filter="required" role="tab"><strong>{stats.required}</strong><span>с визой</span></button>
       </div>
-      <div class="countries-search">
-        <svg class="cs-icon" viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="6"></circle><line x1="14" y1="14" x2="18" y2="18"></line></svg>
-        <input type="search" id="countriesSearch" placeholder="Найти страну…" autocomplete="off" aria-label="Поиск страны" />
-        <button type="button" class="cs-clear" id="countriesSearchClear" aria-label="Очистить" hidden>×</button>
+      <div class="countries-tools">
+        <div class="countries-search">
+          <svg class="cs-icon" viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="6"></circle><line x1="14" y1="14" x2="18" y2="18"></line></svg>
+          <input type="search" id="countriesSearch" placeholder="Найти страну…" autocomplete="off" aria-label="Поиск страны" />
+          <button type="button" class="cs-clear" id="countriesSearchClear" aria-label="Очистить" hidden>×</button>
+        </div>
+        <div class="view-toggle" role="tablist" aria-label="Вид">
+          <button type="button" class="vt-btn vt-btn--active" data-view="list" role="tab">📋 Список</button>
+          <button type="button" class="vt-btn" data-view="map" role="tab">🗺 Карта</button>
+        </div>
       </div>
       <p class="countries-empty" id="countriesEmpty" hidden>Ничего не найдено. Попробуй другой запрос или сбрось фильтр.</p>
     </header>
+
+    {/* Map контейнер — изначально hidden, лениво грузим Leaflet при клике */}
+    <section id="countriesMapWrap" class="map-wrap" hidden aria-label="Карта направлений">
+      <div id="countriesMap"></div>
+      <div class="map-legend">
+        <span class="ml-item"><span class="ml-dot ml-dot--free"></span>Без визы</span>
+        <span class="ml-item"><span class="ml-dot ml-dot--evisa"></span>eVisa</span>
+        <span class="ml-item"><span class="ml-dot ml-dot--required"></span>Виза</span>
+      </div>
+    </section>
+
+    <script type="application/json" id="mapPinsData" set:html={JSON.stringify(mapPins)}></script>
+
+    <div id="countriesListWrap">
 
     {groupOrder.map((group) => (
       <section class="countries-group" data-group={group}>
@@ -156,6 +190,8 @@ const ldJson = {
         </div>
       </section>
     ))}
+
+    </div>
 
     <p class="countries-updated">Актуально на: 13 мая 2026 · {DIRECTIONS.length} направлений · обновляется каждые 4–6 недель</p>
   </main>
@@ -224,6 +260,85 @@ const ldJson = {
 
   initCountriesFilter();
   document.addEventListener('astro:page-load', initCountriesFilter);
+
+  /* ─── Map view: Leaflet lazy-load по клику на toggle ─── */
+  function loadLeaflet(): Promise<typeof window.L> {
+    if ((window as any).L) return Promise.resolve((window as any).L);
+    return new Promise((resolve) => {
+      const css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(css);
+      const js = document.createElement('script');
+      js.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      js.onload = () => resolve((window as any).L);
+      document.head.appendChild(js);
+    });
+  }
+
+  let mapInstance: any = null;
+
+  async function initMap() {
+    if (mapInstance) return;
+    const L = await loadLeaflet();
+    const container = document.getElementById('countriesMap');
+    if (!container) return;
+    const pinsRaw = document.getElementById('mapPinsData')?.textContent || '[]';
+    const pins = JSON.parse(pinsRaw);
+
+    mapInstance = L.map(container, {
+      center: [25, 30],
+      zoom: 2,
+      worldCopyJump: true,
+      scrollWheelZoom: true,
+    });
+    L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap, &copy; CARTO',
+      subdomains: 'abcd',
+      maxZoom: 18,
+    }).addTo(mapInstance);
+
+    pins.forEach((p: any) => {
+      const icon = L.divIcon({
+        className: `country-pin country-pin--${p.visa}`,
+        iconSize: [22, 22],
+        iconAnchor: [11, 11],
+      });
+      const marker = L.marker([p.lat, p.lng], { icon }).addTo(mapInstance);
+      const visaLabel = p.visa === 'free' ? 'Без визы' : p.visa === 'evisa' ? 'eVisa' : 'Виза';
+      const budgetLabel = p.budget === 'low' ? '$' : p.budget === 'mid' ? '$$' : '$$$';
+      marker.bindPopup(`
+        <div class="map-pop-title">${p.emoji} ${p.name}</div>
+        <div class="map-pop-meta">${visaLabel} · ${budgetLabel}</div>
+        <a class="map-pop-link" href="/${p.slug}/">Подробнее →</a>
+      `);
+    });
+  }
+
+  function initViewToggle() {
+    const buttons = document.querySelectorAll('.vt-btn');
+    const listWrap = document.getElementById('countriesListWrap');
+    const mapWrap = document.getElementById('countriesMapWrap');
+    if (!buttons.length || !listWrap || !mapWrap) return;
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const view = (btn as HTMLElement).dataset.view;
+        buttons.forEach((b) => b.classList.toggle('vt-btn--active', b === btn));
+        if (view === 'map') {
+          (listWrap as HTMLElement).hidden = true;
+          (mapWrap as HTMLElement).hidden = false;
+          await initMap();
+          if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 100);
+        } else {
+          (mapWrap as HTMLElement).hidden = true;
+          (listWrap as HTMLElement).hidden = false;
+        }
+      });
+    });
+  }
+
+  initViewToggle();
+  document.addEventListener('astro:page-load', initViewToggle);
 </script>
 
 <style>
@@ -339,6 +454,128 @@ const ldJson = {
   border-radius: var(--radius-3, 10px);
   max-width: 460px;
 }
+
+/* ─── Tools row: search + view toggle ─── */
+.countries-tools {
+  display: flex; gap: var(--space-3);
+  max-width: 760px;
+  margin: var(--space-5) auto 0;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.countries-tools .countries-search { flex: 1; margin: 0; min-width: 240px; }
+.view-toggle {
+  display: inline-flex;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-3, 10px);
+  padding: 4px;
+  gap: 2px;
+}
+.vt-btn {
+  padding: 0.55rem 1.1rem;
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  color: var(--text-dim);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background var(--duration-fast), color var(--duration-fast);
+  white-space: nowrap;
+}
+.vt-btn:hover { color: var(--text); }
+.vt-btn--active {
+  background: var(--gold);
+  color: #fff;
+}
+
+/* ─── Map view ─── */
+.map-wrap {
+  position: relative;
+  margin: var(--space-6) 0 var(--space-8);
+  border-radius: var(--radius-4, 12px);
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+#countriesMap {
+  width: 100%;
+  height: 600px;
+  background: var(--bg3);
+}
+.map-legend {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  display: flex; gap: var(--space-4);
+  padding: 0.6rem 1rem;
+  background: rgba(12,10,8,0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-3, 10px);
+  font-size: var(--text-sm);
+  color: #f8f5ef;
+  z-index: 500;
+  flex-wrap: wrap;
+}
+.ml-item { display: inline-flex; align-items: center; gap: 0.5rem; }
+.ml-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.4);
+}
+.ml-dot--free { background: #22c55e; }
+.ml-dot--evisa { background: #4a9eff; }
+.ml-dot--required { background: #c9973a; }
+
+/* Кастомизация Leaflet popup под наш стиль */
+:global(.leaflet-popup-content-wrapper) {
+  background: var(--bg2);
+  color: var(--text);
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+:global(.leaflet-popup-tip) { background: var(--bg2); }
+:global(.leaflet-popup-content) {
+  margin: 12px 14px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+:global(.leaflet-popup-content .map-pop-title) {
+  font-family: var(--ff-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+:global(.leaflet-popup-content .map-pop-meta) {
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  margin-bottom: 8px;
+}
+:global(.leaflet-popup-content .map-pop-link) {
+  display: inline-block;
+  color: var(--gold);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+:global(.leaflet-popup-content .map-pop-link:hover) { text-decoration: underline; }
+:global(.leaflet-container) { font-family: inherit; }
+:global(.country-pin) {
+  width: 22px !important; height: 22px !important;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.3);
+  transition: transform 0.15s ease;
+}
+:global(.country-pin:hover) { transform: scale(1.25); z-index: 1000 !important; }
+:global(.country-pin--free) { background: #22c55e; }
+:global(.country-pin--evisa) { background: #4a9eff; }
+:global(.country-pin--required) { background: #c9973a; }
 
 /* Группа скрыта если в ней нет видимых карточек */
 .countries-group[hidden] { display: none; }
