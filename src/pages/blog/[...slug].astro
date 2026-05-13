@@ -5,6 +5,7 @@ import Layout from '../../layouts/Layout.astro';
 import Nav from '../../components/Nav.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Footer from '../../components/Footer.astro';
+import TableOfContents from '../../components/post/TableOfContents.astro';
 import authorPhoto from '../../assets/author/nikita.jpg';
 
 export async function getStaticPaths() {
@@ -13,7 +14,7 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await post.render();
+const { Content, headings } = await post.render();
 const url = `https://traveltribe.ru/blog/${post.slug}/`;
 const coverUrl = typeof post.data.coverImage === 'string' ? post.data.coverImage : `https://traveltribe.ru${post.data.coverImage.src}`;
 const ogImageUrl = `https://traveltribe.ru/og/${post.slug}.png`;
@@ -216,6 +217,8 @@ if (post.data.howto) {
           <strong>Как написан этот пост.</strong> Это обзор по официальным источникам — сайтам консульств, статистике, форумам туристов. Лично эту визу/маршрут я в 2026 не оформлял, но сверил факты на актуальность. Если вы только что прошли — поправьте через <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram-канал</a>, обновлю.
         </aside>
       )}
+
+      <TableOfContents headings={headings} />
 
       <div class="prose">
         <Content />

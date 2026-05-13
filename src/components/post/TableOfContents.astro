@@ -1,0 +1,69 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+interface Props {
+  headings: Heading[];
+  minH2Count?: number;
+}
+const { headings, minH2Count = 4 } = Astro.props;
+const items = headings.filter((h) => h.depth === 2 && !/^FAQ$/i.test(h.text));
+const show = items.length >= minH2Count;
+---
+{show && (
+  <nav class="toc" aria-label="Содержание статьи">
+    <p class="toc-label">Содержание</p>
+    <ol class="toc-list">
+      {items.map((h) => (
+        <li><a href={`#${h.slug}`}>{h.text}</a></li>
+      ))}
+    </ol>
+  </nav>
+)}
+
+<style>
+.toc {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold);
+  border-radius: 4px;
+  padding: 1rem 1.4rem 1.1rem;
+  margin: 1.5rem 0 2.5rem;
+}
+.toc-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 0 0 0.6rem;
+  font-weight: 500;
+}
+.toc-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  list-style: decimal;
+}
+.toc-list li {
+  margin: 0.2rem 0;
+  color: var(--text-faint);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+.toc-list a {
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.toc-list a:hover {
+  color: var(--gold);
+}
+@media (max-width: 600px) {
+  .toc {
+    padding: 0.85rem 1rem;
+    margin: 1rem 0 2rem;
+  }
+  .toc-list li { font-size: 0.83rem; }
+}
+</style>
