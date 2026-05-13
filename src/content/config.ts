@@ -15,6 +15,13 @@ const blog = defineCollection({
     sourceType: z.enum(['personal', 'compilation', 'hybrid']).default('hybrid'),
     coverPosition: z.string().default('center'),
     coverPositionCard: z.string().default('center'),
+    howto: z.object({
+      name: z.string(),
+      description: z.string().optional(),
+      totalTime: z.string().optional(),
+      estimatedCost: z.object({ currency: z.string(), value: z.string() }).optional(),
+      steps: z.array(z.object({ name: z.string(), text: z.string() })),
+    }).optional(),
   }),
 });
 

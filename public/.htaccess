@@ -11,6 +11,14 @@ RewriteCond %{HTTPS} off
 RewriteCond %{HTTP_HOST} ^traveltribe\.ru$ [NC]
 RewriteRule ^(.*)$ https://traveltribe.ru/$1 [R=301,L]
 
+# ─── LEGACY URL REDIRECTS (старые ссылки в выдаче Яндекса/Google) ───
+# Не отдавать 404 — это плохой signal для crawl-бюджета.
+# Каждый легаси URL ведёт на ближайшую тематическую страницу.
+RewriteRule ^japan_momiji/?$ /blog/japan-guide-2026/ [R=301,L]
+RewriteRule ^japan-momiji/?$ /blog/japan-guide-2026/ [R=301,L]
+RewriteRule ^mexico_old/?$ /blog/ [R=301,L]
+RewriteRule ^mexico/?$ /blog/ [R=301,L]
+
 # ─── SECURITY HEADERS ───
 # Если REG.RU shared имеет mod_headers — applies. Если нет — секция игнорируется без ошибок.
 <IfModule mod_headers.c>
