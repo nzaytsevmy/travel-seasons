@@ -41,6 +41,13 @@ const stats = {
   required: DIRECTIONS.filter(d => d.visa === 'required').length,
 };
 
+// Топ-направления Bento — крупные 2×1 tile в своих регионах
+const FEATURED_SLUGS = new Set([
+  'japan', 'turkey', 'bali', 'antarctica',
+  'georgia', 'thailand', 'peru', 'uae',
+  'kenya', 'australia-east'
+]);
+
 const url = 'https://traveltribe.ru/countries/';
 const ldJson = {
   "@context": "https://schema.org",
@@ -90,16 +97,22 @@ const ldJson = {
       <div class="section-eyebrow">// Все направления</div>
       <h1>Кратко о <em>странах</em></h1>
       <p class="countries-sub">Виза, сезоны, бюджет на день и главные гайды. Если нужно быстро решить «куда» — выбирай регион ниже.</p>
-      <div class="countries-stats">
-        <div><strong>{stats.total}</strong><span>направлений</span></div>
-        <div><strong>{stats.free}</strong><span>без визы</span></div>
-        <div><strong>{stats.evisa}</strong><span>eVisa</span></div>
-        <div><strong>{stats.required}</strong><span>с визой</span></div>
+      <div class="countries-stats" role="tablist" aria-label="Фильтр по визе">
+        <button type="button" class="cstat cstat--active" data-filter="all" role="tab"><strong>{stats.total}</strong><span>направлений</span></button>
+        <button type="button" class="cstat" data-filter="free" role="tab"><strong>{stats.free}</strong><span>без визы</span></button>
+        <button type="button" class="cstat" data-filter="evisa" role="tab"><strong>{stats.evisa}</strong><span>eVisa</span></button>
+        <button type="button" class="cstat" data-filter="required" role="tab"><strong>{stats.required}</strong><span>с визой</span></button>
       </div>
+      <div class="countries-search">
+        <svg class="cs-icon" viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="6"></circle><line x1="14" y1="14" x2="18" y2="18"></line></svg>
+        <input type="search" id="countriesSearch" placeholder="Найти страну…" autocomplete="off" aria-label="Поиск страны" />
+        <button type="button" class="cs-clear" id="countriesSearchClear" aria-label="Очистить" hidden>×</button>
+      </div>
+      <p class="countries-empty" id="countriesEmpty" hidden>Ничего не найдено. Попробуй другой запрос или сбрось фильтр.</p>
     </header>
 
     {groupOrder.map((group) => (
-      <section class="countries-group">
+      <section class="countries-group" data-group={group}>
         <h2 class="countries-group-title">
           <span class="cgt-icon" aria-hidden="true">{GROUP_ICON[group] || '📍'}</span>
           <span class="cgt-name">{group}</span>
@@ -108,8 +121,9 @@ const ldJson = {
         <div class="countries-grid">
           {grouped[group].map((d) => {
             const photo = destPhotos[`../assets/destinations/${d.slug}.jpg`];
+            const featured = FEATURED_SLUGS.has(d.slug);
             return (
-              <a href={`/${d.slug}/`} class="country-card">
+              <a href={`/${d.slug}/`} class={`country-card ${featured ? 'country-card--featured' : ''}`} data-visa={d.visa} data-name={d.cases.nom.toLowerCase()}>
                 <div class="cc-media">
                   {photo ? (
                     <Image
@@ -143,11 +157,74 @@ const ldJson = {
       </section>
     ))}
 
-    <p class="countries-updated">Актуально на: 10 мая 2026 · {DIRECTIONS.length} направлений · обновляется каждые 4–6 недель</p>
+    <p class="countries-updated">Актуально на: 13 мая 2026 · {DIRECTIONS.length} направлений · обновляется каждые 4–6 недель</p>
   </main>
 
   <Footer />
 </Layout>
+
+<script>
+  function initCountriesFilter() {
+    const stats = document.querySelectorAll('.cstat');
+    const cards = document.querySelectorAll('.country-card');
+    const groups = document.querySelectorAll('.countries-group');
+    const search = document.getElementById('countriesSearch') as HTMLInputElement | null;
+    const clearBtn = document.getElementById('countriesSearchClear');
+    const emptyState = document.getElementById('countriesEmpty');
+
+    if (!stats.length || !cards.length || !search) return;
+
+    let currentFilter: string = 'all';
+    let currentQuery: string = '';
+
+    function applyFilters() {
+      let visibleTotal = 0;
+      cards.forEach((card) => {
+        const visa = (card as HTMLElement).dataset.visa || '';
+        const name = (card as HTMLElement).dataset.name || '';
+        const matchVisa = currentFilter === 'all' || visa === currentFilter;
+        const matchSearch = !currentQuery || name.includes(currentQuery);
+        const visible = matchVisa && matchSearch;
+        (card as HTMLElement).hidden = !visible;
+        if (visible) visibleTotal++;
+      });
+      // Скрыть пустые группы
+      groups.forEach((g) => {
+        const anyVisible = Array.from(g.querySelectorAll('.country-card')).some((c) => !(c as HTMLElement).hidden);
+        (g as HTMLElement).hidden = !anyVisible;
+      });
+      if (emptyState) (emptyState as HTMLElement).hidden = visibleTotal > 0;
+    }
+
+    stats.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const filter = (btn as HTMLElement).dataset.filter || 'all';
+        currentFilter = filter;
+        stats.forEach((b) => b.classList.toggle('cstat--active', b === btn));
+        applyFilters();
+      });
+    });
+
+    search.addEventListener('input', () => {
+      currentQuery = search.value.trim().toLowerCase();
+      if (clearBtn) (clearBtn as HTMLElement).hidden = currentQuery.length === 0;
+      applyFilters();
+    });
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        search.value = '';
+        currentQuery = '';
+        (clearBtn as HTMLElement).hidden = true;
+        applyFilters();
+        search.focus();
+      });
+    }
+  }
+
+  initCountriesFilter();
+  document.addEventListener('astro:page-load', initCountriesFilter);
+</script>
 
 <style>
 .countries-wrap { max-width: var(--container-wide, 1200px); margin: 0 auto; padding: 0 var(--container-edge, 2rem) var(--space-16, 4rem); }
@@ -172,17 +249,33 @@ const ldJson = {
   font-size: var(--text-lg);
   line-height: var(--leading-relaxed);
 }
-/* ─── Hero статистика ─── */
+/* ─── Hero статистика как фильтр-чипы ─── */
 .countries-stats {
-  display: flex; justify-content: center; gap: var(--space-8);
+  display: flex; justify-content: center; flex-wrap: wrap; gap: var(--space-3);
   margin: var(--space-7) auto 0;
   padding: var(--space-5) 0;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  max-width: 720px;
+  max-width: 760px;
 }
-.countries-stats > div { display: flex; flex-direction: column; gap: 4px; align-items: center; }
-.countries-stats strong {
+.cstat {
+  display: flex; flex-direction: column; gap: 4px; align-items: center;
+  padding: 0.85rem 1.4rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-3, 10px);
+  cursor: pointer;
+  transition: background var(--duration-fast), border-color var(--duration-fast), transform var(--duration-fast);
+  font-family: inherit; color: inherit;
+  min-width: 110px;
+}
+.cstat:hover { background: var(--bg2); border-color: var(--line); transform: translateY(-1px); }
+.cstat--active {
+  background: rgba(201,151,58,0.1);
+  border-color: rgba(201,151,58,0.4);
+}
+.cstat--active strong { color: var(--gold); }
+.cstat strong {
   font-family: var(--ff-display);
   font-size: var(--text-4xl);
   font-weight: 700;
@@ -190,10 +283,65 @@ const ldJson = {
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
-.countries-stats span {
+.cstat span {
   font-size: var(--text-xs); color: var(--text-faint);
   letter-spacing: var(--tracking-wide); text-transform: uppercase;
 }
+
+/* ─── Поиск ─── */
+.countries-search {
+  position: relative;
+  max-width: 460px;
+  margin: var(--space-5) auto 0;
+}
+.cs-icon {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  color: var(--text-faint);
+  pointer-events: none;
+}
+.countries-search input {
+  width: 100%;
+  padding: 0.85rem 2.5rem 0.85rem 2.6rem;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-3, 10px);
+  color: var(--text);
+  font-size: var(--text-base);
+  font-family: inherit;
+  transition: border-color var(--duration-fast), background var(--duration-fast);
+}
+.countries-search input:focus {
+  outline: none;
+  border-color: rgba(201,151,58,0.5);
+  background: var(--bg2);
+}
+.countries-search input::placeholder { color: var(--text-faint); }
+.cs-clear {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  width: 28px; height: 28px;
+  border: none; background: transparent;
+  color: var(--text-faint);
+  font-size: 1.5rem;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+.cs-clear:hover { background: var(--bg3); color: var(--text); }
+
+.countries-empty {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: var(--text-base);
+  margin: var(--space-8) auto;
+  padding: var(--space-6);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-3, 10px);
+  max-width: 460px;
+}
+
+/* Группа скрыта если в ней нет видимых карточек */
+.countries-group[hidden] { display: none; }
 
 /* ─── Заголовок региона с emoji и счётчиком ─── */
 .countries-group { margin-bottom: var(--space-14); }
@@ -222,10 +370,10 @@ const ldJson = {
   flex: 0 0 auto;
 }
 
-/* ─── Сетка карточек — крупнее ─── */
+/* ─── Сетка Bento — featured-карточки 2×1, остальные 1×1 ─── */
 .countries-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: var(--space-5);
 }
 
@@ -238,6 +386,23 @@ const ldJson = {
   text-decoration: none;
   color: inherit;
   transition: transform var(--duration-base), box-shadow var(--duration-base), border-color var(--duration-base);
+}
+/* Скрытые при фильтрации/поиске */
+.country-card[hidden] { display: none; }
+
+/* Bento featured — занимает 2 колонки на широких экранах */
+@media (min-width: 760px) {
+  .country-card--featured {
+    grid-column: span 2;
+  }
+  .country-card--featured .cc-media {
+    aspect-ratio: 16 / 9;
+  }
+  .country-card--featured .cc-name {
+    font-size: var(--text-2xl);
+    letter-spacing: -0.015em;
+  }
+  .country-card--featured .cc-fallback-emoji { font-size: 6rem; }
 }
 .country-card:hover {
   transform: translateY(-4px);

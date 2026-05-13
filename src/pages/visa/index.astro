@@ -67,6 +67,12 @@ const ldJson = {
         <div><strong>{byVisa.evisa.length}</strong><span>eVisa</span></div>
         <div><strong>{byVisa.required.length}</strong><span>требуют визу</span></div>
       </div>
+      <div class="visa-search">
+        <svg class="vs-icon" viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="6"></circle><line x1="14" y1="14" x2="18" y2="18"></line></svg>
+        <input type="search" id="visaSearch" placeholder="Найти страну…" autocomplete="off" aria-label="Поиск страны" />
+        <button type="button" class="vs-clear" id="visaSearchClear" aria-label="Очистить" hidden>×</button>
+      </div>
+      <p class="visa-empty" id="visaEmpty" hidden>Ничего не найдено. Попробуй другой запрос.</p>
     </header>
 
     {['free', 'evisa', 'required'].map((vt) => (
@@ -77,7 +83,7 @@ const ldJson = {
           {byVisa[vt].map((d) => {
             const photo = destPhotos[`../../assets/destinations/${d.slug}.jpg`];
             return (
-              <a href={`/visa/${d.slug}/`} class="visa-list-card">
+              <a href={`/visa/${d.slug}/`} class="visa-list-card" data-name={d.cases.nom.toLowerCase()}>
                 <div class="vlc-media">
                   {photo ? (
                     <Image src={photo} alt={d.cases.nom} widths={[200, 400]} sizes="(max-width: 700px) 50vw, 25vw" formats={['avif', 'webp']} quality={68} loading="lazy" />
@@ -96,11 +102,45 @@ const ldJson = {
       </section>
     ))}
 
-    <p class="visa-list-updated">Актуально на: 10 мая 2026 · обновляется каждые 4–6 недель</p>
+    <p class="visa-list-updated">Актуально на: 13 мая 2026 · обновляется каждые 4–6 недель</p>
   </main>
 
   <Footer />
 </Layout>
+
+<script>
+  function initVisaSearch() {
+    const cards = document.querySelectorAll('.visa-list-card');
+    const groups = document.querySelectorAll('.visa-group');
+    const search = document.getElementById('visaSearch') as HTMLInputElement | null;
+    const clearBtn = document.getElementById('visaSearchClear');
+    const emptyState = document.getElementById('visaEmpty');
+    if (!cards.length || !search) return;
+
+    function apply() {
+      const q = search!.value.trim().toLowerCase();
+      let visible = 0;
+      cards.forEach((card) => {
+        const name = (card as HTMLElement).dataset.name || '';
+        const show = !q || name.includes(q);
+        (card as HTMLElement).hidden = !show;
+        if (show) visible++;
+      });
+      groups.forEach((g) => {
+        const any = Array.from(g.querySelectorAll('.visa-list-card')).some((c) => !(c as HTMLElement).hidden);
+        (g as HTMLElement).hidden = !any;
+      });
+      if (emptyState) (emptyState as HTMLElement).hidden = visible > 0;
+      if (clearBtn) (clearBtn as HTMLElement).hidden = q.length === 0;
+    }
+
+    search.addEventListener('input', apply);
+    if (clearBtn) clearBtn.addEventListener('click', () => { search.value = ''; apply(); search.focus(); });
+  }
+
+  initVisaSearch();
+  document.addEventListener('astro:page-load', initVisaSearch);
+</script>
 
 <style>
 .visa-list-wrap { max-width: var(--container-wide, 1200px); margin: 0 auto; padding: 0 var(--container-edge, 2rem) var(--space-16, 4rem); }
@@ -243,6 +283,54 @@ const ldJson = {
   padding-top: var(--space-6);
   border-top: 1px solid var(--line);
 }
+
+/* ─── Search field для /visa/ ─── */
+.visa-search {
+  position: relative;
+  max-width: 460px;
+  margin: var(--space-5) auto 0;
+}
+.vs-icon {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  color: var(--text-faint);
+  pointer-events: none;
+}
+.visa-search input {
+  width: 100%;
+  padding: 0.85rem 2.5rem 0.85rem 2.6rem;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-3, 10px);
+  color: var(--text);
+  font-size: var(--text-base);
+  font-family: inherit;
+  transition: border-color var(--duration-fast);
+}
+.visa-search input:focus { outline: none; border-color: rgba(201,151,58,0.5); }
+.visa-search input::placeholder { color: var(--text-faint); }
+.vs-clear {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  width: 28px; height: 28px;
+  border: none; background: transparent;
+  color: var(--text-faint);
+  font-size: 1.5rem;
+  cursor: pointer; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+.vs-clear:hover { background: var(--bg3); color: var(--text); }
+.visa-empty {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: var(--text-base);
+  margin: var(--space-8) auto;
+  padding: var(--space-6);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-3, 10px);
+  max-width: 460px;
+}
+.visa-group[hidden] { display: none; }
+.visa-list-card[hidden] { display: none; }
 
 @media (max-width: 600px) {
   .visa-list-grid { grid-template-columns: repeat(2, 1fr); }
