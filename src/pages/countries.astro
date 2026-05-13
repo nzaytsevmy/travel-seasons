@@ -5,7 +5,7 @@ import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { Image } from 'astro:assets';
 import { DIRECTIONS } from '../data/directions.js';
-import { COORDS } from '../data/destination-coords.js';
+import { COORDS, SLUG_TO_ISO } from '../data/destination-coords.js';
 
 const destPhotos = import.meta.glob('../assets/destinations/*.jpg', { eager: true, import: 'default' });
 
@@ -49,18 +49,20 @@ const FEATURED_SLUGS = new Set([
   'kenya', 'australia-east'
 ]);
 
-// Данные для Map view — серилизуем в JSON для client-side JS
-const mapPins = DIRECTIONS
-  .filter(d => COORDS[d.slug])
-  .map(d => ({
-    slug: d.slug,
-    name: d.cases.nom,
-    visa: d.visa,
-    budget: d.budget,
-    lat: COORDS[d.slug].lat,
-    lng: COORDS[d.slug].lng,
-    emoji: d.visual?.emoji || '📍',
-  }));
+// Данные для Map view — choropleth: ISO_A3 → direction info
+const isoToDir = {};
+DIRECTIONS.forEach((d) => {
+  const iso = SLUG_TO_ISO[d.slug];
+  if (iso && !isoToDir[iso]) {
+    isoToDir[iso] = {
+      slug: d.slug,
+      name: d.cases.nom,
+      visa: d.visa,
+      budget: d.budget,
+      emoji: d.visual?.emoji || '📍',
+    };
+  }
+});
 
 const url = 'https://traveltribe.ru/countries/';
 const ldJson = {
@@ -141,7 +143,7 @@ const ldJson = {
       </div>
     </section>
 
-    <script type="application/json" id="mapPinsData" set:html={JSON.stringify(mapPins)}></script>
+    <script type="application/json" id="mapIsoData" set:html={JSON.stringify(isoToDir)}></script>
 
     <div id="countriesListWrap">
 
@@ -278,41 +280,97 @@ const ldJson = {
 
   let mapInstance: any = null;
 
+  const VISA_FILLS: Record<string, string> = {
+    free: '#22c55e',
+    evisa: '#4a9eff',
+    required: '#c9973a',
+  };
+  const VISA_LABELS: Record<string, string> = {
+    free: 'Без визы',
+    evisa: 'eVisa',
+    required: 'Виза',
+  };
+
   async function initMap() {
     if (mapInstance) return;
     const L = await loadLeaflet();
     const container = document.getElementById('countriesMap');
     if (!container) return;
-    const pinsRaw = document.getElementById('mapPinsData')?.textContent || '[]';
-    const pins = JSON.parse(pinsRaw);
+    const isoRaw = document.getElementById('mapIsoData')?.textContent || '{}';
+    const isoToDir = JSON.parse(isoRaw);
 
     mapInstance = L.map(container, {
-      center: [25, 30],
+      center: [20, 10],
       zoom: 2,
       worldCopyJump: true,
       scrollWheelZoom: true,
+      minZoom: 2,
+      maxZoom: 6,
+      preferCanvas: false,
     });
     L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap, &copy; CARTO',
       subdomains: 'abcd',
-      maxZoom: 18,
+      maxZoom: 6,
     }).addTo(mapInstance);
 
-    pins.forEach((p: any) => {
-      const icon = L.divIcon({
-        className: `country-pin country-pin--${p.visa}`,
-        iconSize: [22, 22],
-        iconAnchor: [11, 11],
-      });
-      const marker = L.marker([p.lat, p.lng], { icon }).addTo(mapInstance);
-      const visaLabel = p.visa === 'free' ? 'Без визы' : p.visa === 'evisa' ? 'eVisa' : 'Виза';
-      const budgetLabel = p.budget === 'low' ? '$' : p.budget === 'mid' ? '$$' : '$$$';
-      marker.bindPopup(`
-        <div class="map-pop-title">${p.emoji} ${p.name}</div>
-        <div class="map-pop-meta">${visaLabel} · ${budgetLabel}</div>
-        <a class="map-pop-link" href="/${p.slug}/">Подробнее →</a>
-      `);
-    });
+    // Загружаем GeoJSON всех стран мира
+    const geoResp = await fetch('/data/world-countries.geojson');
+    const geoData = await geoResp.json();
+
+    const baseStyle = (feature: any) => {
+      const iso = feature.properties.iso_a3;
+      const d = isoToDir[iso];
+      if (d) {
+        return {
+          fillColor: VISA_FILLS[d.visa] || '#888',
+          fillOpacity: 0.55,
+          weight: 0.8,
+          color: '#0c0a08',
+          opacity: 0.6,
+        };
+      }
+      return {
+        fillColor: '#2a2622',
+        fillOpacity: 0.25,
+        weight: 0.4,
+        color: '#0c0a08',
+        opacity: 0.4,
+      };
+    };
+
+    const geoLayer = L.geoJSON(geoData, {
+      style: baseStyle,
+      onEachFeature: (feature: any, layer: any) => {
+        const iso = feature.properties.iso_a3;
+        const d = isoToDir[iso];
+        if (d) {
+          const budgetLabel = d.budget === 'low' ? '$' : d.budget === 'mid' ? '$$' : '$$$';
+          layer.bindPopup(`
+            <div class="map-pop-title">${d.emoji} ${d.name}</div>
+            <div class="map-pop-meta">${VISA_LABELS[d.visa]} · ${budgetLabel}</div>
+            <a class="map-pop-link" href="/${d.slug}/">Подробнее →</a>
+          `);
+          layer.bindTooltip(`<strong>${d.name}</strong><br><span style="font-size:11px;opacity:0.8">${VISA_LABELS[d.visa]} · ${budgetLabel}</span>`, {
+            sticky: true,
+            direction: 'auto',
+            className: 'map-country-tooltip',
+          });
+          layer.on('mouseover', (e: any) => {
+            e.target.setStyle({ fillOpacity: 0.85, weight: 1.5, color: '#fff', opacity: 1 });
+            e.target.bringToFront();
+          });
+          layer.on('mouseout', (e: any) => {
+            geoLayer.resetStyle(e.target);
+          });
+          layer.on('click', (e: any) => {
+            mapInstance.flyTo(e.latlng, Math.max(mapInstance.getZoom(), 4), { duration: 0.5 });
+          });
+        } else {
+          layer.bindTooltip(feature.properties.name, { sticky: true, className: 'map-country-tooltip map-country-tooltip--dim' });
+        }
+      },
+    }).addTo(mapInstance);
   }
 
   function initViewToggle() {
@@ -565,17 +623,21 @@ const ldJson = {
 }
 :global(.leaflet-popup-content .map-pop-link:hover) { text-decoration: underline; }
 :global(.leaflet-container) { font-family: inherit; }
-:global(.country-pin) {
-  width: 22px !important; height: 22px !important;
-  border-radius: 50%;
-  border: 3px solid #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.3);
-  transition: transform 0.15s ease;
+:global(.map-country-tooltip) {
+  background: rgba(12,10,8,0.92) !important;
+  color: #f8f5ef !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  border-radius: 6px !important;
+  padding: 6px 10px !important;
+  font-size: 13px !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
 }
-:global(.country-pin:hover) { transform: scale(1.25); z-index: 1000 !important; }
-:global(.country-pin--free) { background: #22c55e; }
-:global(.country-pin--evisa) { background: #4a9eff; }
-:global(.country-pin--required) { background: #c9973a; }
+:global(.map-country-tooltip::before) { display: none !important; }
+:global(.map-country-tooltip--dim) {
+  background: rgba(12,10,8,0.7) !important;
+  color: rgba(248,245,239,0.65) !important;
+  font-size: 11px !important;
+}
 
 /* Группа скрыта если в ней нет видимых карточек */
 .countries-group[hidden] { display: none; }
