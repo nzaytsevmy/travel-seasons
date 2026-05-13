@@ -37,13 +37,19 @@ const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-image.png?v=2';
 <head>
   <meta charset="UTF-8" />
 
-  <!-- FOUC: light is the default theme. Dark only when user explicitly opts in. -->
+  <!-- FOUC: light is the default theme. Dark only when user explicitly opts in.
+       Также применяется после ClientRouter swap, чтобы тема не слетала
+       при SPA-навигации (Safari особенно чувствителен к этому). -->
   <script is:inline>
     (function () {
-      if (localStorage.getItem('theme') === 'dark') {
-        document.documentElement.classList.add('dark-theme');
-        document.body && document.body.classList.add('dark-theme');
+      function applyTheme() {
+        var dark = localStorage.getItem('theme') === 'dark';
+        document.documentElement.classList.toggle('dark-theme', dark);
+        if (document.body) document.body.classList.toggle('dark-theme', dark);
       }
+      applyTheme();
+      // ClientRouter (Astro View Transitions): применять тему после swap
+      document.addEventListener('astro:after-swap', applyTheme);
     })();
   </script>
 
@@ -138,7 +144,8 @@ const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-image.png?v=2';
 
   <slot />
 
-  <!-- Theme toggle — light is default, button switches to dark and back -->
+  <!-- Theme toggle — light is default, button switches to dark and back.
+       Re-init после ClientRouter swap: новая кнопка в DOM = новый listener. -->
   <script is:inline>
     function _initThemeToggle() {
       var btn = document.getElementById('themeToggle');
@@ -156,6 +163,7 @@ const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-image.png?v=2';
       btn.addEventListener('click', function () {
         var dark = document.documentElement.classList.toggle('dark-theme');
         document.body.classList.toggle('dark-theme', dark);
+        // Safari hack: force repaint чтобы CSS variables применились мгновенно
         document.body.style.display = 'none';
         void document.body.offsetHeight;
         document.body.style.display = '';
@@ -165,6 +173,8 @@ const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-image.png?v=2';
     }
 
     _initThemeToggle();
+    // Re-init после каждого SPA-перехода через ClientRouter
+    document.addEventListener('astro:page-load', _initThemeToggle);
   </script>
 </body>
 </html>
