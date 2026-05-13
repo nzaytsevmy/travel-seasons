@@ -74,6 +74,25 @@ const SLUG_OVERRIDES = {
   'Япония — Хоккайдо|Саппоро, Ниссеко, лыжи': 'japan-hokkaido',
   'США|Нью-Йорк, ЛА, нацпарки': 'usa',
   'Новая Зеландия|Юг + Север, фьорды': 'new-zealand',
+  // Новые направления 2026 (топ-18 россиян)
+  'Иран|Тегеран, Исфахан, Шираз, Йезд': 'iran',
+  'Иордания|Петра, Мёртвое море, Вади-Рам': 'jordan',
+  'Танзания|Серенгети, Занзибар, Килиманджаро': 'tanzania',
+  'Мадагаскар|Антананариву, Нуси-Бе, Цинги': 'madagascar',
+  'Маврикий|Гранд Бэ, Иль-о-Серф': 'mauritius',
+  'Сейшелы|Маэ, Праслин, Ла-Диг': 'seychelles',
+  'Израиль|Тель-Авив, Иерусалим, Эйлат, Мёртвое море': 'israel',
+  'Китай|Пекин, Шанхай, Сиань, Гуанчжоу': 'china',
+  'Хайнань|Санья, Хайкоу, тропики': 'hainan',
+  'Малайзия|Куала-Лумпур, Лангкави, Борнео': 'malaysia',
+  'Филиппины|Палаван, Бохол, Себу, Манила': 'philippines',
+  'Камбоджа|Ангкор, Пном-Пень, Сиануквиль': 'cambodia',
+  'Сингапур|Сити, Сентоса, Гарденс-бай-зе-Бэй': 'singapore',
+  'Непал|Катманду, Покхара, Эверест-трек': 'nepal',
+  'Абхазия|Гагра, Сухум, Рица': 'abkhazia',
+  'Сербия|Белград, Нови-Сад, Златибор': 'serbia',
+  'Финляндия|Хельсинки, Лапландия, северное сияние': 'finland',
+  'Кипр|Лимасол, Пафос, Айя-Напа': 'cyprus',
 };
 
 // Russian name in different cases (acc/prep) for natural headlines.
@@ -142,6 +161,25 @@ const COUNTRY_CASES = {
   'costa-rica-panama': { nom: 'Коста-Рика и Панама', acc: 'Коста-Рику и Панаму', prep: 'Коста-Рике и Панаме', vP: 'в Коста-Рику и Панаму' , loc: 'в Коста-Рике и Панаме' },
   'chile-patagonia': { nom: 'Чилийская Патагония', acc: 'Чилийскую Патагонию', prep: 'чилийской Патагонии', vP: 'в Чилийскую Патагонию' , loc: 'в Чилийской Патагонии' },
   'chile-fjords': { nom: 'Чилийские фьорды', acc: 'Чилийские фьорды', prep: 'чилийских фьордах', vP: 'в Чилийские фьорды' , loc: 'в Чилийских фьордах' },
+  // Новые направления 2026
+  'iran': { nom: 'Иран', acc: 'Иран', prep: 'Иране', vP: 'в Иран', loc: 'в Иране' },
+  'jordan': { nom: 'Иордания', acc: 'Иорданию', prep: 'Иордании', vP: 'в Иорданию', loc: 'в Иордании' },
+  'tanzania': { nom: 'Танзания', acc: 'Танзанию', prep: 'Танзании', vP: 'в Танзанию', loc: 'в Танзании' },
+  'madagascar': { nom: 'Мадагаскар', acc: 'Мадагаскар', prep: 'Мадагаскаре', vP: 'на Мадагаскар', loc: 'на Мадагаскаре' },
+  'mauritius': { nom: 'Маврикий', acc: 'Маврикий', prep: 'Маврикии', vP: 'на Маврикий', loc: 'на Маврикии' },
+  'seychelles': { nom: 'Сейшелы', acc: 'Сейшелы', prep: 'Сейшелах', vP: 'на Сейшелы', loc: 'на Сейшелах' },
+  'israel': { nom: 'Израиль', acc: 'Израиль', prep: 'Израиле', vP: 'в Израиль', loc: 'в Израиле' },
+  'china': { nom: 'Китай', acc: 'Китай', prep: 'Китае', vP: 'в Китай', loc: 'в Китае' },
+  'hainan': { nom: 'Хайнань', acc: 'Хайнань', prep: 'Хайнане', vP: 'на Хайнань', loc: 'на Хайнане' },
+  'malaysia': { nom: 'Малайзия', acc: 'Малайзию', prep: 'Малайзии', vP: 'в Малайзию', loc: 'в Малайзии' },
+  'philippines': { nom: 'Филиппины', acc: 'Филиппины', prep: 'Филиппинах', vP: 'на Филиппины', loc: 'на Филиппинах' },
+  'cambodia': { nom: 'Камбоджа', acc: 'Камбоджу', prep: 'Камбодже', vP: 'в Камбоджу', loc: 'в Камбодже' },
+  'singapore': { nom: 'Сингапур', acc: 'Сингапур', prep: 'Сингапуре', vP: 'в Сингапур', loc: 'в Сингапуре' },
+  'nepal': { nom: 'Непал', acc: 'Непал', prep: 'Непале', vP: 'в Непал', loc: 'в Непале' },
+  'abkhazia': { nom: 'Абхазия', acc: 'Абхазию', prep: 'Абхазии', vP: 'в Абхазию', loc: 'в Абхазии' },
+  'serbia': { nom: 'Сербия', acc: 'Сербию', prep: 'Сербии', vP: 'в Сербию', loc: 'в Сербии' },
+  'finland': { nom: 'Финляндия', acc: 'Финляндию', prep: 'Финляндии', vP: 'в Финляндию', loc: 'в Финляндии' },
+  'cyprus': { nom: 'Кипр', acc: 'Кипр', prep: 'Кипре', vP: 'на Кипр', loc: 'на Кипре' },
 };
 
 // Map slug → array of related blog post slugs (which already exist in content/blog/).
@@ -241,6 +279,25 @@ const DEST_VISUALS = {
   'usa':              { emoji: '🗽', g1: '#dbeafe', g2: '#bfdbfe' },
   'uzbekistan':       { emoji: '🕌', g1: '#fed7aa', g2: '#fdba74' },
   'vietnam':          { emoji: '🍜', g1: '#dcfce7', g2: '#bbf7d0' },
+  // Новые направления 2026
+  'iran':             { emoji: '🕌', g1: '#fef3c7', g2: '#fde68a' },
+  'jordan':           { emoji: '🏛️', g1: '#fde68a', g2: '#fbbf24' },
+  'tanzania':         { emoji: '🦒', g1: '#fde68a', g2: '#facc15' },
+  'madagascar':       { emoji: '🌳', g1: '#dcfce7', g2: '#86efac' },
+  'mauritius':        { emoji: '🐢', g1: '#cffafe', g2: '#67e8f9' },
+  'seychelles':       { emoji: '🏖️', g1: '#cffafe', g2: '#a5f3fc' },
+  'israel':           { emoji: '🕯️', g1: '#dbeafe', g2: '#93c5fd' },
+  'china':            { emoji: '🏯', g1: '#fee2e2', g2: '#fca5a5' },
+  'hainan':           { emoji: '🌴', g1: '#cffafe', g2: '#67e8f9' },
+  'malaysia':         { emoji: '🌺', g1: '#fce7f3', g2: '#f9a8d4' },
+  'philippines':      { emoji: '🏝️', g1: '#cffafe', g2: '#a5f3fc' },
+  'cambodia':         { emoji: '🛕', g1: '#fed7aa', g2: '#fdba74' },
+  'singapore':        { emoji: '🏙️', g1: '#dbeafe', g2: '#bfdbfe' },
+  'nepal':            { emoji: '🏔️', g1: '#e0e7ff', g2: '#c7d2fe' },
+  'abkhazia':         { emoji: '🌊', g1: '#cffafe', g2: '#67e8f9' },
+  'serbia':           { emoji: '🏛️', g1: '#fef3c7', g2: '#fde68a' },
+  'finland':          { emoji: '🌌', g1: '#e0e7ff', g2: '#c7d2fe' },
+  'cyprus':           { emoji: '🏖️', g1: '#fef3c7', g2: '#fde68a' },
 };
 
 function findPrice(direction) {
