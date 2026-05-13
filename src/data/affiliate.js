@@ -17,4 +17,7 @@ export const TP_LINKS = {
   airalo:     'https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_&u=https%3A%2F%2Fairalo.com%2Fru',
   // Drimsim: direct URL с tracking id (через tpk.mx lang=ru не пробрасывается)
   drimsim:    'https://drimsim.ru/?utm_travelpayouts_track_id=9681f36432214f3785fa2431a-546042',
+  // PlatipoMiru: виртуальные карты USD/EUR для россиян (Visa/MC иностранного эмитента).
+  // CPA-партнёрка. erid НЕОБХОДИМО получить от партнёра и подставить вместо TBD (38-ФЗ).
+  platipomiru: 'https://platipomiru.com/?utm_source=traveltribe&utm_medium=cpa',
 };
