@@ -15,6 +15,7 @@ import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { Image } from 'astro:assets';
 import { DIRECTIONS, MONTHS } from '../data/directions.js';
+import { PRICES } from '../data/prices.js';
 import AviasalesWidget from '../components/post/AviasalesWidget.astro';
 
 // Pre-import all destination photos (Vite needs static imports). glob lazy:
@@ -65,6 +66,9 @@ const flightFrom = d.price?.flight?.[0];
 const hotelFrom = d.price?.hotel?.[0];
 const foodFrom = d.price?.food?.[0];
 const weekTotal = flightFrom ? flightFrom + (hotelFrom || 0) * 7 + (foodFrom || 0) * 7 : null;
+// Индекс в PRICES для глубокой ссылки на калькулятор с преселекцией страны
+const priceIdx = d.price ? PRICES.findIndex(p => p.iata === d.price.iata && p.name === d.price.name) : -1;
+const calcUrl = priceIdx >= 0 ? `/calculator/?r=${priceIdx}` : '/calculator/';
 
 // FAQ generated from data
 const faqs = [
@@ -178,7 +182,7 @@ const ldJson = {
         <div class="qf-label">Бюджет</div>
         <div class="qf-value qf-value--lg">{BUDGET_LABEL[d.budget].split('—')[0].trim()}</div>
         {weekTotal && <div class="qf-value-sub">от ${weekTotal} за неделю</div>}
-        <a href="/calculator/" class="qf-link">Калькулятор поездки →</a>
+        <a href={calcUrl} class="qf-link">Калькулятор поездки →</a>
       </div>
       <div class="qf-card">
         <div class="qf-label">Лучшие месяцы</div>
@@ -253,8 +257,8 @@ const ldJson = {
     <section class="quick-block">
       <h2>Что почитать дальше</h2>
       <ul class="quick-related-misc">
-        <li><a href="/seasons/">Сравнение всех 39 направлений по сезонам</a></li>
-        <li><a href="/calculator/">Калькулятор бюджета поездки</a></li>
+        <li><a href="/seasons/">Сравнение всех 70 направлений по сезонам</a></li>
+        <li><a href={calcUrl}>Калькулятор бюджета поездки</a></li>
         <li><a href={`/trips/${MONTHS[new Date().getMonth()].slug}/${d.slug}/`}>{d.cases.nom} в {MONTHS[new Date().getMonth()].prep} 2026</a></li>
         <li><a href={`/visa/${d.slug}/`}>Виза {d.cases.vP} — детально</a></li>
         <li><a href="/countries/">Все страны на сайте</a></li>
