@@ -16,13 +16,13 @@ for (const d of DIRECTIONS) {
 }
 
 const GROUP_ORDER = [
-  '🌏 Азия',
-  '🌍 Африка & Ближний Восток',
-  '🌎 Латам и Карибы — расширение',
-  '🌎 Америка',
-  '🐧 Полярные регионы',
-  '🏔️ Европа',
-  '🌊 Австралия & Океания',
+  'Азия',
+  'Европа',
+  'Африка & Ближний Восток',
+  'Америка',
+  'Латам и Карибы',
+  'Австралия & Океания',
+  'Антарктида',
 ];
 const groupOrder = GROUP_ORDER.filter(g => grouped[g]).concat(
   Object.keys(grouped).filter(g => !GROUP_ORDER.includes(g))
@@ -53,7 +53,7 @@ const ldJson = {
       "@id": `${url}#page`,
       "url": url,
       "name": "Atlas — все 70 направлений TravelTribe 2026",
-      "description": "Cinematic atlas всех 70 направлений для российского путешественника 2026: виза, лучшие сезоны, бюджет, главные гайды.",
+      "description": "Атлас всех 70 направлений для российского путешественника 2026: виза, лучшие сезоны, бюджет на день, главные гайды.",
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "mainEntity": {
@@ -79,7 +79,7 @@ const ldJson = {
 ---
 <Layout
   title="Atlas 2026 — 70 направлений для российского путешественника"
-  description="Cinematic-атлас всех 70 направлений: виза, лучшие сезоны, бюджет на день, главные гайды. Кратко всё что важно перед поездкой."
+  description="Атлас всех 70 направлений: виза, лучшие сезоны, бюджет на день, главные гайды. Кратко то, что важно знать перед поездкой."
   canonical={url}
   ogTitle="Atlas — Кратко о странах · TravelTribe"
   ogDescription="70 направлений с визой, сезонами, бюджетом и главными гайдами"
@@ -115,11 +115,11 @@ const ldJson = {
 
       <div class="cine-hero-frame">
         <div class="cine-hero-eyebrow" data-reveal>
-          <span>Выпуск № 01</span>
+          <span>Выпуск 01 / 2026</span>
           <span class="cine-sep">·</span>
-          <span>Май 2026</span>
+          <span>Атлас путешественника</span>
           <span class="cine-sep">·</span>
-          <span>Travel Atlas</span>
+          <span>Май</span>
         </div>
 
         <h1 class="cine-hero-title" data-reveal>
@@ -130,13 +130,13 @@ const ldJson = {
         </h1>
 
         <p class="cine-hero-lede" data-reveal>
-          Кинематографичный атлас 2026 года. <em>Виза, сезон, бюджет.</em>
-          Каждая страна — личный опыт там, где он есть.
+          Семьдесят направлений 2026 года. <em>Виза, сезон, бюджет — без воды.</em>
+          Где был лично — личный взгляд, не пересказ Википедии.
         </p>
 
         <div class="cine-hero-scroll" data-reveal aria-hidden="true">
           <span class="chs-line"></span>
-          <span class="chs-label">Scroll</span>
+          <span class="chs-label">Листать</span>
         </div>
       </div>
     </section>
@@ -164,30 +164,30 @@ const ldJson = {
       </div>
 
       <div class="atlas-search">
-        <span class="atlas-search-prompt" aria-hidden="true">— Найти</span>
+        <span class="atlas-search-prompt" aria-hidden="true">— Куда</span>
         <input type="search" id="countriesSearch" placeholder="Япония, Турция, Бали…" autocomplete="off" aria-label="Поиск страны" />
         <button type="button" class="atlas-search-clear" id="countriesSearchClear" aria-label="Очистить" hidden>×</button>
       </div>
 
-      <p class="atlas-empty" id="countriesEmpty" hidden>Ничего не нашлось — попробуй другой запрос или сбрось фильтр.</p>
+      <p class="atlas-empty" id="countriesEmpty" hidden>Не нашлось такого. Попробуй другое название или сбрось фильтр визы.</p>
     </section>
 
     {/* ─── CHAPTERS ─── */}
     {groupOrder.map((group, gIdx) => {
       const heroes = grouped[group].filter(d => HERO_FEATURED.has(d.slug)).slice(0, 2);
       const rest = grouped[group].filter(d => !heroes.includes(d));
-      const cleanGroup = group.replace(/^[^\s]+\s/, '');
+      const cleanGroup = group;
       return (
         <section class="atlas-chapter" data-group={group} data-reveal-section>
           <header class="atlas-chapter-head" data-reveal>
             <div class="ach-left">
               <span class="ach-roman" aria-hidden="true">{ROMAN[gIdx] || gIdx + 1}</span>
-              <span class="ach-meta">Глава</span>
+              <span class="ach-meta">глава</span>
             </div>
             <h2 class="ach-title">{cleanGroup}</h2>
             <div class="ach-right">
               <span class="ach-count">{grouped[group].length}</span>
-              <span class="ach-meta">направлений</span>
+              <span class="ach-meta">{grouped[group].length === 1 ? 'страна' : grouped[group].length < 5 ? 'страны' : 'стран'}</span>
             </div>
           </header>
 
@@ -223,7 +223,7 @@ const ldJson = {
                       </div>
                       <h3 class="ahc-title">{d.cases.nom}</h3>
                       <p class="ahc-sub">{d.sub}</p>
-                      <span class="ahc-cta">Читать <span class="ahc-cta-arrow">→</span></span>
+                      <span class="ahc-cta">Открыть страну <span class="ahc-cta-arrow">→</span></span>
                     </div>
                   </a>
                 );
@@ -279,9 +279,9 @@ const ldJson = {
         <span class="atlas-rule-line"></span>
       </div>
       <p class="atlas-colophon-text">
-        <em>Atlas составлен Никитой Зайцевым. Был на 7 континентах, посетил 60+ стран лично.</em>
+        <em>Атлас собрал Никита Зайцев. Семь континентов, 60+ стран — где был лично, видно из текста.</em>
       </p>
-      <p class="atlas-colophon-date">Май 2026 · Обновляется каждые 4–6 недель · <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a></p>
+      <p class="atlas-colophon-date">Май 2026 · обновляется раз в 4–6 недель · канал <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a></p>
     </footer>
   </main>
 
