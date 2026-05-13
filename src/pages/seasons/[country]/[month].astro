@@ -1,0 +1,387 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Nav from '../../../components/Nav.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import Footer from '../../../components/Footer.astro';
+import { COUNTRIES, MONTHS, getCountryMonthPaths } from '../../../data/programmatic-seasons.js';
+
+export function getStaticPaths() {
+  return getCountryMonthPaths();
+}
+
+const { country, monthKey, monthMeta, data } = Astro.props;
+
+const url = `https://traveltribe.ru/seasons/${country.slug}/${monthKey}/`;
+const title = `${country.name} в ${monthMeta.loc} 2026: погода, цены, что делать`;
+const description = `${country.name} в ${monthMeta.loc} 2026: ${data.weather.day} °C днём, море ${data.weather.sea} °C, бюджет от $${data.budget.low}/день. Сезон ${data.seasonLevel}, перелёт ${data.flight}. Что смотреть и стоит ли ехать.`;
+
+// TL;DR — кратко на основе данных
+const tldr = `В ${monthMeta.loc} в ${country.nameLoc} ${data.weather.day} °C днём и ${data.weather.night} °C ночью, море ${data.weather.sea} °C. Сезон — ${data.seasonLevel}. Перелёт из Москвы: ${data.flight}. Бюджет: от $${data.budget.low}/день (эконом) до $${data.budget.high}/день (премиум). ${data.weatherDesc}`;
+
+// FAQ — генерируется из данных, плюс универсальные вопросы
+const faqs = [
+  {
+    q: `Какая погода в ${country.nameLoc} в ${monthMeta.loc} 2026?`,
+    a: `Днём ${data.weather.day} °C, ночью ${data.weather.night} °C, море ${data.weather.sea} °C. Дождливых дней в месяц — около ${data.weather.rainDays}, влажность ${data.weather.humidity}%. ${data.weatherDesc}`,
+  },
+  {
+    q: `Сколько стоит поездка в ${country.nameAcc} в ${monthMeta.loc}?`,
+    a: `Бюджет на одного: эконом от $${data.budget.low}/день, комфорт $${data.budget.mid}/день, премиум от $${data.budget.high}/день. Перелёт из Москвы: ${data.flight}. Сезон ${data.seasonLevel} — цены ${data.seasonLevel === 'высокий' ? 'на максимуме' : data.seasonLevel === 'низкий' ? 'минимальные' : 'умеренные'}.`,
+  },
+  {
+    q: `Нужна ли виза в ${country.nameAcc} россиянам в 2026?`,
+    a: country.visa,
+  },
+  {
+    q: `Стоит ли ехать в ${country.nameAcc} в ${monthMeta.loc}?`,
+    a: `${data.bestFor.length ? 'Да, особенно если интересно: ' + data.bestFor.join(', ') + '.' : ''} Главные плюсы: ${data.highlights.slice(0, 3).join('; ')}. Главные минусы: ${data.warnings.slice(0, 2).join('; ')}.`,
+  },
+];
+
+if (data.events && data.events.length > 0) {
+  faqs.push({
+    q: `Какие события и фестивали в ${country.nameLoc} в ${monthMeta.loc} 2026?`,
+    a: data.events.map(e => `${e.name} (${e.dates}): ${e.note}`).join(' '),
+  });
+}
+
+const ldJson = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BlogPosting',
+      '@id': `${url}#article`,
+      'headline': title,
+      'description': description,
+      'author': {
+        '@type': 'Person',
+        '@id': 'https://traveltribe.ru/about/#person',
+        'name': 'Никита Зайцев',
+        'url': 'https://traveltribe.ru/about/',
+      },
+      'publisher': { '@id': 'https://traveltribe.ru/#org' },
+      'datePublished': '2026-05-13',
+      'dateModified': '2026-05-13',
+      'mainEntityOfPage': { '@type': 'WebPage', '@id': url },
+      'inLanguage': 'ru-RU',
+      'about': { '@type': 'Place', 'name': country.name },
+      'temporalCoverage': `2026-${String(monthMeta.num).padStart(2, '0')}`,
+    },
+    {
+      '@type': 'BreadcrumbList',
+      'itemListElement': [
+        { '@type': 'ListItem', 'position': 1, 'name': 'Главная', 'item': 'https://traveltribe.ru/' },
+        { '@type': 'ListItem', 'position': 2, 'name': 'Сезоны', 'item': 'https://traveltribe.ru/seasons/' },
+        { '@type': 'ListItem', 'position': 3, 'name': country.name, 'item': `https://traveltribe.ru/seasons/${country.slug}/` },
+        { '@type': 'ListItem', 'position': 4, 'name': `${country.name} в ${monthMeta.loc}`, 'item': url },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${url}#faq`,
+      'mainEntity': faqs.map(f => ({
+        '@type': 'Question',
+        'name': f.q,
+        'acceptedAnswer': { '@type': 'Answer', 'text': f.a },
+      })),
+    },
+  ],
+};
+
+// Другие месяцы той же страны для cross-links
+const otherMonths = Object.keys(country.months).filter(m => m !== monthKey);
+---
+<Layout title={title} description={description} canonical={url} ldJson={ldJson}>
+  <Nav active="seasons" />
+  <Breadcrumbs crumbs={[
+    { label: 'Сезоны', href: '/seasons/' },
+    { label: country.name },
+    { label: monthMeta.name },
+  ]} />
+
+  <main id="main" class="seasons-page">
+    <header class="seasons-header">
+      <p class="seasons-tag">// {country.name} · {monthMeta.name} 2026</p>
+      <h1>{country.name} в {monthMeta.loc} 2026: погода, цены, что делать</h1>
+      <p class="seasons-tldr">{tldr}</p>
+    </header>
+
+    <section class="seasons-facts">
+      <div class="fact">
+        <div class="fact-label">Температура днём</div>
+        <div class="fact-value">{data.weather.day} °C</div>
+      </div>
+      <div class="fact">
+        <div class="fact-label">Море</div>
+        <div class="fact-value">{data.weather.sea} °C</div>
+      </div>
+      <div class="fact">
+        <div class="fact-label">Дождливые дни</div>
+        <div class="fact-value">{data.weather.rainDays}</div>
+      </div>
+      <div class="fact">
+        <div class="fact-label">Сезон</div>
+        <div class="fact-value">{data.seasonLevel}</div>
+      </div>
+      <div class="fact">
+        <div class="fact-label">Бюджет от</div>
+        <div class="fact-value">${data.budget.low}/день</div>
+      </div>
+      <div class="fact">
+        <div class="fact-label">Перелёт</div>
+        <div class="fact-value">{data.flight}</div>
+      </div>
+    </section>
+
+    <section class="seasons-section">
+      <h2 id="weather">Какая погода в {country.nameLoc} в {monthMeta.loc}?</h2>
+      <p><strong>Днём {data.weather.day} °C, ночью {data.weather.night} °C, море {data.weather.sea} °C.</strong> Дождливых дней — около {data.weather.rainDays}, влажность {data.weather.humidity}%. {data.weatherDesc}</p>
+    </section>
+
+    <section class="seasons-section">
+      <h2 id="budget">Сколько стоит поездка в {country.nameAcc} в {monthMeta.loc}?</h2>
+      <p><strong>От ${data.budget.low}/день (эконом) до ${data.budget.high}/день (премиум).</strong> Перелёт из Москвы — {data.flight}. Сезон <strong>{data.seasonLevel}</strong>.</p>
+      <div class="budget-grid">
+        <div class="budget-card">
+          <div class="budget-tier">Эконом</div>
+          <div class="budget-amount">от ${data.budget.low}/день</div>
+          <div class="budget-note">Хостелы, локальная еда, общественный транспорт</div>
+        </div>
+        <div class="budget-card">
+          <div class="budget-tier">Комфорт</div>
+          <div class="budget-amount">${data.budget.mid}/день</div>
+          <div class="budget-note">3* отели, рестораны, такси периодически</div>
+        </div>
+        <div class="budget-card">
+          <div class="budget-tier">Премиум</div>
+          <div class="budget-amount">от ${data.budget.high}/день</div>
+          <div class="budget-note">4-5* отели, авторская кухня, частный транспорт</div>
+        </div>
+      </div>
+      <p class="budget-note-link">
+        <a href="/calculator/">Калькулятор бюджета</a> поможет посчитать точную сумму под твой стиль и даты.
+      </p>
+    </section>
+
+    <section class="seasons-section">
+      <h2 id="why-go">Что делать в {country.nameLoc} в {monthMeta.loc}?</h2>
+      <ul class="highlights-list">
+        {data.highlights.map(h => <li>{h}</li>)}
+      </ul>
+    </section>
+
+    {data.events && data.events.length > 0 && (
+      <section class="seasons-section">
+        <h2 id="events">Какие события и фестивали в {country.nameLoc} в {monthMeta.loc} 2026?</h2>
+        <div class="events-list">
+          {data.events.map(e => (
+            <div class="event">
+              <div class="event-head">
+                <strong>{e.name}</strong>
+                <span class="event-date">{e.dates}</span>
+              </div>
+              <p class="event-note">{e.note}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="seasons-section">
+      <h2 id="cons">Чего стоит знать заранее</h2>
+      <ul class="warnings-list">
+        {data.warnings.map(w => <li>{w}</li>)}
+      </ul>
+    </section>
+
+    <section class="seasons-section">
+      <h2 id="best-for">Кому подходит {country.name} в {monthMeta.loc}</h2>
+      <ul class="best-for-list">
+        {data.bestFor.map(b => <li>{b}</li>)}
+      </ul>
+    </section>
+
+    <section class="seasons-section">
+      <h2 id="visa">Виза в {country.nameAcc} для россиян</h2>
+      <p>{country.visa}</p>
+      {country.guideUrl && (
+        <p><a href={country.guideUrl}>Полный гайд по {country.nameLoc} 2026 →</a></p>
+      )}
+    </section>
+
+    <section class="seasons-section seasons-faq">
+      <h2 id="faq">FAQ</h2>
+      <div class="faq-block">
+        {faqs.map(f => (
+          <details class="faq-item">
+            <summary class="faq-q">{f.q}</summary>
+            <div class="faq-a"><p>{f.a}</p></div>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <section class="seasons-section seasons-related">
+      <h2>Другие месяцы в {country.nameLoc}</h2>
+      <div class="months-grid">
+        {otherMonths.map(m => (
+          <a href={`/seasons/${country.slug}/${m}/`} class="month-card">
+            <div class="month-name">{country.name} в {MONTHS[m].loc}</div>
+            <div class="month-temp">{country.months[m].weather.day} °C · {country.months[m].seasonLevel}</div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="seasons-section">
+      <h2>Смотри также</h2>
+      <ul class="related-list">
+        <li><a href="/seasons/">Сезоны для всех 39 стран</a> — выбор страны под месяц</li>
+        <li><a href="/calculator/">Калькулятор бюджета поездки</a> — посчитай свою поездку</li>
+        {country.guideUrl && <li><a href={country.guideUrl}>Полный гайд по {country.nameLoc} 2026</a></li>}
+        {country.visaUrl && <li><a href={country.visaUrl}>Виза в {country.nameAcc} 2026</a></li>}
+      </ul>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.seasons-page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 2.4rem 1.4rem 5rem;
+}
+
+.seasons-header { margin-bottom: 2.5rem; }
+.seasons-tag {
+  font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold); margin: 0 0 0.8rem;
+}
+.seasons-header h1 {
+  font-family: var(--ff-body);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  margin: 0 0 1.2rem;
+  text-wrap: balance;
+}
+.seasons-tldr {
+  font-size: 1.04rem; line-height: 1.7; color: var(--text-dim);
+  padding: 1rem 1.2rem; border-left: 3px solid var(--gold);
+  background: var(--bg2); border-radius: 4px;
+  margin: 0;
+}
+
+.seasons-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.7rem;
+  margin: 2rem 0 2.5rem;
+}
+.fact {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  padding: 0.7rem 0.9rem;
+  border-radius: 4px;
+}
+.fact-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 0.3rem;
+}
+.fact-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.seasons-section { margin: 2.5rem 0; }
+.seasons-section h2 {
+  font-family: var(--ff-body);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin: 0 0 1rem;
+}
+.seasons-section p { color: var(--text-dim); line-height: 1.75; margin: 0 0 1rem; }
+.seasons-section strong { color: var(--text); font-weight: 600; }
+.seasons-section ul { padding-left: 1.4rem; color: var(--text-dim); line-height: 1.75; }
+.seasons-section li { margin-bottom: 0.4rem; }
+.seasons-section a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.4); text-underline-offset: 3px; }
+
+.budget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+  margin: 1rem 0;
+}
+.budget-card {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  padding: 1rem 1.1rem;
+  border-radius: 4px;
+}
+.budget-tier {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.3rem;
+}
+.budget-amount { font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+.budget-note { font-size: 0.82rem; color: var(--text-faint); line-height: 1.5; }
+.budget-note-link { font-size: 0.86rem; }
+
+.events-list { display: flex; flex-direction: column; gap: 1rem; }
+.event { padding: 0.8rem 1rem; background: var(--bg2); border: 1px solid var(--line); border-radius: 4px; }
+.event-head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.8rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
+.event-head strong { color: var(--text); }
+.event-date { font-size: 0.78rem; color: var(--gold); white-space: nowrap; }
+.event-note { font-size: 0.88rem; color: var(--text-dim); margin: 0; line-height: 1.6; }
+
+.months-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+.month-card {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  padding: 0.8rem 1rem;
+  border-radius: 4px;
+  text-decoration: none !important;
+  transition: border-color 0.15s;
+}
+.month-card:hover { border-color: rgba(201,151,58,0.5); }
+.month-name { color: var(--text); font-size: 0.92rem; font-weight: 500; margin-bottom: 0.2rem; }
+.month-temp { color: var(--text-faint); font-size: 0.78rem; }
+
+.seasons-faq .faq-block { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem; }
+.seasons-faq .faq-item {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.8rem 1.1rem;
+}
+.seasons-faq .faq-q {
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text);
+  font-size: 0.95rem;
+  list-style: none;
+}
+.seasons-faq .faq-q::-webkit-details-marker { display: none; }
+.seasons-faq .faq-q::before { content: '+ '; color: var(--gold); margin-right: 0.3rem; }
+.seasons-faq .faq-item[open] .faq-q::before { content: '− '; }
+.seasons-faq .faq-a { margin-top: 0.6rem; }
+.seasons-faq .faq-a p { font-size: 0.9rem; line-height: 1.7; color: var(--text-dim); margin: 0; }
+
+.related-list { padding-left: 1.4rem; }
+.related-list li { margin-bottom: 0.5rem; }
+</style>
