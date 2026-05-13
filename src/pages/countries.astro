@@ -8,32 +8,40 @@ import { DIRECTIONS } from '../data/directions.js';
 
 const destPhotos = import.meta.glob('../assets/destinations/*.jpg', { eager: true, import: 'default' });
 
-// Sort by group, потом alphabet
+// Group по регионам с editorial-порядком — крупные первыми
 const grouped = {};
 for (const d of DIRECTIONS) {
   if (!grouped[d.group]) grouped[d.group] = [];
   grouped[d.group].push(d);
 }
-const groupOrder = Object.keys(grouped).sort();
+
+// Editorial order — сначала Азия, потом крупные регионы
+const GROUP_ORDER = [
+  '🌏 Азия',
+  '🌍 Африка & Ближний Восток',
+  '🌎 Латам и Карибы — расширение',
+  '🌎 Америка',
+  '🐧 Полярные регионы',
+  '🏔️ Европа',
+  '🌊 Австралия & Океания',
+];
+const groupOrder = GROUP_ORDER.filter(g => grouped[g]).concat(
+  Object.keys(grouped).filter(g => !GROUP_ORDER.includes(g))
+);
 
 const VISA_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза' };
 const BUDGET_LABEL = { low: '$', mid: '$$', high: '$$$' };
 
-// Иконка-эмблема для региона (decoration в group-заголовке)
-const GROUP_ICON = {
-  'Африка и Ближний Восток': '🌍',
-  'Европа': '🇪🇺',
-  'Латам и Карибы': '🌴',
-  'Океания': '🌊',
-  'Полярные регионы': '❄️',
-  'Северная Америка': '🗽',
-  'Россия и СНГ': '🇷🇺',
-  'Юго-Восточная Азия': '🌏',
-  'Южная Азия': '🛕',
-  'Восточная Азия': '🏯',
-};
+// Roman numerals для chapters
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
 
-// Статистика для hero
+// Hero featured — самые сильные карточки региона
+const HERO_FEATURED = new Set([
+  'japan', 'antarctica', 'turkey', 'bali', 'peru',
+  'china', 'uae', 'australia-east', 'iceland', 'kenya'
+]);
+
+// Статистика
 const stats = {
   total: DIRECTIONS.length,
   free: DIRECTIONS.filter(d => d.visa === 'free').length,
@@ -41,12 +49,9 @@ const stats = {
   required: DIRECTIONS.filter(d => d.visa === 'required').length,
 };
 
-// Топ-направления Bento — крупные 2×1 tile в своих регионах
-const FEATURED_SLUGS = new Set([
-  'japan', 'turkey', 'bali', 'antarctica',
-  'georgia', 'thailand', 'peru', 'uae',
-  'kenya', 'australia-east'
-]);
+// Issue для журнальной обёртки
+const issueNum = '01';
+const issueDate = 'МАЙ 2026';
 
 const url = 'https://traveltribe.ru/countries/';
 const ldJson = {
@@ -56,8 +61,8 @@ const ldJson = {
       "@type": "CollectionPage",
       "@id": `${url}#page`,
       "url": url,
-      "name": "Все страны на TravelTribe — 70 направлений 2026",
-      "description": "Полный список 70 направлений: виза, лучшие сезоны, бюджет на день. Кратко всё что нужно знать перед поездкой.",
+      "name": "Atlas — все 70 направлений TravelTribe 2026",
+      "description": "Полный атлас направлений: виза, лучшие сезоны, бюджет, главные гайды. Кратко всё что важно перед поездкой.",
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "mainEntity": {
@@ -75,428 +80,791 @@ const ldJson = {
       "@type": "BreadcrumbList",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
-        { "@type": "ListItem", "position": 2, "name": "Страны", "item": url },
+        { "@type": "ListItem", "position": 2, "name": "Atlas", "item": url },
       ]
     }
   ]
 };
 ---
 <Layout
-  title="Кратко о странах — все направления TravelTribe 2026"
-  description="Полный список стран: виза, лучшие сезоны, бюджет на день, главные гайды. Кратко всё что важно перед поездкой."
+  title="Atlas 2026 — 70 направлений для российского путешественника"
+  description="Editorial-атлас всех направлений: виза, лучшие сезоны, бюджет на день, главные гайды. Кратко всё что важно перед поездкой."
   canonical={url}
-  ogTitle="Кратко о странах — TravelTribe"
-  ogDescription="Виза, сезоны, бюджет для каждой страны — кратко"
+  ogTitle="Atlas — Кратко о странах · TravelTribe"
+  ogDescription="70 направлений с визой, сезонами, бюджетом и главными гайдами"
   ldJson={ldJson}
 >
   <Nav active="countries" />
-  <Breadcrumbs crumbs={[{ label: 'Кратко о странах' }]} />
+  <Breadcrumbs crumbs={[{ label: 'Atlas' }]} />
 
-  <main id="main" class="countries-wrap">
-    <header class="countries-header">
-      <div class="section-eyebrow">// Все направления</div>
-      <h1>Кратко о <em>странах</em></h1>
-      <p class="countries-sub">Виза, сезоны, бюджет на день и главные гайды. Если нужно быстро решить «куда» — выбирай регион ниже.</p>
-      <div class="countries-stats" role="tablist" aria-label="Фильтр по визе">
-        <button type="button" class="cstat cstat--active" data-filter="all" role="tab"><strong>{stats.total}</strong><span>направлений</span></button>
-        <button type="button" class="cstat" data-filter="free" role="tab"><strong>{stats.free}</strong><span>без визы</span></button>
-        <button type="button" class="cstat" data-filter="evisa" role="tab"><strong>{stats.evisa}</strong><span>eVisa</span></button>
-        <button type="button" class="cstat" data-filter="required" role="tab"><strong>{stats.required}</strong><span>с визой</span></button>
+  <main id="main" class="atlas-wrap">
+
+    {/* ─── Hero как разворот журнала ─── */}
+    <header class="atlas-hero">
+      <div class="atlas-issue">
+        <span class="atlas-issue-meta">Выпуск № {issueNum}</span>
+        <span class="atlas-issue-sep">·</span>
+        <span class="atlas-issue-meta">{issueDate}</span>
+        <span class="atlas-issue-sep">·</span>
+        <span class="atlas-issue-meta">Travel Atlas</span>
       </div>
-      <div class="countries-search">
-        <svg class="cs-icon" viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="6"></circle><line x1="14" y1="14" x2="18" y2="18"></line></svg>
-        <input type="search" id="countriesSearch" placeholder="Найти страну…" autocomplete="off" aria-label="Поиск страны" />
-        <button type="button" class="cs-clear" id="countriesSearchClear" aria-label="Очистить" hidden>×</button>
+
+      <h1 class="atlas-title">
+        <span class="atlas-title-line">Atlas</span>
+        <span class="atlas-title-deco" aria-hidden="true">—</span>
+        <span class="atlas-title-sub"><em>{stats.total}</em> направлений<br />для российского путешественника</span>
+      </h1>
+
+      <p class="atlas-lede">
+        <span class="atlas-dropcap">К</span>раткие путеводители по всему миру в 2026 году. Каждая страна — виза, лучшие месяцы, реальный бюджет на день и связанные гайды. <em>Без воды, с конкретикой.</em>
+      </p>
+
+      <div class="atlas-rule" aria-hidden="true">
+        <span class="atlas-rule-line"></span>
+        <span class="atlas-rule-star">✦</span>
+        <span class="atlas-rule-line"></span>
       </div>
-      <p class="countries-empty" id="countriesEmpty" hidden>Ничего не найдено. Попробуй другой запрос или сбрось фильтр.</p>
+
+      {/* Stats как кликабельные фильтры */}
+      <div class="atlas-stats" role="tablist" aria-label="Фильтр по визе">
+        <button type="button" class="atlas-stat atlas-stat--active" data-filter="all" role="tab">
+          <span class="atlas-stat-num">{stats.total}</span>
+          <span class="atlas-stat-label">Все<br />направления</span>
+        </button>
+        <button type="button" class="atlas-stat" data-filter="free" role="tab">
+          <span class="atlas-stat-num">{stats.free}</span>
+          <span class="atlas-stat-label">Без<br />визы</span>
+        </button>
+        <button type="button" class="atlas-stat" data-filter="evisa" role="tab">
+          <span class="atlas-stat-num">{stats.evisa}</span>
+          <span class="atlas-stat-label">e<wbr/>Visa<br />онлайн</span>
+        </button>
+        <button type="button" class="atlas-stat" data-filter="required" role="tab">
+          <span class="atlas-stat-num">{stats.required}</span>
+          <span class="atlas-stat-label">С<br />визой</span>
+        </button>
+      </div>
+
+      <div class="atlas-search">
+        <span class="atlas-search-prompt" aria-hidden="true">— Найти страну</span>
+        <input type="search" id="countriesSearch" placeholder="Например: Япония, Турция…" autocomplete="off" aria-label="Поиск страны" />
+        <button type="button" class="atlas-search-clear" id="countriesSearchClear" aria-label="Очистить" hidden>×</button>
+      </div>
+
+      <p class="atlas-empty" id="countriesEmpty" hidden>Ничего не нашлось. Попробуй другой запрос или сбрось фильтр.</p>
     </header>
 
-    {groupOrder.map((group) => (
-      <section class="countries-group" data-group={group}>
-        <h2 class="countries-group-title">
-          <span class="cgt-icon" aria-hidden="true">{GROUP_ICON[group] || '📍'}</span>
-          <span class="cgt-name">{group}</span>
-          <span class="cgt-count">{grouped[group].length}</span>
-        </h2>
-        <div class="countries-grid">
-          {grouped[group].map((d) => {
-            const photo = destPhotos[`../assets/destinations/${d.slug}.jpg`];
-            const featured = FEATURED_SLUGS.has(d.slug);
-            return (
-              <a href={`/${d.slug}/`} class={`country-card ${featured ? 'country-card--featured' : ''}`} data-visa={d.visa} data-name={d.cases.nom.toLowerCase()}>
-                <div class="cc-media">
-                  {photo ? (
-                    <Image
-                      src={photo}
-                      alt={d.cases.nom}
-                      widths={[300, 600]}
-                      sizes="(max-width: 700px) 50vw, 25vw"
-                      formats={['avif', 'webp']}
-                      quality={68}
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div class="cc-fallback" style={`background: linear-gradient(135deg, ${d.visual.g1}, ${d.visual.g2})`}>
-                      <span class="cc-fallback-emoji" aria-hidden="true">{d.visual.emoji}</span>
-                      <span class="cc-fallback-pattern" aria-hidden="true"></span>
-                    </div>
-                  )}
-                  <div class="cc-overlay"></div>
-                </div>
-                <div class="cc-body">
-                  <div class="cc-name">{d.cases.nom}</div>
-                  <div class="cc-meta">
-                    <span class={`cc-tag cc-tag--${d.visa}`}>{VISA_LABEL[d.visa]}</span>
-                    <span class="cc-budget">{BUDGET_LABEL[d.budget]}</span>
-                  </div>
-                </div>
-              </a>
-            );
-          })}
-        </div>
-      </section>
-    ))}
+    {/* ─── Регионы как главы ─── */}
+    {groupOrder.map((group, gIdx) => {
+      // Делим регион на featured + остальные
+      const heroes = grouped[group].filter(d => HERO_FEATURED.has(d.slug)).slice(0, 2);
+      const rest = grouped[group].filter(d => !heroes.includes(d));
+      return (
+        <section class="atlas-chapter" data-group={group}>
+          <header class="atlas-chapter-head">
+            <div class="atlas-chapter-num">
+              <span class="atlas-chapter-roman" aria-hidden="true">{ROMAN[gIdx] || gIdx + 1}</span>
+              <span class="atlas-chapter-meta">Глава</span>
+            </div>
+            <h2 class="atlas-chapter-title">{group.replace(/^[^\s]+\s/, '')}</h2>
+            <div class="atlas-chapter-meta-right">
+              <span class="atlas-chapter-count">{grouped[group].length}</span>
+              <span class="atlas-chapter-meta">направлений</span>
+            </div>
+          </header>
 
-    <p class="countries-updated">Актуально на: 13 мая 2026 · {DIRECTIONS.length} направлений · обновляется каждые 4–6 недель</p>
+          {/* Featured spread — 2 крупных карточки если есть */}
+          {heroes.length > 0 && (
+            <div class={`atlas-spread ${heroes.length === 1 ? 'atlas-spread--single' : ''}`}>
+              {heroes.map((d) => {
+                const photo = destPhotos[`../assets/destinations/${d.slug}.jpg`];
+                return (
+                  <a href={`/${d.slug}/`} class="atlas-hero-card" data-visa={d.visa} data-name={d.cases.nom.toLowerCase()}>
+                    <div class="ahc-photo">
+                      {photo ? (
+                        <Image
+                          src={photo}
+                          alt={d.cases.nom}
+                          widths={[600, 1200]}
+                          sizes="(max-width: 720px) 100vw, 50vw"
+                          formats={['avif', 'webp']}
+                          quality={72}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div class="ahc-photo-fallback" style={`background: linear-gradient(135deg, ${d.visual.g1}, ${d.visual.g2})`}>
+                          <span class="ahc-fallback-emoji" aria-hidden="true">{d.visual.emoji}</span>
+                        </div>
+                      )}
+                      <div class="ahc-photo-tint" aria-hidden="true"></div>
+                    </div>
+                    <div class="ahc-text">
+                      <div class="ahc-eyebrow">
+                        <span>{VISA_LABEL[d.visa]}</span>
+                        <span class="ahc-eyebrow-sep">·</span>
+                        <span>{BUDGET_LABEL[d.budget]}</span>
+                      </div>
+                      <h3 class="ahc-title">{d.cases.nom}</h3>
+                      <p class="ahc-sub">{d.sub}</p>
+                      <span class="ahc-cta">Читать подробно <span class="ahc-cta-arrow">→</span></span>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Editorial list — остальные страны региона */}
+          {rest.length > 0 && (
+            <ul class="atlas-list">
+              {rest.map((d, idx) => {
+                const photo = destPhotos[`../assets/destinations/${d.slug}.jpg`];
+                const num = String(idx + heroes.length + 1).padStart(2, '0');
+                return (
+                  <li class="atlas-row" data-visa={d.visa} data-name={d.cases.nom.toLowerCase()}>
+                    <a href={`/${d.slug}/`} class="atlas-row-link">
+                      <span class="ar-num">{num}</span>
+                      <span class="ar-thumb">
+                        {photo ? (
+                          <Image
+                            src={photo}
+                            alt={d.cases.nom}
+                            widths={[120, 240]}
+                            sizes="120px"
+                            formats={['avif', 'webp']}
+                            quality={70}
+                            loading="lazy"
+                          />
+                        ) : (
+                          <span class="ar-thumb-emoji" style={`background: linear-gradient(135deg, ${d.visual.g1}, ${d.visual.g2})`} aria-hidden="true">{d.visual.emoji}</span>
+                        )}
+                      </span>
+                      <span class="ar-name">{d.cases.nom}</span>
+                      <span class="ar-meta">
+                        <span class={`ar-visa ar-visa--${d.visa}`}>{VISA_LABEL[d.visa]}</span>
+                        <span class="ar-budget">{BUDGET_LABEL[d.budget]}</span>
+                      </span>
+                      <span class="ar-arrow" aria-hidden="true">→</span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+      );
+    })}
+
+    {/* ─── Colophon ─── */}
+    <footer class="atlas-colophon">
+      <div class="atlas-rule" aria-hidden="true">
+        <span class="atlas-rule-line"></span>
+        <span class="atlas-rule-star">✦</span>
+        <span class="atlas-rule-line"></span>
+      </div>
+      <p class="atlas-colophon-text">
+        <em>Атлас составлен Никитой Зайцевым. Был на 7 континентах, посетил 60+ стран лично. Каждая страница содержит личный опыт там, где удалось. Обновляется каждые 4–6 недель.</em>
+      </p>
+      <p class="atlas-colophon-date">Актуально на 13 мая 2026 · <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a></p>
+    </footer>
   </main>
 
   <Footer />
 </Layout>
 
+<style>
+  /* ═══════════════════════════════════════════════════════════════
+     ATLAS — Editorial Magazine редизайн /countries/
+     Серифная типография Cormorant Garamond + sans-serif body
+     Asymmetric grid с featured-spreads, generous spacing
+     ═══════════════════════════════════════════════════════════════ */
+
+  .atlas-wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 var(--container-edge, 2rem) 6rem;
+  }
+
+  /* ─── Issue eyebrow ─── */
+  .atlas-issue {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    margin: 2.5rem 0 2rem;
+    color: var(--text-faint);
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .atlas-issue-sep { color: var(--gold-600); }
+
+  /* ─── Hero title ─── */
+  .atlas-hero { text-align: center; padding-bottom: 3rem; }
+  .atlas-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 400;
+    margin: 0 auto 1.5rem;
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    color: var(--text);
+  }
+  .atlas-title-line {
+    display: block;
+    font-size: clamp(4rem, 12vw, 9rem);
+    font-weight: 500;
+    font-style: italic;
+  }
+  .atlas-title-deco {
+    display: block;
+    margin: 1rem auto 1.2rem;
+    color: var(--gold);
+    font-size: 2rem;
+    letter-spacing: 0.1em;
+  }
+  .atlas-title-sub {
+    display: block;
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--text-dim);
+    letter-spacing: 0.005em;
+  }
+  .atlas-title-sub em {
+    font-style: italic;
+    color: var(--gold);
+    font-weight: 600;
+    font-size: 1.15em;
+    font-variant-numeric: lining-nums;
+  }
+
+  /* ─── Lede с drop-cap ─── */
+  .atlas-lede {
+    max-width: 540px;
+    margin: 0 auto 2.5rem;
+    font-size: clamp(0.95rem, 1.3vw, 1.05rem);
+    line-height: 1.75;
+    color: var(--text-dim);
+    text-align: center;
+    font-weight: 400;
+  }
+  .atlas-lede em {
+    color: var(--text);
+    font-style: italic;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.15em;
+  }
+  .atlas-dropcap {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 3.2rem;
+    line-height: 1;
+    color: var(--gold);
+    float: left;
+    margin: 0.1rem 0.5rem 0 0;
+    font-weight: 600;
+    font-style: italic;
+  }
+  /* На мобиле drop-cap уменьшаем */
+  @media (max-width: 600px) {
+    .atlas-dropcap { font-size: 2.5rem; }
+  }
+
+  /* ─── Editorial rule (декоративный разделитель) ─── */
+  .atlas-rule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2rem;
+    margin: 2.5rem auto;
+    max-width: 600px;
+  }
+  .atlas-rule-line {
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+  .atlas-rule-star {
+    color: var(--gold-600);
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+  }
+
+  /* ─── Stats: классические циферки с серифом ─── */
+  .atlas-stats {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin: 2.5rem auto 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    max-width: 800px;
+  }
+  .atlas-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 1.4rem 0.5rem;
+    background: transparent;
+    border: none;
+    border-right: 1px solid var(--line);
+    cursor: pointer;
+    transition: background 0.2s ease;
+    font-family: inherit;
+    color: inherit;
+  }
+  .atlas-stat:last-child { border-right: none; }
+  .atlas-stat:hover { background: var(--bg2); }
+  .atlas-stat--active {
+    background: rgba(201,151,58,0.06);
+  }
+  .atlas-stat-num {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 500;
+    font-style: italic;
+    color: var(--gold);
+    line-height: 1;
+    font-variant-numeric: lining-nums;
+  }
+  .atlas-stat--active .atlas-stat-num {
+    color: var(--gold);
+  }
+  .atlas-stat-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    line-height: 1.3;
+    text-align: center;
+    font-weight: 500;
+  }
+  .atlas-stat--active .atlas-stat-label { color: var(--text-dim); }
+
+  /* ─── Search bar в editorial-стиле ─── */
+  .atlas-search {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    max-width: 540px;
+    margin: 2.5rem auto 0;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .atlas-search-prompt {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    color: var(--gold-600);
+    font-size: 1.05rem;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+  .atlas-search input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 1rem;
+    font-family: inherit;
+    padding: 0.3rem 0;
+    outline: none;
+  }
+  .atlas-search input::placeholder {
+    color: var(--text-faint);
+    font-style: italic;
+  }
+  .atlas-search-clear {
+    flex: 0 0 auto;
+    width: 28px; height: 28px;
+    border: none;
+    background: transparent;
+    color: var(--text-faint);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    border-radius: 50%;
+  }
+  .atlas-search-clear:hover { color: var(--text); background: var(--bg2); }
+
+  .atlas-empty {
+    max-width: 540px;
+    margin: 2rem auto;
+    text-align: center;
+    color: var(--text-dim);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 1.15rem;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     CHAPTER (регион)
+     ═══════════════════════════════════════════════════ */
+  .atlas-chapter {
+    padding: 4.5rem 0;
+    border-top: 1px solid var(--line);
+  }
+  .atlas-chapter:first-of-type { margin-top: 3rem; }
+  .atlas-chapter[hidden] { display: none; }
+
+  .atlas-chapter-head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: end;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .atlas-chapter-num {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .atlas-chapter-roman {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 2.5rem;
+    line-height: 1;
+    color: var(--gold);
+    font-weight: 500;
+    font-style: italic;
+  }
+  .atlas-chapter-meta {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-top: 0.4rem;
+  }
+  .atlas-chapter-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 500;
+    line-height: 1.1;
+    color: var(--text);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .atlas-chapter-meta-right {
+    text-align: right;
+  }
+  .atlas-chapter-count {
+    display: block;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 2rem;
+    font-style: italic;
+    color: var(--gold);
+    line-height: 1;
+    font-variant-numeric: lining-nums;
+  }
+
+  @media (max-width: 600px) {
+    .atlas-chapter-head {
+      grid-template-columns: auto auto;
+      grid-template-rows: auto auto;
+    }
+    .atlas-chapter-meta-right { grid-column: 2; grid-row: 1; text-align: right; }
+    .atlas-chapter-title { grid-column: 1 / -1; grid-row: 2; }
+  }
+
+  /* ═══════════════════════════════════════════════════
+     FEATURED SPREAD (top-2 страны региона как магазинный разворот)
+     ═══════════════════════════════════════════════════ */
+  .atlas-spread {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .atlas-spread--single { grid-template-columns: 1fr; }
+  @media (max-width: 780px) {
+    .atlas-spread { grid-template-columns: 1fr; }
+  }
+
+  .atlas-hero-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--line);
+    background: var(--bg2);
+    overflow: hidden;
+    transition: border-color 0.25s ease, transform 0.4s var(--ease-out);
+  }
+  .atlas-hero-card[hidden] { display: none; }
+  .atlas-hero-card:hover { border-color: rgba(201,151,58,0.5); }
+  .atlas-hero-card:hover .ahc-photo :global(img) { transform: scale(1.04); }
+  .atlas-hero-card:hover .ahc-cta-arrow { transform: translateX(6px); }
+
+  .ahc-photo {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--bg3);
+  }
+  .ahc-photo :global(img),
+  .ahc-photo :global(picture) {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.7s var(--ease-out);
+  }
+  .ahc-photo-fallback {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ahc-fallback-emoji {
+    font-size: 5rem;
+    filter: drop-shadow(0 4px 14px rgba(0,0,0,0.25));
+  }
+  .ahc-photo-tint {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(12,10,8,0.35) 100%);
+    pointer-events: none;
+  }
+
+  .ahc-text {
+    padding: 1.8rem 1.6rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .ahc-eyebrow {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold-600);
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+  }
+  .ahc-eyebrow-sep { color: var(--text-faint); }
+  .ahc-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(1.7rem, 3vw, 2.4rem);
+    font-weight: 500;
+    line-height: 1.05;
+    margin: 0;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .ahc-sub {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text-dim);
+    margin: 0.4rem 0 0.8rem;
+  }
+  .ahc-cta {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--gold);
+    margin-top: 0.4rem;
+  }
+  .ahc-cta-arrow {
+    display: inline-block;
+    transition: transform 0.3s var(--ease-out);
+    margin-left: 0.2rem;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     LIST (остальные страны региона как table-of-contents)
+     ═══════════════════════════════════════════════════ */
+  .atlas-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .atlas-row {
+    border-bottom: 1px solid var(--line);
+  }
+  .atlas-row:first-child { border-top: 1px solid var(--line); }
+  .atlas-row[hidden] { display: none; }
+
+  .atlas-row-link {
+    display: grid;
+    grid-template-columns: 48px 70px 1fr auto auto;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.1rem 0;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.2s ease;
+  }
+  .atlas-row-link:hover { background: rgba(201,151,58,0.04); }
+  .atlas-row-link:hover .ar-name { color: var(--gold); }
+  .atlas-row-link:hover .ar-arrow { transform: translateX(6px); color: var(--gold); }
+
+  .ar-num {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.4rem;
+    font-style: italic;
+    color: var(--gold-600);
+    font-variant-numeric: lining-nums;
+    text-align: center;
+  }
+  .ar-thumb {
+    width: 70px; height: 50px;
+    overflow: hidden;
+    border-radius: 2px;
+    display: block;
+  }
+  .ar-thumb :global(img),
+  .ar-thumb :global(picture) {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .ar-thumb-emoji {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+  }
+  .ar-name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.2;
+    transition: color 0.2s ease;
+  }
+  .ar-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+  }
+  .ar-visa {
+    padding: 0.15rem 0.55rem;
+    border: 1px solid;
+    border-radius: 2px;
+    font-weight: 500;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .ar-visa--free { color: var(--peak-text); border-color: rgba(34,197,94,0.4); }
+  .ar-visa--evisa { color: var(--good-text); border-color: rgba(74,158,255,0.4); }
+  .ar-visa--required { color: var(--gold); border-color: rgba(201,151,58,0.4); }
+  .ar-budget {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    color: var(--gold-600);
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+  .ar-arrow {
+    color: var(--text-faint);
+    transition: transform 0.25s ease, color 0.25s ease;
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 600px) {
+    .atlas-row-link {
+      grid-template-columns: 32px 50px 1fr auto;
+      gap: 0.7rem;
+      padding: 0.85rem 0;
+    }
+    .ar-num { font-size: 1.1rem; }
+    .ar-name { font-size: 1.05rem; }
+    .ar-thumb { width: 50px; height: 38px; }
+    .ar-meta { gap: 0.4rem; font-size: 0.7rem; }
+    .ar-arrow { display: none; }
+  }
+
+  /* ═══════════════════════════════════════════════════
+     COLOPHON (журнальная подпись внизу)
+     ═══════════════════════════════════════════════════ */
+  .atlas-colophon {
+    margin-top: 6rem;
+    text-align: center;
+    color: var(--text-dim);
+  }
+  .atlas-colophon-text {
+    max-width: 500px;
+    margin: 0 auto 1rem;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    font-style: italic;
+  }
+  .atlas-colophon-date {
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    color: var(--text-faint);
+  }
+  .atlas-colophon-date a { color: var(--gold); }
+</style>
+
 <script>
-  function initCountriesFilter() {
-    const stats = document.querySelectorAll('.cstat');
-    const cards = document.querySelectorAll('.country-card');
-    const groups = document.querySelectorAll('.countries-group');
+  function initAtlasFilter() {
+    const stats = document.querySelectorAll('.atlas-stat');
+    const heroCards = document.querySelectorAll('.atlas-hero-card');
+    const rows = document.querySelectorAll('.atlas-row');
+    const chapters = document.querySelectorAll('.atlas-chapter');
     const search = document.getElementById('countriesSearch') as HTMLInputElement | null;
     const clearBtn = document.getElementById('countriesSearchClear');
     const emptyState = document.getElementById('countriesEmpty');
-
-    if (!stats.length || !cards.length || !search) return;
+    if (!stats.length || !search) return;
 
     let currentFilter: string = 'all';
     let currentQuery: string = '';
 
-    function applyFilters() {
+    function matches(el: HTMLElement) {
+      const visa = el.dataset.visa || '';
+      const name = el.dataset.name || '';
+      const matchVisa = currentFilter === 'all' || visa === currentFilter;
+      const matchSearch = !currentQuery || name.includes(currentQuery);
+      return matchVisa && matchSearch;
+    }
+
+    function apply() {
       let visibleTotal = 0;
-      cards.forEach((card) => {
-        const visa = (card as HTMLElement).dataset.visa || '';
-        const name = (card as HTMLElement).dataset.name || '';
-        const matchVisa = currentFilter === 'all' || visa === currentFilter;
-        const matchSearch = !currentQuery || name.includes(currentQuery);
-        const visible = matchVisa && matchSearch;
-        (card as HTMLElement).hidden = !visible;
-        if (visible) visibleTotal++;
+      heroCards.forEach((c) => {
+        const show = matches(c as HTMLElement);
+        (c as HTMLElement).hidden = !show;
+        if (show) visibleTotal++;
       });
-      // Скрыть пустые группы
-      groups.forEach((g) => {
-        const anyVisible = Array.from(g.querySelectorAll('.country-card')).some((c) => !(c as HTMLElement).hidden);
-        (g as HTMLElement).hidden = !anyVisible;
+      rows.forEach((r) => {
+        const show = matches(r as HTMLElement);
+        (r as HTMLElement).hidden = !show;
+        if (show) visibleTotal++;
+      });
+      chapters.forEach((ch) => {
+        const heroes = Array.from(ch.querySelectorAll('.atlas-hero-card')).some((c) => !(c as HTMLElement).hidden);
+        const list = Array.from(ch.querySelectorAll('.atlas-row')).some((r) => !(r as HTMLElement).hidden);
+        (ch as HTMLElement).hidden = !heroes && !list;
       });
       if (emptyState) (emptyState as HTMLElement).hidden = visibleTotal > 0;
     }
 
     stats.forEach((btn) => {
       btn.addEventListener('click', () => {
-        const filter = (btn as HTMLElement).dataset.filter || 'all';
-        currentFilter = filter;
-        stats.forEach((b) => b.classList.toggle('cstat--active', b === btn));
-        applyFilters();
+        currentFilter = (btn as HTMLElement).dataset.filter || 'all';
+        stats.forEach((b) => b.classList.toggle('atlas-stat--active', b === btn));
+        apply();
       });
     });
 
     search.addEventListener('input', () => {
       currentQuery = search.value.trim().toLowerCase();
       if (clearBtn) (clearBtn as HTMLElement).hidden = currentQuery.length === 0;
-      applyFilters();
+      apply();
     });
 
-    if (clearBtn) {
-      clearBtn.addEventListener('click', () => {
-        search.value = '';
-        currentQuery = '';
-        (clearBtn as HTMLElement).hidden = true;
-        applyFilters();
-        search.focus();
-      });
-    }
+    if (clearBtn) clearBtn.addEventListener('click', () => {
+      search.value = '';
+      currentQuery = '';
+      (clearBtn as HTMLElement).hidden = true;
+      apply();
+      search.focus();
+    });
   }
 
-  initCountriesFilter();
-  document.addEventListener('astro:page-load', initCountriesFilter);
+  initAtlasFilter();
+  document.addEventListener('astro:page-load', initAtlasFilter);
 </script>
-
-<style>
-.countries-wrap { max-width: var(--container-wide, 1200px); margin: 0 auto; padding: 0 var(--container-edge, 2rem) var(--space-16, 4rem); }
-
-.countries-header { text-align: center; margin: var(--space-10) 0 var(--space-12); }
-.section-eyebrow { font-size: var(--text-xs); letter-spacing: var(--tracking-widest); text-transform: uppercase; color: var(--gold-600); margin-bottom: var(--space-3); }
-.countries-header h1 {
-  font-family: var(--ff-display);
-  font-size: var(--text-6xl);
-  font-weight: 700;
-  line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-tight);
-  margin: 0 auto;
-  max-width: 720px;
-  text-wrap: balance;
-}
-.countries-header h1 em { color: var(--gold); font-style: italic; font-weight: 600; }
-.countries-sub {
-  margin: var(--space-3) auto 0;
-  max-width: 560px;
-  color: var(--text-dim);
-  font-size: var(--text-lg);
-  line-height: var(--leading-relaxed);
-}
-/* ─── Hero статистика как фильтр-чипы ─── */
-.countries-stats {
-  display: flex; justify-content: center; flex-wrap: wrap; gap: var(--space-3);
-  margin: var(--space-7) auto 0;
-  padding: var(--space-5) 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  max-width: 760px;
-}
-.cstat {
-  display: flex; flex-direction: column; gap: 4px; align-items: center;
-  padding: 0.85rem 1.4rem;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--radius-3, 10px);
-  cursor: pointer;
-  transition: background var(--duration-fast), border-color var(--duration-fast), transform var(--duration-fast);
-  font-family: inherit; color: inherit;
-  min-width: 110px;
-}
-.cstat:hover { background: var(--bg2); border-color: var(--line); transform: translateY(-1px); }
-.cstat--active {
-  background: rgba(201,151,58,0.1);
-  border-color: rgba(201,151,58,0.4);
-}
-.cstat--active strong { color: var(--gold); }
-.cstat strong {
-  font-family: var(--ff-display);
-  font-size: var(--text-4xl);
-  font-weight: 700;
-  color: var(--gold);
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-.cstat span {
-  font-size: var(--text-xs); color: var(--text-faint);
-  letter-spacing: var(--tracking-wide); text-transform: uppercase;
-}
-
-/* ─── Поиск ─── */
-.countries-search {
-  position: relative;
-  max-width: 460px;
-  margin: var(--space-5) auto 0;
-}
-.cs-icon {
-  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-  color: var(--text-faint);
-  pointer-events: none;
-}
-.countries-search input {
-  width: 100%;
-  padding: 0.85rem 2.5rem 0.85rem 2.6rem;
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-3, 10px);
-  color: var(--text);
-  font-size: var(--text-base);
-  font-family: inherit;
-  transition: border-color var(--duration-fast), background var(--duration-fast);
-}
-.countries-search input:focus {
-  outline: none;
-  border-color: rgba(201,151,58,0.5);
-  background: var(--bg2);
-}
-.countries-search input::placeholder { color: var(--text-faint); }
-.cs-clear {
-  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-  width: 28px; height: 28px;
-  border: none; background: transparent;
-  color: var(--text-faint);
-  font-size: 1.5rem;
-  cursor: pointer;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  line-height: 1;
-}
-.cs-clear:hover { background: var(--bg3); color: var(--text); }
-
-.countries-empty {
-  text-align: center;
-  color: var(--text-dim);
-  font-size: var(--text-base);
-  margin: var(--space-8) auto;
-  padding: var(--space-6);
-  border: 1px dashed var(--line);
-  border-radius: var(--radius-3, 10px);
-  max-width: 460px;
-}
-
-
-/* Группа скрыта если в ней нет видимых карточек */
-.countries-group[hidden] { display: none; }
-
-/* ─── Заголовок региона с emoji и счётчиком ─── */
-.countries-group { margin-bottom: var(--space-14); }
-.countries-group-title {
-  display: flex; align-items: baseline; gap: var(--space-3);
-  font-family: var(--ff-display);
-  font-size: var(--text-3xl);
-  font-weight: 700;
-  margin: 0 0 var(--space-6);
-  padding-bottom: var(--space-4);
-  border-bottom: 1px solid var(--line);
-  color: var(--text);
-  letter-spacing: var(--tracking-tight);
-}
-.cgt-icon { font-size: 1.5rem; line-height: 1; flex: 0 0 auto; transform: translateY(2px); }
-.cgt-name { flex: 1; }
-.cgt-count {
-  font-family: var(--ff-display);
-  font-size: var(--text-base);
-  font-weight: 500;
-  color: var(--gold-600);
-  background: rgba(201,151,58,0.1);
-  padding: 0.25rem 0.65rem;
-  border-radius: 999px;
-  letter-spacing: 0;
-  flex: 0 0 auto;
-}
-
-/* ─── Сетка Bento — featured-карточки 2×1, остальные 1×1 ─── */
-.countries-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: var(--space-5);
-}
-
-.country-card {
-  display: flex; flex-direction: column;
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-4, 10px);
-  overflow: hidden;
-  text-decoration: none;
-  color: inherit;
-  transition: transform var(--duration-base), box-shadow var(--duration-base), border-color var(--duration-base);
-}
-/* Скрытые при фильтрации/поиске */
-.country-card[hidden] { display: none; }
-
-/* Bento featured — занимает 2 колонки на широких экранах */
-@media (min-width: 760px) {
-  .country-card--featured {
-    grid-column: span 2;
-  }
-  .country-card--featured .cc-media {
-    aspect-ratio: 16 / 9;
-  }
-  .country-card--featured .cc-name {
-    font-size: var(--text-2xl);
-    letter-spacing: -0.015em;
-  }
-  .country-card--featured .cc-fallback-emoji { font-size: 6rem; }
-}
-.country-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px -20px rgba(0,0,0,0.45), 0 0 0 1px rgba(201,151,58,0.35);
-  border-color: rgba(201,151,58,0.5);
-}
-.cc-media {
-  position: relative; aspect-ratio: 4 / 3;
-  background: var(--bg3);
-  overflow: hidden;
-}
-.cc-media img, .cc-media picture {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-  transition: transform 0.5s var(--ease-out);
-}
-.country-card:hover .cc-media img { transform: scale(1.06); }
-
-/* ─── Fallback для стран без фото — большой emoji + градиент + pattern ─── */
-.cc-fallback {
-  position: relative;
-  width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden;
-}
-.cc-fallback-emoji {
-  position: relative; z-index: 2;
-  font-size: 4.5rem;
-  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.3));
-  transition: transform 0.5s var(--ease-out);
-}
-.country-card:hover .cc-fallback-emoji { transform: scale(1.1) rotate(-3deg); }
-.cc-fallback-pattern {
-  position: absolute; inset: 0;
-  background-image:
-    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.12) 0%, transparent 25%),
-    radial-gradient(circle at 80% 80%, rgba(255,255,255,0.08) 0%, transparent 30%);
-  z-index: 1;
-}
-.cc-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 55%);
-  z-index: 3;
-  pointer-events: none;
-}
-.cc-body {
-  padding: var(--space-4) var(--space-4) var(--space-4);
-  display: flex; flex-direction: column; gap: var(--space-2);
-  flex: 1;
-}
-.cc-name {
-  font-family: var(--ff-display);
-  font-size: var(--text-xl);
-  font-weight: 600;
-  line-height: var(--leading-snug);
-  color: var(--text);
-  text-wrap: balance;
-  letter-spacing: -0.005em;
-}
-.country-card:hover .cc-name { color: var(--gold); transition: color var(--duration-fast); }
-.cc-meta {
-  display: flex; align-items: center; gap: var(--space-2);
-  margin-top: auto;
-  padding-top: var(--space-3);
-}
-.cc-tag {
-  font-size: var(--text-xs);
-  letter-spacing: 0.04em;
-  padding: 0.3rem 0.65rem;
-  border-radius: var(--radius-1);
-  font-weight: 600;
-}
-.cc-tag--free { background: rgba(34, 197, 94, 0.15); color: var(--peak-text); }
-.cc-tag--evisa { background: rgba(74, 158, 255, 0.15); color: var(--good-text); }
-.cc-tag--required { background: rgba(201, 151, 58, 0.15); color: var(--gold-700, var(--gold)); }
-.cc-budget {
-  font-size: var(--text-sm);
-  color: var(--gold-600);
-  font-weight: 600;
-  letter-spacing: 0.05em;
-}
-
-.countries-updated {
-  margin-top: var(--space-10);
-  font-size: var(--text-xs);
-  color: var(--text-faint);
-  text-align: center;
-  letter-spacing: var(--tracking-wide);
-  padding-top: var(--space-6);
-  border-top: 1px solid var(--line);
-}
-
-@media (max-width: 600px) {
-  .countries-grid { grid-template-columns: repeat(2, 1fr); }
-  .countries-header h1 { font-size: var(--text-4xl); }
-}
-</style>
