@@ -19,6 +19,28 @@ const groupOrder = Object.keys(grouped).sort();
 const VISA_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза' };
 const BUDGET_LABEL = { low: '$', mid: '$$', high: '$$$' };
 
+// Иконка-эмблема для региона (decoration в group-заголовке)
+const GROUP_ICON = {
+  'Африка и Ближний Восток': '🌍',
+  'Европа': '🇪🇺',
+  'Латам и Карибы': '🌴',
+  'Океания': '🌊',
+  'Полярные регионы': '❄️',
+  'Северная Америка': '🗽',
+  'Россия и СНГ': '🇷🇺',
+  'Юго-Восточная Азия': '🌏',
+  'Южная Азия': '🛕',
+  'Восточная Азия': '🏯',
+};
+
+// Статистика для hero
+const stats = {
+  total: DIRECTIONS.length,
+  free: DIRECTIONS.filter(d => d.visa === 'free').length,
+  evisa: DIRECTIONS.filter(d => d.visa === 'evisa').length,
+  required: DIRECTIONS.filter(d => d.visa === 'required').length,
+};
+
 const url = 'https://traveltribe.ru/countries/';
 const ldJson = {
   "@context": "https://schema.org",
@@ -67,13 +89,22 @@ const ldJson = {
     <header class="countries-header">
       <div class="section-eyebrow">// Все направления</div>
       <h1>Кратко о <em>странах</em></h1>
-      <p class="countries-tagline">{DIRECTIONS.length} направлений · виза, сезоны, бюджет</p>
       <p class="countries-sub">Виза, сезоны, бюджет на день и главные гайды. Если нужно быстро решить «куда» — выбирай регион ниже.</p>
+      <div class="countries-stats">
+        <div><strong>{stats.total}</strong><span>направлений</span></div>
+        <div><strong>{stats.free}</strong><span>без визы</span></div>
+        <div><strong>{stats.evisa}</strong><span>eVisa</span></div>
+        <div><strong>{stats.required}</strong><span>с визой</span></div>
+      </div>
     </header>
 
     {groupOrder.map((group) => (
       <section class="countries-group">
-        <h2 class="countries-group-title">{group}</h2>
+        <h2 class="countries-group-title">
+          <span class="cgt-icon" aria-hidden="true">{GROUP_ICON[group] || '📍'}</span>
+          <span class="cgt-name">{group}</span>
+          <span class="cgt-count">{grouped[group].length}</span>
+        </h2>
         <div class="countries-grid">
           {grouped[group].map((d) => {
             const photo = destPhotos[`../assets/destinations/${d.slug}.jpg`];
@@ -91,8 +122,9 @@ const ldJson = {
                       loading="lazy"
                     />
                   ) : (
-                    <div class="cc-emoji" style={`background: linear-gradient(135deg, ${d.visual.g1}, ${d.visual.g2})`}>
-                      <span aria-hidden="true">{d.visual.emoji}</span>
+                    <div class="cc-fallback" style={`background: linear-gradient(135deg, ${d.visual.g1}, ${d.visual.g2})`}>
+                      <span class="cc-fallback-emoji" aria-hidden="true">{d.visual.emoji}</span>
+                      <span class="cc-fallback-pattern" aria-hidden="true"></span>
                     </div>
                   )}
                   <div class="cc-overlay"></div>
@@ -140,43 +172,77 @@ const ldJson = {
   font-size: var(--text-lg);
   line-height: var(--leading-relaxed);
 }
-.countries-tagline {
-  margin-top: var(--space-3);
-  color: var(--text-faint);
-  font-size: var(--text-sm);
-  letter-spacing: var(--tracking-wide);
+/* ─── Hero статистика ─── */
+.countries-stats {
+  display: flex; justify-content: center; gap: var(--space-8);
+  margin: var(--space-7) auto 0;
+  padding: var(--space-5) 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  max-width: 720px;
+}
+.countries-stats > div { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+.countries-stats strong {
+  font-family: var(--ff-display);
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.countries-stats span {
+  font-size: var(--text-xs); color: var(--text-faint);
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
 }
 
-.countries-group { margin-bottom: var(--space-12); }
+/* ─── Заголовок региона с emoji и счётчиком ─── */
+.countries-group { margin-bottom: var(--space-14); }
 .countries-group-title {
+  display: flex; align-items: baseline; gap: var(--space-3);
   font-family: var(--ff-display);
-  font-size: var(--text-2xl);
-  font-weight: 600;
-  margin: 0 0 var(--space-5);
-  padding-bottom: var(--space-3);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  margin: 0 0 var(--space-6);
+  padding-bottom: var(--space-4);
   border-bottom: 1px solid var(--line);
   color: var(--text);
+  letter-spacing: var(--tracking-tight);
 }
+.cgt-icon { font-size: 1.5rem; line-height: 1; flex: 0 0 auto; transform: translateY(2px); }
+.cgt-name { flex: 1; }
+.cgt-count {
+  font-family: var(--ff-display);
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--gold-600);
+  background: rgba(201,151,58,0.1);
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  letter-spacing: 0;
+  flex: 0 0 auto;
+}
+
+/* ─── Сетка карточек — крупнее ─── */
 .countries-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-5);
 }
 
 .country-card {
   display: flex; flex-direction: column;
   background: var(--bg2);
   border: 1px solid var(--line);
-  border-radius: var(--radius-4, 8px);
+  border-radius: var(--radius-4, 10px);
   overflow: hidden;
   text-decoration: none;
   color: inherit;
   transition: transform var(--duration-base), box-shadow var(--duration-base), border-color var(--duration-base);
 }
 .country-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-  border-color: rgba(201,151,58,0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -20px rgba(0,0,0,0.45), 0 0 0 1px rgba(201,151,58,0.35);
+  border-color: rgba(201,151,58,0.5);
 }
 .cc-media {
   position: relative; aspect-ratio: 4 / 3;
@@ -188,40 +254,60 @@ const ldJson = {
   transition: transform 0.5s var(--ease-out);
 }
 .country-card:hover .cc-media img { transform: scale(1.06); }
-.cc-emoji {
+
+/* ─── Fallback для стран без фото — большой emoji + градиент + pattern ─── */
+.cc-fallback {
+  position: relative;
   width: 100%; height: 100%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 3rem;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.18));
+  overflow: hidden;
+}
+.cc-fallback-emoji {
+  position: relative; z-index: 2;
+  font-size: 4.5rem;
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.3));
+  transition: transform 0.5s var(--ease-out);
+}
+.country-card:hover .cc-fallback-emoji { transform: scale(1.1) rotate(-3deg); }
+.cc-fallback-pattern {
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.12) 0%, transparent 25%),
+    radial-gradient(circle at 80% 80%, rgba(255,255,255,0.08) 0%, transparent 30%);
+  z-index: 1;
 }
 .cc-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.25) 0%, transparent 50%);
+  background: linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 55%);
+  z-index: 3;
+  pointer-events: none;
 }
 .cc-body {
-  padding: var(--space-3) var(--space-4);
-  display: flex; flex-direction: column; gap: var(--space-1);
+  padding: var(--space-4) var(--space-4) var(--space-4);
+  display: flex; flex-direction: column; gap: var(--space-2);
   flex: 1;
 }
 .cc-name {
   font-family: var(--ff-display);
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
   font-weight: 600;
   line-height: var(--leading-snug);
   color: var(--text);
   text-wrap: balance;
+  letter-spacing: -0.005em;
 }
+.country-card:hover .cc-name { color: var(--gold); transition: color var(--duration-fast); }
 .cc-meta {
   display: flex; align-items: center; gap: var(--space-2);
   margin-top: auto;
-  padding-top: var(--space-2);
+  padding-top: var(--space-3);
 }
 .cc-tag {
   font-size: var(--text-xs);
   letter-spacing: 0.04em;
-  padding: 0.15rem 0.5rem;
+  padding: 0.3rem 0.65rem;
   border-radius: var(--radius-1);
-  font-weight: 500;
+  font-weight: 600;
 }
 .cc-tag--free { background: rgba(34, 197, 94, 0.15); color: var(--peak-text); }
 .cc-tag--evisa { background: rgba(74, 158, 255, 0.15); color: var(--good-text); }
