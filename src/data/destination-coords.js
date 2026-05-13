@@ -1,3 +1,38 @@
+// Маппинг slug → ISO 3166-1 alpha-3 (для choropleth-карты в /countries/).
+// При совпадении (Bali, Hainan, Italy-North/South и т.п.) — все варианты
+// мапятся на одну страну; в client-side JS выбирается первый встретившийся
+// direction.
+export const SLUG_TO_ISO = {
+  'australia-east': 'AUS', 'australia-north': 'AUS',
+  'new-zealand': 'NZL',
+  'bali': 'IDN', 'sumatra-kalimantan': 'IDN', 'raja-ampat': 'IDN',
+  'thailand': 'THA', 'vietnam': 'VNM', 'cambodia': 'KHM',
+  'malaysia': 'MYS', 'singapore': 'SGP', 'philippines': 'PHL',
+  'japan': 'JPN', 'japan-hokkaido': 'JPN',
+  'china': 'CHN', 'hainan': 'CHN',
+  'south-korea': 'KOR', 'mongolia': 'MNG',
+  'india': 'IND', 'india-goa': 'IND',
+  'sri-lanka': 'LKA', 'maldives': 'MDV', 'nepal': 'NPL',
+  'kenya': 'KEN', 'south-africa': 'ZAF', 'uganda': 'UGA', 'tanzania': 'TZA',
+  'morocco': 'MAR', 'egypt': 'EGY', 'tunisia': 'TUN',
+  'uae': 'ARE', 'jordan': 'JOR', 'turkey': 'TUR', 'israel': 'ISR', 'iran': 'IRN',
+  'madagascar': 'MDG', 'mauritius': 'MUS', 'seychelles': 'SYC',
+  'georgia': 'GEO', 'armenia': 'ARM', 'azerbaijan': 'AZE',
+  'serbia': 'SRB', 'croatia': 'HRV',
+  'iceland': 'ISL', 'norway': 'NOR', 'finland': 'FIN',
+  'switzerland': 'CHE', 'italy-north': 'ITA', 'italy-south': 'ITA',
+  'spain': 'ESP', 'greece': 'GRC',
+  'peru': 'PER',
+  'chile': 'CHL', 'chile-patagonia': 'CHL', 'chile-fjords': 'CHL',
+  'bolivia': 'BOL', 'ecuador': 'ECU', 'galapagos': 'ECU',
+  'argentina': 'ARG', 'brazil': 'BRA',
+  'mexico': 'MEX', 'cuba': 'CUB', 'dominican-republic': 'DOM',
+  'costa-rica-panama': 'CRI', 'guatemala-belize': 'GTM',
+  'canada-east': 'CAN', 'canada-rockies': 'CAN', 'usa': 'USA',
+  'antarctica': 'ATA', 'greenland': 'GRL',
+  'kazakhstan': 'KAZ', 'uzbekistan': 'UZB', 'kyrgyzstan': 'KGZ', 'tajikistan': 'TJK',
+};
+
 // Координаты для отображения стран на карте /countries/.
 // Используются для Leaflet pins. Брать центр страны или ключевой город/регион
 // (Москва vs Россия → берём столицу; Австралия-восток → Сидней).
