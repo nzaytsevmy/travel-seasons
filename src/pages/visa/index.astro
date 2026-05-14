@@ -86,7 +86,7 @@ const ldJson = {
               <a href={`/visa/${d.slug}/`} class="visa-list-card" data-name={d.cases.nom.toLowerCase()}>
                 <div class="vlc-media">
                   {photo ? (
-                    <Image src={photo} alt={d.cases.nom} widths={[200, 400]} sizes="(max-width: 700px) 50vw, 25vw" formats={['avif', 'webp']} quality={68} loading="lazy" />
+                    <Image src={photo} alt={d.cases.nom} widths={[200, 400]} sizes="(max-width: 700px) 50vw, 25vw" formats={['webp']} quality={68} loading="lazy" />
                   ) : (
                     <div class="vlc-fallback" style={`background: linear-gradient(135deg, ${d.visual.g1}, ${d.visual.g2})`}>
                       <span class="vlc-fallback-emoji" aria-hidden="true">{d.visual.emoji}</span>
