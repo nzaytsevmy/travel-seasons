@@ -113,12 +113,21 @@ body {
   font-family: var(--ff-body);
   font-weight: 300;
   line-height: 1.65;
-  min-height: 100vh;
+  min-height: 100dvh;  /* dvh, не vh — iOS Safari не «прыгает» при появлении URL-бара */
   overflow-x: clip;  /* clip вместо hidden — sticky-nav работает в Safari (clip с iOS 16+) */
   padding-bottom: 4rem;
   position: relative;
   touch-action: manipulation;
   -webkit-touch-callout: none;
+}
+
+/* iOS Safari: убираем синюю/серую подсветку при тапе на ссылках/кнопках */
+a, button, [role="button"], summary { -webkit-tap-highlight-color: transparent; }
+
+/* iOS Safari: если font-size < 16px на input, при тапе автозум на поле.
+   Защищаемся глобально — 16px минимум для всех текстовых полей. */
+input, select, textarea {
+  font-size: max(16px, 1rem);
 }
 
 body::before {
@@ -215,6 +224,7 @@ a { text-decoration: none; color: inherit; }
   background: none; border: 1px solid var(--line); color: var(--text-dim);
   cursor: pointer; padding: 5px 9px; border-radius: 3px; font-size: 1rem; line-height: 1;
   display: flex; align-items: center; justify-content: center;
+  min-width: 40px; min-height: 40px;  /* iOS Safari: tap target ≥40px */
 }
 .theme-btn:hover { color: var(--gold); border-color: var(--gold-dim); background: var(--gold-glow); }
 

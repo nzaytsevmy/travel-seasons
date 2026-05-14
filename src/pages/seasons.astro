@@ -678,8 +678,9 @@ function restoreFromUrl() {
     const idx = parseInt(m, 10) - 1;
     const cell = document.querySelector(`td.cell[data-slug="${country}"][data-month="${idx}"]`);
     if (cell) {
-      cell.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      setTimeout(() => openPanel(cell), 300);
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      cell.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest', inline: 'center' });
+      setTimeout(() => openPanel(cell), reduce ? 50 : 300);
     }
   }
 }
@@ -694,7 +695,7 @@ restoreFromUrl();
 }
 .search-input {
   background: var(--bg2); border: 1px solid var(--line); color: var(--text);
-  font-family: var(--ff-body); font-size: 0.85rem;
+  font-family: var(--ff-body); font-size: 1rem;  /* iOS Safari: ≥16px, иначе zoom при тапе */
   padding: 0.5rem 0.9rem; border-radius: 3px; min-width: 240px;
   transition: border-color 0.2s;
 }
