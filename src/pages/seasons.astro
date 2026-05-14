@@ -766,7 +766,7 @@ tbody tr:hover { background: rgba(201,151,58,0.03); }
 .cell .badge {
   display: inline-flex; align-items: center; justify-content: center;
   width: 28px; height: 28px; border-radius: 3px; font-size: 0.6rem; font-weight: 500;
-  transition: transform 0.15s; will-change: transform;
+  transition: transform 0.15s;
 }
 .cell:hover .badge { transform: scale(1.2); }
 
@@ -964,8 +964,15 @@ h1 em { color: var(--gold); font-style: italic; }
   .search-input { min-width: 140px; max-width: 200px; flex-shrink: 0; }
   .legend { margin-top: 1rem; gap: 0.7rem; }
 
-  .table-wrap { margin: 0; border-radius: 0; border-left: none; border-right: none; max-height: calc(100vh - 200px); overscroll-behavior: contain; }
-  thead tr:first-child th { top: 0; }
+  /* iPhone fix: убираем nested scroll контейнер — оставляем только горизонтальный.
+     Вертикальный скролл — на странице (плавный), без дёрганья. Sticky thead
+     теперь sticky относительно viewport, поэтому top = высота .controls (~52px). */
+  .table-wrap {
+    margin: 0; border-radius: 0; border-left: none; border-right: none;
+    max-height: none; overflow-x: auto; overflow-y: visible;
+    overscroll-behavior-x: contain;
+  }
+  thead tr:first-child th { top: 112px; }
   thead tr:first-child th:first-child { min-width: 110px; }
   .region-cell { min-width: 130px; max-width: 140px; padding: 0.6rem 0.4rem 0.6rem 0.6rem; font-size: 0.82rem; }
   .region-sub { font-size: 0.78rem; }
