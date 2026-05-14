@@ -612,41 +612,42 @@ const ldJson = {
     if (clearBtn) clearBtn.addEventListener('click', () => { search.value = ''; applyVisaFilters(); search.focus(); });
   }
 
+  // Event-delegation на document — robust против timing issues и SPA-навигации
   function initVisaFilters() {
-    const chips = document.querySelectorAll<HTMLElement>('.va-chip');
-    if (!chips.length) return;
+    if ((window as any).__vaFiltersBound) return;
+    (window as any).__vaFiltersBound = true;
 
-    chips.forEach((chip) => {
-      chip.addEventListener('click', () => {
-        const fVisa = chip.dataset.filter;
-        const fCost = chip.dataset.cost;
-        const fDur = chip.dataset.duration;
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const chip = target.closest('.va-chip') as HTMLElement | null;
+      if (!chip) return;
 
-        if (fVisa) {
-          // Visa-type filter group — single select. Снимаем active с других visa-chips.
-          chips.forEach((c) => { if (c.dataset.filter) c.classList.remove('va-chip--active'); });
+      const fVisa = chip.dataset.filter;
+      const fCost = chip.dataset.cost;
+      const fDur = chip.dataset.duration;
+      const allChips = document.querySelectorAll<HTMLElement>('.va-chip');
+
+      if (fVisa) {
+        allChips.forEach((c) => { if (c.dataset.filter) c.classList.remove('va-chip--active'); });
+        chip.classList.add('va-chip--active');
+        filterState.visa = fVisa;
+      }
+      if (fCost) {
+        if (filterState.cost === fCost) {
+          filterState.cost = null;
+          chip.classList.remove('va-chip--active');
+        } else {
+          allChips.forEach((c) => { if (c.dataset.cost) c.classList.remove('va-chip--active'); });
           chip.classList.add('va-chip--active');
-          filterState.visa = fVisa;
+          filterState.cost = fCost;
         }
-        if (fCost) {
-          // Toggle cost
-          if (filterState.cost === fCost) {
-            filterState.cost = null;
-            chip.classList.remove('va-chip--active');
-          } else {
-            // Снимаем active с других cost-chips
-            chips.forEach((c) => { if (c.dataset.cost) c.classList.remove('va-chip--active'); });
-            chip.classList.add('va-chip--active');
-            filterState.cost = fCost;
-          }
-        }
-        if (fDur === 'long') {
-          filterState.durationLong = !filterState.durationLong;
-          chip.classList.toggle('va-chip--active', filterState.durationLong);
-        }
+      }
+      if (fDur === 'long') {
+        filterState.durationLong = !filterState.durationLong;
+        chip.classList.toggle('va-chip--active', filterState.durationLong);
+      }
 
-        applyVisaFilters();
-      });
+      applyVisaFilters();
     });
   }
 
