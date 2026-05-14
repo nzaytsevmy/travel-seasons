@@ -5,6 +5,7 @@ import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { Image } from 'astro:assets';
 import { DIRECTIONS } from '../../data/directions.js';
+import { getVisaDetails } from '../../data/visa-details.js';
 
 const destPhotos = import.meta.glob('../../assets/destinations/*.jpg', { eager: true, import: 'default' });
 
@@ -44,7 +45,7 @@ const VISITED = new Set([
   'georgia', 'armenia', 'turkey', 'uae',
 ]);
 
-// FAQ для AEO (AI Overviews / Perplexity / ChatGPT)
+// FAQ для AEO (AI Overviews / Perplexity / ChatGPT) — 12 вопросов
 const FAQ_ITEMS = [
   {
     q: 'Куда россиянину можно без визы в 2026?',
@@ -56,7 +57,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Где взять визу быстро и дёшево в 2026?',
-    a: 'Быстрые eVisa: Шри-Ланка (24 часа, $35), Камбоджа (24–72 часа, $36), Индия (3 дня, $25), Кения (2–7 дней, $51). Без визы и бесплатно: Грузия (1 год), Армения (180 дней), Узбекистан (30 дней), Турция (60 дней), Сербия (30 дней).',
+    a: 'Быстрые eVisa: Шри-Ланка (24 часа, $35), Камбоджа (24–72 часа, $36), Индия (3 дня, $25), Кения (2–7 дней, $51). Без визы и бесплатно: Грузия (1 год), Армения (180 дней), Узбекистан (90 дней), Турция (60 дней), Сербия (30 дней).',
   },
   {
     q: 'Какие страны больше всего отказывают россиянам?',
@@ -69,6 +70,30 @@ const FAQ_ITEMS = [
   {
     q: 'Сколько действует виза и можно ли продлить?',
     a: 'eVisa обычно 30–90 дней без права продления — нужно выехать и въехать заново (если разрешён повторный въезд). Обычная виза: туристическая 30–180 дней, бизнес/учёба 1–5 лет. Продление — через миграционную службу страны пребывания, $20–100 за 30–60 дней.',
+  },
+  {
+    q: 'Можно ли по российскому загранпаспорту в США в 2026?',
+    a: 'Технически да — США выдают визы B1/B2 россиянам, но только через консульства в третьих странах (Варшава, Стамбул, Алматы, Белград). Сроки ожидания — 6–12 месяцев. Стоимость $185 + сбор третьей страны. Альтернатива — Канада (CA$100, 2–3 месяца через Варшаву) или Мексика (180 дней безвиз) с дальнейшим планом.',
+  },
+  {
+    q: 'Какие визы дают мультивизу на 5 лет?',
+    a: 'США B1/B2 — стандартно 5 лет (multi-entry), реально 10. Канада eTA — 5 лет (но short-stay). Япония — до 3 лет при повторных поездках. Шенген — после 3 коротких виз можно претендовать на 1–5 лет. ОАЭ — 5-летняя multi-entry для регулярных туристов. Конкретные сроки зависят от истории поездок и страны выдачи.',
+  },
+  {
+    q: 'Что с EES и ETIAS — Шенгенским системой 2026?',
+    a: 'EES (Entry/Exit System) — биометрическая регистрация на границе Шенгена. Запущена в октябре 2025. Заменяет штампы в паспорте: при первом въезде снимают отпечатки пальцев и фото лица, хранятся 3 года. ETIAS (Travel Authorization) — не для россиян; для граждан безвизовых стран. Россияне продолжают оформлять обычную шенгенскую визу.',
+  },
+  {
+    q: 'Стоит ли оформлять Кипр или Болгарию вместо Шенгена?',
+    a: 'Кипр — не Шенген, оформляется онлайн pro-visa бесплатно за 1 день. 90 дней пребывания. Болгария и Румыния с марта 2024 в Шенгене только частично (только воздух/море, не сухопутно). По кипрской pro-visa нельзя въехать в страны Шенгена — это отдельная зона.',
+  },
+  {
+    q: 'Нужна ли биометрия на визу в 2026?',
+    a: 'Шенген — да, обязательно при подаче (отпечатки + фото). Действует 5 лет. Великобритания — да, в визовых центрах. США — да, на интервью. Япония — нет для туристической визы. eVisa (Индия, Шри-Ланка, Камбоджа, Кения, Мадагаскар) — биометрия не нужна, только онлайн-анкета и сканы паспорта.',
+  },
+  {
+    q: 'Что делать если отказали в визе?',
+    a: 'Шенген: подать апелляцию в течение 15–30 дней или переоформить через другую страну (Италия, Греция чаще одобряют). США: повторно подавать через 1 месяц с улучшенным комплектом. Япония: исправить ошибку и попробовать через того же туроператора. Учти: в анкете честно указывать прошлые отказы — скрывать = автоматический отказ.',
   },
 ];
 
@@ -99,6 +124,22 @@ const ISO_CODE = {
 };
 
 const VISA_TYPE_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза обязательна' };
+
+// Helper-функции для filter-buckets — выполняются в frontmatter (regex здесь работает)
+function costBucket(cost) {
+  const lower = cost.toLowerCase();
+  if (lower.indexOf('беспл') >= 0) return 'free';
+  const digits = cost.replace(/[^\d]/g, ' ').trim().split(/\s+/)[0] || '0';
+  const num = parseInt(digits, 10) || 0;
+  return num > 0 && num <= 50 ? 'cheap' : 'premium';
+}
+function isLongDuration(dur) {
+  const lower = dur.toLowerCase();
+  if (lower.indexOf('год') >= 0 || lower.indexOf('без срока') >= 0) return true;
+  const digits = dur.replace(/[^\d]/g, ' ').trim().split(/\s+/)[0] || '0';
+  const num = parseInt(digits, 10) || 0;
+  return num >= 60;
+}
 const url = 'https://traveltribe.ru/visa/';
 const ldJson = {
   "@context": "https://schema.org",
@@ -241,6 +282,74 @@ const ldJson = {
       </div>
     </section>
 
+    {/* ─── HUB INTRO — вступительная статья ─── */}
+    <section class="va-intro" data-reveal>
+      <div class="va-intro-meta">
+        <span class="va-intro-tag">ОБЗОР · ВИЗОВАЯ ОБСТАНОВКА · МАЙ 2026</span>
+      </div>
+      <h2 class="va-intro-title">Куда летать россиянам в 2026 — главное</h2>
+
+      <div class="va-intro-body">
+        <p class="va-intro-lede">
+          С 2022 года визовая карта мира перерисовывается каждые 3–6 месяцев. Здесь — актуальный реестр на май 2026: <strong>{byVisa.free.length} стран принимают по загранпаспорту, {byVisa.evisa.length} дают eVisa онлайн, {byVisa.required.length} требуют полноценную визу</strong>. Реестр обновляется при изменении правил, последняя сверка — 14 мая 2026.
+        </p>
+
+        <p>
+          <strong>Тренд 2026 — азиатские открытия.</strong> Китай с 14 сентября 2025 пустил россиян без визы на 30 дней (продлено до 14.09.2026, после ожидается переход в постоянный режим). Это первый раз с 1999 года, когда Китай открывал безвиз для России. Гонконг как специальный административный район даёт 14 дней без визы. Хайнань — 30 дней по общему китайскому режиму. Таиланд с 2024 даёт 60 дней вместо классических 30 — это позволяет полноценный wintering без visa-run в соседний Лаос.
+        </p>
+
+        <p>
+          <strong>Шенген — медленный и дорогой.</strong> Стоимость подачи поднялась до €90 (с €80) с июня 2024. Сроки рассмотрения в Польше, Прибалтике, Скандинавии — 30–60 дней при процентном отказе 12–25%. Лучше работают Италия, Греция, Испания, Венгрия — там процент отказов ниже, выдают мультивизы на 6+ месяцев активным путешественникам. С октября 2025 действует EES (Entry/Exit System) — биометрическая регистрация на границе вместо штампов; первое прохождение занимает 5–10 минут.
+        </p>
+
+        <p>
+          <strong>США и Канада — длинные сроки через третьи страны.</strong> Консульства США в России не работают с 2022. Россияне подают B1/B2 в Варшаве, Стамбуле, Алматы, Белграде — ожидание интервью 6–12 месяцев, стоимость $185 + сборы третьих стран. Канада дешевле (CA$100) и быстрее (2–3 месяца через Варшаву), но требует доказать связи с РФ и регулярные туристические поездки. Альтернатива для тех, кто хочет в Северную Америку быстро, — Мексика (180 дней безвиз) с возможностью наземного въезда в США/Канаду через границу.
+        </p>
+
+        <p>
+          <strong>Что брать с собой — базовый комплект.</strong> Для всех виз — загранпаспорт от 6 месяцев действия с двумя пустыми страницами, фото 35×45 мм цветное, обратные билеты, бронь отеля (не возвратная букирование можно бесплатно — Booking, Agoda), банковская справка $50–100/день поездки. Для шенгена и Японии добавляется медстраховка от €30 000, справка с работы на бланке, выписка по счёту за 3 месяца. Для США и Канады — выписки за 6 месяцев, налоговая декларация, документы о собственности.
+        </p>
+
+        <p>
+          <strong>Как читать этот реестр.</strong> Каждая карточка ниже показывает три факта: <em>срок пребывания</em> · <em>стоимость</em> · <em>срок оформления</em>. Эти данные — для туристической визы, не для бизнес/учёба/работа. На карточку с галочкой <span class="va-intro-check">✓</span> я был лично — могу подтвердить процесс. Все цены — на май 2026 в местной валюте оригинала.
+        </p>
+      </div>
+    </section>
+
+    {/* ─── CHANGES FEED — что изменилось за последние 6 месяцев ─── */}
+    <section class="va-changes" data-reveal>
+      <header class="va-changes-head">
+        <span class="va-changes-tag">ИЗМЕНЕНИЯ · ПОСЛЕДНИЕ 6 МЕСЯЦЕВ</span>
+        <h2 class="va-changes-title">Что менялось</h2>
+      </header>
+      <ol class="va-changes-list">
+        <li class="va-change-item">
+          <time class="va-change-date">14 мая 2026</time>
+          <div class="va-change-text"><strong>Реестр обновлён.</strong> Проверены сроки оформления Шенгена в Италии и Греции — увеличены до 30–45 дней (было 15–20).</div>
+        </li>
+        <li class="va-change-item">
+          <time class="va-change-date">март 2026</time>
+          <div class="va-change-text"><strong>Кения eVisa подорожала</strong> с $32 до $51. Срок оформления — теперь 2–7 дней вместо 24 часов.</div>
+        </li>
+        <li class="va-change-item">
+          <time class="va-change-date">январь 2026</time>
+          <div class="va-change-text"><strong>Армения 180 дней безвиз</strong> подтверждено. Раньше работало правило 90/180, теперь 180 непрерывно.</div>
+        </li>
+        <li class="va-change-item">
+          <time class="va-change-date">октябрь 2025</time>
+          <div class="va-change-text"><strong>EES запущен в Шенгене.</strong> Биометрия на границе вместо штампов. При первом проходе — отпечатки + фото. Очереди удлинились на 5–10 минут.</div>
+        </li>
+        <li class="va-change-item">
+          <time class="va-change-date">14 сентября 2025</time>
+          <div class="va-change-text"><strong>Китай открыл безвиз на 30 дней.</strong> Первый раз с 1999 года. Действует до 14.09.2026, после ожидается продление.</div>
+        </li>
+        <li class="va-change-item">
+          <time class="va-change-date">июнь 2024</time>
+          <div class="va-change-text"><strong>Шенген подорожал</strong> с €80 до €90. Сервисные сборы визовых центров — отдельно, €25–40.</div>
+        </li>
+      </ol>
+    </section>
+
     {/* ─── FAQ — Часто спрашивают ─── */}
     <section class="va-faq" aria-label="Часто спрашивают" data-reveal>
       <header class="va-faq-head">
@@ -258,6 +367,21 @@ const ldJson = {
             <div class="va-faq-a">{item.a}</div>
           </details>
         ))}
+      </div>
+    </section>
+
+    {/* ─── QUICK-FILTER CHIPS — фильтры по визовому режиму, бюджету и сроку ─── */}
+    <section class="va-filters" aria-label="Фильтры по реестру" data-reveal>
+      <div class="va-filters-label">Фильтры →</div>
+      <div class="va-filters-chips" role="group" aria-label="Выбор визового режима и условий">
+        <button type="button" class="va-chip va-chip--active" data-filter="all">Все ({DIRECTIONS.length})</button>
+        <button type="button" class="va-chip" data-filter="free">Без визы ({byVisa.free.length})</button>
+        <button type="button" class="va-chip" data-filter="evisa">eVisa ({byVisa.evisa.length})</button>
+        <button type="button" class="va-chip" data-filter="required">Виза ({byVisa.required.length})</button>
+        <span class="va-chip-divider" aria-hidden="true">·</span>
+        <button type="button" class="va-chip" data-cost="free">Бесплатно</button>
+        <button type="button" class="va-chip" data-cost="cheap">До $50</button>
+        <button type="button" class="va-chip" data-duration="long">60+ дней</button>
       </div>
     </section>
 
@@ -295,15 +419,35 @@ const ldJson = {
             const iso = ISO_CODE[d.slug] || 'XXX';
             const num = String(idx + 1).padStart(3, '0');
             const visited = VISITED.has(d.slug);
+            const details = getVisaDetails(d.slug, d.visa);
+            // Первые 3 карточки в каждой группе — eager + fetchpriority для LCP
+            const isAboveFold = idx < 3;
+            const cb = costBucket(details.cost);
+            const isLong = isLongDuration(details.duration);
+            const altText = d.cases.nom + ' — ' + d.sub + ', виза для россиян 2026';
             return (
-              <a href={`/visa/${d.slug}/`} class={`va-card ${visited ? 'va-card--visited' : ''}`} data-name={d.cases.nom.toLowerCase()}>
+              <a href={`/visa/${d.slug}/`}
+                 class={`va-card ${visited ? 'va-card--visited' : ''}`}
+                 data-name={d.cases.nom.toLowerCase()}
+                 data-visa={d.visa}
+                 data-cost={cb}
+                 data-duration-long={isLong ? '1' : '0'}>
                 <div class="va-card-num">
                   № {num}
                   {visited && <span class="va-card-visited" title="Никита был лично">✓</span>}
                 </div>
                 <div class="va-card-photo">
                   {photo ? (
-                    <Image src={photo} alt={d.cases.nom} widths={[280, 560]} sizes="(max-width: 700px) 50vw, 25vw" formats={['webp']} quality={70} loading="lazy" />
+                    <Image
+                      src={photo}
+                      alt={altText}
+                      widths={[280, 560]}
+                      sizes="(max-width: 700px) 50vw, 25vw"
+                      formats={['webp']}
+                      quality={70}
+                      loading={isAboveFold ? 'eager' : 'lazy'}
+                      {...(isAboveFold ? { fetchpriority: 'high' } : {})}
+                    />
                   ) : (
                     <div class="va-card-fallback" style={`background: linear-gradient(135deg, ${d.visual.g1}, ${d.visual.g2})`}>
                       <span class="va-card-emoji" aria-hidden="true">{d.visual.emoji}</span>
@@ -314,6 +458,20 @@ const ldJson = {
                 <div class="va-card-body">
                   <h3 class="va-card-name">{d.cases.nom}</h3>
                   <div class="va-card-iso">{iso}</div>
+                  <dl class="va-card-facts">
+                    <div class="va-fact">
+                      <dt>Срок</dt>
+                      <dd>{details.duration}</dd>
+                    </div>
+                    <div class="va-fact">
+                      <dt>Цена</dt>
+                      <dd>{details.cost}</dd>
+                    </div>
+                    <div class="va-fact">
+                      <dt>Оформление</dt>
+                      <dd>{details.timing}</dd>
+                    </div>
+                  </dl>
                 </div>
               </a>
             );
@@ -321,6 +479,76 @@ const ldJson = {
         </div>
       </section>
     ))}
+
+    {/* ─── RELATED PILLARS — глубокие гайды по визам ─── */}
+    <section class="va-related" data-reveal>
+      <header class="va-related-head">
+        <span class="va-related-tag">СВЯЗАННЫЕ ГАЙДЫ</span>
+        <h2 class="va-related-title">Что почитать дальше</h2>
+      </header>
+      <ul class="va-related-list">
+        <li class="va-related-item">
+          <a href="/blog/china-guide-2026/">
+            <span class="va-related-num">01</span>
+            <span class="va-related-meta">
+              <span class="va-related-name">Китай 2026 — безвиз 30 дней</span>
+              <span class="va-related-desc">Полный гайд: маршрут, бюджет, оплата без карт</span>
+            </span>
+            <span class="va-related-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li class="va-related-item">
+          <a href="/blog/schengen-visa-2026/">
+            <span class="va-related-num">02</span>
+            <span class="va-related-meta">
+              <span class="va-related-name">Шенген 2026 для россиян</span>
+              <span class="va-related-desc">Какая страна одобряет, документы, EES</span>
+            </span>
+            <span class="va-related-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li class="va-related-item">
+          <a href="/blog/japan-visa-2026/">
+            <span class="va-related-num">03</span>
+            <span class="va-related-meta">
+              <span class="va-related-name">Виза в Японию 2026</span>
+              <span class="va-related-desc">Туристическая через турагентство, документы, сроки</span>
+            </span>
+            <span class="va-related-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li class="va-related-item">
+          <a href="/blog/ees-shengen-2026/">
+            <span class="va-related-num">04</span>
+            <span class="va-related-meta">
+              <span class="va-related-name">EES — биометрия на границе</span>
+              <span class="va-related-desc">Что изменилось с октября 2025, как проходить</span>
+            </span>
+            <span class="va-related-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li class="va-related-item">
+          <a href="/blog/pay-abroad-2026/">
+            <span class="va-related-num">05</span>
+            <span class="va-related-meta">
+              <span class="va-related-name">Как платить за границей в 2026</span>
+              <span class="va-related-desc">UnionPay, Alipay, виртуальные карты, наличные</span>
+            </span>
+            <span class="va-related-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li class="va-related-item">
+          <a href="/blog/turkey-guide-2026/">
+            <span class="va-related-num">06</span>
+            <span class="va-related-meta">
+              <span class="va-related-name">Турция 2026 — безвиз 60 дней</span>
+              <span class="va-related-desc">Регионы, бюджет all-inclusive, перелёт из Москвы</span>
+            </span>
+            <span class="va-related-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+      </ul>
+    </section>
 
     {/* ─── FOOTER NOTE ─── */}
     <footer class="va-foot">
@@ -340,37 +568,91 @@ const ldJson = {
 </Layout>
 
 <script>
-  function initVisaSearch() {
-    const cards = document.querySelectorAll('.va-card');
-    const sections = document.querySelectorAll('.va-section');
+  // Active filter state — комбинируется с поиском
+  let filterState = { visa: 'all', cost: null as string | null, durationLong: false };
+
+  function applyVisaFilters() {
+    const cards = document.querySelectorAll<HTMLElement>('.va-card');
+    const sections = document.querySelectorAll<HTMLElement>('.va-section');
     const search = document.getElementById('visaSearch') as HTMLInputElement | null;
     const clearBtn = document.getElementById('visaSearchClear');
     const emptyState = document.getElementById('visaEmpty');
+    if (!cards.length) return;
+
+    const q = (search?.value || '').trim().toLowerCase();
+    let visible = 0;
+    cards.forEach((card) => {
+      const name = card.dataset.name || '';
+      const visa = card.dataset.visa || '';
+      const cost = card.dataset.cost || '';
+      const isLong = card.dataset.durationLong === '1';
+      const showSearch = !q || name.includes(q);
+      const showVisa = filterState.visa === 'all' || visa === filterState.visa;
+      const showCost = !filterState.cost || cost === filterState.cost;
+      const showDuration = !filterState.durationLong || isLong;
+      const show = showSearch && showVisa && showCost && showDuration;
+      card.hidden = !show;
+      if (show) visible++;
+    });
+    sections.forEach((g) => {
+      const any = Array.from(g.querySelectorAll<HTMLElement>('.va-card')).some((c) => !c.hidden);
+      g.hidden = !any;
+    });
+    if (emptyState) (emptyState as HTMLElement).hidden = visible > 0;
+    if (clearBtn) (clearBtn as HTMLElement).hidden = q.length === 0;
+  }
+
+  function initVisaSearch() {
+    const cards = document.querySelectorAll('.va-card');
+    const search = document.getElementById('visaSearch') as HTMLInputElement | null;
+    const clearBtn = document.getElementById('visaSearchClear');
     if (!cards.length || !search) return;
 
-    function apply() {
-      const q = search!.value.trim().toLowerCase();
-      let visible = 0;
-      cards.forEach((card) => {
-        const name = (card as HTMLElement).dataset.name || '';
-        const show = !q || name.includes(q);
-        (card as HTMLElement).hidden = !show;
-        if (show) visible++;
-      });
-      sections.forEach((g) => {
-        const any = Array.from(g.querySelectorAll('.va-card')).some((c) => !(c as HTMLElement).hidden);
-        (g as HTMLElement).hidden = !any;
-      });
-      if (emptyState) (emptyState as HTMLElement).hidden = visible > 0;
-      if (clearBtn) (clearBtn as HTMLElement).hidden = q.length === 0;
-    }
+    search.addEventListener('input', applyVisaFilters);
+    if (clearBtn) clearBtn.addEventListener('click', () => { search.value = ''; applyVisaFilters(); search.focus(); });
+  }
 
-    search.addEventListener('input', apply);
-    if (clearBtn) clearBtn.addEventListener('click', () => { search.value = ''; apply(); search.focus(); });
+  function initVisaFilters() {
+    const chips = document.querySelectorAll<HTMLElement>('.va-chip');
+    if (!chips.length) return;
+
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const fVisa = chip.dataset.filter;
+        const fCost = chip.dataset.cost;
+        const fDur = chip.dataset.duration;
+
+        if (fVisa) {
+          // Visa-type filter group — single select. Снимаем active с других visa-chips.
+          chips.forEach((c) => { if (c.dataset.filter) c.classList.remove('va-chip--active'); });
+          chip.classList.add('va-chip--active');
+          filterState.visa = fVisa;
+        }
+        if (fCost) {
+          // Toggle cost
+          if (filterState.cost === fCost) {
+            filterState.cost = null;
+            chip.classList.remove('va-chip--active');
+          } else {
+            // Снимаем active с других cost-chips
+            chips.forEach((c) => { if (c.dataset.cost) c.classList.remove('va-chip--active'); });
+            chip.classList.add('va-chip--active');
+            filterState.cost = fCost;
+          }
+        }
+        if (fDur === 'long') {
+          filterState.durationLong = !filterState.durationLong;
+          chip.classList.toggle('va-chip--active', filterState.durationLong);
+        }
+
+        applyVisaFilters();
+      });
+    });
   }
 
   initVisaSearch();
-  document.addEventListener('astro:page-load', initVisaSearch);
+  initVisaFilters();
+  document.addEventListener('astro:page-load', () => { initVisaSearch(); initVisaFilters(); });
 
   // Scroll-reveal через IntersectionObserver — staggered появление секций и cards
   function initReveal() {
@@ -481,18 +763,16 @@ const ldJson = {
     overflow: hidden;
   }
 
-  /* Paper grain texture overlay */
+  /* Paper grain — SVG fractalNoise inline вместо 3× radial-gradient.
+     Один filter pass, статичный, кэшируется браузером. */
   .visa-archive::before {
     content: "";
     position: absolute; inset: 0;
-    background-image:
-      radial-gradient(circle at 20% 30%, rgba(122, 104, 85, 0.04) 1px, transparent 1.5px),
-      radial-gradient(circle at 80% 70%, rgba(122, 104, 85, 0.05) 1px, transparent 1.5px),
-      radial-gradient(circle at 50% 50%, rgba(122, 104, 85, 0.03) 1px, transparent 1.5px);
-    background-size: 4px 4px, 6px 6px, 8px 8px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.48  0 0 0 0 0.41  0 0 0 0 0.33  0 0 0 0.18 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    background-size: 220px 220px;
     pointer-events: none;
     mix-blend-mode: multiply;
-    opacity: 0.85;
+    opacity: 0.5;
     z-index: 0;
   }
   /* Subtle paper edge */
@@ -630,6 +910,264 @@ const ldJson = {
     color: var(--stamp-red);
     font-size: 0.9rem;
     opacity: 0.8;
+  }
+
+  /* ──────────────── HUB INTRO + CHANGES + FILTERS + RELATED — новые секции ──────────────── */
+  .va-intro {
+    margin: 3rem auto 2rem;
+    max-width: 760px;
+  }
+  .va-intro-meta { margin-bottom: 0.8rem; }
+  .va-intro-tag {
+    display: inline-block;
+    font-family: var(--ff-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    color: var(--stamp-red);
+    padding: 0.25rem 0.7rem;
+    border: 1px solid var(--stamp-red);
+    background: var(--stamp-red-soft);
+  }
+  .va-intro-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    font-weight: 500;
+    margin: 0.6rem 0 1.3rem;
+    color: var(--ink);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    font-variation-settings: "opsz" 48, "SOFT" 50;
+  }
+  .va-intro-body {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 1.04rem;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    font-variation-settings: "opsz" 14, "SOFT" 30;
+  }
+  .va-intro-body p {
+    margin: 0 0 1.1rem;
+  }
+  .va-intro-lede {
+    font-size: 1.14rem !important;
+    color: var(--ink) !important;
+    line-height: 1.6 !important;
+  }
+  .va-intro-body strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .va-intro-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--stamp-red);
+    border-radius: 50%;
+    color: var(--stamp-red);
+    font-size: 0.62rem;
+    font-weight: 600;
+    vertical-align: 1px;
+    transform: rotate(-6deg);
+    background: var(--paper);
+  }
+
+  /* Changes feed */
+  .va-changes {
+    margin: 3rem auto 2rem;
+    max-width: 760px;
+    padding: 1.5rem 0 1rem;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--line-doc);
+  }
+  .va-changes-head { margin-bottom: 1.3rem; }
+  .va-changes-tag {
+    display: inline-block;
+    font-family: var(--ff-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    color: var(--customs-blue);
+    padding: 0.25rem 0.7rem;
+    border: 1px solid var(--customs-blue);
+    background: var(--customs-blue-soft);
+  }
+  .va-changes-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.5rem, 2.8vw, 2rem);
+    font-style: italic;
+    font-weight: 500;
+    margin: 0.5rem 0 0;
+    color: var(--ink);
+    line-height: 1.1;
+    font-variation-settings: "opsz" 36, "SOFT" 80;
+  }
+  .va-changes-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: change;
+  }
+  .va-change-item {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 1.2rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px dashed var(--line-doc);
+    align-items: baseline;
+  }
+  .va-change-item:last-child { border-bottom: none; }
+  .va-change-date {
+    font-family: var(--ff-mono);
+    font-size: 0.78rem;
+    color: var(--stamp-red);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .va-change-text {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .va-change-text strong { color: var(--ink); font-weight: 600; }
+
+  /* Quick-filter chips */
+  .va-filters {
+    margin: 2rem 0 1rem;
+    padding: 0.9rem 1rem;
+    background: var(--paper-dark);
+    border: 1px solid var(--line-doc);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .va-filters-label {
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--stamp-red);
+    text-transform: uppercase;
+    flex: 0 0 auto;
+  }
+  .va-filters-chips {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+  .va-chip {
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.75rem;
+    background: var(--paper);
+    border: 1px solid var(--line-doc);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .va-chip:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+  .va-chip.va-chip--active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .va-chip-divider {
+    color: var(--sepia);
+    opacity: 0.5;
+    margin: 0 0.2rem;
+  }
+
+  /* Related pillars */
+  .va-related {
+    margin: 4rem auto 2rem;
+    max-width: 880px;
+    padding-top: 2rem;
+    border-top: 2px solid var(--ink);
+  }
+  .va-related-head { margin-bottom: 1.3rem; }
+  .va-related-tag {
+    display: inline-block;
+    font-family: var(--ff-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    color: var(--sepia);
+    padding: 0.25rem 0.7rem;
+    border: 1px solid var(--sepia);
+  }
+  .va-related-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-style: italic;
+    font-weight: 500;
+    margin: 0.5rem 0 0;
+    color: var(--ink);
+    line-height: 1.1;
+    font-variation-settings: "opsz" 40, "SOFT" 80;
+  }
+  .va-related-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .va-related-item {
+    border-bottom: 1px dashed var(--line-doc);
+  }
+  .va-related-item:last-child { border-bottom: none; }
+  .va-related-item a {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    gap: 1.2rem;
+    padding: 1rem 0.5rem;
+    align-items: baseline;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.2s, color 0.2s;
+  }
+  .va-related-item a:hover {
+    background: rgba(163, 55, 42, 0.04);
+  }
+  .va-related-item a:hover .va-related-name {
+    color: var(--stamp-red);
+  }
+  .va-related-num {
+    font-family: var(--ff-mono);
+    font-size: 0.78rem;
+    color: var(--sepia);
+    letter-spacing: 0.06em;
+  }
+  .va-related-meta { min-width: 0; }
+  .va-related-name {
+    display: block;
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.3;
+    transition: color 0.2s;
+    font-variation-settings: "opsz" 18;
+  }
+  .va-related-desc {
+    display: block;
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    margin-top: 0.2rem;
+    line-height: 1.4;
+    font-style: italic;
+    font-variation-settings: "opsz" 14;
+  }
+  .va-related-arrow {
+    font-family: 'Fraunces', serif;
+    font-size: 1.2rem;
+    color: var(--stamp-red);
+    font-style: italic;
   }
 
   /* ──────────────── CTA ROW — Telegram + Aviasales ──────────────── */
@@ -1168,6 +1706,39 @@ const ldJson = {
     letter-spacing: 0.14em;
     color: var(--sepia);
     margin-top: 0.2rem;
+  }
+
+  /* Per-card facts: срок / цена / оформление */
+  .va-card-facts {
+    margin: 0.6rem 0 0;
+    padding: 0.55rem 0 0;
+    border-top: 1px dashed var(--line-doc);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .va-fact {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 0.45rem;
+    align-items: baseline;
+  }
+  .va-fact dt {
+    font-family: var(--ff-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--sepia);
+    margin: 0;
+    line-height: 1.3;
+  }
+  .va-fact dd {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 0.85rem;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.3;
+    font-variation-settings: "opsz" 12;
   }
   .va-card:hover .va-card-name { color: var(--stamp-red); }
 
