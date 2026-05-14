@@ -8,19 +8,49 @@ import { DIRECTIONS } from '../../data/directions.js';
 
 const destPhotos = import.meta.glob('../../assets/destinations/*.jpg', { eager: true, import: 'default' });
 
-// Group by visa type for clearer scanning
 const byVisa = { free: [], evisa: [], required: [] };
 for (const d of DIRECTIONS) byVisa[d.visa].push(d);
 
-const VISA_TITLE = {
-  free: 'Без визы',
-  evisa: 'Электронная виза (eVisa)',
-  required: 'Виза обязательна',
+const VISA_META = {
+  free: {
+    title: 'Без визы',
+    code: 'БВ',
+    iso: 'VISA-FREE',
+    desc: 'Загранпаспорт от 6 месяцев. Штамп на границе. Никаких документов и оплат заранее.',
+    section: 'I',
+  },
+  evisa: {
+    title: 'Электронная виза',
+    code: 'EV',
+    iso: 'eVISA',
+    desc: 'Оформляется онлайн до вылета через сайт миграционной службы. $20–80 · 1–3 дня.',
+    section: 'II',
+  },
+  required: {
+    title: 'Виза обязательна',
+    code: 'ВЗ',
+    iso: 'CONSULAR',
+    desc: 'Через консульство или визовый центр. Биометрия, документы, $35–200+ · до 30 дней.',
+    section: 'III',
+  },
 };
-const VISA_DESC = {
-  free: 'Достаточно загранпаспорта со сроком 6+ месяцев. На границе ставят штамп.',
-  evisa: 'Оформляется онлайн до вылета через сайт миграционной службы. $20–80, 1–3 дня.',
-  required: 'Полноценная виза через консульство или визовый центр. Биометрия, документы, $35–200+.',
+
+// ISO 3166-1 alpha-3 для маленького кода под названием страны (визовый стиль)
+const ISO_CODE = {
+  'australia-east': 'AUS', 'australia-north': 'AUS', 'bali': 'IDN', 'sumatra-kalimantan': 'IDN', 'raja-ampat': 'IDN',
+  'new-zealand': 'NZL', 'kenya': 'KEN', 'south-africa': 'ZAF', 'uae': 'ARE', 'turkey': 'TUR', 'egypt': 'EGY',
+  'morocco': 'MAR', 'tanzania': 'TZA', 'madagascar': 'MDG', 'mauritius': 'MUS', 'seychelles': 'SYC',
+  'iran': 'IRN', 'jordan': 'JOR', 'israel': 'ISR', 'japan': 'JPN', 'japan-hokkaido': 'JPN', 'south-korea': 'KOR',
+  'thailand': 'THA', 'vietnam': 'VNM', 'india-goa': 'IND', 'sri-lanka': 'LKA', 'maldives': 'MDV',
+  'georgia': 'GEO', 'armenia': 'ARM', 'kyrgyzstan': 'KGZ', 'uzbekistan': 'UZB', 'tajikistan': 'TJK',
+  'kazakhstan': 'KAZ', 'abkhazia': 'ABH', 'china': 'CHN', 'hainan': 'CHN', 'hong-kong': 'HKG',
+  'malaysia': 'MYS', 'philippines': 'PHL', 'cambodia': 'KHM', 'singapore': 'SGP', 'nepal': 'NPL',
+  'switzerland': 'CHE', 'italy-north': 'ITA', 'italy-south': 'ITA', 'spain': 'ESP', 'greece': 'GRC',
+  'croatia': 'HRV', 'serbia': 'SRB', 'finland': 'FIN', 'cyprus': 'CYP',
+  'canada-rockies': 'CAN', 'canada-east': 'CAN', 'usa': 'USA',
+  'mexico': 'MEX', 'cuba': 'CUB', 'dominican-republic': 'DOM', 'guatemala-belize': 'GTM', 'costa-rica-panama': 'CRI',
+  'chile-patagonia': 'CHL', 'chile-fjords': 'CHL', 'peru': 'PER', 'bolivia': 'BOL', 'chile': 'CHL',
+  'argentina': 'ARG', 'ecuador': 'ECU', 'brazil': 'BRA', 'antarctica': 'ATA', 'iceland': 'ISL', 'norway': 'NOR',
 };
 
 const url = 'https://traveltribe.ru/visa/';
@@ -32,7 +62,7 @@ const ldJson = {
       "@id": `${url}#page`,
       "url": url,
       "name": "Визы для россиян 2026 — все направления TravelTribe",
-      "description": `Визовая ситуация для россиян по ${DIRECTIONS.length} направлениям мира: безвиз, eVisa, обязательная виза. Документы, цены, сроки.`,
+      "description": `Визовый реестр 2026: ${DIRECTIONS.length} направлений. ${byVisa.free.length} без визы · ${byVisa.evisa.length} eVisa · ${byVisa.required.length} требуют визу. Документы, цены, сроки.`,
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
     },
@@ -47,54 +77,136 @@ const ldJson = {
 };
 ---
 <Layout
-  title="Визы для россиян 2026 — все направления"
-  description={`Визовая ситуация для россиян по ${DIRECTIONS.length} направлениям: безвиз, eVisa, обязательная виза. Документы и цены.`}
+  title="Визовый реестр 2026 — визы для россиян по 70 направлениям"
+  description={`Визовый реестр 2026: ${byVisa.free.length} без визы · ${byVisa.evisa.length} eVisa · ${byVisa.required.length} требуют визу. Документы, цены, сроки.`}
   canonical={url}
-  ogTitle="Визы для россиян 2026"
-  ogDescription={`${byVisa.free.length} безвиз · ${byVisa.evisa.length} eVisa · ${byVisa.required.length} требуют визу`}
+  ogTitle="Визовый реестр 2026 · TravelTribe"
+  ogDescription={`${byVisa.free.length} без визы · ${byVisa.evisa.length} eVisa · ${byVisa.required.length} требуют визу`}
   ldJson={ldJson}
 >
   <Nav active="blog" />
   <Breadcrumbs crumbs={[{ label: 'Визы' }]} />
 
-  <main id="main" class="visa-list-wrap">
-    <header class="visa-list-header">
-      <div class="section-eyebrow">// Визы для россиян</div>
-      <h1>Где нужна <em>виза</em>, а где нет</h1>
-      <p class="visa-list-tagline">{DIRECTIONS.length} направлений · обновляется при изменении правил</p>
-      <div class="visa-list-stats">
-        <div><strong>{byVisa.free.length}</strong><span>без визы</span></div>
-        <div><strong>{byVisa.evisa.length}</strong><span>eVisa</span></div>
-        <div><strong>{byVisa.required.length}</strong><span>требуют визу</span></div>
+  <main id="main" class="visa-archive">
+
+    {/* ─── ДЕКОРАТИВНЫЙ ШТАМП В ФОНЕ ─── */}
+    <div class="va-stamp-bg" aria-hidden="true">
+      <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <path id="vaStampCircle" d="M 160, 160 m -120, 0 a 120,120 0 1,1 240,0 a 120,120 0 1,1 -240,0" />
+        </defs>
+        <circle cx="160" cy="160" r="138" fill="none" stroke="currentColor" stroke-width="2.5" />
+        <circle cx="160" cy="160" r="120" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" />
+        <text font-family="PT Mono, monospace" font-size="13" letter-spacing="4" fill="currentColor">
+          <textPath href="#vaStampCircle" startOffset="0%">TRAVELTRIBE · ВИЗОВЫЙ РЕЕСТР · 2026 · ПРОВЕРЕНО · </textPath>
+        </text>
+        <text x="160" y="148" text-anchor="middle" font-family="PT Mono, monospace" font-size="14" letter-spacing="2" fill="currentColor">14·05·2026</text>
+        <line x1="100" y1="160" x2="220" y2="160" stroke="currentColor" stroke-width="1.5" />
+        <text x="160" y="184" text-anchor="middle" font-family="PT Mono, monospace" font-size="11" letter-spacing="3" fill="currentColor">RU · 070</text>
+      </svg>
+    </div>
+
+    {/* ─── DOCUMENT HEADER ─── */}
+    <header class="va-doc-head">
+      <div class="va-meta-line">
+        <span>РЕГ. № 070—2026</span>
+        <span class="va-meta-dot">·</span>
+        <span>TT-VISA-RU</span>
+        <span class="va-meta-dot">·</span>
+        <span>Версия 14.05.2026</span>
       </div>
-      <div class="visa-search">
-        <svg class="vs-icon" viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="6"></circle><line x1="14" y1="14" x2="18" y2="18"></line></svg>
-        <input type="search" id="visaSearch" placeholder="Найти страну…" autocomplete="off" aria-label="Поиск страны" />
-        <button type="button" class="vs-clear" id="visaSearchClear" aria-label="Очистить" hidden>×</button>
+
+      <div class="va-classification">FILED UNDER · ВИЗОВЫЕ РЕЖИМЫ</div>
+
+      <h1 class="va-title">
+        <span class="va-title-line">Визовый</span>
+        <span class="va-title-line va-title-line--italic">реестр</span>
+        <span class="va-title-line va-title-line--small">для гражданина РФ</span>
+      </h1>
+
+      <p class="va-subtitle">
+        Сводка по {DIRECTIONS.length} направлениям. Что нужно для въезда, сколько стоит, сколько ждать.
+      </p>
+
+      <div class="va-divider" aria-hidden="true">
+        <span class="va-divider-line"></span>
+        <span class="va-divider-glyph">✦</span>
+        <span class="va-divider-line"></span>
       </div>
-      <p class="visa-empty" id="visaEmpty" hidden>Ничего не найдено. Попробуй другой запрос.</p>
     </header>
 
+    {/* ─── STATS PANEL — три «карточки реестра» ─── */}
+    <section class="va-stats" aria-label="Сводка по визовым режимам">
+      <div class="va-stat va-stat--free">
+        <div class="va-stat-mark" aria-hidden="true">БВ</div>
+        <div class="va-stat-num">{byVisa.free.length}</div>
+        <div class="va-stat-label">без визы</div>
+        <div class="va-stat-note">визу не оформлять</div>
+      </div>
+      <div class="va-stat va-stat--evisa">
+        <div class="va-stat-mark" aria-hidden="true">EV</div>
+        <div class="va-stat-num">{byVisa.evisa.length}</div>
+        <div class="va-stat-label">eVisa</div>
+        <div class="va-stat-note">онлайн, 1–3 дня</div>
+      </div>
+      <div class="va-stat va-stat--required">
+        <div class="va-stat-mark" aria-hidden="true">ВЗ</div>
+        <div class="va-stat-num">{byVisa.required.length}</div>
+        <div class="va-stat-label">виза обязательна</div>
+        <div class="va-stat-note">консульство · до 30 дней</div>
+      </div>
+    </section>
+
+    {/* ─── SEARCH — filing tray style ─── */}
+    <section class="va-search-wrap" aria-label="Поиск страны">
+      <label class="va-search-label" for="visaSearch">
+        <span class="va-search-prefix">Запрос →</span>
+      </label>
+      <div class="va-search-field">
+        <input type="search" id="visaSearch" placeholder="Япония, Турция, Грузия…" autocomplete="off" aria-label="Поиск страны" />
+        <button type="button" class="va-search-clear" id="visaSearchClear" aria-label="Очистить" hidden>×</button>
+      </div>
+      <p class="va-empty" id="visaEmpty" hidden>В реестре не значится. Попробуй другое название.</p>
+    </section>
+
+    {/* ─── CLASSIFIED SECTIONS — три картотеки ─── */}
     {['free', 'evisa', 'required'].map((vt) => (
-      <section class={`visa-group visa-group--${vt}`}>
-        <h2><span class="vg-icon" aria-hidden="true">{vt === 'free' ? '✓' : vt === 'evisa' ? '◊' : '⚠'}</span>{VISA_TITLE[vt]}<span class="vg-count">{byVisa[vt].length}</span></h2>
-        <p class="visa-group-desc">{VISA_DESC[vt]}</p>
-        <div class="visa-list-grid">
-          {byVisa[vt].map((d) => {
+      <section class={`va-section va-section--${vt}`} data-section={vt}>
+        <header class="va-section-head">
+          <div class="va-section-stamp" aria-hidden="true">
+            <span class="vss-roman">{VISA_META[vt].section}</span>
+            <span class="vss-code">{VISA_META[vt].code}</span>
+            <span class="vss-count">{byVisa[vt].length}</span>
+          </div>
+          <div class="va-section-meta">
+            <div class="va-section-iso">{VISA_META[vt].iso}</div>
+            <h2 class="va-section-title">{VISA_META[vt].title}</h2>
+            <p class="va-section-desc">{VISA_META[vt].desc}</p>
+          </div>
+        </header>
+
+        <div class="va-grid">
+          {byVisa[vt].map((d, idx) => {
             const photo = destPhotos[`../../assets/destinations/${d.slug}.jpg`];
+            const iso = ISO_CODE[d.slug] || 'XXX';
+            const num = String(idx + 1).padStart(3, '0');
             return (
-              <a href={`/visa/${d.slug}/`} class="visa-list-card" data-name={d.cases.nom.toLowerCase()}>
-                <div class="vlc-media">
+              <a href={`/visa/${d.slug}/`} class="va-card" data-name={d.cases.nom.toLowerCase()}>
+                <div class="va-card-num">№ {num}</div>
+                <div class="va-card-photo">
                   {photo ? (
-                    <Image src={photo} alt={d.cases.nom} widths={[200, 400]} sizes="(max-width: 700px) 50vw, 25vw" formats={['webp']} quality={68} loading="lazy" />
+                    <Image src={photo} alt={d.cases.nom} widths={[280, 560]} sizes="(max-width: 700px) 50vw, 25vw" formats={['webp']} quality={70} loading="lazy" />
                   ) : (
-                    <div class="vlc-fallback" style={`background: linear-gradient(135deg, ${d.visual.g1}, ${d.visual.g2})`}>
-                      <span class="vlc-fallback-emoji" aria-hidden="true">{d.visual.emoji}</span>
-                      <span class="vlc-fallback-pattern" aria-hidden="true"></span>
+                    <div class="va-card-fallback" style={`background: linear-gradient(135deg, ${d.visual.g1}, ${d.visual.g2})`}>
+                      <span class="va-card-emoji" aria-hidden="true">{d.visual.emoji}</span>
                     </div>
                   )}
+                  <div class="va-card-stamp" aria-hidden="true">{VISA_META[vt].code}</div>
                 </div>
-                <div class="vlc-name">{d.cases.nom}</div>
+                <div class="va-card-body">
+                  <h3 class="va-card-name">{d.cases.nom}</h3>
+                  <div class="va-card-iso">{iso}</div>
+                </div>
               </a>
             );
           })}
@@ -102,7 +214,18 @@ const ldJson = {
       </section>
     ))}
 
-    <p class="visa-list-updated">Актуально на: 13 мая 2026 · обновляется каждые 4–6 недель</p>
+    {/* ─── FOOTER NOTE ─── */}
+    <footer class="va-foot">
+      <div class="va-divider" aria-hidden="true">
+        <span class="va-divider-line"></span>
+        <span class="va-divider-glyph">✦</span>
+        <span class="va-divider-line"></span>
+      </div>
+      <p class="va-foot-text">
+        Реестр актуален на <strong>14 мая 2026</strong>. Обновляется при изменении правил въезда раз в 4–6 недель.
+      </p>
+      <p class="va-foot-sig">Составитель — <a href="/about/">Никита Зайцев</a>, TravelTribe</p>
+    </footer>
   </main>
 
   <Footer />
@@ -110,8 +233,8 @@ const ldJson = {
 
 <script>
   function initVisaSearch() {
-    const cards = document.querySelectorAll('.visa-list-card');
-    const groups = document.querySelectorAll('.visa-group');
+    const cards = document.querySelectorAll('.va-card');
+    const sections = document.querySelectorAll('.va-section');
     const search = document.getElementById('visaSearch') as HTMLInputElement | null;
     const clearBtn = document.getElementById('visaSearchClear');
     const emptyState = document.getElementById('visaEmpty');
@@ -126,8 +249,8 @@ const ldJson = {
         (card as HTMLElement).hidden = !show;
         if (show) visible++;
       });
-      groups.forEach((g) => {
-        const any = Array.from(g.querySelectorAll('.visa-list-card')).some((c) => !(c as HTMLElement).hidden);
+      sections.forEach((g) => {
+        const any = Array.from(g.querySelectorAll('.va-card')).some((c) => !(c as HTMLElement).hidden);
         (g as HTMLElement).hidden = !any;
       });
       if (emptyState) (emptyState as HTMLElement).hidden = visible > 0;
@@ -143,197 +266,556 @@ const ldJson = {
 </script>
 
 <style>
-.visa-list-wrap { max-width: var(--container-wide, 1200px); margin: 0 auto; padding: 0 var(--container-edge, 2rem) var(--space-16, 4rem); }
+  /* ═══════════════════════════════════════════════════════════════
+     VISA ARCHIVE — Documentary / Passport Office aesthetic
+     Type pairing: Fraunces (serif display) + PT Mono (state-document mono)
+     Palette: paper cream + ink + visa-stamp red + customs blue
+     ═══════════════════════════════════════════════════════════════ */
 
-.visa-list-header { text-align: center; margin: var(--space-10) 0 var(--space-12); }
-.section-eyebrow { font-size: var(--text-xs); letter-spacing: var(--tracking-widest); text-transform: uppercase; color: var(--gold-600); margin-bottom: var(--space-3); }
-.visa-list-header h1 {
-  font-family: var(--ff-display);
-  font-size: var(--text-6xl);
-  font-weight: 700;
-  line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-tight);
-  margin: 0 auto;
-}
-.visa-list-header h1 em { color: var(--gold); font-style: italic; }
-.visa-list-tagline {
-  margin: var(--space-3) auto 0;
-  color: var(--text-faint);
-  font-size: var(--text-sm);
-  letter-spacing: var(--tracking-wide);
-}
-.visa-list-stats {
-  display: flex; justify-content: center; gap: var(--space-8);
-  margin-top: var(--space-6);
-  padding: var(--space-4) 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  max-width: 600px; margin-left: auto; margin-right: auto;
-}
-.visa-list-stats > div { display: flex; flex-direction: column; gap: 2px; align-items: center; }
-.visa-list-stats strong {
-  font-family: var(--ff-display);
-  font-size: var(--text-3xl); font-weight: 700; color: var(--gold-600);
-}
-.visa-list-stats span {
-  font-size: var(--text-xs); color: var(--text-faint);
-  letter-spacing: var(--tracking-wide); text-transform: uppercase;
-}
+  .visa-archive {
+    --paper: #f4ede0;
+    --paper-dark: #ebe1cf;
+    --ink: #1a1612;
+    --ink-soft: #3e352a;
+    --sepia: #7a6855;
+    --stamp-red: #a3372a;
+    --stamp-red-soft: rgba(163, 55, 42, 0.12);
+    --customs-blue: #1e3a64;
+    --customs-blue-soft: rgba(30, 58, 100, 0.12);
+    --line-doc: rgba(26, 22, 18, 0.18);
+    --line-doc-faint: rgba(26, 22, 18, 0.08);
+    --ff-mono: 'PT Mono', 'Courier New', monospace;
 
-.visa-group { margin-bottom: var(--space-14); }
-.visa-group h2 {
-  display: flex; align-items: baseline; gap: var(--space-3);
-  font-family: var(--ff-display);
-  font-size: var(--text-3xl);
-  font-weight: 700;
-  margin: 0 0 var(--space-2);
-  color: var(--text);
-  letter-spacing: var(--tracking-tight);
-}
-.vg-icon {
-  flex: 0 0 auto;
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 2rem; height: 2rem;
-  font-size: 1.1rem; font-weight: 700;
-  border-radius: 50%;
-  line-height: 1;
-}
-.vg-count {
-  font-family: var(--ff-display);
-  font-size: var(--text-base);
-  font-weight: 500;
-  background: rgba(201,151,58,0.1);
-  color: var(--gold-600);
-  padding: 0.25rem 0.65rem;
-  border-radius: 999px;
-  letter-spacing: 0;
-  flex: 0 0 auto;
-}
-.visa-group--free h2 { color: var(--peak-text); }
-.visa-group--free .vg-icon { background: rgba(34,197,94,0.15); color: var(--peak-text); }
-.visa-group--evisa h2 { color: var(--good-text); }
-.visa-group--evisa .vg-icon { background: rgba(74,158,255,0.15); color: var(--good-text); }
-.visa-group--required h2 { color: var(--gold-700, var(--gold)); }
-.visa-group--required .vg-icon { background: rgba(201,151,58,0.18); color: var(--gold); }
-.visa-group-desc {
-  color: var(--text-dim); font-size: var(--text-base);
-  line-height: var(--leading-relaxed);
-  margin: 0 0 var(--space-5);
-  max-width: 600px;
-}
+    position: relative;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 2rem clamp(1rem, 4vw, 3rem) 4rem;
+    background: var(--paper);
+    color: var(--ink);
+    overflow: hidden;
+  }
 
-.visa-list-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-4);
-}
-.visa-list-card {
-  display: flex; flex-direction: column;
-  text-decoration: none; color: inherit;
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-3, 10px);
-  overflow: hidden;
-  transition: transform var(--duration-base), border-color var(--duration-base), box-shadow var(--duration-base);
-}
-.visa-list-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(201,151,58,0.5);
-  box-shadow: 0 18px 36px -18px rgba(0,0,0,0.45), 0 0 0 1px rgba(201,151,58,0.3);
-}
-.vlc-media { aspect-ratio: 4 / 3; overflow: hidden; position: relative; }
-.vlc-media img, .vlc-media picture { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s var(--ease-out); }
-.visa-list-card:hover .vlc-media img { transform: scale(1.05); }
-.vlc-fallback {
-  position: relative;
-  width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden;
-}
-.vlc-fallback-emoji {
-  position: relative; z-index: 2;
-  font-size: 3rem;
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
-  transition: transform 0.5s var(--ease-out);
-}
-.visa-list-card:hover .vlc-fallback-emoji { transform: scale(1.1) rotate(-3deg); }
-.vlc-fallback-pattern {
-  position: absolute; inset: 0;
-  background-image:
-    radial-gradient(circle at 25% 30%, rgba(255,255,255,0.12) 0%, transparent 25%),
-    radial-gradient(circle at 75% 75%, rgba(255,255,255,0.08) 0%, transparent 30%);
-  z-index: 1;
-}
-.vlc-name {
-  padding: var(--space-3) var(--space-4);
-  font-size: var(--text-base);
-  font-weight: 600;
-  color: var(--text);
-  line-height: var(--leading-snug);
-  text-wrap: balance;
-}
-.visa-list-card:hover .vlc-name { color: var(--gold); transition: color var(--duration-fast); }
+  /* Paper grain texture overlay */
+  .visa-archive::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(122, 104, 85, 0.04) 1px, transparent 1.5px),
+      radial-gradient(circle at 80% 70%, rgba(122, 104, 85, 0.05) 1px, transparent 1.5px),
+      radial-gradient(circle at 50% 50%, rgba(122, 104, 85, 0.03) 1px, transparent 1.5px);
+    background-size: 4px 4px, 6px 6px, 8px 8px;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    opacity: 0.85;
+    z-index: 0;
+  }
+  /* Subtle paper edge */
+  .visa-archive::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(122, 104, 85, 0.06), transparent 8%, transparent 92%, rgba(122, 104, 85, 0.06));
+    pointer-events: none;
+    z-index: 0;
+  }
+  .visa-archive > * { position: relative; z-index: 1; }
 
-.visa-list-updated {
-  margin-top: var(--space-10);
-  font-size: var(--text-xs);
-  color: var(--text-faint);
-  text-align: center;
-  letter-spacing: var(--tracking-wide);
-  padding-top: var(--space-6);
-  border-top: 1px solid var(--line);
-}
+  /* Decorative giant stamp behind hero */
+  .va-stamp-bg {
+    position: absolute;
+    top: 1rem; right: -3rem;
+    width: clamp(220px, 30vw, 360px);
+    height: clamp(220px, 30vw, 360px);
+    color: var(--stamp-red);
+    opacity: 0.07;
+    transform: rotate(-9deg);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .va-stamp-bg svg { width: 100%; height: 100%; }
 
-/* ─── Search field для /visa/ ─── */
-.visa-search {
-  position: relative;
-  max-width: 460px;
-  margin: var(--space-5) auto 0;
-}
-.vs-icon {
-  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-  color: var(--text-faint);
-  pointer-events: none;
-}
-.visa-search input {
-  width: 100%;
-  padding: 0.85rem 2.5rem 0.85rem 2.6rem;
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-3, 10px);
-  color: var(--text);
-  font-size: var(--text-base);
-  font-family: inherit;
-  transition: border-color var(--duration-fast);
-}
-.visa-search input:focus { outline: none; border-color: rgba(201,151,58,0.5); }
-.visa-search input::placeholder { color: var(--text-faint); }
-.vs-clear {
-  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-  width: 28px; height: 28px;
-  border: none; background: transparent;
-  color: var(--text-faint);
-  font-size: 1.5rem;
-  cursor: pointer; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  line-height: 1;
-}
-.vs-clear:hover { background: var(--bg3); color: var(--text); }
-.visa-empty {
-  text-align: center;
-  color: var(--text-dim);
-  font-size: var(--text-base);
-  margin: var(--space-8) auto;
-  padding: var(--space-6);
-  border: 1px dashed var(--line);
-  border-radius: var(--radius-3, 10px);
-  max-width: 460px;
-}
-.visa-group[hidden] { display: none; }
-.visa-list-card[hidden] { display: none; }
+  /* ──────────────── DOCUMENT HEADER ──────────────── */
+  .va-doc-head {
+    padding: 2rem 0 1rem;
+    border-top: 2px solid var(--ink);
+    border-bottom: 1px solid var(--line-doc);
+    margin-bottom: 2.5rem;
+  }
+  .va-meta-line {
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    margin-bottom: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .va-meta-dot { color: var(--sepia); opacity: 0.6; }
 
-@media (max-width: 600px) {
-  .visa-list-grid { grid-template-columns: repeat(2, 1fr); }
-  .visa-list-stats { gap: var(--space-5); }
-}
+  .va-classification {
+    font-family: var(--ff-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    color: var(--stamp-red);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: inline-block;
+    padding: 0.25rem 0.7rem;
+    border: 1px solid var(--stamp-red);
+    background: var(--stamp-red-soft);
+  }
+
+  .va-title {
+    font-family: 'Fraunces', 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(2.8rem, 7vw, 5.2rem);
+    line-height: 0.95;
+    margin: 0 0 1.2rem;
+    color: var(--ink);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+  }
+  .va-title-line { display: block; }
+  .va-title-line--italic {
+    font-style: italic;
+    color: var(--stamp-red);
+    font-variation-settings: "opsz" 144, "SOFT" 60;
+  }
+  .va-title-line--small {
+    font-family: var(--ff-mono);
+    font-size: 0.82rem;
+    font-style: normal;
+    color: var(--sepia);
+    margin-top: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .va-subtitle {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: clamp(1rem, 1.4vw, 1.18rem);
+    color: var(--ink-soft);
+    line-height: 1.55;
+    max-width: 540px;
+    margin: 0 0 1.6rem;
+    font-style: italic;
+    font-variation-settings: "opsz" 14;
+  }
+
+  .va-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.4rem 0 0;
+  }
+  .va-divider-line {
+    flex: 1;
+    height: 1px;
+    background: var(--line-doc);
+  }
+  .va-divider-glyph {
+    color: var(--stamp-red);
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  /* ──────────────── STATS — три карточки реестра ──────────────── */
+  .va-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    margin-bottom: 3rem;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+  }
+  .va-stat {
+    background: var(--paper);
+    padding: 1.6rem 1.4rem 1.4rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .va-stat-mark {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    font-family: var(--ff-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0.55rem;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    transform: rotate(-6deg);
+  }
+  .va-stat--free .va-stat-mark { color: var(--customs-blue); }
+  .va-stat--evisa .va-stat-mark { color: var(--sepia); }
+  .va-stat--required .va-stat-mark { color: var(--stamp-red); }
+
+  .va-stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(3rem, 6vw, 4.4rem);
+    line-height: 1;
+    font-weight: 500;
+    color: var(--ink);
+    font-variation-settings: "opsz" 144;
+    margin-top: 0.6rem;
+  }
+  .va-stat-label {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--ink-soft);
+    margin-top: 0.2rem;
+    font-variation-settings: "opsz" 18, "SOFT" 70;
+  }
+  .va-stat-note {
+    font-family: var(--ff-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    color: var(--sepia);
+    margin-top: 0.55rem;
+    text-transform: uppercase;
+  }
+
+  /* ──────────────── SEARCH — filing tray ──────────────── */
+  .va-search-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 3rem;
+    padding: 0.8rem 1rem;
+    background: var(--paper-dark);
+    border: 1px solid var(--line-doc);
+    flex-wrap: wrap;
+  }
+  .va-search-label {
+    flex: 0 0 auto;
+  }
+  .va-search-prefix {
+    font-family: var(--ff-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: var(--stamp-red);
+    text-transform: uppercase;
+  }
+  .va-search-field {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  .va-search-field input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--line-doc);
+    color: var(--ink);
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 1.05rem;
+    padding: 0.4rem 1.6rem 0.4rem 0;
+    outline: none;
+    font-style: italic;
+    font-variation-settings: "opsz" 16;
+  }
+  .va-search-field input::placeholder {
+    color: var(--sepia);
+    opacity: 0.6;
+  }
+  .va-search-field input:focus {
+    border-bottom-color: var(--stamp-red);
+  }
+  .va-search-clear {
+    position: absolute;
+    right: 0;
+    background: none;
+    border: none;
+    color: var(--sepia);
+    cursor: pointer;
+    font-size: 1.2rem;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+  }
+  .va-search-clear:hover { color: var(--stamp-red); background: var(--stamp-red-soft); }
+  .va-empty {
+    width: 100%;
+    font-family: var(--ff-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    color: var(--stamp-red);
+    margin: 0.5rem 0 0;
+  }
+
+  /* ──────────────── CLASSIFIED SECTIONS ──────────────── */
+  .va-section { margin-bottom: 3.5rem; }
+  .va-section[hidden] { display: none; }
+
+  .va-section-head {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.4rem 1.6rem;
+    align-items: start;
+    padding-bottom: 1.3rem;
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: 1.8rem;
+  }
+
+  /* Circular stamp for section number */
+  .va-section-stamp {
+    flex: 0 0 auto;
+    width: clamp(86px, 12vw, 110px);
+    height: clamp(86px, 12vw, 110px);
+    border-radius: 50%;
+    border: 2.5px solid currentColor;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transform: rotate(-4deg);
+    font-family: var(--ff-mono);
+  }
+  .va-section-stamp::after {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 1px dashed currentColor;
+    border-radius: 50%;
+    opacity: 0.6;
+  }
+  .vss-roman {
+    font-family: 'Fraunces', serif;
+    font-size: 1.5rem;
+    font-style: italic;
+    line-height: 1;
+    font-variation-settings: "opsz" 24;
+  }
+  .vss-code {
+    font-family: var(--ff-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    margin-top: 0.2rem;
+  }
+  .vss-count {
+    font-family: var(--ff-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    opacity: 0.7;
+    margin-top: 0.1rem;
+  }
+  .vss-count::before { content: "· "; }
+  .vss-count::after { content: " ·"; }
+
+  .va-section--free .va-section-stamp { color: var(--customs-blue); }
+  .va-section--evisa .va-section-stamp { color: var(--sepia); }
+  .va-section--required .va-section-stamp { color: var(--stamp-red); }
+
+  .va-section-meta { min-width: 0; }
+  .va-section-iso {
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    color: var(--sepia);
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+  }
+  .va-section-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 4.5vw, 2.8rem);
+    margin: 0 0 0.6rem;
+    color: var(--ink);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variation-settings: "opsz" 60, "SOFT" 40;
+  }
+  .va-section-desc {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: clamp(0.95rem, 1.2vw, 1.06rem);
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0;
+    max-width: 640px;
+    font-variation-settings: "opsz" 14;
+  }
+
+  /* ──────────────── GRID OF CARDS ──────────────── */
+  .va-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 0;
+    border-top: 1px dashed var(--line-doc);
+    border-left: 1px dashed var(--line-doc);
+  }
+  .va-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    padding: 1rem 1rem 1.1rem;
+    border-right: 1px dashed var(--line-doc);
+    border-bottom: 1px dashed var(--line-doc);
+    background: transparent;
+    transition: background 0.25s ease;
+  }
+  .va-card[hidden] { display: none; }
+  .va-card:hover {
+    background: rgba(163, 55, 42, 0.04);
+  }
+  .va-card:hover .va-card-stamp {
+    opacity: 1;
+    transform: rotate(-6deg) scale(1.05);
+  }
+  .va-card:hover .va-card-photo img,
+  .va-card:hover .va-card-fallback {
+    filter: sepia(0.05) saturate(1.05);
+  }
+
+  .va-card-num {
+    font-family: var(--ff-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    color: var(--sepia);
+    margin-bottom: 0.6rem;
+    text-transform: uppercase;
+  }
+  .va-card-photo {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    margin-bottom: 0.7rem;
+    background: var(--paper-dark);
+  }
+  .va-card-photo img,
+  .va-card-photo picture {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: sepia(0.12) saturate(0.95);
+    transition: filter 0.4s ease, transform 0.5s ease;
+  }
+  .va-card:hover .va-card-photo img { transform: scale(1.04); }
+  .va-card-fallback {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    transition: filter 0.4s ease;
+  }
+  .va-card-emoji { font-size: 2.4rem; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15)); }
+
+  /* Маленький штамп на карточке — индикатор визового кода */
+  .va-card-stamp {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(244, 237, 224, 0.92);
+    backdrop-filter: blur(2px);
+    transform: rotate(-6deg);
+    opacity: 0.92;
+    transition: opacity 0.25s, transform 0.25s ease;
+    z-index: 2;
+  }
+  .va-section--free .va-card-stamp { color: var(--customs-blue); }
+  .va-section--evisa .va-card-stamp { color: var(--sepia); }
+  .va-section--required .va-card-stamp { color: var(--stamp-red); }
+
+  .va-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .va-card-name {
+    font-family: 'Fraunces', serif;
+    font-size: 1.08rem;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.18;
+    letter-spacing: -0.005em;
+    font-variation-settings: "opsz" 16;
+    text-wrap: balance;
+  }
+  .va-card-iso {
+    font-family: var(--ff-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    color: var(--sepia);
+    margin-top: 0.2rem;
+  }
+  .va-card:hover .va-card-name { color: var(--stamp-red); }
+
+  /* ──────────────── FOOTER NOTE ──────────────── */
+  .va-foot {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--ink);
+    text-align: center;
+  }
+  .va-foot .va-divider { margin: 0 0 1.5rem; }
+  .va-foot-text {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    margin: 0 0 0.4rem;
+    font-style: italic;
+  }
+  .va-foot-text strong { color: var(--stamp-red); font-style: normal; font-weight: 600; }
+  .va-foot-sig {
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--sepia);
+    margin: 0;
+    text-transform: uppercase;
+  }
+  .va-foot-sig a { color: var(--stamp-red); border-bottom: 1px dashed currentColor; }
+
+  /* ──────────────── DARK THEME ──────────────── */
+  :global(.dark-theme) .visa-archive {
+    --paper: #1a1612;
+    --paper-dark: #221c16;
+    --ink: #f0e8d8;
+    --ink-soft: #c4b7a0;
+    --sepia: #8a7a64;
+    --line-doc: rgba(240, 232, 216, 0.16);
+    --line-doc-faint: rgba(240, 232, 216, 0.08);
+  }
+  :global(.dark-theme) .va-stamp-bg { opacity: 0.05; }
+  :global(.dark-theme) .va-card-photo img { filter: sepia(0.18) saturate(0.85) brightness(0.95); }
+  :global(.dark-theme) .va-card-stamp { background: rgba(34, 28, 22, 0.92); }
+
+  /* ──────────────── MOBILE ──────────────── */
+  @media (max-width: 720px) {
+    .va-stamp-bg { right: -5rem; top: 4rem; opacity: 0.06; }
+    .va-title { font-size: clamp(2.4rem, 11vw, 3.4rem); }
+    .va-title-line--small { font-size: 0.7rem; }
+    .va-stats { grid-template-columns: 1fr; }
+    .va-stats { border: 1px solid var(--ink); gap: 0; }
+    .va-stat { border-bottom: 1px solid var(--ink); }
+    .va-stat:last-child { border-bottom: none; }
+    .va-section-head { grid-template-columns: 1fr; }
+    .va-section-stamp { width: 76px; height: 76px; }
+    .vss-roman { font-size: 1.2rem; }
+    .vss-code { font-size: 0.66rem; }
+    .va-grid { grid-template-columns: repeat(2, 1fr); }
+    .va-card-photo { aspect-ratio: 1 / 1; }
+    .va-card-num { font-size: 0.55rem; }
+    .va-card-name { font-size: 0.98rem; }
+    .va-search-wrap { padding: 0.7rem 0.9rem; }
+    .va-search-field input { font-size: 1rem; }
+  }
 </style>
