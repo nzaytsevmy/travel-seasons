@@ -36,6 +36,7 @@ howto:
 ---
 
 import PricingCards from '../../components/post/PricingCards.astro';
+import FlightRoutes from '../../components/post/FlightRoutes.astro';
 
 Сентябрь 2024 я прилетел в Пекин по бизнес-визе на международную конференцию по AI. Год спустя, в сентябре 2025, Китай объявил **безвизовый режим 30 дней для россиян** — до 14 сентября 2026, с возможностью продления до 2027. Это полностью меняет travel-карту для россиян: страна с 1.4 миллиардом населения, Великой стеной, Шанхаем, тропическим Хайнанем и Тибетом стала **самой простой страной Азии** для самостоятельного путешествия.
 
@@ -115,14 +116,34 @@ import PricingCards from '../../components/post/PricingCards.astro';
 
 **Прямые рейсы в 2026:**
 
-| Куда | Авиакомпания | Время | Цена (май 2026) |
-|---|---|---|---|
-| Москва → Пекин | Аэрофлот SU | 7 ч 15 мин | от **20 748 ₽** ([Aviasales](https://www.aviasales.ru/?marker=546042.Zz66f13c16ff6b488883a4127-546042&market=ru)) |
-| Москва → Пекин | Air China CA | 7 ч 30 мин | от 24 000 ₽ |
-| Москва → Шанхай | Аэрофлот | 8 ч 10 мин | от 26 000 ₽ |
-| Москва → Шанхай | China Eastern MU | 8 ч 30 мин | от 23 000 ₽ |
-| Москва → Гуанчжоу | China Southern CZ | 9 ч | от 28 000 ₽ |
-| Москва → Чэнду | Sichuan Airlines 3U | 8 ч 30 мин | от 32 000 ₽ |
+<FlightRoutes routes={[
+  {
+    from: 'Москва', to: 'Пекин',
+    flights: [
+      { airline: 'Аэрофлот', code: 'SU', duration: '7 ч 15 мин', priceFrom: '20 748 ₽', priceUrl: 'https://www.aviasales.ru/?marker=546042.Zz66f13c16ff6b488883a4127-546042&market=ru' },
+      { airline: 'Air China', code: 'CA', duration: '7 ч 30 мин', priceFrom: '24 000 ₽' },
+    ]
+  },
+  {
+    from: 'Москва', to: 'Шанхай',
+    flights: [
+      { airline: 'Аэрофлот', code: 'SU', duration: '8 ч 10 мин', priceFrom: '26 000 ₽' },
+      { airline: 'China Eastern', code: 'MU', duration: '8 ч 30 мин', priceFrom: '23 000 ₽' },
+    ]
+  },
+  {
+    from: 'Москва', to: 'Гуанчжоу',
+    flights: [
+      { airline: 'China Southern', code: 'CZ', duration: '9 ч', priceFrom: '28 000 ₽' },
+    ]
+  },
+  {
+    from: 'Москва', to: 'Чэнду',
+    flights: [
+      { airline: 'Sichuan Airlines', code: '3U', duration: '8 ч 30 мин', priceFrom: '32 000 ₽' },
+    ]
+  },
+]} caption="Прямые рейсы Москва → Китай в 2026" />
 
 **Лайфхак:** прилёт в Гуанчжоу — главный южный хаб, из которого дешёвые перелёты по всему Китаю. Если едешь на 14 дней с маршрутом Гуанчжоу → Гуйлинь → Чэнду → Сиань → Пекин — это выгодно, прямой Москва-Гуанчжоу от 28к ₽.
 
