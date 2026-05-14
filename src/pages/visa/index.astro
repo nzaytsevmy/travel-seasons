@@ -124,6 +124,8 @@ const ISO_CODE = {
 };
 
 const VISA_TYPE_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза обязательна' };
+const VERIFIED_AT = '2026-05-14'; // дата последней массовой сверки реестра
+const VERIFIED_AT_PRETTY = '14 мая 2026';
 
 // Helper-функции для filter-buckets — выполняются в frontmatter (regex здесь работает)
 function costBucket(cost) {
@@ -153,6 +155,10 @@ const ldJson = {
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "mainEntity": { "@id": `${url}#itemlist` },
+      "dateModified": `${VERIFIED_AT}T12:00:00+03:00`,
+      "datePublished": "2025-09-15T00:00:00+03:00",
+      "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://traveltribe.ru/about/" },
+      "publisher": { "@type": "Organization", "name": "TravelTribe", "url": "https://traveltribe.ru/" },
     },
     {
       "@type": "ItemList",
@@ -163,7 +169,7 @@ const ldJson = {
         "@type": "ListItem",
         "position": i + 1,
         "item": {
-          "@type": "TouristDestination",
+          "@type": ["TouristDestination", "Place"],
           "@id": `https://traveltribe.ru/visa/${d.slug}/#destination`,
           "name": d.cases.nom,
           "url": `https://traveltribe.ru/visa/${d.slug}/`,
@@ -245,13 +251,22 @@ const ldJson = {
       <div class="va-cta-row">
         <a class="va-cta va-cta--primary" href="https://t.me/traveltriberu?utm_source=traveltribe&utm_medium=visa-hero" target="_blank" rel="noopener">
           <span class="va-cta-label">Telegram-канал</span>
-          <span class="va-cta-arrow">→</span>
+          <span class="va-cta-arrow" aria-hidden="true">→</span>
         </a>
         <a class="va-cta va-cta--secondary" href="https://www.aviasales.ru/?marker=546042.Zz66f13c16ff6b488883a4127-546042&market=ru" target="_blank" rel="nofollow noopener sponsored">
           <span class="va-cta-label">Найти билеты</span>
           <span class="va-cta-meta">Aviasales</span>
         </a>
+        <button type="button" class="va-cta va-cta--share" id="visaShareBtn" aria-label="Поделиться реестром">
+          <span class="va-cta-label">Поделиться</span>
+          <span class="va-cta-arrow" aria-hidden="true">↗</span>
+        </button>
       </div>
+
+      <p class="va-verified-banner" aria-label="Дата последней проверки реестра">
+        <span class="va-verified-dot" aria-hidden="true"></span>
+        Реестр проверен <strong>{VERIFIED_AT_PRETTY}</strong>. Перед поездкой сверьте через МИД РФ.
+      </p>
 
       <div class="va-divider" aria-hidden="true">
         <span class="va-divider-line"></span>
@@ -398,15 +413,19 @@ const ldJson = {
     <section class="va-filters" aria-label="Фильтры по реестру" data-reveal>
       <div class="va-filters-label">Фильтры →</div>
       <div class="va-filters-chips" role="group" aria-label="Выбор визового режима и условий">
-        <button type="button" class="va-chip va-chip--active" data-filter="all">Все ({DIRECTIONS.length})</button>
-        <button type="button" class="va-chip" data-filter="free">Без визы ({byVisa.free.length})</button>
-        <button type="button" class="va-chip" data-filter="evisa">eVisa ({byVisa.evisa.length})</button>
-        <button type="button" class="va-chip" data-filter="required">Виза ({byVisa.required.length})</button>
+        <button type="button" class="va-chip va-chip--active" data-filter="all" aria-pressed="true">Все ({DIRECTIONS.length})</button>
+        <button type="button" class="va-chip" data-filter="free" aria-pressed="false">Без визы ({byVisa.free.length})</button>
+        <button type="button" class="va-chip" data-filter="evisa" aria-pressed="false">eVisa ({byVisa.evisa.length})</button>
+        <button type="button" class="va-chip" data-filter="required" aria-pressed="false">Виза ({byVisa.required.length})</button>
         <span class="va-chip-divider" aria-hidden="true">·</span>
-        <button type="button" class="va-chip" data-cost="free">Бесплатно</button>
-        <button type="button" class="va-chip" data-cost="cheap">До $50</button>
-        <button type="button" class="va-chip" data-duration="long">60+ дней</button>
+        <button type="button" class="va-chip" data-cost="free" aria-pressed="false">Бесплатно</button>
+        <button type="button" class="va-chip" data-cost="cheap" aria-pressed="false">До $50</button>
+        <button type="button" class="va-chip" data-duration="long" aria-pressed="false">60+ дней</button>
       </div>
+      <p class="va-filter-count" id="visaFilterCount" aria-live="polite" aria-atomic="true">Показано: <strong>{DIRECTIONS.length}</strong> из {DIRECTIONS.length} направлений</p>
+      <noscript>
+        <p class="va-noscript">⚠️ Фильтры работают с включённым JavaScript. Список всех 70 стран ниже доступен полностью.</p>
+      </noscript>
     </section>
 
     {/* ─── SEARCH — filing tray style ─── */}
@@ -457,8 +476,8 @@ const ldJson = {
                  data-cost={cb}
                  data-duration-long={isLong ? '1' : '0'}>
                 <div class="va-card-num">
-                  № {num}
-                  {visited && <span class="va-card-visited" title="Никита был лично">✓</span>}
+                  <span aria-label={`Карточка ${num} из ${byVisa[vt].length}`}>№ {num}</span>
+                  {visited && <span class="va-card-visited" title="Никита был лично" aria-label="Автор был в этой стране лично">✓</span>}
                 </div>
                 <div class="va-card-photo">
                   {photo ? (
@@ -626,6 +645,7 @@ const ldJson = {
     const search = document.getElementById('visaSearch') as HTMLInputElement | null;
     const clearBtn = document.getElementById('visaSearchClear');
     const emptyState = document.getElementById('visaEmpty');
+    const countLabel = document.getElementById('visaFilterCount');
     if (!cards.length) return;
 
     const q = (search?.value || '').trim().toLowerCase();
@@ -649,6 +669,43 @@ const ldJson = {
     });
     if (emptyState) (emptyState as HTMLElement).hidden = visible > 0;
     if (clearBtn) (clearBtn as HTMLElement).hidden = q.length === 0;
+    if (countLabel) {
+      const strong = countLabel.querySelector('strong');
+      if (strong) strong.textContent = String(visible);
+    }
+    // Sync URL — bookmarkable filter state (resilience)
+    updateUrlFromFilterState();
+  }
+
+  function updateUrlFromFilterState() {
+    const params = new URLSearchParams();
+    if (filterState.visa !== 'all') params.set('visa', filterState.visa);
+    if (filterState.cost) params.set('cost', filterState.cost);
+    if (filterState.durationLong) params.set('dur', 'long');
+    const qstr = params.toString();
+    const newUrl = qstr ? `?${qstr}` : window.location.pathname;
+    if (window.location.search !== `?${qstr}` && !(qstr === '' && window.location.search === '')) {
+      window.history.replaceState({}, '', newUrl);
+    }
+  }
+
+  function applyFilterStateFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const visa = params.get('visa');
+    const cost = params.get('cost');
+    const dur = params.get('dur');
+    if (visa && ['free', 'evisa', 'required'].includes(visa)) filterState.visa = visa;
+    if (cost && ['free', 'cheap', 'premium'].includes(cost)) filterState.cost = cost;
+    if (dur === 'long') filterState.durationLong = true;
+    // Update chip UI
+    document.querySelectorAll<HTMLElement>('.va-chip').forEach((c) => {
+      const isActive = (c.dataset.filter === filterState.visa)
+        || (c.dataset.cost && c.dataset.cost === filterState.cost)
+        || (c.dataset.duration === 'long' && filterState.durationLong);
+      c.classList.toggle('va-chip--active', !!isActive);
+      c.setAttribute('aria-pressed', String(!!isActive));
+    });
+    applyVisaFilters();
   }
 
   function initVisaSearch() {
@@ -677,32 +734,63 @@ const ldJson = {
       const allChips = document.querySelectorAll<HTMLElement>('.va-chip');
 
       if (fVisa) {
-        allChips.forEach((c) => { if (c.dataset.filter) c.classList.remove('va-chip--active'); });
+        allChips.forEach((c) => {
+          if (c.dataset.filter) { c.classList.remove('va-chip--active'); c.setAttribute('aria-pressed', 'false'); }
+        });
         chip.classList.add('va-chip--active');
+        chip.setAttribute('aria-pressed', 'true');
         filterState.visa = fVisa;
       }
       if (fCost) {
         if (filterState.cost === fCost) {
           filterState.cost = null;
           chip.classList.remove('va-chip--active');
+          chip.setAttribute('aria-pressed', 'false');
         } else {
-          allChips.forEach((c) => { if (c.dataset.cost) c.classList.remove('va-chip--active'); });
+          allChips.forEach((c) => {
+            if (c.dataset.cost) { c.classList.remove('va-chip--active'); c.setAttribute('aria-pressed', 'false'); }
+          });
           chip.classList.add('va-chip--active');
+          chip.setAttribute('aria-pressed', 'true');
           filterState.cost = fCost;
         }
       }
       if (fDur === 'long') {
         filterState.durationLong = !filterState.durationLong;
         chip.classList.toggle('va-chip--active', filterState.durationLong);
+        chip.setAttribute('aria-pressed', String(filterState.durationLong));
       }
 
       applyVisaFilters();
     });
   }
 
+  // Share API — поделиться текущим состоянием реестра (mobile-first)
+  function initShareBtn() {
+    const btn = document.getElementById('visaShareBtn') as HTMLButtonElement | null;
+    if (!btn) return;
+    btn.addEventListener('click', async () => {
+      const url = window.location.href;
+      const title = 'Визовый реестр 2026 · TravelTribe';
+      const text = 'Актуальная сводка визовых правил для россиян по 70 направлениям.';
+      if (navigator.share) {
+        try { await navigator.share({ title, text, url }); } catch (e) { /* user cancelled */ }
+      } else if (navigator.clipboard) {
+        try {
+          await navigator.clipboard.writeText(url);
+          const orig = btn.querySelector('.va-cta-label');
+          if (orig) { const txt = orig.textContent; orig.textContent = 'Скопировано'; setTimeout(() => { orig.textContent = txt; }, 1800); }
+        } catch (e) { /* clipboard not available */ }
+      }
+    });
+  }
+
   initVisaSearch();
   initVisaFilters();
-  document.addEventListener('astro:page-load', () => { initVisaSearch(); initVisaFilters(); });
+  initShareBtn();
+  // Apply URL-state filters на initial load (bookmarkable filters)
+  if (window.location.search) applyFilterStateFromUrl();
+  document.addEventListener('astro:page-load', () => { initVisaSearch(); initVisaFilters(); initShareBtn(); });
 
   // Scroll-reveal через IntersectionObserver — staggered появление секций и cards
   function initReveal() {
@@ -774,6 +862,104 @@ const ldJson = {
      Type pairing: Fraunces (serif display) + PT Mono (state-document mono)
      Palette: paper cream + ink + visa-stamp red + customs blue
      ═══════════════════════════════════════════════════════════════ */
+
+  /* ──────────────── A11Y — focus-visible на всех interactive ──────────────── */
+  .visa-archive :focus-visible {
+    outline: 2px solid var(--stamp-red);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  .va-chip:focus-visible,
+  .va-cta:focus-visible {
+    outline: 2px solid var(--stamp-red);
+    outline-offset: 3px;
+  }
+  .va-card:focus-visible {
+    outline: 2px solid var(--stamp-red);
+    outline-offset: -2px;
+    background: rgba(163, 55, 42, 0.06);
+  }
+  .va-faq-q:focus-visible {
+    outline: 2px solid var(--stamp-red);
+    outline-offset: -2px;
+  }
+  .va-search-field input:focus-visible {
+    outline: none;
+    border-bottom-color: var(--stamp-red);
+  }
+
+  /* Auto dark theme — respects prefers-color-scheme */
+  @media (prefers-color-scheme: dark) {
+    html:not(.light-theme) .visa-archive {
+      --paper: #1a1612;
+      --paper-dark: #221c16;
+      --ink: #f0e8d8;
+      --ink-soft: #c4b7a0;
+      --sepia: #8a7a64;
+      --line-doc: rgba(240, 232, 216, 0.16);
+      --line-doc-faint: rgba(240, 232, 216, 0.08);
+    }
+  }
+
+  /* Verified-at banner — data freshness indicator */
+  .va-verified-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1.3rem 0 0;
+    padding: 0.45rem 0.75rem;
+    background: var(--paper-dark);
+    border-left: 3px solid var(--stamp-red);
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+  }
+  .va-verified-banner strong { color: var(--ink); font-weight: 600; text-transform: none; }
+  .va-verified-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--stamp-red);
+    box-shadow: 0 0 6px var(--stamp-red);
+    animation: vaPulse 2.4s ease-in-out infinite;
+    flex: 0 0 auto;
+  }
+  @keyframes vaPulse {
+    0%, 100% { opacity: 0.8; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .va-verified-dot { animation: none; }
+  }
+
+  /* Filter count + noscript fallback */
+  .va-filter-count {
+    margin: 0.6rem 0 0;
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    color: var(--sepia);
+    letter-spacing: 0.04em;
+  }
+  .va-filter-count strong { color: var(--ink); font-weight: 600; }
+  .va-noscript {
+    margin: 0.8rem 0 0;
+    padding: 0.6rem 0.8rem;
+    background: var(--stamp-red-soft);
+    border-left: 3px solid var(--stamp-red);
+    font-family: var(--ff-mono);
+    font-size: 0.72rem;
+    color: var(--ink);
+  }
+
+  /* Share button — Mobile-first */
+  .va-cta--share {
+    color: var(--sepia);
+    cursor: pointer;
+    font-family: var(--ff-mono);
+  }
+  .va-cta--share:hover { background: var(--sepia); color: var(--paper); transform: translateY(-1px); }
 
   /* ──────────────── SCROLL REVEAL (IntersectionObserver) ──────────────── */
   [data-reveal] {
@@ -1112,7 +1298,8 @@ const ldJson = {
     font-size: 0.72rem;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    padding: 0.4rem 0.75rem;
+    padding: 0.55rem 0.9rem;
+    min-height: 36px;
     background: var(--paper);
     border: 1px solid var(--line-doc);
     color: var(--ink-soft);
