@@ -14,7 +14,7 @@ interface Flight {
   airline: string;
   code?: string;
   duration: string;
-  priceFrom: string;
+  priceFrom?: string;
   priceUrl?: string;
   priceUrlLabel?: string;
 }
@@ -49,19 +49,23 @@ const { routes, caption } = Astro.props;
             </span>
             <span class="fr-sep" aria-hidden="true">·</span>
             <span class="fr-duration">{f.duration}</span>
-            <span class="fr-sep" aria-hidden="true">·</span>
-            <span class="fr-price">
-              <span class="fr-price-prefix">от</span>
-              <strong>{f.priceFrom}</strong>
-              {f.priceUrl && (
-                <>
-                  {' '}
-                  <a class="fr-price-link" href={f.priceUrl} target="_blank" rel="nofollow noopener sponsored">
-                    {f.priceUrlLabel || 'Aviasales'}
-                  </a>
-                </>
-              )}
-            </span>
+            {f.priceFrom && (
+              <>
+                <span class="fr-sep" aria-hidden="true">·</span>
+                <span class="fr-price">
+                  <span class="fr-price-prefix">от</span>
+                  <strong>{f.priceFrom}</strong>
+                </span>
+              </>
+            )}
+            {f.priceUrl && (
+              <>
+                <span class="fr-sep" aria-hidden="true">·</span>
+                <a class="fr-price-link" href={f.priceUrl} target="_blank" rel="nofollow noopener sponsored">
+                  {f.priceUrlLabel || 'Aviasales'}
+                </a>
+              </>
+            )}
           </li>
         ))}
       </ul>
