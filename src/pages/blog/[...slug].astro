@@ -308,9 +308,10 @@ if (post.data.howto) {
   margin-bottom: 2rem;
 }
 @media (max-width: 720px) {
-  /* Минималистичный inline-label pattern (без карточек, без жирных треков):
-     thead скрыт, каждая строка = простой block с горизонтальным разделителем,
-     внутри td=block с inline label слева мелким шрифтом */
+  /* Editorial stacked pattern (как FlightRoutes): первая колонка = серифный
+     заголовок Fraunces, остальные колонки — compact rows с тонким uppercase
+     label сверху, золотой bullet слева. Без рамок и backgrounds — никаких
+     «карточек». */
   .prose :global(.table-wrap.table-wide table),
   .prose :global(.table-wrap.table-wide thead),
   .prose :global(.table-wrap.table-wide tbody),
@@ -324,41 +325,64 @@ if (post.data.howto) {
     top: -9999px;
     left: -9999px;
   }
+  .prose :global(.table-wrap.table-wide tbody) {
+    border-top: 1px solid var(--line);
+  }
   .prose :global(.table-wrap.table-wide tr) {
-    padding: 0.8rem 0;
+    padding: 1.4rem 0 1.2rem;
     border-bottom: 1px solid var(--line);
     background: transparent;
   }
   .prose :global(.table-wrap.table-wide tr:last-child) {
     border-bottom: none;
   }
-  .prose :global(.table-wrap.table-wide td) {
-    padding: 0.15rem 0;
-    border: none;
-    font-size: 0.9rem;
-    color: var(--text);
-    line-height: 1.55;
-  }
-  .prose :global(.table-wrap.table-wide td::before) {
-    content: attr(data-label) ": ";
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: var(--text-faint);
-    text-transform: none;
-    letter-spacing: 0;
-    margin-right: 0.3rem;
-    white-space: pre;
-  }
-  /* Первая строка-колонка таблицы (имя категории) — отдельный header card-блока:
-     убираем data-label, оставляем text, делаем чуть крупнее. */
+  /* Первая колонка — серифный заголовок Fraunces, как в FlightRoutes */
   .prose :global(.table-wrap.table-wide tbody td:first-child) {
-    font-weight: 600;
-    font-size: 1rem;
-    margin-bottom: 0.3rem;
+    font-family: var(--ff-display, 'Fraunces', 'Cormorant Garamond', Georgia, serif);
+    font-size: 1.35rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
     color: var(--text);
+    margin-bottom: 0.85rem;
+    padding: 0;
   }
   .prose :global(.table-wrap.table-wide tbody td:first-child::before) {
     content: none;
+  }
+  /* Остальные колонки — золотой bullet, тихий uppercase label сверху, текст ниже */
+  .prose :global(.table-wrap.table-wide tbody td:not(:first-child)) {
+    padding: 0 0 0 0.9rem;
+    margin-top: 0.55rem;
+    border: none;
+    font-size: 0.95rem;
+    color: var(--text);
+    line-height: 1.5;
+    position: relative;
+  }
+  .prose :global(.table-wrap.table-wide tbody td:not(:first-child))::before {
+    /* Bullet + label сверху */
+    content: attr(data-label);
+    display: block;
+    font-size: 0.62rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+    margin-bottom: 0.15rem;
+    padding-left: 0;
+  }
+  .prose :global(.table-wrap.table-wide tbody td:not(:first-child))::after {
+    /* Золотой bullet слева */
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--gold-dim, #c9973a);
+    opacity: 0.55;
   }
 }
 
