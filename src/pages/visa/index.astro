@@ -888,18 +888,9 @@ const ldJson = {
     border-bottom-color: var(--stamp-red);
   }
 
-  /* Auto dark theme — respects prefers-color-scheme */
-  @media (prefers-color-scheme: dark) {
-    html:not(.light-theme) .visa-archive {
-      --paper: #1a1612;
-      --paper-dark: #221c16;
-      --ink: #f0e8d8;
-      --ink-soft: #c4b7a0;
-      --sepia: #8a7a64;
-      --line-doc: rgba(240, 232, 216, 0.16);
-      --line-doc-faint: rgba(240, 232, 216, 0.08);
-    }
-  }
+  /* Dark theme только при ручном toggle через .dark-theme — НЕ через
+     prefers-color-scheme: dark. Auto-mode конфликтовал с manual toggle
+     и игнорировал выбор юзера. Site-wide theme handling в Layout.astro. */
 
   /* Verified-at banner — data freshness indicator */
   .va-verified-banner {
