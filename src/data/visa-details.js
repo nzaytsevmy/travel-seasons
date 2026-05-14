@@ -1,105 +1,110 @@
-// Per-country visa details for Russian passport holders, mid-2026.
-// Keys: slug from directions.js. Values: { duration, cost, timing }.
-// Используется на /visa/ hub для per-card facts.
+// Per-country visa details for Russian passport holders.
+// Verified May 2026 through 5 parallel research agents using:
+// — МИД РФ (kdmid.ru, mid.ru and country embassy subdomains)
+// — официальные иммиграционные сайты стран
+// — VFS Global / BLS / GVCW / Almaviva (визовые центры)
+// — посольства стран в РФ
+//
+// Все данные имеют source в notes/sources block на странице.
+// Confidence: high (официальный источник) если не указано otherwise.
 
 const DEFAULT_BY_VISA = {
   free: { duration: 'до 90 дней', cost: 'бесплатно', timing: 'штамп на границе' },
-  evisa: { duration: '30 дней', cost: '$30–50', timing: '1–3 дня' },
+  evisa: { duration: '30 дней', cost: '$30–50', timing: '1–3 дня онлайн' },
   required: { duration: '30 дней', cost: '$50–200', timing: '15–30 дней' },
 };
 
 const VISA_DETAILS = {
-  // ─── Безвиз — близкое зарубежье и СНГ
-  'turkey':              { duration: '60 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'georgia':             { duration: '365 дней',    cost: 'бесплатно',     timing: 'штамп на границе' },
-  'armenia':             { duration: '180 дней',    cost: 'бесплатно',     timing: 'штамп на границе' },
-  'kyrgyzstan':          { duration: '60 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'kazakhstan':          { duration: '90 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'uzbekistan':          { duration: '90 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'tajikistan':          { duration: '90 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'abkhazia':            { duration: 'без срока',   cost: 'бесплатно',     timing: 'паспорт РФ' },
-  'serbia':              { duration: '30 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
+  // ═══════════════════════════════════════════════════════════════════
+  // БЕЗВИЗ — СНГ и близкое зарубежье
+  // ═══════════════════════════════════════════════════════════════════
+  'turkey':              { duration: '60 дней (макс 90/180)',  cost: 'бесплатно',     timing: 'штамп на границе' },
+  'georgia':             { duration: '360 дней',               cost: 'бесплатно',     timing: 'штамп + медстраховка с 01.01.2026' },
+  'armenia':             { duration: '180 дней в году',        cost: 'бесплатно',     timing: 'авиа: внутренний РФ паспорт' },
+  'kyrgyzstan':          { duration: '30 дней без рег. (до 90)', cost: 'бесплатно',   timing: 'внутренний РФ для взрослых' },
+  'kazakhstan':          { duration: '30 дней без рег. (до 90)', cost: 'бесплатно',   timing: 'внутренний РФ для взрослых' },
+  'uzbekistan':          { duration: '60 дней',                cost: 'бесплатно',     timing: 'штамп; рег. отель >15 дн' },
+  'tajikistan':          { duration: '90 дней',                cost: 'бесплатно',     timing: 'штамп; рег. через отель' },
+  'abkhazia':            { duration: '90 дней',                cost: 'бесплатно',     timing: 'через ПП Псоу' },
+  'serbia':              { duration: '30 дней (макс 90/180)',  cost: 'бесплатно',     timing: 'штамп + белый картон' },
 
-  // ─── Безвиз — Азия
-  'china':               { duration: '30 дней',     cost: 'бесплатно',     timing: 'до 14.09.2026' },
-  'hainan':              { duration: '30 дней',     cost: 'бесплатно',     timing: 'до 14.09.2026' },
-  'hong-kong':           { duration: '14 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'thailand':            { duration: '60 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'malaysia':            { duration: '30 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'philippines':         { duration: '30 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'maldives':            { duration: '30 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'vietnam':             { duration: '45 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
+  // ═══════════════════════════════════════════════════════════════════
+  // БЕЗВИЗ — Азия (тестовый Китай!) и Ближний Восток
+  // ═══════════════════════════════════════════════════════════════════
+  'china':               { duration: '30 дней',                cost: 'бесплатно',     timing: 'тестовый режим до 14.09.2026' },
+  'hainan':              { duration: '30 дней',                cost: 'бесплатно',     timing: 'постоянный, только остров' },
+  'hong-kong':           { duration: '14 дней',                cost: 'бесплатно',     timing: 'штамп; не = въезд в КНР' },
+  'thailand':            { duration: '60 дней',                cost: 'бесплатно',     timing: 'штамп + TM6 (под угрозой сокращения)' },
+  'vietnam':             { duration: '45 дней',                cost: 'бесплатно',     timing: 'штамп; действует до 14.03.2028' },
+  'malaysia':            { duration: '30 дней',                cost: 'бесплатно',     timing: 'штамп + MDAC за 72 ч' },
+  'philippines':         { duration: '30 дней',                cost: 'бесплатно',     timing: 'штамп + eTravel QR' },
+  'maldives':            { duration: '30 дней',                cost: 'бесплатно',     timing: 'VOA + Imuga 96 ч' },
+  'uae':                 { duration: '90/180 дней',            cost: 'бесплатно',     timing: 'visa on arrival' },
+  'israel':              { duration: '90/180 дней',            cost: '25 шекелей',    timing: 'ETA-IL онлайн (~$6)' },
 
-  // ─── Безвиз — Африка / БВ
-  'uae':                 { duration: '90 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'south-africa':        { duration: '90 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'morocco':             { duration: '90 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'mauritius':           { duration: '60 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'seychelles':          { duration: '90 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'israel':              { duration: '90 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
+  // ═══════════════════════════════════════════════════════════════════
+  // БЕЗВИЗ — Африка и Латам
+  // ═══════════════════════════════════════════════════════════════════
+  'south-africa':        { duration: '90 дней',                cost: 'бесплатно',     timing: 'штамп на границе' },
+  'morocco':             { duration: '90 дней',                cost: 'бесплатно',     timing: 'штамп на границе' },
+  'mauritius':           { duration: '90 дней',                cost: 'бесплатно',     timing: 'visitor permit' },
+  'seychelles':          { duration: '90 дней',                cost: '€10 ETA',       timing: 'ETA онлайн + страховка $50k' },
+  'mexico':              { duration: '180 дней',               cost: 'SAE бесплатно',  timing: 'SAE онлайн + FMM в билете' },
+  'cuba':                { duration: '90 дней',                cost: 'бесплатно',     timing: 'двустороннее соглашение' },
+  'dominican-republic':  { duration: '30 дней (до 90)',        cost: '$10 в билете',  timing: 'e-Ticket онлайн' },
+  'argentina':           { duration: '90 дней',                cost: 'бесплатно',     timing: 'штамп на границе' },
+  'brazil':              { duration: '90 дней (до 180)',       cost: 'бесплатно',     timing: 'штамп на границе' },
+  'peru':                { duration: '183 дня',                cost: 'бесплатно',     timing: 'онлайн-рег. 72 ч с 2026' },
+  'chile':               { duration: '90 дней',                cost: 'бесплатно',     timing: 'Tarjeta Única' },
+  'chile-patagonia':     { duration: '90 дней',                cost: 'бесплатно',     timing: 'Tarjeta Única (Чили)' },
+  'chile-fjords':        { duration: '90 дней',                cost: 'бесплатно',     timing: 'Tarjeta Única (Чили)' },
+  'bolivia':             { duration: '90 дней (макс 180/год)', cost: 'бесплатно',     timing: 'штамп на границе' },
+  'ecuador':             { duration: '90 дней',                cost: 'бесплатно',     timing: 'штамп T-3; Галапагосы +$220' },
+  'guatemala-belize':    { duration: '90 дней',                cost: 'бесплатно',     timing: 'CA-4 + Belize exit $40' },
+  'costa-rica-panama':   { duration: '90 дней',                cost: 'бесплатно',     timing: 'штамп; Панама $5 наземно' },
+  'antarctica':          { duration: 'круиз',                  cost: '$6 000–25 000',  timing: 'через АР/ЧЛ безвиз' },
 
-  // ─── Безвиз — Латам и Карибы
-  'mexico':              { duration: '180 дней',    cost: 'бесплатно',     timing: 'FMM на границе' },
-  'cuba':                { duration: '90 дней',     cost: 'tourist card $25', timing: 'на границе/туроператор' },
-  'dominican-republic':  { duration: '30 дней',     cost: '$10 tourist card', timing: 'на границе' },
-  'argentina':           { duration: '90 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'brazil':              { duration: '90 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'peru':                { duration: '183 дня',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'chile':               { duration: '90 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'chile-patagonia':     { duration: '90 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'chile-fjords':        { duration: '90 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'bolivia':             { duration: '90 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'ecuador':             { duration: '90 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
-  'guatemala-belize':    { duration: '90 дней',     cost: 'бесплатно',     timing: 'CA-4 на границе' },
-  'costa-rica-panama':   { duration: '90 дней',     cost: 'бесплатно',     timing: 'штамп на границе' },
+  // ═══════════════════════════════════════════════════════════════════
+  // eVisa / VOA / ETA — онлайн-режимы
+  // ═══════════════════════════════════════════════════════════════════
+  'kenya':               { duration: '90 + 90 дней',           cost: '$30 eTA',       timing: '48–72 ч онлайн' },
+  'tanzania':            { duration: '90 дней',                cost: '$50',           timing: 'до 10 дней онлайн' },
+  'madagascar':          { duration: '15/30/60 дн = €30/35/40', cost: '€30+',         timing: '3–5 дней онлайн' },
+  'egypt':               { duration: '30 дней',                cost: '$25 eVisa / $30 VOA', timing: 'до 7 дней' },
+  'india-goa':           { duration: '30 дней (double)',       cost: 'бесплатно для РФ', timing: 'до 30 дней онлайн' },
+  'sri-lanka':           { duration: '30 дней (double)',       cost: 'бесплатно для РФ', timing: '24–72 ч онлайн' },
+  'cambodia':            { duration: '30 дней',                cost: '$36',           timing: '3 дня онлайн' },
+  'south-korea':         { duration: '90 дн, K-ETA 3 года',    cost: '~$8 (₩10 000)', timing: '24–72 ч K-ETA' },
+  'jordan':              { duration: '30 дн (с 13.12.2026 безвиз)', cost: 'JD 40 (~$56)', timing: '3–5 дней онлайн' },
+  'bali':                { duration: '30 + 30 дней',           cost: 'IDR 500k (~$35)', timing: 'VOA или eVOA 1–3 дня' },
+  'sumatra-kalimantan':  { duration: '30 + 30 дней',           cost: 'IDR 500k (~$35)', timing: 'VOA / eVOA' },
+  'raja-ampat':          { duration: '30 + 30 дней',           cost: 'IDR 500k + Marine Park', timing: 'VOA через Sorong' },
+  'cyprus':              { duration: '90 дней',                cost: 'бесплатно',     timing: 'pro-visa (нет прямых рейсов из РФ)' },
+  'nepal':               { duration: '15/30/90 дн = $30/50/125', cost: '$30+',        timing: 'мгновенно VOA' },
+  'iran':                { duration: '30 дней',                cost: '$75 eVisa',     timing: '5–14 дней онлайн' },
 
-  // ─── Антарктида (через Чили/Аргентину)
-  'antarctica':          { duration: 'круиз',       cost: 'виза Чили/Арг.',   timing: 'через тур-оператора' },
+  // ═══════════════════════════════════════════════════════════════════
+  // ВИЗА ОБЯЗАТЕЛЬНА — Шенген, США, Япония, Австралия, Сингапур
+  // ═══════════════════════════════════════════════════════════════════
+  'switzerland':         { duration: '90/180 (Шенген)',        cost: '€90 + ~2400₽',   timing: '15–60 дней VFS' },
+  'italy-north':         { duration: '90/180 (Шенген)',        cost: '€90 + €30',     timing: '30–60 дней (e-виза 5 дн с 06.2026)' },
+  'italy-south':         { duration: '90/180 (Шенген)',        cost: '€90 + €30',     timing: '30–60 дней (e-виза 5 дн с 06.2026)' },
+  'spain':               { duration: '90/180 (Шенген)',        cost: '€90 + €35 BLS', timing: '10–15 дней (single-entry)' },
+  'greece':              { duration: '90/180 (Шенген)',        cost: '€90 + €30',     timing: '5–15 дней (самый лояльный)' },
+  'croatia':             { duration: '90/180 (Шенген)',        cost: '€90 + €30',     timing: '10–60 дней VFS' },
+  'finland':             { duration: '90/180 (закрыт туризм)', cost: '€90 + VFS',     timing: 'не выдают с 30.09.2022' },
+  'iceland':             { duration: '90/180 (через 3-ю)',     cost: 'Шенген 3-й страны', timing: 'посольство закрыто с 08.2023' },
+  'norway':              { duration: '90/180 (риск отказа)',   cost: '€90 + VFS',     timing: '15–45 дней; отказы на границе' },
 
-  // ─── eVisa
-  'kenya':               { duration: '90 дней',     cost: '$51',           timing: '2–7 дней онлайн' },
-  'tanzania':            { duration: '90 дней',     cost: '$50',           timing: '5–10 дней онлайн' },
-  'madagascar':          { duration: '60 дней',     cost: '$45',           timing: '7 дней онлайн' },
-  'egypt':               { duration: '30 дней',     cost: '$25',           timing: '7 дней онлайн' },
-  'india-goa':           { duration: '60 дней',     cost: '$25',           timing: '3 дня онлайн' },
-  'sri-lanka':           { duration: '30 дней',     cost: '$35',           timing: '24 часа онлайн' },
-  'cambodia':            { duration: '30 дней',     cost: '$36',           timing: '24–72 ч онлайн' },
-  'south-korea':         { duration: '60 дней',     cost: '$10 (K-ETA)',   timing: '72 ч онлайн' },
-  'jordan':              { duration: '30 дней',     cost: 'JD 40',         timing: '3–5 дней онлайн' },
-  'bali':                { duration: '30 + 30 дн.', cost: '$35 VOA',       timing: 'на границе' },
-  'sumatra-kalimantan':  { duration: '30 дней',     cost: '$35 VOA',       timing: 'на границе' },
-  'raja-ampat':          { duration: '30 дней',     cost: '$35 VOA',       timing: 'на границе' },
-  'cyprus':              { duration: '90 дней',     cost: 'бесплатно',     timing: 'pro-visa онлайн 1 день' },
-  'nepal':               { duration: '30 дней',     cost: '$30 VOA',       timing: 'на границе' },
-
-  // ─── Required — Шенген (90/180)
-  'switzerland':         { duration: '90 дн./180',  cost: '€90 + сбор',    timing: '15–45 дней' },
-  'italy-north':         { duration: '90 дн./180',  cost: '€90 + сбор',    timing: '15–45 дней' },
-  'italy-south':         { duration: '90 дн./180',  cost: '€90 + сбор',    timing: '15–45 дней' },
-  'spain':               { duration: '90 дн./180',  cost: '€90 + сбор',    timing: '15–45 дней' },
-  'greece':              { duration: '90 дн./180',  cost: '€90 + сбор',    timing: '15–45 дней' },
-  'croatia':             { duration: '90 дн./180',  cost: '€90 + сбор',    timing: '15–45 дней' },
-  'finland':             { duration: '90 дн./180',  cost: '€90 + сбор',    timing: '30–60 дней' },
-  'iceland':             { duration: '90 дн./180',  cost: '€90 + сбор',    timing: '15–30 дней' },
-  'norway':              { duration: '90 дн./180',  cost: '€90 + сбор',    timing: '15–45 дней' },
-
-  // ─── Required — Северная Америка
-  'usa':                 { duration: 'до 180 дней', cost: '$185',          timing: '6–12 мес. (Варшава)' },
-  'canada-rockies':      { duration: 'до 180 дней', cost: 'CA$100',        timing: '2–3 мес.' },
-  'canada-east':         { duration: 'до 180 дней', cost: 'CA$100',        timing: '2–3 мес.' },
-
-  // ─── Required — Океания
-  'australia-east':      { duration: '90 дней',     cost: 'A$190',         timing: '2–6 недель' },
-  'australia-north':     { duration: '90 дней',     cost: 'A$190',         timing: '2–6 недель' },
-  'new-zealand':         { duration: '90 дней',     cost: 'NZ$246',        timing: '20+ дней' },
-
-  // ─── Required — Азия (через турагентство)
-  'japan':               { duration: '15 дней (TO)',cost: 'бесплатно',     timing: '5–10 дней через TO' },
-  'japan-hokkaido':      { duration: '15 дней (TO)',cost: 'бесплатно',     timing: '5–10 дней через TO' },
-  'singapore':           { duration: '30 дней',     cost: 'S$45',          timing: '3–7 дней' },
-
-  // ─── Required — Иран
-  'iran':                { duration: '30 дней',     cost: '$80',           timing: '5–7 дней онлайн' },
+  'usa':                 { duration: '6 мес/въезд, виза 3 года', cost: '$185 MRV',    timing: 'Варшава 14–30 дн или Астана 2027–2028' },
+  'canada-rockies':      { duration: '6 мес/въезд, виза 10 лет', cost: 'CA$100 + биом. CA$85', timing: '4–8 недель' },
+  'canada-east':         { duration: '6 мес/въезд, виза 10 лет', cost: 'CA$100 + биом. CA$85', timing: '4–8 недель' },
+  'australia-east':      { duration: '3/6/12 мес (subclass 600)', cost: 'AUD 200',     timing: '2 нед — 3 мес' },
+  'australia-north':     { duration: '3/6/12 мес (subclass 600)', cost: 'AUD 200',     timing: '2 нед — 3 мес' },
+  'new-zealand':         { duration: '9 мес/18 мес',           cost: 'NZD 246 + NZD 100 IVL', timing: '20–25 дней' },
+  'japan':               { duration: '15/30/90 дн (мульти до 3 лет)', cost: 'бесплатно + JVAC 970₽', timing: 'от 4 дней через JVAC' },
+  'japan-hokkaido':      { duration: '15/30/90 дн (мульти до 3 лет)', cost: 'бесплатно + JVAC 970₽', timing: 'от 4 дней через JVAC' },
+  'singapore':           { duration: '30 дн e-Visa',           cost: 'SGD 30 + AVA $60–100', timing: '3–4 дня через AVA' },
 };
 
 export function getVisaDetails(slug, visaType) {
