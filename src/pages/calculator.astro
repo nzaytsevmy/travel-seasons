@@ -16,13 +16,11 @@ PRICES.forEach((p, i) => {
 
 const iataToSlug: Record<string, string> = {};
 const iataToSeasons: Record<string, any> = {};
-const iataToSeasonText: Record<string, any> = {};
 const iataToBudgetSlug: Record<string, string> = {};
 DIRECTIONS.forEach((d: any) => {
   if (d.price?.iata) {
     iataToSlug[d.price.iata] = d.slug;
     iataToSeasons[d.price.iata] = d.r;
-    iataToSeasonText[d.price.iata] = d.t;
     if ((realBudgets as any)[d.slug]) iataToBudgetSlug[d.price.iata] = d.slug;
   }
 });
@@ -47,7 +45,7 @@ const ldJson = {
       "applicationCategory": "TravelApplication",
       "operatingSystem": "Any",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "RUB" },
-      "featureList": ["70 направлений","Сравнение до 3 стран","Сезонный коэффициент по 12 месяцам","Расчёт 1–4 путешественников","Виза в разбивке","Курс ЦБ РФ в реальном времени","Реальные траты 2026 из 12 источников"],
+      "featureList": ["70 направлений","Сравнение до 3 стран","Сезонный коэффициент по 12 месяцам","Расчёт 1–4 путешественников","Виза в разбивке","Курс ЦБ РФ","Реальные траты 2026 из 12 источников"],
       "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://t.me/traveltriberu" }
     },
     {
@@ -58,19 +56,19 @@ const ldJson = {
       "step": [
         { "@type":"HowToStep", "position":1, "name":"Выбрать направление", "text":"Одна из 70 стран. Опционально добавь ещё для сравнения." },
         { "@type":"HowToStep", "position":2, "name":"Указать месяц поездки", "text":"Калькулятор учтёт сезонный коэффициент: пик +30%, не сезон −30%." },
-        { "@type":"HowToStep", "position":3, "name":"Длительность и путешественники", "text":"От 1 до 30 дней, от 1 до 4 человек. Отель не удваивается, перелёт и еда — да." },
-        { "@type":"HowToStep", "position":4, "name":"Уровень комфорта", "text":"Эконом / комфорт / люкс. Влияет на отель, еду, перелёт." },
-        { "@type":"HowToStep", "position":5, "name":"Скопировать в Telegram", "text":"Готовая сводка для пересылки в чат или сохранения." }
+        { "@type":"HowToStep", "position":3, "name":"Длительность и путешественники", "text":"От 1 до 30 дней, от 1 до 4 человек." },
+        { "@type":"HowToStep", "position":4, "name":"Уровень комфорта", "text":"Эконом / комфорт / люкс." },
+        { "@type":"HowToStep", "position":5, "name":"Скопировать в Telegram", "text":"Готовая сводка для пересылки в чат." }
       ]
     },
     {
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type":"Question", "name":"Сколько стоит поездка из Москвы в 2026 году?", "acceptedAnswer":{"@type":"Answer","text":"Зависит от направления и сезона. Турция в комфортном варианте на 7 дней — около 90–110 тысяч ₽ на одного. Грузия — 50–70 тысяч ₽. Бали — 130–180 тысяч ₽. Точную цифру под твои даты считает калькулятор."} },
-        { "@type":"Question", "name":"Как калькулятор учитывает сезонность?", "acceptedAnswer":{"@type":"Answer","text":"Каждая страна имеет 12-месячный рейтинг: пик (+30% к перелёту), хорошо (норма), нормально (−15%), не сезон (−30%). Подсказывает, в каком месяце поездка обойдётся дешевле всего."} },
-        { "@type":"Question", "name":"Можно ли сравнить несколько направлений?", "acceptedAnswer":{"@type":"Answer","text":"Да, до 3 стран рядом с одинаковыми параметрами — дни, путешественники, месяц, уровень."} },
-        { "@type":"Question", "name":"Откуда берутся цены?", "acceptedAnswer":{"@type":"Answer","text":"Базовые цены 70 направлений собраны вручную: перелёт по средней Aviasales, отель по медиане Ostrovok/Booking 3*/4*/5*, еда — типовой день. Реальные траты — агрегация из 12 источников: Самокатус, make-trip, BudgetYourTrip, IndieTraveller и др."} },
-        { "@type":"Question", "name":"Курс рубля учитывается?", "acceptedAnswer":{"@type":"Answer","text":"Да. Курс подтягивается через open exchange rates в реальном времени. Переключение ₽/$ одной кнопкой."} }
+        { "@type":"Question", "name":"Сколько стоит поездка из Москвы в 2026?", "acceptedAnswer":{"@type":"Answer","text":"Зависит от направления и сезона. Турция в комфортном варианте на 7 дней — около 90–110 тысяч ₽ на одного. Грузия — 50–70 тысяч ₽. Бали — 130–180 тысяч ₽."} },
+        { "@type":"Question", "name":"Как учитывается сезонность?", "acceptedAnswer":{"@type":"Answer","text":"Каждая страна имеет 12-месячный рейтинг: пик +30%, хорошо ±0%, нормально −15%, не сезон −30%. Подсвечивает лучший месяц."} },
+        { "@type":"Question", "name":"Сравнение нескольких направлений?", "acceptedAnswer":{"@type":"Answer","text":"Да, до 3 стран с одинаковыми параметрами."} },
+        { "@type":"Question", "name":"Откуда цены?", "acceptedAnswer":{"@type":"Answer","text":"Базовые — вручную по средней Aviasales / медиане Ostrovok. Реальные траты — 12 источников: Самокатус, make-trip, BudgetYourTrip, IndieTraveller и др."} },
+        { "@type":"Question", "name":"Учитывает курс рубля?", "acceptedAnswer":{"@type":"Answer","text":"Да, в реальном времени через open exchange rates."} }
       ]
     },
     {
@@ -84,243 +82,204 @@ const ldJson = {
 };
 ---
 <Layout
-  title="Калькулятор бюджета путешествия 2026 — 70 стран, сравнение, реальные траты"
-  description="Интерактивный калькулятор стоимости поездки из Москвы на 2026: 70 направлений, сравнение до 3 стран, сезонный коэффициент по месяцам, реальные траты из 12 источников, курс ЦБ РФ. Сколько стоит твоя поездка — за 30 секунд."
+  title="Калькулятор бюджета путешествия 2026 — 70 стран · реальные траты"
+  description="Калькулятор стоимости поездки из Москвы 2026: 70 направлений, сравнение до 3 стран, сезон по месяцам, реальные траты из 12 источников, курс ЦБ РФ."
   canonical="https://traveltribe.ru/calculator/"
   ogTitle="Калькулятор бюджета — TravelTribe"
-  ogDescription="70 направлений · сравнение · сезонный коэффициент · реальные траты 2026"
+  ogDescription="70 направлений · сравнение · сезон · реальные траты 2026"
   ogType="website"
   ldJson={ldJson}
 >
   <Nav active="calculator" />
 
-  <main id="main" class="atlas">
-    <!-- Decorative grid paper background -->
-    <div class="atlas-paper" aria-hidden="true"></div>
+  <main id="main" class="tc">
 
-    <!-- ───────────── HERO ─────────────────────────────────────── -->
-    <section class="hero">
-      <div class="hero-inner">
-        <div class="hero-eyebrow">
-          <span class="eyebrow-dot" aria-hidden="true"></span>
-          <span>Calculator · издание 2026</span>
-        </div>
-        <h1 class="hero-title">
-          <span class="hero-line">Сколько</span>
-          <span class="hero-line">стоит твоя</span>
-          <span class="hero-line"><em>поездка</em></span>
-        </h1>
-        <p class="hero-deck">
-          70 направлений мира · сравнение до трёх стран · сезонный коэффициент по двенадцати месяцам · виза в разбивке · реальные траты путешественников 2026 из двенадцати источников.
-        </p>
-        <div class="hero-stats">
-          <div class="stat">
-            <span class="stat-num">70</span>
-            <span class="stat-label">направлений</span>
-          </div>
-          <div class="stat">
-            <span class="stat-num">12</span>
-            <span class="stat-label">источников</span>
-          </div>
-          <div class="stat">
-            <span class="stat-num">2026</span>
-            <span class="stat-label">актуально</span>
-          </div>
-        </div>
+    <!-- ───────────── HERO ──────────────────────────────────── -->
+    <section class="tc-hero">
+      <div class="tc-container">
+        <div class="tc-eyebrow">Калькулятор · 2026</div>
+        <h1 class="tc-h1">Сколько стоит твоя поездка</h1>
+        <p class="tc-lede">70 направлений · сезонный коэффициент по 12 месяцам · сравнение до трёх стран · реальные траты путешественников из 12 источников.</p>
       </div>
     </section>
 
-    <!-- ─────────── EDITORIAL SPLIT: FORM + COMPUTE ────────────── -->
-    <section class="spread">
-      <div class="spread-inner">
-        <!-- LEFT: form column -->
-        <div class="form-col">
-          <div class="col-marker"><span>01</span> Параметры</div>
-
-          <div class="field">
-            <label class="field-label">Направление</label>
-            <select class="field-select" id="calcRegion" aria-label="Выберите регион">
-              {Object.entries(groups).map(([label, items]) => (
-                <optgroup label={label}>
-                  {items.map(({ i, name }) => (
-                    <option value={i}>{name}</option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-            <select class="field-select field-select--add" id="addCountrySelect" aria-label="Сравнить с другой страной" hidden>
-              <option value="">+ сравнить с другой страной</option>
-              {Object.entries(groups).map(([label, items]) => (
-                <optgroup label={label}>
-                  {items.map(({ i, name }) => (
-                    <option value={i}>{name}</option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-          </div>
-
-          <div class="field-row">
-            <div class="field">
-              <label class="field-label">Путешественников</label>
-              <div class="seg" id="travelersGroup" role="group" aria-label="Число путешественников">
-                <button class="seg-btn active" data-tr="1" aria-pressed="true">1</button>
-                <button class="seg-btn" data-tr="2" aria-pressed="false">2</button>
-                <button class="seg-btn" data-tr="3" aria-pressed="false">3</button>
-                <button class="seg-btn" data-tr="4" aria-pressed="false">4</button>
-              </div>
+    <!-- ───────────── FORM BAR (horizontal, like Google Flights) ─ -->
+    <section class="tc-form-section">
+      <div class="tc-container">
+        <form class="tc-form" id="tcForm" onsubmit="return false">
+          <div class="tc-form-grid">
+            <div class="tc-field tc-field--country">
+              <label class="tc-field-label" for="calcRegion">Направление</label>
+              <select class="tc-input tc-input--select" id="calcRegion">
+                {Object.entries(groups).map(([label, items]) => (
+                  <optgroup label={label}>
+                    {items.map(({ i, name }) => (
+                      <option value={i}>{name}</option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
             </div>
 
-            <div class="field">
-              <label class="field-label">Дней</label>
-              <div class="stepper">
-                <button class="stepper-btn" id="daysDown" type="button" aria-label="Меньше дней">−</button>
-                <span class="stepper-val" id="calcDaysDisplay" aria-live="polite">7</span>
-                <button class="stepper-btn" id="daysUp" type="button" aria-label="Больше дней">+</button>
+            <div class="tc-field">
+              <label class="tc-field-label">Месяц</label>
+              <select class="tc-input tc-input--select" id="monthSelect">
+                <option value="0">Любой</option>
+                {MONTH_NAMES.map((m, i) => (
+                  <option value={i + 1}>{['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'][i]}</option>
+                ))}
+              </select>
+            </div>
+
+            <div class="tc-field">
+              <label class="tc-field-label">Дней</label>
+              <div class="tc-stepper">
+                <button class="tc-stepper-btn" id="daysDown" type="button" aria-label="Меньше дней">−</button>
+                <span class="tc-stepper-val" id="calcDaysDisplay">7</span>
+                <button class="tc-stepper-btn" id="daysUp" type="button" aria-label="Больше дней">+</button>
                 <input type="hidden" id="calcDays" value="7" />
               </div>
-              <div class="quick-days" role="group" aria-label="Быстрый выбор дней">
-                <button class="qd-chip" type="button" data-d="3">3</button>
-                <button class="qd-chip" type="button" data-d="7">7</button>
-                <button class="qd-chip" type="button" data-d="10">10</button>
-                <button class="qd-chip" type="button" data-d="14">14</button>
-                <button class="qd-chip" type="button" data-d="21">21</button>
-                <button class="qd-chip" type="button" data-d="30">30</button>
+            </div>
+
+            <div class="tc-field">
+              <label class="tc-field-label">Путешественников</label>
+              <div class="tc-stepper">
+                <button class="tc-stepper-btn" id="travDown" type="button" aria-label="Меньше людей">−</button>
+                <span class="tc-stepper-val" id="travelersDisplay">1</span>
+                <button class="tc-stepper-btn" id="travUp" type="button" aria-label="Больше людей">+</button>
+              </div>
+            </div>
+
+            <div class="tc-field tc-field--level">
+              <label class="tc-field-label">Уровень</label>
+              <div class="tc-seg" id="levelGroup" role="group" aria-label="Уровень комфорта">
+                <button class="tc-seg-btn active" data-lvl="0" aria-pressed="true">Эконом</button>
+                <button class="tc-seg-btn" data-lvl="1" aria-pressed="false">Комфорт</button>
+                <button class="tc-seg-btn" data-lvl="2" aria-pressed="false">Люкс</button>
+              </div>
+            </div>
+
+            <div class="tc-field">
+              <label class="tc-field-label">Валюта</label>
+              <div class="tc-seg tc-seg--small" id="currGroup" role="group" aria-label="Валюта">
+                <button class="tc-seg-btn active" data-cur="rub" aria-pressed="true">₽</button>
+                <button class="tc-seg-btn" data-cur="usd" aria-pressed="false">$</button>
               </div>
             </div>
           </div>
 
-          <div class="field">
-            <label class="field-label">
-              Уровень комфорта
-              <button class="lvl-info" id="levelInfoBtn" type="button" aria-label="Подробнее об уровнях" aria-expanded="false">i</button>
-            </label>
-            <div class="seg seg--wide" id="levelGroup" role="group">
-              <button class="seg-btn active" data-lvl="0" aria-pressed="true">Эконом</button>
-              <button class="seg-btn" data-lvl="1" aria-pressed="false">Комфорт</button>
-              <button class="seg-btn" data-lvl="2" aria-pressed="false">Люкс</button>
-            </div>
-            <div class="lvl-tip" id="levelInfoTip" hidden>
-              <strong>Эконом:</strong> хостел / 3*, локальная еда, метро.<br>
-              <strong>Комфорт:</strong> 4* отель, рестораны, такси.<br>
-              <strong>Люкс:</strong> 5*+, премиум-кухня, частный транспорт.
-            </div>
-          </div>
-
-          <div class="field">
-            <label class="field-label">Месяц поездки</label>
-            <div class="months" id="monthChips" role="group" aria-label="Выбор месяца">
-              {MONTH_NAMES.map((m, i) => (
-                <button class="month" type="button" data-m={i + 1} aria-label={`${m}`}>
-                  <span class="m-num">{String(i+1).padStart(2,'0')}</span>
-                  <span class="m-name">{m}</span>
-                  <span class="m-dot" aria-hidden="true"></span>
-                </button>
+          <div class="tc-form-extra">
+            <select class="tc-add-country" id="addCountrySelect" aria-label="Сравнить с другой страной" hidden>
+              <option value="">+ Сравнить с другой страной</option>
+              {Object.entries(groups).map(([label, items]) => (
+                <optgroup label={label}>
+                  {items.map(({ i, name }) => (
+                    <option value={i}>{name}</option>
+                  ))}
+                </optgroup>
               ))}
-            </div>
-            <div class="month-legend" aria-hidden="true">
-              <span class="lg-item"><i class="lg-dot lg-peak"></i> Пик</span>
-              <span class="lg-item"><i class="lg-dot lg-good"></i> Хорошо</span>
-              <span class="lg-item"><i class="lg-dot lg-ok"></i> Норма</span>
-              <span class="lg-item"><i class="lg-dot lg-bad"></i> Не сезон</span>
-            </div>
+            </select>
+            <span class="tc-rate" id="calcRateLabel">1 $ = 90 ₽ · загрузка курса…</span>
           </div>
+        </form>
+      </div>
+    </section>
 
-          <div class="field">
-            <label class="field-label">Валюта</label>
-            <div class="seg" id="currGroup" role="group">
-              <button class="seg-btn active" data-cur="rub" aria-pressed="true">₽ рубли</button>
-              <button class="seg-btn" data-cur="usd" aria-pressed="false">$ доллары</button>
+    <!-- ───────────── RESULT — full width hero panel ─────────── -->
+    <section class="tc-result-section">
+      <div class="tc-container">
+        <div id="calcResult" class="tc-result"></div>
+      </div>
+    </section>
+
+    <!-- ───────────── BUDGET BLOCK (real travelers data) ──────── -->
+    <section class="tc-section">
+      <div class="tc-container">
+        <div id="budgetBlocksHost" class="tc-bb-host">
+          {Object.keys(realBudgets).filter(k => k !== '_meta').map((slug) => (
+            <div class="tc-bb-wrap" data-slug={slug} hidden>
+              <BudgetBlock slug={slug} />
             </div>
-          </div>
+          ))}
         </div>
-
-        <!-- RIGHT: compute column (sticky on desktop) -->
-        <aside class="compute-col" id="computeCol">
-          <div class="compute-marker"><span>02</span> Итог</div>
-          <div id="calcResult" class="compute-result"></div>
-          <p class="rate-line"><span id="calcRateLabel">1 $ = 90 ₽ · загрузка курса…</span></p>
-        </aside>
       </div>
     </section>
 
-    <!-- ─────────── BUDGET BLOCK (real traveler data) ──────────── -->
-    <section class="real-section">
-      <div class="real-marker"><span>03</span> Что говорит интернет</div>
-      <div id="budgetBlocksHost" class="bb-host">
-        {Object.keys(realBudgets).filter(k => k !== '_meta').map((slug) => (
-          <div class="bb-wrap" data-slug={slug} hidden>
-            <BudgetBlock slug={slug} />
-          </div>
-        ))}
+    <!-- ───────────── TIPS ───────────────────────────────────── -->
+    <section class="tc-section tc-tips">
+      <div class="tc-container">
+        <div class="tc-section-head">
+          <span class="tc-section-num">01</span>
+          <h2 class="tc-section-title">Полезное при планировании</h2>
+        </div>
+        <div class="tc-tips-grid">
+          <article class="tc-tip">
+            <div class="tc-tip-icon">📅</div>
+            <h3 class="tc-tip-title">Бронируй за 60+ дней</h3>
+            <p class="tc-tip-body">Авиабилеты дешевле на 15–20%. Отели — без разницы.</p>
+          </article>
+          <article class="tc-tip">
+            <div class="tc-tip-icon">🛡</div>
+            <h3 class="tc-tip-title">Страховка не опция</h3>
+            <p class="tc-tip-body">Стоит 2 000 ₽, спасает от $20 000+ медрасходов в Европе или США.</p>
+          </article>
+          <article class="tc-tip">
+            <div class="tc-tip-icon">📱</div>
+            <h3 class="tc-tip-title">eSIM вместо роуминга</h3>
+            <p class="tc-tip-body">Airalo 1 500 ₽ за 10 ГБ против МТС 5 000 ₽ за неделю.</p>
+          </article>
+          <article class="tc-tip">
+            <div class="tc-tip-icon">👨‍👩‍👧</div>
+            <h3 class="tc-tip-title">Семья экономит</h3>
+            <p class="tc-tip-body">Один номер на 2–4 человек. Калькулятор учитывает: перелёт × N, отель × 1.</p>
+          </article>
+          <article class="tc-tip">
+            <div class="tc-tip-icon">📊</div>
+            <h3 class="tc-tip-title">Сезон важнее уровня</h3>
+            <p class="tc-tip-body">5* в не сезон дешевле, чем 3* в пик. Покрути месяцы первыми.</p>
+          </article>
+          <article class="tc-tip">
+            <div class="tc-tip-icon">🛂</div>
+            <h3 class="tc-tip-title">Виза не приговор</h3>
+            <p class="tc-tip-body">Шенген ~12 000 ₽. На фоне 150-200к поездки — 6-8%, не повод отказывать.</p>
+          </article>
+        </div>
       </div>
     </section>
 
-    <!-- ─────────── EDITORIAL TIPS ─────────────────────────────── -->
-    <section class="tips-section">
-      <div class="tips-marker"><span>04</span> Дельные советы</div>
-      <div class="tips-grid">
-        <article class="tip">
-          <div class="tip-num">i</div>
-          <h3 class="tip-title">Бронируй за 60+ дней</h3>
-          <p class="tip-body">Авиа дешевле на 15-20% если присматриваться заранее. Отели — без разницы, в последнюю минуту даже выгоднее.</p>
-        </article>
-        <article class="tip">
-          <div class="tip-num">ii</div>
-          <h3 class="tip-title">Страховка не опция</h3>
-          <p class="tip-body">Для безвизовых тоже. Стоит 2 000 ₽, спасает от $20 000+ медрасходов в Европе или США. Cherehapa принимает рубли.</p>
-        </article>
-        <article class="tip">
-          <div class="tip-num">iii</div>
-          <h3 class="tip-title">eSIM вместо роуминга</h3>
-          <p class="tip-body">МТС/Билайн в Европе — 5 000 ₽ за неделю. eSIM Airalo — 1 500 ₽ за 10 ГБ. Активируется до вылета QR-кодом.</p>
-        </article>
-        <article class="tip">
-          <div class="tip-num">iv</div>
-          <h3 class="tip-title">Семья экономит на отеле</h3>
-          <p class="tip-body">Один номер на 2-4 человека вместо двух. Калькулятор учитывает это автоматически: перелёт × N, отель × 1.</p>
-        </article>
-        <article class="tip">
-          <div class="tip-num">v</div>
-          <h3 class="tip-title">Сезонность важнее уровня</h3>
-          <p class="tip-body">Поездка в не сезон в 5* дешевле, чем в пик в 3*. Покрути месяцы перед уровнем — сэкономишь больше.</p>
-        </article>
-        <article class="tip">
-          <div class="tip-num">vi</div>
-          <h3 class="tip-title">Виза — не приговор</h3>
-          <p class="tip-body">Шенген из РФ стоит €90 + €30 BLS = ~12 000 ₽. На фоне поездки в 150-200 тыс. это 6-8%. Не повод отказываться.</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- ─────────── FAQ ───────────────────────────────────────── -->
-    <section class="faq-section">
-      <div class="faq-marker"><span>05</span> Частые вопросы</div>
-      <div class="faq-list">
-        <details class="faq-item" open>
-          <summary>Откуда берутся цены?</summary>
-          <p>Базовые цены 70 направлений собраны вручную: перелёт из Москвы туда-обратно по средней цене Aviasales за последний квартал, отель — по медиане Ostrovok / Booking по уровням 3*/4*/5*, еда — по типовому дню (завтрак-обед-ужин) для каждого уровня. Сезонный коэффициент применяется к перелёту: пик +30%, хорошо ±0%, нормально −15%, не сезон −30%.</p>
-        </details>
-        <details class="faq-item">
-          <summary>Реальные траты из интернета — откуда?</summary>
-          <p>Кросс-источниковая агрегация по 12 ресурсам: Самокатус (русский Travel Budget раздел), make-trip.ru, howtrip.ru, wrenjapan.com — российские. BudgetYourTrip (3000+ городов от 50 000 контрибьюторов), IndieTraveller, SoutheastAsiaBackpacker, NeverEndingFootsteps, Holafly, Maldives Magazine, Norway Budget Guide, Reddit r/solotravel — англоязычные с переводом.</p>
-        </details>
-        <details class="faq-item">
-          <summary>Как считается несколько путешественников?</summary>
-          <p>Перелёт умножается на число людей. Питание тоже. Отель — нет: один номер вмещает 2–4 человек. Это даёт реалистичную сумму: семья из 2 платит примерно в 1.6× больше одного, а не в 2×.</p>
-        </details>
-        <details class="faq-item">
-          <summary>А виза включена в итог?</summary>
-          <p>Да, если виза платная. В разбивке появляется строка с конкретной стоимостью и сроком — «€90 + €30 BLS, 10–15 дней». Если безвиз — стоит ✓ и виза не добавляется. По клику — переход на детальную страницу /visa/&lt;страна&gt;/.</p>
-        </details>
-        <details class="faq-item">
-          <summary>Что такое «лучший месяц»?</summary>
-          <p>Калькулятор смотрит 12-месячный рейтинг страны и подсвечивает месяц с минимальным коэффициентом цены и нормальной погодой. Например: «В ноябре та же поездка обойдётся на 28% дешевле — лучший месяц года для Турции».</p>
-        </details>
-        <details class="faq-item">
-          <summary>Курс рубля меняется — учитывает?</summary>
-          <p>Да. Курс подтягивается через open exchange rates в реальном времени. Переключение ₽/$ одной кнопкой — внутренний расчёт в долларах, отображение по выбору.</p>
-        </details>
+    <!-- ───────────── FAQ ────────────────────────────────────── -->
+    <section class="tc-section tc-faq">
+      <div class="tc-container">
+        <div class="tc-section-head">
+          <span class="tc-section-num">02</span>
+          <h2 class="tc-section-title">Частые вопросы</h2>
+        </div>
+        <div class="tc-faq-list">
+          <details class="tc-faq-item" open>
+            <summary>Откуда берутся цены?</summary>
+            <p>Базовые цены 70 направлений собраны вручную: перелёт из Москвы туда-обратно по средней цене Aviasales за квартал, отель — по медиане Ostrovok / Booking по уровням 3*/4*/5*, еда — по типовому дню для каждого уровня. Сезонный коэффициент применяется к перелёту: пик +30%, хорошо ±0%, нормально −15%, не сезон −30%.</p>
+          </details>
+          <details class="tc-faq-item">
+            <summary>Реальные траты — откуда?</summary>
+            <p>Кросс-источниковая агрегация из 12 ресурсов. Российские: Самокатус, make-trip.ru, howtrip.ru, wrenjapan.com. Англоязычные с переводом: BudgetYourTrip (3000+ городов от 50 000 контрибьюторов), IndieTraveller, SoutheastAsiaBackpacker, Maldives Magazine, Norway Budget Guide, Reddit r/solotravel и др.</p>
+          </details>
+          <details class="tc-faq-item">
+            <summary>Как считается несколько путешественников?</summary>
+            <p>Перелёт и питание умножаются на число людей. Отель — нет: один номер вмещает 2-4 человек. Это даёт реалистичную сумму — семья из 2 платит ≈ в 1.6× больше одного, а не в 2×.</p>
+          </details>
+          <details class="tc-faq-item">
+            <summary>Виза включена в итог?</summary>
+            <p>Да, если виза платная — в разбивке появляется строка со стоимостью. Если безвиз — «✓ безвиз». По клику — переход на детальную страницу /visa/&lt;страна&gt;/.</p>
+          </details>
+          <details class="tc-faq-item">
+            <summary>Что такое «лучший месяц»?</summary>
+            <p>Калькулятор смотрит 12-месячный рейтинг страны и подсвечивает месяц с минимальным коэффициентом цены и нормальной погодой. «В ноябре та же поездка обойдётся на 28% дешевле».</p>
+          </details>
+          <details class="tc-faq-item">
+            <summary>Учитывает ли курс рубля?</summary>
+            <p>Да, в реальном времени через open exchange rates. Переключение ₽/$ одной кнопкой.</p>
+          </details>
+        </div>
       </div>
     </section>
 
@@ -330,17 +289,13 @@ const ldJson = {
 </Layout>
 
 <script define:vars={{ PRICES, MONTH_NAMES, MONTH_FULL, iataToSeasons, iataToVisa, iataToSlug, iataToBudgetSlug }}>
-// ─── STATE ───────────────────────────────────────────────────────────
-let RUB = 90;
-let calcLevel = 0;
-let calcCurrency = 'rub';
-let travelers = 1;
-let selectedMonth = 0;
+let RUB = 90, calcLevel = 0, calcCurrency = 'rub';
+let travelers = 1, selectedMonth = 0;
 let compareList = [];
 
-const SEASON_MULT = { P: 1.30, G: 1.00, O: 0.85, B: 0.70 };
-const SEASON_LABEL = { P: 'Пик', G: 'Хорошо', O: 'Норма', B: 'Не сезон' };
-const SEASON_CLASS = { P: 'peak', G: 'good', O: 'ok', B: 'bad' };
+const SEASON_MULT = { P:1.30, G:1.00, O:0.85, B:0.70 };
+const SEASON_LABEL = { P:'Пик', G:'Хорошо', O:'Норма', B:'Не сезон' };
+const SEASON_CLASS = { P:'peak', G:'good', O:'ok', B:'bad' };
 
 const AVIASALES_MARKER = '546042.Zz66f13c16ff6b488883a4127-546042';
 const AVIASALES_BASE = `https://www.aviasales.ru/?marker=${AVIASALES_MARKER}&market=ru`;
@@ -348,19 +303,18 @@ const CHEREHAPA = 'https://cherehapa.tpk.mx/GmVWjhCN';
 const OSTROVOK = 'https://ostrovok.tpk.mx/w4cAS1wZ';
 const AIRALO = 'https://ref.airalo.com/k7Wf';
 
+const CAT_COLORS = { flight: '#3b82f6', hotel: '#a855f7', food: '#22c55e', visa: '#f59e0b' };
+
 const calcSel = document.getElementById('calcRegion');
+const monthSel = document.getElementById('monthSelect');
 const resultEl = document.getElementById('calcResult');
 const addSelect = document.getElementById('addCountrySelect');
 
-// ─── URL params ─────────────────────────────────────────────────────
 function readUrlParams() {
   const u = new URL(window.location.href);
-  const r = u.searchParams.get('r');
-  const d = u.searchParams.get('d');
-  const l = u.searchParams.get('l');
-  const c = u.searchParams.get('c');
-  const t = u.searchParams.get('t');
-  const m = u.searchParams.get('m');
+  const r = u.searchParams.get('r'), d = u.searchParams.get('d');
+  const l = u.searchParams.get('l'), c = u.searchParams.get('c');
+  const t = u.searchParams.get('t'), m = u.searchParams.get('m');
   const cmp = u.searchParams.get('cmp');
 
   if (r !== null && PRICES[+r]) calcSel.value = r;
@@ -371,29 +325,28 @@ function readUrlParams() {
   }
   if (l !== null && (+l >= 0 && +l <= 2)) {
     calcLevel = +l;
-    document.querySelectorAll('#levelGroup .seg-btn').forEach(b => {
+    document.querySelectorAll('#levelGroup .tc-seg-btn').forEach(b => {
       const on = +b.dataset.lvl === calcLevel;
       b.classList.toggle('active', on);
-      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.setAttribute('aria-pressed', on?'true':'false');
     });
   }
   if (c === 'usd' || c === 'rub') {
     calcCurrency = c;
-    document.querySelectorAll('#currGroup .seg-btn').forEach(b => {
+    document.querySelectorAll('#currGroup .tc-seg-btn').forEach(b => {
       const on = b.dataset.cur === calcCurrency;
       b.classList.toggle('active', on);
-      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.setAttribute('aria-pressed', on?'true':'false');
     });
   }
   if (t !== null && +t >= 1 && +t <= 4) {
     travelers = +t;
-    document.querySelectorAll('#travelersGroup .seg-btn').forEach(b => {
-      const on = +b.dataset.tr === travelers;
-      b.classList.toggle('active', on);
-      b.setAttribute('aria-pressed', on ? 'true' : 'false');
-    });
+    document.getElementById('travelersDisplay').textContent = travelers;
   }
-  if (m !== null && +m >= 0 && +m <= 12) selectedMonth = +m;
+  if (m !== null && +m >= 0 && +m <= 12) {
+    selectedMonth = +m;
+    monthSel.value = String(selectedMonth);
+  }
   if (cmp) compareList = cmp.split(',').map(x => parseInt(x)).filter(x => !isNaN(x) && PRICES[x]).slice(0, 3);
 }
 
@@ -411,20 +364,19 @@ function writeUrlParams() {
   window.history.replaceState(null, '', u.toString());
 }
 
-// ─── Rate ──────────────────────────────────────────────────────────
 async function fetchRate() {
   const rateEl = document.getElementById('calcRateLabel');
   try {
     const r = await fetch('https://open.er-api.com/v6/latest/USD');
     const d = await r.json();
-    if (d.result === 'success' && d.rates && d.rates.RUB) {
+    if (d.result === 'success' && d.rates?.RUB) {
       RUB = d.rates.RUB;
-      if (rateEl) rateEl.textContent = '1 $ = ' + RUB.toFixed(2) + ' ₽ · open exchange rates';
+      if (rateEl) rateEl.textContent = `1 $ = ${RUB.toFixed(2)} ₽`;
       renderCalc();
       return;
     }
   } catch (e) {}
-  if (rateEl) rateEl.textContent = '1 $ ≈ 90 ₽ · курс не загружен';
+  if (rateEl) rateEl.textContent = '1 $ ≈ 90 ₽';
 }
 
 function fmt(usd) {
@@ -447,14 +399,12 @@ function aviasalesUrl(iata, monthNum) {
   return url;
 }
 
-// ─── Compute ─────────────────────────────────────────────────────
 function computeForPriceIndex(pi) {
   const p = PRICES[pi];
   const days = Math.max(1, parseInt(document.getElementById('calcDays').value) || 1);
   const baseFlight = p.flight[calcLevel];
   const hotel = p.hotel[calcLevel];
   const food = p.food[calcLevel];
-
   let seasonMult = 1, seasonLabel = '', seasonClass = '';
   if (selectedMonth > 0 && iataToSeasons[p.iata]) {
     const rating = iataToSeasons[p.iata][selectedMonth - 1];
@@ -462,13 +412,12 @@ function computeForPriceIndex(pi) {
     seasonLabel = SEASON_LABEL[rating] || '';
     seasonClass = SEASON_CLASS[rating] || '';
   }
-  const flightAdjusted = baseFlight * seasonMult;
-  const flightTotal = flightAdjusted * travelers;
+  const flightTotal = baseFlight * seasonMult * travelers;
   const hotelTotal = hotel * days;
   const foodTotal = food * days * travelers;
   const visa = iataToVisa[p.iata];
   let visaUsd = 0;
-  if (visa && visa.cost) {
+  if (visa?.cost) {
     const m1 = visa.cost.match(/\$(\d+)/);
     if (m1) visaUsd = parseInt(m1[1]);
     else {
@@ -498,154 +447,179 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-// ─── Render comparison TABLE (когда выбрано 2-3 страны) ────────────
+// ─── Render single-country result with category bars ───────────
+function renderSingle(pi) {
+  const r = computeForPriceIndex(pi);
+  const aviUrl = aviasalesUrl(r.p.iata, selectedMonth > 0 ? selectedMonth : null);
+  const perPerson = r.grand / Math.max(1, r.travelers);
+  const perDay = r.grand / Math.max(1, r.days);
+
+  const categories = [
+    { name: 'Перелёт', value: r.flightTotal, color: CAT_COLORS.flight, icon: '✈' },
+    { name: 'Отель', value: r.hotelTotal, color: CAT_COLORS.hotel, icon: '🏨' },
+    { name: 'Питание', value: r.foodTotal, color: CAT_COLORS.food, icon: '🍴' },
+  ];
+  if (r.visa && r.visaTotal > 0) categories.push({ name: 'Виза', value: r.visaTotal, color: CAT_COLORS.visa, icon: '🛂' });
+
+  const total = r.grand;
+
+  // Best month nudge
+  const best = findBestMonth(r.p.iata);
+  let nudge = '';
+  if (best && selectedMonth > 0 && best.monthNum !== selectedMonth) {
+    const saving = Math.round((1 - best.mult / r.seasonMult) * 100);
+    if (saving > 5) nudge = `<div class="tc-nudge"><span class="tc-nudge-icon">↘</span> В <strong>${best.monthName}</strong> на <strong>${saving}%</strong> дешевле — лучший месяц года</div>`;
+  } else if (best && selectedMonth === 0) {
+    nudge = `<div class="tc-nudge tc-nudge--soft"><span class="tc-nudge-icon">💡</span> Самый дешёвый месяц — <strong>${best.monthName}</strong></div>`;
+  }
+
+  // Visa info
+  const visaInfo = r.visa
+    ? (r.visa.cost === 'бесплатно'
+        ? `<a href="/visa/${r.visa.slug}/" class="tc-visa-pill tc-visa-pill--free">✓ Безвиз · детали</a>`
+        : `<a href="/visa/${r.visa.slug}/" class="tc-visa-pill">🛂 Виза ${escapeHtml(r.visa.cost)} · детали</a>`)
+    : '';
+
+  // Season pill
+  const seasonPill = r.seasonLabel
+    ? `<span class="tc-season-pill tc-season-pill--${r.seasonClass}">${['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'][selectedMonth-1]} · ${r.seasonLabel}</span>`
+    : '';
+
+  return `
+    <div class="tc-single">
+      <header class="tc-result-head">
+        <div class="tc-result-head-meta">
+          <div class="tc-result-tag">${escapeHtml(r.p.name)}</div>
+          <div class="tc-result-pills">
+            <span class="tc-meta-pill">${r.days} ${r.days === 1 ? 'день' : (r.days < 5 ? 'дня' : 'дней')} · ${r.travelers} ${r.travelers === 1 ? 'человек' : (r.travelers < 5 ? 'человека' : 'человек')}</span>
+            ${seasonPill}
+            ${visaInfo}
+          </div>
+        </div>
+      </header>
+
+      <div class="tc-hero-total">
+        <div class="tc-hero-label">Итого на поездку</div>
+        <div class="tc-hero-amount">${fmt(total)}</div>
+        <div class="tc-hero-sub">
+          ${r.travelers > 1 ? `<span>${fmt(perPerson)} на человека</span><span class="tc-sep">·</span>` : ''}
+          <span>${fmt(perDay)} в день</span>
+        </div>
+      </div>
+
+      ${nudge}
+
+      <div class="tc-cats">
+        ${categories.map(c => {
+          const pct = total > 0 ? (c.value / total * 100) : 0;
+          return `
+            <div class="tc-cat">
+              <div class="tc-cat-head">
+                <span class="tc-cat-name"><span class="tc-cat-icon">${c.icon}</span> ${c.name}</span>
+                <span class="tc-cat-val">${fmt(c.value)}</span>
+              </div>
+              <div class="tc-cat-bar"><div class="tc-cat-fill" style="--w:${pct}%; --c:${c.color}"></div></div>
+              <div class="tc-cat-pct">${pct.toFixed(0)}%</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <div class="tc-cta-block">
+        <a href="${aviUrl}" target="_blank" rel="noopener sponsored" class="tc-cta-primary">
+          <span class="tc-cta-icon">✈</span>
+          <span class="tc-cta-text">Найти билет на Aviasales</span>
+          <span class="tc-cta-arrow">→</span>
+        </a>
+        <div class="tc-cta-side-row">
+          <a href="${OSTROVOK}" target="_blank" rel="noopener sponsored" class="tc-cta-side">
+            <span>🏨</span> Отели Ostrovok
+          </a>
+          <a href="${CHEREHAPA}" target="_blank" rel="noopener sponsored" class="tc-cta-side">
+            <span>🛡</span> Страховка Cherehapa
+          </a>
+          <a href="${AIRALO}" target="_blank" rel="noopener sponsored" class="tc-cta-side">
+            <span>📱</span> eSIM Airalo
+          </a>
+        </div>
+      </div>
+
+      <div class="tc-utility">
+        <button class="tc-copy-btn" id="copyTgBtn" type="button">
+          <span>📋</span> Скопировать сводку для Telegram
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// ─── Render comparison table (full width) ──────────────────────
 function renderTable(piList) {
   const rows = piList.map(pi => computeForPriceIndex(pi));
   const cols = rows.length;
   const minTotal = Math.min(...rows.map(r => r.grand));
 
-  const cells = (key, fn) => rows.map(r => `<td>${fn(r)}</td>`).join('');
-  const cellsCls = (key, fn) => rows.map(r => `<td class="${r.grand === minTotal ? 'is-min' : ''}">${fn(r)}</td>`).join('');
+  let html = `<div class="tc-compare">
+    <div class="tc-compare-head">
+      <h2 class="tc-compare-title">Сравнение ${cols} направлений</h2>
+      <p class="tc-compare-sub">${rows[0].travelers} ${rows[0].travelers===1?'человек':'чел.'} · ${rows[0].days} ${rows[0].days===1?'день':'дней'}${selectedMonth>0?` · ${['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'][selectedMonth-1]}`:''}</p>
+    </div>
+    <div class="tc-compare-grid" style="grid-template-columns: repeat(${cols}, minmax(0, 1fr))">`;
 
-  // Headers
-  let html = `<div class="ct-wrap"><table class="ct">`;
-  html += `<thead><tr><th></th>`;
-  html += rows.map((r, idx) => {
-    const isFirst = idx === 0;
-    return `<th>
-      <div class="ct-th-name">${escapeHtml(r.p.name.split('(')[0].trim())}</div>
-      ${r.seasonLabel ? `<div class="ct-th-season ct-th-season--${r.seasonClass}">${MONTH_NAMES[selectedMonth-1]} · ${r.seasonLabel}</div>` : ''}
-      ${!isFirst ? `<button class="ct-remove" data-remove="${piList[idx]}" type="button" aria-label="Убрать">×</button>` : ''}
-    </th>`;
-  }).join('');
-  html += `</tr></thead>`;
-
-  html += `<tbody>`;
-  // ИТОГО — главная строка
-  html += `<tr class="ct-total-row"><td class="ct-key">Итого</td>`;
-  html += rows.map(r => {
-    const isMin = r.grand === minTotal && cols > 1;
-    return `<td class="ct-amount ${isMin ? 'is-min' : ''}">${fmt(r.grand)}${isMin ? '<span class="ct-best-badge">самое дешёвое</span>' : ''}</td>`;
-  }).join('');
-  html += `</tr>`;
-
-  // На человека (если travelers > 1)
-  if (travelers > 1) {
-    html += `<tr><td class="ct-key">На человека</td>${cells('pp', r => fmt(r.grand / travelers))}</tr>`;
-  }
-
-  // Breakdown
-  html += `<tr class="ct-divider"><td colspan="${cols+1}"></td></tr>`;
-  html += `<tr><td class="ct-key">Перелёт</td>${cells('f', r => fmt(r.flightTotal))}</tr>`;
-  html += `<tr><td class="ct-key">Отель × ${rows[0].days} ноч.</td>${cells('h', r => fmt(r.hotelTotal))}</tr>`;
-  html += `<tr><td class="ct-key">Питание</td>${cells('e', r => fmt(r.foodTotal))}</tr>`;
-
-  // Виза (если хоть у одной есть)
-  const anyVisa = rows.some(r => r.visa);
-  if (anyVisa) {
-    html += `<tr><td class="ct-key">Виза</td>${rows.map(r => {
-      if (!r.visa) return '<td>—</td>';
-      const cost = r.visa.cost === 'бесплатно' ? '<span class="ct-free">✓ безвиз</span>' : escapeHtml(r.visa.cost);
-      return `<td class="ct-visa">${cost}<a href="/visa/${r.visa.slug}/" class="ct-visa-link" aria-label="Детали визы">→</a></td>`;
-    }).join('')}</tr>`;
-  }
-
-  // Лучший месяц (если выбран не лучший)
-  const bestSaving = rows.map(r => {
-    const b = findBestMonth(r.p.iata);
-    if (!b) return null;
-    if (selectedMonth > 0 && b.monthNum !== selectedMonth) {
-      const s = Math.round((1 - b.mult / r.seasonMult) * 100);
-      if (s > 5) return { name: b.monthName, saving: s };
-    } else if (selectedMonth === 0) {
-      return { name: b.monthName, saving: 0 };
-    }
-    return null;
-  });
-  if (bestSaving.some(b => b)) {
-    html += `<tr class="ct-divider"><td colspan="${cols+1}"></td></tr>`;
-    html += `<tr><td class="ct-key">Дешевле в</td>${bestSaving.map(b => {
-      if (!b) return '<td>—</td>';
-      return `<td class="ct-best">${b.name}${b.saving > 0 ? ` <span class="ct-sav">−${b.saving}%</span>` : ''}</td>`;
-    }).join('')}</tr>`;
-  }
-
-  // CTA row
-  html += `<tr class="ct-cta-row"><td class="ct-key">Билеты</td>${rows.map((r, idx) => {
+  rows.forEach((r, idx) => {
+    const isMin = r.grand === minTotal;
     const aviUrl = aviasalesUrl(r.p.iata, selectedMonth > 0 ? selectedMonth : null);
-    return `<td><a href="${aviUrl}" target="_blank" rel="noopener sponsored" class="ct-cta-btn">Найти →</a></td>`;
-  }).join('')}</tr>`;
+    const seasonPill = r.seasonLabel
+      ? `<span class="tc-season-pill tc-season-pill--${r.seasonClass}">${r.seasonLabel}</span>`
+      : '';
+    const visaText = r.visa
+      ? (r.visa.cost === 'бесплатно' ? '✓ безвиз' : escapeHtml(r.visa.cost))
+      : '—';
 
-  html += `</tbody></table></div>`;
+    html += `
+      <div class="tc-cmp-card ${isMin ? 'tc-cmp-card--best' : ''}">
+        ${idx > 0 ? `<button class="tc-cmp-remove" data-remove="${piList[idx]}" type="button" aria-label="Убрать">×</button>` : ''}
+        ${isMin ? '<div class="tc-cmp-badge">🏆 Самое дешёвое</div>' : ''}
 
-  // Общий блок партнёрских ссылок
-  html += `<div class="ct-aux">
-    <span class="ct-aux-label">Сопутствующее:</span>
-    <a href="${OSTROVOK}" target="_blank" rel="noopener sponsored" class="ct-aux-link">Отель Ostrovok →</a>
-    <a href="${CHEREHAPA}" target="_blank" rel="noopener sponsored" class="ct-aux-link">Страховка Cherehapa →</a>
-    <a href="${AIRALO}" target="_blank" rel="noopener sponsored" class="ct-aux-link">eSIM Airalo →</a>
+        <div class="tc-cmp-head">
+          <h3 class="tc-cmp-name">${escapeHtml(r.p.name.split('(')[0].trim())}</h3>
+          ${seasonPill}
+        </div>
+
+        <div class="tc-cmp-total">
+          <div class="tc-cmp-total-label">Итого</div>
+          <div class="tc-cmp-total-amount">${fmt(r.grand)}</div>
+          ${r.travelers > 1 ? `<div class="tc-cmp-total-pp">${fmt(r.grand / r.travelers)} / чел.</div>` : ''}
+        </div>
+
+        <ul class="tc-cmp-list">
+          <li><span class="tc-cmp-key">✈ Перелёт</span><span class="tc-cmp-val">${fmt(r.flightTotal)}</span></li>
+          <li><span class="tc-cmp-key">🏨 Отель × ${r.days}</span><span class="tc-cmp-val">${fmt(r.hotelTotal)}</span></li>
+          <li><span class="tc-cmp-key">🍴 Питание</span><span class="tc-cmp-val">${fmt(r.foodTotal)}</span></li>
+          <li><span class="tc-cmp-key">🛂 Виза</span><span class="tc-cmp-val tc-cmp-visa">${visaText}${r.visa ? ` <a href="/visa/${r.visa.slug}/">→</a>` : ''}</span></li>
+        </ul>
+
+        <a href="${aviUrl}" target="_blank" rel="noopener sponsored" class="tc-cmp-cta">Найти билет →</a>
+      </div>
+    `;
+  });
+
+  html += `</div>
+    <div class="tc-compare-aux">
+      <span class="tc-aux-label">Партнёры:</span>
+      <a href="${OSTROVOK}" target="_blank" rel="noopener sponsored">🏨 Ostrovok</a>
+      <a href="${CHEREHAPA}" target="_blank" rel="noopener sponsored">🛡 Cherehapa</a>
+      <a href="${AIRALO}" target="_blank" rel="noopener sponsored">📱 Airalo</a>
+    </div>
+  </div>
+
+  <div class="tc-utility">
+    <button class="tc-copy-btn" id="copyTgBtn" type="button">
+      <span>📋</span> Скопировать сводку
+    </button>
   </div>`;
 
   return html;
-}
-
-// ─── Render compute card (editorial style) ──────────────────────
-function renderCard(pi, isPrimary, index) {
-  const r = computeForPriceIndex(pi);
-  const aviUrl = aviasalesUrl(r.p.iata, selectedMonth > 0 ? selectedMonth : null);
-  const perPerson = r.grand / Math.max(1, r.travelers);
-  const cityShort = r.p.name.split('(')[0].trim();
-
-  const best = findBestMonth(r.p.iata);
-  let nudge = '';
-  if (best && selectedMonth > 0 && best.monthNum !== selectedMonth) {
-    const saving = Math.round((1 - best.mult / r.seasonMult) * 100);
-    if (saving > 5) nudge = `<div class="cc-nudge"><span class="cc-nudge-mark">↘</span> В <strong>${best.monthName}</strong> на <strong>${saving}%</strong> дешевле</div>`;
-  } else if (best && selectedMonth === 0) {
-    nudge = `<div class="cc-nudge"><span class="cc-nudge-mark">↘</span> Самый дешёвый месяц — <strong>${best.monthName}</strong></div>`;
-  }
-
-  const visaChip = r.visa ? (r.visa.cost === 'бесплатно' ? '✓ безвиз' : escapeHtml(r.visa.cost)) : '';
-
-  return `
-    <article class="cc${isPrimary ? ' cc-primary' : ''}" data-pi="${pi}" style="--cc-i:${index}">
-      ${!isPrimary ? `<button class="cc-remove" data-remove="${pi}" type="button" aria-label="Убрать из сравнения">×</button>` : ''}
-
-      <header class="cc-head">
-        <div class="cc-tag">${escapeHtml(cityShort)}</div>
-        ${r.seasonLabel ? `<div class="cc-season cc-season--${r.seasonClass}">${MONTH_NAMES[selectedMonth - 1]} · ${r.seasonLabel}</div>` : ''}
-      </header>
-
-      <div class="cc-hero">
-        <div class="cc-label">ИТОГО</div>
-        <div class="cc-amount">${r.grand > 0 ? fmt(r.grand) : '—'}</div>
-        ${r.travelers > 1 ? `<div class="cc-per">≈ ${fmt(perPerson)} <span>на человека</span></div>` : ''}
-      </div>
-
-      ${nudge}
-
-      <table class="cc-table">
-        <tbody>
-          <tr><td>Перелёт${r.travelers > 1 ? ' (×' + r.travelers + ')' : ''}</td><td>${fmt(r.flightTotal)}</td></tr>
-          <tr><td>Отель · ${r.days} ноч.</td><td>${fmt(r.hotelTotal)}</td></tr>
-          <tr><td>Питание${r.travelers > 1 ? ' (×' + r.travelers + ')' : ''}</td><td>${fmt(r.foodTotal)}</td></tr>
-          ${visaChip ? `<tr><td>Виза${r.visa ? ` <a href="/visa/${r.visa.slug}/" class="cc-visa-link">детали →</a>` : ''}</td><td>${r.visaTotal > 0 ? fmt(r.visaTotal) + ' · ' : ''}${visaChip}</td></tr>` : ''}
-        </tbody>
-      </table>
-
-      <div class="cc-cta">
-        <a href="${aviUrl}" target="_blank" rel="noopener sponsored" class="cta-main">
-          <span>Найти билет</span>
-          <span class="cta-arrow" aria-hidden="true">→</span>
-        </a>
-        <div class="cta-row">
-          <a href="${OSTROVOK}" target="_blank" rel="noopener sponsored" class="cta-side">Отель</a>
-          <a href="${CHEREHAPA}" target="_blank" rel="noopener sponsored" class="cta-side">Страховка</a>
-          <a href="${AIRALO}" target="_blank" rel="noopener sponsored" class="cta-side">eSIM</a>
-        </div>
-      </div>
-    </article>
-  `;
 }
 
 function renderCalc() {
@@ -653,29 +627,9 @@ function renderCalc() {
   const all = [primary, ...compareList.filter(x => x !== primary)].slice(0, 3);
   const isCompare = all.length > 1;
 
-  let html;
-  if (isCompare) {
-    html = renderTable(all);
-  } else {
-    html = `<div class="cc-stack">${renderCard(all[0], true, 0)}</div>`;
-  }
+  resultEl.innerHTML = isCompare ? renderTable(all) : renderSingle(all[0]);
 
-  html += `<div class="cc-footer">
-    <button class="copy-btn" id="copyTgBtn" type="button" aria-label="Копировать сводку">
-      <span class="copy-icon" aria-hidden="true">⌘</span>
-      <span>Скопировать сводку для Telegram</span>
-    </button>
-  </div>`;
-
-  resultEl.innerHTML = html;
-
-  // Подсветить активный day chip
-  const cur = +document.getElementById('calcDays').value;
-  document.querySelectorAll('.quick-days .qd-chip').forEach(c => {
-    c.classList.toggle('active', +c.dataset.d === cur);
-  });
-
-  // Селект для сравнения
+  // Add country select state
   if (compareList.length < 2 && all.length < 3) {
     addSelect.hidden = false;
     addSelect.value = '';
@@ -689,7 +643,6 @@ function renderCalc() {
   }
 
   writeUrlParams();
-  renderMonthChips();
   showBudgetBlock();
 }
 
@@ -697,39 +650,15 @@ function showBudgetBlock() {
   const primary = parseInt(calcSel.value);
   const iata = PRICES[primary]?.iata;
   const slug = iataToBudgetSlug[iata];
-  document.querySelectorAll('.bb-wrap').forEach(el => {
+  document.querySelectorAll('.tc-bb-wrap').forEach(el => {
     el.hidden = el.dataset.slug !== slug;
   });
 }
 
-function renderMonthChips() {
-  const primary = parseInt(calcSel.value);
-  const iata = PRICES[primary]?.iata;
-  const rating = iata && iataToSeasons[iata] ? iataToSeasons[iata] : null;
-  document.querySelectorAll('#monthChips .month').forEach((btn, i) => {
-    const m = i + 1;
-    btn.classList.toggle('active', selectedMonth === m);
-    btn.setAttribute('aria-pressed', selectedMonth === m ? 'true' : 'false');
-    const dot = btn.querySelector('.m-dot');
-    if (rating && dot) {
-      const r = rating[i];
-      dot.dataset.r = r;
-      btn.setAttribute('aria-label', `${MONTH_NAMES[i]} · ${SEASON_LABEL[r] || ''}`);
-    }
-  });
-}
-
-// ─── EVENT LISTENERS ────────────────────────────────────────────────
+// ─── EVENT HANDLERS ────────────────────────────────────────────
 calcSel.addEventListener('change', renderCalc);
-
-document.getElementById('travelersGroup').addEventListener('click', e => {
-  const btn = e.target.closest('[data-tr]');
-  if (!btn) return;
-  travelers = +btn.dataset.tr;
-  document.querySelectorAll('#travelersGroup .seg-btn').forEach(b => {
-    b.classList.toggle('active', b === btn);
-    b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
-  });
+monthSel.addEventListener('change', e => {
+  selectedMonth = parseInt(e.target.value);
   renderCalc();
 });
 
@@ -741,15 +670,20 @@ function setDays(n) {
 }
 document.getElementById('daysDown').addEventListener('click', () => setDays(parseInt(document.getElementById('calcDays').value) - 1));
 document.getElementById('daysUp').addEventListener('click', () => setDays(parseInt(document.getElementById('calcDays').value) + 1));
-document.querySelectorAll('.quick-days .qd-chip').forEach(chip => {
-  chip.addEventListener('click', () => setDays(+chip.dataset.d));
-});
+
+function setTravelers(n) {
+  travelers = Math.min(4, Math.max(1, n));
+  document.getElementById('travelersDisplay').textContent = travelers;
+  renderCalc();
+}
+document.getElementById('travDown').addEventListener('click', () => setTravelers(travelers - 1));
+document.getElementById('travUp').addEventListener('click', () => setTravelers(travelers + 1));
 
 document.getElementById('levelGroup').addEventListener('click', e => {
   const btn = e.target.closest('[data-lvl]');
   if (!btn) return;
   calcLevel = +btn.dataset.lvl;
-  document.querySelectorAll('#levelGroup .seg-btn').forEach(b => {
+  document.querySelectorAll('#levelGroup .tc-seg-btn').forEach(b => {
     b.classList.toggle('active', b === btn);
     b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
   });
@@ -760,18 +694,10 @@ document.getElementById('currGroup').addEventListener('click', e => {
   const btn = e.target.closest('[data-cur]');
   if (!btn) return;
   calcCurrency = btn.dataset.cur;
-  document.querySelectorAll('#currGroup .seg-btn').forEach(b => {
+  document.querySelectorAll('#currGroup .tc-seg-btn').forEach(b => {
     b.classList.toggle('active', b === btn);
     b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
   });
-  renderCalc();
-});
-
-document.getElementById('monthChips').addEventListener('click', e => {
-  const btn = e.target.closest('[data-m]');
-  if (!btn) return;
-  const m = +btn.dataset.m;
-  selectedMonth = selectedMonth === m ? 0 : m;
   renderCalc();
 });
 
@@ -779,8 +705,7 @@ addSelect.addEventListener('change', e => {
   const v = parseInt(e.target.value);
   if (isNaN(v)) return;
   const primary = parseInt(calcSel.value);
-  if (v === primary || compareList.includes(v)) return;
-  if (compareList.length >= 2) return;
+  if (v === primary || compareList.includes(v) || compareList.length >= 2) return;
   compareList.push(v);
   renderCalc();
 });
@@ -813,986 +738,764 @@ resultEl.addEventListener('click', async e => {
   text += `📎 ${window.location.href}\n🌍 traveltribe.ru/calculator/`;
   try {
     await navigator.clipboard.writeText(text);
-    const span = btn.querySelector('span:not(.copy-icon)');
-    const orig = span.textContent;
-    span.textContent = '✓ Скопировано';
-    setTimeout(() => { span.textContent = orig; }, 1800);
-  } catch (err) {
-    alert('Не удалось скопировать');
-  }
+    const span = btn.querySelector('span:nth-child(2)') || btn.lastChild;
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<span>✓</span> Скопировано';
+    setTimeout(() => { btn.innerHTML = orig; }, 1800);
+  } catch (err) { alert('Не удалось'); }
 });
 
-const lvlInfoBtn = document.getElementById('levelInfoBtn');
-const lvlInfoTip = document.getElementById('levelInfoTip');
-if (lvlInfoBtn) {
-  lvlInfoBtn.addEventListener('click', () => {
-    const open = !lvlInfoTip.hasAttribute('hidden');
-    if (open) lvlInfoTip.setAttribute('hidden', '');
-    else lvlInfoTip.removeAttribute('hidden');
-    lvlInfoBtn.setAttribute('aria-expanded', String(!open));
-  });
-}
-
-// ─── INIT ───────────────────────────────────────────────────────────
 readUrlParams();
 fetchRate();
 renderCalc();
 </script>
 
-<style>
+<style is:global>
 /* ═══════════════════════════════════════════════════════════════════
-   EDITORIAL TRAVEL ATLAS — Calculator 2026
+   TRAVEL CALCULATOR — Modern Fintech 2026
+   Inspired by: Google Flights · Airbnb · Wise · Revolut
    ═══════════════════════════════════════════════════════════════════ */
 
-/* ── PAPER BACKGROUND ─────────────────────────────────────────────── */
-.atlas {
-  position: relative;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-.atlas-paper {
-  position: fixed; inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.4;
-  background-image:
-    linear-gradient(rgba(180, 150, 80, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(180, 150, 80, 0.06) 1px, transparent 1px);
-  background-size: 48px 48px;
-  background-position: -1px -1px;
-  mask-image: radial-gradient(ellipse 90% 60% at 50% 30%, black 30%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 30%, black 30%, transparent 100%);
-}
+.tc { background: var(--bg); }
+.tc-container { max-width: 1180px; margin: 0 auto; padding: 0 clamp(1rem, 3vw, 2rem); }
 
-main.atlas > * { position: relative; z-index: 1; }
-
-/* ── HERO ─────────────────────────────────────────────────────────── */
-.hero {
-  padding: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 4vw, 4rem) clamp(2rem, 5vw, 4rem);
-  border-bottom: 1px solid var(--line);
-  position: relative;
+/* ── HERO ─────────────────────────────────────────────────────── */
+.tc-hero {
+  padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(1.5rem, 3vw, 2rem);
+  text-align: center;
 }
-.hero::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold) 70%, transparent);
-  opacity: 0.4;
-}
-.hero-inner {
-  max-width: 1400px;
-  margin: 0 auto;
-}
-.hero-eyebrow {
-  display: inline-flex; align-items: center; gap: 0.6rem;
+.tc-eyebrow {
   font-family: var(--ff-mono);
   font-size: 11px;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--gold-600, var(--gold));
-  margin-bottom: 1.8rem;
+  margin-bottom: 1rem;
 }
-.eyebrow-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--gold);
-  animation: pulse 2.4s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.8); }
-}
-
-.hero-title {
+.tc-h1 {
   font-family: var(--ff-display);
-  font-weight: 400;
-  font-size: clamp(3.5rem, 11vw, 9rem);
-  line-height: 0.92;
-  letter-spacing: -0.04em;
-  margin: 0 0 1.5rem;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  margin: 0 0 1rem;
   color: var(--text);
 }
-.hero-line {
-  display: block;
-  opacity: 0;
-  animation: lineIn 0.9s var(--ease-out, cubic-bezier(0.22, 0.61, 0.36, 1)) forwards;
-}
-.hero-line:nth-child(1) { animation-delay: 0.1s; }
-.hero-line:nth-child(2) { animation-delay: 0.25s; transform: translateX(0.5em); display: inline-block; }
-.hero-line:nth-child(3) { animation-delay: 0.4s; }
-.hero-line em {
-  font-style: italic;
-  font-variation-settings: "opsz" 72;
-  color: var(--gold-600, var(--gold));
-  position: relative;
-}
-.hero-line em::after {
-  content: "";
-  position: absolute; left: -2%; right: -2%; bottom: 0.05em; height: 0.18em;
-  background: var(--gold);
-  opacity: 0.15;
-  z-index: -1;
-  transform: skew(-12deg);
-}
-@keyframes lineIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.hero-line:nth-child(2) { animation-name: lineInRight; }
-@keyframes lineInRight {
-  from { opacity: 0; transform: translate(calc(0.5em + 20px), 0); }
-  to   { opacity: 1; transform: translate(0.5em, 0); }
-}
-
-.hero-deck {
-  font-family: var(--ff-display);
-  font-style: italic;
-  font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+.tc-lede {
+  font-size: 1.05rem;
   line-height: 1.55;
   color: var(--text-dim);
-  max-width: 680px;
-  margin: 0 0 2rem;
-  opacity: 0;
-  animation: lineIn 0.9s 0.6s ease-out forwards;
-}
-
-.hero-stats {
-  display: flex; gap: clamp(2rem, 5vw, 4rem);
-  border-top: 1px solid var(--line);
-  padding-top: 1.5rem;
-  opacity: 0;
-  animation: lineIn 0.9s 0.8s ease-out forwards;
-}
-.stat { display: flex; flex-direction: column; }
-.stat-num {
-  font-family: var(--ff-display);
-  font-weight: 500;
-  font-size: clamp(2rem, 3.5vw, 2.8rem);
-  line-height: 1;
-  color: var(--text);
-  font-variant-numeric: tabular-nums lining-nums;
-  letter-spacing: -0.02em;
-}
-.stat-label {
-  font-family: var(--ff-mono);
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin-top: 0.3rem;
-}
-
-/* ── EDITORIAL SPLIT SPREAD ───────────────────────────────────────── */
-.spread {
-  padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 4rem);
-  border-bottom: 1px solid var(--line);
-}
-.spread-inner {
-  max-width: 1400px;
+  max-width: 660px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(2rem, 4vw, 4rem);
-  align-items: start;
 }
 
-.col-marker, .compute-marker, .real-marker, .tips-marker, .faq-marker {
+/* ── FORM SECTION (horizontal bar) ────────────────────────────── */
+.tc-form-section {
+  padding: 1rem 0 0;
+}
+.tc-form {
+  background: var(--surface, #fff);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1.4rem 1.6rem 1.2rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 32px -16px rgba(0,0,0,0.12);
+}
+.tc-form-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1.6fr 0.9fr;
+  gap: 1rem;
+  align-items: end;
+}
+.tc-field { display: flex; flex-direction: column; gap: 0.4rem; min-width: 0; }
+.tc-field--country { min-width: 200px; }
+.tc-field-label {
+  font-family: var(--ff-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-faint);
+  letter-spacing: 0.02em;
+}
+
+.tc-input {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-family: var(--ff-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.6rem 0.85rem;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+  min-width: 0;
+}
+.tc-input:hover { border-color: var(--gold-dim, var(--gold)); }
+.tc-input:focus-visible {
+  border-color: var(--gold-600, var(--gold));
+  box-shadow: 0 0 0 3px rgba(201,151,58,0.12);
+}
+.tc-input--select {
+  appearance: none; -webkit-appearance: none;
+  padding-right: 2rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  cursor: pointer;
+}
+
+/* Stepper */
+.tc-stepper {
+  display: flex; align-items: center;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  height: 40px;
+}
+.tc-stepper-btn {
+  background: transparent; border: none;
+  font-size: 1.2rem; line-height: 1;
+  color: var(--text-dim);
+  width: 36px; height: 100%;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  border-radius: 10px;
+}
+.tc-stepper-btn:hover { color: var(--gold); background: rgba(201,151,58,0.08); }
+.tc-stepper-val {
+  flex: 1; text-align: center;
+  font-family: var(--ff-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Segmented */
+.tc-seg {
+  display: inline-flex;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+  height: 40px;
+}
+.tc-seg-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-family: var(--ff-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0 0.85rem;
+  cursor: pointer;
+  border-radius: 7px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.tc-seg-btn:hover:not(.active) { color: var(--text); }
+.tc-seg-btn.active {
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 600;
+}
+.tc-seg--small .tc-seg-btn { padding: 0 0.5rem; }
+
+.tc-form-extra {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--line);
+  flex-wrap: wrap; gap: 0.7rem;
+}
+.tc-add-country {
+  background: transparent;
+  border: 1px dashed var(--gold-dim, var(--gold));
+  color: var(--gold-600, var(--gold));
+  font-family: var(--ff-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  appearance: none; -webkit-appearance: none;
+  padding-right: 1.8rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23c9973a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 0.7rem center;
+}
+.tc-add-country:hover { background: rgba(201,151,58,0.06); border-style: solid; }
+.tc-rate {
+  font-family: var(--ff-mono);
+  font-size: 0.72rem;
+  color: var(--text-faint);
+}
+
+/* ── RESULT SECTION ──────────────────────────────────────────── */
+.tc-result-section {
+  padding: 1.5rem 0 2rem;
+}
+.tc-result { /* host */ }
+
+/* SINGLE country card */
+.tc-single {
+  background: var(--surface, #fff);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: clamp(1.5rem, 3vw, 2rem);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 12px 40px -20px rgba(0,0,0,0.10);
+}
+
+.tc-result-head { margin-bottom: 1.4rem; }
+.tc-result-head-meta { display: flex; flex-direction: column; gap: 0.6rem; }
+.tc-result-tag {
+  font-family: var(--ff-display);
+  font-size: clamp(1.3rem, 2.3vw, 1.7rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.2;
+}
+.tc-result-pills {
+  display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center;
+}
+.tc-meta-pill {
+  font-family: var(--ff-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  color: var(--text-dim);
+}
+.tc-season-pill {
+  font-family: var(--ff-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+}
+.tc-season-pill--peak { background: rgba(239,68,68,0.1); color: #c63b3b; }
+.tc-season-pill--good { background: rgba(34,197,94,0.1); color: #1f9c4a; }
+.tc-season-pill--ok   { background: rgba(245,158,11,0.1); color: #c97d09; }
+.tc-season-pill--bad  { background: rgba(107,114,128,0.1); color: #4b5563; }
+
+.tc-visa-pill {
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.2);
+  color: #b87308;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.tc-visa-pill--free { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.2); color: #1f9c4a; }
+.tc-visa-pill:hover { background: rgba(245,158,11,0.15); }
+.tc-visa-pill--free:hover { background: rgba(34,197,94,0.15); }
+
+/* Hero total — главное число */
+.tc-hero-total {
+  text-align: center;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin: 0.5rem 0 1.5rem;
+  background: linear-gradient(180deg, rgba(201,151,58,0.025), transparent);
+}
+.tc-hero-label {
   font-family: var(--ff-mono);
   font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--text-faint);
-  margin-bottom: 1.5rem;
-  display: flex; align-items: baseline; gap: 0.7rem;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 0.7rem;
+  margin-bottom: 0.5rem;
 }
-.col-marker span, .compute-marker span, .real-marker span, .tips-marker span, .faq-marker span {
+.tc-hero-amount {
   font-family: var(--ff-display);
-  font-style: italic;
-  font-size: 1.4rem;
-  font-weight: 400;
-  color: var(--gold-600, var(--gold));
-  letter-spacing: -0.02em;
-}
-
-/* ── FORM COLUMN ──────────────────────────────────────────────────── */
-.form-col {
-  display: flex; flex-direction: column;
-  gap: 1.8rem;
-}
-
-.field { display: flex; flex-direction: column; gap: 0.55rem; }
-.field-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-}
-
-.field-label {
-  font-family: var(--ff-body);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text);
-  letter-spacing: -0.005em;
-  display: flex; align-items: center; gap: 0.4rem;
-}
-
-.field-select {
-  background: var(--bg);
-  border: none;
-  border-bottom: 2px solid var(--text);
-  color: var(--text);
-  font-family: var(--ff-display);
-  font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+  font-size: clamp(2.8rem, 6vw, 4.5rem);
   font-weight: 500;
-  padding: 0.7rem 2.2rem 0.7rem 0;
-  outline: none; cursor: pointer;
-  appearance: none; -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23c9973a' stroke-width='2' fill='none' stroke-linecap='square'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 0 center;
-  transition: border-color 0.2s;
-  letter-spacing: -0.01em;
-}
-.field-select:focus-visible { border-bottom-color: var(--gold); }
-.field-select--add {
-  margin-top: 0.7rem;
-  border-bottom-color: var(--gold-dim, var(--gold));
-  border-bottom-style: dashed;
-  color: var(--gold-600, var(--gold));
-  font-size: 0.9rem;
-  font-style: italic;
-  font-weight: 400;
-}
-
-/* SEGMENTED CONTROLS — Editorial style */
-.seg {
-  display: inline-flex;
-  border: 1px solid var(--text);
-  border-radius: 0;
-  background: transparent;
-  width: max-content;
-}
-.seg--wide { width: 100%; }
-.seg-btn {
-  background: transparent;
-  border: none;
-  color: var(--text);
-  font-family: var(--ff-body);
-  font-size: 0.88rem;
-  font-weight: 500;
-  padding: 0.65rem 1.1rem;
-  cursor: pointer;
-  border-right: 1px solid var(--text);
-  transition: background 0.15s, color 0.15s;
-  letter-spacing: -0.005em;
-}
-.seg-btn:last-child { border-right: none; }
-.seg-btn.active {
-  background: var(--text);
-  color: var(--bg);
-  font-weight: 600;
-}
-.seg-btn:hover:not(.active) { background: rgba(0,0,0,0.04); }
-.seg--wide .seg-btn { flex: 1; }
-
-/* STEPPER */
-.stepper {
-  display: inline-flex; align-items: center;
-  border: 1px solid var(--text);
-  border-radius: 0;
-  width: max-content;
-}
-.stepper-btn {
-  background: transparent; border: none;
-  font-family: var(--ff-display);
-  font-size: 1.4rem; line-height: 1;
-  color: var(--text);
-  width: 40px; height: 40px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-.stepper-btn:hover { background: var(--text); color: var(--bg); }
-.stepper-val {
-  font-family: var(--ff-display);
-  font-size: 1.5rem;
-  font-weight: 500;
-  min-width: 54px;
-  text-align: center;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-}
-
-.quick-days {
-  display: flex; gap: 0.3rem;
-  margin-top: 0.4rem;
-  flex-wrap: wrap;
-}
-.qd-chip {
-  background: transparent;
-  border: 1px solid var(--line-strong, var(--line));
-  color: var(--text-dim);
-  font-family: var(--ff-mono);
-  font-size: 0.72rem;
-  font-variant-numeric: tabular-nums;
-  padding: 0.3rem 0.55rem;
-  cursor: pointer;
-  border-radius: 0;
-  min-width: 32px;
-  transition: all 0.15s;
-}
-.qd-chip:hover { border-color: var(--gold); color: var(--gold-600); }
-.qd-chip.active {
-  background: var(--gold-600, var(--gold));
-  border-color: var(--gold-600, var(--gold));
-  color: #fff;
-}
-
-.lvl-info {
-  background: transparent;
-  border: 1px solid var(--text-faint);
-  color: var(--text-faint);
-  width: 16px; height: 16px;
-  border-radius: 50%; cursor: pointer;
-  font-family: var(--ff-display);
-  font-style: italic;
-  font-size: 0.6rem;
+  letter-spacing: -0.035em;
   line-height: 1;
-  padding: 0;
+  color: var(--text);
+  font-variant-numeric: tabular-nums lining-nums;
 }
-.lvl-info:hover { color: var(--gold); border-color: var(--gold); }
-.lvl-tip {
-  margin-top: 0.6rem;
-  background: var(--surface-2, var(--bg2));
-  border: 1px solid var(--line);
-  border-left: 2px solid var(--gold);
+.tc-hero-sub {
+  font-family: var(--ff-mono);
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-top: 0.7rem;
+  display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap;
+}
+.tc-sep { color: var(--text-faint); }
+
+/* Nudge */
+.tc-nudge {
+  display: flex; align-items: center; gap: 0.5rem;
+  background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.02));
+  border: 1px solid rgba(34,197,94,0.2);
+  border-radius: 12px;
   padding: 0.8rem 1rem;
-  font-size: 0.8rem;
-  line-height: 1.65;
-  color: var(--text-dim);
-}
-.lvl-tip strong { color: var(--text); font-weight: 600; }
-
-/* MONTHS — editorial 12 strip */
-.months {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 1px;
-  background: var(--text);
-  border: 1px solid var(--text);
-}
-.month {
-  background: var(--bg);
-  border: none;
-  cursor: pointer;
-  padding: 0.6rem 0.3rem 0.5rem;
-  display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
-  transition: background 0.15s;
-  min-height: 64px;
-  position: relative;
-}
-.month:hover { background: rgba(201, 151, 58, 0.08); }
-.month.active {
-  background: var(--text);
-  color: var(--bg);
-}
-.m-num {
-  font-family: var(--ff-mono);
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  color: var(--text-faint);
-}
-.month.active .m-num { color: var(--gold); }
-.m-name {
-  font-family: var(--ff-display);
-  font-size: 0.95rem;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  color: var(--text);
-}
-.month.active .m-name { color: var(--bg); }
-.m-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--text-faint);
-  margin-top: 0.2rem;
-}
-.m-dot[data-r="P"] { background: #ef4444; }
-.m-dot[data-r="G"] { background: #22c55e; }
-.m-dot[data-r="O"] { background: #f59e0b; }
-.m-dot[data-r="B"] { background: #6b7280; }
-.month.active .m-dot { box-shadow: 0 0 0 2px var(--bg); }
-
-.month-legend {
-  display: flex; gap: 1rem; flex-wrap: wrap;
-  margin-top: 0.6rem;
-  font-family: var(--ff-mono);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  color: var(--text-faint);
-}
-.lg-item { display: inline-flex; align-items: center; gap: 0.3rem; }
-.lg-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
-.lg-peak { background: #ef4444; }
-.lg-good { background: #22c55e; }
-.lg-ok { background: #f59e0b; }
-.lg-bad { background: #6b7280; }
-
-/* ── COMPUTE COLUMN — Sticky Result ───────────────────────────────── */
-.compute-col {
-  position: sticky;
-  top: 1.5rem;
-  align-self: start;
-}
-
-.compute-result { display: contents; }
-
-.cc-stack { display: flex; flex-direction: column; gap: 1.5rem; }
-.cc-stack--compare { gap: 1rem; }
-
-.cc {
-  background: var(--bg);
-  border: 1px solid var(--text);
-  padding: 1.6rem 1.6rem 1.4rem;
-  position: relative;
-  opacity: 0;
-  animation: ccIn 0.5s calc(var(--cc-i) * 0.08s + 0.1s) ease-out forwards;
-}
-.cc-primary {
-  background: var(--bg);
-  border: 2px solid var(--text);
-  box-shadow: 6px 6px 0 var(--gold);
-}
-@keyframes ccIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.cc-remove {
-  position: absolute; top: 0.8rem; right: 0.8rem;
-  background: var(--bg); border: 1px solid var(--text);
-  width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
-  font-size: 1.2rem; line-height: 1;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.15s;
-  z-index: 2;
-}
-.cc-remove:hover { background: var(--text); color: var(--bg); transform: rotate(90deg); }
-
-.cc-head {
-  display: flex; justify-content: space-between; align-items: baseline;
-  gap: 1rem; flex-wrap: wrap;
-  margin-bottom: 1.2rem;
-  padding-bottom: 0.8rem;
-  border-bottom: 1px solid var(--line);
-}
-.cc-tag {
-  font-family: var(--ff-display);
-  font-size: 1.15rem;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  color: var(--text);
-  padding-right: 36px;
-  word-break: break-word;
-  flex: 1; min-width: 0;
-  line-height: 1.2;
-}
-.cc-season {
-  font-family: var(--ff-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 0.25rem 0.6rem;
-  white-space: nowrap;
-  background: var(--bg);
-}
-.cc-season--peak { background: rgba(239,68,68,0.1); color: #c63b3b; border: 1px solid rgba(239,68,68,0.3); }
-.cc-season--good { background: rgba(34,197,94,0.1); color: #1f9c4a; border: 1px solid rgba(34,197,94,0.3); }
-.cc-season--ok   { background: rgba(245,158,11,0.1); color: #c97d09; border: 1px solid rgba(245,158,11,0.3); }
-.cc-season--bad  { background: rgba(107,114,128,0.1); color: #4b5563; border: 1px solid rgba(107,114,128,0.3); }
-
-.cc-hero { margin-bottom: 1rem; }
-.cc-label {
-  font-family: var(--ff-mono);
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  color: var(--text-faint);
-  margin-bottom: 0.3rem;
-}
-.cc-amount {
-  font-family: var(--ff-display);
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
-  font-weight: 500;
-  line-height: 0.95;
-  letter-spacing: -0.04em;
-  color: var(--text);
-  font-variant-numeric: tabular-nums lining-nums;
-}
-.cc-per {
-  font-family: var(--ff-mono);
-  font-size: 0.78rem;
-  color: var(--text-dim);
-  margin-top: 0.5rem;
-}
-.cc-per span { color: var(--text-faint); }
-
-.cc-nudge {
-  display: inline-flex; align-items: center; gap: 0.4rem;
-  background: rgba(34,197,94,0.08);
-  padding: 0.4rem 0.8rem;
-  font-family: var(--ff-display);
-  font-style: italic;
-  font-size: 0.85rem;
-  color: var(--text);
-  margin-bottom: 1rem;
-  border-left: 2px solid #22c55e;
-}
-.cc-nudge-mark { font-style: normal; color: #1f9c4a; font-weight: 600; }
-.cc-nudge strong { font-weight: 600; color: #1f9c4a; }
-
-/* Editorial table inside card */
-.cc-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0.5rem 0 1.1rem;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-.cc-table td {
-  padding: 0.55rem 0;
   font-size: 0.88rem;
-  vertical-align: baseline;
-  border-bottom: 1px dashed var(--line);
-}
-.cc-table tr:last-child td { border-bottom: none; }
-.cc-table td:first-child {
-  color: var(--text-dim);
-  padding-right: 1rem;
-}
-.cc-table td:last-child {
-  text-align: right;
   color: var(--text);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums lining-nums;
-  white-space: nowrap;
+  margin-bottom: 1.2rem;
 }
-.cc-visa-link {
+.tc-nudge--soft {
+  background: linear-gradient(135deg, rgba(201,151,58,0.06), rgba(201,151,58,0.01));
+  border-color: rgba(201,151,58,0.2);
+}
+.tc-nudge-icon { font-size: 1.05rem; flex-shrink: 0; }
+.tc-nudge strong { font-weight: 700; color: #1f9c4a; }
+.tc-nudge--soft strong { color: var(--gold-600, var(--gold)); }
+
+/* Category bars */
+.tc-cats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.tc-cat {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  display: flex; flex-direction: column; gap: 0.5rem;
+  transition: border-color 0.15s;
+}
+.tc-cat:hover { border-color: var(--gold-dim); }
+.tc-cat-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: 0.5rem;
+}
+.tc-cat-name {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-dim);
+}
+.tc-cat-icon { margin-right: 0.2rem; }
+.tc-cat-val {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.tc-cat-bar {
+  height: 6px;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.tc-cat-fill {
+  height: 100%;
+  width: var(--w);
+  background: var(--c);
+  border-radius: 999px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.tc-cat-pct {
   font-family: var(--ff-mono);
-  font-size: 0.68rem;
-  color: var(--gold-600);
-  text-decoration: none;
-  border-bottom: 1px dashed var(--gold-dim);
-  margin-left: 0.3rem;
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  text-align: right;
 }
 
-/* CTA — editorial */
-.cc-cta { display: flex; flex-direction: column; gap: 0.55rem; }
-.cta-main {
-  display: flex; align-items: center; justify-content: space-between;
-  background: var(--text);
-  color: var(--bg);
-  padding: 0.95rem 1.2rem;
+/* CTA Block */
+.tc-cta-block {
+  display: flex; flex-direction: column; gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+.tc-cta-primary {
+  display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+  background: linear-gradient(135deg, var(--gold-600, var(--gold)), #b58838);
+  color: #fff;
+  padding: 1.05rem 1.5rem;
+  border-radius: 14px;
   font-family: var(--ff-body);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 1rem;
   text-decoration: none;
-  border: none;
-  transition: background 0.15s, transform 0.15s;
-  border-radius: 0;
+  box-shadow: 0 4px 14px rgba(201,151,58,0.3), 0 1px 2px rgba(0,0,0,0.06);
+  transition: all 0.2s;
 }
-.cta-main:hover {
-  background: var(--gold-600, var(--gold));
+.tc-cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(201,151,58,0.4), 0 2px 4px rgba(0,0,0,0.08);
+}
+.tc-cta-icon { font-size: 1.1em; }
+.tc-cta-arrow { transition: transform 0.2s; font-size: 1.1em; }
+.tc-cta-primary:hover .tc-cta-arrow { transform: translateX(4px); }
+
+.tc-cta-side-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.5rem;
+}
+.tc-cta-side {
+  display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--text-dim);
+  padding: 0.65rem 1rem;
+  border-radius: 12px;
+  font-family: var(--ff-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.tc-cta-side:hover {
+  background: var(--surface, #fff);
+  border-color: var(--gold-dim);
+  color: var(--gold-600);
   transform: translateY(-1px);
 }
-.cta-arrow {
-  font-family: var(--ff-display);
-  font-size: 1.3em;
-  transition: transform 0.2s;
-}
-.cta-main:hover .cta-arrow { transform: translateX(4px); }
+.tc-cta-side span { font-size: 1.05em; }
 
-.cta-row {
-  display: flex;
-  gap: 1px;
-  background: var(--line);
-  padding: 1px;
-  border: 1px solid var(--line);
-}
-.cta-side {
-  flex: 1;
-  background: var(--bg);
-  color: var(--text-dim);
-  font-family: var(--ff-body);
-  font-size: 0.78rem;
-  font-weight: 500;
-  padding: 0.55rem 0.4rem;
-  text-decoration: none;
-  text-align: center;
-  transition: all 0.15s;
-}
-.cta-side:hover { background: var(--gold-600); color: var(--bg); }
-
-/* ── COMPARISON TABLE — Editorial Financial-Times style ─────────── */
-.ct-wrap {
-  width: 100%;
-  overflow-x: auto;
-  margin: 0 0 1rem;
-  border: 1px solid var(--text);
-  background: var(--bg);
-  box-shadow: 6px 6px 0 var(--gold);
-  opacity: 0;
-  animation: ccIn 0.5s 0.1s ease-out forwards;
-}
-.ct {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: var(--ff-body);
-}
-.ct th, .ct td {
-  padding: 0.7rem 0.9rem;
-  text-align: right;
-  font-size: 0.85rem;
-  border-bottom: 1px solid var(--line);
-  vertical-align: middle;
-  position: relative;
-}
-.ct th:first-child, .ct td:first-child {
-  text-align: left;
-  background: var(--surface-2, var(--bg2));
-  border-right: 1px solid var(--line);
-  width: 38%;
-  max-width: 200px;
-}
-.ct thead th {
-  background: var(--text);
-  color: var(--bg);
-  padding: 0.9rem 0.9rem 0.7rem;
-  border-bottom: 1px solid var(--text);
-  vertical-align: top;
-  font-weight: 500;
-}
-.ct thead th:first-child { background: var(--text); }
-.ct-th-name {
-  font-family: var(--ff-display);
-  font-size: 0.92rem;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
-  padding-right: 22px;
-  word-break: break-word;
-}
-.ct-th-season {
-  display: inline-block;
-  margin-top: 0.4rem;
-  font-family: var(--ff-mono);
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 0.18rem 0.45rem;
-  font-weight: 400;
-}
-.ct-th-season--peak { background: rgba(239,68,68,0.25); color: #ffb4b4; }
-.ct-th-season--good { background: rgba(34,197,94,0.25); color: #b8efc5; }
-.ct-th-season--ok   { background: rgba(245,158,11,0.25); color: #ffd994; }
-.ct-th-season--bad  { background: rgba(180,180,180,0.25); color: #ddd; }
-
-.ct-remove {
-  position: absolute; top: 0.4rem; right: 0.4rem;
-  background: transparent; border: 1px solid var(--bg);
-  color: var(--bg);
-  width: 22px; height: 22px; border-radius: 50%; cursor: pointer;
-  font-size: 0.95rem; line-height: 1;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.15s;
-}
-.ct-remove:hover { background: var(--bg); color: var(--text); }
-
-.ct-key {
-  font-family: var(--ff-body);
-  font-size: 0.78rem;
-  color: var(--text-dim);
-  font-weight: 500;
-  letter-spacing: -0.005em;
-}
-
-.ct-total-row td {
-  padding-top: 1.2rem;
-  padding-bottom: 1.2rem;
-  border-bottom: 2px solid var(--text);
-}
-.ct-amount {
-  font-family: var(--ff-display);
-  font-size: clamp(1.3rem, 2.5vw, 1.7rem);
-  font-weight: 500;
-  letter-spacing: -0.025em;
-  color: var(--text);
-  font-variant-numeric: tabular-nums lining-nums;
-  line-height: 1.1;
-}
-.ct-amount.is-min {
-  color: #1f9c4a;
-  position: relative;
-}
-.ct-best-badge {
-  display: block;
-  font-family: var(--ff-mono);
-  font-size: 9px;
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #1f9c4a;
-  margin-top: 0.25rem;
-}
-
-.ct td:not(:first-child) {
-  font-variant-numeric: tabular-nums lining-nums;
-  font-weight: 500;
-  color: var(--text);
-}
-
-.ct-divider td { padding: 0; height: 6px; background: var(--line); border-bottom: none; }
-
-.ct-visa {
-  font-size: 0.78rem;
-  font-weight: 500;
-}
-.ct-visa-link {
-  font-family: var(--ff-mono);
-  color: var(--gold-600);
-  margin-left: 0.3rem;
-  text-decoration: none;
-  border-bottom: 1px dashed var(--gold-dim);
-}
-.ct-free { color: #1f9c4a; font-weight: 600; }
-
-.ct-best {
-  font-family: var(--ff-display);
-  font-style: italic;
-  font-size: 0.92rem;
-  color: var(--text);
-}
-.ct-sav {
-  font-family: var(--ff-mono);
-  font-style: normal;
-  font-size: 0.7rem;
-  color: #1f9c4a;
-  font-weight: 600;
-  margin-left: 0.3rem;
-}
-
-.ct-cta-row td { padding-top: 1rem; padding-bottom: 1rem; }
-.ct-cta-btn {
-  display: inline-block;
-  background: var(--text);
-  color: var(--bg);
-  font-family: var(--ff-body);
-  font-size: 0.82rem;
-  font-weight: 600;
-  padding: 0.5rem 0.9rem;
-  text-decoration: none;
-  transition: background 0.15s;
-  white-space: nowrap;
-}
-.ct-cta-btn:hover { background: var(--gold-600, var(--gold)); }
-
-.ct-aux {
-  display: flex; gap: 1.2rem;
-  flex-wrap: wrap;
-  padding: 0.8rem 0;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 1rem;
-  font-size: 0.78rem;
-}
-.ct-aux-label {
-  font-family: var(--ff-mono);
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-}
-.ct-aux-link {
-  color: var(--text);
-  text-decoration: none;
-  border-bottom: 1px dashed var(--gold-dim);
-  font-weight: 500;
-  transition: color 0.15s;
-}
-.ct-aux-link:hover { color: var(--gold-600); }
-
-/* ── FOOTER OF COMPUTE ────────────────────────────────────────────── */
-.cc-footer {
-  margin-top: 1.2rem;
+/* Utility */
+.tc-utility {
   display: flex; justify-content: center;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--line);
+  margin-top: 0.5rem;
 }
-.copy-btn {
+.tc-copy-btn {
   display: inline-flex; align-items: center; gap: 0.5rem;
   background: transparent;
   border: 1px dashed var(--text);
   color: var(--text);
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
   font-family: var(--ff-body);
   font-size: 0.82rem;
   font-weight: 500;
-  padding: 0.55rem 1.1rem;
   cursor: pointer;
   transition: all 0.15s;
 }
-.copy-btn:hover {
-  border-style: solid;
+.tc-copy-btn:hover {
   background: var(--text);
   color: var(--bg);
-}
-.copy-icon {
-  font-family: var(--ff-mono);
-  font-weight: 600;
+  border-style: solid;
 }
 
-.rate-line {
-  margin-top: 1.5rem;
-  font-family: var(--ff-mono);
-  font-size: 0.7rem;
-  color: var(--text-faint);
-  text-align: right;
-  border-top: 1px dashed var(--line);
-  padding-top: 0.7rem;
-}
-
-/* ── REAL SECTION (BudgetBlock host) ──────────────────────────────── */
-.real-section {
-  padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 4rem);
-  max-width: 1400px;
-  margin: 0 auto;
-  border-bottom: 1px solid var(--line);
-}
-
-/* ── TIPS — Editorial 6-grid ──────────────────────────────────────── */
-.tips-section {
-  padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 4rem);
-  max-width: 1400px;
-  margin: 0 auto;
-  border-bottom: 1px solid var(--line);
-}
-.tips-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1px;
-  background: var(--line);
+/* ── COMPARISON GRID — full width cards side by side ───────── */
+.tc-compare {
+  background: var(--surface, #fff);
   border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: clamp(1.5rem, 3vw, 2rem);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 12px 40px -20px rgba(0,0,0,0.10);
 }
-.tip {
-  background: var(--bg);
-  padding: 2rem 1.8rem 1.6rem;
-  position: relative;
-  transition: background 0.2s;
-}
-.tip:hover { background: rgba(201, 151, 58, 0.04); }
-.tip-num {
-  position: absolute;
-  top: 1rem; right: 1.2rem;
+.tc-compare-head { text-align: center; margin-bottom: 1.5rem; }
+.tc-compare-title {
   font-family: var(--ff-display);
-  font-style: italic;
-  font-size: 1.1rem;
-  color: var(--gold-600, var(--gold));
-  letter-spacing: 0.05em;
-}
-.tip-title {
-  font-family: var(--ff-display);
-  font-size: 1.3rem;
+  font-size: clamp(1.4rem, 2.5vw, 1.8rem);
   font-weight: 500;
-  letter-spacing: -0.015em;
-  margin: 0 0 0.6rem;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.4rem;
   color: var(--text);
-  line-height: 1.2;
 }
-.tip-body {
-  font-size: 0.92rem;
+.tc-compare-sub {
+  font-family: var(--ff-mono);
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.tc-compare-grid {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tc-cmp-card {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1.3rem 1.2rem 1.1rem;
+  display: flex; flex-direction: column; gap: 0.9rem;
+  position: relative;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.tc-cmp-card:hover { border-color: var(--gold-dim); }
+.tc-cmp-card--best {
+  background: linear-gradient(180deg, rgba(34,197,94,0.05), var(--bg));
+  border: 1.5px solid rgba(34,197,94,0.4);
+}
+.tc-cmp-remove {
+  position: absolute; top: 0.7rem; right: 0.7rem;
+  background: var(--surface, #fff);
+  border: 1px solid var(--line);
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem; line-height: 1;
+  color: var(--text-faint);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  z-index: 2;
+}
+.tc-cmp-remove:hover { background: var(--text); color: var(--bg); transform: rotate(90deg); }
+
+.tc-cmp-badge {
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  background: #22c55e;
+  color: #fff;
+  font-family: var(--ff-body);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(34,197,94,0.3);
+}
+
+.tc-cmp-head {
+  display: flex; flex-direction: column; gap: 0.4rem;
+  padding-right: 28px;
+}
+.tc-cmp-name {
+  font-family: var(--ff-display);
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin: 0;
+  color: var(--text);
+}
+
+.tc-cmp-total {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 0.9rem 0;
+  text-align: center;
+}
+.tc-cmp-total-label {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 0.3rem;
+}
+.tc-cmp-total-amount {
+  font-family: var(--ff-display);
+  font-size: clamp(1.6rem, 2.5vw, 2rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--text);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.tc-cmp-card--best .tc-cmp-total-amount { color: #1f9c4a; }
+.tc-cmp-total-pp {
+  font-family: var(--ff-mono);
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  margin-top: 0.3rem;
+}
+
+.tc-cmp-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex; flex-direction: column;
+  gap: 0.5rem;
+}
+.tc-cmp-list li {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 0.85rem;
+  gap: 0.5rem;
+}
+.tc-cmp-key {
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.tc-cmp-val {
+  color: var(--text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+.tc-cmp-visa { font-weight: 500; }
+.tc-cmp-visa a {
+  color: var(--gold-600);
+  text-decoration: none;
+  margin-left: 0.2rem;
+}
+
+.tc-cmp-cta {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--text);
+  color: var(--bg);
+  padding: 0.75rem 1.1rem;
+  border-radius: 10px;
+  font-family: var(--ff-body);
+  font-weight: 600;
+  font-size: 0.88rem;
+  text-decoration: none;
+  margin-top: auto;
+  transition: background 0.15s, transform 0.15s;
+}
+.tc-cmp-cta:hover {
+  background: var(--gold-600, var(--gold));
+  transform: translateY(-1px);
+}
+.tc-cmp-card--best .tc-cmp-cta {
+  background: #22c55e;
+}
+.tc-cmp-card--best .tc-cmp-cta:hover { background: #1f9c4a; }
+
+.tc-compare-aux {
+  display: flex; gap: 1.2rem; flex-wrap: wrap; align-items: center;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--line);
+}
+.tc-aux-label {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.tc-compare-aux a {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-bottom: 1px dashed var(--gold-dim);
+  transition: color 0.15s;
+}
+.tc-compare-aux a:hover { color: var(--gold-600); }
+
+/* ── SECTIONS (Tips, BudgetBlock, FAQ) ───────────────────────── */
+.tc-section { padding: clamp(2.5rem, 5vw, 4rem) 0; }
+.tc-section-head {
+  display: flex; align-items: baseline; gap: 0.8rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.8rem;
+}
+.tc-section-num {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--gold-600);
+}
+.tc-section-title {
+  font-family: var(--ff-display);
+  font-size: clamp(1.3rem, 2.3vw, 1.8rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--text);
+}
+
+/* Tips grid */
+.tc-tips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+.tc-tip {
+  background: var(--surface, #fff);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1.3rem 1.3rem 1.1rem;
+  transition: all 0.15s;
+}
+.tc-tip:hover { border-color: var(--gold-dim); transform: translateY(-2px); box-shadow: 0 8px 24px -12px rgba(0,0,0,0.08); }
+.tc-tip-icon { font-size: 1.5rem; margin-bottom: 0.7rem; }
+.tc-tip-title {
+  font-family: var(--ff-body);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.4rem;
+  color: var(--text);
+}
+.tc-tip-body {
+  font-size: 0.88rem;
   line-height: 1.55;
   color: var(--text-dim);
   margin: 0;
 }
 
-/* ── FAQ ──────────────────────────────────────────────────────────── */
-.faq-section {
-  padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 4rem) clamp(4rem, 8vw, 7rem);
-  max-width: 1100px;
-  margin: 0 auto;
+/* FAQ */
+.tc-faq-list { display: flex; flex-direction: column; }
+.tc-faq-item {
+  background: var(--surface, #fff);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  margin-bottom: 0.5rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
-.faq-list { display: flex; flex-direction: column; }
-.faq-item {
-  border-bottom: 1px solid var(--line);
-  padding: 1.4rem 0;
-  transition: padding 0.15s;
+.tc-faq-item[open] {
+  border-color: var(--gold-dim);
+  box-shadow: 0 4px 14px -8px rgba(201,151,58,0.15);
 }
-.faq-item:first-child { border-top: 1px solid var(--line); }
-.faq-item summary {
+.tc-faq-item summary {
   cursor: pointer;
-  font-family: var(--ff-display);
-  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  font-family: var(--ff-body);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
   color: var(--text);
   list-style: none;
   position: relative;
-  padding: 0.3rem 3rem 0.3rem 0;
-  line-height: 1.35;
-  display: block;
+  padding: 1.1rem 3.2rem 1.1rem 1.3rem;
+  line-height: 1.4;
 }
-.faq-item summary::-webkit-details-marker { display: none; }
-.faq-item summary::after {
+.tc-faq-item summary::-webkit-details-marker { display: none; }
+.tc-faq-item summary::after {
   content: '+';
-  position: absolute; right: 0.2rem; top: 50%;
+  position: absolute; right: 1.2rem; top: 50%;
   transform: translateY(-50%);
   font-family: var(--ff-display);
-  font-size: 1.4rem; font-weight: 300;
-  color: var(--gold-600, var(--gold));
-  transition: transform 0.25s var(--ease-out, cubic-bezier(0.22, 0.61, 0.36, 1));
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--gold-600);
+  transition: transform 0.25s;
   line-height: 1;
-  width: 1.4rem; text-align: center;
 }
-.faq-item[open] summary::after { transform: translateY(-50%) rotate(45deg); }
-.faq-item p {
-  margin: 1rem 0 0;
+.tc-faq-item[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+.tc-faq-item p {
+  margin: 0;
+  padding: 0 1.3rem 1.2rem;
   color: var(--text-dim);
-  font-size: 1rem;
+  font-size: 0.94rem;
   line-height: 1.65;
-  max-width: 720px;
+  max-width: 760px;
 }
 
-/* ── BUDGET BLOCK WRAPS ──────────────────────────────────────────── */
-.bb-host { /* host */ }
-.bb-wrap { /* individual */ }
-
-/* ── RESPONSIVE ───────────────────────────────────────────────────── */
-@media (max-width: 920px) {
-  .spread-inner {
-    grid-template-columns: 1fr;
-    gap: 3rem;
+/* ── RESPONSIVE ───────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .tc-form-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
   }
-  .compute-col {
-    position: static;
-  }
-  .field-row { grid-template-columns: 1fr; }
-  .months { grid-template-columns: repeat(6, 1fr); }
-  .seg-btn { padding: 0.55rem 0.85rem; font-size: 0.82rem; }
-  .hero-line:nth-child(2) { transform: translateX(0); }
-  @keyframes lineInRight {
-    from { opacity: 0; transform: translate(0, 20px); }
-    to   { opacity: 1; transform: translate(0, 0); }
-  }
+  .tc-field--country, .tc-field--level { grid-column: 1 / -1; }
 }
 @media (max-width: 640px) {
-  .hero { padding: 2.5rem 1.2rem 2rem; }
-  .spread, .real-section, .tips-section, .faq-section { padding-left: 1.2rem; padding-right: 1.2rem; }
-  .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
-  .cc { padding: 1.2rem 1.2rem 1rem; }
-  .cc-primary { box-shadow: 4px 4px 0 var(--gold); }
-  .cta-row { flex-direction: column; }
-  .cta-side { padding: 0.55rem; }
-  .month { min-height: 56px; padding: 0.5rem 0.2rem 0.4rem; }
-  .m-name { font-size: 0.85rem; }
-  .tip { padding: 1.5rem 1.2rem 1.3rem; }
-  .tip-num { top: 0.8rem; right: 0.9rem; }
+  .tc-form { padding: 1rem; border-radius: 12px; }
+  .tc-form-grid { grid-template-columns: 1fr; gap: 0.7rem; }
+  .tc-single { padding: 1.2rem 1rem; border-radius: 14px; }
+  .tc-compare { padding: 1.2rem 1rem; }
+  .tc-compare-grid { grid-template-columns: 1fr; }
+  .tc-cats { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+  .tc-cat { padding: 0.7rem 0.8rem; }
+  .tc-cta-side-row { grid-template-columns: 1fr; }
+  .tc-form-extra { flex-direction: column; align-items: stretch; }
+  .tc-add-country { width: 100%; }
+  .tc-result-pills { gap: 0.3rem; }
 }
-
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-  .eyebrow-dot { animation: none; }
 }
 </style>
