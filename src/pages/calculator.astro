@@ -786,10 +786,19 @@ renderCalc();
 document.addEventListener('astro:page-load', () => {
   const onCalc = location.pathname.replace(/\/+$/, '') === '/calculator';
   if (!onCalc) return;
-  // resultEl — замыкание на DOM первой загрузки. Если он отсоединён от
-  // нового документа, значит был swap → нужен честный reload.
   if (!resultEl || !document.contains(resultEl)) {
     window.location.reload();
+  }
+});
+
+// Safari bfcache: при возврате кнопкой «назад» страница восстанавливается
+// из снапшота без выполнения скриптов. event.persisted = true → перезагрузка.
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) {
+    const onCalc = location.pathname.replace(/\/+$/, '') === '/calculator';
+    if (onCalc && (!resultEl || !document.contains(resultEl) || !resultEl.innerHTML.trim())) {
+      window.location.reload();
+    }
   }
 });
 </script>
