@@ -13,21 +13,34 @@ PRICES.forEach((p, i) => {
   if (!groups[p.g]) groups[p.g] = [];
   groups[p.g].push({ i, name: p.name, iata: p.iata });
 });
-
-const iataToSlug: Record<string, string> = {};
-const iataToSeasons: Record<string, any> = {};
-const iataToBudgetSlug: Record<string, string> = {};
-DIRECTIONS.forEach((d: any) => {
-  if (d.price?.iata) {
-    iataToSlug[d.price.iata] = d.slug;
-    iataToSeasons[d.price.iata] = d.r;
-    if ((realBudgets as any)[d.slug]) iataToBudgetSlug[d.price.iata] = d.slug;
-  }
+// Сортировка стран внутри каждой группы по алфавиту (русская локаль)
+Object.keys(groups).forEach(g => {
+  groups[g].sort((a, b) => a.name.localeCompare(b.name, 'ru'));
 });
-const iataToVisa: Record<string, any> = {};
-PRICES.forEach((p) => {
-  const slug = iataToSlug[p.iata];
-  if (slug && (VISA_DETAILS as any)[slug]) iataToVisa[p.iata] = { ...(VISA_DETAILS as any)[slug], slug };
+// Сортировка самих групп по алфавиту
+const sortedGroups: Record<string, Array<{i:number,name:string,iata:string}>> = {};
+Object.keys(groups).sort((a, b) => a.localeCompare(b, 'ru')).forEach(g => {
+  sortedGroups[g] = groups[g];
+});
+
+// Маппинг по NAME (а не iata) — потому что разные направления могут шарить iata
+// (например, Australia-East и Australia-North в DIRECTIONS оба ссылаются на SYD).
+// PRICES — источник истины: у каждого свой name + iata.
+const priceIdxToSlug: Record<number, string> = {};
+const priceIdxToSeasons: Record<number, any> = {};
+const priceIdxToVisa: Record<number, any> = {};
+const priceIdxToBudgetSlug: Record<number, string> = {};
+
+PRICES.forEach((p, i) => {
+  // Находим DIRECTIONS-запись с тем же name (в price.name внутри directions)
+  const dir: any = DIRECTIONS.find((d: any) => d.price?.name === p.name);
+  if (!dir) return;
+  priceIdxToSlug[i] = dir.slug;
+  priceIdxToSeasons[i] = dir.r;
+  if ((VISA_DETAILS as any)[dir.slug]) {
+    priceIdxToVisa[i] = { ...(VISA_DETAILS as any)[dir.slug], slug: dir.slug };
+  }
+  if ((realBudgets as any)[dir.slug]) priceIdxToBudgetSlug[i] = dir.slug;
 });
 
 const MONTH_NAMES = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
@@ -111,7 +124,7 @@ const ldJson = {
             <div class="tc-field tc-field--country">
               <label class="tc-field-label" for="calcRegion">Направление</label>
               <select class="tc-input tc-input--select" id="calcRegion">
-                {Object.entries(groups).map(([label, items]) => (
+                {Object.entries(sortedGroups).map(([label, items]) => (
                   <optgroup label={label}>
                     {items.map(({ i, name }) => (
                       <option value={i}>{name}</option>
@@ -171,7 +184,7 @@ const ldJson = {
           <div class="tc-form-extra">
             <select class="tc-add-country" id="addCountrySelect" aria-label="Сравнить с другой страной" hidden>
               <option value="">+ Сравнить с другой страной</option>
-              {Object.entries(groups).map(([label, items]) => (
+              {Object.entries(sortedGroups).map(([label, items]) => (
                 <optgroup label={label}>
                   {items.map(({ i, name }) => (
                     <option value={i}>{name}</option>
@@ -288,7 +301,7 @@ const ldJson = {
   <Footer />
 </Layout>
 
-<script define:vars={{ PRICES, MONTH_NAMES, MONTH_FULL, iataToSeasons, iataToVisa, iataToSlug, iataToBudgetSlug }}>
+<script define:vars={{ PRICES, MONTH_NAMES, MONTH_FULL, priceIdxToSeasons, priceIdxToVisa, priceIdxToSlug, priceIdxToBudgetSlug }}>
 let RUB = 90, calcLevel = 0, calcCurrency = 'rub';
 let travelers = 1, selectedMonth = 0;
 let compareList = [];
@@ -406,8 +419,9 @@ function computeForPriceIndex(pi) {
   const hotel = p.hotel[calcLevel];
   const food = p.food[calcLevel];
   let seasonMult = 1, seasonLabel = '', seasonClass = '';
-  if (selectedMonth > 0 && iataToSeasons[p.iata]) {
-    const rating = iataToSeasons[p.iata][selectedMonth - 1];
+  const seasonsArr = priceIdxToSeasons[pi];
+  if (selectedMonth > 0 && seasonsArr) {
+    const rating = seasonsArr[selectedMonth - 1];
     seasonMult = SEASON_MULT[rating] || 1;
     seasonLabel = SEASON_LABEL[rating] || '';
     seasonClass = SEASON_CLASS[rating] || '';
@@ -415,7 +429,7 @@ function computeForPriceIndex(pi) {
   const flightTotal = baseFlight * seasonMult * travelers;
   const hotelTotal = hotel * days;
   const foodTotal = food * days * travelers;
-  const visa = iataToVisa[p.iata];
+  const visa = priceIdxToVisa[pi];
   let visaUsd = 0;
   if (visa?.cost) {
     const m1 = visa.cost.match(/\$(\d+)/);
@@ -430,9 +444,9 @@ function computeForPriceIndex(pi) {
   return { p, days, travelers, flightTotal, hotelTotal, foodTotal, visa, visaTotal, seasonMult, seasonLabel, seasonClass, grand };
 }
 
-function findBestMonth(iata) {
-  if (!iataToSeasons[iata]) return null;
-  const ratings = iataToSeasons[iata];
+function findBestMonth(pi) {
+  const ratings = priceIdxToSeasons[pi];
+  if (!ratings) return null;
   let bestIdx = -1, bestMult = 999;
   ratings.forEach((r, i) => {
     const mu = SEASON_MULT[r] || 1;
@@ -450,6 +464,7 @@ function escapeHtml(s) {
 // ─── Render single-country result with category bars ───────────
 function renderSingle(pi) {
   const r = computeForPriceIndex(pi);
+  const piIdx = pi;
   const aviUrl = aviasalesUrl(r.p.iata, selectedMonth > 0 ? selectedMonth : null);
   const perPerson = r.grand / Math.max(1, r.travelers);
   const perDay = r.grand / Math.max(1, r.days);
@@ -464,7 +479,7 @@ function renderSingle(pi) {
   const total = r.grand;
 
   // Best month nudge
-  const best = findBestMonth(r.p.iata);
+  const best = findBestMonth(pi);
   let nudge = '';
   if (best && selectedMonth > 0 && best.monthNum !== selectedMonth) {
     const saving = Math.round((1 - best.mult / r.seasonMult) * 100);
@@ -567,18 +582,34 @@ function renderTable(piList) {
     <div class="tc-compare-grid" style="grid-template-columns: repeat(${cols}, minmax(0, 1fr))">`;
 
   rows.forEach((r, idx) => {
+    const pi = piList[idx];
     const isMin = r.grand === minTotal;
     const aviUrl = aviasalesUrl(r.p.iata, selectedMonth > 0 ? selectedMonth : null);
+
+    // Сезон-бейдж: всегда показываем (placeholder для равной высоты)
     const seasonPill = r.seasonLabel
       ? `<span class="tc-season-pill tc-season-pill--${r.seasonClass}">${r.seasonLabel}</span>`
-      : '';
-    const visaText = r.visa
-      ? (r.visa.cost === 'бесплатно' ? '✓ безвиз' : escapeHtml(r.visa.cost))
-      : '—';
+      : `<span class="tc-season-pill tc-season-pill--any">Любой месяц</span>`;
+
+    // Виза: используем slug из priceIdxToSlug (а не r.visa.slug), чтобы ссылка
+    // была доступна даже когда детальной visa-data нет
+    const slug = priceIdxToSlug[pi];
+    const visaUrl = slug ? `/visa/${slug}/` : null;
+    let visaText, visaLink;
+    if (r.visa) {
+      visaText = r.visa.cost === 'бесплатно' ? '✓ безвиз' : escapeHtml(r.visa.cost);
+      visaLink = visaUrl;
+    } else if (slug) {
+      visaText = 'нужна';
+      visaLink = visaUrl;
+    } else {
+      visaText = '—';
+      visaLink = null;
+    }
 
     html += `
       <div class="tc-cmp-card ${isMin ? 'tc-cmp-card--best' : ''}">
-        ${idx > 0 ? `<button class="tc-cmp-remove" data-remove="${piList[idx]}" type="button" aria-label="Убрать">×</button>` : ''}
+        ${idx > 0 ? `<button class="tc-cmp-remove" data-remove="${pi}" type="button" aria-label="Убрать">×</button>` : ''}
         ${isMin ? '<div class="tc-cmp-badge">🏆 Самое дешёвое</div>' : ''}
 
         <div class="tc-cmp-head">
@@ -589,14 +620,14 @@ function renderTable(piList) {
         <div class="tc-cmp-total">
           <div class="tc-cmp-total-label">Итого</div>
           <div class="tc-cmp-total-amount">${fmt(r.grand)}</div>
-          ${r.travelers > 1 ? `<div class="tc-cmp-total-pp">${fmt(r.grand / r.travelers)} / чел.</div>` : ''}
+          <div class="tc-cmp-total-pp">${r.travelers > 1 ? `${fmt(r.grand / r.travelers)} / чел.` : `${fmt(r.grand / r.days)} / день`}</div>
         </div>
 
         <ul class="tc-cmp-list">
           <li><span class="tc-cmp-key">✈ Перелёт</span><span class="tc-cmp-val">${fmt(r.flightTotal)}</span></li>
           <li><span class="tc-cmp-key">🏨 Отель × ${r.days}</span><span class="tc-cmp-val">${fmt(r.hotelTotal)}</span></li>
           <li><span class="tc-cmp-key">🍴 Питание</span><span class="tc-cmp-val">${fmt(r.foodTotal)}</span></li>
-          <li><span class="tc-cmp-key">🛂 Виза</span><span class="tc-cmp-val tc-cmp-visa">${visaText}${r.visa ? ` <a href="/visa/${r.visa.slug}/">→</a>` : ''}</span></li>
+          <li><span class="tc-cmp-key">🛂 Виза</span><span class="tc-cmp-val tc-cmp-visa">${visaLink ? `<a href="${visaLink}" target="_blank" rel="noopener">${visaText} →</a>` : visaText}</span></li>
         </ul>
 
         <a href="${aviUrl}" target="_blank" rel="noopener sponsored" class="tc-cmp-cta">Найти билет →</a>
@@ -648,8 +679,7 @@ function renderCalc() {
 
 function showBudgetBlock() {
   const primary = parseInt(calcSel.value);
-  const iata = PRICES[primary]?.iata;
-  const slug = iataToBudgetSlug[iata];
+  const slug = priceIdxToBudgetSlug[primary];
   document.querySelectorAll('.tc-bb-wrap').forEach(el => {
     el.hidden = el.dataset.slug !== slug;
   });
@@ -802,7 +832,7 @@ renderCalc();
 }
 .tc-form-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1.6fr 0.9fr;
+  grid-template-columns: minmax(180px, 2fr) minmax(110px, 1fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(220px, 2.2fr) minmax(90px, 1fr);
   gap: 1rem;
   align-items: end;
 }
@@ -882,18 +912,22 @@ renderCalc();
   height: 40px;
 }
 .tc-seg-btn {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   background: transparent;
   border: none;
   color: var(--text-dim);
   font-family: var(--ff-body);
   font-size: 0.85rem;
   font-weight: 500;
-  padding: 0 0.85rem;
+  padding: 0 0.4rem;
   cursor: pointer;
   border-radius: 7px;
   transition: all 0.15s;
   white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  text-align: center;
 }
 .tc-seg-btn:hover:not(.active) { color: var(--text); }
 .tc-seg-btn.active {
@@ -982,6 +1016,7 @@ renderCalc();
 .tc-season-pill--good { background: rgba(34,197,94,0.1); color: #1f9c4a; }
 .tc-season-pill--ok   { background: rgba(245,158,11,0.1); color: #c97d09; }
 .tc-season-pill--bad  { background: rgba(107,114,128,0.1); color: #4b5563; }
+.tc-season-pill--any  { background: var(--bg); color: var(--text-faint); border: 1px dashed var(--line-strong, var(--line)); }
 
 .tc-visa-pill {
   font-size: 0.75rem;
@@ -1218,9 +1253,17 @@ renderCalc();
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 1.3rem 1.2rem 1.1rem;
-  display: flex; flex-direction: column; gap: 0.9rem;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 0.9rem;
   position: relative;
   transition: border-color 0.15s, transform 0.15s;
+  min-width: 0;
+}
+.tc-cmp-head {
+  min-height: 4.2rem;
+  display: flex; flex-direction: column; gap: 0.4rem;
+  padding-right: 28px;
 }
 .tc-cmp-card:hover { border-color: var(--gold-dim); }
 .tc-cmp-card--best {
@@ -1256,10 +1299,6 @@ renderCalc();
   box-shadow: 0 2px 8px rgba(34,197,94,0.3);
 }
 
-.tc-cmp-head {
-  display: flex; flex-direction: column; gap: 0.4rem;
-  padding-right: 28px;
-}
 .tc-cmp-name {
   font-family: var(--ff-display);
   font-size: 1.1rem;
