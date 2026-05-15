@@ -241,6 +241,13 @@ const inHub = ['countries', 'visa', 'seasons', 'trips', 'cards'].includes(active
        MenuIcon   → #astronav-menu
   ─────────────────────────────────────────────────────────── */
 
+  /* Резерв высоты navbar — предотвращает CLS при гидрации astro-navbar.
+     Контент под шапкой не прыгает, пока JS навешивает классы. */
+  .site-nav {
+    min-height: 64px;
+    box-sizing: border-box;
+  }
+
   /* MenuItems wrapper — на desktop всегда виден, на mobile управляется .hidden */
   .nav-links {
     display: flex;

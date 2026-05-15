@@ -14,6 +14,7 @@ interface Props {
   ldJson?: object;
   preloadImage?: string;
   noindex?: boolean;
+  noTransitions?: boolean;
 }
 
 const {
@@ -28,6 +29,7 @@ const {
   ldJson,
   preloadImage,
   noindex = false,
+  noTransitions = false,
 } = Astro.props;
 
 const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-image.png?v=2';
@@ -142,7 +144,7 @@ const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-image.png?v=2';
   <noscript><div><img src="https://mc.yandex.ru/watch/95832375" style="position:absolute; left:-9999px;" alt="Yandex Metrika" aria-hidden="true" /></div></noscript>
 
   <!-- View Transitions API — плавные переходы между страницами -->
-  <ClientRouter />
+  {!noTransitions && <ClientRouter />}
 </head>
 <body>
   <!-- Skip-link for keyboard / screen reader users -->
