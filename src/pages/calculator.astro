@@ -498,6 +498,97 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+// ─── Render comparison TABLE (когда выбрано 2-3 страны) ────────────
+function renderTable(piList) {
+  const rows = piList.map(pi => computeForPriceIndex(pi));
+  const cols = rows.length;
+  const minTotal = Math.min(...rows.map(r => r.grand));
+
+  const cells = (key, fn) => rows.map(r => `<td>${fn(r)}</td>`).join('');
+  const cellsCls = (key, fn) => rows.map(r => `<td class="${r.grand === minTotal ? 'is-min' : ''}">${fn(r)}</td>`).join('');
+
+  // Headers
+  let html = `<div class="ct-wrap"><table class="ct">`;
+  html += `<thead><tr><th></th>`;
+  html += rows.map((r, idx) => {
+    const isFirst = idx === 0;
+    return `<th>
+      <div class="ct-th-name">${escapeHtml(r.p.name.split('(')[0].trim())}</div>
+      ${r.seasonLabel ? `<div class="ct-th-season ct-th-season--${r.seasonClass}">${MONTH_NAMES[selectedMonth-1]} · ${r.seasonLabel}</div>` : ''}
+      ${!isFirst ? `<button class="ct-remove" data-remove="${piList[idx]}" type="button" aria-label="Убрать">×</button>` : ''}
+    </th>`;
+  }).join('');
+  html += `</tr></thead>`;
+
+  html += `<tbody>`;
+  // ИТОГО — главная строка
+  html += `<tr class="ct-total-row"><td class="ct-key">Итого</td>`;
+  html += rows.map(r => {
+    const isMin = r.grand === minTotal && cols > 1;
+    return `<td class="ct-amount ${isMin ? 'is-min' : ''}">${fmt(r.grand)}${isMin ? '<span class="ct-best-badge">самое дешёвое</span>' : ''}</td>`;
+  }).join('');
+  html += `</tr>`;
+
+  // На человека (если travelers > 1)
+  if (travelers > 1) {
+    html += `<tr><td class="ct-key">На человека</td>${cells('pp', r => fmt(r.grand / travelers))}</tr>`;
+  }
+
+  // Breakdown
+  html += `<tr class="ct-divider"><td colspan="${cols+1}"></td></tr>`;
+  html += `<tr><td class="ct-key">Перелёт</td>${cells('f', r => fmt(r.flightTotal))}</tr>`;
+  html += `<tr><td class="ct-key">Отель × ${rows[0].days} ноч.</td>${cells('h', r => fmt(r.hotelTotal))}</tr>`;
+  html += `<tr><td class="ct-key">Питание</td>${cells('e', r => fmt(r.foodTotal))}</tr>`;
+
+  // Виза (если хоть у одной есть)
+  const anyVisa = rows.some(r => r.visa);
+  if (anyVisa) {
+    html += `<tr><td class="ct-key">Виза</td>${rows.map(r => {
+      if (!r.visa) return '<td>—</td>';
+      const cost = r.visa.cost === 'бесплатно' ? '<span class="ct-free">✓ безвиз</span>' : escapeHtml(r.visa.cost);
+      return `<td class="ct-visa">${cost}<a href="/visa/${r.visa.slug}/" class="ct-visa-link" aria-label="Детали визы">→</a></td>`;
+    }).join('')}</tr>`;
+  }
+
+  // Лучший месяц (если выбран не лучший)
+  const bestSaving = rows.map(r => {
+    const b = findBestMonth(r.p.iata);
+    if (!b) return null;
+    if (selectedMonth > 0 && b.monthNum !== selectedMonth) {
+      const s = Math.round((1 - b.mult / r.seasonMult) * 100);
+      if (s > 5) return { name: b.monthName, saving: s };
+    } else if (selectedMonth === 0) {
+      return { name: b.monthName, saving: 0 };
+    }
+    return null;
+  });
+  if (bestSaving.some(b => b)) {
+    html += `<tr class="ct-divider"><td colspan="${cols+1}"></td></tr>`;
+    html += `<tr><td class="ct-key">Дешевле в</td>${bestSaving.map(b => {
+      if (!b) return '<td>—</td>';
+      return `<td class="ct-best">${b.name}${b.saving > 0 ? ` <span class="ct-sav">−${b.saving}%</span>` : ''}</td>`;
+    }).join('')}</tr>`;
+  }
+
+  // CTA row
+  html += `<tr class="ct-cta-row"><td class="ct-key">Билеты</td>${rows.map((r, idx) => {
+    const aviUrl = aviasalesUrl(r.p.iata, selectedMonth > 0 ? selectedMonth : null);
+    return `<td><a href="${aviUrl}" target="_blank" rel="noopener sponsored" class="ct-cta-btn">Найти →</a></td>`;
+  }).join('')}</tr>`;
+
+  html += `</tbody></table></div>`;
+
+  // Общий блок партнёрских ссылок
+  html += `<div class="ct-aux">
+    <span class="ct-aux-label">Сопутствующее:</span>
+    <a href="${OSTROVOK}" target="_blank" rel="noopener sponsored" class="ct-aux-link">Отель Ostrovok →</a>
+    <a href="${CHEREHAPA}" target="_blank" rel="noopener sponsored" class="ct-aux-link">Страховка Cherehapa →</a>
+    <a href="${AIRALO}" target="_blank" rel="noopener sponsored" class="ct-aux-link">eSIM Airalo →</a>
+  </div>`;
+
+  return html;
+}
+
 // ─── Render compute card (editorial style) ──────────────────────
 function renderCard(pi, isPrimary, index) {
   const r = computeForPriceIndex(pi);
@@ -533,29 +624,14 @@ function renderCard(pi, isPrimary, index) {
 
       ${nudge}
 
-      <div class="cc-rows">
-        <div class="cc-row">
-          <span class="cc-row-key">Перелёт${r.travelers > 1 ? ' × ' + r.travelers : ''}</span>
-          <span class="cc-dots" aria-hidden="true"></span>
-          <span class="cc-row-val">${fmt(r.flightTotal)}</span>
-        </div>
-        <div class="cc-row">
-          <span class="cc-row-key">Отель · ${r.days} ноч.</span>
-          <span class="cc-dots" aria-hidden="true"></span>
-          <span class="cc-row-val">${fmt(r.hotelTotal)}</span>
-        </div>
-        <div class="cc-row">
-          <span class="cc-row-key">Питание${r.travelers > 1 ? ' × ' + r.travelers : ''}</span>
-          <span class="cc-dots" aria-hidden="true"></span>
-          <span class="cc-row-val">${fmt(r.foodTotal)}</span>
-        </div>
-        ${visaChip ? `<div class="cc-row cc-row--visa">
-          <span class="cc-row-key">Виза</span>
-          <span class="cc-dots" aria-hidden="true"></span>
-          <span class="cc-row-val">${r.visaTotal > 0 ? fmt(r.visaTotal) + ' · ' : ''}${visaChip}</span>
-          ${r.visa ? `<a class="cc-visa-link" href="/visa/${r.visa.slug}/" aria-label="Детали визы">детали →</a>` : ''}
-        </div>` : ''}
-      </div>
+      <table class="cc-table">
+        <tbody>
+          <tr><td>Перелёт${r.travelers > 1 ? ' (×' + r.travelers + ')' : ''}</td><td>${fmt(r.flightTotal)}</td></tr>
+          <tr><td>Отель · ${r.days} ноч.</td><td>${fmt(r.hotelTotal)}</td></tr>
+          <tr><td>Питание${r.travelers > 1 ? ' (×' + r.travelers + ')' : ''}</td><td>${fmt(r.foodTotal)}</td></tr>
+          ${visaChip ? `<tr><td>Виза${r.visa ? ` <a href="/visa/${r.visa.slug}/" class="cc-visa-link">детали →</a>` : ''}</td><td>${r.visaTotal > 0 ? fmt(r.visaTotal) + ' · ' : ''}${visaChip}</td></tr>` : ''}
+        </tbody>
+      </table>
 
       <div class="cc-cta">
         <a href="${aviUrl}" target="_blank" rel="noopener sponsored" class="cta-main">
@@ -577,9 +653,12 @@ function renderCalc() {
   const all = [primary, ...compareList.filter(x => x !== primary)].slice(0, 3);
   const isCompare = all.length > 1;
 
-  let html = `<div class="cc-stack${isCompare ? ' cc-stack--compare' : ''}">`;
-  html += all.map((pi, idx) => renderCard(pi, idx === 0, idx)).join('');
-  html += `</div>`;
+  let html;
+  if (isCompare) {
+    html = renderTable(all);
+  } else {
+    html = `<div class="cc-stack">${renderCard(all[0], true, 0)}</div>`;
+  }
 
   html += `<div class="cc-footer">
     <button class="copy-btn" id="copyTgBtn" type="button" aria-label="Копировать сводку">
@@ -1268,49 +1347,39 @@ main.atlas > * { position: relative; z-index: 1; }
 .cc-nudge-mark { font-style: normal; color: #1f9c4a; font-weight: 600; }
 .cc-nudge strong { font-weight: 600; color: #1f9c4a; }
 
-/* Editorial dot-leader rows */
-.cc-rows {
-  display: flex; flex-direction: column;
-  gap: 0.45rem;
-  padding: 0.8rem 0 1rem;
+/* Editorial table inside card */
+.cc-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.5rem 0 1.1rem;
+  border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  margin-bottom: 1rem;
 }
-.cc-row {
-  display: flex; align-items: baseline; gap: 0.5rem;
+.cc-table td {
+  padding: 0.55rem 0;
   font-size: 0.88rem;
-  flex-wrap: wrap;
+  vertical-align: baseline;
+  border-bottom: 1px dashed var(--line);
 }
-.cc-row-key {
+.cc-table tr:last-child td { border-bottom: none; }
+.cc-table td:first-child {
   color: var(--text-dim);
-  white-space: nowrap;
+  padding-right: 1rem;
 }
-.cc-dots {
-  flex: 1;
-  height: 1px;
-  background-image: radial-gradient(circle, var(--text-faint) 1px, transparent 1.4px);
-  background-size: 6px 1px;
-  background-position: 0 50%;
-  background-repeat: repeat-x;
-  opacity: 0.4;
-  min-width: 30px;
-  align-self: center;
-  margin-top: 0.3em;
-}
-.cc-row-val {
+.cc-table td:last-child {
+  text-align: right;
   color: var(--text);
   font-weight: 600;
   font-variant-numeric: tabular-nums lining-nums;
   white-space: nowrap;
 }
-.cc-row--visa .cc-row-val { font-weight: 500; }
 .cc-visa-link {
   font-family: var(--ff-mono);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--gold-600);
   text-decoration: none;
   border-bottom: 1px dashed var(--gold-dim);
-  margin-left: 0.5rem;
+  margin-left: 0.3rem;
 }
 
 /* CTA — editorial */
@@ -1359,6 +1428,193 @@ main.atlas > * { position: relative; z-index: 1; }
   transition: all 0.15s;
 }
 .cta-side:hover { background: var(--gold-600); color: var(--bg); }
+
+/* ── COMPARISON TABLE — Editorial Financial-Times style ─────────── */
+.ct-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin: 0 0 1rem;
+  border: 1px solid var(--text);
+  background: var(--bg);
+  box-shadow: 6px 6px 0 var(--gold);
+  opacity: 0;
+  animation: ccIn 0.5s 0.1s ease-out forwards;
+}
+.ct {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--ff-body);
+}
+.ct th, .ct td {
+  padding: 0.7rem 0.9rem;
+  text-align: right;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+  position: relative;
+}
+.ct th:first-child, .ct td:first-child {
+  text-align: left;
+  background: var(--surface-2, var(--bg2));
+  border-right: 1px solid var(--line);
+  width: 38%;
+  max-width: 200px;
+}
+.ct thead th {
+  background: var(--text);
+  color: var(--bg);
+  padding: 0.9rem 0.9rem 0.7rem;
+  border-bottom: 1px solid var(--text);
+  vertical-align: top;
+  font-weight: 500;
+}
+.ct thead th:first-child { background: var(--text); }
+.ct-th-name {
+  font-family: var(--ff-display);
+  font-size: 0.92rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  padding-right: 22px;
+  word-break: break-word;
+}
+.ct-th-season {
+  display: inline-block;
+  margin-top: 0.4rem;
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.45rem;
+  font-weight: 400;
+}
+.ct-th-season--peak { background: rgba(239,68,68,0.25); color: #ffb4b4; }
+.ct-th-season--good { background: rgba(34,197,94,0.25); color: #b8efc5; }
+.ct-th-season--ok   { background: rgba(245,158,11,0.25); color: #ffd994; }
+.ct-th-season--bad  { background: rgba(180,180,180,0.25); color: #ddd; }
+
+.ct-remove {
+  position: absolute; top: 0.4rem; right: 0.4rem;
+  background: transparent; border: 1px solid var(--bg);
+  color: var(--bg);
+  width: 22px; height: 22px; border-radius: 50%; cursor: pointer;
+  font-size: 0.95rem; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.ct-remove:hover { background: var(--bg); color: var(--text); }
+
+.ct-key {
+  font-family: var(--ff-body);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+.ct-total-row td {
+  padding-top: 1.2rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 2px solid var(--text);
+}
+.ct-amount {
+  font-family: var(--ff-display);
+  font-size: clamp(1.3rem, 2.5vw, 1.7rem);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums lining-nums;
+  line-height: 1.1;
+}
+.ct-amount.is-min {
+  color: #1f9c4a;
+  position: relative;
+}
+.ct-best-badge {
+  display: block;
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #1f9c4a;
+  margin-top: 0.25rem;
+}
+
+.ct td:not(:first-child) {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.ct-divider td { padding: 0; height: 6px; background: var(--line); border-bottom: none; }
+
+.ct-visa {
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+.ct-visa-link {
+  font-family: var(--ff-mono);
+  color: var(--gold-600);
+  margin-left: 0.3rem;
+  text-decoration: none;
+  border-bottom: 1px dashed var(--gold-dim);
+}
+.ct-free { color: #1f9c4a; font-weight: 600; }
+
+.ct-best {
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: 0.92rem;
+  color: var(--text);
+}
+.ct-sav {
+  font-family: var(--ff-mono);
+  font-style: normal;
+  font-size: 0.7rem;
+  color: #1f9c4a;
+  font-weight: 600;
+  margin-left: 0.3rem;
+}
+
+.ct-cta-row td { padding-top: 1rem; padding-bottom: 1rem; }
+.ct-cta-btn {
+  display: inline-block;
+  background: var(--text);
+  color: var(--bg);
+  font-family: var(--ff-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.5rem 0.9rem;
+  text-decoration: none;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.ct-cta-btn:hover { background: var(--gold-600, var(--gold)); }
+
+.ct-aux {
+  display: flex; gap: 1.2rem;
+  flex-wrap: wrap;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 1rem;
+  font-size: 0.78rem;
+}
+.ct-aux-label {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.ct-aux-link {
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--gold-dim);
+  font-weight: 500;
+  transition: color 0.15s;
+}
+.ct-aux-link:hover { color: var(--gold-600); }
 
 /* ── FOOTER OF COMPUTE ────────────────────────────────────────────── */
 .cc-footer {
@@ -1467,25 +1723,27 @@ main.atlas > * { position: relative; z-index: 1; }
 .faq-item summary {
   cursor: pointer;
   font-family: var(--ff-display);
-  font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
   font-weight: 500;
   letter-spacing: -0.01em;
   color: var(--text);
   list-style: none;
   position: relative;
-  padding-right: 2.5rem;
-  line-height: 1.3;
+  padding: 0.3rem 3rem 0.3rem 0;
+  line-height: 1.35;
+  display: block;
 }
 .faq-item summary::-webkit-details-marker { display: none; }
 .faq-item summary::after {
   content: '+';
-  position: absolute; right: 0; top: 50%;
+  position: absolute; right: 0.2rem; top: 50%;
   transform: translateY(-50%);
   font-family: var(--ff-display);
-  font-size: 1.5rem; font-weight: 300;
+  font-size: 1.4rem; font-weight: 300;
   color: var(--gold-600, var(--gold));
   transition: transform 0.25s var(--ease-out, cubic-bezier(0.22, 0.61, 0.36, 1));
   line-height: 1;
+  width: 1.4rem; text-align: center;
 }
 .faq-item[open] summary::after { transform: translateY(-50%) rotate(45deg); }
 .faq-item p {
