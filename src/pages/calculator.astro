@@ -301,7 +301,7 @@ const ldJson = {
   <Footer />
 </Layout>
 
-<script define:vars={{ PRICES, MONTH_NAMES, MONTH_FULL, priceIdxToSeasons, priceIdxToVisa, priceIdxToSlug, priceIdxToBudgetSlug }}>
+<script is:inline define:vars={{ PRICES, MONTH_NAMES, MONTH_FULL, priceIdxToSeasons, priceIdxToVisa, priceIdxToSlug, priceIdxToBudgetSlug }} data-astro-rerun>
 let RUB = 90, calcLevel = 0, calcCurrency = 'rub';
 let travelers = 1, selectedMonth = 0;
 let compareList = [];
@@ -778,6 +778,20 @@ resultEl.addEventListener('click', async e => {
 readUrlParams();
 fetchRate();
 renderCalc();
+
+// Astro View Transitions: при back/forward DOM пересоздаётся, а
+// замыкания этого скрипта держат ссылки на старые (detached) элементы.
+// Если resultEl больше не в документе — страница пришла через
+// view-transition: делаем полную перезагрузку (один раз, без цикла).
+document.addEventListener('astro:page-load', () => {
+  const onCalc = location.pathname.replace(/\/+$/, '') === '/calculator';
+  if (!onCalc) return;
+  // resultEl — замыкание на DOM первой загрузки. Если он отсоединён от
+  // нового документа, значит был swap → нужен честный reload.
+  if (!resultEl || !document.contains(resultEl)) {
+    window.location.reload();
+  }
+});
 </script>
 
 <style is:global>
