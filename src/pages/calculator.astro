@@ -136,7 +136,7 @@ const ldJson = {
 
             <div class="tc-field">
               <label class="tc-field-label">Месяц</label>
-              <select class="tc-input tc-input--select" id="monthSelect">
+              <select class="tc-input tc-input--select" id="monthSelect" aria-label="Месяц поездки">
                 <option value="0">Любой</option>
                 {MONTH_NAMES.map((m, i) => (
                   <option value={i + 1}>{['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'][i]}</option>
@@ -150,7 +150,7 @@ const ldJson = {
                 <button class="tc-stepper-btn" id="daysDown" type="button" aria-label="Меньше дней">−</button>
                 <span class="tc-stepper-val" id="calcDaysDisplay">7</span>
                 <button class="tc-stepper-btn" id="daysUp" type="button" aria-label="Больше дней">+</button>
-                <input type="hidden" id="calcDays" value="7" />
+                <input type="hidden" id="calcDays" value="7" aria-hidden="true" />
               </div>
             </div>
 
@@ -1554,8 +1554,14 @@ window.addEventListener('pageshow', (e) => {
   .tc-cat { padding: 0.7rem 0.8rem; }
   .tc-cta-side-row { grid-template-columns: 1fr; }
   .tc-form-extra { flex-direction: column; align-items: stretch; }
-  .tc-add-country { width: 100%; }
+  .tc-add-country { width: 100%; padding-top: 0.7rem; padding-bottom: 0.7rem; }
   .tc-result-pills { gap: 0.3rem; }
+  /* WCAG 2.2 / Apple HIG — минимум 44px тап-таргеты на тач-экранах */
+  .tc-stepper, .tc-seg { height: 46px; }
+  .tc-stepper-btn { width: 46px; }
+  .tc-seg-btn { min-height: 40px; padding: 0 0.5rem; }
+  .tc-input { padding-top: 0.7rem; padding-bottom: 0.7rem; }
+  .tc-copy-btn { padding: 0.75rem 1.2rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
