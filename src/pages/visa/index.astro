@@ -45,7 +45,7 @@ const VISITED = new Set([
   'georgia', 'armenia', 'turkey', 'uae',
 ]);
 
-// FAQ для AEO (AI Overviews / Perplexity / ChatGPT) — 12 вопросов
+// FAQ — 12 главных вопросов о визах
 const FAQ_ITEMS = [
   {
     q: 'Куда россиянину можно без визы в 2026?',
@@ -340,7 +340,7 @@ const ldJson = {
       <ol class="va-changes-list">
         <li class="va-change-item">
           <time class="va-change-date">14 мая 2026</time>
-          <div class="va-change-text"><strong>Реестр fact-checked.</strong> Все 70 направлений сверены через МИД РФ, посольства, VFS Global, BLS, GVCW, JVAC и официальные иммиграционные сайты стран.</div>
+          <div class="va-change-text"><strong>Реестр обновлён.</strong> Все 70 направлений сверены через МИД РФ, посольства, VFS Global, BLS, GVCW, JVAC и официальные иммиграционные сайты стран.</div>
         </li>
         <li class="va-change-item">
           <time class="va-change-date">7 мая 2026</time>
@@ -601,7 +601,7 @@ const ldJson = {
       </header>
       <div class="va-sources-body">
         <p>
-          Реестр сверен на <strong>14 мая 2026</strong> через 5 параллельных fact-check агентов. Для каждой страны проверены два-три источника: МИД страны, посольство в РФ, иммиграционный портал, визовый центр.
+          Реестр сверен <strong>14 мая 2026</strong>. По каждой стране проверены 2–3 источника: МИД страны, посольство в РФ, иммиграционный портал, визовый центр.
         </p>
         <ul class="va-sources-list">
           <li><strong>МИД РФ:</strong> <a href="https://www.mid.ru" target="_blank" rel="noopener">mid.ru</a> + субдомены посольств (china.mid.ru, japan.mid.ru, israel.mid.ru, vietnam.mid.ru, uzbekistan.mid.ru)</li>
@@ -2013,36 +2013,43 @@ const ldJson = {
     margin-top: 0.2rem;
   }
 
-  /* Per-card facts: срок / цена / оформление */
+  /* Per-card facts: компактный inline format — label · value одной строкой.
+     Newsreader/Onest шире чем DM Sans → 2-колонный grid не помещался.
+     Inline + word-wrap для значения, label стабильный на первой строке. */
   .va-card-facts {
     margin: 0.6rem 0 0;
     padding: 0.55rem 0 0;
     border-top: 1px dashed var(--line-doc);
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.32rem;
   }
   .va-fact {
-    display: grid;
-    grid-template-columns: 72px 1fr;
-    gap: 0.45rem;
-    align-items: baseline;
+    display: block;
+    line-height: 1.35;
+    margin: 0;
   }
   .va-fact dt {
+    display: inline;
     font-family: var(--ff-mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.08em;
+    font-size: 0.56rem;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--sepia);
-    margin: 0;
-    line-height: 1.3;
+    margin: 0 0.35rem 0 0;
+  }
+  .va-fact dt::after {
+    content: ' ·';
+    color: var(--sepia);
+    opacity: 0.5;
+    margin-left: 0.05rem;
   }
   .va-fact dd {
+    display: inline;
     font-family: 'Newsreader Variable', 'Newsreader', Georgia, serif;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--ink);
     margin: 0;
-    line-height: 1.3;
     font-variation-settings: "opsz" 12;
   }
   .va-card:hover .va-card-name { color: var(--stamp-red); }
