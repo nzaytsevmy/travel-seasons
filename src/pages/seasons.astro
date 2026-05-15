@@ -183,7 +183,7 @@ const pricesUpdatedAt = pricesData.updatedAt
 
   <div class="controls">
     <input
-      id="search"
+      id="seasonsSearch"
       type="search"
       class="search-input"
       placeholder="Поиск страны или города…"
@@ -467,7 +467,7 @@ document.querySelectorAll('.month-btn').forEach(btn => {
 document.getElementById('resetBtn').addEventListener('click', () => {
   activeMonth = null;
   activeQuery = '';
-  document.getElementById('search').value = '';
+  document.getElementById('seasonsSearch').value = '';
   document.querySelectorAll('.month-btn').forEach(b => {
     b.classList.remove('active');
     b.setAttribute('aria-pressed', 'false');
@@ -477,7 +477,7 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 });
 
 // Search
-const searchInput = document.getElementById('search');
+const searchInput = document.getElementById('seasonsSearch');
 let searchTimer = null;
 searchInput.addEventListener('input', e => {
   clearTimeout(searchTimer);
