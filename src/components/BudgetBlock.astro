@@ -1,0 +1,231 @@
+---
+// BudgetBlock — реальные траты путешественников по данным 2026.
+// Используется в calculator.astro, pillar страницах стран, /visa/, /seasons/.
+//
+// Usage:
+//   <BudgetBlock slug="turkey" />
+//   <BudgetBlock slug="bali" compact={true} />
+//
+// Данные: src/data/real-budgets-2026.json
+// Кросс-источниковая агрегация: Самокатус + BudgetYourTrip +
+// IndieTraveller + Nomadic Matt + Reddit + др.
+
+import data from '../data/real-budgets-2026.json';
+
+interface Props {
+  slug: string;
+  compact?: boolean;
+  title?: string;
+}
+
+const { slug, compact = false, title } = Astro.props;
+const budget = data[slug as keyof typeof data];
+
+// Если страны нет в базе — компонент не рендерится
+if (!budget || slug === '_meta') return null as any;
+
+const b = budget as any;
+const sourceCount = b.sources?.length || 0;
+const sampleSources = b.sources?.slice(0, compact ? 2 : 5) || [];
+---
+
+{b && (
+<section class="budget-block" aria-label={`Реальные траты в ${b.country_ru}`}>
+  {!compact && (
+    <header class="bb-head">
+      <div class="bb-eyebrow">// Реальные траты 2026</div>
+      <h3 class="bb-title">{title || `${b.country_ru}: сколько на самом деле тратят`}</h3>
+      <p class="bb-sub">Кросс-источниковая агрегация по {sourceCount} источникам — российским и переведённым с английского.</p>
+    </header>
+  )}
+
+  {b.median_daily_rub && (
+    <div class="bb-grid">
+      <div class="bb-tier bb-tier--budget">
+        <div class="bb-tier-label">$ Бюджет</div>
+        <div class="bb-tier-amount">{b.median_daily_rub.budget?.toLocaleString('ru-RU')} ₽</div>
+        <div class="bb-tier-sub">в день · хостел, локальная еда</div>
+      </div>
+      <div class="bb-tier bb-tier--mid">
+        <div class="bb-tier-label">$$ Комфорт</div>
+        <div class="bb-tier-amount">{b.median_daily_rub.midrange?.toLocaleString('ru-RU')} ₽</div>
+        <div class="bb-tier-sub">в день · 3–4* отель, кафе</div>
+      </div>
+      <div class="bb-tier bb-tier--lux">
+        <div class="bb-tier-label">$$$ Люкс</div>
+        <div class="bb-tier-amount">{b.median_daily_rub.luxury?.toLocaleString('ru-RU')} ₽</div>
+        <div class="bb-tier-sub">в день · 5*+, премиум</div>
+      </div>
+    </div>
+  )}
+
+  {sampleSources.length > 0 && (
+    <div class="bb-sources">
+      <div class="bb-sources-head">Источники:</div>
+      <ul class="bb-source-list">
+        {sampleSources.map((s: any) => (
+          <li class="bb-source">
+            <span class="bb-source-site">
+              {s.site}
+              {s.lang === 'en' && <span class="bb-lang-badge" title="перевод TravelTribe">EN→RU</span>}
+            </span>
+            {s.sample && <span class="bb-source-sample">{s.sample}</span>}
+            {s.url && <a href={s.url} target="_blank" rel="nofollow noopener" class="bb-source-link">оригинал →</a>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  {!compact && (
+    <p class="bb-disclaimer">
+      Данные собраны 15.05.2026. Курсы валют для пересчёта: $1 = 90 ₽, €1 = 100 ₽.
+      Цены без перелёта — посчитай его отдельно в <a href="/calculator/">калькуляторе</a>.
+    </p>
+  )}
+</section>
+)}
+
+<style>
+.budget-block {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-5, 12px);
+  padding: 1.5rem 1.5rem 1.25rem;
+  margin: 2rem 0;
+}
+.bb-head { margin-bottom: 1.25rem; }
+.bb-eyebrow {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-600, var(--gold));
+  margin-bottom: 0.4rem;
+}
+.bb-title {
+  font-family: var(--ff-display);
+  font-size: clamp(1.3rem, 2.5vw, 1.7rem);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  margin: 0 0 0.4rem;
+  color: var(--text);
+  line-height: 1.2;
+}
+.bb-sub {
+  color: var(--text-dim);
+  font-size: 0.88rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.bb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.7rem;
+  margin: 1rem 0;
+}
+.bb-tier {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-3, 6px);
+  padding: 1rem 1.1rem;
+  text-align: left;
+}
+.bb-tier--mid {
+  border-color: var(--gold-dim);
+  background: linear-gradient(180deg, rgba(201,151,58,0.06), var(--bg));
+}
+.bb-tier-label {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+  margin-bottom: 0.3rem;
+}
+.bb-tier-amount {
+  font-family: var(--ff-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums lining-nums;
+  line-height: 1;
+}
+.bb-tier--mid .bb-tier-amount { color: var(--gold-600, var(--gold)); }
+.bb-tier-sub {
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  margin-top: 0.3rem;
+}
+
+.bb-sources {
+  border-top: 1px dashed var(--line);
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+.bb-sources-head {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 0.5rem;
+}
+.bb-source-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex; flex-direction: column;
+  gap: 0.5rem;
+}
+.bb-source {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+  display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: baseline;
+}
+.bb-source-site {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+.bb-lang-badge {
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  background: rgba(201,151,58,0.12);
+  color: var(--gold-600);
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 4px;
+  letter-spacing: 0.05em;
+  vertical-align: 1px;
+}
+.bb-source-sample {
+  color: var(--text-dim);
+  font-size: 0.78rem;
+}
+.bb-source-link {
+  color: var(--gold-600); text-decoration: none;
+  font-size: 0.75rem;
+  margin-left: auto;
+  border-bottom: 1px dashed var(--gold-dim);
+}
+.bb-source-link:hover { color: var(--gold); }
+
+.bb-disclaimer {
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  margin: 0.8rem 0 0;
+  line-height: 1.5;
+}
+.bb-disclaimer a { color: var(--gold-600); text-decoration: none; border-bottom: 1px dashed var(--gold-dim); }
+
+@media (max-width: 640px) {
+  .budget-block { padding: 1.2rem; }
+  .bb-grid { grid-template-columns: 1fr; }
+  .bb-source { flex-direction: column; gap: 0.15rem; }
+  .bb-source-link { margin-left: 0; }
+}
+</style>

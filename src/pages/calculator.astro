@@ -2,9 +2,17 @@
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import BudgetBlock from '../components/BudgetBlock.astro';
 import { PRICES } from '../data/prices.js';
 import { DIRECTIONS } from '../data/directions.js';
 import { VISA_DETAILS } from '../data/visa-details.js';
+import realBudgets from '../data/real-budgets-2026.json';
+
+// Маппинг PRICES.iata → slug (для подтягивания real-budgets)
+const iataToBudgetSlug: Record<string, string> = {};
+DIRECTIONS.forEach((d: any) => {
+  if (d.price?.iata && (realBudgets as any)[d.slug]) iataToBudgetSlug[d.price.iata] = d.slug;
+});
 
 const groups = {};
 PRICES.forEach((p, i) => {
@@ -253,6 +261,14 @@ const ldJson = {
         </p>
       </div>
 
+      <div id="budgetBlocksHost" class="bb-host">
+        {Object.keys(realBudgets).filter(k => k !== '_meta').map((slug) => (
+          <div class="bb-wrap" data-slug={slug} hidden>
+            <BudgetBlock slug={slug} />
+          </div>
+        ))}
+      </div>
+
       <section class="faq" aria-label="Частые вопросы">
         <h2>Частые вопросы</h2>
         <details class="faq-item" open>
@@ -287,7 +303,7 @@ const ldJson = {
   <Footer />
 </Layout>
 
-<script define:vars={{ PRICES, MONTH_NAMES, MONTH_FULL, iataToSeasons, iataToVisa, iataToSlug }}>
+<script define:vars={{ PRICES, MONTH_NAMES, MONTH_FULL, iataToSeasons, iataToVisa, iataToSlug, iataToBudgetSlug }}>
 // ─── STATE ────────────────────────────────────────────────────────────
 let RUB = 90;
 let calcLevel = 0;
@@ -613,6 +629,17 @@ function renderCalc() {
 
   writeUrlParams();
   renderMonthChips();
+  showBudgetBlock();
+}
+
+// Показать BudgetBlock для текущей страны (если есть данные)
+function showBudgetBlock() {
+  const primary = parseInt(calcSel.value);
+  const iata = PRICES[primary]?.iata;
+  const slug = iataToBudgetSlug[iata];
+  document.querySelectorAll('.bb-wrap').forEach(el => {
+    el.hidden = el.dataset.slug !== slug;
+  });
 }
 
 // ─── Рендер месячных chip с цветными точками ──────────────────────────
