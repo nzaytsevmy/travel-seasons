@@ -8,45 +8,33 @@ import { DIRECTIONS } from '../data/directions.js';
 import { VISA_DETAILS } from '../data/visa-details.js';
 import realBudgets from '../data/real-budgets-2026.json';
 
-// Маппинг PRICES.iata → slug (для подтягивания real-budgets)
-const iataToBudgetSlug: Record<string, string> = {};
-DIRECTIONS.forEach((d: any) => {
-  if (d.price?.iata && (realBudgets as any)[d.slug]) iataToBudgetSlug[d.price.iata] = d.slug;
-});
-
-const groups = {};
+const groups: Record<string, Array<{i:number,name:string,iata:string}>> = {};
 PRICES.forEach((p, i) => {
   if (!groups[p.g]) groups[p.g] = [];
   groups[p.g].push({ i, name: p.name, iata: p.iata });
 });
 
-// iata -> slug map (для подтягивания seasons rating + visa)
-const iataToSlug = {};
-DIRECTIONS.forEach(d => {
-  if (d.price && d.price.iata) iataToSlug[d.price.iata] = d.slug;
-});
-
-// iata -> seasons rating (12 месяцев: G/P/O/B)
-const iataToSeasons = {};
-const iataToSeasonText = {};
-DIRECTIONS.forEach(d => {
-  if (d.price && d.price.iata) {
+const iataToSlug: Record<string, string> = {};
+const iataToSeasons: Record<string, any> = {};
+const iataToSeasonText: Record<string, any> = {};
+const iataToBudgetSlug: Record<string, string> = {};
+DIRECTIONS.forEach((d: any) => {
+  if (d.price?.iata) {
+    iataToSlug[d.price.iata] = d.slug;
     iataToSeasons[d.price.iata] = d.r;
     iataToSeasonText[d.price.iata] = d.t;
+    if ((realBudgets as any)[d.slug]) iataToBudgetSlug[d.price.iata] = d.slug;
   }
 });
-
-// iata -> visa info (для inline в breakdown)
-const iataToVisa = {};
-PRICES.forEach(p => {
+const iataToVisa: Record<string, any> = {};
+PRICES.forEach((p) => {
   const slug = iataToSlug[p.iata];
-  if (slug && VISA_DETAILS[slug]) iataToVisa[p.iata] = { ...VISA_DETAILS[slug], slug };
+  if (slug && (VISA_DETAILS as any)[slug]) iataToVisa[p.iata] = { ...(VISA_DETAILS as any)[slug], slug };
 });
 
 const MONTH_NAMES = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
-const MONTH_FULL = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
+const MONTH_FULL  = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
 
-// JSON-LD: WebApplication + HowTo + TouristTrip + ItemList + FAQPage + BreadcrumbList
 const ldJson = {
   "@context": "https://schema.org",
   "@graph": [
@@ -54,111 +42,104 @@ const ldJson = {
       "@type": "WebApplication",
       "name": "Калькулятор бюджета путешествия 2026",
       "url": "https://traveltribe.ru/calculator/",
-      "description": "Интерактивный калькулятор стоимости путешествия из Москвы на 2026 год: 70 направлений, сравнение до 3 стран, выбор месяца с сезонным коэффициентом, число путешественников, страховка и eSIM в расчёте, виза в breakdown, копирование сводки в Telegram.",
+      "description": "Интерактивный калькулятор стоимости поездки из Москвы на 2026: 70 направлений, сравнение, сезонный коэффициент по месяцам, виза в расчёте, реальные траты по 12 источникам.",
       "inLanguage": "ru-RU",
       "applicationCategory": "TravelApplication",
       "operatingSystem": "Any",
-      "browserRequirements": "JavaScript enabled",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "RUB" },
-      "isPartOf": { "@id": "https://traveltribe.ru/#website" },
-      "featureList": [
-        "70 направлений мира",
-        "Сравнение до 3 стран рядом",
-        "Сезонный коэффициент перелёта по 12 месяцам",
-        "Расчёт для 1–4 путешественников",
-        "Виза в breakdown с сроком и стоимостью",
-        "Опциональные страховка и eSIM",
-        "Курс ЦБ РФ в реальном времени",
-        "Копирование сводки в Telegram"
-      ],
+      "featureList": ["70 направлений","Сравнение до 3 стран","Сезонный коэффициент по 12 месяцам","Расчёт 1–4 путешественников","Виза в разбивке","Курс ЦБ РФ в реальном времени","Реальные траты 2026 из 12 источников"],
       "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://t.me/traveltriberu" }
     },
     {
       "@type": "HowTo",
-      "name": "Как посчитать бюджет путешествия из Москвы в 2026 году",
-      "description": "Полный расчёт за 5 шагов: страна, месяц, длительность, путешественники, уровень комфорта — с автоматическим учётом сезона, визы, страховки и eSIM.",
+      "name": "Как посчитать бюджет путешествия из Москвы в 2026",
       "totalTime": "PT2M",
       "estimatedCost": { "@type": "MonetaryAmount", "currency": "RUB", "value": "0" },
-      "tool": [{ "@type": "HowToTool", "name": "Калькулятор TravelTribe" }],
       "step": [
-        { "@type": "HowToStep", "position": 1, "name": "Выбрать направление", "text": "Выбери одну из 70 стран. Можно добавить до 3 направлений для сравнения." },
-        { "@type": "HowToStep", "position": 2, "name": "Указать месяц поездки", "text": "Выбери месяц — калькулятор учтёт сезонный коэффициент: пик +30%, не сезон −30%." },
-        { "@type": "HowToStep", "position": 3, "name": "Длительность и путешественники", "text": "Задай число дней (1–30) и сколько человек едет (1–4). Отель не удваивается, перелёт и питание — да." },
-        { "@type": "HowToStep", "position": 4, "name": "Уровень комфорта и опции", "text": "Эконом / комфорт / люкс. Включи страховку (~2000 ₽) и eSIM (~1500 ₽), если они нужны в бюджете." },
-        { "@type": "HowToStep", "position": 5, "name": "Скопировать в Telegram", "text": "Получи готовую сводку для пересылки в чат или сохранения." }
+        { "@type":"HowToStep", "position":1, "name":"Выбрать направление", "text":"Одна из 70 стран. Опционально добавь ещё для сравнения." },
+        { "@type":"HowToStep", "position":2, "name":"Указать месяц поездки", "text":"Калькулятор учтёт сезонный коэффициент: пик +30%, не сезон −30%." },
+        { "@type":"HowToStep", "position":3, "name":"Длительность и путешественники", "text":"От 1 до 30 дней, от 1 до 4 человек. Отель не удваивается, перелёт и еда — да." },
+        { "@type":"HowToStep", "position":4, "name":"Уровень комфорта", "text":"Эконом / комфорт / люкс. Влияет на отель, еду, перелёт." },
+        { "@type":"HowToStep", "position":5, "name":"Скопировать в Telegram", "text":"Готовая сводка для пересылки в чат или сохранения." }
       ]
-    },
-    {
-      "@type": "TouristTrip",
-      "name": "Планирование поездки через калькулятор TravelTribe",
-      "description": "Интерактивное планирование 70 направлений 2026 с детальным расчётом по 8 категориям расходов.",
-      "touristType": ["Solo", "Couple", "Family", "Backpacker", "Luxury"],
-      "subjectOf": { "@id": "https://traveltribe.ru/calculator/" }
     },
     {
       "@type": "FAQPage",
       "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Сколько стоит поездка из Москвы в 2026 году?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Зависит от направления и сезона. Турция в комфортном варианте на 7 дней — около 90–110 тысяч ₽ на одного. Грузия — 50–70 тысяч ₽. Бали — 130–180 тысяч ₽. Точную цифру под твои даты считает калькулятор: учитывает сезонный коэффициент, число путешественников, отель, перелёт, еду, визу, страховку и eSIM." }
-        },
-        {
-          "@type": "Question",
-          "name": "Как калькулятор учитывает сезонность?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Каждая страна имеет 12-месячный рейтинг: пик (высокий сезон, +30% к перелёту), хорошо (норма), нормально (−15%), не сезон (низкий сезон, −30%). Калькулятор пересчитывает перелёт в зависимости от выбранного месяца и подсказывает, в каком месяце поездка обойдётся дешевле всего." }
-        },
-        {
-          "@type": "Question",
-          "name": "Можно ли сравнить несколько направлений?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Да. Кнопка «+ Добавить страну» позволяет положить рядом до 3 направлений с одинаковыми параметрами (дни, путешественники, месяц, уровень) — итог считается отдельно для каждой страны." }
-        },
-        {
-          "@type": "Question",
-          "name": "Сколько считать на семью из 2–4 человек?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Перелёт умножается на число людей, питание тоже, а отель остаётся одинаковым (один номер на всех). Это даёт реалистичную сумму для пары или семьи, которая обычно меньше, чем простое умножение в 2–4 раза." }
-        },
-        {
-          "@type": "Question",
-          "name": "Курс рубля к доллару меняется — учитывает ли калькулятор?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Да. Курс подтягивается через open exchange rates в реальном времени. Можно переключаться между ₽ и $ одной кнопкой — внутренний расчёт всегда в долларах, отображение по твоему выбору." }
-        }
+        { "@type":"Question", "name":"Сколько стоит поездка из Москвы в 2026 году?", "acceptedAnswer":{"@type":"Answer","text":"Зависит от направления и сезона. Турция в комфортном варианте на 7 дней — около 90–110 тысяч ₽ на одного. Грузия — 50–70 тысяч ₽. Бали — 130–180 тысяч ₽. Точную цифру под твои даты считает калькулятор."} },
+        { "@type":"Question", "name":"Как калькулятор учитывает сезонность?", "acceptedAnswer":{"@type":"Answer","text":"Каждая страна имеет 12-месячный рейтинг: пик (+30% к перелёту), хорошо (норма), нормально (−15%), не сезон (−30%). Подсказывает, в каком месяце поездка обойдётся дешевле всего."} },
+        { "@type":"Question", "name":"Можно ли сравнить несколько направлений?", "acceptedAnswer":{"@type":"Answer","text":"Да, до 3 стран рядом с одинаковыми параметрами — дни, путешественники, месяц, уровень."} },
+        { "@type":"Question", "name":"Откуда берутся цены?", "acceptedAnswer":{"@type":"Answer","text":"Базовые цены 70 направлений собраны вручную: перелёт по средней Aviasales, отель по медиане Ostrovok/Booking 3*/4*/5*, еда — типовой день. Реальные траты — агрегация из 12 источников: Самокатус, make-trip, BudgetYourTrip, IndieTraveller и др."} },
+        { "@type":"Question", "name":"Курс рубля учитывается?", "acceptedAnswer":{"@type":"Answer","text":"Да. Курс подтягивается через open exchange rates в реальном времени. Переключение ₽/$ одной кнопкой."} }
       ]
     },
     {
       "@type": "BreadcrumbList",
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
-        { "@type": "ListItem", "position": 2, "name": "Калькулятор", "item": "https://traveltribe.ru/calculator/" }
+        { "@type":"ListItem", "position":1, "name":"Главная", "item":"https://traveltribe.ru/" },
+        { "@type":"ListItem", "position":2, "name":"Калькулятор", "item":"https://traveltribe.ru/calculator/" }
       ]
     }
   ]
 };
 ---
 <Layout
-  title="Калькулятор бюджета путешествия 2026: 70 стран + сравнение + сезон"
-  description="Калькулятор стоимости путешествия 2026: 70 направлений, сравнение до 3 стран рядом, выбор месяца с сезонным коэффициентом, виза, страховка, eSIM, курс ЦБ РФ. Сколько стоит твоя поездка из Москвы — за 30 секунд."
+  title="Калькулятор бюджета путешествия 2026 — 70 стран, сравнение, реальные траты"
+  description="Интерактивный калькулятор стоимости поездки из Москвы на 2026: 70 направлений, сравнение до 3 стран, сезонный коэффициент по месяцам, реальные траты из 12 источников, курс ЦБ РФ. Сколько стоит твоя поездка — за 30 секунд."
   canonical="https://traveltribe.ru/calculator/"
-  ogTitle="Калькулятор бюджета путешествия — TravelTribe"
-  ogDescription="70 направлений · сравнение 3 стран · сезонный коэффициент · виза · курс ЦБ РФ"
+  ogTitle="Калькулятор бюджета — TravelTribe"
+  ogDescription="70 направлений · сравнение · сезонный коэффициент · реальные траты 2026"
   ogType="website"
   ldJson={ldJson}
 >
   <Nav active="calculator" />
 
-  <main id="main">
-    <div class="page">
-      <header>
-        <div class="eyebrow">// Калькулятор</div>
-        <h1>Сколько будет <em>стоить поездка</em></h1>
-        <p class="subtitle">70 направлений · сравнение до 3 стран · сезонный коэффициент · виза · страховка · курс ЦБ РФ.</p>
-      </header>
+  <main id="main" class="atlas">
+    <!-- Decorative grid paper background -->
+    <div class="atlas-paper" aria-hidden="true"></div>
 
-      <div class="calc">
-        <div class="calc-form">
-          <div class="calc-field" style="flex:1;min-width:240px">
-            <label>Регион</label>
-            <select class="calc-select" id="calcRegion" aria-label="Выберите регион для расчёта бюджета">
+    <!-- ───────────── HERO ─────────────────────────────────────── -->
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-eyebrow">
+          <span class="eyebrow-dot" aria-hidden="true"></span>
+          <span>Calculator · издание 2026</span>
+        </div>
+        <h1 class="hero-title">
+          <span class="hero-line">Сколько</span>
+          <span class="hero-line">стоит твоя</span>
+          <span class="hero-line"><em>поездка</em></span>
+        </h1>
+        <p class="hero-deck">
+          70 направлений мира · сравнение до трёх стран · сезонный коэффициент по двенадцати месяцам · виза в разбивке · реальные траты путешественников 2026 из двенадцати источников.
+        </p>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-num">70</span>
+            <span class="stat-label">направлений</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">12</span>
+            <span class="stat-label">источников</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">2026</span>
+            <span class="stat-label">актуально</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────── EDITORIAL SPLIT: FORM + COMPUTE ────────────── -->
+    <section class="spread">
+      <div class="spread-inner">
+        <!-- LEFT: form column -->
+        <div class="form-col">
+          <div class="col-marker"><span>01</span> Параметры</div>
+
+          <div class="field">
+            <label class="field-label">Направление</label>
+            <select class="field-select" id="calcRegion" aria-label="Выберите регион">
               {Object.entries(groups).map(([label, items]) => (
                 <optgroup label={label}>
                   {items.map(({ i, name }) => (
@@ -167,7 +148,7 @@ const ldJson = {
                 </optgroup>
               ))}
             </select>
-            <select class="add-country-select" id="addCountrySelect" aria-label="Добавить страну для сравнения" hidden>
+            <select class="field-select field-select--add" id="addCountrySelect" aria-label="Сравнить с другой страной" hidden>
               <option value="">+ сравнить с другой страной</option>
               {Object.entries(groups).map(([label, items]) => (
                 <optgroup label={label}>
@@ -179,88 +160,93 @@ const ldJson = {
             </select>
           </div>
 
-          <div class="calc-field">
-            <label>Путешественников</label>
-            <div class="btn-group" id="travelersGroup" role="group" aria-label="Число путешественников">
-              <button class="active" data-tr="1" aria-pressed="true">1</button>
-              <button data-tr="2" aria-pressed="false">2</button>
-              <button data-tr="3" aria-pressed="false">3</button>
-              <button data-tr="4" aria-pressed="false">4</button>
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Путешественников</label>
+              <div class="seg" id="travelersGroup" role="group" aria-label="Число путешественников">
+                <button class="seg-btn active" data-tr="1" aria-pressed="true">1</button>
+                <button class="seg-btn" data-tr="2" aria-pressed="false">2</button>
+                <button class="seg-btn" data-tr="3" aria-pressed="false">3</button>
+                <button class="seg-btn" data-tr="4" aria-pressed="false">4</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Дней</label>
+              <div class="stepper">
+                <button class="stepper-btn" id="daysDown" type="button" aria-label="Меньше дней">−</button>
+                <span class="stepper-val" id="calcDaysDisplay" aria-live="polite">7</span>
+                <button class="stepper-btn" id="daysUp" type="button" aria-label="Больше дней">+</button>
+                <input type="hidden" id="calcDays" value="7" />
+              </div>
+              <div class="quick-days" role="group" aria-label="Быстрый выбор дней">
+                <button class="qd-chip" type="button" data-d="3">3</button>
+                <button class="qd-chip" type="button" data-d="7">7</button>
+                <button class="qd-chip" type="button" data-d="10">10</button>
+                <button class="qd-chip" type="button" data-d="14">14</button>
+                <button class="qd-chip" type="button" data-d="21">21</button>
+                <button class="qd-chip" type="button" data-d="30">30</button>
+              </div>
             </div>
           </div>
 
-          <div class="calc-field">
-            <label>Дней</label>
-            <div class="stepper">
-              <button class="step-btn" id="daysDown" type="button" aria-label="Уменьшить количество дней">−</button>
-              <span class="step-val" id="calcDaysDisplay" aria-live="polite">7</span>
-              <button class="step-btn" id="daysUp" type="button" aria-label="Увеличить количество дней">+</button>
-              <input type="hidden" id="calcDays" value="7" />
-            </div>
-            <div class="day-chips" role="group" aria-label="Быстрый выбор дней">
-              <button class="chip" type="button" data-d="3">3</button>
-              <button class="chip" type="button" data-d="7">7</button>
-              <button class="chip" type="button" data-d="10">10</button>
-              <button class="chip" type="button" data-d="14">14</button>
-              <button class="chip" type="button" data-d="21">21</button>
-              <button class="chip" type="button" data-d="30">30</button>
-            </div>
-          </div>
-
-          <div class="calc-field">
-            <label>
-              Уровень
-              <button class="info-btn" id="levelInfoBtn" type="button" aria-label="Что входит в каждый уровень" aria-expanded="false">?</button>
+          <div class="field">
+            <label class="field-label">
+              Уровень комфорта
+              <button class="lvl-info" id="levelInfoBtn" type="button" aria-label="Подробнее об уровнях" aria-expanded="false">i</button>
             </label>
-            <div class="btn-group" id="levelGroup" role="group" aria-label="Уровень комфорта">
-              <button class="active" data-lvl="0" aria-pressed="true">$ Бюджет</button>
-              <button data-lvl="1" aria-pressed="false">$$ Комфорт</button>
-              <button data-lvl="2" aria-pressed="false">$$$ Люкс</button>
+            <div class="seg seg--wide" id="levelGroup" role="group">
+              <button class="seg-btn active" data-lvl="0" aria-pressed="true">Эконом</button>
+              <button class="seg-btn" data-lvl="1" aria-pressed="false">Комфорт</button>
+              <button class="seg-btn" data-lvl="2" aria-pressed="false">Люкс</button>
             </div>
-            <div class="info-tip" id="levelInfoTip" hidden>
-              <strong>$ Бюджет:</strong> хостел / 3*, чифаньки и комбини, метро.<br>
-              <strong>$$ Комфорт:</strong> 4* отель, нормальные рестораны, такси иногда.<br>
-              <strong>$$$ Люкс:</strong> 5*+, премиум-кухня, частный транспорт.
+            <div class="lvl-tip" id="levelInfoTip" hidden>
+              <strong>Эконом:</strong> хостел / 3*, локальная еда, метро.<br>
+              <strong>Комфорт:</strong> 4* отель, рестораны, такси.<br>
+              <strong>Люкс:</strong> 5*+, премиум-кухня, частный транспорт.
             </div>
           </div>
 
-          <div class="calc-field calc-field--full">
-            <label>Месяц поездки</label>
-            <div class="month-chips" id="monthChips" role="group" aria-label="Выбор месяца">
+          <div class="field">
+            <label class="field-label">Месяц поездки</label>
+            <div class="months" id="monthChips" role="group" aria-label="Выбор месяца">
               {MONTH_NAMES.map((m, i) => (
-                <button class="month-chip" type="button" data-m={i + 1} aria-label={`Месяц ${m}, рейтинг загружается`}>
+                <button class="month" type="button" data-m={i + 1} aria-label={`${m}`}>
+                  <span class="m-num">{String(i+1).padStart(2,'0')}</span>
                   <span class="m-name">{m}</span>
                   <span class="m-dot" aria-hidden="true"></span>
                 </button>
               ))}
             </div>
             <div class="month-legend" aria-hidden="true">
-              <span><i class="lg lg-peak"></i> Пик</span>
-              <span><i class="lg lg-good"></i> Хорошо</span>
-              <span><i class="lg lg-ok"></i> Нормально</span>
-              <span><i class="lg lg-bad"></i> Не сезон</span>
+              <span class="lg-item"><i class="lg-dot lg-peak"></i> Пик</span>
+              <span class="lg-item"><i class="lg-dot lg-good"></i> Хорошо</span>
+              <span class="lg-item"><i class="lg-dot lg-ok"></i> Норма</span>
+              <span class="lg-item"><i class="lg-dot lg-bad"></i> Не сезон</span>
             </div>
           </div>
 
-          <div class="calc-field">
-            <label>Валюта</label>
-            <div class="btn-group" id="currGroup" role="group" aria-label="Валюта">
-              <button class="active" data-cur="rub" aria-pressed="true">₽</button>
-              <button data-cur="usd" aria-pressed="false">$</button>
+          <div class="field">
+            <label class="field-label">Валюта</label>
+            <div class="seg" id="currGroup" role="group">
+              <button class="seg-btn active" data-cur="rub" aria-pressed="true">₽ рубли</button>
+              <button class="seg-btn" data-cur="usd" aria-pressed="false">$ доллары</button>
             </div>
           </div>
         </div>
 
-        <div class="calc-result" id="calcResult">
-          <!-- Заполняется через JS: 1 страна или сравнение 2–3 -->
-        </div>
-
-        <p class="calc-note">
-          <span id="calcRateLabel">1 $ = 90 ₽ · загрузка курса...</span>
-          &nbsp;·&nbsp; Отель и питание — ориентировочно. Часть ссылок партнёрские, цена для тебя не меняется.
-        </p>
+        <!-- RIGHT: compute column (sticky on desktop) -->
+        <aside class="compute-col" id="computeCol">
+          <div class="compute-marker"><span>02</span> Итог</div>
+          <div id="calcResult" class="compute-result"></div>
+          <p class="rate-line"><span id="calcRateLabel">1 $ = 90 ₽ · загрузка курса…</span></p>
+        </aside>
       </div>
+    </section>
 
+    <!-- ─────────── BUDGET BLOCK (real traveler data) ──────────── -->
+    <section class="real-section">
+      <div class="real-marker"><span>03</span> Что говорит интернет</div>
       <div id="budgetBlocksHost" class="bb-host">
         {Object.keys(realBudgets).filter(k => k !== '_meta').map((slug) => (
           <div class="bb-wrap" data-slug={slug} hidden>
@@ -268,53 +254,92 @@ const ldJson = {
           </div>
         ))}
       </div>
+    </section>
 
-      <section class="faq" aria-label="Частые вопросы">
-        <h2>Частые вопросы</h2>
+    <!-- ─────────── EDITORIAL TIPS ─────────────────────────────── -->
+    <section class="tips-section">
+      <div class="tips-marker"><span>04</span> Дельные советы</div>
+      <div class="tips-grid">
+        <article class="tip">
+          <div class="tip-num">i</div>
+          <h3 class="tip-title">Бронируй за 60+ дней</h3>
+          <p class="tip-body">Авиа дешевле на 15-20% если присматриваться заранее. Отели — без разницы, в последнюю минуту даже выгоднее.</p>
+        </article>
+        <article class="tip">
+          <div class="tip-num">ii</div>
+          <h3 class="tip-title">Страховка не опция</h3>
+          <p class="tip-body">Для безвизовых тоже. Стоит 2 000 ₽, спасает от $20 000+ медрасходов в Европе или США. Cherehapa принимает рубли.</p>
+        </article>
+        <article class="tip">
+          <div class="tip-num">iii</div>
+          <h3 class="tip-title">eSIM вместо роуминга</h3>
+          <p class="tip-body">МТС/Билайн в Европе — 5 000 ₽ за неделю. eSIM Airalo — 1 500 ₽ за 10 ГБ. Активируется до вылета QR-кодом.</p>
+        </article>
+        <article class="tip">
+          <div class="tip-num">iv</div>
+          <h3 class="tip-title">Семья экономит на отеле</h3>
+          <p class="tip-body">Один номер на 2-4 человека вместо двух. Калькулятор учитывает это автоматически: перелёт × N, отель × 1.</p>
+        </article>
+        <article class="tip">
+          <div class="tip-num">v</div>
+          <h3 class="tip-title">Сезонность важнее уровня</h3>
+          <p class="tip-body">Поездка в не сезон в 5* дешевле, чем в пик в 3*. Покрути месяцы перед уровнем — сэкономишь больше.</p>
+        </article>
+        <article class="tip">
+          <div class="tip-num">vi</div>
+          <h3 class="tip-title">Виза — не приговор</h3>
+          <p class="tip-body">Шенген из РФ стоит €90 + €30 BLS = ~12 000 ₽. На фоне поездки в 150-200 тыс. это 6-8%. Не повод отказываться.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ─────────── FAQ ───────────────────────────────────────── -->
+    <section class="faq-section">
+      <div class="faq-marker"><span>05</span> Частые вопросы</div>
+      <div class="faq-list">
         <details class="faq-item" open>
           <summary>Откуда берутся цены?</summary>
           <p>Базовые цены 70 направлений собраны вручную: перелёт из Москвы туда-обратно по средней цене Aviasales за последний квартал, отель — по медиане Ostrovok / Booking по уровням 3*/4*/5*, еда — по типовому дню (завтрак-обед-ужин) для каждого уровня. Сезонный коэффициент применяется к перелёту: пик +30%, хорошо ±0%, нормально −15%, не сезон −30%.</p>
         </details>
         <details class="faq-item">
-          <summary>Как считается, когда едет несколько человек?</summary>
-          <p>Перелёт умножается на число путешественников. Питание тоже умножается. Отель — нет, потому что один номер вмещает 2–4 человек. Это даёт реалистичную сумму: семья из 2 человек платит примерно в 1.6× больше одного, а не в 2×.</p>
+          <summary>Реальные траты из интернета — откуда?</summary>
+          <p>Кросс-источниковая агрегация по 12 ресурсам: Самокатус (русский Travel Budget раздел), make-trip.ru, howtrip.ru, wrenjapan.com — российские. BudgetYourTrip (3000+ городов от 50 000 контрибьюторов), IndieTraveller, SoutheastAsiaBackpacker, NeverEndingFootsteps, Holafly, Maldives Magazine, Norway Budget Guide, Reddit r/solotravel — англоязычные с переводом.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Как считается несколько путешественников?</summary>
+          <p>Перелёт умножается на число людей. Питание тоже. Отель — нет: один номер вмещает 2–4 человек. Это даёт реалистичную сумму: семья из 2 платит примерно в 1.6× больше одного, а не в 2×.</p>
         </details>
         <details class="faq-item">
           <summary>А виза включена в итог?</summary>
-          <p>Да, если виза платная. Под breakdown показывается строка с конкретной стоимостью и сроком оформления — например, «€90 + €30 BLS, 10–15 дней». Если у России безвиз — стоит ✓ и виза не добавляется к сумме. По клику — переход на детальную страницу /visa/&lt;страна&gt;/.</p>
+          <p>Да, если виза платная. В разбивке появляется строка с конкретной стоимостью и сроком — «€90 + €30 BLS, 10–15 дней». Если безвиз — стоит ✓ и виза не добавляется. По клику — переход на детальную страницу /visa/&lt;страна&gt;/.</p>
         </details>
         <details class="faq-item">
           <summary>Что такое «лучший месяц»?</summary>
-          <p>Калькулятор смотрит 12-месячный рейтинг страны и подсвечивает месяцы с минимальным коэффициентом цены и хорошей погодой. Например, «В ноябре та же поездка обойдётся на 28% дешевле — это лучший месяц года для Турции».</p>
+          <p>Калькулятор смотрит 12-месячный рейтинг страны и подсвечивает месяц с минимальным коэффициентом цены и нормальной погодой. Например: «В ноябре та же поездка обойдётся на 28% дешевле — лучший месяц года для Турции».</p>
         </details>
         <details class="faq-item">
-          <summary>Зачем добавлять страховку и eSIM в расчёт?</summary>
-          <p>Эти 2 категории — реальные расходы, которые забывают: страховка обязательна для большинства стран (без неё могут не пустить), eSIM экономит на роуминге МТС/Билайн (1500 ₽ vs 5000+ ₽ переплаты). Включи галочки — увидишь полный честный бюджет.</p>
+          <summary>Курс рубля меняется — учитывает?</summary>
+          <p>Да. Курс подтягивается через open exchange rates в реальном времени. Переключение ₽/$ одной кнопкой — внутренний расчёт в долларах, отображение по выбору.</p>
         </details>
-        <details class="faq-item">
-          <summary>Куда поделиться расчётом?</summary>
-          <p>Кнопка «📋 Скопировать для Telegram» — копирует красивую сводку с разбивкой по категориям и партнёрской ссылкой. Можно вставить в чат с попутчиком, в личные заметки или в почту. URL калькулятора содержит все твои параметры — кто перейдёт по ссылке, увидит точно такой же расчёт.</p>
-        </details>
-      </section>
+      </div>
+    </section>
 
-    </div>
   </main>
 
   <Footer />
 </Layout>
 
 <script define:vars={{ PRICES, MONTH_NAMES, MONTH_FULL, iataToSeasons, iataToVisa, iataToSlug, iataToBudgetSlug }}>
-// ─── STATE ────────────────────────────────────────────────────────────
+// ─── STATE ───────────────────────────────────────────────────────────
 let RUB = 90;
 let calcLevel = 0;
 let calcCurrency = 'rub';
 let travelers = 1;
-let selectedMonth = 0;       // 0 = «любой / без сезона», 1..12 = конкретный месяц
-let compareList = [];        // массив индексов PRICES для сравнения; 1й элемент — основной из <select>
+let selectedMonth = 0;
+let compareList = [];
 
-// Сезонные коэффициенты для перелёта
 const SEASON_MULT = { P: 1.30, G: 1.00, O: 0.85, B: 0.70 };
-const SEASON_LABEL = { P: 'Пик', G: 'Хорошо', O: 'Нормально', B: 'Не сезон' };
+const SEASON_LABEL = { P: 'Пик', G: 'Хорошо', O: 'Норма', B: 'Не сезон' };
 const SEASON_CLASS = { P: 'peak', G: 'good', O: 'ok', B: 'bad' };
 
 const AVIASALES_MARKER = '546042.Zz66f13c16ff6b488883a4127-546042';
@@ -327,7 +352,7 @@ const calcSel = document.getElementById('calcRegion');
 const resultEl = document.getElementById('calcResult');
 const addSelect = document.getElementById('addCountrySelect');
 
-// ─── URL params ──────────────────────────────────────────────────────
+// ─── URL params ─────────────────────────────────────────────────────
 function readUrlParams() {
   const u = new URL(window.location.href);
   const r = u.searchParams.get('r');
@@ -346,7 +371,7 @@ function readUrlParams() {
   }
   if (l !== null && (+l >= 0 && +l <= 2)) {
     calcLevel = +l;
-    document.querySelectorAll('#levelGroup button').forEach(b => {
+    document.querySelectorAll('#levelGroup .seg-btn').forEach(b => {
       const on = +b.dataset.lvl === calcLevel;
       b.classList.toggle('active', on);
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -354,7 +379,7 @@ function readUrlParams() {
   }
   if (c === 'usd' || c === 'rub') {
     calcCurrency = c;
-    document.querySelectorAll('#currGroup button').forEach(b => {
+    document.querySelectorAll('#currGroup .seg-btn').forEach(b => {
       const on = b.dataset.cur === calcCurrency;
       b.classList.toggle('active', on);
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -362,19 +387,14 @@ function readUrlParams() {
   }
   if (t !== null && +t >= 1 && +t <= 4) {
     travelers = +t;
-    document.querySelectorAll('#travelersGroup button').forEach(b => {
+    document.querySelectorAll('#travelersGroup .seg-btn').forEach(b => {
       const on = +b.dataset.tr === travelers;
       b.classList.toggle('active', on);
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
   }
-  if (m !== null && +m >= 0 && +m <= 12) {
-    selectedMonth = +m;
-  }
-
-  if (cmp) {
-    compareList = cmp.split(',').map(x => parseInt(x)).filter(x => !isNaN(x) && PRICES[x]).slice(0, 3);
-  }
+  if (m !== null && +m >= 0 && +m <= 12) selectedMonth = +m;
+  if (cmp) compareList = cmp.split(',').map(x => parseInt(x)).filter(x => !isNaN(x) && PRICES[x]).slice(0, 3);
 }
 
 function writeUrlParams() {
@@ -391,7 +411,7 @@ function writeUrlParams() {
   window.history.replaceState(null, '', u.toString());
 }
 
-// ─── Live USD→RUB rate ───────────────────────────────────────────────
+// ─── Rate ──────────────────────────────────────────────────────────
 async function fetchRate() {
   const rateEl = document.getElementById('calcRateLabel');
   try {
@@ -404,7 +424,7 @@ async function fetchRate() {
       return;
     }
   } catch (e) {}
-  if (rateEl) rateEl.textContent = '1 $ ≈ 90 ₽ · курс не загружен, примерный';
+  if (rateEl) rateEl.textContent = '1 $ ≈ 90 ₽ · курс не загружен';
 }
 
 function fmt(usd) {
@@ -419,24 +439,22 @@ function aviasalesUrl(iata, monthNum) {
   let url = `${AVIASALES_BASE}&origin_iata=MOW&destination_iata=${iata}`;
   if (monthNum && monthNum >= 1 && monthNum <= 12) {
     const year = new Date().getFullYear();
-    const targetMonth = monthNum - 1;
     const now = new Date();
     let y = year;
-    if (targetMonth < now.getMonth()) y += 1;
-    const dateStr = `${y}-${String(monthNum).padStart(2, '0')}-15`;
-    url += `&depart_date=${dateStr}`;
+    if ((monthNum - 1) < now.getMonth()) y += 1;
+    url += `&depart_date=${y}-${String(monthNum).padStart(2,'0')}-15`;
   }
   return url;
 }
 
-// ─── Расчёт для одной страны ─────────────────────────────────────────
+// ─── Compute ─────────────────────────────────────────────────────
 function computeForPriceIndex(pi) {
   const p = PRICES[pi];
   const days = Math.max(1, parseInt(document.getElementById('calcDays').value) || 1);
   const baseFlight = p.flight[calcLevel];
   const hotel = p.hotel[calcLevel];
   const food = p.food[calcLevel];
-  // Сезонный множитель
+
   let seasonMult = 1, seasonLabel = '', seasonClass = '';
   if (selectedMonth > 0 && iataToSeasons[p.iata]) {
     const rating = iataToSeasons[p.iata][selectedMonth - 1];
@@ -446,178 +464,142 @@ function computeForPriceIndex(pi) {
   }
   const flightAdjusted = baseFlight * seasonMult;
   const flightTotal = flightAdjusted * travelers;
-  const hotelTotal = hotel * days; // отель один номер на всех
+  const hotelTotal = hotel * days;
   const foodTotal = food * days * travelers;
-  // Визa: подтянуть стоимость в долларах если есть
   const visa = iataToVisa[p.iata];
   let visaUsd = 0;
   if (visa && visa.cost) {
-    // Парсим типичные форматы: "$30", "€90", "JD 40 (~$56)", "бесплатно", "от $X"
-    const m = visa.cost.match(/\$(\d+)/);
-    if (m) visaUsd = parseInt(m[1]);
+    const m1 = visa.cost.match(/\$(\d+)/);
+    if (m1) visaUsd = parseInt(m1[1]);
     else {
       const e = visa.cost.match(/€\s?(\d+)/);
-      if (e) visaUsd = Math.round(parseInt(e[1]) * 1.08); // EUR→USD приблизительно
+      if (e) visaUsd = Math.round(parseInt(e[1]) * 1.08);
     }
   }
   const visaTotal = visaUsd * travelers;
   const grand = flightTotal + hotelTotal + foodTotal + visaTotal;
-  return {
-    p,
-    days,
-    travelers,
-    baseFlight,
-    flightAdjusted,
-    flightTotal,
-    hotel,
-    hotelTotal,
-    food,
-    foodTotal,
-    visa,
-    visaUsd,
-    visaTotal,
-    seasonMult,
-    seasonLabel,
-    seasonClass,
-    grand,
-  };
+  return { p, days, travelers, flightTotal, hotelTotal, foodTotal, visa, visaTotal, seasonMult, seasonLabel, seasonClass, grand };
 }
 
-// ─── Найти лучший месяц для страны (минимальный коэффициент) ──────────
 function findBestMonth(iata) {
   if (!iataToSeasons[iata]) return null;
   const ratings = iataToSeasons[iata];
   let bestIdx = -1, bestMult = 999;
   ratings.forEach((r, i) => {
-    const m = SEASON_MULT[r] || 1;
-    // Хотим минимальный коэффициент с приемлемой погодой (не B при пляжных)
-    if (m < bestMult && r !== 'B') {
-      bestMult = m;
-      bestIdx = i;
-    }
+    const mu = SEASON_MULT[r] || 1;
+    if (mu < bestMult && r !== 'B') { bestMult = mu; bestIdx = i; }
   });
-  // Fallback: если все B — берём первый O
   if (bestIdx === -1) ratings.forEach((r, i) => { if (r === 'O' && bestIdx === -1) bestIdx = i; });
   if (bestIdx === -1) bestIdx = 0;
-  return { monthNum: bestIdx + 1, monthName: MONTH_FULL[bestIdx], mult: SEASON_MULT[ratings[bestIdx]] || 1, rating: ratings[bestIdx] };
-}
-
-// ─── Рендер одной карточки результата (новый дизайн 2026) ─────────────
-function renderCard(pi, isPrimary) {
-  const r = computeForPriceIndex(pi);
-  const aviUrl = aviasalesUrl(r.p.iata, selectedMonth > 0 ? selectedMonth : null);
-  const perPerson = r.grand / Math.max(1, r.travelers);
-
-  // Виза — компакт в строке meta
-  const visaText = r.visa
-    ? (r.visa.cost === 'бесплатно' ? 'безвиз' : escapeHtml(r.visa.cost))
-    : null;
-
-  // Best month nudge — inline, маленький
-  const best = findBestMonth(r.p.iata);
-  let nudge = '';
-  if (best && selectedMonth > 0 && best.monthNum !== selectedMonth) {
-    const saving = Math.round((1 - best.mult / r.seasonMult) * 100);
-    if (saving > 5) {
-      nudge = `<div class="nudge"><span>💡</span> Лучший месяц — <strong>${best.monthName}</strong>, поездка будет на <strong>${saving}%</strong> дешевле</div>`;
-    }
-  } else if (best && selectedMonth === 0) {
-    nudge = `<div class="nudge"><span>💡</span> Самый дешёвый месяц для поездки — <strong>${best.monthName}</strong></div>`;
-  }
-
-  const seasonBadge = r.seasonLabel
-    ? `<span class="season-badge season-${r.seasonClass}">${MONTH_NAMES[selectedMonth - 1]} · ${r.seasonLabel}</span>`
-    : '';
-
-  const cityName = r.p.name.split('(')[0].trim();
-
-  return `
-    <article class="card${isPrimary ? ' card-primary' : ''}" data-pi="${pi}">
-      ${!isPrimary ? `<button class="card-remove" data-remove="${pi}" type="button" aria-label="Убрать из сравнения">×</button>` : ''}
-
-      <div class="card-meta">
-        <h3 class="card-title">${escapeHtml(r.p.name)}</h3>
-        <div class="card-chips">
-          ${seasonBadge}
-          <span class="meta-chip">${r.travelers} чел · ${r.days} дн</span>
-          ${visaText ? `<a href="/visa/${r.visa.slug}/" class="meta-chip meta-chip--link">🛂 ${visaText}</a>` : ''}
-        </div>
-      </div>
-
-      <div class="card-hero">
-        <div class="hero-label">Итого</div>
-        <div class="hero-amount">${r.grand > 0 ? fmt(r.grand) : '—'}</div>
-        ${r.travelers > 1 ? `<div class="hero-perperson">≈ ${fmt(perPerson)} на человека</div>` : ''}
-        ${nudge}
-      </div>
-
-      <details class="breakdown-toggle">
-        <summary>Что включено →</summary>
-        <div class="calc-breakdown">
-          <div class="breakdown-item"><span>✈ Перелёт${r.travelers > 1 ? ' × ' + r.travelers : ''}</span><span>${fmt(r.flightTotal)}</span></div>
-          <div class="breakdown-item"><span>🏨 Отель × ${r.days} ноч.</span><span>${fmt(r.hotelTotal)}</span></div>
-          <div class="breakdown-item"><span>🍴 Еда${r.travelers > 1 ? ' × ' + r.travelers : ''} × ${r.days} дн</span><span>${fmt(r.foodTotal)}</span></div>
-          ${r.visa && r.visaTotal > 0 ? `<div class="breakdown-item"><span>🛂 Виза${r.travelers > 1 ? ' × ' + r.travelers : ''}</span><span>${fmt(r.visaTotal)}</span></div>` : ''}
-        </div>
-      </details>
-
-      <div class="card-cta">
-        <a href="${aviUrl}" target="_blank" rel="noopener sponsored" class="cta-primary">
-          <span class="cta-label">Найти билет</span>
-          <span class="cta-arrow" aria-hidden="true">→</span>
-        </a>
-        <div class="cta-row">
-          <a href="${OSTROVOK}" target="_blank" rel="noopener sponsored" class="cta-mini" title="Поиск отелей">
-            <span>🏨</span> Отель
-          </a>
-          <a href="${CHEREHAPA}" target="_blank" rel="noopener sponsored" class="cta-mini" title="Страховка от 2 000 ₽">
-            <span>🛡</span> Страховка
-          </a>
-          <a href="${AIRALO}" target="_blank" rel="noopener sponsored" class="cta-mini" title="eSIM мобильный интернет">
-            <span>📱</span> eSIM
-          </a>
-        </div>
-      </div>
-    </article>
-  `;
+  return { monthNum: bestIdx + 1, monthName: MONTH_FULL[bestIdx], mult: SEASON_MULT[ratings[bestIdx]] || 1 };
 }
 
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-// ─── Главный рендер ──────────────────────────────────────────────────
+// ─── Render compute card (editorial style) ──────────────────────
+function renderCard(pi, isPrimary, index) {
+  const r = computeForPriceIndex(pi);
+  const aviUrl = aviasalesUrl(r.p.iata, selectedMonth > 0 ? selectedMonth : null);
+  const perPerson = r.grand / Math.max(1, r.travelers);
+  const cityShort = r.p.name.split('(')[0].trim();
+
+  const best = findBestMonth(r.p.iata);
+  let nudge = '';
+  if (best && selectedMonth > 0 && best.monthNum !== selectedMonth) {
+    const saving = Math.round((1 - best.mult / r.seasonMult) * 100);
+    if (saving > 5) nudge = `<div class="cc-nudge"><span class="cc-nudge-mark">↘</span> В <strong>${best.monthName}</strong> на <strong>${saving}%</strong> дешевле</div>`;
+  } else if (best && selectedMonth === 0) {
+    nudge = `<div class="cc-nudge"><span class="cc-nudge-mark">↘</span> Самый дешёвый месяц — <strong>${best.monthName}</strong></div>`;
+  }
+
+  const visaChip = r.visa ? (r.visa.cost === 'бесплатно' ? '✓ безвиз' : escapeHtml(r.visa.cost)) : '';
+
+  return `
+    <article class="cc${isPrimary ? ' cc-primary' : ''}" data-pi="${pi}" style="--cc-i:${index}">
+      ${!isPrimary ? `<button class="cc-remove" data-remove="${pi}" type="button" aria-label="Убрать из сравнения">×</button>` : ''}
+
+      <header class="cc-head">
+        <div class="cc-tag">${escapeHtml(cityShort)}</div>
+        ${r.seasonLabel ? `<div class="cc-season cc-season--${r.seasonClass}">${MONTH_NAMES[selectedMonth - 1]} · ${r.seasonLabel}</div>` : ''}
+      </header>
+
+      <div class="cc-hero">
+        <div class="cc-label">ИТОГО</div>
+        <div class="cc-amount">${r.grand > 0 ? fmt(r.grand) : '—'}</div>
+        ${r.travelers > 1 ? `<div class="cc-per">≈ ${fmt(perPerson)} <span>на человека</span></div>` : ''}
+      </div>
+
+      ${nudge}
+
+      <div class="cc-rows">
+        <div class="cc-row">
+          <span class="cc-row-key">Перелёт${r.travelers > 1 ? ' × ' + r.travelers : ''}</span>
+          <span class="cc-dots" aria-hidden="true"></span>
+          <span class="cc-row-val">${fmt(r.flightTotal)}</span>
+        </div>
+        <div class="cc-row">
+          <span class="cc-row-key">Отель · ${r.days} ноч.</span>
+          <span class="cc-dots" aria-hidden="true"></span>
+          <span class="cc-row-val">${fmt(r.hotelTotal)}</span>
+        </div>
+        <div class="cc-row">
+          <span class="cc-row-key">Питание${r.travelers > 1 ? ' × ' + r.travelers : ''}</span>
+          <span class="cc-dots" aria-hidden="true"></span>
+          <span class="cc-row-val">${fmt(r.foodTotal)}</span>
+        </div>
+        ${visaChip ? `<div class="cc-row cc-row--visa">
+          <span class="cc-row-key">Виза</span>
+          <span class="cc-dots" aria-hidden="true"></span>
+          <span class="cc-row-val">${r.visaTotal > 0 ? fmt(r.visaTotal) + ' · ' : ''}${visaChip}</span>
+          ${r.visa ? `<a class="cc-visa-link" href="/visa/${r.visa.slug}/" aria-label="Детали визы">детали →</a>` : ''}
+        </div>` : ''}
+      </div>
+
+      <div class="cc-cta">
+        <a href="${aviUrl}" target="_blank" rel="noopener sponsored" class="cta-main">
+          <span>Найти билет</span>
+          <span class="cta-arrow" aria-hidden="true">→</span>
+        </a>
+        <div class="cta-row">
+          <a href="${OSTROVOK}" target="_blank" rel="noopener sponsored" class="cta-side">Отель</a>
+          <a href="${CHEREHAPA}" target="_blank" rel="noopener sponsored" class="cta-side">Страховка</a>
+          <a href="${AIRALO}" target="_blank" rel="noopener sponsored" class="cta-side">eSIM</a>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
 function renderCalc() {
   const primary = parseInt(calcSel.value);
   const all = [primary, ...compareList.filter(x => x !== primary)].slice(0, 3);
   const isCompare = all.length > 1;
 
-  let html = '<div class="cards' + (isCompare ? ' cards-compare' : '') + '">';
-  html += all.map((pi, idx) => renderCard(pi, idx === 0)).join('');
-  html += '</div>';
+  let html = `<div class="cc-stack${isCompare ? ' cc-stack--compare' : ''}">`;
+  html += all.map((pi, idx) => renderCard(pi, idx === 0, idx)).join('');
+  html += `</div>`;
 
-  // Footer: только copy button — компактный
-  html += `
-    <div class="result-footer">
-      <button class="copy-tg" id="copyTgBtn" type="button" aria-label="Скопировать сводку для Telegram">
-        📋 Скопировать сводку для Telegram
-      </button>
-    </div>
-  `;
+  html += `<div class="cc-footer">
+    <button class="copy-btn" id="copyTgBtn" type="button" aria-label="Копировать сводку">
+      <span class="copy-icon" aria-hidden="true">⌘</span>
+      <span>Скопировать сводку для Telegram</span>
+    </button>
+  </div>`;
 
   resultEl.innerHTML = html;
 
   // Подсветить активный day chip
   const cur = +document.getElementById('calcDays').value;
-  document.querySelectorAll('.day-chips .chip').forEach(c => {
-    c.classList.toggle('is-active', +c.dataset.d === cur);
+  document.querySelectorAll('.quick-days .qd-chip').forEach(c => {
+    c.classList.toggle('active', +c.dataset.d === cur);
   });
 
-  // Селект добавить страну (показывать если < 3 и есть варианты)
+  // Селект для сравнения
   if (compareList.length < 2 && all.length < 3) {
     addSelect.hidden = false;
     addSelect.value = '';
-    // Скрыть текущую primary + уже выбранные в compareList из options
     Array.from(addSelect.options).forEach(opt => {
       const v = parseInt(opt.value);
       if (isNaN(v)) { opt.disabled = false; return; }
@@ -632,7 +614,6 @@ function renderCalc() {
   showBudgetBlock();
 }
 
-// Показать BudgetBlock для текущей страны (если есть данные)
 function showBudgetBlock() {
   const primary = parseInt(calcSel.value);
   const iata = PRICES[primary]?.iata;
@@ -642,12 +623,11 @@ function showBudgetBlock() {
   });
 }
 
-// ─── Рендер месячных chip с цветными точками ──────────────────────────
 function renderMonthChips() {
   const primary = parseInt(calcSel.value);
   const iata = PRICES[primary]?.iata;
   const rating = iata && iataToSeasons[iata] ? iataToSeasons[iata] : null;
-  document.querySelectorAll('#monthChips .month-chip').forEach((btn, i) => {
+  document.querySelectorAll('#monthChips .month').forEach((btn, i) => {
     const m = i + 1;
     btn.classList.toggle('active', selectedMonth === m);
     btn.setAttribute('aria-pressed', selectedMonth === m ? 'true' : 'false');
@@ -655,22 +635,21 @@ function renderMonthChips() {
     if (rating && dot) {
       const r = rating[i];
       dot.dataset.r = r;
-      btn.setAttribute('aria-label', `${MONTH_NAMES[i]}, ${SEASON_LABEL[r] || ''}`);
+      btn.setAttribute('aria-label', `${MONTH_NAMES[i]} · ${SEASON_LABEL[r] || ''}`);
     }
   });
 }
 
-// ─── EVENT HANDLERS (через делегирование где можно для INP) ──────────
+// ─── EVENT LISTENERS ────────────────────────────────────────────────
 calcSel.addEventListener('change', renderCalc);
 
 document.getElementById('travelersGroup').addEventListener('click', e => {
   const btn = e.target.closest('[data-tr]');
   if (!btn) return;
   travelers = +btn.dataset.tr;
-  document.querySelectorAll('#travelersGroup button').forEach(b => {
-    const on = b === btn;
-    b.classList.toggle('active', on);
-    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  document.querySelectorAll('#travelersGroup .seg-btn').forEach(b => {
+    b.classList.toggle('active', b === btn);
+    b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
   });
   renderCalc();
 });
@@ -683,7 +662,7 @@ function setDays(n) {
 }
 document.getElementById('daysDown').addEventListener('click', () => setDays(parseInt(document.getElementById('calcDays').value) - 1));
 document.getElementById('daysUp').addEventListener('click', () => setDays(parseInt(document.getElementById('calcDays').value) + 1));
-document.querySelectorAll('.day-chips .chip').forEach(chip => {
+document.querySelectorAll('.quick-days .qd-chip').forEach(chip => {
   chip.addEventListener('click', () => setDays(+chip.dataset.d));
 });
 
@@ -691,7 +670,7 @@ document.getElementById('levelGroup').addEventListener('click', e => {
   const btn = e.target.closest('[data-lvl]');
   if (!btn) return;
   calcLevel = +btn.dataset.lvl;
-  document.querySelectorAll('#levelGroup button').forEach(b => {
+  document.querySelectorAll('#levelGroup .seg-btn').forEach(b => {
     b.classList.toggle('active', b === btn);
     b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
   });
@@ -702,7 +681,7 @@ document.getElementById('currGroup').addEventListener('click', e => {
   const btn = e.target.closest('[data-cur]');
   if (!btn) return;
   calcCurrency = btn.dataset.cur;
-  document.querySelectorAll('#currGroup button').forEach(b => {
+  document.querySelectorAll('#currGroup .seg-btn').forEach(b => {
     b.classList.toggle('active', b === btn);
     b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
   });
@@ -717,7 +696,6 @@ document.getElementById('monthChips').addEventListener('click', e => {
   renderCalc();
 });
 
-// Select для добавления страны в сравнение — работает на Safari/Chrome одинаково
 addSelect.addEventListener('change', e => {
   const v = parseInt(e.target.value);
   if (isNaN(v)) return;
@@ -728,557 +706,835 @@ addSelect.addEventListener('change', e => {
   renderCalc();
 });
 
-// Удалить карточку из сравнения
 resultEl.addEventListener('click', e => {
   const rm = e.target.closest('[data-remove]');
-  if (!rm) return;
-  const pi = +rm.dataset.remove;
-  compareList = compareList.filter(x => x !== pi);
-  renderCalc();
+  if (rm) {
+    const pi = +rm.dataset.remove;
+    compareList = compareList.filter(x => x !== pi);
+    renderCalc();
+    return;
+  }
 });
 
-// Copy to Telegram
 resultEl.addEventListener('click', async e => {
   const btn = e.target.closest('#copyTgBtn');
   if (!btn) return;
   const primary = parseInt(calcSel.value);
   const all = [primary, ...compareList.filter(x => x !== primary)].slice(0, 3);
   const days = +document.getElementById('calcDays').value;
-  const lvlNames = ['$ Бюджет', '$$ Комфорт', '$$$ Люкс'];
+  const lvlNames = ['Эконом', 'Комфорт', 'Люкс'];
   const monthLine = selectedMonth > 0 ? `, в ${MONTH_FULL[selectedMonth - 1]}` : '';
-  let text = `✈ Бюджет поездки${monthLine}\n`;
-  text += `${days} дн · ${travelers} чел. · ${lvlNames[calcLevel]}\n`;
-  text += `─────\n`;
+  let text = `✈ Бюджет поездки${monthLine}\n${days} дн · ${travelers} чел · ${lvlNames[calcLevel]}\n─────\n`;
   all.forEach(pi => {
     const r = computeForPriceIndex(pi);
-    text += `${r.p.name}\n`;
-    text += `  ИТОГО: ${fmt(r.grand)}\n`;
-    text += `  ✈ Перелёт: ${fmt(r.flightTotal)}\n`;
-    text += `  🏨 Отель × ${days}: ${fmt(r.hotelTotal)}\n`;
-    text += `  🍴 Еда × ${days}: ${fmt(r.foodTotal)}\n`;
+    text += `${r.p.name}\n  ИТОГО: ${fmt(r.grand)}\n  ✈ Перелёт: ${fmt(r.flightTotal)}\n  🏨 Отель × ${days}: ${fmt(r.hotelTotal)}\n  🍴 Еда × ${days}: ${fmt(r.foodTotal)}\n`;
     if (r.visa && r.visaTotal > 0) text += `  🛂 Виза: ${fmt(r.visaTotal)} (${r.visa.cost})\n`;
     text += `\n`;
   });
-  text += `📎 ${window.location.href}\n`;
-  text += `🌍 traveltribe.ru/calculator/`;
+  text += `📎 ${window.location.href}\n🌍 traveltribe.ru/calculator/`;
   try {
     await navigator.clipboard.writeText(text);
-    const orig = btn.querySelector('span').textContent;
-    btn.querySelector('span').textContent = '✓ Скопировано';
-    setTimeout(() => { btn.querySelector('span').textContent = orig; }, 1800);
+    const span = btn.querySelector('span:not(.copy-icon)');
+    const orig = span.textContent;
+    span.textContent = '✓ Скопировано';
+    setTimeout(() => { span.textContent = orig; }, 1800);
   } catch (err) {
-    alert('Не удалось скопировать. Скопируй вручную из URL.');
+    alert('Не удалось скопировать');
   }
 });
 
-// "Что входит" tooltip
-const levelInfoBtn = document.getElementById('levelInfoBtn');
-const levelInfoTip = document.getElementById('levelInfoTip');
-if (levelInfoBtn) {
-  levelInfoBtn.addEventListener('click', () => {
-    const open = !levelInfoTip.hasAttribute('hidden');
-    if (open) levelInfoTip.setAttribute('hidden', '');
-    else levelInfoTip.removeAttribute('hidden');
-    levelInfoBtn.setAttribute('aria-expanded', String(!open));
+const lvlInfoBtn = document.getElementById('levelInfoBtn');
+const lvlInfoTip = document.getElementById('levelInfoTip');
+if (lvlInfoBtn) {
+  lvlInfoBtn.addEventListener('click', () => {
+    const open = !lvlInfoTip.hasAttribute('hidden');
+    if (open) lvlInfoTip.setAttribute('hidden', '');
+    else lvlInfoTip.removeAttribute('hidden');
+    lvlInfoBtn.setAttribute('aria-expanded', String(!open));
   });
 }
 
-// ─── INIT ────────────────────────────────────────────────────────────
+// ─── INIT ───────────────────────────────────────────────────────────
 readUrlParams();
 fetchRate();
 renderCalc();
 </script>
 
 <style>
-.page {
-  max-width: var(--container-wide, 1100px);
-  margin: 0 auto;
-  padding: var(--space-16, 4rem) var(--container-edge, 2rem) var(--space-12, 3rem);
-  position: relative; z-index: 1;
+/* ═══════════════════════════════════════════════════════════════════
+   EDITORIAL TRAVEL ATLAS — Calculator 2026
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── PAPER BACKGROUND ─────────────────────────────────────────────── */
+.atlas {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
-header { margin-bottom: 2.5rem; text-align: center; }
-.eyebrow {
-  font-size: var(--text-xs, 0.75rem);
-  letter-spacing: var(--tracking-widest, 0.16em);
+.atlas-paper {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+  background-image:
+    linear-gradient(rgba(180, 150, 80, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(180, 150, 80, 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: -1px -1px;
+  mask-image: radial-gradient(ellipse 90% 60% at 50% 30%, black 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 30%, black 30%, transparent 100%);
+}
+
+main.atlas > * { position: relative; z-index: 1; }
+
+/* ── HERO ─────────────────────────────────────────────────────────── */
+.hero {
+  padding: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 4vw, 4rem) clamp(2rem, 5vw, 4rem);
+  border-bottom: 1px solid var(--line);
+  position: relative;
+}
+.hero::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold) 70%, transparent);
+  opacity: 0.4;
+}
+.hero-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--gold-600, var(--gold));
-  margin-bottom: var(--space-3, 0.75rem);
+  margin-bottom: 1.8rem;
 }
-header h1 {
+.eyebrow-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--gold);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.hero-title {
   font-family: var(--ff-display);
-  font-size: var(--text-6xl, clamp(2.8rem, 5vw, 4rem));
-  font-weight: 600;
-  letter-spacing: var(--tracking-tight, -0.02em);
-  line-height: var(--leading-tight, 1.1);
-  margin: 0;
-  text-wrap: balance;
+  font-weight: 400;
+  font-size: clamp(3.5rem, 11vw, 9rem);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  margin: 0 0 1.5rem;
+  color: var(--text);
 }
-header h1 em { color: var(--gold); font-style: italic; font-weight: 600; }
-.subtitle {
+.hero-line {
+  display: block;
+  opacity: 0;
+  animation: lineIn 0.9s var(--ease-out, cubic-bezier(0.22, 0.61, 0.36, 1)) forwards;
+}
+.hero-line:nth-child(1) { animation-delay: 0.1s; }
+.hero-line:nth-child(2) { animation-delay: 0.25s; transform: translateX(0.5em); display: inline-block; }
+.hero-line:nth-child(3) { animation-delay: 0.4s; }
+.hero-line em {
+  font-style: italic;
+  font-variation-settings: "opsz" 72;
+  color: var(--gold-600, var(--gold));
+  position: relative;
+}
+.hero-line em::after {
+  content: "";
+  position: absolute; left: -2%; right: -2%; bottom: 0.05em; height: 0.18em;
+  background: var(--gold);
+  opacity: 0.15;
+  z-index: -1;
+  transform: skew(-12deg);
+}
+@keyframes lineIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-line:nth-child(2) { animation-name: lineInRight; }
+@keyframes lineInRight {
+  from { opacity: 0; transform: translate(calc(0.5em + 20px), 0); }
+  to   { opacity: 1; transform: translate(0.5em, 0); }
+}
+
+.hero-deck {
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+  line-height: 1.55;
   color: var(--text-dim);
-  font-size: var(--text-base, 1rem);
-  line-height: var(--leading-relaxed, 1.7);
-  margin: var(--space-3, 0.75rem) auto 0;
-  max-width: 720px;
+  max-width: 680px;
+  margin: 0 0 2rem;
+  opacity: 0;
+  animation: lineIn 0.9s 0.6s ease-out forwards;
 }
 
-.calc {
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-5, 12px);
-  padding: clamp(1.5rem, 4vw, 2.5rem);
-  position: relative; overflow: hidden;
-  box-shadow: var(--shadow-md, 0 4px 12px rgba(0,0,0,0.05));
+.hero-stats {
+  display: flex; gap: clamp(2rem, 5vw, 4rem);
+  border-top: 1px solid var(--line);
+  padding-top: 1.5rem;
+  opacity: 0;
+  animation: lineIn 0.9s 0.8s ease-out forwards;
 }
-.calc::before {
-  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold-500, var(--gold)), transparent);
+.stat { display: flex; flex-direction: column; }
+.stat-num {
+  font-family: var(--ff-display);
+  font-weight: 500;
+  font-size: clamp(2rem, 3.5vw, 2.8rem);
+  line-height: 1;
+  color: var(--text);
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.02em;
+}
+.stat-label {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-top: 0.3rem;
 }
 
-.calc-form { display: flex; flex-wrap: wrap; gap: 1.75rem; margin-bottom: 2.5rem; align-items: flex-start; }
-.calc-field { display: flex; flex-direction: column; gap: 0.7rem; }
-.calc-field--full { flex-basis: 100%; }
-.calc-field > label {
-  color: var(--text-dim); font-size: var(--text-sm, 0.875rem); font-weight: 600;
-  letter-spacing: 0; text-transform: none;
+/* ── EDITORIAL SPLIT SPREAD ───────────────────────────────────────── */
+.spread {
+  padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 4rem);
+  border-bottom: 1px solid var(--line);
+}
+.spread-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 4vw, 4rem);
+  align-items: start;
+}
+
+.col-marker, .compute-marker, .real-marker, .tips-marker, .faq-marker {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 1.5rem;
+  display: flex; align-items: baseline; gap: 0.7rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.7rem;
+}
+.col-marker span, .compute-marker span, .real-marker span, .tips-marker span, .faq-marker span {
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: var(--gold-600, var(--gold));
+  letter-spacing: -0.02em;
+}
+
+/* ── FORM COLUMN ──────────────────────────────────────────────────── */
+.form-col {
+  display: flex; flex-direction: column;
+  gap: 1.8rem;
+}
+
+.field { display: flex; flex-direction: column; gap: 0.55rem; }
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.field-label {
+  font-family: var(--ff-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.005em;
   display: flex; align-items: center; gap: 0.4rem;
 }
 
-.calc-select {
-  background: var(--bg); border: 1.5px solid var(--line); color: var(--text);
-  font-family: var(--ff-body); font-size: var(--text-base, 1rem); font-weight: 500;
-  padding: 0.85rem 2.6rem 0.85rem 1rem; border-radius: var(--radius-3, 6px);
-  outline: none; cursor: pointer;
-  min-width: 280px; appearance: none; -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c9973a' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 1rem center;
-  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
-  min-height: 48px;
-}
-.calc-select:hover { border-color: var(--gold-dim); }
-.calc-select:focus-visible { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,151,58,0.18); }
-
-.add-country-select {
-  margin-top: 0.5rem;
+.field-select {
   background: var(--bg);
-  border: 1.5px dashed var(--gold-dim, var(--gold));
-  color: var(--gold-dim, var(--gold));
-  font-family: var(--ff-body); font-size: var(--text-sm); font-weight: 500;
-  padding: 0.6rem 2.2rem 0.6rem 0.9rem;
-  border-radius: var(--radius-3, 6px);
-  cursor: pointer;
-  min-width: 100%;
+  border: none;
+  border-bottom: 2px solid var(--text);
+  color: var(--text);
+  font-family: var(--ff-display);
+  font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+  font-weight: 500;
+  padding: 0.7rem 2.2rem 0.7rem 0;
+  outline: none; cursor: pointer;
   appearance: none; -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c9973a' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 0.9rem center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23c9973a' stroke-width='2' fill='none' stroke-linecap='square'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 0 center;
+  transition: border-color 0.2s;
+  letter-spacing: -0.01em;
+}
+.field-select:focus-visible { border-bottom-color: var(--gold); }
+.field-select--add {
+  margin-top: 0.7rem;
+  border-bottom-color: var(--gold-dim, var(--gold));
+  border-bottom-style: dashed;
+  color: var(--gold-600, var(--gold));
+  font-size: 0.9rem;
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* SEGMENTED CONTROLS — Editorial style */
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--text);
+  border-radius: 0;
+  background: transparent;
+  width: max-content;
+}
+.seg--wide { width: 100%; }
+.seg-btn {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: var(--ff-body);
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 0.65rem 1.1rem;
+  cursor: pointer;
+  border-right: 1px solid var(--text);
+  transition: background 0.15s, color 0.15s;
+  letter-spacing: -0.005em;
+}
+.seg-btn:last-child { border-right: none; }
+.seg-btn.active {
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 600;
+}
+.seg-btn:hover:not(.active) { background: rgba(0,0,0,0.04); }
+.seg--wide .seg-btn { flex: 1; }
+
+/* STEPPER */
+.stepper {
+  display: inline-flex; align-items: center;
+  border: 1px solid var(--text);
+  border-radius: 0;
+  width: max-content;
+}
+.stepper-btn {
+  background: transparent; border: none;
+  font-family: var(--ff-display);
+  font-size: 1.4rem; line-height: 1;
+  color: var(--text);
+  width: 40px; height: 40px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.stepper-btn:hover { background: var(--text); color: var(--bg); }
+.stepper-val {
+  font-family: var(--ff-display);
+  font-size: 1.5rem;
+  font-weight: 500;
+  min-width: 54px;
+  text-align: center;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.quick-days {
+  display: flex; gap: 0.3rem;
+  margin-top: 0.4rem;
+  flex-wrap: wrap;
+}
+.qd-chip {
+  background: transparent;
+  border: 1px solid var(--line-strong, var(--line));
+  color: var(--text-dim);
+  font-family: var(--ff-mono);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  padding: 0.3rem 0.55rem;
+  cursor: pointer;
+  border-radius: 0;
+  min-width: 32px;
   transition: all 0.15s;
 }
-.add-country-select:hover {
-  background-color: rgba(201,151,58,0.06);
-  border-style: solid;
-}
-.add-country-select:focus-visible {
-  outline: 2px solid var(--gold); outline-offset: 2px;
-  border-style: solid;
-}
-
-.stepper {
-  display: flex; align-items: center; background: var(--bg); border: 1.5px solid var(--line);
-  border-radius: var(--radius-3); overflow: hidden;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  min-height: 48px;
-}
-.stepper:focus-within { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,151,58,0.18); }
-.step-btn {
-  background: transparent; border: none; color: var(--text-dim);
-  font-size: 1.4rem; width: 48px; height: 48px; cursor: pointer;
-  font-family: var(--ff-body); line-height: 1; transition: color 0.15s, background 0.15s;
-}
-.step-btn:hover { color: var(--gold); background: var(--gold-glow); }
-.step-val {
-  font-size: var(--text-lg, 1.125rem); font-weight: 600;
-  color: var(--text); min-width: 56px; text-align: center;
-  font-variant-numeric: tabular-nums;
-}
-
-.btn-group {
-  display: inline-flex; gap: 4px;
-  background: var(--bg); padding: 4px;
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-pill);
-}
-.btn-group button {
-  background: transparent; border: none; color: var(--text-dim);
-  font-family: var(--ff-body); font-size: var(--text-sm, 0.875rem); font-weight: 500;
-  letter-spacing: 0; text-transform: none;
-  padding: 0.6rem 1.1rem; border-radius: var(--radius-pill); cursor: pointer;
-  transition: color 0.15s, background 0.15s, transform 0.15s;
-  min-height: 44px;
-}
-.btn-group button.active {
-  background: var(--gold-600, var(--gold)); color: #fff;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(201,151,58,0.25);
-}
-.btn-group button:hover:not(.active) { color: var(--text); background: var(--bg3); }
-.btn-group button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
-
-/* ── Month chips ── */
-.month-chips {
-  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 4px;
-}
-.month-chip {
-  background: var(--bg); border: 1.5px solid var(--line); color: var(--text-dim);
-  font-family: var(--ff-body); font-size: 0.78rem; font-weight: 500;
-  padding: 0.55rem 0.3rem; border-radius: var(--radius-3, 6px); cursor: pointer;
-  display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
-  transition: border-color 0.15s, color 0.15s, background 0.15s, transform 0.1s;
-  min-height: 52px;
-}
-.month-chip:hover { border-color: var(--gold-dim); color: var(--text); transform: translateY(-1px); }
-.month-chip.active {
-  background: var(--gold-600, var(--gold)); color: #fff;
+.qd-chip:hover { border-color: var(--gold); color: var(--gold-600); }
+.qd-chip.active {
+  background: var(--gold-600, var(--gold));
   border-color: var(--gold-600, var(--gold));
+  color: #fff;
 }
-.month-chip .m-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--text-faint);
+
+.lvl-info {
+  background: transparent;
+  border: 1px solid var(--text-faint);
+  color: var(--text-faint);
+  width: 16px; height: 16px;
+  border-radius: 50%; cursor: pointer;
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: 0.6rem;
+  line-height: 1;
+  padding: 0;
+}
+.lvl-info:hover { color: var(--gold); border-color: var(--gold); }
+.lvl-tip {
+  margin-top: 0.6rem;
+  background: var(--surface-2, var(--bg2));
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--gold);
+  padding: 0.8rem 1rem;
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: var(--text-dim);
+}
+.lvl-tip strong { color: var(--text); font-weight: 600; }
+
+/* MONTHS — editorial 12 strip */
+.months {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1px;
+  background: var(--text);
+  border: 1px solid var(--text);
+}
+.month {
+  background: var(--bg);
+  border: none;
+  cursor: pointer;
+  padding: 0.6rem 0.3rem 0.5rem;
+  display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
   transition: background 0.15s;
+  min-height: 64px;
+  position: relative;
 }
-.month-chip .m-dot[data-r="P"] { background: #ef4444; }
-.month-chip .m-dot[data-r="G"] { background: #22c55e; }
-.month-chip .m-dot[data-r="O"] { background: #f59e0b; }
-.month-chip .m-dot[data-r="B"] { background: #6b7280; }
-.month-chip.active .m-dot { background: #fff; }
+.month:hover { background: rgba(201, 151, 58, 0.08); }
+.month.active {
+  background: var(--text);
+  color: var(--bg);
+}
+.m-num {
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+}
+.month.active .m-num { color: var(--gold); }
+.m-name {
+  font-family: var(--ff-display);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.month.active .m-name { color: var(--bg); }
+.m-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--text-faint);
+  margin-top: 0.2rem;
+}
+.m-dot[data-r="P"] { background: #ef4444; }
+.m-dot[data-r="G"] { background: #22c55e; }
+.m-dot[data-r="O"] { background: #f59e0b; }
+.m-dot[data-r="B"] { background: #6b7280; }
+.month.active .m-dot { box-shadow: 0 0 0 2px var(--bg); }
+
 .month-legend {
-  display: flex; gap: 1.2rem; flex-wrap: wrap;
-  margin-top: 0.5rem; font-size: 0.7rem; color: var(--text-faint);
+  display: flex; gap: 1rem; flex-wrap: wrap;
+  margin-top: 0.6rem;
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
 }
-.month-legend .lg { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 0.3rem; vertical-align: middle; }
+.lg-item { display: inline-flex; align-items: center; gap: 0.3rem; }
+.lg-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
 .lg-peak { background: #ef4444; }
 .lg-good { background: #22c55e; }
 .lg-ok { background: #f59e0b; }
 .lg-bad { background: #6b7280; }
 
-/* (Add-ons убраны — теперь только в CTA с трекингом) */
-
-/* ── Result panel — Editorial 2026 Hero-style ── */
-.calc-result {
-  margin: 2rem 0 0;
-  padding: 0;
+/* ── COMPUTE COLUMN — Sticky Result ───────────────────────────────── */
+.compute-col {
+  position: sticky;
+  top: 1.5rem;
+  align-self: start;
 }
-.cards { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
-.cards-compare { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
 
-.card {
+.compute-result { display: contents; }
+
+.cc-stack { display: flex; flex-direction: column; gap: 1.5rem; }
+.cc-stack--compare { gap: 1rem; }
+
+.cc {
   background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-5, 12px);
-  padding: 1.5rem 1.5rem 1.25rem;
-  display: flex; flex-direction: column;
-  gap: 1.25rem;
+  border: 1px solid var(--text);
+  padding: 1.6rem 1.6rem 1.4rem;
   position: relative;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  opacity: 0;
+  animation: ccIn 0.5s calc(var(--cc-i) * 0.08s + 0.1s) ease-out forwards;
 }
-.card-primary {
-  border-color: var(--gold-dim);
-  box-shadow: 0 1px 8px rgba(201,151,58,0.08), 0 8px 24px -12px rgba(201,151,58,0.15);
+.cc-primary {
+  background: var(--bg);
+  border: 2px solid var(--text);
+  box-shadow: 6px 6px 0 var(--gold);
 }
-.card-remove {
-  position: absolute; top: 0.9rem; right: 0.9rem;
-  background: var(--bg2); border: 1px solid var(--line);
-  color: var(--text-faint);
-  width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+@keyframes ccIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cc-remove {
+  position: absolute; top: 0.8rem; right: 0.8rem;
+  background: var(--bg); border: 1px solid var(--text);
+  width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
   font-size: 1.2rem; line-height: 1;
   display: flex; align-items: center; justify-content: center;
   transition: all 0.15s;
   z-index: 2;
 }
-.card-remove:hover { color: var(--gold); border-color: var(--gold); transform: rotate(90deg); }
+.cc-remove:hover { background: var(--text); color: var(--bg); transform: rotate(90deg); }
 
-/* ── Compact meta-row ── */
-.card-meta { display: flex; flex-direction: column; gap: 0.55rem; }
-.card-title {
-  font-family: var(--ff-display);
-  font-size: var(--text-lg, 1.15rem);
-  font-weight: 500; letter-spacing: -0.01em;
-  margin: 0; color: var(--text);
-  word-break: break-word; padding-right: 36px;
-  line-height: 1.25;
-}
-.card-chips {
-  display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center;
-}
-.meta-chip {
-  font-family: var(--ff-mono);
-  font-size: 0.68rem; letter-spacing: 0.04em;
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  padding: 0.22rem 0.55rem;
-  border-radius: 999px;
-  color: var(--text-dim);
-  text-decoration: none;
-  white-space: nowrap;
-}
-.meta-chip--link {
-  color: var(--gold-600);
-  border-color: rgba(201,151,58,0.3);
-  transition: background 0.15s;
-}
-.meta-chip--link:hover {
-  background: rgba(201,151,58,0.08);
-  border-color: var(--gold);
-}
-.season-badge {
-  font-family: var(--ff-mono); font-size: 0.68rem;
-  padding: 0.22rem 0.6rem; border-radius: 999px;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-}
-.season-peak { background: rgba(239,68,68,0.12); color: #c63b3b; border: 1px solid rgba(239,68,68,0.2); }
-.season-good { background: rgba(34,197,94,0.12); color: #1f9c4a; border: 1px solid rgba(34,197,94,0.2); }
-.season-ok { background: rgba(245,158,11,0.12); color: #c97d09; border: 1px solid rgba(245,158,11,0.2); }
-.season-bad { background: rgba(107,114,128,0.12); color: #4b5563; border: 1px solid rgba(107,114,128,0.2); }
-
-/* ── HERO: огромная сумма посередине карточки ── */
-.card-hero {
-  text-align: center;
-  padding: 1.5rem 0 1.25rem;
-  border-top: 1px solid var(--line);
+.cc-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: 1rem; flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.8rem;
   border-bottom: 1px solid var(--line);
-  background: linear-gradient(180deg, rgba(201,151,58,0.03), transparent 70%);
 }
-.hero-label {
+.cc-tag {
+  font-family: var(--ff-display);
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  padding-right: 36px;
+  word-break: break-word;
+  flex: 1; min-width: 0;
+  line-height: 1.2;
+}
+.cc-season {
+  font-family: var(--ff-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  white-space: nowrap;
+  background: var(--bg);
+}
+.cc-season--peak { background: rgba(239,68,68,0.1); color: #c63b3b; border: 1px solid rgba(239,68,68,0.3); }
+.cc-season--good { background: rgba(34,197,94,0.1); color: #1f9c4a; border: 1px solid rgba(34,197,94,0.3); }
+.cc-season--ok   { background: rgba(245,158,11,0.1); color: #c97d09; border: 1px solid rgba(245,158,11,0.3); }
+.cc-season--bad  { background: rgba(107,114,128,0.1); color: #4b5563; border: 1px solid rgba(107,114,128,0.3); }
+
+.cc-hero { margin-bottom: 1rem; }
+.cc-label {
   font-family: var(--ff-mono);
   font-size: 10px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  letter-spacing: 0.2em;
   color: var(--text-faint);
   margin-bottom: 0.3rem;
 }
-.hero-amount {
+.cc-amount {
   font-family: var(--ff-display);
-  font-size: clamp(2.4rem, 6vw, 3.5rem);
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: -0.03em;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
   color: var(--text);
   font-variant-numeric: tabular-nums lining-nums;
 }
-.hero-perperson {
+.cc-per {
   font-family: var(--ff-mono);
   font-size: 0.78rem;
-  color: var(--text-faint);
+  color: var(--text-dim);
   margin-top: 0.5rem;
-  letter-spacing: 0.02em;
 }
+.cc-per span { color: var(--text-faint); }
 
-/* Inline nudge внутри hero */
-.card-hero .nudge {
-  margin-top: 0.9rem;
+.cc-nudge {
   display: inline-flex; align-items: center; gap: 0.4rem;
   background: rgba(34,197,94,0.08);
-  border: 1px solid rgba(34,197,94,0.2);
-  border-radius: 999px;
-  padding: 0.4rem 0.9rem;
-  font-size: 0.78rem; line-height: 1.4;
-  color: var(--text);
-  max-width: 100%;
-  text-align: left;
-}
-.card-hero .nudge span { color: #1f9c4a; flex-shrink: 0; }
-.card-hero .nudge strong { color: #1f9c4a; font-weight: 600; }
-
-/* ── Collapsible breakdown ── */
-.breakdown-toggle {
-  border-radius: var(--radius-3);
-}
-.breakdown-toggle summary {
-  cursor: pointer;
-  font-family: var(--ff-mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.04em;
-  color: var(--text-dim);
-  padding: 0.4rem 0.2rem;
-  list-style: none;
-  user-select: none;
-  transition: color 0.15s;
-}
-.breakdown-toggle summary::-webkit-details-marker { display: none; }
-.breakdown-toggle summary:hover { color: var(--gold); }
-.breakdown-toggle[open] summary { color: var(--gold); margin-bottom: 0.5rem; }
-.breakdown-toggle[open] summary::after { content: ' ↓'; }
-
-.calc-breakdown {
-  display: grid; grid-template-columns: 1fr;
-  gap: 0.3rem;
-}
-.breakdown-item {
-  display: flex; justify-content: space-between; align-items: baseline;
-  padding: 0.6rem 0.8rem;
-  background: var(--bg2);
-  border-radius: var(--radius-2, 4px);
-  border: none;
-}
-.breakdown-item span:first-child {
-  color: var(--text-dim);
+  padding: 0.4rem 0.8rem;
+  font-family: var(--ff-display);
+  font-style: italic;
   font-size: 0.85rem;
-}
-.breakdown-item span:last-child {
   color: var(--text);
-  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  border-left: 2px solid #22c55e;
+}
+.cc-nudge-mark { font-style: normal; color: #1f9c4a; font-weight: 600; }
+.cc-nudge strong { font-weight: 600; color: #1f9c4a; }
+
+/* Editorial dot-leader rows */
+.cc-rows {
+  display: flex; flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.8rem 0 1rem;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 1rem;
+}
+.cc-row {
+  display: flex; align-items: baseline; gap: 0.5rem;
+  font-size: 0.88rem;
+  flex-wrap: wrap;
+}
+.cc-row-key {
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.cc-dots {
+  flex: 1;
+  height: 1px;
+  background-image: radial-gradient(circle, var(--text-faint) 1px, transparent 1.4px);
+  background-size: 6px 1px;
+  background-position: 0 50%;
+  background-repeat: repeat-x;
+  opacity: 0.4;
+  min-width: 30px;
+  align-self: center;
+  margin-top: 0.3em;
+}
+.cc-row-val {
+  color: var(--text);
   font-weight: 600;
   font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+.cc-row--visa .cc-row-val { font-weight: 500; }
+.cc-visa-link {
+  font-family: var(--ff-mono);
+  font-size: 0.7rem;
+  color: var(--gold-600);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--gold-dim);
+  margin-left: 0.5rem;
 }
 
-/* ── Bottom CTA ── */
-.card-cta {
-  display: flex; flex-direction: column; gap: 0.55rem;
-  margin-top: auto;
-}
-.cta-row {
-  display: flex; gap: 0.4rem; flex-wrap: wrap;
-}
-.cta-mini {
-  flex: 1; min-width: 80px;
-  display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem;
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  color: var(--text-dim);
-  font-family: var(--ff-body); font-size: 0.78rem; font-weight: 500;
-  padding: 0.55rem 0.7rem;
-  border-radius: var(--radius-3, 6px);
+/* CTA — editorial */
+.cc-cta { display: flex; flex-direction: column; gap: 0.55rem; }
+.cta-main {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--text);
+  color: var(--bg);
+  padding: 0.95rem 1.2rem;
+  font-family: var(--ff-body);
+  font-weight: 600;
+  font-size: 0.95rem;
   text-decoration: none;
-  transition: all 0.15s;
+  border: none;
+  transition: background 0.15s, transform 0.15s;
+  border-radius: 0;
 }
-.cta-mini:hover {
-  background: var(--bg); color: var(--gold-600);
-  border-color: var(--gold-dim);
+.cta-main:hover {
+  background: var(--gold-600, var(--gold));
   transform: translateY(-1px);
 }
-.cta-mini span { font-size: 0.95em; }
-
-.calc-note { color: var(--text-faint); font-size: 0.75rem; line-height: 1.6; border-top: 1px dashed var(--line); padding-top: 1rem; margin-top: 1.5rem; }
-#calcRateLabel { color: var(--text-dim); }
-
-/* ── Day quick chips ── */
-.day-chips { display: flex; gap: 4px; margin-top: 0.4rem; flex-wrap: wrap; }
-.day-chips .chip {
-  background: var(--bg); border: 1px solid var(--line); color: var(--text-faint);
-  font-family: var(--ff-body); font-size: 0.72rem; font-variant-numeric: tabular-nums;
-  padding: 0.35rem 0.55rem; border-radius: 3px; cursor: pointer;
-  min-width: 36px; transition: border-color 0.2s, color 0.2s, background 0.2s;
-}
-.day-chips .chip:hover { border-color: var(--gold-dim); color: var(--text); }
-.day-chips .chip.is-active {
-  background: rgba(201,151,58,0.12); border-color: var(--gold); color: var(--gold);
-}
-
-/* ── Info button & tooltip ── */
-.calc-field > label { display: flex; align-items: center; gap: 0.4rem; }
-.info-btn {
-  background: transparent; border: 1px solid var(--line); color: var(--text-faint);
-  width: 18px; height: 18px; border-radius: 50%; cursor: pointer;
-  font-size: 0.65rem; line-height: 1; padding: 0; font-family: var(--ff-body);
-  transition: color 0.2s, border-color 0.2s;
-}
-.info-btn:hover { color: var(--gold); border-color: var(--gold-dim); }
-.info-tip {
-  margin-top: 0.6rem; background: var(--bg3); border: 1px solid var(--line);
-  border-radius: 3px; padding: 0.7rem 0.9rem; font-size: 0.78rem;
-  color: var(--text-dim); line-height: 1.7; max-width: 360px;
-}
-.info-tip strong { color: var(--text); font-weight: 500; }
-
-/* ── Primary CTA: один большой ── */
-.cta-primary {
-  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-  background: var(--gold-600, var(--gold)); color: #fff;
-  padding: 0.95rem 1.5rem;
-  border-radius: var(--radius-pill);
-  font-family: var(--ff-body); font-weight: 600; font-size: 0.95rem;
-  text-decoration: none;
-  box-shadow: 0 4px 14px rgba(201,151,58,0.28), 0 1px 2px rgba(0,0,0,0.06);
-  transition: background 0.15s, box-shadow 0.2s, transform 0.15s;
-}
-.cta-primary:hover {
-  background: var(--gold-500);
-  box-shadow: 0 8px 22px rgba(201,151,58,0.4), 0 2px 4px rgba(0,0,0,0.08);
-  transform: translateY(-2px);
-}
-.cta-primary .cta-arrow {
+.cta-arrow {
+  font-family: var(--ff-display);
+  font-size: 1.3em;
   transition: transform 0.2s;
-  font-size: 1.1em;
 }
-.cta-primary:hover .cta-arrow { transform: translateX(3px); }
+.cta-main:hover .cta-arrow { transform: translateX(4px); }
 
-/* ── Result footer (Copy) ── */
-.result-footer {
-  margin-top: 1.25rem;
+.cta-row {
+  display: flex;
+  gap: 1px;
+  background: var(--line);
+  padding: 1px;
+  border: 1px solid var(--line);
+}
+.cta-side {
+  flex: 1;
+  background: var(--bg);
+  color: var(--text-dim);
+  font-family: var(--ff-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.55rem 0.4rem;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.15s;
+}
+.cta-side:hover { background: var(--gold-600); color: var(--bg); }
+
+/* ── FOOTER OF COMPUTE ────────────────────────────────────────────── */
+.cc-footer {
+  margin-top: 1.2rem;
   display: flex; justify-content: center;
 }
-.copy-tg {
+.copy-btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
   background: transparent;
-  border: 1px dashed var(--gold-dim);
-  color: var(--gold-600, var(--gold));
-  font-family: var(--ff-body); font-weight: 500; font-size: 0.85rem;
-  padding: 0.6rem 1.2rem;
-  border-radius: var(--radius-pill, 999px);
+  border: 1px dashed var(--text);
+  color: var(--text);
+  font-family: var(--ff-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.55rem 1.1rem;
   cursor: pointer;
   transition: all 0.15s;
 }
-.copy-tg:hover {
-  background: rgba(201,151,58,0.08);
+.copy-btn:hover {
   border-style: solid;
-  color: var(--gold);
+  background: var(--text);
+  color: var(--bg);
+}
+.copy-icon {
+  font-family: var(--ff-mono);
+  font-weight: 600;
 }
 
-/* ── FAQ ── */
-.faq { margin-top: 3rem; }
-.faq h2 {
-  font-family: var(--ff-display); font-weight: 600;
-  font-size: clamp(1.6rem, 3vw, 2rem); letter-spacing: -0.015em;
-  margin: 0 0 1.2rem; color: var(--text);
+.rate-line {
+  margin-top: 1.5rem;
+  font-family: var(--ff-mono);
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  text-align: right;
+  border-top: 1px dashed var(--line);
+  padding-top: 0.7rem;
 }
-.faq-item {
-  background: var(--bg2);
+
+/* ── REAL SECTION (BudgetBlock host) ──────────────────────────────── */
+.real-section {
+  padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 4rem);
+  max-width: 1400px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--line);
+}
+
+/* ── TIPS — Editorial 6-grid ──────────────────────────────────────── */
+.tips-section {
+  padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 4rem);
+  max-width: 1400px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--line);
+}
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1px;
+  background: var(--line);
   border: 1px solid var(--line);
-  border-radius: var(--radius-3, 6px);
-  padding: 0.9rem 1.2rem;
-  margin-bottom: 0.5rem;
-  transition: border-color 0.15s;
 }
-.faq-item[open] { border-color: var(--gold-dim); }
-.faq-item summary {
-  cursor: pointer; font-weight: 600; color: var(--text);
-  font-size: var(--text-base, 1rem);
-  list-style: none; position: relative;
-  padding-right: 1.5rem;
+.tip {
+  background: var(--bg);
+  padding: 2rem 1.8rem 1.6rem;
+  position: relative;
+  transition: background 0.2s;
 }
-.faq-item summary::after {
-  content: '+'; position: absolute; right: 0; top: 0;
-  font-size: 1.4rem; line-height: 1; color: var(--gold);
-  transition: transform 0.2s;
+.tip:hover { background: rgba(201, 151, 58, 0.04); }
+.tip-num {
+  position: absolute;
+  top: 1rem; right: 1.2rem;
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--gold-600, var(--gold));
+  letter-spacing: 0.05em;
 }
-.faq-item[open] summary::after { transform: rotate(45deg); }
-.faq-item summary::-webkit-details-marker { display: none; }
-.faq-item p {
-  margin: 0.7rem 0 0; color: var(--text-dim); line-height: 1.65;
-  font-size: var(--text-sm, 0.95rem);
+.tip-title {
+  font-family: var(--ff-display);
+  font-size: 1.3rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  margin: 0 0 0.6rem;
+  color: var(--text);
+  line-height: 1.2;
+}
+.tip-body {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--text-dim);
+  margin: 0;
 }
 
-/* ── Responsive ── */
-@media (max-width: 720px) {
-  .page { padding: 2rem 1rem; }
-  .calc { padding: 1.3rem; }
-  .calc-form { gap: 1.3rem; }
-  .calc-select { min-width: 100%; width: 100%; }
-  .btn-group button { padding: 0.5rem 0.7rem; font-size: 0.75rem; }
-  .month-chips { grid-template-columns: repeat(6, 1fr); }
-  .calc-cta { flex-direction: column; }
-  .cta-primary, .cta-secondary { width: 100%; min-width: unset; justify-content: center; }
-  .result-footer { flex-direction: column; }
-  .cards-compare { grid-template-columns: 1fr; }
+/* ── FAQ ──────────────────────────────────────────────────────────── */
+.faq-section {
+  padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 4rem) clamp(4rem, 8vw, 7rem);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.faq-list { display: flex; flex-direction: column; }
+.faq-item {
+  border-bottom: 1px solid var(--line);
+  padding: 1.4rem 0;
+  transition: padding 0.15s;
+}
+.faq-item:first-child { border-top: 1px solid var(--line); }
+.faq-item summary {
+  cursor: pointer;
+  font-family: var(--ff-display);
+  font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  list-style: none;
+  position: relative;
+  padding-right: 2.5rem;
+  line-height: 1.3;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: '+';
+  position: absolute; right: 0; top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--ff-display);
+  font-size: 1.5rem; font-weight: 300;
+  color: var(--gold-600, var(--gold));
+  transition: transform 0.25s var(--ease-out, cubic-bezier(0.22, 0.61, 0.36, 1));
+  line-height: 1;
+}
+.faq-item[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+.faq-item p {
+  margin: 1rem 0 0;
+  color: var(--text-dim);
+  font-size: 1rem;
+  line-height: 1.65;
+  max-width: 720px;
+}
+
+/* ── BUDGET BLOCK WRAPS ──────────────────────────────────────────── */
+.bb-host { /* host */ }
+.bb-wrap { /* individual */ }
+
+/* ── RESPONSIVE ───────────────────────────────────────────────────── */
+@media (max-width: 920px) {
+  .spread-inner {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  .compute-col {
+    position: static;
+  }
+  .field-row { grid-template-columns: 1fr; }
+  .months { grid-template-columns: repeat(6, 1fr); }
+  .seg-btn { padding: 0.55rem 0.85rem; font-size: 0.82rem; }
+  .hero-line:nth-child(2) { transform: translateX(0); }
+  @keyframes lineInRight {
+    from { opacity: 0; transform: translate(0, 20px); }
+    to   { opacity: 1; transform: translate(0, 0); }
+  }
+}
+@media (max-width: 640px) {
+  .hero { padding: 2.5rem 1.2rem 2rem; }
+  .spread, .real-section, .tips-section, .faq-section { padding-left: 1.2rem; padding-right: 1.2rem; }
+  .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
+  .cc { padding: 1.2rem 1.2rem 1rem; }
+  .cc-primary { box-shadow: 4px 4px 0 var(--gold); }
+  .cta-row { flex-direction: column; }
+  .cta-side { padding: 0.55rem; }
+  .month { min-height: 56px; padding: 0.5rem 0.2rem 0.4rem; }
+  .m-name { font-size: 0.85rem; }
+  .tip { padding: 1.5rem 1.2rem 1.3rem; }
+  .tip-num { top: 0.8rem; right: 0.9rem; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  .eyebrow-dot { animation: none; }
 }
 </style>
