@@ -1,11 +1,11 @@
 // Per-country visa details for Russian passport holders.
-// Verified May 2026 through 5 parallel research agents using:
-// — МИД РФ (kdmid.ru, mid.ru and country embassy subdomains)
-// — официальные иммиграционные сайты стран
+// Verified May 2026 against official sources:
+// — МИД РФ (kdmid.ru, mid.ru и субдомены посольств)
+// — Официальные иммиграционные сайты стран
 // — VFS Global / BLS / GVCW / Almaviva (визовые центры)
-// — посольства стран в РФ
+// — Посольства стран в РФ
 //
-// Все данные имеют source в notes/sources block на странице.
+// Sources на странице /visa/ в блоке «Откуда данные».
 // Confidence: high (официальный источник) если не указано otherwise.
 
 const DEFAULT_BY_VISA = {
