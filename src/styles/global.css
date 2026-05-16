@@ -3,7 +3,8 @@
    Body: Onest (рус. дизайн Дениса Машарова, optimized кириллица)
    Mono: JetBrains Mono (для дат, кодов, штампов) */
 @import "@fontsource-variable/newsreader";
-@import "@fontsource-variable/onest";
+/* Onest НЕ через @import (там font-display:swap → CLS).
+   Объявлен в Layout.astro с font-display:optional. */
 @import "@fontsource/jetbrains-mono/400.css";
 @import "@fontsource/jetbrains-mono/500.css";
 
