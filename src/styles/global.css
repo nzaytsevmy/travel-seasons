@@ -7,34 +7,6 @@
 @import "@fontsource/jetbrains-mono/400.css";
 @import "@fontsource/jetbrains-mono/500.css";
 
-/* Metric-matched fallback шрифты — устраняют CLS от font-swap.
-   Метрики подобраны так, чтобы fallback (Arial/Georgia) занимал
-   ту же высоту строки и ширину, что веб-шрифт → нет сдвига при swap. */
-@font-face {
-  font-family: "Onest Fallback";
-  src: local("Arial");
-  size-adjust: 104%;
-  ascent-override: 96%;
-  descent-override: 24%;
-  line-gap-override: 0%;
-}
-@font-face {
-  font-family: "Newsreader Fallback";
-  src: local("Georgia");
-  size-adjust: 92%;
-  ascent-override: 99%;
-  descent-override: 27%;
-  line-gap-override: 0%;
-}
-@font-face {
-  font-family: "Mono Fallback";
-  src: local("Menlo"), local("Consolas");
-  size-adjust: 95%;
-  ascent-override: 90%;
-  descent-override: 22%;
-  line-gap-override: 0%;
-}
-
 /* Design tokens — Open Props inspired color/spacing/typography scales. */
 @import "./tokens.css";
 
@@ -55,9 +27,9 @@
   --text:        oklch(0.14 0.02 70);    /* warm near-black */
   --text-dim:    oklch(0.38 0.015 70);
   --text-faint:  oklch(0.50 0.012 70);
-  --ff-display:  "Newsreader Variable", "Newsreader", "Newsreader Fallback", Georgia, serif;
-  --ff-body:     "Onest Variable", "Onest", "Onest Fallback", system-ui, sans-serif;
-  --ff-mono:     "JetBrains Mono", "Mono Fallback", "Courier New", monospace;
+  --ff-display:  "Newsreader Variable", "Newsreader", Georgia, serif;
+  --ff-body:     "Onest Variable", "Onest", system-ui, sans-serif;
+  --ff-mono:     "JetBrains Mono", "Courier New", monospace;
   --green:       #22c55e;
   --blue:        #4a9eff;
   --yellow:      #f59e0b;
