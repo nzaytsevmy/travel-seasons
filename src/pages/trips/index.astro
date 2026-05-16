@@ -4,6 +4,22 @@ import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { data as regions } from '../../data/regions.js';
+import { DATA_UPDATED_RU } from '../../data/meta.js';
+
+const faqs = [
+  {
+    q: 'Как выбрать месяц для поездки в 2026?',
+    a: 'Открой нужный месяц — для каждого собраны направления с пиком сезона, хорошей погодой, ценой перелёта из Москвы и визовым режимом для россиян. Сначала смотри блок «Пик сезона»: там погода и инфраструктура работают на 100%.',
+  },
+  {
+    q: 'В каком месяце дешевле всего путешествовать?',
+    a: 'Цена зависит не от месяца вообще, а от связки направление + сезон: низкий сезон в конкретной стране даёт перелёт и отели на 20–30% дешевле пика. На странице каждого месяца дешёвые перелёты подсвечены.',
+  },
+  {
+    q: 'Где смотреть визу и бюджет по месяцу?',
+    a: 'На странице месяца у каждого направления указан визовый режим для россиян и ориентир бюджета на день. Точную сумму под свои даты считает калькулятор бюджета.',
+  },
+];
 
 const MONTHS = [
   { slug: 'january',   name: 'январь',   short: 'Янв', en: 'January' },
@@ -54,6 +70,14 @@ const ldJson = {
       ]
     },
     {
+      "@type": "FAQPage",
+      "mainEntity": faqs.map(f => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": f.a }
+      }))
+    },
+    {
       "@type": "ItemList",
       "name": "Месяцы для путешествий 2026",
       "numberOfItems": 12,
@@ -83,6 +107,11 @@ const ldJson = {
       <div class="hero-tag">// Календарь · 12 месяцев</div>
       <h1>Куда поехать <em>по месяцам</em></h1>
       <p class="cal-sub">У тебя отпуск в марте? Или хочешь спланировать декабрь? Выбери месяц — покажем где сезон, цены на перелёт и какая виза нужна.</p>
+      <p class="cal-byline">
+        <a href="/about/" class="byline-author">Никита Зайцев</a> ·
+        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
+        <span class="byline-fresh">сезоны и визы актуальны на {DATA_UPDATED_RU}</span>
+      </p>
     </header>
 
     <div class="months-grid">
@@ -101,6 +130,18 @@ const ldJson = {
         </a>
       ))}
     </div>
+
+    <section class="cal-faq">
+      <h2>Частые вопросы</h2>
+      <div class="cal-faq-list">
+        {faqs.map(f => (
+          <details class="cal-faq-item">
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
 
     <section class="cal-cta">
       <h2>Что ещё посмотреть</h2>
@@ -124,6 +165,20 @@ const ldJson = {
 .cal-header h1 { font-family: var(--ff-body); font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1rem; }
 .cal-header h1 em { color: var(--gold); font-style: italic; }
 .cal-sub { color: var(--text-dim); font-size: 0.95rem; max-width: 640px; margin: 0 auto; line-height: 1.6; }
+.cal-byline { font-size: 0.76rem; color: var(--text-faint); max-width: 640px; margin: 0.7rem auto 0; letter-spacing: 0.01em; }
+.cal-byline a { color: var(--text-dim); text-decoration: none; }
+.cal-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+.cal-byline .byline-fresh { color: var(--text-faint); }
+
+.cal-faq { margin: 0 0 3rem; }
+.cal-faq h2 { font-family: var(--ff-body); font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1.2rem; text-align: center; }
+.cal-faq-list { display: flex; flex-direction: column; gap: 0.6rem; max-width: 760px; margin: 0 auto; }
+.cal-faq-item { background: var(--bg2); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.cal-faq-item summary { font-weight: 500; color: var(--text); padding: 0.95rem 1.2rem; cursor: pointer; font-size: 0.95rem; line-height: 1.5; list-style: none; position: relative; }
+.cal-faq-item summary::-webkit-details-marker { display: none; }
+.cal-faq-item summary::after { content: '+'; position: absolute; right: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--gold); font-size: 1.2rem; transition: transform 0.2s; }
+.cal-faq-item[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+.cal-faq-item p { padding: 0 1.2rem 1.1rem; margin: 0; color: var(--text-dim); line-height: 1.75; font-size: 0.92rem; }
 
 .months-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
 .month-card {

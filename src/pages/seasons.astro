@@ -7,6 +7,7 @@ import { data } from '../data/regions.js';
 import { regionMeta } from '../data/regions-meta.js';
 import { regionsRich } from '../data/regions-rich.js';
 import pricesData from '../data/prices-cache.json';
+import { DATA_UPDATED_RU } from '../data/meta.js';
 
 const VISA_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза' };
 const VISA_CLASS = { free: 'tag-free', evisa: 'tag-evisa', required: 'tag-visa' };
@@ -171,6 +172,11 @@ const pricesUpdatedAt = pricesData.updatedAt
   <header>
     <h1>Сезоны для <em>путешествий</em></h1>
     <p class="subtitle">// 39 регионов · виза, бюджет и цены билетов · обновлено {pricesUpdatedAt ?? '—'}</p>
+    <p class="seasons-byline">
+      <a href="/about/" class="byline-author">Никита Зайцев</a> ·
+      <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
+      <span class="byline-fresh">сезоны и визы актуальны на {DATA_UPDATED_RU}</span>
+    </p>
   </header>
 
   <div class="mission">
@@ -828,6 +834,10 @@ header {
 h1 { font-family: var(--ff-display); font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 300; letter-spacing: -0.01em; line-height: 1.1; }
 h1 em { color: var(--gold); font-style: italic; }
 .subtitle { color: var(--gold-dim); font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; margin-top: 0.5rem; }
+.seasons-byline { font-size: 0.76rem; color: var(--text-faint); margin-top: 0.6rem; letter-spacing: 0.01em; }
+.seasons-byline a { color: var(--text-dim); text-decoration: none; }
+.seasons-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+.seasons-byline .byline-fresh { color: var(--text-faint); }
 
 .mission { max-width: 1400px; margin: 0 auto 2.5rem; padding: 0 clamp(1rem, 4vw, 3rem); display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; }
 .mission-pill {

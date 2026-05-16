@@ -27,35 +27,9 @@ const letters = Object.keys(grouped).sort((a, b) => a.localeCompare(b, 'ru'));
 
 const currentMonthSlug = MONTHS[new Date().getMonth()].slug;
 
-// ── Schema ───────────────────────────────────────────
-const ldJson = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebSite",
-      "@id": "https://traveltribe.ru/#website",
-      "name": "TravelTribe",
-      "url": "https://traveltribe.ru/",
-      "description": "Авторский тревел-блог из России: личные отчёты, визы, сезоны, бюджет 70 направлений мира",
-      "inLanguage": "ru-RU",
-      "publisher": { "@id": "https://traveltribe.ru/#org" },
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": { "@type": "EntryPoint", "urlTemplate": "https://traveltribe.ru/?s={search_term_string}" },
-        "query-input": "required name=search_term_string"
-      }
-    },
-    {
-      "@type": "Organization",
-      "@id": "https://traveltribe.ru/#org",
-      "name": "TravelTribe",
-      "url": "https://traveltribe.ru/",
-      "logo": "https://traveltribe.ru/brand-mark.svg",
-      "founder": { "@type": "Person", "name": "Никита Зайцев", "url": "https://t.me/traveltriberu" },
-      "sameAs": ["https://t.me/traveltriberu", "https://github.com/nzaytsevmy/travel-seasons"]
-    }
-  ]
-};
+// Schema: Organization + WebSite + SearchAction теперь эмитятся глобально
+// в Layout.astro (резолвят isPartOf:#website / publisher:#org на всех
+// страницах). Дублировать на главной не нужно.
 
 // ── Posts ─────────────────────────────────────────
 const allPosts = (await getCollection('blog')).sort(
@@ -102,7 +76,6 @@ const featuredImageUrl = featured ? (await getImage({
   canonical="https://traveltribe.ru/"
   ogTitle="TravelTribe — авторский тревел-блог из России"
   ogDescription="60+ стран, 7 континентов. Личные отчёты, реальные цены 2026, без воды и рекламы."
-  ldJson={ldJson}
   preloadImage={featuredImageUrl}
 >
   <Nav active="home" />
