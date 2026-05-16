@@ -257,6 +257,17 @@ const ldJson = {
             <h3 class="tc-tip-title">Виза не приговор</h3>
             <p class="tc-tip-body">Шенген ~12 000 ₽. На фоне 150-200к поездки — 6-8%, не повод отказывать.</p>
           </article>
+          <article class="tc-tip tc-tip--wide">
+            <div class="tc-tip-icon">💳</div>
+            <h3 class="tc-tip-title">Чем платить за границей</h3>
+            <p class="tc-tip-body">
+              Российские Visa/MC за рубежом не работают, UnionPay из РФ с конца 2024
+              массово отклоняют. Рабочие варианты 2026: виртуальные USD/EUR-карты,
+              UnionPay от несанкционного банка (АТБ), карта банка ЕАЭС (Kaspi,
+              Ameriabank), наличные $/€ как страховка.
+              <a href="/blog/pay-abroad-2026/" class="tc-tip-link">4 способа подробно →</a>
+            </p>
+          </article>
         </div>
       </div>
     </section>
@@ -1489,6 +1500,17 @@ window.addEventListener('pageshow', (e) => {
   color: var(--text-dim);
   margin: 0;
 }
+.tc-tip--wide { grid-column: 1 / -1; }
+.tc-tip-link {
+  display: inline-block;
+  margin-top: 0.4rem;
+  color: var(--gold-600, var(--gold));
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px dashed var(--gold-dim, var(--gold));
+  transition: color 0.15s;
+}
+.tc-tip-link:hover { color: var(--gold); }
 
 /* FAQ */
 .tc-faq-list { display: flex; flex-direction: column; }
