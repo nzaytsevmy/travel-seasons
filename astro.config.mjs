@@ -6,9 +6,24 @@ import icon from 'astro-icon';
 import partytown from '@astrojs/partytown';
 import compress from 'astro-compress';
 import brokenLinks from 'astro-broken-links-checker';
+import { readFileSync, readdirSync } from 'node:fs';
 import remarkNumerals from './tools/remark-numerals.mjs';
 import rehypeTableWrap from './tools/rehype-table-wrap.mjs';
 import rehypeFaqAccordion from './tools/rehype-faq-accordion.mjs';
+import { DATA_UPDATED } from './src/data/meta.js';
+
+// Реальный lastmod вместо даты сборки: посты — по updatedDate/pubDate
+// из frontmatter, программные страницы (visa/hub/seasons/trips/countries)
+// — по DATA_UPDATED. Иначе sitemap инфлирует свежесть всех URL.
+const BLOG_DIR = new URL('./src/content/blog/', import.meta.url);
+const blogLastmod = {};
+for (const f of readdirSync(BLOG_DIR)) {
+  if (!/\.mdx?$/.test(f)) continue;
+  const fm = (readFileSync(new URL(f, BLOG_DIR), 'utf8').split(/^---\s*$/m)[1]) || '';
+  const raw = (fm.match(/^updatedDate:\s*(.+)$/m)?.[1] || fm.match(/^pubDate:\s*(.+)$/m)?.[1] || '').replace(/['"]/g, '').trim();
+  if (raw) blogLastmod[`https://traveltribe.ru/blog/${f.replace(/\.mdx?$/, '')}/`] = new Date(raw);
+}
+const DATA_DATE = new Date(DATA_UPDATED + 'T00:00:00Z');
 
 export default defineConfig({
   site: 'https://traveltribe.ru',
@@ -62,9 +77,10 @@ export default defineConfig({
         && !page.includes('/pagefind/'),
       changefreq: 'weekly',
       priority: 0.7,
-      lastmod: new Date(),
+      lastmod: DATA_DATE,
       serialize(item) {
         const url = item.url;
+        item = { ...item, lastmod: blogLastmod[url] || DATA_DATE };
         // Homepage and main tools — top priority, daily-ish updates
         if (url === 'https://traveltribe.ru/') {
           return { ...item, priority: 1.0, changefreq: 'daily' };

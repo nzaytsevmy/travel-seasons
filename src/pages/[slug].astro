@@ -16,6 +16,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { Image } from 'astro:assets';
 import { DIRECTIONS, MONTHS } from '../data/directions.js';
 import { PRICES } from '../data/prices.js';
+import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
 import AviasalesWidget from '../components/post/AviasalesWidget.astro';
 import BudgetBlock from '../components/BudgetBlock.astro';
 
@@ -103,6 +104,20 @@ const ldJson = {
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "about": { "@type": "Country", "name": d.cases.nom },
+      "datePublished": "2026-04-30",
+      "dateModified": DATA_UPDATED,
+      "author": {
+        "@type": "Person",
+        "@id": "https://traveltribe.ru/about/#person",
+        "name": "Никита Зайцев",
+        "url": "https://traveltribe.ru/about/",
+        "jobTitle": "Travel writer",
+        "knowsAbout": ["Путешествия", "Визы", "Travel-бюджет", "Сезоны"],
+        "sameAs": ["https://t.me/traveltriberu", "https://www.linkedin.com/in/nzaytsev/", "https://github.com/nzaytsevmy"]
+      },
+      "publisher": { "@id": "https://traveltribe.ru/#org" },
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".quick-tldr"] },
+      "mainEntity": { "@id": `${url}#faq` }
     },
     {
       "@type": "FAQPage",
@@ -117,7 +132,8 @@ const ldJson = {
       "@type": "BreadcrumbList",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
-        { "@type": "ListItem", "position": 2, "name": d.cases.nom, "item": url },
+        { "@type": "ListItem", "position": 2, "name": "Страны", "item": "https://traveltribe.ru/countries/" },
+        { "@type": "ListItem", "position": 3, "name": d.cases.nom, "item": url },
       ]
     }
   ]
@@ -133,7 +149,7 @@ const ldJson = {
   ldJson={ldJson}
 >
   <Nav active="blog" />
-  <Breadcrumbs crumbs={[{ label: d.cases.nom }]} />
+  <Breadcrumbs crumbs={[{ label: 'Страны', href: '/countries/' }, { label: d.cases.nom }]} />
 
   <main id="main" class="quick-wrap">
     {/* HERO */}
@@ -171,6 +187,11 @@ const ldJson = {
     <section class="quick-tldr">
       <strong>Если коротко:</strong> {VISA_SUMMARY[d.visa]} Бюджет — <strong>{BUDGET_LABEL[d.budget]}</strong>. Лучшие месяцы: <strong>{bestMonths.slice(0, 3).map(m => m.nom).join(', ')}</strong>. {flightFrom && <>Перелёт из Москвы от <strong>${flightFrom}</strong>.</>} Подробности ниже + связанные посты с личным опытом.
     </section>
+    <p class="quick-byline">
+      <a href="/about/" class="byline-author">Никита Зайцев</a> ·
+      <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
+      <span class="byline-fresh">данные актуальны на {DATA_UPDATED_RU}</span>
+    </p>
 
     {/* QUICK FACTS grid */}
     <section class="quick-facts">
@@ -359,6 +380,10 @@ const ldJson = {
   margin-bottom: var(--space-8);
 }
 .quick-tldr strong { color: var(--text); }
+.quick-byline { font-size: 0.78rem; color: var(--text-faint); margin: -0.6rem 0 var(--space-8); letter-spacing: 0.02em; }
+.quick-byline a { color: var(--text-dim); text-decoration: none; }
+.quick-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+.quick-byline .byline-fresh { color: var(--text-faint); }
 
 /* FACTS GRID */
 .quick-facts {

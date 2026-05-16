@@ -7,6 +7,7 @@ import { PRICES } from '../data/prices.js';
 import { DIRECTIONS } from '../data/directions.js';
 import { VISA_DETAILS } from '../data/visa-details.js';
 import realBudgets from '../data/real-budgets-2026.json';
+import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
 
 const groups: Record<string, Array<{i:number,name:string,iata:string}>> = {};
 PRICES.forEach((p, i) => {
@@ -59,7 +60,9 @@ const ldJson = {
       "operatingSystem": "Any",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "RUB" },
       "featureList": ["70 направлений","Сравнение до 3 стран","Сезонный коэффициент по 12 месяцам","Расчёт 1–4 путешественников","Виза в разбивке","Курс ЦБ РФ","Реальные траты 2026 из 12 источников"],
-      "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://t.me/traveltriberu" }
+      "dateModified": DATA_UPDATED,
+      "author": { "@id": "https://traveltribe.ru/about/#person" },
+      "publisher": { "@id": "https://traveltribe.ru/#org" }
     },
     {
       "@type": "HowTo",
@@ -114,6 +117,11 @@ const ldJson = {
         <div class="tc-eyebrow">Калькулятор · 2026</div>
         <h1 class="tc-h1">Сколько стоит твоя поездка</h1>
         <p class="tc-lede">70 направлений · сезонный коэффициент по 12 месяцам · сравнение до трёх стран · реальные траты путешественников из 12 источников.</p>
+        <p class="tc-byline">
+          <a href="/about/" class="tc-byline-author">Никита Зайцев</a> ·
+          <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
+          <span class="tc-byline-method">методика: базовые цены — медиана Aviasales / Островок, реальные траты — 12 источников (Самокатус, BudgetYourTrip, IndieTraveller и др.), курс ₽ в реальном времени · обновлено {DATA_UPDATED_RU}</span>
+        </p>
       </div>
     </section>
 
@@ -853,6 +861,17 @@ window.addEventListener('pageshow', (e) => {
   max-width: 660px;
   margin: 0 auto;
 }
+.tc-byline {
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--text-faint);
+  max-width: 660px;
+  margin: 0.9rem auto 0;
+  letter-spacing: 0.01em;
+}
+.tc-byline a { color: var(--text-dim); text-decoration: none; }
+.tc-byline a.tc-byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+.tc-byline .tc-byline-method { color: var(--text-faint); }
 
 /* ── FORM SECTION (horizontal bar) ────────────────────────────── */
 .tc-form-section {

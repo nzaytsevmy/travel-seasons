@@ -26,6 +26,21 @@ const sorted = [...countries].sort((a, b) => {
   return score(b) - score(a);
 });
 
+const faqs = [
+  {
+    q: 'Какая карта работает у россиян за границей в 2026?',
+    a: `Универсального решения нет — зависит от страны. Где-то принимают только UnionPay российских банков, где-то карту МИР, где-то ничего российского не работает и нужна карта зарубежного банка или наличные. Конкретный статус по каждой из ${countries.length} стран — в таблице выше, с источниками.`,
+  },
+  {
+    q: 'Что такое UnionPay российского банка и где он принимается?',
+    a: 'Это карта платёжной системы UnionPay, выпущенная российским банком. Принимается ограниченно и нестабильно — статус по странам смотрите в таблице. Карты UnionPay, выпущенные банками вне РФ, работают заметно шире.',
+  },
+  {
+    q: 'Как подготовиться к поездке с деньгами в 2026?',
+    a: 'Проверьте статус всех трёх систем для своей страны в таблице, не полагайтесь на одну карту, заранее подготовьте резерв наличными в долларах или евро. Статусы пересматриваются — дата последнего обновления указана вверху страницы.',
+  },
+];
+
 const ldJson = {
   "@context": "https://schema.org",
   "@graph": [
@@ -57,6 +72,14 @@ const ldJson = {
         "position": i + 1,
         "name": c.name
       }))
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": faqs.map(f => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": f.a }
+      }))
     }
   ]
 };
@@ -73,6 +96,11 @@ const ldJson = {
         Где сейчас принимают <strong>МИР</strong>, <strong>UnionPay</strong> российских банков
         и <strong>Visa&nbsp;/ Mastercard</strong> иностранных банков. {countries.length}&nbsp;стран,
         источники в&nbsp;каждой карточке.
+      </p>
+      <p class="cards-byline">
+        <a href="/about/" class="byline-author">Никита Зайцев</a> ·
+        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
+        <span class="byline-fresh">статусы карт актуальны на {formattedDate}</span>
       </p>
 
       <div class="cards-legend">
@@ -217,6 +245,18 @@ const ldJson = {
       </ol>
     </section>
 
+    <section class="cards-faq">
+      <h2>Частые вопросы</h2>
+      <div class="cards-faq-list">
+        {faqs.map(f => (
+          <details class="cards-faq-item">
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
     <footer class="cards-footer">
       <p>
         Данные актуальны на&nbsp;<strong>{formattedDate}</strong>. Ситуация меняется быстро —
@@ -334,6 +374,19 @@ const ldJson = {
     line-height: 1.6;
   }
   .cards-hero__lede strong { color: var(--text); font-weight: 600; }
+  .cards-byline { font-size: 0.76rem; color: var(--text-faint); margin: 0.8rem 0 0; letter-spacing: 0.01em; }
+  .cards-byline a { color: var(--text-dim); text-decoration: none; }
+  .cards-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+  .cards-byline .byline-fresh { color: var(--text-faint); }
+  .cards-faq { max-width: 760px; margin: 3rem auto 0; }
+  .cards-faq h2 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1.1rem; color: var(--text); }
+  .cards-faq-list { display: flex; flex-direction: column; gap: 0.6rem; }
+  .cards-faq-item { background: var(--bg2); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .cards-faq-item summary { font-weight: 500; color: var(--text); padding: 0.95rem 1.2rem; cursor: pointer; font-size: 0.95rem; line-height: 1.5; list-style: none; position: relative; }
+  .cards-faq-item summary::-webkit-details-marker { display: none; }
+  .cards-faq-item summary::after { content: '+'; position: absolute; right: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--gold); font-size: 1.2rem; transition: transform 0.2s; }
+  .cards-faq-item[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+  .cards-faq-item p { padding: 0 1.2rem 1.1rem; margin: 0; color: var(--text-dim); line-height: 1.75; font-size: 0.92rem; }
 
   .cards-legend {
     display: flex;

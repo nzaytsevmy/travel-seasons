@@ -6,6 +6,7 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { data as regions } from '../../data/regions.js';
 import { PRICES } from '../../data/prices.js';
 import { regionMeta } from '../../data/regions-meta.js';
+import { DATA_UPDATED_RU } from '../../data/meta.js';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -97,6 +98,21 @@ const title = `Куда поехать в ${M.name} 2026 — топ направ
 const description = `Куда лететь в ${M.name} 2026: ${peak.length} направлений с пиком сезона, актуальные цены на перелёт из Москвы, виза для россиян, бюджет на день. Без воды.`;
 const url = `https://traveltribe.ru/trips/${month}/`;
 
+const faqs = [
+  {
+    q: `Куда лучше всего поехать в ${M.name} 2026?`,
+    a: `В пиковом сезоне сейчас ${peak.length} направлений: ${peak.slice(0, 5).map(d => d.region).join(', ')} и другие. Полный список с ценами и визами — на этой странице.`,
+  },
+  {
+    q: `Куда дешевле всего лететь в ${M.name}?`,
+    a: `Самые дешёвые перелёты из Москвы в ${M.name}: ${cheapest.slice(0, 3).map(d => `${d.region} от $${d.flight}`).join(', ')}. Цены обновляются ежедневно через TravelPayouts.`,
+  },
+  {
+    q: `Куда без визы в ${M.name}?`,
+    a: `Безвизовые направления для россиян с хорошим сезоном в ${M.name}: ${visaFree.slice(0, 5).map(d => d.region).join(', ')}.`,
+  },
+];
+
 const ldJson = {
   "@context": "https://schema.org",
   "@graph": [
@@ -136,23 +152,11 @@ const ldJson = {
     },
     {
       "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": `Куда лучше всего поехать в ${M.name} 2026?`,
-          "acceptedAnswer": { "@type": "Answer", "text": `В пиковом сезоне сейчас ${peak.length} направлений: ${peak.slice(0, 5).map(d => d.region).join(', ')} и другие. Полный список с ценами и визами — на этой странице.` }
-        },
-        {
-          "@type": "Question",
-          "name": `Куда дешевле всего лететь в ${M.name}?`,
-          "acceptedAnswer": { "@type": "Answer", "text": `Самые дешёвые перелёты из Москвы в ${M.name}: ${cheapest.slice(0, 3).map(d => `${d.region} от $${d.flight}`).join(', ')}. Цены обновляются ежедневно через TravelPayouts.` }
-        },
-        {
-          "@type": "Question",
-          "name": `Куда без визы в ${M.name}?`,
-          "acceptedAnswer": { "@type": "Answer", "text": `Безвизовые направления для россиян с хорошим сезоном в ${M.name}: ${visaFree.slice(0, 5).map(d => d.region).join(', ')}.` }
-        }
-      ]
+      "mainEntity": faqs.map(f => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": f.a }
+      }))
     }
   ]
 };
@@ -176,6 +180,11 @@ const ldJson = {
       <div class="hero-tag">// Календарь · {M.nameNom} 2026</div>
       <h1>Куда поехать в <em>{M.name}</em></h1>
       <p class="trips-sub">{peak.length} направлений с пиком сезона · {good.length} с хорошей погодой · цены на перелёт обновлены {new Date().toLocaleDateString('ru-RU')}</p>
+      <p class="trips-byline">
+        <a href="/about/" class="byline-author">Никита Зайцев</a> ·
+        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
+        <span class="byline-fresh">сезоны и визы актуальны на {DATA_UPDATED_RU}</span>
+      </p>
     </header>
 
     {peak.length > 0 && (
@@ -287,6 +296,18 @@ const ldJson = {
       </div>
     </section>
 
+    <section class="trips-faq">
+      <h2>Частые вопросы — {M.nameNom} 2026</h2>
+      <div class="trips-faq-list">
+        {faqs.map(f => (
+          <details class="trips-faq-item">
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
     <section class="trips-cta">
       <h2>Что делать дальше</h2>
       <ul class="cta-list">
@@ -323,6 +344,20 @@ const ldJson = {
 .trips-header h1 { font-family: var(--ff-body); font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1rem; }
 .trips-header h1 em { color: var(--gold); font-style: italic; }
 .trips-sub { color: var(--text-dim); font-size: 0.95rem; max-width: 640px; margin: 0 auto; line-height: 1.6; }
+.trips-byline { font-size: 0.76rem; color: var(--text-faint); max-width: 640px; margin: 0.7rem auto 0; letter-spacing: 0.01em; }
+.trips-byline a { color: var(--text-dim); text-decoration: none; }
+.trips-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+.trips-byline .byline-fresh { color: var(--text-faint); }
+
+.trips-faq { margin: 3rem 0 2.5rem; }
+.trips-faq h2 { font-family: var(--ff-body); font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1.2rem; }
+.trips-faq-list { display: flex; flex-direction: column; gap: 0.6rem; max-width: 760px; }
+.trips-faq-item { background: var(--bg2); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.trips-faq-item summary { font-weight: 500; color: var(--text); padding: 0.95rem 1.2rem; cursor: pointer; font-size: 0.95rem; line-height: 1.5; list-style: none; position: relative; }
+.trips-faq-item summary::-webkit-details-marker { display: none; }
+.trips-faq-item summary::after { content: '+'; position: absolute; right: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--gold); font-size: 1.2rem; transition: transform 0.2s; }
+.trips-faq-item[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+.trips-faq-item p { padding: 0 1.2rem 1.1rem; margin: 0; color: var(--text-dim); line-height: 1.75; font-size: 0.92rem; }
 
 .trips-section { margin: 3rem 0 2.5rem; }
 .trips-section h2 { font-family: var(--ff-body); font-size: 1.4rem; font-weight: 700; margin-bottom: 0.4rem; letter-spacing: -0.01em; }

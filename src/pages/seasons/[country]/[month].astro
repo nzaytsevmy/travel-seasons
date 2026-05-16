@@ -4,6 +4,7 @@ import Nav from '../../../components/Nav.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import Footer from '../../../components/Footer.astro';
 import { COUNTRIES, MONTHS, getCountryMonthPaths } from '../../../data/programmatic-seasons.js';
+import { DATA_UPDATED_RU } from '../../../data/meta.js';
 
 export function getStaticPaths() {
   return getCountryMonthPaths();
@@ -104,6 +105,11 @@ const otherMonths = Object.keys(country.months).filter(m => m !== monthKey);
       <p class="seasons-tag">// {country.name} · {monthMeta.name} 2026</p>
       <h1>{country.name} в {monthMeta.loc} 2026: погода, цены, что делать</h1>
       <p class="seasons-tldr">{tldr}</p>
+      <p class="seasons-byline">
+        <a href="/about/" class="byline-author">Никита Зайцев</a> ·
+        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
+        <span class="byline-fresh">погода и цены актуальны на {DATA_UPDATED_RU}</span>
+      </p>
     </header>
 
     <section class="seasons-facts">
@@ -274,6 +280,10 @@ const otherMonths = Object.keys(country.months).filter(m => m !== monthKey);
   background: var(--bg2); border-radius: 4px;
   margin: 0;
 }
+.seasons-byline { font-size: 0.76rem; color: var(--text-faint); margin: 0.7rem 0 0; letter-spacing: 0.01em; }
+.seasons-byline a { color: var(--text-dim); text-decoration: none; }
+.seasons-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+.seasons-byline .byline-fresh { color: var(--text-faint); }
 
 .seasons-facts {
   display: grid;

@@ -4,6 +4,7 @@ import Nav from '../components/Nav.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Footer from '../components/Footer.astro';
 import PricingCards from '../components/post/PricingCards.astro';
+import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
 
 const url = 'https://traveltribe.ru/antarctica/';
 
@@ -62,6 +63,19 @@ const ldJson = {
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "about": { "@type": "Place", "name": "Антарктида", "alternateName": "Антарктический полуостров" },
+      "datePublished": "2026-04-30",
+      "dateModified": DATA_UPDATED,
+      "author": {
+        "@type": "Person",
+        "@id": "https://traveltribe.ru/about/#person",
+        "name": "Никита Зайцев",
+        "url": "https://traveltribe.ru/about/",
+        "jobTitle": "Travel writer",
+        "knowsAbout": ["Путешествия", "Визы", "Travel-бюджет", "Сезоны"],
+        "sameAs": ["https://t.me/traveltriberu", "https://www.linkedin.com/in/nzaytsev/", "https://github.com/nzaytsevmy"]
+      },
+      "publisher": { "@id": "https://traveltribe.ru/#org" },
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".hub-tldr"] },
       "mainEntity": {
         "@type": "ItemList",
         "itemListElement": [
@@ -122,6 +136,11 @@ const ldJson = {
     <section class="hub-tldr">
       <strong>Если коротко:</strong> цена круиза «под ключ из Москвы» — <strong>750 000–1 400 000 ₽</strong> на человека за 10–11 дней. Маршрут: <strong>Москва → Буэнос-Айрес → Ушуая → Антарктический полуостров</strong>. <strong>Виза в Аргентину не нужна</strong> (безвиз 90 дней). Сезон — <strong>ноябрь–март</strong>, оптимальный месяц февраль (киты + не пик цен). Бронировать на сезон 2026/27 уже сейчас, лучшие каюты разлетаются за 6–9 месяцев.
     </section>
+    <p class="hub-byline">
+      <a href="/about/" class="byline-author">Никита Зайцев</a> ·
+      <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
+      <span class="byline-fresh">был в Антарктиде в январе 2025 · данные актуальны на {DATA_UPDATED_RU}</span>
+    </p>
 
     <section class="hub-section">
       <h2>Сколько стоит — три класса в 2026</h2>
@@ -264,6 +283,11 @@ const ldJson = {
   margin-bottom: 3rem;
 }
 .hub-tldr strong { color: var(--text); }
+
+.hub-byline { font-size: 0.78rem; color: var(--text-faint); margin: -2rem 0 3rem; letter-spacing: 0.02em; }
+.hub-byline a { color: var(--text-dim); text-decoration: none; }
+.hub-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+.hub-byline .byline-fresh { color: var(--text-faint); }
 
 .hub-section { margin-bottom: 3rem; }
 .hub-section h2 {

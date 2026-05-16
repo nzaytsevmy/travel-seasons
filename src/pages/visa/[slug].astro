@@ -5,6 +5,7 @@ import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { Picture } from 'astro:assets';
 import { DIRECTIONS } from '../../data/directions.js';
+import { DATA_UPDATED, DATA_UPDATED_RU } from '../../data/meta.js';
 
 const destPhotos = import.meta.glob('../../assets/destinations/*.jpg', { eager: true, import: 'default' });
 
@@ -28,6 +29,63 @@ const visaSummary = {
   required: `Для поездки ${d.cases.vP} россиянам нужна полноценная виза. Оформляется через визовый центр или посольство страны, требуется пакет документов и личная подача с биометрией.`,
 };
 
+const flightFrom = d.price?.flight?.[0];
+const hotelFrom = d.price?.hotel?.[0];
+
+// Лучшие месяцы — из помесячного рейтинга направления
+const RANK = { P: 4, G: 3, O: 2, B: 1, X: 0 };
+const MONTH_NOM = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+  'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+const bestMonths = MONTH_NOM
+  .map((nom, i) => ({ nom, rank: RANK[d.r[i]] || 0, text: d.t[i] }))
+  .filter(m => m.rank >= 3)
+  .slice(0, 3);
+
+// Документы / сбор / срок / пребывание по типу визы
+const VISA_DOCS = {
+  free: 'Загранпаспорт со сроком действия от 6 месяцев и пустой страницей, обратный билет, бронь жилья. Виза не нужна.',
+  evisa: 'Загранпаспорт от 6 месяцев, скан паспорта и фото для онлайн-анкеты, оплата сбора картой. Посольство посещать не нужно.',
+  required: 'Загранпаспорт от 6 месяцев, анкета, фото по требованиям страны, банковская выписка, справка с работы, бронь жилья и билеты, биометрия в визовом центре.',
+};
+const VISA_FEE = {
+  free: 'Консульский сбор не взимается — въезд по штампу на границе бесплатный.',
+  evisa: 'Сбор за eVisa обычно $20–80, оплата картой онлайн.',
+  required: 'Консульский сбор от $35 (Шенген) до $200+ (Австралия, Великобритания, США), плюс сервисный сбор визового центра.',
+};
+const VISA_TERM = {
+  free: 'Оформление не требуется — решение принимает офицер на границе за минуты.',
+  evisa: 'eVisa одобряется обычно за 24–72 часа, иногда мгновенно.',
+  required: 'Полноценная виза делается 5–15 рабочих дней. Подавать минимум за 2 месяца до вылета.',
+};
+const VISA_STAY = {
+  free: 'Безвизовый въезд обычно даёт 30–90 дней пребывания.',
+  evisa: 'eVisa обычно покрывает 30–90 дней, продление — на месте.',
+  required: 'Срок пребывания указан в визе — от 15 дней до полугода в зависимости от типа.',
+};
+
+// FAQ — генерируется из данных направления (YMYL: прямые ответы с цифрами)
+const faqs = [
+  { q: `Нужна ли виза ${d.cases.vP} для россиян в 2026?`, a: visaSummary[d.visa] },
+  { q: `Какие документы нужны для въезда ${d.cases.vP}?`, a: VISA_DOCS[d.visa] },
+  { q: `Сколько стоит виза ${d.cases.vP}?`, a: VISA_FEE[d.visa] },
+  { q: `Сколько оформляется виза ${d.cases.vP}?`, a: VISA_TERM[d.visa] },
+  { q: `На сколько дней можно въехать ${d.cases.vP}?`, a: VISA_STAY[d.visa] },
+  {
+    q: `Когда лучше ехать ${d.cases.vP}?`,
+    a: bestMonths.length
+      ? `Оптимальные месяцы: ${bestMonths.map(m => m.nom).join(', ')}. ${bestMonths[0]?.text || ''}`.trim()
+      : `Сезоны ${d.cases.loc} переменчивы — смотрите помесячный календарь ниже и таблицу сезонов.`,
+  },
+];
+if (d.relatedPosts.length > 0) {
+  faqs.push({
+    q: `Есть личный опыт поездки ${d.cases.loc}?`,
+    a: `Да, разборы с реальными ценами и маршрутами: ${d.relatedPosts.map(p => p.title).join('; ')}. Ссылки в разделе «Подробные гайды» ниже.`,
+  });
+}
+
+const tldr = `${visaSummary[d.visa]} ${VISA_FEE[d.visa]} ${VISA_TERM[d.visa]}${bestMonths.length ? ` Лучшие месяцы — ${bestMonths.map(m => m.nom).join(', ')}.` : ''}`;
+
 const ldJson = {
   "@context": "https://schema.org",
   "@graph": [
@@ -40,6 +98,20 @@ const ldJson = {
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "about": { "@type": "Country", "name": d.cases.nom },
+      "datePublished": "2026-04-30",
+      "dateModified": DATA_UPDATED,
+      "author": {
+        "@type": "Person",
+        "@id": "https://traveltribe.ru/about/#person",
+        "name": "Никита Зайцев",
+        "url": "https://traveltribe.ru/about/",
+        "jobTitle": "Travel writer",
+        "knowsAbout": ["Визы", "Путешествия", "Travel-бюджет", "Сезоны"],
+        "sameAs": ["https://t.me/traveltriberu", "https://www.linkedin.com/in/nzaytsev/", "https://github.com/nzaytsevmy"]
+      },
+      "publisher": { "@id": "https://traveltribe.ru/#org" },
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".quick-tldr"] },
+      "mainEntity": { "@id": `${url}#faq` }
     },
     {
       "@type": "BreadcrumbList",
@@ -48,12 +120,18 @@ const ldJson = {
         { "@type": "ListItem", "position": 2, "name": "Визы", "item": "https://traveltribe.ru/visa/" },
         { "@type": "ListItem", "position": 3, "name": d.cases.nom, "item": url },
       ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${url}#faq`,
+      "mainEntity": faqs.map(f => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": f.a }
+      }))
     }
   ]
 };
-
-const flightFrom = d.price?.flight?.[0];
-const hotelFrom = d.price?.hotel?.[0];
 ---
 <Layout
   title={`Виза ${d.cases.vP} для россиян 2026 — документы, цена, сроки`}
@@ -95,7 +173,16 @@ const hotelFrom = d.price?.hotel?.[0];
       <div class={`visa-tag visa-tag--${d.visa}`}>// {VISA_LABELS[d.visa]}</div>
       <h1>Виза <em>{d.cases.vP}</em> в 2026 году</h1>
       <p class="visa-sub">{visaSummary[d.visa]}</p>
+      <p class="visa-byline">
+        <a href="/about/" class="byline-author">Никита Зайцев</a> ·
+        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
+        <span class="byline-fresh">данные актуальны на {DATA_UPDATED_RU}</span>
+      </p>
     </header>
+
+    <section class="quick-tldr" aria-label="Кратко">
+      <strong>Если коротко:</strong> {tldr}
+    </section>
 
     <section class="visa-block">
       <h2>Кратко</h2>
@@ -183,13 +270,27 @@ const hotelFrom = d.price?.hotel?.[0];
       </section>
     )}
 
+    <section class="visa-block" id="faq">
+      <h2>FAQ — виза {d.cases.vP}</h2>
+      <div class="faq-block">
+        {faqs.map(f => (
+          <details class="faq-item">
+            <summary class="faq-q">{f.q}</summary>
+            <div class="faq-a"><p>{f.a}</p></div>
+          </details>
+        ))}
+      </div>
+    </section>
+
     <section class="visa-block">
       <h2>Связанные ресурсы</h2>
       <ul class="visa-related">
         <li><a href="/seasons/">Таблица сезонов</a> — сравнение всех 70 направлений по месяцам</li>
         <li><a href="/calculator/">Калькулятор бюджета</a> — посчитать стоимость поездки {d.cases.vP}</li>
         <li><a href="/blog/">Блог</a> — личные отчёты по странам</li>
+        <li><a href="https://www.kdmid.ru/" target="_blank" rel="noopener nofollow">Консульский департамент МИД РФ</a> — официальные визовые требования и предупреждения, проверяйте перед поездкой</li>
       </ul>
+      <p class="visa-disclaimer">Визовые правила меняются. Данные сверены на {DATA_UPDATED_RU}; перед поездкой обязательно проверьте актуальные требования на сайте посольства или консульства {d.cases.nom}.</p>
     </section>
   </main>
 
@@ -265,6 +366,25 @@ const hotelFrom = d.price?.hotel?.[0];
 }
 .visa-header h1 em { color: var(--gold); font-style: italic; }
 .visa-sub { color: var(--text-dim); font-size: 1rem; line-height: 1.7; margin: 1rem auto 0; max-width: 580px; }
+.visa-byline { font-size: 0.78rem; color: var(--text-faint); margin: 1rem auto 0; letter-spacing: 0.02em; }
+.visa-byline a { color: var(--text-dim); text-decoration: none; }
+.visa-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+.visa-byline .byline-fresh { color: var(--text-faint); }
+
+.quick-tldr {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold-dim);
+  padding: 1.2rem 1.4rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--text-dim);
+  margin: 0 0 2.5rem;
+}
+.quick-tldr strong { color: var(--text); }
+
+.visa-disclaimer { font-size: 0.82rem; color: var(--text-faint); line-height: 1.7; margin-top: 1rem; font-style: italic; }
 
 .visa-block { margin-bottom: 2.5rem; }
 .visa-block h2 {
