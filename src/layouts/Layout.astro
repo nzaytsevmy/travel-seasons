@@ -66,15 +66,40 @@ const SITE = {
     "query-input": "required name=search_term_string",
   },
 };
+// Канонический Person — резолвит author/founder/#person на ВСЕХ страницах
+// (раньше определялся только на /about/ = висячий @id везде остальном).
+const PERSON = {
+  "@type": "Person",
+  "@id": "https://traveltribe.ru/about/#person",
+  "name": "Никита Зайцев",
+  "alternateName": "Nikita Zaytsev",
+  "url": "https://traveltribe.ru/about/",
+  "image": "https://traveltribe.ru/og-image.png",
+  "jobTitle": "Travel writer · Product Manager",
+  "description": "Путешественник, был на всех 7 континентах, посетил 60+ стран. Автор Telegram-канала @traveltriberu о путешествиях из России.",
+  "knowsAbout": ["Путешествия из России", "Визы и пограничные правила", "Travel-бюджет и сезоны", "Тревел-фотография"],
+  "nationality": { "@type": "Country", "name": "Россия" },
+  "sameAs": ["https://t.me/traveltriberu", "https://www.linkedin.com/in/nzaytsev/", "https://github.com/nzaytsevmy"],
+};
 // Слить базовый граф со страничным; страничные дубли #org/#website отбросить.
+// PERSON НЕ добавляем, если страница уже определяет свой #person (/about/ —
+// там более полный Person; иначе был бы дубль @id).
 const _ld = ldJson as any;
 const _pageNodes = _ld
   ? (Array.isArray(_ld["@graph"]) ? _ld["@graph"] : Array.isArray(_ld) ? _ld : [_ld])
   : [];
 const _baseIds = new Set(["https://traveltribe.ru/#org", "https://traveltribe.ru/#website"]);
+const _pageHasPerson = _pageNodes.some(
+  (n: any) => n && n["@id"] === "https://traveltribe.ru/about/#person"
+);
 const finalLd = {
   "@context": "https://schema.org",
-  "@graph": [ORG, SITE, ..._pageNodes.filter((n: any) => !(n && n["@id"] && _baseIds.has(n["@id"])))],
+  "@graph": [
+    ORG,
+    SITE,
+    ...(_pageHasPerson ? [] : [PERSON]),
+    ..._pageNodes.filter((n: any) => !(n && n["@id"] && _baseIds.has(n["@id"]))),
+  ],
 };
 ---
 <!DOCTYPE html>
