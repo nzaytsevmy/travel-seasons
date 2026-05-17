@@ -215,6 +215,7 @@ const RELATED_POSTS = {
   ],
   'new-zealand': [
     { slug: 'aurora-new-zealand-2026', title: 'Южное сияние в Новой Зеландии 2026', kind: 'guide' },
+    { slug: 'milford-sound-2026', title: 'Милфорд-Саунд 2026: каяк и круиз', kind: 'guide' },
   ],
 };
 
