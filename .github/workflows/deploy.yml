@@ -20,7 +20,27 @@ jobs:
           node-version: 20
           cache: npm
 
-      - run: npm ci
+      - name: Cache node_modules
+        id: node-modules-cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-node20-${{ hashFiles('package-lock.json') }}
+
+      - name: Install deps (on cache miss)
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Cache Astro asset transforms
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules/.astro
+            .astro
+          key: astro-cache-${{ runner.os }}-${{ hashFiles('src/**', 'public/**', 'astro.config.mjs', 'package-lock.json') }}
+          restore-keys: |
+            astro-cache-${{ runner.os }}-
+
       - run: npm run build
 
       - name: Setup SSH
