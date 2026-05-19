@@ -2,8 +2,15 @@ name: SEO Pulse
 
 on:
   schedule:
-    - cron: '0 6 * * 1'  # Каждый понедельник 06:00 UTC = 09:00 МСК
+    - cron: '0 6 * * 1'              # Пн 06:00 UTC = 09:00 МСК — полный отчёт
+    - cron: '0 6 * * 0,2,3,4,5,6'    # остальные дни — лёгкий алерт-режим
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Режим прогона
+        type: choice
+        options: [weekly, alert]
+        default: weekly
 
 permissions:
   contents: write
@@ -20,10 +27,22 @@ jobs:
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
           YANDEX_OAUTH_TOKEN: ${{ secrets.YANDEX_OAUTH_TOKEN }}
           YANDEX_USER_ID: ${{ secrets.YANDEX_USER_ID }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
         run: |
-          python3 .github/scripts/seo_pulse.py
+          MODE="${{ github.event.inputs.mode }}"
+          if [ -z "$MODE" ]; then
+            if [ "${{ github.event.schedule }}" = "0 6 * * 1" ]; then
+              MODE=weekly
+            else
+              MODE=alert
+            fi
+          fi
+          echo "SEO Pulse mode: $MODE"
+          python3 .github/scripts/seo_pulse.py --mode "$MODE"
 
-      - name: Commit report
+      - name: Commit report (weekly only produces changes)
         run: |
           git config user.name "seo-pulse-bot"
           git config user.email "seo-pulse@traveltribe.ru"
@@ -32,3 +51,14 @@ jobs:
             git commit -m "seo-pulse: $(date -u +%Y-%m-%d) report"
             git push
           fi
+
+      - name: Alert on job failure
+        if: failure()
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TG_CHAT_ID}" \
+            --data-urlencode "text=🚨 SEO Pulse: GHA job упал (run ${{ github.run_id }}). Мониторинг не отработал — проверь Actions." \
+            >/dev/null || true
