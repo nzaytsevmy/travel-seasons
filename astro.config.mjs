@@ -74,7 +74,8 @@ export default defineConfig({
         && !page.includes('/blog/tag/')
         && !page.includes('sitemap-images')
         && !page.includes('/og/')
-        && !page.includes('/pagefind/'),
+        && !page.includes('/pagefind/')
+        && !/\/trips\/[^/]+\/[^/]+\//.test(page),
       changefreq: 'weekly',
       priority: 0.7,
       lastmod: DATA_DATE,
