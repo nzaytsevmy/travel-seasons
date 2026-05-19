@@ -16,6 +16,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { Image } from 'astro:assets';
 import { DIRECTIONS, MONTHS } from '../data/directions.js';
 import { PRICES } from '../data/prices.js';
+import { getVisaDetails } from '../data/visa-details.js';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
 import AviasalesWidget from '../components/post/AviasalesWidget.astro';
 import BudgetBlock from '../components/BudgetBlock.astro';
@@ -56,6 +57,8 @@ const VISA_SUMMARY = {
   evisa: `Для въезда ${d.cases.vP} россиянам нужна eVisa — оформляется онлайн до вылета, без посольства.`,
   required: `Для поездки ${d.cases.vP} нужна полноценная виза. Оформляется через визовый центр или посольство.`,
 };
+// Реальные верифицированные визовые специфики на страну (visa-details.js)
+const vd = getVisaDetails(d.slug, d.visa);
 
 // Best months for this destination
 const rank = { P: 4, G: 3, O: 2, B: 1, X: 0 };
@@ -76,7 +79,7 @@ const calcUrl = priceIdx >= 0 ? `/calculator/?r=${priceIdx}` : '/calculator/';
 const faqs = [
   {
     q: `Нужна ли виза ${d.cases.vP} для россиян в 2026?`,
-    a: VISA_SUMMARY[d.visa],
+    a: `${VISA_SUMMARY[d.visa]} Срок пребывания: ${vd.duration}; стоимость: ${vd.cost}; оформление: ${vd.timing}.`,
   },
   {
     q: `Сколько стоит поездка ${d.cases.vP} в 2026?`,
@@ -99,8 +102,8 @@ const ldJson = {
       "@type": "WebPage",
       "@id": `${url}#page`,
       "url": url,
-      "name": `${d.cases.nom} 2026 — кратко: виза, сезоны, бюджет`,
-      "description": `Кратко всё что нужно ${d.cases.vP} — виза, лучшие месяцы, бюджет, главные гайды.`,
+      "name": `${d.cases.nom} 2026 для россиян: виза, когда ехать, бюджет`,
+      "description": `${d.cases.nom} 2026 для россиян: виза (${vd.duration}), когда ехать по месяцам, бюджет, проверенные данные.`,
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "about": { "@type": "Country", "name": d.cases.nom },
@@ -140,10 +143,10 @@ const ldJson = {
 };
 ---
 <Layout
-  title={`${d.cases.nom} 2026: виза, сезоны, бюджет — кратко`}
-  description={`Всё нужное ${d.cases.vP} в 2026: ${VISA_LABEL[d.visa].toLowerCase()}, лучшие месяцы — ${bestMonths.map(m => m.nom).join(', ')}, бюджет от $${weekTotal || 'N/A'}/нед.`.slice(0, 155)}
+  title={`${d.cases.nom} 2026 для россиян: виза, когда ехать, бюджет`}
+  description={`${d.cases.nom} 2026 для россиян: ${VISA_LABEL[d.visa].toLowerCase()} (${vd.duration}), когда ехать — ${bestMonths.map(m => m.nom).join(', ')}, бюджет от $${weekTotal || 'N/A'}/нед.`.slice(0, 155)}
   canonical={url}
-  ogTitle={`${d.cases.nom} 2026 — кратко`}
+  ogTitle={`${d.cases.nom} 2026 — виза, когда ехать, бюджет`}
   ogDescription={`${VISA_LABEL[d.visa]} · бюджет ${BUDGET_LABEL[d.budget].split('—')[0].trim()} · лучшие месяцы: ${bestMonths.slice(0,2).map(m => m.nom).join(', ')}`}
   ogType="article"
   ldJson={ldJson}
@@ -167,7 +170,7 @@ const ldJson = {
         />
         <div class="quick-hero-overlay"></div>
         <div class="quick-hero-content">
-          <div class="quick-hero-eyebrow">// {d.group} · если кратко</div>
+          <div class="quick-hero-eyebrow">// {d.group} · гид 2026</div>
           <h1 class="quick-hero-title">{d.cases.nom} <span class="quick-hero-year">2026</span></h1>
           <p class="quick-hero-sub">{d.region} — {d.sub}</p>
         </div>
@@ -176,7 +179,7 @@ const ldJson = {
       <section class="quick-hero quick-hero--gradient" style={`--g1:${d.visual.g1}; --g2:${d.visual.g2};`}>
         <span class="quick-hero-emoji" aria-hidden="true">{d.visual.emoji}</span>
         <div class="quick-hero-content">
-          <div class="quick-hero-eyebrow">// {d.group} · если кратко</div>
+          <div class="quick-hero-eyebrow">// {d.group} · гид 2026</div>
           <h1 class="quick-hero-title">{d.cases.nom} <span class="quick-hero-year">2026</span></h1>
           <p class="quick-hero-sub">{d.region} — {d.sub}</p>
         </div>
@@ -243,6 +246,19 @@ const ldJson = {
       </div>
     </section>
 
+    {/* WHEN TO GO — читаемый помесячный разбор (реальные данные d.t) */}
+    <section class="quick-block">
+      <h2>Когда ехать {d.cases.vP} в 2026 — по месяцам</h2>
+      <p class="quick-answer"><strong>Коротко:</strong> лучшие месяцы — {bestMonths.map(m => m.nom).join(', ') || '—'}{worstMonths.length ? `; хуже всего — ${worstMonths.map(m => m.nom).join(', ')}` : ''}. Ниже — погода, цены и сезон по каждому месяцу.</p>
+      <ul class="quick-monthtext">
+        {monthsRanked.map((m) => (
+          <li>
+            <strong>{m.nom.charAt(0).toUpperCase() + m.nom.slice(1)}</strong>{' — '}{m.text || '—'}
+          </li>
+        ))}
+      </ul>
+    </section>
+
     {/* RELATED POSTS */}
     {d.relatedPosts.length > 0 && (
       <section class="quick-block">
@@ -289,7 +305,7 @@ const ldJson = {
       </ul>
     </section>
 
-    <p class="quick-updated">Актуально на: 10 мая 2026 · обновляется каждые 4–6 недель</p>
+    <p class="quick-updated">Актуально на: {DATA_UPDATED_RU} · обновляется каждые 4–6 недель</p>
   </main>
 
   <Footer />
@@ -504,4 +520,8 @@ const ldJson = {
   .quick-hero { min-height: 250px; }
   .quick-block h2 { font-size: var(--text-2xl); }
 }
+.quick-answer { margin: 0 0 1rem; font-size: 1.02rem; }
+.quick-monthtext { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.5rem; list-style: disc; }
+.quick-monthtext li { line-height: 1.5; }
+.quick-monthtext strong { font-weight: 700; }
 </style>
