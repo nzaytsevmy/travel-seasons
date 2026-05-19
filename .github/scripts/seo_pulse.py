@@ -364,6 +364,16 @@ def weekly_mode(c) -> None:
     else:
         L += ["", "Ручных действий нет — всё на автоматике."]
 
+    # Дорожная карта: датированные чекпоинты — нудж когда срок пришёл и не done
+    due = [r for r in c.get("roadmap", [])
+           if not r.get("done") and str(r.get("date", "9999")) <= str(TODAY)]
+    if due:
+        L += ["", "━━━ 📍 ДОРОЖНАЯ КАРТА — пора ━━━"]
+        for r in due:
+            L.append(f"• {r.get('label','')}")
+            L.append(f"  ▶ {r.get('prompt','')}")
+        L.append('  (сделано → в seo-pulse/config.json у пункта "done": true)')
+
     report = "\n".join(L)
     print(report)
     if DRY:
