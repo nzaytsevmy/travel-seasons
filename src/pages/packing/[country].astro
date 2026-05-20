@@ -12,7 +12,9 @@ export async function getStaticPaths() {
 
 const { d } = Astro.props;
 const url = `https://traveltribe.ru/packing/${d.slug}/`;
-const title = `Что взять в ${d.cases.acc} 2026 — чек-листы по месяцам`;
+// Адаптивно для длинных названий стран — без «2026» если >60
+const tBase = `Что взять в ${d.cases.acc} — чек-листы по месяцам`;
+const title = tBase.length <= 55 ? `Что взять в ${d.cases.acc} 2026 — чек-листы по месяцам` : tBase;
 const description = `Чек-листы для поездки ${d.cases.vP} в 2026: 12 месяцев, одежда по погоде, документы, аптечка, техника. Выбери свой месяц.`;
 
 // Статусы по месяцам (без X-закрытых)
