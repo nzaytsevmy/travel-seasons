@@ -44,11 +44,72 @@ const bestMonths = MONTHS
   .filter((x) => x.rank >= 3 && x.slug !== m.slug)
   .slice(0, 4);
 
-const flightFrom = d.price?.flight?.[0];
-const hotelFrom = d.price?.hotel?.[0];
-const foodFrom = d.price?.food?.[0];
+const flightTiers = d.price?.flight || [0,0,0];
+const hotelTiers = d.price?.hotel || [0,0,0];
+const foodTiers = d.price?.food || [0,0,0];
+const flightFrom = flightTiers[0];
+const hotelFrom = hotelTiers[0];
+const foodFrom = foodTiers[0];
 const dailyFrom = (hotelFrom || 0) + (foodFrom || 0);
 const weekTotal = flightFrom ? flightFrom + dailyFrom * 7 : null;
+
+// Бюджет по тирам × длительность (для таблицы)
+function budgetFor(days, tier) {
+  const f = flightTiers[tier] || 0;
+  const daily = (hotelTiers[tier] || 0) + (foodTiers[tier] || 0);
+  return f + daily * days;
+}
+const hasPrices = flightTiers[0] > 0;
+const budgetGrid = hasPrices ? [7, 14, 21].map(d_ => ({
+  days: d_,
+  low: budgetFor(d_, 0),
+  mid: budgetFor(d_, 1),
+  high: budgetFor(d_, 2),
+})) : [];
+
+// 12-месячная таблица — для блока «когда ехать»
+const MONTH_META = MONTHS.map((mm, i) => {
+  const st = d.r[i];
+  const meta = { P: { emoji: '🔥', cls: 'peak', label: 'пик' },
+                 G: { emoji: '✅', cls: 'good', label: 'хороший' },
+                 O: { emoji: '🟡', cls: 'off', label: 'так себе' },
+                 B: { emoji: '⛔', cls: 'bad', label: 'не лучшее' },
+                 X: { emoji: '❄️', cls: 'closed', label: 'закрыто' } }[st] || { emoji: '🟡', cls: 'off', label: '—' };
+  return { ...mm, status: st, ...meta, text: d.t[i] || '', isCurrent: mm.slug === m.slug };
+});
+
+// FAQ — авто-генерация (4 Q/A) для FAQPage schema и видимого блока
+const visaLine = ({
+  free: 'Без визы для российского паспорта',
+  evisa: 'Электронная виза (eVisa) — оформляется онлайн',
+  required: 'Виза обязательна — оформление в консульстве',
+}[d.visa]) || 'Виза — уточнить';
+const bestMonthsAll = MONTH_META.filter(mm => mm.status === 'P' || mm.status === 'G')
+  .map(mm => mm.nom);
+const bestMonthsStr = bestMonthsAll.length ? bestMonthsAll.join(', ') : 'нет ярко выраженного пика — едут круглый год';
+const verdictForMonth = lbl.verdict + (status === 'P' || status === 'G' ? '.' : '. ' + (bestMonthsAll.length ? 'Лучше выбрать: ' + bestMonthsAll.slice(0,3).join(', ') + '.' : ''));
+const budgetSummary = hasPrices && weekTotal
+  ? `Перелёт из Москвы от $${flightFrom}, отель эконом от $${hotelFrom}/ночь, еда от $${foodFrom}/день. Бюджет на неделю эконом — от $${weekTotal} на человека.`
+  : 'Точные цены — в калькуляторе поездки.';
+
+const FAQS = [
+  {
+    q: `Стоит ли ехать ${d.cases.vP} в ${m.prep} 2026?`,
+    a: `${verdictForMonth} ${text}`.trim(),
+  },
+  {
+    q: `Сколько стоит неделя ${d.cases.loc} в ${m.prep} 2026?`,
+    a: budgetSummary,
+  },
+  {
+    q: `Какая виза нужна россиянам ${d.cases.vP} в 2026?`,
+    a: `${visaLine}. Детали — на странице визы.`,
+  },
+  {
+    q: `Когда лучше ехать ${d.cases.vP}?`,
+    a: `Лучшие месяцы для поездки: ${bestMonthsStr}. Сравнить все 12 месяцев — таблица ниже.`,
+  },
+];
 
 const ldJson = {
   "@context": "https://schema.org",
@@ -72,6 +133,15 @@ const ldJson = {
         { "@type": "ListItem", "position": 3, "name": m.nom.charAt(0).toUpperCase() + m.nom.slice(1), "item": `https://traveltribe.ru/trips/${m.slug}/` },
         { "@type": "ListItem", "position": 4, "name": d.cases.nom, "item": url },
       ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${url}#faq`,
+      "mainEntity": FAQS.map(f => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": f.a },
+      })),
     }
   ]
 };
@@ -82,7 +152,7 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
   title={`${d.cases.nom} в ${m.prep} 2026: погода, цены, виза`}
   description={`Стоит ли ехать ${d.cases.vP} в ${m.prep} 2026 — погода, цены, виза для россиян, бюджет на неделю. ${lbl.verdict}.`}
   canonical={url}
-  noindex={true}
+  noindex={status === 'X'}
   ogTitle={`${d.cases.nom} в ${m.prep} 2026`}
   ogDescription={`${lbl.tag}. ${text.slice(0, 130)}`}
   ogType="article"
@@ -118,6 +188,55 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
         {hotelFrom && <li><strong>Отель эконом от:</strong> ${hotelFrom}/ночь</li>}
         {weekTotal && <li><strong>Бюджет на неделю эконом:</strong> от ${weekTotal} на человека</li>}
       </ul>
+    </section>
+
+    {hasPrices && (
+      <section class="season-block">
+        <h2>Сколько стоит поездка {d.cases.vP} в {m.prep} 2026</h2>
+        <table class="budget-table">
+          <thead>
+            <tr><th>Длительность</th><th>Эконом</th><th>Средний</th><th>Комфорт</th></tr>
+          </thead>
+          <tbody>
+            {budgetGrid.map((b) => (
+              <tr>
+                <td><strong>{b.days} дней</strong></td>
+                <td>от ${b.low}</td>
+                <td>${b.mid}</td>
+                <td>${b.high}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p class="budget-note">Перелёт из Москвы ${flightTiers[0]}–${flightTiers[2]}, отель ${hotelTiers[0]}–${hotelTiers[2]}/ночь, еда ${foodTiers[0]}–${foodTiers[2]}/день. Точный расчёт под маршрут — в <a href="/calculator/">калькуляторе поездки</a>.</p>
+      </section>
+    )}
+
+    <section class="season-block">
+      <h2>Когда ехать {d.cases.vP}: все 12 месяцев</h2>
+      <ul class="months-grid">
+        {MONTH_META.map((mm) => (
+          <li class={`mg-item mg-item--${mm.cls}${mm.isCurrent ? ' mg-item--current' : ''}`}>
+            <a href={`/trips/${mm.slug}/${d.slug}/`} aria-current={mm.isCurrent ? 'page' : undefined}>
+              <span class="mg-emoji" aria-hidden="true">{mm.emoji}</span>
+              <span class="mg-name">{mm.nom.charAt(0).toUpperCase() + mm.nom.slice(1)}</span>
+              <span class="mg-status">{mm.label}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="season-block">
+      <h2>Частые вопросы {d.cases.vP} в {m.prep}</h2>
+      <div class="faq-list">
+        {FAQS.map((f) => (
+          <details class="faq-item">
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
     </section>
 
     {(status === 'P' || status === 'G') && (
@@ -234,4 +353,60 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
   color: var(--text-dim); line-height: 1.8; margin-bottom: 0.45rem; font-size: 0.95rem;
 }
 .season-facts li strong, .season-list li strong { color: var(--text); }
+
+/* Budget table */
+.budget-table {
+  width: 100%; border-collapse: collapse; margin: 1rem 0;
+  font-size: 0.95rem; color: var(--text-dim);
+}
+.budget-table th, .budget-table td {
+  text-align: left; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--line);
+}
+.budget-table th { font-weight: 500; color: var(--text); border-bottom-color: var(--gold); }
+.budget-table tr:last-child td { border-bottom: none; }
+.budget-table td:first-child { color: var(--text); }
+.budget-note { font-size: 0.85rem; color: var(--text-faint); margin-top: 0.5rem; }
+
+/* 12-month grid */
+.months-grid {
+  list-style: none; padding: 0; margin: 1rem 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem;
+}
+.mg-item { margin: 0; }
+.mg-item a {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 0.7rem 0.5rem; border: 1px solid var(--line); border-radius: 6px;
+  text-decoration: none; color: var(--text);
+  transition: border-color 0.15s, background 0.15s;
+}
+.mg-item a:hover { border-color: var(--gold); background: rgba(201,151,58,0.05); }
+.mg-emoji { font-size: 1.2rem; line-height: 1; margin-bottom: 0.3rem; }
+.mg-name { font-size: 0.9rem; font-weight: 500; }
+.mg-status { font-size: 0.7rem; color: var(--text-faint); margin-top: 0.15rem; }
+.mg-item--current a { border-color: var(--gold); background: rgba(201,151,58,0.08); font-weight: 600; }
+.mg-item--peak .mg-status { color: #22c55e; }
+.mg-item--good .mg-status { color: #4a9eff; }
+.mg-item--off  .mg-status { color: #f59e0b; }
+.mg-item--bad  .mg-status { color: #ef4444; }
+.mg-item--closed .mg-status { color: var(--text-faint); }
+
+/* FAQ accordion */
+.faq-list { margin: 1rem 0; }
+.faq-item {
+  border-bottom: 1px solid var(--line); padding: 0.8rem 0;
+}
+.faq-item summary {
+  cursor: pointer; color: var(--text); font-size: 1rem; font-weight: 500;
+  list-style: none; padding-right: 1.5rem; position: relative;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: '+'; position: absolute; right: 0; top: 0;
+  color: var(--gold); font-size: 1.3rem; line-height: 1;
+  transition: transform 0.2s;
+}
+.faq-item[open] summary::after { content: '−'; }
+.faq-item p {
+  margin: 0.6rem 0 0; color: var(--text-dim); line-height: 1.7; font-size: 0.95rem;
+}
 </style>
