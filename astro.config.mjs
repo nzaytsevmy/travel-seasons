@@ -1,7 +1,6 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
-import pagefind from 'astro-pagefind';
 import icon from 'astro-icon';
 import partytown from '@astrojs/partytown';
 import compress from 'astro-compress';
@@ -59,7 +58,6 @@ export default defineConfig({
   },
   integrations: [
     mdx(),
-    pagefind(),
     icon({ include: { lucide: ['*'] } }),
     // Partytown: Я.Метрика + Ahrefs в Web Worker, не main thread.
     // Освобождает main thread на 200-400 ms (TBT/INP).
@@ -87,7 +85,6 @@ export default defineConfig({
         && !page.includes('/blog/tag/')
         && !page.includes('sitemap-images')
         && !page.includes('/og/')
-        && !page.includes('/pagefind/')
         && !CLOSED_TRIPS.has(page),
       changefreq: 'weekly',
       priority: 0.7,
