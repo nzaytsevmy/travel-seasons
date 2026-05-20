@@ -52,7 +52,7 @@ export const WEATHER_BUCKETS = {
     ],
     tech: [
       'Power bank 10 000+ мАч',
-      'Универсальный переходник (см. plug-types по стране)',
+      // Конкретный тип розетки добавляется в [month].astro из PLUG_TYPES по slug страны
     ],
     gear: [
       'Полотенце микрофибра',
@@ -110,7 +110,7 @@ export const WEATHER_BUCKETS = {
     ],
     tech: [
       'Power bank',
-      'Переходник по стране',
+      // Конкретный тип розетки — из PLUG_TYPES по slug страны
     ],
     gear: [
       'Спальник-вкладыш если ночуешь в bedouin-кэмпе (одеяла бывают тонкие)',
@@ -136,7 +136,7 @@ export const WEATHER_BUCKETS = {
     ],
     tech: [
       'Power bank',
-      'Переходник',
+      // Конкретный тип розетки — из PLUG_TYPES по slug страны
     ],
     gear: [
       'Day-pack 15–20 л',
@@ -164,7 +164,7 @@ export const WEATHER_BUCKETS = {
     ],
     tech: [
       'Power bank 15 000+ мАч (на холоде батарея садится быстрее)',
-      'Переходник',
+      // Конкретный тип розетки — из PLUG_TYPES по slug страны
     ],
     gear: [
       'Грелки-катализаторные на ноги/руки (12 ч тепла, в любом аптеке/Tomod в Японии)',

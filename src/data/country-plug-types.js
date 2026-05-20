@@ -103,6 +103,29 @@ export const PLUG_TYPES = {
 
   // Полярные
   'antarctica':           { types: 'A/F/I', voltage: '230 V', hz: '50 Hz', note: 'на круизных лайнерах варьируется' },
+
+  // Дополнено 2026-05-20 — направления без plug-данных
+  // Океания
+  'new-zealand':          { types: 'I',     voltage: '230 V', hz: '50 Hz' },
+  // Азия
+  'hong-kong':            { types: 'G',     voltage: '220 V', hz: '50 Hz' }, // UK-наследие
+  'nepal':                { types: 'C/D/M', voltage: '230 V', hz: '50 Hz' },
+  // Ближний Восток
+  'iran':                 { types: 'C/F',   voltage: '220 V', hz: '50 Hz' },
+  'cyprus':               { types: 'G',     voltage: '240 V', hz: '50 Hz' }, // UK-наследие
+  // Африка / Острова Индийского океана
+  'madagascar':           { types: 'C/D/E/J/K', voltage: '220 V', hz: '50 Hz' },
+  'mauritius':            { types: 'C/G',   voltage: '230 V', hz: '50 Hz' },
+  'seychelles':           { types: 'G',     voltage: '240 V', hz: '50 Hz' }, // UK-наследие
+  // СНГ / Кавказ
+  'abkhazia':             { types: 'C/F',   voltage: '220 V', hz: '50 Hz' }, // как Россия/Грузия
+  // Европа
+  'serbia':               { types: 'C/F',   voltage: '230 V', hz: '50 Hz' },
+  'finland':              { types: 'C/F',   voltage: '230 V', hz: '50 Hz' },
+  // Северная Америка
+  'usa':                  { types: 'A/B',   voltage: '120 V', hz: '60 Hz' },
+  // Южная Америка
+  'chile-fjords':         { types: 'C/L',   voltage: '220 V', hz: '50 Hz' },
 };
 
 // Подсказка по типам plug — нужен ли универсальный переходник?
