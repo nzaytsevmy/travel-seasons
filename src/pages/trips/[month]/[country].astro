@@ -212,6 +212,15 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
       </section>
     )}
 
+    <section class="season-block pack-cta">
+      <a href={`/packing/${d.slug}/${m.slug}/`} class="pack-cta-link">
+        <span class="pack-cta-text">
+          <strong>Что взять {d.cases.vP} в {m.prep}</strong>
+          <span>Чек-лист по погоде: одежда, документы, аптечка, техника →</span>
+        </span>
+      </a>
+    </section>
+
     <section class="season-block">
       <h2>Когда ехать {d.cases.vP}: все 12 месяцев</h2>
       <ul class="months-grid">
@@ -366,6 +375,24 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
 .budget-table tr:last-child td { border-bottom: none; }
 .budget-table td:first-child { color: var(--text); }
 .budget-note { font-size: 0.85rem; color: var(--text-faint); margin-top: 0.5rem; }
+
+/* Packing CTA — переход на чек-лист */
+.pack-cta { margin: 1.5rem 0 2.5rem; }
+.pack-cta-link {
+  display: block;
+  padding: 1.1rem 1.3rem;
+  border: 1px solid var(--gold-dim, var(--line));
+  border-left: 3px solid var(--gold);
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--text);
+  background: rgba(201,151,58,0.04);
+  transition: background 0.15s, transform 0.15s;
+}
+.pack-cta-link:hover { background: rgba(201,151,58,0.08); transform: translateX(2px); }
+.pack-cta-text { display: flex; flex-direction: column; gap: 0.2rem; }
+.pack-cta-text strong { color: var(--text); font-size: 1rem; line-height: 1.3; }
+.pack-cta-text span { color: var(--text-dim); font-size: 0.85rem; }
 
 /* 12-month grid */
 .months-grid {
