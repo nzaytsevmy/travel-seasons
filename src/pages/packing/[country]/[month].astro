@@ -192,7 +192,7 @@ const ldJson = {
         {!needsVisa && (
           <li><strong>Виза не нужна</strong> — {visa?.duration || 'безвизовый въезд'}, {visa?.timing || 'штамп на границе'}.</li>
         )}
-        <li><strong>Обратный билет</strong> или бронь выезда (часто проверяют на стойке регистрации).</li>
+        <li><strong>Обратный билет</strong> или бронь выезда (часто проверяют на стойке регистрации). Поиск рейсов — <a href={TP_LINKS.aviasales} target="_blank" rel="sponsored noopener">Aviasales</a> <span class="ad-mark">Реклама</span>.</li>
         <li><strong>Страховка</strong> {needsVisa ? '(обязательна для визы)' : '(рекомендую — медпомощь платная)'}.</li>
         <li><strong>Копии</strong> паспорта и виз в облаке + бумажные — отдельно от оригиналов.</li>
       </ul>
@@ -258,9 +258,9 @@ const ldJson = {
 
     <section class="pack-block">
       <h2>Частые вопросы</h2>
-      <div class="faq-list">
+      <div class="pack-faq">
         {FAQS.map((f) => (
-          <details class="faq-item">
+          <details class="pack-faq-row">
             <summary>{f.q}</summary>
             <p>{f.a}</p>
           </details>
@@ -368,22 +368,51 @@ const ldJson = {
   margin-top: 0.8rem;
 }
 
-.faq-list { margin: 0.5rem 0; }
-.faq-item {
-  border-bottom: 1px solid var(--line); padding: 0.8rem 0;
+/* Editorial FAQ — без pillowy-боксов, hairline-divider, как разворот в журнале.
+   Имя классов pack-faq-* чтобы не наследоваться от global .faq-item (blog accordion). */
+.pack-faq { margin: 0.5rem 0 0; border-top: 1px solid var(--line); }
+.pack-faq-row {
+  border-bottom: 1px solid var(--line);
+  background: transparent;
 }
-.faq-item summary {
-  cursor: pointer; color: var(--text); font-size: 0.98rem; font-weight: 500;
-  list-style: none; padding-right: 1.5rem; position: relative;
+.pack-faq-row summary {
+  cursor: pointer;
+  list-style: none;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.45;
+  padding: 1rem 2.5rem 1rem 0;
+  position: relative;
+  transition: color 0.15s ease;
 }
-.faq-item summary::-webkit-details-marker { display: none; }
-.faq-item summary::after {
-  content: '+'; position: absolute; right: 0; top: 0;
-  color: var(--gold); font-size: 1.2rem; line-height: 1;
+.pack-faq-row summary::-webkit-details-marker { display: none; }
+.pack-faq-row summary:hover { color: var(--gold); }
+.pack-faq-row[open] summary { color: var(--gold); }
+.pack-faq-row summary::after {
+  content: '';
+  position: absolute;
+  right: 0.2rem;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
+  background-image:
+    linear-gradient(currentColor, currentColor),
+    linear-gradient(currentColor, currentColor);
+  background-size: 12px 1.4px, 1.4px 12px;
+  background-position: center, center;
+  background-repeat: no-repeat;
+  color: var(--gold);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.faq-item[open] summary::after { content: '−'; }
-.faq-item p {
-  margin: 0.5rem 0 0; color: var(--text-dim); line-height: 1.75; font-size: 0.95rem;
+.pack-faq-row[open] summary::after { transform: rotate(45deg); }
+.pack-faq-row p {
+  margin: 0 0 1rem;
+  color: var(--text-dim);
+  line-height: 1.75;
+  font-size: 0.95rem;
+  max-width: 95%;
 }
 
 .ad-mark {
