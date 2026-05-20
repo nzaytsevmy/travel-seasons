@@ -11,6 +11,19 @@ import remarkNumerals from './tools/remark-numerals.mjs';
 import rehypeTableWrap from './tools/rehype-table-wrap.mjs';
 import rehypeFaqAccordion from './tools/rehype-faq-accordion.mjs';
 import { DATA_UPDATED } from './src/data/meta.js';
+import { DIRECTIONS, MONTHS } from './src/data/directions.js';
+
+// Trips closed (status='X' — направление недоступно в месяц) → noindex,
+// исключаем из sitemap. Остальные trips-страницы индексируются после
+// расширения шаблона (FAQ, бюджет 7/14/21, 12-month grid).
+const CLOSED_TRIPS = new Set();
+for (let i = 0; i < MONTHS.length; i++) {
+  for (const d of DIRECTIONS) {
+    if (d.r[i] === 'X') {
+      CLOSED_TRIPS.add(`https://traveltribe.ru/trips/${MONTHS[i].slug}/${d.slug}/`);
+    }
+  }
+}
 
 // Реальный lastmod вместо даты сборки: посты — по updatedDate/pubDate
 // из frontmatter, программные страницы (visa/hub/seasons/trips/countries)
@@ -75,7 +88,7 @@ export default defineConfig({
         && !page.includes('sitemap-images')
         && !page.includes('/og/')
         && !page.includes('/pagefind/')
-        && !/\/trips\/[^/]+\/[^/]+\//.test(page),
+        && !CLOSED_TRIPS.has(page),
       changefreq: 'weekly',
       priority: 0.7,
       lastmod: DATA_DATE,

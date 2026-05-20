@@ -197,7 +197,7 @@ const featuredImageUrl = featured ? (await getImage({
                 sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
                 formats={['webp']}
                 quality={68}
-                loading={i < 2 ? 'eager' : 'lazy'}
+                loading="lazy"
                 style={`object-position: ${c.objPos || 'center'};`}
               />
               <div class="bento-overlay"></div>
