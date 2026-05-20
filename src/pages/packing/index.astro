@@ -8,7 +8,7 @@ import { DATA_UPDATED_RU } from '../../data/meta.js';
 
 const url = 'https://traveltribe.ru/packing/';
 const title = 'Что взять в поездку 2026 — чек-листы по 70 странам';
-const description = 'Чек-листы по странам и месяцам: одежда по погоде, документы, аптечка, техника. Реальные данные сезонов, виз и партнёрских ссылок. Обновлено ' + DATA_UPDATED_RU + '.';
+const description = 'Чек-листы вещей в путешествие: одежда под погоду конкретной страны и месяца, документы, аптечка, техника. 70 направлений. Обновлено ' + DATA_UPDATED_RU + '.';
 
 const ldJson = {
   "@context": "https://schema.org",
@@ -31,22 +31,59 @@ const ldJson = {
   ],
 };
 
-// Группируем страны по `group`, считаем «лучшие» месяцы (P+G) для подсказки
+const MONTHS_SHORT = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+
+// Slug для anchor id региона
+function slugRegion(g) {
+  return g.toLowerCase()
+    .replace(/[а-яё]/g, c => ({
+      'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z',
+      'и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r',
+      'с':'s','т':'t','у':'u','ф':'f','х':'h','ц':'c','ч':'ch','ш':'sh','щ':'sch',
+      'ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya'
+    }[c] || c))
+    .replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+// Группируем; bestMonths = peak+good; топ-3 лучших месяца для aria
 const grouped = {};
 for (const d of DIRECTIONS) {
-  const g = d.group || 'Прочее';
+  const g = (d.group || 'Прочее').replace(/^\p{Extended_Pictographic}[︀-️‍]*\s*/u, ''); // снять ведущий эмодзи если есть
   if (!grouped[g]) grouped[g] = [];
   const bestMonths = d.r.filter(s => s === 'P' || s === 'G').length;
-  grouped[g].push({ ...d, bestMonths });
+  const peakIdx = d.r.map((s, i) => (s === 'P' || s === 'G') ? i : -1).filter(i => i >= 0);
+  const peakNames = peakIdx.map(i => MONTHS_SHORT[i]).join(', ');
+  grouped[g].push({ ...d, bestMonths, peakNames });
 }
-// Отсортируем страны внутри группы по числу «хороших» месяцев убыванию (релевантность)
-for (const g in grouped) grouped[g].sort((a, b) => b.bestMonths - a.bestMonths || a.cases.nom.localeCompare(b.cases.nom));
+for (const g in grouped) {
+  grouped[g].sort((a, b) => b.bestMonths - a.bestMonths || a.cases.nom.localeCompare(b.cases.nom, 'ru'));
+}
 
-const groupOrder = ['Азия', 'Юго-Восточная Азия', 'Океания', 'Африка', 'Ближний Восток', 'Европа', 'Северная Америка', 'Латинская Америка', 'Южная Америка', 'Полярные'];
+const groupOrder = ['Азия', 'Юго-Восточная Азия', 'Океания', 'Австралия & Океания', 'Африка', 'Африка & Ближний Восток', 'Ближний Восток', 'Европа', 'Северная Америка', 'Латинская Америка', 'Латам и Карибы', 'Южная Америка', 'Америка', 'Полярные', 'Антарктида'];
 const sortedGroups = Object.keys(grouped).sort((a, b) => {
   const ia = groupOrder.indexOf(a), ib = groupOrder.indexOf(b);
   return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
 });
+
+// Подзаголовки регионов (контекст климата, не AI-маркетинг)
+const REGION_DEK = {
+  'Азия': 'Тропики, муссоны, континентальный климат',
+  'Юго-Восточная Азия': 'Влажные тропики, два сезона дождей',
+  'Океания': 'Сезоны зеркальные северному полушарию',
+  'Австралия & Океания': 'Сезоны зеркальные северному полушарию',
+  'Африка': 'Сафари-сухой и сафари-зелёный сезоны',
+  'Африка & Ближний Восток': 'Сафари, пустыня, прибрежная влажность',
+  'Ближний Восток': 'Жара до +45°C летом, мягкая зима',
+  'Европа': 'Средиземноморье, Альпы, фьорды — слои важнее всего',
+  'Северная Америка': 'От Аляски до Юкатана — три гардероба',
+  'Латинская Америка': 'Высокогорье, Карибы, тропики',
+  'Латам и Карибы': 'Высокогорье, Карибы, тропики',
+  'Южная Америка': 'Высокогорье, Патагония, Амазония',
+  'Америка': 'От Аляски до Юкатана — три гардероба',
+  'Полярные': 'За полярным кругом — отдельная категория',
+  'Антарктида': 'За полярным кругом — отдельная категория',
+};
+
 const totalCountries = DIRECTIONS.length;
 ---
 <Layout title={title} description={description} canonical={url} ldJson={ldJson}>
@@ -55,115 +92,272 @@ const totalCountries = DIRECTIONS.length;
 
   <main id="main" class="pl-wrap">
     <header class="pl-hero">
-      <p class="pl-eyebrow">// Чек-листы</p>
       <h1 class="pl-h1">Что взять в поездку</h1>
-      <p class="pl-lead">
-        <strong>{totalCountries} стран × 12 месяцев</strong> — конкретный список под твою погоду:
-        одежда, документы, аптечка, техника, переходник под розетку. Без воды.
+      <p class="pl-deck">
+        Под каждую страну — что класть в чемодан под месяц поездки.
+        Одежда по погоде, документы, аптечка, техника.
+        По <strong>{totalCountries} направлениям</strong> из своих маршрутов:
+        что реально достал из чемодана, что осталось лежать.
       </p>
-      <p class="pl-fresh">Обновлено {DATA_UPDATED_RU}.</p>
+      <p class="pl-fresh">
+        <span>12 месяцев</span>
+        <span aria-hidden="true">·</span>
+        <span>Обновлено {DATA_UPDATED_RU}</span>
+      </p>
     </header>
 
+    <nav class="pl-regions" aria-label="Регионы">
+      {sortedGroups.map((g) => (
+        <a href={`#g-${slugRegion(g)}`} class="pl-region-link">{g}</a>
+      ))}
+    </nav>
+
+    <div class="pl-legend" aria-hidden="true">
+      <span class="pl-legend-item"><i class="pl-s pl-s-p"></i>пик</span>
+      <span class="pl-legend-item"><i class="pl-s pl-s-g"></i>хорошо</span>
+      <span class="pl-legend-item"><i class="pl-s pl-s-o"></i>средне</span>
+      <span class="pl-legend-item"><i class="pl-s pl-s-b"></i>плохо</span>
+      <span class="pl-legend-axis">12-полоска = янв→дек</span>
+    </div>
+
     {sortedGroups.map((g) => (
-      <section class="pl-group">
-        <div class="pl-group-head">
-          <span class="pl-group-label">{g}</span>
-          <span class="pl-group-count">{grouped[g].length}</span>
-        </div>
-        <ul class="pl-countries">
+      <section class="pl-group" id={`g-${slugRegion(g)}`}>
+        <header class="pl-group-head">
+          <h2 class="editorial-h2 pl-group-title">{g}</h2>
+          <p class="pl-group-meta">
+            {REGION_DEK[g] ? <><span class="pl-group-dek">{REGION_DEK[g]}</span><span aria-hidden="true"> · </span></> : null}
+            <span class="pl-group-count">{grouped[g].length} стран</span>
+          </p>
+        </header>
+
+        <ul class="editorial-grid pl-countries">
           {grouped[g].map((d) => (
-            <li class="pl-country">
-              <a href={`/packing/${d.slug}/`}>
-                <span class="pl-flag" aria-hidden="true">{d.visual.emoji}</span>
-                <span class="pl-name">{d.cases.nom}</span>
-                <span class="pl-meta">{d.bestMonths > 0 ? `${d.bestMonths} мес` : '—'}</span>
+            <li>
+              <a href={`/packing/${d.slug}/`} class="pl-country">
+                <span class="pl-country-head">
+                  <span class="pl-name">{d.cases.nom}</span>
+                  <span class="pl-meta">
+                    <span class="pl-meta-num">{d.bestMonths}</span>
+                    <span class="pl-meta-sep">/</span>
+                    <span class="pl-meta-tot">12</span>
+                  </span>
+                </span>
+                <span class="pl-strip" role="img" aria-label={`Благоприятные месяцы: ${d.peakNames || 'нет'}`}>
+                  {d.r.map((s) => (
+                    <i class={`pl-s pl-s-${s.toLowerCase()}`}></i>
+                  ))}
+                </span>
               </a>
             </li>
           ))}
         </ul>
       </section>
     ))}
+
+    <aside class="pl-footnote">
+      <p>
+        Цвета — по моим заметкам с маршрутов и open-source данным погоды (Open-Meteo).
+        Лучший месяц ≠ обязательно дешёвый: пик сезона = высокие цены и толпы.
+        Календарь стоимости — на <a href="/seasons/" class="pl-footnote-link">странице сезонов</a>.
+      </p>
+    </aside>
   </main>
 
   <Footer />
 </Layout>
 
 <style>
-.pl-wrap { max-width: 980px; margin: 0 auto; padding: 0 2rem 5rem; }
+.pl-wrap { max-width: 980px; margin: 0 auto; padding: 0 var(--container-edge) 5rem; }
 
-/* Hero — editorial, без картинки */
-.pl-hero { text-align: center; margin: 2.5rem 0 3rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--line); }
-.pl-eyebrow {
-  font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--gold); margin-bottom: 0.6rem;
+/* ─── Hero ─── editorial, серый-кремовый, без декор-эмодзи и slash-eyebrow */
+.pl-hero {
+  margin: 2.5rem 0 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--line);
 }
 .pl-h1 {
   font-family: var(--ff-display);
-  font-size: clamp(2.4rem, 5.5vw, 3.8rem);
-  font-weight: 300; line-height: 1.05; letter-spacing: -0.02em;
+  font-size: clamp(2.6rem, 6vw, 4.2rem);
+  font-weight: 300;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
   margin: 0;
+  color: var(--text);
 }
-.pl-lead {
-  color: var(--text-dim); font-size: 1.05rem; line-height: 1.65;
-  max-width: 620px; margin: 1.2rem auto 0;
+.pl-deck {
+  color: var(--text-dim);
+  font-size: 1.05rem;
+  line-height: 1.65;
+  max-width: 60ch;
+  margin: 1.2rem 0 0;
 }
-.pl-lead strong { color: var(--text); font-weight: 600; }
-.pl-fresh { color: var(--text-faint); font-size: 0.85rem; margin: 0.5rem 0 0; }
-
-/* Groups — editorial с small-caps eyebrow */
-.pl-group { margin-bottom: 2.5rem; }
-.pl-group-head {
-  display: flex; align-items: baseline; justify-content: space-between;
-  border-bottom: 1px solid var(--line); padding-bottom: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-.pl-group-label {
-  font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--gold);
-}
-.pl-group-count {
+.pl-deck strong { color: var(--text); font-weight: 600; }
+.pl-fresh {
+  display: flex; gap: 0.5rem; align-items: center;
+  color: var(--text-faint);
   font-family: var(--ff-mono);
-  font-size: 0.7rem; color: var(--text-faint);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 1.2rem 0 0;
 }
 
-/* Country list — hairline-grid, без gradient-cards */
-.pl-countries {
-  list-style: none; padding: 0; margin: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-.pl-country { margin: 0; }
-.pl-country a {
-  display: grid;
-  grid-template-columns: 1.6rem 1fr auto;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.7rem 0.8rem 0.7rem 0.2rem;
+/* ─── Region nav ─── sticky chips для прыжков, без pill-капсул */
+.pl-regions {
+  position: sticky;
+  top: 56px;
+  z-index: 5;
+  background: var(--bg);
+  margin: 0 calc(var(--container-edge) * -1);
+  padding: 0.7rem var(--container-edge);
   border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 1.6rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.pl-regions::-webkit-scrollbar { display: none; }
+.pl-region-link {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 0.2rem 0;
+  border-bottom: 1px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.pl-region-link:hover { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* ─── Legend ─── inline, hairline, без pillow */
+.pl-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem 1.4rem;
+  padding: 1rem 0 0.5rem;
+  font-family: var(--ff-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+.pl-legend-item { display: inline-flex; align-items: center; gap: 0.45rem; }
+.pl-legend-item .pl-s {
+  display: inline-block;
+  width: 14px; height: 4px;
+}
+.pl-legend-axis { margin-left: auto; opacity: 0.7; }
+
+/* ─── Group ─── editorial-h2 + dek + count */
+.pl-group { margin-top: 2.5rem; scroll-margin-top: 110px; }
+.pl-group-head {
+  margin-bottom: 0.4rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--line);
+}
+.pl-group-title {
+  font-family: var(--ff-display);
+  font-size: clamp(1.4rem, 2.3vw, 1.7rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin: 0;
+  color: var(--text);
+}
+.pl-group-meta {
+  font-family: var(--ff-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin: 0.4rem 0 0;
+}
+.pl-group-dek { color: var(--text-dim); text-transform: none; letter-spacing: 0; font-family: var(--ff-sans); font-size: 0.88rem; }
+.pl-group-count { white-space: nowrap; }
+
+/* ─── Country list ─── используем готовый .editorial-grid из global.css
+       только переопределяем шаг колонок под более узкий список */
+.pl-countries.editorial-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  border-top: none; /* group-head уже даёт линию сверху */
+}
+.pl-countries > li { padding: 0; }
+.pl-countries > li > .pl-country {
+  display: block;
+  padding: 1rem 1.2rem 1.05rem 0;
   text-decoration: none;
   color: var(--text);
-  transition: background 0.12s, padding-left 0.12s;
+  transition: background 0.15s var(--ease-out), padding-left 0.15s var(--ease-out);
 }
-.pl-country a:hover {
-  background: rgba(201, 151, 58, 0.04);
+.pl-countries > li > .pl-country:hover {
+  background: rgba(201, 151, 58, 0.045);
   padding-left: 0.5rem;
 }
-.pl-flag { font-size: 1.05rem; line-height: 1; opacity: 0.85; }
-.pl-name { font-size: 0.95rem; font-weight: 500; line-height: 1.3; }
+@media (min-width: 720px) {
+  .pl-countries > li:nth-child(2n) > .pl-country { padding-left: 1.2rem; }
+  .pl-countries > li:nth-child(2n) > .pl-country:hover { padding-left: 1.7rem; }
+}
+
+.pl-country-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.55rem;
+}
+.pl-name {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--text);
+}
 .pl-meta {
   font-family: var(--ff-mono);
-  font-size: 0.72rem; color: var(--text-faint);
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  white-space: nowrap;
+  letter-spacing: 0.02em;
 }
-.pl-country a:hover .pl-meta { color: var(--gold); }
+.pl-meta-num { color: var(--text); font-weight: 600; }
+.pl-meta-sep { margin: 0 0.1em; opacity: 0.55; }
+.pl-country:hover .pl-meta-num { color: var(--gold); }
 
-@media (min-width: 720px) {
-  .pl-countries > li + li { border-left: 1px solid var(--line); }
-  .pl-countries > li:nth-child(2n+1) { border-left: none; }
+/* ─── Climate strip ─── 12 микро-cells, sharp, без border-radius */
+.pl-strip {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  height: 3px;
+  width: 100%;
 }
-@media (min-width: 980px) {
-  .pl-countries { grid-template-columns: repeat(3, 1fr); }
-  .pl-countries > li:nth-child(3n+1) { border-left: none; }
-  .pl-countries > li:nth-child(3n+2) { border-left: 1px solid var(--line); }
-  .pl-countries > li:nth-child(3n+3) { border-left: 1px solid var(--line); }
+.pl-s { display: block; }
+.pl-s-p { background: var(--color-peak); }
+.pl-s-g { background: var(--color-good); }
+.pl-s-o { background: var(--color-ok); }
+.pl-s-b { background: var(--color-bad); opacity: 0.45; }
+
+/* ─── Footnote ─── без callout-box, hairline */
+.pl-footnote {
+  margin: 3rem 0 0;
+  padding: 1.5rem 0 0;
+  border-top: 1px solid var(--line);
+  color: var(--text-faint);
+  font-size: 0.85rem;
+  line-height: 1.65;
+  max-width: 60ch;
+}
+.pl-footnote-link {
+  color: var(--text-dim);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  transition: color 0.15s, border-color 0.15s;
+}
+.pl-footnote-link:hover { color: var(--gold); border-bottom-color: var(--gold); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pl-region-link, .pl-country, .pl-meta-num, .pl-footnote-link {
+    transition: none !important;
+  }
 }
 </style>
