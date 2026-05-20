@@ -1,0 +1,161 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { DIRECTIONS, MONTHS } from '../../data/directions.js';
+import { DATA_UPDATED_RU } from '../../data/meta.js';
+
+export async function getStaticPaths() {
+  return DIRECTIONS.map((d) => ({ params: { country: d.slug }, props: { d } }));
+}
+
+const { d } = Astro.props;
+const url = `https://traveltribe.ru/packing/${d.slug}/`;
+const title = `Что взять в ${d.cases.acc} 2026 — чек-листы по месяцам`;
+const description = `Чек-листы для поездки ${d.cases.vP} в 2026: 12 месяцев, одежда по погоде, документы, аптечка, техника. Выбери свой месяц.`;
+
+// Статусы по месяцам (без X-закрытых)
+const STATUS_META = {
+  P: { emoji: '🔥', label: 'пик', cls: 'peak' },
+  G: { emoji: '✅', label: 'хороший', cls: 'good' },
+  O: { emoji: '🟡', label: 'так себе', cls: 'off' },
+  B: { emoji: '⛔', label: 'не лучшее', cls: 'bad' },
+  X: { emoji: '❄️', label: 'закрыто', cls: 'closed' },
+};
+const monthsData = MONTHS.map((m, i) => ({
+  ...m,
+  status: d.r[i],
+  ...(STATUS_META[d.r[i]] || STATUS_META.O),
+  text: d.t[i] || '',
+}));
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": `${url}#page`,
+      "name": title,
+      "description": description,
+      "url": url,
+      "inLanguage": "ru-RU",
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Чек-листы", "item": "https://traveltribe.ru/packing/" },
+        { "@type": "ListItem", "position": 3, "name": d.cases.nom, "item": url },
+      ],
+    },
+  ],
+};
+---
+<Layout title={title} description={description} canonical={url} ldJson={ldJson}>
+  <Nav active="packing" />
+  <Breadcrumbs crumbs={[
+    { label: 'Чек-листы', href: '/packing/' },
+    { label: d.cases.nom },
+  ]} />
+
+  <main id="main" class="pack-country">
+    <div class="hub-hero" style={`--g1:${d.visual.g1}; --g2:${d.visual.g2};`}>
+      <span class="hub-emoji" aria-hidden="true">{d.visual.emoji}</span>
+    </div>
+    <header class="hub-header">
+      <p class="pack-eyebrow">Чек-лист · {d.region}</p>
+      <h1>Что взять <em>{d.cases.vP}</em></h1>
+      <p class="lead">Выбери месяц поездки — получишь конкретный список под погоду и сезон. <span class="fresh">Обновлено {DATA_UPDATED_RU}.</span></p>
+    </header>
+
+    <section class="months-grid">
+      {monthsData.map((m) => (
+        m.status === 'X'
+          ? (
+            <div class={`month-card month-card--closed`} aria-disabled="true">
+              <span class="month-emoji" aria-hidden="true">{m.emoji}</span>
+              <span class="month-name">{m.nom.charAt(0).toUpperCase() + m.nom.slice(1)}</span>
+              <span class="month-status">{m.label}</span>
+            </div>
+          )
+          : (
+            <a href={`/packing/${d.slug}/${m.slug}/`} class={`month-card month-card--${m.cls}`}>
+              <span class="month-emoji" aria-hidden="true">{m.emoji}</span>
+              <span class="month-name">{m.nom.charAt(0).toUpperCase() + m.nom.slice(1)}</span>
+              <span class="month-status">{m.label}</span>
+            </a>
+          )
+      ))}
+    </section>
+
+    <section class="hub-related">
+      <h2>Связанные страницы</h2>
+      <ul>
+        <li><a href={`/${d.slug}/`}>Карточка {d.cases.prep} — виза, цены, сезоны</a></li>
+        <li><a href={`/visa/${d.slug}/`}>Виза {d.cases.prep} для россиян</a></li>
+        <li><a href="/seasons/">Таблица сезонов 70×12</a></li>
+        <li><a href="/packing/">Все чек-листы по странам</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.pack-country { max-width: 760px; margin: 0 auto; padding: 0 2rem 5rem; }
+.hub-hero {
+  height: clamp(140px, 22vw, 200px);
+  margin: 0 -2rem;
+  background: linear-gradient(135deg, var(--g1) 0%, var(--g2) 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.hub-emoji { font-size: clamp(3.5rem, 9vw, 5.5rem); filter: drop-shadow(0 4px 14px rgba(0,0,0,0.15)); }
+@media (min-width: 760px) {
+  .hub-hero { margin-left: 0; margin-right: 0; border-radius: 8px; margin-top: 1rem; }
+}
+
+.hub-header { text-align: center; margin: 2rem 0 2.5rem; }
+.pack-eyebrow {
+  font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 0.5rem;
+}
+.hub-header h1 {
+  font-family: var(--ff-display); font-size: clamp(2rem, 4.5vw, 2.8rem);
+  font-weight: 300; line-height: 1.15; margin: 0;
+}
+.hub-header h1 em { color: var(--gold); font-style: italic; }
+.lead { color: var(--text-dim); font-size: 1rem; line-height: 1.7; max-width: 540px; margin: 1rem auto 0; }
+.fresh { color: var(--text-faint); }
+
+.months-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 0.6rem;
+  margin: 1rem 0 3rem;
+}
+.month-card {
+  display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+  padding: 0.9rem 0.5rem;
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 6px;
+  text-decoration: none; color: var(--text);
+  transition: border-color 0.15s, transform 0.15s;
+}
+.month-card:hover:not(.month-card--closed) { border-color: var(--gold); transform: translateY(-1px); }
+.month-emoji { font-size: 1.3rem; line-height: 1; }
+.month-name { font-size: 0.9rem; font-weight: 500; }
+.month-status { font-size: 0.7rem; color: var(--text-faint); }
+.month-card--peak .month-status { color: #22c55e; }
+.month-card--good .month-status { color: #4a9eff; }
+.month-card--off .month-status  { color: #f59e0b; }
+.month-card--bad .month-status  { color: #ef4444; }
+.month-card--closed { opacity: 0.5; cursor: not-allowed; }
+
+.hub-related { margin-top: 3rem; }
+.hub-related h2 {
+  font-family: var(--ff-display); font-size: 1.2rem; font-weight: 400;
+  color: var(--gold); margin-bottom: 0.8rem;
+}
+.hub-related ul { padding-left: 1.4rem; }
+.hub-related li { color: var(--text-dim); line-height: 1.8; font-size: 0.95rem; }
+.hub-related a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); }
+</style>
