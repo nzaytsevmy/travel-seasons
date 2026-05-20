@@ -234,49 +234,39 @@ const ldJson = {
           <span class="tc-section-num">01</span>
           <h2 class="tc-section-title">Полезное при планировании</h2>
         </div>
-        <div class="tc-tips-grid">
-          <article class="tc-tip">
-            <div class="tc-tip-icon">📅</div>
+        <ul class="tc-tips-list">
+          <li class="tc-tip-row">
             <h3 class="tc-tip-title">Бронируй за 60+ дней</h3>
             <p class="tc-tip-body">Авиабилеты дешевле на 15–20%. Отели — без разницы.</p>
-          </article>
-          <article class="tc-tip">
-            <div class="tc-tip-icon">🛡</div>
+          </li>
+          <li class="tc-tip-row">
             <h3 class="tc-tip-title">Страховка не опция</h3>
             <p class="tc-tip-body">Стоит 2 000 ₽, спасает от $20 000+ медрасходов в Европе или США.</p>
-          </article>
-          <article class="tc-tip">
-            <div class="tc-tip-icon">📱</div>
+          </li>
+          <li class="tc-tip-row">
             <h3 class="tc-tip-title">eSIM вместо роуминга</h3>
             <p class="tc-tip-body">Airalo 1 500 ₽ за 10 ГБ против МТС 5 000 ₽ за неделю.</p>
-          </article>
-          <article class="tc-tip">
-            <div class="tc-tip-icon">👨‍👩‍👧</div>
+          </li>
+          <li class="tc-tip-row">
             <h3 class="tc-tip-title">Семья экономит</h3>
             <p class="tc-tip-body">Один номер на 2–4 человек. Калькулятор учитывает: перелёт × N, отель × 1.</p>
-          </article>
-          <article class="tc-tip">
-            <div class="tc-tip-icon">📊</div>
+          </li>
+          <li class="tc-tip-row">
             <h3 class="tc-tip-title">Сезон важнее уровня</h3>
             <p class="tc-tip-body">5* в не сезон дешевле, чем 3* в пик. Покрути месяцы первыми.</p>
-          </article>
-          <article class="tc-tip">
-            <div class="tc-tip-icon">🛂</div>
+          </li>
+          <li class="tc-tip-row">
             <h3 class="tc-tip-title">Виза не приговор</h3>
-            <p class="tc-tip-body">Шенген ~12 000 ₽. На фоне 150-200к поездки — 6-8%, не повод отказывать.</p>
-          </article>
-          <article class="tc-tip tc-tip--wide">
-            <div class="tc-tip-icon">💳</div>
-            <h3 class="tc-tip-title">Чем платить за границей</h3>
-            <p class="tc-tip-body">
-              Российские Visa/MC за рубежом не работают, UnionPay из РФ с конца 2024
-              массово отклоняют. Рабочие варианты 2026: виртуальные USD/EUR-карты,
-              UnionPay от несанкционного банка (АТБ), карта банка ЕАЭС (Kaspi,
-              Ameriabank), наличные $/€ как страховка.
-              <a href="/blog/pay-abroad-2026/" class="tc-tip-link">4 способа подробно →</a>
-            </p>
-          </article>
-        </div>
+            <p class="tc-tip-body">Шенген ~12 000 ₽. На фоне 150–200к поездки — 6–8%, не повод отказывать.</p>
+          </li>
+        </ul>
+
+        <a href="/blog/pay-abroad-2026/" class="tc-tip-callout">
+          <span class="tc-tip-callout-text">
+            <strong>Чем платить за границей в 2026</strong>
+            <span>Visa/MC РФ не работают, UnionPay из РФ массово отклоняют. Виртуальные USD/EUR-карты, UnionPay от АТБ, банки ЕАЭС, наличные — 4 рабочих способа подробно →</span>
+          </span>
+        </a>
       </div>
     </section>
 
@@ -1490,46 +1480,56 @@ window.addEventListener('pageshow', (e) => {
   color: var(--text);
 }
 
-/* Tips grid */
-.tc-tips-grid {
+/* Editorial tips — hairline-grid 2 cols, без pillowy cards и emoji */
+.tc-tips-list {
+  list-style: none; padding: 0; margin: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  border-top: 1px solid var(--line);
 }
-.tc-tip {
-  background: var(--surface, #fff);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 1.3rem 1.3rem 1.1rem;
-  transition: all 0.15s;
+.tc-tip-row {
+  padding: 1.1rem 1.4rem 1.1rem 0;
+  border-bottom: 1px solid var(--line);
+  margin: 0;
 }
-.tc-tip:hover { border-color: var(--gold-dim); transform: translateY(-2px); box-shadow: 0 8px 24px -12px rgba(0,0,0,0.08); }
-.tc-tip-icon { font-size: 1.5rem; margin-bottom: 0.7rem; }
+@media (min-width: 720px) {
+  .tc-tip-row:nth-child(2n) { padding-left: 1.4rem; border-left: 1px solid var(--line); padding-right: 0; }
+}
 .tc-tip-title {
   font-family: var(--ff-body);
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: -0.01em;
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.35rem;
   color: var(--text);
 }
 .tc-tip-body {
-  font-size: 0.88rem;
-  line-height: 1.55;
+  font-size: 0.92rem;
+  line-height: 1.6;
   color: var(--text-dim);
   margin: 0;
 }
-.tc-tip--wide { grid-column: 1 / -1; }
-.tc-tip-link {
-  display: inline-block;
-  margin-top: 0.4rem;
-  color: var(--gold-600, var(--gold));
-  font-weight: 600;
+
+/* Editorial callout (former wide-tip) — gold accent left-border */
+.tc-tip-callout {
+  display: block;
+  margin-top: 1.5rem;
+  padding: 1.2rem 1.4rem;
+  background: rgba(201,151,58,0.05);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold);
+  border-radius: 4px;
   text-decoration: none;
-  border-bottom: 1px dashed var(--gold-dim, var(--gold));
-  transition: color 0.15s;
+  color: var(--text);
+  transition: background 0.15s, transform 0.15s;
 }
-.tc-tip-link:hover { color: var(--gold); }
+.tc-tip-callout:hover { background: rgba(201,151,58,0.09); transform: translateX(2px); }
+.tc-tip-callout-text { display: flex; flex-direction: column; gap: 0.3rem; }
+.tc-tip-callout-text strong { color: var(--text); font-size: 1rem; line-height: 1.3; }
+.tc-tip-callout-text span { color: var(--text-dim); font-size: 0.88rem; line-height: 1.55; }
+
+/* Anchor scroll offset (sticky-nav overlap fix) */
+.tc-section-title { scroll-margin-top: 80px; }
 
 /* FAQ */
 .tc-faq-list { display: flex; flex-direction: column; }
