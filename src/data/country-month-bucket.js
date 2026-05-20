@@ -57,6 +57,9 @@ const regionBuckets = {
   'japan':              { cold: [11,0,1,2], default: 'temperate-warm' },
   'south-korea':        { cold: [10,11,0,1,2], default: 'temperate-warm' },
   'china':              { cold: [10,11,0,1,2], default: 'temperate-warm' },
+  // Гонконг: субтропический, лето с тайфунами/ливнями (май-сентябрь),
+  // мягкая зима (декабрь-февраль +15..20)
+  'hong-kong':          { rainy: [4,5,6,7,8], default: 'temperate-warm' },
 
   // Япония Хоккайдо / Альпы / Канада Скалы — ski-альпы зимой, mountain летом
   'japan-hokkaido':     { cold: [10,11,0,1,2,3], default: 'mountain-altitude' },
