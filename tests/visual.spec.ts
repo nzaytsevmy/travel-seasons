@@ -17,6 +17,9 @@ const PAGES = [
   { slug: '/blog/japan-guide-2026/',        name: 'blog-japan' },
   { slug: '/blog/bolivia-guide-2026/',      name: 'blog-bolivia' },   // 4-кол таблица сезонов + PricingCards
   { slug: '/blog/peru-guide-2026/',         name: 'blog-peru' },      // wide table (Inca Trail vs Salkantay vs Lares)
+  { slug: '/packing/',                      name: 'packing-landing' },        // /packing/ landing: 70 country cards
+  { slug: '/packing/japan/',                name: 'packing-country-japan' },  // country-hub: 12-month grid
+  { slug: '/packing/japan/april/',          name: 'packing-detail-japan-apr' },// detail с HowTo+FAQ
 ];
 
 for (const page of PAGES) {

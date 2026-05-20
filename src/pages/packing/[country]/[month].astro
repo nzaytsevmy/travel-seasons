@@ -67,8 +67,10 @@ const pillarUrl = blogSlug ? `/blog/${blogSlug}/` : null;
 // TL;DR (answer-first 40–60 слов)
 const tldr = `${bucket.summary}. Главное по чек-листу: ${bucket.clothing[0].split(' (')[0]}, ${bucket.health[0].split(' (')[0]}. ${needsVisa ? `Виза: ${visa?.duration || '—'}, ${visa?.cost || '—'}.` : 'Виза не нужна.'}`;
 
-// Title и description (≤60 / ≤155)
-const title = `Что взять в ${d.cases.acc} в ${m.prep} 2026 — чек-лист`;
+// Title и description (≤60 / ≤155). Адаптивно — для длинных названий стран
+// (Канадские Скалистые горы) урезаем «2026» из title, оставляем в desc.
+const titleBase = `Что взять в ${d.cases.acc} в ${m.prep} — чек-лист`;
+const title = titleBase.length <= 55 ? `${titleBase} 2026` : titleBase;
 const description = `Чек-лист для поездки ${d.cases.vP} в ${m.prep} 2026: одежда по погоде (${bucket.label}), документы, аптечка, техника. Реальный опыт + источники.`;
 
 // FAQ авто-генерация (4 Q/A)
