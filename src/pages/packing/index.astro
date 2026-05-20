@@ -130,9 +130,9 @@ const totalCountries = DIRECTIONS.length;
           </p>
         </header>
 
-        <ul class="editorial-grid pl-countries">
+        <ul class="pl-countries">
           {grouped[g].map((d) => (
-            <li>
+            <li class="pl-country-cell">
               <a href={`/packing/${d.slug}/`} class="pl-country">
                 <span class="pl-country-head">
                   <span class="pl-name">{d.cases.nom}</span>
@@ -277,35 +277,54 @@ const totalCountries = DIRECTIONS.length;
 .pl-group-dek { color: var(--text-dim); text-transform: none; letter-spacing: 0; font-family: var(--ff-sans); font-size: 0.88rem; }
 .pl-group-count { white-space: nowrap; }
 
-/* ─── Country list ─── используем готовый .editorial-grid из global.css
-       только переопределяем шаг колонок под более узкий список */
-.pl-countries.editorial-grid {
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  border-top: none; /* group-head уже даёт линию сверху */
+/* ─── Country list ─── собственный grid (editorial-grid отключен потому что
+       его правило nth-child(2n) для 2-col layout ломает 3-col рандомным
+       padding-left на col1-row2/col3-row2/etc).
+       Решение: чистый CSS grid + равная высота через flex + strip всегда внизу
+       через grid-template-rows внутри .pl-country. Vertical разделителей нет —
+       editorial-канон через horizontal hairlines читается чище. */
+.pl-countries {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
 }
-.pl-countries > li { padding: 0; }
-.pl-countries > li > .pl-country {
-  display: block;
-  padding: 1rem 1.2rem 1.05rem 0;
+.pl-country-cell {
+  margin: 0;
+  border-bottom: 1px solid var(--line);
+  display: flex; /* растягивает .pl-country на всю высоту cell */
+}
+.pl-country-cell:first-child { border-top: 1px solid var(--line); }
+@media (min-width: 720px) {
+  .pl-countries { grid-template-columns: repeat(2, 1fr); }
+  /* в 2-col убираем top-border у второй cell первого ряда */
+  .pl-country-cell:nth-child(2) { border-top: 1px solid var(--line); }
+}
+@media (min-width: 980px) {
+  .pl-countries { grid-template-columns: repeat(3, 1fr); }
+  /* в 3-col добавляем top-border у третьей cell первого ряда */
+  .pl-country-cell:nth-child(3) { border-top: 1px solid var(--line); }
+}
+
+.pl-country {
+  flex: 1;
+  display: grid;
+  grid-template-rows: 1fr auto; /* head растет, strip всегда внизу */
+  gap: 0.55rem;
+  padding: 1rem 1.2rem 1.05rem 1.2rem;
   text-decoration: none;
   color: var(--text);
-  transition: background 0.15s var(--ease-out), padding-left 0.15s var(--ease-out);
+  transition: background 0.15s var(--ease-out);
 }
-.pl-countries > li > .pl-country:hover {
-  background: rgba(201, 151, 58, 0.045);
-  padding-left: 0.5rem;
-}
-@media (min-width: 720px) {
-  .pl-countries > li:nth-child(2n) > .pl-country { padding-left: 1.2rem; }
-  .pl-countries > li:nth-child(2n) > .pl-country:hover { padding-left: 1.7rem; }
-}
+.pl-country:hover { background: rgba(201, 151, 58, 0.045); }
 
 .pl-country-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 0.55rem;
+  align-self: start; /* head вверху, strip уйдёт в bottom через grid-template-rows */
 }
 .pl-name {
   font-size: 1rem;
@@ -359,5 +378,10 @@ const totalCountries = DIRECTIONS.length;
   .pl-region-link, .pl-country, .pl-meta-num, .pl-footnote-link {
     transition: none !important;
   }
+}
+
+/* Tablet 720-979: keep 1-col regions nav, ensure strip width 100% in 2-col */
+@media (max-width: 719px) {
+  .pl-strip { max-width: 100%; }
 }
 </style>
