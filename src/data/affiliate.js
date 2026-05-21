@@ -22,4 +22,15 @@ export const TP_LINKS = {
   // PlatipoMiru: виртуальные карты USD/EUR для россиян (Visa/MC иностранного эмитента).
   // CPA-партнёрка. erid НЕОБХОДИМО получить от партнёра и подставить вместо TBD (38-ФЗ).
   platipomiru: 'https://platipomiru.com/?utm_source=traveltribe&utm_medium=cpa',
+  // Travelata: пакетные туры + отели. Вертикаль «готовый тур vs самостоятельно».
+  // Cookie 180 дней (лучший), комиссия 3.8–8%. erid от партнёра (38-ФЗ).
+  travelata:  'https://travelata.tpk.mx/Do2A3cgV?erid=2VtzqufPtiT',
 };
+
+// Aviasales deep-link под конкретный маршрут (origin/destination IATA) —
+// поднимает конверсию: пользователь сразу видит свой перелёт, а не главную.
+// Пример: aviasalesRoute('MOW','DXB') для Москва→Дубай.
+export function aviasalesRoute(originIata, destIata) {
+  return `https://www.aviasales.ru/?marker=${TP_MARKER_FULL}&market=ru`
+    + `&origin_iata=${originIata}&destination_iata=${destIata}`;
+}
