@@ -60,9 +60,11 @@ coverPosition: "center 42%"
 
 **Бронировать отели на Golden Week нужно за 4–6 месяцев минимум.** За 1–2 месяца остаётся только премиум-сегмент или пригороды. За 2 недели — практически ничего, кроме капсульных отелей по 8000 ¥ (которые в обычные дни — 3500 ¥). Бронировать удобно через Ostrovok — японские отели в каталоге все, карты МИР принимает, Booking из РФ — нет. <a href="https://ostrovok.tpk.mx/w4cAS1wZ" class="aff-cta" rel="sponsored">Забронировать отель на Golden Week</a><span class="ad-mark">реклама</span>
 
+**Или готовый тур «всё включено»** — если не собирать отель и перелёт по частям. Пакет из Москвы — <a href="https://travelata.tpk.mx/Do2A3cgV?erid=2VtzqufPtiT" class="aff-cta" rel="sponsored">Подобрать тур в Японию</a><span class="ad-mark">реклама</span>: в высокий сезон туроператор часто выкупает блоки мест заранее, поэтому пакет на пиковые даты бывает дешевле раздельной брони, оплата картой МИР.
+
 ### Авиабилеты
 
-По данным Aviasales и Skyscanner, средняя цена туда-обратно Москва — Токио (NRT/HND) с пересадкой (<a href="https://www.aviasales.ru/?marker=546042.Zz66f13c16ff6b488883a4127-546042&market=ru" class="aff-cta" rel="sponsored">найти билет на свои даты</a><span class="ad-mark">реклама</span>):
+По данным Aviasales и Skyscanner, средняя цена туда-обратно Москва — Токио (NRT/HND) с пересадкой (<a href="https://www.aviasales.ru/?marker=546042.Zz66f13c16ff6b488883a4127-546042&market=ru&origin_iata=MOW&destination_iata=TYO" class="aff-cta" rel="sponsored">найти билет Москва — Токио</a><span class="ad-mark">реклама</span> — сравнивает все авиакомпании сразу, cookie 30 дней, можно забронировать позже):
 
 - Низкий сезон (январь, февраль): **$500–650**
 - Обычный апрель / июнь: **$700–900**
