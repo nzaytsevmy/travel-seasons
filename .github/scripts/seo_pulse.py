@@ -16,7 +16,7 @@ SEO Pulse 10/10 — двух-движковый actionable монитор travel
 """
 from datetime import date, datetime, timedelta
 from pathlib import Path
-import argparse, json, os, re, sys, urllib.parse, urllib.request
+import argparse, json, os, re, sys, urllib.parse, urllib.request, urllib.error
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 BLOG_DIR = REPO_ROOT / "src" / "content" / "blog"
@@ -136,6 +136,16 @@ def gsc_token():
                                      data=body, method="POST")
         with urllib.request.urlopen(req, timeout=20) as r:
             return json.loads(r.read())["access_token"], None
+    except urllib.error.HTTPError as e:
+        # Тело ошибки несёт причину (invalid_grant = токен протух/отозван;
+        # invalid_client = неверный client_id/secret) — без него алерт бесполезен.
+        try:
+            detail = json.loads(e.read().decode())
+            reason = detail.get("error", "")
+            hint = " — перевыпусти токен: python3 ~/.config/gsc/grant.py + Publish App в GCC" if reason == "invalid_grant" else ""
+            return None, f"GSC refresh {e.code}: {reason} {detail.get('error_description','')}{hint}"
+        except Exception:
+            return None, f"GSC refresh failed: HTTP {e.code}"
     except Exception as e:
         return None, f"GSC refresh failed: {e}"
 
