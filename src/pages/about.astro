@@ -206,7 +206,9 @@ code {
 <script is:inline>
   // Email anti-scraper: собираем mailto и видимый текст на клиенте.
   // Боты, не выполняющие JS, видят только "Email →" / "показать email" без адреса.
-  document.addEventListener('DOMContentLoaded', function () {
+  // Запуск на первой загрузке И после SPA-перехода ClientRouter (DOMContentLoaded
+   // при SPA не срабатывает). data-u снимается после обработки → идемпотентно.
+  function _initEmails() {
     document.querySelectorAll('a.email-link').forEach(function (a) {
       var u = a.getAttribute('data-u');
       var d = a.getAttribute('data-d');
@@ -215,7 +217,6 @@ code {
       a.setAttribute('href', 'mailto:' + addr);
       a.removeAttribute('data-u');
       a.removeAttribute('data-d');
-      // Показываем адрес только при первом клике/hover (на десктопе) или сразу при touch
       var revealed = false;
       function reveal(e) {
         if (revealed) return;
@@ -226,5 +227,7 @@ code {
       a.addEventListener('focus', reveal);
       a.addEventListener('click', reveal);
     });
-  });
+  }
+  if (document.readyState !== 'loading') _initEmails();
+  document.addEventListener('astro:page-load', _initEmails);
 </script>
