@@ -441,7 +441,7 @@ const ldJson = {
     </section>
 
     {/* ─── CLASSIFIED SECTIONS — три картотеки ─── */}
-    {['free', 'evisa', 'required'].map((vt) => (
+    {['free', 'evisa', 'required'].map((vt, vti) => (
       <section class={`va-section va-section--${vt}`} data-section={vt} data-reveal>
         <header class="va-section-head">
           <div class="va-section-stamp" aria-hidden="true">
@@ -463,8 +463,10 @@ const ldJson = {
             const num = String(idx + 1).padStart(3, '0');
             const visited = VISITED.has(d.slug);
             const details = getVisaDetails(d.slug, d.visa);
-            // Первые 3 карточки в каждой группе — eager + fetchpriority для LCP
-            const isAboveFold = idx < 3;
+            // Eager только для первых карточек ПЕРВОЙ группы (above-fold на мобайле,
+            // 2-кол сетка → ~2 ряда). idx сбрасывается в каждой группе, поэтому без vti===0
+            // получалось 9 eager × fetchpriority — приоритетный шторм убивал LCP.
+            const isAboveFold = vti === 0 && idx < 4;
             const cb = costBucket(details.cost);
             const isLong = isLongDuration(details.duration);
             const altText = d.cases.nom + ' — ' + d.sub + ', виза для россиян 2026';
@@ -489,7 +491,6 @@ const ldJson = {
                       formats={['webp']}
                       quality={70}
                       loading={isAboveFold ? 'eager' : 'lazy'}
-                      {...(isAboveFold ? { fetchpriority: 'high' } : {})}
                     />
                   ) : (
                     <div class="va-card-fallback" style={`background: linear-gradient(135deg, ${d.visual.g1}, ${d.visual.g2})`}>
