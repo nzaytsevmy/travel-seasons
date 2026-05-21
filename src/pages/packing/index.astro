@@ -240,18 +240,19 @@ const ldJson = {
   </main>
 
   <script is:inline>
-    (() => {
-      const input  = document.getElementById('pl-search-input');
-      const list   = document.getElementById('pl-all-list');
-      const count  = document.getElementById('pl-search-count');
-      const empty  = document.getElementById('pl-empty');
-      if (!input || !list || !count || !empty) return;
+    // Идемпотентная инициализация + astro:page-load — иначе после SPA-перехода
+    // ClientRouter (навигация внутри сайта) listener'ы не вешались и поиск был мёртв.
+    function _initPackingSearch() {
+      const input = document.getElementById('pl-search-input');
+      const list  = document.getElementById('pl-all-list');
+      const count = document.getElementById('pl-search-count');
+      const empty = document.getElementById('pl-empty');
+      if (!input || !list || !count || !empty || input._plReady) return;
+      input._plReady = true;
       const items = Array.from(list.querySelectorAll('.pl-all-item'));
       const total = items.length;
 
-      function normalize(s) {
-        return s.toLowerCase().replace(/ё/g, 'е').trim();
-      }
+      const normalize = (s) => s.toLowerCase().replace(/ё/g, 'е').trim();
 
       function applyFilter() {
         const q = normalize(input.value);
@@ -269,15 +270,22 @@ const ldJson = {
       input.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') { input.value = ''; applyFilter(); input.blur(); }
       });
+    }
 
-      // "/" фокусит поиск (как в GitHub/Wikipedia)
+    // "/" фокусит поиск — вешаем на document один раз (переживает SPA-переходы)
+    if (!window._plSlashKey) {
+      window._plSlashKey = true;
       document.addEventListener('keydown', (e) => {
-        if (e.key === '/' && document.activeElement !== input &&
+        const input = document.getElementById('pl-search-input');
+        if (input && e.key === '/' && document.activeElement !== input &&
             !['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)) {
           e.preventDefault(); input.focus();
         }
       });
-    })();
+    }
+
+    _initPackingSearch();
+    document.addEventListener('astro:page-load', _initPackingSearch);
   </script>
 
   <Footer />
