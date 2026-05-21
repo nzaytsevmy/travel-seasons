@@ -1096,6 +1096,9 @@ h1 em { color: var(--gold); font-style: normal; }
   }
   .region-cell .region-sub { display: inline; margin: 0; font-size: 0.78rem; }
   .region-cell .tags { flex-basis: 100%; margin: 0.2rem 0 0; gap: 0.3rem; }
+  /* поиск/фильтр прячут строки через [hidden]; display:grid выше перебивал бы
+     UA-правило [hidden]{display:none} → возвращаем приоритет скрытию */
+  #mainTable tr[hidden] { display: none !important; }
   /* .tag — берётся глобальный mobile override (0.78rem ≈ 12.5px) для Yandex Mobile-Friendly */
   .month-btn { padding: 0.5rem 0.7rem; font-size: 0.82rem; min-height: 40px; }
   .footer-contribute { margin-top: 2rem; padding: 1.5rem; }
