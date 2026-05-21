@@ -344,7 +344,8 @@ const pricesUpdatedAt = pricesData.updatedAt
     <p>Зависит от направления и того, что ты ищешь. Для <strong>пляжного отдыха зимой</strong> (декабрь–февраль) лучшие варианты — Таиланд, Бали (апрель–октябрь сухой сезон), Доминикана, Мальдивы, ОАЭ, Куба. <strong>Летом без визы</strong> — Грузия, Армения, Турция, Узбекистан, Казахстан, Кыргызстан. <strong>Осенью</strong> — Япония (момидзи в ноябре), Канада (foliage в Квебеке в октябре), Чили (март–апрель в Патагонии). <strong>Весной</strong> — Узбекистан в апреле, цветение сакуры в Японии и Корее.</p>
 
     <h2 style="margin-top:1.5rem">Куда поехать без визы или с eVisa?</h2>
-    <p><strong>Без визы для россиян:</strong> Турция, Грузия, Армения, Узбекистан, Казахстан, Кыргызстан, ОАЭ, Таиланд, Вьетнам, Мальдивы, ЮАР, Марокко, Куба, Доминикана, Мексика, Чили, Швейцария по Шенгену.<br /><strong>С eVisa онлайн:</strong> Индонезия (Бали), Шри-Ланка, Индия (Гоа), Кения, Египет, Южная Корея, Таджикистан.<br /><strong>Стандартная виза:</strong> Япония, страны Шенгена, Канада, Австралия.</p>
+    <p><strong>Без визы для россиян:</strong> <a href="/turkey/">Турция</a>, <a href="/georgia/">Грузия</a>, <a href="/armenia/">Армения</a>, <a href="/uzbekistan/">Узбекистан</a>, <a href="/kazakhstan/">Казахстан</a>, <a href="/kyrgyzstan/">Кыргызстан</a>, <a href="/uae/">ОАЭ</a>, <a href="/thailand/">Таиланд</a>, <a href="/vietnam/">Вьетнам</a>, <a href="/maldives/">Мальдивы</a>, <a href="/south-africa/">ЮАР</a>, <a href="/morocco/">Марокко</a>, <a href="/cuba/">Куба</a>, <a href="/dominican-republic/">Доминикана</a>, <a href="/mexico/">Мексика</a>, <a href="/chile-patagonia/">Чили</a>, <a href="/switzerland/">Швейцария</a> по Шенгену.<br /><strong>С eVisa онлайн:</strong> <a href="/bali/">Индонезия (Бали)</a>, <a href="/sri-lanka/">Шри-Ланка</a>, <a href="/india-goa/">Индия (Гоа)</a>, <a href="/kenya/">Кения</a>, <a href="/egypt/">Египет</a>, <a href="/south-korea/">Южная Корея</a>, <a href="/tajikistan/">Таджикистан</a>.<br /><strong>Стандартная виза:</strong> <a href="/japan/">Япония</a>, страны Шенгена, <a href="/canada-east/">Канада</a>, <a href="/australia-north/">Австралия</a>.</p>
+    <p class="faq-hubs"><a href="/visa/"><strong>Все визовые требования по странам →</strong></a> · <a href="/countries/"><strong>Каталог всех 70 направлений →</strong></a></p>
 
     <p class="faq-note">Виза и бюджет актуальны для граждан России на 2026 год. Всегда уточняйте визовые требования на сайте консульства перед покупкой билетов.</p>
 
@@ -591,13 +592,14 @@ function openPanel(cell) {
     avBtn.setAttribute('hidden', '');
   }
 
-  // Blog link
-  const blogBtn = document.getElementById('panelBlog');
-  if (blog) {
-    blogBtn.href = `/blog/${blog}/`;
-    blogBtn.removeAttribute('hidden');
+  // Ссылка вглубь сайта — хаб страны (визы, сезоны, бюджет, гайды). Есть у всех 70.
+  const guideBtn = document.getElementById('panelBlog');
+  if (slug) {
+    guideBtn.href = `/${slug}/`;
+    guideBtn.textContent = blog ? 'Полный гид по стране →' : 'Виза, сезоны и бюджет →';
+    guideBtn.removeAttribute('hidden');
   } else {
-    blogBtn.setAttribute('hidden', '');
+    guideBtn.setAttribute('hidden', '');
   }
 
   // Show panel
@@ -884,6 +886,9 @@ tbody tr td.cell.dimmed { opacity: 0.28; }
 .dot-ok   { color: #f59e0b; }
 .dot-bad  { color: #ef4444; }
 .faq-note { font-size: 0.75rem; color: var(--text-faint); line-height: 1.6; }
+.faq a { color: var(--gold); text-decoration: underline; text-decoration-color: var(--gold-dim); text-underline-offset: 2px; }
+.faq a:hover { color: var(--gold-dim); }
+.faq-hubs { margin-top: 0.4rem; }
 
 header {
   max-width: 1400px; margin: 0 auto 2rem; padding: 2.4rem clamp(1rem, 4vw, 3rem) 0;
