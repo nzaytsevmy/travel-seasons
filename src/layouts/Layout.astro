@@ -184,7 +184,7 @@ const finalLd = {
 
   <script type="application/ld+json" set:html={JSON.stringify(finalLd)} />
 
-  {preloadImage && <link rel="preload" as="image" href={preloadImage} />}
+  {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
 
   <!-- Аналитика — только на production hostname (не на localhost / staging).
        Иначе Playwright/preview сервер накручивает визиты в метрике. -->
