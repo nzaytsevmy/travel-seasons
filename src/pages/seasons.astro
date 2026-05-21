@@ -296,6 +296,7 @@ const pricesUpdatedAt = pricesData.updatedAt
                   aria-label={`${row.region}, ${MONTH_NAMES[i]}: ${row.t[i]}`}
                 >
                   <span class="badge">{LABELS[code]}</span>
+                  <span class="cell-mo" aria-hidden="true">{['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][i]}</span>
                   {isBest && <span class="best-mark" aria-hidden="true">★</span>}
                   {isWorst && <span class="worst-mark" aria-hidden="true">✕</span>}
                   {price && <span class="price-mini" aria-hidden="true">{Math.round(price / 1000)}к</span>}
@@ -825,6 +826,7 @@ tbody tr:hover { background: rgba(201,151,58,0.03); }
 
 /* точка-глиф не нужна — тайл и есть сигнал (контекст — в aria-label/панели) */
 .cell .badge { display: none; }
+.cell-mo { display: none; }   /* инициал месяца — только на мобайле (десктоп-шапка несёт месяцы) */
 
 .cell:hover { filter: brightness(1.18) saturate(1.1); z-index: 2; }
 
@@ -1059,19 +1061,32 @@ h1 em { color: var(--gold); font-style: normal; }
   .search-input { min-width: 140px; max-width: 200px; flex-shrink: 0; }
   .legend { margin-top: 1rem; gap: 0.7rem; }
 
-  /* iPhone fix: убираем nested scroll контейнер — оставляем только горизонтальный.
-     Вертикальный скролл — на странице (плавный), без дёрганья. Sticky thead
-     теперь sticky относительно viewport, поэтому top = высота .controls (~52px). */
-  .table-wrap {
-    margin: 0; border-radius: 0; border-left: none; border-right: none;
-    max-height: none; overflow-x: auto; overflow-y: visible;
-    overscroll-behavior-x: contain;
+  /* ─── Web design 2026: таблица → карточки регионов. Card pattern вместо
+     горизонтального скролла (UX Movement 2026), вертикальный скролл, тач ≥44px. ─── */
+  .table-wrap { margin: 0; border: none; border-radius: 0; max-height: none; overflow: visible; }
+  #mainTable { min-width: 0; width: 100%; display: block; }
+  #mainTable thead { display: none; }              /* десктоп-шапка месяцев не нужна — инициалы на тайлах */
+  #mainTable tbody { display: block; }
+  .group-header td { position: static; display: block; padding: 0.75rem clamp(0.85rem, 4vw, 1.1rem); }
+
+  /* строка региона → карточка-грид: инфо сверху, ниже тайлы месяцев 6×2 */
+  #tbody tr:not(.group-header) {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 5px;
+    padding: 0.85rem clamp(0.85rem, 4vw, 1.1rem) 1.05rem;
+    border-bottom: 1px solid var(--line);
   }
-  thead tr:first-child th { top: 112px; }
-  thead tr:first-child th:first-child { min-width: 110px; }
-  .region-cell { min-width: 130px; max-width: 140px; padding: 0.6rem 0.4rem 0.6rem 0.6rem; font-size: 0.82rem; }
-  .region-sub { font-size: 0.78rem; }
-  .tags { gap: 0.25rem; margin-top: 0.4rem; }
+  .region-cell {
+    grid-column: 1 / -1;
+    position: static; min-width: 0; max-width: none;
+    background: transparent; box-shadow: none; border: none;
+    padding: 0 0 0.6rem; margin: 0;
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.55rem;
+    font-size: 1rem;
+  }
+  .region-cell .region-sub { display: inline; margin: 0; font-size: 0.78rem; }
+  .region-cell .tags { flex-basis: 100%; margin: 0.2rem 0 0; gap: 0.3rem; }
   /* .tag — берётся глобальный mobile override (0.78rem ≈ 12.5px) для Yandex Mobile-Friendly */
   .month-btn { padding: 0.5rem 0.7rem; font-size: 0.82rem; min-height: 40px; }
   .footer-contribute { margin-top: 2rem; padding: 1.5rem; }
@@ -1089,8 +1104,17 @@ h1 em { color: var(--gold); font-style: normal; }
   .panel-body { padding: 0.9rem 1rem; gap: 0.6rem; }
   .panel-footer { padding: 0.8rem 1rem 1.2rem; }
 
-  .cell { height: 42px; }
-  .cell .price-mini { font-size: 0.5rem; bottom: 1px; }
-  .cell.is-best::after, .cell.is-worst::after { top: 1px; right: 2px; font-size: 0.5rem; }
+  /* квадратные тач-тайлы (~55px ≥44px на 360–430px), инициал месяца сверху */
+  #tbody tr:not(.group-header) .cell {
+    height: auto; aspect-ratio: 1; border-width: 1px; border-radius: 8px;
+  }
+  .cell-mo {
+    display: block; position: absolute; top: 4px; left: 0; right: 0; text-align: center;
+    font-family: var(--ff-mono); font-size: 0.6rem; letter-spacing: 0.02em;
+    color: rgba(255,255,255,.72); text-shadow: 0 1px 1px rgba(0,0,0,.45); pointer-events: none;
+  }
+  .cell .price-mini { bottom: 4px; font-size: 0.62rem; }
+  .cell.is-best::after, .cell.is-worst::after { top: 3px; right: 4px; font-size: 0.62rem; }
+  .empty-state { padding: 2rem 1rem; }
 }
 </style>
