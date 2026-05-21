@@ -693,3 +693,35 @@ footer {
   filter: drop-shadow(0 6px 18px rgba(0,0,0,0.18));
   z-index: 1;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   AFFILIATE — компактная маркировка (38-ФЗ) + benefit-CTA, конверсия 2026
+   Маркер ненавязчивый (не убивает CTR), но видим = закон соблюдён.
+   ───────────────────────────────────────────────────────────────────────── */
+.ad-mark {
+  font-size: 0.62em;
+  color: var(--text-faint);
+  opacity: 0.55;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  vertical-align: baseline;
+  margin-left: 0.25em;
+  white-space: nowrap;
+}
+
+/* Benefit-CTA — заметная кликабельная ссылка-действие внутри текста */
+.aff-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  font-weight: 600;
+  color: var(--gold);
+  text-decoration: none;
+  border-bottom: 1.5px solid rgba(201, 151, 58, 0.35);
+  transition: border-color 0.15s, color 0.15s;
+}
+.aff-cta:hover { color: var(--gold-dim); border-bottom-color: var(--gold); }
+.aff-cta::after { content: '→'; transition: transform 0.15s; display: inline-block; }
+.aff-cta:hover::after { transform: translateX(3px); }
