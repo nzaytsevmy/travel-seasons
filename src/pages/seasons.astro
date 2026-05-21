@@ -86,7 +86,11 @@ const ldJson = {
       "description": "Интерактивная таблица: 70 направлений мира, лучшее время для поездки, виза, бюджет и реальные цены билетов из Москвы. Для путешественников из России.",
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
-      "mainEntity": { "@id": "https://traveltribe.ru/seasons/#destinations" }
+      "mainEntity": { "@id": "https://traveltribe.ru/seasons/#destinations" },
+      "speakable": {
+        "@type": "SpeakableSpecification",
+        "cssSelector": ["h1", ".seasons-tldr"]
+      }
     },
     {
       "@type": "ItemList",
@@ -178,6 +182,13 @@ const pricesUpdatedAt = pricesData.updatedAt
       <span class="byline-fresh">сезоны и визы актуальны на {DATA_UPDATED_RU}</span>
     </p>
   </header>
+
+  <div class="seasons-tldr">
+    <div class="tldr-box">
+      <p><strong>Когда лучше ехать:</strong> зимой (декабрь–февраль) — Юго-Восточная Азия, Бали, Мальдивы, ОАЭ и Карибы; летом без визы — Грузия, Армения, Турция и Средняя Азия; осенью — Япония (момидзи в ноябре) и Патагония; весной — Узбекистан и цветение сакуры в Японии и Корее.</p>
+      <p>Ниже — таблица по {destinationRows.length} направлениям: <strong>цвет ячейки</strong> показывает, насколько хорош месяц для поездки, <strong>★</strong> — лучший месяц по строке, <strong>цифра</strong> — цена билета из Москвы. Кликни на месяц — погода, события, личные пометки и ссылка на билет.</p>
+    </div>
+  </div>
 
   <div class="mission">
     <span class="mission-pill pill-os">⊹ Open Source</span>
@@ -893,6 +904,16 @@ h1 em { color: var(--gold); font-style: normal; }
 .seasons-byline a { color: var(--text-dim); text-decoration: none; }
 .seasons-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
 .seasons-byline .byline-fresh { color: var(--text-faint); }
+
+/* Answer-first TL;DR — прямой ответ + как читать таблицу (критичный контент в начале) */
+.seasons-tldr { max-width: 1400px; margin: 0 auto 1.5rem; padding: 0 clamp(1rem, 4vw, 3rem); }
+.tldr-box {
+  border-left: 3px solid var(--gold); background: rgba(245,166,35,0.05);
+  padding: 0.9rem 1.15rem; border-radius: 0 var(--radius-3, 6px) var(--radius-3, 6px) 0;
+}
+.tldr-box p { font-family: var(--ff-body); color: var(--text-dim); font-size: 0.92rem; line-height: 1.6; margin: 0; }
+.tldr-box p + p { margin-top: 0.5rem; }
+.tldr-box strong { color: var(--text); font-weight: 600; }
 
 .mission { max-width: 1400px; margin: 0 auto 1.5rem; padding: 0 clamp(1rem, 4vw, 3rem); display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
 .mission-pill {
