@@ -1,0 +1,31 @@
+---
+// Единый тёплый disclosure для партнёрских ссылок (38-ФЗ + конверсия).
+// Ставится один раз в начале поста — снимает нужду дублировать «Реклама»
+// у каждой ссылки, располагает доверием вместо отпугивания.
+---
+<aside class="affiliate-note">
+  <span class="affiliate-note-icon" aria-hidden="true">⚡</span>
+  <p>По некоторым ссылкам в гайде можно сразу забронировать или оформить — <strong>цена для вас та же</strong>, а блог получает небольшую комиссию. Это держит его бесплатным и без назойливых баннеров. Такие ссылки помечены <span class="ad-mark">реклама</span>.</p>
+</aside>
+
+<style>
+.affiliate-note {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  margin: 1.6rem 0;
+  padding: 0.9rem 1.1rem;
+  background: rgba(201, 151, 58, 0.05);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold);
+  border-radius: 6px;
+}
+.affiliate-note-icon { font-size: 1.1rem; line-height: 1.5; flex-shrink: 0; }
+.affiliate-note p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+.affiliate-note strong { color: var(--text); font-weight: 600; }
+</style>
