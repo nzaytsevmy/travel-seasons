@@ -25,6 +25,9 @@ export const TP_LINKS = {
   // Travelata: пакетные туры + отели. Вертикаль «готовый тур vs самостоятельно».
   // Cookie 180 дней (лучший), комиссия 3.8–8%. erid от партнёра (38-ФЗ).
   travelata:  'https://travelata.tpk.mx/Do2A3cgV?erid=2VtzqufPtiT',
+  // EconomyBookings: аренда авто (car rental aggregator), erid встроен (38-ФЗ).
+  // Интент «road-trip / самостоятельно за рулём» — добавлять в self-drive направления.
+  economybookings: 'https://economybookings.tpk.mx/xlSFNA6p?erid=2VtzqxYvA5V',
 };
 
 // Aviasales deep-link под конкретный маршрут (origin/destination IATA) —
