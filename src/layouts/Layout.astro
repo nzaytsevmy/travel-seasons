@@ -162,11 +162,11 @@ const finalLd = {
   <meta name="theme-color" content="#0c0a08" media="(prefers-color-scheme: dark)" />
   <meta name="theme-color" content="#f8f5ef" media="(prefers-color-scheme: light)" />
 
-  <!-- DNS prefetch + preconnect для third-party аналитики -->
+  <!-- Только dns-prefetch для аналитики (грузится поздно). preconnect убран:
+       PageSpeed флагует «unused preconnect» — eager-соединение крало канал у
+       hero-картинки/шрифтов на медленном 4G (хуже LCP). -->
   <link rel="dns-prefetch" href="https://mc.yandex.ru" />
-  <link rel="preconnect" href="https://mc.yandex.ru" crossorigin />
   <link rel="dns-prefetch" href="https://analytics.ahrefs.com" />
-  <link rel="preconnect" href="https://analytics.ahrefs.com" crossorigin />
 
   <!-- Editorial Magazine fonts: self-hosted через @fontsource (no Google Fonts request)
        Newsreader (variable italic + opsz) — заменяет Fraunces, editorial italic с длинными descenders
