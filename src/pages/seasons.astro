@@ -416,6 +416,7 @@ const MONTH_NAMES_LOCATIVE = ['январе','феврале','марте','ап
 let activeMonth = null;
 let activeQuery = '';
 let panelOpen = false;
+let currentShare = null;   // ?country=&m= текущей ячейки — строим ссылку для Share, но НЕ пишем в адрес постоянно
 
 function applyFilter() {
   const rows = document.querySelectorAll('#tbody tr:not(.group-header)');
@@ -610,8 +611,11 @@ function openPanel(cell) {
   document.body.classList.add('panel-open');
   panelOpen = true;
 
-  // URL state
-  syncUrl(slug, monthIdx);
+  // Ссылка для Share строится из текущей ячейки, но НЕ пишется в адрес постоянно —
+  // иначе кнопка «назад» в Safari возвращает на /seasons/?country=… и панель
+  // автo-переоткрывается (ощущение «назад не работает»).
+  currentShare = slug ? `?country=${slug}&m=${monthIdx + 1}` : null;
+  syncUrl();
 }
 
 function toggleBlock(blockId, textId, content) {
@@ -652,7 +656,7 @@ document.querySelectorAll('td.cell').forEach(cell => {
 
 // Share button
 document.getElementById('panelShare').addEventListener('click', async () => {
-  const url = window.location.href;
+  const url = location.origin + location.pathname + (currentShare || location.search);
   if (navigator.share) {
     try { await navigator.share({ title: document.getElementById('panelTitle').textContent, url }); } catch (e) {}
   } else if (navigator.clipboard) {
@@ -710,6 +714,11 @@ function restoreFromUrl() {
 }
 
 restoreFromUrl();
+
+// Safari bfcache: при возврате «назад» страница восстанавливается из кэша с
+// открытой панелью (overflow:hidden) — принудительно закрываем, чтобы «назад»
+// возвращал на таблицу, а не «застревал» на той же карточке.
+window.addEventListener('pageshow', (e) => { if (e.persisted && panelOpen) closePanel(); });
 </script>
 
 <style>
