@@ -235,5 +235,3 @@ howto:
 ---
 
 *Актуально на: 17 мая 2026. Стоимость визы и International Visitor Levy — по официальному сайту Immigration New Zealand. Цены на каяк-туры и круизы — операторы Roscos Milford Kayaks, Go Orange, Southern Discoveries, RealNZ на момент поездки. Цены на перелёты — Aviasales и официальные сайты авиакомпаний. Курсы валют ЦБ РФ.*
-
-*Часть ссылок партнёрские (Aviasales, Ostrovok, Cherehapa, Airalo). Цена для тебя не меняется — мы получаем небольшую комиссию.*
