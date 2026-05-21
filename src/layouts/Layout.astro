@@ -6,7 +6,6 @@ import onestCyrExt from '@fontsource-variable/onest/files/onest-cyrillic-ext-wgh
 import onestCyr from '@fontsource-variable/onest/files/onest-cyrillic-wght-normal.woff2?url';
 import onestLatExt from '@fontsource-variable/onest/files/onest-latin-ext-wght-normal.woff2?url';
 import onestLat from '@fontsource-variable/onest/files/onest-latin-wght-normal.woff2?url';
-import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   title: string;
@@ -219,8 +218,11 @@ const finalLd = {
   </script>
   <noscript><div><img src="https://mc.yandex.ru/watch/95832375" style="position:absolute; left:-9999px;" alt="Yandex Metrika" aria-hidden="true" /></div></noscript>
 
-  <!-- View Transitions API — плавные переходы между страницами -->
-  {!noTransitions && <ClientRouter />}
+  <!-- ClientRouter (SPA View Transitions) ОТКЛЮЧЁН по всему сайту 2026-05-21:
+       давал класс Safari/SPA-багов (скрипты умирали при навигации, конфликт с
+       bfcache на back/forward). Сайт статичный — нативные полные загрузки надёжнее,
+       кастомных transition-анимаций не было. Все скрипты инициализируются на каждой
+       полной загрузке (прямые вызовы init), astro:page-load-листенеры стали no-op. -->
 </head>
 <body>
   <!-- Skip-link for keyboard / screen reader users -->
