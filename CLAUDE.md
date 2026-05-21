@@ -167,3 +167,19 @@ Search Central (канон Google) · разбор факторов Яндекс
 2. Нет global-классов `.faq-item`, `.faq-block` в JSX программной страницы.
 3. CTA-блоки используют `.editorial-cta` pattern (gold-left, не card-shadow).
 4. Visual @402 + @1280 Playwright прогон на представителе типа.
+
+### Сетка и адаптив 2026 (web design канон — применять на всех новых лейаутах)
+Источники: UXPin UI Grids, USWDS, CMS Design System, 12-8-4. Утилиты в `global.css`, токены в `tokens.css`.
+- **Сетка 12-8-4 (mobile-first):** мобайл <768px = 4 кол, планшет ≥768 = 8, десктоп ≥1024 = 12.
+  Использовать `.grid-12` + спаны `.col-2/3/4/6/8`, или `.grid-auto` для карточек. Колонки fluid (`fr`),
+  gutters фикс (`--gutter` 16px / `--gutter-wide` 24px). Контейнер ≤1280 (`--container-wide` 1200).
+- **Таблицы на мобайле → карточки**, НЕ горизонтальный скролл (повтор десктоп-таблицы = анти-паттерн).
+- **Тач-таргеты ≥44px** (Apple HIG; WCAG 2.5.8 минимум 24). Типографика — `clamp()`, не фикс-px.
+- **CWV (фактор ранжирования + −24% bounce):** INP <200ms — главная боль 2026 (минимум JS, defer
+  некритичного, мгновенный visual feedback на тап); LCP <2.5s (preload hero+шрифты, critical CSS);
+  CLS 0 (width/height на media, fixed `aspect-ratio`, резерв под динамику).
+- **Современный CSS (production 2026, заменяет JS):** container queries (компонент адаптивен к контейнеру),
+  `:has()`, subgrid (выравнивание карточек), `clamp()`, `color-mix()`, `@layer`, nesting, view transitions.
+- **Конверсия = доступность:** один value-prop + 1 CTA над сгибом, повтор вторичных; формы — минимум полей;
+  контраст/heading-структура/keyboard-nav. (полный CTA-стандарт — `MONETIZATION-2026.md`).
+- **Проверять измеримо** (overflow=0, тач ≥44px) в Chromium+WebKit+Firefox @360/390 + десктоп — не на глаз.
