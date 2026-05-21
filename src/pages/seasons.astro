@@ -743,9 +743,10 @@ document.addEventListener('astro:page-load', _seasonsInit);
   --bg:#0c0e12; --bg2:#13161c; --bg3:#1b1f27;
   --line:rgba(245,166,35,.16);
   --gold:#f5a623; --gold-dim:#c98a2e; --gold-glow:rgba(245,166,35,.20);
-  --text:#e9e4d6; --text-dim:#8b8678; --text-faint:#5e5949;
+  --text:#e9e4d6; --text-dim:#8b8678; --text-faint:#8a8475;   /* faint поднят до WCAG AA (region-sub и пр. на тёмном) */
   --peak:#4f8a64; --good:#4d7e9e; --ok:#c79a4a; --bad:#b05a48; --off:#262b33;
-  --peak-text:#7fc89a; --good-text:#86b8e0;
+  /* *-text для тегов/статусов — светлые, контрастные на тёмном (WCAG AA) */
+  --peak-text:#7fc89a; --good-text:#86b8e0; --ok-text:#e3b75a; --bad-text:#ec9484;
 }
 #main {
   background: var(--bg); color: var(--text);
