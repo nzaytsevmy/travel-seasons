@@ -11,7 +11,9 @@ export const TP_LINKS = {
   aviasales:  `https://www.aviasales.ru/?marker=${TP_MARKER_FULL}&market=ru`,
   ostrovok:   'https://ostrovok.tpk.mx/w4cAS1wZ',
   cherehapa:  'https://cherehapa.tpk.mx/GmVWjhCN',
-  tripster:   'https://tripster.tpk.mx/PJlXelJd',
+  // tripster удалён 2026-05-21 — старый shortlink PJlXelJd редиректил на мёртвый
+  // tripster.com. Оффер в Travelpayouts активен (4–10%, cookie 90д) — при возврате
+  // перегенерировать ссылку на experience.tripster.ru и добавить сюда заново.
   // eSIM-провайдеры (оба ведут на RU-сайты).
   // Airalo: direct партнёрский URL + erid (38-ФЗ маркировка рекламы РФ)
   airalo:     'https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_&u=https%3A%2F%2Fairalo.com%2Fru',
