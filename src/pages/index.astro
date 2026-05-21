@@ -339,8 +339,11 @@ const featuredImageUrl = featured ? (await getImage({
 
 <script is:inline define:vars={{ searchOptions, currentMonthSlug }}>
   // Hero search: combobox с алфавитным listbox + live-фильтр + submit-фолбек
-  const heroForm = document.getElementById('heroSearch');
-  if (heroForm) {
+  // Идемпотентно + astro:page-load — иначе hero-поиск мёртв после SPA-перехода ClientRouter.
+  function _initHeroSearch() {
+    const heroForm = document.getElementById('heroSearch');
+    if (!heroForm || heroForm._heroReady) return;
+    heroForm._heroReady = true;
     const input = heroForm.querySelector('input[name="q"]');
     const list  = document.getElementById('hero-search-list');
     const items = list ? Array.from(list.querySelectorAll('.hero-list-item')) : [];
@@ -403,6 +406,8 @@ const featuredImageUrl = featured ? (await getImage({
       }
     });
   }
+  if (document.readyState !== 'loading') _initHeroSearch();
+  document.addEventListener('astro:page-load', _initHeroSearch);
 </script>
 
 <style>

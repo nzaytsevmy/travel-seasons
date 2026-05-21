@@ -410,6 +410,13 @@ const pricesUpdatedAt = pricesData.updatedAt
 </Layout>
 
 <script>
+// Идемпотентная инициализация: на первой загрузке И после каждого SPA-перехода
+// ClientRouter (иначе вся интерактивность таблицы умирала при навигации внутри сайта).
+function _seasonsInit() {
+  const _tb = document.getElementById('tbody');
+  if (!_tb || _tb._seasonsReady) return;   // 1 раз на свежий DOM
+  _tb._seasonsReady = true;
+
 const MONTH_NAMES = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 const MONTH_NAMES_LOCATIVE = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
 
@@ -721,6 +728,9 @@ restoreFromUrl();
 // открытой панелью (overflow:hidden) — принудительно закрываем, чтобы «назад»
 // возвращал на таблицу, а не «застревал» на той же карточке.
 window.addEventListener('pageshow', (e) => { if (e.persisted && panelOpen) closePanel(); });
+}
+if (document.readyState !== 'loading') _seasonsInit();
+document.addEventListener('astro:page-load', _seasonsInit);
 </script>
 
 <style>

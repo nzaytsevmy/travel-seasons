@@ -274,7 +274,11 @@ const ldJson = {
 </Layout>
 
 <script is:inline>
-(function () {
+// Идемпотентно + astro:page-load — иначе поиск/фильтры мертвы после SPA-перехода ClientRouter.
+function _initCards() {
+  var _g = document.getElementById('cardsGrid');
+  if (!_g || _g._cardsReady) return;
+  _g._cardsReady = true;
   var search = document.getElementById('cardsSearch');
   var grid = document.getElementById('cardsGrid');
   var empty = document.getElementById('cardsEmpty');
@@ -334,7 +338,9 @@ const ldJson = {
 
   // first sys chip "Любая" active by default
   if (sysChips[0]) sysChips[0].classList.add('is-active');
-})();
+}
+if (document.readyState !== 'loading') _initCards();
+document.addEventListener('astro:page-load', _initCards);
 </script>
 
 <style>
