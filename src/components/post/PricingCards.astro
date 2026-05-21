@@ -61,10 +61,9 @@ const { tiers, caption } = Astro.props;
 <style>
 .pricing-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
   margin: 2rem 0 2.5rem;
-  container-type: inline-size;
 }
 
 .pc-card {
@@ -161,8 +160,11 @@ const { tiers, caption } = Astro.props;
 }
 .pc-card--featured .pc-check { background: rgba(201,151,58,0.22); }
 
-/* Mobile: одна колонка, full-width карточки */
-@container (max-width: 600px) {
+/* Mobile: одна колонка, full-width карточки.
+   @media, не @container: контейнер-запрос таргетил сам .pricing-cards (контейнер),
+   а это применяется только к потомкам — правило не срабатывало. container-type
+   на auto-fit-гриде также валил старый Safari (схлопывал в min-content). */
+@media (max-width: 600px) {
   .pricing-cards {
     grid-template-columns: 1fr;
     gap: 0.85rem;
