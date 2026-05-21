@@ -228,6 +228,21 @@ const finalLd = {
 
   <slot />
 
+  <!-- Реферальные/партнёрские ссылки (rel=sponsored / .aff-cta) открываем в новой
+       вкладке + noopener — чтобы клик по партнёру не уводил человека с сайта.
+       Внутренние и информационные ссылки не трогаем. Re-run после SPA-перехода. -->
+  <script is:inline>
+    function _refLinksNewTab() {
+      document.querySelectorAll('a[rel~="sponsored"], a.aff-cta').forEach(function (a) {
+        if (a.target === '_blank') return;
+        a.target = '_blank';
+        if (!/\bnoopener\b/.test(a.rel)) a.rel = (a.rel + ' noopener').trim();
+      });
+    }
+    _refLinksNewTab();
+    document.addEventListener('astro:page-load', _refLinksNewTab);
+  </script>
+
   <!-- Theme toggle — light is default, button switches to dark and back.
        Re-init после ClientRouter swap: новая кнопка в DOM = новый listener. -->
   <script is:inline>
