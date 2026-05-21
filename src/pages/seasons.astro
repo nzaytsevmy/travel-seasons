@@ -512,18 +512,19 @@ searchInput.addEventListener('input', e => {
   }, 100);
 });
 
-// Hover на ячейке — подсвечиваем колонку (визуальный сигнал)
-document.querySelectorAll('td.cell').forEach(cell => {
-  cell.addEventListener('mouseenter', () => {
-    if (activeMonth !== null) return;
-    const m = parseInt(cell.dataset.month, 10);
-    document.querySelectorAll('.month-header').forEach((th, i) => {
-      th.classList.toggle('hover-col', i === m);
-    });
-  });
-  cell.addEventListener('mouseleave', () => {
+// Hover на ячейке — подсветка колонки. Делегирование на #tbody (1 listener вместо
+// 840×2) — канон 2026: минимум JS для хорошего INP.
+const tbodyEl = document.getElementById('tbody');
+tbodyEl.addEventListener('mouseover', e => {
+  const cell = e.target.closest('td.cell');
+  if (!cell || activeMonth !== null) return;
+  const m = parseInt(cell.dataset.month, 10);
+  document.querySelectorAll('.month-header').forEach((th, i) => th.classList.toggle('hover-col', i === m));
+});
+tbodyEl.addEventListener('mouseout', e => {
+  if (e.target.closest('td.cell')) {
     document.querySelectorAll('.month-header.hover-col').forEach(th => th.classList.remove('hover-col'));
-  });
+  }
 });
 
 // Side-panel open
@@ -643,15 +644,16 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && panelOpen) closePanel();
 });
 
-// Cell click / keyboard activation
-document.querySelectorAll('td.cell').forEach(cell => {
-  cell.addEventListener('click', () => openPanel(cell));
-  cell.addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      openPanel(cell);
-    }
-  });
+// Клик/клавиатура по ячейке — делегирование на #tbody (1 listener вместо 840×2).
+tbodyEl.addEventListener('click', e => {
+  const cell = e.target.closest('td.cell');
+  if (cell) openPanel(cell);
+});
+tbodyEl.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    const cell = e.target.closest('td.cell');
+    if (cell) { e.preventDefault(); openPanel(cell); }
+  }
 });
 
 // Share button
