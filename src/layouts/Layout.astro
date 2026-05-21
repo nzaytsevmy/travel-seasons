@@ -233,10 +233,17 @@ const finalLd = {
        Внутренние и информационные ссылки не трогаем. Re-run после SPA-перехода. -->
   <script is:inline>
     function _refLinksNewTab() {
-      document.querySelectorAll('a[rel~="sponsored"], a.aff-cta').forEach(function (a) {
-        if (a.target === '_blank') return;
-        a.target = '_blank';
+      var AFF = ['aviasales.ru', 'tpk.mx', 'pxf.io', 'platipomiru.com', 'drimsim.ru', 'cherehapa.ru', 'airalo.com', 'travelata.ru'];
+      document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+        var host;
+        try { host = new URL(a.href).hostname.toLowerCase(); } catch (e) { return; }
+        if (host.indexOf('traveltribe.ru') !== -1) return;                 // внутренние не трогаем
+        var isRef = a.rel.indexOf('sponsored') !== -1 || a.classList.contains('aff-cta') ||
+          AFF.some(function (d) { return host === d || host.endsWith('.' + d); });
+        if (!isRef) return;                                                // только реферальные
+        if (a.target !== '_blank') a.target = '_blank';
         if (!/\bnoopener\b/.test(a.rel)) a.rel = (a.rel + ' noopener').trim();
+        if (a.rel.indexOf('sponsored') === -1) a.rel = (a.rel + ' sponsored').trim();  // доразметка bare-реф
       });
     }
     _refLinksNewTab();
