@@ -725,3 +725,24 @@ footer {
 .aff-cta:hover { color: var(--gold-dim); border-bottom-color: var(--gold); }
 .aff-cta::after { content: '→'; transition: transform 0.15s; display: inline-block; }
 .aff-cta:hover::after { transform: translateX(3px); }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   СЕТКА 2026 — web design канон (12-8-4, gutter 16px). Переиспользуемые утилиты,
+   применять на новых лейаутах. Колонки fluid (fr), gutters фиксированные.
+   ───────────────────────────────────────────────────────────────────────────── */
+.grid-12 { display: grid; gap: var(--gutter); grid-template-columns: repeat(4, 1fr); }
+@media (min-width: 768px)  { .grid-12 { grid-template-columns: repeat(8, 1fr); gap: var(--gutter-wide); } }
+@media (min-width: 1024px) { .grid-12 { grid-template-columns: repeat(12, 1fr); } }
+
+/* авто-сетка карточек: подстраивается под контент, без media queries */
+.grid-auto { display: grid; gap: var(--gutter); grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); }
+
+/* спан-хелперы 12-сетки (десктоп); на мобайле каждый блок во всю ширину */
+.col-2, .col-3, .col-4, .col-6, .col-8 { grid-column: 1 / -1; }
+@media (min-width: 1024px) {
+  .col-2 { grid-column: span 2; }
+  .col-3 { grid-column: span 3; }
+  .col-4 { grid-column: span 4; }
+  .col-6 { grid-column: span 6; }
+  .col-8 { grid-column: span 8; }
+}
