@@ -1,1019 +1,385 @@
 ---
-import { getCollection } from 'astro:content';
-import { Image, getImage } from 'astro:assets';
+// Главная — Swiss / International Typographic по BRANDBOOK.md (пилот миграции).
+// Layout — только для <head>/SEO/schema/аналитики; визуал — самодостаточный Swiss,
+// scoped, light-only (свои токены, не зависят от тёмной темы остального сайта).
+import '@fontsource-variable/archivo/index.css';
 import Layout from '../layouts/Layout.astro';
-import Nav from '../components/Nav.astro';
-import Footer from '../components/Footer.astro';
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import { DIRECTIONS } from '../data/directions.js';
+import { TP_LINKS } from '../data/affiliate.js';
+import budgets from '../data/real-budgets-2026.json';
 import authorPhoto from '../assets/author/nikita.jpg';
-import { DIRECTIONS, MONTHS } from '../data/directions.js';
-import { Icon } from 'astro-icon/components';
 
-// Search autocomplete data
-const searchOptions = DIRECTIONS.map(d => ({
-  label: d.cases.nom,
-  slug: d.slug,
-  region: d.region,
-  sub: d.sub,
-}));
+import georgiaCover from '../assets/destinations/georgia.jpg';
+import turkeyCover from '../assets/destinations/turkey.jpg';
+import baliCover from '../assets/destinations/bali.jpg';
+import japanCover from '../assets/destinations/japan.jpg';
+import peruCover from '../assets/destinations/peru.jpg';
+import uaeCover from '../assets/destinations/uae.jpg';
+import kenyaCover from '../assets/destinations/kenya.jpg';
+import nzCover from '../assets/destinations/new-zealand.jpg';
+import icelandCover from '../assets/destinations/iceland.jpg';
+import moroccoCover from '../assets/destinations/morocco.jpg';
+import ecuadorCover from '../assets/destinations/ecuador.jpg';
 
-// Сгруппировано по первой букве — для алфавитного listbox под input
-const sortedSearchOptions = [...searchOptions].sort((a, b) => a.label.localeCompare(b.label, 'ru'));
-const grouped = sortedSearchOptions.reduce<Record<string, typeof sortedSearchOptions>>((acc, o) => {
-  const letter = o.label.charAt(0).toUpperCase();
-  (acc[letter] ||= []).push(o);
-  return acc;
-}, {});
-const letters = Object.keys(grouped).sort((a, b) => a.localeCompare(b, 'ru'));
+const COVERS = { georgia: georgiaCover, turkey: turkeyCover, bali: baliCover, japan: japanCover, peru: peruCover, uae: uaeCover, kenya: kenyaCover, 'new-zealand': nzCover, iceland: icelandCover, morocco: moroccoCover, ecuador: ecuadorCover };
 
-const currentMonthSlug = MONTHS[new Date().getMonth()].slug;
-
-// Schema: Organization + WebSite + SearchAction теперь эмитятся глобально
-// в Layout.astro (резолвят isPartOf:#website / publisher:#org на всех
-// страницах). Дублировать на главной не нужно.
-
-// ── Posts ─────────────────────────────────────────
-const allPosts = (await getCollection('blog')).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-);
-const featured = allPosts[0];
-const restPosts = allPosts.slice(1, 7);
-
-function readingTime(body: string) {
-  return Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
-}
-
-// ── Bento categories — все ведут на /<slug>/ кратко-хабы (унифицировано)
-import antarcticaCover from '../assets/destinations/antarctica.jpg';
-import japanCover      from '../assets/destinations/japan.jpg';
-import baliCover       from '../assets/destinations/bali.jpg';
-import ecuadorCover    from '../assets/destinations/ecuador.jpg';
-import nzCover         from '../assets/destinations/new-zealand.jpg';
-import georgiaCover    from '../assets/destinations/georgia.jpg';
-
-const CATEGORIES = [
-  { label: 'Антарктида',     sub: 'Круиз · 750k–4.5M ₽',   href: '/antarctica/',  cover: antarcticaCover, size: 'lg' },
-  { label: 'Япония',         sub: 'Виза · сезоны · бюджет', href: '/japan/',       cover: japanCover,      size: 'lg' },
-  { label: 'Бали',           sub: '6 районов',              href: '/bali/',        cover: baliCover,       size: 'md' },
-  { label: 'Эквадор',        sub: 'Галапагосы',             href: '/ecuador/',     cover: ecuadorCover,    size: 'md' },
-  { label: 'Новая Зеландия', sub: 'Южное сияние',           href: '/new-zealand/', cover: nzCover,         size: 'md' },
-  { label: 'Грузия',         sub: 'Безвиз · от $50/день',   href: '/georgia/',     cover: georgiaCover,    size: 'md' },
+// Сезон/вайб/месяцы — выверенная редактура; БЮДЖЕТ (₽/день) и ВИЗА — реальные из данных.
+const FEATURED = [
+  { slug: 'georgia',     months: [5,6,9,10],            vibe: ['mountains','city'],   vibeRu: 'Горы · город · вино',     season: 'май–октябрь' },
+  { slug: 'turkey',      months: [4,5,6,9,10],          vibe: ['beach','city'],       vibeRu: 'Пляж · город',            season: 'апрель–октябрь' },
+  { slug: 'bali',        months: [4,5,6,7,8,9,10],      vibe: ['beach','nature'],     vibeRu: 'Пляж · природа',          season: 'апрель–октябрь' },
+  { slug: 'japan',       months: [3,4,11],              vibe: ['city','nature'],      vibeRu: 'Город · природа · еда',   season: 'ноябрь / апрель' },
+  { slug: 'peru',        months: [5,6,7,8,9],           vibe: ['mountains','nature'], vibeRu: 'Горы · Мачу-Пикчу',       season: 'май–сентябрь' },
+  { slug: 'uae',         months: [11,12,1,2,3],         vibe: ['city','beach'],       vibeRu: 'Город · пляж · шопинг',   season: 'ноябрь–апрель' },
+  { slug: 'kenya',       months: [7,8,9,10],            vibe: ['nature'],             vibeRu: 'Сафари · Большая пятёрка', season: 'июль–октябрь' },
+  { slug: 'new-zealand', months: [12,1,2,3],            vibe: ['nature'],             vibeRu: 'Природа · фьорды',        season: 'декабрь–февраль' },
+  { slug: 'iceland',     months: [6,7,8,9,10,11,12,1,2,3], vibe: ['nature'],          vibeRu: 'Природа · сияние',        season: 'сияние сен–март' },
+  { slug: 'morocco',     months: [3,4,5,10,11],         vibe: ['city','nature'],      vibeRu: 'Город · пустыня',         season: 'весна / осень' },
+  { slug: 'ecuador',     months: [6,7,8,9],             vibe: ['nature'],             vibeRu: 'Галапагосы · природа',    season: 'круглый год' },
 ];
 
-const MONTHS_RU = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
-const currentMonthRu = MONTHS_RU[new Date().getMonth()];
+const VISA_LABEL = { free: 'Безвиз', evisa: 'e-Visa', required: 'Виза' };
+const VISA_CLASS = { free: 'free', evisa: 'evisa', required: 'visa' };
+const fmt = (n) => n.toLocaleString('ru-RU');
+const tier = (b) => (b < 2500 ? 'low' : b <= 6000 ? 'mid' : 'high');
 
-// LCP candidate — featured cover. Preload через Layout prop.
-const featuredImageUrl = featured ? (await getImage({
-  src: featured.data.coverImage,
-  width: 1024,
-  format: 'webp',
-  quality: 72,
-})).src : undefined;
+const rows = FEATURED.map((f) => {
+  const d = DIRECTIONS.find((x) => x.slug === f.slug);
+  const budget = budgets[f.slug]?.median_daily_rub?.budget;
+  return d && budget ? { ...f, nom: d.cases.nom, visa: d.visa, budget, cover: COVERS[f.slug] } : null;
+}).filter(Boolean);
+
+const MONTHS_PREP = ['', 'январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
+const month = new Date().getMonth() + 1;
+const monthWord = MONTHS_PREP[month];
+const nowRows = rows.filter((r) => r.months.includes(month));
+const nowNames = nowRows.map((r) => r.nom);
+const plural = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'направление' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'направления' : 'направлений'));
+const nowWord = plural(nowRows.length);
+
+// Бали — реальный пример для превью инструментов
+const baliDay = budgets['bali']?.median_daily_rub?.budget ?? 1294;
+const baliWeek = baliDay * 7;
+
+// Свежие посты
+const allPosts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const posts = allPosts.slice(0, 3);
+const readingTime = (body) => Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
+
+const desc = 'Куда поехать из России в 2026: визы, сезоны и реальные цены 2026 по 70 направлениям в одной таблице — куда, когда и за сколько. Автор был лично на 7 континентах.';
+const ldJson = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'WebPage', '@id': 'https://traveltribe.ru/#webpage', url: 'https://traveltribe.ru/', name: 'TravelTribe — куда поехать из России в 2026', description: desc, isPartOf: { '@id': 'https://traveltribe.ru/#website' }, about: { '@id': 'https://traveltribe.ru/#org' }, inLanguage: 'ru-RU' },
+    { '@type': 'ItemList', name: 'Куда поехать из России в 2026 — направления', itemListElement: rows.map((r, i) => ({ '@type': 'ListItem', position: i + 1, name: r.nom, url: `https://traveltribe.ru/${r.slug}/` })) },
+  ],
+};
 ---
-<Layout
-  title="TravelTribe — авторский тревел-блог из России"
-  description="Личные отчёты Никиты Зайцева о путешествиях. Визы, сезоны, реальные бюджеты для 70 направлений мира — Антарктида, Япония, Бали, Африка, Латам."
-  canonical="https://traveltribe.ru/"
-  ogTitle="TravelTribe — авторский тревел-блог из России"
-  ogDescription="60+ стран, 7 континентов. Личные отчёты, реальные цены 2026, без воды и рекламы."
-  preloadImage={featuredImageUrl}
->
-  <Nav active="home" />
+<Layout title="TravelTribe — куда поехать из России в 2026: визы, сезоны, цены" description={desc} canonical="https://traveltribe.ru/" ldJson={ldJson}>
+<div class="sw">
+  <header class="sw-head">
+    <div class="wrap nav">
+      <a class="wm" href="/">TravelTribe</a>
+      <nav aria-label="Основное меню"><ul>
+        <li><a href="/countries/">Направления</a></li>
+        <li><a href="/visa/">Визы</a></li>
+        <li><a href="/seasons/">Сезоны</a></li>
+        <li><a href="/trips/">Поездки</a></li>
+        <li><a href="/calculator/">Калькулятор</a></li>
+        <li><a href="/packing/">Чек-лист</a></li>
+        <li><a href="/blog/">Блог</a></li>
+      </ul></nav>
+    </div>
+  </header>
 
   <main id="main">
-    {/* ─── HERO — split: brand intro слева, featured story справа ─── */}
-    {featured && (
-      <section class="hero-split">
-        <div class="hero-intro">
-          <div class="hero-intro-eyebrow">// Travel-блог · Россия</div>
-          <h1 class="hero-intro-title">
-            Реальные путешествия. <em>Без воды.</em>
-          </h1>
-          <p class="hero-intro-desc">
-            Личные отчёты, актуальные визы, реальные цены 2026 для 70 направлений мира. То что работает прямо сейчас — без рекламы и партнёрских туров.
-          </p>
+    <!-- Манифест -->
+    <section class="manifest"><div class="wrap grid">
+      <div class="idx">01 / Манифест<b>Авторский тревел-журнал</b></div>
+      <p class="meta"><b>Был лично на 7 континентах</b><br>60+ стран · цены из чеков, не пересказ · обновлено V.2026</p>
+      <h1 class="h1">Вся польза<br>о поездках —<br><span class="rd">на виду.</span></h1>
+      <p class="sub">Визы, сезоны, реальные цены 2026 и маршруты по 70 направлениям — в одной таблице. Куда, когда и за сколько видно сразу. Ничего копать не нужно.</p>
+      <ul class="vlist">
+        <li class="vi"><span>01</span>Визы РФ</li>
+        <li class="vi"><span>02</span>Сезоны 70×12</li>
+        <li class="vi"><span>03</span>Цены из чеков</li>
+        <li class="vi"><span>04</span>Маршруты</li>
+        <li class="vi"><span>05</span>Чек-листы</li>
+        <li class="vi"><span>06</span>70 направлений</li>
+      </ul>
+    </div></section>
 
-          <form class="hero-search" id="heroSearch" autocomplete="off" data-month={currentMonthSlug} role="search">
-            <label for="hero-search-input" class="hero-search-label">Куда хочешь поехать?</label>
-            <div class="hero-search-row">
-              <svg class="hero-search-icon" viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-                <circle cx="7" cy="7" r="5"></circle><line x1="11" y1="11" x2="14.5" y2="14.5"></line>
-              </svg>
-              <input
-                id="hero-search-input"
-                name="q"
-                type="search"
-                placeholder="Япония, Бали, Грузия, Антарктида…"
-                class="hero-search-input"
-                role="combobox"
-                aria-expanded="false"
-                aria-controls="hero-search-list"
-                aria-autocomplete="list"
-              />
-              <button type="submit" class="hero-search-btn">
-                <span>Найти</span>
-                <span aria-hidden="true">→</span>
-              </button>
-            </div>
-            <div id="hero-search-list" class="hero-list" role="listbox" aria-label="Все направления по алфавиту">
-              {letters.map(letter => (
-                <div class="hero-list-group" data-letter={letter}>
-                  <div class="hero-list-letter" aria-hidden="true">{letter}</div>
-                  <ul class="hero-list-items">
-                    {grouped[letter].map(o => (
-                      <li>
-                        <a
-                          href={`/${o.slug}/`}
-                          class="hero-list-item"
-                          role="option"
-                          data-label={o.label.toLowerCase()}
-                          data-region={o.region.toLowerCase()}
-                        >
-                          <span class="hero-list-name">{o.label}</span>
-                          <span class="hero-list-region">{o.region}</span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-              <p class="hero-list-empty" hidden>Ничего не нашлось — попробуй другую страну или регион</p>
-            </div>
-          </form>
-          <div class="hero-intro-stats">
-            <div><strong>{DIRECTIONS.length}</strong><span>направлений</span></div>
-            <div><strong>7</strong><span>континентов</span></div>
-            <div><strong>{allPosts.length}</strong><span>лонгрида</span></div>
-            <div><strong>1100+</strong><span>страниц</span></div>
-          </div>
-          <div class="hero-intro-cta">
-            <a href="/blog/" class="hero-btn-primary">Читать блог</a>
-            <a href="/seasons/" class="hero-btn-ghost">Куда ехать сейчас</a>
-          </div>
-        </div>
-
-        <a class="hero-feature" href={`/blog/${featured.slug}/`}>
-          <div class="hero-feature-image">
-            <Image
-              src={featured.data.coverImage}
-              alt={featured.data.title}
-              widths={[640, 1024, 1400]}
-              sizes="(max-width: 960px) 100vw, 50vw"
-              formats={['webp']}
-              fallbackFormat="jpg"
-              quality={72}
-              loading="eager"
-              fetchpriority="high"
-              style={`object-position: ${featured.data.coverPosition || 'center'};`}
-            />
-            <div class="hero-feature-overlay"></div>
-          </div>
-          <div class="hero-feature-content">
-            <div class="hero-feature-meta">
-              <span class="hero-feature-tag">Свежее · {featured.data.tags?.[0] || 'История'}</span>
-              {featured.data.sourceType === 'personal' && featured.data.tripPlace && (
-                <span class="hero-feature-trip">✓ Был лично</span>
-              )}
-            </div>
-            <h2 class="hero-feature-title">{featured.data.title}</h2>
-            <span class="hero-feature-cta">Читать историю →</span>
-          </div>
-        </a>
-      </section>
-    )}
-
-    {/* ─── Categories Bento (Apple/Linear-style asymmetric grid с photo) ─── */}
-    <section class="cat-section">
-      <div class="cat-container">
-        <div class="section-eyebrow">// Направления</div>
-        <h2 class="section-title">Куда поехать</h2>
-        <div class="bento-grid">
-          {CATEGORIES.map((c, i) => (
-            <a href={c.href} class={`bento-card bento-card--${c.size}`}>
-              <Image
-                src={c.cover}
-                alt={c.label}
-                widths={[400, 800, 1200]}
-                sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
-                formats={['webp']}
-                quality={68}
-                loading="lazy"
-                style={`object-position: ${c.objPos || 'center'};`}
-              />
-              <div class="bento-overlay"></div>
-              <div class="bento-content">
-                <div class="bento-sub">{c.sub}</div>
-                <div class="bento-label">{c.label}</div>
-              </div>
-              <span class="bento-arrow" aria-hidden="true">→</span>
-            </a>
+    <!-- Фильтры + дашборд -->
+    <section><div class="wrap grid">
+      <div class="filters" role="search">
+        <div class="fg"><span class="fl">Когда</span><select class="t" id="fMonth" aria-label="Месяц поездки">
+          <option value="0">любой</option>
+          {MONTHS_PREP.slice(1).map((_, i) => (
+            <option value={i + 1} selected={i + 1 === month}>{['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'][i]}</option>
           ))}
+        </select></div>
+        <div class="fg"><span class="fl">Бюджет</span><div class="fopts" data-g="b"><button class="t" data-v="low" type="button">$</button><button class="t" data-v="mid" type="button">$$</button><button class="t" data-v="high" type="button">$$$</button></div></div>
+        <div class="fg"><span class="fl">Виза</span><div class="fopts" data-g="v"><button class="t" data-v="free" type="button">безвиз</button><button class="t" data-v="evisa" type="button">e-visa</button></div></div>
+        <div class="fg"><span class="fl">Вайб</span><div class="fopts" data-g="vibe"><button class="t" data-v="beach" type="button">пляж</button><button class="t" data-v="mountains" type="button">горы</button><button class="t" data-v="city" type="button">город</button><button class="t" data-v="nature" type="button">природа</button></div></div>
+        <div class="fcount"><b id="fCountN">{nowRows.length}</b><span id="fCountW">{nowWord}</span></div>
+      </div>
+
+      <p class="seasonlead" id="seasonlead">Сейчас, <b>в {monthWord}</b>, подходит: {nowNames.join(', ') || '—'}.</p>
+
+      <div class="dashwrap"><table class="dash" id="dash">
+        <thead><tr><th></th><th>Направление</th><th>Бюджет / день</th><th>Виза</th><th>Лучший сезон</th><th class="r">Перелёт</th></tr></thead>
+        <tbody>
+          {rows.map((r, i) => (
+            <tr data-m={r.months.join(',')} data-b={tier(r.budget)} data-v={r.visa} data-vibe={r.vibe.join(',')} data-name={r.nom.toLowerCase()}>
+              <td class="cno no">{String(i + 1).padStart(2, '0')}</td>
+              <td class="cdest"><span class="dest"><span class="th"><Image src={r.cover} alt={r.nom} width={124} height={92} formats={['webp']} /></span><span><a class="nm" href={`/${r.slug}/`}>{r.nom}</a><span class="vibe">{r.vibeRu}</span></span></span></td>
+              <td data-l="Бюджет"><span class="price">{fmt(r.budget)} ₽ <small>/день</small></span></td>
+              <td data-l="Виза"><span class={`visa ${VISA_CLASS[r.visa]}`}>{VISA_LABEL[r.visa]}</span></td>
+              <td data-l="Сезон" class="season">{r.season}</td>
+              <td data-l="Перелёт" class="flight r"><a class="fly" href={TP_LINKS.aviasales} rel="sponsored noopener" target="_blank">Найти билет →</a></td>
+            </tr>
+          ))}
+        </tbody>
+      </table></div>
+      <p class="nomatch" id="noMatch">По фильтрам пусто — снимите вайб или выберите «любой» месяц.</p>
+      <p class="dfoot">Бюджет ₽/день — реальные траты и агрегаторы 2026, на одного (хостел/локальная еда/транспорт; перелёт отдельно). Ссылки на билеты — партнёрские. <a href="/seasons/">Все 70 направлений →</a></p>
+
+      <!-- Монетизация -->
+      <div class="gear">
+        <div class="gear-h"><h2>Собраться в дорогу</h2><span class="adm">реклама</span></div>
+        <div class="gear-grid">
+          <div class="gi"><div class="gl">Билеты</div><div class="gt">Авиабилеты</div><div class="gd">Сравнить цены и поймать дешёвый</div><a class="cta" href={TP_LINKS.aviasales} rel="sponsored noopener" target="_blank">Найти билет →</a></div>
+          <div class="gi"><div class="gl">Жильё</div><div class="gt">Отели и апарты</div><div class="gd">Оплата картой РФ, бесплатная отмена</div><a class="cta" href={TP_LINKS.ostrovok} rel="sponsored noopener" target="_blank">Подобрать жильё →</a></div>
+          <div class="gi"><div class="gl">Страховка</div><div class="gt">Мед. страховка</div><div class="gd">Под визу и погранусловия</div><a class="cta" href={TP_LINKS.cherehapa} rel="sponsored noopener" target="_blank">Оформить →</a></div>
+          <div class="gi"><div class="gl">Авто</div><div class="gt">Прокат авто</div><div class="gd">Локальные и межд. прокатчики</div><a class="cta" href={TP_LINKS.economybookings} rel="sponsored noopener" target="_blank">Сравнить прокат →</a></div>
         </div>
       </div>
-    </section>
 
-    {/* ─── Latest posts grid ─── */}
-    {restPosts.length > 0 && (
-      <section class="latest-section">
-        <div class="latest-container">
-          <header class="latest-header">
-            <div class="section-eyebrow">// Последние истории</div>
-            <h2 class="section-title">Свежие посты</h2>
-            <a href="/blog/" class="latest-all">Все статьи →</a>
-          </header>
-          <div class="latest-grid">
-            {restPosts.map((post) => (
-              <a href={`/blog/${post.slug}/`} class="latest-card">
-                <div class="latest-cover">
-                  <Image
-                    src={post.data.coverImage}
-                    alt={post.data.title}
-                    widths={[400, 720]}
-                    sizes="(max-width: 700px) 100vw, 33vw"
-                    formats={['webp']}
-                    quality={68}
-                    loading="lazy"
-                    style={`object-position: ${post.data.coverPositionCard || post.data.coverPosition || 'center'};`}
-                  />
-                </div>
-                <div class="latest-body">
-                  <div class="latest-tags">
-                    {post.data.tags?.slice(0, 2).map((t) => (
-                      <span class="latest-tag">{t}</span>
-                    ))}
-                  </div>
-                  <h3 class="latest-title">{post.data.title}</h3>
-                  <p class="latest-desc">{post.data.description}</p>
-                  <div class="latest-meta">
-                    <span>{readingTime(post.body)} мин</span>
-                    {post.data.sourceType === 'personal' && <span class="latest-personal">· Был лично</span>}
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
+      <div class="visaband"><span class="vt"><b>Виза для россиян 2026</b> — по каждой из 70 стран: безвиз, e-Visa или консульство. В таблице выше виза видна в каждой строке.</span><a href="/visa/">Все визы и что изменилось →</a></div>
+    </div></section>
+
+    <!-- Инструменты -->
+    <section class="sec"><div class="wrap grid">
+      <div class="shead"><div><span class="n">02</span><h2>Инструменты — не на слово</h2></div><a href="/seasons/">Все →</a></div>
+      <div class="tools">
+        <div class="tcard"><div class="tt">Таблица сезонов 70×12</div><div class="ts">Пример строки «Бали» — когда ехать:</div>
+          <div class="heat" id="heat"></div>
+          <div class="heatlbl"><span>Я</span><span>Ф</span><span>М</span><span>А</span><span>М</span><span>И</span><span>И</span><span>А</span><span>С</span><span>О</span><span>Н</span><span>Д</span></div>
+          <div class="lg"><span><i style="background:var(--gold)"></i>пик</span><span><i style="background:var(--ink)"></i>хорошо</span><span><i style="background:#9b9789"></i>норм</span><span><i style="background:var(--hair)"></i>не сезон</span></div>
+          <div class="tl"><a href="/seasons/">Открыть 70×12 →</a><a href="/visa/">Визы РФ →</a></div>
         </div>
-      </section>
-    )}
-
-    {/* ─── Tools strip — calc + seasons + visa-map ─── */}
-    <section class="tools-section">
-      <div class="tools-container">
-        <div class="section-eyebrow">// Инструменты</div>
-        <div class="tools-grid">
-          <a href="/seasons/" class="tool-card">
-            <Icon name="lucide:calendar-days" class="tool-icon" />
-            <strong>Таблица сезонов</strong>
-            <span>70 направлений × 12 месяцев. Когда лучше ехать.</span>
-          </a>
-          <a href="/calculator/" class="tool-card">
-            <Icon name="lucide:wallet" class="tool-icon" />
-            <strong>Калькулятор бюджета</strong>
-            <span>Перелёт + проживание + еда. Живой курс ЦБ.</span>
-          </a>
-          <a href="/trips/" class="tool-card">
-            <Icon name="lucide:globe-2" class="tool-icon" />
-            <strong>Календарь поездок</strong>
-            <span>Что работает в каждом месяце 2026.</span>
-          </a>
-          <a href="/packing/" class="tool-card">
-            <Icon name="lucide:list-checks" class="tool-icon" />
-            <strong>Чек-листы</strong>
-            <span>Что взять в каждую страну по сезону.</span>
-          </a>
-          <a href="/blog/" class="tool-card">
-            <Icon name="lucide:book-open" class="tool-icon" />
-            <strong>Блог</strong>
-            <span>Личные отчёты автора. {allPosts.length} статей.</span>
-          </a>
+        <div class="tcard bud"><div class="tt">Калькулятор бюджета</div><div class="ts">Бали, реальный бюджет-уровень:</div>
+          <div class="br"><span>В день (жильё+еда+транспорт)</span><b>{fmt(baliDay)} ₽</b></div>
+          <div class="br"><span>Неделя (7 дней)</span><b>{fmt(baliWeek)} ₽</b></div>
+          <div class="br"><span>Перелёт</span><b>считается отдельно</b></div>
+          <div class="tl"><a href="/calculator/">Посчитать свою поездку →</a></div>
         </div>
       </div>
-    </section>
+    </div></section>
 
-    {/* ─── Newsletter — Telegram-канал (Email убран — в РФ Telegram > Email) ─── */}
-    <section class="news-section">
-      <div class="news-container">
-        <div class="news-head">
-          <div class="section-eyebrow">// Telegram-канал</div>
-          <h2>Свежие истории и апдейты виз</h2>
-          <p>Личные истории из текущих поездок, оперативные апдейты виз и неочевидные открытия. Без воды и рекламы. Раз в 2-3 дня.</p>
-        </div>
-
-        <a class="news-tg-big" href="https://t.me/traveltriberu" target="_blank" rel="noopener">
-          <span class="news-tg-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295l.213-3.053 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.643.135-.953l11.566-4.458c.538-.196 1.006.128.832.937z"/></svg>
-          </span>
-          <span class="news-tg-text">
-            <strong>@traveltriberu</strong>
-            <span>Подписаться в Telegram</span>
-          </span>
-          <span class="news-arrow" aria-hidden="true">→</span>
-        </a>
+    <!-- Свежие истории -->
+    <section class="sec"><div class="wrap grid">
+      <div class="shead"><div><span class="n">03</span><h2>Свежие истории</h2></div><a href="/blog/">Все статьи →</a></div>
+      <div class="posts">
+        {posts.map((p, i) => (
+          <a class="post" href={`/blog/${p.slug}/`}>
+            <div class="pn">{String(i + 1).padStart(2, '0')}</div>
+            <div class="ph"><Image src={p.data.coverImage} alt={p.data.title} width={760} height={507} formats={['webp']} /></div>
+            <div class="tg">{(p.data.tags || []).slice(0, 2).join(' · ')}</div>
+            <h3>{p.data.title}</h3>
+            <div class="mt">{readingTime(p.body)} мин{p.data.sourceType === 'personal' && <span class="pers"> · был лично</span>}</div>
+          </a>
+        ))}
       </div>
-    </section>
+      <p class="topics">Темы: <a href="/visa/">Визы</a> · <a href="/blog/">Деньги за границей</a> · <a href="/blog/">eSIM и связь</a> · <a href="/trips/">Маршруты</a></p>
+    </div></section>
 
-    {/* ─── Author strip ─── */}
-    <section class="author-section">
-      <a href="/about/" class="author-strip">
-        <Image
-          src={authorPhoto}
-          alt="Никита Зайцев — автор TravelTribe"
-          width={88}
-          height={88}
-          format="webp"
-          quality={82}
-          loading="lazy"
-          class="author-photo"
-        />
-        <div class="author-text">
-          <strong>Никита Зайцев</strong>
-          <span>7 континентов · 60+ стран · 13 лет в продуктах · авторский блог без рекламы</span>
-        </div>
-        <span class="author-arrow">→</span>
-      </a>
-    </section>
+    <!-- Сообщество + автор -->
+    <section><div class="wrap grid">
+      <div class="comm">
+        <div class="tg2"><div class="k">04 / Telegram</div><h3>Свежие истории и апдейты виз — раньше, чем на сайте</h3><a href="https://t.me/traveltriberu" rel="noopener" target="_blank">Подписаться @traveltriberu →</a></div>
+        <div class="au"><div class="au-ph"><Image src={authorPhoto} alt="Никита Зайцев" width={156} height={156} formats={['webp']} /></div><div><div class="nm">Никита Зайцев</div><p>Был на всех 7 континентах, 60+ стран. Пишу только то, где был сам.</p><a class="method" href="/about/">Как я считаю бюджет и проверяю визы →</a></div></div>
+      </div>
+    </div></section>
   </main>
 
-  <Footer />
+  <footer class="sw-foot"><div class="wrap ft"><div>© 2026 TravelTribe — Никита Зайцев</div><div>Telegram @traveltriberu · Aviasales · Ostrovok</div></div></footer>
+</div>
 </Layout>
 
-<script is:inline define:vars={{ searchOptions, currentMonthSlug }}>
-  // Hero search: combobox с алфавитным listbox + live-фильтр + submit-фолбек
-  // Идемпотентно + astro:page-load — иначе hero-поиск мёртв после SPA-перехода ClientRouter.
-  function _initHeroSearch() {
-    const heroForm = document.getElementById('heroSearch');
-    if (!heroForm || heroForm._heroReady) return;
-    heroForm._heroReady = true;
-    const input = heroForm.querySelector('input[name="q"]');
-    const list  = document.getElementById('hero-search-list');
-    const items = list ? Array.from(list.querySelectorAll('.hero-list-item')) : [];
-    const groups = list ? Array.from(list.querySelectorAll('.hero-list-group')) : [];
-    const empty = list ? list.querySelector('.hero-list-empty') : null;
-
-    function open() {
-      if (!list) return;
-      list.classList.add('is-open');
-      input.setAttribute('aria-expanded', 'true');
-    }
-    function close() {
-      if (!list) return;
-      list.classList.remove('is-open');
-      input.setAttribute('aria-expanded', 'false');
-    }
-    function filter(q) {
-      const query = (q || '').trim().toLowerCase();
-      let visible = 0;
-      items.forEach(a => {
-        const label = a.dataset.label || '';
-        const region = a.dataset.region || '';
-        const match = !query || label.includes(query) || region.includes(query);
-        a.parentElement.hidden = !match;
-        if (match) visible++;
-      });
-      // Hide letter group if no items visible
-      groups.forEach(g => {
-        const has = Array.from(g.querySelectorAll('li')).some(li => !li.hidden);
-        g.hidden = !has;
-      });
-      if (empty) empty.hidden = visible !== 0;
-    }
-
-    input.addEventListener('focus', open);
-    input.addEventListener('input', () => { open(); filter(input.value); });
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') { close(); input.blur(); }
-    });
-    document.addEventListener('click', (e) => {
-      if (!heroForm.contains(e.target)) close();
-    });
-
-    heroForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const q = (input.value || '').trim().toLowerCase();
-      if (!q) return;
-
-      const exact = searchOptions.find(o => o.label.toLowerCase() === q);
-      const partial = exact || searchOptions.find(o =>
-        o.label.toLowerCase().includes(q) ||
-        o.region.toLowerCase().includes(q) ||
-        o.sub.toLowerCase().includes(q)
-      );
-
-      if (partial) {
-        window.location.href = `/${partial.slug}/`;
-      } else {
-        window.location.href = `/seasons/?q=${encodeURIComponent(q)}`;
-      }
-    });
-  }
-  if (document.readyState !== 'loading') _initHeroSearch();
-  document.addEventListener('astro:page-load', _initHeroSearch);
-</script>
+<style is:global>
+  /* Swiss-главная: фон только этой страницы (is:global грузится лишь на этом маршруте) */
+  body { background: #f4f2eb; }
+</style>
 
 <style>
-/* ─── HERO split: brand intro + featured story (Atlas Obscura / Outside pattern) ─── */
-.hero-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-  min-height: clamp(440px, 70dvh, 680px);
-  border-bottom: 1px solid var(--line);
-}
-.hero-split > * { min-width: 0; }  /* CSS grid 1fr fix — prevent micro-overflow on narrow viewports */
-@media (max-width: 960px) {
-  .hero-split { grid-template-columns: 1fr; }
-}
+.sw{--paper:#f4f2eb;--ink:#1b1914;--mid:#6b685e;--line:#23211a;--hair:#cdc9bd;--gold:#8e6618;
+  --ff:'Archivo Variable',Archivo,Helvetica,Arial,sans-serif;--edge:clamp(1.1rem,3vw,2.6rem);
+  background:var(--paper);color:var(--ink);font-family:var(--ff);font-weight:400;line-height:1.4;
+  font-variant-numeric:tabular-nums lining-nums;-webkit-font-smoothing:antialiased}
+.sw :where(h1,h2,h3,h4,p,ul,li){margin:0}
+.sw :where(h1,h2,h3,h4,button,select,input){font-family:var(--ff);color:var(--ink)}
+.sw img{display:block;width:100%;height:100%;object-fit:cover;filter:grayscale(.06) contrast(1.02)}
+.sw a{color:inherit;text-decoration:none}
+.sw :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.wrap{max-width:1280px;margin-inline:auto;padding-inline:var(--edge)}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:0 clamp(.8rem,2vw,1.6rem)}
 
-.hero-intro {
-  display: flex; flex-direction: column; justify-content: center;
-  padding: clamp(2rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4rem);
-  background: var(--bg);
-}
-.hero-intro-eyebrow {
-  font-size: var(--text-xs); letter-spacing: var(--tracking-widest);
-  text-transform: uppercase; color: var(--gold-600);
-  margin-bottom: var(--space-4);
-}
-.hero-intro-title {
-  font-family: var(--ff-display);
-  font-size: var(--text-6xl);
-  font-weight: 700;
-  line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-tight);
-  color: var(--text);
-  margin: 0 0 var(--space-5);
-  text-wrap: balance;
-}
-.hero-intro-title em { font-style: italic; color: var(--gold-600); font-weight: 600; }
-.hero-intro-desc {
-  font-size: var(--text-lg);
-  line-height: var(--leading-relaxed);
-  color: var(--text-dim);
-  margin: 0 0 var(--space-6);
-  max-width: 480px;
-}
-.hero-intro-stats {
-  display: grid;
-  grid-template-columns: repeat(4, auto);
-  gap: var(--space-6);
-  margin-bottom: var(--space-8);
-  padding: var(--space-4) 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-.hero-intro-stats > div { display: flex; flex-direction: column; gap: 2px; }
-.hero-intro-stats strong {
-  font-family: var(--ff-display);
-  font-size: var(--text-3xl);
-  font-weight: 700;
-  color: var(--gold-600);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: var(--tracking-tight);
-}
-.hero-intro-stats span {
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-wide);
-  color: var(--text-faint);
-  text-transform: uppercase;
-}
-/* ─── Hero search bar (Skyscanner / Booking-style) ─── */
-.hero-search {
-  position: relative;
-  margin: var(--space-6) 0 var(--space-7);
-  display: flex; flex-direction: column; gap: var(--space-2);
-  max-width: 480px;
-}
+.sw-head{border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;padding:.9rem 0}
+.wm{font-weight:800;font-size:1.05rem;letter-spacing:-.02em;text-transform:uppercase}
+.nav ul{list-style:none;display:flex;gap:1.4rem;font-size:.72rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:0}
+.nav ul a{display:inline-flex;align-items:center;min-height:44px;text-decoration:2px underline transparent;text-underline-offset:5px}
+.nav ul a:hover{text-decoration-color:var(--gold)}
+@media(max-width:920px){.nav ul{display:none}}
 
-/* ── Алфавитный listbox под input ── */
-.hero-list {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  right: 0;
-  max-height: 360px;
-  overflow-y: auto;
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md, 10px);
-  box-shadow: 0 18px 48px -12px rgba(0,0,0,0.18);
-  padding: 0.5rem 0;
-  z-index: 50;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-4px);
-  transition: opacity 0.15s, transform 0.15s, visibility 0s linear 0.15s;
-  scrollbar-width: thin;
-  scrollbar-color: var(--gold-dim) var(--bg2);
-}
-.hero-list.is-open {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-  transition-delay: 0s;
-}
-.hero-list-group { padding: 0; }
-.hero-list-letter {
-  position: sticky;
-  top: 0;
-  background: var(--bg2);
-  padding: 0.4rem 1rem 0.3rem;
-  font-family: var(--ff-display);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--gold-600);
-  border-bottom: 1px solid var(--line);
-  z-index: 1;
-}
-.hero-list-items {
-  list-style: none;
-  margin: 0;
-  padding: 0.25rem 0;
-}
-.hero-list-items li { margin: 0; padding: 0; }
-.hero-list-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 0.75rem;
-  padding: 0.55rem 1rem;
-  text-decoration: none;
-  color: var(--text);
-  transition: background 0.12s;
-}
-.hero-list-item:hover { background: rgba(201,151,58,0.08); }
-.hero-list-item:hover .hero-list-name { color: var(--gold); }
-.hero-list-name { font-size: 0.92rem; font-weight: 500; }
-.hero-list-region {
-  font-size: 0.74rem;
-  color: var(--text-faint);
-  letter-spacing: 0.02em;
-}
-.hero-list-empty {
-  margin: 0;
-  padding: 1rem 1.2rem;
-  font-size: 0.85rem;
-  color: var(--text-faint);
-  text-align: center;
-}
-.hero-search-label {
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--text-dim);
-}
-.hero-search-row {
-  display: flex; align-items: center;
-  background: var(--bg2);
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-pill);
-  padding: 4px 4px 4px 16px;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  max-width: 480px;
-}
-.hero-search-row:focus-within {
-  border-color: var(--gold-600);
-  box-shadow: 0 0 0 3px rgba(201,151,58,0.15);
-}
-.hero-search-icon { color: var(--text-faint); flex: 0 0 auto; }
-.hero-search-input {
-  flex: 1; min-width: 0;
-  padding: 0.85rem 0.5rem;
-  border: none; background: transparent; outline: none;
-  font-family: var(--ff-body);
-  font-size: var(--text-base);
-  color: var(--text);
-  font-weight: 500;
-}
-.hero-search-input::placeholder { color: var(--text-faint); font-weight: 400; }
-.hero-search-input::-webkit-search-cancel-button { -webkit-appearance: none; }
+.manifest{padding:clamp(2rem,5vw,4.5rem) 0 clamp(1.2rem,2.5vw,2rem)}
+.idx{grid-column:1/5;grid-row:1;font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--gold)}
+.idx b{display:block;color:var(--ink);font-size:.74rem;font-weight:600;margin-top:.2rem}
+.meta{grid-column:8/13;grid-row:1;text-align:right;align-self:start;font-size:.8rem;color:var(--mid);line-height:1.5}
+.meta b{color:var(--ink);font-weight:600}
+.h1{grid-column:1/13;grid-row:2;font-weight:800;font-size:clamp(2.4rem,7vw,6.4rem);line-height:.94;letter-spacing:-.035em;margin-top:clamp(1.2rem,2.5vw,2rem)}
+.h1 .rd{color:var(--gold)}
+.sub{grid-column:1/8;grid-row:3;font-size:clamp(1rem,1.3vw,1.18rem);color:var(--ink);margin-top:1.4rem;max-width:46ch}
+.vlist{grid-column:1/13;grid-row:4;margin-top:1.8rem;display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);list-style:none}
+.vi{padding:.75rem 1.2rem;border-right:1px solid var(--hair);font-size:.82rem;font-weight:600}
+.vi:first-child{padding-left:0}.vi:last-child{border-right:none}
+.vi span{display:block;font-size:.66rem;font-weight:700;color:var(--gold);margin-bottom:.15rem}
+@media(max-width:760px){.idx,.h1,.sub,.meta,.vlist{grid-column:1/-1;grid-row:auto}.meta{text-align:left;margin-top:.6rem}.h1{margin-top:1.1rem}.vlist{grid-template-columns:repeat(2,1fr)}.vi:nth-child(2n){border-right:none}.vi:nth-child(odd){padding-left:0}}
 
-.hero-search-btn {
-  display: inline-flex; align-items: center; gap: 0.4rem;
-  padding: 0.7rem 1.3rem;
-  background: var(--gold-600);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-pill);
-  font-family: var(--ff-body);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
-}
-.hero-search-btn:hover { background: var(--gold-500); }
-.hero-search-btn:active { transform: scale(0.97); }
-.hero-search-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.filters{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:.3rem 1.6rem;padding:.6rem 0;margin-top:1.4rem;border-bottom:1px solid var(--line)}
+.fg{display:flex;align-items:center;gap:.7rem}
+.fl{font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
+.fopts{display:flex;gap:.6rem}
+.t{font-family:var(--ff);font-size:.84rem;font-weight:600;color:var(--ink);background:none;border:none;padding:0 .15rem;min-height:44px;display:inline-flex;align-items:center;cursor:pointer;text-decoration:2px underline transparent;text-underline-offset:5px}
+.t:hover{text-decoration-color:var(--hair)}.t.on{color:var(--gold);text-decoration-color:var(--gold)}
+select.t{appearance:none;border-bottom:2px solid var(--ink);padding:0 1.2rem 0 .15rem;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' fill='none' stroke='%2315140f' stroke-width='1.8'%3E%3Cpath d='M1 1l3.5 3.5L8 1'/%3E%3C/svg%3E") right .1rem center no-repeat}
+.fcount{margin-left:auto;font-size:.8rem;font-weight:700}.fcount b{color:var(--gold);font-size:1.5rem;font-weight:800;margin-right:.2rem;vertical-align:-1px}
+.seasonlead{grid-column:1/-1;font-size:.95rem;color:var(--ink);margin:1rem 0 .2rem}.seasonlead b{color:var(--gold);font-weight:700}
 
-.hero-intro-cta { display: flex; gap: var(--space-3); flex-wrap: wrap; }
-.hero-btn-primary, .hero-btn-ghost {
-  display: inline-flex; align-items: center;
-  padding: var(--space-3) var(--space-5);
-  border-radius: var(--radius-pill);
-  font-weight: 600; font-size: var(--text-base);
-  text-decoration: none;
-  transition: background var(--duration-fast), border-color var(--duration-fast), transform var(--duration-fast), box-shadow var(--duration-fast);
-}
-.hero-btn-primary {
-  background: var(--gold-600);
-  color: #fff;
-  box-shadow: var(--shadow-md);
-}
-.hero-btn-primary:hover { background: var(--gold-500); transform: translateY(-1px); box-shadow: var(--shadow-lg); }
-.hero-btn-ghost {
-  background: transparent;
-  color: var(--text);
-  border: 1.5px solid var(--line);
-}
-.hero-btn-ghost:hover { border-color: var(--gold-600); color: var(--gold-600); }
+.dashwrap{grid-column:1/-1}
+.dash{width:100%;border-collapse:collapse;font-size:.92rem}
+.dash thead th{font-size:.64rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mid);text-align:left;padding:.5rem .8rem .55rem 0;border-bottom:1px solid var(--line)}
+.dash thead th.r{text-align:right;padding-right:0}
+.dash td{padding:.95rem .8rem;border-bottom:1px solid var(--hair);vertical-align:middle}
+.dash td:first-child,.dash th:first-child{padding-left:0}.dash td.r{text-align:right;padding-right:0}
+.dash tbody tr:hover td{background:rgba(142,102,24,.07)}
+.no{font-size:.72rem;font-weight:700;color:var(--gold);width:2.2rem}
+.dest{display:flex;align-items:center;gap:.9rem}
+.th{width:62px;height:46px;flex:none}
+.nm{display:block;font-weight:700;font-size:1.15rem;letter-spacing:-.01em;line-height:1.15}
+.nm:hover{text-decoration:2px underline var(--gold);text-underline-offset:3px}
+.dash tbody tr:hover .nm{color:var(--gold)}
+.vibe{display:block;font-size:.74rem;color:var(--mid);margin-top:.15rem}
+.price{font-weight:800;font-size:1.2rem}.price small{font-size:.7rem;color:var(--mid);font-weight:500}
+.visa{font-size:.74rem;font-weight:700;letter-spacing:.02em;text-transform:uppercase}
+.visa.free{color:var(--gold)}.visa.evisa{color:var(--ink)}.visa.visa{color:#56534c}
+.season{font-size:.86rem}.flight{font-size:.86rem;color:var(--mid)}
+.fly{color:var(--ink);font-weight:700;white-space:nowrap;text-decoration:2px underline transparent;text-underline-offset:3px}
+.fly:hover{color:var(--gold);text-decoration-color:var(--gold)}
+.dash tr[hidden]{display:none}
+.nomatch{grid-column:1/-1;display:none;color:var(--mid);padding:1.4rem 0;font-size:.92rem}
+.dfoot{grid-column:1/-1;font-size:.72rem;color:var(--mid);padding:.8rem 0 0}.dfoot a{color:var(--gold);border-bottom:1px solid var(--gold)}
+@media(max-width:760px){.dash thead{position:absolute;left:-9999px}.dash,.dash tbody,.dash tr,.dash td{display:block;width:100%}.dash tr{border-bottom:1px solid var(--line);padding:.7rem 0}.dash td{border:none;padding:.25rem 0;display:flex;justify-content:space-between;gap:1rem;text-align:left}.dash td.r{text-align:left}.dash td::before{content:attr(data-l);font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}.dash td.cdest::before,.dash td.cno::before{display:none}.cno{display:none}}
 
-/* Featured story — image + overlay + title */
-.hero-feature {
-  position: relative;
-  display: block; overflow: hidden;
-  isolation: isolate;
-  text-decoration: none; color: #fff;
-  min-height: 380px;
-}
-.hero-feature-image { position: absolute; inset: 0; z-index: -1; }
-.hero-feature-image picture, .hero-feature-image img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-  transition: transform 0.6s var(--ease-out);
-}
-.hero-feature:hover .hero-feature-image img { transform: scale(1.04); }
-.hero-feature-overlay {
-  position: absolute; inset: 0; z-index: 1;
-  background:
-    linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%);
-}
-.hero-feature-content {
-  position: relative; z-index: 2;
-  display: flex; flex-direction: column; gap: var(--space-3);
-  height: 100%; justify-content: flex-end;
-  padding: var(--space-8) clamp(1.5rem, 4vw, 3rem);
-}
-.hero-feature-meta {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 0.7rem;
-}
-.hero-feature-tag {
-  font-size: var(--text-xs); letter-spacing: var(--tracking-widest);
-  text-transform: uppercase; color: var(--gold-300, #e8c062);
-}
-.hero-feature-trip {
-  font-size: var(--text-xs); color: rgba(255,255,255,0.85);
-  border: 1px solid rgba(232,192,98,0.5);
-  background: rgba(232,192,98,0.15);
-  padding: 0.2rem 0.6rem; border-radius: var(--radius-pill);
-}
-.hero-feature-title {
-  font-family: var(--ff-display);
-  font-size: clamp(1.7rem, 3.5vw, 2.4rem);
-  font-weight: 600;
-  line-height: var(--leading-snug);
-  letter-spacing: var(--tracking-tight);
-  color: #fff;
-  margin: 0;
-  text-wrap: balance;
-  text-shadow: 0 2px 14px rgba(0,0,0,0.4);
-}
-.hero-feature-cta {
-  font-size: var(--text-sm); color: var(--gold-300);
-  letter-spacing: var(--tracking-wide); font-weight: 500;
-  transition: transform var(--duration-base) var(--ease-out);
-  display: inline-block;
-}
-.hero-feature:hover .hero-feature-cta { transform: translateX(4px); }
+.gear{grid-column:1/-1;margin-top:2.4rem}
+.gear-h{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;border-top:2px solid var(--line);padding-top:.8rem;margin-bottom:1rem}
+.gear-h h2{font-weight:800;font-size:clamp(1.4rem,2.6vw,2rem);letter-spacing:-.02em}
+.gear-h .adm{font-size:.6rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
+.gear-grid{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.gi{padding:1rem 1.2rem 1.1rem;border-right:1px solid var(--hair)}.gi:first-child{padding-left:0}.gi:last-child{border-right:none}
+.gi .gl{font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
+.gi .gt{font-weight:800;font-size:1.05rem;margin:.25rem 0 .15rem}
+.gi .gd{font-size:.78rem;color:var(--mid);margin-bottom:.4rem}
+.gi a.cta{font-size:.82rem;font-weight:700;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:3px;display:inline-flex;align-items:center;min-height:44px}
+@media(max-width:760px){.gear-grid{grid-template-columns:repeat(2,1fr)}.gi:nth-child(2n){border-right:none}.gi:nth-child(odd){padding-left:0}}
 
-@media (max-width: 600px) {
-  .hero-intro-stats { grid-template-columns: repeat(2, 1fr); gap: var(--space-4); }
-  .hero-intro-title { font-size: var(--text-5xl); }
-  .hero-feature { min-height: 300px; }
-}
+.visaband{grid-column:1/-1;margin-top:2.4rem;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:1rem;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:1.1rem 0}
+.visaband .vt{font-weight:700;font-size:1.02rem;max-width:64ch}.visaband .vt b{color:var(--gold)}
+.visaband a{font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:4px;display:inline-flex;align-items:center;min-height:44px;white-space:nowrap}
 
-/* ─── SECTION primitives ─── */
-.section-eyebrow {
-  font-size: var(--text-xs); letter-spacing: var(--tracking-widest);
-  text-transform: uppercase; color: var(--gold-600);
-  margin-bottom: var(--space-3);
-}
-.section-title {
-  font-family: var(--ff-display);
-  font-size: var(--text-4xl);
-  font-weight: 600; line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-tight);
-  margin: 0;
-}
+.sec{padding:clamp(2.4rem,5vw,4rem) 0 0}
+.shead{grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;gap:1rem;border-top:2px solid var(--line);padding-top:.8rem;margin-bottom:1.4rem}
+.shead .n{font-size:.74rem;font-weight:700;color:var(--gold);margin-right:.8rem}
+.shead h2{display:inline;font-weight:800;font-size:clamp(1.4rem,2.6vw,2rem);letter-spacing:-.02em}
+.shead a{font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:4px;display:inline-flex;align-items:center;min-height:44px}
 
-/* ─── BENTO categories — Apple/Linear asymmetric grid с photo backgrounds ─── */
-.cat-section { padding: var(--space-12) 0 var(--space-12); }
-.cat-container { max-width: var(--container-wide, 1200px); margin: 0 auto; padding: 0 var(--container-edge, 2rem); }
-.cat-section .section-title { margin-bottom: var(--space-6); }
+.tools{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:0 clamp(1rem,2vw,2.4rem)}
+.tcard{border-top:1px solid var(--line);padding:1.2rem 0}
+.tcard .tt{font-weight:800;font-size:1.15rem}.tcard .ts{font-size:.8rem;color:var(--mid);margin:.2rem 0 1rem}
+.heat{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}.heat .mh{aspect-ratio:1}
+.heatlbl{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:.25rem;font-size:.56rem;color:var(--mid);text-align:center;font-weight:600}
+.lg{display:flex;gap:1rem;margin-top:.7rem;font-size:.7rem;color:var(--mid);font-weight:600}.lg i{width:9px;height:9px;display:inline-block;margin-right:.3rem;vertical-align:middle}
+.bud .br{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--hair);font-size:.9rem}
+.tl{display:flex;flex-wrap:wrap;gap:1.2rem;margin-top:1.1rem}.tl a{font-size:.78rem;font-weight:700;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:4px;display:inline-flex;align-items:center;min-height:44px}
+@media(max-width:760px){.tools{grid-template-columns:1fr}}
 
-.bento-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: minmax(180px, 1fr);
-  gap: var(--space-3);
-  margin-top: var(--space-5);
-}
-.bento-card {
-  position: relative;
-  display: block;
-  text-decoration: none;
-  color: #fff;
-  border-radius: var(--radius-4, 8px);
-  overflow: hidden;
-  isolation: isolate;
-  min-height: 200px;
-  transition: transform var(--duration-base) var(--ease-out);
-}
-.bento-card:hover { transform: translateY(-3px); }
-.bento-card--lg { grid-column: span 2; grid-row: span 2; min-height: 360px; }
-.bento-card--md { grid-column: span 1; grid-row: span 1; }
+.posts{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+.post{border-top:1px solid var(--line);padding-top:.7rem}
+.post .pn{font-size:.7rem;font-weight:700;color:var(--gold)}
+.post .ph{aspect-ratio:3/2;margin:.7rem 0;overflow:hidden}.post .ph img{transition:transform .6s}.post:hover .ph img{transform:scale(1.04)}
+.post .tg{font-size:.66rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--mid)}
+.post h3{font-weight:700;font-size:1.15rem;line-height:1.15;letter-spacing:-.01em;margin:.3rem 0}
+.post .mt{font-size:.76rem;color:var(--mid)}.post .pers{color:var(--gold);font-weight:700}
+.topics{grid-column:1/-1;font-size:.8rem;color:var(--mid);margin-top:1rem}.topics a{color:var(--ink);font-weight:600;text-decoration:2px underline transparent;text-underline-offset:3px}.topics a:hover{text-decoration-color:var(--gold)}
+@media(max-width:760px){.posts{grid-template-columns:1fr}}
 
-.bento-card img,
-.bento-card picture {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  z-index: -1;
-  transition: transform 0.6s var(--ease-out);
-}
-.bento-card:hover img { transform: scale(1.06); }
+.comm{grid-column:1/-1;display:grid;grid-template-columns:1.4fr 1fr;border-top:2px solid var(--line);margin-top:clamp(2rem,4vw,3.5rem)}
+.tg2{padding:1.6rem 2rem 1.8rem 0;border-right:1px solid var(--hair)}
+.tg2 .k{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+.tg2 h3{font-weight:800;font-size:clamp(1.4rem,2.4vw,1.9rem);letter-spacing:-.02em;margin:.5rem 0 1rem;max-width:20ch}
+.tg2 a{font-size:.8rem;font-weight:700;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:4px;display:inline-flex;align-items:center;min-height:44px}
+.au{padding:1.6rem 0 1.8rem 2rem;align-self:center;display:flex;gap:1.1rem;align-items:flex-start}
+.au-ph{width:78px;height:78px;flex:none;overflow:hidden}.au-ph img{filter:grayscale(.3) contrast(1.03)}
+.au .nm{font-weight:800;font-size:1.2rem}.au p{font-size:.85rem;color:var(--mid);margin-top:.4rem;max-width:32ch}
+.au .method{display:inline-flex;align-items:center;min-height:44px;margin-top:.4rem;font-size:.76rem;font-weight:700;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:3px}
+@media(max-width:760px){.comm{grid-template-columns:1fr}.tg2{border-right:none;border-bottom:1px solid var(--hair);padding:1.4rem 0}.au{padding:1.4rem 0}}
 
-.bento-overlay {
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0.05) 100%);
-  transition: background 0.3s var(--ease-out);
-}
-.bento-card:hover .bento-overlay {
-  background:
-    linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.10) 100%);
-}
-
-.bento-content {
-  position: absolute;
-  left: var(--space-5); right: var(--space-5); bottom: var(--space-5);
-  display: flex; flex-direction: column; gap: 2px;
-  z-index: 1;
-}
-.bento-sub {
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-widest);
-  text-transform: uppercase;
-  color: var(--gold-300, #e8c062);
-  margin-bottom: 2px;
-}
-.bento-label {
-  font-family: var(--ff-display);
-  font-size: var(--text-2xl);
-  font-weight: 600;
-  line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-tight);
-  color: #fff;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
-}
-.bento-card--lg .bento-label { font-size: var(--text-4xl); }
-
-.bento-arrow {
-  position: absolute;
-  top: var(--space-4); right: var(--space-4);
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex; align-items: center; justify-content: center;
-  color: #fff; font-size: 1.1rem;
-  transition: background var(--duration-fast), transform var(--duration-fast);
-  z-index: 2;
-}
-.bento-card:hover .bento-arrow {
-  background: var(--gold-600);
-  transform: translate(2px, -2px);
-}
-
-@media (max-width: 900px) {
-  .bento-grid { grid-template-columns: repeat(2, 1fr); }
-  .bento-card--lg { grid-column: span 2; grid-row: span 2; min-height: 320px; }
-  .bento-card--md { grid-column: span 1; }
-}
-@media (max-width: 540px) {
-  .bento-grid { grid-template-columns: 1fr; }
-  .bento-card,
-  .bento-card--lg,
-  .bento-card--md { grid-column: auto; grid-row: auto; min-height: 220px; }
-  .bento-card--lg { min-height: 320px; }
-}
-
-/* ─── LATEST POSTS ─── */
-.latest-section { padding: var(--space-12) 0; }
-.latest-container { max-width: var(--container-wide); margin: 0 auto; padding: 0 var(--container-edge); }
-.latest-header {
-  display: flex; align-items: end; justify-content: space-between; gap: var(--space-4);
-  margin-bottom: var(--space-8);
-  padding-bottom: var(--space-4);
-  border-bottom: 1px solid var(--line);
-}
-.latest-all {
-  font-size: var(--text-sm); letter-spacing: var(--tracking-wide);
-  color: var(--gold-600); text-decoration: none;
-  white-space: nowrap;
-}
-.latest-all:hover { color: var(--gold-500); }
-.latest-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--space-6);
-}
-.latest-card {
-  display: flex; flex-direction: column;
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-4, 8px);
-  overflow: hidden;
-  text-decoration: none;
-  color: inherit;
-  transition: transform var(--duration-base), box-shadow var(--duration-base), border-color var(--duration-base);
-}
-.latest-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-  border-color: rgba(201,151,58,0.4);
-}
-.latest-cover {
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  background: var(--bg3);
-}
-.latest-cover img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-  transition: transform var(--duration-slow) var(--ease-out);
-}
-.latest-card:hover .latest-cover img { transform: scale(1.04); }
-.latest-body { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); flex: 1; }
-.latest-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.2rem; }
-.latest-tag {
-  font-size: var(--text-xs); letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--gold-600);
-  border: 1px solid rgba(201,151,58,0.3);
-  padding: 0.12rem 0.5rem;
-  border-radius: var(--radius-1);
-}
-.latest-title {
-  font-family: var(--ff-display);
-  font-size: var(--text-xl);
-  font-weight: 600; line-height: var(--leading-snug);
-  margin: 0;
-  text-wrap: balance;
-}
-.latest-desc {
-  font-size: var(--text-sm); color: var(--text-dim);
-  line-height: var(--leading-normal);
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.latest-meta {
-  font-size: var(--text-xs); color: var(--text-faint);
-  letter-spacing: var(--tracking-wide);
-  margin-top: auto;
-}
-.latest-personal { color: var(--gold-600); }
-
-/* ─── TOOLS ─── */
-.tools-section { padding: var(--space-8) 0 var(--space-12); }
-.tools-container { max-width: var(--container-wide); margin: 0 auto; padding: 0 var(--container-edge); }
-.tools-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-3);
-  margin-top: var(--space-4);
-}
-.tool-card {
-  display: flex; flex-direction: column; gap: var(--space-2);
-  padding: var(--space-5);
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-3);
-  text-decoration: none;
-  color: var(--text);
-  transition: border-color var(--duration-fast), background var(--duration-fast);
-}
-.tool-card:hover { border-color: rgba(201,151,58,0.4); background: var(--bg3); }
-.tool-icon {
-  width: 28px; height: 28px;
-  color: var(--gold-600);
-  stroke-width: 1.5;
-  flex: 0 0 auto;
-}
-.tool-card strong { font-size: var(--text-base); font-weight: 600; }
-.tool-card span:last-child { font-size: var(--text-sm); color: var(--text-dim); line-height: var(--leading-normal); }
-
-/* ─── NEWSLETTER (email + Telegram) ─── */
-.news-section {
-  padding: var(--space-12) 0;
-  background: linear-gradient(180deg, transparent, rgba(201,151,58,0.04));
-}
-.news-container {
-  max-width: 720px; margin: 0 auto;
-  padding: var(--space-10) clamp(1.5rem, 4vw, 3rem);
-  background: var(--bg2);
-  border: 1px solid rgba(201,151,58,0.25);
-  border-radius: var(--radius-4);
-  position: relative; overflow: hidden;
-  text-align: center;
-}
-.news-container::before {
-  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-500), transparent);
-}
-.news-head { margin-bottom: var(--space-6); }
-.news-head h2 {
-  font-family: var(--ff-display); font-size: var(--text-3xl);
-  font-weight: 600; line-height: var(--leading-snug);
-  margin: var(--space-3) 0 var(--space-2);
-  text-wrap: balance;
-}
-.news-head p {
-  font-size: var(--text-base);
-  color: var(--text-dim);
-  line-height: var(--leading-relaxed);
-  margin: 0;
-  max-width: 460px;
-  margin-left: auto; margin-right: auto;
-}
-
-/* Big Telegram CTA */
-.news-tg-big {
-  display: inline-flex; align-items: center; gap: var(--space-4);
-  padding: var(--space-4) var(--space-6);
-  background: var(--gold-600);
-  border: none;
-  border-radius: var(--radius-pill);
-  color: #fff;
-  text-decoration: none;
-  transition: background 0.15s, transform 0.15s, box-shadow 0.2s;
-  box-shadow: 0 4px 14px rgba(201,151,58,0.28), 0 1px 2px rgba(0,0,0,0.06);
-  max-width: 480px; width: 100%;
-  margin: 0 auto;
-}
-.news-tg-big:hover {
-  background: var(--gold-500);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(201,151,58,0.4);
-}
-.news-tg-icon {
-  width: 44px; height: 44px;
-  display: inline-flex; align-items: center; justify-content: center;
-  background: rgba(255,255,255,0.18);
-  color: #fff;
-  border-radius: 50%;
-  flex: 0 0 auto;
-}
-.news-tg-text { display: flex; flex-direction: column; gap: 2px; flex: 1; text-align: left; }
-.news-tg-text strong { font-size: var(--text-lg); font-weight: 700; color: #fff; }
-.news-tg-text span { font-size: var(--text-sm); color: rgba(255,255,255,0.85); }
-.news-arrow { font-size: 1.3rem; transition: transform 0.15s; }
-.news-tg-big:hover .news-arrow { transform: translateX(4px); }
-
-/* ─── AUTHOR ─── */
-.author-section { padding: 0 0 var(--space-16); }
-.author-strip {
-  max-width: 720px; margin: 0 auto;
-  padding: var(--space-4) var(--space-5);
-  display: flex; align-items: center; gap: var(--space-4);
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-3);
-  text-decoration: none;
-  color: var(--text);
-  transition: border-color var(--duration-fast), transform var(--duration-fast);
-  margin-left: var(--container-edge); margin-right: var(--container-edge);
-}
-@media (min-width: 760px) { .author-strip { margin-left: auto; margin-right: auto; } }
-.author-strip:hover { border-color: rgba(201,151,58,0.5); transform: translateY(-1px); }
-.author-photo {
-  width: 64px; height: 64px;
-  border-radius: 50%; object-fit: cover; object-position: center 30%;
-  border: 2px solid rgba(201,151,58,0.4);
-  flex: 0 0 auto;
-}
-.author-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.15rem; }
-.author-text strong { font-size: var(--text-base); font-weight: 600; }
-.author-text span { font-size: var(--text-sm); color: var(--text-dim); }
-.author-arrow { color: var(--gold-600); font-size: 1.2rem; transition: transform var(--duration-fast); }
-.author-strip:hover .author-arrow { transform: translateX(3px); }
-
-/* ─── Mobile adjustments ─── */
-@media (max-width: 600px) {
-  .hero { min-height: 60dvh; }
-  .hero-content { padding-bottom: var(--space-8); }
-  .hero-title { font-size: clamp(2.4rem, 9vw, 3.4rem); }
-  .latest-header { flex-direction: column; align-items: stretch; }
-  .news-container { padding: var(--space-6); }
-  .news-text h2 { font-size: var(--text-xl); }
-}
+.sw-foot{border-top:1px solid var(--line);margin-top:clamp(2rem,4vw,3.5rem)}
+.ft{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding:1.6rem 0;font-size:.74rem;color:var(--mid);font-weight:500}
 </style>
+
+<script>
+  const dash = document.getElementById('dash');
+  if (dash) {
+    const rows = [...dash.querySelectorAll('tbody tr')];
+    const state = { m: new Date().getMonth() + 1, b: null, v: null, vibe: null };
+    const PREP = ['', 'январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
+    const pl = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'направление' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'направления' : 'направлений'));
+    function apply() {
+      let n = 0;
+      rows.forEach((c) => {
+        const m = c.dataset.m.split(','), vibe = c.dataset.vibe.split(',');
+        let ok = true;
+        if (state.m && !m.includes(String(state.m))) ok = false;
+        if (state.b && c.dataset.b !== state.b) ok = false;
+        if (state.v && c.dataset.v !== state.v) ok = false;
+        if (state.vibe && !vibe.includes(state.vibe)) ok = false;
+        c.hidden = !ok; if (ok) n++;
+      });
+      document.getElementById('fCountN').textContent = n;
+      document.getElementById('fCountW').textContent = pl(n);
+      document.getElementById('noMatch').style.display = n ? 'none' : 'block';
+      const names = rows.filter((r) => !r.hidden).map((r) => r.querySelector('.nm').textContent);
+      const sl = document.getElementById('seasonlead');
+      if (sl) sl.innerHTML = n
+        ? `Сейчас, <b>${state.m ? 'в ' + PREP[state.m] : 'в любой месяц'}</b>, подходит: ${names.slice(0, 6).join(', ')}${names.length > 6 ? ' и ещё ' + (names.length - 6) : ''}.`
+        : 'Под эти фильтры пока ничего — попробуйте другой месяц.';
+    }
+    document.getElementById('fMonth').addEventListener('change', (e) => { state.m = +e.target.value; apply(); });
+    document.querySelectorAll('.fopts[data-g]').forEach((g) => g.addEventListener('click', (e) => {
+      const b = e.target.closest('.t'); if (!b) return;
+      const grp = g.dataset.g, was = b.classList.contains('on');
+      g.querySelectorAll('.t').forEach((x) => x.classList.remove('on'));
+      if (!was) { b.classList.add('on'); state[grp] = b.dataset.v; } else state[grp] = null;
+      apply();
+    }));
+    apply();
+    // мини-хитмэп Бали (пример): off,off,ok,good,peak×5,good,ok,off
+    const pat = [3,3,2,1,0,0,0,0,0,1,2,3], col = ['var(--gold)','var(--ink)','#9b9789','var(--hair)'];
+    const h = document.getElementById('heat');
+    if (h) pat.forEach((p) => { const d = document.createElement('div'); d.className = 'mh'; d.style.background = col[p]; h.appendChild(d); });
+  }
+</script>
