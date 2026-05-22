@@ -36,11 +36,11 @@ const rows = DIRECTIONS.map((d) => {
   const budget = budgets[d.slug]?.median_daily_rub?.budget;
   const cover = covers[`../assets/destinations/${d.slug}.jpg`];
   if (!budget || !d.r || !cover) return null;
-  const months = d.r.map((c, i) => ((c === 'P' || c === 'G') ? i + 1 : null)).filter(Boolean);
+  const months = d.r.map((c, i) => (c === 'P' ? i + 1 : null)).filter(Boolean); // только ПИК-сезон
   const vibe = [...new Set((ACTIVITY_TAGS[d.slug] || []).map((t) => VIBE_MAP[t]).filter(Boolean))];
   const vibeRu = vibe.length ? vibe.map((v) => VIBE_RU[v]).join(' · ') : (d.sub || '');
   return { slug: d.slug, nom: d.cases.nom, visa: d.visa, budget, months, vibe, vibeRu, cover, season: seasonLabel(d.r) };
-}).filter(Boolean).sort((a, b) => a.budget - b.budget);
+}).filter(Boolean); // порядок = релевантность (DIRECTIONS); сортировка по цене — переключателем на клиенте
 
 const MONTHS_PREP = ['', 'январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
 const month = new Date().getMonth() + 1;
@@ -114,16 +114,17 @@ const ldJson = {
         <div class="fg"><span class="fl">Бюджет</span><div class="fopts" data-g="b"><button class="t" data-v="low" type="button">$</button><button class="t" data-v="mid" type="button">$$</button><button class="t" data-v="high" type="button">$$$</button></div></div>
         <div class="fg"><span class="fl">Виза</span><div class="fopts" data-g="v"><button class="t" data-v="free" type="button">безвиз</button><button class="t" data-v="evisa" type="button">e-visa</button></div></div>
         <div class="fg"><span class="fl">Вайб</span><div class="fopts" data-g="vibe"><button class="t" data-v="beach" type="button">пляж</button><button class="t" data-v="mountains" type="button">горы</button><button class="t" data-v="city" type="button">город</button><button class="t" data-v="nature" type="button">природа</button></div></div>
+        <div class="fg"><span class="fl">Сортировка</span><div class="fopts" id="sortOpts"><button class="t on" data-s="rel" type="button">рекомендую</button><button class="t" data-s="asc" type="button">дешевле</button><button class="t" data-s="desc" type="button">дороже</button></div></div>
         <div class="fcount"><b id="fCountN">{nowRows.length}</b><span id="fCountW">{nowWord}</span></div>
       </div>
 
-      <p class="seasonlead" id="seasonlead">Сейчас, <b>в {monthWord}</b>, подходит: {nowNames.join(', ') || '—'}.</p>
+      <p class="seasonlead" id="seasonlead">Сейчас, <b>в {monthWord}</b>, на пике сезона: {nowNames.join(', ') || '—'}.</p>
 
       <div class="dashwrap"><table class="dash" id="dash">
         <thead><tr><th>Направление</th><th>Бюджет / день</th><th>Виза</th><th>Лучший сезон</th><th class="r">Перелёт</th></tr></thead>
         <tbody>
           {rows.map((r) => (
-            <tr data-m={r.months.join(',')} data-b={tier(r.budget)} data-v={r.visa} data-vibe={r.vibe.join(',')} data-name={r.nom.toLowerCase()}>
+            <tr data-m={r.months.join(',')} data-b={tier(r.budget)} data-v={r.visa} data-vibe={r.vibe.join(',')} data-budget={r.budget} data-name={r.nom.toLowerCase()}>
               <td class="cdest"><span class="dest"><span class="th"><Image src={r.cover} alt={r.nom} width={124} height={92} formats={['webp']} loading="lazy" /></span><span><a class="nm" href={`/${r.slug}/`}>{r.nom}</a><span class="vibe">{r.vibeRu}</span></span></span></td>
               <td data-l="Бюджет"><span class="price">{fmt(r.budget)} ₽ <small>/день</small></span></td>
               <td data-l="Виза"><span class={`visa ${VISA_CLASS[r.visa]}`}>{VISA_LABEL[r.visa]}</span></td>
@@ -131,7 +132,7 @@ const ldJson = {
               <td data-l="Перелёт" class="flight r"><a class="fly" href={TP_LINKS.aviasales} rel="sponsored noopener" target="_blank">Найти билет →</a></td>
             </tr>
           ))}
-          <tr id="moreRow" hidden><td colspan="5" class="more-cell"><a href="/seasons/">Ещё <b id="moreN"></b> подходящих → смотреть все 70 в таблице сезонов</a></td></tr>
+          <tr id="moreRow" hidden><td colspan="5" class="more-cell"><a href="/countries/">Ещё <b id="moreN"></b> на пике сезона → все направления</a></td></tr>
         </tbody>
       </table></div>
       <p class="nomatch" id="noMatch">Под эти фильтры ничего — попробуйте другой месяц, бюджет или визу. Например, дорогих e-Visa в мае почти нет — есть безвиз.</p>
@@ -336,31 +337,43 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 <script>
   const dash = document.getElementById('dash');
   if (dash) {
-    const rows = [...dash.querySelectorAll('tbody tr:not(#moreRow)')];
-    const CAP = 14, moreRow = document.getElementById('moreRow'), moreN = document.getElementById('moreN');
-    const state = { m: new Date().getMonth() + 1, b: null, v: null, vibe: null };
+    const tbody = dash.querySelector('tbody');
+    const moreRow = document.getElementById('moreRow'), moreN = document.getElementById('moreN');
+    const allRows = [...tbody.querySelectorAll('tr:not(#moreRow)')];
+    const CAP = 14;
+    const state = { m: new Date().getMonth() + 1, b: null, v: null, vibe: null, sort: 'rel' };
     const PREP = ['', 'январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
     const pl = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'направление' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'направления' : 'направлений'));
+    const ordered = () => {
+      if (state.sort === 'asc') return [...allRows].sort((a, b) => +a.dataset.budget - +b.dataset.budget);
+      if (state.sort === 'desc') return [...allRows].sort((a, b) => +b.dataset.budget - +a.dataset.budget);
+      return allRows; // рекомендую = порядок подборки
+    };
     function apply() {
-      let n = 0, shown = 0;
-      rows.forEach((c) => {
-        const m = c.dataset.m.split(','), vibe = c.dataset.vibe.split(',');
+      const list = ordered();
+      list.forEach((r) => tbody.insertBefore(r, moreRow)); // переставить под текущую сортировку
+      let n = 0, shown = 0; const names = [];
+      list.forEach((c) => {
+        const m = c.dataset.m ? c.dataset.m.split(',') : [];
+        const vibe = c.dataset.vibe ? c.dataset.vibe.split(',') : [];
         let ok = true;
         if (state.m && !m.includes(String(state.m))) ok = false;
         if (state.b && c.dataset.b !== state.b) ok = false;
         if (state.v && c.dataset.v !== state.v) ok = false;
-        if (state.vibe && !vibe.includes(state.vibe)) ok = false;
-        if (ok) { n++; if (shown < CAP) { c.hidden = false; shown++; } else c.hidden = true; }
-        else c.hidden = true;
+        if (state.vibe && vibe.length && !vibe.includes(state.vibe)) ok = false; // без тегов вайба = подходит под любой
+        if (ok) {
+          n++;
+          if (shown < CAP) { c.hidden = false; shown++; if (names.length < 6) names.push(c.querySelector('.nm').textContent); }
+          else c.hidden = true;
+        } else c.hidden = true;
       });
       document.getElementById('fCountN').textContent = n;
       document.getElementById('fCountW').textContent = pl(n);
       document.getElementById('noMatch').style.display = n ? 'none' : 'block';
       if (moreRow) { if (n > CAP) { moreN.textContent = n - CAP; moreRow.hidden = false; } else moreRow.hidden = true; }
-      const names = rows.filter((r) => !r.hidden).slice(0, 6).map((r) => r.querySelector('.nm').textContent);
       const sl = document.getElementById('seasonlead');
       if (sl) sl.innerHTML = n
-        ? `Сейчас, <b>${state.m ? 'в ' + PREP[state.m] : 'в любой месяц'}</b>, подходит ${n}: ${names.join(', ')}${n > names.length ? ' и др.' : ''}.`
+        ? `Сейчас, <b>${state.m ? 'в ' + PREP[state.m] : 'в любой месяц'}</b>, на пике сезона ${n}: ${names.join(', ')}${n > names.length ? ' и др' : ''}.`
         : 'Под эти фильтры ничего — попробуйте другой месяц, бюджет или визу.';
     }
     document.getElementById('fMonth').addEventListener('change', (e) => { state.m = +e.target.value; apply(); });
@@ -371,6 +384,12 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
       if (!was) { b.classList.add('on'); state[grp] = b.dataset.v; } else state[grp] = null;
       apply();
     }));
+    const sortOpts = document.getElementById('sortOpts');
+    if (sortOpts) sortOpts.addEventListener('click', (e) => {
+      const b = e.target.closest('.t'); if (!b) return;
+      sortOpts.querySelectorAll('.t').forEach((x) => x.classList.remove('on'));
+      b.classList.add('on'); state.sort = b.dataset.s; apply();
+    });
     apply();
     // мини-хитмэп Бали (пример): off,off,ok,good,peak×5,good,ok,off
     const pat = [3,3,2,1,0,0,0,0,0,1,2,3], col = ['var(--gold)','var(--ink)','#9b9789','var(--hair)'];
