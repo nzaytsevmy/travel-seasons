@@ -11,51 +11,42 @@ import { TP_LINKS } from '../data/affiliate.js';
 import budgets from '../data/real-budgets-2026.json';
 import authorPhoto from '../assets/author/nikita.jpg';
 
-import georgiaCover from '../assets/destinations/georgia.jpg';
-import turkeyCover from '../assets/destinations/turkey.jpg';
-import baliCover from '../assets/destinations/bali.jpg';
-import japanCover from '../assets/destinations/japan.jpg';
-import peruCover from '../assets/destinations/peru.jpg';
-import uaeCover from '../assets/destinations/uae.jpg';
-import kenyaCover from '../assets/destinations/kenya.jpg';
-import nzCover from '../assets/destinations/new-zealand.jpg';
-import icelandCover from '../assets/destinations/iceland.jpg';
-import moroccoCover from '../assets/destinations/morocco.jpg';
-import ecuadorCover from '../assets/destinations/ecuador.jpg';
-
-const COVERS = { georgia: georgiaCover, turkey: turkeyCover, bali: baliCover, japan: japanCover, peru: peruCover, uae: uaeCover, kenya: kenyaCover, 'new-zealand': nzCover, iceland: icelandCover, morocco: moroccoCover, ecuador: ecuadorCover };
-
-// Сезон/вайб/месяцы — выверенная редактура; БЮДЖЕТ (₽/день) и ВИЗА — реальные из данных.
-const FEATURED = [
-  { slug: 'georgia',     months: [5,6,9,10],            vibe: ['mountains','city'],   vibeRu: 'Горы · город · вино',     season: 'май–октябрь' },
-  { slug: 'turkey',      months: [4,5,6,9,10],          vibe: ['beach','city'],       vibeRu: 'Пляж · город',            season: 'апрель–октябрь' },
-  { slug: 'bali',        months: [4,5,6,7,8,9,10],      vibe: ['beach','nature'],     vibeRu: 'Пляж · природа',          season: 'апрель–октябрь' },
-  { slug: 'japan',       months: [3,4,11],              vibe: ['city','nature'],      vibeRu: 'Город · природа · еда',   season: 'ноябрь / апрель' },
-  { slug: 'peru',        months: [5,6,7,8,9],           vibe: ['mountains','nature'], vibeRu: 'Горы · Мачу-Пикчу',       season: 'май–сентябрь' },
-  { slug: 'uae',         months: [11,12,1,2,3],         vibe: ['city','beach'],       vibeRu: 'Город · пляж · шопинг',   season: 'ноябрь–апрель' },
-  { slug: 'kenya',       months: [7,8,9,10],            vibe: ['nature'],             vibeRu: 'Сафари · Большая пятёрка', season: 'июль–октябрь' },
-  { slug: 'new-zealand', months: [12,1,2,3],            vibe: ['nature'],             vibeRu: 'Природа · фьорды',        season: 'декабрь–февраль' },
-  { slug: 'iceland',     months: [6,7,8,9,10,11,12,1,2,3], vibe: ['nature'],          vibeRu: 'Природа · сияние',        season: 'сияние сен–март' },
-  { slug: 'morocco',     months: [3,4,5,10,11],         vibe: ['city','nature'],      vibeRu: 'Город · пустыня',         season: 'весна / осень' },
-  { slug: 'ecuador',     months: [6,7,8,9],             vibe: ['nature'],             vibeRu: 'Галапагосы · природа',    season: 'круглый год' },
-];
+import { ACTIVITY_TAGS } from '../data/country-activity-tags.js';
+const covers = import.meta.glob('../assets/destinations/*.jpg', { eager: true, import: 'default' });
 
 const VISA_LABEL = { free: 'Безвиз', evisa: 'e-Visa', required: 'Виза' };
 const VISA_CLASS = { free: 'free', evisa: 'evisa', required: 'visa' };
+const VIBE_RU = { beach: 'Пляж', mountains: 'Горы', city: 'Город', nature: 'Природа' };
+const VIBE_MAP = { beach:'beach', mountain:'mountains', altitude:'mountains', ski:'mountains', city:'city', culture:'city', food:'city', jungle:'nature', safari:'nature', dive:'nature', desert:'nature', photo:'nature' };
+const MON_ABBR = ['', 'янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
 const fmt = (n) => n.toLocaleString('ru-RU');
 const tier = (b) => (b < 2500 ? 'low' : b <= 6000 ? 'mid' : 'high');
-
-const rows = FEATURED.map((f) => {
-  const d = DIRECTIONS.find((x) => x.slug === f.slug);
-  const budget = budgets[f.slug]?.median_daily_rub?.budget;
-  return d && budget ? { ...f, nom: d.cases.nom, visa: d.visa, budget, cover: COVERS[f.slug] } : null;
-}).filter(Boolean);
+function seasonLabel(r) {
+  let idx = r.map((c, i) => (c === 'P' ? i + 1 : 0)).filter(Boolean);
+  if (!idx.length) idx = r.map((c, i) => (c === 'G' ? i + 1 : 0)).filter(Boolean);
+  if (!idx.length) return 'круглый год';
+  const g = []; let s = idx[0], p = idx[0];
+  for (let k = 1; k < idx.length; k++) { if (idx[k] === p + 1) p = idx[k]; else { g.push([s, p]); s = idx[k]; p = idx[k]; } }
+  g.push([s, p]);
+  return g.map(([a, b]) => (a === b ? MON_ABBR[a] : `${MON_ABBR[a]}–${MON_ABBR[b]}`)).join(', ');
+}
+// Все 70 направлений на РЕАЛЬНЫХ данных: бюджет ₽/день (real-budgets), виза (DIRECTIONS),
+// месяцы (сезонные коды DIRECTIONS.r: P/G = подходит), вайб (ACTIVITY_TAGS). Без выдумок.
+const rows = DIRECTIONS.map((d) => {
+  const budget = budgets[d.slug]?.median_daily_rub?.budget;
+  const cover = covers[`../assets/destinations/${d.slug}.jpg`];
+  if (!budget || !d.r || !cover) return null;
+  const months = d.r.map((c, i) => ((c === 'P' || c === 'G') ? i + 1 : null)).filter(Boolean);
+  const vibe = [...new Set((ACTIVITY_TAGS[d.slug] || []).map((t) => VIBE_MAP[t]).filter(Boolean))];
+  const vibeRu = vibe.length ? vibe.map((v) => VIBE_RU[v]).join(' · ') : (d.sub || '');
+  return { slug: d.slug, nom: d.cases.nom, visa: d.visa, budget, months, vibe, vibeRu, cover, season: seasonLabel(d.r) };
+}).filter(Boolean).sort((a, b) => a.budget - b.budget);
 
 const MONTHS_PREP = ['', 'январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
 const month = new Date().getMonth() + 1;
 const monthWord = MONTHS_PREP[month];
 const nowRows = rows.filter((r) => r.months.includes(month));
-const nowNames = nowRows.map((r) => r.nom);
+const nowNames = nowRows.slice(0, 6).map((r) => r.nom);
 const plural = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'направление' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'направления' : 'направлений'));
 const nowWord = plural(nowRows.length);
 
@@ -129,21 +120,21 @@ const ldJson = {
       <p class="seasonlead" id="seasonlead">Сейчас, <b>в {monthWord}</b>, подходит: {nowNames.join(', ') || '—'}.</p>
 
       <div class="dashwrap"><table class="dash" id="dash">
-        <thead><tr><th></th><th>Направление</th><th>Бюджет / день</th><th>Виза</th><th>Лучший сезон</th><th class="r">Перелёт</th></tr></thead>
+        <thead><tr><th>Направление</th><th>Бюджет / день</th><th>Виза</th><th>Лучший сезон</th><th class="r">Перелёт</th></tr></thead>
         <tbody>
-          {rows.map((r, i) => (
+          {rows.map((r) => (
             <tr data-m={r.months.join(',')} data-b={tier(r.budget)} data-v={r.visa} data-vibe={r.vibe.join(',')} data-name={r.nom.toLowerCase()}>
-              <td class="cno no">{String(i + 1).padStart(2, '0')}</td>
-              <td class="cdest"><span class="dest"><span class="th"><Image src={r.cover} alt={r.nom} width={124} height={92} formats={['webp']} /></span><span><a class="nm" href={`/${r.slug}/`}>{r.nom}</a><span class="vibe">{r.vibeRu}</span></span></span></td>
+              <td class="cdest"><span class="dest"><span class="th"><Image src={r.cover} alt={r.nom} width={124} height={92} formats={['webp']} loading="lazy" /></span><span><a class="nm" href={`/${r.slug}/`}>{r.nom}</a><span class="vibe">{r.vibeRu}</span></span></span></td>
               <td data-l="Бюджет"><span class="price">{fmt(r.budget)} ₽ <small>/день</small></span></td>
               <td data-l="Виза"><span class={`visa ${VISA_CLASS[r.visa]}`}>{VISA_LABEL[r.visa]}</span></td>
               <td data-l="Сезон" class="season">{r.season}</td>
               <td data-l="Перелёт" class="flight r"><a class="fly" href={TP_LINKS.aviasales} rel="sponsored noopener" target="_blank">Найти билет →</a></td>
             </tr>
           ))}
+          <tr id="moreRow" hidden><td colspan="5" class="more-cell"><a href="/seasons/">Ещё <b id="moreN"></b> подходящих → смотреть все 70 в таблице сезонов</a></td></tr>
         </tbody>
       </table></div>
-      <p class="nomatch" id="noMatch">По фильтрам пусто — снимите вайб или выберите «любой» месяц.</p>
+      <p class="nomatch" id="noMatch">Под эти фильтры ничего — попробуйте другой месяц, бюджет или визу. Например, дорогих e-Visa в мае почти нет — есть безвиз.</p>
       <p class="dfoot">Бюджет ₽/день — реальные траты и агрегаторы 2026, на одного (хостел/локальная еда/транспорт; перелёт отдельно). Ссылки на билеты — партнёрские. <a href="/seasons/">Все 70 направлений →</a></p>
 
       <!-- Монетизация -->
@@ -282,6 +273,7 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .dash tr[hidden]{display:none}
 .nomatch{grid-column:1/-1;display:none;color:var(--mid);padding:1.4rem 0;font-size:.92rem}
 .dfoot{grid-column:1/-1;font-size:.72rem;color:var(--mid);padding:.8rem 0 0}.dfoot a{color:var(--gold);border-bottom:1px solid var(--gold)}
+.more-cell{padding:1.1rem 0!important}.more-cell::before{content:none!important}.more-cell a{color:var(--gold);font-weight:600;text-decoration:2px underline var(--gold);text-underline-offset:3px}.more-cell b{color:var(--gold)}
 @media(max-width:760px){.dash thead{position:absolute;left:-9999px}.dash,.dash tbody,.dash tr,.dash td{display:block;width:100%}.dash tr{border-bottom:1px solid var(--line);padding:.7rem 0}.dash td{border:none;padding:.25rem 0;display:flex;justify-content:space-between;gap:1rem;text-align:left}.dash td.r{text-align:left}.dash td::before{content:attr(data-l);font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}.dash td.cdest::before,.dash td.cno::before{display:none}.cno{display:none}}
 
 .gear{grid-column:1/-1;margin-top:2.4rem}
@@ -344,12 +336,13 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 <script>
   const dash = document.getElementById('dash');
   if (dash) {
-    const rows = [...dash.querySelectorAll('tbody tr')];
+    const rows = [...dash.querySelectorAll('tbody tr:not(#moreRow)')];
+    const CAP = 14, moreRow = document.getElementById('moreRow'), moreN = document.getElementById('moreN');
     const state = { m: new Date().getMonth() + 1, b: null, v: null, vibe: null };
     const PREP = ['', 'январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
     const pl = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'направление' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'направления' : 'направлений'));
     function apply() {
-      let n = 0;
+      let n = 0, shown = 0;
       rows.forEach((c) => {
         const m = c.dataset.m.split(','), vibe = c.dataset.vibe.split(',');
         let ok = true;
@@ -357,16 +350,18 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
         if (state.b && c.dataset.b !== state.b) ok = false;
         if (state.v && c.dataset.v !== state.v) ok = false;
         if (state.vibe && !vibe.includes(state.vibe)) ok = false;
-        c.hidden = !ok; if (ok) n++;
+        if (ok) { n++; if (shown < CAP) { c.hidden = false; shown++; } else c.hidden = true; }
+        else c.hidden = true;
       });
       document.getElementById('fCountN').textContent = n;
       document.getElementById('fCountW').textContent = pl(n);
       document.getElementById('noMatch').style.display = n ? 'none' : 'block';
-      const names = rows.filter((r) => !r.hidden).map((r) => r.querySelector('.nm').textContent);
+      if (moreRow) { if (n > CAP) { moreN.textContent = n - CAP; moreRow.hidden = false; } else moreRow.hidden = true; }
+      const names = rows.filter((r) => !r.hidden).slice(0, 6).map((r) => r.querySelector('.nm').textContent);
       const sl = document.getElementById('seasonlead');
       if (sl) sl.innerHTML = n
-        ? `Сейчас, <b>${state.m ? 'в ' + PREP[state.m] : 'в любой месяц'}</b>, подходит: ${names.slice(0, 6).join(', ')}${names.length > 6 ? ' и ещё ' + (names.length - 6) : ''}.`
-        : 'Под эти фильтры пока ничего — попробуйте другой месяц.';
+        ? `Сейчас, <b>${state.m ? 'в ' + PREP[state.m] : 'в любой месяц'}</b>, подходит ${n}: ${names.join(', ')}${n > names.length ? ' и др.' : ''}.`
+        : 'Под эти фильтры ничего — попробуйте другой месяц, бюджет или визу.';
     }
     document.getElementById('fMonth').addEventListener('change', (e) => { state.m = +e.target.value; apply(); });
     document.querySelectorAll('.fopts[data-g]').forEach((g) => g.addEventListener('click', (e) => {
