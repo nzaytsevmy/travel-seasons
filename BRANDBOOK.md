@@ -29,8 +29,11 @@
 
 ## 2. Типографика
 
-- **Один гротеск: Archivo** (Helvetica/Arial fallback). Никаких вторых семейств, никакого серифа,
-  никакого Inter/Roboto/Space Grotesk.
+- **Один гротеск: Golos Text** (`'Golos Text Variable'`, self-hosted via fontsource; Helvetica/Arial fallback).
+  Никаких вторых семейств, никакого серифа, никакого Inter/Roboto/Space Grotesk.
+- **⚠️ Шрифт ОБЯЗАН поддерживать кириллицу** (основной язык сайта — русский). Golos Text — кириллица-натив.
+  НЕ брать Archivo/латиница-only (был баг: кириллица падала в системный fallback). Проверять отрисованный
+  глиф, а не `computed font-family`.
 - Иерархия — только **размером и весом** (400/500/600/700/800/900), не гарнитурой.
 - **Табличные цифры везде:** `font-variant-numeric: tabular-nums lining-nums`.
 - Выравнивание **flush-left, ragged-right**. Центрирование запрещено (кроме мелких служебных).
@@ -93,7 +96,7 @@
 ```css
 :root{
   --paper:#f4f2eb; --ink:#1b1914; --mid:#6b685e; --line:#23211a; --hair:#cdc9bd; --gold:#8e6618;
-  --ff:'Archivo',Helvetica,Arial,sans-serif;
+  --ff:'Golos Text Variable','Golos Text',Helvetica,Arial,sans-serif;
   --container:1280px; --gutter:clamp(.8rem,2vw,1.6rem); --edge:clamp(1.1rem,3vw,2.6rem);
 }
 body{font-family:var(--ff);font-variant-numeric:tabular-nums lining-nums;background:var(--paper);color:var(--ink)}
