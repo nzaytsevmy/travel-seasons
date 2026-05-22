@@ -2,7 +2,7 @@
 // Главная — Swiss / International Typographic по BRANDBOOK.md (пилот миграции).
 // Layout — только для <head>/SEO/schema/аналитики; визуал — самодостаточный Swiss,
 // scoped, light-only (свои токены, не зависят от тёмной темы остального сайта).
-import '@fontsource-variable/archivo/index.css';
+import '@fontsource-variable/golos-text/index.css';
 import Layout from '../layouts/Layout.astro';
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
@@ -216,7 +216,7 @@ const ldJson = {
 
 <style>
 .sw{--paper:#f4f2eb;--ink:#1b1914;--mid:#6b685e;--line:#23211a;--hair:#cdc9bd;--gold:#8e6618;
-  --ff:'Archivo Variable',Archivo,Helvetica,Arial,sans-serif;--edge:clamp(1.1rem,3vw,2.6rem);
+  --ff:'Golos Text Variable','Golos Text',Helvetica,Arial,sans-serif;--edge:clamp(1.1rem,3vw,2.6rem);
   background:var(--paper);color:var(--ink);font-family:var(--ff);font-weight:400;line-height:1.4;
   font-variant-numeric:tabular-nums lining-nums;-webkit-font-smoothing:antialiased}
 .sw :where(h1,h2,h3,h4,p,ul,li){margin:0}
@@ -255,7 +255,7 @@ const ldJson = {
 .fopts{display:flex;gap:.6rem}
 .t{font-family:var(--ff);font-size:.84rem;font-weight:600;color:var(--ink);background:none;border:none;padding:0 .15rem;min-height:44px;display:inline-flex;align-items:center;cursor:pointer;text-decoration:2px underline transparent;text-underline-offset:5px}
 .t:hover{text-decoration-color:var(--hair)}.t.on{color:var(--gold);text-decoration-color:var(--gold)}
-select.t{appearance:none;border-bottom:2px solid var(--ink);padding:0 1.2rem 0 .15rem;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' fill='none' stroke='%2315140f' stroke-width='1.8'%3E%3Cpath d='M1 1l3.5 3.5L8 1'/%3E%3C/svg%3E") right .1rem center no-repeat}
+select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:none;border-bottom:2px solid var(--ink);border-radius:0;padding:0 1.2rem 0 .15rem;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' fill='none' stroke='%2315140f' stroke-width='1.8'%3E%3Cpath d='M1 1l3.5 3.5L8 1'/%3E%3C/svg%3E") right .1rem center no-repeat}
 .fcount{margin-left:auto;font-size:.8rem;font-weight:700}.fcount b{color:var(--gold);font-size:1.5rem;font-weight:800;margin-right:.2rem;vertical-align:-1px}
 .seasonlead{grid-column:1/-1;font-size:.95rem;color:var(--ink);margin:1rem 0 .2rem}.seasonlead b{color:var(--gold);font-weight:700}
 
@@ -309,7 +309,7 @@ select.t{appearance:none;border-bottom:2px solid var(--ink);padding:0 1.2rem 0 .
 .tools{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:0 clamp(1rem,2vw,2.4rem)}
 .tcard{border-top:1px solid var(--line);padding:1.2rem 0}
 .tcard .tt{font-weight:800;font-size:1.15rem}.tcard .ts{font-size:.8rem;color:var(--mid);margin:.2rem 0 1rem}
-.heat{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}.heat .mh{aspect-ratio:1}
+.heat{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}.heat .mh{height:clamp(1.5rem,2.6vw,2rem)}
 .heatlbl{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:.25rem;font-size:.56rem;color:var(--mid);text-align:center;font-weight:600}
 .lg{display:flex;gap:1rem;margin-top:.7rem;font-size:.7rem;color:var(--mid);font-weight:600}.lg i{width:9px;height:9px;display:inline-block;margin-right:.3rem;vertical-align:middle}
 .bud .br{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--hair);font-size:.9rem}
@@ -380,6 +380,6 @@ select.t{appearance:none;border-bottom:2px solid var(--ink);padding:0 1.2rem 0 .
     // мини-хитмэп Бали (пример): off,off,ok,good,peak×5,good,ok,off
     const pat = [3,3,2,1,0,0,0,0,0,1,2,3], col = ['var(--gold)','var(--ink)','#9b9789','var(--hair)'];
     const h = document.getElementById('heat');
-    if (h) pat.forEach((p) => { const d = document.createElement('div'); d.className = 'mh'; d.style.background = col[p]; h.appendChild(d); });
+    if (h) pat.forEach((p) => { const d = document.createElement('div'); d.className = 'mh'; d.style.cssText = 'height:1.6rem;background:' + col[p]; h.appendChild(d); });
   }
 </script>
