@@ -94,7 +94,7 @@ const ldJson = {
       <p class="sub">Визы, сезоны, реальные цены 2026 и маршруты по 70 направлениям — в одной таблице. Куда, когда и за сколько видно сразу. Ничего копать не нужно.</p>
       <ul class="vlist">
         <li class="vi"><span>01</span>Визы РФ</li>
-        <li class="vi"><span>02</span>Сезоны 70×12</li>
+        <li class="vi"><span>02</span>Когда ехать</li>
         <li class="vi"><span>03</span>Цены из чеков</li>
         <li class="vi"><span>04</span>Маршруты</li>
         <li class="vi"><span>05</span>Чек-листы</li>
@@ -156,11 +156,11 @@ const ldJson = {
     <section class="sec"><div class="wrap grid">
       <div class="shead"><div><span class="n">02</span><h2>Инструменты — не на слово</h2></div><a href="/seasons/">Все →</a></div>
       <div class="tools">
-        <div class="tcard"><div class="tt">Таблица сезонов 70×12</div><div class="ts">Пример строки «Бали» — когда ехать:</div>
+        <div class="tcard"><div class="tt">Когда ехать в каждую страну</div><div class="ts">Пример строки «Бали» — по месяцам:</div>
           <div class="heat" id="heat"></div>
           <div class="heatlbl"><span>Я</span><span>Ф</span><span>М</span><span>А</span><span>М</span><span>И</span><span>И</span><span>А</span><span>С</span><span>О</span><span>Н</span><span>Д</span></div>
           <div class="lg"><span><i style="background:var(--gold)"></i>пик</span><span><i style="background:var(--ink)"></i>хорошо</span><span><i style="background:#9b9789"></i>норм</span><span><i style="background:var(--hair)"></i>не сезон</span></div>
-          <div class="tl"><a href="/seasons/">Открыть 70×12 →</a><a href="/visa/">Визы РФ →</a></div>
+          <div class="tl"><a href="/seasons/">Сезоны по месяцам →</a><a href="/visa/">Визы РФ →</a></div>
         </div>
         <div class="tcard bud"><div class="tt">Калькулятор бюджета</div><div class="ts">Бали, реальный бюджет-уровень:</div>
           <div class="br"><span>В день (жильё+еда+транспорт)</span><b>{fmt(baliDay)} ₽</b></div>
@@ -340,7 +340,7 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
     const tbody = dash.querySelector('tbody');
     const moreRow = document.getElementById('moreRow'), moreN = document.getElementById('moreN');
     const allRows = [...tbody.querySelectorAll('tr:not(#moreRow)')];
-    const CAP = 14;
+    const CAP = 5;
     const state = { m: new Date().getMonth() + 1, b: null, v: null, vibe: null, sort: 'rel' };
     const PREP = ['', 'январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
     const pl = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'направление' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'направления' : 'направлений'));
