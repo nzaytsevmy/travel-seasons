@@ -858,11 +858,8 @@ tbody tr:hover { background: rgba(201,151,58,0.03); }
 }
 .cell .best-mark, .cell .worst-mark { display: none; }
 
-/* Текущий месяц — янтарный гайд сверху колонки */
-.cell.is-current-month::before {
-  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: var(--gold); pointer-events: none; z-index: 1;
-}
+/* Гайд текущего месяца убран 2026-05-23: на мобиле (ячейки в столбик) превращался
+   в разбросанные золотые полосы. Текущий месяц виден по активной кнопке-месяцу. */
 
 /* Цена — на лучшей ячейке всегда, на остальных при hover/focus */
 .cell .price-mini {
