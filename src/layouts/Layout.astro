@@ -13,6 +13,8 @@ interface Props {
   ogImageAlt?: string;
   ldJson?: object;
   preloadImage?: string;
+  preloadImageSrcset?: string;
+  preloadImageSizes?: string;
   noindex?: boolean;
   noTransitions?: boolean;
 }
@@ -28,6 +30,8 @@ const {
   ogImageAlt = 'TravelTribe — куда поехать: сезоны, визы и бюджет для 70 направлений',
   ldJson,
   preloadImage,
+  preloadImageSrcset,
+  preloadImageSizes = '100vw',
   noindex = false,
   noTransitions = false,
 } = Astro.props;
@@ -154,6 +158,7 @@ const finalLd = {
   <script type="application/ld+json" set:html={JSON.stringify(finalLd)} />
 
   {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
+  {preloadImageSrcset && <link rel="preload" as="image" imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
 
   <!-- Аналитика — только на production hostname (не на localhost / staging).
        Иначе Playwright/preview сервер накручивает визиты в метрике. -->
