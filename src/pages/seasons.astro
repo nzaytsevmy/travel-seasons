@@ -742,7 +742,8 @@ document.addEventListener('astro:page-load', _seasonsInit);
   --line:#cdc9bd;
   --gold:#8e6618; --gold-dim:#8e6618; --gold-glow:rgba(142,102,24,.10);
   --text:#1b1914; --text-dim:#56524a; --text-faint:#6b685e;   /* WCAG AA на светлом */
-  --peak:#2f8f57; --good:#3f7fae; --ok:#c0892c; --bad:#b0503c; --off:#e6e2d6;
+  /* мягкие тинты вместо насыщенных блоков — элегантнее на десктопе (текст на ячейках тёмный) */
+  --peak:#8fb89c; --good:#9bb4ce; --ok:#dcc089; --bad:#d3a293; --off:#eceadf;
   /* *-text для тегов/статусов — тёмные, контрастные на светлом (WCAG AA) */
   --peak-text:#1f6b40; --good-text:#2a5f86; --ok-text:#8a5e1e; --bad-text:#8f3f2e;
 }
@@ -853,7 +854,7 @@ tbody tr:hover { background: rgba(201,151,58,0.03); }
 /* Худший месяц — приглушённый ✕ */
 .cell.is-worst::after {
   content: "✕"; position: absolute; top: 1px; right: 3px;
-  font-size: 0.55rem; line-height: 1; color: rgba(255,255,255,.5); pointer-events: none;
+  font-size: 0.55rem; line-height: 1; color: rgba(27,25,20,.55); pointer-events: none;
 }
 .cell .best-mark, .cell .worst-mark { display: none; }
 
@@ -866,8 +867,8 @@ tbody tr:hover { background: rgba(201,151,58,0.03); }
 /* Цена — на лучшей ячейке всегда, на остальных при hover/focus */
 .cell .price-mini {
   position: absolute; bottom: 2px; left: 0; right: 0; text-align: center;
-  font-family: var(--ff-mono); font-size: 0.56rem; font-weight: 600; letter-spacing: -0.02em;
-  color: #fff;
+  font-family: var(--ff-mono); font-size: 0.56rem; font-weight: 700; letter-spacing: -0.02em;
+  color: var(--text);
   pointer-events: none; opacity: 0; transition: opacity 0.15s; z-index: 1;
 }
 .cell.is-best .price-mini,
@@ -1135,9 +1136,8 @@ h1 em { color: var(--gold); font-style: normal; }
   .cell-mo {
     display: block; position: absolute; top: 4px; left: 0; right: 0; text-align: center;
     font-family: var(--ff-mono); font-size: 0.6rem; letter-spacing: 0.02em;
-    color: rgba(255,255,255,.9); pointer-events: none;
+    color: rgba(27,25,20,.78); pointer-events: none;
   }
-  .cell.off .cell-mo { color: var(--text-dim); }
   .cell .price-mini { bottom: 4px; font-size: 0.62rem; }
   .cell.is-best::after, .cell.is-worst::after { top: 3px; right: 4px; font-size: 0.62rem; }
   .empty-state { padding: 2rem 1rem; }
