@@ -20,6 +20,7 @@ import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
 import AviasalesWidget from '../components/post/AviasalesWidget.astro';
 import BudgetBlock from '../components/BudgetBlock.astro';
 import { TP_LINKS } from '../data/affiliate.js';
+import { getGuide } from '../data/country-guides.js';
 
 // Pre-import all destination photos (Vite needs static imports). glob lazy:
 const destPhotos = import.meta.glob('../assets/destinations/*.jpg', {
@@ -45,6 +46,9 @@ const url = `https://traveltribe.ru/${d.slug}/`;
 // Resolve cover photo if downloaded
 const coverPath = `../assets/destinations/${d.slug}.jpg`;
 const coverImage = destPhotos[coverPath];
+
+// Расширенный гайд (если заполнен в country-guides.js) — иначе базовый хаб
+const guide = getGuide(d.slug);
 
 const VISA_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза обязательна' };
 const BUDGET_LABEL = {
@@ -94,6 +98,8 @@ const faqs = [
       : `${d.cases.nom} имеет переменчивые сезоны — смотри помесячный календарь ниже.`,
   },
 ];
+// Доп. вопросы из расширенного гайда — и в видимый FAQ, и в schema (AEO)
+if (guide?.faq?.length) faqs.push(...guide.faq);
 
 const ldJson = {
   "@context": "https://schema.org",
@@ -227,6 +233,57 @@ const ldJson = {
         </div>
       )}
     </section>
+
+    {/* РАСШИРЕННЫЙ ГАЙД — рендерится, если страна заполнена в country-guides.js */}
+    {guide && (
+      <>
+        {guide.intro && (
+          <section class="quick-block">
+            <h2>Зачем ехать {d.cases.vP}</h2>
+            <p class="quick-answer">{guide.intro}</p>
+          </section>
+        )}
+        {guide.highlights?.length > 0 && (
+          <section class="quick-block">
+            <h2>Главные впечатления</h2>
+            <ul class="guide-list">
+              {guide.highlights.map((h) => <li><strong>{h.t}</strong> — {h.d}</li>)}
+            </ul>
+          </section>
+        )}
+        {guide.getThere && (
+          <section class="quick-block">
+            <h2>Как добраться {d.cases.vP}</h2>
+            <p class="quick-answer">{guide.getThere}</p>
+          </section>
+        )}
+        {guide.stay?.length > 0 && (
+          <section class="quick-block">
+            <h2>Где остановиться</h2>
+            <ul class="guide-list">
+              {guide.stay.map((s) => <li><strong>{s.t}</strong> — {s.d}</li>)}
+            </ul>
+          </section>
+        )}
+        {guide.itinerary?.length > 0 && (
+          <section class="quick-block">
+            <h2>Маршрут на 7–10 дней</h2>
+            <ul class="guide-list guide-list--steps">
+              {guide.itinerary.map((s) => <li><strong>{s.t}.</strong> {s.d}</li>)}
+            </ul>
+          </section>
+        )}
+        {guide.practical?.length > 0 && (
+          <section class="quick-block">
+            <h2>Деньги, связь и практика</h2>
+            <ul class="guide-list">
+              {guide.practical.map((s) => <li><strong>{s.t}</strong> — {s.d}</li>)}
+            </ul>
+          </section>
+        )}
+        {guide.authorNote && <p class="guide-note">{guide.authorNote}</p>}
+      </>
+    )}
 
     {/* MONTH CALENDAR — clickable */}
     <section class="quick-block">
@@ -535,4 +592,13 @@ const ldJson = {
 .quick-monthtext { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.5rem; list-style: disc; }
 .quick-monthtext li { line-height: 1.5; }
 .quick-monthtext strong { font-weight: 700; }
+
+/* РАСШИРЕННЫЙ ГАЙД */
+.guide-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.7rem; }
+.guide-list li { position: relative; padding-left: 1.05rem; line-height: 1.55; color: var(--text-dim); }
+.guide-list li::before { content: ''; position: absolute; left: 0; top: 0.62em; width: 5px; height: 5px; border-radius: 50%; background: var(--gold-600); }
+.guide-list li strong { color: var(--text); font-weight: 700; }
+.guide-list--steps li { padding-left: 0.9rem; border-left: 2px solid var(--line); }
+.guide-list--steps li::before { content: none; }
+.guide-note { font-size: 0.85rem; font-style: italic; color: var(--text-faint); border-left: 2px solid var(--line); padding-left: 0.9rem; margin: -0.4rem 0 var(--space-10); line-height: 1.5; }
 </style>
