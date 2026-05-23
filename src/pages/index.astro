@@ -101,7 +101,7 @@ const ldJson = {
 
     <!-- Фильтры + дашборд -->
     <section><div class="wrap grid">
-      <div class="shead"><div><span class="n">02</span><h2>Куда поехать из России</h2></div><a href="/countries/">Все направления →</a></div>
+      <div class="shead"><div><span class="n">02</span><h2>Куда поехать из России</h2></div><a href="/countries/">Все направления →</a></div>
       <div class="filters" role="search">
         <div class="fg"><span class="fl">Когда</span><select class="t" id="fMonth" aria-label="Месяц поездки">
           <option value="0">любой</option>
@@ -126,19 +126,19 @@ const ldJson = {
               <td data-l="Поездка"><span class="price">≈ {fmt(r.budget)} ₽ <small>за неделю</small></span></td>
               <td data-l="Виза"><span class={`visa ${VISA_CLASS[r.visa]}`}>{VISA_LABEL[r.visa]}</span></td>
               <td data-l="Сезон" class="season">{r.season}</td>
-              <td class="flight r"><a class="fly" href={`/${r.slug}/`}>Подробнее →</a></td>
+              <td class="flight r"><a class="fly" href={`/${r.slug}/`}>Подробнее →</a></td>
             </tr>
           ))}
-          <tr id="moreRow" hidden><td colspan="5" class="more-cell"><a href="/countries/">Ещё <b id="moreN"></b> в сезоне → все направления</a></td></tr>
+          <tr id="moreRow" hidden><td colspan="5" class="more-cell"><a href="/countries/">Ещё <b id="moreN"></b> в сезоне → все направления</a></td></tr>
         </tbody>
       </table></div>
       <p class="nomatch" id="noMatch">Под эти фильтры ничего не нашлось — попробуйте ослабить один: другой месяц, бюджет повыше или другой вайб.</p>
-      <p class="dfoot">Цена — ориентир всей поездки в комфорте на одного: перелёт из Москвы + жильё, еда и транспорт за 7 ночей (медиана Aviasales/Островок и траты из источников 2026, курс ≈90 ₽/$). Зависит от дат и сезона — <a href="/calculator/">посчитайте точно →</a></p>
+      <p class="dfoot">Цена — ориентир всей поездки в комфорте на одного: перелёт из Москвы + жильё, еда и транспорт за 7 ночей (медиана Aviasales/Островок и траты из источников 2026, курс ≈90 ₽/$). Зависит от дат и сезона — <a href="/calculator/">посчитайте точно →</a></p>
 
       <!-- Авторские туры (YouTravel) — альтернатива DIY -->
       <div class="tourcta">
         <span class="tourcta-t"><b>Не хочешь планировать сам?</b> Авторский тур с экспертом — маршрут, логистика и малая группа уже собраны.</span>
-        <a class="tourcta-a" href={TP_LINKS.youtravel} rel="sponsored noopener" target="_blank">Смотреть авторские туры →</a>
+        <a class="tourcta-a" href={TP_LINKS.youtravel} rel="sponsored noopener" target="_blank">Смотреть авторские туры →</a>
         <span class="adm">реклама</span>
       </div>
 
@@ -146,38 +146,38 @@ const ldJson = {
       <div class="gear">
         <div class="gear-h"><h2>Собраться в дорогу</h2><span class="adm">реклама</span></div>
         <div class="gear-grid">
-          <div class="gi"><div class="gl">Билеты</div><div class="gt">Авиабилеты</div><div class="gd">Сравнить цены и поймать дешёвый</div><a class="cta" href={TP_LINKS.aviasales} rel="sponsored noopener" target="_blank">Найти билет →</a></div>
-          <div class="gi"><div class="gl">Жильё</div><div class="gt">Отели и апарты</div><div class="gd">Оплата картой РФ, бесплатная отмена</div><a class="cta" href={TP_LINKS.ostrovok} rel="sponsored noopener" target="_blank">Подобрать жильё →</a></div>
-          <div class="gi"><div class="gl">Страховка</div><div class="gt">Мед. страховка</div><div class="gd">Под визу и погранусловия</div><a class="cta" href={TP_LINKS.cherehapa} rel="sponsored noopener" target="_blank">Оформить →</a></div>
-          <div class="gi"><div class="gl">Авто</div><div class="gt">Прокат авто</div><div class="gd">Локальные и межд. прокатчики</div><a class="cta" href={TP_LINKS.economybookings} rel="sponsored noopener" target="_blank">Сравнить прокат →</a></div>
+          <div class="gi"><div class="gl">Билеты</div><div class="gt">Авиабилеты</div><div class="gd">Сравнить цены и поймать дешёвый</div><a class="cta" href={TP_LINKS.aviasales} rel="sponsored noopener" target="_blank">Найти билет&nbsp;→</a></div>
+          <div class="gi"><div class="gl">Жильё</div><div class="gt">Отели и апарты</div><div class="gd">Оплата картой РФ, бесплатная отмена</div><a class="cta" href={TP_LINKS.ostrovok} rel="sponsored noopener" target="_blank">Подобрать жильё →</a></div>
+          <div class="gi"><div class="gl">Страховка</div><div class="gt">Мед. страховка</div><div class="gd">Под визу и погранусловия</div><a class="cta" href={TP_LINKS.cherehapa} rel="sponsored noopener" target="_blank">Оформить →</a></div>
+          <div class="gi"><div class="gl">Авто</div><div class="gt">Прокат авто</div><div class="gd">Локальные и межд. прокатчики</div><a class="cta" href={TP_LINKS.economybookings} rel="sponsored noopener" target="_blank">Сравнить прокат →</a></div>
         </div>
       </div>
 
-      <div class="visaband"><span class="vt"><b>Виза для россиян 2026</b> — по каждой из 70 стран: безвиз, e-Visa или консульство. В таблице выше виза видна в каждой строке.</span><a href="/visa/">Все визы и что изменилось →</a></div>
+      <div class="visaband"><span class="vt"><b>Виза для россиян 2026</b> — по каждой из 70 стран: безвиз, e-Visa или консульство. В таблице выше виза видна в каждой строке.</span><a href="/visa/">Все визы и что изменилось →</a></div>
     </div></section>
 
     <!-- Инструменты -->
     <section class="sec"><div class="wrap grid">
-      <div class="shead"><div><span class="n">03</span><h2>Инструменты — не на слово</h2></div><a href="/seasons/">Все →</a></div>
+      <div class="shead"><div><span class="n">03</span><h2>Инструменты — не на слово</h2></div><a href="/seasons/">Все →</a></div>
       <div class="tools">
         <div class="tcard"><div class="tt">Когда ехать в каждую страну</div><div class="ts">Пример строки «Бали» — по месяцам:</div>
           <div class="heat" id="heat" data-pat={JSON.stringify(baliPat)}></div>
           <div class="heatlbl"><span>Я</span><span>Ф</span><span>М</span><span>А</span><span>М</span><span>И</span><span>И</span><span>А</span><span>С</span><span>О</span><span>Н</span><span>Д</span></div>
           <div class="lg"><span><i style="background:var(--gold)"></i>пик</span><span><i style="background:var(--ink)"></i>хорошо</span><span><i style="background:#9b9789"></i>норм</span><span><i style="background:var(--hair)"></i>не сезон</span></div>
-          <div class="tl"><a href="/seasons/">Сезоны по месяцам →</a><a href="/visa/">Визы РФ →</a></div>
+          <div class="tl"><a href="/seasons/">Сезоны по месяцам →</a><a href="/visa/">Визы РФ →</a></div>
         </div>
         <div class="tcard bud"><div class="tt">Калькулятор бюджета</div><div class="ts">Бали, комфорт на неделю с перелётом:</div>
           <div class="br"><span>Перелёт из Москвы</span><b>≈ {fmt(baliFlight)} ₽</b></div>
           <div class="br"><span>Неделя на месте (комфорт)</span><b>≈ {fmt(baliStay)} ₽</b></div>
           <div class="br"><span>Вся поездка</span><b>≈ {fmt(baliTrip)} ₽</b></div>
-          <div class="tl"><a href="/calculator/">Посчитать свою поездку →</a></div>
+          <div class="tl"><a href="/calculator/">Посчитать свою поездку →</a></div>
         </div>
       </div>
     </div></section>
 
     <!-- Свежие истории -->
     <section class="sec"><div class="wrap grid">
-      <div class="shead"><div><span class="n">04</span><h2>Свежие истории</h2></div><a href="/blog/">Все статьи →</a></div>
+      <div class="shead"><div><span class="n">04</span><h2>Свежие истории</h2></div><a href="/blog/">Все статьи →</a></div>
       <div class="posts">
         {posts.map((p, i) => (
           <a class="post" href={`/blog/${p.slug}/`}>
@@ -195,8 +195,8 @@ const ldJson = {
     <!-- Сообщество + автор -->
     <section><div class="wrap grid">
       <div class="comm">
-        <div class="tg2"><div class="k">05 / Telegram</div><h3>Свежие истории и апдейты виз — раньше, чем на сайте</h3><a href="https://t.me/traveltriberu" rel="noopener" target="_blank">Подписаться @traveltriberu →</a></div>
-        <div class="au"><div class="au-ph"><Image src={authorPhoto} alt="Никита Зайцев" width={156} height={156} formats={['webp']} /></div><div><div class="nm">Никита Зайцев</div><p>Был на всех 7 континентах, 60+ стран. Пишу только то, где был сам.</p><a class="method" href="/about/">Как я считаю бюджет и проверяю визы →</a></div></div>
+        <div class="tg2"><div class="k">05 / Telegram</div><h3>Свежие истории и апдейты виз — раньше, чем на сайте</h3><a href="https://t.me/traveltriberu" rel="noopener" target="_blank">Подписаться @traveltriberu →</a></div>
+        <div class="au"><div class="au-ph"><Image src={authorPhoto} alt="Никита Зайцев" width={156} height={156} formats={['webp']} /></div><div><div class="nm">Никита Зайцев</div><p>Был на всех 7 континентах, 60+ стран. Пишу только то, где был сам.</p><a class="method" href="/about/">Как я считаю бюджет и проверяю визы →</a></div></div>
       </div>
     </div></section>
   </main>
@@ -240,7 +240,7 @@ const ldJson = {
 .vlist{grid-column:1/13;grid-row:5;margin-top:.5rem;display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);list-style:none}
 .vi{border-right:1px solid var(--hair)}
 .vi-n{display:block;font-size:.62rem;font-weight:700;color:var(--gold);letter-spacing:.04em;margin-bottom:.22rem}
-.vi-l{display:block;font-size:.92rem;font-weight:600;line-height:1.25}
+.vi-l{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;font-size:.92rem;font-weight:600;line-height:1.25}
 .vi-ar{color:var(--gold);font-weight:600;white-space:nowrap}
 .vi:first-child{padding-left:0}.vi:last-child{border-right:none}
 .vi a{display:block;color:inherit;min-height:48px;padding:.7rem 1rem}
@@ -256,13 +256,14 @@ const ldJson = {
 .t:hover{text-decoration-color:var(--hair)}.t.on{color:var(--gold);text-decoration-color:var(--gold)}
 select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:none;border-bottom:2px solid var(--ink);border-radius:0;padding:0 1.2rem 0 .15rem;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' fill='none' stroke='%2315140f' stroke-width='1.8'%3E%3Cpath d='M1 1l3.5 3.5L8 1'/%3E%3C/svg%3E") right .1rem center no-repeat}
 .fcount{margin-left:auto;font-size:.8rem;font-weight:600}.fcount b{color:var(--gold);font-size:1.5rem;font-weight:700;margin-right:.2rem;vertical-align:-1px}
-/* Мобайл: фильтры в столбик, подписи фикс-ширины → опции выровнены ровной колонкой */
+/* Мобайл: фильтры в столбик, подписи фикс-ширины → опции выровнены ровной колонкой */
 @media(max-width:760px){
-  .filters{flex-direction:column;align-items:stretch;gap:.8rem;margin-top:1.2rem}
-  .fg{align-items:baseline;gap:.6rem}
-  .fl{flex:none;width:5.7rem}
-  .fopts{flex:1;flex-wrap:wrap;gap:.45rem 1rem}
-  .fcount{margin-left:0;padding-top:.2rem;border-top:1px solid var(--hair)}
+  /* подпись НАД чипами → опции на всю ширину (влезают в один ряд, без сирот), тесный ритм */
+  .filters{flex-direction:column;align-items:stretch;gap:.55rem;margin-top:1.2rem;padding:.3rem 0}
+  .fg{flex-direction:column;align-items:flex-start;gap:.05rem}
+  .fl{width:auto}
+  .fopts{flex:none;flex-wrap:wrap;gap:0 1.3rem;width:100%}
+  .fcount{margin-left:0;margin-top:.15rem;padding-top:.45rem;border-top:1px solid var(--hair)}
 }
 .seasonlead{grid-column:1/-1;font-size:.95rem;color:var(--ink);margin:1rem 0 .2rem}.seasonlead b{color:var(--gold);font-weight:600}
 
@@ -272,13 +273,14 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .dash thead th.r{text-align:right;padding-right:0}
 .dash td{padding:.95rem .8rem;border-bottom:1px solid var(--hair);vertical-align:middle}
 .dash td:first-child,.dash th:first-child{padding-left:0}.dash td.r{text-align:right;padding-right:0}
-.dash tbody tr:hover td{background:rgba(142,102,24,.07)}
+@media(hover:hover){.dash tbody tr:hover td{background:rgba(142,102,24,.07)}}
 .no{font-size:.72rem;font-weight:600;color:var(--gold);width:2.2rem}
 .dest{display:flex;align-items:center;gap:.9rem}
 .th{width:62px;height:46px;flex:none}
+.th img{display:block;width:100%;height:100%;object-fit:cover}
 .nm{display:block;font-weight:600;font-size:1.15rem;letter-spacing:-.01em;line-height:1.15}
 .nm:hover{text-decoration:2px underline var(--gold);text-underline-offset:3px}
-.dash tbody tr:hover .nm{color:var(--gold)}
+@media(hover:hover){.dash tbody tr:hover .nm{color:var(--gold)}}
 .vibe{display:block;font-size:.74rem;color:var(--mid);margin-top:.15rem}
 .sq{display:inline-block;margin-top:.22rem;font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
 .sq.peak{color:var(--gold)}
@@ -300,7 +302,7 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
   .dash td{border:none;padding:0;text-align:left}
   .dash td::before{display:none}                                  /* подписи не нужны — значения самоочевидны */
   /* ── ФОТО-КАРТОЧКА (Airbnb-style): чистое фото, инфо снизу, бейдж сезона уголком ── */
-  .dash td.cdest{margin-bottom:.55rem}
+  .dash td.cdest{display:block;width:100%;margin-bottom:.55rem}
   .cdest .dest{position:relative;display:block}
   .cdest .th{width:100%;height:200px;border-radius:12px;overflow:hidden;display:block;margin-bottom:.6rem}
   .cdest .dest>span:not(.th){display:block}
