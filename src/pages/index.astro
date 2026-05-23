@@ -41,16 +41,17 @@ const rows = DIRECTIONS.map((d) => {
   const budget = d.price?.flight ? tripCost(d.price) : null; // вся поездка с перелётом, ₽
   const cover = covers[`../assets/destinations/${d.slug}.jpg`];
   if (!budget || !d.r || !cover) return null;
-  const months = d.r.map((c, i) => (c === 'P' ? i + 1 : null)).filter(Boolean); // только ПИК-сезон
   const vibe = [...new Set((ACTIVITY_TAGS[d.slug] || []).map((t) => VIBE_MAP[t]).filter(Boolean))];
   const vibeRu = vibe.length ? vibe.map((v) => VIBE_RU[v]).join(' · ') : (d.sub || '');
-  return { slug: d.slug, nom: d.cases.nom, visa: d.visa, budget, months, vibe, vibeRu, cover, season: seasonLabel(d.r) };
+  // r — коды сезона по 12 месяцам: P пик / G хороший / O так себе / B плохо / X закрыто
+  return { slug: d.slug, nom: d.cases.nom, visa: d.visa, budget, r: d.r, vibe, vibeRu, cover, season: seasonLabel(d.r) };
 }).filter(Boolean); // порядок = релевантность (DIRECTIONS); сортировка по цене — переключателем на клиенте
 
 const MONTHS_PREP = ['', 'январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
 const month = new Date().getMonth() + 1;
 const monthWord = MONTHS_PREP[month];
-const nowRows = rows.filter((r) => r.months.includes(month));
+const inSeason = (codes, mo) => codes[mo - 1] === 'P' || codes[mo - 1] === 'G'; // пик или хороший (shoulder)
+const nowRows = rows.filter((r) => inSeason(r.r, month));
 const nowNames = nowRows.slice(0, 6).map((r) => r.nom);
 const plural = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'направление' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'направления' : 'направлений'));
 const nowWord = plural(nowRows.length);
@@ -113,21 +114,21 @@ const ldJson = {
         <div class="fcount"><b id="fCountN">{nowRows.length}</b><span id="fCountW">{nowWord}</span></div>
       </div>
 
-      <p class="seasonlead" id="seasonlead">Сейчас, <b>в {monthWord}</b>, на пике сезона: {nowNames.join(', ') || '—'}.</p>
+      <p class="seasonlead" id="seasonlead">Сейчас, <b>в {monthWord}</b>, в сезоне: {nowNames.join(', ') || '—'}.</p>
 
       <div class="dashwrap"><table class="dash" id="dash">
         <thead><tr><th>Направление</th><th>Поездка с перелётом</th><th>Виза</th><th>Лучший сезон</th><th class="r" aria-label="Подробнее"></th></tr></thead>
         <tbody>
           {rows.map((r) => (
-            <tr data-m={r.months.join(',')} data-b={tier(r.budget)} data-v={r.visa} data-vibe={r.vibe.join(',')} data-budget={r.budget} data-name={r.nom.toLowerCase()}>
-              <td class="cdest"><span class="dest"><span class="th"><Image src={r.cover} alt={r.nom} width={124} height={92} formats={['webp']} loading="lazy" /></span><span><a class="nm" href={`/${r.slug}/`}>{r.nom}</a><span class="vibe">{r.vibeRu}</span></span></span></td>
+            <tr data-r={r.r.join('')} data-b={tier(r.budget)} data-v={r.visa} data-vibe={r.vibe.join(',')} data-budget={r.budget} data-name={r.nom.toLowerCase()}>
+              <td class="cdest"><span class="dest"><span class="th"><Image src={r.cover} alt={r.nom} width={124} height={92} formats={['webp']} loading="lazy" /></span><span><a class="nm" href={`/${r.slug}/`}>{r.nom}</a><span class="vibe">{r.vibeRu}</span><span class="sq" hidden></span></span></span></td>
               <td data-l="Поездка"><span class="price">≈ {fmt(r.budget)} ₽ <small>за неделю</small></span></td>
               <td data-l="Виза"><span class={`visa ${VISA_CLASS[r.visa]}`}>{VISA_LABEL[r.visa]}</span></td>
               <td data-l="Сезон" class="season">{r.season}</td>
               <td class="flight r"><a class="fly" href={`/${r.slug}/`}>Подробнее →</a></td>
             </tr>
           ))}
-          <tr id="moreRow" hidden><td colspan="5" class="more-cell"><a href="/countries/">Ещё <b id="moreN"></b> на пике сезона → все направления</a></td></tr>
+          <tr id="moreRow" hidden><td colspan="5" class="more-cell"><a href="/countries/">Ещё <b id="moreN"></b> в сезоне → все направления</a></td></tr>
         </tbody>
       </table></div>
       <p class="nomatch" id="noMatch">Под эти фильтры ничего не нашлось — попробуйте ослабить один: другой месяц, бюджет повыше или другой вайб.</p>
@@ -259,6 +260,9 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .nm:hover{text-decoration:2px underline var(--gold);text-underline-offset:3px}
 .dash tbody tr:hover .nm{color:var(--gold)}
 .vibe{display:block;font-size:.74rem;color:var(--mid);margin-top:.15rem}
+.sq{display:inline-block;margin-top:.22rem;font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.sq.peak{color:var(--gold)}
+.sq.good{color:var(--mid)}
 .price{font-weight:700;font-size:1.2rem}.price small{font-size:.7rem;color:var(--mid);font-weight:500}
 .visa{font-size:.74rem;font-weight:600;letter-spacing:.02em;text-transform:uppercase}
 .visa.free{color:var(--gold)}.visa.evisa{color:var(--ink)}.visa.visa{color:#56534c}
@@ -343,22 +347,30 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
     const state = { m: new Date().getMonth() + 1, b: null, vibe: null, sort: 'rel' };
     const PREP = ['', 'январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
     const pl = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'направление' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'направления' : 'направлений'));
+    const qcode = (tr) => (state.m ? (tr.dataset.r[state.m - 1] || '') : ''); // код сезона выбранного месяца
+    const rank = (tr) => { const c = qcode(tr); return c === 'P' ? 0 : (c === 'G' ? 1 : 2); };
     const ordered = () => {
       if (state.sort === 'asc') return [...allRows].sort((a, b) => +a.dataset.budget - +b.dataset.budget);
       if (state.sort === 'desc') return [...allRows].sort((a, b) => +b.dataset.budget - +a.dataset.budget);
-      return allRows; // рекомендую = порядок подборки
+      if (state.m) { const idx = new Map(allRows.map((r, i) => [r, i])); return [...allRows].sort((a, b) => rank(a) - rank(b) || idx.get(a) - idx.get(b)); } // рекомендую: пик раньше хорошего
+      return allRows; // без месяца — порядок подборки
     };
     function apply() {
       const list = ordered();
       list.forEach((r) => tbody.insertBefore(r, moreRow)); // переставить под текущую сортировку
       let n = 0, shown = 0; const names = [];
       list.forEach((c) => {
-        const m = c.dataset.m ? c.dataset.m.split(',') : [];
+        const code = qcode(c);
         const vibe = c.dataset.vibe ? c.dataset.vibe.split(',') : [];
         let ok = true;
-        if (state.m && !m.includes(String(state.m))) ok = false;
+        if (state.m && code !== 'P' && code !== 'G') ok = false; // в сезоне = пик ИЛИ хороший (не только пик)
         if (state.b && c.dataset.b !== state.b) ok = false;
         if (state.vibe && !vibe.includes(state.vibe)) ok = false; // вайб должен реально совпадать (без тегов — не под конкретный)
+        const sq = c.querySelector('.sq'); // бейдж качества сезона выбранного месяца
+        if (sq) {
+          if (state.m && (code === 'P' || code === 'G')) { sq.hidden = false; sq.textContent = code === 'P' ? 'пик сезона' : 'хороший сезон'; sq.className = 'sq ' + (code === 'P' ? 'peak' : 'good'); }
+          else sq.hidden = true;
+        }
         if (ok) {
           n++;
           if (shown < CAP) { c.hidden = false; shown++; if (names.length < 6) names.push(c.querySelector('.nm').textContent); }
@@ -371,7 +383,7 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
       if (moreRow) { if (n > CAP) { moreN.textContent = n - CAP; moreRow.hidden = false; } else moreRow.hidden = true; }
       const sl = document.getElementById('seasonlead');
       if (sl) sl.innerHTML = n
-        ? `Сейчас, <b>${state.m ? 'в ' + PREP[state.m] : 'в любой месяц'}</b>, на пике сезона ${n}: ${names.join(', ')}${n > names.length ? ' и др' : ''}.`
+        ? `Сейчас, <b>${state.m ? 'в ' + PREP[state.m] : 'в любой месяц'}</b>, в сезоне ${n}: ${names.join(', ')}${n > names.length ? ' и др' : ''}.`
         : 'Под эти фильтры ничего не нашлось — ослабьте один: месяц, бюджет или вайб.';
     }
     const fMonth = document.getElementById('fMonth');
