@@ -122,7 +122,7 @@ const ldJson = {
         <tbody>
           {rows.map((r) => (
             <tr data-r={r.r.join('')} data-b={tier(r.budget)} data-v={r.visa} data-vibe={r.vibe.join(',')} data-budget={r.budget} data-name={r.nom.toLowerCase()}>
-              <td class="cdest"><span class="dest"><span class="th"><Image src={r.cover} alt={r.nom} width={124} height={92} formats={['webp']} loading="lazy" /></span><span><a class="nm" href={`/${r.slug}/`}>{r.nom}</a><span class="vibe">{r.vibeRu}</span><span class="sq" hidden></span></span></span></td>
+              <td class="cdest"><span class="dest"><span class="th"><Image src={r.cover} alt={r.nom} width={420} height={300} formats={['webp']} loading="lazy" /></span><span><a class="nm" href={`/${r.slug}/`}>{r.nom}</a><span class="vibe">{r.vibeRu}</span><span class="sq" hidden></span></span></span></td>
               <td data-l="Поездка"><span class="price">≈ {fmt(r.budget)} ₽ <small>за неделю</small></span></td>
               <td data-l="Виза"><span class={`visa ${VISA_CLASS[r.visa]}`}>{VISA_LABEL[r.visa]}</span></td>
               <td data-l="Сезон" class="season">{r.season}</td>
@@ -256,6 +256,14 @@ const ldJson = {
 .t:hover{text-decoration-color:var(--hair)}.t.on{color:var(--gold);text-decoration-color:var(--gold)}
 select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:none;border-bottom:2px solid var(--ink);border-radius:0;padding:0 1.2rem 0 .15rem;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' fill='none' stroke='%2315140f' stroke-width='1.8'%3E%3Cpath d='M1 1l3.5 3.5L8 1'/%3E%3C/svg%3E") right .1rem center no-repeat}
 .fcount{margin-left:auto;font-size:.8rem;font-weight:600}.fcount b{color:var(--gold);font-size:1.5rem;font-weight:700;margin-right:.2rem;vertical-align:-1px}
+/* Мобайл: фильтры в столбик, подписи фикс-ширины → опции выровнены ровной колонкой */
+@media(max-width:760px){
+  .filters{flex-direction:column;align-items:stretch;gap:.8rem;margin-top:1.2rem}
+  .fg{align-items:baseline;gap:.6rem}
+  .fl{flex:none;width:5.7rem}
+  .fopts{flex:1;flex-wrap:wrap;gap:.45rem 1rem}
+  .fcount{margin-left:0;padding-top:.2rem;border-top:1px solid var(--hair)}
+}
 .seasonlead{grid-column:1/-1;font-size:.95rem;color:var(--ink);margin:1rem 0 .2rem}.seasonlead b{color:var(--gold);font-weight:600}
 
 .dashwrap{grid-column:1/-1}
@@ -288,15 +296,26 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 @media(max-width:760px){
   .dash thead{position:absolute;left:-9999px}
   .dash,.dash tbody,.dash tr{display:block;width:100%}
-  .dash tr{border-bottom:1px solid var(--line);padding:.95rem 0}
+  .dash tr{border:none;padding:0 0 1.6rem}
   .dash td{border:none;padding:0;text-align:left}
   .dash td::before{display:none}                                  /* подписи не нужны — значения самоочевидны */
-  .dash td.cdest{margin-bottom:.55rem}                            /* шапка карточки: фото + название + вайб */
-  .dash td[data-l="Поездка"]{display:block;margin-bottom:.15rem}  /* цена — крупно, отдельной строкой */
-  .dash td[data-l="Виза"],.dash td.season{display:inline;font-size:.82rem;color:var(--mid)}  /* виза + сезон — одна мета-строка */
-  .dash td[data-l="Виза"] .visa{font-size:.82rem}
+  /* ── ФОТО-КАРТОЧКА: крупное фото + название/«пик» поверх ── */
+  .dash td.cdest{margin-bottom:.6rem}
+  .cdest .dest{position:relative;display:block;border-radius:10px;overflow:hidden}
+  .cdest .th{width:100%;height:178px}
+  .cdest .dest>span:not(.th){position:absolute;left:0;right:0;bottom:0;display:block;padding:.9rem .9rem .7rem;background:linear-gradient(to top,rgba(18,14,8,.78),rgba(18,14,8,.18) 55%,transparent)}
+  .cdest .nm{color:#fff;font-size:1.4rem}
+  .cdest .nm:hover{color:#fff}
+  .cdest .vibe{color:rgba(255,255,255,.85);margin-top:.12rem}
+  .cdest .sq{color:#fff;margin-top:.3rem}
+  .cdest .sq.peak{color:#e8b65c}.cdest .sq.good{color:#cdd6de}
+  /* ── под фото: цена крупно, виза·сезон мета, ссылка ── */
+  .dash td[data-l="Поездка"]{display:block;margin-bottom:.2rem}
+  .price{font-size:1.45rem}
+  .dash td[data-l="Виза"],.dash td.season{display:inline;font-size:.84rem;color:var(--mid)}
+  .dash td[data-l="Виза"] .visa{font-size:.84rem}
   .dash td[data-l="Виза"]::after{content:" · ";color:var(--hair)}
-  .dash td.flight{display:block;margin-top:.55rem}
+  .dash td.flight{display:block;margin-top:.5rem;text-align:left}
   .cno{display:none}
 }
 
