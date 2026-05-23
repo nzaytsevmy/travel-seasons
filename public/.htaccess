@@ -11,16 +11,9 @@ RewriteCond %{HTTPS} off
 RewriteCond %{HTTP_HOST} ^traveltribe\.ru$ [NC]
 RewriteRule ^(.*)$ https://traveltribe.ru/$1 [R=301,L]
 
-# ─── LEGACY URL REDIRECTS (старые ссылки в выдаче Яндекса/Google) ───
-# Не отдавать 404 — это плохой signal для crawl-бюджета.
-# Каждый легаси URL ведёт на ближайшую тематическую страницу.
-RewriteRule ^japan_momiji/?$ /blog/japan-guide-2026/ [R=301,L]
-RewriteRule ^japan-momiji/?$ /blog/japan-guide-2026/ [R=301,L]
-RewriteRule ^mexico_old/?$ /blog/ [R=301,L]
-RewriteRule ^mexico/?$ /blog/ [R=301,L]
-
-# Консолидация packing: detail [страна]/[месяц] → хаб [страна] (823→70, scaled-content)
-RewriteRule ^packing/([^/]+)/([^/]+)/?$ /packing/$1/ [R=301,L]
+# ─── LEGACY URL REDIRECTS перенесены в astro.config.mjs (redirects) ───
+# REG.RU = nginx, RewriteRule из .htaccess НЕ применяются (проверено 2026-05-23).
+# Редиректы теперь — served-стабы Astro (meta-refresh + canonical).
 
 # ─── SECURITY HEADERS ───
 # Если REG.RU shared имеет mod_headers — applies. Если нет — секция игнорируется без ошибок.
