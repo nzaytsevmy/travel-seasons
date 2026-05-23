@@ -8,7 +8,6 @@ import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import { DIRECTIONS } from '../data/directions.js';
 import { TP_LINKS } from '../data/affiliate.js';
-import budgets from '../data/real-budgets-2026.json';
 import authorPhoto from '../assets/author/nikita.jpg';
 
 import { ACTIVITY_TAGS } from '../data/country-activity-tags.js';
@@ -20,7 +19,13 @@ const VIBE_RU = { beach: 'Пляж', mountains: 'Горы', city: 'Город', 
 const VIBE_MAP = { beach:'beach', mountain:'mountains', altitude:'mountains', ski:'mountains', city:'city', culture:'city', food:'city', jungle:'nature', safari:'nature', dive:'nature', desert:'nature', photo:'nature' };
 const MON_ABBR = ['', 'янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
 const fmt = (n) => n.toLocaleString('ru-RU');
-const tier = (b) => (b < 2500 ? 'low' : b <= 6000 ? 'mid' : 'high');
+const USD_RUB = 90, NIGHTS = 7; // курс ≈ЦБ; неделя на месте (как в /calculator/)
+const roundK = (n) => Math.round(n / 1000) * 1000; // округление до тысячи — единое для таблицы и карточки
+// Вся поездка в комфорте на одного: перелёт из Москвы + (отель+еда)×ночи. Источник — prices.js (USD).
+const flightRub = (p) => roundK(p.flight[1] * USD_RUB);
+const stayRub = (p) => roundK((p.hotel[1] + p.food[1]) * NIGHTS * USD_RUB);
+const tripCost = (p) => flightRub(p) + stayRub(p);
+const tier = (t) => (t < 100000 ? 'low' : t <= 200000 ? 'mid' : 'high'); // вся поездка с перелётом, ₽
 function seasonLabel(r) {
   let idx = r.map((c, i) => (c === 'P' ? i + 1 : 0)).filter(Boolean);
   if (!idx.length) idx = r.map((c, i) => (c === 'G' ? i + 1 : 0)).filter(Boolean);
@@ -30,10 +35,10 @@ function seasonLabel(r) {
   g.push([s, p]);
   return g.map(([a, b]) => (a === b ? MON_ABBR[a] : `${MON_ABBR[a]}–${MON_ABBR[b]}`)).join(', ');
 }
-// Все 70 направлений на РЕАЛЬНЫХ данных: бюджет ₽/день (real-budgets), виза (DIRECTIONS),
-// месяцы (сезонные коды DIRECTIONS.r: P/G = подходит), вайб (ACTIVITY_TAGS). Без выдумок.
+// Все 70 направлений на РЕАЛЬНЫХ данных: цена ВСЕЙ поездки с перелётом (prices.js, комфорт),
+// виза (DIRECTIONS), месяцы (DIRECTIONS.r: P = пик), вайб (ACTIVITY_TAGS). Без выдумок.
 const rows = DIRECTIONS.map((d) => {
-  const budget = budgets[d.slug]?.median_daily_rub?.budget;
+  const budget = d.price?.flight ? tripCost(d.price) : null; // вся поездка с перелётом, ₽
   const cover = covers[`../assets/destinations/${d.slug}.jpg`];
   if (!budget || !d.r || !cover) return null;
   const months = d.r.map((c, i) => (c === 'P' ? i + 1 : null)).filter(Boolean); // только ПИК-сезон
@@ -50,9 +55,11 @@ const nowNames = nowRows.slice(0, 6).map((r) => r.nom);
 const plural = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'направление' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'направления' : 'направлений'));
 const nowWord = plural(nowRows.length);
 
-// Бали — реальный пример для превью инструментов
-const baliDay = budgets['bali']?.median_daily_rub?.budget ?? 1294;
-const baliWeek = baliDay * 7;
+// Бали — реальный пример для превью «Калькулятор бюджета» (комфорт, с перелётом)
+const baliP = DIRECTIONS.find((d) => d.slug === 'bali')?.price;
+const baliFlight = baliP ? flightRub(baliP) : 0;
+const baliStay = baliP ? stayRub(baliP) : 0;
+const baliTrip = baliFlight + baliStay;
 
 // Свежие посты
 const allPosts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
@@ -89,13 +96,13 @@ const ldJson = {
     <!-- Манифест -->
     <section class="manifest"><div class="wrap grid">
       <div class="idx">01 / Манифест<b>Авторский тревел-журнал</b></div>
-      <p class="meta"><b>Был лично на 7 континентах</b><br>60+ стран · цены из чеков, не пересказ · обновлено V.2026</p>
+      <p class="meta"><b>Был лично на 7 континентах</b><br>60+ стран · цены с перелётом, не пересказ · обновлено V.2026</p>
       <h1 class="h1">Вся польза<br>о поездках —<br><span class="rd">на виду.</span></h1>
       <p class="sub">Визы, сезоны, реальные цены 2026 и маршруты по 70 направлениям — в одной таблице. Куда, когда и за сколько видно сразу. Ничего копать не нужно.</p>
       <ul class="vlist">
         <li class="vi"><span>01</span>Визы РФ</li>
         <li class="vi"><span>02</span>Когда ехать</li>
-        <li class="vi"><span>03</span>Цены из чеков</li>
+        <li class="vi"><span>03</span>Цена с перелётом</li>
         <li class="vi"><span>04</span>Маршруты</li>
         <li class="vi"><span>05</span>Чек-листы</li>
         <li class="vi"><span>06</span>70 направлений</li>
@@ -111,7 +118,7 @@ const ldJson = {
             <option value={i + 1} selected={i + 1 === month}>{['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'][i]}</option>
           ))}
         </select></div>
-        <div class="fg"><span class="fl">Бюджет</span><div class="fopts" data-g="b"><button class="t" data-v="low" type="button">$</button><button class="t" data-v="mid" type="button">$$</button><button class="t" data-v="high" type="button">$$$</button></div></div>
+        <div class="fg"><span class="fl">Поездка ₽</span><div class="fopts" data-g="b"><button class="t" data-v="low" type="button">до 100к</button><button class="t" data-v="mid" type="button">100–200к</button><button class="t" data-v="high" type="button">200к+</button></div></div>
         <div class="fg"><span class="fl">Виза</span><div class="fopts" data-g="v"><button class="t" data-v="free" type="button">безвиз</button><button class="t" data-v="evisa" type="button">e-visa</button></div></div>
         <div class="fg"><span class="fl">Вайб</span><div class="fopts" data-g="vibe"><button class="t" data-v="beach" type="button">пляж</button><button class="t" data-v="mountains" type="button">горы</button><button class="t" data-v="city" type="button">город</button><button class="t" data-v="nature" type="button">природа</button></div></div>
         <div class="fg"><span class="fl">Сортировка</span><div class="fopts" id="sortOpts"><button class="t on" data-s="rel" type="button">рекомендую</button><button class="t" data-s="asc" type="button">дешевле</button><button class="t" data-s="desc" type="button">дороже</button></div></div>
@@ -121,22 +128,22 @@ const ldJson = {
       <p class="seasonlead" id="seasonlead">Сейчас, <b>в {monthWord}</b>, на пике сезона: {nowNames.join(', ') || '—'}.</p>
 
       <div class="dashwrap"><table class="dash" id="dash">
-        <thead><tr><th>Направление</th><th>Бюджет / день</th><th>Виза</th><th>Лучший сезон</th><th class="r">Перелёт</th></tr></thead>
+        <thead><tr><th>Направление</th><th>Поездка с перелётом</th><th>Виза</th><th>Лучший сезон</th><th class="r" aria-label="Подробнее"></th></tr></thead>
         <tbody>
           {rows.map((r) => (
             <tr data-m={r.months.join(',')} data-b={tier(r.budget)} data-v={r.visa} data-vibe={r.vibe.join(',')} data-budget={r.budget} data-name={r.nom.toLowerCase()}>
               <td class="cdest"><span class="dest"><span class="th"><Image src={r.cover} alt={r.nom} width={124} height={92} formats={['webp']} loading="lazy" /></span><span><a class="nm" href={`/${r.slug}/`}>{r.nom}</a><span class="vibe">{r.vibeRu}</span></span></span></td>
-              <td data-l="Бюджет"><span class="price">{fmt(r.budget)} ₽ <small>/день</small></span></td>
+              <td data-l="Поездка"><span class="price">≈ {fmt(r.budget)} ₽ <small>за неделю</small></span></td>
               <td data-l="Виза"><span class={`visa ${VISA_CLASS[r.visa]}`}>{VISA_LABEL[r.visa]}</span></td>
               <td data-l="Сезон" class="season">{r.season}</td>
-              <td data-l="Перелёт" class="flight r"><a class="fly" href={TP_LINKS.aviasales} rel="sponsored noopener" target="_blank">Найти билет →</a></td>
+              <td class="flight r"><a class="fly" href={`/${r.slug}/`}>Подробнее →</a></td>
             </tr>
           ))}
           <tr id="moreRow" hidden><td colspan="5" class="more-cell"><a href="/countries/">Ещё <b id="moreN"></b> на пике сезона → все направления</a></td></tr>
         </tbody>
       </table></div>
-      <p class="nomatch" id="noMatch">Под эти фильтры ничего — попробуйте другой месяц, бюджет или визу. Например, дорогих e-Visa в мае почти нет — есть безвиз.</p>
-      <p class="dfoot">Бюджет ₽/день — реальные траты и агрегаторы 2026, на одного (хостел/локальная еда/транспорт; перелёт отдельно). Ссылки на билеты — партнёрские. <a href="/seasons/">Все 70 направлений →</a></p>
+      <p class="nomatch" id="noMatch">Под эти фильтры ничего не нашлось — попробуйте ослабить один: другой месяц, бюджет повыше или другой тип визы.</p>
+      <p class="dfoot">Цена — ориентир всей поездки в комфорте на одного: перелёт из Москвы + жильё, еда и транспорт за 7 ночей (медиана Aviasales/Островок и траты из источников 2026, курс ≈90 ₽/$). Зависит от дат и сезона — <a href="/calculator/">посчитайте точно →</a></p>
 
       <!-- Монетизация -->
       <div class="gear">
@@ -162,10 +169,10 @@ const ldJson = {
           <div class="lg"><span><i style="background:var(--gold)"></i>пик</span><span><i style="background:var(--ink)"></i>хорошо</span><span><i style="background:#9b9789"></i>норм</span><span><i style="background:var(--hair)"></i>не сезон</span></div>
           <div class="tl"><a href="/seasons/">Сезоны по месяцам →</a><a href="/visa/">Визы РФ →</a></div>
         </div>
-        <div class="tcard bud"><div class="tt">Калькулятор бюджета</div><div class="ts">Бали, реальный бюджет-уровень:</div>
-          <div class="br"><span>В день (жильё+еда+транспорт)</span><b>{fmt(baliDay)} ₽</b></div>
-          <div class="br"><span>Неделя (7 дней)</span><b>{fmt(baliWeek)} ₽</b></div>
-          <div class="br"><span>Перелёт</span><b>считается отдельно</b></div>
+        <div class="tcard bud"><div class="tt">Калькулятор бюджета</div><div class="ts">Бали, комфорт на неделю с перелётом:</div>
+          <div class="br"><span>Перелёт из Москвы</span><b>≈ {fmt(baliFlight)} ₽</b></div>
+          <div class="br"><span>Неделя на месте (комфорт)</span><b>≈ {fmt(baliStay)} ₽</b></div>
+          <div class="br"><span>Вся поездка</span><b>≈ {fmt(baliTrip)} ₽</b></div>
           <div class="tl"><a href="/calculator/">Посчитать свою поездку →</a></div>
         </div>
       </div>
@@ -219,7 +226,7 @@ const ldJson = {
 .wrap{max-width:1280px;margin-inline:auto;padding-inline:var(--edge)}
 .grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:0 clamp(.8rem,2vw,1.6rem)}
 
-.sw-head{border-bottom:1px solid var(--line)}
+.sw-head{position:sticky;top:0;z-index:50;background:var(--paper);border-bottom:1px solid var(--line)}
 .nav{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;padding-block:.9rem}
 .wm{font-weight:700;font-size:1.05rem;letter-spacing:-.02em;text-transform:uppercase}
 .nav ul{list-style:none;display:flex;gap:1.4rem;font-size:.72rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;padding:0}
@@ -360,7 +367,7 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
         if (state.m && !m.includes(String(state.m))) ok = false;
         if (state.b && c.dataset.b !== state.b) ok = false;
         if (state.v && c.dataset.v !== state.v) ok = false;
-        if (state.vibe && vibe.length && !vibe.includes(state.vibe)) ok = false; // без тегов вайба = подходит под любой
+        if (state.vibe && !vibe.includes(state.vibe)) ok = false; // вайб должен реально совпадать (без тегов — не под конкретный)
         if (ok) {
           n++;
           if (shown < CAP) { c.hidden = false; shown++; if (names.length < 6) names.push(c.querySelector('.nm').textContent); }
@@ -374,9 +381,11 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
       const sl = document.getElementById('seasonlead');
       if (sl) sl.innerHTML = n
         ? `Сейчас, <b>${state.m ? 'в ' + PREP[state.m] : 'в любой месяц'}</b>, на пике сезона ${n}: ${names.join(', ')}${n > names.length ? ' и др' : ''}.`
-        : 'Под эти фильтры ничего — попробуйте другой месяц, бюджет или визу.';
+        : 'Под эти фильтры ничего не нашлось — ослабьте один: месяц, бюджет или визу.';
     }
-    document.getElementById('fMonth').addEventListener('change', (e) => { state.m = +e.target.value; apply(); });
+    const fMonth = document.getElementById('fMonth');
+    if (fMonth) fMonth.value = String(state.m); // месяц по дате пользователя, а не по дате сборки
+    fMonth.addEventListener('change', (e) => { state.m = +e.target.value; apply(); });
     document.querySelectorAll('.fopts[data-g]').forEach((g) => g.addEventListener('click', (e) => {
       const b = e.target.closest('.t'); if (!b) return;
       const grp = g.dataset.g, was = b.classList.contains('on');
