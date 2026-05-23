@@ -69,7 +69,7 @@ const allPosts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.val
 const posts = allPosts.slice(0, 3);
 const readingTime = (body) => Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
 
-const desc = 'Куда поехать из России в 2026: визы, сезоны и реальные цены 2026 по 70 направлениям в одной таблице — куда, когда и за сколько. Автор был лично на 7 континентах.';
+const desc = 'Куда поехать из России в 2026: визы, сезоны и реальные цены с перелётом по 70 направлениям — в одной таблице. Автор был лично на 7 континентах.';
 const ldJson = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -78,7 +78,7 @@ const ldJson = {
   ],
 };
 ---
-<Layout title="TravelTribe — куда поехать из России в 2026: визы, сезоны, цены" description={desc} canonical="https://traveltribe.ru/" ldJson={ldJson}>
+<Layout title="Куда поехать из России в 2026: визы, сезоны, цены · TravelTribe" description={desc} canonical="https://traveltribe.ru/" ldJson={ldJson}>
 <div class="sw">
 
   <main id="main">
