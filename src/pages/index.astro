@@ -88,13 +88,14 @@ const ldJson = {
       <p class="meta"><b>Был лично на 7 континентах</b><br>60+ стран · цены с перелётом, не пересказ · обновлено V.2026</p>
       <h1 class="h1">Вся польза<br>о поездках —<br><span class="rd">на виду.</span></h1>
       <p class="sub">Визы, сезоны и реальные цены с перелётом по 70 направлениям — в одной таблице. Куда, когда и за сколько видно сразу. Ничего копать не нужно.</p>
+      <p class="vlist-cap">Разделы сайта</p>
       <ul class="vlist">
-        <li class="vi"><a href="/visa/"><span>01</span>Визы РФ</a></li>
-        <li class="vi"><a href="/seasons/"><span>02</span>Когда ехать</a></li>
-        <li class="vi"><a href="/calculator/"><span>03</span>Цена с перелётом</a></li>
-        <li class="vi"><a href="/trips/"><span>04</span>Поездки</a></li>
-        <li class="vi"><a href="/packing/"><span>05</span>Чек-листы</a></li>
-        <li class="vi"><a href="/countries/"><span>06</span>70 направлений</a></li>
+        <li class="vi"><a href="/visa/"><span class="vi-n">01</span><span class="vi-l">Визы РФ <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
+        <li class="vi"><a href="/seasons/"><span class="vi-n">02</span><span class="vi-l">Когда ехать <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
+        <li class="vi"><a href="/calculator/"><span class="vi-n">03</span><span class="vi-l">Цена с перелётом <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
+        <li class="vi"><a href="/trips/"><span class="vi-n">04</span><span class="vi-l">Поездки <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
+        <li class="vi"><a href="/packing/"><span class="vi-n">05</span><span class="vi-l">Чек-листы <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
+        <li class="vi"><a href="/countries/"><span class="vi-n">06</span><span class="vi-l">70 направлений <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
       </ul>
     </div></section>
 
@@ -235,13 +236,17 @@ const ldJson = {
 .h1{grid-column:1/13;grid-row:2;font-weight:700;font-size:clamp(2.4rem,7vw,6.4rem);line-height:1.02;letter-spacing:-.035em;margin-top:clamp(1.2rem,2.5vw,2rem);padding-bottom:.06em}
 .h1 .rd{color:var(--gold)}
 .sub{grid-column:1/8;grid-row:3;font-size:clamp(1rem,1.3vw,1.18rem);color:var(--ink);margin-top:clamp(1.5rem,2vw,1.9rem);max-width:46ch}
-.vlist{grid-column:1/13;grid-row:4;margin-top:1.8rem;display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);list-style:none}
-.vi{padding:.75rem 1.2rem;border-right:1px solid var(--hair);font-size:.82rem;font-weight:500}
+.vlist-cap{grid-column:1/13;grid-row:4;margin-top:1.8rem;font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mid)}
+.vlist{grid-column:1/13;grid-row:5;margin-top:.5rem;display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);list-style:none}
+.vi{border-right:1px solid var(--hair)}
+.vi-n{display:block;font-size:.62rem;font-weight:700;color:var(--gold);letter-spacing:.04em;margin-bottom:.22rem}
+.vi-l{display:block;font-size:.92rem;font-weight:600;line-height:1.25}
+.vi-ar{color:var(--gold);font-weight:600;white-space:nowrap}
 .vi:first-child{padding-left:0}.vi:last-child{border-right:none}
-.vi span{display:block;font-size:.66rem;font-weight:600;color:var(--gold);margin-bottom:.15rem}
-.vi a{display:block;color:inherit;min-height:44px}
-.vi a:hover,.vi a:focus-visible{color:var(--gold)}
-@media(max-width:760px){.idx,.h1,.sub,.meta,.vlist{grid-column:1/-1;grid-row:auto}.meta{text-align:left;margin-top:.6rem}.h1{margin-top:1.1rem}.vlist{grid-template-columns:repeat(2,1fr)}.vi:nth-child(2n){border-right:none}.vi:nth-child(odd){padding-left:0}}
+.vi a{display:block;color:inherit;min-height:48px;padding:.7rem 1rem}
+.vi a:hover,.vi a:focus-visible{background:rgba(142,102,24,.05)}
+.vi a:hover .vi-l,.vi a:focus-visible .vi-l{color:var(--gold)}
+@media(max-width:760px){.idx,.h1,.sub,.meta,.vlist-cap,.vlist{grid-column:1/-1;grid-row:auto}.meta{text-align:left;margin-top:.6rem}.h1{margin-top:1.1rem}.vlist{grid-template-columns:repeat(2,1fr)}.vi{border-bottom:1px solid var(--hair)}.vi:nth-child(2n){border-right:none}.vi:nth-child(5),.vi:nth-child(6){border-bottom:none}.vi:nth-child(odd) a{padding-left:0}}
 
 .filters{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:.3rem 1.6rem;padding:.6rem 0;margin-top:1.4rem;border-bottom:1px solid var(--line)}
 .fg{display:flex;align-items:center;gap:.7rem}
