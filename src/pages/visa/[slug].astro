@@ -1,6 +1,5 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { Picture } from 'astro:assets';
@@ -142,7 +141,6 @@ const ldJson = {
   ogType="article"
   ldJson={ldJson}
 >
-  <Nav active="blog" />
   <Breadcrumbs crumbs={[{ label: 'Визы', href: '/visa/' }, { label: d.cases.nom }]} />
 
   <main id="main" class="visa-wrap">

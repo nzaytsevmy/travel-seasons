@@ -1,6 +1,5 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { data as regions } from '../../data/regions.js';
@@ -169,7 +168,6 @@ const ldJson = {
   ogDescription={description}
   ldJson={ldJson}
 >
-  <Nav active="trips" />
   <Breadcrumbs crumbs={[
     { label: 'Календарь', href: '/trips/' },
     { label: M.nameNom }

@@ -1,6 +1,5 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { Image } from 'astro:assets';
@@ -204,7 +203,6 @@ const ldJson = {
   ogDescription={`${byVisa.free.length} без визы · ${byVisa.evisa.length} eVisa · ${byVisa.required.length} требуют визу`}
   ldJson={ldJson}
 >
-  <Nav active="blog" />
   <Breadcrumbs crumbs={[{ label: 'Визы' }]} />
 
   <main id="main" class="visa-archive">

@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import SwissHeader from '../components/SwissHeader.astro';
 // Onest woff2 через Vite (?url → хешированный путь). font-display:optional
 // объявляется ниже вручную — устраняет CLS от font-swap без size-adjust.
 import onestCyrExt from '@fontsource-variable/onest/files/onest-cyrillic-ext-wght-normal.woff2?url';
@@ -106,24 +107,10 @@ const finalLd = {
 <head>
   <meta charset="UTF-8" />
 
-  <!-- FOUC: light is the default theme. Dark only when user explicitly opts in.
-       Также применяется после ClientRouter swap, чтобы тема не слетала
-       при SPA-навигации (Safari особенно чувствителен к этому). -->
-  <script is:inline>
-    (function () {
-      function applyTheme() {
-        var dark = localStorage.getItem('theme') === 'dark';
-        document.documentElement.classList.toggle('dark-theme', dark);
-        if (document.body) document.body.classList.toggle('dark-theme', dark);
-      }
-      applyTheme();
-      // ClientRouter (Astro View Transitions): применять тему после swap
-      document.addEventListener('astro:after-swap', applyTheme);
-    })();
-  </script>
+  <!-- Тёмная тема убрана 2026-05-23 — сайт только светлый (брендбук Swiss). -->
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="color-scheme" content="dark light" />
+  <meta name="color-scheme" content="light" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -159,8 +146,7 @@ const finalLd = {
   <meta name="twitter:description" content={ogDescription} />
   <meta name="twitter:image" content={OG_IMAGE} />
   <meta name="twitter:image:alt" content={ogImageAlt} />
-  <meta name="theme-color" content="#0c0a08" media="(prefers-color-scheme: dark)" />
-  <meta name="theme-color" content="#f8f5ef" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#f4f2eb" />
 
   <!-- Только dns-prefetch для аналитики (грузится поздно). preconnect убран:
        PageSpeed флагует «unused preconnect» — eager-соединение крало канал у
@@ -228,6 +214,9 @@ const finalLd = {
   <!-- Skip-link for keyboard / screen reader users -->
   <a href="#main" class="skip-link">Перейти к контенту</a>
 
+  <!-- Единое верхнее меню (Swiss) на всём сайте -->
+  <SwissHeader />
+
   <slot />
 
   <!-- Реферальные/партнёрские ссылки (rel=sponsored / .aff-cta) открываем в новой
@@ -252,37 +241,6 @@ const finalLd = {
     document.addEventListener('astro:page-load', _refLinksNewTab);
   </script>
 
-  <!-- Theme toggle — light is default, button switches to dark and back.
-       Re-init после ClientRouter swap: новая кнопка в DOM = новый listener. -->
-  <script is:inline>
-    function _initThemeToggle() {
-      var btn = document.getElementById('themeToggle');
-      if (!btn || btn._themeReady) return;
-      btn._themeReady = true;
-
-      function syncIcon() {
-        var dark = document.documentElement.classList.contains('dark-theme');
-        btn.textContent = dark ? '☀' : '☾';
-        btn.setAttribute('aria-label', dark ? 'Светлая тема' : 'Тёмная тема');
-      }
-
-      syncIcon();
-
-      btn.addEventListener('click', function () {
-        var dark = document.documentElement.classList.toggle('dark-theme');
-        document.body.classList.toggle('dark-theme', dark);
-        // Safari hack: force repaint чтобы CSS variables применились мгновенно
-        document.body.style.display = 'none';
-        void document.body.offsetHeight;
-        document.body.style.display = '';
-        localStorage.setItem('theme', dark ? 'dark' : 'light');
-        syncIcon();
-      });
-    }
-
-    _initThemeToggle();
-    // Re-init после каждого SPA-перехода через ClientRouter
-    document.addEventListener('astro:page-load', _initThemeToggle);
-  </script>
+  <!-- Тёмная тема и её переключатель удалены 2026-05-23 (сайт только светлый). -->
 </body>
 </html>

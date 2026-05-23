@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { Image } from 'astro:assets';
@@ -85,7 +84,6 @@ const ldJson = {
   ogDescription="70 направлений с визой, сезонами, бюджетом и главными гайдами"
   ldJson={ldJson}
 >
-  <Nav active="countries" />
   <Breadcrumbs crumbs={[{ label: 'Atlas' }]} />
 
   <main id="main" class="atlas-main">

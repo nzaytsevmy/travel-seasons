@@ -1,6 +1,5 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { DIRECTIONS } from '../../data/directions.js';
@@ -129,7 +128,6 @@ const ldJson = {
 };
 ---
 <Layout title={title} description={description} canonical={url} ldJson={ldJson}>
-  <Nav active="packing" />
   <Breadcrumbs crumbs={[{ label: 'Чек-листы' }]} />
 
   <main id="main" class="pl-wrap">

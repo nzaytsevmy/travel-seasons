@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../../../layouts/Layout.astro';
-import Nav from '../../../components/Nav.astro';
 import Footer from '../../../components/Footer.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
@@ -150,7 +149,6 @@ const ldJson = {
   ogDescription={description}
   ldJson={ldJson}
 >
-  <Nav active="packing" />
   <Breadcrumbs crumbs={[
     { label: 'Чек-листы', href: '/packing/' },
     { label: d.cases.nom, href: `/packing/${d.slug}/` },

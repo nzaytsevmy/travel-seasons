@@ -1,6 +1,5 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
-import Nav from '../../../components/Nav.astro';
 import Footer from '../../../components/Footer.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
@@ -158,7 +157,6 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
   ogType="article"
   ldJson={ldJson}
 >
-  <Nav active="trips" />
   <Breadcrumbs crumbs={[
     { label: 'Календарь', href: '/trips/' },
     { label: monthCap, href: `/trips/${m.slug}/` },
