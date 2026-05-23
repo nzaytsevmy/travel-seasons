@@ -45,7 +45,6 @@ export default defineConfig({
   redirects: {
     '/japan_momiji': '/blog/japan-guide-2026/',
     '/japan-momiji': '/blog/japan-guide-2026/',
-    '/mexico': '/blog/',
     '/mexico_old': '/blog/',
   },
   build: {
