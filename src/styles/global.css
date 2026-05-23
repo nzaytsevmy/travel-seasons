@@ -1,10 +1,5 @@
-/* Editorial Magazine font stack — self-hosted via @fontsource
-   Display: Newsreader (Production Type, variable italic + opsz 6-72)
-   Body: Onest (рус. дизайн Дениса Машарова, optimized кириллица)
-   Mono: JetBrains Mono (для дат, кодов, штампов) */
-@import "@fontsource-variable/newsreader";
-/* Onest НЕ через @import (там font-display:swap → CLS).
-   Объявлен в Layout.astro с font-display:optional. */
+/* Swiss/брендбук: один гротеск Golos (грузится в SwissHeader через Layout).
+   Newsreader/Onest УБРАНЫ (миграция 2026-05-23). Mono — для дат/штампов. */
 @import "@fontsource/jetbrains-mono/400.css";
 @import "@fontsource/jetbrains-mono/500.css";
 
@@ -17,19 +12,20 @@
    Тёмная — opt-in через .dark-theme на <html>.
    ───────────────────────────────────────────────────────── */
 :root {
-  /* Light cream background, warm dark text, gold accents */
-  --bg:          oklch(0.98 0.006 80);   /* warm cream #fbf8f1 */
-  --bg2:         oklch(0.95 0.006 80);   /* slightly darker for cards */
-  --bg3:         oklch(0.91 0.009 76);   /* hover/active surface */
-  --line:        rgba(160, 110, 20, 0.14);
-  --gold:        oklch(0.46 0.12 68);    /* burnished gold, WCAG AA on cream */
-  --gold-dim:    oklch(0.36 0.10 68);
-  --gold-glow:   oklch(0.46 0.12 68 / 0.14);
-  --text:        oklch(0.14 0.02 70);    /* warm near-black */
-  --text-dim:    oklch(0.38 0.015 70);
-  --text-faint:  oklch(0.50 0.012 70);
-  --ff-display:  "Newsreader Variable", "Newsreader", Georgia, serif;
-  --ff-body:     "Onest Variable", "Onest", system-ui, sans-serif;
+  /* Swiss/брендбук: paper + ink + бренд-золото, один гротеск Golos, hairlines */
+  --bg:          #f4f2eb;   /* paper */
+  --bg2:         #faf8f1;   /* карточки */
+  --bg3:         #ece9df;   /* hover/active */
+  --line:        #cdc9bd;   /* hairline */
+  --gold:        #8e6618;   /* бренд-золото (нижняя граница AA) */
+  --gold-dim:    #6f4f12;
+  --gold-glow:   rgba(142, 102, 24, 0.12);
+  --text:        #1b1914;   /* ink */
+  --text-dim:    #56524a;
+  --text-faint:  #6b685e;
+  /* Один гротеск Golos на всё — БЕЗ serif-fallback (иначе italic валится в Newsreader-сериф) */
+  --ff-display:  "Golos Text Variable", "Golos Text", Helvetica, Arial, sans-serif;
+  --ff-body:     "Golos Text Variable", "Golos Text", Helvetica, Arial, sans-serif;
   --ff-mono:     "JetBrains Mono", "Courier New", monospace;
   --green:       #22c55e;
   --blue:        #4a9eff;
