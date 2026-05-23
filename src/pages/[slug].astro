@@ -10,7 +10,6 @@
 // перебивают dynamic [slug]. Они исключены из getStaticPaths.
 
 import Layout from '../layouts/Layout.astro';
-import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { Image } from 'astro:assets';
@@ -151,7 +150,6 @@ const ldJson = {
   ogType="article"
   ldJson={ldJson}
 >
-  <Nav active="blog" />
   <Breadcrumbs crumbs={[{ label: 'Страны', href: '/countries/' }, { label: d.cases.nom }]} />
 
   <main id="main" class="quick-wrap">

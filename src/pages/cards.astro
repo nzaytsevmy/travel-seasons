@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { countries, regionLabels, lastGlobalUpdate, issuingBanks } from '../data/cards-countries.js';
@@ -85,7 +84,6 @@ const ldJson = {
 };
 ---
 <Layout title={title} description={description} canonical={url} ldJson={ldJson}>
-  <Nav active="cards" />
   <Breadcrumbs crumbs={[{ label: 'Карты за границей' }]} />
 
   <main id="main" class="cards-wrap">
