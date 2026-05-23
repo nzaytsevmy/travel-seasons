@@ -28,6 +28,10 @@ export const TP_LINKS = {
   // EconomyBookings: аренда авто (car rental aggregator), erid встроен (38-ФЗ).
   // Интент «road-trip / самостоятельно за рулём» — добавлять в self-drive направления.
   economybookings: 'https://economybookings.tpk.mx/xlSFNA6p?erid=2VtzqxYvA5V',
+  // YouTravel.me: АВТОРСКИЕ туры с экспертами (малые группы) — вертикаль «не планировать
+  // самому, поехать с гидом». On-brand для DIY-аудитории. CPA g2afse (pid=1163).
+  // ⚠ erid НЕОБХОДИМО получить от YouTravel/ОРД и подставить (38-ФЗ) — пока его нет.
+  youtravel:  'https://travelme.g2afse.com/click?pid=1163&offer_id=1',
 };
 
 // Aviasales deep-link под конкретный маршрут (origin/destination IATA) —

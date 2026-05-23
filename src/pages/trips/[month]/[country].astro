@@ -3,6 +3,7 @@ import Layout from '../../../layouts/Layout.astro';
 import Footer from '../../../components/Footer.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
+import { TP_LINKS } from '../../../data/affiliate.js';
 
 export async function getStaticPaths() {
   const paths = [];
@@ -217,6 +218,12 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
           <span>Чек-лист по сезонам: одежда, документы, аптечка, техника →</span>
         </span>
       </a>
+    </section>
+
+    {/* Авторские туры (YouTravel) — поехать с гидом */}
+    <section class="season-block">
+      <h2>Поехать с экспертом</h2>
+      <p>Не хочешь планировать сам? <a href={TP_LINKS.youtravel} rel="sponsored noopener" target="_blank"><strong>Авторские туры {d.cases.vP} →</strong></a> — готовый маршрут, логистика и малая группа с экспертом. <span class="ad-mark">реклама</span></p>
     </section>
 
     <section class="season-block">
