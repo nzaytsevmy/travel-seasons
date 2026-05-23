@@ -208,6 +208,8 @@ Search Central (канон Google) · разбор факторов Яндекс
 - ❌ Картинки в hero программных страниц — LCP риск. Gradient+emoji = LCP <1 с.
 - ❌ Hard-coded ширина >1920w для hero-cover — bandwidth waste на mobile.
 - ❌ `formats={['avif']}` в Picture — Safari+astro-compress = broken image (`feedback_safari_avif_bug`).
+- ❌ `align-items:baseline` во flex header-ряду «заголовок + ссылка/кнопка с `min-height`/`<input>`» — WebKit/Safari считает baseline иначе → разъезд по вертикали (кейс «Свежие истории»). Использовать `align-items:center`; baseline только для инлайн-текста одной природы (число+подпись, цена+единица). Проверять в WebKit, не только Chromium. ([[reference_spacing_alignment_canon]])
+- ❌ Удвоенный вертикальный ритм: `padding` сверху И снизу у каждой стыкующейся секции → дыры (4rem+4rem=8rem). Отступ только с одной стороны + `:last-of-type{padding-bottom}`. Шкала 8pt (4/8/16/24/32/48/64); секции 48-64px десктоп / 32-40 мобайл; близость: внешний зазор > внутреннего. ([[reference_spacing_alignment_canon]])
 
 ### Quality gate
 Перед коммитом нового программного шаблона:
