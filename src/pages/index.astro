@@ -285,7 +285,20 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .nomatch{grid-column:1/-1;display:none;color:var(--mid);padding:1.4rem 0;font-size:.92rem}
 .dfoot{grid-column:1/-1;font-size:.72rem;color:var(--mid);padding:.8rem 0 0}.dfoot a{color:var(--gold);border-bottom:1px solid var(--gold)}
 .more-cell{padding:1.1rem 0!important}.more-cell::before{content:none!important}.more-cell a{color:var(--gold);font-weight:600;text-decoration:2px underline var(--gold);text-underline-offset:3px}.more-cell b{color:var(--gold)}
-@media(max-width:760px){.dash thead{position:absolute;left:-9999px}.dash,.dash tbody,.dash tr,.dash td{display:block;width:100%}.dash tr{border-bottom:1px solid var(--line);padding:.7rem 0}.dash td{border:none;padding:.25rem 0;display:flex;justify-content:space-between;gap:1rem;text-align:left}.dash td.r{text-align:left}.dash td::before{content:attr(data-l);font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}.dash td.cdest::before,.dash td.cno::before{display:none}.cno{display:none}}
+@media(max-width:760px){
+  .dash thead{position:absolute;left:-9999px}
+  .dash,.dash tbody,.dash tr{display:block;width:100%}
+  .dash tr{border-bottom:1px solid var(--line);padding:.95rem 0}
+  .dash td{border:none;padding:0;text-align:left}
+  .dash td::before{display:none}                                  /* подписи не нужны — значения самоочевидны */
+  .dash td.cdest{margin-bottom:.55rem}                            /* шапка карточки: фото + название + вайб */
+  .dash td[data-l="Поездка"]{display:block;margin-bottom:.15rem}  /* цена — крупно, отдельной строкой */
+  .dash td[data-l="Виза"],.dash td.season{display:inline;font-size:.82rem;color:var(--mid)}  /* виза + сезон — одна мета-строка */
+  .dash td[data-l="Виза"] .visa{font-size:.82rem}
+  .dash td[data-l="Виза"]::after{content:" · ";color:var(--hair)}
+  .dash td.flight{display:block;margin-top:.55rem}
+  .cno{display:none}
+}
 
 .gear{grid-column:1/-1;margin-top:2.4rem}
 .gear-h{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;border-top:2px solid var(--line);padding-top:.8rem;margin-bottom:1rem}
