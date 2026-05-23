@@ -19,6 +19,9 @@ RewriteRule ^japan-momiji/?$ /blog/japan-guide-2026/ [R=301,L]
 RewriteRule ^mexico_old/?$ /blog/ [R=301,L]
 RewriteRule ^mexico/?$ /blog/ [R=301,L]
 
+# Консолидация packing: detail [страна]/[месяц] → хаб [страна] (823→70, scaled-content)
+RewriteRule ^packing/([^/]+)/([^/]+)/?$ /packing/$1/ [R=301,L]
+
 # ─── SECURITY HEADERS ───
 # Если REG.RU shared имеет mod_headers — applies. Если нет — секция игнорируется без ошибок.
 <IfModule mod_headers.c>
