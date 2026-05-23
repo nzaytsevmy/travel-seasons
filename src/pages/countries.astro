@@ -4,37 +4,48 @@ import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { Image } from 'astro:assets';
 import { DIRECTIONS } from '../data/directions.js';
-import heroCover from '../assets/destinations/antarctica.jpg';
+import { ACTIVITY_TAGS } from '../data/country-activity-tags.js';
 
 const destPhotos = import.meta.glob('../assets/destinations/*.jpg', { eager: true, import: 'default' });
 
+// Порядок по регионам — даёт осмысленный дефолт-порядок (не алфавит, не случайно)
+const GROUP_ORDER = ['Азия', 'Европа', 'Африка & Ближний Восток', 'Америка', 'Латам и Карибы', 'Австралия & Океания', 'Антарктида'];
 const grouped = {};
-for (const d of DIRECTIONS) {
-  if (!grouped[d.group]) grouped[d.group] = [];
-  grouped[d.group].push(d);
-}
+for (const d of DIRECTIONS) (grouped[d.group] ||= []).push(d);
+const groupOrder = GROUP_ORDER.filter(g => grouped[g]).concat(Object.keys(grouped).filter(g => !GROUP_ORDER.includes(g)));
 
-const GROUP_ORDER = [
-  'Азия',
-  'Европа',
-  'Африка & Ближний Восток',
-  'Америка',
-  'Латам и Карибы',
-  'Австралия & Океания',
-  'Антарктида',
-];
-const groupOrder = GROUP_ORDER.filter(g => grouped[g]).concat(
-  Object.keys(grouped).filter(g => !GROUP_ORDER.includes(g))
-);
-
+// ── Та же логика, что в финдере на главной: цена ВСЕЙ поездки с перелётом, сезон, вайб ──
+const USD_RUB = 90, NIGHTS = 7;
+const roundK = (n) => Math.round(n / 1000) * 1000;
+const tripCost = (p) => roundK(p.flight[1] * USD_RUB) + roundK((p.hotel[1] + p.food[1]) * NIGHTS * USD_RUB);
+const tierOf = (t) => (t < 100000 ? 'low' : t <= 200000 ? 'mid' : 'high');
+const fmt = (n) => n.toLocaleString('ru-RU');
 const VISA_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза' };
 const BUDGET_LABEL = { low: '$', mid: '$$', high: '$$$' };
-const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+const VIBE_RU = { beach: 'Пляж', mountains: 'Горы', city: 'Город', nature: 'Природа' };
+const VIBE_MAP = { beach:'beach', mountain:'mountains', altitude:'mountains', ski:'mountains', city:'city', culture:'city', food:'city', jungle:'nature', safari:'nature', dive:'nature', desert:'nature', photo:'nature' };
+const MON_ABBR = ['', 'янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+function seasonLabel(r) {
+  if (!r) return '';
+  let idx = r.map((c, i) => (c === 'P' ? i + 1 : 0)).filter(Boolean);
+  if (!idx.length) idx = r.map((c, i) => (c === 'G' ? i + 1 : 0)).filter(Boolean);
+  if (!idx.length) return 'круглый год';
+  const g = []; let s = idx[0], p = idx[0];
+  for (let k = 1; k < idx.length; k++) { if (idx[k] === p + 1) p = idx[k]; else { g.push([s, p]); s = idx[k]; p = idx[k]; } }
+  g.push([s, p]);
+  return g.map(([a, b]) => (a === b ? MON_ABBR[a] : `${MON_ABBR[a]}–${MON_ABBR[b]}`)).join(', ');
+}
 
-const HERO_FEATURED = new Set([
-  'japan', 'antarctica', 'turkey', 'bali', 'peru',
-  'china', 'uae', 'australia-east', 'iceland', 'kenya'
-]);
+const cards = groupOrder.flatMap(g => grouped[g]).map((d) => {
+  const budgetRub = d.price?.flight ? tripCost(d.price) : null;
+  const btier = budgetRub ? tierOf(budgetRub) : (d.budget || null);
+  const vibe = [...new Set((ACTIVITY_TAGS[d.slug] || []).map(t => VIBE_MAP[t]).filter(Boolean))];
+  return {
+    slug: d.slug, nom: d.cases.nom, visa: d.visa, r: d.r || null,
+    budgetRub, btier, vibe, season: seasonLabel(d.r),
+    photo: destPhotos[`../assets/destinations/${d.slug}.jpg`], visual: d.visual,
+  };
+});
 
 const stats = {
   total: DIRECTIONS.length,
@@ -42,244 +53,117 @@ const stats = {
   evisa: DIRECTIONS.filter(d => d.visa === 'evisa').length,
   required: DIRECTIONS.filter(d => d.visa === 'required').length,
 };
+const MONTHS = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
 
 const url = 'https://traveltribe.ru/countries/';
 const ldJson = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "CollectionPage",
-      "@id": `${url}#page`,
-      "url": url,
-      "name": "Atlas — все 70 направлений TravelTribe 2026",
-      "description": "Атлас всех 70 направлений для российского путешественника 2026: виза, лучшие сезоны, бюджет на день, главные гайды.",
-      "inLanguage": "ru-RU",
-      "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+      "@type": "CollectionPage", "@id": `${url}#page`, "url": url,
+      "name": "Каталог направлений 2026 — 70 стран для поездки из России",
+      "description": "Каталог всех 70 направлений: виза для россиян, лучший сезон и цена всей поездки с перелётом. Фильтр по визе, бюджету, сезону и вайбу.",
+      "inLanguage": "ru-RU", "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "mainEntity": {
-        "@type": "ItemList",
-        "numberOfItems": DIRECTIONS.length,
-        "itemListElement": DIRECTIONS.map((d, i) => ({
-          "@type": "ListItem",
-          "position": i + 1,
-          "url": `https://traveltribe.ru/${d.slug}/`,
-          "name": d.cases.nom,
-        }))
-      }
+        "@type": "ItemList", "numberOfItems": DIRECTIONS.length,
+        "itemListElement": cards.map((c, i) => ({ "@type": "ListItem", "position": i + 1, "url": `https://traveltribe.ru/${c.slug}/`, "name": c.nom })),
+      },
     },
     {
-      "@type": "BreadcrumbList",
-      "itemListElement": [
+      "@type": "BreadcrumbList", "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
-        { "@type": "ListItem", "position": 2, "name": "Atlas", "item": url },
-      ]
-    }
-  ]
+        { "@type": "ListItem", "position": 2, "name": "Направления", "item": url },
+      ],
+    },
+  ],
 };
 ---
 <Layout
-  title="Atlas 2026 — 70 направлений для российского путешественника"
-  description="Атлас всех 70 направлений: виза, лучшие сезоны, бюджет на день, главные гайды. Кратко то, что важно знать перед поездкой."
+  title="Направления 2026 — каталог 70 стран из России: виза, сезон, цена"
+  description="Все 70 направлений в одном каталоге: виза для россиян, лучший сезон и цена всей поездки с перелётом. Фильтр по визе, бюджету, сезону и вайбу — выбери и открой гайд."
   canonical={url}
-  ogTitle="Atlas — Кратко о странах · TravelTribe"
-  ogDescription="70 направлений с визой, сезонами, бюджетом и главными гайдами"
+  ogTitle="Каталог направлений · TravelTribe"
+  ogDescription="70 стран с визой, сезоном и ценой поездки — фильтруй и выбирай"
   ldJson={ldJson}
 >
-  <Breadcrumbs crumbs={[{ label: 'Atlas' }]} />
+  <Breadcrumbs crumbs={[{ label: 'Направления' }]} />
 
-  <main id="main" class="atlas-main">
+  <main id="main" class="cat">
+    <header class="cat-head">
+      <p class="cat-eyebrow">Каталог · {stats.total} направлений</p>
+      <h1 class="cat-h1">Все направления — {stats.total} стран для поездки из России</h1>
+      <p class="cat-lede">Все {stats.total} направлений в одной сетке: <b>виза</b> для россиян, <b>лучший сезон</b> и <b>цена всей поездки</b> с перелётом из Москвы. Отфильтруй под себя — и открой полный гайд страны.</p>
+      <p class="cat-byline">Собрал <a href="/about/">Никита Зайцев</a> · был на 7 континентах, 60+ стран · обновлено: май 2026</p>
+    </header>
 
-    {/* ─── CINEMATIC HERO ─── */}
-    <section class="cine-hero" aria-label="Atlas hero">
-      <div class="cine-hero-photo">
-        <Image
-          src={heroCover}
-          alt="Atlas"
-          widths={[640, 1280, 1920, 2560]}
-          sizes="100vw"
-          formats={['webp']}
-          quality={78}
-          loading="eager"
-          fetchpriority="high"
-        />
+    {/* ─── Панель фильтров ─── */}
+    <section class="cfilters" role="search" aria-label="Подбор направления">
+      <div class="cf-search">
+        <input type="search" id="catSearch" placeholder="Поиск страны: Япония, Турция, Бали…" autocomplete="off" aria-label="Поиск страны" />
+        <button type="button" id="catSearchClear" class="cf-clear" aria-label="Очистить" hidden>×</button>
       </div>
-      <div class="cine-hero-tint" aria-hidden="true"></div>
-      <svg class="cine-hero-grain" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-        <filter id="atlasNoise">
-          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch" />
-          <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.06 0" />
-        </filter>
-        <rect width="100%" height="100%" filter="url(#atlasNoise)" />
-      </svg>
-
-      <div class="cine-hero-frame">
-        <div class="cine-hero-eyebrow" data-reveal>
-          <span>Выпуск 01 / 2026</span>
-          <span class="cine-sep">·</span>
-          <span>Атлас путешественника</span>
-          <span class="cine-sep">·</span>
-          <span>Май</span>
-        </div>
-
-        <h1 class="cine-hero-title" data-reveal>
-          <span class="cht-line cht-line--1">Atlas</span>
-          <span class="cht-deco" aria-hidden="true">—</span>
-          <span class="cht-line cht-line--2"><em>{stats.total}</em> направлений</span>
-          <span class="cht-line cht-line--3">для российского<br />путешественника</span>
-        </h1>
-
-        <p class="cine-hero-lede" data-reveal>
-          Семьдесят направлений 2026 года. <em>Виза, сезон, бюджет — без воды.</em>
-          Где был лично — личный взгляд, не пересказ Википедии.
-        </p>
-
-        <div class="cine-hero-scroll" data-reveal aria-hidden="true">
-          <span class="chs-line"></span>
-          <span class="chs-label">Листать</span>
+      <div class="cf-row"><span class="cf-lbl">Виза</span><div class="cf-opts" data-g="visa">
+        <button type="button" class="cf-t" data-v="free">Без визы <i>{stats.free}</i></button>
+        <button type="button" class="cf-t" data-v="evisa">eVisa <i>{stats.evisa}</i></button>
+        <button type="button" class="cf-t" data-v="required">Виза <i>{stats.required}</i></button>
+      </div></div>
+      <div class="cf-row"><span class="cf-lbl">Бюджет</span><div class="cf-opts" data-g="b">
+        <button type="button" class="cf-t" data-v="low">до 100к</button>
+        <button type="button" class="cf-t" data-v="mid">100–200к</button>
+        <button type="button" class="cf-t" data-v="high">200к+</button>
+      </div></div>
+      <div class="cf-row"><span class="cf-lbl">Вайб</span><div class="cf-opts" data-g="vibe">
+        <button type="button" class="cf-t" data-v="beach">Пляж</button>
+        <button type="button" class="cf-t" data-v="mountains">Горы</button>
+        <button type="button" class="cf-t" data-v="city">Город</button>
+        <button type="button" class="cf-t" data-v="nature">Природа</button>
+      </div></div>
+      <div class="cf-row"><span class="cf-lbl">Сезон</span>
+        <select id="catMonth" class="cf-sel" aria-label="Месяц поездки">
+          <option value="0">любой месяц</option>
+          {MONTHS.map((m, i) => <option value={i + 1}>{m}</option>)}
+        </select>
+        <span class="cf-lbl cf-lbl--sort">Сорт.</span>
+        <div class="cf-opts" id="catSort">
+          <button type="button" class="cf-t on" data-s="rel">по региону</button>
+          <button type="button" class="cf-t" data-s="asc">дешевле</button>
+          <button type="button" class="cf-t" data-s="desc">дороже</button>
         </div>
       </div>
+      <p class="cf-count"><b id="catN">{stats.total}</b> <span id="catW">направлений</span></p>
     </section>
 
-    {/* ─── DESK / TOOLS BAR (sticky-like при скролле) ─── */}
-    <section class="atlas-desk">
+    <p class="cat-empty" id="catEmpty" hidden>Под эти фильтры ничего не нашлось — ослабь один: визу, бюджет, сезон или вайб.</p>
 
-      <div class="atlas-stats" role="tablist" aria-label="Фильтр по визе">
-        <button type="button" class="atlas-stat atlas-stat--active" data-filter="all" role="tab">
-          <span class="as-num">{stats.total}</span>
-          <span class="as-label">Все</span>
-        </button>
-        <button type="button" class="atlas-stat" data-filter="free" role="tab">
-          <span class="as-num">{stats.free}</span>
-          <span class="as-label">Без&nbsp;визы</span>
-        </button>
-        <button type="button" class="atlas-stat" data-filter="evisa" role="tab">
-          <span class="as-num">{stats.evisa}</span>
-          <span class="as-label">eVisa</span>
-        </button>
-        <button type="button" class="atlas-stat" data-filter="required" role="tab">
-          <span class="as-num">{stats.required}</span>
-          <span class="as-label">Виза</span>
-        </button>
-      </div>
+    {/* ─── Сетка направлений ─── */}
+    <div class="cgrid" id="cgrid">
+      {cards.map((c, i) => (
+        <a href={`/${c.slug}/`} class="cd"
+           data-name={c.nom.toLowerCase()} data-visa={c.visa} data-b={c.btier || ''}
+           data-vibe={c.vibe.join(',')} data-r={c.r ? c.r.join('') : ''} data-budget={c.budgetRub || 0}>
+          <span class="cd-ph">
+            {c.photo ? (
+              <Image src={c.photo} alt={c.nom} width={600} height={400} formats={['webp']} quality={72} loading={i < 6 ? 'eager' : 'lazy'} />
+            ) : (
+              <span class="cd-emoji" style={`background:linear-gradient(135deg,${c.visual?.g1 || '#8e6618'},${c.visual?.g2 || '#1b1914'})`} aria-hidden="true">{c.visual?.emoji || '📍'}</span>
+            )}
+            <span class="cd-sq" hidden></span>
+          </span>
+          <span class="cd-body">
+            <span class="cd-name">{c.nom}</span>
+            <span class="cd-meta">
+              <span class={`cd-visa cd-visa--${c.visa}`}>{VISA_LABEL[c.visa]}</span>
+              {c.season && <span class="cd-season">{c.season}</span>}
+            </span>
+            <span class="cd-price">{c.budgetRub ? `≈ ${fmt(c.budgetRub)} ₽` : (c.btier ? BUDGET_LABEL[c.btier] : '')}</span>
+          </span>
+        </a>
+      ))}
+    </div>
 
-      <div class="atlas-search">
-        <span class="atlas-search-prompt" aria-hidden="true">— Куда</span>
-        <input type="search" id="countriesSearch" placeholder="Япония, Турция, Бали…" autocomplete="off" aria-label="Поиск страны" />
-        <button type="button" class="atlas-search-clear" id="countriesSearchClear" aria-label="Очистить" hidden>×</button>
-      </div>
-
-      <p class="atlas-empty" id="countriesEmpty" hidden>Не нашлось такого. Попробуй другое название или сбрось фильтр визы.</p>
-    </section>
-
-    {/* ─── CHAPTERS ─── */}
-    {groupOrder.map((group, gIdx) => {
-      const heroes = grouped[group].filter(d => HERO_FEATURED.has(d.slug)).slice(0, 2);
-      const rest = grouped[group].filter(d => !heroes.includes(d));
-      const cleanGroup = group;
-      return (
-        <section class="atlas-chapter" data-group={group} data-reveal-section>
-          <header class="atlas-chapter-head" data-reveal>
-            <div class="ach-left">
-              <span class="ach-roman" aria-hidden="true">{ROMAN[gIdx] || gIdx + 1}</span>
-              <span class="ach-meta">глава</span>
-            </div>
-            <h2 class="ach-title">{cleanGroup}</h2>
-            <div class="ach-right">
-              <span class="ach-count">{grouped[group].length}</span>
-              <span class="ach-meta">{grouped[group].length === 1 ? 'страна' : grouped[group].length < 5 ? 'страны' : 'стран'}</span>
-            </div>
-          </header>
-
-          {heroes.length > 0 && (
-            <div class={`atlas-spread ${heroes.length === 1 ? 'atlas-spread--single' : ''}`}>
-              {heroes.map((d, idx) => {
-                const photo = destPhotos[`../assets/destinations/${d.slug}.jpg`];
-                return (
-                  <a href={`/${d.slug}/`} class="atlas-hero-card" data-visa={d.visa} data-name={d.cases.nom.toLowerCase()} data-reveal style={`--reveal-delay: ${0.1 + idx * 0.15}s`}>
-                    <div class="ahc-photo">
-                      {photo ? (
-                        <Image
-                          src={photo}
-                          alt={d.cases.nom}
-                          widths={[600, 1200]}
-                          sizes="(max-width: 720px) 100vw, 50vw"
-                          formats={['webp']}
-                          quality={72}
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div class="ahc-photo-fallback" style={`background: linear-gradient(135deg, ${d.visual.g1}, ${d.visual.g2})`}>
-                          <span class="ahc-fallback-emoji" aria-hidden="true">{d.visual.emoji}</span>
-                        </div>
-                      )}
-                      <div class="ahc-photo-tint" aria-hidden="true"></div>
-                    </div>
-                    <div class="ahc-text">
-                      <div class="ahc-eyebrow">
-                        <span>{VISA_LABEL[d.visa]}</span>
-                        <span class="ahc-eyebrow-sep">·</span>
-                        <span>{BUDGET_LABEL[d.budget]}</span>
-                      </div>
-                      <h3 class="ahc-title">{d.cases.nom}</h3>
-                      <p class="ahc-sub">{d.sub}</p>
-                      <span class="ahc-cta">Открыть страну <span class="ahc-cta-arrow">→</span></span>
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
-          )}
-
-          {rest.length > 0 && (
-            <ul class="atlas-list">
-              {rest.map((d, idx) => {
-                const photo = destPhotos[`../assets/destinations/${d.slug}.jpg`];
-                const num = String(idx + heroes.length + 1).padStart(2, '0');
-                return (
-                  <li class="atlas-row" data-visa={d.visa} data-name={d.cases.nom.toLowerCase()} data-reveal style={`--reveal-delay: ${0.05 * idx}s`}>
-                    <a href={`/${d.slug}/`} class="atlas-row-link">
-                      <span class="ar-num">{num}</span>
-                      <span class="ar-thumb">
-                        {photo ? (
-                          <Image
-                            src={photo}
-                            alt={d.cases.nom}
-                            widths={[120, 240]}
-                            sizes="120px"
-                            formats={['webp']}
-                            quality={70}
-                            loading="lazy"
-                          />
-                        ) : (
-                          <span class="ar-thumb-emoji" style={`background: linear-gradient(135deg, ${d.visual.g1}, ${d.visual.g2})`} aria-hidden="true">{d.visual.emoji}</span>
-                        )}
-                      </span>
-                      <span class="ar-name">{d.cases.nom}</span>
-                      <span class="ar-meta">
-                        <span class={`ar-visa ar-visa--${d.visa}`}>{VISA_LABEL[d.visa]}</span>
-                        <span class="ar-budget">{BUDGET_LABEL[d.budget]}</span>
-                      </span>
-                      <span class="ar-arrow" aria-hidden="true">→</span>
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </section>
-      );
-    })}
-
-    {/* ─── COLOPHON ─── */}
-    <footer class="atlas-colophon" data-reveal>
-      <div class="atlas-rule" aria-hidden="true">
-        <span class="atlas-rule-line"></span>
-        <span class="atlas-rule-star">✦</span>
-        <span class="atlas-rule-line"></span>
-      </div>
-      <p class="atlas-colophon-text">
-        <em>Атлас собрал <a href="/about/" class="atlas-author-link">Никита Зайцев</a>. Семь континентов, 60+ стран — где был лично, видно из текста.</em>
-      </p>
-      <p class="atlas-colophon-date">Май 2026 · обновляется раз в 4–6 недель · канал <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a></p>
+    <footer class="cat-colophon">
+      <p><a href="/about/">Никита Зайцев</a> — семь континентов, 60+ стран. Где был лично, видно из текста гайдов.</p>
+      <p class="cat-colophon-date">Май 2026 · обновляется раз в 4–6 недель · канал <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a></p>
     </footer>
   </main>
 
@@ -287,696 +171,130 @@ const ldJson = {
 </Layout>
 
 <style>
-  /* ═══════════════════════════════════════════════════════════════
-     ATLAS — Cinematic Editorial (2026 trends)
-     Hero full-bleed photo + grain + Newsreader variable serif
-     Scroll-reveal staggers + sticky chapter heads
-     ═══════════════════════════════════════════════════════════════ */
+  .cat { max-width: 1200px; margin: 0 auto; padding: 1.5rem clamp(1rem, 4vw, 2rem) 4rem; }
 
-  .atlas-main {
-    margin: 0;
-    padding: 0 0 6rem;
-  }
+  /* ── Шапка ── */
+  .cat-head { max-width: 760px; margin-bottom: 1.6rem; }
+  .cat-eyebrow { font-family: var(--ff-mono); font-size: .7rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin: 0 0 .7rem; }
+  .cat-h1 { font-size: clamp(1.7rem, 4.5vw, 2.6rem); font-weight: 700; line-height: 1.08; letter-spacing: -.02em; margin: 0 0 .8rem; color: var(--text); }
+  .cat-lede { font-size: clamp(.98rem, 2vw, 1.1rem); line-height: 1.55; color: var(--text-dim); margin: 0 0 .7rem; }
+  .cat-lede b { color: var(--text); font-weight: 600; }
+  .cat-byline { font-size: .8rem; color: var(--text-faint); margin: 0; }
+  .cat-byline a { color: var(--gold); text-decoration: 1px underline var(--gold); text-underline-offset: 3px; }
 
-  /* ──────────────── HERO ──────────────── */
-  .cine-hero {
-    position: relative;
-    height: clamp(560px, 95dvh, 880px);
-    overflow: hidden;
-    isolation: isolate;
-    background: #0a0907;
-  }
-  .cine-hero-photo {
-    position: absolute; inset: 0;
-    z-index: 0;
-    animation: slowZoom 22s ease-out forwards;
-  }
-  .cine-hero-photo :global(img),
-  .cine-hero-photo :global(picture) {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  @keyframes slowZoom {
-    from { transform: scale(1); }
-    to   { transform: scale(1.08); }
-  }
-  .cine-hero-tint {
-    position: absolute; inset: 0;
-    z-index: 1;
-    background:
-      radial-gradient(ellipse at 50% 30%, transparent 0%, rgba(10,9,7,0.45) 60%, rgba(10,9,7,0.85) 100%),
-      linear-gradient(180deg, rgba(10,9,7,0.4) 0%, rgba(10,9,7,0.2) 35%, rgba(10,9,7,0.8) 100%);
-    pointer-events: none;
-  }
-  .cine-hero-grain {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    z-index: 2;
-    pointer-events: none;
-    mix-blend-mode: overlay;
-    opacity: 0.55;
-  }
+  /* ── Фильтры ── */
+  .cfilters { border-top: 2px solid var(--text); border-bottom: 1px solid var(--line); padding: 1rem 0; display: flex; flex-direction: column; gap: .7rem; }
+  .cf-search { position: relative; }
+  .cf-search input { width: 100%; font: inherit; font-size: 1rem; padding: .65rem 2.2rem .65rem .9rem; background: var(--bg2); border: 1px solid var(--line); border-radius: 8px; color: var(--text); }
+  .cf-search input:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; border-color: var(--gold); }
+  .cf-clear { position: absolute; right: .5rem; top: 50%; transform: translateY(-50%); width: 1.7rem; height: 1.7rem; border: none; background: none; font-size: 1.3rem; line-height: 1; color: var(--text-faint); cursor: pointer; }
+  .cf-row { display: flex; align-items: center; flex-wrap: wrap; gap: .35rem 1.1rem; }
+  .cf-lbl { font-size: .66rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text-faint); flex: none; width: 4.4rem; }
+  .cf-lbl--sort { width: auto; margin-left: .4rem; }
+  .cf-opts { display: flex; flex-wrap: wrap; gap: .15rem .9rem; }
+  .cf-t { font: inherit; font-size: .9rem; font-weight: 500; color: var(--text); background: none; border: none; padding: 0 .1rem; min-height: 44px; display: inline-flex; align-items: center; gap: .25rem; cursor: pointer; text-decoration: 2px underline transparent; text-underline-offset: 5px; }
+  .cf-t i { font-style: normal; font-size: .7rem; color: var(--text-faint); }
+  .cf-t:hover { text-decoration-color: var(--line); }
+  .cf-t.on { color: var(--gold); text-decoration-color: var(--gold); }
+  .cf-t.on i { color: var(--gold); }
+  .cf-sel { font: inherit; font-size: .9rem; min-height: 44px; padding: 0 1.6rem 0 .1rem; border: none; border-bottom: 2px solid var(--text); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' fill='none' stroke='%231b1914' stroke-width='1.8'%3E%3Cpath d='M1 1l3.5 3.5L8 1'/%3E%3C/svg%3E") right .1rem center no-repeat; -webkit-appearance: none; appearance: none; color: var(--text); cursor: pointer; }
+  .cf-count { font-size: .85rem; color: var(--text-faint); margin: .1rem 0 0; }
+  .cf-count b { font-size: 1.4rem; font-weight: 700; color: var(--gold); margin-right: .15rem; }
 
-  .cine-hero-frame {
-    position: relative;
-    z-index: 3;
-    height: 100%;
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 6vh var(--container-edge, 2rem) 4vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    color: #f8f5ef;
-    text-align: center;
-  }
+  .cat-empty { padding: 2rem 0; color: var(--text-dim); font-size: .98rem; }
 
-  .cine-hero-eyebrow {
-    display: flex; justify-content: center; align-items: center;
-    gap: 0.75rem;
-    color: rgba(248, 245, 239, 0.78);
-    font-size: 0.7rem;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    font-weight: 500;
-    margin-bottom: 1rem;
-  }
-  .cine-sep { color: rgba(201, 151, 58, 0.85); }
+  /* ── Сетка карточек ── */
+  .cgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.4rem .9rem; margin-top: 1.4rem; }
+  @media (min-width: 560px) { .cgrid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 820px) { .cgrid { grid-template-columns: repeat(4, 1fr); gap: 1.8rem 1.2rem; } }
+  @media (min-width: 1080px) { .cgrid { grid-template-columns: repeat(5, 1fr); } }
 
-  .cine-hero-title {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-weight: 400;
-    font-style: italic;
-    color: #fff;
-    margin: 0 auto;
-    line-height: 0.92;
-    letter-spacing: -0.025em;
-    max-width: 920px;
-    text-shadow: 0 4px 32px rgba(0,0,0,0.45);
-  }
-  .cht-line {
-    display: block;
-  }
-  .cht-line--1 {
-    font-size: clamp(5rem, 14vw, 11rem);
-    font-weight: 400;
-  }
-  .cht-deco {
-    display: block;
-    margin: 0.5rem auto 0.7rem;
-    font-size: 1.5rem;
-    font-style: normal;
-    color: rgba(201, 151, 58, 0.9);
-    letter-spacing: 0.4em;
-  }
-  .cht-line--2 {
-    font-size: clamp(1.15rem, 2.2vw, 1.7rem);
-    font-style: normal;
-    font-weight: 400;
-    color: rgba(248, 245, 239, 0.88);
-    letter-spacing: 0;
-  }
-  .cht-line--2 em {
-    font-style: italic;
-    color: #c9973a;
-    font-size: 1.6em;
-    font-weight: 500;
-    font-variant-numeric: lining-nums;
-    margin-right: 0.1em;
-    vertical-align: -0.1em;
-  }
-  .cht-line--3 {
-    font-size: clamp(1.15rem, 2.2vw, 1.7rem);
-    font-style: normal;
-    font-weight: 400;
-    color: rgba(248, 245, 239, 0.88);
-    margin-top: 0.3rem;
-  }
+  .cd { display: block; color: inherit; text-decoration: none; }
+  .cd[hidden] { display: none; }
+  .cd-ph { position: relative; display: block; aspect-ratio: 3 / 2; border-radius: 10px; overflow: hidden; background: var(--bg3); margin-bottom: .55rem; }
+  .cd-ph img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease; }
+  .cd-emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; }
+  @media (hover: hover) { .cd:hover .cd-ph img { transform: scale(1.04); } .cd:hover .cd-name { color: var(--gold); } }
+  .cd-sq { position: absolute; top: .5rem; left: .5rem; padding: .26rem .5rem; background: var(--bg); border-radius: 5px; font-size: .56rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; box-shadow: 0 1px 3px rgba(0,0,0,.18); }
+  .cd-sq.peak { color: var(--gold); } .cd-sq.good { color: var(--text-dim); }
+  .cd-body { display: block; }
+  .cd-name { display: block; font-size: 1.06rem; font-weight: 700; letter-spacing: -.01em; line-height: 1.15; color: var(--text); }
+  .cd-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: .1rem .5rem; margin-top: .2rem; }
+  .cd-visa { font-size: .64rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+  .cd-visa--free { color: var(--gold); } .cd-visa--evisa { color: var(--text); } .cd-visa--required { color: var(--text-faint); }
+  .cd-season { font-size: .78rem; color: var(--text-faint); }
+  .cd-price { display: block; font-size: .96rem; font-weight: 700; color: var(--text); margin-top: .15rem; }
 
-  .cine-hero-lede {
-    max-width: 480px;
-    margin: 1rem auto 0;
-    color: rgba(248, 245, 239, 0.78);
-    font-size: clamp(0.95rem, 1.4vw, 1.05rem);
-    line-height: 1.6;
-    font-weight: 400;
+  @media (max-width: 559px) {
+    .cf-lbl { width: 100%; }
+    .cf-row { gap: .1rem; }
+    .cf-opts { width: 100%; }
+    .cf-lbl--sort { margin-left: 0; margin-top: .4rem; }
   }
-  .cine-hero-lede em {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-style: italic;
-    color: #c9973a;
-    font-size: 1.15em;
-  }
-
-  .cine-hero-scroll {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 0.7rem;
-    margin-top: 2rem;
-    color: rgba(248, 245, 239, 0.55);
-    font-size: 0.65rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-  }
-  .chs-line {
-    display: block;
-    width: 1px;
-    height: 50px;
-    background: linear-gradient(180deg, transparent, rgba(201,151,58,0.7), transparent);
-    animation: scrollPulse 2s ease-in-out infinite;
-  }
-  @keyframes scrollPulse {
-    0%, 100% { transform: scaleY(0.4); opacity: 0.4; }
-    50%      { transform: scaleY(1);   opacity: 1; }
-  }
-  .chs-label {
-    font-weight: 500;
-  }
-
-  /* ──────────────── DESK / TOOLS BAR ──────────────── */
-  .atlas-desk {
-    max-width: 1180px;
-    margin: -3rem auto 0;
-    padding: 0 var(--container-edge, 2rem);
-    position: relative;
-    z-index: 10;
-  }
-  .atlas-stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    background: var(--bg2);
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    padding: 0;
-    box-shadow: 0 24px 60px -28px rgba(0,0,0,0.6);
-  }
-  .atlas-stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 1.6rem 0.5rem;
-    background: transparent;
-    border: none;
-    border-right: 1px solid var(--line);
-    cursor: pointer;
-    transition: background 0.25s ease, color 0.25s ease;
-    font-family: inherit;
-    color: inherit;
-  }
-  .atlas-stat:last-child { border-right: none; }
-  .atlas-stat:hover { background: rgba(201,151,58,0.06); }
-  .atlas-stat--active { background: rgba(201,151,58,0.1); }
-  .as-num {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-style: italic;
-    font-size: clamp(2.2rem, 4vw, 3rem);
-    font-weight: 400;
-    color: #c9973a;
-    line-height: 1;
-    font-variant-numeric: lining-nums;
-  }
-  .as-label {
-    font-size: 0.65rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    font-weight: 500;
-  }
-  .atlas-stat--active .as-label { color: var(--text-dim); }
-
-  .atlas-search {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    max-width: 720px;
-    margin: 2.5rem auto 0;
-    padding: 0.7rem 0.4rem;
-    border-bottom: 1px solid var(--line);
-    position: relative;
-  }
-  .atlas-search-prompt {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-style: italic;
-    color: #c9973a;
-    font-size: 1.05rem;
-    flex: 0 0 auto;
-  }
-  .atlas-search input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: var(--text);
-    font-size: 1rem;
-    font-family: inherit;
-    padding: 0.3rem 0;
-    outline: none;
-  }
-  .atlas-search input::placeholder {
-    color: var(--text-faint);
-    font-style: italic;
-  }
-  .atlas-search-clear {
-    flex: 0 0 auto;
-    width: 28px; height: 28px;
-    border: none;
-    background: transparent;
-    color: var(--text-faint);
-    font-size: 1.5rem;
-    cursor: pointer;
-    line-height: 1;
-    border-radius: 50%;
-  }
-  .atlas-search-clear:hover { color: var(--text); background: var(--bg2); }
-
-  .atlas-empty {
-    max-width: 540px;
-    margin: 2rem auto;
-    text-align: center;
-    color: var(--text-dim);
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-style: italic;
-    font-size: 1.2rem;
-  }
-
-  /* ──────────────── REVEAL ANIMATIONS ──────────────── */
-  [data-reveal] {
-    opacity: 0;
-    transform: translateY(28px);
-    transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
-    transition-delay: var(--reveal-delay, 0s);
-  }
-  [data-reveal].is-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  /* Уважение пользователя — отключить motion если он попросил */
-  @media (prefers-reduced-motion: reduce) {
-    [data-reveal], .cine-hero-photo, .chs-line {
-      animation: none !important;
-      transition: none !important;
-      opacity: 1 !important;
-      transform: none !important;
-    }
-  }
-
-  /* ──────────────── CHAPTER ──────────────── */
-  .atlas-chapter {
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 6rem var(--container-edge, 2rem) 2rem;
-    border-top: 1px solid var(--line);
-  }
-  .atlas-chapter:first-of-type { margin-top: 5rem; }
-  .atlas-chapter[hidden] { display: none; }
-
-  .atlas-chapter-head {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: end;
-    gap: 1.5rem;
-    margin-bottom: 3.5rem;
-    padding-bottom: 1.2rem;
-    border-bottom: 1px solid var(--line);
-    position: sticky;
-    top: 60px;
-    background: var(--bg);
-    z-index: 5;
-    padding-top: 1.5rem;
-  }
-  .ach-left, .ach-right { display: flex; flex-direction: column; }
-  .ach-right { align-items: flex-end; }
-  .ach-roman {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-style: italic;
-    font-size: 2.6rem;
-    line-height: 1;
-    color: #c9973a;
-    font-weight: 400;
-  }
-  .ach-meta {
-    font-size: 0.65rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    margin-top: 0.4rem;
-  }
-  .ach-title {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: clamp(2rem, 4vw, 3rem);
-    font-weight: 500;
-    line-height: 1.05;
-    color: var(--text);
-    margin: 0;
-    letter-spacing: -0.015em;
-  }
-  .ach-count {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-style: italic;
-    font-size: 2rem;
-    color: #c9973a;
-    line-height: 1;
-    font-variant-numeric: lining-nums;
-  }
-
-  @media (max-width: 600px) {
-    .atlas-chapter-head {
-      grid-template-columns: auto auto;
-      grid-template-rows: auto auto;
-      position: relative;
-      top: auto;
-    }
-    .ach-right { grid-column: 2; grid-row: 1; }
-    .ach-title { grid-column: 1 / -1; grid-row: 2; }
-  }
-
-  /* ──────────────── FEATURED SPREAD ──────────────── */
-  .atlas-spread {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 3rem;
-  }
-  .atlas-spread--single { grid-template-columns: 1fr; }
-  @media (max-width: 780px) {
-    .atlas-spread { grid-template-columns: 1fr; }
-  }
-
-  .atlas-hero-card {
-    display: flex;
-    flex-direction: column;
-    text-decoration: none;
-    color: inherit;
-    border: 1px solid var(--line);
-    background: var(--bg2);
-    overflow: hidden;
-    transition: border-color 0.3s ease, transform 0.5s var(--ease-out);
-  }
-  .atlas-hero-card[hidden] { display: none; }
-  .atlas-hero-card:hover { border-color: rgba(201,151,58,0.6); }
-  .atlas-hero-card:hover .ahc-photo :global(img) { transform: scale(1.04); }
-  .atlas-hero-card:hover .ahc-cta-arrow { transform: translateX(6px); }
-
-  .ahc-photo {
-    position: relative;
-    aspect-ratio: 16 / 10;
-    overflow: hidden;
-    background: var(--bg3);
-  }
-  .ahc-photo :global(img),
-  .ahc-photo :global(picture) {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.9s var(--ease-out);
-  }
-  .ahc-photo-fallback {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .ahc-fallback-emoji {
-    font-size: 5rem;
-    filter: drop-shadow(0 4px 14px rgba(0,0,0,0.25));
-  }
-  .ahc-photo-tint {
-    position: absolute; inset: 0;
-    background: linear-gradient(180deg, transparent 55%, rgba(12,10,8,0.4) 100%);
-    pointer-events: none;
-  }
-
-  .ahc-text {
-    padding: 1.8rem 1.6rem 1.6rem;
-    display: flex; flex-direction: column; gap: 0.5rem;
-  }
-  .ahc-eyebrow {
-    display: flex; align-items: center; gap: 0.5rem;
-    font-size: 0.68rem; letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: #c9973a;
-    font-weight: 500;
-    margin-bottom: 0.3rem;
-  }
-  .ahc-eyebrow-sep { color: var(--text-faint); }
-  .ahc-title {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: clamp(1.9rem, 3.2vw, 2.6rem);
-    font-weight: 500;
-    line-height: 1.05;
-    margin: 0;
-    color: var(--text);
-    letter-spacing: -0.015em;
-  }
-  .ahc-sub {
-    font-size: 0.9rem;
-    line-height: 1.5;
-    color: var(--text-dim);
-    margin: 0.4rem 0 0.8rem;
-  }
-  .ahc-cta {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-style: italic;
-    font-size: 1.05rem;
-    color: #c9973a;
-    margin-top: 0.4rem;
-  }
-  .ahc-cta-arrow {
-    display: inline-block;
-    transition: transform 0.3s var(--ease-out);
-    margin-left: 0.2rem;
-  }
-
-  /* ──────────────── EDITORIAL LIST ──────────────── */
-  .atlas-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  .atlas-row { border-bottom: 1px solid var(--line); }
-  .atlas-row:first-child { border-top: 1px solid var(--line); }
-  .atlas-row[hidden] { display: none; }
-
-  .atlas-row-link {
-    display: grid;
-    grid-template-columns: 56px 80px 1fr auto auto;
-    align-items: center;
-    gap: 1.4rem;
-    padding: 1.2rem 0.4rem;
-    text-decoration: none;
-    color: inherit;
-    transition: background 0.2s ease, padding 0.3s ease;
-  }
-  .atlas-row-link:hover {
-    background: rgba(201,151,58,0.04);
-    padding-left: 1rem;
-  }
-  .atlas-row-link:hover .ar-name { color: #c9973a; }
-  .atlas-row-link:hover .ar-arrow { transform: translateX(6px); color: #c9973a; }
-
-  .ar-num {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: 1.5rem;
-    font-style: italic;
-    color: var(--gold-600);
-    font-variant-numeric: lining-nums;
-    text-align: center;
-  }
-  .ar-thumb {
-    width: 80px; height: 56px;
-    overflow: hidden;
-    border-radius: 2px;
-    display: block;
-  }
-  .ar-thumb :global(img),
-  .ar-thumb :global(picture) {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  .ar-thumb-emoji {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.8rem;
-  }
-  .ar-name {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: var(--text);
-    line-height: 1.2;
-    transition: color 0.2s ease;
-  }
-  .ar-meta {
-    display: flex; align-items: center; gap: 0.8rem;
-    font-size: 0.78rem;
-  }
-  .ar-visa {
-    padding: 0.2rem 0.6rem;
-    border: 1px solid;
-    border-radius: 2px;
-    font-weight: 500;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-  .ar-visa--free { color: var(--peak-text); border-color: rgba(34,197,94,0.4); }
-  .ar-visa--evisa { color: var(--good-text); border-color: rgba(74,158,255,0.4); }
-  .ar-visa--required { color: var(--gold); border-color: rgba(201,151,58,0.4); }
-  .ar-budget {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-style: italic;
-    color: var(--gold-600);
-    font-size: 1.15rem;
-    font-weight: 500;
-  }
-  .ar-arrow {
-    color: var(--text-faint);
-    transition: transform 0.25s ease, color 0.25s ease;
-    font-size: 1.1rem;
-  }
-
-  @media (max-width: 600px) {
-    .atlas-row-link {
-      grid-template-columns: 36px 56px 1fr auto;
-      gap: 0.75rem;
-      padding: 0.9rem 0.2rem;
-    }
-    .ar-num { font-size: 1.15rem; }
-    .ar-name { font-size: 1.1rem; }
-    .ar-thumb { width: 56px; height: 42px; }
-    .ar-meta { gap: 0.4rem; font-size: 0.7rem; }
-    .ar-arrow { display: none; }
-  }
-
-  /* ──────────────── COLOPHON ──────────────── */
-  .atlas-rule {
-    display: flex; align-items: center; justify-content: center;
-    gap: 1.2rem;
-    margin: 3rem auto 1.5rem;
-    max-width: 600px;
-  }
-  .atlas-rule-line {
-    flex: 1; height: 1px;
-    background: var(--line);
-  }
-  .atlas-rule-star {
-    color: var(--gold-600);
-    font-size: 0.85rem;
-    letter-spacing: 0.2em;
-  }
-
-  .atlas-colophon {
-    max-width: 1180px;
-    margin: 4rem auto 0;
-    padding: 0 var(--container-edge, 2rem);
-    text-align: center;
-  }
-  .atlas-colophon-text {
-    max-width: 500px;
-    margin: 0 auto 1rem;
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: 1.2rem;
-    line-height: 1.6;
-    font-style: italic;
-    color: var(--text-dim);
-  }
-  .atlas-colophon-date {
-    font-size: 0.78rem;
-    letter-spacing: 0.06em;
-    color: var(--text-faint);
-  }
-  .atlas-colophon-date a { color: var(--gold); }
-  .atlas-author-link { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; font-style: normal; }
 </style>
 
 <script>
-  function initAtlasReveal() {
-    const targets = document.querySelectorAll('[data-reveal]');
-    if (!targets.length || !('IntersectionObserver' in window)) {
-      targets.forEach((el) => (el as HTMLElement).classList.add('is-visible'));
-      return;
+  const grid = document.getElementById('cgrid');
+  if (grid) {
+    const cards = Array.from(grid.querySelectorAll('.cd'));
+    const order = new Map(cards.map((c, i) => [c, i]));
+    const state = { q: '', m: 0, visa: null, b: null, vibe: null, sort: 'rel' };
+    const PREP = ['', 'январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
+    const pl = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'направление' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'направления' : 'направлений'));
+    const qcode = (c) => (state.m ? ((c.dataset.r || '')[state.m - 1] || '') : '');
+    const rank = (c) => { const x = qcode(c); return x === 'P' ? 0 : (x === 'G' ? 1 : 2); };
+    const countN = document.getElementById('catN'), countW = document.getElementById('catW'), empty = document.getElementById('catEmpty');
+
+    function ordered() {
+      if (state.sort === 'asc') return [...cards].sort((a, b) => (+a.dataset.budget || 1e12) - (+b.dataset.budget || 1e12));
+      if (state.sort === 'desc') return [...cards].sort((a, b) => (+b.dataset.budget || 0) - (+a.dataset.budget || 0));
+      if (state.m) return [...cards].sort((a, b) => rank(a) - rank(b) || order.get(a) - order.get(b));
+      return cards;
     }
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add('is-visible');
-            io.unobserve(e.target);
-          }
-        });
-      },
-      { rootMargin: '-10% 0px -5% 0px', threshold: 0.1 }
-    );
-    targets.forEach((t) => io.observe(t));
-  }
-
-  function initAtlasFilter() {
-    const stats = document.querySelectorAll('.atlas-stat');
-    const heroCards = document.querySelectorAll('.atlas-hero-card');
-    const rows = document.querySelectorAll('.atlas-row');
-    const chapters = document.querySelectorAll('.atlas-chapter');
-    const search = document.getElementById('countriesSearch') as HTMLInputElement | null;
-    const clearBtn = document.getElementById('countriesSearchClear');
-    const emptyState = document.getElementById('countriesEmpty');
-    if (!stats.length || !search) return;
-
-    let currentFilter: string = 'all';
-    let currentQuery: string = '';
-
-    function matches(el: HTMLElement) {
-      const visa = el.dataset.visa || '';
-      const name = el.dataset.name || '';
-      const matchVisa = currentFilter === 'all' || visa === currentFilter;
-      const matchSearch = !currentQuery || name.includes(currentQuery);
-      return matchVisa && matchSearch;
-    }
-
     function apply() {
-      let visibleTotal = 0;
-      heroCards.forEach((c) => {
-        const show = matches(c as HTMLElement);
-        (c as HTMLElement).hidden = !show;
-        if (show) visibleTotal++;
+      ordered().forEach((c) => grid.appendChild(c));
+      let n = 0;
+      cards.forEach((c) => {
+        const vibe = c.dataset.vibe ? c.dataset.vibe.split(',') : [];
+        const code = qcode(c);
+        let ok = true;
+        if (state.q && !c.dataset.name.includes(state.q)) ok = false;
+        if (state.visa && c.dataset.visa !== state.visa) ok = false;
+        if (state.b && c.dataset.b !== state.b) ok = false;
+        if (state.vibe && !vibe.includes(state.vibe)) ok = false;
+        if (state.m && code !== 'P' && code !== 'G') ok = false;
+        const sq = c.querySelector('.cd-sq');
+        if (sq) {
+          if (state.m && (code === 'P' || code === 'G')) { sq.hidden = false; sq.textContent = code === 'P' ? 'пик сезона' : 'хороший сезон'; sq.className = 'cd-sq ' + (code === 'P' ? 'peak' : 'good'); }
+          else sq.hidden = true;
+        }
+        c.hidden = !ok; if (ok) n++;
       });
-      rows.forEach((r) => {
-        const show = matches(r as HTMLElement);
-        (r as HTMLElement).hidden = !show;
-        if (show) visibleTotal++;
-      });
-      chapters.forEach((ch) => {
-        const heroes = Array.from(ch.querySelectorAll('.atlas-hero-card')).some((c) => !(c as HTMLElement).hidden);
-        const list = Array.from(ch.querySelectorAll('.atlas-row')).some((r) => !(r as HTMLElement).hidden);
-        (ch as HTMLElement).hidden = !heroes && !list;
-      });
-      if (emptyState) (emptyState as HTMLElement).hidden = visibleTotal > 0;
+      countN.textContent = String(n);
+      countW.textContent = pl(n);
+      if (empty) empty.hidden = n > 0;
     }
 
-    stats.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        currentFilter = (btn as HTMLElement).dataset.filter || 'all';
-        stats.forEach((b) => b.classList.toggle('atlas-stat--active', b === btn));
-        apply();
-      });
-    });
+    const search = document.getElementById('catSearch'), clearBtn = document.getElementById('catSearchClear');
+    search.addEventListener('input', () => { state.q = search.value.trim().toLowerCase(); if (clearBtn) clearBtn.hidden = !search.value; apply(); });
+    if (clearBtn) clearBtn.addEventListener('click', () => { search.value = ''; state.q = ''; clearBtn.hidden = true; apply(); search.focus(); });
 
-    search.addEventListener('input', () => {
-      currentQuery = search.value.trim().toLowerCase();
-      if (clearBtn) (clearBtn as HTMLElement).hidden = currentQuery.length === 0;
+    document.querySelectorAll('.cf-opts[data-g]').forEach((g) => g.addEventListener('click', (e) => {
+      const t = e.target.closest('.cf-t'); if (!t) return;
+      const grp = g.dataset.g, was = t.classList.contains('on');
+      g.querySelectorAll('.cf-t').forEach((x) => x.classList.remove('on'));
+      if (!was) { t.classList.add('on'); state[grp] = t.dataset.v; } else state[grp] = null;
       apply();
+    }));
+    const sortG = document.getElementById('catSort');
+    if (sortG) sortG.addEventListener('click', (e) => {
+      const t = e.target.closest('.cf-t'); if (!t) return;
+      sortG.querySelectorAll('.cf-t').forEach((x) => x.classList.remove('on'));
+      t.classList.add('on'); state.sort = t.dataset.s; apply();
     });
+    const month = document.getElementById('catMonth');
+    if (month) month.addEventListener('change', (e) => { state.m = +e.target.value; apply(); });
 
-    if (clearBtn) clearBtn.addEventListener('click', () => {
-      search.value = '';
-      currentQuery = '';
-      (clearBtn as HTMLElement).hidden = true;
-      apply();
-      search.focus();
-    });
+    apply();
   }
-
-  initAtlasReveal();
-  initAtlasFilter();
-  document.addEventListener('astro:page-load', () => {
-    initAtlasReveal();
-    initAtlasFilter();
-  });
 </script>
