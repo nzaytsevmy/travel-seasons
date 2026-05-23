@@ -43,7 +43,9 @@ export const ACTIVITY_TAGS = {
   'hainan':               ['beach','food'],
 
   // Центральная Азия / Кавказ
-  'georgia':              ['mountain','culture','food'],
+  'georgia':              ['beach','mountain','culture','food'],
+  'abkhazia':             ['beach','mountain','nature'],
+  'iran':                 ['culture','city','desert'],
   'armenia':              ['mountain','culture'],
   'kyrgyzstan':           ['mountain','altitude','culture'],
   'uzbekistan':           ['desert','culture','city'],
