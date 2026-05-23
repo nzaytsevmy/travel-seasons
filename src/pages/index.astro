@@ -60,6 +60,8 @@ const baliP = DIRECTIONS.find((d) => d.slug === 'bali')?.price;
 const baliFlight = baliP ? flightRub(baliP) : 0;
 const baliStay = baliP ? stayRub(baliP) : 0;
 const baliTrip = baliFlight + baliStay;
+const SEASON_IDX = { P: 0, G: 1, O: 2, B: 3 }; // пик / хорошо / норм / не сезон
+const baliPat = (DIRECTIONS.find((d) => d.slug === 'bali')?.r || []).map((c) => SEASON_IDX[c] ?? 3);
 
 // Свежие посты
 const allPosts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
@@ -80,7 +82,8 @@ const ldJson = {
   <header class="sw-head">
     <div class="wrap nav">
       <a class="wm" href="/">TravelTribe</a>
-      <nav aria-label="Основное меню"><ul>
+      <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="navmenu" aria-label="Открыть меню"><span></span><span></span><span></span></button>
+      <nav id="navmenu" aria-label="Основное меню"><ul>
         <li><a href="/countries/">Направления</a></li>
         <li><a href="/visa/">Визы</a></li>
         <li><a href="/seasons/">Сезоны</a></li>
@@ -98,19 +101,20 @@ const ldJson = {
       <div class="idx">01 / Манифест<b>Авторский тревел-журнал</b></div>
       <p class="meta"><b>Был лично на 7 континентах</b><br>60+ стран · цены с перелётом, не пересказ · обновлено V.2026</p>
       <h1 class="h1">Вся польза<br>о поездках —<br><span class="rd">на виду.</span></h1>
-      <p class="sub">Визы, сезоны, реальные цены 2026 и маршруты по 70 направлениям — в одной таблице. Куда, когда и за сколько видно сразу. Ничего копать не нужно.</p>
+      <p class="sub">Визы, сезоны и реальные цены с перелётом по 70 направлениям — в одной таблице. Куда, когда и за сколько видно сразу. Ничего копать не нужно.</p>
       <ul class="vlist">
-        <li class="vi"><span>01</span>Визы РФ</li>
-        <li class="vi"><span>02</span>Когда ехать</li>
-        <li class="vi"><span>03</span>Цена с перелётом</li>
-        <li class="vi"><span>04</span>Маршруты</li>
-        <li class="vi"><span>05</span>Чек-листы</li>
-        <li class="vi"><span>06</span>70 направлений</li>
+        <li class="vi"><a href="/visa/"><span>01</span>Визы РФ</a></li>
+        <li class="vi"><a href="/seasons/"><span>02</span>Когда ехать</a></li>
+        <li class="vi"><a href="/calculator/"><span>03</span>Цена с перелётом</a></li>
+        <li class="vi"><a href="/trips/"><span>04</span>Поездки</a></li>
+        <li class="vi"><a href="/packing/"><span>05</span>Чек-листы</a></li>
+        <li class="vi"><a href="/countries/"><span>06</span>70 направлений</a></li>
       </ul>
     </div></section>
 
     <!-- Фильтры + дашборд -->
     <section><div class="wrap grid">
+      <div class="shead"><div><span class="n">02</span><h2>Куда поехать из России</h2></div><a href="/countries/">Все направления →</a></div>
       <div class="filters" role="search">
         <div class="fg"><span class="fl">Когда</span><select class="t" id="fMonth" aria-label="Месяц поездки">
           <option value="0">любой</option>
@@ -160,10 +164,10 @@ const ldJson = {
 
     <!-- Инструменты -->
     <section class="sec"><div class="wrap grid">
-      <div class="shead"><div><span class="n">02</span><h2>Инструменты — не на слово</h2></div><a href="/seasons/">Все →</a></div>
+      <div class="shead"><div><span class="n">03</span><h2>Инструменты — не на слово</h2></div><a href="/seasons/">Все →</a></div>
       <div class="tools">
         <div class="tcard"><div class="tt">Когда ехать в каждую страну</div><div class="ts">Пример строки «Бали» — по месяцам:</div>
-          <div class="heat" id="heat"></div>
+          <div class="heat" id="heat" data-pat={JSON.stringify(baliPat)}></div>
           <div class="heatlbl"><span>Я</span><span>Ф</span><span>М</span><span>А</span><span>М</span><span>И</span><span>И</span><span>А</span><span>С</span><span>О</span><span>Н</span><span>Д</span></div>
           <div class="lg"><span><i style="background:var(--gold)"></i>пик</span><span><i style="background:var(--ink)"></i>хорошо</span><span><i style="background:#9b9789"></i>норм</span><span><i style="background:var(--hair)"></i>не сезон</span></div>
           <div class="tl"><a href="/seasons/">Сезоны по месяцам →</a><a href="/visa/">Визы РФ →</a></div>
@@ -179,7 +183,7 @@ const ldJson = {
 
     <!-- Свежие истории -->
     <section class="sec"><div class="wrap grid">
-      <div class="shead"><div><span class="n">03</span><h2>Свежие истории</h2></div><a href="/blog/">Все статьи →</a></div>
+      <div class="shead"><div><span class="n">04</span><h2>Свежие истории</h2></div><a href="/blog/">Все статьи →</a></div>
       <div class="posts">
         {posts.map((p, i) => (
           <a class="post" href={`/blog/${p.slug}/`}>
@@ -191,19 +195,22 @@ const ldJson = {
           </a>
         ))}
       </div>
-      <p class="topics">Темы: <a href="/visa/">Визы</a> · <a href="/blog/">Деньги за границей</a> · <a href="/blog/">eSIM и связь</a> · <a href="/trips/">Маршруты</a></p>
+      <p class="topics">Темы: <a href="/visa/">Визы</a> · <a href="/blog/pay-abroad-2026/">Деньги за границей</a> · <a href="/blog/esim-zagranicey-2026/">eSIM и связь</a> · <a href="/trips/">Поездки</a></p>
     </div></section>
 
     <!-- Сообщество + автор -->
     <section><div class="wrap grid">
       <div class="comm">
-        <div class="tg2"><div class="k">04 / Telegram</div><h3>Свежие истории и апдейты виз — раньше, чем на сайте</h3><a href="https://t.me/traveltriberu" rel="noopener" target="_blank">Подписаться @traveltriberu →</a></div>
+        <div class="tg2"><div class="k">05 / Telegram</div><h3>Свежие истории и апдейты виз — раньше, чем на сайте</h3><a href="https://t.me/traveltriberu" rel="noopener" target="_blank">Подписаться @traveltriberu →</a></div>
         <div class="au"><div class="au-ph"><Image src={authorPhoto} alt="Никита Зайцев" width={156} height={156} formats={['webp']} /></div><div><div class="nm">Никита Зайцев</div><p>Был на всех 7 континентах, 60+ стран. Пишу только то, где был сам.</p><a class="method" href="/about/">Как я считаю бюджет и проверяю визы →</a></div></div>
       </div>
     </div></section>
   </main>
 
-  <footer class="sw-foot"><div class="wrap ft"><div>© 2026 TravelTribe — Никита Зайцев</div><div>Telegram @traveltriberu · Aviasales · Ostrovok</div></div></footer>
+  <footer class="sw-foot"><div class="wrap ft">
+    <nav class="fnav" aria-label="Подвал"><a href="/countries/">Направления</a><a href="/visa/">Визы</a><a href="/seasons/">Сезоны</a><a href="/trips/">Поездки</a><a href="/calculator/">Калькулятор</a><a href="/packing/">Чек-лист</a><a href="/blog/">Блог</a><a href="/about/">Об авторе</a></nav>
+    <div class="fbot"><div>© 2026 TravelTribe — Никита Зайцев</div><div>Telegram <a href="https://t.me/traveltriberu" rel="noopener" target="_blank">@traveltriberu</a> · Aviasales · Ostrovok</div></div>
+  </div></footer>
 </div>
 </Layout>
 
@@ -226,12 +233,24 @@ const ldJson = {
 .grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:0 clamp(.8rem,2vw,1.6rem)}
 
 .sw-head{position:sticky;top:0;z-index:50;background:var(--paper);border-bottom:1px solid var(--line)}
-.nav{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;padding-block:.9rem}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:.9rem}
 .wm{font-weight:700;font-size:1.05rem;letter-spacing:-.02em;text-transform:uppercase}
-.nav ul{list-style:none;display:flex;gap:1.4rem;font-size:.72rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;padding:0}
+.nav ul{list-style:none;display:flex;gap:1.4rem;font-size:.72rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;padding:0;margin:0}
 .nav ul a{display:inline-flex;align-items:center;min-height:44px;text-decoration:2px underline transparent;text-underline-offset:5px}
-.nav ul a:hover{text-decoration-color:var(--gold)}
-@media(max-width:920px){.nav ul{display:none}}
+.nav ul a:hover,.nav ul a:focus-visible{text-decoration-color:var(--gold)}
+.burger{display:none;width:44px;height:44px;flex-direction:column;justify-content:center;align-items:center;gap:5px;background:none;border:none;cursor:pointer;padding:0;margin:-.4rem -.6rem -.4rem 0}
+.burger span{display:block;width:24px;height:2px;background:var(--ink);transition:transform .2s ease,opacity .2s ease}
+.sw-head.open .burger span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.sw-head.open .burger span:nth-child(2){opacity:0}
+.sw-head.open .burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+@media(max-width:920px){
+  .burger{display:flex}
+  #navmenu{position:absolute;left:0;right:0;top:100%;background:var(--paper);border-bottom:1px solid var(--line);display:none;max-height:calc(100vh - 53px);overflow:auto}
+  .sw-head.open #navmenu{display:block}
+  .nav ul{flex-direction:column;gap:0;padding:.2rem var(--edge) 1rem}
+  .nav ul li{border-top:1px solid var(--hair)}
+  .nav ul a{min-height:52px;width:100%;font-size:.92rem;letter-spacing:.02em}
+}
 
 .manifest{padding:clamp(2rem,5vw,4.5rem) 0 clamp(1.2rem,2.5vw,2rem)}
 .idx{grid-column:1/5;grid-row:1;font-size:.74rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--gold)}
@@ -245,6 +264,8 @@ const ldJson = {
 .vi{padding:.75rem 1.2rem;border-right:1px solid var(--hair);font-size:.82rem;font-weight:500}
 .vi:first-child{padding-left:0}.vi:last-child{border-right:none}
 .vi span{display:block;font-size:.66rem;font-weight:600;color:var(--gold);margin-bottom:.15rem}
+.vi a{display:block;color:inherit;min-height:44px}
+.vi a:hover,.vi a:focus-visible{color:var(--gold)}
 @media(max-width:760px){.idx,.h1,.sub,.meta,.vlist{grid-column:1/-1;grid-row:auto}.meta{text-align:left;margin-top:.6rem}.h1{margin-top:1.1rem}.vlist{grid-template-columns:repeat(2,1fr)}.vi:nth-child(2n){border-right:none}.vi:nth-child(odd){padding-left:0}}
 
 .filters{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:.3rem 1.6rem;padding:.6rem 0;margin-top:1.4rem;border-bottom:1px solid var(--line)}
@@ -337,7 +358,12 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 @media(max-width:760px){.comm{grid-template-columns:1fr}.tg2{border-right:none;border-bottom:1px solid var(--hair);padding:1.4rem 0}.au{padding:1.4rem 0}}
 
 .sw-foot{border-top:1px solid var(--line);margin-top:clamp(2rem,4vw,3.5rem);display:block;max-width:none;margin-inline:0;padding:0}
-.ft{display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding-block:1.6rem;font-size:.74rem;color:var(--mid);font-weight:500}
+.ft{display:flex;flex-direction:column;gap:1.1rem;padding-block:1.6rem;font-size:.74rem;color:var(--mid);font-weight:500}
+.fnav{display:flex;flex-wrap:wrap;gap:.1rem 1.4rem}
+.fnav a{min-height:44px;display:inline-flex;align-items:center;color:var(--ink);text-decoration:2px underline transparent;text-underline-offset:4px}
+.fnav a:hover,.fnav a:focus-visible{text-decoration-color:var(--gold)}
+.fbot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.6rem 1rem}
+.fbot a{color:inherit;text-decoration:underline}
 </style>
 
 <script>
@@ -398,9 +424,21 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
       b.classList.add('on'); state.sort = b.dataset.s; apply();
     });
     apply();
-    // мини-хитмэп Бали (пример): off,off,ok,good,peak×5,good,ok,off
-    const pat = [3,3,2,1,0,0,0,0,0,1,2,3], col = ['var(--gold)','var(--ink)','#9b9789','var(--hair)'];
+    // мини-хитмэп Бали — из реальных данных DIRECTIONS (data-pat), не хардкод
+    const col = ['var(--gold)','var(--ink)','#9b9789','var(--hair)'];
     const h = document.getElementById('heat');
-    if (h) pat.forEach((p) => { const d = document.createElement('div'); d.className = 'mh'; d.style.cssText = 'height:1.6rem;background:' + col[p]; h.appendChild(d); });
+    if (h) JSON.parse(h.dataset.pat || '[]').forEach((p) => { const d = document.createElement('div'); d.className = 'mh'; d.style.cssText = 'height:1.6rem;background:' + col[p]; h.appendChild(d); });
+  }
+
+  // Мобильное меню (бургер) — работает независимо от финдера
+  const burger = document.getElementById('burger');
+  const head = document.querySelector('.sw-head');
+  if (burger && head) {
+    const navmenu = head.querySelector('#navmenu');
+    const setOpen = (o) => { burger.setAttribute('aria-expanded', String(o)); head.classList.toggle('open', o); burger.setAttribute('aria-label', o ? 'Закрыть меню' : 'Открыть меню'); };
+    burger.addEventListener('click', () => setOpen(burger.getAttribute('aria-expanded') !== 'true'));
+    if (navmenu) navmenu.addEventListener('click', (e) => { if (e.target.closest('a')) setOpen(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+    document.addEventListener('click', (e) => { if (head.classList.contains('open') && !e.target.closest('.sw-head')) setOpen(false); });
   }
 </script>
