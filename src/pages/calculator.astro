@@ -1018,7 +1018,7 @@ window.addEventListener('pageshow', (e) => {
 
 /* ── RESULT SECTION ──────────────────────────────────────────── */
 .tc-result-section {
-  padding: 1.5rem 0 2rem;
+  padding: 1.5rem 0 0;
 }
 .tc-result { /* host */ }
 
@@ -1464,7 +1464,9 @@ window.addEventListener('pageshow', (e) => {
 .tc-compare-aux a:hover { color: var(--gold-600); }
 
 /* ── SECTIONS (Tips, BudgetBlock, FAQ) ───────────────────────── */
-.tc-section { padding: clamp(2.5rem, 5vw, 4rem) 0; }
+/* вертикальный ритм: отступ только сверху (без удвоения у соседних секций), уменьшается на мобайле */
+.tc-section { padding: clamp(2rem, 4vw, 3rem) 0 0; }
+.tc-section:last-of-type { padding-bottom: clamp(2.5rem, 5vw, 3.5rem); }
 .tc-tourcta { max-width: 680px; margin: 1.4rem auto 0; padding: 1rem 1.3rem; border: 1px solid var(--line); border-left: 3px solid var(--gold); font-size: 0.95rem; line-height: 1.6; color: var(--text-dim); }
 .tc-tourcta a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
 .tc-tourcta strong { color: var(--text); }

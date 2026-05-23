@@ -299,16 +299,15 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
   .dash tr{border:none;padding:0 0 1.6rem}
   .dash td{border:none;padding:0;text-align:left}
   .dash td::before{display:none}                                  /* подписи не нужны — значения самоочевидны */
-  /* ── ФОТО-КАРТОЧКА: крупное фото + название/«пик» поверх ── */
-  .dash td.cdest{margin-bottom:.6rem}
-  .cdest .dest{position:relative;display:block;border-radius:10px;overflow:hidden}
-  .cdest .th{width:100%;height:178px}
-  .cdest .dest>span:not(.th){position:absolute;left:0;right:0;bottom:0;display:block;padding:.9rem .9rem .7rem;background:linear-gradient(to top,rgba(18,14,8,.78),rgba(18,14,8,.18) 55%,transparent)}
-  .cdest .nm{color:#fff;font-size:1.4rem}
-  .cdest .nm:hover{color:#fff}
-  .cdest .vibe{color:rgba(255,255,255,.85);margin-top:.12rem}
-  .cdest .sq{color:#fff;margin-top:.3rem}
-  .cdest .sq.peak{color:#e8b65c}.cdest .sq.good{color:#cdd6de}
+  /* ── ФОТО-КАРТОЧКА (Airbnb-style): чистое фото, инфо снизу, бейдж сезона уголком ── */
+  .dash td.cdest{margin-bottom:.55rem}
+  .cdest .dest{position:relative;display:block}
+  .cdest .th{width:100%;height:200px;border-radius:12px;overflow:hidden;display:block;margin-bottom:.6rem}
+  .cdest .dest>span:not(.th){display:block}
+  .cdest .nm{color:var(--ink);font-size:1.3rem}
+  .cdest .vibe{color:var(--mid);margin-top:.1rem}
+  .cdest .sq{position:absolute;top:.6rem;left:.6rem;margin:0;padding:.3rem .55rem;background:var(--paper);border-radius:5px;font-size:.58rem;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+  .cdest .sq.peak{color:var(--gold)}.cdest .sq.good{color:var(--mid)}
   /* ── под фото: цена крупно, виза·сезон мета, ссылка ── */
   .dash td[data-l="Поездка"]{display:block;margin-bottom:.2rem}
   .price{font-size:1.45rem}
@@ -331,7 +330,7 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .gi a.cta{font-size:.82rem;font-weight:600;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:3px;display:inline-flex;align-items:center;min-height:44px}
 @media(max-width:760px){.gear-grid{grid-template-columns:repeat(2,1fr)}.gi:nth-child(2n){border-right:none}.gi:nth-child(odd){padding-left:0}}
 
-.visaband{grid-column:1/-1;margin-top:2.4rem;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:1rem;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:1.1rem 0}
+.visaband{grid-column:1/-1;margin-top:2.4rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:1.1rem 0}
 .visaband .vt{font-weight:600;font-size:1.02rem;max-width:64ch}.visaband .vt b{color:var(--gold)}
 .visaband a{font-size:.74rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:4px;display:inline-flex;align-items:center;min-height:44px;white-space:nowrap}
 .tourcta{grid-column:1/-1;margin-top:2.4rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem 1rem;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:1.1rem 0}
@@ -340,7 +339,7 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .tourcta .adm{font-size:.6rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
 
 .sec{padding:clamp(2.4rem,5vw,4rem) 0 0}
-.shead{grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;gap:1rem;border-top:2px solid var(--line);padding-top:.8rem;margin-bottom:1.4rem}
+.shead{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:1rem;border-top:2px solid var(--line);padding-top:.8rem;margin-bottom:1.4rem}
 .shead .n{font-size:.74rem;font-weight:600;color:var(--gold);margin-right:.8rem}
 .shead h2{display:inline;font-weight:700;font-size:clamp(1.4rem,2.6vw,2rem);letter-spacing:-.02em}
 .shead a{font-size:.72rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:4px;display:inline-flex;align-items:center;min-height:44px}
