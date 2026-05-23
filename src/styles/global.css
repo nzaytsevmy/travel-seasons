@@ -130,25 +130,8 @@ input, select, textarea {
   font-size: max(16px, 1rem);
 }
 
-body::before {
-  content: "";
-  position: fixed; inset: 0;
-  background-image:
-    linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 60px 60px;
-  pointer-events: none;
-  z-index: -1;
-}
-body.post-page::before { display: none; }
-body.blog-index::before { opacity: 0.18; }
-
-/* Force Safari/WebKit to repaint body::before grid — direct selector on body */
-body::before {
-  background-image:
-    linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
-}
+/* Фоновая grid-сетка убрана 2026-05-23: при Swiss-палитре (--line сплошной #cdc9bd)
+   она стала видимой и захламляла страницы. Чистый paper-фон, как на главной. */
 
 h1, h2, h3 { text-wrap: balance; }
 a { text-decoration: none; color: inherit; }

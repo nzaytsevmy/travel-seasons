@@ -192,7 +192,7 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
     {hasPrices && (
       <section class="season-block">
         <h2>Сколько стоит поездка {d.cases.vP} в {m.prep} 2026</h2>
-        <table class="budget-table">
+        <div class="bt-scroll"><table class="budget-table">
           <thead>
             <tr><th>Длительность</th><th>Эконом</th><th>Средний</th><th>Комфорт</th></tr>
           </thead>
@@ -206,7 +206,7 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
         <p class="budget-note">Перелёт из Москвы ${flightTiers[0]}–${flightTiers[2]}, отель ${hotelTiers[0]}–${hotelTiers[2]}/ночь, еда ${foodTiers[0]}–${foodTiers[2]}/день. Точный расчёт под маршрут — в <a href="/calculator/">калькуляторе поездки</a>.</p>
       </section>
     )}
@@ -369,10 +369,12 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
 .season-facts li strong, .season-list li strong { color: var(--text); }
 
 /* Budget table */
+.bt-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
 .budget-table {
-  width: 100%; border-collapse: collapse; margin: 1rem 0;
+  width: 100%; min-width: 380px; border-collapse: collapse; margin: 0;
   font-size: 0.95rem; color: var(--text-dim);
 }
+.budget-table th, .budget-table td { white-space: nowrap; }
 .budget-table th, .budget-table td {
   text-align: left; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--line);
 }
