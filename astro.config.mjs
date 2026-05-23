@@ -40,6 +40,14 @@ const DATA_DATE = new Date(DATA_UPDATED + 'T00:00:00Z');
 export default defineConfig({
   site: 'https://traveltribe.ru',
   trailingSlash: 'always',
+  // Редиректы: .htaccess на REG.RU (nginx) НЕ применяется → через Astro (генерит
+  // served-стабы с meta-refresh + canonical). Легаси-URL из старой выдачи.
+  redirects: {
+    '/japan_momiji': '/blog/japan-guide-2026/',
+    '/japan-momiji': '/blog/japan-guide-2026/',
+    '/mexico': '/blog/',
+    '/mexico_old': '/blog/',
+  },
   build: {
     // Все стили inline в HTML — убирает render-blocking CSS (164ms по GTmetrix).
     // Trade-off: HTML +5-15KB, brotli сжимает до ~1-3KB. Net win.
