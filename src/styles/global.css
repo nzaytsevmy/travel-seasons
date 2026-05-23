@@ -668,8 +668,9 @@ footer {
    ───────────────────────────────────────────────────────────────────────── */
 .ad-mark {
   font-size: 0.62em;
+  /* без opacity — она роняла контраст ниже AA (4.98:1 у --text-faint на cream).
+     Компактность даёт мелкий кегль + lowercase, не приглушение. */
   color: var(--text-faint);
-  opacity: 0.55;
   font-style: normal;
   font-weight: 400;
   letter-spacing: 0.02em;
