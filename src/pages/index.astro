@@ -134,6 +134,13 @@ const ldJson = {
       <p class="nomatch" id="noMatch">Под эти фильтры ничего не нашлось — попробуйте ослабить один: другой месяц, бюджет повыше или другой вайб.</p>
       <p class="dfoot">Цена — ориентир всей поездки в комфорте на одного: перелёт из Москвы + жильё, еда и транспорт за 7 ночей (медиана Aviasales/Островок и траты из источников 2026, курс ≈90 ₽/$). Зависит от дат и сезона — <a href="/calculator/">посчитайте точно →</a></p>
 
+      <!-- Авторские туры (YouTravel) — альтернатива DIY -->
+      <div class="tourcta">
+        <span class="tourcta-t"><b>Не хочешь планировать сам?</b> Авторский тур с экспертом — маршрут, логистика и малая группа уже собраны.</span>
+        <a class="tourcta-a" href={TP_LINKS.youtravel} rel="sponsored noopener" target="_blank">Смотреть авторские туры →</a>
+        <span class="adm">реклама</span>
+      </div>
+
       <!-- Монетизация -->
       <div class="gear">
         <div class="gear-h"><h2>Собраться в дорогу</h2><span class="adm">реклама</span></div>
@@ -290,6 +297,10 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .visaband{grid-column:1/-1;margin-top:2.4rem;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:1rem;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:1.1rem 0}
 .visaband .vt{font-weight:600;font-size:1.02rem;max-width:64ch}.visaband .vt b{color:var(--gold)}
 .visaband a{font-size:.74rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:4px;display:inline-flex;align-items:center;min-height:44px;white-space:nowrap}
+.tourcta{grid-column:1/-1;margin-top:2.4rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem 1rem;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:1.1rem 0}
+.tourcta-t{font-size:1.02rem;color:var(--ink);max-width:62ch}.tourcta-t b{color:var(--gold)}
+.tourcta-a{font-size:.74rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:4px;display:inline-flex;align-items:center;min-height:44px;white-space:nowrap}
+.tourcta .adm{font-size:.6rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
 
 .sec{padding:clamp(2.4rem,5vw,4rem) 0 0}
 .shead{grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;gap:1rem;border-top:2px solid var(--line);padding-top:.8rem;margin-bottom:1.4rem}
@@ -316,6 +327,8 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .post .mt{font-size:.76rem;color:var(--mid)}.post .pers{color:var(--gold);font-weight:600}
 .topics{grid-column:1/-1;font-size:.8rem;color:var(--mid);margin-top:1rem}.topics a{color:var(--ink);font-weight:500;text-decoration:2px underline transparent;text-underline-offset:3px}.topics a:hover{text-decoration-color:var(--gold)}
 @media(max-width:760px){.posts{grid-template-columns:1fr}}
+/* Ровный ритм секций на мобиле — единый зазор 2.4rem (было manifest→финдер 1.2, comm 2.0) */
+@media(max-width:760px){.manifest{padding-bottom:2.4rem}.comm{margin-top:2.4rem}}
 
 .comm{grid-column:1/-1;display:grid;grid-template-columns:1.4fr 1fr;border-top:2px solid var(--line);margin-top:clamp(2rem,4vw,3.5rem)}
 .tg2{padding:1.6rem 2rem 1.8rem 0;border-right:1px solid var(--hair)}

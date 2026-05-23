@@ -19,6 +19,7 @@ import { getVisaDetails } from '../data/visa-details.js';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
 import AviasalesWidget from '../components/post/AviasalesWidget.astro';
 import BudgetBlock from '../components/BudgetBlock.astro';
+import { TP_LINKS } from '../data/affiliate.js';
 
 // Pre-import all destination photos (Vite needs static imports). glob lazy:
 const destPhotos = import.meta.glob('../assets/destinations/*.jpg', {
@@ -296,6 +297,12 @@ const ldJson = {
     <BudgetBlock slug={d.slug} />
 
     <AviasalesWidget title={`Найти билеты — ${d.cases.vP}`} subid={`hub-${d.slug}`} />
+
+    {/* Авторские туры (YouTravel) — поехать с гидом вместо DIY */}
+    <section class="quick-block">
+      <h2>Поехать с экспертом</h2>
+      <p class="quick-answer">Не хочешь планировать самостоятельно? <a href={TP_LINKS.youtravel} rel="sponsored noopener" target="_blank"><strong>Авторские туры {d.cases.vP} →</strong></a> — маршрут, логистика и малая группа уже собраны. <span class="ad-mark">реклама</span></p>
+    </section>
 
     {/* RELATED LINKS */}
     <section class="quick-block">

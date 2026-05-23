@@ -7,6 +7,7 @@ import { DIRECTIONS } from '../data/directions.js';
 import { VISA_DETAILS } from '../data/visa-details.js';
 import realBudgets from '../data/real-budgets-2026.json';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
+import { TP_LINKS } from '../data/affiliate.js';
 
 const groups: Record<string, Array<{i:number,name:string,iata:string}>> = {};
 PRICES.forEach((p, i) => {
@@ -209,6 +210,13 @@ const ldJson = {
     <section class="tc-result-section">
       <div class="tc-container">
         <div id="calcResult" class="tc-result"></div>
+      </div>
+    </section>
+
+    {/* Авторские туры (YouTravel) — альтернатива самостоятельному расчёту */}
+    <section class="tc-section">
+      <div class="tc-container">
+        <p class="tc-tourcta">Считать и планировать не хочется? <a href={TP_LINKS.youtravel} rel="sponsored noopener" target="_blank"><strong>Авторский тур с экспертом →</strong></a> — бюджет, маршрут и малая группа уже собраны. <span class="ad-mark">реклама</span></p>
       </div>
     </section>
 
@@ -1457,6 +1465,9 @@ window.addEventListener('pageshow', (e) => {
 
 /* ── SECTIONS (Tips, BudgetBlock, FAQ) ───────────────────────── */
 .tc-section { padding: clamp(2.5rem, 5vw, 4rem) 0; }
+.tc-tourcta { max-width: 680px; margin: 1.4rem auto 0; padding: 1rem 1.3rem; border: 1px solid var(--line); border-left: 3px solid var(--gold); font-size: 0.95rem; line-height: 1.6; color: var(--text-dim); }
+.tc-tourcta a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
+.tc-tourcta strong { color: var(--text); }
 .tc-section-head {
   display: flex; align-items: baseline; gap: 0.8rem;
   margin-bottom: 1.5rem;
