@@ -119,7 +119,6 @@ const ldJson = {
           ))}
         </select></div>
         <div class="fg"><span class="fl">Поездка ₽</span><div class="fopts" data-g="b"><button class="t" data-v="low" type="button">до 100к</button><button class="t" data-v="mid" type="button">100–200к</button><button class="t" data-v="high" type="button">200к+</button></div></div>
-        <div class="fg"><span class="fl">Виза</span><div class="fopts" data-g="v"><button class="t" data-v="free" type="button">безвиз</button><button class="t" data-v="evisa" type="button">e-visa</button></div></div>
         <div class="fg"><span class="fl">Вайб</span><div class="fopts" data-g="vibe"><button class="t" data-v="beach" type="button">пляж</button><button class="t" data-v="mountains" type="button">горы</button><button class="t" data-v="city" type="button">город</button><button class="t" data-v="nature" type="button">природа</button></div></div>
         <div class="fg"><span class="fl">Сортировка</span><div class="fopts" id="sortOpts"><button class="t on" data-s="rel" type="button">рекомендую</button><button class="t" data-s="asc" type="button">дешевле</button><button class="t" data-s="desc" type="button">дороже</button></div></div>
         <div class="fcount"><b id="fCountN">{nowRows.length}</b><span id="fCountW">{nowWord}</span></div>
@@ -142,7 +141,7 @@ const ldJson = {
           <tr id="moreRow" hidden><td colspan="5" class="more-cell"><a href="/countries/">Ещё <b id="moreN"></b> на пике сезона → все направления</a></td></tr>
         </tbody>
       </table></div>
-      <p class="nomatch" id="noMatch">Под эти фильтры ничего не нашлось — попробуйте ослабить один: другой месяц, бюджет повыше или другой тип визы.</p>
+      <p class="nomatch" id="noMatch">Под эти фильтры ничего не нашлось — попробуйте ослабить один: другой месяц, бюджет повыше или другой вайб.</p>
       <p class="dfoot">Цена — ориентир всей поездки в комфорте на одного: перелёт из Москвы + жильё, еда и транспорт за 7 ночей (медиана Aviasales/Островок и траты из источников 2026, курс ≈90 ₽/$). Зависит от дат и сезона — <a href="/calculator/">посчитайте точно →</a></p>
 
       <!-- Монетизация -->
@@ -348,7 +347,7 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
     const moreRow = document.getElementById('moreRow'), moreN = document.getElementById('moreN');
     const allRows = [...tbody.querySelectorAll('tr:not(#moreRow)')];
     const CAP = 5;
-    const state = { m: new Date().getMonth() + 1, b: null, v: null, vibe: null, sort: 'rel' };
+    const state = { m: new Date().getMonth() + 1, b: null, vibe: null, sort: 'rel' };
     const PREP = ['', 'январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
     const pl = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'направление' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'направления' : 'направлений'));
     const ordered = () => {
@@ -366,7 +365,6 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
         let ok = true;
         if (state.m && !m.includes(String(state.m))) ok = false;
         if (state.b && c.dataset.b !== state.b) ok = false;
-        if (state.v && c.dataset.v !== state.v) ok = false;
         if (state.vibe && !vibe.includes(state.vibe)) ok = false; // вайб должен реально совпадать (без тегов — не под конкретный)
         if (ok) {
           n++;
@@ -381,7 +379,7 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
       const sl = document.getElementById('seasonlead');
       if (sl) sl.innerHTML = n
         ? `Сейчас, <b>${state.m ? 'в ' + PREP[state.m] : 'в любой месяц'}</b>, на пике сезона ${n}: ${names.join(', ')}${n > names.length ? ' и др' : ''}.`
-        : 'Под эти фильтры ничего не нашлось — ослабьте один: месяц, бюджет или визу.';
+        : 'Под эти фильтры ничего не нашлось — ослабьте один: месяц, бюджет или вайб.';
     }
     const fMonth = document.getElementById('fMonth');
     if (fMonth) fMonth.value = String(state.m); // месяц по дате пользователя, а не по дате сборки
