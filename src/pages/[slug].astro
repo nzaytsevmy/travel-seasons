@@ -310,7 +310,7 @@ if (guide?.itinerary?.length) {
           <section class="quick-block">
             <h2>Как добраться {d.cases.vP}</h2>
             <p class="quick-answer">{guide.getThere}</p>
-            {!guide.compare && d.price?.iata && flightFrom && (
+            {!guide.compare && !guide.noFlightCta && d.price?.iata && flightFrom && (
               <p class="guide-cta">
                 <a href={aviasalesRoute('MOW', d.price.iata)} class="aff-cta" rel="sponsored noopener" target="_blank">Сравнить билеты Москва — {d.cases.nom} от ${flightFrom}</a>
                 <span class="ad-mark">реклама</span>
