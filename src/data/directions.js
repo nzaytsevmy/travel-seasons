@@ -211,6 +211,16 @@ const RELATED_POSTS = {
     { slug: 'uae-guide-2026', title: 'Дубай 2026 для россиян: безвиз 90 дней, цены, сезон', kind: 'guide' },
     { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
   ],
+  'georgia': [
+    { slug: 'georgia-guide-2026', title: 'Грузия 2026: виза 365 дней, страховка, цены, маршрут', kind: 'guide' },
+    { slug: 'pay-abroad-2026', title: 'Как платить в Грузии: карты РФ не работают', kind: 'guide' },
+    { slug: 'turkey-guide-2026', title: 'Турция 2026 — соседнее безвизовое направление', kind: 'guide' },
+  ],
+  'turkey': [
+    { slug: 'turkey-guide-2026', title: 'Турция 2026 россиянам: безвиз, цены, маршрут', kind: 'guide' },
+    { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
+    { slug: 'esim-zagranicey-2026', title: 'Связь за границей 2026: eSIM и SIM', kind: 'guide' },
+  ],
   'uganda': [
     { slug: 'uganda-safari-2026', title: 'Уганда 2026: гориллы Бвинди и сафари', kind: 'guide' },
   ],
