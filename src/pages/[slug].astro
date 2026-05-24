@@ -369,6 +369,13 @@ if (guide?.itinerary?.length) {
             <ul class="guide-list">
               {guide.practical.map((s) => <li><strong>{s.t}</strong> — {s.d}</li>)}
             </ul>
+            {guide.insuranceCta && (
+              <p class="guide-cta">
+                <a href={TP_LINKS.cherehapa} class="aff-cta" rel="sponsored noopener" target="_blank">Оформить страховку {d.cases.vP}</a>
+                <span class="ad-mark">реклама</span>
+                <span class="guide-cta-trust">{guide.insuranceNote || 'сравнение цен, оплата картами РФ'}</span>
+              </p>
+            )}
           </section>
         )}
         {guide.data?.length > 0 && (
