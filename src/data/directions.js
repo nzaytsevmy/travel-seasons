@@ -231,6 +231,21 @@ const RELATED_POSTS = {
     { slug: 'aurora-new-zealand-2026', title: 'Южное сияние в Новой Зеландии 2026', kind: 'guide' },
     { slug: 'milford-sound-2026', title: 'Милфорд-Саунд 2026: каяк и круиз', kind: 'guide' },
   ],
+  'bolivia': [
+    { slug: 'bolivia-guide-2026', title: 'Боливия 2026: тур по Уюни за $130, безвиз 90 дней', kind: 'guide' },
+    { slug: 'peru-guide-2026', title: 'Перу 2026 — соседний маршрут (Мачу-Пикчу)', kind: 'guide' },
+    { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
+  ],
+  'chile': [
+    { slug: 'chile-guide-2026', title: 'Чили 2026: Патагония и Атакама за $1500, безвиз', kind: 'guide' },
+    { slug: 'peru-guide-2026', title: 'Перу 2026 — соседний маршрут (Мачу-Пикчу)', kind: 'guide' },
+    { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
+  ],
+  'peru': [
+    { slug: 'peru-guide-2026', title: 'Перу 2026 россиянам: 12 дней за $1200, Мачу-Пикчу', kind: 'guide' },
+    { slug: 'bolivia-guide-2026', title: 'Боливия 2026 — соседний маршрут (Уюни)', kind: 'guide' },
+    { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
+  ],
 };
 
 // EU/Шенген hub — связываем все европейские направления с шенгенским гайдом
