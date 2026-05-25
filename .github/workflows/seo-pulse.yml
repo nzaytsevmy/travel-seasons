@@ -15,6 +15,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: seo-pulse
+  cancel-in-progress: false
+
 jobs:
   pulse:
     runs-on: ubuntu-latest
@@ -47,10 +51,20 @@ jobs:
           git config user.name "seo-pulse-bot"
           git config user.email "seo-pulse@traveltribe.ru"
           git add seo-pulse/
-          if ! git diff --cached --quiet; then
-            git commit -m "seo-pulse: $(date -u +%Y-%m-%d) report"
-            git push
+          if git diff --cached --quiet; then
+            echo "Нет изменений — коммит не нужен (alert-режим)"
+            exit 0
           fi
+          git commit -m "seo-pulse: $(date -u +%Y-%m-%d) report"
+          for i in 1 2 3; do
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
+              exit 0
+            fi
+            echo "push: попытка $i не удалась (гонка с другим коммитом), повтор через 5с..."
+            sleep 5
+          done
+          echo "push не прошёл после 3 попыток" >&2
+          exit 1
 
       - name: Alert on job failure
         if: failure()
