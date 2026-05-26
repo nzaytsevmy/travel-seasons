@@ -6,6 +6,130 @@
 // В UI компонент помечает «обзорная карта» vs «мой маршрут».
 
 export const POIS = {
+  'bali': {
+    visited: false,
+    center: { lat: -8.4095, lng: 115.1889, zoom: 9 },
+    pois: [
+      { name: 'Денпасар',     lat: -8.6500, lng: 115.2167, type: 'city',    note: 'столица + аэропорт' },
+      { name: 'Семиньяк',     lat: -8.6900, lng: 115.1600, type: 'beach',   note: 'премиум пляж + закаты' },
+      { name: 'Чангу',        lat: -8.6478, lng: 115.1385, type: 'beach',   note: 'сёрф + диджитал-номады' },
+      { name: 'Убуд',         lat: -8.5069, lng: 115.2625, type: 'culture', note: 'арт-столица, рисовые террасы' },
+      { name: 'Улувату',      lat: -8.8290, lng: 115.0850, type: 'beach',   note: 'клиффы + храм Pura Luhur' },
+      { name: 'Нуса Пенида',  lat: -8.7270, lng: 115.5450, type: 'nature',  note: 'Kelingking Beach, дайвинг' },
+      { name: 'Мунду',        lat: -8.2762, lng: 115.0383, type: 'nature',  note: 'север Бали, водопады' },
+      { name: 'Танах Лот',    lat: -8.6212, lng: 115.0867, type: 'culture', note: 'храм на скале в океане' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'uae': {
+    visited: false,
+    center: { lat: 24.9, lng: 54.5, zoom: 7 },
+    pois: [
+      { name: 'Дубай',              lat: 25.2048, lng: 55.2708, type: 'city',    note: 'Бурдж-Халифа, Дубай-молл, Палма' },
+      { name: 'Абу-Даби',           lat: 24.4539, lng: 54.3773, type: 'city',    note: 'мечеть Шейха Зайеда, Лувр Абу-Даби' },
+      { name: 'Шарджа',             lat: 25.3463, lng: 55.4209, type: 'culture', note: 'культурная столица ОАЭ, музеи' },
+      { name: 'Аль-Айн',            lat: 24.2075, lng: 55.7447, type: 'nature',  note: 'оазис, гора Джебель Хафит' },
+      { name: 'Рас-эль-Хайма',      lat: 25.7895, lng: 55.9432, type: 'nature',  note: 'Джебель-Джейс, самая длинная зиплайн' },
+      { name: 'Фуджейра',           lat: 25.1288, lng: 56.3265, type: 'beach',   note: 'восточный берег, дайвинг в Индийском океане' },
+      { name: 'Хатта',              lat: 24.7980, lng: 56.1297, type: 'nature',  note: 'горы Хаджар, каяки на озере' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'vietnam': {
+    visited: false,
+    center: { lat: 16.0, lng: 107.5, zoom: 5 },
+    pois: [
+      { name: 'Ханой',         lat: 21.0285, lng: 105.8542, type: 'city',    note: 'Старый квартал, озеро Хоан Кьем' },
+      { name: 'Халонг',        lat: 20.9101, lng: 107.1839, type: 'nature',  note: 'известняковые острова, круизы' },
+      { name: 'Сапа',          lat: 22.3364, lng: 103.8438, type: 'nature',  note: 'рисовые террасы, треккинг' },
+      { name: 'Хюэ',           lat: 16.4637, lng: 107.5909, type: 'culture', note: 'императорская столица, цитадель' },
+      { name: 'Хойан',         lat: 15.8801, lng: 108.3380, type: 'culture', note: 'старый город, фонарики, шитьё одежды' },
+      { name: 'Дананг',        lat: 16.0544, lng: 108.2022, type: 'beach',   note: 'My Khe Beach, Marble Mountains' },
+      { name: 'Нячанг',        lat: 12.2388, lng: 109.1967, type: 'beach',   note: 'русский курорт, дайвинг' },
+      { name: 'Хошимин',       lat: 10.8231, lng: 106.6297, type: 'city',    note: 'бывший Сайгон, тоннели Ку Чи' },
+      { name: 'Фукуок',        lat: 10.2899, lng: 103.9840, type: 'beach',   note: 'остров, премиум-резорты' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'armenia': {
+    visited: false,
+    center: { lat: 40.3, lng: 45.0, zoom: 8 },
+    pois: [
+      { name: 'Ереван',      lat: 40.1792, lng: 44.4991, type: 'city',    note: 'Каскад, Республика, музей Параджанова' },
+      { name: 'Гарни',       lat: 40.1129, lng: 44.7311, type: 'culture', note: 'эллинистический храм I века' },
+      { name: 'Гегард',      lat: 40.1419, lng: 44.8210, type: 'culture', note: 'пещерный монастырь, UNESCO' },
+      { name: 'Севан',       lat: 40.5697, lng: 45.0146, type: 'nature',  note: 'высокогорное озеро, монастырь Севанаванк' },
+      { name: 'Дилижан',     lat: 40.7415, lng: 44.8625, type: 'nature',  note: '«армянская Швейцария», лес' },
+      { name: 'Хор Вирап',   lat: 39.8788, lng: 44.5783, type: 'culture', note: 'вид на Арарат, древний монастырь' },
+      { name: 'Татев',       lat: 39.3791, lng: 46.2502, type: 'culture', note: 'монастырь + канатка «Крылья Татева»' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'sri-lanka': {
+    visited: false,
+    center: { lat: 7.5, lng: 80.7, zoom: 7 },
+    pois: [
+      { name: 'Коломбо',      lat: 6.9271,  lng: 79.8612, type: 'city',    note: 'столица, Galle Face, аэропорт' },
+      { name: 'Сигирия',      lat: 7.9569,  lng: 80.7600, type: 'culture', note: 'скала-крепость UNESCO, львиные лапы' },
+      { name: 'Канди',        lat: 7.2906,  lng: 80.6337, type: 'culture', note: 'храм Зуба Будды, Перахера' },
+      { name: 'Элла',         lat: 6.8716,  lng: 81.0463, type: 'nature',  note: 'Девятиарочный мост, чайные плантации' },
+      { name: 'Унавантуна',   lat: 6.0125,  lng: 80.2491, type: 'beach',   note: 'пляж у Галле, сёрф' },
+      { name: 'Мирисса',      lat: 5.9485,  lng: 80.4571, type: 'beach',   note: 'киты в сезоне декабрь-апрель' },
+      { name: 'Анурадхапура', lat: 8.3114,  lng: 80.4037, type: 'culture', note: 'древняя столица UNESCO, ступы' },
+      { name: 'Яла нацпарк',  lat: 6.3700,  lng: 81.5167, type: 'nature',  note: 'леопарды, слоны, сафари' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'maldives': {
+    visited: false,
+    center: { lat: 3.2, lng: 73.2, zoom: 7 },
+    pois: [
+      { name: 'Мале',                lat: 4.1755, lng: 73.5093, type: 'city',   note: 'столица + аэропорт Velana International' },
+      { name: 'Маафуши',             lat: 3.9425, lng: 73.4906, type: 'beach',  note: 'местный остров, бюджетный вариант, гестхаусы' },
+      { name: 'Атолл Северный Мале', lat: 4.4000, lng: 73.5000, type: 'beach',  note: 'премиум резорты: One&Only, W Maldives' },
+      { name: 'Атолл Южный Ари',     lat: 3.5000, lng: 72.8500, type: 'nature', note: 'киты, манта-рэи, дайвинг класс-1 мирового уровня' },
+      { name: 'Атолл Баа (UNESCO)',  lat: 5.1500, lng: 73.0667, type: 'nature', note: 'манты Hanifaru Bay в сезоне май-ноябрь' },
+      { name: 'Гаафу-Алифу',         lat: 0.3000, lng: 73.4000, type: 'beach',  note: 'южные атоллы, дикий дайвинг' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'kenya': {
+    visited: false,
+    center: { lat: 0.5, lng: 37.5, zoom: 6 },
+    pois: [
+      { name: 'Найроби',           lat: -1.2864, lng: 36.8172, type: 'city',    note: 'столица, Nairobi NP в черте города' },
+      { name: 'Масаи Мара',        lat: -1.5036, lng: 35.1430, type: 'nature',  note: 'Big Five, миграция гну июль-октябрь' },
+      { name: 'Амбосели',          lat: -2.6450, lng: 37.2606, type: 'nature',  note: 'слоны на фоне Килиманджаро' },
+      { name: 'Цаво',              lat: -2.9667, lng: 38.4667, type: 'nature',  note: 'крупнейший парк Кении, красные слоны' },
+      { name: 'Озеро Накуру',      lat: -0.3700, lng: 36.0830, type: 'nature',  note: 'розовые фламинго, носороги' },
+      { name: 'Ламу',              lat: -2.2717, lng: 40.9020, type: 'culture', note: 'UNESCO суахили-город, островная архитектура' },
+      { name: 'Диани-Бич',         lat: -4.3000, lng: 39.5833, type: 'beach',   note: 'Индийский океан, главный курорт' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'mexico': {
+    visited: false,
+    center: { lat: 23.5, lng: -102.0, zoom: 5 },
+    pois: [
+      { name: 'Мехико',           lat: 19.4326, lng: -99.1332, type: 'city',    note: 'столица, Сокало, Теотиуакан рядом' },
+      { name: 'Канкун',           lat: 21.1619, lng: -86.8515, type: 'beach',   note: 'all-inclusive курорт, Карибы' },
+      { name: 'Плайя-дель-Кармен',lat: 20.6296, lng: -87.0739, type: 'beach',   note: '5-я авеню, sеноты + Тулум 1ч' },
+      { name: 'Тулум',            lat: 20.2114, lng: -87.4654, type: 'culture', note: 'руины майя на скале + пляж' },
+      { name: 'Чичен-Ица',        lat: 20.6843, lng: -88.5678, type: 'culture', note: 'UNESCO, пирамида Кукулькана' },
+      { name: 'Оахака',           lat: 17.0732, lng: -96.7266, type: 'culture', note: 'мескаль, Día de Muertos, Монте-Альбан' },
+      { name: 'Пуэрто-Вальярта',  lat: 20.6534, lng: -105.2253, type: 'beach',  note: 'тихоокеанский курорт' },
+      { name: 'Сан-Кристобаль',   lat: 16.7370, lng: -92.6376, type: 'nature',  note: 'Чьяпас, каньон Sumidero' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
   'turkey': {
     visited: false,
     center: { lat: 39.0, lng: 35.0, zoom: 6 },
