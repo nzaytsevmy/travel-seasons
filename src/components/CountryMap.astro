@@ -1,0 +1,398 @@
+---
+// CountryMap — Swiss/Brandbook + Leaflet с numbered pins.
+// Lazy-load из CDN через IntersectionObserver (карта инициализируется только когда видна).
+// Pins — gold круг с номером 01..N, белый контур (без box-shadow по брендбуку).
+//
+// Usage: <CountryMap slug="japan" countryNom="Япония" idx="07" />
+
+import { getPois } from '../data/country-pois.js';
+
+interface Props {
+  slug: string;
+  countryNom?: string;
+  idx?: string;
+}
+const { slug, countryNom, idx = '04' } = Astro.props;
+const data = getPois(slug);
+if (!data?.pois?.length) return null as any;
+
+// Уникальный ID контейнера карты — на случай если несколько CountryMap на одной странице
+const mapId = `cmap-${slug}-${Math.random().toString(36).slice(2, 7)}`;
+
+const TYPE_LABEL: Record<string, string> = {
+  city: 'город',
+  nature: 'природа',
+  culture: 'культура',
+  beach: 'пляж',
+  food: 'еда'
+};
+---
+
+<section class="cm" aria-label={`Карта — ${countryNom || slug}`}>
+  <header class="cm-h">
+    <span class="cm-n">{idx}</span>
+    <h2 class="cm-t">Где смотреть{countryNom ? ` — ${countryNom}` : ''}</h2>
+    <span class="cm-meta">{data.visited ? 'Реальный маршрут' : 'Обзорная карта'} · {data.pois.length} точек</span>
+  </header>
+  <p class="cm-s">
+    {data.visited
+      ? 'Точки отобраны по личному маршруту. Кликни на пин на карте или название в таблице.'
+      : 'Must-see из открытых источников. Кликни на пин на карте или название в таблице.'}
+  </p>
+
+  <div class="cm-frame">
+    <div id={mapId} class="cm-map" role="application" aria-roledescription={`Интерактивная карта: ${data.pois.length} точек, ${countryNom || slug}`}></div>
+    <noscript>
+      <p class="cm-noscript">Карта требует JavaScript. Координаты точек — в таблице ниже.</p>
+    </noscript>
+  </div>
+
+  <table class="cm-dash">
+    <thead>
+      <tr>
+        <th class="cm-nh">№</th>
+        <th class="cm-mh">Место</th>
+        <th class="cm-th">Тип</th>
+        <th class="cm-ch r">Координаты</th>
+        <th class="cm-lh r">Карты</th>
+      </tr>
+    </thead>
+    <tbody>
+      {data.pois.map((p, i) => {
+        const gmaps = `https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}`;
+        const ymaps = `https://yandex.ru/maps/?ll=${p.lng},${p.lat}&z=12&pt=${p.lng},${p.lat}`;
+        return (
+          <tr class="cm-r">
+            <td class="cm-no" data-l="№">{String(i + 1).padStart(2, '0')}</td>
+            <td class="cm-name" data-l="Место">
+              <b>{p.name}</b>
+              {p.note && <div class="cm-note">{p.note}</div>}
+            </td>
+            <td class="cm-type" data-l="Тип">{p.type ? (TYPE_LABEL[p.type] || p.type) : '—'}</td>
+            <td class="cm-coord r" data-l="Координаты">{p.lat.toFixed(4)}, {p.lng.toFixed(4)}</td>
+            <td class="cm-links r" data-l="Карты">
+              <a href={ymaps} target="_blank" rel="noopener">Я</a>
+              <a href={gmaps} target="_blank" rel="noopener">G</a>
+            </td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+
+  {data.sources?.length > 0 && (
+    <div class="cm-foot">
+      <span class="cm-fhead">Источники:</span>
+      {data.sources.map((s, i) => (
+        <>
+          {i > 0 && <span class="cm-sep">·</span>}
+          {s.url ? (
+            <a href={s.url} target={s.url.startsWith('http') ? '_blank' : '_self'} rel="noopener">{s.name}</a>
+          ) : (
+            <span>{s.name}</span>
+          )}
+        </>
+      ))}
+    </div>
+  )}
+</section>
+
+<script is:inline define:vars={{ mapId, pois: data.pois, center: data.center }}>
+  (function() {
+    var el = document.getElementById(mapId);
+    if (!el) return;
+
+    function load() {
+      // CSS Leaflet — один раз на страницу
+      if (!document.querySelector('link[data-leaflet]')) {
+        var css = document.createElement('link');
+        css.rel = 'stylesheet';
+        css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+        css.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
+        css.crossOrigin = '';
+        css.setAttribute('data-leaflet', '1');
+        document.head.appendChild(css);
+      }
+      // JS Leaflet — один раз на страницу
+      function init() {
+        var L = window.L;
+        var map = L.map(mapId, { scrollWheelZoom: false, attributionControl: true })
+          .setView([center.lat, center.lng], center.zoom);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 17,
+          attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
+        }).addTo(map);
+
+        var bounds = [];
+        pois.forEach(function(p, i) {
+          var n = String(i + 1).padStart(2, '0');
+          var icon = L.divIcon({
+            className: 'cm-pin',
+            html: '<span class="cm-pin-n">' + n + '</span>',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+          });
+          var m = L.marker([p.lat, p.lng], { icon: icon }).addTo(map);
+          var html = '<b>' + p.name + '</b>' + (p.note ? '<br><span class="cm-pop-n">' + p.note + '</span>' : '');
+          m.bindPopup(html, { closeButton: true, autoClose: true });
+          bounds.push([p.lat, p.lng]);
+        });
+        if (bounds.length > 1) {
+          map.fitBounds(bounds, { padding: [40, 40], maxZoom: 9 });
+        }
+        // Дать клик-zoom включить wheel scroll (UX: не блокирует страничный скролл)
+        map.on('click', function() { map.scrollWheelZoom.enable(); });
+        map.on('mouseout', function() { map.scrollWheelZoom.disable(); });
+      }
+      if (window.L) { init(); return; }
+      var existing = document.querySelector('script[data-leaflet]');
+      if (existing) { existing.addEventListener('load', init); return; }
+      var js = document.createElement('script');
+      js.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      js.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+      js.crossOrigin = '';
+      js.setAttribute('data-leaflet', '1');
+      js.onload = init;
+      document.head.appendChild(js);
+    }
+
+    // Lazy: ждать пока карта попадёт в viewport
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function(entries) {
+        if (!entries[0].isIntersecting) return;
+        io.disconnect();
+        load();
+      }, { rootMargin: '200px' });
+      io.observe(el);
+    } else {
+      load();
+    }
+  })();
+</script>
+
+<style>
+.cm {
+  --line-strong: #1b1914;
+  --line-hair: var(--line);
+  margin: clamp(2.4rem, 5vw, 4rem) 0 0;
+  font-family: var(--ff-display);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.cm-h {
+  border-top: 2px solid var(--line-strong);
+  padding-top: .8rem;
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: .4rem .9rem;
+  margin-bottom: .35rem;
+}
+.cm-n {
+  font-size: .74rem; font-weight: 700; color: var(--gold);
+  letter-spacing: .04em;
+}
+.cm-t {
+  font-weight: 800;
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  letter-spacing: -.02em;
+  line-height: 1.1;
+  margin: 0;
+  color: var(--text);
+}
+.cm-meta {
+  margin-left: auto;
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.cm-s {
+  font-size: .92rem;
+  color: var(--text-dim);
+  margin: 0 0 1.4rem;
+  max-width: 64ch;
+}
+
+.cm-frame {
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+  background: var(--bg);
+}
+.cm-map {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 460px;
+  min-height: 280px;
+}
+.cm-noscript {
+  padding: 1rem 1.2rem;
+  font-size: .82rem;
+  color: var(--text-dim);
+}
+
+.cm-dash {
+  margin-top: 1.6rem;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .92rem;
+}
+.cm-dash thead th {
+  font-size: .64rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  text-align: left;
+  padding: .5rem .8rem .55rem 0;
+  border-bottom: 1px solid var(--line-strong);
+  border-top: 1px solid var(--line-strong);
+}
+.cm-dash thead th.r { text-align: right; padding-right: 0; }
+.cm-r td {
+  padding: .8rem .8rem .85rem 0;
+  border-bottom: 1px solid var(--line-hair);
+  vertical-align: baseline;
+}
+.cm-r:last-child td { border-bottom: 1px solid var(--line-strong); }
+.cm-r:hover td { background: rgba(142, 102, 24, 0.07); }
+.cm-r td.r { text-align: right; padding-right: 0; }
+
+.cm-no {
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--gold);
+  width: 2.4rem;
+}
+.cm-name b {
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: -.01em;
+  color: var(--text);
+}
+.cm-note {
+  font-size: .8rem;
+  color: var(--text-dim);
+  margin-top: .25rem;
+  line-height: 1.5;
+}
+.cm-type {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  width: 6rem;
+}
+.cm-coord {
+  font-size: .82rem;
+  color: var(--text);
+  white-space: nowrap;
+}
+.cm-links { white-space: nowrap; }
+.cm-links a {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 .6rem;
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-decoration: 1px underline var(--gold);
+  text-underline-offset: 4px;
+  margin-left: .4rem;
+}
+
+.cm-foot {
+  display: flex; align-items: baseline; flex-wrap: wrap;
+  gap: .4rem .8rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--line-strong);
+  font-size: .78rem;
+  color: var(--text-dim);
+}
+.cm-fhead {
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-right: .4rem;
+}
+.cm-foot a {
+  color: var(--gold);
+  text-decoration: 1px underline var(--gold);
+  text-underline-offset: 4px;
+}
+.cm-sep { color: var(--text-faint); margin: 0 .3rem; }
+
+/* Leaflet pin — Swiss: gold disc + ink border + white number, без shadow/радиуса */
+:global(.leaflet-container) {
+  font-family: var(--ff-display, "Golos Text Variable", Helvetica, Arial, sans-serif);
+  background: #ece9df;
+}
+:global(.cm-pin) {
+  background: transparent !important;
+  border: none !important;
+}
+:global(.cm-pin-n) {
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px;
+  background: #8e6618;        /* var(--gold) — нельзя в global */
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums lining-nums;
+  border: 2px solid #1b1914;
+}
+:global(.leaflet-popup-content-wrapper) {
+  border-radius: 0 !important;
+  background: #f4f2eb;
+  color: #1b1914;
+  font-family: var(--ff-display, Helvetica, Arial, sans-serif);
+  font-size: .88rem;
+  line-height: 1.45;
+  border: 1px solid #1b1914;
+  box-shadow: none !important;
+}
+:global(.leaflet-popup-tip) {
+  background: #f4f2eb;
+  border-right: 1px solid #1b1914;
+  border-bottom: 1px solid #1b1914;
+  box-shadow: none !important;
+}
+:global(.leaflet-popup-content) { margin: .55rem .8rem; }
+:global(.leaflet-popup-content b) { font-weight: 800; }
+:global(.cm-pop-n) { color: #56524a; font-size: .8rem; }
+
+@media (max-width: 760px) {
+  .cm-map { aspect-ratio: 4 / 3; max-height: 360px; }
+  .cm-dash thead { position: absolute; left: -9999px; }
+  .cm-dash, .cm-dash tbody, .cm-dash tr, .cm-dash td { display: block; width: 100%; }
+  .cm-r {
+    border-bottom: 1px solid var(--line-strong);
+    padding: .75rem 0;
+  }
+  .cm-r:first-child { border-top: 1px solid var(--line-strong); }
+  .cm-r td {
+    border: none;
+    padding: .12rem 0;
+    text-align: left;
+    display: flex; justify-content: space-between; gap: 1rem;
+  }
+  .cm-r td.r { text-align: left; }
+  .cm-r td::before {
+    content: attr(data-l);
+    font-size: .62rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    flex: none;
+  }
+  .cm-name::before, .cm-no::before { display: none !important; }
+  .cm-name { display: block !important; }
+  .cm-no { display: none !important; }
+  .cm-type, .cm-coord { font-size: .82rem; }
+  .cm-r:hover td { background: none; }
+}
+</style>
