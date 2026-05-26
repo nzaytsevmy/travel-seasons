@@ -13,6 +13,257 @@
 // забирают только структурированные блок-факты, не абзац прозы).
 
 export const ESSENTIALS = {
+  'bali': {
+    tipping: {
+      restaurants: '10% service-charge + 11% налог обычно включены; в кафе/варунгах — округление',
+      taxi: 'округление; Grab/Gojek чаевые в приложении',
+      hotel: '10-50k IDR носильщику',
+      note: 'местные зарплаты низкие; чаевые делают разницу'
+    },
+    emergency: {
+      police: '110',
+      ambulance: '118',
+      fire: '113',
+      general: '112',
+      embassy_ru_url: 'https://indonesia.mid.ru/',
+      embassy_note: 'Главное посольство — Джакарта; в Денпасаре только Почётный консул (визы и паспорта НЕ оформляются)'
+    },
+    water: {
+      tap_drinkable: false,
+      note: 'НЕ пить; местные тоже пьют бутилированную/фильтрованную'
+    },
+    taxi_apps: [
+      { name: 'Grab', note: 'крупнейшее, по всей Юго-Восточной Азии' },
+      { name: 'Gojek', note: 'местное, мото-такси GoRide дешевле всего' },
+      { name: 'Bluebird', note: 'официальные синие такси Bali Taxi' }
+    ],
+    sources: [
+      { name: 'Посольство РФ в Индонезии', url: 'https://indonesia.mid.ru/' },
+      { name: 'Bali.com — Emergency Numbers', url: 'https://bali.com/bali/travel-guide/health-safety/emergency-numbers/' },
+      { name: 'Bali.com — Tap Water', url: 'https://bali.com/bali/travel-guide/practical-tips-must-know/can-i-drink-tap-water-bali/' }
+    ],
+    updated: '2026-05-26'
+  },
+
+  'uae': {
+    tipping: {
+      restaurants: '10-15% если сервис-чардж не включён',
+      taxi: 'округление до целого AED',
+      hotel: '10-20 AED носильщику',
+      note: 'нет строгих правил; чаевые ценятся, но не обязательны'
+    },
+    emergency: {
+      police: '999',
+      ambulance: '998',
+      fire: '997',
+      embassy_ru_phone: '+971-4-328-5347',
+      embassy_ru_url: 'https://dubai.mid.ru/',
+      embassy_note: 'Генконсульство в Дубае + Посольство в Абу-Даби'
+    },
+    water: {
+      tap_drinkable: true,
+      note: 'безопасна — 99% воды из крупномасштабной опреснительной обработки (DEWA)'
+    },
+    taxi_apps: [
+      { name: 'Careem', note: 'крупнейшее на Ближнем Востоке (принадлежит Uber с 2020)' },
+      { name: 'Uber', note: 'работает как везде, через тот же флот' },
+      { name: 'Hala', note: 'интегрировано с Careem, такси Dubai Taxi Corporation' }
+    ],
+    sources: [
+      { name: 'Генконсульство РФ в Дубае', url: 'https://dubai.mid.ru/' },
+      { name: 'UAE Government — Emergencies', url: 'https://u.ae/en/information-and-services/justice-safety-and-the-law/handling-emergencies' },
+      { name: 'Visit Dubai — Tipping', url: 'https://www.visitdubai.com/en/articles/tipping-in-dubai' }
+    ],
+    updated: '2026-05-26'
+  },
+
+  'vietnam': {
+    tipping: {
+      restaurants: 'не обязательно; 5-10% в mid-range/luxury',
+      taxi: 'округление до целого; в Grab — через приложение',
+      hotel: '20-50k VND носильщику',
+      note: 'не часть культуры; гидам/драйверам 10-15% от тура'
+    },
+    emergency: {
+      police: '113',
+      fire: '114',
+      ambulance: '115',
+      embassy_ru_phone: '+84-24-3833-6991',
+      embassy_ru_url: 'https://vietnam.mid.ru/'
+    },
+    water: {
+      tap_drinkable: false,
+      note: 'НЕ пить; даже хлорированная в городах — старые трубы; бутилированная везде'
+    },
+    taxi_apps: [
+      { name: 'Grab', note: 'крупнейшее; машины, мото, доставка' },
+      { name: 'Be', note: 'вьетнамское, дешевле; ~28 городов' },
+      { name: 'XanhSM', note: 'электротакси VinFast, новые машины' }
+    ],
+    sources: [
+      { name: 'Посольство РФ во Вьетнаме (Ханой)', url: 'https://vietnam.mid.ru/' },
+      { name: 'GOV.UK — Vietnam Emergency', url: 'https://www.gov.uk/foreign-travel-advice/vietnam/getting-help' },
+      { name: 'Vietnam.vn — 2026 Entry Regulations', url: 'https://www.vietnam.vn/en/cap-nhat-quy-dinh-nhap-canh-viet-nam-2026' }
+    ],
+    updated: '2026-05-26'
+  },
+
+  'armenia': {
+    tipping: {
+      restaurants: '10% часто включено в сервис-чардж; иначе — по желанию',
+      taxi: 'не принято; max 500 драм за хороший сервис',
+      hotel: '500-1000 драм носильщику',
+      note: 'не часть культуры; max 2000 драм в любой ситуации'
+    },
+    emergency: {
+      police: '102',
+      ambulance: '103',
+      fire: '101',
+      general: '911',
+      gas: '104',
+      embassy_ru_phone: '+374-10-567-427',
+      embassy_ru_url: 'https://armenia.mid.ru/'
+    },
+    water: {
+      tap_drinkable: true,
+      note: 'безопасна и вкусная; Армения славится водой (Джермук, Бжни — газированные источники)'
+    },
+    taxi_apps: [
+      { name: 'GG Taxi', note: 'местное, основное в Ереване' },
+      { name: 'Yandex Go', note: 'дешевле, ночью лучшая доступность' },
+      { name: 'Uklon', note: 'дополнительный вариант' }
+    ],
+    sources: [
+      { name: 'Посольство РФ в Армении (Ереван)', url: 'https://armenia.mid.ru/' },
+      { name: 'Visit Yerevan — Emergency', url: 'https://visityerevan.am/uinfo/details/8/en/' },
+      { name: 'Advantour — Armenia Codes', url: 'https://www.advantour.com/armenia/phone-code.htm' }
+    ],
+    updated: '2026-05-26'
+  },
+
+  'sri-lanka': {
+    tipping: {
+      restaurants: '10% часто включён; иначе — 10% за хороший сервис',
+      taxi: 'округление; PickMe — через приложение',
+      hotel: '100-200 LKR носильщику',
+      note: 'ценится больше чем в Индии; гидам сафари 500-1000 LKR в день'
+    },
+    emergency: {
+      police: '119',
+      fire: '110',
+      ambulance: '1990',
+      tourist_police: '011-2421052',
+      embassy_ru_phone: '+94-11-2697036',
+      embassy_ru_emergency: '+94-77-7287988',
+      embassy_ru_url: 'https://sri-lanka.mid.ru/'
+    },
+    water: {
+      tap_drinkable: false,
+      note: 'НЕ пить; рестораны часто имеют "government water line" — безопасная альтернатива'
+    },
+    taxi_apps: [
+      { name: 'PickMe', note: 'местное, по всей стране' },
+      { name: 'Uber', note: 'только Коломбо и крупные города' }
+    ],
+    sources: [
+      { name: 'Посольство РФ в Шри-Ланке (Коломбо)', url: 'https://sri-lanka.mid.ru/' },
+      { name: 'Sri Lanka Police — Emergency 119', url: 'https://www.police.lk/?p=18161' },
+      { name: 'DigiBiz — Sri Lanka Emergency', url: 'https://www.digibiz.lk/blog/emergency-services-telephone-numbers-sri-lanka' }
+    ],
+    updated: '2026-05-26'
+  },
+
+  'maldives': {
+    tipping: {
+      restaurants: 'на курортах сервис-чардж 10% обычно включён',
+      taxi: 'на островах такси редко; в Мале — округление',
+      hotel: '$5-10 за услугу на курорте',
+      note: 'на курортах ценится; стандарт $1-3 в день горничной + $5-10 за сафари-гида'
+    },
+    emergency: {
+      police: '119',
+      police_hotline: '332-2111',
+      fire: '118',
+      ambulance: '102',
+      embassy_ru_url: 'https://sri-lanka.mid.ru/',
+      embassy_note: 'Отдельного посольства РФ на Мальдивах нет — обращения через Посольство РФ в Шри-Ланке'
+    },
+    water: {
+      tap_drinkable: false,
+      note: 'НЕ пить; на курортах фильтрованная подаётся бесплатно'
+    },
+    taxi_apps: [
+      { name: 'Avas Ride', note: 'местное, в Мале' }
+    ],
+    sources: [
+      { name: 'Maldives Police — Emergency', url: 'https://x.com/PoliceMv/status/407360773342523392' },
+      { name: 'NDMA Maldives', url: 'https://ndma.gov.mv/en' }
+    ],
+    updated: '2026-05-26'
+  },
+
+  'kenya': {
+    tipping: {
+      restaurants: '10% если сервис-чардж не включён',
+      taxi: 'округление; в Bolt/Uber через приложение',
+      hotel: '100-200 KES носильщику',
+      note: 'сафари-гидам обязательно: $10-15/день драйверу, $5-10/день кемп-стаффу'
+    },
+    emergency: {
+      police: '999',
+      general: '112',
+      ambulance_red_cross: '1199',
+      ambulance_e_plus: '+254-700-395-395',
+      amref_flying_doctors: '+254-20-6992299',
+      embassy_ru_phone: '+254-20-2722462',
+      embassy_ru_url: 'https://russembkenya.mid.ru/'
+    },
+    water: {
+      tap_drinkable: false,
+      note: 'НЕ пить без кипячения/фильтрации; в отелях — бутилированная'
+    },
+    taxi_apps: [
+      { name: 'Bolt', note: 'крупнейшее в Кении, дешевле Uber на 10-15%' },
+      { name: 'Uber', note: 'работает в Найроби, Момбасе, недавно — сафари-туры' },
+      { name: 'Little Cab', note: 'кенийское, безопаснее ночью' }
+    ],
+    sources: [
+      { name: 'Посольство РФ в Кении', url: 'https://russembkenya.mid.ru/' },
+      { name: 'Nairobi Info — Useful Numbers', url: 'https://www.nairobi-info.com/town/travel_info/useful-numbers' },
+      { name: 'Tapestry of Africa — Tipping', url: 'https://tapestryofafrica.com/what-is-the-tipping-etiquette-in-kenya/' }
+    ],
+    updated: '2026-05-26'
+  },
+
+  'mexico': {
+    tipping: {
+      restaurants: '10-15% — это обязательно; даже если есть сервис-чардж, +10%',
+      taxi: 'округление',
+      hotel: '20-50 MXN носильщику, ~20 MXN/день горничной',
+      note: 'часть культуры, не оставлять считается грубо в ресторанах'
+    },
+    emergency: {
+      general: '911',
+      green_angels: '078',
+      embassy_ru_url: 'https://mexico.mid.ru/',
+      embassy_note: '«Зелёные ангелы» 078 — англоязычная служба для туристов на трассах'
+    },
+    water: {
+      tap_drinkable: false,
+      note: 'НЕ пить; местные тоже пьют бутилированную (garrafones — большие 20л)'
+    },
+    taxi_apps: [
+      { name: 'Uber', note: 'крупнейшее в стране' },
+      { name: 'DiDi', note: 'дешевле Uber на 10-20%' },
+      { name: 'Cabify', note: 'премиум-сегмент' }
+    ],
+    sources: [
+      { name: 'Посольство РФ в Мексике', url: 'https://mexico.mid.ru/' },
+      { name: 'Pacific Prime — Mexico Emergency', url: 'https://www.pacificprime.com/blog/emergency-response-systems-in-mexico-for-foreigners.html' }
+    ],
+    updated: '2026-05-26'
+  },
+
   'turkey': {
     tipping: {
       restaurants: '5-10% если сервис-чардж не включён; для high-end 10-15%',
