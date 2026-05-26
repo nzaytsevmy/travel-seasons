@@ -1,0 +1,191 @@
+---
+// MonthlyEvents — Swiss/Brandbook.
+// Hairline-list месяц → событие. Текст-маркеры (uppercase, без bg-пилюль), один акцент gold.
+// Эталон: ~/Downloads/tt-home-1-editorial.html (shead + dash-таблица).
+
+import { getHolidays } from '../data/country-holidays.js';
+
+interface Props {
+  slug: string;
+  countryNom?: string;
+  countryNameVp?: string;
+  idx?: string;
+}
+const { slug, countryNom, countryNameVp, idx = '05' } = Astro.props;
+const events = getHolidays(slug);
+if (!events.length) return null as any;
+
+const MONTH_RU = ['Январь','Февраль','Март','Апрель','Май','Июнь',
+                  'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+
+const byMonth: Record<number, any[]> = {};
+for (const ev of events) {
+  if (!byMonth[ev.month]) byMonth[ev.month] = [];
+  byMonth[ev.month].push(ev);
+}
+const months = Object.keys(byMonth).map(Number).sort((a, b) => a - b);
+
+const TAG_LABEL: Record<string, string> = {
+  closed: 'выходные',
+  fest: 'фестиваль',
+  culture: 'сезонное'
+};
+const closedCount = events.filter(e => e.tag === 'closed').length;
+---
+
+<section class="me" aria-label={`Праздники и события — ${countryNom || slug}`}>
+  <header class="me-h">
+    <span class="me-n">{idx}</span>
+    <h2 class="me-t">События по месяцам{countryNom ? ` — ${countryNom}` : ''}</h2>
+  </header>
+  <p class="me-s">
+    Когда страна гуляет, когда стоит и когда смотреть на сезонное явление.
+    {closedCount > 0 && <> <b>{closedCount}</b> дат, когда многое закрыто и цены растут.</>}
+  </p>
+
+  <table class="me-dash">
+    <thead>
+      <tr>
+        <th class="me-mh">Месяц</th>
+        <th class="me-eh">Событие</th>
+        <th class="me-th">Тип</th>
+      </tr>
+    </thead>
+    <tbody>
+      {months.flatMap((m) => byMonth[m].map((ev, j) => (
+        <tr class={`me-r me-r--${ev.tag}`}>
+          <td class="me-mc" data-l="Месяц">{j === 0 ? MONTH_RU[m - 1] : ''}</td>
+          <td class="me-ec" data-l="Событие">
+            <b class="me-ename">{ev.name}</b>
+            {ev.dates && <span class="me-edates"> · {ev.dates}</span>}
+            {ev.note && <div class="me-enote">{ev.note}</div>}
+          </td>
+          <td class="me-tc" data-l="Тип">{TAG_LABEL[ev.tag] || ev.tag}</td>
+        </tr>
+      )))}
+    </tbody>
+  </table>
+</section>
+
+<style>
+.me {
+  --line-strong: #1b1914;
+  --line-hair: var(--line);
+  margin: clamp(2.4rem, 5vw, 4rem) 0 0;
+  font-family: var(--ff-display);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.me-h {
+  border-top: 2px solid var(--line-strong);
+  padding-top: .8rem;
+  display: flex; align-items: baseline; gap: .8rem;
+  margin-bottom: .35rem;
+}
+.me-n {
+  font-size: .74rem; font-weight: 700; color: var(--gold);
+  letter-spacing: .04em;
+}
+.me-t {
+  font-weight: 800;
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  letter-spacing: -.02em;
+  line-height: 1.1;
+  margin: 0;
+  color: var(--text);
+}
+.me-s {
+  font-size: .92rem;
+  color: var(--text-dim);
+  margin: 0 0 1.4rem;
+  max-width: 64ch;
+}
+.me-s b { color: var(--gold); font-weight: 800; }
+
+.me-dash {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .94rem;
+}
+.me-dash thead th {
+  font-size: .64rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  text-align: left;
+  padding: .5rem .8rem .55rem 0;
+  border-bottom: 1px solid var(--line-strong);
+  border-top: 1px solid var(--line-strong);
+}
+.me-dash thead th.me-th { text-align: right; padding-right: 0; }
+
+.me-r td {
+  padding: .85rem .8rem .9rem 0;
+  border-bottom: 1px solid var(--line-hair);
+  vertical-align: baseline;
+  color: var(--text);
+  line-height: 1.5;
+}
+.me-r:last-child td { border-bottom: 1px solid var(--line-strong); }
+.me-r:hover td { background: rgba(142, 102, 24, 0.07); }
+
+.me-mc {
+  font-weight: 700;
+  font-size: .82rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--gold);
+  width: 7rem;
+}
+.me-ec { padding-right: 1rem !important; }
+.me-ename { font-weight: 700; color: var(--text); }
+.me-edates { color: var(--text-dim); font-size: .88rem; }
+.me-enote {
+  font-size: .82rem;
+  color: var(--text-dim);
+  margin-top: .25rem;
+  line-height: 1.5;
+}
+.me-tc {
+  text-align: right;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  width: 6rem;
+}
+
+/* Текст-маркеры (без bg-пилюль), один акцент — gold для critical */
+.me-r--closed .me-tc { color: var(--gold); }
+.me-r--closed .me-ename { color: var(--text); }
+.me-r--fest .me-tc { color: var(--text); }
+.me-r--culture .me-tc { color: var(--text-dim); }
+
+/* MOBILE: таблица → строки-блоки (Swiss-канон) */
+@media (max-width: 760px) {
+  .me-dash thead { position: absolute; left: -9999px; }
+  .me-dash, .me-dash tbody, .me-dash tr, .me-dash td { display: block; width: 100%; }
+  .me-r {
+    border-bottom: 1px solid var(--line-strong);
+    padding: .8rem 0;
+  }
+  .me-r:first-child { border-top: 1px solid var(--line-strong); }
+  .me-r td {
+    border: none;
+    padding: .15rem 0;
+    text-align: left;
+  }
+  .me-mc {
+    width: auto;
+    margin-bottom: .15rem;
+  }
+  .me-tc {
+    text-align: left;
+    width: auto;
+    margin-top: .25rem;
+    color: var(--text-dim);
+  }
+  .me-r:hover td { background: none; }
+}
+</style>

@@ -1,0 +1,356 @@
+---
+// EssentialsCard — Swiss/Brandbook.
+// Эталон: ~/Downloads/tt-home-1-editorial.html (vlist + shead + dash + gear-grid).
+// Без border-radius, без bg-карточек, только hairlines + индексы 01/02 gold + uppercase labels.
+
+import { PLUG_TYPES } from '../data/country-plug-types.js';
+import { getEssentials } from '../data/country-essentials.js';
+import { getCustoms } from '../data/country-customs.js';
+
+interface Props {
+  slug: string;
+  countryName?: string;
+  idx?: string;
+}
+const { slug, countryName, idx = '06' } = Astro.props;
+
+const plug = PLUG_TYPES[slug];
+const ess = getEssentials(slug);
+const cust = getCustoms(slug);
+
+const hasAny = plug || ess || cust;
+if (!hasAny) return null as any;
+
+const allSources = [
+  ...(ess?.sources || []),
+  ...(cust?.sources || []),
+].filter((s, i, arr) => arr.findIndex(x => x.url === s.url) === i);
+const updated = ess?.updated || cust?.updated || null;
+
+// Короткие практики — 4 ячейки value-list
+const quick: { idx: string; k: string; main: string; meta?: string; note?: string }[] = [];
+if (plug) quick.push({ idx: '01', k: 'Розетки', main: `Тип ${plug.types}`, meta: `${plug.voltage} · ${plug.hz}`, note: 'Переходник нужен, если техника не USB-зарядка.' });
+if (ess?.water) quick.push({ idx: '02', k: 'Вода из-под крана', main: ess.water.tap_drinkable ? 'Можно пить' : 'Не пить — бутил.', meta: ess.water.note });
+if (ess?.tipping) {
+  const tipMain = (/нет/i.test(ess.tipping.restaurants) && /нет/i.test(ess.tipping.taxi)) ? 'Не приняты' : 'По ситуации';
+  quick.push({ idx: '03', k: 'Чаевые', main: tipMain, meta: `Рестораны: ${ess.tipping.restaurants}. Такси: ${ess.tipping.taxi}.`, note: ess.tipping.hotel ? `Отели: ${ess.tipping.hotel}.` : undefined });
+}
+if (ess?.taxi_apps?.length) {
+  const names = ess.taxi_apps.map(t => t.name).join(' · ');
+  const head = ess.taxi_apps[0];
+  const tail = ess.taxi_apps.slice(1).map(t => `${t.name} — ${t.note}`).join('. ');
+  quick.push({ idx: '04', k: 'Такси-приложения', main: names, meta: head ? `${head.name} — ${head.note}.` : undefined, note: tail || undefined });
+}
+
+// Экстренные номера — data-таблица
+const dash: { k: string; v: string; link?: { href: string; label: string } }[] = [];
+if (ess?.emergency?.police) dash.push({ k: 'Полиция', v: ess.emergency.police });
+if (ess?.emergency?.ambulance_fire) dash.push({ k: 'Скорая · пожарные', v: ess.emergency.ambulance_fire });
+if (ess?.emergency?.ambulance) dash.push({ k: 'Скорая', v: ess.emergency.ambulance });
+if (ess?.emergency?.fire) dash.push({ k: 'Пожарные', v: ess.emergency.fire });
+if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ', v: ess.emergency.embassy_ru_phone, link: ess.emergency.embassy_ru_url ? { href: ess.emergency.embassy_ru_url, label: 'сайт →' } : undefined });
+---
+
+<section class="ec" aria-label={`Бытовая практика — ${countryName || slug}`}>
+  <header class="ec-h">
+    <span class="ec-n">{idx}</span>
+    <h2 class="ec-t">Что нужно знать на месте{countryName ? ` — ${countryName}` : ''}</h2>
+  </header>
+  <p class="ec-s">Розетки, чаевые, экстренные номера, вода, такси, таможня — фактами.</p>
+
+  {quick.length > 0 && (
+    <div class={`ec-vl ec-vl--cols-${Math.min(4, quick.length)}`}>
+      {quick.map((q) => (
+        <div class="ec-vi">
+          <span class="ec-vk"><b>{q.idx}</b>{q.k}</span>
+          <div class="ec-vm">{q.main}</div>
+          {q.meta && <div class="ec-vd">{q.meta}</div>}
+          {q.note && <div class="ec-vn">{q.note}</div>}
+        </div>
+      ))}
+    </div>
+  )}
+
+  {dash.length > 0 && (
+    <div class="ec-section">
+      <h3 class="ec-th"><b>05</b>Экстренные номера</h3>
+      <table class="ec-dash">
+        <tbody>
+          {dash.map((r) => (
+            <tr>
+              <td data-l="Кому">{r.k}</td>
+              <td data-l="Номер" class="r">
+                {r.v}
+                {r.link && <a href={r.link.href} target="_blank" rel="noopener" class="ec-dlink">{r.link.label}</a>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+
+  {cust?.forbidden?.length > 0 && (
+    <div class="ec-section">
+      <h3 class="ec-th"><b>07</b>Таможня — нельзя ввозить</h3>
+      <ul class="ec-cus">
+        {cust.forbidden.map((item) => (
+          <li><span class="ec-x" aria-hidden="true">×</span>{item}</li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  {cust?.limits && (
+    <div class="ec-section">
+      <h3 class="ec-th"><b>08</b>Лимиты ввоза</h3>
+      <div class="ec-vl ec-vl--cols-4">
+        {cust.limits.cash && <div class="ec-vi"><span class="ec-vk">Наличные</span><div class="ec-vm">{cust.limits.cash.replace(/^до /, '')}</div><div class="ec-vd">без декларации</div></div>}
+        {cust.limits.alcohol && <div class="ec-vi"><span class="ec-vk">Алкоголь</span><div class="ec-vm">{cust.limits.alcohol}</div></div>}
+        {cust.limits.cigarettes && <div class="ec-vi"><span class="ec-vk">Сигареты</span><div class="ec-vm">{cust.limits.cigarettes}</div></div>}
+        {cust.limits.perfume && <div class="ec-vi"><span class="ec-vk">Парфюм</span><div class="ec-vm">{cust.limits.perfume}</div></div>}
+      </div>
+    </div>
+  )}
+
+  {(allSources.length > 0 || updated) && (
+    <div class="ec-foot">
+      {allSources.length > 0 && (
+        <span class="ec-fsrc">
+          <span class="ec-fhead">Источники:</span>
+          {allSources.map((s, i) => (
+            <>
+              {i > 0 && <span class="ec-sep">·</span>}
+              <a href={s.url} target="_blank" rel="noopener">{s.name}</a>
+            </>
+          ))}
+        </span>
+      )}
+      {updated && <span class="ec-upd">Проверено: {updated}</span>}
+    </div>
+  )}
+</section>
+
+<style>
+.ec {
+  /* page-level override: в global.css --line == hair; для Swiss-канона
+     нужна СИЛЬНАЯ линия — заводим локально из эталонного значения */
+  --line-strong: #1b1914;
+  --line-hair: var(--line);
+  margin: clamp(2.4rem, 5vw, 4rem) 0 0;
+  font-family: var(--ff-display);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.ec-h {
+  border-top: 2px solid var(--line-strong);
+  padding-top: .8rem;
+  display: flex; align-items: baseline; gap: .8rem;
+  margin-bottom: .35rem;
+}
+.ec-n {
+  font-size: .74rem; font-weight: 700; color: var(--gold);
+  letter-spacing: .04em;
+}
+.ec-t {
+  font-weight: 800;
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  letter-spacing: -.02em;
+  line-height: 1.1;
+  margin: 0;
+  color: var(--text);
+}
+.ec-s {
+  font-size: .92rem;
+  color: var(--text-dim);
+  margin: 0 0 1.6rem;
+  max-width: 64ch;
+}
+
+/* value-list — четыре ячейки в одной полосе, hairline между, border-top/bottom strong */
+.ec-vl {
+  display: grid;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+  margin: 0 0 1.8rem;
+}
+.ec-vl--cols-4 { grid-template-columns: repeat(4, 1fr); }
+.ec-vl--cols-3 { grid-template-columns: repeat(3, 1fr); }
+.ec-vl--cols-2 { grid-template-columns: repeat(2, 1fr); }
+.ec-vl--cols-1 { grid-template-columns: 1fr; }
+
+.ec-vi {
+  padding: 1rem 1.2rem 1.1rem;
+  border-right: 1px solid var(--line-hair);
+}
+.ec-vi:first-child { padding-left: 0; }
+.ec-vl--cols-4 .ec-vi:nth-child(4n),
+.ec-vl--cols-3 .ec-vi:nth-child(3n),
+.ec-vl--cols-2 .ec-vi:nth-child(2n) { border-right: none; }
+.ec-vl > .ec-vi:last-child { border-right: none; }
+
+.ec-vk {
+  display: block;
+  font-size: .66rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: .45rem;
+}
+.ec-vk b {
+  color: var(--gold);
+  margin-right: .4rem;
+  font-weight: 700;
+}
+.ec-vm {
+  font-weight: 800;
+  font-size: 1.05rem;
+  line-height: 1.18;
+  letter-spacing: -.005em;
+  color: var(--text);
+}
+.ec-vd {
+  font-size: .82rem;
+  color: var(--text-dim);
+  margin-top: .25rem;
+  line-height: 1.5;
+}
+.ec-vn {
+  font-size: .76rem;
+  color: var(--text-faint);
+  margin-top: .35rem;
+  line-height: 1.5;
+}
+
+.ec-section { margin: 0 0 1.8rem; }
+.ec-th {
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -.005em;
+  margin: 0 0 .6rem;
+  color: var(--text);
+  display: flex; align-items: baseline; gap: .6rem;
+}
+.ec-th b {
+  font-size: .74rem; font-weight: 700; color: var(--gold);
+  letter-spacing: .04em; font-style: normal;
+}
+
+/* dash — Swiss data table */
+.ec-dash {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .94rem;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+.ec-dash td {
+  padding: .7rem 0;
+  border-top: 1px solid var(--line-hair);
+  vertical-align: baseline;
+  color: var(--text);
+}
+.ec-dash tr:first-child td { border-top: none; }
+.ec-dash td.r {
+  text-align: right;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.ec-dlink {
+  margin-left: .6rem;
+  font-size: .76rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-decoration: 1px underline var(--gold);
+  text-underline-offset: 4px;
+}
+
+/* customs list */
+.ec-cus {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+.ec-cus li {
+  padding: .7rem 0 .75rem;
+  border-top: 1px solid var(--line-hair);
+  font-size: .92rem;
+  color: var(--text);
+  line-height: 1.5;
+  display: flex; gap: .65rem;
+}
+.ec-cus li:first-child { border-top: none; }
+.ec-x {
+  color: var(--gold);
+  font-weight: 800;
+  font-size: 1rem;
+  flex: none;
+  width: 1rem;
+  line-height: 1.4;
+}
+
+/* footer band */
+.ec-foot {
+  display: flex; align-items: baseline;
+  flex-wrap: wrap;
+  gap: .4rem 1rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+  font-size: .78rem;
+  color: var(--text-dim);
+  margin-top: 1.8rem;
+}
+.ec-fsrc { line-height: 1.55; }
+.ec-fhead {
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-right: .4rem;
+}
+.ec-foot a {
+  color: var(--gold);
+  text-decoration: 1px underline var(--gold);
+  text-underline-offset: 4px;
+}
+.ec-sep { color: var(--text-faint); margin: 0 .3rem; }
+.ec-upd {
+  margin-left: auto;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* MOBILE */
+@media (max-width: 760px) {
+  .ec-vl--cols-4 { grid-template-columns: repeat(2, 1fr); }
+  .ec-vl--cols-4 .ec-vi:nth-child(2n) { border-right: none; }
+  .ec-vl--cols-4 .ec-vi:nth-child(odd) { padding-left: 0; }
+  .ec-vl--cols-4 .ec-vi:nth-child(n+3) { border-top: 1px solid var(--line-hair); }
+
+  .ec-vl--cols-3 { grid-template-columns: 1fr; }
+  .ec-vl--cols-3 .ec-vi { border-right: none; padding-left: 0; border-top: 1px solid var(--line-hair); }
+  .ec-vl--cols-3 .ec-vi:first-child { border-top: none; }
+}
+@media (max-width: 480px) {
+  .ec-vl--cols-4,
+  .ec-vl--cols-2 { grid-template-columns: 1fr; }
+  .ec-vl--cols-4 .ec-vi,
+  .ec-vl--cols-2 .ec-vi {
+    border-right: none;
+    padding-left: 0;
+    border-top: 1px solid var(--line-hair);
+  }
+  .ec-vl--cols-4 .ec-vi:first-child,
+  .ec-vl--cols-2 .ec-vi:first-child { border-top: none; }
+
+  .ec-dash td { padding: .55rem 0; }
+  .ec-foot { flex-direction: column; align-items: flex-start; }
+  .ec-upd { margin-left: 0; }
+}
+</style>
