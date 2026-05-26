@@ -182,6 +182,90 @@ export const CUSTOMS = {
     updated: '2026-05-26'
   },
 
+  'cuba': {
+    forbidden: [
+      'Наркотики и психотропные вещества',
+      'Огнестрельное оружие и боеприпасы',
+      'Порнография и материалы против режима',
+      'Антиквариат и книги напечатанные до 1940',
+      'Произведения искусства, исторической/культурной ценности — без сертификата вывоза',
+      'Дроны и спутниковые телефоны (требуют разрешения MINCEX)'
+    ],
+    limits: {
+      cash: 'свыше $5 000 USD (или эквивалент) декларировать',
+      alcohol: '3 литра',
+      cigarettes: '50 шт сигарет + 50 сигар + 250 г табака',
+      perfume: 'разумные количества для личного пользования'
+    },
+    sources: [
+      { name: 'Aduana de Cuba (Customs)', url: 'https://www.aduana.gob.cu/en/' },
+      { name: 'Authentic Cuba Travel — Customs', url: 'https://www.authenticubatours.com/cuba-travel-formalities/customs-cuba-travel.htm' }
+    ],
+    updated: '2026-05-26'
+  },
+
+  'italy-north': {
+    forbidden: [
+      'Наркотики и психотропные вещества',
+      'Оружие, боеприпасы, ножи без разрешения',
+      'Контрафакт и пиратские товары',
+      'Защищённые виды CITES (слоновая кость, рога, шкуры)',
+      'Свежие мясные/молочные продукты не из EU (без сертификата)'
+    ],
+    limits: {
+      cash: 'свыше €10 000 декларировать',
+      alcohol: '1 л крепкого + 4 л вина + 16 л пива (внутри EU — без лимита для личного пользования)',
+      cigarettes: '200 шт (внутри EU — больше, для личного пользования)',
+      meat_dairy: 'до 10 кг мясо/молочка из EU + Фарер + Гренландии + Исландии'
+    },
+    sources: [
+      { name: 'Agenzia delle Dogane (Italian Customs)', url: 'https://www.adm.gov.it/' },
+      { name: 'Visa List — Italy Customs 2026', url: 'https://visalist.io/italy/customs' }
+    ],
+    updated: '2026-05-26'
+  },
+
+  'italy-south': {
+    forbidden: [
+      'Наркотики и психотропные вещества',
+      'Оружие, боеприпасы, ножи без разрешения',
+      'Контрафакт и пиратские товары',
+      'Защищённые виды CITES (кораллы из Карибов, слоновая кость)',
+      'Свежие мясные/молочные продукты не из EU (без сертификата)'
+    ],
+    limits: {
+      cash: 'свыше €10 000 декларировать',
+      alcohol: '1 л крепкого + 4 л вина + 16 л пива',
+      cigarettes: '200 шт',
+      meat_dairy: 'до 10 кг мясо/молочка из EU'
+    },
+    sources: [
+      { name: 'Agenzia delle Dogane', url: 'https://www.adm.gov.it/' }
+    ],
+    updated: '2026-05-26'
+  },
+
+  'spain': {
+    forbidden: [
+      'Наркотики и психотропные вещества',
+      'Оружие и оружие массового поражения',
+      'Контрафакт и пиратские товары',
+      'Мясные/молочные продукты из Алжира, Ливии, Марокко, Туниса (фитосанитарный запрет)',
+      'Защищённые виды CITES'
+    ],
+    limits: {
+      cash: 'свыше €10 000 декларировать',
+      alcohol: '1 л крепкого + 4 л вина + 16 л пива (внутри EU — без лимита для личного пользования)',
+      cigarettes: '200 шт',
+      meat_dairy: 'до 10 кг из EU'
+    },
+    sources: [
+      { name: 'Agencia Tributaria — Aduanas', url: 'https://sede.agenciatributaria.gob.es/' },
+      { name: 'Trade.gov — Spain Restrictions', url: 'https://www.trade.gov/country-commercial-guides/spain-prohibited-restricted-imports' }
+    ],
+    updated: '2026-05-26'
+  },
+
   'turkey': {
     forbidden: [
       'Антиквариат и археологические артефакты (тяжкие санкции при вывозе)',
