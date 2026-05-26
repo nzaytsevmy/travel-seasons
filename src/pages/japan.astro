@@ -2,8 +2,12 @@
 import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Footer from '../components/Footer.astro';
-import PricingCards from '../components/post/PricingCards.astro';
+import EssentialsCard from '../components/EssentialsCard.astro';
+import MonthlyEvents from '../components/MonthlyEvents.astro';
+import CountryMap from '../components/CountryMap.astro';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
+import { buildEssentialsFaq } from '../data/essentials-faq.js';
+import { TP_LINKS, aviasalesRoute } from '../data/affiliate.js';
 
 const url = 'https://traveltribe.ru/japan/';
 
@@ -35,7 +39,10 @@ const faqs = [
   {
     q: 'Что нельзя ввозить в Японию из России?',
     a: 'Главное — Корвалол, Валокордин (содержат фенобарбитал — это в Японии наркотик, депортация и запрет на въезд). Псевдоэфедрин (Sudafed, Actifed). Аддерол и амфетамин-содержащие. Из еды — мясо, сало, колбасу, мёд, цитрусовые. Свежие фрукты и овощи. Ограничения на алкоголь (3 бутылки) и сигареты (200 шт). Заполняйте таможенную декларацию честно — штрафы крупные.'
-  }
+  },
+  ...buildEssentialsFaq('japan', 'в Японии').filter(
+    (item) => !/что\s+нельзя\s+ввозить/i.test(item.q)
+  )
 ];
 
 const ldJson = {
@@ -62,7 +69,7 @@ const ldJson = {
         "sameAs": ["https://t.me/traveltriberu", "https://www.linkedin.com/in/nzaytsev/", "https://github.com/nzaytsevmy"]
       },
       "publisher": { "@id": "https://traveltribe.ru/#org" },
-      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".hub-tldr"] },
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".jp-tldr"] },
       "mainEntity": {
         "@type": "ItemList",
         "itemListElement": [
@@ -103,127 +110,165 @@ const ldJson = {
 >
   <Breadcrumbs crumbs={[{ label: 'Япония' }]} />
 
-  <main id="main" class="hub-wrap">
-    <header class="hub-header">
-      <div class="hub-tag">// Страна · 60+ стран автора</div>
-      <h1>Япония <em>2026</em></h1>
-      <p class="hub-sub">Виза, сезоны, бюджет, маршруты — всё что нужно для первой поездки из России. Был в ноябре 2023, готовлю обновление 2026.</p>
-    </header>
+  <main id="main" class="jp">
+    {/* MANIFEST */}
+    <section class="jp-manifest">
+      <div class="jp-idx">01 / Страна<b>Япония 2026</b></div>
+      <div class="jp-meta">Был в ноябре 2023<br /><b>Обновлено V.2026</b></div>
+      <h1 class="jp-h1">Япония <span class="rd">2026</span></h1>
+      <p class="jp-sub">Виза, сезоны, бюджет, маршруты — всё что нужно для первой поездки из России. Без воды, с реальными цифрами из чеков.</p>
 
-    <section class="hub-tldr">
-      <strong>Если коротко:</strong> виза <strong>бесплатна</strong>, сервисный сбор JVAC <strong>970 ₽</strong>, отказов <5%. Лучший сезон — <strong>октябрь–ноябрь</strong> (момидзи). Избегать: <strong>Золотая неделя 29 апр — 6 мая 2026</strong>, Обон (середина августа), цую (июнь–июль). Бюджет: <strong>$50/день</strong> эконом, <strong>$150–250</strong> комфорт, <strong>$300+</strong> премиум. JR Pass с 2023 чаще не нужен. Минимум 10 дней на Golden Route Токио — Хаконе — Киото — Осака.
-    </section>
-    <p class="hub-byline">
-      <a href="/about/" class="byline-author">Никита Зайцев</a> ·
-      <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
-      <span class="byline-fresh">был в Японии в ноябре 2023 · данные актуальны на {DATA_UPDATED_RU}</span>
-    </p>
-
-    <section class="hub-section">
-      <h2>Сезоны — когда лететь</h2>
-      <ul class="hub-list">
-        <li><strong>Октябрь–ноябрь</strong> — момидзи (красные клёны), сухо, +18°C, идеальная погода. Мой выбор для первой поездки. Пик в Киото — середина-конец ноября.</li>
-        <li><strong>Конец марта — начало апреля</strong> — сакура. Пик туризма, отели бронируются за полгода, цены максимальные. Цветение 1–2 недели, зависит от широты.</li>
-        <li><strong>🚩 29 апреля — 6 мая 2026 (Golden Week)</strong> — избегать. Толпы, цены ×2.5–3, синкансены забиты.</li>
-        <li><strong>🚩 Середина июня — середина июля (цую)</strong> — сезон дождей, влажно.</li>
-        <li><strong>🚩 Июль–август</strong> — жара до +38°C, влажность 100%. Ехать только за восхождением на Фудзи (1 июля — 10 сентября) или летними фестивалями.</li>
-        <li><strong>🚩 Середина августа (Обон)</strong> — второй национальный отпуск, толпы и цены.</li>
-      </ul>
-      <p class="hub-note"><a href="/seasons/">Таблица сезонов</a> — Япония и 38 других направлений с оптимальными окнами.</p>
-    </section>
-
-    <section class="hub-section">
-      <h2>Виза для россиян в 2026</h2>
-      <ul class="hub-list">
-        <li><strong>Стоимость:</strong> виза бесплатна, сервисный сбор JVAC <strong>970 ₽</strong> (Москва, СПб), до 2500 ₽ в регионах</li>
-        <li><strong>Где подавать:</strong> JVAC под управлением VFS Global с 12 февраля 2026 (посольство больше не принимает напрямую)</li>
-        <li><strong>Срок:</strong> 4–7 рабочих дней, не ранее чем за 3 месяца до вылета</li>
-        <li><strong>Документы:</strong> загранпаспорт, фото <strong>4.5 × 4.5 см</strong> (не Шенген!), банковская выписка $100/день минимум $2000, авиабилеты, бронь отеля (с ноября 2024 — можно не выкупать)</li>
-        <li><strong>Отказы:</strong> &lt;5%, главная причина — неправильный формат фото или незаполненные поля анкеты</li>
-      </ul>
-      <p class="hub-note"><a href="/blog/japan-visa-2026/">Полный пошаговый гайд по визе →</a></p>
-    </section>
-
-    <section class="hub-section">
-      <h2>Бюджет — реальные цифры 2026</h2>
-      <PricingCards tiers={[
-        {
-          tier: 'Эконом',
-          emoji: '🟢',
-          price: '$50–80 / день',
-          priceNote: 'минимум на двоих',
-          features: [
-            'Хостел или капсульный отель',
-            'Чифаньки и конбини',
-            'IC-карта на метро',
-            'Базовая еда без рамена в очереди',
-          ],
-        },
-        {
-          tier: 'Комфорт',
-          emoji: '🟡',
-          price: '$150–250 / день',
-          priceNote: 'первый раз — оптимально',
-          featured: true,
-          badge: 'Большинство туристов',
-          features: [
-            '3★ отель или бизнес-отель',
-            'Нормальные рестораны',
-            'Такси по необходимости',
-            'Хотя бы одна ночь в рёкан',
-          ],
-        },
-        {
-          tier: 'Премиум',
-          emoji: '🔴',
-          price: '$300+ / день',
-          priceNote: 'без компромиссов',
-          features: [
-            '4–5★ или премиум рёкан',
-            'Кайсэки в Мишлен-ресторанах',
-            'Онсэн в горах + спа',
-            'Частный транспорт / гид',
-          ],
-        },
-      ]} />
-      <p>Перелёт Москва ↔ Токио с пересадкой: <strong>$500–900</strong> в обычные даты, <strong>$1100–1500</strong> на Golden Week. Иена в 2026 слабая (~7 ¥/₽), что делает Японию доступнее обычного. <a href="/calculator/">Калькулятор бюджета</a> — точная сумма под твои даты.</p>
-    </section>
-
-    <section class="hub-section">
-      <h2>Главные гайды</h2>
-      <div class="hub-cards">
-        <a href="/blog/japan-guide-2026/" class="hub-card">
-          <div class="hub-card-tag">// Главный гайд · ноябрь 2023</div>
-          <div class="hub-card-title">Япония 2026: гайд без воды для россиян</div>
-          <div class="hub-card-desc">Бюджет, аэропорты Токио, доставка багажа, IC-карты, Tax Free, что нельзя ввозить (Корвалол депортируют).</div>
-          <div class="hub-card-arrow">Читать →</div>
-        </a>
-        <a href="/blog/japan-visa-2026/" class="hub-card">
-          <div class="hub-card-tag">// Виза · обновлено</div>
-          <div class="hub-card-title">Виза в Японию для россиян 2026</div>
-          <div class="hub-card-desc">Пошагово через JVAC: документы, фото 4.5×4.5 (не Шенген), банковская выписка, неоплаченные брони — что изменилось в 2024–2026.</div>
-          <div class="hub-card-arrow">Читать →</div>
-        </a>
-        <a href="/blog/japan-golden-week-2026/" class="hub-card">
-          <div class="hub-card-tag">// Golden Week 2026</div>
-          <div class="hub-card-title">Золотая неделя в Японии 2026</div>
-          <div class="hub-card-desc">29 апреля — 6 мая, 8 дней подряд. Цены ×3, что закрыто, что работает, альтернативные даты, стратегия если уже купили билеты.</div>
-          <div class="hub-card-arrow">Читать →</div>
-        </a>
-        <a href="/blog/pay-abroad-2026/" class="hub-card">
-          <div class="hub-card-tag">// Деньги за границей</div>
-          <div class="hub-card-title">Как платить в Японии россиянину 2026</div>
-          <div class="hub-card-desc">Visa/MC российских банков не работают. JCB и UnionPay Газпромбанка местами. Виртуальная карта USD/EUR за 2 минуты. Сравнение всех способов с цифрами.</div>
-          <div class="hub-card-arrow">Читать →</div>
-        </a>
+      <div class="jp-vlist">
+        <div class="jp-vi"><span><b>01</b> Виза</span><div>Бесплатно</div></div>
+        <div class="jp-vi"><span><b>02</b> Сбор JVAC</span><div>970 ₽</div></div>
+        <div class="jp-vi"><span><b>03</b> Бюджет</span><div>$50–300 / день</div></div>
+        <div class="jp-vi"><span><b>04</b> Когда лучше</span><div>Октябрь–ноябрь</div></div>
+        <div class="jp-vi"><span><b>05</b> Мин. маршрут</span><div>10 дней</div></div>
+        <div class="jp-vi"><span><b>06</b> JR Pass</span><div>Не нужен</div></div>
       </div>
     </section>
 
-    <section class="hub-section">
-      <h2>FAQ</h2>
-      <div class="hub-faq">
+    {/* TLDR + BYLINE */}
+    <section class="jp-section">
+      <div class="jp-shead"><span class="jp-n">02</span><h2>Если коротко</h2></div>
+      <p class="jp-tldr">Виза <b>бесплатна</b>, сервисный сбор JVAC <b>970 ₽</b>, отказов &lt;5%. Лучший сезон — <b>октябрь–ноябрь</b> (момидзи). Избегать: <b>Золотая неделя 29 апр — 6 мая 2026</b>, Обон (середина августа), цую (июнь–июль). Бюджет: <b>$50/день</b> эконом, <b>$150–250</b> комфорт, <b>$300+</b> премиум. JR Pass с 2023 чаще не нужен. Минимум 10 дней на Golden Route Токио — Хаконе — Киото — Осака.</p>
+      <p class="jp-byline">
+        <a href="/about/" class="byline-author">Никита Зайцев</a> ·
+        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
+        <span class="byline-fresh">был в Японии в ноябре 2023 · данные актуальны на {DATA_UPDATED_RU}</span>
+      </p>
+    </section>
+
+    {/* СЕЗОНЫ */}
+    <section class="jp-section">
+      <div class="jp-shead"><span class="jp-n">03</span><h2>Сезоны — когда лететь</h2></div>
+      <ul class="jp-list">
+        <li><b>Октябрь–ноябрь</b> — момидзи (красные клёны), сухо, +18°C, идеальная погода. Мой выбор для первой поездки. Пик в Киото — середина–конец ноября.</li>
+        <li><b>Конец марта — начало апреля</b> — сакура. Пик туризма, отели бронируются за полгода, цены максимальные. Цветение 1–2 недели, зависит от широты.</li>
+        <li><b>29 апреля — 6 мая 2026 (Golden Week)</b> — избегать. Толпы, цены ×2.5–3, синкансены забиты.</li>
+        <li><b>Середина июня — середина июля (цую)</b> — сезон дождей, влажно.</li>
+        <li><b>Июль–август</b> — жара до +38°C, влажность 100%. Ехать только за восхождением на Фудзи (1 июля — 10 сентября) или летними фестивалями.</li>
+        <li><b>Середина августа (Обон)</b> — второй национальный отпуск, толпы и цены.</li>
+      </ul>
+      <p class="jp-note"><a href="/seasons/">Таблица сезонов</a> — Япония и 38 других направлений с оптимальными окнами.</p>
+    </section>
+
+    <MonthlyEvents slug="japan" countryNom="Япония" countryNameVp="в Японии" idx="04" />
+
+    {/* ВИЗА */}
+    <section class="jp-section">
+      <div class="jp-shead"><span class="jp-n">05</span><h2>Виза для россиян в 2026</h2></div>
+      <ul class="jp-list">
+        <li><b>Стоимость:</b> виза бесплатна, сервисный сбор JVAC <b>970 ₽</b> (Москва, СПб), до 2500 ₽ в регионах</li>
+        <li><b>Где подавать:</b> JVAC под управлением VFS Global с 12 февраля 2026 (посольство больше не принимает напрямую)</li>
+        <li><b>Срок:</b> 4–7 рабочих дней, не ранее чем за 3 месяца до вылета</li>
+        <li><b>Документы:</b> загранпаспорт, фото <b>4.5 × 4.5 см</b> (не Шенген!), банковская выписка $100/день минимум $2000, авиабилеты, бронь отеля (с ноября 2024 — можно не выкупать)</li>
+        <li><b>Отказы:</b> &lt;5%, главная причина — неправильный формат фото или незаполненные поля анкеты</li>
+      </ul>
+      <p class="jp-note"><a href="/blog/japan-visa-2026/">Полный пошаговый гайд по визе →</a></p>
+      <p class="jp-cta">
+        <a class="jp-aff" href={TP_LINKS.cherehapa} rel="sponsored noopener" target="_blank">Оформить страховку для визы в Японию →</a>
+        <span class="ad-mark">реклама</span>
+        <span class="jp-trust">от 110 ₽/день · подходит под требования JVAC · оплата картами РФ</span>
+      </p>
+    </section>
+
+    {/* БЮДЖЕТ — три уровня Swiss */}
+    <section class="jp-section">
+      <div class="jp-shead"><span class="jp-n">06</span><h2>Бюджет — реальные цифры 2026</h2></div>
+      <div class="jp-tiers">
+        <article class="jp-tier">
+          <div class="jp-tier-l">Эконом</div>
+          <div class="jp-tier-p">$50–80<small> / день</small></div>
+          <div class="jp-tier-n">минимум на двоих</div>
+          <ul>
+            <li>Хостел или капсульный отель</li>
+            <li>Чифаньки и конбини</li>
+            <li>IC-карта на метро</li>
+            <li>Базовая еда без рамена в очереди</li>
+          </ul>
+        </article>
+        <article class="jp-tier jp-tier--mid">
+          <div class="jp-tier-l">Комфорт <span class="jp-tier-badge">большинство туристов</span></div>
+          <div class="jp-tier-p">$150–250<small> / день</small></div>
+          <div class="jp-tier-n">первый раз — оптимально</div>
+          <ul>
+            <li>3★ отель или бизнес-отель</li>
+            <li>Нормальные рестораны</li>
+            <li>Такси по необходимости</li>
+            <li>Хотя бы одна ночь в рёкан</li>
+          </ul>
+        </article>
+        <article class="jp-tier">
+          <div class="jp-tier-l">Премиум</div>
+          <div class="jp-tier-p">$300+<small> / день</small></div>
+          <div class="jp-tier-n">без компромиссов</div>
+          <ul>
+            <li>4–5★ или премиум рёкан</li>
+            <li>Кайсэки в Мишлен-ресторанах</li>
+            <li>Онсэн в горах + спа</li>
+            <li>Частный транспорт / гид</li>
+          </ul>
+        </article>
+      </div>
+      <p class="jp-after">Перелёт Москва ↔ Токио с пересадкой: <b>$500–900</b> в обычные даты, <b>$1100–1500</b> на Golden Week. Иена в 2026 слабая (~7 ¥/₽), что делает Японию доступнее обычного. <a href="/calculator/">Калькулятор бюджета</a> — точная сумма под твои даты.</p>
+      <p class="jp-cta">
+        <a class="jp-aff" href={aviasalesRoute('MOW','HND')} rel="sponsored noopener" target="_blank">Найти билет Москва — Токио от $500 →</a>
+        <span class="ad-mark">реклама</span>
+        <span class="jp-trust">все авиакомпании в одной выдаче · оплата картами РФ</span>
+      </p>
+    </section>
+
+    <CountryMap slug="japan" countryNom="Япония" idx="07" />
+
+    <EssentialsCard slug="japan" countryName="Япония" idx="08" />
+
+    {/* ГЛАВНЫЕ ГАЙДЫ */}
+    <section class="jp-section">
+      <div class="jp-shead"><span class="jp-n">09</span><h2>Главные гайды</h2></div>
+      <div class="jp-posts">
+        <a href="/blog/japan-guide-2026/" class="jp-post">
+          <div class="jp-pn">01</div>
+          <div class="jp-pt">Главный гайд · ноябрь 2023</div>
+          <h3>Япония 2026: гайд без воды для россиян</h3>
+          <p>Бюджет, аэропорты Токио, доставка багажа, IC-карты, Tax Free, что нельзя ввозить (Корвалол депортируют).</p>
+          <span class="jp-pa">Читать →</span>
+        </a>
+        <a href="/blog/japan-visa-2026/" class="jp-post">
+          <div class="jp-pn">02</div>
+          <div class="jp-pt">Виза · обновлено</div>
+          <h3>Виза в Японию для россиян 2026</h3>
+          <p>Пошагово через JVAC: документы, фото 4.5×4.5 (не Шенген), банковская выписка, неоплаченные брони — что изменилось в 2024–2026.</p>
+          <span class="jp-pa">Читать →</span>
+        </a>
+        <a href="/blog/japan-golden-week-2026/" class="jp-post">
+          <div class="jp-pn">03</div>
+          <div class="jp-pt">Golden Week 2026</div>
+          <h3>Золотая неделя в Японии 2026</h3>
+          <p>29 апреля — 6 мая, 8 дней подряд. Цены ×3, что закрыто, что работает, альтернативные даты, стратегия если уже купили билеты.</p>
+          <span class="jp-pa">Читать →</span>
+        </a>
+        <a href="/blog/pay-abroad-2026/" class="jp-post">
+          <div class="jp-pn">04</div>
+          <div class="jp-pt">Деньги за границей</div>
+          <h3>Как платить в Японии россиянину 2026</h3>
+          <p>Visa/MC российских банков не работают. JCB и UnionPay Газпромбанка местами. Виртуальная карта USD/EUR за 2 минуты. Сравнение всех способов с цифрами.</p>
+          <span class="jp-pa">Читать →</span>
+        </a>
+      </div>
+      <p class="jp-cta">
+        <a class="jp-aff" href={TP_LINKS.ostrovok} rel="sponsored noopener" target="_blank">Подобрать отель в Токио или Киото →</a>
+        <span class="ad-mark">реклама</span>
+        <span class="jp-trust">цены в ₽ · оплата картами РФ · бесплатная отмена</span>
+      </p>
+    </section>
+
+    {/* FAQ */}
+    <section class="jp-section">
+      <div class="jp-shead"><span class="jp-n">10</span><h2>FAQ</h2></div>
+      <div class="jp-faq">
         {faqs.map(f => (
-          <details class="hub-faq-item">
+          <details class="jp-faq-i">
             <summary>{f.q}</summary>
             <p>{f.a}</p>
           </details>
@@ -231,9 +276,10 @@ const ldJson = {
       </div>
     </section>
 
-    <section class="hub-section">
-      <h2>Что почитать дальше</h2>
-      <ul class="hub-related">
+    {/* RELATED */}
+    <section class="jp-section">
+      <div class="jp-shead"><span class="jp-n">11</span><h2>Что почитать дальше</h2></div>
+      <ul class="jp-related">
         <li><a href="/seasons/">Таблица сезонов</a> — 70 направлений мира, фильтр по месяцу и визе</li>
         <li><a href="/calculator/">Калькулятор бюджета путешествия</a> — перелёт + проживание + питание</li>
         <li><a href="/blog/aurora-new-zealand-2026/">Южное сияние в Новой Зеландии</a> — частый компаньон Японии через Сингапур</li>
@@ -246,99 +292,419 @@ const ldJson = {
 </Layout>
 
 <style>
-.hub-wrap { max-width: 760px; margin: 0 auto; padding: 0 2rem 5rem; }
+.jp {
+  /* Swiss page-level tokens (override under-component) */
+  --line-strong: #1b1914;
+  --line-hair: var(--line); /* в global.css --line == hair-уровень */
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(1.1rem, 3vw, 2.6rem) clamp(2rem, 4vw, 4rem);
+  font-family: var(--ff-display);
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--text);
+}
 
-.hub-header { margin: 3rem 0 2.5rem; text-align: center; }
-.hub-tag {
-  display: inline-flex; align-items: center;
-  font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--gold); border: 1px solid rgba(201,151,58,0.3);
-  background: rgba(201,151,58,0.08); padding: 0.3rem 0.85rem; border-radius: 20px;
+/* ===== MANIFEST ===== */
+.jp-manifest {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0 clamp(.8rem, 2vw, 1.6rem);
+  padding: clamp(2rem, 5vw, 4.5rem) 0 clamp(1.2rem, 2.5vw, 2rem);
+}
+.jp-idx {
+  grid-column: 1 / 5; grid-row: 1;
+  font-size: .74rem; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase;
+  color: var(--gold);
+}
+.jp-idx b {
+  display: block; color: var(--text); font-size: .74rem;
+  font-weight: 600; margin-top: .2rem;
+}
+.jp-meta {
+  grid-column: 8 / 13; grid-row: 1;
+  text-align: right; align-self: start;
+  font-size: .8rem; color: var(--text-dim);
+  line-height: 1.5;
+}
+.jp-meta b { color: var(--text); font-weight: 600; }
+.jp-h1 {
+  grid-column: 1 / 13; grid-row: 2;
+  font-weight: 800;
+  font-size: clamp(2.4rem, 7vw, 6.4rem);
+  line-height: .94;
+  letter-spacing: -.035em;
+  margin: clamp(1.2rem, 2.5vw, 2rem) 0 0;
+}
+.jp-h1 .rd { color: var(--gold); }
+.jp-sub {
+  grid-column: 1 / 8; grid-row: 3;
+  font-size: clamp(1rem, 1.3vw, 1.18rem);
+  color: var(--text);
+  margin-top: 1.4rem;
+  max-width: 46ch;
+  line-height: 1.5;
+}
+
+/* vlist в manifest — 6 ячеек hairline */
+.jp-vlist {
+  grid-column: 1 / 13; grid-row: 4;
+  margin-top: 1.8rem;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+.jp-vi {
+  padding: .85rem 1.2rem .95rem;
+  border-right: 1px solid var(--line-hair);
+}
+.jp-vi:first-child { padding-left: 0; }
+.jp-vi:last-child { border-right: none; }
+.jp-vi span {
+  display: block;
+  font-size: .66rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: .35rem;
+}
+.jp-vi span b {
+  color: var(--gold);
+  margin-right: .35rem;
+  font-weight: 700;
+}
+.jp-vi > div {
+  font-weight: 800;
+  font-size: .98rem;
+  color: var(--text);
+  line-height: 1.2;
+  letter-spacing: -.005em;
+}
+@media (max-width: 760px) {
+  .jp-idx, .jp-meta, .jp-h1, .jp-sub, .jp-vlist {
+    grid-column: 1 / -1; grid-row: auto;
+  }
+  .jp-meta { text-align: left; margin-top: .6rem; }
+  .jp-h1 { margin-top: 1.1rem; }
+  .jp-vlist { grid-template-columns: repeat(2, 1fr); }
+  .jp-vi:nth-child(2n) { border-right: none; }
+  .jp-vi:nth-child(odd) { padding-left: 0; }
+  .jp-vi:nth-child(n+3) { border-top: 1px solid var(--line-hair); }
+}
+
+/* ===== СЕКЦИИ ===== */
+.jp-section { margin-top: clamp(2.4rem, 5vw, 4rem); }
+.jp-shead {
+  border-top: 2px solid var(--line-strong);
+  padding-top: .8rem;
+  display: flex; align-items: baseline; gap: .8rem;
   margin-bottom: 1.4rem;
 }
-.hub-header h1 {
-  font-family: var(--ff-display); font-size: clamp(2.6rem, 6vw, 4.5rem);
-  font-weight: 300; line-height: 1.05; letter-spacing: -0.01em;
+.jp-n {
+  font-size: .74rem; font-weight: 700; color: var(--gold);
+  letter-spacing: .04em;
 }
-.hub-header h1 em { color: var(--gold); font-style: italic; }
-.hub-sub { color: var(--text-dim); font-size: 1rem; line-height: 1.7; margin: 1rem auto 0; max-width: 560px; }
-
-.hub-tldr {
-  background: var(--bg2); border: 1px solid var(--line); border-left: 3px solid var(--gold);
-  padding: 1.2rem 1.4rem; border-radius: 4px;
-  font-size: 0.95rem; line-height: 1.7; color: var(--text-dim);
-  margin-bottom: 3rem;
-}
-.hub-tldr strong { color: var(--text); }
-
-.hub-byline { font-size: 0.78rem; color: var(--text-faint); margin: -2rem 0 3rem; letter-spacing: 0.02em; }
-.hub-byline a { color: var(--text-dim); text-decoration: none; }
-.hub-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
-.hub-byline .byline-fresh { color: var(--text-faint); }
-
-.hub-section { margin-bottom: 3rem; }
-.hub-section h2 {
-  font-family: var(--ff-display); font-size: 1.6rem; font-weight: 400;
-  color: var(--gold); margin-bottom: 1.2rem; line-height: 1.2;
-}
-.hub-section p { color: var(--text-dim); line-height: 1.8; font-size: 0.95rem; margin-bottom: 1rem; }
-.hub-section a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
-
-.hub-list { padding-left: 1.4rem; margin: 0.5rem 0 1rem; }
-.hub-list li { color: var(--text-dim); line-height: 1.75; margin-bottom: 0.55rem; font-size: 0.95rem; }
-.hub-list li strong { color: var(--text); }
-
-/* .hub-table stylized globally in src/styles/global.css */
-
-.hub-note { font-size: 0.85rem; color: var(--text-faint); }
-
-.hub-cards { display: flex; flex-direction: column; gap: 1rem; }
-.hub-card {
-  display: block;
-  background: var(--bg2); border: 1px solid var(--line); border-radius: 4px;
-  padding: 1.4rem 1.6rem;
-  text-decoration: none !important;
-  position: relative; overflow: hidden;
-  transition: border-color 0.2s ease, transform 0.2s ease;
-}
-.hub-card::before {
-  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
-  opacity: 0; transition: opacity 0.3s ease;
-}
-.hub-card:hover { border-color: rgba(201,151,58,0.5); transform: translateY(-2px); }
-.hub-card:hover::before { opacity: 1; }
-.hub-card-tag {
-  font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--gold); margin-bottom: 0.5rem;
-}
-.hub-card-title {
-  font-family: var(--ff-display); font-size: 1.25rem; font-weight: 400;
-  color: var(--text); line-height: 1.25; margin-bottom: 0.5rem;
-}
-.hub-card-desc { color: var(--text-dim); font-size: 0.86rem; line-height: 1.65; margin-bottom: 0.6rem; }
-.hub-card-arrow { color: var(--gold); font-size: 0.82rem; letter-spacing: 0.04em; }
-
-.hub-faq { display: flex; flex-direction: column; gap: 0.6rem; }
-.hub-faq-item {
-  background: var(--bg2); border: 1px solid var(--line); border-radius: 4px;
-  padding: 0; overflow: hidden;
-}
-.hub-faq-item summary {
-  font-weight: 500; color: var(--text); padding: 0.95rem 1.2rem;
-  cursor: pointer; font-size: 0.95rem; line-height: 1.5;
-  list-style: none; position: relative;
-}
-.hub-faq-item summary::after {
-  content: '+'; position: absolute; right: 1.2rem; top: 50%; transform: translateY(-50%);
-  color: var(--gold); font-size: 1.2rem; transition: transform 0.2s;
-}
-.hub-faq-item[open] summary::after { transform: translateY(-50%) rotate(45deg); }
-.hub-faq-item p {
-  padding: 0 1.2rem 1.1rem; margin: 0;
-  color: var(--text-dim); line-height: 1.75; font-size: 0.92rem;
+.jp-shead h2 {
+  display: inline; font-weight: 800;
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  letter-spacing: -.02em;
+  line-height: 1.1;
+  margin: 0;
 }
 
-.hub-related { padding-left: 1.4rem; }
-.hub-related li { color: var(--text-dim); line-height: 1.75; margin-bottom: 0.5rem; font-size: 0.95rem; }
+/* TLDR — без border-radius, акцент = подчёркнутые слова */
+.jp-tldr {
+  font-size: clamp(1rem, 1.3vw, 1.15rem);
+  line-height: 1.55;
+  color: var(--text);
+  max-width: 76ch;
+  padding: 0;
+  margin: 0 0 1rem;
+}
+.jp-tldr b { color: var(--gold); font-weight: 800; }
+
+.jp-byline {
+  font-size: .76rem;
+  color: var(--text-dim);
+  margin: 0;
+  letter-spacing: .01em;
+  padding-bottom: .5rem;
+}
+.jp-byline a { color: var(--text); text-decoration: 1px underline rgba(86,82,74,.4); text-underline-offset: 3px; }
+.jp-byline a.byline-author { color: var(--gold); text-decoration: 1px underline var(--gold); }
+.jp-byline .byline-fresh { color: var(--text-faint); }
+
+/* Hairline-list (без буллетов-точек, через padding + label-position) */
+.jp-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+.jp-list li {
+  padding: .8rem 0 .85rem;
+  border-top: 1px solid var(--line-hair);
+  font-size: .96rem;
+  line-height: 1.55;
+  color: var(--text);
+}
+.jp-list li:first-child { border-top: none; }
+.jp-list li b { color: var(--text); font-weight: 800; }
+.jp-note {
+  font-size: .82rem;
+  color: var(--text-dim);
+  margin: 1rem 0 0;
+}
+.jp-note a {
+  color: var(--gold);
+  text-decoration: 1px underline var(--gold);
+  text-underline-offset: 4px;
+}
+
+/* TIERS бюджета — 3 кол hairline */
+.jp-tiers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+.jp-tier {
+  padding: 1.1rem 1.2rem 1.2rem;
+  border-right: 1px solid var(--line-hair);
+}
+.jp-tier:first-child { padding-left: 0; }
+.jp-tier:last-child { border-right: none; padding-right: 0; }
+.jp-tier-l {
+  font-size: .68rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-dim);
+  display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap;
+}
+.jp-tier--mid .jp-tier-l { color: var(--gold); }
+.jp-tier-badge {
+  font-size: .6rem; font-weight: 700;
+  letter-spacing: .04em;
+  color: var(--gold);
+  padding-left: .55rem;
+  border-left: 1px solid var(--line-hair);
+}
+.jp-tier-p {
+  font-weight: 800;
+  font-size: clamp(1.5rem, 2.4vw, 1.85rem);
+  letter-spacing: -.02em;
+  margin-top: .25rem;
+  color: var(--text);
+  line-height: 1.1;
+}
+.jp-tier--mid .jp-tier-p { color: var(--gold); }
+.jp-tier-p small { font-size: .65rem; font-weight: 500; color: var(--text-dim); letter-spacing: 0; }
+.jp-tier-n {
+  font-size: .78rem;
+  color: var(--text-dim);
+  margin-top: .25rem;
+}
+.jp-tier ul {
+  list-style: none; padding: 0; margin: .9rem 0 0;
+  display: flex; flex-direction: column; gap: .35rem;
+}
+.jp-tier li {
+  font-size: .85rem;
+  line-height: 1.5;
+  color: var(--text);
+  padding-left: .85rem;
+  position: relative;
+}
+.jp-tier li::before {
+  content: ''; position: absolute;
+  left: 0; top: .65em;
+  width: 4px; height: 1px;
+  background: var(--gold);
+}
+.jp-after {
+  font-size: .95rem;
+  line-height: 1.55;
+  color: var(--text);
+  margin: 1rem 0 0;
+  max-width: 76ch;
+}
+.jp-after b { color: var(--text); font-weight: 800; }
+.jp-after a {
+  color: var(--gold);
+  text-decoration: 1px underline var(--gold);
+  text-underline-offset: 4px;
+}
+@media (max-width: 760px) {
+  .jp-tiers { grid-template-columns: 1fr; }
+  .jp-tier {
+    border-right: none;
+    border-top: 1px solid var(--line-hair);
+    padding-left: 0; padding-right: 0;
+  }
+  .jp-tier:first-child { border-top: none; }
+}
+
+/* POSTS grid — 2 кол hairline */
+.jp-posts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+.jp-post {
+  padding: 1.1rem 1.2rem 1.2rem;
+  border-right: 1px solid var(--line-hair);
+  border-bottom: 1px solid var(--line-hair);
+  text-decoration: none;
+  color: var(--text);
+  display: flex; flex-direction: column;
+  transition: background .15s;
+}
+.jp-post:nth-child(2n) { border-right: none; }
+.jp-post:nth-last-child(-n+2) { border-bottom: none; }
+.jp-post:nth-child(odd) { padding-left: 0; }
+.jp-post:hover { background: rgba(142, 102, 24, 0.05); }
+.jp-pn {
+  font-size: .72rem; font-weight: 700; color: var(--gold);
+  letter-spacing: .04em;
+}
+.jp-pt {
+  font-size: .66rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-dim);
+  margin-top: .55rem;
+}
+.jp-post h3 {
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: -.01em;
+  line-height: 1.2;
+  margin: .35rem 0 .5rem;
+  color: var(--text);
+}
+.jp-post p {
+  font-size: .86rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+  margin: 0 0 .85rem;
+  flex: 1;
+}
+.jp-pa {
+  font-size: .78rem; font-weight: 700;
+  letter-spacing: .04em;
+  color: var(--gold);
+  text-decoration: 1px underline var(--gold);
+  text-underline-offset: 4px;
+  margin-top: auto;
+}
+@media (max-width: 760px) {
+  .jp-posts { grid-template-columns: 1fr; }
+  .jp-post {
+    border-right: none;
+    border-bottom: 1px solid var(--line-hair);
+    padding-left: 0; padding-right: 0;
+  }
+  .jp-post:last-child { border-bottom: none; }
+}
+
+/* FAQ — без bg/радиуса/крестика */
+.jp-faq {
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+.jp-faq-i {
+  border-top: 1px solid var(--line-hair);
+}
+.jp-faq-i:first-child { border-top: none; }
+.jp-faq-i summary {
+  font-weight: 700;
+  font-size: .98rem;
+  color: var(--text);
+  padding: .85rem 2rem .9rem 0;
+  cursor: pointer;
+  list-style: none;
+  position: relative;
+  line-height: 1.45;
+}
+.jp-faq-i summary::-webkit-details-marker { display: none; }
+.jp-faq-i summary::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 50%; transform: translateY(-50%);
+  width: 12px; height: 1px;
+  background: var(--text);
+  transition: transform .2s;
+}
+.jp-faq-i summary::before {
+  content: '';
+  position: absolute;
+  right: 5.5px; top: 50%; transform: translateY(-50%);
+  width: 1px; height: 12px;
+  background: var(--text);
+  transition: opacity .2s;
+}
+.jp-faq-i[open] summary::before { opacity: 0; }
+.jp-faq-i p {
+  padding: 0 0 1rem;
+  margin: 0;
+  font-size: .9rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* RELATED */
+.jp-related {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+.jp-related li {
+  padding: .75rem 0;
+  border-top: 1px solid var(--line-hair);
+  font-size: .92rem;
+  line-height: 1.55;
+  color: var(--text-dim);
+}
+.jp-related li:first-child { border-top: none; }
+.jp-related a {
+  color: var(--gold);
+  text-decoration: 1px underline var(--gold);
+  text-underline-offset: 3px;
+  font-weight: 700;
+}
+
+/* CTA — Swiss: gold 2px underline, без bg/радиуса, тач ≥44px */
+.jp-cta {
+  margin: 1.2rem 0 0;
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: .35rem .7rem;
+  font-size: .95rem;
+  line-height: 1.5;
+}
+.jp-aff {
+  font-weight: 800;
+  color: var(--text);
+  text-decoration: 2px underline var(--gold);
+  text-underline-offset: 4px;
+  display: inline-flex; align-items: center;
+  min-height: 44px;
+  letter-spacing: -.005em;
+}
+.jp-aff:hover { color: var(--gold); }
+.ad-mark {
+  font-size: .6rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.jp-trust {
+  flex-basis: 100%;
+  font-size: .76rem;
+  color: var(--text-dim);
+  letter-spacing: .01em;
+}
 </style>
