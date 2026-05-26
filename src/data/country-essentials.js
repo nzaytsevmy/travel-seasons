@@ -264,6 +264,135 @@ export const ESSENTIALS = {
     updated: '2026-05-26'
   },
 
+  'cuba': {
+    tipping: {
+      restaurants: '10% в туристических местах; в государственных столовых не принято',
+      taxi: '$1-3 USD за короткую; 10% за длинную трассу (Гавана → Варадеро)',
+      hotel: '$1-2 USD/день горничной; в all-inclusive — общий tipping pool на ресепшен',
+      note: 'USD/EUR предпочтительнее куб. песо; ценится высоко местными'
+    },
+    emergency: {
+      police: '106',
+      ambulance: '104',
+      fire: '105',
+      embassy_ru_url: 'https://cuba.mid.ru/',
+      embassy_note: 'Посольство РФ в Гаване (5-та авенида, Мирамар, Плайя)'
+    },
+    water: {
+      tap_drinkable: false,
+      note: 'НЕ пить — даже местные пьют бутилированную; иногда фильтруют'
+    },
+    taxi_apps: [
+      { name: 'La Nave', note: 'местное приложение, в Гаване' },
+      { name: 'Cubacar', note: 'классические такси-стоянки' },
+      { name: 'Сoco/Almendrón', note: 'старые американские такси по маршрутам — не приложение, ловить на улице' }
+    ],
+    sources: [
+      { name: 'Посольство РФ на Кубе', url: 'https://cuba.mid.ru/' },
+      { name: 'Cuba-Room — Useful Numbers', url: 'https://www.cubaroom.net/useful-numbers' },
+      { name: 'Cubas Best — Tipping 2026', url: 'https://cubasbest.com/tipping-in-cuba/' }
+    ],
+    updated: '2026-05-26'
+  },
+
+  'italy-north': {
+    tipping: {
+      restaurants: '5-10% при хорошем сервисе; coperto (€1-3) уже в счёте',
+      taxi: 'округление до целого евро',
+      hotel: '€1-2 носильщику; €1/день горничной',
+      note: 'не обязательно; локалы оставляют пару евро на дне или ничего'
+    },
+    emergency: {
+      general: '112',
+      police: '113',
+      fire: '115',
+      ambulance: '118',
+      embassy_ru_phone: '+39-06-494-1680',
+      embassy_ru_url: 'https://italy.mid.ru/',
+      embassy_note: '112 — единый европейский, отвечает на EN/FR/DE; консульства РФ в Милане, Генуе, Венеции'
+    },
+    water: {
+      tap_drinkable: true,
+      note: 'безопасна — EU стандарты; в рестораны можно попросить "acqua del rubinetto"; «Non Potabile» = нельзя пить'
+    },
+    taxi_apps: [
+      { name: 'FreeNow', note: 'официальные белые такси по счётчику' },
+      { name: 'Uber Black', note: 'только премиум-сегмент в крупных городах' },
+      { name: 'itTaxi', note: 'местное приложение для официальных такси' }
+    ],
+    sources: [
+      { name: 'Посольство РФ в Италии', url: 'https://italy.mid.ru/' },
+      { name: 'Italia.it — Emergency', url: 'https://www.italia.it/en/italy/practical-information/emergency-and-assistance' },
+      { name: 'Pyllola — Tap Water Italy 2026', url: 'https://www.pyllola.com/post/water-in-italy-tap-water-and-safety-considerations' }
+    ],
+    updated: '2026-05-26'
+  },
+
+  'italy-south': {
+    tipping: {
+      restaurants: '5-10% при хорошем сервисе; coperto (€1-3) уже в счёте',
+      taxi: 'округление до целого евро',
+      hotel: '€1-2 носильщику; €1/день горничной',
+      note: 'не обязательно; на юге чуть охотнее берут'
+    },
+    emergency: {
+      general: '112',
+      police: '113',
+      fire: '115',
+      ambulance: '118',
+      embassy_ru_phone: '+39-06-494-1680',
+      embassy_ru_url: 'https://italy.mid.ru/',
+      embassy_note: '112 — единый европейский, отвечает на EN/FR/DE; консульство РФ в Палермо, Бари, Мессине'
+    },
+    water: {
+      tap_drinkable: true,
+      note: 'безопасна — EU стандарты; в Риме питьевые фонтаны (nasoni) бесплатные. На Сицилии в старых зданиях — старые трубы'
+    },
+    taxi_apps: [
+      { name: 'FreeNow', note: 'официальные белые такси' },
+      { name: 'Uber Black', note: 'премиум в Риме/Неаполе' },
+      { name: 'itTaxi', note: 'местное' }
+    ],
+    sources: [
+      { name: 'Посольство РФ в Италии', url: 'https://italy.mid.ru/' },
+      { name: 'Italia.it — Emergency', url: 'https://www.italia.it/en/italy/practical-information/emergency-and-assistance' }
+    ],
+    updated: '2026-05-26'
+  },
+
+  'spain': {
+    tipping: {
+      restaurants: '5-10% при хорошем сервисе; не обязательно',
+      taxi: 'округление до целого евро',
+      hotel: '€1-2 носильщику; €1-2/день горничной',
+      note: 'не часть культуры; локалы оставляют пару монет или ничего'
+    },
+    emergency: {
+      general: '112',
+      police: '091',
+      ambulance: '061',
+      embassy_ru_phone: '+34-91-562-9712',
+      embassy_ru_url: 'https://spain.mid.ru/',
+      embassy_note: '112 — отвечает на 50+ языках включая русский; консульство РФ в Барселоне'
+    },
+    water: {
+      tap_drinkable: true,
+      note: 'безопасна — 99.5% соответствует стандартам; с 2022 рестораны обязаны давать водопроводную бесплатно'
+    },
+    taxi_apps: [
+      { name: 'Cabify', note: 'крупнейшее, по всей стране; премиум-чувство' },
+      { name: 'FreeNow', note: 'официальные белые такси по счётчику' },
+      { name: 'Uber', note: 'Мадрид, Барселона, Малага, Валенсия' },
+      { name: 'Bolt', note: 'дешевле, основные города' }
+    ],
+    sources: [
+      { name: 'Посольство РФ в Испании', url: 'https://spain.mid.ru/' },
+      { name: 'Administracion.gob.es — 112 Services', url: 'https://administracion.gob.es/pag_Home/en/Tu-espacio-europeo/derechos-obligaciones/ciudadanos/asistencia-sanitaria/numeros-urgencia.html' },
+      { name: 'WaterWell — Spain Tap Water 2025', url: 'https://orderwaterwell.com/blogs/news/tap-water-safety-spain-travel-guide' }
+    ],
+    updated: '2026-05-26'
+  },
+
   'turkey': {
     tipping: {
       restaurants: '5-10% если сервис-чардж не включён; для high-end 10-15%',

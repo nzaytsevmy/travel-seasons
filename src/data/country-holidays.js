@@ -109,6 +109,69 @@ export const HOLIDAYS = {
       note: 'паломничество в Мехико; декабрьские festas' }
   ],
 
+  'cuba': [
+    { month: 1, name: 'День освобождения (Triunfo de la Revolución)', dates: '1 января', tag: 'closed',
+      note: 'годовщина победы Революции 1959' },
+    { month: 5, name: 'День труда', dates: '1 мая', tag: 'closed',
+      note: 'массовые шествия на Площади Революции' },
+    { month: 7, name: 'День национального восстания', dates: '25-27 июля', tag: 'closed',
+      note: 'годовщина штурма Монкады 1953; 3 дня выходных' },
+    { month: 10, name: 'День начала войны за независимость', dates: '10 октября', tag: 'closed' },
+    { month: 12, name: 'Рождество', dates: '25 декабря', tag: 'closed',
+      note: 'восстановлено как праздник после визита Папы 1998' }
+  ],
+
+  'italy-north': [
+    { month: 1, name: 'Богоявление (Epifania)', dates: '6 января', tag: 'closed',
+      note: 'La Befana — старушка-волшебница, детям подарки' },
+    { month: 4, name: 'Пасха (Pasqua)', dates: 'плавающая (~март-апрель)', tag: 'closed',
+      note: 'Pasquetta понедельник тоже выходной; туристические места переполнены' },
+    { month: 4, name: 'День освобождения (Festa della Liberazione)', dates: '25 апреля', tag: 'closed' },
+    { month: 5, name: 'День труда', dates: '1 мая', tag: 'closed' },
+    { month: 6, name: 'День Республики', dates: '2 июня', tag: 'closed',
+      note: 'парад в Риме, fly-by Frecce Tricolori' },
+    { month: 8, name: 'Феррагосто', dates: '15 августа', tag: 'closed',
+      note: 'итальянцы массово в отпуске; города пустеют, многие магазины закрыты весь август' },
+    { month: 9, name: 'Венецианский кинофестиваль', dates: 'конец августа - начало сентября', tag: 'fest',
+      note: 'Венеция переполнена, цены отелей ×2' },
+    { month: 12, name: 'Рождественский сезон', dates: '8-26 декабря', tag: 'fest',
+      note: 'Иммаколата 8 декабря открывает сезон; рождественские ярмарки в Больцано, Тренто' }
+  ],
+
+  'italy-south': [
+    { month: 1, name: 'Богоявление (Epifania)', dates: '6 января', tag: 'closed' },
+    { month: 4, name: 'Пасха', dates: 'плавающая (~март-апрель)', tag: 'closed',
+      note: 'Процессии страстной недели в Сицилии — особо впечатляющие' },
+    { month: 4, name: 'День освобождения', dates: '25 апреля', tag: 'closed' },
+    { month: 5, name: 'День труда', dates: '1 мая', tag: 'closed' },
+    { month: 6, name: 'День Республики', dates: '2 июня', tag: 'closed' },
+    { month: 7, name: 'Festa di San Gennaro (Неаполь)', dates: '19 сентября', tag: 'fest',
+      note: 'чудо разжижения крови — главный фестиваль Неаполя' },
+    { month: 8, name: 'Феррагосто', dates: '15 августа', tag: 'closed',
+      note: 'на юге особенно мощный отдых; пляжи переполнены' },
+    { month: 9, name: 'Праздник святой Розалии (Палермо)', dates: '14 июля + 4 сентября', tag: 'fest' }
+  ],
+
+  'spain': [
+    { month: 1, name: 'День Богоявления (Día de los Reyes)', dates: '6 января', tag: 'closed',
+      note: 'кавалькады волхвов 5 января вечером; детям подарки от Reyes Magos' },
+    { month: 3, name: 'Лас Файас (Валенсия)', dates: '15-19 марта', tag: 'fest',
+      note: 'сожжение огромных кукол ninots; одно из топ-зрелищ' },
+    { month: 4, name: 'Семана Санта (Страстная неделя)', dates: 'плавающая (~март-апрель)', tag: 'fest',
+      note: 'Севилья и Малага — мировые процессии; бронь за полгода' },
+    { month: 4, name: 'Feria de Abril (Севилья)', dates: '2 недели после Пасхи', tag: 'fest',
+      note: 'фламенко + лошади + ёжа; цены ×2' },
+    { month: 5, name: 'День труда', dates: '1 мая', tag: 'closed' },
+    { month: 7, name: 'Сан-Фермин (Памплона)', dates: '6-14 июля', tag: 'fest',
+      note: 'бега быков; забронировать за год' },
+    { month: 8, name: 'La Tomatina (Буньоль)', dates: 'последняя среда августа', tag: 'fest',
+      note: 'битва помидорами; билеты обязательно' },
+    { month: 10, name: 'День испаноязычности (Día de la Hispanidad)', dates: '12 октября', tag: 'closed',
+      note: 'парад в Мадриде с участием Короля' },
+    { month: 12, name: 'Día de la Constitución + Иммаколата', dates: '6, 8 декабря', tag: 'closed',
+      note: 'два выходных подряд = «мост»' }
+  ],
+
   'turkey': [
     { month: 1, name: 'Новый год', dates: '1 января', tag: 'closed' },
     { month: 4, name: 'Ураза-Байрам (Eid al-Fitr)', dates: 'плавающая дата (~март-апрель)', tag: 'closed',

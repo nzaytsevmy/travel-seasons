@@ -130,6 +130,69 @@ export const POIS = {
     sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
   },
 
+  'cuba': {
+    visited: false,
+    center: { lat: 21.5, lng: -77.8, zoom: 6 },
+    pois: [
+      { name: 'Гавана',         lat: 23.1136, lng: -82.3666, type: 'city',    note: 'Старая Гавана UNESCO, Малекон' },
+      { name: 'Варадеро',       lat: 23.1394, lng: -81.2868, type: 'beach',   note: 'главный пляжный курорт' },
+      { name: 'Тринидад',       lat: 21.8045, lng: -79.9846, type: 'culture', note: 'колониальный город UNESCO' },
+      { name: 'Виньялес',       lat: 22.6168, lng: -83.7060, type: 'nature',  note: 'долина с моготес, табачные плантации' },
+      { name: 'Сантьяго-де-Куба', lat: 20.0247, lng: -75.8219, type: 'culture', note: 'столица востока, кубинская колыбель Революции' },
+      { name: 'Кайо-Коко',      lat: 22.5132, lng: -78.4053, type: 'beach',   note: 'дикий остров, all-inclusive резорты' },
+      { name: 'Сьенфуэгос',     lat: 22.1499, lng: -80.4364, type: 'culture', note: 'французская колониальная архитектура UNESCO' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'italy-north': {
+    visited: false,
+    center: { lat: 45.5, lng: 11.0, zoom: 7 },
+    pois: [
+      { name: 'Венеция',         lat: 45.4408, lng: 12.3155, type: 'culture', note: 'лагуна, гондолы, Сан-Марко' },
+      { name: 'Милан',           lat: 45.4642, lng: 9.1900,  type: 'city',    note: 'мода, Дуомо, Тайная вечеря' },
+      { name: 'Озеро Комо',      lat: 45.9985, lng: 9.2580,  type: 'nature',  note: 'премиум вилла-зона, Bellagio' },
+      { name: 'Озеро Гарда',     lat: 45.6385, lng: 10.6418, type: 'nature',  note: 'крупнейшее озеро Италии, виндсёрф' },
+      { name: 'Доломиты',        lat: 46.4102, lng: 11.8440, type: 'nature',  note: 'UNESCO, треккинг + горнолыжка' },
+      { name: 'Верона',          lat: 45.4384, lng: 10.9916, type: 'culture', note: 'дом Джульетты, римская арена' },
+      { name: 'Чинкве-Терре',    lat: 44.1227, lng: 9.7173,  type: 'beach',   note: 'пять рыбацких деревень UNESCO' },
+      { name: 'Турин',           lat: 45.0703, lng: 7.6869,  type: 'city',    note: 'столица Пьемонта, шоколад, барокко' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'italy-south': {
+    visited: false,
+    center: { lat: 40.5, lng: 14.5, zoom: 6 },
+    pois: [
+      { name: 'Рим',             lat: 41.9028, lng: 12.4964, type: 'city',    note: 'Колизей, Ватикан, Пантеон' },
+      { name: 'Флоренция',       lat: 43.7696, lng: 11.2558, type: 'culture', note: 'Уффици, Понте-Веккьо, Тоскана' },
+      { name: 'Тоскана (Сиена)', lat: 43.3188, lng: 11.3308, type: 'nature',  note: 'кипарисы, винодельни, Сан-Джиминьяно' },
+      { name: 'Амальфи',         lat: 40.6346, lng: 14.6027, type: 'beach',   note: 'побережье UNESCO, Позитано' },
+      { name: 'Помпеи',          lat: 40.7484, lng: 14.4854, type: 'culture', note: 'античный город, засыпанный Везувием' },
+      { name: 'Капри',           lat: 40.5479, lng: 14.2426, type: 'beach',   note: 'остров, Голубой грот' },
+      { name: 'Сицилия (Палермо)', lat: 38.1157, lng: 13.3615, type: 'culture', note: 'арабо-норманнское наследие, Этна' },
+      { name: 'Сардиния (Кальяри)', lat: 39.2238, lng: 9.1217, type: 'beach', note: 'белые пляжи, Costa Smeralda' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'spain': {
+    visited: false,
+    center: { lat: 40.4, lng: -3.7, zoom: 6 },
+    pois: [
+      { name: 'Мадрид',          lat: 40.4168, lng: -3.7038,  type: 'city',    note: 'Прадо, Ретиро, тапас' },
+      { name: 'Барселона',       lat: 41.3851, lng: 2.1734,   type: 'city',    note: 'Гауди, Готический квартал, пляж' },
+      { name: 'Севилья',         lat: 37.3891, lng: -5.9845,  type: 'culture', note: 'Альказар, фламенко, Семана Санта' },
+      { name: 'Гранада',          lat: 37.1773, lng: -3.5986,  type: 'culture', note: 'Альгамбра — UNESCO мавританская архитектура' },
+      { name: 'Сан-Себастьян',   lat: 43.3183, lng: -1.9812,  type: 'food',    note: 'пинчос-столица + La Concha' },
+      { name: 'Валенсия',        lat: 39.4699, lng: -0.3763,  type: 'city',    note: 'паэлья, Las Fallas, Город науки' },
+      { name: 'Канарские острова (Тенерифе)', lat: 28.2916, lng: -16.6291, type: 'beach', note: 'вулкан Тейде, пляжи круглый год' },
+      { name: 'Малага',          lat: 36.7213, lng: -4.4214,  type: 'beach',   note: 'Коста-дель-Соль + Пикассо музей' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
   'turkey': {
     visited: false,
     center: { lat: 39.0, lng: 35.0, zoom: 6 },
