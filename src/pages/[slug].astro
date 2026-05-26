@@ -19,8 +19,16 @@ import { getVisaDetails } from '../data/visa-details.js';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
 import AviasalesWidget from '../components/post/AviasalesWidget.astro';
 import BudgetBlock from '../components/BudgetBlock.astro';
+import EssentialsCard from '../components/EssentialsCard.astro';
+import MonthlyEvents from '../components/MonthlyEvents.astro';
+import CountryMap from '../components/CountryMap.astro';
 import { TP_LINKS, aviasalesRoute } from '../data/affiliate.js';
 import { getGuide } from '../data/country-guides.js';
+import { buildEssentialsFaq } from '../data/essentials-faq.js';
+import { hasEssentials } from '../data/country-essentials.js';
+import { hasCustoms } from '../data/country-customs.js';
+import { hasHolidays } from '../data/country-holidays.js';
+import { hasPois } from '../data/country-pois.js';
 
 // Pre-import all destination photos (Vite needs static imports). glob lazy:
 const destPhotos = import.meta.glob('../assets/destinations/*.jpg', {
@@ -121,6 +129,13 @@ const faqs = [
 // Доп. вопросы из расширенного гайда — и в видимый FAQ, и в schema (AEO)
 if (guide?.faq?.length) faqs.push(...guide.faq);
 
+// FAQ из бытовой практики (розетки/чаевые/экстренные/вода/такси/таможня) —
+// renders только если EssentialsCard/CustomsCard для slug заполнены.
+const essVp = d.cases?.vP || `в ${d.cases?.loc || d.cases?.nom || ''}`;
+if (hasEssentials(d.slug) || hasCustoms(d.slug)) {
+  faqs.push(...buildEssentialsFaq(d.slug, essVp));
+}
+
 // Изображения для schema (обложка + inline-фото) — ImageObject с финальными URL.
 const SITE = 'https://traveltribe.ru';
 const schemaImages = [];
@@ -161,7 +176,7 @@ const ldJson = {
         "sameAs": ["https://t.me/traveltriberu", "https://www.linkedin.com/in/nzaytsev/", "https://github.com/nzaytsevmy"]
       },
       "publisher": { "@id": "https://traveltribe.ru/#org" },
-      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".quick-tldr"] },
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".sl-tldr"] },
       "mainEntity": { "@id": `${url}#faq` }
     },
     {
@@ -208,10 +223,10 @@ if (guide?.itinerary?.length) {
 >
   <Breadcrumbs crumbs={[{ label: 'Страны', href: '/countries/' }, { label: d.cases.nom }]} />
 
-  <main id="main" class="quick-wrap">
-    {/* HERO */}
-    {coverImage ? (
-      <section class="quick-hero quick-hero--photo">
+  <main id="main" class="sl">
+    {/* COVER PHOTO (если есть) — Swiss: фото как обложка с лёгким filter */}
+    {coverImage && (
+      <section class="sl-cover">
         <Image
           src={coverImage}
           alt={d.cases.nom}
@@ -222,224 +237,250 @@ if (guide?.itinerary?.length) {
           loading="eager"
           fetchpriority="high"
         />
-        <div class="quick-hero-overlay"></div>
-        <div class="quick-hero-content">
-          <div class="quick-hero-eyebrow">// {d.group} · гид 2026</div>
-          <h1 class="quick-hero-title">{d.cases.nom} <span class="quick-hero-year">2026</span></h1>
-          <p class="quick-hero-sub">{d.region} — {d.sub}</p>
-        </div>
-      </section>
-    ) : (
-      <section class="quick-hero quick-hero--gradient" style={`--g1:${d.visual.g1}; --g2:${d.visual.g2};`}>
-        <span class="quick-hero-emoji" aria-hidden="true">{d.visual.emoji}</span>
-        <div class="quick-hero-content">
-          <div class="quick-hero-eyebrow">// {d.group} · гид 2026</div>
-          <h1 class="quick-hero-title">{d.cases.nom} <span class="quick-hero-year">2026</span></h1>
-          <p class="quick-hero-sub">{d.region} — {d.sub}</p>
-        </div>
       </section>
     )}
 
-    {/* TLDR */}
-    <section class="quick-tldr">
-      <strong>Если коротко:</strong> {VISA_SUMMARY[d.visa]} Бюджет — <strong>{BUDGET_LABEL[d.budget]}</strong>. Лучшие месяцы: <strong>{bestMonths.slice(0, 3).map(m => m.nom).join(', ')}</strong>. {flightFrom && <>Перелёт из Москвы от <strong>${flightFrom}</strong>.</>} Подробности ниже + связанные посты с личным опытом.
-    </section>
-    <p class="quick-byline">
-      <a href="/about/" class="byline-author">Никита Зайцев</a> ·
-      <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
-      <span class="byline-fresh">данные актуальны на {DATA_UPDATED_RU}</span>
-    </p>
+    {/* MANIFEST — Swiss: 12-grid, idx/meta/H1/sub/vlist */}
+    <section class="sl-manifest">
+      <div class="sl-idx">01 / {d.group}<b>{d.cases.nom} 2026</b></div>
+      <div class="sl-meta">{d.region}<br /><b>Обновлено V.2026</b></div>
+      <h1 class="sl-h1">{d.cases.nom} <span class="rd">2026</span></h1>
+      <p class="sl-sub">{d.sub} — виза, сезоны, бюджет, маршруты для россиян. Без воды, с реальными цифрами.</p>
 
-    {/* QUICK FACTS grid */}
-    <section class="quick-facts">
-      <div class="qf-card">
-        <div class="qf-label">Виза</div>
-        <div class="qf-value qf-value--lg">{VISA_LABEL[d.visa]}</div>
-        <a href={`/visa/${d.slug}/`} class="qf-link">Документы и сроки →</a>
+      <div class="sl-vlist">
+        <div class="sl-vi"><span><b>01</b> Виза</span><div>{VISA_LABEL[d.visa]}</div></div>
+        <div class="sl-vi"><span><b>02</b> Бюджет</span><div>{BUDGET_LABEL[d.budget].split('—')[0].trim()}</div></div>
+        {flightFrom ? (
+          <div class="sl-vi"><span><b>03</b> Перелёт от</span><div>${flightFrom}</div></div>
+        ) : (
+          <div class="sl-vi"><span><b>03</b> Сроки визы</span><div>{vd.duration.split(/[,;(]/)[0].trim()}</div></div>
+        )}
+        <div class="sl-vi"><span><b>04</b> Лучше</span><div>{bestMonths[0] ? bestMonths[0].nom.charAt(0).toUpperCase() + bestMonths[0].nom.slice(1) : 'круглый год'}</div></div>
+        {weekTotal ? (
+          <div class="sl-vi"><span><b>05</b> Неделя от</span><div>${weekTotal}</div></div>
+        ) : (
+          <div class="sl-vi"><span><b>05</b> Стоимость визы</span><div>{vd.cost}</div></div>
+        )}
+        <div class="sl-vi"><span><b>06</b> Регион</span><div>{d.region}</div></div>
       </div>
-      <div class="qf-card">
-        <div class="qf-label">Бюджет</div>
-        <div class="qf-value qf-value--lg">{BUDGET_LABEL[d.budget].split('—')[0].trim()}</div>
-        {weekTotal && <div class="qf-value-sub">от ${weekTotal} за неделю</div>}
-        <a href={calcUrl} class="qf-link">Калькулятор поездки →</a>
-      </div>
-      <div class="qf-card">
-        <div class="qf-label">Лучшие месяцы</div>
-        <div class="qf-value">
-          {bestMonths.slice(0, 3).map((m) => (
-            <a href={`/trips/${m.slug}/${d.slug}/`} class="qf-month">{m.nom.charAt(0).toUpperCase() + m.nom.slice(1)}</a>
-          ))}
-        </div>
-        {worstMonths.length > 0 && (
-          <div class="qf-value-sub">Не лучшее время: {worstMonths.map(m => m.nom).join(', ')}</div>
+    </section>
+
+    {/* TLDR + BYLINE */}
+    <section class="sl-section">
+      <div class="sl-shead"><h2>Если коротко</h2></div>
+      <p class="sl-tldr"><b>{VISA_SUMMARY[d.visa].replace(/\.$/, '')}.</b> Бюджет — <b>{BUDGET_LABEL[d.budget]}</b>. Лучшие месяцы: <b>{bestMonths.slice(0, 3).map(m => m.nom).join(', ') || '—'}</b>.{flightFrom && <> Перелёт из Москвы от <b>${flightFrom}</b>.</>} Подробности ниже + связанные посты с личным опытом.</p>
+      <p class="sl-byline">
+        <a href="/about/" class="byline-author">Никита Зайцев</a> ·
+        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
+        <span class="byline-fresh">данные актуальны на {DATA_UPDATED_RU}</span>
+      </p>
+    </section>
+
+    {/* QUICK ACTIONS — навигация по основным ресурсам страны */}
+    <section class="sl-section">
+      <div class="sl-shead"><h2>Главное о стране</h2></div>
+      <div class="sl-actions">
+        <a href={`/visa/${d.slug}/`} class="sl-action">
+          <div class="sl-a-l">Виза</div>
+          <div class="sl-a-v">{VISA_LABEL[d.visa]}</div>
+          <div class="sl-a-s">Документы и сроки →</div>
+        </a>
+        <a href={calcUrl} class="sl-action">
+          <div class="sl-a-l">Бюджет</div>
+          <div class="sl-a-v">{BUDGET_LABEL[d.budget].split('—')[0].trim()}</div>
+          <div class="sl-a-s">{weekTotal ? `от $${weekTotal} за неделю · ` : ''}Калькулятор →</div>
+        </a>
+        {bestMonths.length > 0 && (
+          <a href={`/trips/${bestMonths[0].slug}/${d.slug}/`} class="sl-action">
+            <div class="sl-a-l">Лучшие месяцы</div>
+            <div class="sl-a-v">{bestMonths.slice(0, 3).map(m => m.nom.charAt(0).toUpperCase() + m.nom.slice(1)).join(' · ')}</div>
+            {worstMonths.length > 0 && <div class="sl-a-s">Не лучшее: {worstMonths.map(m => m.nom).join(', ')}</div>}
+          </a>
+        )}
+        {flightFrom && (
+          <a href={d.price?.iata ? aviasalesRoute('MOW', d.price.iata) : '/calculator/'} class="sl-action" rel={d.price?.iata ? 'sponsored noopener' : undefined} target={d.price?.iata ? '_blank' : undefined}>
+            <div class="sl-a-l">Перелёт от</div>
+            <div class="sl-a-v">${flightFrom}</div>
+            <div class="sl-a-s">{d.price?.iata ? 'Найти билет → ' : 'эконом, в одну сторону'}{d.price?.iata && <span class="ad-mark">реклама</span>}</div>
+          </a>
         )}
       </div>
-      {flightFrom && (
-        <div class="qf-card">
-          <div class="qf-label">Перелёт от</div>
-          <div class="qf-value qf-value--lg">${flightFrom}</div>
-          <div class="qf-value-sub">в одну сторону, эконом</div>
-        </div>
-      )}
     </section>
 
     {/* РАСШИРЕННЫЙ ГАЙД — рендерится, если страна заполнена в country-guides.js */}
     {guide && (
       <>
         {guide.intro && (
-          <section class="quick-block">
-            <h2>Зачем ехать {d.cases.vP}</h2>
-            <p class="quick-answer">{guide.intro}</p>
+          <section class="sl-section">
+            <div class="sl-shead"><h2>Зачем ехать {d.cases.vP}</h2></div>
+            <p class="sl-answer">{guide.intro}</p>
           </section>
         )}
         {guide.highlights?.length > 0 && (
-          <section class="quick-block">
-            <h2>Главные впечатления</h2>
-            <ul class="guide-list">
-              {guide.highlights.map((h) => <li><strong>{h.t}</strong> — {h.d}</li>)}
+          <section class="sl-section">
+            <div class="sl-shead"><h2>Главные впечатления</h2></div>
+            <ul class="sl-list">
+              {guide.highlights.map((h) => <li><b>{h.t}</b> — {h.d}</li>)}
             </ul>
           </section>
         )}
         {photosAfter('highlights').map((p) => (
-          <figure class="guide-figure">
+          <figure class="sl-figure">
             <Image src={p.img} alt={p.alt} widths={[640, 1024, 1520]} sizes="(max-width: 800px) 100vw, 760px" formats={['webp']} quality={72} loading="lazy" />
             <figcaption>{p.caption}</figcaption>
           </figure>
         ))}
         {guide.getThere && (
-          <section class="quick-block">
-            <h2>Как добраться {d.cases.vP}</h2>
-            <p class="quick-answer">{guide.getThere}</p>
+          <section class="sl-section">
+            <div class="sl-shead"><h2>Как добраться {d.cases.vP}</h2></div>
+            <p class="sl-answer">{guide.getThere}</p>
             {!guide.compare && !guide.noFlightCta && d.price?.iata && flightFrom && (
-              <p class="guide-cta">
-                <a href={aviasalesRoute('MOW', d.price.iata)} class="aff-cta" rel="sponsored noopener" target="_blank">Сравнить билеты Москва — {d.cases.nom} от ${flightFrom}</a>
+              <p class="sl-cta">
+                <a href={aviasalesRoute('MOW', d.price.iata)} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить билеты Москва — {d.cases.nom} от ${flightFrom} →</a>
                 <span class="ad-mark">реклама</span>
-                <span class="guide-cta-trust">все авиакомпании в одной выдаче, оплата картами РФ</span>
+                <span class="sl-trust">все авиакомпании в одной выдаче · оплата картами РФ</span>
               </p>
             )}
           </section>
         )}
         {guide.compare?.options?.length > 0 && (
-          <section class="quick-block">
-            <h2>{guide.compare.title}</h2>
-            {guide.compare.intro && <p class="quick-answer">{guide.compare.intro}</p>}
-            <div class="guide-compare">
+          <section class="sl-section">
+            <div class="sl-shead"><h2>{guide.compare.title}</h2></div>
+            {guide.compare.intro && <p class="sl-answer">{guide.compare.intro}</p>}
+            <div class="sl-comp">
               {guide.compare.options.map((o) => (
-                <div class="gc-card">
-                  <div class="gc-name">{o.name}</div>
-                  {o.sub && <div class="gc-sub">{o.sub}</div>}
-                  <p class="gc-for">{o.for}</p>
-                  <a class="aff-cta gc-cta" href={o.flightIata ? aviasalesRoute('MOW', o.flightIata) : o.href} rel="sponsored noopener" target="_blank">{o.ctaLabel}</a>
+                <div class="sl-cc">
+                  <div class="sl-cc-name">{o.name}</div>
+                  {o.sub && <div class="sl-cc-sub">{o.sub}</div>}
+                  <p class="sl-cc-for">{o.for}</p>
+                  <a class="sl-aff sl-cc-cta" href={o.flightIata ? aviasalesRoute('MOW', o.flightIata) : o.href} rel="sponsored noopener" target="_blank">{o.ctaLabel} →</a>
                 </div>
               ))}
             </div>
-            {guide.compare.note && <p class="gc-mark"><span class="ad-mark">реклама</span> — {guide.compare.note}</p>}
+            {guide.compare.note && <p class="sl-cc-mark"><span class="ad-mark">реклама</span> — {guide.compare.note}</p>}
           </section>
         )}
         {guide.stay?.length > 0 && (
-          <section class="quick-block">
-            <h2>Где остановиться</h2>
-            <ul class="guide-list">
-              {guide.stay.map((s) => <li><strong>{s.t}</strong> — {s.d}</li>)}
+          <section class="sl-section">
+            <div class="sl-shead"><h2>Где остановиться</h2></div>
+            <ul class="sl-list">
+              {guide.stay.map((s) => <li><b>{s.t}</b> — {s.d}</li>)}
             </ul>
-            <p class="guide-cta">
-              <a href={TP_LINKS.ostrovok} class="aff-cta" rel="sponsored noopener" target="_blank">Подобрать отель {d.cases.loc} на Островке</a>
+            <p class="sl-cta">
+              <a href={TP_LINKS.ostrovok} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать отель {d.cases.loc} на Островке →</a>
               <span class="ad-mark">реклама</span>
-              <span class="guide-cta-trust">оплата российскими картами, цены в рублях</span>
+              <span class="sl-trust">оплата российскими картами · цены в ₽</span>
             </p>
           </section>
         )}
         {guide.itinerary?.length > 0 && (
-          <section class="quick-block">
-            <h2>Маршрут на 7–10 дней</h2>
-            <ul class="guide-list guide-list--steps">
-              {guide.itinerary.map((s) => <li><strong>{s.t}.</strong> {s.d}</li>)}
-            </ul>
+          <section class="sl-section">
+            <div class="sl-shead"><h2>Маршрут на 7–10 дней</h2></div>
+            <ol class="sl-steps">
+              {guide.itinerary.map((s, i) => (
+                <li>
+                  <span class="sl-step-n">{String(i + 1).padStart(2, '0')}</span>
+                  <div class="sl-step-b"><b>{s.t}.</b> {s.d}</div>
+                </li>
+              ))}
+            </ol>
           </section>
         )}
         {photosAfter('itinerary').map((p) => (
-          <figure class="guide-figure">
+          <figure class="sl-figure">
             <Image src={p.img} alt={p.alt} widths={[640, 1024, 1520]} sizes="(max-width: 800px) 100vw, 760px" formats={['webp']} quality={72} loading="lazy" />
             <figcaption>{p.caption}</figcaption>
           </figure>
         ))}
         {guide.practical?.length > 0 && (
-          <section class="quick-block">
-            <h2>Деньги, связь и практика</h2>
-            <ul class="guide-list">
-              {guide.practical.map((s) => <li><strong>{s.t}</strong> — {s.d}</li>)}
+          <section class="sl-section">
+            <div class="sl-shead"><h2>Деньги, связь и практика</h2></div>
+            <ul class="sl-list">
+              {guide.practical.map((s) => <li><b>{s.t}</b> — {s.d}</li>)}
             </ul>
             {guide.insuranceCta && (
-              <p class="guide-cta">
-                <a href={TP_LINKS.cherehapa} class="aff-cta" rel="sponsored noopener" target="_blank">Оформить страховку {d.cases.vP}</a>
+              <p class="sl-cta">
+                <a href={TP_LINKS.cherehapa} class="sl-aff" rel="sponsored noopener" target="_blank">Оформить страховку {d.cases.vP} →</a>
                 <span class="ad-mark">реклама</span>
-                <span class="guide-cta-trust">{guide.insuranceNote || 'сравнение цен, оплата картами РФ'}</span>
+                <span class="sl-trust">{guide.insuranceNote || 'сравнение цен · оплата картами РФ'}</span>
               </p>
             )}
           </section>
         )}
         {guide.data?.length > 0 && (
-          <section class="quick-block">
-            <h2>{d.cases.nom} в цифрах — сколько стоит в 2026</h2>
-            <table class="guide-data">
+          <section class="sl-section">
+            <div class="sl-shead"><h2>{d.cases.nom} в цифрах — 2026</h2></div>
+            <table class="sl-dash">
               <tbody>
                 {guide.data.map((row) => (
-                  <tr><th scope="row">{row.k}</th><td>{row.v}</td></tr>
+                  <tr><td>{row.k}</td><td class="r">{row.v}</td></tr>
                 ))}
               </tbody>
             </table>
-            {guide.dataNote && <p class="guide-data-note">{guide.dataNote}</p>}
+            {guide.dataNote && <p class="sl-dash-note">{guide.dataNote}</p>}
           </section>
         )}
-        {guide.authorNote && <p class="guide-note">{guide.authorNote}</p>}
+        {guide.authorNote && <p class="sl-note">{guide.authorNote}</p>}
       </>
     )}
 
-    {/* MONTH CALENDAR — clickable */}
-    <section class="quick-block">
-      <h2>{d.cases.nom} по месяцам — стоит ли ехать</h2>
-      <div class="quick-months">
+    {/* Карта (если есть POI) — после расширенного гайда, до календаря */}
+    <CountryMap slug={d.slug} countryNom={d.cases.nom} />
+
+    {/* MONTH CALENDAR — Swiss heat-grid 12 ячеек, цвет = ранг (без эмодзи по брендбуку) */}
+    <section class="sl-section">
+      <div class="sl-shead"><h2>{d.cases.nom} по месяцам — стоит ли ехать</h2></div>
+      <div class="sl-heat">
         {monthsRanked.map((m) => {
           const cls = m.status === 'P' ? 'peak' : m.status === 'G' ? 'good' : m.status === 'O' ? 'off' : m.status === 'B' ? 'bad' : 'closed';
-          const sym = m.status === 'P' ? '🔥' : m.status === 'G' ? '✅' : m.status === 'O' ? '🟡' : m.status === 'B' ? '⛔' : '❄️';
           return (
-            <a href={`/trips/${m.slug}/${d.slug}/`} class={`qm qm--${cls}`}>
-              <span class="qm-name">{m.nom.charAt(0).toUpperCase() + m.nom.slice(1)}</span>
-              <span class="qm-status">{sym}</span>
+            <a href={`/trips/${m.slug}/${d.slug}/`} class={`sl-mh sl-mh--${cls}`} title={m.text || m.nom}>
+              <span class="sl-mh-n">{m.nom.charAt(0).toUpperCase() + m.nom.slice(1, 3)}</span>
             </a>
           );
         })}
       </div>
+      <div class="sl-heat-lg">
+        <span><i class="sl-mh--peak"></i>пик</span>
+        <span><i class="sl-mh--good"></i>хорошо</span>
+        <span><i class="sl-mh--off"></i>нормально</span>
+        <span><i class="sl-mh--bad"></i>не сезон</span>
+        <span><i class="sl-mh--closed"></i>закрыто</span>
+      </div>
     </section>
 
     {/* WHEN TO GO — читаемый помесячный разбор (реальные данные d.t) */}
-    <section class="quick-block">
-      <h2>Когда ехать {d.cases.vP} в 2026 — по месяцам</h2>
-      <p class="quick-answer"><strong>Коротко:</strong> лучшие месяцы — {bestMonths.map(m => m.nom).join(', ') || '—'}{worstMonths.length ? `; хуже всего — ${worstMonths.map(m => m.nom).join(', ')}` : ''}. Ниже — погода, цены и сезон по каждому месяцу.</p>
-      <ul class="quick-monthtext">
+    <section class="sl-section">
+      <div class="sl-shead"><h2>Когда ехать {d.cases.vP} в 2026 — по месяцам</h2></div>
+      <p class="sl-answer"><b>Коротко:</b> лучшие месяцы — {bestMonths.map(m => m.nom).join(', ') || '—'}{worstMonths.length ? `; хуже всего — ${worstMonths.map(m => m.nom).join(', ')}` : ''}. Ниже — погода, цены и сезон по каждому месяцу.</p>
+      <ul class="sl-list">
         {monthsRanked.map((m) => (
-          <li>
-            <strong>{m.nom.charAt(0).toUpperCase() + m.nom.slice(1)}</strong>{' — '}{m.text || '—'}
-          </li>
+          <li><b>{m.nom.charAt(0).toUpperCase() + m.nom.slice(1)}</b> — {m.text || '—'}</li>
         ))}
       </ul>
     </section>
 
+    {/* События и праздники по месяцам — если данные заполнены */}
+    <MonthlyEvents slug={d.slug} countryNom={d.cases.nom} countryNameVp={essVp} />
+
+    {/* Бытовая практика */}
+    <EssentialsCard slug={d.slug} countryName={d.cases.nom} />
+
     {/* PACKING CHECK-LIST */}
-    <section class="quick-block">
-      <h2>Что взять {d.cases.vP}</h2>
-      <p class="quick-answer">Чек-лист по месяцам: одежда под погоду, документы, аптечка, техника, переходник. <a href={`/packing/${d.slug}/`}><strong>Открыть чек-лист {d.cases.gen || d.cases.prep || d.cases.nom} →</strong></a></p>
+    <section class="sl-section">
+      <div class="sl-shead"><h2>Что взять {d.cases.vP}</h2></div>
+      <p class="sl-answer">Чек-лист по месяцам: одежда под погоду, документы, аптечка, техника, переходник. <a href={`/packing/${d.slug}/`} class="sl-link"><b>Открыть чек-лист {d.cases.gen || d.cases.prep || d.cases.nom} →</b></a></p>
     </section>
 
     {/* RELATED POSTS */}
     {d.relatedPosts.length > 0 && (
-      <section class="quick-block">
-        <h2>Подробные гайды {d.cases.loc}</h2>
-        <ul class="quick-related">
+      <section class="sl-section">
+        <div class="sl-shead"><h2>Подробные гайды {d.cases.loc}</h2></div>
+        <ul class="sl-related">
           {d.relatedPosts.map((p) => (
             <li>
               <a href={`/blog/${p.slug}/`}>
-                <strong>{p.title}</strong>
+                <b>{p.title}</b>
                 <span>{p.kind === 'visa' ? 'про визу пошагово' : p.kind === 'season' ? 'про конкретный сезон' : 'личный опыт автора'}</span>
               </a>
             </li>
@@ -448,14 +489,14 @@ if (guide?.itinerary?.length) {
       </section>
     )}
 
-    {/* FAQ */}
-    <section class="quick-block">
-      <h2>FAQ</h2>
-      <div class="faq-block">
+    {/* FAQ — Swiss-details без bg/радиуса */}
+    <section class="sl-section">
+      <div class="sl-shead"><h2>FAQ</h2></div>
+      <div class="sl-faq">
         {faqs.map(f => (
-          <details class="faq-item">
-            <summary class="faq-q">{f.q}</summary>
-            <div class="faq-a"><p>{f.a}</p></div>
+          <details class="sl-faq-i">
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
           </details>
         ))}
       </div>
@@ -465,277 +506,456 @@ if (guide?.itinerary?.length) {
 
     <AviasalesWidget title={`Найти билеты — ${d.cases.vP}`} subid={`hub-${d.slug}`} />
 
-    {/* Авторские туры (YouTravel) — поехать с гидом вместо DIY */}
-    <section class="quick-block">
-      <h2>Поехать с экспертом</h2>
-      <p class="quick-answer">Не хочешь планировать самостоятельно? <a href={TP_LINKS.youtravel} rel="sponsored noopener" target="_blank"><strong>Авторские туры {d.cases.vP} →</strong></a> — маршрут, логистика и малая группа уже собраны. <span class="ad-mark">реклама</span></p>
+    {/* Авторские туры (YouTravel) */}
+    <section class="sl-section">
+      <div class="sl-shead"><h2>Поехать с экспертом</h2></div>
+      <p class="sl-cta">
+        <a href={TP_LINKS.youtravel} class="sl-aff" rel="sponsored noopener" target="_blank">Авторские туры {d.cases.vP} →</a>
+        <span class="ad-mark">реклама</span>
+        <span class="sl-trust">маршрут, логистика и малая группа уже собраны</span>
+      </p>
     </section>
 
     {/* RELATED LINKS */}
-    <section class="quick-block">
-      <h2>Что почитать дальше</h2>
-      <ul class="quick-related-misc">
-        <li><a href="/seasons/">Сравнение всех 70 направлений по сезонам</a></li>
-        <li><a href={calcUrl}>Калькулятор бюджета поездки</a></li>
-        <li><a href={`/trips/${MONTHS[new Date().getMonth()].slug}/${d.slug}/`}>{d.cases.nom} в {MONTHS[new Date().getMonth()].prep} 2026</a></li>
-        <li><a href={`/visa/${d.slug}/`}>Виза {d.cases.vP} — детально</a></li>
-        <li><a href="/countries/">Все страны на сайте</a></li>
+    <section class="sl-section">
+      <div class="sl-shead"><h2>Что почитать дальше</h2></div>
+      <ul class="sl-related">
+        <li><a href="/seasons/"><b>Сравнение всех 70 направлений по сезонам</b></a></li>
+        <li><a href={calcUrl}><b>Калькулятор бюджета поездки</b></a></li>
+        <li><a href={`/trips/${MONTHS[new Date().getMonth()].slug}/${d.slug}/`}><b>{d.cases.nom} в {MONTHS[new Date().getMonth()].prep} 2026</b></a></li>
+        <li><a href={`/visa/${d.slug}/`}><b>Виза {d.cases.vP} — детально</b></a></li>
+        <li><a href="/countries/"><b>Все страны на сайте</b></a></li>
       </ul>
     </section>
 
-    <p class="quick-updated">Актуально на: {DATA_UPDATED_RU} · обновляется каждые 4–6 недель</p>
+    <p class="sl-updated">Актуально на: {DATA_UPDATED_RU} · обновляется каждые 4–6 недель</p>
   </main>
 
   <Footer />
 </Layout>
 
 <style>
-.quick-wrap { max-width: 760px; margin: 0 auto; padding: 0 var(--container-edge, 2rem) var(--space-16, 4rem); }
-
-/* HERO */
-.quick-hero {
-  position: relative;
-  margin: 0 calc(-1 * var(--container-edge, 2rem)) var(--space-8);
-  min-height: clamp(280px, 40vw, 420px);
-  overflow: hidden;
-  isolation: isolate;
-  display: flex; align-items: flex-end;
-}
-.quick-hero--photo img,
-.quick-hero--photo picture {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover; z-index: -2;
-}
-.quick-hero-overlay {
-  position: absolute; inset: 0; z-index: -1;
-  background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.25) 60%, rgba(0,0,0,0.05) 100%);
-}
-.quick-hero--gradient {
-  background: linear-gradient(135deg, var(--g1) 0%, var(--g2) 100%);
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-12);
-  flex-direction: column;
-}
-.quick-hero--gradient::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.4), transparent 50%);
-}
-.quick-hero-emoji {
-  font-size: clamp(5rem, 12vw, 8rem);
-  filter: drop-shadow(0 6px 18px rgba(0,0,0,0.18));
-  margin-bottom: var(--space-3);
-}
-.quick-hero-content {
-  position: relative; z-index: 1;
-  padding: var(--space-8) clamp(1.5rem, 4vw, 3rem);
-  width: 100%;
-  color: var(--quick-fg, #fff);
-}
-.quick-hero--photo .quick-hero-content { color: #fff; }
-.quick-hero--gradient .quick-hero-content { color: var(--text); padding: 0; text-align: center; }
-.quick-hero-eyebrow {
-  font-size: var(--text-xs); letter-spacing: var(--tracking-widest);
-  text-transform: uppercase; color: var(--gold-300, var(--gold));
-  margin-bottom: var(--space-3);
-}
-.quick-hero--gradient .quick-hero-eyebrow { color: rgba(0,0,0,0.55); }
-.quick-hero-title {
+.sl {
+  --line-strong: #1b1914;
+  --line-hair: var(--line);
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(1.1rem, 3vw, 2.6rem) clamp(2rem, 4vw, 4rem);
   font-family: var(--ff-display);
-  font-size: clamp(2.4rem, 6vw, 4rem);
-  font-weight: 700;
-  line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-tight);
-  margin: 0 0 var(--space-2);
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--text);
+}
+
+/* COVER PHOTO — Swiss: full-bleed, лёгкий фильтр, без overlay/scrunch */
+.sl-cover {
+  position: relative;
+  margin: 0 calc(-1 * clamp(1.1rem, 3vw, 2.6rem)) clamp(1.6rem, 3vw, 2.4rem);
+  aspect-ratio: 21 / 9;
+  max-height: 460px;
+  overflow: hidden;
+}
+.sl-cover :global(img),
+.sl-cover :global(picture) {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(.06) contrast(1.02);
+}
+
+/* MANIFEST */
+.sl-manifest {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0 clamp(.8rem, 2vw, 1.6rem);
+  padding: clamp(1rem, 2vw, 1.8rem) 0 clamp(1.2rem, 2.5vw, 2rem);
+}
+.sl-idx {
+  grid-column: 1 / 5; grid-row: 1;
+  font-size: .74rem; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase;
+  color: var(--gold);
+}
+.sl-idx b {
+  display: block; color: var(--text); font-size: .74rem;
+  font-weight: 600; margin-top: .2rem;
+}
+.sl-meta {
+  grid-column: 8 / 13; grid-row: 1;
+  text-align: right; align-self: start;
+  font-size: .8rem; color: var(--text-dim);
+  line-height: 1.5;
+}
+.sl-meta b { color: var(--text); font-weight: 600; }
+.sl-h1 {
+  grid-column: 1 / 13; grid-row: 2;
+  font-weight: 800;
+  font-size: clamp(2.4rem, 7vw, 6.4rem);
+  line-height: .94;
+  letter-spacing: -.035em;
+  margin: clamp(1.2rem, 2.5vw, 2rem) 0 0;
   text-wrap: balance;
 }
-.quick-hero--photo .quick-hero-title { text-shadow: 0 2px 14px rgba(0,0,0,0.4); }
-.quick-hero-year { font-style: italic; color: var(--gold-300); font-weight: 600; }
-.quick-hero--gradient .quick-hero-year { color: rgba(0,0,0,0.45); }
-.quick-hero-sub {
-  font-size: var(--text-base);
-  color: rgba(255,255,255,0.85);
-  margin: 0;
-}
-.quick-hero--gradient .quick-hero-sub { color: rgba(0,0,0,0.62); }
-
-/* TLDR */
-.quick-tldr {
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-left: 3px solid var(--gold-600);
-  padding: 1.2rem 1.4rem;
-  border-radius: var(--radius-3);
-  font-size: var(--text-base);
-  line-height: var(--leading-relaxed);
-  color: var(--text-dim);
-  margin-bottom: var(--space-8);
-}
-.quick-tldr strong { color: var(--text); }
-.quick-byline { font-size: 0.78rem; color: var(--text-faint); margin: -0.6rem 0 var(--space-8); letter-spacing: 0.02em; }
-.quick-byline a { color: var(--text-dim); text-decoration: underline; text-decoration-color: rgba(86,82,74,0.4); text-underline-offset: 2px; }
-.quick-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
-.quick-byline .byline-fresh { color: var(--text-faint); }
-
-/* FACTS GRID */
-.quick-facts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: var(--space-3);
-  margin-bottom: var(--space-10);
-}
-.qf-card {
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-4);
-  padding: var(--space-5);
-  display: flex; flex-direction: column; gap: var(--space-1);
-}
-.qf-label {
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-widest);
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin-bottom: var(--space-1);
-}
-.qf-value {
-  font-size: var(--text-base);
+.sl-h1 .rd { color: var(--gold); }
+.sl-sub {
+  grid-column: 1 / 9; grid-row: 3;
+  font-size: clamp(1rem, 1.3vw, 1.18rem);
   color: var(--text);
-  font-weight: 500;
-  display: flex; flex-wrap: wrap; gap: var(--space-2);
+  margin-top: 1.4rem;
+  max-width: 56ch;
+  line-height: 1.5;
 }
-.qf-value--lg {
-  font-family: var(--ff-display);
-  font-size: var(--text-2xl);
-  font-weight: 600;
-  letter-spacing: var(--tracking-tight);
+
+.sl-vlist {
+  grid-column: 1 / 13; grid-row: 4;
+  margin-top: 1.8rem;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
 }
-.qf-value-sub { font-size: var(--text-xs); color: var(--text-faint); margin-top: 2px; }
-.qf-month {
-  background: rgba(201,151,58,0.12);
-  color: var(--gold-700, var(--gold));
-  padding: 0.18rem 0.55rem;
-  border-radius: var(--radius-pill);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  text-decoration: none;
+.sl-vi {
+  padding: .85rem 1.2rem .95rem;
+  border-right: 1px solid var(--line-hair);
 }
-.qf-month:hover { background: var(--gold-600); color: #fff; }
-.qf-link {
-  margin-top: auto; padding-top: var(--space-2);
-  font-size: var(--text-sm);
-  color: var(--gold-600);
-  text-decoration: underline; text-underline-offset: 3px;
-  text-decoration-color: rgba(201,151,58,0.4);
+.sl-vi:first-child { padding-left: 0; }
+.sl-vi:last-child { border-right: none; }
+.sl-vi span {
+  display: block;
+  font-size: .66rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: .35rem;
+}
+.sl-vi span b {
+  color: var(--gold);
+  margin-right: .35rem;
+  font-weight: 700;
+}
+.sl-vi > div {
+  font-weight: 800;
+  font-size: .98rem;
+  color: var(--text);
+  line-height: 1.2;
+  letter-spacing: -.005em;
+}
+
+@media (max-width: 760px) {
+  .sl-idx, .sl-meta, .sl-h1, .sl-sub, .sl-vlist {
+    grid-column: 1 / -1; grid-row: auto;
+  }
+  .sl-meta { text-align: left; margin-top: .6rem; }
+  .sl-h1 { margin-top: 1.1rem; }
+  .sl-vlist { grid-template-columns: repeat(2, 1fr); }
+  .sl-vi:nth-child(2n) { border-right: none; }
+  .sl-vi:nth-child(odd) { padding-left: 0; }
+  .sl-vi:nth-child(n+3) { border-top: 1px solid var(--line-hair); }
 }
 
 /* SECTIONS */
-.quick-block { margin-bottom: var(--space-10); }
-.quick-block h2 {
-  font-family: var(--ff-display);
-  font-size: var(--text-3xl);
-  font-weight: 600;
-  letter-spacing: var(--tracking-tight);
-  line-height: var(--leading-tight);
-  margin: 0 0 var(--space-5);
+.sl-section { margin-top: clamp(2.4rem, 5vw, 4rem); }
+.sl-shead {
+  border-top: 2px solid var(--line-strong);
+  padding-top: .8rem;
+  margin-bottom: 1.4rem;
+}
+.sl-shead h2 {
+  font-weight: 800;
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  letter-spacing: -.02em;
+  line-height: 1.1;
+  margin: 0;
   color: var(--text);
 }
-.quick-block a { color: var(--gold-600); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(201,151,58,0.4); }
 
-/* MONTH CALENDAR */
-.quick-months {
+.sl-tldr {
+  font-size: clamp(1rem, 1.3vw, 1.15rem);
+  line-height: 1.55;
+  color: var(--text);
+  max-width: 76ch;
+  padding: 0;
+  margin: 0 0 1rem;
+}
+.sl-tldr b { color: var(--gold); font-weight: 800; }
+.sl-answer {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--text);
+  max-width: 76ch;
+}
+.sl-answer b { color: var(--text); font-weight: 800; }
+.sl-link { color: var(--gold); text-decoration: 1px underline var(--gold); text-underline-offset: 4px; font-weight: 700; }
+.sl-byline { font-size: .76rem; color: var(--text-dim); margin: 0; letter-spacing: .01em; }
+.sl-byline a { color: var(--text); text-decoration: 1px underline rgba(86,82,74,.4); text-underline-offset: 3px; }
+.sl-byline a.byline-author { color: var(--gold); text-decoration: 1px underline var(--gold); }
+.sl-byline .byline-fresh { color: var(--text-faint); }
+
+/* QUICK ACTIONS — 4 hairline-card grid (visa/budget/months/flight) */
+.sl-actions {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: var(--space-2);
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
 }
-.qm {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0.7rem 1rem;
-  background: var(--bg2); border: 1px solid var(--line);
-  border-radius: var(--radius-3);
-  text-decoration: none !important;
-  transition: border-color 0.15s, background 0.15s, transform 0.1s;
-}
-.qm:hover { border-color: rgba(201,151,58,0.4); background: var(--bg3); transform: translateY(-1px); }
-.qm-name { color: var(--text); font-size: var(--text-sm); font-weight: 500; }
-.qm-status { font-size: 1rem; }
-.qm--peak { border-left-color: #22c55e; border-left-width: 3px; }
-.qm--good { border-left-color: #4a9eff; border-left-width: 3px; }
-.qm--off { border-left-color: #f59e0b; border-left-width: 3px; }
-.qm--bad { border-left-color: #ef4444; border-left-width: 3px; }
-.qm--closed { opacity: 0.6; }
-
-/* RELATED LINKS */
-.quick-related, .quick-related-misc { padding-left: 1.4rem; }
-.quick-related li, .quick-related-misc li {
-  color: var(--text-dim); line-height: var(--leading-relaxed);
-  margin-bottom: var(--space-2);
-}
-.quick-related li a {
-  display: flex; flex-direction: column; gap: 2px;
+.sl-action {
+  padding: 1rem 1.2rem 1.1rem;
+  border-right: 1px solid var(--line-hair);
   text-decoration: none;
+  color: var(--text);
+  display: flex; flex-direction: column; gap: .25rem;
+  min-height: 96px;
+  transition: background .15s;
 }
-.quick-related li a strong {
-  color: var(--gold-600);
-  text-decoration: underline; text-decoration-color: rgba(201,151,58,0.4); text-underline-offset: 3px;
-}
-.quick-related li a span { color: var(--text-faint); font-size: var(--text-sm); }
-.quick-related li a:hover strong { color: var(--gold-500); }
+.sl-action:first-child { padding-left: 0; }
+.sl-action:last-child { border-right: none; }
+.sl-action:hover { background: rgba(142, 102, 24, 0.06); }
+.sl-a-l { font-size: .66rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-dim); }
+.sl-a-v { font-weight: 800; font-size: 1.05rem; letter-spacing: -.005em; color: var(--text); line-height: 1.2; }
+.sl-a-s { margin-top: auto; padding-top: .4rem; font-size: .76rem; color: var(--gold); font-weight: 600; }
 
-.quick-updated {
-  margin-top: var(--space-12);
-  font-size: var(--text-xs);
+@media (max-width: 760px) {
+  .sl-actions { grid-template-columns: repeat(2, 1fr); }
+  .sl-action:nth-child(2n) { border-right: none; }
+  .sl-action:nth-child(odd) { padding-left: 0; }
+  .sl-action:nth-child(n+3) { border-top: 1px solid var(--line-hair); }
+}
+
+/* GUIDE LIST — hairline rows */
+.sl-list {
+  list-style: none; margin: 0; padding: 0;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+.sl-list li {
+  padding: .8rem 0 .85rem;
+  border-top: 1px solid var(--line-hair);
+  font-size: .96rem; line-height: 1.55;
+  color: var(--text);
+}
+.sl-list li:first-child { border-top: none; }
+.sl-list li b { color: var(--text); font-weight: 800; }
+
+/* STEPS — numbered itinerary */
+.sl-steps {
+  list-style: none; margin: 0; padding: 0;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+.sl-steps li {
+  padding: .85rem 0;
+  border-top: 1px solid var(--line-hair);
+  display: grid;
+  grid-template-columns: 2.6rem 1fr;
+  gap: 0 .8rem;
+}
+.sl-steps li:first-child { border-top: none; }
+.sl-step-n {
+  font-family: var(--ff-display);
+  font-size: .76rem; font-weight: 700; color: var(--gold);
+  letter-spacing: .04em;
+  padding-top: 2px;
+}
+.sl-step-b { font-size: .95rem; line-height: 1.55; color: var(--text); }
+.sl-step-b b { color: var(--text); font-weight: 800; }
+
+/* COMPARE */
+.sl-comp {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+.sl-cc {
+  padding: 1rem 1.2rem 1.1rem;
+  border-right: 1px solid var(--line-hair);
+  display: flex; flex-direction: column;
+}
+.sl-cc:first-child { padding-left: 0; }
+.sl-cc:last-child { border-right: none; }
+.sl-cc-name { font-weight: 800; font-size: 1.05rem; letter-spacing: -.005em; color: var(--text); line-height: 1.2; }
+.sl-cc-sub {
+  margin-top: .2rem;
+  font-size: .66rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-dim);
+}
+.sl-cc-for { flex: 1; margin: .5rem 0 .85rem; font-size: .88rem; line-height: 1.5; color: var(--text-dim); }
+.sl-cc-cta { font-size: .82rem; }
+.sl-cc-mark { margin: .7rem 0 0; font-size: .74rem; color: var(--text-faint); line-height: 1.5; }
+
+/* DASH — данные «в цифрах» */
+.sl-dash {
+  width: 100%; border-collapse: collapse; font-size: .94rem;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+.sl-dash td {
+  padding: .7rem 0 .75rem;
+  border-top: 1px solid var(--line-hair);
+  vertical-align: baseline; color: var(--text); line-height: 1.5;
+}
+.sl-dash tr:first-child td { border-top: none; }
+.sl-dash td.r { text-align: right; font-weight: 800; }
+.sl-dash-note { margin: .7rem 0 0; font-size: .78rem; color: var(--text-faint); line-height: 1.5; }
+
+/* FIGURE — фото гайда без скруглений */
+.sl-figure { margin: 1.6rem 0; }
+.sl-figure :global(img) { display: block; width: 100%; height: auto; filter: grayscale(.06) contrast(1.02); }
+.sl-figure figcaption { margin-top: .55rem; font-size: .8rem; color: var(--text-faint); line-height: 1.5; }
+
+.sl-note {
+  font-size: .85rem; font-style: italic; color: var(--text-dim);
+  border-left: 2px solid var(--gold); padding-left: .9rem;
+  margin: 1.2rem 0 0; line-height: 1.55;
+}
+
+/* HEAT — 12 ячеек месяца, цвет = ранг, без эмодзи */
+.sl-heat {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 2px;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+  padding: .5rem 0;
+}
+.sl-mh {
+  aspect-ratio: 1 / 1.1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: .78rem;
+  letter-spacing: .04em;
+  min-height: 44px;
+  transition: filter .15s;
+}
+.sl-mh:hover { filter: brightness(.94); }
+.sl-mh-n { font-family: var(--ff-display); font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+/* Цвета подобраны под WCAG AA: контраст ≥4.5:1 для всех ячеек */
+.sl-mh--peak    { background: #8e6618; color: #fff; }              /* gold + white = 4.6:1 */
+.sl-mh--good    { background: #1b1914; color: #fff; }              /* ink + white = 18:1 */
+.sl-mh--off     { background: #e6dcc4; color: #1b1914; }           /* light gold tint + ink = 12:1 */
+.sl-mh--bad     { background: #cdc9bd; color: #1b1914; }           /* hair + ink = 7:1 */
+.sl-mh--closed  { background: var(--bg); color: #1b1914; border: 1px solid #1b1914; }
+.sl-heat-lg {
+  display: flex; flex-wrap: wrap; gap: .6rem 1.2rem;
+  margin-top: .75rem;
+  font-size: .72rem;
+  color: var(--text-dim); font-weight: 600;
+}
+.sl-heat-lg span { display: inline-flex; align-items: center; gap: .35rem; }
+.sl-heat-lg i {
+  width: 12px; height: 12px;
+  display: inline-block;
+}
+@media (max-width: 760px) {
+  .sl-heat { grid-template-columns: repeat(6, 1fr); }
+}
+
+/* CTA — Swiss: gold 2px underline, тач ≥44px */
+.sl-cta {
+  margin: 1.2rem 0 0;
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: .35rem .7rem;
+  font-size: .95rem; line-height: 1.5;
+}
+.sl-aff {
+  font-weight: 800;
+  color: var(--text);
+  text-decoration: 2px underline var(--gold);
+  text-underline-offset: 4px;
+  display: inline-flex; align-items: center;
+  min-height: 44px;
+  letter-spacing: -.005em;
+}
+.sl-aff:hover { color: var(--gold); }
+.ad-mark {
+  font-size: .6rem; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase;
   color: var(--text-faint);
-  text-align: center;
-  letter-spacing: var(--tracking-wide);
-  padding-top: var(--space-6);
-  border-top: 1px solid var(--line);
+}
+.sl-trust {
+  flex-basis: 100%;
+  font-size: .76rem;
+  color: var(--text-dim);
+  letter-spacing: .01em;
 }
 
-@media (max-width: 600px) {
-  .quick-hero { min-height: 250px; }
-  .quick-block h2 { font-size: var(--text-2xl); }
+/* FAQ — Swiss: без bg, без скруглений, hairline-cross 12×12 */
+.sl-faq {
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
 }
-.quick-answer { margin: 0 0 1rem; font-size: 1.02rem; }
-.quick-monthtext { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.5rem; list-style: disc; }
-.quick-monthtext li { line-height: 1.5; }
-.quick-monthtext strong { font-weight: 700; }
+.sl-faq-i { border-top: 1px solid var(--line-hair); }
+.sl-faq-i:first-child { border-top: none; }
+.sl-faq-i summary {
+  font-weight: 700;
+  font-size: .98rem;
+  color: var(--text);
+  padding: .85rem 2rem .9rem 0;
+  cursor: pointer;
+  list-style: none;
+  position: relative;
+  line-height: 1.45;
+}
+.sl-faq-i summary::-webkit-details-marker { display: none; }
+.sl-faq-i summary::after {
+  content: ''; position: absolute;
+  right: 0; top: 50%; transform: translateY(-50%);
+  width: 12px; height: 1px;
+  background: var(--text);
+  transition: transform .2s;
+}
+.sl-faq-i summary::before {
+  content: ''; position: absolute;
+  right: 5.5px; top: 50%; transform: translateY(-50%);
+  width: 1px; height: 12px;
+  background: var(--text);
+  transition: opacity .2s;
+}
+.sl-faq-i[open] summary::before { opacity: 0; }
+.sl-faq-i p {
+  padding: 0 0 1rem;
+  margin: 0;
+  font-size: .9rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
 
-/* РАСШИРЕННЫЙ ГАЙД */
-.guide-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.7rem; }
-.guide-list li { position: relative; padding-left: 1.05rem; line-height: 1.55; color: var(--text-dim); }
-.guide-list li::before { content: ''; position: absolute; left: 0; top: 0.62em; width: 5px; height: 5px; border-radius: 50%; background: var(--gold-600); }
-.guide-list li strong { color: var(--text); font-weight: 700; }
-.guide-list--steps li { padding-left: 0.9rem; border-left: 2px solid var(--line); }
-.guide-list--steps li::before { content: none; }
-.guide-note { font-size: 0.85rem; font-style: italic; color: var(--text-faint); border-left: 2px solid var(--line); padding-left: 0.9rem; margin: -0.4rem 0 var(--space-10); line-height: 1.5; }
+/* RELATED */
+.sl-related {
+  list-style: none; margin: 0; padding: 0;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+.sl-related li {
+  padding: .75rem 0;
+  border-top: 1px solid var(--line-hair);
+  font-size: .92rem; line-height: 1.55;
+  color: var(--text-dim);
+}
+.sl-related li:first-child { border-top: none; }
+.sl-related a {
+  color: var(--text);
+  text-decoration: none;
+  display: block;
+}
+.sl-related a b {
+  color: var(--gold);
+  text-decoration: 1px underline var(--gold);
+  text-underline-offset: 3px;
+  font-weight: 700;
+}
+.sl-related a span { display: block; color: var(--text-faint); font-size: .8rem; margin-top: .2rem; }
 
-/* Inline-фото гайда (Я.Диск) */
-.guide-figure { margin: -0.4rem 0 var(--space-10); }
-.guide-figure img { width: 100%; height: auto; display: block; border-radius: 8px; }
-.guide-figure figcaption { margin-top: 0.5rem; font-size: 0.8rem; font-style: italic; color: var(--text-faint); line-height: 1.45; }
-
-/* Inline-CTA партнёрки внутри секций гайда (38-ФЗ: rel=sponsored + .ad-mark) */
-.guide-cta { margin: 0.9rem 0 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.55rem; font-size: 0.95rem; line-height: 1.4; }
-.guide-cta-trust { flex-basis: 100%; font-size: 0.76rem; color: var(--text-faint); letter-spacing: 0.01em; }
-
-/* Уникальные данные на страну — таблица «в цифрах» (анти-scaled-content + AEO) */
-.guide-data { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
-.guide-data tr { border-bottom: 1px solid var(--line); }
-.guide-data tr:last-child { border-bottom: none; }
-.guide-data th { text-align: left; font-weight: 400; color: var(--text-dim); padding: 0.6rem 1rem 0.6rem 0; vertical-align: top; line-height: 1.4; }
-.guide-data td { text-align: right; font-weight: 700; color: var(--text); padding: 0.6rem 0; vertical-align: top; line-height: 1.4; white-space: nowrap; font-variant-numeric: tabular-nums lining-nums; }
-.guide-data-note { margin: 0.7rem 0 0; font-size: 0.78rem; color: var(--text-faint); line-height: 1.5; }
-
-/* Comparison-блок: сравнение вариантов с партнёрской ссылкой в каждой карточке.
-   Хайрлайн-сетка (без заливки/тени) — editorial, не bootstrap-cards. */
-.guide-compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0.7rem; }
-.gc-card { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 8px; padding: 0.9rem 1rem; }
-.gc-name { font-weight: 700; color: var(--text); line-height: 1.3; }
-.gc-sub { margin-top: 0.15rem; font-family: var(--ff-mono); font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-faint); }
-.gc-for { flex: 1; margin: 0.5rem 0 0.85rem; font-size: 0.88rem; line-height: 1.45; color: var(--text-dim); }
-.gc-cta { margin-top: auto; font-size: 0.9rem; }
-.gc-mark { margin: 0.7rem 0 0; font-size: 0.74rem; color: var(--text-faint); line-height: 1.5; }
+.sl-updated {
+  margin-top: clamp(2rem, 4vw, 3.5rem);
+  font-size: .72rem;
+  color: var(--text-faint);
+  text-align: left;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding-top: .8rem;
+  border-top: 1px solid var(--line-strong);
+}
 </style>
