@@ -366,7 +366,7 @@ const pricesUpdatedAt = pricesData.updatedAt
 
   <!-- Side-panel (desktop) / Bottom-sheet (mobile) — открывается по клику на ячейку -->
   <div id="panelOverlay" class="panel-overlay" aria-hidden="true"></div>
-  <aside id="cellPanel" class="cell-panel" role="dialog" aria-modal="false" aria-labelledby="panelTitle" aria-hidden="true">
+  <aside id="cellPanel" class="cell-panel" role="dialog" aria-modal="false" aria-labelledby="panelTitle" inert>
     <header class="panel-header">
       <div>
         <h2 id="panelTitle"></h2>
@@ -612,7 +612,7 @@ function openPanel(cell) {
   }
 
   // Show panel
-  document.getElementById('cellPanel').setAttribute('aria-hidden', 'false');
+  document.getElementById('cellPanel').removeAttribute('inert');
   document.getElementById('cellPanel').classList.add('is-open');
   document.getElementById('panelOverlay').classList.add('is-open');
   document.body.classList.add('panel-open');
@@ -636,7 +636,7 @@ function toggleBlock(blockId, textId, content) {
 }
 
 function closePanel() {
-  document.getElementById('cellPanel').setAttribute('aria-hidden', 'true');
+  document.getElementById('cellPanel').setAttribute('inert', '');
   document.getElementById('cellPanel').classList.remove('is-open');
   document.getElementById('panelOverlay').classList.remove('is-open');
   document.body.classList.remove('panel-open');
@@ -800,17 +800,17 @@ thead tr:first-child th {
   cursor: default;
 }
 thead tr:first-child th:first-child { text-align: left; padding-left: 1.2rem; min-width: 240px; position: sticky; left: 0; z-index: 11; border-right: 1px solid var(--line); box-shadow: 6px 0 10px -8px rgba(0, 0, 0, 0.10); }
-.month-header { text-align: center; min-width: 56px; border-left: 1px solid color-mix(in oklch, var(--line) 55%, transparent); transition: background 0.15s, color 0.15s; }
-.month-header.is-current { color: var(--gold) !important; background: var(--gold-glow); box-shadow: inset 0 -2px 0 var(--gold); }
-.month-header.hover-col { background: rgba(201,151,58,0.06); color: var(--gold-dim); }
+.month-header { text-align: center; min-width: 56px; border-left: 1px solid color-mix(in oklch, var(--line) 55%, transparent); transition: background 0.15s, color 0.15s; color: var(--text); }
+.month-header.is-current { color: var(--text) !important; background: var(--gold-glow); box-shadow: inset 0 -2px 0 var(--gold); font-weight: 800; }
+.month-header.hover-col { background: rgba(201,151,58,0.10); color: var(--text); }
 
 tbody tr { border-bottom: 1px solid var(--line); transition: background 0.15s; }
 tbody tr:last-child { border-bottom: none; }
 tbody tr:hover { background: rgba(201,151,58,0.03); }
 
 .group-header td {
-  background: var(--bg3); color: var(--gold); font-family: var(--ff-mono);
-  font-size: 0.82rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+  background: var(--bg3); color: var(--text); font-family: var(--ff-mono);
+  font-size: 0.82rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
   padding: 0.7rem 1.2rem; position: sticky; left: 0;
   border-bottom: 1px solid var(--line); border-top: 1px solid var(--line);
 }
@@ -886,7 +886,7 @@ tbody tr td.cell.dimmed { opacity: 0.28; }
   font-size: 0.78rem; color: var(--text-dim); line-height: 1.7;
   border-left: 2px solid var(--gold-dim); background: rgba(201,151,58,0.04);
 }
-.climate-disclaimer strong { color: var(--gold); font-weight: 500; }
+.climate-disclaimer strong { color: var(--text); font-weight: 700; }
 
 .table-footer {
   max-width: 1400px; margin: 1.5rem auto 0; padding: 0 clamp(1rem, 4vw, 3rem);
@@ -928,7 +928,7 @@ h1 {
 h1 em { color: var(--gold); font-style: normal; }
 .subtitle { color: var(--gold-dim); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; margin-top: 0.7rem; }
 .seasons-byline { font-size: 0.76rem; color: var(--text-faint); margin-top: 0.6rem; letter-spacing: 0.01em; }
-.seasons-byline a { color: var(--text-dim); text-decoration: none; }
+.seasons-byline a { color: var(--text-dim); text-decoration: underline; text-decoration-color: rgba(86,82,74,0.5); text-underline-offset: 2px; }
 .seasons-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
 .seasons-byline .byline-fresh { color: var(--text-faint); }
 
@@ -948,9 +948,9 @@ h1 em { color: var(--gold); font-style: normal; }
   letter-spacing: 0.05em; padding: 0.22rem 0.6rem; border-radius: var(--radius-pill); border: 1px solid;
   text-transform: uppercase;
 }
-.pill-os   { color: var(--gold); border-color: rgba(201,151,58,0.3); background: rgba(201,151,58,0.07); }
-.pill-free { color: var(--peak-text); border-color: rgba(34,197,94,0.3);  background: rgba(34,197,94,0.07); }
-.pill-uni  { color: var(--good-text); border-color: rgba(74,158,255,0.3); background: rgba(74,158,255,0.07); }
+.pill-os   { color: var(--text); border-color: var(--gold); background: rgba(201,151,58,0.10); font-weight: 700; }
+.pill-free { color: var(--text); border-color: var(--text); background: transparent; font-weight: 700; }
+.pill-uni  { color: var(--text); border-color: var(--text-dim); background: transparent; font-weight: 700; }
 .mission-sep { color: var(--gold-dim); font-size: 0.8rem; }
 
 .footer-contribute {

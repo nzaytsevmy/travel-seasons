@@ -343,7 +343,7 @@ const ldJson = {
 .trips-header h1 em { color: var(--gold); font-style: italic; }
 .trips-sub { color: var(--text-dim); font-size: 0.95rem; max-width: 640px; margin: 0 auto; line-height: 1.6; }
 .trips-byline { font-size: 0.76rem; color: var(--text-faint); max-width: 640px; margin: 0.7rem auto 0; letter-spacing: 0.01em; }
-.trips-byline a { color: var(--text-dim); text-decoration: none; }
+.trips-byline a { color: var(--text-dim); text-decoration: underline; text-decoration-color: rgba(86,82,74,0.5); text-underline-offset: 2px; }
 .trips-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
 .trips-byline .byline-fresh { color: var(--text-faint); }
 
@@ -421,12 +421,13 @@ const ldJson = {
 .month-nav-label { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 0.8rem; }
 .month-pills { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .month-pill {
-  font-size: 0.78rem; padding: 0.4rem 0.85rem; border-radius: 3px;
-  border: 1px solid var(--line); color: var(--text-dim); letter-spacing: 0.04em;
+  font-size: 0.82rem; padding: 0.45rem 0.9rem; border-radius: 3px;
+  border: 1px solid var(--text-dim); color: var(--text); letter-spacing: 0.04em;
+  font-weight: 600;
   transition: border-color 0.2s ease, color 0.2s ease;
 }
-.month-pill:hover { border-color: var(--gold-dim); color: var(--text); }
-.month-pill.active { border-color: var(--gold); color: var(--gold); background: var(--gold-glow); }
+.month-pill:hover { border-color: var(--gold); color: var(--text); background: rgba(201,151,58,0.06); }
+.month-pill.active { border-color: var(--gold); color: var(--text); background: var(--gold-glow); font-weight: 800; }
 
 @media (max-width: 600px) {
   .trips-header { padding: 2rem 0 1.5rem; }
