@@ -30,7 +30,7 @@ const updated = ess?.updated || cust?.updated || null;
 // Короткие практики — 4 ячейки value-list
 const quick: { idx: string; k: string; main: string; meta?: string; note?: string }[] = [];
 if (plug) quick.push({ idx: '01', k: 'Розетки', main: `Тип ${plug.types}`, meta: `${plug.voltage} · ${plug.hz}`, note: 'Переходник нужен, если техника не USB-зарядка.' });
-if (ess?.water) quick.push({ idx: '02', k: 'Вода из-под крана', main: ess.water.tap_drinkable ? 'Можно пить' : 'Не пить — бутил.', meta: ess.water.note });
+if (ess?.water) quick.push({ idx: '02', k: 'Вода из-под крана', main: ess.water.tap_drinkable ? 'Можно пить' : 'Только бутилированная', meta: ess.water.note });
 if (ess?.tipping) {
   const tipMain = (/нет/i.test(ess.tipping.restaurants) && /нет/i.test(ess.tipping.taxi)) ? 'Не приняты' : 'По ситуации';
   quick.push({ idx: '03', k: 'Чаевые', main: tipMain, meta: `Рестораны: ${ess.tipping.restaurants}. Такси: ${ess.tipping.taxi}.`, note: ess.tipping.hotel ? `Отели: ${ess.tipping.hotel}.` : undefined });
