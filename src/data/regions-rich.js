@@ -10,7 +10,7 @@ export const regionsRich = {
   // ─── Австралия & Океания ───
   'australia-east': {
     events: ['Sydney Festival, теннис Australian Open', null, null, 'Anzac Day 25 апр, осенние цвета', null, 'Vivid Sydney — свет/инсталляции', null, null, 'AFL Grand Final', null, 'Melbourne Cup', 'Boxing Day Test, фейерверк над Гаванью'],
-    notes:  [null, 'Февраль — лучший месяц на Сиднее, теплее воды чем в январе', null, 'Был в апреле — Голубые горы в красном, без толп, идеал', null, null, 'Зимой реально холодно в Мельбурне, +10°C, недооценка', null, 'Сентябрь — джакаранды цветут фиолетом, мой топ для Сиднея', null, null, null],
+    notes:  [null, 'Февраль — лучший месяц на Сиднее, теплее воды чем в январе', 'Австралия как США, но чище, спокойнее и человечнее. Попугаев тут столько же, сколько голубей в России', 'Был в апреле — Голубые горы в красном, без толп, идеал. Мельбурн отличается от Сиднея: меньше пляжной расслабленности, больше рабочего ритма', null, null, 'Зимой реально холодно в Мельбурне, +10°C, недооценка', null, 'Сентябрь — джакаранды цветут фиолетом, мой топ для Сиднея', null, null, null],
     negatives: ['но Сидней забит школьными каникулами и отелями ×2', null, null, null, null, null, null, null, null, null, 'но октябрь — нестабильный ветер, на пляжах прохладно', null]
   },
   'australia-north': {
@@ -209,6 +209,28 @@ export const regionsRich = {
   'chile-fjords': {
     events: [null, null, null, null, null, null, null, null, null, null, null, null],
     notes:  [null, 'Февраль на Каррера — мраморные пещеры, бирюза до боли в глазах', null, null, null, null, null, null, null, null, null, null],
+    negatives: [null, null, null, null, null, null, null, null, null, null, null, null]
+  },
+
+  // ─── Дополнено из канала @traveltriberu (2025-2026) — реальные посты Никиты ───
+  'new-zealand': {
+    events: [null, null, null, 'Осенние цвета Wanaka, Queenstown', null, null, null, null, null, null, null, null],
+    notes: [null, null, 'В Милфорд надо ехать в дождь — постоянных водопадов всего два, остальное временные, их включает дождь. После ливня каждая стена сверху превращается в сотню водопадов', 'Озеро Пукаки: вода синяя, как будто кто-то залил туда небо. Ледниковая мука с гор — без фильтров. Без машины ехать бессмысленно', null, null, null, null, null, null, null, null],
+    negatives: [null, null, null, null, null, null, null, null, null, null, null, null]
+  },
+  // Уганда — нет в DIRECTIONS (только cases), поэтому notes сюда не идёт. Если страна
+  // появится в DIRECTIONS — раскомментировать блок ниже.
+  // 'uganda': {
+  //   notes: ['В отель пришёл дикий слон...', 'Львы лазают по деревьям в Ишаше...', ..., 'Прямой взгляд гориллы — вызов...'],
+  // },
+  'peru': {
+    events: [null, null, null, null, null, 'Инти Райми в Куско', 'Fiestas Patrias', null, null, null, null, null],
+    notes: ['Ловля пираний в перуанской Амазонии (Икитос): дневной тур 60-80 USD, 3 дня в лодже типа Maniti Eco — 300-500 USD полный пансион. Ночёвки в кронах деревьев', null, null, null, null, null, null, null, null, null, null, 'Жили в лодже посреди джунглей, катались по притокам Амазонки. Соседи: ленивцы, наглые обезьянки, кайман и розовый речной дельфин — ради него готов был вставать в любую рань'],
+    negatives: [null, null, null, null, null, null, null, null, null, null, null, null]
+  },
+  'ecuador': {
+    events: [null, null, null, null, null, null, null, null, null, null, null, null],
+    notes: [null, null, null, null, null, null, null, null, null, null, null, 'Голубоногая олуша на Галапагосах танцует, поднимая неоново-бирюзовые лапы. Назка-олуша надувает красный зобный мешок с громким хлопком — 8 литров воздуха за 0,8 сек. И всё это в метре от моих кроссовок'],
     negatives: [null, null, null, null, null, null, null, null, null, null, null, null]
   },
 };
