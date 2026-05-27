@@ -17,6 +17,8 @@ import { DATA_UPDATED_RU } from '../../../data/meta.js';
 import { TP_LINKS, aviasalesRoute } from '../../../data/affiliate.js';
 import { getHolidaysByMonth } from '../../../data/country-holidays.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
+import { regionsRich } from '../../../data/regions-rich.js';
+import { getGuide } from '../../../data/country-guides.js';
 
 // Cover photos для страны — те же что используются на /<slug>/
 const destPhotos = import.meta.glob('../../../assets/destinations/*.jpg', {
@@ -50,6 +52,13 @@ const monthWeather = getMonthlyWeather(d.slug, monthIdx); // реальные mi
 // Cover-photo страны (если есть в assets/destinations/<slug>.jpg)
 const coverPath = `../../../assets/destinations/${d.slug}.jpg`;
 const coverImage = destPhotos[coverPath];
+
+// Реальный авторский опыт (E-E-A-T) — берём ТОЛЬКО что уже есть в repo, не выдумываем
+const rich = regionsRich[d.slug];
+const personalMonthNote = rich?.notes?.[monthIdx] || null;  // конкретный комментарий под месяц
+const guide = getGuide(d.slug);
+const authorOverall = guide?.authorNote || null;             // общий «был сам» по стране
+const visitedThisMonth = Boolean(personalMonthNote);
 const HERO_WIDTHS = [512, 768, 1024, 1600];
 const heroPreload = coverImage
   ? await getImage({ src: coverImage, widths: HERO_WIDTHS, formats: ['webp'], quality: 70 })
@@ -290,6 +299,27 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       </section>
     )}
 
+    {/* ЛИЧНЫЙ ОПЫТ — только если notes[monthIdx] или authorNote реально есть в repo */}
+    {(personalMonthNote || authorOverall) && (
+      <section class="pmu-section">
+        <div class="pmu-shead"><h2>Личный опыт автора</h2></div>
+        <div class="pmu-personal">
+          {personalMonthNote && (
+            <p class="pmu-personal-month">
+              <b class="pmu-personal-mark">★ {monthCap} {d.cases.loc}, был лично</b><br />
+              {personalMonthNote}
+            </p>
+          )}
+          {!personalMonthNote && authorOverall && (
+            <p class="pmu-personal-overall">
+              <b class="pmu-personal-mark">★ {d.cases.nom} — личный опыт</b><br />
+              {authorOverall}
+            </p>
+          )}
+        </div>
+      </section>
+    )}
+
     {/* СОБЫТИЯ МЕСЯЦА — главный month-specific блок */}
     {monthEvents.length > 0 && (
       <section class="pmu-section">
@@ -509,6 +539,29 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
   .pmu-weather-grid { grid-template-columns: 1fr; }
   .pmu-w-cell { border-right: none; padding-left: 0; border-top: 1px solid var(--line-hair); }
   .pmu-w-cell:first-child { border-top: none; }
+}
+
+/* PERSONAL — авторский опыт с явной пометкой «был лично» */
+.pmu-personal {
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+  padding: 1rem 0 1.1rem;
+}
+.pmu-personal p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--text);
+}
+.pmu-personal p + p { margin-top: .8rem; padding-top: .8rem; border-top: 1px solid var(--line-hair); }
+.pmu-personal-mark {
+  display: inline-block;
+  color: var(--gold);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: .3rem;
 }
 
 /* PRICE block */
