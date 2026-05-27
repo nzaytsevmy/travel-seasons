@@ -6,6 +6,7 @@
 import Layout from '../../../layouts/Layout.astro';
 import Footer from '../../../components/Footer.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import { Image, getImage } from 'astro:assets';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
 import { VISA_DETAILS } from '../../../data/visa-details.js';
 import { getBucket } from '../../../data/packing-weather-buckets.js';
@@ -15,6 +16,13 @@ import { PLUG_TYPES, plugAdvice } from '../../../data/country-plug-types.js';
 import { DATA_UPDATED_RU } from '../../../data/meta.js';
 import { TP_LINKS, aviasalesRoute } from '../../../data/affiliate.js';
 import { getHolidaysByMonth } from '../../../data/country-holidays.js';
+import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
+
+// Cover photos для страны — те же что используются на /<slug>/
+const destPhotos = import.meta.glob('../../../assets/destinations/*.jpg', {
+  eager: true,
+  import: 'default',
+});
 
 export async function getStaticPaths() {
   const paths = [];
@@ -37,6 +45,15 @@ const monthText = d.t[monthIdx];                          // авторский 
 const bucketKey = getWeatherBucket(d.slug, monthIdx);
 const bucket = getBucket(bucketKey);
 const monthEvents = getHolidaysByMonth(d.slug)[monthIdx + 1] || [];  // 1-12 индексация
+const monthWeather = getMonthlyWeather(d.slug, monthIdx); // реальные min/max + rain для топ-15
+
+// Cover-photo страны (если есть в assets/destinations/<slug>.jpg)
+const coverPath = `../../../assets/destinations/${d.slug}.jpg`;
+const coverImage = destPhotos[coverPath];
+const HERO_WIDTHS = [512, 768, 1024, 1600];
+const heroPreload = coverImage
+  ? await getImage({ src: coverImage, widths: HERO_WIDTHS, formats: ['webp'], quality: 70 })
+  : null;
 
 const RANK = {
   P: { label: 'Пик сезона',     tone: 'peak',   tldr: 'идеальное время — лучший месяц года',           price: 'Цены на пике: авиа и отели ×1.5–2 vs низкий сезон.' },
@@ -66,6 +83,14 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
 
 // Минимальный перелёт из prices (массив [low, avg, high])
 const flightLow = d.price?.flight?.[0];
+const flightAvg = d.price?.flight?.[1];
+
+// Sezon-multiplier для конкретного месяца: P (peak) ×1.7 / G ×1.2 / O ×1.0 / B ×0.7 / X null
+const SEASONAL_MULT = { P: 1.7, G: 1.2, O: 1.0, B: 0.7, X: null };
+const monthMult = SEASONAL_MULT[status];
+const flightMonth = (flightLow && monthMult)
+  ? Math.round(flightLow * monthMult / 10) * 10  // округление до десятков
+  : null;
 
 // SEO
 const title = `Что взять ${d.cases.vP} в ${m.prep} 2026 — чек-лист`;
@@ -74,7 +99,9 @@ const description = `Что брать ${d.cases.vP} в ${m.prep}: ${bucket.summ
 const FAQS = [
   {
     q: `Какая погода ${d.cases.vP} в ${m.prep} 2026?`,
-    a: `${monthText || `${monthCap} ${d.cases.loc} — ${bucket.label.toLowerCase()}.`} По бакету: ${bucket.summary}.`,
+    a: monthWeather
+      ? `${monthCap} ${d.cases.loc} — температура ${monthWeather.temp}, осадки ${monthWeather.rain}. ${monthText || ''}`.trim()
+      : `${monthText || `${monthCap} ${d.cases.loc} — ${bucket.label.toLowerCase()}.`} По бакету: ${bucket.summary}.`,
   },
   {
     q: `Стоит ли ехать ${d.cases.vP} в ${m.prep}?`,
@@ -92,9 +119,11 @@ const FAQS = [
   },
   {
     q: `Сколько стоит перелёт ${d.cases.vP} в ${m.prep}?`,
-    a: flightLow
-      ? `Минимум — от $${flightLow} one-way из Москвы (низкий сезон). В ${m.prep} ${d.cases.loc} цены ${(status==='P'?'на пике (×1.5–2 от минимума)':status==='G'?'средние':status==='B'?'минимальные за год':'ниже среднего')}. Конкретно под твои даты — в калькуляторе.`
-      : `Цены варьируются по сезону и пересадкам. ${rank.price} Поиск по конкретным датам — Aviasales.`,
+    a: flightMonth
+      ? `Ориентир для ${m.prep}: от $${flightMonth} one-way из Москвы (база $${flightLow} × сезонный множитель ${monthMult}). В ${m.prep} ${d.cases.loc} ${(status==='P'?'пик сезона, цены на максимуме':status==='G'?'хороший сезон, цены средние':status==='B'?'низкий сезон, минимум за год':status==='O'?'нормальный сезон':'инфраструктура частично закрыта')}. Конкретно под даты — в калькуляторе.`
+      : flightLow
+        ? `Минимум — от $${flightLow} one-way из Москвы. ${rank.price}`
+        : `Цены варьируются по сезону. ${rank.price} Поиск — Aviasales.`,
   },
   {
     q: `Нужна ли страховка ${d.cases.vP}?`,
@@ -108,6 +137,14 @@ const FAQS = [
   },
 ];
 
+const SITE = 'https://traveltribe.ru';
+const imageNode = coverImage ? [{
+  "@type": "ImageObject",
+  "url": `${SITE}${coverImage.src}`,
+  "width": coverImage.width,
+  "height": coverImage.height,
+}] : null;
+
 const ldJson = {
   "@context": "https://schema.org",
   "@graph": [
@@ -120,9 +157,21 @@ const ldJson = {
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "about": { "@type": "Country", "name": d.cases.nom },
+      ...(imageNode ? { "image": imageNode, "primaryImageOfPage": imageNode[0] } : {}),
       "datePublished": "2026-05-27",
       "dateModified": "2026-05-27",
       "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".pmu-tldr"] },
+    },
+    // ItemList: одежда из bucket — AEO любит структурированные списки для long-tail
+    {
+      "@type": "ItemList",
+      "@id": `${url}#packing-list`,
+      "name": `Что взять ${d.cases.vP} в ${m.prep} — список одежды`,
+      "itemListElement": bucket.clothing.map((item, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "name": item,
+      })),
     },
     {
       "@type": "FAQPage",
@@ -149,7 +198,15 @@ const noindex = status === 'X';
 
 const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', culture: 'сезонное' };
 ---
-<Layout title={title} description={description} canonical={url} ldJson={ldJson} noindex={noindex}>
+<Layout
+  title={title}
+  description={description}
+  canonical={url}
+  ldJson={ldJson}
+  noindex={noindex}
+  preloadImageSrcset={heroPreload?.srcSet?.attribute}
+  preloadImageSizes="100vw"
+>
   <Breadcrumbs crumbs={[
     { label: 'Чек-листы', href: '/packing/' },
     { label: d.cases.nom, href: `/packing/${d.slug}/` },
@@ -157,6 +214,22 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
   ]} />
 
   <main id="main" class="pmu">
+    {/* COVER PHOTO — Swiss-канон: full-bleed, лёгкий filter, без overlay */}
+    {coverImage && (
+      <section class="pmu-cover">
+        <Image
+          src={coverImage}
+          alt={`${d.cases.nom} — пейзаж страны`}
+          widths={HERO_WIDTHS}
+          sizes="100vw"
+          formats={['webp']}
+          quality={70}
+          loading="eager"
+          fetchpriority="high"
+        />
+      </section>
+    )}
+
     {/* MANIFEST */}
     <section class="pmu-manifest">
       <div class="pmu-idx">01 / Чек-лист<b>{d.cases.nom} · {monthCap} 2026</b></div>
@@ -184,11 +257,38 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       </div>
     </section>
 
-    {/* ПОГОДА */}
+    {/* ПОГОДА — реальные цифры для топ-15, generic для остальных */}
     <section class="pmu-section">
-      <div class="pmu-shead"><h2>Погода в {m.prep}</h2></div>
-      <p class="pmu-answer">{bucket.summary}.</p>
+      <div class="pmu-shead"><h2>Погода {d.cases.loc} в {m.prep}</h2></div>
+      {monthWeather ? (
+        <>
+          <div class="pmu-weather-grid">
+            <div class="pmu-w-cell"><span class="pmu-w-k">Температура</span><div class="pmu-w-v">{monthWeather.temp}</div></div>
+            <div class="pmu-w-cell"><span class="pmu-w-k">Осадки</span><div class="pmu-w-v">{monthWeather.rain}</div></div>
+            <div class="pmu-w-cell"><span class="pmu-w-k">Тип климата</span><div class="pmu-w-v">{bucket.label}</div></div>
+          </div>
+          <p class="pmu-weather-note">{bucket.summary}. Замер по {monthWeather.city}. Источник: {monthWeather.source}.</p>
+        </>
+      ) : (
+        <p class="pmu-answer">{bucket.summary}. Конкретные температуры — см. <a href="/seasons/" class="pmu-link">таблицу сезонов 70 стран</a>.</p>
+      )}
     </section>
+
+    {/* SEZON-PRICE — конкретная цифра под месяц */}
+    {flightMonth && d.price?.iata && (
+      <section class="pmu-section">
+        <div class="pmu-shead"><h2>Перелёт Москва — {d.cases.nom} в {m.prep}</h2></div>
+        <div class="pmu-price">
+          <div class="pmu-price-main">от <b>${flightMonth}</b> one-way</div>
+          <div class="pmu-price-meta">База ${flightLow} × сезонный множитель {monthMult} ({rank.label.toLowerCase()})</div>
+        </div>
+        <p class="pmu-cta">
+          <a class="pmu-aff" href={aviasalesRoute('MOW', d.price.iata)} rel="sponsored noopener" target="_blank">Найти билет Москва — {d.cases.nom} →</a>
+          <span class="ad-mark">реклама</span>
+          <span class="pmu-trust">актуальные цены под твои даты · оплата картами РФ</span>
+        </p>
+      </section>
+    )}
 
     {/* СОБЫТИЯ МЕСЯЦА — главный month-specific блок */}
     {monthEvents.length > 0 && (
@@ -358,6 +458,78 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
   font-family: var(--ff-display);
   font-variant-numeric: tabular-nums lining-nums;
   color: var(--text);
+}
+
+/* COVER PHOTO */
+.pmu-cover {
+  margin: 0 calc(-1 * clamp(1.1rem, 3vw, 2.6rem)) clamp(1.4rem, 2.5vw, 2rem);
+  aspect-ratio: 21 / 9;
+  max-height: 380px;
+  overflow: hidden;
+}
+.pmu-cover :global(img),
+.pmu-cover :global(picture) {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(.06) contrast(1.02);
+}
+
+/* WEATHER detail grid */
+.pmu-weather-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+.pmu-w-cell {
+  padding: .85rem 1.2rem .95rem;
+  border-right: 1px solid var(--line-hair);
+}
+.pmu-w-cell:first-child { padding-left: 0; }
+.pmu-w-cell:last-child { border-right: none; }
+.pmu-w-k {
+  display: block;
+  font-size: .66rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: .35rem;
+}
+.pmu-w-v {
+  font-weight: 800; font-size: 1.05rem;
+  color: var(--text); line-height: 1.2;
+}
+.pmu-weather-note {
+  margin-top: .8rem;
+  font-size: .82rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+}
+@media (max-width: 760px) {
+  .pmu-weather-grid { grid-template-columns: 1fr; }
+  .pmu-w-cell { border-right: none; padding-left: 0; border-top: 1px solid var(--line-hair); }
+  .pmu-w-cell:first-child { border-top: none; }
+}
+
+/* PRICE block */
+.pmu-price {
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+  padding: 1rem 0;
+}
+.pmu-price-main {
+  font-size: 1.3rem;
+  color: var(--text);
+}
+.pmu-price-main b {
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--gold);
+}
+.pmu-price-meta {
+  margin-top: .25rem;
+  font-size: .82rem;
+  color: var(--text-dim);
 }
 
 /* MANIFEST */
