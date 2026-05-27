@@ -6,6 +6,161 @@
 // В UI компонент помечает «обзорная карта» vs «мой маршрут».
 
 export const POIS = {
+  'china': {
+    visited: false,
+    center: { lat: 35.0, lng: 110.0, zoom: 4 },
+    pois: [
+      { name: 'Пекин',         lat: 39.9042, lng: 116.4074, type: 'city',    note: 'Запретный город, Великая стена в Бадалинге' },
+      { name: 'Шанхай',        lat: 31.2304, lng: 121.4737, type: 'city',    note: 'Бунд, Pudong, magenkrupp' },
+      { name: 'Сиань',         lat: 34.3416, lng: 108.9398, type: 'culture', note: 'Терракотовая армия, древняя столица' },
+      { name: 'Гуйлинь / Яншо', lat: 24.7716, lng: 110.4978, type: 'nature',  note: 'карстовые горы реки Ли' },
+      { name: 'Чэнду',         lat: 30.5728, lng: 104.0668, type: 'food',    note: 'панды + сычуаньская кухня' },
+      { name: 'Чжанцзяцзе',    lat: 29.1271, lng: 110.4791, type: 'nature',  note: 'аватарские горы UNESCO' },
+      { name: 'Гонконг',       lat: 22.3193, lng: 114.1694, type: 'city',    note: 'отдельная виза не нужна 14 дней' },
+      { name: 'Пин-Яо',        lat: 37.2009, lng: 112.1751, type: 'culture', note: 'древний город Мин-Цин UNESCO' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'hainan': {
+    visited: false,
+    center: { lat: 19.2, lng: 109.7, zoom: 8 },
+    pois: [
+      { name: 'Санья (Yalong Bay)', lat: 18.2528, lng: 109.5119, type: 'beach', note: 'главный курорт, 5★ отели' },
+      { name: 'Санья (Dadonghai)',  lat: 18.2256, lng: 109.5167, type: 'beach', note: 'городской пляж, доступно' },
+      { name: 'Санья (Haitang Bay)', lat: 18.3306, lng: 109.6500, type: 'beach', note: 'премиум-курорты + duty-free Mall' },
+      { name: 'Хайкоу',            lat: 20.0440, lng: 110.1992, type: 'city',  note: 'столица острова, аэропорт' },
+      { name: 'Wuzhizhou Island',  lat: 18.3147, lng: 109.7611, type: 'beach', note: 'остров-парк, дайвинг' },
+      { name: 'Nanshan Buddhism',  lat: 18.2814, lng: 109.1989, type: 'culture', note: 'статуя Гуаньинь 108м' },
+      { name: 'Цинтоу (Ананас)',    lat: 18.4500, lng: 109.4500, type: 'nature', note: 'ананасовые поля + чай' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'egypt': {
+    visited: false,
+    center: { lat: 26.5, lng: 30.0, zoom: 5 },
+    pois: [
+      { name: 'Каир + Гиза',  lat: 29.9773, lng: 31.1325, type: 'culture', note: 'пирамиды Гизы, Сфинкс, Египетский музей' },
+      { name: 'Луксор',       lat: 25.6872, lng: 32.6396, type: 'culture', note: 'Долина Царей, Карнакский храм' },
+      { name: 'Асуан',        lat: 24.0889, lng: 32.8998, type: 'culture', note: 'Филе, Высокая плотина' },
+      { name: 'Абу-Симбел',   lat: 22.3372, lng: 31.6258, type: 'culture', note: 'храмы Рамсеса II' },
+      { name: 'Хургада',      lat: 27.2579, lng: 33.8116, type: 'beach',   note: 'главный курорт Красного моря' },
+      { name: 'Шарм-эль-Шейх', lat: 27.9158, lng: 34.3300, type: 'beach',   note: 'премиум-курорты, Naama Bay' },
+      { name: 'Дахаб',        lat: 28.5000, lng: 34.5167, type: 'beach',   note: 'фриденвящий, Blue Hole для дайверов' },
+      { name: 'Александрия',  lat: 31.2001, lng: 29.9187, type: 'city',    note: 'средиземноморская, библиотека' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'south-korea': {
+    visited: false,
+    center: { lat: 36.5, lng: 127.8, zoom: 7 },
+    pois: [
+      { name: 'Сеул',     lat: 37.5665, lng: 126.9780, type: 'city',    note: 'Мёндон, Хондэ, Канвандэ + дворцы' },
+      { name: 'Пусан',    lat: 35.1796, lng: 129.0756, type: 'beach',   note: 'Haeundae пляж + Гамчхон арт-район' },
+      { name: 'Чеджу',    lat: 33.4996, lng: 126.5312, type: 'nature',  note: 'остров вулкан Халласан UNESCO' },
+      { name: 'Кёнджу',   lat: 35.8562, lng: 129.2247, type: 'culture', note: 'столица Силла; UNESCO Bulguksa' },
+      { name: 'Соннисан / Сораксан', lat: 38.1191, lng: 128.4655, type: 'nature', note: 'нацпарк, осенние клёны' },
+      { name: 'DMZ',      lat: 38.0000, lng: 126.7000, type: 'culture', note: 'тур с гидом к границе с КНДР' },
+      { name: 'Андон',    lat: 36.5684, lng: 128.7294, type: 'culture', note: 'традиционная деревня Хахве UNESCO' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'malaysia': {
+    visited: false,
+    center: { lat: 4.0, lng: 109.0, zoom: 6 },
+    pois: [
+      { name: 'Куала-Лумпур', lat: 3.1390, lng: 101.6869, type: 'city',    note: 'Башни Petronas, Бату-Кейвз' },
+      { name: 'Пенанг (Джорджтаун)', lat: 5.4145, lng: 100.3292, type: 'culture', note: 'UNESCO стрит-арт + еда mainland Asia' },
+      { name: 'Лангкави',     lat: 6.3500, lng: 99.8000,  type: 'beach',   note: 'duty-free остров, Sky Bridge' },
+      { name: 'Кота-Кинабалу', lat: 5.9788, lng: 116.0753, type: 'nature',  note: 'Borneo, гора Кинабалу 4095м' },
+      { name: 'Кучинг',       lat: 1.5535, lng: 110.3593, type: 'nature',  note: 'Sarawak, орангутаны в Semenggoh' },
+      { name: 'Малакка',      lat: 2.1896, lng: 102.2501, type: 'culture', note: 'UNESCO колониальная история' },
+      { name: 'Камеронские горы', lat: 4.4710, lng: 101.3760, type: 'nature', note: 'чайные плантации, прохлада' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'morocco': {
+    visited: false,
+    center: { lat: 31.5, lng: -7.0, zoom: 6 },
+    pois: [
+      { name: 'Марракеш',     lat: 31.6295, lng: -7.9811, type: 'culture', note: 'Джемаа-эль-Фна, рияды, Меллах' },
+      { name: 'Фес',          lat: 34.0181, lng: -5.0078, type: 'culture', note: 'крупнейшая медина мира UNESCO' },
+      { name: 'Шефшауэн',     lat: 35.1714, lng: -5.2697, type: 'culture', note: 'голубой город в горах Риф' },
+      { name: 'Сахара (Мерзуга)', lat: 31.1000, lng: -4.0000, type: 'nature', note: 'дюны Erg Chebbi, ночёвка в кэмпе' },
+      { name: 'Касабланка',   lat: 33.5731, lng: -7.5898, type: 'city',    note: 'мечеть Хасана II, экономический центр' },
+      { name: 'Эссауира',     lat: 31.5125, lng: -9.7700, type: 'beach',   note: 'ветреная атлантическая, сёрф' },
+      { name: 'Атлас (Имлиль)', lat: 31.1372, lng: -7.9189, type: 'nature',  note: 'базовый лагерь Toubkal (4167м)' },
+      { name: 'Айт-Бен-Хадду', lat: 31.0470, lng: -7.1314, type: 'culture', note: 'ksar UNESCO, локация Game of Thrones' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'peru': {
+    visited: false,
+    center: { lat: -10.0, lng: -75.5, zoom: 6 },
+    pois: [
+      { name: 'Лима',         lat: -12.0464, lng: -77.0428, type: 'city',    note: 'столица + аэропорт; Мирафлорес' },
+      { name: 'Куско',        lat: -13.5320, lng: -71.9675, type: 'culture', note: 'столица инков, 3400м — акклиматизация 2 дня' },
+      { name: 'Мачу-Пикчу',   lat: -13.1631, lng: -72.5450, type: 'culture', note: 'UNESCO; билет за 6 мес' },
+      { name: 'Священная долина', lat: -13.3193, lng: -72.0824, type: 'nature', note: 'Писак, Ольянтайтамбо' },
+      { name: 'Радужная гора (Vinicunca)', lat: -13.8689, lng: -71.3017, type: 'nature', note: '5200м; треккинг с Куско' },
+      { name: 'Озеро Титикака (Пуно)', lat: -15.8402, lng: -70.0219, type: 'nature', note: 'плавающие острова Урос' },
+      { name: 'Арекипа',      lat: -16.4090, lng: -71.5375, type: 'culture', note: 'белый город + каньон Колка кондоры' },
+      { name: 'Линии Наски',  lat: -14.7390, lng: -75.1300, type: 'culture', note: 'обзор только с самолёта (40 мин)' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'bolivia': {
+    visited: false,
+    center: { lat: -16.5, lng: -65.0, zoom: 6 },
+    pois: [
+      { name: 'Ла-Пас',       lat: -16.4897, lng: -68.1193, type: 'city',    note: 'столица 3650м, телеферико Mi Teleférico' },
+      { name: 'Уюни (соляная пустыня)', lat: -20.1338, lng: -67.4891, type: 'nature', note: '10 000 км² — мировая визитка' },
+      { name: 'Сукре',        lat: -19.0196, lng: -65.2619, type: 'culture', note: 'белая столица UNESCO' },
+      { name: 'Потоси',       lat: -19.5722, lng: -65.7531, type: 'culture', note: 'серебряные шахты UNESCO, 4090м' },
+      { name: 'Копакабана',   lat: -16.1668, lng: -69.0857, type: 'nature',  note: 'озеро Титикака + Isla del Sol' },
+      { name: 'Тиуанако',     lat: -16.5547, lng: -68.6736, type: 'culture', note: 'доинкская столица UNESCO' },
+      { name: 'Рурренабаке (Амазония)', lat: -14.4419, lng: -67.5293, type: 'nature', note: 'нацпарк Madidi, ягуары' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'chile': {
+    visited: false,
+    center: { lat: -33.0, lng: -71.0, zoom: 4 },
+    pois: [
+      { name: 'Сантьяго',     lat: -33.4489, lng: -70.6693, type: 'city',    note: 'столица + Анды видны' },
+      { name: 'Вальпараисо',  lat: -33.0472, lng: -71.6127, type: 'culture', note: 'UNESCO, холмы, фуникулёры, стрит-арт' },
+      { name: 'Атакама (Сан-Педро)', lat: -22.9098, lng: -68.1996, type: 'nature', note: 'самая сухая пустыня мира, гейзеры' },
+      { name: 'Торрес-дель-Пайне', lat: -50.9423, lng: -73.4068, type: 'nature', note: 'патагония, W-trek 4-5 дней' },
+      { name: 'Чилоэ',        lat: -42.6166, lng: -73.7768, type: 'culture', note: 'остров деревянных церквей UNESCO' },
+      { name: 'Атакама обсерватория', lat: -24.6275, lng: -70.4044, type: 'nature', note: 'Paranal/ALMA, лучшие звёзды Земли' },
+      { name: 'Пуэрто-Варас',  lat: -41.3194, lng: -72.9856, type: 'nature',  note: 'озёрный край, вулкан Osorno' },
+      { name: 'Остров Пасхи',  lat: -27.1127, lng: -109.3497, type: 'culture', note: 'моаи; перелёт из Сантьяго 5ч' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
+  'serbia': {
+    visited: false,
+    center: { lat: 44.0, lng: 21.0, zoom: 7 },
+    pois: [
+      { name: 'Белград',       lat: 44.7866, lng: 20.4489, type: 'city',    note: 'крепость Калемегдан, Скадарлия' },
+      { name: 'Нови-Сад',      lat: 45.2671, lng: 19.8335, type: 'city',    note: 'Петроварадин = место Exit Festival' },
+      { name: 'Златибор',      lat: 43.7286, lng: 19.7019, type: 'nature',  note: 'горный курорт, лыжи зимой, треккинг летом' },
+      { name: 'Дрвенград (Мечавник)', lat: 43.8071, lng: 19.5081, type: 'culture', note: 'село Кустурицы + Šargan 8' },
+      { name: 'Студеница',     lat: 43.4828, lng: 20.5375, type: 'culture', note: 'православный монастырь UNESCO' },
+      { name: 'Тара (нацпарк)', lat: 43.9176, lng: 19.4239, type: 'nature',  note: 'каньон Дрина, дикая природа' },
+      { name: 'Ниш',           lat: 43.3209, lng: 21.8954, type: 'culture', note: 'родина Константина, Челе-Кула' }
+    ],
+    sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
+  },
+
   'bali': {
     visited: false,
     center: { lat: -8.4095, lng: 115.1889, zoom: 9 },

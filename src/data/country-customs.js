@@ -7,6 +7,226 @@
 // Каденс ревизии: ≤180 дней; перед сезоном — обязательно (правила меняются).
 
 export const CUSTOMS = {
+  'china': {
+    forbidden: [
+      'Наркотики — смертная казнь возможна за траффик',
+      'Печать/медиа против режима (политическое, тибетское, FLG)',
+      'Оружие и боеприпасы (включая декоративное)',
+      'Поддельная валюта и ценные бумаги',
+      'CBD и марихуана-продукты (любые уровни THC)',
+      'Свежие фрукты, овощи, мясо без сертификата'
+    ],
+    limits: {
+      cash: 'до 20 000 ¥ или $5 000 USD без декларации',
+      alcohol: '1.5 л крепкого',
+      cigarettes: '400 шт (2 блока) или 100 сигар',
+      perfume: 'разумные количества для личного пользования'
+    },
+    sources: [
+      { name: 'Trade.gov — China Prohibited Imports', url: 'https://www.trade.gov/country-commercial-guides/china-prohibited-and-restricted-imports' },
+      { name: 'Travel China Guide — Customs', url: 'https://www.travelchinaguide.com/essential/not-taken.htm' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'hainan': {
+    forbidden: [
+      'Наркотики (как в материковом Китае — смертная казнь)',
+      'Печать против режима',
+      'Оружие и боеприпасы',
+      'Дроны без разрешения CAAC',
+      'CBD-продукты любых уровней',
+      'Свежие фрукты, овощи, мясо без сертификата'
+    ],
+    limits: {
+      cash: 'до 20 000 ¥ или $5 000 USD без декларации',
+      alcohol: '1.5 л крепкого',
+      cigarettes: '400 шт (2 блока)',
+      perfume: 'разумные количества для личного пользования'
+    },
+    sources: [
+      { name: 'Sanya Phoenix Airport — Customs', url: 'https://en.sanyaairport.com/engjtg.jhtml' },
+      { name: 'Hainan FTP — Visa-Free Policy', url: 'http://en.hnftp.gov.cn/tips/policy/202003/t20200317_3263796.html' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'egypt': {
+    forbidden: [
+      'Оружие, боеприпасы, игрушечные пистолеты внешне реалистичные',
+      'Дроны и RC-вертолёты (строжайший запрет, аресты на таможне)',
+      'Хлопок (для защиты местного производства)',
+      'Антиквариат без разрешения Министерства Древностей (вывоз ≥100 лет = тюрьма)',
+      'Наркотики (смертная казнь возможна за траффик)',
+      'Сигаретные подделки'
+    ],
+    limits: {
+      cash: 'до $10 000 USD декларировать',
+      alcohol: '1 л (по прибытии в duty-free до 3 л за 48 ч)',
+      cigarettes: '200 шт + 25 сигар',
+      perfume: 'разумные количества для личного пользования'
+    },
+    sources: [
+      { name: 'Trade.gov — Egypt Restrictions', url: 'https://www.trade.gov/country-commercial-guides/egypt-prohibited-restricted-imports' },
+      { name: 'Посольство РФ в Египте', url: 'https://egypt.mid.ru/' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'south-korea': {
+    forbidden: [
+      'Оружие, боеприпасы — любое',
+      'Наркотики (марихуана криминализована даже для медицины)',
+      'CBD-продукты — полный запрет независимо от THC',
+      'Мясо/мясные продукты — даже beef jerky и SPAM (штраф от 5 млн KRW)',
+      'Печатное про КНДР / pro-режимная пропаганда Северной Кореи',
+      'Контрафакт и поддельная валюта'
+    ],
+    limits: {
+      cash: 'до $10 000 USD декларировать',
+      alcohol: '1 л + ≤$400',
+      cigarettes: '200 шт (1 блок)',
+      perfume: '2 oz (≈60 мл)'
+    },
+    sources: [
+      { name: 'Trade.gov — South Korea Prohibited Imports', url: 'https://www.trade.gov/country-commercial-guides/south-korea-prohibited-and-restricted-imports' },
+      { name: 'Korea Customs Service', url: 'https://www.customs.go.kr/english/' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'malaysia': {
+    forbidden: [
+      'Наркотики — обязательная смертная казнь за траффик ≥15 г героина или ≥200 г марихуаны',
+      'Порнография любого типа',
+      'Контрафакт и поддельные товары',
+      'Изображения с pro-Israeli/анти-исламской символикой',
+      'Острое оружие, ножи >длина запястья',
+      'Виды CITES без сертификата'
+    ],
+    limits: {
+      cash: 'до 30 000 RM (~$6 500) декларировать',
+      alcohol: '1 л',
+      cigarettes: '200 шт (1 блок)',
+      perfume: '$400 USD стоимостью'
+    },
+    sources: [
+      { name: 'Trade.gov — Malaysia Customs', url: 'https://www.trade.gov/country-commercial-guides/malaysia-customs-regulations' },
+      { name: 'Royal Malaysian Customs', url: 'https://www.customs.gov.my/en' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'morocco': {
+    forbidden: [
+      'Наркотики и психотропные вещества',
+      'Огнестрельное оружие, боеприпасы, взрывчатка',
+      'Использованная одежда и шины',
+      'Порнография и материалы против ислама / монархии',
+      'Дроны без специального разрешения',
+      'Ковры, похожие на марокканские (защита местного промысла)'
+    ],
+    limits: {
+      cash: 'до 100 000 MAD (~$10 000) декларировать; вывоз местной валюты ограничен',
+      alcohol: '1 л + 1 л вина',
+      cigarettes: '200 шт (1 блок) или 25 сигар',
+      perfume: '5 г парфюма + 0.25 л туалетной воды'
+    },
+    sources: [
+      { name: 'Douane Maroc (customs)', url: 'https://www.douane.gov.ma/' },
+      { name: 'Trade.gov — Morocco Restrictions', url: 'https://www.trade.gov/country-commercial-guides/morocco-prohibited-restricted-imports' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'peru': {
+    forbidden: [
+      'Подержанная одежда и обувь',
+      'Псевдо-«писко» произведённый вне Перу',
+      'Свежие фрукты, овощи, семена, орехи',
+      'Мясные продукты — окорок, колбаса, свежие сыры',
+      'Наркотики (включая коку в виде листьев вывоз)',
+      'Антиквариат без разрешения Министерства Культуры'
+    ],
+    limits: {
+      cash: 'до $10 000 USD декларировать',
+      alcohol: '3 л',
+      cigarettes: '400 шт (2 блока) или 50 сигар',
+      perfume: 'разумные количества для личного пользования'
+    },
+    sources: [
+      { name: 'SUNAT Aduanas Peru', url: 'https://www.sunat.gob.pe/' },
+      { name: 'Trade.gov — Peru Restrictions', url: 'https://www.trade.gov/country-commercial-guides/peru-prohibited-and-restricted-imports' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'bolivia': {
+    forbidden: [
+      'Подержанная одежда и текстиль (полный запрет с 2024)',
+      'Наркотики и психотропные вещества',
+      'Оружие, боеприпасы, взрывчатка без разрешения',
+      'Острые/смертельные предметы без разрешения',
+      'Несанкционированные фарма-препараты',
+      'Контрафакт и поддельная валюта'
+    ],
+    limits: {
+      cash: 'до $10 000 USD декларировать',
+      alcohol: '5 л',
+      cigarettes: '400 шт (2 блока) или 50 сигар',
+      perfume: 'разумные количества для личного пользования'
+    },
+    sources: [
+      { name: 'Trade.gov — Bolivia Prohibited Imports', url: 'https://www.trade.gov/country-commercial-guides/bolivia-prohibited-and-restricted-imports' },
+      { name: 'Aduana Nacional Bolivia', url: 'https://www.aduana.gob.bo/' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'chile': {
+    forbidden: [
+      'Подержанные мотоциклы — полный запрет',
+      'Использованные шины — экологический запрет',
+      'Оружие, боеприпасы, взрывчатка',
+      'Наркотики и психотропные вещества',
+      'Порнография',
+      'Свежие фрукты, овощи, мёд, орехи (SAG-биобезопасность — штрафы $200-1500 USD)'
+    ],
+    limits: {
+      cash: 'до $10 000 USD декларировать',
+      alcohol: '2.5 л',
+      cigarettes: '400 шт (2 блока) или 50 сигар',
+      perfume: 'разумные количества для личного пользования'
+    },
+    sources: [
+      { name: 'SAG Chile (биобезопасность)', url: 'https://www.sag.gob.cl/' },
+      { name: 'Trade.gov — Chile Restrictions', url: 'https://www.trade.gov/country-commercial-guides/chile-prohibited-and-restricted-imports' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'serbia': {
+    forbidden: [
+      'Снюс (snus, табак для сосания) — особый запрет, реальные штрафы',
+      'Оружие и боеприпасы без разрешения',
+      'Наркотики и психотропные вещества',
+      'Антиквариат и предметы искусства без разрешения',
+      'Драгметаллы без декларации',
+      'Озон-разрушающие вещества'
+    ],
+    limits: {
+      cash: 'до 10 000 EUR (или эквивалент) декларировать',
+      alcohol: '1 л крепкого + 2 л вина',
+      cigarettes: '200 шт (1 блок) или 50 сигар',
+      vapes: 'разрешены в пределах личного пользования (≠ снюс)'
+    },
+    sources: [
+      { name: 'Customs Administration Serbia', url: 'https://www.carina.rs/en/passengers/passenger-custom-clerance/useful-information-for-passengers.html' },
+      { name: 'Trade.gov — Serbia Restrictions', url: 'https://www.trade.gov/country-commercial-guides/serbia-prohibited-restricted-imports' }
+    ],
+    updated: '2026-05-27'
+  },
+
   'bali': {
     forbidden: [
       'Наркотики (смертная казнь за траффик в Индонезии — реальная)',
