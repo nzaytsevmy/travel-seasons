@@ -1,0 +1,345 @@
+---
+// /packing/<country>/<month>/ — что взять в страну в конкретный месяц.
+// 70 стран × 12 месяцев = 840 страниц. Уникальный угол: сезон + погода + советы под месяц.
+// Закрывает 404 которые видели в Метрике (внешние ссылки/боты на этот формат URL).
+//
+// Pattern: /packing/[country].astro (страновой полный чек-лист по всем сезонам)
+// → этот файл фокусирует на одном месяце для long-tail "что брать в [страну] в [месяц]".
+
+import Layout from '../../../layouts/Layout.astro';
+import Footer from '../../../components/Footer.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
+import { VISA_DETAILS } from '../../../data/visa-details.js';
+import { getBucket } from '../../../data/packing-weather-buckets.js';
+import { getWeatherBucket } from '../../../data/country-month-bucket.js';
+import { ACTIVITY_TAGS, ACTIVITY_LABEL, ACTIVITY_GEAR } from '../../../data/country-activity-tags.js';
+import { PLUG_TYPES, plugAdvice } from '../../../data/country-plug-types.js';
+import { DATA_UPDATED_RU } from '../../../data/meta.js';
+import { TP_LINKS } from '../../../data/affiliate.js';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const d of DIRECTIONS) {
+    for (let i = 0; i < 12; i++) {
+      paths.push({
+        params: { country: d.slug, month: MONTHS[i].slug },
+        props: { d, m: MONTHS[i], monthIdx: i },
+      });
+    }
+  }
+  return paths;
+}
+
+const { d, m, monthIdx } = Astro.props;
+const url = `https://traveltribe.ru/packing/${d.slug}/${m.slug}/`;
+
+const status = d.r[monthIdx];        // P=peak, G=good, O=off, B=bad, X=closed
+const monthText = d.t[monthIdx];
+const bucketKey = getWeatherBucket(d.slug, monthIdx);
+const bucket = getBucket(bucketKey);
+
+const RANK_LABEL = {
+  P: { label: '🟢 Пик сезона', tone: 'peak', tldr: 'идеальное время — лучший вариант' },
+  G: { label: '🔵 Хорошо', tone: 'good', tldr: 'отличный сезон — погода и цены ОК' },
+  O: { label: '🟡 Нормально', tone: 'off', tldr: 'не пик, но ехать можно' },
+  B: { label: '🟠 Не лучший месяц', tone: 'bad', tldr: 'есть нюансы — внутри подсказки как обойти' },
+  X: { label: '🔴 Закрыто', tone: 'closed', tldr: 'не рекомендуется — лучше выбрать другой месяц' },
+};
+const rank = RANK_LABEL[status] || RANK_LABEL.O;
+
+const visa = VISA_DETAILS[d.slug];
+const needsVisa = d.visa !== 'free';
+const plug = PLUG_TYPES[d.slug];
+const tags = ACTIVITY_TAGS[d.slug] || [];
+
+// ── SEO ──
+const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
+const title = `Что взять ${d.cases.vP} в ${m.prep} 2026 — чек-лист`;
+const description = `Что брать ${d.cases.vP} в ${m.prep}: одежда под погоду (${bucket.summary.split(',')[0]}), документы, аптечка, техника. Сезон: ${rank.tldr}.`.slice(0, 155);
+
+// Лучшие альтернативные месяцы (если status плохой)
+const altMonths = (d.r || []).map((s, i) => ({ s, i }))
+  .filter(({ s }) => s === 'P' || s === 'G')
+  .map(({ i }) => MONTHS[i].nom)
+  .slice(0, 3);
+
+const FAQS = [
+  {
+    q: `Какая погода ${d.cases.vP} в ${m.prep} 2026?`,
+    a: `${monthText || `В ${m.prep} ${d.cases.loc} — ${bucket.label.toLowerCase()}.`} По климат-бакету: ${bucket.summary}.`,
+  },
+  {
+    q: `Стоит ли ехать ${d.cases.vP} в ${m.prep}?`,
+    a: status === 'X'
+      ? `Не рекомендуется — ${rank.tldr}. ${altMonths.length ? `Лучшие месяцы: ${altMonths.join(', ')}.` : 'Смотри помесячный календарь на странице страны.'}`
+      : status === 'B'
+        ? `Можно, но с нюансами — ${rank.tldr}. ${altMonths.length ? `Если гибкие даты — рассмотри ${altMonths.join(', ')}.` : ''}`.trim()
+        : `Да, ${rank.tldr}. Подробности — в чек-листе ниже.`,
+  },
+  {
+    q: `Нужна ли страховка ${d.cases.vP} в ${m.prep}?`,
+    a: needsVisa
+      ? `Да, страховка обязательна для визы ${d.cases.prep} (минимум €30 000). Без полиса визу не дадут.`
+      : `Формально не обязательна, но настоятельно рекомендую: медпомощь иностранцам ${d.cases.loc} платная, полис на 14 дней ≈ 1 500 ₽.`,
+  },
+  {
+    q: `Что НЕ ввезёшь ${d.cases.vP}?`,
+    a: `Базовые запреты: наркотики, оружие, дроны без разрешения, продукты животноводства, валюта свыше нормы. На странице ${d.cases.gen || d.cases.nom} есть полный список таможни.`,
+  },
+];
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": `${url}#page`,
+      "name": title,
+      "description": description,
+      "url": url,
+      "inLanguage": "ru-RU",
+      "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+      "about": { "@type": "Country", "name": d.cases.nom },
+      "datePublished": "2026-05-27",
+      "dateModified": "2026-05-27",
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${url}#faq`,
+      "mainEntity": FAQS.map((f) => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": f.a },
+      })),
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Чек-листы", "item": "https://traveltribe.ru/packing/" },
+        { "@type": "ListItem", "position": 3, "name": d.cases.nom, "item": `https://traveltribe.ru/packing/${d.slug}/` },
+        { "@type": "ListItem", "position": 4, "name": monthCap, "item": url },
+      ],
+    },
+  ],
+};
+
+// Для not-recommended месяцев (X = закрыто) — noindex чтобы не разводить тонкий контент по сезону «не ехать»
+const noindex = status === 'X';
+---
+<Layout title={title} description={description} canonical={url} ldJson={ldJson} noindex={noindex}>
+  <Breadcrumbs crumbs={[
+    { label: 'Чек-листы', href: '/packing/' },
+    { label: d.cases.nom, href: `/packing/${d.slug}/` },
+    { label: monthCap },
+  ]} />
+
+  <main id="main" class="pm-wrap">
+    <header class="pm-header">
+      <p class="pm-eyebrow">// Чек-лист · {d.cases.nom} · {monthCap} 2026</p>
+      <h1>Что взять <em>{d.cases.vP}</em> в {m.prep}</h1>
+      <p class="pm-byline">
+        <a href="/about/" class="byline-author">Никита Зайцев</a> ·
+        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
+        <span class="byline-fresh">обновлено {DATA_UPDATED_RU}</span>
+      </p>
+    </header>
+
+    <section class={`pm-season pm-season--${rank.tone}`}>
+      <span class="pm-season-label">{rank.label}</span>
+      <p class="pm-season-tldr">{rank.tldr.charAt(0).toUpperCase() + rank.tldr.slice(1)}.</p>
+      {monthText && <p class="pm-month-text">{monthText}</p>}
+      {altMonths.length > 0 && (status === 'B' || status === 'X') && (
+        <p class="pm-alt">Если гибкие даты — лучше: <strong>{altMonths.join(', ')}</strong>. Подробнее в <a href={`/${d.slug}/`}>таблице месяцев {d.cases.gen || d.cases.nom}</a>.</p>
+      )}
+    </section>
+
+    <section class="pm-block">
+      <h2>Погода ({bucket.label})</h2>
+      <p class="pm-weather">{bucket.summary}.</p>
+    </section>
+
+    <section class="pm-block">
+      <h2>Одежда</h2>
+      <ul class="pm-list">
+        {bucket.clothing.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class="pm-block">
+      <h2>Аптечка</h2>
+      <ul class="pm-list">
+        {bucket.health.map((item) => <li>{item}</li>)}
+      </ul>
+      <p class="pm-disclaimer">⚠ Общий список. Перед поездкой — у врача. Источники: <a href="https://www.rospotrebnadzor.ru/" target="_blank" rel="noopener">Роспотребнадзор</a>, <a href="https://www.who.int/" target="_blank" rel="noopener">ВОЗ</a>.</p>
+    </section>
+
+    <section class="pm-block">
+      <h2>Документы и деньги</h2>
+      <ul class="pm-list">
+        <li><strong>Загранпаспорт</strong> — срок действия 6+ месяцев на момент въезда.</li>
+        {needsVisa && visa && (<li><strong>Виза:</strong> {visa.duration}, {visa.cost}, {visa.timing}. Детали — <a href={`/visa/${d.slug}/`}>на странице визы</a>.</li>)}
+        {!needsVisa && (<li><strong>Виза не нужна</strong> — {visa?.duration || 'безвизовый въезд'}.</li>)}
+        <li><strong>Обратный билет</strong> или бронь выезда. Поиск — <a href={TP_LINKS.aviasales} target="_blank" rel="sponsored noopener">Aviasales</a> <span class="ad-mark">реклама</span>.</li>
+        <li><strong>Страховка</strong> — оформи онлайн на <a href={TP_LINKS.cherehapa} target="_blank" rel="sponsored noopener">Cherehapa</a> <span class="ad-mark">реклама</span>.</li>
+        <li><strong>Карты</strong> — Visa/MC российских банков не работают. Проверь UnionPay / МИР / иностранные на <a href="/cards/">/cards/</a>.</li>
+        <li><strong>Наличные</strong> $200–300 USD/EUR на непредвиденные.</li>
+      </ul>
+    </section>
+
+    {bucket.gear?.length > 0 && (
+      <section class="pm-block">
+        <h2>Снаряжение</h2>
+        <ul class="pm-list">
+          {bucket.gear.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+    )}
+
+    <section class="pm-block">
+      <h2>Техника и связь</h2>
+      <ul class="pm-list">
+        {plug && (<li><strong>Переходник Type {plug.types}</strong> · {plug.voltage} · {plug.hz}. {plugAdvice(plug)}</li>)}
+        <li><strong>Повербанк</strong> 10 000 мА·ч (в ручную кладь).</li>
+        <li><strong>eSIM</strong> вместо роуминга — от $5/нед. <a href={TP_LINKS.airalo} target="_blank" rel="sponsored noopener">Airalo</a> <span class="ad-mark">реклама</span>.</li>
+      </ul>
+    </section>
+
+    {tags.filter((t) => ACTIVITY_GEAR[t]).length > 0 && (
+      <section class="pm-block">
+        <h2>Под местные занятия</h2>
+        {tags.map((tag) => {
+          const gear = ACTIVITY_GEAR[tag];
+          if (!gear) return null;
+          return (
+            <div class="pm-activity">
+              <p class="pm-activity-label">— {ACTIVITY_LABEL[tag]}:</p>
+              <ul class="pm-list">{gear.map((item) => <li>{item}</li>)}</ul>
+            </div>
+          );
+        })}
+      </section>
+    )}
+
+    <section class="pm-block">
+      <h2>FAQ</h2>
+      <div class="pm-faq">
+        {FAQS.map((f) => (
+          <details class="pm-faq-row">
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <section class="pm-block pm-related">
+      <h2>Связанные</h2>
+      <ul class="pm-list">
+        <li><a href={`/packing/${d.slug}/`}>Полный чек-лист {d.cases.gen || d.cases.nom} по всем сезонам</a></li>
+        <li><a href={`/${d.slug}/`}>Карточка {d.cases.gen || d.cases.nom} — виза, цены, сезоны</a></li>
+        <li><a href={`/trips/${m.slug}/${d.slug}/`}>{d.cases.nom} в {m.prep} 2026 — отдельный гайд</a></li>
+        <li><a href="/packing/">Все чек-листы 70 стран</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.pm-wrap { max-width: 720px; margin: 0 auto; padding: 0 2rem 5rem; }
+
+.pm-header { margin: 2rem 0 1.5rem; }
+.pm-eyebrow {
+  font-family: var(--ff-mono);
+  font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 0.5rem;
+}
+.pm-header h1 {
+  font-family: var(--ff-display);
+  font-size: clamp(1.9rem, 4.5vw, 2.8rem); font-weight: 300; line-height: 1.15; margin: 0;
+}
+.pm-header h1 em { color: var(--gold); font-style: italic; }
+.pm-byline {
+  margin: 0.8rem 0 0; font-size: 0.78rem; color: var(--text-dim); letter-spacing: 0.02em;
+}
+.pm-byline a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+.pm-byline .byline-fresh { color: var(--text-faint); }
+
+.pm-season {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold);
+  background: var(--bg2);
+  padding: 1.1rem 1.3rem; border-radius: 4px;
+  margin: 1.5rem 0 2.5rem;
+}
+.pm-season--peak { border-left-color: #22c55e; }
+.pm-season--good { border-left-color: #4a9eff; }
+.pm-season--off  { border-left-color: #f59e0b; }
+.pm-season--bad  { border-left-color: #ef4444; }
+.pm-season--closed { border-left-color: var(--text-faint); opacity: 0.85; }
+.pm-season-label {
+  display: inline-block; font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.02em; color: var(--text);
+}
+.pm-season-tldr { margin: 0.5rem 0 0; font-weight: 600; color: var(--text); line-height: 1.5; }
+.pm-month-text { margin: 0.6rem 0 0; color: var(--text-dim); line-height: 1.7; font-size: 0.95rem; }
+.pm-alt { margin: 0.7rem 0 0; font-size: 0.88rem; color: var(--text-dim); line-height: 1.55; }
+.pm-alt strong { color: var(--text); }
+.pm-alt a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+
+.pm-block { margin-bottom: 2.5rem; }
+.pm-block h2 {
+  font-family: var(--ff-display);
+  font-size: 1.4rem; font-weight: 400; color: var(--gold); margin-bottom: 1rem;
+}
+.pm-block p { color: var(--text-dim); line-height: 1.75; font-size: 0.95rem; margin-bottom: 0.7rem; }
+.pm-block a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+
+.pm-weather { color: var(--text); font-weight: 500; }
+
+.pm-list { padding-left: 1.4rem; margin: 0.4rem 0 0.8rem; }
+.pm-list li { color: var(--text-dim); line-height: 1.8; margin-bottom: 0.5rem; font-size: 0.95rem; }
+.pm-list li strong { color: var(--text); }
+
+.pm-activity { margin-bottom: 1rem; }
+.pm-activity-label { font-weight: 500; color: var(--text); margin-bottom: 0.3rem; }
+
+.pm-disclaimer {
+  font-size: 0.8rem; color: var(--text-dim);
+  background: rgba(201,151,58,0.08);
+  padding: 0.7rem 1rem; border-radius: 4px;
+  border-left: 2px solid var(--gold);
+  margin-top: 0.8rem;
+}
+.pm-disclaimer a { color: var(--text); font-weight: 600; text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 3px; }
+
+.pm-faq { margin: 0.5rem 0 0; border-top: 1px solid var(--line); }
+.pm-faq-row { border-bottom: 1px solid var(--line); background: transparent; }
+.pm-faq-row summary {
+  cursor: pointer; list-style: none; color: var(--text);
+  font-size: 1rem; font-weight: 500; line-height: 1.45;
+  padding: 1rem 2.5rem 1rem 0; position: relative;
+  transition: color 0.15s ease;
+}
+.pm-faq-row summary::-webkit-details-marker { display: none; }
+.pm-faq-row summary:hover, .pm-faq-row[open] summary { color: var(--gold); }
+.pm-faq-row summary::after {
+  content: ''; position: absolute; right: 0.2rem; top: 50%;
+  width: 12px; height: 12px; margin-top: -6px;
+  background-image: linear-gradient(currentColor, currentColor), linear-gradient(currentColor, currentColor);
+  background-size: 12px 1.4px, 1.4px 12px; background-position: center, center; background-repeat: no-repeat;
+  color: var(--gold); transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.pm-faq-row[open] summary::after { transform: rotate(45deg); }
+.pm-faq-row p { margin: 0 0 1rem; color: var(--text-dim); line-height: 1.75; font-size: 0.95rem; max-width: 95%; }
+
+.ad-mark {
+  display: inline-block; font-size: 0.65rem; color: var(--text-faint);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  padding: 0 0.4rem; border: 1px solid var(--line); border-radius: 2px;
+  margin-left: 0.3rem; vertical-align: middle;
+}
+</style>
