@@ -13,6 +13,316 @@
 // забирают только структурированные блок-факты, не абзац прозы).
 
 export const ESSENTIALS = {
+  'china': {
+    tipping: {
+      restaurants: 'не приняты — wait-staff на ставке, отказываются',
+      taxi: 'не приняты',
+      hotel: '10-30 ¥ носильщику',
+      note: 'культура no-tipping; чаевые могут восприняться как обида'
+    },
+    emergency: {
+      police: '110',
+      ambulance: '120',
+      fire: '119',
+      tourist: '12301',
+      embassy_ru_url: 'https://china.mid.ru/',
+      embassy_note: 'Посольство РФ в Пекине + консульства в Шанхае, Гуанчжоу, Шэньяне, Гонконге'
+    },
+    water: {
+      tap_drinkable: false,
+      note: 'НЕ пить; даже местные кипятят; в отелях термос с горячей водой стандарт'
+    },
+    taxi_apps: [
+      { name: 'DiDi', note: 'крупнейшее; через Alipay/WeChat mini-program для иностранцев' },
+      { name: 'Meituan', note: 'для еды + такси, требует китайский номер' }
+    ],
+    sources: [
+      { name: 'Посольство РФ в КНР', url: 'https://china.mid.ru/' },
+      { name: 'VisaHQ — China visa-free Russia 2026', url: 'https://www.visahq.com/news/2026-04-07/cn/china-to-extend-30-day-visa-free-entry-for-russian-citizens-until-september-2027/' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'hainan': {
+    tipping: {
+      restaurants: 'не приняты — китайская no-tipping культура',
+      taxi: 'не приняты; DiDi через приложение',
+      hotel: '10-30 ¥ носильщику на курорте',
+      note: 'на Хайнане туристы из РФ привычны — персонал не обижается на отсутствие чаевых'
+    },
+    emergency: {
+      police: '110',
+      ambulance: '120',
+      fire: '119',
+      tourist: '12301',
+      embassy_ru_url: 'https://china.mid.ru/',
+      embassy_note: 'Ближайшее консульство РФ — Гуанчжоу'
+    },
+    water: {
+      tap_drinkable: false,
+      note: 'НЕ пить; на курортах фильтрованная подаётся бесплатно'
+    },
+    taxi_apps: [
+      { name: 'DiDi', note: 'в Санье и Хайкоу через Alipay' },
+      { name: 'Bluebird/Yellow Cab', note: 'местные жёлтые такси, торг или счётчик' }
+    ],
+    sources: [
+      { name: 'Hainan Free Trade Port — Visa-Free', url: 'http://en.hnftp.gov.cn/tips/policy/202003/t20200317_3263796.html' },
+      { name: 'Посольство РФ в КНР', url: 'https://china.mid.ru/' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'egypt': {
+    tipping: {
+      restaurants: '10-15% если сервис-чардж не включён',
+      taxi: 'округление; ~10-20 EGP за поездку',
+      hotel: '10-20 EGP/сумка носильщику; 20-30 EGP/день горничной',
+      note: '«бакшиш» — глубоко укоренённая культура; держи мелкие купюры'
+    },
+    emergency: {
+      police: '122',
+      ambulance: '123',
+      fire: '180',
+      tourist_police: '126',
+      traffic: '128',
+      embassy_ru_phone: '+20-2-748-9353',
+      embassy_ru_url: 'https://egypt.mid.ru/'
+    },
+    water: {
+      tap_drinkable: false,
+      note: 'НЕ пить — даже в Каире чистая, но трубы старые; на курортах только бутилированная'
+    },
+    taxi_apps: [
+      { name: 'Uber', note: 'Каир, Александрия — основной' },
+      { name: 'Careem', note: 'Каир, Александрия, Хургада, Луксор, Асуан' },
+      { name: 'inDrive', note: 'торг с водителем' }
+    ],
+    sources: [
+      { name: 'Посольство РФ в Египте', url: 'https://egypt.mid.ru/' },
+      { name: 'Orange Egypt — Emergency Numbers', url: 'https://www.orange.eg/en/help/emergency-numbers' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'south-korea': {
+    tipping: {
+      restaurants: 'НЕ приняты — wait-staff на ставке; отказ от чаевых = норма',
+      taxi: 'не приняты',
+      hotel: 'не приняты; экскл. luxury hotels — там 1-2 USD носильщику',
+      note: 'one of the few non-tipping countries; не обидно ничего не давать'
+    },
+    emergency: {
+      police: '112',
+      ambulance: '119',
+      fire: '119',
+      embassy_ru_phone: '+82-2-318-2116',
+      embassy_ru_url: 'https://korea-seoul.mid.ru/',
+      embassy_note: '119 для туристов: 3-way call с переводчиком (EN/JP/CN)'
+    },
+    water: {
+      tap_drinkable: true,
+      note: 'Сеульский «Arisu» проходит все 303 стандарта ВОЗ; но 64% корейцев предпочитают бутилированную'
+    },
+    taxi_apps: [
+      { name: 'Kakao T', note: '90% рынка, дешевле Uber, English-friendly' },
+      { name: 'Uber', note: 'только лицензированные такси через Uber, не свои машины' },
+      { name: 'K-RIDE', note: 'специально для иностранцев, English-only' }
+    ],
+    sources: [
+      { name: 'Посольство РФ в Республике Корея', url: 'https://korea-seoul.mid.ru/' },
+      { name: 'Visit Seoul — Medical Emergencies', url: 'https://english.visitseoul.net/medical-emergencies' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'malaysia': {
+    tipping: {
+      restaurants: 'не обязательно; 10% сервис-чардж обычно включён в счёт',
+      taxi: 'округление',
+      hotel: '2-5 RM носильщику',
+      note: 'не часть культуры; в туристических местах ценится'
+    },
+    emergency: {
+      general: '999',
+      ambulance: '999',
+      fire: '999',
+      police: '999',
+      embassy_ru_url: 'https://malaysia.mid.ru/',
+      embassy_note: '999 — единый номер для всех экстренных служб'
+    },
+    water: {
+      tap_drinkable: false,
+      note: 'технически безопасна в КЛ после кипячения, но местные предпочитают бутилированную или фильтр'
+    },
+    taxi_apps: [
+      { name: 'Grab', note: 'крупнейшее, по всей стране' },
+      { name: 'AirAsia ride (формерно EzCab)', note: 'дешевле в КЛ' },
+      { name: 'inDrive', note: 'торг' }
+    ],
+    sources: [
+      { name: 'Civil Defence Malaysia — 999', url: 'https://www.civildefence.gov.my/999-emergency-services/?lang=en' },
+      { name: 'Посольство РФ в Малайзии', url: 'https://malaysia.mid.ru/' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'morocco': {
+    tipping: {
+      restaurants: '5-10% если сервис не включён; в дорогих ресторанах — 10%',
+      taxi: '5-10 дирхам или 10% округление',
+      hotel: '10-20 дирхам носильщику; 30-50/день горничной',
+      note: 'часть культуры; туалетным attendants 1-2 дирхама; гидам обязательно'
+    },
+    emergency: {
+      police: '19',
+      ambulance: '15',
+      fire: '15',
+      gendarmerie: '177',
+      embassy_ru_url: 'https://morocco.mid.ru/',
+      embassy_note: 'Посольство РФ в Рабате + консульство в Марракеше +212-661-14-56-40'
+    },
+    water: {
+      tap_drinkable: false,
+      note: 'НЕ пить — хлорированная, но непривычная микрофлора; бутилированная везде'
+    },
+    taxi_apps: [
+      { name: 'inDrive', note: 'торг с водителем; самое дешёвое' },
+      { name: 'Careem', note: 'Касабланка, Марракеш, Рабат' },
+      { name: 'Heetch', note: 'регулируемое VTC, лицензированные такси' }
+    ],
+    sources: [
+      { name: 'Посольство РФ в Марокко', url: 'https://morocco.mid.ru/' },
+      { name: 'CityTours Morocco — Emergency 2026', url: 'https://citytoursmorocco.com/emergency' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'peru': {
+    tipping: {
+      restaurants: '5-10% если «servicio» не в счёте',
+      taxi: 'не приняты на улице; в Uber/inDrive через приложение',
+      hotel: '2-5 PEN носильщику; 5/день горничной',
+      note: 'гидам Мачу-Пикчу обязательно 30-50 USD/день; портерам трекинга — 50-100 PEN/день'
+    },
+    emergency: {
+      police: '105',
+      ambulance: '106',
+      fire: '116',
+      general: '911',
+      tourist: '0800-22221',
+      embassy_ru_url: 'https://peru.mid.ru/',
+      embassy_note: 'Лима/Кальяо унифицирован под 911 в 2024; legacy 105/106/116 работает'
+    },
+    water: {
+      tap_drinkable: false,
+      note: 'НЕ пить; в Куско (>3000м) кипятить 3 мин из-за высоты'
+    },
+    taxi_apps: [
+      { name: 'Uber', note: 'Лима, Куско, Арекипа, Трухильо' },
+      { name: 'inDrive', note: 'торг — часто дешевле Uber на 30%' },
+      { name: 'Cabify', note: 'премиум-сегмент в Лиме' },
+      { name: 'DiDi', note: 'набирает в Лиме' }
+    ],
+    sources: [
+      { name: 'Посольство РФ в Перу', url: 'https://peru.mid.ru/' },
+      { name: 'New Peruvian — Emergency Phones', url: 'https://newperuvian.com/emergency-phone-numbers-in-peru-police-ambulance-fire/' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'bolivia': {
+    tipping: {
+      restaurants: '5-10% если сервис не включён',
+      taxi: 'не приняты',
+      hotel: '5-10 BOB носильщику',
+      note: 'гидам сафари/Уюни 50-100 BOB/день; драйверам солончака — обязательно'
+    },
+    emergency: {
+      police: '110',
+      ambulance: '118',
+      fire: '119',
+      embassy_ru_phone: '+591-2-278-6419',
+      embassy_ru_url: 'https://bolivia.mid.ru/'
+    },
+    water: {
+      tap_drinkable: false,
+      note: 'НЕ пить; на высоте Ла-Паса (3650м) кипятить 3 мин; бутилированная везде'
+    },
+    taxi_apps: [
+      { name: 'inDrive', note: 'основной — соответствует местной торговой культуре' },
+      { name: 'Uber', note: 'работает но менее популярен; в основном Санта-Крус' },
+      { name: 'Yango', note: 'набирает с 2024' }
+    ],
+    sources: [
+      { name: 'Посольство РФ в Боливии', url: 'https://bolivia.mid.ru/' },
+      { name: 'Antipode Bolivia — Useful Numbers', url: 'https://antipode-bolivia.com/en-guide-useful-numbers-in-bolivia' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'chile': {
+    tipping: {
+      restaurants: '10% «propina» обычно автоматически добавляется — нужно подтвердить или отказаться',
+      taxi: 'округление',
+      hotel: '1000-2000 CLP носильщику',
+      note: 'обязательно подтверждать «propina» в чеке (¿con propina?)'
+    },
+    emergency: {
+      police: '133',
+      ambulance: '131',
+      fire: '132',
+      general: '112',
+      embassy_ru_url: 'https://chile.mid.ru/',
+      embassy_note: 'мнемоника: A=131, B(omberos)=132, C(arabineros)=133'
+    },
+    water: {
+      tap_drinkable: true,
+      note: 'Чили — единственная страна Латам где вода безопасна по всей территории'
+    },
+    taxi_apps: [
+      { name: 'Uber', note: 'крупнейшее, по всей стране' },
+      { name: 'Cabify', note: 'премиум в Сантьяго и Вальпараисо' },
+      { name: 'DiDi', note: 'дешевле Uber на 15-20%' }
+    ],
+    sources: [
+      { name: 'Посольство РФ в Чили', url: 'https://chile.mid.ru/' },
+      { name: 'Homeurbano — Emergency Phones Santiago', url: 'https://www.homeurbano.com/en/chile-santiago/security-emergency-numbers' }
+    ],
+    updated: '2026-05-27'
+  },
+
+  'serbia': {
+    tipping: {
+      restaurants: '10% если сервис не включён; округление обычно',
+      taxi: 'округление до целого RSD',
+      hotel: '100-200 RSD носильщику',
+      note: 'не обязательно; за хороший сервис ценится'
+    },
+    emergency: {
+      general: '112',
+      police: '192',
+      ambulance: '194',
+      fire: '193',
+      embassy_ru_url: 'https://serbia.mid.ru/',
+      embassy_note: '112 → пресс 1 (полиция) / 2 (скорая) / 3 (пожарные)'
+    },
+    water: {
+      tap_drinkable: true,
+      note: 'безопасна — водопровод и фонтаны питьевые, если нет таблички «не питьевая»'
+    },
+    taxi_apps: [
+      { name: 'Yandex Go', note: 'крупнейшее в Белграде (Yandex купил рынок)' },
+      { name: 'CarGo', note: 'местный Uber-конкурент' },
+      { name: 'Naxis Taxi', note: 'традиционные такси по приложению' }
+    ],
+    sources: [
+      { name: 'Посольство РФ в Сербии', url: 'https://serbia.mid.ru/' },
+      { name: 'Serbia.com — Important Phone Numbers', url: 'https://serbia.com/visit-serbia/travel/useful-info/important-phone-numbers/' }
+    ],
+    updated: '2026-05-27'
+  },
+
   'bali': {
     tipping: {
       restaurants: '10% service-charge + 11% налог обычно включены; в кафе/варунгах — округление',
