@@ -12,6 +12,10 @@ export function getStaticPaths() {
 const { country, monthKey, monthMeta, data } = Astro.props;
 
 const url = `https://traveltribe.ru/seasons/${country.slug}/${monthKey}/`;
+// Анти-каннибализация: /seasons/[c]/[m]/ дублирует /trips/[m]/[c]/ (тот же
+// country×month интент, оба ранжируются и делят сигнал). /trips — канон-система
+// (полный каталог 852 + все топ-эрнеры), сюда и консолидируем сигнал.
+const canonicalUrl = `https://traveltribe.ru/trips/${monthKey}/${country.slug}/`;
 const title = `${country.name} в ${monthMeta.loc} 2026: погода, цены, что делать`;
 const description = `${country.name} в ${monthMeta.loc} 2026: ${data.weather.day} °C днём, море ${data.weather.sea} °C, бюджет от $${data.budget.low}/день. Сезон ${data.seasonLevel}, перелёт ${data.flight}. Что смотреть и стоит ли ехать.`;
 
@@ -91,7 +95,7 @@ const ldJson = {
 // Другие месяцы той же страны для cross-links
 const otherMonths = Object.keys(country.months).filter(m => m !== monthKey);
 ---
-<Layout title={title} description={description} canonical={url} ldJson={ldJson}>
+<Layout title={title} description={description} canonical={canonicalUrl} ldJson={ldJson}>
   <Breadcrumbs crumbs={[
     { label: 'Сезоны', href: '/seasons/' },
     { label: country.name },
