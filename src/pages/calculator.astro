@@ -298,7 +298,7 @@ const ldJson = {
           </details>
           <details class="tc-faq-item">
             <summary>Виза включена в итог?</summary>
-            <p>Да, если виза платная — в разбивке появляется строка со стоимостью. Если безвиз — «✓ безвиз». По клику — переход на детальную страницу /visa/&lt;страна&gt;/.</p>
+            <p>Да, если виза платная — в разбивке появляется строка со стоимостью. Если безвиз — «безвиз». По клику — переход на детальную страницу /visa/&lt;страна&gt;/.</p>
           </details>
           <details class="tc-faq-item">
             <summary>Что такое «лучший месяц»?</summary>
@@ -332,7 +332,7 @@ const CHEREHAPA = 'https://cherehapa.tpk.mx/GmVWjhCN';
 const OSTROVOK = 'https://ostrovok.tpk.mx/w4cAS1wZ';
 const AIRALO = 'https://ref.airalo.com/k7Wf';
 
-const CAT_COLORS = { flight: '#3b82f6', hotel: '#a855f7', food: '#22c55e', visa: '#f59e0b' };
+const CAT_COLORS = { flight: '#8e6618', hotel: '#1b1914', food: '#6b685e', visa: '#a8a294' };
 
 const calcSel = document.getElementById('calcRegion');
 const monthSel = document.getElementById('monthSelect');
@@ -486,11 +486,11 @@ function renderSingle(pi) {
   const perDay = r.grand / Math.max(1, r.days);
 
   const categories = [
-    { name: 'Перелёт', value: r.flightTotal, color: CAT_COLORS.flight, icon: '✈' },
-    { name: 'Отель', value: r.hotelTotal, color: CAT_COLORS.hotel, icon: '🏨' },
-    { name: 'Питание', value: r.foodTotal, color: CAT_COLORS.food, icon: '🍴' },
+    { name: 'Перелёт', value: r.flightTotal, color: CAT_COLORS.flight, icon: '' },
+    { name: 'Отель', value: r.hotelTotal, color: CAT_COLORS.hotel, icon: '' },
+    { name: 'Питание', value: r.foodTotal, color: CAT_COLORS.food, icon: '' },
   ];
-  if (r.visa && r.visaTotal > 0) categories.push({ name: 'Виза', value: r.visaTotal, color: CAT_COLORS.visa, icon: '🛂' });
+  if (r.visa && r.visaTotal > 0) categories.push({ name: 'Виза', value: r.visaTotal, color: CAT_COLORS.visa, icon: '' });
 
   const total = r.grand;
 
@@ -501,14 +501,14 @@ function renderSingle(pi) {
     const saving = Math.round((1 - best.mult / r.seasonMult) * 100);
     if (saving > 5) nudge = `<div class="tc-nudge"><span class="tc-nudge-icon">↘</span> В <strong>${best.monthName}</strong> на <strong>${saving}%</strong> дешевле — лучший месяц года</div>`;
   } else if (best && selectedMonth === 0) {
-    nudge = `<div class="tc-nudge tc-nudge--soft"><span class="tc-nudge-icon">💡</span> Самый дешёвый месяц — <strong>${best.monthName}</strong></div>`;
+    nudge = `<div class="tc-nudge tc-nudge--soft"><span class="tc-nudge-icon"></span> Самый дешёвый месяц — <strong>${best.monthName}</strong></div>`;
   }
 
   // Visa info
   const visaInfo = r.visa
     ? (r.visa.cost === 'бесплатно'
-        ? `<a href="/visa/${r.visa.slug}/" class="tc-visa-pill tc-visa-pill--free">✓ Безвиз · детали</a>`
-        : `<a href="/visa/${r.visa.slug}/" class="tc-visa-pill">🛂 Виза ${escapeHtml(r.visa.cost)} · детали</a>`)
+        ? `<a href="/visa/${r.visa.slug}/" class="tc-visa-pill tc-visa-pill--free">Безвиз · детали</a>`
+        : `<a href="/visa/${r.visa.slug}/" class="tc-visa-pill">Виза ${escapeHtml(r.visa.cost)} · детали</a>`)
     : '';
 
   // Season pill
@@ -558,26 +558,26 @@ function renderSingle(pi) {
 
       <div class="tc-cta-block">
         <a href="${aviUrl}" target="_blank" rel="noopener sponsored" class="tc-cta-primary">
-          <span class="tc-cta-icon">✈</span>
+          <span class="tc-cta-icon"></span>
           <span class="tc-cta-text">Найти билет на Aviasales</span>
           <span class="tc-cta-arrow">→</span>
         </a>
         <div class="tc-cta-side-row">
           <a href="${OSTROVOK}" target="_blank" rel="noopener sponsored" class="tc-cta-side">
-            <span>🏨</span> Отели Ostrovok
+            <span></span> Отели Ostrovok
           </a>
           <a href="${CHEREHAPA}" target="_blank" rel="noopener sponsored" class="tc-cta-side">
-            <span>🛡</span> Страховка Cherehapa
+            <span></span> Страховка Cherehapa
           </a>
           <a href="${AIRALO}" target="_blank" rel="noopener sponsored" class="tc-cta-side">
-            <span>📱</span> eSIM Airalo
+            <span></span> eSIM Airalo
           </a>
         </div>
       </div>
 
       <div class="tc-utility">
         <button class="tc-copy-btn" id="copyTgBtn" type="button">
-          <span>📋</span> Скопировать сводку для Telegram
+          <span></span> Скопировать сводку для Telegram
         </button>
       </div>
     </div>
@@ -613,7 +613,7 @@ function renderTable(piList) {
     const visaUrl = slug ? `/visa/${slug}/` : null;
     let visaText, visaLink;
     if (r.visa) {
-      visaText = r.visa.cost === 'бесплатно' ? '✓ безвиз' : escapeHtml(r.visa.cost);
+      visaText = r.visa.cost === 'бесплатно' ? 'безвиз' : escapeHtml(r.visa.cost);
       visaLink = visaUrl;
     } else if (slug) {
       visaText = 'нужна';
@@ -626,7 +626,7 @@ function renderTable(piList) {
     html += `
       <div class="tc-cmp-card ${isMin ? 'tc-cmp-card--best' : ''}">
         ${idx > 0 ? `<button class="tc-cmp-remove" data-remove="${pi}" type="button" aria-label="Убрать">×</button>` : ''}
-        ${isMin ? '<div class="tc-cmp-badge">🏆 Самое дешёвое</div>' : ''}
+        ${isMin ? '<div class="tc-cmp-badge">Самое дешёвое</div>' : ''}
 
         <div class="tc-cmp-head">
           <h3 class="tc-cmp-name">${escapeHtml(r.p.name.split('(')[0].trim())}</h3>
@@ -640,10 +640,10 @@ function renderTable(piList) {
         </div>
 
         <ul class="tc-cmp-list">
-          <li><span class="tc-cmp-key">✈ Перелёт</span><span class="tc-cmp-val">${fmt(r.flightTotal)}</span></li>
-          <li><span class="tc-cmp-key">🏨 Отель × ${r.days}</span><span class="tc-cmp-val">${fmt(r.hotelTotal)}</span></li>
-          <li><span class="tc-cmp-key">🍴 Питание</span><span class="tc-cmp-val">${fmt(r.foodTotal)}</span></li>
-          <li><span class="tc-cmp-key">🛂 Виза</span><span class="tc-cmp-val tc-cmp-visa">${visaLink ? `<a href="${visaLink}" target="_blank" rel="noopener">${visaText} →</a>` : visaText}</span></li>
+          <li><span class="tc-cmp-key">Перелёт</span><span class="tc-cmp-val">${fmt(r.flightTotal)}</span></li>
+          <li><span class="tc-cmp-key">Отель × ${r.days}</span><span class="tc-cmp-val">${fmt(r.hotelTotal)}</span></li>
+          <li><span class="tc-cmp-key">Питание</span><span class="tc-cmp-val">${fmt(r.foodTotal)}</span></li>
+          <li><span class="tc-cmp-key">Виза</span><span class="tc-cmp-val tc-cmp-visa">${visaLink ? `<a href="${visaLink}" target="_blank" rel="noopener">${visaText} →</a>` : visaText}</span></li>
         </ul>
 
         <a href="${aviUrl}" target="_blank" rel="noopener sponsored" class="tc-cmp-cta">Найти билет →</a>
@@ -654,15 +654,15 @@ function renderTable(piList) {
   html += `</div>
     <div class="tc-compare-aux">
       <span class="tc-aux-label">Партнёры:</span>
-      <a href="${OSTROVOK}" target="_blank" rel="noopener sponsored">🏨 Ostrovok</a>
-      <a href="${CHEREHAPA}" target="_blank" rel="noopener sponsored">🛡 Cherehapa</a>
-      <a href="${AIRALO}" target="_blank" rel="noopener sponsored">📱 Airalo</a>
+      <a href="${OSTROVOK}" target="_blank" rel="noopener sponsored">Ostrovok</a>
+      <a href="${CHEREHAPA}" target="_blank" rel="noopener sponsored">Cherehapa</a>
+      <a href="${AIRALO}" target="_blank" rel="noopener sponsored">Airalo</a>
     </div>
   </div>
 
   <div class="tc-utility">
     <button class="tc-copy-btn" id="copyTgBtn" type="button">
-      <span>📋</span> Скопировать сводку
+      <span></span> Скопировать сводку
     </button>
   </div>`;
 
@@ -774,19 +774,19 @@ resultEl.addEventListener('click', async e => {
   const days = +document.getElementById('calcDays').value;
   const lvlNames = ['Эконом', 'Комфорт', 'Люкс'];
   const monthLine = selectedMonth > 0 ? `, в ${MONTH_FULL[selectedMonth - 1]}` : '';
-  let text = `✈ Бюджет поездки${monthLine}\n${days} дн · ${travelers} чел · ${lvlNames[calcLevel]}\n─────\n`;
+  let text = `Бюджет поездки${monthLine}\n${days} дн · ${travelers} чел · ${lvlNames[calcLevel]}\n─────\n`;
   all.forEach(pi => {
     const r = computeForPriceIndex(pi);
-    text += `${r.p.name}\n  ИТОГО: ${fmt(r.grand)}\n  ✈ Перелёт: ${fmt(r.flightTotal)}\n  🏨 Отель × ${days}: ${fmt(r.hotelTotal)}\n  🍴 Еда × ${days}: ${fmt(r.foodTotal)}\n`;
-    if (r.visa && r.visaTotal > 0) text += `  🛂 Виза: ${fmt(r.visaTotal)} (${r.visa.cost})\n`;
+    text += `${r.p.name}\n  ИТОГО: ${fmt(r.grand)}\n  Перелёт: ${fmt(r.flightTotal)}\n  Отель × ${days}: ${fmt(r.hotelTotal)}\n  Еда × ${days}: ${fmt(r.foodTotal)}\n`;
+    if (r.visa && r.visaTotal > 0) text += `  Виза: ${fmt(r.visaTotal)} (${r.visa.cost})\n`;
     text += `\n`;
   });
-  text += `📎 ${window.location.href}\n🌍 traveltribe.ru/calculator/`;
+  text += `${window.location.href}\ntraveltribe.ru/calculator/`;
   try {
     await navigator.clipboard.writeText(text);
     const span = btn.querySelector('span:nth-child(2)') || btn.lastChild;
     const orig = btn.innerHTML;
-    btn.innerHTML = '<span>✓</span> Скопировано';
+    btn.innerHTML = '<span></span> Скопировано';
     setTimeout(() => { btn.innerHTML = orig; }, 1800);
   } catch (err) { alert('Не удалось'); }
 });
@@ -838,7 +838,7 @@ window.addEventListener('pageshow', (e) => {
   font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--gold-600, var(--gold));
+  color: var(--gold);
   margin-bottom: 1rem;
 }
 .tc-h1 {
@@ -866,7 +866,7 @@ window.addEventListener('pageshow', (e) => {
   letter-spacing: 0.01em;
 }
 .tc-byline a { color: var(--text-dim); text-decoration: underline; text-decoration-color: rgba(86,82,74,0.5); text-underline-offset: 2px; }
-.tc-byline a.tc-byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+.tc-byline a.tc-byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(142, 102, 24,0.5); text-underline-offset: 3px; }
 .tc-byline .tc-byline-method { color: var(--text-faint); }
 
 /* ── FORM SECTION (horizontal bar) ────────────────────────────── */
@@ -876,9 +876,8 @@ window.addEventListener('pageshow', (e) => {
 .tc-form {
   background: var(--surface, #fff);
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 1.4rem 1.6rem 1.2rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 32px -16px rgba(0,0,0,0.12);
 }
 .tc-form-grid {
   display: grid;
@@ -904,7 +903,7 @@ window.addEventListener('pageshow', (e) => {
   font-size: 0.95rem;
   font-weight: 500;
   padding: 0.6rem 0.85rem;
-  border-radius: 10px;
+  border-radius: 0;
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
   width: 100%;
@@ -912,8 +911,8 @@ window.addEventListener('pageshow', (e) => {
 }
 .tc-input:hover { border-color: var(--gold-dim, var(--gold)); }
 .tc-input:focus-visible {
-  border-color: var(--gold-600, var(--gold));
-  box-shadow: 0 0 0 3px rgba(201,151,58,0.12);
+  border-color: var(--gold);
+  outline: 2px solid var(--gold); outline-offset: 2px;
 }
 .tc-input--select {
   appearance: none; -webkit-appearance: none;
@@ -929,7 +928,7 @@ window.addEventListener('pageshow', (e) => {
   display: flex; align-items: center;
   background: var(--bg);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   height: 40px;
 }
 .tc-stepper-btn {
@@ -939,9 +938,9 @@ window.addEventListener('pageshow', (e) => {
   width: 36px; height: 100%;
   cursor: pointer;
   transition: color 0.15s, background 0.15s;
-  border-radius: 10px;
+  border-radius: 0;
 }
-.tc-stepper-btn:hover { color: var(--gold); background: rgba(201,151,58,0.08); }
+.tc-stepper-btn:hover { color: var(--gold); background: rgba(142, 102, 24,0.08); }
 .tc-stepper-val {
   flex: 1; text-align: center;
   font-family: var(--ff-body);
@@ -956,7 +955,7 @@ window.addEventListener('pageshow', (e) => {
   display: inline-flex;
   background: var(--bg);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   padding: 3px;
   gap: 2px;
   height: 40px;
@@ -972,7 +971,7 @@ window.addEventListener('pageshow', (e) => {
   font-weight: 500;
   padding: 0 0.4rem;
   cursor: pointer;
-  border-radius: 7px;
+  border-radius: 0;
   transition: all 0.15s;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -997,19 +996,19 @@ window.addEventListener('pageshow', (e) => {
 .tc-add-country {
   background: transparent;
   border: 1px dashed var(--gold-dim, var(--gold));
-  color: var(--gold-600, var(--gold));
+  color: var(--gold);
   font-family: var(--ff-body);
   font-size: 0.85rem;
   font-weight: 500;
   padding: 0.45rem 0.9rem;
-  border-radius: 999px;
+  border-radius: 0;
   cursor: pointer;
   appearance: none; -webkit-appearance: none;
   padding-right: 1.8rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23c9973a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238e6618' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right 0.7rem center;
 }
-.tc-add-country:hover { background: rgba(201,151,58,0.06); border-style: solid; }
+.tc-add-country:hover { background: rgba(142, 102, 24,0.06); border-style: solid; }
 .tc-rate {
   font-family: var(--ff-mono);
   font-size: 0.72rem;
@@ -1026,9 +1025,8 @@ window.addEventListener('pageshow', (e) => {
 .tc-single {
   background: var(--surface, #fff);
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: 0;
   padding: clamp(1.5rem, 3vw, 2rem);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 12px 40px -20px rgba(0,0,0,0.10);
 }
 
 .tc-result-head { margin-bottom: 1.4rem; }
@@ -1051,7 +1049,7 @@ window.addEventListener('pageshow', (e) => {
   background: var(--bg);
   border: 1px solid var(--line);
   padding: 0.3rem 0.7rem;
-  border-radius: 999px;
+  border-radius: 0;
   color: var(--text-dim);
 }
 .tc-season-pill {
@@ -1060,10 +1058,10 @@ window.addEventListener('pageshow', (e) => {
   letter-spacing: 0.05em;
   text-transform: uppercase;
   padding: 0.3rem 0.7rem;
-  border-radius: 999px;
+  border-radius: 0;
 }
 .tc-season-pill--peak { background: rgba(239,68,68,0.1); color: #c63b3b; }
-.tc-season-pill--good { background: rgba(34,197,94,0.1); color: #1f9c4a; }
+.tc-season-pill--good { background: rgba(142, 102, 24,0.1); color: #1f9c4a; }
 .tc-season-pill--ok   { background: rgba(245,158,11,0.1); color: #c97d09; }
 .tc-season-pill--bad  { background: rgba(107,114,128,0.1); color: #4b5563; }
 .tc-season-pill--any  { background: var(--bg); color: var(--text-faint); border: 1px dashed var(--line-strong, var(--line)); }
@@ -1075,13 +1073,13 @@ window.addEventListener('pageshow', (e) => {
   border: 1px solid var(--text);
   color: var(--text);
   padding: 0.3rem 0.7rem;
-  border-radius: 999px;
+  border-radius: 0;
   text-decoration: none;
   transition: background 0.15s;
 }
-.tc-visa-pill--free { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.2); color: #1f9c4a; }
+.tc-visa-pill--free { background: rgba(142, 102, 24,0.08); border-color: rgba(142, 102, 24,0.2); color: #1f9c4a; }
 .tc-visa-pill:hover { background: rgba(245,158,11,0.15); }
-.tc-visa-pill--free:hover { background: rgba(34,197,94,0.15); }
+.tc-visa-pill--free:hover { background: rgba(142, 102, 24,0.15); }
 
 /* Hero total — главное число */
 .tc-hero-total {
@@ -1090,7 +1088,7 @@ window.addEventListener('pageshow', (e) => {
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   margin: 0.5rem 0 1.5rem;
-  background: linear-gradient(180deg, rgba(201,151,58,0.025), transparent);
+  background: rgba(142, 102, 24, 0.02);
 }
 .tc-hero-label {
   font-family: var(--ff-mono);
@@ -1121,21 +1119,21 @@ window.addEventListener('pageshow', (e) => {
 /* Nudge */
 .tc-nudge {
   display: flex; align-items: center; gap: 0.5rem;
-  background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.02));
-  border: 1px solid rgba(34,197,94,0.2);
-  border-radius: 12px;
+  background: rgba(142, 102, 24, 0.05);
+  border: 1px solid rgba(142, 102, 24,0.2);
+  border-radius: 0;
   padding: 0.8rem 1rem;
   font-size: 0.88rem;
   color: var(--text);
   margin-bottom: 1.2rem;
 }
 .tc-nudge--soft {
-  background: linear-gradient(135deg, rgba(201,151,58,0.06), rgba(201,151,58,0.01));
-  border-color: rgba(201,151,58,0.2);
+  background: rgba(142, 102, 24, 0.04);
+  border-color: rgba(142, 102, 24,0.2);
 }
 .tc-nudge-icon { font-size: 1.05rem; flex-shrink: 0; }
 .tc-nudge strong { font-weight: 700; color: #1f9c4a; }
-.tc-nudge--soft strong { color: var(--gold-600, var(--gold)); }
+.tc-nudge--soft strong { color: var(--gold); }
 
 /* Category bars */
 .tc-cats {
@@ -1147,7 +1145,7 @@ window.addEventListener('pageshow', (e) => {
 .tc-cat {
   background: var(--bg);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 0.9rem 1rem;
   display: flex; flex-direction: column; gap: 0.5rem;
   transition: border-color 0.15s;
@@ -1172,14 +1170,14 @@ window.addEventListener('pageshow', (e) => {
 .tc-cat-bar {
   height: 6px;
   background: var(--line);
-  border-radius: 999px;
+  border-radius: 0;
   overflow: hidden;
 }
 .tc-cat-fill {
   height: 100%;
   width: var(--w);
   background: var(--c);
-  border-radius: 999px;
+  border-radius: 0;
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .tc-cat-pct {
@@ -1196,20 +1194,18 @@ window.addEventListener('pageshow', (e) => {
 }
 .tc-cta-primary {
   display: flex; align-items: center; justify-content: center; gap: 0.6rem;
-  background: linear-gradient(135deg, var(--gold-600, var(--gold)), #b58838);
+  background: var(--gold);
   color: #fff;
   padding: 1.05rem 1.5rem;
-  border-radius: 14px;
+  border-radius: 0;
   font-family: var(--ff-body);
   font-weight: 600;
   font-size: 1rem;
   text-decoration: none;
-  box-shadow: 0 4px 14px rgba(201,151,58,0.3), 0 1px 2px rgba(0,0,0,0.06);
   transition: all 0.2s;
 }
 .tc-cta-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(201,151,58,0.4), 0 2px 4px rgba(0,0,0,0.08);
 }
 .tc-cta-icon { font-size: 1.1em; }
 .tc-cta-arrow { transition: transform 0.2s; font-size: 1.1em; }
@@ -1226,7 +1222,7 @@ window.addEventListener('pageshow', (e) => {
   border: 1px solid var(--line);
   color: var(--text-dim);
   padding: 0.65rem 1rem;
-  border-radius: 12px;
+  border-radius: 0;
   font-family: var(--ff-body);
   font-size: 0.85rem;
   font-weight: 500;
@@ -1236,7 +1232,7 @@ window.addEventListener('pageshow', (e) => {
 .tc-cta-side:hover {
   background: var(--surface, #fff);
   border-color: var(--gold-dim);
-  color: var(--gold-600);
+  color: var(--gold);
   transform: translateY(-1px);
 }
 .tc-cta-side span { font-size: 1.05em; }
@@ -1254,7 +1250,7 @@ window.addEventListener('pageshow', (e) => {
   border: 1px dashed var(--text);
   color: var(--text);
   padding: 0.55rem 1.1rem;
-  border-radius: 999px;
+  border-radius: 0;
   font-family: var(--ff-body);
   font-size: 0.82rem;
   font-weight: 500;
@@ -1271,9 +1267,8 @@ window.addEventListener('pageshow', (e) => {
 .tc-compare {
   background: var(--surface, #fff);
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: 0;
   padding: clamp(1.5rem, 3vw, 2rem);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 12px 40px -20px rgba(0,0,0,0.10);
 }
 .tc-compare-head { text-align: center; margin-bottom: 1.5rem; }
 .tc-compare-title {
@@ -1301,7 +1296,7 @@ window.addEventListener('pageshow', (e) => {
 .tc-cmp-card {
   background: var(--bg);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 0;
   padding: 1.3rem 1.2rem 1.1rem;
   display: grid;
   grid-template-rows: auto auto 1fr auto;
@@ -1317,15 +1312,15 @@ window.addEventListener('pageshow', (e) => {
 }
 .tc-cmp-card:hover { border-color: var(--gold-dim); }
 .tc-cmp-card--best {
-  background: linear-gradient(180deg, rgba(34,197,94,0.05), var(--bg));
-  border: 1.5px solid rgba(34,197,94,0.4);
+  background: rgba(142, 102, 24, 0.03);
+  border: 1.5px solid rgba(142, 102, 24,0.4);
 }
 .tc-cmp-remove {
   position: absolute; top: 0.7rem; right: 0.7rem;
   background: var(--surface, #fff);
   border: 1px solid var(--line);
   width: 26px; height: 26px;
-  border-radius: 50%;
+  border-radius: 0;
   cursor: pointer;
   font-size: 1rem; line-height: 1;
   color: var(--text-faint);
@@ -1337,16 +1332,15 @@ window.addEventListener('pageshow', (e) => {
 
 .tc-cmp-badge {
   position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-  background: #22c55e;
+  background: #8e6618;
   color: #fff;
   font-family: var(--ff-body);
   font-size: 0.7rem;
   font-weight: 700;
   padding: 0.25rem 0.7rem;
-  border-radius: 999px;
+  border-radius: 0;
   letter-spacing: 0.02em;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(34,197,94,0.3);
 }
 
 .tc-cmp-name {
@@ -1414,7 +1408,7 @@ window.addEventListener('pageshow', (e) => {
 }
 .tc-cmp-visa { font-weight: 500; }
 .tc-cmp-visa a {
-  color: var(--gold-600);
+  color: var(--gold);
   text-decoration: none;
   margin-left: 0.2rem;
 }
@@ -1424,7 +1418,7 @@ window.addEventListener('pageshow', (e) => {
   background: var(--text);
   color: var(--bg);
   padding: 0.75rem 1.1rem;
-  border-radius: 10px;
+  border-radius: 0;
   font-family: var(--ff-body);
   font-weight: 600;
   font-size: 0.88rem;
@@ -1433,11 +1427,11 @@ window.addEventListener('pageshow', (e) => {
   transition: background 0.15s, transform 0.15s;
 }
 .tc-cmp-cta:hover {
-  background: var(--gold-600, var(--gold));
+  background: var(--gold);
   transform: translateY(-1px);
 }
 .tc-cmp-card--best .tc-cmp-cta {
-  background: #22c55e;
+  background: #8e6618;
 }
 .tc-cmp-card--best .tc-cmp-cta:hover { background: #1f9c4a; }
 
@@ -1461,7 +1455,7 @@ window.addEventListener('pageshow', (e) => {
   border-bottom: 1px dashed var(--gold-dim);
   transition: color 0.15s;
 }
-.tc-compare-aux a:hover { color: var(--gold-600); }
+.tc-compare-aux a:hover { color: var(--gold); }
 
 /* ── SECTIONS (Tips, BudgetBlock, FAQ) ───────────────────────── */
 /* вертикальный ритм: отступ только сверху (без удвоения у соседних секций), уменьшается на мобайле */
@@ -1480,7 +1474,7 @@ window.addEventListener('pageshow', (e) => {
   font-family: var(--ff-mono);
   font-size: 11px;
   letter-spacing: 0.2em;
-  color: var(--gold-600);
+  color: var(--gold);
 }
 .tc-section-title {
   font-family: var(--ff-display);
@@ -1526,15 +1520,15 @@ window.addEventListener('pageshow', (e) => {
   display: block;
   margin-top: 1.5rem;
   padding: 1.2rem 1.4rem;
-  background: rgba(201,151,58,0.05);
+  background: rgba(142, 102, 24,0.05);
   border: 1px solid var(--line);
   border-left: 3px solid var(--gold);
-  border-radius: 4px;
+  border-radius: 0;
   text-decoration: none;
   color: var(--text);
   transition: background 0.15s, transform 0.15s;
 }
-.tc-tip-callout:hover { background: rgba(201,151,58,0.09); transform: translateX(2px); }
+.tc-tip-callout:hover { background: rgba(142, 102, 24,0.09); transform: translateX(2px); }
 .tc-tip-callout-text { display: flex; flex-direction: column; gap: 0.3rem; }
 .tc-tip-callout-text strong { color: var(--text); font-size: 1rem; line-height: 1.3; }
 .tc-tip-callout-text span { color: var(--text-dim); font-size: 0.88rem; line-height: 1.55; }
@@ -1547,13 +1541,12 @@ window.addEventListener('pageshow', (e) => {
 .tc-faq-item {
   background: var(--surface, #fff);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 0;
   margin-bottom: 0.5rem;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .tc-faq-item[open] {
   border-color: var(--gold-dim);
-  box-shadow: 0 4px 14px -8px rgba(201,151,58,0.15);
 }
 .tc-faq-item summary {
   cursor: pointer;
@@ -1575,7 +1568,7 @@ window.addEventListener('pageshow', (e) => {
   font-family: var(--ff-display);
   font-size: 1.5rem;
   font-weight: 300;
-  color: var(--gold-600);
+  color: var(--gold);
   transition: transform 0.25s;
   line-height: 1;
 }
@@ -1598,9 +1591,9 @@ window.addEventListener('pageshow', (e) => {
   .tc-field--country, .tc-field--level { grid-column: 1 / -1; }
 }
 @media (max-width: 640px) {
-  .tc-form { padding: 1rem; border-radius: 12px; }
+  .tc-form { padding: 1rem; border-radius: 0; }
   .tc-form-grid { grid-template-columns: 1fr; gap: 0.7rem; }
-  .tc-single { padding: 1.2rem 1rem; border-radius: 14px; }
+  .tc-single { padding: 1.2rem 1rem; border-radius: 0; }
   .tc-compare { padding: 1.2rem 1rem; }
   .tc-compare-grid { grid-template-columns: 1fr; }
   .tc-cats { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
