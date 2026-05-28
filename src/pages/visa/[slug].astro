@@ -4,6 +4,7 @@ import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { Picture } from 'astro:assets';
 import { DIRECTIONS } from '../../data/directions.js';
+import { getVisaDetails } from '../../data/visa-details.js';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../../data/meta.js';
 
 const destPhotos = import.meta.glob('../../assets/destinations/*.jpg', { eager: true, import: 'default' });
@@ -62,13 +63,23 @@ const VISA_STAY = {
   required: 'Срок пребывания указан в визе — от 15 дней до полугода в зависимости от типа.',
 };
 
+// Страновые verified-данные (visa-details.js) — цена/срок/оформление по конкретной
+// стране, не generic по типу. Это закрывает «сколько стоит виза в X» answer-first.
+const vd = getVisaDetails(d.slug, d.visa);
+const costFree = vd.cost === 'бесплатно';
+const costAnswer = costFree
+  ? `Виза ${d.cases.vP} не нужна — въезд бесплатный, ${vd.timing}. Консульский сбор не платится.`
+  : `Стоимость визы ${d.cases.vP} — ${vd.cost}. ${VISA_FEE[d.visa]}`;
+const stayAnswer = `Разрешённое пребывание ${d.cases.loc} — ${vd.duration}. Оформление: ${vd.timing}.`;
+const termAnswer = `${vd.timing}. ${VISA_TERM[d.visa]}`;
+
 // FAQ — генерируется из данных направления (YMYL: прямые ответы с цифрами)
 const faqs = [
   { q: `Нужна ли виза ${d.cases.vP} для россиян в 2026?`, a: visaSummary[d.visa] },
   { q: `Какие документы нужны для въезда ${d.cases.vP}?`, a: VISA_DOCS[d.visa] },
-  { q: `Сколько стоит виза ${d.cases.vP}?`, a: VISA_FEE[d.visa] },
-  { q: `Сколько оформляется виза ${d.cases.vP}?`, a: VISA_TERM[d.visa] },
-  { q: `На сколько дней можно въехать ${d.cases.vP}?`, a: VISA_STAY[d.visa] },
+  { q: `Сколько стоит виза ${d.cases.vP}?`, a: costAnswer },
+  { q: `Сколько оформляется виза ${d.cases.vP}?`, a: termAnswer },
+  { q: `На сколько дней можно въехать ${d.cases.vP}?`, a: stayAnswer },
   {
     q: `Когда лучше ехать ${d.cases.vP}?`,
     a: bestMonths.length
@@ -83,7 +94,7 @@ if (d.relatedPosts.length > 0) {
   });
 }
 
-const tldr = `${visaSummary[d.visa]} ${VISA_FEE[d.visa]} ${VISA_TERM[d.visa]}${bestMonths.length ? ` Лучшие месяцы — ${bestMonths.map(m => m.nom).join(', ')}.` : ''}`;
+const tldr = `${visaSummary[d.visa]} ${costAnswer} ${stayAnswer}${bestMonths.length ? ` Лучшие месяцы — ${bestMonths.map(m => m.nom).join(', ')}.` : ''}`;
 
 const ldJson = {
   "@context": "https://schema.org",
@@ -186,11 +197,20 @@ const ldJson = {
       <h2>Кратко</h2>
       <ul class="visa-facts">
         <li><strong>Статус:</strong> {VISA_LABELS[d.visa]}</li>
+        <li><strong>Стоимость визы:</strong> {costFree ? 'бесплатно (виза не нужна)' : vd.cost}</li>
+        <li><strong>Разрешённое пребывание:</strong> {vd.duration}</li>
+        <li><strong>Оформление:</strong> {vd.timing}</li>
         <li><strong>Регион:</strong> {d.group}</li>
         <li><strong>Бюджет на день:</strong> {d.budget === 'low' ? '$ — до $80' : d.budget === 'mid' ? '$$ — $80–250' : '$$$ — от $250'}</li>
         {flightFrom && <li><strong>Перелёт из Москвы от:</strong> ${flightFrom}</li>}
         {hotelFrom && <li><strong>Отель эконом от:</strong> ${hotelFrom}/ночь</li>}
       </ul>
+    </section>
+
+    <section class="visa-block">
+      <h2>Сколько стоит виза {d.cases.vP} в 2026</h2>
+      <p>{costAnswer}</p>
+      <p>{stayAnswer}</p>
     </section>
 
     {d.visa === 'free' && (
