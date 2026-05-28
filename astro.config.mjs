@@ -92,6 +92,9 @@ export default defineConfig({
         && !page.includes('/blog/tag/')
         && !page.includes('sitemap-images')
         && !page.includes('/og/')
+        // /seasons/[c]/[m]/ — дубль /trips/[m]/[c]/; canonical ведёт на trips,
+        // поэтому из sitemap исключаем (только canonical+200). Хаб /seasons/ остаётся.
+        && !/\/seasons\/[^/]+\/[^/]+\//.test(page)
         && !CLOSED_TRIPS.has(page),
       changefreq: 'weekly',
       priority: 0.7,
