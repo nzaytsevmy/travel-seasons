@@ -92,7 +92,6 @@ export default defineConfig({
         && !page.includes('/blog/tag/')
         && !page.includes('sitemap-images')
         && !page.includes('/og/')
-        && !/\/packing\/[^/]+\/[^/]+\//.test(page)  // packing detail [страна]/[месяц] — noindex (scaled-content, 0 трафика)
         && !CLOSED_TRIPS.has(page),
       changefreq: 'weekly',
       priority: 0.7,
