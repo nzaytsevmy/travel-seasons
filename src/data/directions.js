@@ -187,6 +187,9 @@ const COUNTRY_CASES = {
 // Used by /visa/<slug>/ and /trips/<month>/<slug>/ to surface long-form content.
 // Add a new entry whenever you publish a new post for an existing direction.
 const RELATED_POSTS = {
+  'abkhazia': [
+    { slug: 'abkhazia-2026', title: 'Абхазия 2026: стоит ли ехать, цены, как добраться', kind: 'guide' },
+  ],
   'japan': [
     { slug: 'japan-guide-2026', title: 'Япония 2026: гайд без воды', kind: 'guide' },
     { slug: 'japan-visa-2026', title: 'Виза в Японию для россиян 2026', kind: 'visa' },
