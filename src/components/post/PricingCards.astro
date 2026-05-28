@@ -1,21 +1,11 @@
 ---
-// Premium pricing comparison cards. Pattern: Stripe / Linear / Vercel / Apple.
-// Use in MDX:
-//   <PricingCards tiers={[
-//     { tier: 'Эконом', price: '750 000–950 000 ₽', priceNote: 'март или ноябрь', emoji: '🟢',
-//       features: ['MV Ushuaia / Ocean Nova', 'Нижняя палуба', 'Перелёт эконом', 'Базовый круиз 10–11 дней'] },
-//     { tier: 'Стандарт', price: '1 100 000–1 400 000 ₽', priceNote: 'декабрь–февраль', emoji: '🟡',
-//       featured: true,
-//       features: ['Swan Hellenic / Quark', 'Каюта с окном', 'Хороший корабль', 'Одна ночь в БА'] },
-//     { tier: 'Премиум', price: '2 500 000–4 500 000+ ₽', priceNote: 'люкс-яхты', emoji: '🔴',
-//       features: ['Ponant Le Boreal / Silversea', 'Балкон', 'Личный бутлер', 'Бизнес-перелёт', 'Five Star Alliance'] },
-//   ]} />
-
+// Swiss comparison grid (BRANDBOOK §4/§5): только hairlines, ноль radius/shadow/
+// gradient/заливок/пилюль. Акцент — единственное бренд-золото (--gold #8e6618),
+// эмфаза featured типографикой + золотой левой линейкой. Табличные цифры.
 interface Tier {
   tier: string;
   price: string;
   priceNote?: string;
-  emoji?: string;
   featured?: boolean;
   badge?: string;
   features: string[];
@@ -28,15 +18,13 @@ interface Props {
 
 const { tiers, caption } = Astro.props;
 ---
-<div class="pricing-cards" role="region" aria-label={caption || 'Тарифы'}>
-  {tiers.map((t) => (
+<div class="pricing-cards" role="region" aria-label={caption || 'Сравнение'}>
+  {tiers.map((t, i) => (
     <article class={`pc-card ${t.featured ? 'pc-card--featured' : ''}`}>
-      {(t.badge || t.featured) && (
-        <div class="pc-badge">{t.badge || 'Оптимальный выбор'}</div>
-      )}
       <div class="pc-head">
-        {t.emoji && <span class="pc-emoji" aria-hidden="true">{t.emoji}</span>}
+        <span class="pc-idx">{String(i + 1).padStart(2, '0')}</span>
         <span class="pc-tier">{t.tier}</span>
+        {(t.badge || t.featured) && <span class="pc-badge">{t.badge || 'Оптимально'}</span>}
       </div>
       <div class="pc-price-wrap">
         <div class="pc-price">{t.price}</div>
@@ -46,7 +34,7 @@ const { tiers, caption } = Astro.props;
         {t.features.map((f) => (
           <li>
             <span class="pc-check" aria-hidden="true">
-              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="3 8.5 6.5 12 13 4.5"></polyline>
               </svg>
             </span>
@@ -61,68 +49,38 @@ const { tiers, caption } = Astro.props;
 <style>
 .pricing-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   margin: 2rem 0 2.5rem;
+  border-top: 2px solid var(--line);
 }
-
 .pc-card {
-  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  padding: 1.6rem 1.4rem 1.5rem;
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  gap: 1rem;
+  padding: 1.3rem 1.3rem 1.4rem;
+  border-left: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
-.pc-card:hover {
-  border-color: rgba(201,151,58,0.35);
-  transform: translateY(-2px);
-  box-shadow: 0 14px 30px -18px rgba(0,0,0,0.5);
-}
-
-.pc-card--featured {
-  border-color: var(--gold);
-  background: linear-gradient(180deg, rgba(201,151,58,0.06) 0%, var(--bg2) 100%);
-  box-shadow: 0 0 0 1px var(--gold), 0 14px 40px -20px rgba(201,151,58,0.4);
-}
-.pc-card--featured:hover {
-  box-shadow: 0 0 0 1px var(--gold), 0 22px 50px -18px rgba(201,151,58,0.5);
-}
-
-.pc-badge {
-  position: absolute;
-  top: -10px; left: 50%; transform: translateX(-50%);
-  font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
-  color: #fff;
-  background: var(--gold);
-  padding: 0.25rem 0.7rem;
-  border-radius: 999px;
-  font-weight: 700;
-  white-space: nowrap;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.2);
-}
+.pc-card:first-child { border-left: none; }
+.pc-card.pc-card--featured { border-left: 3px solid var(--gold); }
 
 .pc-head {
-  display: flex; align-items: center; gap: 0.5rem;
-  font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--text-faint);
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.5rem;
+  font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
 }
-.pc-emoji { font-size: 0.9rem; }
-.pc-tier { font-weight: 600; color: var(--text-dim); }
+.pc-idx { font-weight: 700; color: var(--gold); font-variant-numeric: tabular-nums; }
+.pc-tier { font-weight: 700; color: var(--text-dim); }
 .pc-card--featured .pc-tier { color: var(--gold); }
+.pc-badge { font-size: 0.62rem; letter-spacing: 0.1em; font-weight: 700; color: var(--gold); }
 
 .pc-price-wrap {
-  display: flex; flex-direction: column; gap: 0.3rem;
-  padding-bottom: 1rem;
+  display: flex; flex-direction: column; gap: 0.25rem;
+  padding-bottom: 0.9rem;
   border-bottom: 1px solid var(--line);
 }
 .pc-price {
-  font-family: var(--ff-display);
-  font-size: clamp(1.5rem, 2.6vw, 1.9rem);
-  font-weight: 400;
+  font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+  font-weight: 800;
   color: var(--text);
   line-height: 1.1;
   letter-spacing: -0.01em;
@@ -130,46 +88,21 @@ const { tiers, caption } = Astro.props;
   text-wrap: balance;
 }
 .pc-card--featured .pc-price { color: var(--gold); }
-.pc-price-note {
-  font-size: 0.78rem;
-  color: var(--text-faint);
-  font-style: italic;
-}
+.pc-price-note { font-size: 0.76rem; color: var(--text-faint); }
 
 .pc-features {
-  list-style: none;
-  padding: 0; margin: 0;
-  display: flex; flex-direction: column; gap: 0.55rem;
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 0.5rem;
 }
 .pc-features li {
-  display: flex;
-  gap: 0.6rem;
-  align-items: flex-start;
-  font-size: 0.88rem;
-  line-height: 1.55;
-  color: var(--text-dim);
+  display: flex; gap: 0.55rem; align-items: flex-start;
+  font-size: 0.88rem; line-height: 1.55; color: var(--text-dim);
 }
-.pc-check {
-  flex: 0 0 auto;
-  width: 18px; height: 18px;
-  display: inline-flex; align-items: center; justify-content: center;
-  border-radius: 50%;
-  background: rgba(201,151,58,0.12);
-  color: var(--gold);
-  margin-top: 1px;
-}
-.pc-card--featured .pc-check { background: rgba(201,151,58,0.22); }
+.pc-check { flex: 0 0 auto; color: var(--gold); margin-top: 2px; }
 
-/* Mobile: одна колонка, full-width карточки.
-   @media, не @container: контейнер-запрос таргетил сам .pricing-cards (контейнер),
-   а это применяется только к потомкам — правило не срабатывало. container-type
-   на auto-fit-гриде также валил старый Safari (схлопывал в min-content). */
 @media (max-width: 600px) {
-  .pricing-cards {
-    grid-template-columns: 1fr;
-    gap: 0.85rem;
-  }
-  .pc-card { padding: 1.3rem 1.2rem 1.2rem; }
-  .pc-price { font-size: 1.5rem; }
+  .pricing-cards { grid-template-columns: 1fr; }
+  .pc-card { border-left: none; padding: 1.2rem 0; }
+  .pc-card.pc-card--featured { border-left: none; border-top: 2px solid var(--gold); margin-top: -1px; }
 }
 </style>
