@@ -134,6 +134,14 @@ function costBucket(cost) {
   const num = parseInt(digits, 10) || 0;
   return num > 0 && num <= 50 ? 'cheap' : 'premium';
 }
+function costUsd(cost) {
+  const lower = cost.toLowerCase();
+  if (lower.indexOf('беспл') >= 0) return 0;
+  const num = parseInt(cost.replace(/[^\d]/g, ' ').trim().split(/\s+/)[0] || '0', 10) || 0;
+  if (cost.indexOf('\u20ac') >= 0) return Math.round(num * 1.08);   // EUR -> USD
+  if (cost.indexOf('\u20bd') >= 0 || /руб/i.test(cost)) return Math.round(num / 90); // RUB -> USD
+  return num; // $ или без символа -> USD
+}
 function isLongDuration(dur) {
   const lower = dur.toLowerCase();
   if (lower.indexOf('год') >= 0 || lower.indexOf('без срока') >= 0) return true;
@@ -419,6 +427,8 @@ const ldJson = {
         <button type="button" class="va-chip" data-cost="free" aria-pressed="false">Бесплатно</button>
         <button type="button" class="va-chip" data-cost="cheap" aria-pressed="false">До $50</button>
         <button type="button" class="va-chip" data-duration="long" aria-pressed="false">60+ дней</button>
+        <span class="va-chip-divider" aria-hidden="true">·</span>
+        <button type="button" class="va-chip" data-sort="cost" aria-pressed="false">Сначала дешёвые →</button>
       </div>
       <p class="va-filter-count" id="visaFilterCount" aria-live="polite" aria-atomic="true">Показано: <strong>{DIRECTIONS.length}</strong> из {DIRECTIONS.length} направлений</p>
       <noscript>
@@ -474,6 +484,8 @@ const ldJson = {
                  data-name={d.cases.nom.toLowerCase()}
                  data-visa={d.visa}
                  data-cost={cb}
+                 data-cost-usd={costUsd(details.cost)}
+                 data-ord={idx}
                  data-duration-long={isLong ? '1' : '0'}>
                 <div class="va-card-num">
                   <span aria-label={`Карточка ${num} из ${byVisa[vt].length}`}>№ {num}</span>
@@ -637,6 +649,7 @@ const ldJson = {
 <script>
   // Active filter state — комбинируется с поиском
   let filterState = { visa: 'all', cost: null as string | null, durationLong: false };
+  let sortState = { byCost: false };
 
   function applyVisaFilters() {
     const cards = document.querySelectorAll<HTMLElement>('.va-card');
@@ -717,6 +730,19 @@ const ldJson = {
     if (clearBtn) clearBtn.addEventListener('click', () => { search.value = ''; applyVisaFilters(); search.focus(); });
   }
 
+  // Сортировка карточек ВНУТРИ каждой секции (группировка по режиму визы сохраняется)
+  function applySort() {
+    document.querySelectorAll<HTMLElement>('.va-section').forEach((sec) => {
+      const cards = Array.from(sec.querySelectorAll<HTMLElement>('.va-card'));
+      if (!cards.length) return;
+      cards.sort((a, b) => sortState.byCost
+        ? (Number(a.dataset.costUsd) || 0) - (Number(b.dataset.costUsd) || 0)
+        : (Number(a.dataset.ord) || 0) - (Number(b.dataset.ord) || 0));
+      const parent = cards[0].parentElement;
+      if (parent) cards.forEach((c) => parent.appendChild(c));
+    });
+  }
+
   // Event-delegation на document — robust против timing issues и SPA-навигации
   function initVisaFilters() {
     if ((window as any).__vaFiltersBound) return;
@@ -758,6 +784,12 @@ const ldJson = {
         filterState.durationLong = !filterState.durationLong;
         chip.classList.toggle('va-chip--active', filterState.durationLong);
         chip.setAttribute('aria-pressed', String(filterState.durationLong));
+      }
+      if (chip.dataset.sort === 'cost') {
+        sortState.byCost = !sortState.byCost;
+        chip.classList.toggle('va-chip--active', sortState.byCost);
+        chip.setAttribute('aria-pressed', String(sortState.byCost));
+        applySort();
       }
 
       applyVisaFilters();
