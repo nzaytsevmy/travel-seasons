@@ -24,7 +24,6 @@ import MonthlyEvents from '../components/MonthlyEvents.astro';
 import CountryMap from '../components/CountryMap.astro';
 import { TP_LINKS, aviasalesRoute } from '../data/affiliate.js';
 import { getGuide } from '../data/country-guides.js';
-import { MONTHLY_WEATHER } from '../data/country-monthly-weather.js';
 import { buildEssentialsFaq } from '../data/essentials-faq.js';
 import { hasEssentials } from '../data/country-essentials.js';
 import { hasCustoms } from '../data/country-customs.js';
@@ -108,23 +107,6 @@ const weekTotal = flightFrom ? flightFrom + (hotelFrom || 0) * 7 + (foodFrom || 
 const priceIdx = d.price ? PRICES.findIndex(p => p.iata === d.price.iata && p.name === d.price.name) : -1;
 const calcUrl = priceIdx >= 0 ? `/calculator/?r=${priceIdx}` : '/calculator/';
 
-// Помесячная погода — климат-нормали (country-monthly-weather.js, 16 стран).
-// Закрывает weather-интент «погода в X в [месяц] 2026»: точные днев. t° и осадки.
-// Парсим верхнюю границу t° строго (диапазон может быть из отрицательных: '-7--1°C').
-const wx = MONTHLY_WEATHER[d.slug];
-let wxRows = null, wxWarmest = null, wxDriest = null, wxWettest = null;
-if (wx) {
-  wxRows = wx.months.map((mo, i) => {
-    const t = mo.temp.replace('°C', '').trim().match(/^(-?\d+)-(-?\d+)$/);
-    const hi = t ? Number(t[2]) : 0;
-    const mm = Number((mo.rain.match(/\d+/) || ['0'])[0]);
-    return { ...MONTHS[i], temp: mo.temp, rain: mo.rain, hi, mm };
-  });
-  wxWarmest = wxRows.reduce((a, b) => (b.hi > a.hi ? b : a));
-  wxDriest = wxRows.reduce((a, b) => (b.mm < a.mm ? b : a));
-  wxWettest = wxRows.reduce((a, b) => (b.mm > a.mm ? b : a));
-}
-
 // FAQ generated from data
 const faqs = [
   {
@@ -144,11 +126,6 @@ const faqs = [
       : `${d.cases.nom} имеет переменчивые сезоны — смотри помесячный календарь ниже.`,
   },
 ];
-// Погодный вопрос (weather-интент) — в видимый FAQ и в FAQPage schema
-if (wx) faqs.push({
-  q: `Какая погода ${d.cases.loc} по месяцам в 2026?`,
-  a: `Днём теплее всего в ${wxWarmest.prep} (${wxWarmest.temp}), суше всего — в ${wxDriest.prep} (${wxDriest.rain}), больше всего дождей в ${wxWettest.prep} (${wxWettest.rain}). Полная таблица температуры и осадков по всем месяцам — в разделе «Погода ${d.cases.loc} по месяцам». Ориентир — ${wx.city}, многолетние средние.`,
-});
 // Доп. вопросы из расширенного гайда — и в видимый FAQ, и в schema (AEO)
 if (guide?.faq?.length) faqs.push(...guide.faq);
 
@@ -508,27 +485,6 @@ if (guide?.itinerary?.length) {
       </ul>
     </section>
 
-    {/* ПОГОДА ПО МЕСЯЦАМ — точные климат-нормали (weather-интент «погода в X в [месяц]») */}
-    {wx && (
-      <section class="sl-section">
-        <div class="sl-shead"><h2>Погода {d.cases.loc} по месяцам в 2026</h2></div>
-        <p class="sl-answer"><b>Коротко:</b> днём теплее всего в {wxWarmest.prep} ({wxWarmest.temp}), суше всего — в {wxDriest.prep} ({wxDriest.rain}), пик дождей в {wxWettest.prep} ({wxWettest.rain}). Ниже — дневная температура и осадки по каждому месяцу, ориентир — {wx.city}.</p>
-        <table class="sl-wx">
-          <thead><tr><th scope="col">Месяц</th><th scope="col">Днём, °C</th><th scope="col">Осадки</th></tr></thead>
-          <tbody>
-            {wxRows.map((r) => (
-              <tr>
-                <th scope="row">{r.nom.charAt(0).toUpperCase() + r.nom.slice(1)}</th>
-                <td>{r.temp}</td>
-                <td>{r.rain}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <p class="sl-wxsrc">Источник: {wx.source}; многолетние средние (climate normals).</p>
-      </section>
-    )}
-
     {/* События и праздники по месяцам — если данные заполнены */}
     <MonthlyEvents slug={d.slug} countryNom={d.cases.nom} countryNameVp={essVp} />
 
@@ -813,28 +769,6 @@ if (guide?.itinerary?.length) {
 }
 .sl-list li:first-child { border-top: none; }
 .sl-list li b { color: var(--text); font-weight: 800; }
-
-/* WEATHER — hairline-таблица помесячных климат-нормалей */
-.sl-wx {
-  width: 100%; border-collapse: collapse;
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
-  font-size: .92rem; line-height: 1.4;
-}
-.sl-wx th, .sl-wx td {
-  padding: .6rem .5rem; text-align: left;
-  border-top: 1px solid var(--line-hair);
-}
-.sl-wx thead th {
-  border-top: none;
-  font-size: .68rem; letter-spacing: .06em; text-transform: uppercase;
-  color: var(--text-dim); font-weight: 700;
-}
-.sl-wx tbody th { font-weight: 800; color: var(--text); white-space: nowrap; }
-.sl-wx td { color: var(--text); font-variant-numeric: tabular-nums; }
-.sl-wx th:first-child, .sl-wx td:first-child { padding-left: 0; }
-.sl-wx th:last-child, .sl-wx td:last-child { padding-right: 0; }
-.sl-wxsrc { margin: .7rem 0 0; font-size: .76rem; color: var(--text-faint); }
 
 /* STEPS — numbered itinerary */
 .sl-steps {
