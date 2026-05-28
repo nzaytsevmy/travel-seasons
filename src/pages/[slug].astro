@@ -151,6 +151,20 @@ const imageNodes = schemaImages.map((im) => ({
   "height": im.height,
 }));
 
+// Анти-каннибализация: страна с глубоким блог-гайдом (kind:'guide') — голову
+// запроса «{страна} для россиян» отдаём гайду, хаб уводим на регионы/сезоны,
+// чтобы две страницы не делили один интент. Без гайда хаб остаётся головным.
+const deepGuide = d.relatedPosts?.find((p) => p.kind === 'guide');
+const hubTitle = deepGuide
+  ? `${d.cases.nom} 2026: регионы, когда ехать и куда лететь`
+  : `${d.cases.nom} 2026 для россиян: виза, когда ехать, бюджет`;
+const hubDesc = (deepGuide
+  ? `${d.cases.nom}: регионы и куда лететь, когда ехать по месяцам${bestMonths.length ? ` — ${bestMonths.slice(0, 3).map((m) => m.nom).join(', ')}` : ''}, бюджет по сезонам. Полный гайд для россиян — отдельно.`
+  : `${d.cases.nom} 2026 для россиян: ${VISA_LABEL[d.visa].toLowerCase()} (${vd.duration}), когда ехать — ${bestMonths.map((m) => m.nom).join(', ')}, бюджет от $${weekTotal || 'N/A'}/нед.`).slice(0, 155);
+const hubOgTitle = deepGuide
+  ? `${d.cases.nom} 2026 — регионы, сезоны, куда лететь`
+  : `${d.cases.nom} 2026 — виза, когда ехать, бюджет`;
+
 const ldJson = {
   "@context": "https://schema.org",
   "@graph": [
@@ -158,8 +172,8 @@ const ldJson = {
       "@type": "WebPage",
       "@id": `${url}#page`,
       "url": url,
-      "name": `${d.cases.nom} 2026 для россиян: виза, когда ехать, бюджет`,
-      "description": `${d.cases.nom} 2026 для россиян: виза (${vd.duration}), когда ехать по месяцам, бюджет, проверенные данные.`,
+      "name": hubTitle,
+      "description": hubDesc,
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "about": { "@type": "Country", "name": d.cases.nom },
@@ -211,10 +225,10 @@ if (guide?.itinerary?.length) {
 }
 ---
 <Layout
-  title={`${d.cases.nom} 2026 для россиян: виза, когда ехать, бюджет`}
-  description={`${d.cases.nom} 2026 для россиян: ${VISA_LABEL[d.visa].toLowerCase()} (${vd.duration}), когда ехать — ${bestMonths.map(m => m.nom).join(', ')}, бюджет от $${weekTotal || 'N/A'}/нед.`.slice(0, 155)}
+  title={hubTitle}
+  description={hubDesc}
   canonical={url}
-  ogTitle={`${d.cases.nom} 2026 — виза, когда ехать, бюджет`}
+  ogTitle={hubOgTitle}
   ogDescription={`${VISA_LABEL[d.visa]} · бюджет ${BUDGET_LABEL[d.budget].split('—')[0].trim()} · лучшие месяцы: ${bestMonths.slice(0,2).map(m => m.nom).join(', ')}`}
   ogType="article"
   ldJson={ldJson}
@@ -275,6 +289,17 @@ if (guide?.itinerary?.length) {
         <span class="byline-fresh">данные актуальны на {DATA_UPDATED_RU}</span>
       </p>
     </section>
+
+    {/* АНТИ-КАННИБАЛИЗАЦИЯ: голову запроса «{страна} для россиян» забирает
+        глубокий гайд — хаб явно передаёт на него авторитет и юзера */}
+    {deepGuide && (
+      <section class="sl-section">
+        <a href={`/blog/${deepGuide.slug}/`} class="sl-guidelink">
+          <span class="sl-gl-k">Полный гайд по стране</span>
+          <span class="sl-gl-t">{deepGuide.title} →</span>
+        </a>
+      </section>
+    )}
 
     {/* QUICK ACTIONS — навигация по основным ресурсам страны */}
     <section class="sl-section">
@@ -688,6 +713,16 @@ if (guide?.itinerary?.length) {
 .sl-byline { font-size: .76rem; color: var(--text-dim); margin: 0; letter-spacing: .01em; }
 .sl-byline a { color: var(--text); text-decoration: 1px underline rgba(86,82,74,.4); text-underline-offset: 3px; }
 .sl-byline a.byline-author { color: var(--gold); text-decoration: 1px underline var(--gold); }
+.sl-guidelink {
+  display: flex; flex-direction: column; gap: .15rem;
+  padding: .8rem 1rem; min-height: 44px; justify-content: center;
+  border-left: 3px solid var(--gold);
+  background: color-mix(in srgb, var(--gold) 6%, transparent);
+  text-decoration: none; color: var(--text);
+}
+.sl-guidelink:hover { background: color-mix(in srgb, var(--gold) 11%, transparent); }
+.sl-gl-k { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); }
+.sl-gl-t { font-size: 1rem; font-weight: 700; color: var(--gold); }
 .sl-byline .byline-fresh { color: var(--text-faint); }
 
 /* QUICK ACTIONS — 4 hairline-card grid (visa/budget/months/flight) */
