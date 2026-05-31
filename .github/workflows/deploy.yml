@@ -58,6 +58,16 @@ jobs:
             dist/ \
             u3502181@server290.hosting.reg.ru:/var/www/u3502181/data/www/traveltribe.ru/
 
+      - name: Smoke-check live prod
+        run: |
+          set -e
+          for url in "https://traveltribe.ru/" "https://traveltribe.ru/trips/" "https://traveltribe.ru/visa/"; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$url")
+            echo "$url -> $code"
+            [ "$code" = "200" ] || { echo "✖ smoke-check: $url вернул $code"; exit 1; }
+          done
+          echo "✔ прод отвечает 200 на ключевых маршрутах"
+
       - name: Collect changed files
         id: changed
         run: |

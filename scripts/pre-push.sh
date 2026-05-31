@@ -14,7 +14,7 @@ npm run build > /tmp/pre-push-build.log 2>&1 || {
 echo "→ pre-push: starting preview server"
 pkill -f "astro preview" 2>/dev/null || true
 sleep 1
-npm run preview > /tmp/pre-push-preview.log 2>&1 &
+npx astro preview --port 4322 > /tmp/pre-push-preview.log 2>&1 &
 PREVIEW_PID=$!
 
 for i in 1 2 3 4 5 6 7 8 9 10; do
