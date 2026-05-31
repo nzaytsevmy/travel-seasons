@@ -1,4 +1,7 @@
 ---
+// Страница месяца «Куда поехать в <месяце>» — Swiss / International Typographic по BRANDBOOK.md.
+// Дата-таблица направлений (сезон передан типографикой, не цветом), Aviasales deep-link в строках перелётов.
+import '@fontsource-variable/golos-text/index.css';
 import Layout from '../../layouts/Layout.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
@@ -6,22 +9,23 @@ import { data as regions } from '../../data/regions.js';
 import { PRICES } from '../../data/prices.js';
 import { regionMeta } from '../../data/regions-meta.js';
 import { DATA_UPDATED_RU } from '../../data/meta.js';
+import { aviasalesRoute } from '../../data/affiliate.js';
 import fs from 'node:fs';
 import path from 'node:path';
 
 const MONTHS = [
-  { slug: 'january',   name: 'январе',   nameNom: 'Январь',   short: 'Янв', en: 'January' },
-  { slug: 'february',  name: 'феврале',  nameNom: 'Февраль',  short: 'Фев', en: 'February' },
-  { slug: 'march',     name: 'марте',    nameNom: 'Март',     short: 'Мар', en: 'March' },
-  { slug: 'april',     name: 'апреле',   nameNom: 'Апрель',   short: 'Апр', en: 'April' },
-  { slug: 'may',       name: 'мае',      nameNom: 'Май',      short: 'Май', en: 'May' },
-  { slug: 'june',      name: 'июне',     nameNom: 'Июнь',     short: 'Июн', en: 'June' },
-  { slug: 'july',      name: 'июле',     nameNom: 'Июль',     short: 'Июл', en: 'July' },
-  { slug: 'august',    name: 'августе',  nameNom: 'Август',   short: 'Авг', en: 'August' },
-  { slug: 'september', name: 'сентябре', nameNom: 'Сентябрь', short: 'Сен', en: 'September' },
-  { slug: 'october',   name: 'октябре',  nameNom: 'Октябрь',  short: 'Окт', en: 'October' },
-  { slug: 'november',  name: 'ноябре',   nameNom: 'Ноябрь',   short: 'Ноя', en: 'November' },
-  { slug: 'december',  name: 'декабре',  nameNom: 'Декабрь',  short: 'Дек', en: 'December' },
+  { slug: 'january',   name: 'январе',   nameNom: 'Январь',   short: 'Янв' },
+  { slug: 'february',  name: 'феврале',  nameNom: 'Февраль',  short: 'Фев' },
+  { slug: 'march',     name: 'марте',    nameNom: 'Март',     short: 'Мар' },
+  { slug: 'april',     name: 'апреле',   nameNom: 'Апрель',   short: 'Апр' },
+  { slug: 'may',       name: 'мае',      nameNom: 'Май',      short: 'Май' },
+  { slug: 'june',      name: 'июне',     nameNom: 'Июнь',     short: 'Июн' },
+  { slug: 'july',      name: 'июле',     nameNom: 'Июль',     short: 'Июл' },
+  { slug: 'august',    name: 'августе',  nameNom: 'Август',   short: 'Авг' },
+  { slug: 'september', name: 'сентябре', nameNom: 'Сентябрь', short: 'Сен' },
+  { slug: 'october',   name: 'октябре',  nameNom: 'Октябрь',  short: 'Окт' },
+  { slug: 'november',  name: 'ноябре',   nameNom: 'Ноябрь',   short: 'Ноя' },
+  { slug: 'december',  name: 'декабре',  nameNom: 'Декабрь',  short: 'Дек' },
 ];
 
 export async function getStaticPaths() {
@@ -36,24 +40,22 @@ const monthIdx = MONTHS.findIndex(m => m.slug === month);
 const M = MONTHS[monthIdx];
 
 const SCORE = { P: 4, G: 3, O: 2, B: 1, X: 0 };
-const SCORE_LABEL = { P: 'Пик сезона', G: 'Хорошо', O: 'Терпимо', B: 'Плохо', X: 'Закрыто' };
-const SCORE_CLASS = { P: 'peak', G: 'good', O: 'ok', B: 'bad', X: 'off' };
-const VISA_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза' };
-const VISA_CLASS = { free: 'tag-free', evisa: 'tag-evisa', required: 'tag-visa' };
-const BUDGET_LABEL = { low: '$ Дёшево', mid: '$$ Средне', high: '$$$ Дорого' };
-const BUDGET_CLASS = { low: 'tag-low', mid: 'tag-mid', high: 'tag-high' };
+const SEASON_TXT = { P: 'Пик', G: 'Хорошо', O: 'Можно' };
+const SEASON_CLS = { P: 's-peak', G: 's-good', O: 's-ok' };
+const VISA_LABEL = { free: 'Безвиз', evisa: 'e-Visa', required: 'Виза' };
+const VISA_CLS = { free: 'free', evisa: 'evisa', required: 'visa' };
+const BUDGET_LABEL = { low: '$', mid: '$$', high: '$$$' };
+const BUDGET_TITLE = { low: 'до $80/день', mid: '$80–250/день', high: 'от $250/день' };
 
-// Match regions to PRICES by name fragment to get IATA + flight
 const directions = regions.filter(r => !r.group);
 
-// Read live prices at build time (public/ is accessible via fs)
+// Live-цены перелётов (build-time из public/prices.json)
 let livePrices = {};
 try {
   const pjson = JSON.parse(fs.readFileSync(path.resolve('./public/prices.json'), 'utf8'));
   livePrices = pjson.prices || {};
 } catch (e) { /* fallback to estimates */ }
 
-// Match each direction to PRICES[i] (best-effort by name)
 function findPrice(d) {
   const norm = (s) => s.toLowerCase().replace(/[^a-zа-я0-9]/gi, '');
   const dn = norm(d.region) + norm(d.sub);
@@ -88,6 +90,7 @@ const enriched = directions.map(d => {
 const peak = enriched.filter(d => d.score === 'P');
 const good = enriched.filter(d => d.score === 'G');
 const ok = enriched.filter(d => d.score === 'O');
+const rows = [...peak, ...good, ...ok.slice(0, 8)];   // таблица: пик + хорошо + до 8 «можно»
 const top = enriched.slice(0, 15);
 const cheapest = [...enriched].filter(d => d.flight).sort((a, b) => a.flight - b.flight).slice(0, 5);
 const visaFree = enriched.filter(d => d.visa === 'free').slice(0, 5);
@@ -173,264 +176,238 @@ const ldJson = {
     { label: M.nameNom }
   ]} />
 
-  <main id="main" class="trips-wrap">
-    <header class="trips-header">
-      <div class="hero-tag">Календарь · {M.nameNom} 2026</div>
-      <h1>Куда поехать в <em>{M.name}</em></h1>
-      <p class="trips-sub">{peak.length} направлений с пиком сезона · {good.length} с хорошей погодой · цены на перелёт обновлены {new Date().toLocaleDateString('ru-RU')}</p>
-      <p class="trips-byline">
-        <a href="/about/" class="byline-author">Никита Зайцев</a> ·
-        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
-        <span class="byline-fresh">сезоны и визы актуальны на {DATA_UPDATED_RU}</span>
-      </p>
-    </header>
+  <main id="main" class="sw">
+    <div class="wrap">
+      <header class="hero grid">
+        <div class="idx">Календарь поездок<b>{M.nameNom} · 2026</b></div>
+        <div class="meta">Сезоны и визы<br><b>актуальны на {DATA_UPDATED_RU}</b></div>
+        <h1 class="h1">Куда поехать <span class="rd">в {M.name}</span></h1>
+        <p class="sub"><b>{peak.length}</b> направлений с пиком сезона, <b>{good.length}</b> с хорошей погодой. Цены на перелёт из Москвы, виза для россиян и бюджет на день — в одной таблице.</p>
+        <p class="byl">
+          <a href="/about/" class="byl-a">Никита Зайцев</a> ·
+          <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
+          <span>был лично на 7 континентах</span>
+        </p>
+      </header>
 
-    {peak.length > 0 && (
-      <section class="trips-section">
-        <h2>🔥 Пик сезона</h2>
-        <p class="section-desc">Идеальная погода, всё открыто. Может быть многолюдно и дороже.</p>
-        <div class="trips-grid">
-          {peak.map(d => (
-            <a href={d.slug ? `/trips/${month}/${d.slug}/` : '#'} class={`trip-card score-${SCORE_CLASS[d.score]}`}>
-              <div class="trip-head">
-                <h3>{d.region}</h3>
-                <span class="score-pill">{SCORE_LABEL[d.score]}</span>
-              </div>
-              <p class="trip-sub">{d.sub}</p>
-              <p class="trip-text">{d.text}</p>
-              <div class="trip-tags">
-                <span class={`tag ${VISA_CLASS[d.visa]}`}>{VISA_LABEL[d.visa]}</span>
-                <span class={`tag ${BUDGET_CLASS[d.budget]}`}>{BUDGET_LABEL[d.budget]}</span>
-                {d.flight && (
-                  <span class="tag tag-flight">
-                    {d.isLive ? '✈ ' : '~ '}от ${d.flight}
-                  </span>
-                )}
-              </div>
-              <span class="trip-card-arrow" aria-hidden="true">→</span>
-            </a>
-          ))}
+      <section class="sec">
+        <div class="shead">
+          <h2><span class="no">01</span>Направления в {M.name}</h2>
+          <span class="cap">сезон · виза · бюджет · перелёт</span>
         </div>
-      </section>
-    )}
-
-    {good.length > 0 && (
-      <section class="trips-section">
-        <h2>✅ Хорошая погода</h2>
-        <p class="section-desc">Комфортно, меньше туристов, ниже цены чем в пик.</p>
-        <div class="trips-grid">
-          {good.map(d => (
-            <a href={d.slug ? `/trips/${month}/${d.slug}/` : '#'} class={`trip-card score-${SCORE_CLASS[d.score]}`}>
-              <div class="trip-head">
-                <h3>{d.region}</h3>
-                <span class="score-pill">{SCORE_LABEL[d.score]}</span>
-              </div>
-              <p class="trip-sub">{d.sub}</p>
-              <p class="trip-text">{d.text}</p>
-              <div class="trip-tags">
-                <span class={`tag ${VISA_CLASS[d.visa]}`}>{VISA_LABEL[d.visa]}</span>
-                <span class={`tag ${BUDGET_CLASS[d.budget]}`}>{BUDGET_LABEL[d.budget]}</span>
-                {d.flight && (
-                  <span class="tag tag-flight">
-                    {d.isLive ? '✈ ' : '~ '}от ${d.flight}
-                  </span>
-                )}
-              </div>
-              <span class="trip-card-arrow" aria-hidden="true">→</span>
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
-
-    {ok.length > 0 && (
-      <section class="trips-section">
-        <h2>👌 Можно ехать</h2>
-        <p class="section-desc">Сезон не идеальный, но если вы там по другим причинам — норм.</p>
-        <div class="trips-grid">
-          {ok.slice(0, 8).map(d => (
-            <a href={d.slug ? `/trips/${month}/${d.slug}/` : '#'} class={`trip-card score-${SCORE_CLASS[d.score]}`}>
-              <div class="trip-head">
-                <h3>{d.region}</h3>
-                <span class="score-pill">{SCORE_LABEL[d.score]}</span>
-              </div>
-              <p class="trip-sub">{d.sub}</p>
-              <p class="trip-text">{d.text}</p>
-              <div class="trip-tags">
-                <span class={`tag ${VISA_CLASS[d.visa]}`}>{VISA_LABEL[d.visa]}</span>
-                <span class={`tag ${BUDGET_CLASS[d.budget]}`}>{BUDGET_LABEL[d.budget]}</span>
-                {d.flight && (
-                  <span class="tag tag-flight">
-                    {d.isLive ? '✈ ' : '~ '}от ${d.flight}
-                  </span>
-                )}
-              </div>
-              <span class="trip-card-arrow" aria-hidden="true">→</span>
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
-
-    <section class="trips-section quick-picks">
-      <h2>⚡️ Быстрый выбор</h2>
-      <div class="picks-grid">
-        <div class="pick-card">
-          <h3>💸 Самые дешёвые</h3>
-          <ul>
-            {cheapest.map(d => (
-              <li><strong>{d.region}</strong> — от ${d.flight}</li>
+        <table class="dt">
+          <thead><tr>
+            <th>Направление</th><th>Сезон</th><th>Виза</th><th class="c">Бюджет</th><th>Перелёт из Москвы</th>
+          </tr></thead>
+          <tbody>
+            {rows.map(d => (
+              <tr>
+                <td class="dn" data-l="Направление">
+                  {d.slug
+                    ? <a class="nm" href={`/trips/${month}/${d.slug}/`}>{d.region}</a>
+                    : <span class="nm">{d.region}</span>}
+                  <span class="dsub">{d.sub}</span>
+                </td>
+                <td class="season" data-l="Сезон"><span class={SEASON_CLS[d.score]}>{SEASON_TXT[d.score]}</span></td>
+                <td data-l="Виза"><span class={`visa ${VISA_CLS[d.visa]}`}>{VISA_LABEL[d.visa]}</span></td>
+                <td class="c bud" data-l="Бюджет" title={BUDGET_TITLE[d.budget]}>{BUDGET_LABEL[d.budget]}</td>
+                <td class="fl" data-l="Перелёт">
+                  {d.flight
+                    ? (d.iata
+                        ? <a class="find" href={aviasalesRoute('MOW', d.iata)} rel="sponsored noopener" target="_blank">от ${d.flight} · найти →</a>
+                        : <span class="fprice">от ${d.flight}</span>)
+                    : <span class="fdash">—</span>}
+                </td>
+              </tr>
             ))}
-          </ul>
+          </tbody>
+        </table>
+        <p class="tnote">«Сезон»: <b>Пик</b> — погода и инфраструктура на 100%; <b>Хорошо</b> — комфортно и дешевле; <b>Можно</b> — сезон не идеальный. Цена перелёта — ориентир от $; «найти» открывает Aviasales (Москва → город). <span class="adm">реклама</span></p>
+      </section>
+
+      <section class="sec">
+        <div class="shead"><h2><span class="no">02</span>Быстрый выбор</h2></div>
+        <div class="picks">
+          <div class="pick">
+            <h3>Самые дешёвые перелёты</h3>
+            <ul class="vl">
+              {cheapest.map(d => (
+                <li>
+                  <span class="pk-n">{d.region}</span>
+                  {d.iata
+                    ? <a class="find" href={aviasalesRoute('MOW', d.iata)} rel="sponsored noopener" target="_blank">от ${d.flight} · найти →</a>
+                    : <span class="fprice">от ${d.flight}</span>}
+                </li>
+              ))}
+            </ul>
+            <p class="adm-row"><span class="adm">реклама</span> · цены через Aviasales</p>
+          </div>
+          <div class="pick">
+            <h3>Без визы для россиян</h3>
+            <ul class="vl">
+              {visaFree.map(d => (
+                <li>
+                  {d.slug
+                    ? <a class="pk-l" href={`/trips/${month}/${d.slug}/`}>{d.region}</a>
+                    : <span class="pk-n">{d.region}</span>}
+                  <span class="pk-s">{d.sub}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-        <div class="pick-card">
-          <h3>🛂 Без визы для россиян</h3>
-          <ul>
-            {visaFree.map(d => (
-              <li><strong>{d.region}</strong> — {d.sub}</li>
-            ))}
-          </ul>
+      </section>
+
+      <section class="sec">
+        <div class="shead"><h2><span class="no">03</span>Частые вопросы — {M.nameNom} 2026</h2></div>
+        <div class="faq">
+          {faqs.map(f => (
+            <details class="fi">
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="trips-faq">
-      <h2>Частые вопросы — {M.nameNom} 2026</h2>
-      <div class="trips-faq-list">
-        {faqs.map(f => (
-          <details class="trips-faq-item">
-            <summary>{f.q}</summary>
-            <p>{f.a}</p>
-          </details>
-        ))}
-      </div>
-    </section>
+      <section class="sec">
+        <div class="shead"><h2><span class="no">04</span>Что делать дальше</h2></div>
+        <ul class="vl wide">
+          <li><a href="/seasons/">Полная таблица сезонов</a><span>все 70 направлений × 12 месяцев</span></li>
+          <li><a href="/calculator/">Калькулятор бюджета</a><span>посчитать поездку под свои даты и курс</span></li>
+          <li><a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a><span>оперативные обновления по визам и направлениям</span></li>
+        </ul>
+      </section>
 
-    <section class="trips-cta">
-      <h2>Что делать дальше</h2>
-      <ul class="cta-list">
-        <li>📅 <a href="/trips/">Календарь на все 12 месяцев</a> — выбери другой месяц</li>
-        <li>📊 <a href="/seasons/">Полная таблица сезонов</a> — все 70 направлений × 12 месяцев</li>
-        <li>💸 <a href="/calculator/">Калькулятор бюджета</a> — посчитай поездку с актуальным курсом</li>
-        <li>📲 <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> — оперативные обновления по визам и направлениям</li>
-      </ul>
-    </section>
-
-    <nav class="month-nav" aria-label="Другие месяцы">
-      <p class="month-nav-label">Другие месяцы:</p>
-      <div class="month-pills">
-        {MONTHS.map((m, i) => (
-          <a
-            href={`/trips/${m.slug}/`}
-            class={`month-pill ${m.slug === month ? 'active' : ''}`}
-            aria-current={m.slug === month ? 'page' : undefined}
-          >
-            {m.short}
-          </a>
-        ))}
-      </div>
-    </nav>
+      <nav class="mnav" aria-label="Другие месяцы">
+        <span class="mnav-l">Другие месяцы:</span>
+        <span class="mnav-t">
+          {MONTHS.map((m) => (
+            <a href={`/trips/${m.slug}/`} class={`t ${m.slug === month ? 'on' : ''}`} aria-current={m.slug === month ? 'page' : undefined}>{m.short}</a>
+          ))}
+        </span>
+      </nav>
+    </div>
   </main>
 
   <Footer />
 </Layout>
 
+<style is:global>
+  body { background: #f4f2eb; }
+</style>
+
 <style>
-.trips-wrap { max-width: 1200px; margin: 0 auto; padding: 0 1.2rem 5rem; }
-.trips-header { text-align: center; padding: 3rem 0 2.5rem; }
-.hero-tag { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
-.trips-header h1 { font-family: var(--ff-body); font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1rem; }
-.trips-header h1 em { color: var(--gold); font-style: italic; }
-.trips-sub { color: var(--text-dim); font-size: 0.95rem; max-width: 640px; margin: 0 auto; line-height: 1.6; }
-.trips-byline { font-size: 0.76rem; color: var(--text-faint); max-width: 640px; margin: 0.7rem auto 0; letter-spacing: 0.01em; }
-.trips-byline a { color: var(--text-dim); text-decoration: underline; text-decoration-color: rgba(86,82,74,0.5); text-underline-offset: 2px; }
-.trips-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
-.trips-byline .byline-fresh { color: var(--text-faint); }
+.sw{--paper:#f4f2eb;--ink:#1b1914;--mid:#6b685e;--line:#23211a;--hair:#cdc9bd;--gold:#8e6618;
+  --ff:'Golos Text Variable','Golos Text',Helvetica,Arial,sans-serif;--edge:clamp(1.1rem,3vw,2.6rem);
+  background:var(--paper);color:var(--ink);font-family:var(--ff);font-weight:400;line-height:1.4;
+  font-variant-numeric:tabular-nums lining-nums;-webkit-font-smoothing:antialiased;padding-bottom:clamp(3rem,6vw,5rem)}
+:where(.sw) :where(h1,h2,h3,h4,p,ul,li){margin:0}
+.sw :where(h1,h2,h3,h4){font-family:var(--ff);color:var(--ink)}
+.sw a{color:inherit;text-decoration:none}
+.sw :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.wrap{max-width:1280px;margin-inline:auto;padding-inline:var(--edge)}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:0 clamp(.8rem,2vw,1.6rem)}
 
-.trips-faq { margin: 3rem 0 2.5rem; }
-.trips-faq h2 { font-family: var(--ff-body); font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1.2rem; }
-.trips-faq-list { display: flex; flex-direction: column; gap: 0.6rem; max-width: 760px; }
-.trips-faq-item { background: var(--bg2); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
-.trips-faq-item summary { font-weight: 500; color: var(--text); padding: 0.95rem 1.2rem; cursor: pointer; font-size: 0.95rem; line-height: 1.5; list-style: none; position: relative; }
-.trips-faq-item summary::-webkit-details-marker { display: none; }
-.trips-faq-item summary::after { content: '+'; position: absolute; right: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--gold); font-size: 1.2rem; transition: transform 0.2s; }
-.trips-faq-item[open] summary::after { transform: translateY(-50%) rotate(45deg); }
-.trips-faq-item p { padding: 0 1.2rem 1.1rem; margin: 0; color: var(--text-dim); line-height: 1.75; font-size: 0.92rem; }
+.hero{padding:clamp(2rem,5vw,4rem) 0 clamp(1.2rem,2.5vw,2rem)}
+.idx{grid-column:1/6;grid-row:1;font-size:.74rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--gold)}
+.idx b{display:block;color:var(--ink);font-size:.74rem;font-weight:500;margin-top:.2rem}
+.meta{grid-column:8/13;grid-row:1;text-align:right;align-self:start;font-size:.8rem;color:var(--mid);line-height:1.5}
+.meta b{color:var(--ink);font-weight:500}
+.h1{grid-column:1/13;grid-row:2;font-weight:700;font-size:clamp(2.4rem,7vw,6.4rem);line-height:1.02;letter-spacing:-.035em;margin-top:clamp(1.2rem,2.5vw,2rem);padding-bottom:.06em}
+.h1 .rd{color:var(--gold)}
+.sub{grid-column:1/10;grid-row:3;font-size:clamp(1rem,1.3vw,1.18rem);color:var(--ink);margin-top:clamp(1.4rem,2vw,1.8rem);max-width:60ch;line-height:1.55}
+.sub b{color:var(--gold);font-weight:700}
+.byl{grid-column:1/13;grid-row:4;margin-top:1.4rem;font-size:.78rem;color:var(--mid)}
+.byl a{color:var(--mid)}
+.byl .byl-a{color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:3px}
 
-.trips-section { margin: 3rem 0 2.5rem; }
-.trips-section h2 { font-family: var(--ff-body); font-size: 1.4rem; font-weight: 700; margin-bottom: 0.4rem; letter-spacing: -0.01em; }
-.section-desc { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.4rem; max-width: 640px; }
+.sec{padding:clamp(2.2rem,4.5vw,3.4rem) 0 0}
+.shead{display:flex;align-items:center;justify-content:space-between;gap:1rem;border-top:2px solid var(--line);padding-top:.8rem;margin-bottom:1.2rem}
+.shead h2{font-weight:700;font-size:clamp(1.4rem,2.6vw,2rem);letter-spacing:-.02em;display:flex;align-items:baseline;gap:.6rem}
+.no{font-size:.74rem;font-weight:700;color:var(--gold);letter-spacing:.04em}
+.shead .cap{font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mid)}
 
-.trips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+/* Дата-таблица направлений */
+.dt{width:100%;border-collapse:collapse;font-size:.92rem}
+.dt thead th{font-size:.64rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid);text-align:left;padding:.5rem .8rem .55rem 0;border-bottom:1px solid var(--line)}
+.dt thead th.c{text-align:center}
+.dt td{padding:.85rem .8rem;border-bottom:1px solid var(--hair);vertical-align:baseline}
+.dt td:first-child,.dt th:first-child{padding-left:0}
+.dt td.c{text-align:center}
+.dt tr:last-child td{border-bottom:none}
+@media(hover:hover){.dt tbody tr:hover td{background:rgba(142,102,24,.07)}}
+.dn{min-width:12rem}
+.nm{font-weight:700;font-size:1.05rem;letter-spacing:-.01em;line-height:1.2;color:var(--ink)}
+a.nm:hover{color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:3px}
+.dsub{display:block;font-size:.74rem;color:var(--mid);margin-top:.15rem;line-height:1.3}
+.season span{font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.s-peak{color:var(--gold)}.s-good{color:var(--ink)}.s-ok{color:var(--mid)}
+.visa{font-size:.74rem;font-weight:600;letter-spacing:.02em;text-transform:uppercase}
+.visa.free{color:var(--gold)}.visa.evisa{color:var(--ink)}.visa.visa{color:#56534c}
+.bud{font-weight:700;color:var(--ink);letter-spacing:.05em}
+.fl{white-space:nowrap}
+.find{color:var(--ink);font-weight:600;text-decoration:2px underline var(--gold);text-underline-offset:3px}
+.find:hover{color:var(--gold)}
+.fprice{color:var(--mid);font-weight:600}
+.fdash{color:var(--hair)}
+.tnote{margin-top:.9rem;font-size:.72rem;color:var(--mid);line-height:1.6;max-width:90ch}
+.tnote b{color:var(--ink);font-weight:600}
+.adm{font-size:.6rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
 
-.trip-card {
-  background: var(--bg2); border: 1px solid var(--line); border-radius: 4px;
-  padding: 1.2rem; position: relative; overflow: hidden;
-  transition: transform 0.2s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-  display: block; text-decoration: none; color: inherit;
-}
-.trip-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--gold-dim);
-  box-shadow: 0 8px 22px -10px rgba(0,0,0,0.18);
-}
-.trip-card-arrow {
-  position: absolute; top: 1.2rem; right: 1.2rem;
-  color: var(--gold); font-size: 1rem;
-  opacity: 0; transition: opacity 0.2s, transform 0.2s;
-}
-.trip-card:hover .trip-card-arrow { opacity: 1; transform: translateX(3px); }
-.trip-card.score-peak { border-left: 3px solid var(--peak); }
-.trip-card.score-good { border-left: 3px solid var(--good); }
-.trip-card.score-ok   { border-left: 3px solid var(--ok); }
+/* Быстрый выбор */
+.picks{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.4rem,3vw,2.4rem)}
+.pick h3{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);margin-bottom:.4rem}
+.vl{list-style:none;border-top:1px solid var(--line)}
+.vl li{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.2rem .7rem;padding:.7rem 0;border-bottom:1px solid var(--hair)}
+.vl li:last-child{border-bottom:none}
+.pk-n,.pk-l{font-weight:600;font-size:1rem;color:var(--ink)}
+.pk-l{text-decoration:2px underline var(--gold);text-underline-offset:3px}
+.pk-l:hover{color:var(--gold)}
+.pk-s{color:var(--mid);font-size:.8rem}
+.adm-row{margin-top:.5rem;font-size:.66rem;color:var(--mid)}
+/* «что дальше» value-list */
+.vl.wide li{justify-content:flex-start}
+.vl.wide a{font-weight:600;font-size:1.02rem;color:var(--ink);text-decoration:2px underline var(--gold);text-underline-offset:3px}
+.vl.wide a:hover{color:var(--gold)}
+.vl.wide span{color:var(--mid);font-size:.86rem}
 
-.trip-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.3rem; }
-.trip-head h3 { font-family: var(--ff-body); font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; }
-.score-pill {
-  font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase;
-  padding: 0.2rem 0.45rem; border-radius: 2px; white-space: nowrap;
-  border: 1px solid;
-}
-.score-peak .score-pill { color: var(--peak-text); background: rgba(34,197,94,0.10); border-color: rgba(34,197,94,0.3); }
-.score-good .score-pill { color: var(--good-text); background: rgba(74,158,255,0.10); border-color: rgba(74,158,255,0.3); }
-.score-ok   .score-pill { color: var(--ok-text);   background: rgba(245,158,11,0.10); border-color: rgba(245,158,11,0.3); }
+/* FAQ */
+.faq{border-top:1px solid var(--line)}
+.fi{border-bottom:1px solid var(--hair)}
+.fi summary{font-weight:600;font-size:1rem;color:var(--ink);padding:1rem 2rem 1rem 0;cursor:pointer;list-style:none;position:relative;line-height:1.4}
+.fi summary::-webkit-details-marker{display:none}
+.fi summary::after{content:'+';position:absolute;right:.2rem;top:.9rem;color:var(--gold);font-size:1.3rem;line-height:1}
+.fi[open] summary::after{content:'−'}
+.fi p{padding:0 0 1.1rem;color:var(--mid);line-height:1.7;font-size:.95rem;max-width:74ch}
 
-.trip-sub { color: var(--text-faint); font-size: 0.72rem; letter-spacing: 0.04em; margin-bottom: 0.7rem; }
-.trip-text { color: var(--text-dim); font-size: 0.85rem; line-height: 1.5; margin-bottom: 1rem; }
-.trip-tags { display: flex; gap: 0.35rem; flex-wrap: wrap; }
-.tag { font-size: 0.6rem; font-weight: 500; padding: 0.18rem 0.5rem; border-radius: 2px; letter-spacing: 0.05em; text-transform: uppercase; border: 1px solid; }
-.tag-flight { color: var(--gold); background: rgba(201,151,58,0.07); border-color: rgba(201,151,58,0.3); }
+/* Навигация по месяцам — текст-тогглы, не пилюли */
+.mnav{margin-top:clamp(2.2rem,4.5vw,3.4rem);padding-top:.9rem;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;gap:.3rem 1.1rem}
+.mnav-l{font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mid)}
+.mnav-t{display:flex;flex-wrap:wrap;gap:.2rem 1rem}
+.t{font-size:.9rem;font-weight:600;color:var(--ink);min-height:44px;display:inline-flex;align-items:center;text-decoration:2px underline transparent;text-underline-offset:5px}
+.t:hover{text-decoration-color:var(--hair)}
+.t.on{color:var(--gold);text-decoration-color:var(--gold)}
 
-.quick-picks { background: var(--bg2); border: 1px solid var(--line); border-radius: 4px; padding: 1.5rem; margin-top: 2.5rem; }
-.picks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
-.pick-card h3 { font-family: var(--ff-body); font-size: 0.95rem; font-weight: 600; margin-bottom: 0.6rem; color: var(--text); }
-.pick-card ul { list-style: none; padding: 0; }
-.pick-card li { font-size: 0.85rem; color: var(--text-dim); padding: 0.35rem 0; border-bottom: 1px solid var(--line); }
-.pick-card li:last-child { border-bottom: none; }
-.pick-card li strong { color: var(--text); font-weight: 500; }
-
-.trips-cta { background: var(--bg2); border: 1px solid var(--line); border-radius: 4px; padding: 1.5rem; margin-top: 2.5rem; }
-.trips-cta h2 { margin-bottom: 1rem; }
-.cta-list { list-style: none; padding: 0; }
-.cta-list li { padding: 0.5rem 0; font-size: 0.95rem; color: var(--text-dim); border-bottom: 1px solid var(--line); }
-.cta-list li:last-child { border-bottom: none; }
-.cta-list a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.4); text-underline-offset: 3px; }
-.cta-list a:hover { text-decoration-color: var(--gold); }
-
-.month-nav { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--line); }
-.month-nav-label { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 0.8rem; }
-.month-pills { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-.month-pill {
-  font-size: 0.82rem; padding: 0.45rem 0.9rem; border-radius: 3px;
-  border: 1px solid var(--text-dim); color: var(--text); letter-spacing: 0.04em;
-  font-weight: 600;
-  transition: border-color 0.2s ease, color 0.2s ease;
-}
-.month-pill:hover { border-color: var(--gold); color: var(--text); background: rgba(201,151,58,0.06); }
-.month-pill.active { border-color: var(--gold); color: var(--text); background: var(--gold-glow); font-weight: 800; }
-
-@media (max-width: 600px) {
-  .trips-header { padding: 2rem 0 1.5rem; }
-  .trips-grid { grid-template-columns: 1fr; }
+@media(max-width:760px){
+  .idx,.h1,.sub,.meta,.byl{grid-column:1/-1;grid-row:auto}
+  .meta{text-align:left;margin-top:.6rem}
+  .h1{margin-top:1.1rem}
+  .picks{grid-template-columns:1fr;gap:1.6rem}
+  /* Таблица → блоки */
+  .dt thead{position:absolute;left:-9999px}
+  .dt,.dt tbody,.dt tr,.dt td{display:block;width:100%}
+  .dt tr{border-bottom:1px solid var(--hair);padding:.9rem 0}
+  .dt tr:last-child{border-bottom:none}
+  .dt td{border:none;padding:.12rem 0;text-align:left}
+  .dt td.c{text-align:left}
+  .dt td.dn{margin-bottom:.35rem}
+  .dt td.season,.dt td[data-l="Виза"],.dt td.bud{display:inline-block;margin-right:1.1rem}
+  .dt td.season::before{content:'Сезон: ';font-size:.64rem;text-transform:uppercase;letter-spacing:.04em;color:var(--mid)}
+  .dt td[data-l="Виза"]::before{content:'Виза: ';font-size:.64rem;text-transform:uppercase;letter-spacing:.04em;color:var(--mid)}
+  .dt td.bud::before{content:'Бюджет: ';font-size:.64rem;text-transform:uppercase;letter-spacing:.04em;color:var(--mid)}
+  .dt td.fl{margin-top:.4rem}
+  .dt td.fl .find{display:inline-flex;align-items:center;min-height:44px}
+  .dt tbody tr:hover td{background:none}
 }
 </style>
