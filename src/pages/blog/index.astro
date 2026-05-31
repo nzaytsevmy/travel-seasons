@@ -58,7 +58,7 @@ const ldJson = {
 
   <main id="main" class="blog-wrap">
     <header class="blog-header">
-      <div class="hero-tag">// Личный опыт</div>
+      <div class="hero-tag">Личный опыт</div>
       <h1>Блог <em>путешественника</em></h1>
       <p class="blog-lead">Реальные поездки, живые цены, без воды. {allPosts.length} {allPosts.length === 1 ? 'статья' : allPosts.length < 5 ? 'статьи' : 'статей'}.</p>
     </header>
@@ -73,7 +73,7 @@ const ldJson = {
 
     {featured && (
       <section class="featured-section">
-        <div class="section-label">// Свежее</div>
+        <div class="section-label">Свежее</div>
         <a href={`/blog/${featured.slug}/`} class="featured-card">
           <div class="featured-img">
             <Image
@@ -110,7 +110,7 @@ const ldJson = {
 
     {rest.length > 0 && (
       <section class="more-section">
-        <div class="section-label">// Ещё статьи</div>
+        <div class="section-label">Ещё статьи</div>
         <div class="posts-grid" data-count={rest.length + (rest.length % 2 === 0 ? 0 : 1)}>
           {rest.map(post => (
             <a href={`/blog/${post.slug}/`} class="post-card">
