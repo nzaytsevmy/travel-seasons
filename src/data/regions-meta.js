@@ -53,7 +53,7 @@ export const regionMeta = {
   'Тикаль, Антигуа, Карибы':                    { slug: 'guatemala-belize',  iata: 'GUA', blogSlug: null },
   'Природа, пляжи обоих побережий':             { slug: 'costa-rica-panama', iata: 'SJO', blogSlug: null },
   'Торрес-дель-Пайне, Пуэрто-Наталес':          { slug: 'chile-patagonia',  iata: 'PUQ', blogSlug: null },
-  'Каррера, Чилоэ, Айсен':                      { slug: 'chile-fjords', iata: 'SCL', blogSlug: null },
+  'Каррера, Чилоэ, Айсен':                      { slug: 'chile-fjords', iata: 'PMC', blogSlug: null },
 
   // Latam расширение
   'Куско, Мачу-Пикчу, Лима':                    { slug: 'peru',         iata: 'LIM', blogSlug: null },
