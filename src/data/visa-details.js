@@ -19,7 +19,7 @@ const VISA_DETAILS = {
   // БЕЗВИЗ — СНГ и близкое зарубежье
   // ═══════════════════════════════════════════════════════════════════
   'turkey':              { duration: '60 дней (макс 90/180)',  cost: 'бесплатно',     timing: 'штамп на границе' },
-  'georgia':             { duration: '360 дней',               cost: 'бесплатно',     timing: 'штамп + медстраховка с 01.01.2026' },
+  'georgia':             { duration: '365 дней',               cost: 'бесплатно',     timing: 'штамп + медстраховка с 01.01.2026' },
   'armenia':             { duration: '180 дней в году',        cost: 'бесплатно',     timing: 'авиа: внутренний РФ паспорт' },
   'kyrgyzstan':          { duration: '30 дней без рег. (до 90)', cost: 'бесплатно',   timing: 'внутренний РФ для взрослых' },
   'kazakhstan':          { duration: '30 дней без рег. (до 90)', cost: 'бесплатно',   timing: 'внутренний РФ для взрослых' },
@@ -34,7 +34,7 @@ const VISA_DETAILS = {
   'china':               { duration: '30 дней',                cost: 'бесплатно',     timing: 'тестовый режим до 14.09.2026' },
   'hainan':              { duration: '30 дней',                cost: 'бесплатно',     timing: 'постоянный, только остров' },
   'hong-kong':           { duration: '14 дней',                cost: 'бесплатно',     timing: 'штамп; не = въезд в КНР' },
-  'thailand':            { duration: '60 дней',                cost: 'бесплатно',     timing: 'штамп + TM6 (под угрозой сокращения)' },
+  'thailand':            { duration: '60 дней (риск возврата к 30)', cost: 'бесплатно', timing: 'штамп + TDAC; голосование 19.05.2026 за 30 — проверять перед поездкой' },
   'vietnam':             { duration: '45 дней',                cost: 'бесплатно',     timing: 'штамп; действует до 14.03.2028' },
   'malaysia':            { duration: '30 дней',                cost: 'бесплатно',     timing: 'штамп + MDAC за 72 ч' },
   'philippines':         { duration: '30 дней',                cost: 'бесплатно',     timing: 'штамп + eTravel QR' },
@@ -75,13 +75,13 @@ const VISA_DETAILS = {
   'sri-lanka':           { duration: '30 дней (double)',       cost: 'бесплатно для РФ', timing: '24–72 ч онлайн' },
   'cambodia':            { duration: '30 дней',                cost: '$36',           timing: '3 дня онлайн' },
   'south-korea':         { duration: '90 дн, K-ETA 3 года',    cost: '~$8 (₩10 000)', timing: '24–72 ч K-ETA' },
-  'jordan':              { duration: '30 дн (с 13.12.2026 безвиз)', cost: 'JD 40 (~$56)', timing: '3–5 дней онлайн' },
+  'jordan':              { duration: '30 дн (безвиз с 13.12.2025, до 90/год)', cost: 'бесплатно', timing: 'штамп на границе' },
   'bali':                { duration: '30 + 30 дней',           cost: 'IDR 500k (~$35)', timing: 'VOA или eVOA 1–3 дня' },
   'sumatra-kalimantan':  { duration: '30 + 30 дней',           cost: 'IDR 500k (~$35)', timing: 'VOA / eVOA' },
   'raja-ampat':          { duration: '30 + 30 дней',           cost: 'IDR 500k + Marine Park', timing: 'VOA через Sorong' },
   'cyprus':              { duration: '90 дней',                cost: 'бесплатно',     timing: 'pro-visa (нет прямых рейсов из РФ)' },
   'nepal':               { duration: '15/30/90 дн = $30/50/125', cost: '$30+',        timing: 'мгновенно VOA' },
-  'iran':                { duration: '30 дней',                cost: '$75 eVisa',     timing: '5–14 дней онлайн' },
+  'iran':                { duration: 'тургруппы безвиз 15 дн / eVisa 30 дн', cost: 'eVisa €40–70', timing: 'индивидуально через турагентство; eVisa онлайн' },
 
   // ═══════════════════════════════════════════════════════════════════
   // ВИЗА ОБЯЗАТЕЛЬНА — Шенген, США, Япония, Австралия, Сингапур
