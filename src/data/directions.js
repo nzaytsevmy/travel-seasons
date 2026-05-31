@@ -4,6 +4,7 @@
 
 import { data as regions } from './regions.js';
 import { PRICES } from './prices.js';
+import { regionMeta } from './regions-meta.js';
 
 const TRANSLIT = {
   'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z',
@@ -341,6 +342,14 @@ const DEST_VISUALS = {
 };
 
 function findPrice(direction) {
+  // Точный матч по каноническому IATA из regionMeta — снимает коллизии нечёткого матча
+  // (Хоккайдо→Токио, Канада-Восток→Калгари, Чили→Патагония, Австралия-Север→Сидней).
+  const metaIata = regionMeta[direction.sub]?.iata;
+  if (metaIata) {
+    const exact = PRICES.find((p) => p.iata === metaIata);
+    if (exact) return exact;
+  }
+  // Fallback (страны, где PRICES использует другой аэропорт, чем regionMeta): нечёткий матч по имени.
   const norm = (s) => (s || '').toLowerCase().replace(/[^a-zа-я0-9]/gi, '');
   const dn = norm(direction.region) + norm(direction.sub);
   return PRICES.find((p) => {
@@ -371,6 +380,7 @@ for (const r of regions) {
     group: groupLabel,
     cases,
     price: price || null,
+    iata: regionMeta[r.sub]?.iata || price?.iata || null,   // канон. город для Aviasales deep-link
     relatedPosts: RELATED_POSTS[slug] || [],
     visual: DEST_VISUALS[slug] || { emoji: '🌍', g1: '#fef3c7', g2: '#fde68a' },
   });

@@ -48,7 +48,7 @@ const bestMonths = MONTHS
   .filter((x) => x.rank >= 3 && x.slug !== m.slug)
   .slice(0, 4);
 
-const iata = d.price?.iata;
+const iata = d.iata || d.price?.iata;   // канон. IATA из regionMeta (через directions.js)
 const flightTiers = d.price?.flight || [0,0,0];
 const hotelTiers = d.price?.hotel || [0,0,0];
 const foodTiers = d.price?.food || [0,0,0];

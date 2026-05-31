@@ -1,6 +1,7 @@
 ---
 // Страница месяца «Куда поехать в <месяце>» — Swiss / International Typographic по BRANDBOOK.md.
-// Дата-таблица направлений (сезон передан типографикой, не цветом), Aviasales deep-link в строках перелётов.
+// Формат «редакционный индекс»: сезонные секции (H2) из hairline Index-Row с микро-описанием.
+// IATA для Aviasales — канонический из regionMeta (не нечёткий PRICES-матч). Цена — one-way оценка.
 import '@fontsource-variable/golos-text/index.css';
 import Layout from '../../layouts/Layout.astro';
 import Footer from '../../components/Footer.astro';
@@ -10,8 +11,6 @@ import { PRICES } from '../../data/prices.js';
 import { regionMeta } from '../../data/regions-meta.js';
 import { DATA_UPDATED_RU } from '../../data/meta.js';
 import { aviasalesRoute } from '../../data/affiliate.js';
-import fs from 'node:fs';
-import path from 'node:path';
 
 const MONTHS = [
   { slug: 'january',   name: 'январе',   nameNom: 'Январь',   short: 'Янв' },
@@ -40,24 +39,22 @@ const monthIdx = MONTHS.findIndex(m => m.slug === month);
 const M = MONTHS[monthIdx];
 
 const SCORE = { P: 4, G: 3, O: 2, B: 1, X: 0 };
-const SEASON_TXT = { P: 'Пик', G: 'Хорошо', O: 'Можно' };
-const SEASON_CLS = { P: 's-peak', G: 's-good', O: 's-ok' };
 const VISA_LABEL = { free: 'Безвиз', evisa: 'e-Visa', required: 'Виза' };
 const VISA_CLS = { free: 'free', evisa: 'evisa', required: 'visa' };
-const BUDGET_LABEL = { low: '$', mid: '$$', high: '$$$' };
-const BUDGET_TITLE = { low: 'до $80/день', mid: '$80–250/день', high: 'от $250/день' };
+const BUDGET_SYM = { low: '$', mid: '$$', high: '$$$' };
+const BUDGET_WORD = { low: 'бюджетно, до $80 в день', mid: 'средний бюджет, $80–250 в день', high: 'дорого, от $250 в день' };
 
 const directions = regions.filter(r => !r.group);
+const plural = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'направление' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'направления' : 'направлений'));
 
-// Live-цены перелётов (build-time из public/prices.json)
-let livePrices = {};
-try {
-  const pjson = JSON.parse(fs.readFileSync(path.resolve('./public/prices.json'), 'utf8'));
-  livePrices = pjson.prices || {};
-} catch (e) { /* fallback to estimates */ }
-
+// Цена: точный матч PRICES по каноническому regionMeta.iata, иначе нечёткий fallback.
 function findPrice(d) {
-  const norm = (s) => s.toLowerCase().replace(/[^a-zа-я0-9]/gi, '');
+  const metaIata = regionMeta[d.sub]?.iata;
+  if (metaIata) {
+    const exact = PRICES.find(p => p.iata === metaIata);
+    if (exact) return exact;
+  }
+  const norm = (s) => (s || '').toLowerCase().replace(/[^a-zа-я0-9]/gi, '');
   const dn = norm(d.region) + norm(d.sub);
   return PRICES.find(p => {
     const pn = norm(p.name);
@@ -66,19 +63,15 @@ function findPrice(d) {
 }
 
 const enriched = directions.map(d => {
-  const score = d.r[monthIdx];
-  const text = d.t[monthIdx];
-  const price = findPrice(d);
-  const liveFlight = price?.iata && livePrices[price.iata];
   const meta = regionMeta[d.sub] || {};
+  const price = findPrice(d);
   return {
     ...d,
-    score,
-    text,
+    score: d.r[monthIdx],
+    text: d.t[monthIdx],
     slug: meta.slug || '',
-    iata: price?.iata,
-    flight: liveFlight || price?.flight?.[0],
-    isLive: !!liveFlight,
+    iata: meta.iata || price?.iata,             // канон. город для ссылки
+    flight: price?.flight?.[0],                 // оценка one-way (как на странице страны)
   };
 }).filter(d => d.score === 'P' || d.score === 'G' || d.score === 'O')
   .sort((a, b) => {
@@ -89,11 +82,17 @@ const enriched = directions.map(d => {
 
 const peak = enriched.filter(d => d.score === 'P');
 const good = enriched.filter(d => d.score === 'G');
-const ok = enriched.filter(d => d.score === 'O');
-const rows = [...peak, ...good, ...ok.slice(0, 8)];   // таблица: пик + хорошо + до 8 «можно»
+const ok = enriched.filter(d => d.score === 'O').slice(0, 8);
 const top = enriched.slice(0, 15);
 const cheapest = [...enriched].filter(d => d.flight).sort((a, b) => a.flight - b.flight).slice(0, 5);
 const visaFree = enriched.filter(d => d.visa === 'free').slice(0, 5);
+
+// Секции — только непустые
+const SECTIONS = [
+  { key: 'P', title: `Пик сезона в ${M.name}`,   intro: 'Погода и инфраструктура работают на 100%. Дороже и многолюднее — берите, если даты гибкие.', rows: peak },
+  { key: 'G', title: 'Хорошая погода',            intro: 'Комфортно, туристов меньше, цены ниже пика. Оптимальный баланс «погода / деньги».',          rows: good },
+  { key: 'O', title: 'Можно ехать',               intro: 'Сезон не идеальный, но если едете по другим причинам (события, маршрут) — терпимо.',          rows: ok },
+].filter(s => s.rows.length > 0);
 
 // SEO
 const title = `Куда поехать в ${M.name} 2026 — топ направлений`;
@@ -107,7 +106,7 @@ const faqs = [
   },
   {
     q: `Куда дешевле всего лететь в ${M.name}?`,
-    a: `Самые дешёвые перелёты из Москвы в ${M.name}: ${cheapest.slice(0, 3).map(d => `${d.region} от $${d.flight}`).join(', ')}. Цены обновляются ежедневно через TravelPayouts.`,
+    a: `Самые дешёвые перелёты из Москвы в ${M.name}: ${cheapest.slice(0, 3).map(d => `${d.region} от $${d.flight}`).join(', ')}. Цена — ориентир в одну сторону по медиане сезона.`,
   },
   {
     q: `Куда без визы в ${M.name}?`,
@@ -137,11 +136,7 @@ const ldJson = {
       "itemListElement": top.map((d, i) => ({
         "@type": "ListItem",
         "position": i + 1,
-        "item": {
-          "@type": "TouristDestination",
-          "name": d.region,
-          "description": d.sub
-        }
+        "item": { "@type": "TouristDestination", "name": d.region, "description": d.sub }
       }))
     },
     {
@@ -162,6 +157,8 @@ const ldJson = {
     }
   ]
 };
+
+const noIdx = (n) => String(n).padStart(2, '0');
 ---
 <Layout
   title={title}
@@ -182,7 +179,7 @@ const ldJson = {
         <div class="idx">Календарь поездок<b>{M.nameNom} · 2026</b></div>
         <div class="meta">Сезоны и визы<br><b>актуальны на {DATA_UPDATED_RU}</b></div>
         <h1 class="h1">Куда поехать <span class="rd">в {M.name}</span></h1>
-        <p class="sub"><b>{peak.length}</b> направлений с пиком сезона, <b>{good.length}</b> с хорошей погодой. Цены на перелёт из Москвы, виза для россиян и бюджет на день — в одной таблице.</p>
+        <p class="sub"><b>{peak.length}</b> направлений с пиком сезона, <b>{good.length}</b> с хорошей погодой. Цены на перелёт из Москвы, виза для россиян и бюджет на день — по каждому направлению.</p>
         <p class="byl">
           <a href="/about/" class="byl-a">Никита Зайцев</a> ·
           <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
@@ -190,43 +187,46 @@ const ldJson = {
         </p>
       </header>
 
-      <section class="sec">
-        <div class="shead">
-          <h2><span class="no">01</span>Направления в {M.name}</h2>
-          <span class="cap">сезон · виза · бюджет · перелёт</span>
-        </div>
-        <table class="dt">
-          <thead><tr>
-            <th>Направление</th><th>Сезон</th><th>Виза</th><th class="c">Бюджет</th><th>Перелёт из Москвы</th>
-          </tr></thead>
-          <tbody>
-            {rows.map(d => (
-              <tr>
-                <td class="dn" data-l="Направление">
-                  {d.slug
-                    ? <a class="nm" href={`/trips/${month}/${d.slug}/`}>{d.region}</a>
-                    : <span class="nm">{d.region}</span>}
-                  <span class="dsub">{d.sub}</span>
-                </td>
-                <td class="season" data-l="Сезон"><span class={SEASON_CLS[d.score]}>{SEASON_TXT[d.score]}</span></td>
-                <td data-l="Виза"><span class={`visa ${VISA_CLS[d.visa]}`}>{VISA_LABEL[d.visa]}</span></td>
-                <td class="c bud" data-l="Бюджет" title={BUDGET_TITLE[d.budget]}>{BUDGET_LABEL[d.budget]}</td>
-                <td class="fl" data-l="Перелёт">
-                  {d.flight
-                    ? (d.iata
-                        ? <a class="find" href={aviasalesRoute('MOW', d.iata)} rel="sponsored noopener" target="_blank">от ${d.flight} · найти →</a>
-                        : <span class="fprice">от ${d.flight}</span>)
-                    : <span class="fdash">—</span>}
-                </td>
-              </tr>
+      <p class="legend">
+        <b>Виза:</b> <span class="visa free">Безвиз</span> — без визы для россиян · <span class="visa evisa">e-Visa</span> — онлайн · <span class="visa visa">Виза</span> — консульство.
+        <b>Бюджет на день:</b> <b class="bsym">$</b> до $80 · <b class="bsym">$$</b> $80–250 · <b class="bsym">$$$</b> от $250.
+        <b>Перелёт</b> — ориентир в одну сторону из Москвы; «найти» открывает Aviasales. <span class="adm">реклама</span>
+      </p>
+
+      {SECTIONS.map((s, si) => (
+        <section class="sec">
+          <div class="shead">
+            <h2><span class="no">{noIdx(si + 1)}</span>{s.title}</h2>
+            <span class="cap">{s.rows.length} {plural(s.rows.length)}</span>
+          </div>
+          <p class="sintro">{s.intro}</p>
+          <ul class="rows">
+            {s.rows.map(d => (
+              <li class="irow">
+                <div class="ileft">
+                  <p class="inm">
+                    {d.slug
+                      ? <a href={`/trips/${month}/${d.slug}/`}>{d.region}</a>
+                      : <span>{d.region}</span>}
+                    <span class="isub">{d.sub}</span>
+                  </p>
+                  {d.text && <p class="idesc">{d.text}</p>}
+                </div>
+                <div class="iright">
+                  <span class={`visa ${VISA_CLS[d.visa]}`}>{VISA_LABEL[d.visa]}</span>
+                  <span class="bud" title={BUDGET_WORD[d.budget]}><span aria-hidden="true">{BUDGET_SYM[d.budget]}</span><span class="vh">{BUDGET_WORD[d.budget]}</span></span>
+                  {d.flight && d.iata
+                    ? <a class="find" href={aviasalesRoute('MOW', d.iata)} rel="sponsored noopener" target="_blank" aria-label={`Найти перелёт Москва — ${d.region} на Aviasales`}>от ${d.flight} · найти →</a>
+                    : (d.flight ? <span class="fprice">от ${d.flight}</span> : <span class="fdash" aria-hidden="true">—</span>)}
+                </div>
+              </li>
             ))}
-          </tbody>
-        </table>
-        <p class="tnote">«Сезон»: <b>Пик</b> — погода и инфраструктура на 100%; <b>Хорошо</b> — комфортно и дешевле; <b>Можно</b> — сезон не идеальный. Цена перелёта — ориентир от $; «найти» открывает Aviasales (Москва → город). <span class="adm">реклама</span></p>
-      </section>
+          </ul>
+        </section>
+      ))}
 
       <section class="sec">
-        <div class="shead"><h2><span class="no">02</span>Быстрый выбор</h2></div>
+        <div class="shead"><h2><span class="no">{noIdx(SECTIONS.length + 1)}</span>Быстрый выбор</h2></div>
         <div class="picks">
           <div class="pick">
             <h3>Самые дешёвые перелёты</h3>
@@ -235,7 +235,7 @@ const ldJson = {
                 <li>
                   <span class="pk-n">{d.region}</span>
                   {d.iata
-                    ? <a class="find" href={aviasalesRoute('MOW', d.iata)} rel="sponsored noopener" target="_blank">от ${d.flight} · найти →</a>
+                    ? <a class="find" href={aviasalesRoute('MOW', d.iata)} rel="sponsored noopener" target="_blank" aria-label={`Найти перелёт Москва — ${d.region} на Aviasales`}>от ${d.flight} · найти →</a>
                     : <span class="fprice">от ${d.flight}</span>}
                 </li>
               ))}
@@ -259,7 +259,7 @@ const ldJson = {
       </section>
 
       <section class="sec">
-        <div class="shead"><h2><span class="no">03</span>Частые вопросы — {M.nameNom} 2026</h2></div>
+        <div class="shead"><h2><span class="no">{noIdx(SECTIONS.length + 2)}</span>Частые вопросы — {M.nameNom} 2026</h2></div>
         <div class="faq">
           {faqs.map(f => (
             <details class="fi">
@@ -271,7 +271,7 @@ const ldJson = {
       </section>
 
       <section class="sec">
-        <div class="shead"><h2><span class="no">04</span>Что делать дальше</h2></div>
+        <div class="shead"><h2><span class="no">{noIdx(SECTIONS.length + 3)}</span>Что делать дальше</h2></div>
         <ul class="vl wide">
           <li><a href="/seasons/">Полная таблица сезонов</a><span>все 70 направлений × 12 месяцев</span></li>
           <li><a href="/calculator/">Калькулятор бюджета</a><span>посчитать поездку под свои даты и курс</span></li>
@@ -306,6 +306,7 @@ const ldJson = {
 .sw :where(h1,h2,h3,h4){font-family:var(--ff);color:var(--ink)}
 .sw a{color:inherit;text-decoration:none}
 .sw :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.vh{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .wrap{max-width:1280px;margin-inline:auto;padding-inline:var(--edge)}
 .grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:0 clamp(.8rem,2vw,1.6rem)}
 
@@ -322,41 +323,41 @@ const ldJson = {
 .byl a{color:var(--mid)}
 .byl .byl-a{color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:3px}
 
-.sec{padding:clamp(2.2rem,4.5vw,3.4rem) 0 0}
-.shead{display:flex;align-items:center;justify-content:space-between;gap:1rem;border-top:2px solid var(--line);padding-top:.8rem;margin-bottom:1.2rem}
+/* Легенда */
+.legend{margin-top:.5rem;padding:.8rem 0;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);font-size:.8rem;color:var(--mid);line-height:1.7;max-width:96ch}
+.legend b{color:var(--ink);font-weight:600}
+.legend .bsym{color:var(--ink);font-weight:700;letter-spacing:.03em}
+.legend .visa{margin:0 .1rem}
+.adm{font-size:.6rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
+
+.sec{padding:clamp(2rem,4vw,3rem) 0 0}
+.shead{display:flex;align-items:center;justify-content:space-between;gap:1rem;border-top:2px solid var(--line);padding-top:.8rem;margin-bottom:.5rem}
 .shead h2{font-weight:700;font-size:clamp(1.4rem,2.6vw,2rem);letter-spacing:-.02em;display:flex;align-items:baseline;gap:.6rem}
 .no{font-size:.74rem;font-weight:700;color:var(--gold);letter-spacing:.04em}
-.shead .cap{font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mid)}
+.shead .cap{font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);white-space:nowrap}
+.sintro{font-size:.92rem;color:var(--mid);line-height:1.55;max-width:74ch;margin-bottom:1.1rem}
 
-/* Дата-таблица направлений */
-.dt{width:100%;border-collapse:collapse;font-size:.92rem}
-.dt thead th{font-size:.64rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid);text-align:left;padding:.5rem .8rem .55rem 0;border-bottom:1px solid var(--line)}
-.dt thead th.c{text-align:center}
-.dt td{padding:.85rem .8rem;border-bottom:1px solid var(--hair);vertical-align:baseline}
-.dt td:first-child,.dt th:first-child{padding-left:0}
-.dt td.c{text-align:center}
-.dt tr:last-child td{border-bottom:none}
-@media(hover:hover){.dt tbody tr:hover td{background:rgba(142,102,24,.07)}}
-.dn{min-width:12rem}
-.nm{font-weight:700;font-size:1.05rem;letter-spacing:-.01em;line-height:1.2;color:var(--ink)}
-a.nm:hover{color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:3px}
-.dsub{display:block;font-size:.74rem;color:var(--mid);margin-top:.15rem;line-height:1.3}
-.season span{font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
-.s-peak{color:var(--gold)}.s-good{color:var(--ink)}.s-ok{color:var(--mid)}
-.visa{font-size:.74rem;font-weight:600;letter-spacing:.02em;text-transform:uppercase}
+/* Index-rows (не карточки): широкая левая колонка + узкая правая мета */
+.rows{list-style:none;border-top:1px solid var(--line)}
+.irow{display:grid;grid-template-columns:1fr auto;gap:.4rem 1.6rem;padding:1rem 0;border-bottom:1px solid var(--hair);align-items:baseline}
+.irow:last-child{border-bottom:none}
+@media(hover:hover){.irow:hover{background:rgba(142,102,24,.05)}}
+.ileft{min-width:0}
+.inm{font-weight:700;font-size:1.15rem;letter-spacing:-.01em;line-height:1.2}
+.inm a:hover{color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:3px}
+.isub{font-weight:400;font-size:.78rem;color:var(--mid);margin-left:.5rem;letter-spacing:0}
+.idesc{color:var(--mid);font-size:.9rem;line-height:1.5;margin-top:.35rem;max-width:70ch}
+.iright{display:flex;align-items:baseline;gap:1.1rem;justify-self:end;white-space:nowrap}
+.visa{font-size:.72rem;font-weight:600;letter-spacing:.02em;text-transform:uppercase}
 .visa.free{color:var(--gold)}.visa.evisa{color:var(--ink)}.visa.visa{color:#56534c}
-.bud{font-weight:700;color:var(--ink);letter-spacing:.05em}
-.fl{white-space:nowrap}
+.bud{font-weight:700;color:var(--ink);letter-spacing:.05em;font-size:.95rem}
 .find{color:var(--ink);font-weight:600;text-decoration:2px underline var(--gold);text-underline-offset:3px}
 .find:hover{color:var(--gold)}
 .fprice{color:var(--mid);font-weight:600}
 .fdash{color:var(--hair)}
-.tnote{margin-top:.9rem;font-size:.72rem;color:var(--mid);line-height:1.6;max-width:90ch}
-.tnote b{color:var(--ink);font-weight:600}
-.adm{font-size:.6rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
 
 /* Быстрый выбор */
-.picks{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.4rem,3vw,2.4rem)}
+.picks{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.4rem,3vw,2.4rem);margin-top:.6rem}
 .pick h3{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);margin-bottom:.4rem}
 .vl{list-style:none;border-top:1px solid var(--line)}
 .vl li{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.2rem .7rem;padding:.7rem 0;border-bottom:1px solid var(--hair)}
@@ -366,7 +367,6 @@ a.nm:hover{color:var(--gold);text-decoration:2px underline var(--gold);text-unde
 .pk-l:hover{color:var(--gold)}
 .pk-s{color:var(--mid);font-size:.8rem}
 .adm-row{margin-top:.5rem;font-size:.66rem;color:var(--mid)}
-/* «что дальше» value-list */
 .vl.wide li{justify-content:flex-start}
 .vl.wide a{font-weight:600;font-size:1.02rem;color:var(--ink);text-decoration:2px underline var(--gold);text-underline-offset:3px}
 .vl.wide a:hover{color:var(--gold)}
@@ -381,7 +381,7 @@ a.nm:hover{color:var(--gold);text-decoration:2px underline var(--gold);text-unde
 .fi[open] summary::after{content:'−'}
 .fi p{padding:0 0 1.1rem;color:var(--mid);line-height:1.7;font-size:.95rem;max-width:74ch}
 
-/* Навигация по месяцам — текст-тогглы, не пилюли */
+/* Навигация по месяцам — текст-тогглы */
 .mnav{margin-top:clamp(2.2rem,4.5vw,3.4rem);padding-top:.9rem;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;gap:.3rem 1.1rem}
 .mnav-l{font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mid)}
 .mnav-t{display:flex;flex-wrap:wrap;gap:.2rem 1rem}
@@ -394,20 +394,10 @@ a.nm:hover{color:var(--gold);text-decoration:2px underline var(--gold);text-unde
   .meta{text-align:left;margin-top:.6rem}
   .h1{margin-top:1.1rem}
   .picks{grid-template-columns:1fr;gap:1.6rem}
-  /* Таблица → блоки */
-  .dt thead{position:absolute;left:-9999px}
-  .dt,.dt tbody,.dt tr,.dt td{display:block;width:100%}
-  .dt tr{border-bottom:1px solid var(--hair);padding:.9rem 0}
-  .dt tr:last-child{border-bottom:none}
-  .dt td{border:none;padding:.12rem 0;text-align:left}
-  .dt td.c{text-align:left}
-  .dt td.dn{margin-bottom:.35rem}
-  .dt td.season,.dt td[data-l="Виза"],.dt td.bud{display:inline-block;margin-right:1.1rem}
-  .dt td.season::before{content:'Сезон: ';font-size:.64rem;text-transform:uppercase;letter-spacing:.04em;color:var(--mid)}
-  .dt td[data-l="Виза"]::before{content:'Виза: ';font-size:.64rem;text-transform:uppercase;letter-spacing:.04em;color:var(--mid)}
-  .dt td.bud::before{content:'Бюджет: ';font-size:.64rem;text-transform:uppercase;letter-spacing:.04em;color:var(--mid)}
-  .dt td.fl{margin-top:.4rem}
-  .dt td.fl .find{display:inline-flex;align-items:center;min-height:44px}
-  .dt tbody tr:hover td{background:none}
+  /* Index-row → стек: мета под названием, выровнено слева */
+  .irow{grid-template-columns:1fr;gap:.3rem}
+  .iright{justify-self:start;gap:1rem;margin-top:.15rem;flex-wrap:wrap;white-space:normal}
+  .irow:hover{background:none}
+  .find{display:inline-flex;align-items:center;min-height:44px}
 }
 </style>
