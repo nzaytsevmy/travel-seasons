@@ -1,0 +1,80 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Footer from '../../components/Footer.astro';
+
+const updated = '31 мая 2026';
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "url": "https://traveltribe.ru/legal/cookie/",
+      "name": "Cookie-политика — TravelTribe",
+      "inLanguage": "ru-RU",
+      "isPartOf": { "@id": "https://traveltribe.ru/#website" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Cookie-политика", "item": "https://traveltribe.ru/legal/cookie/" }
+      ]
+    }
+  ]
+};
+---
+<Layout
+  title="Cookie-политика — TravelTribe"
+  description="Список cookie сайта traveltribe.ru: назначение, срок жизни и как отказаться."
+  canonical="https://traveltribe.ru/legal/cookie/"
+  ldJson={ldJson}
+  noindex={true}
+>
+  <main id="main" class="legal-doc">
+    <h1>Cookie-политика</h1>
+    <p class="legal-updated">Обновлено: {updated}</p>
+
+    <p class="legal-lead">Cookie — небольшие файлы, которые сайт сохраняет в браузере. На <strong>traveltribe.ru</strong> аналитические cookie ставятся <strong>только после вашего согласия</strong> (кнопка «Принять» в баннере). Без согласия аналитика не загружается, и эти cookie не появляются.</p>
+
+    <h2>Какие cookie используются</h2>
+    <p>Все аналитические cookie ставит счётчик <strong>Яндекс.Метрика № 95832375</strong>. Сервис Ahrefs Web Analytics работает без cookie. Собственная необходимая запись — выбор в cookie-баннере — хранится в локальном хранилище браузера, а не в cookie, и на сервер не передаётся.</p>
+
+    <table class="legal-table">
+      <thead>
+        <tr><th>Имя</th><th>Назначение</th><th>Срок</th><th>Категория</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>_ym_uid</td><td>Обезличенный идентификатор посетителя для подсчёта уникальных визитов</td><td>1 год</td><td>Аналитика</td></tr>
+        <tr><td>_ym_d</td><td>Дата первого визита посетителя</td><td>1 год</td><td>Аналитика</td></tr>
+        <tr><td>_ym_isad</td><td>Признак наличия блокировщика рекламы</td><td>2 дня</td><td>Аналитика</td></tr>
+        <tr><td>_ym_visorc</td><td>Состояние записи сессии Вебвизором (действия на странице)</td><td>30 минут</td><td>Аналитика · Вебвизор</td></tr>
+        <tr><td>tt_consent</td><td>Хранит ваш выбор в баннере (принято / отклонено). Локальное хранилище, не cookie</td><td>До очистки браузера</td><td>Необходимое</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Как управлять</h2>
+    <ul>
+      <li><strong>Отказаться сразу</strong> — нажать «Отклонить» в баннере. Аналитические cookie не будут установлены.</li>
+      <li><strong>Изменить ранее данный выбор</strong> — нажмите кнопку ниже: настройка сбросится, баннер появится снова.</li>
+      <li><strong>Удалить уже стоящие cookie</strong> — в настройках браузера (раздел «Конфиденциальность» → «Файлы cookie и данные сайтов»).</li>
+      <li><strong>Заблокировать на уровне браузера</strong> — расширения-блокировщики и режим «Не отслеживать» полностью совместимы с Сайтом.</li>
+    </ul>
+    <button type="button" class="legal-reset" id="cookie-reset">Сбросить выбор cookie и показать баннер снова →</button>
+
+    <h2>Подробнее</h2>
+    <p>Что именно собирается и зачем — в <a href="/legal/privacy/">Политике конфиденциальности</a>. Подробности по каждому сервису — в политике <a href="https://yandex.ru/legal/confidential/" target="_blank" rel="noopener">Яндекса</a> и <a href="https://ahrefs.com/privacy" target="_blank" rel="noopener">Ahrefs</a>.</p>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script is:inline>
+  (function () {
+    var btn = document.getElementById('cookie-reset');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      try { localStorage.removeItem('tt_consent'); } catch (e) {}
+      location.reload();
+    });
+  })();
+</script>
