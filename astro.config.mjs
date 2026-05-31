@@ -92,6 +92,8 @@ export default defineConfig({
         && !page.includes('/blog/tag/')
         && !page.includes('sitemap-images')
         && !page.includes('/og/')
+        // юр-страницы noindex (privacy/cookie/terms) — не в sitemap (только индексируемые)
+        && !page.includes('/legal/')
         // /seasons/[c]/[m]/ — дубль /trips/[m]/[c]/; canonical ведёт на trips,
         // поэтому из sitemap исключаем (только canonical+200). Хаб /seasons/ остаётся.
         && !/\/seasons\/[^/]+\/[^/]+\//.test(page)
