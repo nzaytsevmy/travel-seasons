@@ -10,6 +10,7 @@ export function getStaticPaths() {
 }
 
 const { country, monthKey, monthMeta, data } = Astro.props;
+const P = country.prep ?? 'в';  // предлог направления: 'на' для островов (Бали, Куба, Мальдивы)
 
 const url = `https://traveltribe.ru/seasons/${country.slug}/${monthKey}/`;
 // Анти-каннибализация: /seasons/[c]/[m]/ дублирует /trips/[m]/[c]/ (тот же
@@ -20,31 +21,31 @@ const title = `${country.name} в ${monthMeta.loc} 2026: погода, цены,
 const description = `${country.name} в ${monthMeta.loc} 2026: ${data.weather.day} °C днём, море ${data.weather.sea} °C, бюджет от $${data.budget.low}/день. Сезон ${data.seasonLevel}, перелёт ${data.flight}. Что смотреть и стоит ли ехать.`;
 
 // TL;DR — кратко на основе данных
-const tldr = `В ${monthMeta.loc} в ${country.nameLoc} ${data.weather.day} °C днём и ${data.weather.night} °C ночью, море ${data.weather.sea} °C. Сезон — ${data.seasonLevel}. Перелёт из Москвы: ${data.flight}. Бюджет: от $${data.budget.low}/день (эконом) до $${data.budget.high}/день (премиум). ${data.weatherDesc}`;
+const tldr = `В ${monthMeta.loc} ${P} ${country.nameLoc} ${data.weather.day} °C днём и ${data.weather.night} °C ночью, море ${data.weather.sea} °C. Сезон — ${data.seasonLevel}. Перелёт из Москвы: ${data.flight}. Бюджет: от $${data.budget.low}/день (эконом) до $${data.budget.high}/день (премиум). ${data.weatherDesc}`;
 
 // FAQ — генерируется из данных, плюс универсальные вопросы
 const faqs = [
   {
-    q: `Какая погода в ${country.nameLoc} в ${monthMeta.loc} 2026?`,
+    q: `Какая погода ${P} ${country.nameLoc} в ${monthMeta.loc} 2026?`,
     a: `Днём ${data.weather.day} °C, ночью ${data.weather.night} °C, море ${data.weather.sea} °C. Дождливых дней в месяц — около ${data.weather.rainDays}, влажность ${data.weather.humidity}%. ${data.weatherDesc}`,
   },
   {
-    q: `Сколько стоит поездка в ${country.nameAcc} в ${monthMeta.loc}?`,
+    q: `Сколько стоит поездка ${P} ${country.nameAcc} в ${monthMeta.loc}?`,
     a: `Бюджет на одного: эконом от $${data.budget.low}/день, комфорт $${data.budget.mid}/день, премиум от $${data.budget.high}/день. Перелёт из Москвы: ${data.flight}. Сезон ${data.seasonLevel} — цены ${data.seasonLevel === 'высокий' ? 'на максимуме' : data.seasonLevel === 'низкий' ? 'минимальные' : 'умеренные'}.`,
   },
   {
-    q: `Нужна ли виза в ${country.nameAcc} россиянам в 2026?`,
+    q: `Нужна ли виза ${P} ${country.nameAcc} россиянам в 2026?`,
     a: country.visa,
   },
   {
-    q: `Стоит ли ехать в ${country.nameAcc} в ${monthMeta.loc}?`,
+    q: `Стоит ли ехать ${P} ${country.nameAcc} в ${monthMeta.loc}?`,
     a: `${data.bestFor.length ? 'Да, особенно если интересно: ' + data.bestFor.join(', ') + '.' : ''} Главные плюсы: ${data.highlights.slice(0, 3).join('; ')}. Главные минусы: ${data.warnings.slice(0, 2).join('; ')}.`,
   },
 ];
 
 if (data.events && data.events.length > 0) {
   faqs.push({
-    q: `Какие события и фестивали в ${country.nameLoc} в ${monthMeta.loc} 2026?`,
+    q: `Какие события и фестивали ${P} ${country.nameLoc} в ${monthMeta.loc} 2026?`,
     a: data.events.map(e => `${e.name} (${e.dates}): ${e.note}`).join(' '),
   });
 }
@@ -137,12 +138,12 @@ const otherMonths = Object.keys(country.months).filter(m => m !== monthKey);
     </section>
 
     <section class="seasons-section">
-      <h2 id="weather">Какая погода в {country.nameLoc} в {monthMeta.loc}?</h2>
+      <h2 id="weather">Какая погода {P} {country.nameLoc} в {monthMeta.loc}?</h2>
       <p><strong>Днём {data.weather.day} °C, ночью {data.weather.night} °C, море {data.weather.sea} °C.</strong> Дождливых дней — около {data.weather.rainDays}, влажность {data.weather.humidity}%. {data.weatherDesc}</p>
     </section>
 
     <section class="seasons-section">
-      <h2 id="budget">Сколько стоит поездка в {country.nameAcc} в {monthMeta.loc}?</h2>
+      <h2 id="budget">Сколько стоит поездка {P} {country.nameAcc} в {monthMeta.loc}?</h2>
       <p><strong>От ${data.budget.low}/день (эконом) до ${data.budget.high}/день (премиум).</strong> Перелёт из Москвы — {data.flight}. Сезон <strong>{data.seasonLevel}</strong>.</p>
       <div class="budget-grid">
         <div class="budget-card">
@@ -167,7 +168,7 @@ const otherMonths = Object.keys(country.months).filter(m => m !== monthKey);
     </section>
 
     <section class="seasons-section">
-      <h2 id="why-go">Что делать в {country.nameLoc} в {monthMeta.loc}?</h2>
+      <h2 id="why-go">Что делать {P} {country.nameLoc} в {monthMeta.loc}?</h2>
       <ul class="highlights-list">
         {data.highlights.map(h => <li>{h}</li>)}
       </ul>
@@ -175,7 +176,7 @@ const otherMonths = Object.keys(country.months).filter(m => m !== monthKey);
 
     {data.events && data.events.length > 0 && (
       <section class="seasons-section">
-        <h2 id="events">Какие события и фестивали в {country.nameLoc} в {monthMeta.loc} 2026?</h2>
+        <h2 id="events">Какие события и фестивали {P} {country.nameLoc} в {monthMeta.loc} 2026?</h2>
         <div class="events-list">
           {data.events.map(e => (
             <div class="event">
@@ -205,7 +206,7 @@ const otherMonths = Object.keys(country.months).filter(m => m !== monthKey);
     </section>
 
     <section class="seasons-section">
-      <h2 id="visa">Виза в {country.nameAcc} для россиян</h2>
+      <h2 id="visa">Виза {P} {country.nameAcc} для россиян</h2>
       <p>{country.visa}</p>
       {country.guideUrl && (
         <p><a href={country.guideUrl}>Полный гайд по {country.nameLoc} 2026 →</a></p>
@@ -225,7 +226,7 @@ const otherMonths = Object.keys(country.months).filter(m => m !== monthKey);
     </section>
 
     <section class="seasons-section seasons-related">
-      <h2>Другие месяцы в {country.nameLoc}</h2>
+      <h2>Другие месяцы {P} {country.nameLoc}</h2>
       <div class="months-grid">
         {otherMonths.map(m => (
           <a href={`/seasons/${country.slug}/${m}/`} class="month-card">
@@ -242,7 +243,7 @@ const otherMonths = Object.keys(country.months).filter(m => m !== monthKey);
         <li><a href="/seasons/">Сезоны для всех 70 стран</a> — выбор страны под месяц</li>
         <li><a href="/calculator/">Калькулятор бюджета поездки</a> — посчитай свою поездку</li>
         {country.guideUrl && <li><a href={country.guideUrl}>Полный гайд по {country.nameLoc} 2026</a></li>}
-        {country.visaUrl && <li><a href={country.visaUrl}>Виза в {country.nameAcc} 2026</a></li>}
+        {country.visaUrl && <li><a href={country.visaUrl}>Виза {P} {country.nameAcc} 2026</a></li>}
       </ul>
     </section>
   </main>
