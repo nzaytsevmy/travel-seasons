@@ -30,6 +30,14 @@ const visaSummary = {
   required: `Для поездки ${d.cases.vP} россиянам нужна полноценная виза. Оформляется через визовый центр или посольство страны, требуется пакет документов и личная подача с биометрией.`,
 };
 
+// CTR-заголовок зеркалит интент «нужна ли виза в X»: для безвиза прямо отвечает
+// «не нужна» (а не вводящее в заблуждение «документы/цена»), для eVisa — «онлайн».
+const VISA_TITLE = {
+  free: `Виза ${d.cases.vP} не нужна россиянам в 2026 — безвиз`,
+  evisa: `Виза ${d.cases.vP} 2026 — eVisa онлайн для россиян, цена`,
+  required: `Виза ${d.cases.vP} для россиян 2026 — документы, цена, сроки`,
+};
+
 const flightFrom = d.price?.flight?.[0];
 const hotelFrom = d.price?.hotel?.[0];
 
@@ -137,10 +145,10 @@ const ldJson = {
 };
 ---
 <Layout
-  title={`Виза ${d.cases.vP} для россиян 2026 — документы, цена, сроки`}
+  title={VISA_TITLE[d.visa]}
   description={visaSummary[d.visa].slice(0, 155)}
   canonical={url}
-  ogTitle={`Виза ${d.cases.vP} для россиян 2026`}
+  ogTitle={VISA_TITLE[d.visa]}
   ogDescription={visaSummary[d.visa].slice(0, 155)}
   ogType="article"
   ldJson={ldJson}
