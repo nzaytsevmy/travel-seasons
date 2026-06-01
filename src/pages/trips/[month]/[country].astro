@@ -7,6 +7,7 @@ import Footer from '../../../components/Footer.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
 import { COUNTRIES as RICH_COUNTRIES } from '../../../data/programmatic-seasons.js';
+import { NICHE_TRIPS } from '../../../data/niche-trips.js';
 import { TP_LINKS, aviasalesRoute } from '../../../data/affiliate.js';
 import { DATA_UPDATED_RU } from '../../../data/meta.js';
 
@@ -147,7 +148,7 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
   title={`${d.cases.nom} в ${m.prep} 2026: погода, цены, виза`}
   description={`Стоит ли ехать ${d.cases.vP} в ${m.prep} 2026 — погода, цены, виза для россиян, бюджет на неделю. ${lbl.verdict}.`}
   canonical={url}
-  noindex={status === 'X'}
+  noindex={status === 'X' || NICHE_TRIPS.has(d.slug)}
   ogTitle={`${d.cases.nom} в ${m.prep} 2026`}
   ogDescription={`${lbl.tag}. ${text.slice(0, 130)}`}
   ogType="article"
