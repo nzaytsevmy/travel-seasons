@@ -94,16 +94,7 @@ const ldJson: any = {
       "headline": post.data.title,
       "description": post.data.description,
       "image": coverUrl,
-      "author": {
-        "@type": "Person",
-        "@id": "https://traveltribe.ru/about/#person",
-        "name": post.data.author,
-        "url": "https://traveltribe.ru/about/",
-        "image": "https://traveltribe.ru/og-image.png",
-        "jobTitle": "Travel writer",
-        "knowsAbout": ["Путешествия", "Визы", "Travel-бюджет", "Сезоны", "Фотография"],
-        "sameAs": ["https://t.me/traveltriberu", "https://www.linkedin.com/in/nzaytsev/", "https://github.com/nzaytsevmy"]
-      },
+      "author": { "@id": "https://traveltribe.ru/about/#person" },
       "datePublished": post.data.pubDate.toISOString(),
       "dateModified": (post.data.updatedDate ?? post.data.pubDate).toISOString(),
       "publisher": { "@id": "https://traveltribe.ru/#org" },
