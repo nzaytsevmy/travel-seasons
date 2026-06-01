@@ -773,7 +773,8 @@ document.addEventListener('astro:page-load', _seasonsInit);
 .month-btn, .reset-btn {
   background: transparent; border: 1px solid var(--line); color: var(--text-dim);
   font-family: var(--ff-body); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase;
-  padding: 0.45rem 0.8rem; border-radius: 3px; cursor: pointer; transition: all 0.2s;
+  padding: 0.45rem 0.9rem; min-height: 44px; display: inline-flex; align-items: center;
+  border-radius: 3px; cursor: pointer; transition: all 0.2s;
 }
 .month-btn:hover, .reset-btn:hover { border-color: var(--gold-dim); color: var(--text); }
 .month-btn.active { background: var(--gold); border-color: var(--gold); color: #fff; font-weight: 500; }
@@ -1004,7 +1005,7 @@ h1 em { color: var(--gold); font-style: normal; }
 .panel-header p { color: var(--text-faint); font-size: 0.78rem; margin: 0; }
 .panel-close {
   background: transparent; border: 1px solid var(--line); color: var(--text-dim);
-  width: 32px; height: 32px; border-radius: 3px; cursor: pointer;
+  width: 44px; height: 44px; border-radius: 3px; cursor: pointer;
   font-size: 1.4rem; line-height: 1; padding: 0; transition: all 0.2s;
 }
 .panel-close:hover { border-color: var(--gold-dim); color: var(--text); }
