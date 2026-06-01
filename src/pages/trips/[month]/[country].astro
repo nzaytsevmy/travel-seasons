@@ -6,6 +6,7 @@ import Layout from '../../../layouts/Layout.astro';
 import Footer from '../../../components/Footer.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
+import { COUNTRIES as RICH_COUNTRIES } from '../../../data/programmatic-seasons.js';
 import { TP_LINKS, aviasalesRoute } from '../../../data/affiliate.js';
 import { DATA_UPDATED_RU } from '../../../data/meta.js';
 
@@ -24,6 +25,10 @@ const url = `https://traveltribe.ru/trips/${m.slug}/${d.slug}/`;
 const monthIdx = MONTHS.findIndex((x) => x.slug === m.slug);
 const status = d.r[monthIdx];
 const text = d.t[monthIdx];
+// Богатые данные по месяцу (погода/события/что смотреть) — есть для части стран
+// (programmatic-seasons.js, источники meteoblue/climate-data). Где есть — выводим
+// реальный уникальный контент вместо общего шаблона. Не выдумываем там, где нет.
+const rich = RICH_COUNTRIES[d.slug]?.months?.[m.slug] || null;
 
 const STATUS_LABEL = {
   P: { tag: 'Пик сезона',      verdict: 'Лучший месяц для поездки',                cls: 'peak' },
@@ -238,7 +243,25 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
         </div>
       </section>
 
-      {(status === 'P' || status === 'G') && (
+      {rich && (
+        <section class="sec">
+          <div class="shead"><h2>{d.cases.nom} в {m.prep}: погода и что смотреть</h2></div>
+          <p class="txt">{rich.weatherDesc}</p>
+          {rich.highlights?.length > 0 && (
+            <ul class="vl wide">
+              {rich.highlights.map((h) => <li>{h}</li>)}
+            </ul>
+          )}
+          {rich.events?.length > 0 && (
+            <p class="txt"><strong>События в {m.prep}:</strong> {rich.events.map((e) => `${e.name} (${e.dates}) — ${e.note}`).join('; ')}.</p>
+          )}
+          {rich.warnings?.length > 0 && (
+            <p class="txt"><strong>Стоит учесть:</strong> {rich.warnings.join('; ')}.</p>
+          )}
+        </section>
+      )}
+
+      {(status === 'P' || status === 'G') && !rich && (
         <section class="sec">
           <div class="shead"><h2><span class="no">05</span>Что делать {d.cases.loc} в {m.prep}</h2></div>
           <p class="txt">{monthCap} 2026 — один из лучших месяцев для поездки {d.cases.vP}. Погода и цены сходятся в окне комфорта. Закладывайте 7–14 дней, бронировать минимум за 2 месяца до вылета — на пиковые даты места разлетаются быстро.</p>
