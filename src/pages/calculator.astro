@@ -400,7 +400,7 @@ async function fetchRate() {
     const d = await r.json();
     if (d.result === 'success' && d.rates?.RUB) {
       RUB = d.rates.RUB;
-      if (rateEl) rateEl.textContent = `1 $ = ${RUB.toFixed(2)} ₽`;
+      if (rateEl) rateEl.textContent = `1 $ = ${RUB.toFixed(2)}&nbsp;₽`;
       renderCalc();
       return;
     }

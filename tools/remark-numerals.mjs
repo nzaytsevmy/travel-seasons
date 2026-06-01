@@ -3,15 +3,16 @@ import { visit } from 'unist-util-visit';
 const NBSP = ' ';
 
 /**
- * Replace ASCII spaces around numbers with NBSP inside table cells so that
- * "1 200 000 ₽" or "10–11 дней" never wraps mid-value across lines.
+ * Replace ASCII spaces around numbers with NBSP so that "1 200 000 ₽" or
+ * "10–11 дней" never wraps mid-value, и нормализует диапазоны на en-dash.
  *
- * Operates only on `tableCell` text nodes — keeps prose paragraphs untouched.
+ * Работает по ВСЕМ text-узлам (проза, заголовки, ссылки, таблицы). `inlineCode`/
+ * `code` — отдельный тип узла, не 'text', поэтому код не трогается.
  */
 export default function remarkNumerals() {
   return (tree) => {
-    visit(tree, 'tableCell', (cell) => {
-      visit(cell, 'text', (node) => {
+    {
+      visit(tree, 'text', (node) => {
         let v = node.value;
         // 1) thousands separators: "1 200 000" → NBSP
         v = v.replace(/(\d) (?=\d{3}(?!\d))/g, `$1${NBSP}`);
@@ -35,6 +36,6 @@ export default function remarkNumerals() {
         v = v.replace(/(\d)\s*([×x])\s*(\d)/g, `$1$2$3`);
         node.value = v;
       });
-    });
+    }
   };
 }

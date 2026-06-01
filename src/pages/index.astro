@@ -123,7 +123,7 @@ const ldJson = {
           {rows.map((r) => (
             <tr data-r={r.r.join('')} data-b={tier(r.budget)} data-v={r.visa} data-vibe={r.vibe.join(',')} data-budget={r.budget} data-name={r.nom.toLowerCase()}>
               <td class="cdest"><span class="dest"><span class="th"><Image src={r.cover} alt={r.nom} width={420} height={300} formats={['webp']} loading="lazy" /></span><span><a class="nm" href={`/${r.slug}/`}>{r.nom}</a><span class="vibe">{r.vibeRu}</span><span class="sq" hidden></span></span></span></td>
-              <td data-l="Поездка"><span class="price">≈ {fmt(r.budget)} ₽ <small>за неделю</small></span></td>
+              <td data-l="Поездка"><span class="price">≈ {fmt(r.budget)}&nbsp;₽ <small>за неделю</small></span></td>
               <td data-l="Виза"><span class={`visa ${VISA_CLASS[r.visa]}`}>{VISA_LABEL[r.visa]}</span></td>
               <td data-l="Сезон" class="season">{r.season}</td>
               <td class="flight r"><a class="fly" href={`/${r.slug}/`}>Подробнее →</a></td>
@@ -167,9 +167,9 @@ const ldJson = {
           <div class="tl"><a href="/seasons/">Сезоны по месяцам →</a><a href="/visa/">Визы РФ →</a></div>
         </div>
         <div class="tcard bud"><div class="tt">Калькулятор бюджета</div><div class="ts">Бали, комфорт на неделю с перелётом:</div>
-          <div class="br"><span>Перелёт из Москвы</span><b>≈ {fmt(baliFlight)} ₽</b></div>
-          <div class="br"><span>Неделя на месте (комфорт)</span><b>≈ {fmt(baliStay)} ₽</b></div>
-          <div class="br"><span>Вся поездка</span><b>≈ {fmt(baliTrip)} ₽</b></div>
+          <div class="br"><span>Перелёт из Москвы</span><b>≈ {fmt(baliFlight)}&nbsp;₽</b></div>
+          <div class="br"><span>Неделя на месте (комфорт)</span><b>≈ {fmt(baliStay)}&nbsp;₽</b></div>
+          <div class="br"><span>Вся поездка</span><b>≈ {fmt(baliTrip)}&nbsp;₽</b></div>
           <div class="tl"><a href="/calculator/">Посчитать свою поездку →</a></div>
         </div>
       </div>
