@@ -269,7 +269,7 @@ const ldJson = {
             <li class={`visa-month visa-month--${klass}`}>
               <a href={`/trips/${slug}/${d.slug}/`}>
                 <span class="vm-name">в {m}</span>
-                <span class="vm-status">{status === 'P' ? '🔥 пик' : status === 'G' ? '✅ хорошо' : status === 'O' ? '🟡 средне' : status === 'B' ? '⛔ плохо' : '❄️ закрыт'}</span>
+                <span class="vm-status"><span class="vm-dot" aria-hidden="true">●</span>{status === 'P' ? 'пик' : status === 'G' ? 'хорошо' : status === 'O' ? 'средне' : status === 'B' ? 'плохо' : 'закрыт'}</span>
               </a>
             </li>
           );
@@ -434,8 +434,13 @@ const ldJson = {
 .visa-month a:hover { border-color: var(--gold-dim); background: var(--bg3); }
 .vm-name { color: var(--text); font-size: 0.9rem; }
 .vm-status { color: var(--text-faint); font-size: 0.78rem; }
-.visa-month--peak .vm-status { color: #22c55e; }
-.visa-month--good .vm-status { color: #4a9eff; }
-.visa-month--off .vm-status { color: #f59e0b; }
-.visa-month--bad .vm-status { color: #ef4444; }
+.vm-dot { margin-right: 0.35em; font-size: 0.7em; vertical-align: 0.1em; color: var(--text-faint); }
+.visa-month--peak .vm-status { color: var(--peak-text); }
+.visa-month--peak .vm-dot { color: var(--peak); }
+.visa-month--good .vm-status { color: var(--good-text); }
+.visa-month--good .vm-dot { color: var(--good); }
+.visa-month--off .vm-status { color: var(--ok-text); }
+.visa-month--off .vm-dot { color: var(--ok); }
+.visa-month--bad .vm-status { color: var(--bad-text); }
+.visa-month--bad .vm-dot { color: var(--bad); }
 </style>
