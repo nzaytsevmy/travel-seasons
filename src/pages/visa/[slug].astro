@@ -271,7 +271,7 @@ const ldJson = {
 
     {d.relatedPosts.length > 0 && (
       <section class="visa-block">
-        <h2>Подробные гайды {d.cases.loc}</h2>
+        <h2>Подробные гайды о {d.cases.prep}</h2>
         <ul class="visa-related">
           {d.relatedPosts.map((p) => (
             <li><a href={`/blog/${p.slug}/`}><strong>{p.title}</strong></a> — {p.kind === 'visa' ? 'детали по визе' : p.kind === 'season' ? 'про конкретный сезон' : 'личный опыт автора'}</li>
