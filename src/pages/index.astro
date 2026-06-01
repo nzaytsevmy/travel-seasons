@@ -327,13 +327,13 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .gear-h{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;border-top:2px solid var(--line);padding-top:.8rem;margin-bottom:1rem}
 .gear-h h2{font-weight:700;font-size:clamp(1.4rem,2.6vw,2rem);letter-spacing:-.02em}
 .gear-h .adm{font-size:.6rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
-.gear-grid{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.gi{padding:1rem 1.2rem 1.1rem;border-right:1px solid var(--hair)}.gi:first-child{padding-left:0}.gi:last-child{border-right:none}
+.gear-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.gi{padding:1rem 1.2rem 1.1rem;border-right:1px solid var(--hair)}.gi:nth-child(3n+1){padding-left:0}.gi:nth-child(3n){border-right:none}.gi:nth-child(n+4){border-top:1px solid var(--hair)}
 .gi .gl{font-size:.66rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
 .gi .gt{font-weight:700;font-size:1.05rem;margin:.25rem 0 .15rem}
 .gi .gd{font-size:.78rem;color:var(--mid);margin-bottom:.4rem}
 .gi a.cta{font-size:.82rem;font-weight:600;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:3px;display:inline-flex;align-items:center;min-height:44px}
-@media(max-width:760px){.gear-grid{grid-template-columns:repeat(2,1fr)}.gi:nth-child(2n){border-right:none}.gi:nth-child(odd){padding-left:0}}
+@media(max-width:760px){.gear-grid{grid-template-columns:repeat(2,1fr)}.gi{border-top:none;border-right:1px solid var(--hair)}.gi:nth-child(2n){border-right:none}.gi:nth-child(2n+1){padding-left:0}.gi:nth-child(n+3){border-top:1px solid var(--hair)}}
 
 .visaband{grid-column:1/-1;margin-top:2.4rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:1.1rem 0}
 .visaband .vt{font-weight:600;font-size:1.02rem;max-width:64ch}.visaband .vt b{color:var(--gold)}
