@@ -188,6 +188,16 @@ const ldJson = {
       </section>
     )}
 
+    <section class="pack-block pack-months-block">
+      <h2>Что взять {d.cases.vP} по месяцам</h2>
+      <p class="pack-months-lead">Точный список под погоду и события конкретного месяца — что докинуть в чемодан.</p>
+      <ul class="pack-months-grid">
+        {MONTHS.map((mo) => (
+          <li><a href={`/packing/${d.slug}/${mo.slug}/`}>{mo.nom}</a></li>
+        ))}
+      </ul>
+    </section>
+
     <section class="pack-block">
       <h2>Частые вопросы</h2>
       <div class="pack-faq">
@@ -277,4 +287,9 @@ const ldJson = {
 .pack-faq-row p { margin: 0 0 1rem; color: var(--text-dim); line-height: 1.75; font-size: 0.95rem; max-width: 95%; }
 
 .ad-mark { display: inline-block; font-size: 0.65rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; padding: 0 0.4rem; border: 1px solid var(--line); border-radius: 2px; margin-left: 0.3rem; vertical-align: middle; }
+
+.pack-months-lead { color: var(--text-dim); font-size: 0.95rem; line-height: 1.7; margin: 0 0 1rem; }
+.pack-months-grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(116px, 1fr)); gap: 0.5rem; }
+.pack-months-grid a { display: flex; align-items: center; min-height: 44px; padding: 0.6rem 0.9rem; border: 1px solid var(--line); color: var(--text); font-size: 0.92rem; text-transform: capitalize; transition: border-color 0.15s ease, color 0.15s ease; }
+.pack-months-grid a:hover { border-color: var(--gold); color: var(--gold); }
 </style>
