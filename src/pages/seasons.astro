@@ -584,7 +584,7 @@ function openPanel(cell) {
   if (price) {
     const priceN = parseInt(price, 10);
     const fmt = priceN.toLocaleString('ru-RU');
-    priceText.innerHTML = `от <strong>${fmt} ₽</strong> в одну сторону · обновлено ежедневно`;
+    priceText.innerHTML = `от <strong>${fmt}&nbsp;₽</strong> в одну сторону · обновлено ежедневно`;
     priceBlock.removeAttribute('hidden');
   } else {
     priceBlock.setAttribute('hidden', '');
