@@ -109,9 +109,9 @@ const ldJson = {
             <option value={i + 1} selected={i + 1 === month}>{['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'][i]}</option>
           ))}
         </select></div>
-        <div class="fg"><span class="fl">Поездка ₽</span><div class="fopts" data-g="b"><button class="t" data-v="low" type="button">до 100к</button><button class="t" data-v="mid" type="button">100–200к</button><button class="t" data-v="high" type="button">200к+</button></div></div>
-        <div class="fg"><span class="fl">Вайб</span><div class="fopts" data-g="vibe"><button class="t" data-v="beach" type="button">пляж</button><button class="t" data-v="mountains" type="button">горы</button><button class="t" data-v="city" type="button">город</button><button class="t" data-v="nature" type="button">природа</button></div></div>
-        <div class="fg"><span class="fl">Сортировка</span><div class="fopts" id="sortOpts"><button class="t on" data-s="rel" type="button">рекомендую</button><button class="t" data-s="asc" type="button">дешевле</button><button class="t" data-s="desc" type="button">дороже</button></div></div>
+        <div class="fg"><span class="fl">Поездка ₽</span><div class="fopts" data-g="b" role="group" aria-label="Бюджет поездки"><button class="t" data-v="low" type="button" aria-pressed="false">до 100к</button><button class="t" data-v="mid" type="button" aria-pressed="false">100–200к</button><button class="t" data-v="high" type="button" aria-pressed="false">200к+</button></div></div>
+        <div class="fg"><span class="fl">Вайб</span><div class="fopts" data-g="vibe" role="group" aria-label="Вайб поездки"><button class="t" data-v="beach" type="button" aria-pressed="false">пляж</button><button class="t" data-v="mountains" type="button" aria-pressed="false">горы</button><button class="t" data-v="city" type="button" aria-pressed="false">город</button><button class="t" data-v="nature" type="button" aria-pressed="false">природа</button></div></div>
+        <div class="fg"><span class="fl">Сортировка</span><div class="fopts" id="sortOpts" role="group" aria-label="Сортировка"><button class="t on" data-s="rel" type="button" aria-pressed="true">рекомендую</button><button class="t" data-s="asc" type="button" aria-pressed="false">дешевле</button><button class="t" data-s="desc" type="button" aria-pressed="false">дороже</button></div></div>
         <div class="fcount"><b id="fCountN">{nowRows.length}</b><span id="fCountW">{nowWord}</span></div>
       </div>
 
@@ -445,15 +445,15 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
     document.querySelectorAll('.fopts[data-g]').forEach((g) => g.addEventListener('click', (e) => {
       const b = e.target.closest('.t'); if (!b) return;
       const grp = g.dataset.g, was = b.classList.contains('on');
-      g.querySelectorAll('.t').forEach((x) => x.classList.remove('on'));
-      if (!was) { b.classList.add('on'); state[grp] = b.dataset.v; } else state[grp] = null;
+      g.querySelectorAll('.t').forEach((x) => { x.classList.remove('on'); x.setAttribute('aria-pressed', 'false'); });
+      if (!was) { b.classList.add('on'); b.setAttribute('aria-pressed', 'true'); state[grp] = b.dataset.v; } else state[grp] = null;
       apply();
     }));
     const sortOpts = document.getElementById('sortOpts');
     if (sortOpts) sortOpts.addEventListener('click', (e) => {
       const b = e.target.closest('.t'); if (!b) return;
-      sortOpts.querySelectorAll('.t').forEach((x) => x.classList.remove('on'));
-      b.classList.add('on'); state.sort = b.dataset.s; apply();
+      sortOpts.querySelectorAll('.t').forEach((x) => { x.classList.remove('on'); x.setAttribute('aria-pressed', 'false'); });
+      b.classList.add('on'); b.setAttribute('aria-pressed', 'true'); state.sort = b.dataset.s; apply();
     });
     apply();
     // мини-хитмэп Бали — из реальных данных DIRECTIONS (data-pat), не хардкод
