@@ -121,7 +121,7 @@ const FAQS = [
         : `Да, ${rank.tldr}. Сезонная стратегия по ценам: ${rank.price.toLowerCase()}`,
   },
   {
-    q: `Какие события и праздники ${d.cases.vP} в ${m.prep}?`,
+    q: `Какие события и праздники ${d.cases.loc} в ${m.prep}?`,
     a: monthEvents.length
       ? monthEvents.map(e => `${e.name}${e.dates ? ' (' + e.dates + ')' : ''}${e.note ? ' — ' + e.note : ''}`).join('. ')
       : `В ${m.prep} ${d.cases.loc} нет крупных гос. праздников или фестивалей, важных для туристов. Смотри помесячный календарь ${d.cases.gen || d.cases.nom}.`,
@@ -323,7 +323,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
     {/* СОБЫТИЯ МЕСЯЦА — главный month-specific блок */}
     {monthEvents.length > 0 && (
       <section class="pmu-section">
-        <div class="pmu-shead"><h2>События и праздники {m.prep}</h2></div>
+        <div class="pmu-shead"><h2>События и праздники в {m.prep}</h2></div>
         <ul class="pmu-events">
           {monthEvents.map((e) => (
             <li class={`pmu-ev pmu-ev--${e.tag}`}>

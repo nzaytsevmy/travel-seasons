@@ -275,7 +275,7 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
 
       {d.relatedPosts.length > 0 && (
         <section class="sec">
-          <div class="shead"><h2><span class="no">07</span>Подробные гайды {d.cases.loc}</h2></div>
+          <div class="shead"><h2><span class="no">07</span>Подробные гайды о {d.cases.prep}</h2></div>
           <ul class="vl wide">
             {d.relatedPosts.map((p) => (
               <li><a href={`/blog/${p.slug}/`}>{p.title}</a><span>{p.kind === 'visa' ? 'про визу' : p.kind === 'season' ? 'про конкретный сезон' : 'личный опыт'}</span></li>
