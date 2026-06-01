@@ -5,6 +5,7 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { Picture } from 'astro:assets';
 import { DIRECTIONS } from '../../data/directions.js';
 import { getVisaDetails } from '../../data/visa-details.js';
+import { TP_LINKS, aviasalesRoute } from '../../data/affiliate.js';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../../data/meta.js';
 
 const destPhotos = import.meta.glob('../../assets/destinations/*.jpg', { eager: true, import: 'default' });
@@ -280,6 +281,27 @@ const ldJson = {
       </section>
     )}
 
+    <section class="visa-block visa-prep">
+      <h2>Перед поездкой {d.cases.vP}</h2>
+      <p class="visa-prep-lead">Что оформить заранее — собрал то, чем пользуюсь сам.</p>
+      <ul class="visa-prep-list">
+        <li>
+          <strong>Медстраховка.</strong> {d.visa === 'required'
+            ? 'Для визы её прикладывают к пакету документов — покрытие обычно от €30 000.'
+            : 'Виза не нужна, но без страховки лечение за границей оплачиваешь из кармана.'} Сравнить полисы: <a href={TP_LINKS.cherehapa} rel="sponsored noopener" target="_blank">Cherehapa</a> — от 70&nbsp;₽/день, оплата картой РФ.
+        </li>
+        {flightFrom > 0 && d.iata && (
+          <li>
+            <strong>Перелёт.</strong> Билеты Москва → {d.cases.nom} от&nbsp;${flightFrom}. <a href={aviasalesRoute('MOW', d.iata)} rel="sponsored noopener" target="_blank">Найти на Aviasales</a> — сравнивает 100+ агентств за раз.
+          </li>
+        )}
+        <li>
+          <strong>Связь.</strong> eSIM вместо роуминга — подключается до вылета, без поиска местной симки. <a href={TP_LINKS.airalo} rel="sponsored noopener" target="_blank">Airalo</a> — от&nbsp;$5 за неделю.
+        </li>
+      </ul>
+      <span class="ad-mark">реклама</span>
+    </section>
+
     <section class="visa-block" id="faq">
       <h2>FAQ — виза {d.cases.vP}</h2>
       <div class="faq-block">
@@ -412,6 +434,13 @@ const ldJson = {
 .visa-facts li strong, .visa-list li strong { color: var(--text); }
 
 .visa-related a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+
+.visa-prep-lead { color: var(--text-faint); font-size: 0.88rem; margin-bottom: 0.8rem; }
+.visa-prep-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.7rem; }
+.visa-prep-list li { color: var(--text-dim); line-height: 1.7; font-size: 0.95rem; padding-left: 1rem; border-left: 2px solid var(--line); }
+.visa-prep-list li strong { color: var(--text); }
+.visa-prep-list a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+.visa-prep-list a:hover { text-decoration-color: var(--gold); }
 
 .visa-months {
   list-style: none; padding: 0;
