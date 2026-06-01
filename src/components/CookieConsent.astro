@@ -23,6 +23,9 @@
     background: var(--bg2); border: 1px solid var(--text-dim);
     padding: 0.95rem 1.1rem;
   }
+  /* Скоуп-селектор .cc перебивает [hidden]{display:none} — возвращаем скрытие явно,
+     иначе атрибут hidden не работает и баннер не убирается по «Принять»/«Отклонить». */
+  .cc[hidden] { display: none; }
   .cc-text { flex: 1 1 280px; margin: 0; font-size: 0.82rem; line-height: 1.6; color: var(--text-dim); }
   .cc-text a { color: var(--gold); border-bottom: 1px solid rgba(142,102,24,0.35); }
   .cc-text a:hover { border-color: var(--gold); }

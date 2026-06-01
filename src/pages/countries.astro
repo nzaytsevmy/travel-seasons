@@ -155,7 +155,7 @@ const ldJson = {
               <span class={`cd-visa cd-visa--${c.visa}`}>{VISA_LABEL[c.visa]}</span>
               {c.season && <span class="cd-season">{c.season}</span>}
             </span>
-            <span class="cd-price">{c.budgetRub ? `≈ ${fmt(c.budgetRub)}&nbsp;₽` : (c.btier ? BUDGET_LABEL[c.btier] : '')}</span>
+            <span class="cd-price">{c.budgetRub ? `≈ ${fmt(c.budgetRub)} ₽` : (c.btier ? BUDGET_LABEL[c.btier] : '')}</span>
           </span>
         </a>
       ))}
