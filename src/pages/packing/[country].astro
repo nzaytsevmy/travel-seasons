@@ -125,7 +125,7 @@ const ldJson = {
         {needsVisa && visa && (<li><strong>Виза/eVisa:</strong> {visa.duration}, {visa.cost}, {visa.timing}. Детали — <a href={`/visa/${d.slug}/`}>на странице визы {d.cases.prep}</a>.</li>)}
         {!needsVisa && (<li><strong>Виза не нужна</strong> — {visa?.duration || 'безвизовый въезд'}, {visa?.timing || 'штамп на границе'}.</li>)}
         <li><strong>Обратный билет</strong> или бронь выезда (часто проверяют на регистрации). Поиск рейсов — <a href={TP_LINKS.aviasales} target="_blank" rel="sponsored noopener">Aviasales</a> <span class="ad-mark">Реклама</span>.</li>
-        <li><strong>Страховка</strong> {needsVisa ? '(обязательна для визы)' : '(рекомендую — медпомощь платная)'}.</li>
+        <li><strong>Страховка</strong> {needsVisa ? '(обязательна для визы)' : '(рекомендую — медпомощь платная)'}. Оформить — <a href={TP_LINKS.cherehapa} target="_blank" rel="sponsored noopener">Cherehapa</a> <span class="ad-mark">Реклама</span>.</li>
         <li><strong>Копии</strong> паспорта и виз в облаке + бумажные отдельно от оригиналов.</li>
       </ul>
     </section>
