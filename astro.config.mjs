@@ -11,6 +11,7 @@ import rehypeTableWrap from './tools/rehype-table-wrap.mjs';
 import rehypeFaqAccordion from './tools/rehype-faq-accordion.mjs';
 import { DATA_UPDATED } from './src/data/meta.js';
 import { DIRECTIONS, MONTHS } from './src/data/directions.js';
+import { NICHE_TRIPS } from './src/data/niche-trips.js';
 
 // Trips closed (status='X' — направление недоступно в месяц) → noindex,
 // исключаем из sitemap. Остальные trips-страницы индексируются после
@@ -94,6 +95,8 @@ export default defineConfig({
         && !page.includes('/og/')
         // юр-страницы noindex (privacy/cookie/terms) — не в sitemap (только индексируемые)
         && !page.includes('/legal/')
+        // нишевые trips-направления noindex (≈0 трафика) — не в sitemap
+        && ![...NICHE_TRIPS].some((s) => page.includes(`/trips/`) && page.endsWith(`/${s}/`))
         // /seasons/[c]/[m]/ — дубль /trips/[m]/[c]/; canonical ведёт на trips,
         // поэтому из sitemap исключаем (только canonical+200). Хаб /seasons/ остаётся.
         && !/\/seasons\/[^/]+\/[^/]+\//.test(page)
