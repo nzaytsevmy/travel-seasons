@@ -212,15 +212,17 @@ const finalLd = {
        вкладке + noopener — чтобы клик по партнёру не уводил человека с сайта.
        Внутренние и информационные ссылки не трогаем. Re-run после SPA-перехода. -->
   <script is:inline>
+    var AFF = ['aviasales.ru', 'tpk.mx', 'pxf.io', 'platipomiru.com', 'drimsim.ru', 'cherehapa.ru', 'airalo.com', 'travelata.ru'];
+    function _affHost(a) { try { return new URL(a.href).hostname.toLowerCase(); } catch (e) { return null; } }
+    function _isAff(a, host) {
+      if (!host || host.indexOf('traveltribe.ru') !== -1) return false;
+      return a.rel.indexOf('sponsored') !== -1 || a.classList.contains('aff-cta') ||
+        AFF.some(function (d) { return host === d || host.endsWith('.' + d); });
+    }
     function _refLinksNewTab() {
-      var AFF = ['aviasales.ru', 'tpk.mx', 'pxf.io', 'platipomiru.com', 'drimsim.ru', 'cherehapa.ru', 'airalo.com', 'travelata.ru'];
       document.querySelectorAll('a[href^="http"]').forEach(function (a) {
-        var host;
-        try { host = new URL(a.href).hostname.toLowerCase(); } catch (e) { return; }
-        if (host.indexOf('traveltribe.ru') !== -1) return;                 // внутренние не трогаем
-        var isRef = a.rel.indexOf('sponsored') !== -1 || a.classList.contains('aff-cta') ||
-          AFF.some(function (d) { return host === d || host.endsWith('.' + d); });
-        if (!isRef) return;                                                // только реферальные
+        var host = _affHost(a);
+        if (!_isAff(a, host)) return;                                      // только реферальные
         if (a.target !== '_blank') a.target = '_blank';
         if (!/\bnoopener\b/.test(a.rel)) a.rel = (a.rel + ' noopener').trim();
         if (a.rel.indexOf('sponsored') === -1) a.rel = (a.rel + ' sponsored').trim();  // доразметка bare-реф
@@ -228,6 +230,17 @@ const finalLd = {
     }
     _refLinksNewTab();
     document.addEventListener('astro:page-load', _refLinksNewTab);
+    // Трекинг партнёрских кликов в Метрику (цель outbound_link, партнёр в параметре).
+    // Делегирование = 1 listener, ловит и динамически добавленные ссылки. ym есть только
+    // после cookie-согласия (152-ФЗ). order_price задаётся в настройках цели в UI Метрики.
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest ? e.target.closest('a[href^="http"]') : null;
+      if (!a) return;
+      var host = _affHost(a);
+      if (_isAff(a, host) && typeof window.ym === 'function') {
+        window.ym(95832375, 'reachGoal', 'outbound_link', { partner: host });
+      }
+    }, true);
   </script>
 
   <!-- Cookie-баннер согласия (152-ФЗ) — на всём сайте, показывается до выбора -->
