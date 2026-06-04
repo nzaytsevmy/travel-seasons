@@ -51,13 +51,15 @@ function nearestPriceKey(monthIdx) {
 }
 
 // Aviasales deep-link для месяца: формат MOW{DD}{MM}{IATA}1 (1 пассажир)
-const AVIASALES_MARKER = '546042.Zz66f13c16ff6b488883a4127-546042';
+// Aviasales через tpk.mx-обёртку (трекинг кликов + erid + .ru). Прямой ?marker со статичным
+// sub-id давал 0 кликов в TP (проверено 2026-06-04). search-путь /search/ уходит внутри &u=.
+const AVIASALES_TPK = 'https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&u=';
 function aviasalesUrl(iata, monthIdx) {
   if (!iata) return null;
   const yr = monthIdx >= currentMonth ? now.getFullYear() : now.getFullYear() + 1;
   const mm = String(monthIdx + 1).padStart(2, '0');
   // Середина месяца
-  return `https://www.aviasales.ru/search/MOW15${mm}${iata}1?marker=${AVIASALES_MARKER}`;
+  return AVIASALES_TPK + encodeURIComponent(`https://www.aviasales.ru/search/MOW15${mm}${iata}1`);
 }
 
 // Подготовка данных для рендера: для каждого региона предвычисляем enriched-объект
@@ -595,7 +597,7 @@ function openPanel(cell) {
   if (iata) {
     const yr = monthIdx >= new Date().getMonth() ? new Date().getFullYear() : new Date().getFullYear() + 1;
     const mm = String(monthIdx + 1).padStart(2, '0');
-    avBtn.href = `https://www.aviasales.ru/search/MOW15${mm}${iata}1?marker=546042.Zz66f13c16ff6b488883a4127-546042`;
+    avBtn.href = 'https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&u=' + encodeURIComponent(`https://www.aviasales.ru/search/MOW15${mm}${iata}1`);
     avBtn.removeAttribute('hidden');
   } else {
     avBtn.setAttribute('hidden', '');

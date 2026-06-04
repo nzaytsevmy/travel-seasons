@@ -4,13 +4,22 @@
 export const TP_MARKER_FULL  = '546042.Zz66f13c16ff6b488883a4127-546042';
 export const TP_MARKER_SHORT = '546042';
 
-// Прямые партнёрские ссылки — переиспользуем по сайту.
-// Где возможно — короткие tpk.mx, для drimsim используем direct URL чтобы
-// принудительно вести на RU-сайт (через tpk.mx параметр lang не пробрасывается).
+// Aviasales: ТОЛЬКО через tpk.mx-redirect — генерит свежий sub-id на клик, поэтому TP
+// СЧИТАЕТ клики. Прямой aviasales.ru/?marker со СТАТИЧНЫМ sub-id давал 0 кликов в TP
+// (проверено 2026-06-04). Параметр &u= переопределяет destination на aviasales.RU и
+// пробрасывает deep-link origin/destination; трекинг + erid (2Vtzqxkn4LF) сохраняются.
+// Гео/locale на .com НЕ работают — только &u= (подтверждено curl-трейсом редиректа).
+const AVIASALES_TPK = 'https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&u=';
+// Оборачивает целевой aviasales.ru-URL в tpk.mx-redirect (трекинг кликов + erid + .ru).
+// query — строка вида '?destination_iata=DPS&sub_id=hub-bali' или '' для главной.
+export const aviasalesUrl = (query) => AVIASALES_TPK + encodeURIComponent('https://www.aviasales.ru/' + (query || ''));
+
+// Партнёрские ссылки — единая точка. Все tpk.mx с erid (38-ФЗ); drimsim — direct RU
+// (tpk.mx не пробрасывает lang=ru), erid у партнёра нет.
 export const TP_LINKS = {
-  aviasales:  `https://www.aviasales.ru/?marker=${TP_MARKER_FULL}&market=ru`,
-  ostrovok:   'https://ostrovok.tpk.mx/w4cAS1wZ',
-  cherehapa:  'https://cherehapa.tpk.mx/GmVWjhCN',
+  aviasales:  aviasalesUrl(),
+  ostrovok:   'https://ostrovok.tpk.mx/w4cAS1wZ?erid=2VtzqvE1cv3',
+  cherehapa:  'https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5',
   // eSIM-провайдеры (оба ведут на RU-сайты).
   // Airalo: direct партнёрский URL + erid (38-ФЗ маркировка рекламы РФ)
   airalo:     'https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_&u=https%3A%2F%2Fairalo.com%2Fru',
@@ -35,6 +44,5 @@ export const TP_LINKS = {
 // поднимает конверсию: пользователь сразу видит свой перелёт, а не главную.
 // Пример: aviasalesRoute('MOW','DXB') для Москва→Дубай.
 export function aviasalesRoute(originIata, destIata) {
-  return `https://www.aviasales.ru/?marker=${TP_MARKER_FULL}&market=ru`
-    + `&origin_iata=${originIata}&destination_iata=${destIata}`;
+  return aviasalesUrl(`?origin_iata=${originIata}&destination_iata=${destIata}`);
 }

@@ -326,10 +326,11 @@ const SEASON_MULT = { P:1.30, G:1.00, O:0.85, B:0.70 };
 const SEASON_LABEL = { P:'Пик', G:'Хорошо', O:'Норма', B:'Не сезон' };
 const SEASON_CLASS = { P:'peak', G:'good', O:'ok', B:'bad' };
 
-const AVIASALES_MARKER = '546042.Zz66f13c16ff6b488883a4127-546042';
-const AVIASALES_BASE = `https://www.aviasales.ru/?marker=${AVIASALES_MARKER}&market=ru`;
-const CHEREHAPA = 'https://cherehapa.tpk.mx/GmVWjhCN';
-const OSTROVOK = 'https://ostrovok.tpk.mx/w4cAS1wZ';
+// Aviasales через tpk.mx-обёртку: трекинг кликов (свежий sub-id на клик) + erid + .ru.
+// Прямой ?marker со статичным sub-id давал 0 кликов в TP (проверено 2026-06-04).
+const AVIASALES_TPK = 'https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&u=';
+const CHEREHAPA = 'https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5';
+const OSTROVOK = 'https://ostrovok.tpk.mx/w4cAS1wZ?erid=2VtzqvE1cv3';
 const AIRALO = 'https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_&u=https%3A%2F%2Fairalo.com%2Fru';
 
 const CAT_COLORS = { flight: '#8e6618', hotel: '#1b1914', food: '#6b685e', visa: '#a8a294' };
@@ -416,16 +417,17 @@ function fmt(usd) {
 }
 
 function aviasalesUrl(iata, monthNum) {
-  if (!iata) return AVIASALES_BASE;
-  let url = `${AVIASALES_BASE}&origin_iata=MOW&destination_iata=${iata}`;
-  if (monthNum && monthNum >= 1 && monthNum <= 12) {
-    const year = new Date().getFullYear();
-    const now = new Date();
-    let y = year;
-    if ((monthNum - 1) < now.getMonth()) y += 1;
-    url += `&depart_date=${y}-${String(monthNum).padStart(2,'0')}-15`;
+  let inner = 'https://www.aviasales.ru/';
+  if (iata) {
+    inner += `?origin_iata=MOW&destination_iata=${iata}`;
+    if (monthNum && monthNum >= 1 && monthNum <= 12) {
+      const now = new Date();
+      let y = now.getFullYear();
+      if ((monthNum - 1) < now.getMonth()) y += 1;
+      inner += `&depart_date=${y}-${String(monthNum).padStart(2,'0')}-15`;
+    }
   }
-  return url;
+  return AVIASALES_TPK + encodeURIComponent(inner);
 }
 
 function computeForPriceIndex(pi) {

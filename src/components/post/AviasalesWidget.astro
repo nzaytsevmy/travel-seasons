@@ -6,7 +6,7 @@
 // Использование:
 //   <AviasalesWidget />
 //   <AviasalesWidget destination="DPS" title="Найти билеты на Бали" subid="hub-bali" />
-import { TP_MARKER_FULL } from '../../data/affiliate.js';
+import { aviasalesUrl } from '../../data/affiliate.js';
 
 interface Props {
   destination?: string;       // IATA destination (опционально)
@@ -23,16 +23,14 @@ const {
   buttonText = 'Открыть Aviasales →',
 } = Astro.props;
 
-// Сборка deeplink. Travelpayouts marker уже включает sub-id, мы добавляем
-// отдельный sub_id query-параметр для конкретной страницы.
-const params = new URLSearchParams({
-  marker: TP_MARKER_FULL,
-  market: 'ru',
-});
+// Ссылка через tpk.mx-обёртку: трекинг кликов (свежий sub-id на клик) + erid + .ru.
+// destination/origin/sub_id уходят в целевой aviasales.ru-URL через &u=.
+const params = new URLSearchParams();
 if (origin) params.set('origin_iata', origin);
 if (destination) params.set('destination_iata', destination);
 if (subid) params.set('sub_id', subid);
-const href = `https://www.aviasales.ru/?${params.toString()}`;
+const q = params.toString();
+const href = aviasalesUrl(q ? `?${q}` : '');
 ---
 
 <aside class="tp-cta" aria-label="Поиск билетов через Aviasales">
@@ -43,7 +41,7 @@ const href = `https://www.aviasales.ru/?${params.toString()}`;
   <a class="tp-cta-btn" href={href} target="_blank" rel="noopener sponsored">
     <span>{buttonText}</span>
   </a>
-  <p class="tp-cta-disc">Партнёрская ссылка. Цена для тебя не меняется.</p>
+  <p class="tp-cta-disc">Реклама · Aviasales. Партнёрская ссылка, цена для тебя не меняется.</p>
 </aside>
 
 <style>
