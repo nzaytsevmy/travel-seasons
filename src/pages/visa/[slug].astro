@@ -76,15 +76,19 @@ const VISA_STAY = {
 // стране, не generic по типу. Это закрывает «сколько стоит виза в X» answer-first.
 const vd = getVisaDetails(d.slug, d.visa);
 const costFree = vd.cost === 'бесплатно';
+// Страновой summary (visa-details.js) переопределяет generic-по-типу, если задан.
+// metaDesc — чистый обрез по границе слова (без середины слова в description).
+const summary = vd.summary ?? visaSummary[d.visa];
+const metaDesc = summary.length > 158 ? summary.slice(0, 155).replace(/\s+\S*$/, '') + '…' : summary;
 const costAnswer = costFree
   ? `Виза ${d.cases.vP} не нужна — въезд бесплатный, ${vd.timing}. Консульский сбор не платится.`
-  : `Стоимость визы ${d.cases.vP} — ${vd.cost}. ${VISA_FEE[d.visa]}`;
+  : `Стоимость визы ${d.cases.vP} — ${vd.cost}.${vd.summary ? '' : ' ' + VISA_FEE[d.visa]}`;
 const stayAnswer = `Разрешённое пребывание ${d.cases.loc} — ${vd.duration}. Оформление: ${vd.timing}.`;
-const termAnswer = `${vd.timing}. ${VISA_TERM[d.visa]}`;
+const termAnswer = `${vd.timing}.${vd.summary ? '' : ' ' + VISA_TERM[d.visa]}`;
 
 // FAQ — генерируется из данных направления (YMYL: прямые ответы с цифрами)
 const faqs = [
-  { q: `Нужна ли виза ${d.cases.vP} для россиян в 2026?`, a: visaSummary[d.visa] },
+  { q: `Нужна ли виза ${d.cases.vP} для россиян в 2026?`, a: summary },
   { q: `Какие документы нужны для въезда ${d.cases.vP}?`, a: VISA_DOCS[d.visa] },
   { q: `Сколько стоит виза ${d.cases.vP}?`, a: costAnswer },
   { q: `Сколько оформляется виза ${d.cases.vP}?`, a: termAnswer },
@@ -103,7 +107,9 @@ if (d.relatedPosts.length > 0) {
   });
 }
 
-const tldr = `${visaSummary[d.visa]} ${costAnswer} ${stayAnswer}${bestMonths.length ? ` Лучшие месяцы — ${bestMonths.map(m => m.nom).join(', ')}.` : ''}`;
+const monthsTail = bestMonths.length ? ` Лучшие месяцы — ${bestMonths.map(m => m.nom).join(', ')}.` : '';
+// Если есть страновой summary (уже включает цену/срок) — не дублируем costAnswer/stayAnswer.
+const tldr = vd.summary ? `${summary}${monthsTail}` : `${summary} ${costAnswer} ${stayAnswer}${monthsTail}`;
 
 const ldJson = {
   "@context": "https://schema.org",
@@ -113,7 +119,7 @@ const ldJson = {
       "@id": `${url}#page`,
       "url": url,
       "name": `Виза ${d.cases.vP} для россиян 2026: документы, цена, сроки`,
-      "description": visaSummary[d.visa],
+      "description": summary,
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "about": { "@type": "Country", "name": d.cases.nom },
@@ -145,11 +151,11 @@ const ldJson = {
 };
 ---
 <Layout
-  title={VISA_TITLE[d.visa]}
-  description={visaSummary[d.visa].slice(0, 155)}
+  title={vd.title ?? VISA_TITLE[d.visa]}
+  description={metaDesc}
   canonical={url}
-  ogTitle={VISA_TITLE[d.visa]}
-  ogDescription={visaSummary[d.visa].slice(0, 155)}
+  ogTitle={vd.title ?? VISA_TITLE[d.visa]}
+  ogDescription={metaDesc}
   ogType="article"
   ldJson={ldJson}
 >
@@ -182,7 +188,7 @@ const ldJson = {
     <header class="visa-header">
       <div class={`visa-tag visa-tag--${d.visa}`}>{VISA_LABELS[d.visa]}</div>
       <h1>Виза <em>{d.cases.vP}</em> в 2026 году</h1>
-      <p class="visa-sub">{visaSummary[d.visa]}</p>
+      <p class="visa-sub">{summary}</p>
       <p class="visa-byline">
         <a href="/about/" class="byline-author">Никита Зайцев</a> ·
         <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
@@ -230,15 +236,19 @@ const ldJson = {
 
     {d.visa === 'evisa' && (
       <section class="visa-block">
-        <h2>Как оформить eVisa</h2>
+        <h2>Как оформить {vd.apply ? `визу ${d.cases.vP}` : 'eVisa'}</h2>
         <ul class="visa-list">
-          <li>Заполнить онлайн-анкету на официальном сайте миграционной службы страны</li>
-          <li>Загрузить скан загранпаспорта (срок 6+ месяцев) и фото</li>
-          <li>Оплатить консульский сбор картой (обычно $20–80)</li>
-          <li>Дождаться одобрения по email — обычно 24–72 часа</li>
-          <li>Распечатать одобрение и предъявить на въезде вместе с загранпаспортом</li>
+          {(vd.apply ?? [
+            'Заполнить онлайн-анкету на официальном сайте миграционной службы страны',
+            'Загрузить скан загранпаспорта (срок 6+ месяцев) и фото',
+            'Оплатить консульский сбор картой (обычно $20–80)',
+            'Дождаться одобрения по email — обычно 24–72 часа',
+            'Распечатать одобрение и предъявить на въезде вместе с загранпаспортом',
+          ]).map((step) => <li>{step}</li>)}
         </ul>
-        <p>Электронная виза удобнее обычной — нет очередей в посольстве, оплата принимается с большинства карт, иногда (Турция, Шри-Ланка, Камбоджа) можно оформить прямо в аэропорту прибытия.</p>
+        {!vd.apply && (
+          <p>Электронная виза удобнее обычной — нет очередей в посольстве, оплата принимается с большинства карт, иногда (Турция, Шри-Ланка, Камбоджа) можно оформить прямо в аэропорту прибытия.</p>
+        )}
       </section>
     )}
 
