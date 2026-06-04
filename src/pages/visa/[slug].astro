@@ -4,7 +4,7 @@ import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { Picture } from 'astro:assets';
 import { DIRECTIONS } from '../../data/directions.js';
-import { getVisaDetails } from '../../data/visa-details.js';
+import { getVisaDetails, VISA_DETAILS } from '../../data/visa-details.js';
 import { TP_LINKS, aviasalesRoute } from '../../data/affiliate.js';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../../data/meta.js';
 
@@ -75,16 +75,25 @@ const VISA_STAY = {
 // Страновые verified-данные (visa-details.js) — цена/срок/оформление по конкретной
 // стране, не generic по типу. Это закрывает «сколько стоит виза в X» answer-first.
 const vd = getVisaDetails(d.slug, d.visa);
-const costFree = vd.cost === 'бесплатно';
+// Разделяем два разных факта: noVisa = визы НЕ нужно (только тег 'free'); feeFree = нет
+// консульского сбора. Кипр (evisa, pro-visa) имеет cost:'бесплатно', но виза НУЖНА —
+// нельзя писать «виза не нужна» по строке cost. hasSpecific = есть страновые данные →
+// generic-хвосты ($20–80 / 24–72ч) не клеим поверх (иначе противоречие со страновой ценой).
+const hasSpecific = !!VISA_DETAILS[d.slug];
+const noVisa = d.visa === 'free';
+const feeFree = /бесплатн/i.test(vd.cost);
+const skipGenericTail = hasSpecific || !!vd.summary;
 // Страновой summary (visa-details.js) переопределяет generic-по-типу, если задан.
 // metaDesc — чистый обрез по границе слова (без середины слова в description).
 const summary = vd.summary ?? visaSummary[d.visa];
 const metaDesc = summary.length > 158 ? summary.slice(0, 155).replace(/\s+\S*$/, '') + '…' : summary;
-const costAnswer = costFree
-  ? `Виза ${d.cases.vP} не нужна — въезд бесплатный, ${vd.timing}. Консульский сбор не платится.`
-  : `Стоимость визы ${d.cases.vP} — ${vd.cost}.${vd.summary ? '' : ' ' + VISA_FEE[d.visa]}`;
+const costAnswer = noVisa
+  ? (feeFree
+      ? `Виза ${d.cases.vP} не нужна — въезд бесплатный, ${vd.timing}. Консульский сбор не платится.`
+      : `Виза ${d.cases.vP} не нужна, но за въезд берут сбор — ${vd.cost} (${vd.timing}).`)
+  : `Стоимость визы ${d.cases.vP} — ${vd.cost}.${skipGenericTail ? '' : ' ' + VISA_FEE[d.visa]}`;
 const stayAnswer = `Разрешённое пребывание ${d.cases.loc} — ${vd.duration}. Оформление: ${vd.timing}.`;
-const termAnswer = `${vd.timing}.${vd.summary ? '' : ' ' + VISA_TERM[d.visa]}`;
+const termAnswer = `${vd.timing}.${skipGenericTail ? '' : ' ' + VISA_TERM[d.visa]}`;
 
 // FAQ — генерируется из данных направления (YMYL: прямые ответы с цифрами)
 const faqs = [
@@ -204,7 +213,7 @@ const ldJson = {
       <h2>Кратко</h2>
       <ul class="visa-facts">
         <li><strong>Статус:</strong> {VISA_LABELS[d.visa]}</li>
-        <li><strong>Стоимость визы:</strong> {costFree ? 'бесплатно (виза не нужна)' : vd.cost}</li>
+        <li><strong>Стоимость визы:</strong> {noVisa && feeFree ? 'бесплатно (виза не нужна)' : vd.cost}</li>
         <li><strong>Разрешённое пребывание:</strong> {vd.duration}</li>
         <li><strong>Оформление:</strong> {vd.timing}</li>
         <li><strong>Регион:</strong> {d.group}</li>
