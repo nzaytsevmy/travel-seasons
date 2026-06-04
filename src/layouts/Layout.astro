@@ -161,17 +161,18 @@ const finalLd = {
   {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
   {preloadImageSrcset && <link rel="preload" as="image" imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
 
-  <!-- Аналитика (Яндекс.Метрика + Вебвизор, Ahrefs) — необлигаторная: грузится ТОЛЬКО
-       на production-домене И после явного cookie-согласия (152-ФЗ, §6 CLAUDE.md).
-       На localhost/preview не стартует (Playwright/preview не накручивает визиты).
-       Загрузчик main-thread (не partytown): Вебвизору нужен синхронный доступ к DOM. -->
+  <!-- Аналитика: базовая Яндекс.Метрика (обезличенная статистика + ПФ) и Ahrefs (cookieless)
+       грузятся на production-домене для работы/улучшения Сайта (тот же законный интерес, что
+       и техлоги хостинга). ВЕБВИЗОР (детальная запись сессий) — ТОЛЬКО после cookie-согласия
+       (152-ФЗ). На localhost/preview не стартует. Main-thread (не partytown): Вебвизору нужен DOM. -->
   <script is:inline>
     (function () {
       var h = window.location.hostname;
       window.__analyticsEnabled = h === 'traveltribe.ru' || h === 'www.traveltribe.ru';
       function consent() { try { return localStorage.getItem('tt_consent'); } catch (e) { return null; } }
       var loaded = false;
-      window.ttLoadAnalytics = function () {
+      // withWebvisor=true только при согласии. Базовый счётчик (ПФ + трекинг кликов) — всегда.
+      window.ttLoadAnalytics = function (withWebvisor) {
         if (loaded || !window.__analyticsEnabled) return;
         loaded = true;
         // Ahrefs Web Analytics (cookieless)
@@ -179,16 +180,17 @@ const finalLd = {
         s.src = 'https://analytics.ahrefs.com/analytics.js';
         s.async = true; s.dataset.key = 'Vlc0xmPDRP3Rn1BkiDfn2A';
         document.head.appendChild(s);
-        // Яндекс.Метрика 95832375 + Вебвизор
+        // Яндекс.Метрика 95832375 (webvisor — только при согласии)
         (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
         for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
         k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
         (window, document,'script','https://mc.yandex.ru/metrika/tag.js', 'ym');
-        ym(95832375, 'init', {webvisor:true, clickmap:true, accurateTrackBounce:true, trackLinks:true});
+        ym(95832375, 'init', {webvisor: !!withWebvisor, clickmap:true, accurateTrackBounce:true, trackLinks:true});
       };
-      // Согласие уже дано ранее → грузим сразу. Иначе ждём решения в cookie-баннере.
-      if (window.__analyticsEnabled && consent() === 'granted') window.ttLoadAnalytics();
+      // Базовую аналитику грузим сразу; Вебвизор — если согласие уже дано.
+      if (window.__analyticsEnabled) window.ttLoadAnalytics(consent() === 'granted');
+      // Баннер показываем, пока выбор не сделан (предложить Вебвизор + проинформировать).
       window.__ttNeedConsent = window.__analyticsEnabled && consent() === null;
     })();
   </script>
@@ -231,8 +233,8 @@ const finalLd = {
     _refLinksNewTab();
     document.addEventListener('astro:page-load', _refLinksNewTab);
     // Трекинг партнёрских кликов в Метрику (цель outbound_link, партнёр в параметре).
-    // Делегирование = 1 listener, ловит и динамически добавленные ссылки. ym есть только
-    // после cookie-согласия (152-ФЗ). order_price задаётся в настройках цели в UI Метрики.
+    // Делегирование = 1 listener, ловит и динамически добавленные ссылки. ym грузится по
+    // умолчанию (базовый счётчик), поэтому клики ловятся у всех. order_price — в UI Метрики.
     document.addEventListener('click', function (e) {
       var a = e.target.closest ? e.target.closest('a[href^="http"]') : null;
       if (!a) return;

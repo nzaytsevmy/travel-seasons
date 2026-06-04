@@ -1,12 +1,14 @@
 ---
-// Cookie-баннер согласия (152-ФЗ). Рендерится скрытым; inline-скрипт показывает его
-// только если выбор ещё не сделан И аналитика разрешена (production-домен).
+// Cookie-баннер (152-ФЗ). Базовая обезличенная Метрика работает по умолчанию (законный
+// интерес); баннер спрашивает согласие на ВЕБВИЗОР (детальная запись сессий) и информирует.
+// Показывается, только если выбор ещё не сделан И аналитика разрешена (production-домен).
 // position:fixed → вне потока → 0 CLS. Без агрессивного оверлея (требование Яндекса).
 ---
 <div id="cookie-consent" class="cc" hidden role="region" aria-label="Согласие на использование cookie">
   <p class="cc-text">
-    Сайт использует cookie и Яндекс.Метрику, чтобы понимать, какие материалы полезны.
-    Подробнее — в <a href="/legal/privacy/">Политике конфиденциальности</a> и
+    Сайт ведёт обезличенную статистику Яндекс.Метрики, чтобы понимать, какие материалы полезны.
+    Для детальной записи сессий (Вебвизор) нужно ваше согласие. Подробнее — в
+    <a href="/legal/privacy/">Политике конфиденциальности</a> и
     <a href="/legal/cookie/">Cookie-политике</a>.
   </p>
   <div class="cc-actions">
@@ -53,7 +55,9 @@
     function decide(value) {
       try { localStorage.setItem('tt_consent', value); } catch (e) {}
       el.hidden = true;
-      if (value === 'granted' && typeof window.ttLoadAnalytics === 'function') window.ttLoadAnalytics();
+      // Базовая Метрика уже работает. Согласие включает Вебвизор; запись стартует со
+      // следующего перехода (флаг webvisor задаётся при init счётчика на загрузке страницы).
+      if (value === 'granted' && typeof window.ttLoadAnalytics === 'function') window.ttLoadAnalytics(true);
     }
     var a = document.getElementById('cc-accept');
     var d = document.getElementById('cc-decline');
