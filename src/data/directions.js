@@ -250,6 +250,11 @@ const RELATED_POSTS = {
     { slug: 'bolivia-guide-2026', title: 'Боливия 2026 — соседний маршрут (Уюни)', kind: 'guide' },
     { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
   ],
+  'vietnam': [
+    { slug: 'vietnam-guide-2026', title: 'Вьетнам 2026: виза, Нячанг, Фукуок, цены', kind: 'guide' },
+    { slug: 'nyachang-fukuok-2026', title: 'Нячанг или Фукуок 2026: где лучше отдыхать', kind: 'guide' },
+    { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
+  ],
 };
 
 // EU/Шенген hub — связываем все европейские направления с шенгенским гайдом
