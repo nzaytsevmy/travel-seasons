@@ -23,6 +23,7 @@ import EssentialsCard from '../components/EssentialsCard.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
 import CountryMap from '../components/CountryMap.astro';
 import { TP_LINKS, aviasalesRoute } from '../data/affiliate.js';
+import { similarDestinations } from '../data/similar.js';
 import { getGuide } from '../data/country-guides.js';
 import { buildEssentialsFaq } from '../data/essentials-faq.js';
 import { hasEssentials } from '../data/country-essentials.js';
@@ -54,6 +55,9 @@ export async function getStaticPaths() {
 }
 
 const { d } = Astro.props;
+// «Похожие направления» — превращает чтение одной страны в сессию из нескольких
+// (глубина/dwell/last-click = ПФ + показы партнёрских CTA). Матч по визе/бюджету/вайбу/сезону.
+const similar = similarDestinations(d.slug, 3);
 const url = `https://traveltribe.ru/${d.slug}/`;
 
 // Resolve cover photo if downloaded
@@ -534,6 +538,17 @@ if (guide?.itinerary?.length) {
     </section>
 
     {/* RELATED LINKS */}
+    {similar.length > 0 && (
+      <section class="sl-section">
+        <div class="sl-shead"><h2>Похожие направления</h2></div>
+        <ul class="sl-related">
+          {similar.map((r) => (
+            <li><a href={`/${r.slug}/`}><b>{r.nom}</b></a> — {r.why}{r.goodNow ? ' · хорошо сейчас' : ''}</li>
+          ))}
+        </ul>
+      </section>
+    )}
+
     <section class="sl-section">
       <div class="sl-shead"><h2>Что почитать дальше</h2></div>
       <ul class="sl-related">
