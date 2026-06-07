@@ -322,7 +322,7 @@ if (guide?.itinerary?.length) {
           <a href={d.price?.iata ? aviasalesRoute('MOW', d.price.iata) : '/calculator/'} class="sl-action" rel={d.price?.iata ? 'sponsored noopener' : undefined} target={d.price?.iata ? '_blank' : undefined}>
             <div class="sl-a-l">Перелёт от</div>
             <div class="sl-a-v">${flightFrom}</div>
-            <div class="sl-a-s">{d.price?.iata ? 'Найти билет → ' : 'эконом, в одну сторону'}{d.price?.iata && <span class="ad-mark">реклама</span>}</div>
+            <div class="sl-a-s">{d.price?.iata ? 'Найти билет → ' : 'эконом, в одну сторону'}</div>
           </a>
         )}
       </div>
@@ -358,7 +358,7 @@ if (guide?.itinerary?.length) {
             {!guide.compare && !guide.noFlightCta && d.price?.iata && flightFrom && (
               <p class="sl-cta">
                 <a href={aviasalesRoute('MOW', d.price.iata)} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить билеты Москва — {d.cases.nom} от ${flightFrom} →</a>
-                <span class="ad-mark">реклама</span>
+                
                 <span class="sl-trust">все авиакомпании в одной выдаче · оплата картами РФ</span>
               </p>
             )}
@@ -378,7 +378,7 @@ if (guide?.itinerary?.length) {
                 </div>
               ))}
             </div>
-            {guide.compare.note && <p class="sl-cc-mark"><span class="ad-mark">реклама</span> — {guide.compare.note}</p>}
+            {guide.compare.note && <p class="sl-cc-mark"> — {guide.compare.note}</p>}
           </section>
         )}
         {guide.stay?.length > 0 && (
@@ -389,7 +389,7 @@ if (guide?.itinerary?.length) {
             </ul>
             <p class="sl-cta">
               <a href={TP_LINKS.ostrovok} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать отель {d.cases.loc} на Островке →</a>
-              <span class="ad-mark">реклама</span>
+              
               <span class="sl-trust">оплата российскими картами · цены в ₽</span>
             </p>
           </section>
@@ -422,7 +422,7 @@ if (guide?.itinerary?.length) {
             {guide.insuranceCta && (
               <p class="sl-cta">
                 <a href={TP_LINKS.cherehapa} class="sl-aff" rel="sponsored noopener" target="_blank">Оформить страховку {d.cases.vP} →</a>
-                <span class="ad-mark">реклама</span>
+                
                 <span class="sl-trust">{guide.insuranceNote || 'сравнение цен · оплата картами РФ'}</span>
               </p>
             )}
@@ -532,7 +532,7 @@ if (guide?.itinerary?.length) {
       <div class="sl-shead"><h2>Поехать с экспертом</h2></div>
       <p class="sl-cta">
         <a href={TP_LINKS.youtravel} class="sl-aff" rel="sponsored noopener" target="_blank">Авторские туры {d.cases.vP} →</a>
-        <span class="ad-mark">реклама</span>
+        
         <span class="sl-trust">маршрут, логистика и малая группа уже собраны</span>
       </p>
     </section>

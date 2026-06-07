@@ -18,7 +18,7 @@ export const aviasalesUrl = (query) => AVIASALES_TPK + encodeURIComponent('https
 // (tpk.mx не пробрасывает lang=ru), erid у партнёра нет.
 export const TP_LINKS = {
   aviasales:  aviasalesUrl(),
-  ostrovok:   'https://ostrovok.tpk.mx/w4cAS1wZ?erid=2VtzqvE1cv3',
+  ostrovok:   'https://ostrovok.tpk.mx/xtyTcUcY?erid=2VtzqvE1cv3',
   cherehapa:  'https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5',
   // eSIM-провайдеры (оба ведут на RU-сайты).
   // Airalo: direct партнёрский URL + erid (38-ФЗ маркировка рекламы РФ)
@@ -38,6 +38,20 @@ export const TP_LINKS = {
   // самому, поехать с гидом». On-brand для DIY-аудитории. CPA g2afse (pid=1163).
   // ⚠ erid НЕОБХОДИМО получить от YouTravel/ОРД и подставить (38-ФЗ) — пока его нет.
   youtravel:  'https://travelme.g2afse.com/click?pid=1163&offer_id=1',
+  // ─── РФ-направления (внутренний туризм) — все tpk.mx с erid (38-ФЗ) ───
+  // Tripster: экскурсии и авторские туры по РФ от местных гидов — ключевая
+  // монетизация внутренних направлений (морские прогулки, вертолёты, треккинги).
+  tripster:    'https://tripster.tpk.mx/UmtUx08Y?erid=2VtzqucRv9m',
+  // Суточно: посуточная аренда жилья в РФ (частный сектор, апартаменты).
+  sutochno:    'https://sutochno.tpk.mx/9wjPjf99?erid=2VtzqusFnyD',
+  // Туту: ж/д + авиа + туры по РФ (поезда — Карелия, Байкал; внутр. перелёты).
+  tutu:        'https://tutu.tpk.mx/f99ezU4z?erid=2Vtzqunoq8B',
+  // Яндекс Путешествия: отели РФ (альтернатива Островку, сильный РФ-инвентарь).
+  yandexTravel:'https://yandex.tpk.mx/ubagzDqF?erid=2VtzqvB3eMM',
+  // Level.Travel: пакетные туры (как Travelata, второй источник предложений).
+  level:       'https://level.tpk.mx/CraFALLJ?erid=2VtzquiMsH9',
+  // Tiqets: билеты в музеи/достопримечательности (загран + крупные РФ-города).
+  tiqets:      'https://tiqets.tpk.mx/QYpcZlVN?erid=2VtzqvKwa3R',
 };
 
 // Aviasales deep-link под конкретный маршрут (origin/destination IATA) —
