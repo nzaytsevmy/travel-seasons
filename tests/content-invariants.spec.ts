@@ -63,3 +63,17 @@ test('Партнёрские ссылки: нет видимой метки «р
   }
   expect(bad, JSON.stringify(bad, null, 2)).toEqual([]);
 });
+
+test('Текст читателю: нет внутренних имён файлов кода в <code> (утечка реализации)', () => {
+  // Читателю нельзя показывать исходники проекта (prices.json, regions.js, *.astro/*.mdx).
+  // URL-пути (/altai/) и erid/rel="sponsored" сюда НЕ попадают (нет код-расширения).
+  // Аудит 2026-06-07: на /about/ светилось <code>prices.json</code>.
+  const re = /<code[^>]*>[^<]*\b[\w-]+\.(?:json|js|ts|astro|mdx|mjs|jsx|tsx)\b[^<]*<\/code>/gi;
+  const bad: { file: string; hit: string }[] = [];
+  for (const f of files) {
+    const html = readFileSync(f, 'utf8');
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(html))) bad.push({ file: f.replace(DIST, ''), hit: m[0].slice(0, 80) });
+  }
+  expect(bad, JSON.stringify(bad, null, 2)).toEqual([]);
+});
