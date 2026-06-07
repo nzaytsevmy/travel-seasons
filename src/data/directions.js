@@ -260,6 +260,11 @@ const RELATED_POSTS = {
     { slug: 'phuket-samui-2026', title: 'Пхукет или Самуи 2026: где лучше отдыхать', kind: 'guide' },
     { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
   ],
+  'egypt': [
+    { slug: 'egypt-guide-2026', title: 'Египет 2026: виза, Хургада, Шарм, цены', kind: 'guide' },
+    { slug: 'hurghada-sharm-2026', title: 'Хургада или Шарм 2026: где лучше отдыхать', kind: 'guide' },
+    { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
+  ],
 };
 
 // EU/Шенген hub — связываем все европейские направления с шенгенским гайдом
