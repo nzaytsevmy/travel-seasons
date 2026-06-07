@@ -18,6 +18,10 @@ function readingTime(body: string) {
 
 const allTags = [...new Set(allPosts.flatMap(p => p.data.tags))];
 
+// Множественное число «статья» по последней цифре (русское правило)
+const _pc = allPosts.length, _d = _pc % 10, _h = _pc % 100;
+const postWord = _d === 1 && _h !== 11 ? 'статья' : _d >= 2 && _d <= 4 && (_h < 12 || _h > 14) ? 'статьи' : 'статей';
+
 const ldJson = {
   "@context": "https://schema.org",
   "@graph": [
@@ -60,7 +64,7 @@ const ldJson = {
     <header class="blog-header">
       <div class="hero-tag">Личный опыт</div>
       <h1>Блог <em>путешественника</em></h1>
-      <p class="blog-lead">Реальные поездки, живые цены, без воды. {allPosts.length} {allPosts.length === 1 ? 'статья' : allPosts.length < 5 ? 'статьи' : 'статей'}.</p>
+      <p class="blog-lead">Реальные поездки, живые цены, без воды. {allPosts.length} {postWord}.</p>
     </header>
 
     {allTags.length > 0 && (
