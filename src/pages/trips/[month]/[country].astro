@@ -186,7 +186,7 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
           {weekTotal && <li><span class="fk">Неделя эконом</span><span class="fv">от ${weekTotal} на человека</span></li>}
         </ul>
         {flightFrom > 0 && iata && (
-          <p class="findcta"><a class="find" href={aviasalesRoute('MOW', iata)} rel="sponsored noopener" target="_blank">Найти перелёт Москва → {iata} от ${flightFrom} →</a> <span class="adm">реклама</span></p>
+          <p class="findcta"><a class="find" href={aviasalesRoute('MOW', iata)} rel="sponsored noopener" target="_blank">Найти перелёт Москва → {iata} от ${flightFrom} →</a> </p>
         )}
       </section>
 
@@ -207,7 +207,7 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
             </tbody>
           </table>
           <p class="tnote">Перелёт из Москвы ${flightTiers[0]}–${flightTiers[2]}, отель ${hotelTiers[0]}–${hotelTiers[2]}/ночь, еда ${foodTiers[0]}–${foodTiers[2]}/день. Точный расчёт под маршрут — в <a href="/calculator/">калькуляторе поездки</a>.</p>
-          <p class="findcta"><a class="find" href={TP_LINKS.ostrovok} rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc}</a> — оплата картой РФ, бесплатная отмена · <a class="find" href={TP_LINKS.cherehapa} rel="sponsored noopener" target="_blank">страховка под визу</a> <span class="adm">реклама</span></p>
+          <p class="findcta"><a class="find" href={TP_LINKS.ostrovok} rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc}</a> — оплата картой РФ, бесплатная отмена · <a class="find" href={TP_LINKS.cherehapa} rel="sponsored noopener" target="_blank">страховка под визу</a> </p>
         </section>
       )}
 
@@ -295,7 +295,7 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
           <span class="cta-t"><b>Авторские туры {d.cases.vP}</b><span>Готовый маршрут, логистика и малая группа с экспертом — не планировать самому</span></span>
           <span class="cta-ar">→</span>
         </a>
-        <p class="adm-row"><span class="adm">реклама</span> · YouTravel.me</p>
+        <p class="adm-row">YouTravel.me</p>
       </section>
 
       {d.relatedPosts.length > 0 && (

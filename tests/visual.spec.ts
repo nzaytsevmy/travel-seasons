@@ -17,6 +17,7 @@ const PAGES = [
   { slug: '/blog/japan-guide-2026/',        name: 'blog-japan' },
   { slug: '/blog/bolivia-guide-2026/',      name: 'blog-bolivia' },   // 4-кол таблица сезонов + PricingCards
   { slug: '/blog/peru-guide-2026/',         name: 'blog-peru' },      // wide table (Inca Trail vs Salkantay vs Lares)
+  { slug: '/blog/kamchatka-guide-2026/',    name: 'blog-kamchatka' }, // РФ-пилот: TOC + FlightRoutes + богатые сезоны
   { slug: '/packing/',                      name: 'packing-landing' },        // /packing/ landing: 70 country cards
   { slug: '/packing/japan/',                name: 'packing-country-japan' },  // консолидированный хаб: упаковка по сезонам
 ];
@@ -33,6 +34,26 @@ for (const page of PAGES) {
     });
     // Сбрось анимации (для стабильных скринов)
     await pwPage.addStyleTag({ content: '*, *::before, *::after { transition: none !important; animation: none !important; }' });
+    // Детерминизм fullPage: догрузить lazy-картинки и дать им декодироваться ДО скрина —
+    // иначе на длинных постах (kamchatka и др.) картинки догружаются во время capture → флейк.
+    await pwPage.evaluate(() => {
+      document.querySelectorAll('img').forEach((img: HTMLImageElement) => {
+        img.loading = 'eager';
+        img.fetchPriority = 'high';
+      });
+    });
+    await pwPage.evaluate(async () => {
+      for (let y = 0; y <= document.body.scrollHeight; y += 600) {
+        window.scrollTo(0, y);
+        await new Promise(r => setTimeout(r, 80));
+      }
+      window.scrollTo(0, 0);
+      await new Promise(r => setTimeout(r, 600));
+    });
+    await pwPage.evaluate(async () => {
+      const imgs = Array.from(document.querySelectorAll('img')) as HTMLImageElement[];
+      await Promise.all(imgs.map(img => img.decode().catch(() => {})));
+    });
     await expect(pwPage).toHaveScreenshot(`${page.name}.png`, { fullPage: true });
   });
 

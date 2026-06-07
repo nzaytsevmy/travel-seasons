@@ -95,6 +95,7 @@ const SLUG_OVERRIDES = {
   'Сербия|Белград, Нови-Сад, Златибор': 'serbia',
   'Финляндия|Хельсинки, Лапландия, северное сияние': 'finland',
   'Кипр|Лимасол, Пафос, Айя-Напа': 'cyprus',
+  'Камчатка|Вулканы, гейзеры, медведи': 'kamchatka',
 };
 
 // Russian name in different cases (acc/prep) for natural headlines.
@@ -182,6 +183,7 @@ const COUNTRY_CASES = {
   'serbia': { nom: 'Сербия', acc: 'Сербию', prep: 'Сербии', vP: 'в Сербию', loc: 'в Сербии' },
   'finland': { nom: 'Финляндия', acc: 'Финляндию', prep: 'Финляндии', vP: 'в Финляндию', loc: 'в Финляндии' },
   'cyprus': { nom: 'Кипр', acc: 'Кипр', prep: 'Кипре', vP: 'на Кипр', loc: 'на Кипре' },
+  'kamchatka': { nom: 'Камчатка', acc: 'Камчатку', prep: 'Камчатке', vP: 'на Камчатку', loc: 'на Камчатке' },
 };
 
 // Map slug → array of related blog post slugs (which already exist in content/blog/).
@@ -264,6 +266,9 @@ const RELATED_POSTS = {
     { slug: 'egypt-guide-2026', title: 'Египет 2026: виза, Хургада, Шарм, цены', kind: 'guide' },
     { slug: 'hurghada-sharm-2026', title: 'Хургада или Шарм 2026: где лучше отдыхать', kind: 'guide' },
     { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
+  ],
+  'kamchatka': [
+    { slug: 'kamchatka-guide-2026', title: 'Камчатка 2026: что посмотреть, когда ехать, цены', kind: 'guide' },
   ],
 };
 
@@ -354,6 +359,7 @@ const DEST_VISUALS = {
   'serbia':           { emoji: '🏛️', g1: '#fef3c7', g2: '#fde68a' },
   'finland':          { emoji: '🌌', g1: '#e0e7ff', g2: '#c7d2fe' },
   'cyprus':           { emoji: '🏖️', g1: '#fef3c7', g2: '#fde68a' },
+  'kamchatka':        { emoji: '🌋', g1: '#fee2e2', g2: '#fecaca' },
 };
 
 function findPrice(direction) {

@@ -115,7 +115,7 @@ const calcUrl = priceIdx >= 0 ? `/calculator/?r=${priceIdx}` : '/calculator/';
 const faqs = [
   {
     q: `Нужна ли виза ${d.cases.vP} для россиян в 2026?`,
-    a: `${VISA_SUMMARY[d.visa]} Срок пребывания: ${vd.duration}; стоимость: ${vd.cost}; оформление: ${vd.timing}.`,
+    a: `${vd.summary ?? VISA_SUMMARY[d.visa]} Срок пребывания: ${vd.duration}; стоимость: ${vd.cost}; оформление: ${vd.timing}.`,
   },
   {
     q: `Сколько стоит поездка ${d.cases.vP} в 2026?`,
@@ -278,7 +278,7 @@ if (guide?.itinerary?.length) {
     {/* TLDR + BYLINE */}
     <section class="sl-section">
       <div class="sl-shead"><h2>Если коротко</h2></div>
-      <p class="sl-tldr"><b>{VISA_SUMMARY[d.visa].replace(/\.$/, '')}.</b> Бюджет — <b>{BUDGET_LABEL[d.budget]}</b>. Лучшие месяцы: <b>{bestMonths.slice(0, 3).map(m => m.nom).join(', ') || '—'}</b>.{flightFrom && <> Перелёт из Москвы от <b>${flightFrom}</b>.</>} Подробности ниже + связанные посты с личным опытом.</p>
+      <p class="sl-tldr"><b>{(vd.summary ?? VISA_SUMMARY[d.visa]).replace(/\.$/, '')}.</b> Бюджет — <b>{BUDGET_LABEL[d.budget]}</b>. Лучшие месяцы: <b>{bestMonths.slice(0, 3).map(m => m.nom).join(', ') || '—'}</b>.{flightFrom && <> Перелёт из Москвы от <b>${flightFrom}</b>.</>} Подробности ниже + связанные посты с личным опытом.</p>
       <p class="sl-byline">
         <a href="/about/" class="byline-author">Никита Зайцев</a> ·
         <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·

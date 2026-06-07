@@ -31,6 +31,10 @@ interface Props {
 }
 
 const { routes, caption } = Astro.props;
+
+// «от» показываем только перед ценой (значение начинается с цифры).
+// Текст вроде «чаще в составе тура» — без «от» (иначе грамматика ломается).
+const isPrice = (p?: string) => !!p && /\d/.test(p.trim().charAt(0));
 ---
 <section class="flight-routes" role="region" aria-label={caption || 'Прямые рейсы'}>
   {routes.map((r) => (
@@ -53,7 +57,7 @@ const { routes, caption } = Astro.props;
               <>
                 <span class="fr-sep" aria-hidden="true">·</span>
                 <span class="fr-price">
-                  <span class="fr-price-prefix">от</span>
+                  {isPrice(f.priceFrom) && <span class="fr-price-prefix">от</span>}
                   <strong>{f.priceFrom}</strong>
                 </span>
               </>
