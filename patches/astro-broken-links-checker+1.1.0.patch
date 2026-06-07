@@ -1,0 +1,24 @@
+diff --git a/node_modules/astro-broken-links-checker/check-links.js b/node_modules/astro-broken-links-checker/check-links.js
+index 662d6c8..be9e459 100644
+--- a/node_modules/astro-broken-links-checker/check-links.js
++++ b/node_modules/astro-broken-links-checker/check-links.js
+@@ -132,11 +132,15 @@ export async function checkLinksInHtml(
+         } else if (base && relativePath === base) {
+           relativePath = '/';
+         }
+-        // Potential file paths to check
++        // Potential file paths to check. Decode %-encoded paths so non-ASCII
++        // slugs (e.g. Cyrillic tag pages) match their raw on-disk directories
++        // — new URL() above percent-encodes them, but Astro writes raw dirs.
++        let decodedPath = relativePath;
++        try { decodedPath = decodeURIComponent(relativePath); } catch {}
+         const possiblePaths = [
+-          path.join(distPath, relativePath),
+-          path.join(distPath, relativePath, 'index.html'),
+-          path.join(distPath, `${relativePath}.html`),
++          path.join(distPath, decodedPath),
++          path.join(distPath, decodedPath, 'index.html'),
++          path.join(distPath, `${decodedPath}.html`),
+         ];
+ 
+         // Check if any of the possible paths exist
