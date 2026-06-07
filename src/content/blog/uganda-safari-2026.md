@@ -19,7 +19,7 @@ coverPosition: "center 38%"
 
 > **Если коротко:** в Бвинди — **половина горных горилл планеты** (~500 особей). Пермит **$800** за час с гориллами, виза $50, прививка от жёлтой лихорадки обязательна. Сезон **июнь–сентябрь** и декабрь–февраль. Бюджет 10 дней — от **$2000** (эконом) до **$3500–6500** (наш и премиум).
 
-> По некоторым ссылкам в гайде можно сразу забронировать или оформить — цена для вас та же, а блог получает небольшую комиссию. Это держит его бесплатным. Такие ссылки помечены <span class="ad-mark">реклама</span>.
+> По некоторым ссылкам в гайде можно сразу забронировать или оформить — цена для вас та же, а блог получает небольшую комиссию. Это держит его бесплатным. Такие ссылки помечены .
 
 > **Когда лучше ехать в Уганду:** [таблица сезонов](/seasons/) — оптимально июнь–сентябрь и декабрь–февраль (сухо, треккинг проходимый).
 
@@ -144,13 +144,13 @@ coverPosition: "center 38%"
 
 Я брал Turkish — короче всех и удобные стыковки (один в Стамбуле 2 часа, обратно 4). Ethiopian — самый дешёвый, но стыковки могут быть кривые: 8 часов в Аддис-Абебе ночью с пересадкой через выход — такое себе.
 
-Билеты — <a href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Forigin_iata%3DMOW%26destination_iata%3DEBB" class="aff-cta" rel="sponsored">Найти билет Москва — Энтеббе</a><span class="ad-mark">реклама</span>: сравнивает все варианты с пересадками, цена та же что напрямую у авиакомпаний.
+Билеты — <a href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Forigin_iata%3DMOW%26destination_iata%3DEBB" class="aff-cta" rel="sponsored">Найти билет Москва — Энтеббе</a>: сравнивает все варианты с пересадками, цена та же что напрямую у авиакомпаний.
 
 Аэропорт **Entebbe (EBB)** — маленький, очень спокойный. От него до Кампалы — 40 км по шоссе, такси через приложения **Bolt** или **SafeBoda** — около **120 000 UGX** (~ $32, или 3000 ₽). Можно договориться с водителем заранее через лоджу — берут $40–50, не торгуйтесь меньше $35 в одну сторону.
 
 **Совет:** селитесь на первую ночь не в Кампале, а в **Entebbe** — это спокойный город на берегу озера Виктория, там же ботанический сад и зоопарк UWEC (если вылет на следующий день рано — удобно). Кампала — шумная, с пробками, ехать туда после перелёта смысла нет.
 
-Отели и лоджи — <a href="https://ostrovok.tpk.mx/w4cAS1wZ?erid=2VtzqvE1cv3" class="aff-cta" rel="sponsored">Забронировать лодж в Уганде</a><span class="ad-mark">реклама</span>: принимает российские карты (Visa/MC/МИР), Booking для россиян мёртв. В Энтеббе варианты от $40 до $200, в Бвинди и QE NP — от $80 за гостевой дом до $800 за luxury-кэмп.
+Отели и лоджи — <a href="https://ostrovok.tpk.mx/xtyTcUcY?erid=2VtzqvE1cv3" class="aff-cta" rel="sponsored">Забронировать лодж в Уганде</a>: принимает российские карты (Visa/MC/МИР), Booking для россиян мёртв. В Энтеббе варианты от $40 до $200, в Бвинди и QE NP — от $80 за гостевой дом до $800 за luxury-кэмп.
 
 ---
 
@@ -223,7 +223,7 @@ coverPosition: "center 38%"
 
 Параллельно — репеллент с DEET 30%+ ([Off! Extreme или Mosquito-Free](https://www.cdc.gov/mosquitoes/prevention/protect-yourself.html)), длинные рукава по вечерам, в лодже — спать строго под москитной сеткой.
 
-**Медстраховка** на Уганду — обязательна. Я брал <a href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5" class="aff-cta" rel="sponsored">Оформить страховку в Уганду</a><span class="ad-mark">реклама</span> с покрытием **50 000 €** и опцией «активный отдых» (треккинг подпадает). Стоит ~1500 ₽ на 10 дней. Без неё страшно: эвакуация из Бвинди вертолётом до Кампалы — это $5000–8000 наличными на месте (ориентир по тарифам [AMREF Flying Doctors](https://www.flydoc.org/), 2025).
+**Медстраховка** на Уганду — обязательна. Я брал <a href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5" class="aff-cta" rel="sponsored">Оформить страховку в Уганду</a> с покрытием **50 000 €** и опцией «активный отдых» (треккинг подпадает). Стоит ~1500 ₽ на 10 дней. Без неё страшно: эвакуация из Бвинди вертолётом до Кампалы — это $5000–8000 наличными на месте (ориентир по тарифам [AMREF Flying Doctors](https://www.flydoc.org/), 2025).
 
 ### Деньги и связь
 
@@ -232,7 +232,7 @@ coverPosition: "center 38%"
 * **Карты** — Visa/Mastercard работают в крупных лоджах и в Кампале. В деревнях и парках — только cash.
 * **Банкоматы** — есть в Кампале и Мбараре, в Бвинди и QE NP — нет. Снимайте кэш заранее.
 * **Сим-карта** — **MTN Uganda** и **Airtel** в аэропорту Энтеббе. ~$10 за 30 ГБ на месяц. Регистрация по паспорту, 5 минут. Покрытие в парках местами скачет, но в лоджах wifi есть.
-* **eSIM как альтернатива** — <a href="https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_&u=https%3A%2F%2Fairalo.com%2Fru" class="aff-cta" rel="sponsored">Подключить eSIM на Уганду</a><span class="ad-mark">реклама</span>: активируется до вылета, не надо стоять в очереди в аэропорту. 5 ГБ на 30 дней ≈ $19. Удобно если приземляетесь поздно или не хотите возиться с регистрацией.
+* **eSIM как альтернатива** — <a href="https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_&u=https%3A%2F%2Fairalo.com%2Fru" class="aff-cta" rel="sponsored">Подключить eSIM на Уганду</a>: активируется до вылета, не надо стоять в очереди в аэропорту. 5 ГБ на 30 дней ≈ $19. Удобно если приземляетесь поздно или не хотите возиться с регистрацией.
 
 ### Что взять, что не брать
 
@@ -278,10 +278,10 @@ coverPosition: "center 38%"
 
 ## Что делать дальше
 
-* <a href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Forigin_iata%3DMOW%26destination_iata%3DEBB" class="aff-cta" rel="sponsored">Найти билет Москва — Энтеббе</a><span class="ad-mark">реклама</span> — гибкий поиск по датам и пересадкам
-* <a href="https://ostrovok.tpk.mx/w4cAS1wZ?erid=2VtzqvE1cv3" class="aff-cta" rel="sponsored">Забронировать отель или лодж</a><span class="ad-mark">реклама</span> — принимает российские карты
-* <a href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5" class="aff-cta" rel="sponsored">Оформить страховку в Уганду</a><span class="ad-mark">реклама</span> — для Уганды обязательно (малярия, тропики, эвакуация)
-* <a href="https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_&u=https%3A%2F%2Fairalo.com%2Fru" class="aff-cta" rel="sponsored">Подключить eSIM на Уганду</a><span class="ad-mark">реклама</span> — будет интернет с момента выхода из самолёта
+* <a href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Forigin_iata%3DMOW%26destination_iata%3DEBB" class="aff-cta" rel="sponsored">Найти билет Москва — Энтеббе</a> — гибкий поиск по датам и пересадкам
+* <a href="https://ostrovok.tpk.mx/xtyTcUcY?erid=2VtzqvE1cv3" class="aff-cta" rel="sponsored">Забронировать отель или лодж</a> — принимает российские карты
+* <a href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5" class="aff-cta" rel="sponsored">Оформить страховку в Уганду</a> — для Уганды обязательно (малярия, тропики, эвакуация)
+* <a href="https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_&u=https%3A%2F%2Fairalo.com%2Fru" class="aff-cta" rel="sponsored">Подключить eSIM на Уганду</a> — будет интернет с момента выхода из самолёта
 * Сверьтесь с [таблицей сезонов](/seasons/) — когда лучше лететь именно в вашем месяце
 * Прикиньте бюджет в [калькуляторе](/calculator/) — он учитывает курс и тип поездки
 * Посмотрите [Японию в апреле](/blog/japan-guide-2026/) или [гайд по Хайнаню](/blog/hainan-guide-2026/) — если думаете о другом направлении

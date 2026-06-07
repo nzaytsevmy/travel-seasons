@@ -124,8 +124,8 @@ const ldJson = {
         <li><strong>Загранпаспорт</strong> — срок действия 6+ месяцев на момент въезда.</li>
         {needsVisa && visa && (<li><strong>Виза/eVisa:</strong> {visa.duration}, {visa.cost}, {visa.timing}. Детали — <a href={`/visa/${d.slug}/`}>на странице визы {d.cases.prep}</a>.</li>)}
         {!needsVisa && (<li><strong>Виза не нужна</strong> — {visa?.duration || 'безвизовый въезд'}, {visa?.timing || 'штамп на границе'}.</li>)}
-        <li><strong>Обратный билет</strong> или бронь выезда (часто проверяют на регистрации). Поиск рейсов — <a href={TP_LINKS.aviasales} target="_blank" rel="sponsored noopener">Aviasales</a> <span class="ad-mark">Реклама</span>.</li>
-        <li><strong>Страховка</strong> {needsVisa ? '(обязательна для визы)' : '(рекомендую — медпомощь платная)'}. Оформить — <a href={TP_LINKS.cherehapa} target="_blank" rel="sponsored noopener">Cherehapa</a> <span class="ad-mark">Реклама</span>.</li>
+        <li><strong>Обратный билет</strong> или бронь выезда (часто проверяют на регистрации). Поиск рейсов — <a href={TP_LINKS.aviasales} target="_blank" rel="sponsored noopener">Aviasales</a> .</li>
+        <li><strong>Страховка</strong> {needsVisa ? '(обязательна для визы)' : '(рекомендую — медпомощь платная)'}. Оформить — <a href={TP_LINKS.cherehapa} target="_blank" rel="sponsored noopener">Cherehapa</a> .</li>
         <li><strong>Копии</strong> паспорта и виз в облаке + бумажные отдельно от оригиналов.</li>
       </ul>
     </section>
@@ -154,7 +154,7 @@ const ldJson = {
       <ul class="pack-list">
         {plug && (<li><strong>Переходник Type {plug.types}</strong> · {plug.voltage} · {plug.hz}. {plugAdvice(plug)}</li>)}
         <li><strong>Повербанк</strong> 10 000 мА·ч (в ручную кладь, не в багаж) + кабели.</li>
-        <li><strong>eSIM вместо роуминга</strong> — настройка за 5 минут, от $5 за неделю. Обзор: <a href="/blog/esim-zagranicey-2026/">eSIM за границей 2026</a>. <a href={TP_LINKS.airalo} target="_blank" rel="sponsored noopener">Airalo</a> <span class="ad-mark">Реклама</span>.</li>
+        <li><strong>eSIM вместо роуминга</strong> — настройка за 5 минут, от $5 за неделю. Обзор: <a href="/blog/esim-zagranicey-2026/">eSIM за границей 2026</a>. <a href={TP_LINKS.airalo} target="_blank" rel="sponsored noopener">Airalo</a> .</li>
       </ul>
     </section>
 
