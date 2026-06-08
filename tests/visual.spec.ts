@@ -18,6 +18,8 @@ const PAGES = [
   { slug: '/blog/bolivia-guide-2026/',      name: 'blog-bolivia' },   // 4-кол таблица сезонов + PricingCards
   { slug: '/blog/peru-guide-2026/',         name: 'blog-peru' },      // wide table (Inca Trail vs Salkantay vs Lares)
   { slug: '/blog/kamchatka-guide-2026/',    name: 'blog-kamchatka' }, // РФ-пилот: TOC + FlightRoutes + богатые сезоны
+  { slug: '/blog/chto-vzyat-na-more-2026/', name: 'blog-more-checklist' }, // пиллар + интерактив-чеклист (sea preset, locked)
+  { slug: '/packing/egypt/june/',           name: 'packing-egypt-june' },  // [month] + встроенный чеклист (sea)
   { slug: '/packing/',                      name: 'packing-landing' },        // /packing/ landing: 70 country cards
   { slug: '/packing/japan/',                name: 'packing-country-japan' },  // консолидированный хаб: упаковка по сезонам
 ];

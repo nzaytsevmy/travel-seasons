@@ -1,0 +1,436 @@
+---
+// Интерактивный чек-лист сборов. Vanilla-JS остров (без фреймворка/гидрации).
+// SSR применяет дефолтный фильтр сразу → на загрузке CLS 0 (JS только меняет hidden).
+// Состояние галочек — в localStorage (ключ на preset). Schema ItemList + HowTo (опц.).
+import {
+  ITEMS, CATEGORIES, TRIP_TYPES, DURATIONS, WHO, KID_AGES, TRANSPORT, PRESETS, itemsForTrip,
+} from '../data/packing-checklist.js';
+
+interface Item {
+  id: string; label: string; cat: string;
+  trip: string[]; who: string[]; kid: string[];
+  minNights: number; liquid: boolean; transport: string[]; note?: string;
+}
+interface Props {
+  preset?: 'sea' | 'city' | 'winter' | 'any';
+  extraItems?: Item[];
+  heading?: string;
+  schema?: boolean;
+  storageKey?: string;
+}
+
+const { preset = 'any', extraItems = [], heading, schema = true, storageKey } = Astro.props as Props;
+const presetCfg = PRESETS[preset] || PRESETS.any;
+const lockedTrip = presetCfg.trip;            // null для 'any'
+const showTripFilter = !lockedTrip;
+const uid = storageKey || `pck-${preset}`;
+const allItems: Item[] = [...ITEMS, ...extraItems];
+
+// Дефолты для SSR (совпадают с тем, что JS посчитает на загрузке — отсюда CLS 0).
+const DEF = { trip: lockedTrip || 'sea', duration: 'week', who: 'adult', kid: 'preschool', transport: 'plane' };
+const defNights = DURATIONS.find((d) => d.id === DEF.duration)!.nights;
+function visibleDefault(it: Item) {
+  if (it.trip.length && !it.trip.includes(DEF.trip)) return false;
+  if (it.who.length && !it.who.includes(DEF.who)) return false;
+  if (it.minNights > defNights) return false;
+  if (it.transport.length && !it.transport.includes(DEF.transport)) return false;
+  return true;
+}
+
+const byCat = CATEGORIES
+  .map((c) => ({ ...c, items: allItems.filter((it) => it.cat === c.id) }))
+  .filter((c) => c.items.length);
+
+// Schema (по locked-типу, для 'any' — море как основной спрос).
+const schemaItems = itemsForTrip(lockedTrip || 'sea');
+const ld = schema
+  ? {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'ItemList',
+          'name': presetCfg.title,
+          'itemListElement': schemaItems.map((it, i) => ({ '@type': 'ListItem', 'position': i + 1, 'name': it.label })),
+        },
+        {
+          '@type': 'HowTo',
+          'name': `${presetCfg.title}: как собрать чемодан и ничего не забыть`,
+          'step': byCat.map((c, i) => ({ '@type': 'HowToStep', 'position': i + 1, 'name': c.label })),
+        },
+      ],
+    }
+  : null;
+
+const title = heading || presetCfg.title;
+---
+<section class="pck" data-uid={uid} data-locked-trip={lockedTrip || ''} aria-label={title}>
+  {ld && <script type="application/ld+json" set:html={JSON.stringify(ld)} />}
+
+  <div class="pck-filters">
+    {showTripFilter && (
+      <fieldset class="pck-fset">
+        <legend>Тип поездки</legend>
+        <div class="pck-chips">
+          {TRIP_TYPES.map((t) => (
+            <label class="pck-chip">
+              <input type="radio" name={`pck-trip-${uid}`} value={t.id} data-filter="trip" checked={t.id === DEF.trip} />
+              <span>{t.label}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+    )}
+
+    <fieldset class="pck-fset">
+      <legend>Длительность</legend>
+      <div class="pck-chips">
+        {DURATIONS.map((dr) => (
+          <label class="pck-chip">
+            <input type="radio" name={`pck-duration-${uid}`} value={dr.id} data-filter="duration" data-nights={dr.nights} checked={dr.id === DEF.duration} />
+            <span>{dr.label}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+
+    <fieldset class="pck-fset">
+      <legend>Кто едет</legend>
+      <div class="pck-chips">
+        {WHO.map((w) => (
+          <label class="pck-chip">
+            <input type="radio" name={`pck-who-${uid}`} value={w.id} data-filter="who" checked={w.id === DEF.who} />
+            <span>{w.label}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+
+    <fieldset class="pck-fset pck-fset--kid" hidden>
+      <legend>Возраст ребёнка</legend>
+      <div class="pck-chips">
+        {KID_AGES.map((k) => (
+          <label class="pck-chip">
+            <input type="radio" name={`pck-kid-${uid}`} value={k.id} data-filter="kid" checked={k.id === DEF.kid} />
+            <span>{k.label}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+
+    <fieldset class="pck-fset">
+      <legend>Транспорт</legend>
+      <div class="pck-chips">
+        {TRANSPORT.map((tr) => (
+          <label class="pck-chip">
+            <input type="radio" name={`pck-transport-${uid}`} value={tr.id} data-filter="transport" checked={tr.id === DEF.transport} />
+            <span>{tr.label}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  </div>
+
+  <div class="pck-bar">
+    <div class="pck-progress">
+      <span class="pck-progress-txt" aria-live="polite">Собрано 0 из 0</span>
+      <div class="pck-progress-bar"><i></i></div>
+    </div>
+    <div class="pck-actions">
+      <button type="button" class="pck-btn" data-act="all">Отметить всё</button>
+      <button type="button" class="pck-btn" data-act="none">Снять всё</button>
+      <button type="button" class="pck-btn" data-act="print">Печать</button>
+      <button type="button" class="pck-btn" data-act="copy">Скопировать список</button>
+    </div>
+  </div>
+
+  <div class="pck-cats">
+    {byCat.map((c) => (
+      <div class="pck-cat" data-cat={c.id}>
+        <h3 class="pck-cat-h">{c.label}</h3>
+        <ul class="pck-list">
+          {c.items.map((it) => (
+            <li
+              class="pck-item"
+              data-trip={it.trip.join(',')}
+              data-who={it.who.join(',')}
+              data-kid={it.kid.join(',')}
+              data-min-nights={it.minNights}
+              data-transport={it.transport.join(',')}
+              data-liquid={it.liquid ? '1' : '0'}
+              hidden={!visibleDefault(it)}
+            >
+              <input type="checkbox" id={`${uid}-${it.id}`} class="pck-cb" data-item={it.id} />
+              <label for={`${uid}-${it.id}`} class="pck-lbl">
+                <span class="pck-name">{it.label}</span>
+                {it.liquid && <span class="pck-liq" hidden={DEF.transport !== 'plane'}>≤100 мл</span>}
+                {it.note && <span class="pck-note">{it.note}</span>}
+              </label>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+
+  <p class="pck-foot">Отметки сохраняются в этом браузере. «Скопировать список» — для заметок или Telegram.</p>
+</section>
+
+<script>
+  // Vanilla island: фильтрация по осям + localStorage + экспорт. Скоупится на каждый .pck.
+  function initPck(root: HTMLElement) {
+    const uid = root.dataset.uid || 'pck';
+    const lockedTrip = root.dataset.lockedTrip || '';
+    const items = Array.from(root.querySelectorAll<HTMLLIElement>('.pck-item'));
+    const cats = Array.from(root.querySelectorAll<HTMLElement>('.pck-cat'));
+    const kidSet = root.querySelector<HTMLElement>('.pck-fset--kid');
+    const progTxt = root.querySelector<HTMLElement>('.pck-progress-txt');
+    const progBar = root.querySelector<HTMLElement>('.pck-progress-bar > i');
+    const lsKey = (id: string) => `pck:${uid}:${id}`;
+
+    const sel = (name: string) =>
+      root.querySelector<HTMLInputElement>(`input[name="pck-${name}-${uid}"]:checked`);
+
+    function parseList(v: string | undefined) {
+      return v ? v.split(',').filter(Boolean) : [];
+    }
+
+    function apply() {
+      const trip = sel('trip')?.value || lockedTrip || 'sea';
+      const durInput = sel('duration');
+      const nights = durInput ? +(durInput.dataset.nights || '7') : 7;
+      const who = sel('who')?.value || 'adult';
+      const kid = sel('kid')?.value || 'preschool';
+      const transport = sel('transport')?.value || 'plane';
+
+      if (kidSet) kidSet.hidden = who !== 'kids';
+
+      for (const li of items) {
+        const t = parseList(li.dataset.trip);
+        const w = parseList(li.dataset.who);
+        const k = parseList(li.dataset.kid);
+        const tr = parseList(li.dataset.transport);
+        const minN = +(li.dataset.minNights || '0');
+        let show = true;
+        if (t.length && !t.includes(trip)) show = false;
+        if (w.length && !w.includes(who)) show = false;
+        if (minN > nights) show = false;
+        if (tr.length && !tr.includes(transport)) show = false;
+        if (who === 'kids' && k.length && !k.includes(kid)) show = false;
+        li.hidden = !show;
+        const liq = li.querySelector<HTMLElement>('.pck-liq');
+        if (liq) liq.hidden = !(transport === 'plane' && li.dataset.liquid === '1');
+      }
+      for (const c of cats) {
+        const any = Array.from(c.querySelectorAll<HTMLLIElement>('.pck-item')).some((li) => !li.hidden);
+        c.hidden = !any;
+      }
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const vis = items.filter((li) => !li.hidden);
+      const done = vis.filter((li) => li.querySelector<HTMLInputElement>('.pck-cb')?.checked).length;
+      if (progTxt) progTxt.textContent = `Собрано ${done} из ${vis.length}`;
+      if (progBar) progBar.style.width = vis.length ? `${Math.round((done / vis.length) * 100)}%` : '0%';
+    }
+
+    // restore checkbox state
+    for (const li of items) {
+      const cb = li.querySelector<HTMLInputElement>('.pck-cb');
+      if (!cb) continue;
+      const id = cb.dataset.item || '';
+      try { if (localStorage.getItem(lsKey(id)) === '1') cb.checked = true; } catch {}
+      cb.addEventListener('change', () => {
+        try { localStorage.setItem(lsKey(id), cb.checked ? '1' : '0'); } catch {}
+        updateProgress();
+      });
+    }
+
+    root.querySelectorAll<HTMLInputElement>('input[data-filter]').forEach((inp) =>
+      inp.addEventListener('change', apply),
+    );
+
+    root.querySelectorAll<HTMLButtonElement>('.pck-btn').forEach((btn) =>
+      btn.addEventListener('click', () => {
+        const act = btn.dataset.act;
+        if (act === 'all' || act === 'none') {
+          const on = act === 'all';
+          for (const li of items) {
+            if (li.hidden) continue;
+            const cb = li.querySelector<HTMLInputElement>('.pck-cb');
+            if (!cb) continue;
+            cb.checked = on;
+            try { localStorage.setItem(lsKey(cb.dataset.item || ''), on ? '1' : '0'); } catch {}
+          }
+          updateProgress();
+        } else if (act === 'print') {
+          window.print();
+        } else if (act === 'copy') {
+          const lines: string[] = [];
+          for (const c of cats) {
+            if (c.hidden) continue;
+            const rows = Array.from(c.querySelectorAll<HTMLLIElement>('.pck-item')).filter((li) => !li.hidden);
+            if (!rows.length) continue;
+            lines.push('', (c.querySelector('.pck-cat-h')?.textContent || '').toUpperCase());
+            for (const li of rows) {
+              const cb = li.querySelector<HTMLInputElement>('.pck-cb');
+              const name = li.querySelector('.pck-name')?.textContent || '';
+              lines.push(`${cb?.checked ? '[x]' : '[ ]'} ${name}`);
+            }
+          }
+          const text = lines.join('\n').trim();
+          const done = () => {
+            const old = btn.textContent;
+            btn.textContent = 'Скопировано';
+            setTimeout(() => { btn.textContent = old; }, 1500);
+          };
+          if (navigator.clipboard?.writeText) {
+            navigator.clipboard.writeText(text).then(done).catch(() => {});
+          }
+        }
+      }),
+    );
+
+    apply();
+  }
+
+  document.querySelectorAll<HTMLElement>('.pck').forEach(initPck);
+</script>
+
+<style>
+  .pck {
+    margin: 1.6rem 0 2rem;
+    font-family: var(--ff-display);
+    color: var(--text);
+  }
+
+  /* Фильтры */
+  .pck-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.6rem;
+    border-top: 2px solid var(--line-strong, #1b1914);
+    border-bottom: 1px solid var(--line);
+    padding: 1rem 0 1.1rem;
+  }
+  .pck-fset { border: none; margin: 0; padding: 0; min-width: 0; }
+  .pck-fset legend {
+    padding: 0;
+    font-size: .64rem; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: .5rem;
+  }
+  .pck-chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .pck-chip {
+    display: inline-flex; align-items: center;
+    min-height: 44px; padding: .35rem .7rem;
+    border: 1px solid var(--line);
+    font-size: .84rem; color: var(--text-dim);
+    cursor: pointer; user-select: none;
+    transition: border-color .15s, color .15s, background .15s;
+  }
+  .pck-chip input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .pck-chip:hover { color: var(--text); border-color: var(--text-dim); }
+  .pck-chip:has(input:checked) {
+    color: var(--text); border-color: var(--gold);
+    background: rgba(142, 102, 24, 0.07);
+    font-weight: 600;
+  }
+  .pck-chip:has(input:focus-visible) { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  /* Прогресс + действия */
+  .pck-bar {
+    display: flex; flex-wrap: wrap; align-items: center;
+    justify-content: space-between; gap: .8rem 1.2rem;
+    padding: 1rem 0 .9rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .pck-progress { flex: 1 1 220px; min-width: 200px; }
+  .pck-progress-txt {
+    display: block;
+    font-size: .8rem; font-weight: 700;
+    letter-spacing: .02em; color: var(--text);
+    margin-bottom: .4rem;
+  }
+  .pck-progress-bar { height: 3px; background: var(--line); }
+  .pck-progress-bar > i { display: block; height: 100%; width: 0; background: var(--gold); transition: width .2s; }
+  .pck-actions { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .pck-btn {
+    min-height: 44px; padding: .35rem .8rem;
+    border: 1px solid var(--line);
+    background: transparent; cursor: pointer;
+    font-family: var(--ff-display); font-size: .8rem; font-weight: 600;
+    color: var(--text-dim);
+    transition: border-color .15s, color .15s;
+  }
+  .pck-btn:hover { color: var(--text); border-color: var(--gold); }
+  .pck-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  /* Категории и пункты */
+  .pck-cat { margin-top: 1.6rem; }
+  .pck-cat-h {
+    font-weight: 800;
+    font-size: 1.05rem; letter-spacing: -.01em;
+    margin: 0 0 .2rem;
+    color: var(--text);
+  }
+  .pck-list { list-style: none; margin: 0; padding: 0; }
+  .pck-item {
+    display: flex; align-items: flex-start; gap: .7rem;
+    padding: .6rem 0;
+    border-top: 1px solid var(--line);
+  }
+  .pck-cb {
+    appearance: none; -webkit-appearance: none;
+    flex: 0 0 auto;
+    width: 20px; height: 20px; margin: 2px 0 0;
+    border: 1.5px solid var(--text-dim);
+    cursor: pointer; position: relative;
+    background: transparent;
+  }
+  .pck-cb:checked { border-color: var(--gold); background: var(--gold); }
+  .pck-cb:checked::after {
+    content: ''; position: absolute;
+    left: 6px; top: 2px; width: 5px; height: 10px;
+    border: solid #fff; border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .pck-cb:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .pck-lbl {
+    flex: 1; cursor: pointer;
+    /* минимальная тач-зона строки */
+    min-height: 24px;
+    line-height: 1.45;
+  }
+  .pck-name { font-size: .96rem; color: var(--text); }
+  .pck-cb:checked + .pck-lbl .pck-name { color: var(--text-dim); text-decoration: line-through; text-decoration-color: var(--text-faint); }
+  .pck-liq {
+    display: inline-block; margin-left: .5rem;
+    font-size: .6rem; font-weight: 700;
+    letter-spacing: .04em;
+    color: var(--text); border: 1px solid var(--gold);
+    padding: 0 .3rem; vertical-align: 1px;
+  }
+  .pck-note {
+    display: block;
+    font-size: .8rem; color: var(--text-dim);
+    line-height: 1.5; margin-top: .15rem;
+  }
+  .pck-foot {
+    margin-top: 1.2rem;
+    font-size: .76rem; color: var(--text-faint); line-height: 1.5;
+  }
+
+  @media (max-width: 600px) {
+    .pck-filters { gap: .9rem 1.2rem; }
+    .pck-bar { flex-direction: column; align-items: stretch; }
+  }
+
+  /* Печать: только чистый список без управления */
+  @media print {
+    .pck-filters, .pck-bar, .pck-liq, .pck-foot { display: none !important; }
+    .pck-item { break-inside: avoid; }
+    .pck-cb { -webkit-appearance: checkbox; appearance: checkbox; }
+  }
+</style>
