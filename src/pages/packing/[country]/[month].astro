@@ -19,6 +19,7 @@ import { getHolidaysByMonth } from '../../../data/country-holidays.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
 import { regionsRich } from '../../../data/regions-rich.js';
 import { getGuide } from '../../../data/country-guides.js';
+import PackingChecklist from '../../../components/PackingChecklist.astro';
 
 // Cover photos для страны — те же что используются на /<slug>/
 const destPhotos = import.meta.glob('../../../assets/destinations/*.jpg', {
@@ -77,6 +78,10 @@ const visa = VISA_DETAILS[d.slug];
 const needsVisa = d.visa !== 'free';
 const plug = PLUG_TYPES[d.slug];
 const tags = ACTIVITY_TAGS[d.slug] || [];
+
+// Пресет интерактивного чек-листа: холодный бакет → зима, пляжная страна → море, иначе универсал.
+const PACK_COLD = ['temperate-cold', 'cold-extreme'];
+const checklistPreset = PACK_COLD.includes(bucketKey) ? 'winter' : (tags.includes('beach') ? 'sea' : 'any');
 
 // Лучшие альтернативные месяцы (P+G), исключая текущий
 const altMonths = (d.r || [])
@@ -264,6 +269,17 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         {flightLow && <div class="pmu-vi"><span><b>03</b> Перелёт от</span><div>${flightLow}</div></div>}
         <div class="pmu-vi"><span><b>04</b> Виза</span><div>{needsVisa ? (visa?.cost || 'Нужна') : 'Не нужна'}</div></div>
       </div>
+    </section>
+
+    {/* ИНТЕРАКТИВНЫЙ ЧЕК-ЛИСТ — отметить, что собрано */}
+    <section class="pmu-section">
+      <div class="pmu-shead"><h2>Собрать чемодан: чек-лист с галочками</h2></div>
+      <p class="pmu-answer">
+        Отметьте, что уже сложили — список подстраивается под длительность, кто едет и транспорт,
+        а отметки сохраняются в браузере.
+        {checklistPreset === 'sea' && <> Полный разбор по категориям — в гайде <a href="/blog/chto-vzyat-na-more-2026/" class="pmu-link">что взять на море</a>.</>}
+      </p>
+      <PackingChecklist preset={checklistPreset} schema={false} storageKey={`pmu-${d.slug}-${m.slug}`} />
     </section>
 
     {/* ПОГОДА — реальные цифры для топ-15, generic для остальных */}
