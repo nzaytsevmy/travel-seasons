@@ -16,7 +16,15 @@ function readingTime(body: string) {
   return Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
 }
 
-const allTags = [...new Set(allPosts.flatMap(p => p.data.tags))];
+// Облако-фильтр — только повторяющиеся теги (≥2 постов = осмысленный фильтр),
+// по убыванию частоты. Generic «2026» (почти на всех) и одиночные теги (страна-
+// специфичные: Вулканы, Уюни, Мачу-Пикчу…) убраны — их страницы остаются доступны
+// со страниц самих постов. Было ~60 тегов сплошным полотном.
+const _tagFreq = {};
+allPosts.flatMap(p => p.data.tags).forEach(t => { _tagFreq[t] = (_tagFreq[t] || 0) + 1; });
+const allTags = Object.keys(_tagFreq)
+  .filter(t => _tagFreq[t] >= 2 && t !== '2026')
+  .sort((a, b) => _tagFreq[b] - _tagFreq[a] || a.localeCompare(b, 'ru'));
 
 // Множественное число «статья» по последней цифре (русское правило)
 const _pc = allPosts.length, _d = _pc % 10, _h = _pc % 100;
