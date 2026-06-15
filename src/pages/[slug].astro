@@ -161,13 +161,13 @@ const imageNodes = schemaImages.map((im) => ({
 const deepGuide = d.relatedPosts?.find((p) => p.kind === 'guide');
 const hubTitle = deepGuide
   ? `${d.cases.nom} 2026: регионы, когда ехать и куда лететь`
-  : `${d.cases.nom} 2026 для россиян: виза, когда ехать, бюджет`;
+  : `${d.cases.nom} 2026 для россиян: когда ехать, цены, маршрут`;
 const hubDesc = (deepGuide
   ? `${d.cases.nom}: регионы и куда лететь, когда ехать по месяцам${bestMonths.length ? ` — ${bestMonths.slice(0, 3).map((m) => m.nom).join(', ')}` : ''}, бюджет по сезонам. Полный гайд для россиян — отдельно.`
   : `${d.cases.nom} 2026 для россиян: ${VISA_LABEL[d.visa].toLowerCase()} (${vd.duration}), когда ехать — ${bestMonths.map((m) => m.nom).join(', ')}, бюджет от $${weekTotal || 'N/A'}/нед.`).slice(0, 155);
 const hubOgTitle = deepGuide
   ? `${d.cases.nom} 2026 — регионы, сезоны, куда лететь`
-  : `${d.cases.nom} 2026 — виза, когда ехать, бюджет`;
+  : `${d.cases.nom} 2026 — когда ехать, цены, маршрут`;
 
 const ldJson = {
   "@context": "https://schema.org",
