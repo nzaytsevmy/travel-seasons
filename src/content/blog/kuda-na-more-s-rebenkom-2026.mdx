@@ -12,7 +12,24 @@ sourceType: "compilation"
 ---
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 import PackingChecklist from '../../components/PackingChecklist.astro';
+import JsonLd from '../../components/JsonLd.astro';
 import { TP_LINKS } from '../../data/affiliate.js';
+
+<JsonLd data={{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Куда поехать с ребёнком на море 2026",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Турция", "url": "https://traveltribe.ru/blog/turkey-guide-2026/" },
+    { "@type": "ListItem", "position": 2, "name": "Египет", "url": "https://traveltribe.ru/blog/hurghada-sharm-2026/" },
+    { "@type": "ListItem", "position": 3, "name": "Абхазия", "url": "https://traveltribe.ru/blog/abkhazia-2026/" },
+    { "@type": "ListItem", "position": 4, "name": "Грузия (Батуми)", "url": "https://traveltribe.ru/blog/georgia-guide-2026/" },
+    { "@type": "ListItem", "position": 5, "name": "ОАЭ", "url": "https://traveltribe.ru/blog/uae-guide-2026/" },
+    { "@type": "ListItem", "position": 6, "name": "Таиланд", "url": "https://traveltribe.ru/blog/thailand-guide-2026/" },
+    { "@type": "ListItem", "position": 7, "name": "Вьетнам (Нячанг)", "url": "https://traveltribe.ru/blog/nyachang-fukuok-2026/" },
+    { "@type": "ListItem", "position": 8, "name": "Хайнань", "url": "https://traveltribe.ru/blog/hainan-guide-2026/" }
+  ]
+}} />
 
 С ребёнком на море важны три вещи, которых нет в обычных подборках «топ-20 пляжей»: **короткий перелёт** (с малышом 9 часов — испытание), **спокойное мелкое море** (без волн и резкого захода) и **детская инфраструктура** (аквапарки, клубы, коляски проедут). Я свёл наши данные по 70 направлениям к восьми, которые реально подходят семье, с честными ценами, визой и сезоном — и оговорками, где что не так.
 

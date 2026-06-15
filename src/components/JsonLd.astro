@@ -1,0 +1,5 @@
+---
+// Инжектор произвольного JSON-LD в .mdx-посты (ItemList/HowTo и т.п. сверх авто-BlogPosting/FAQ).
+const { data } = Astro.props;
+---
+{data && <script type="application/ld+json" set:html={JSON.stringify(data)} />}
