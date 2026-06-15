@@ -20,7 +20,8 @@ const PAGES = [
   { slug: '/blog/kamchatka-guide-2026/',    name: 'blog-kamchatka' }, // РФ-пилот: TOC + FlightRoutes + богатые сезоны
   { slug: '/blog/chto-vzyat-na-more-2026/', name: 'blog-more-checklist' }, // пиллар + интерактив-чеклист (sea preset, locked)
   { slug: '/packing/egypt/june/',           name: 'packing-egypt-june' },  // [month] + встроенный чеклист (sea)
-  { slug: '/blog/ees-2026/',                name: 'blog-ees' },            // YMYL explainer + тул-таблица (SEO-аудит)
+  { slug: '/blog/ees-2026/',                name: 'blog-ees' },            // YMYL explainer + тул-таблица (SEO-аудit)
+  { slug: '/blog/kuda-na-more-s-rebenkom-2026/', name: 'blog-kuda-more-deti' }, // дискавери-пилот: листикл + встроенный чеклист
   { slug: '/packing/',                      name: 'packing-landing' },        // /packing/ landing: 70 country cards
   { slug: '/packing/japan/',                name: 'packing-country-japan' },  // консолидированный хаб: упаковка по сезонам
 ];
