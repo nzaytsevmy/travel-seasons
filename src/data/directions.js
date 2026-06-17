@@ -270,6 +270,9 @@ const RELATED_POSTS = {
   'kamchatka': [
     { slug: 'kamchatka-guide-2026', title: 'Камчатка 2026: что посмотреть, когда ехать, цены', kind: 'guide' },
   ],
+  'morocco': [
+    { slug: 'morocco-guide-2026', title: 'Марокко 2026: безвиз 90 дней, маршрут, цены', kind: 'guide' },
+  ],
 };
 
 // EU/Шенген hub — связываем все европейские направления с шенгенским гайдом
