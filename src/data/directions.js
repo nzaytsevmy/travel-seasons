@@ -273,6 +273,9 @@ const RELATED_POSTS = {
   'morocco': [
     { slug: 'morocco-guide-2026', title: 'Марокко 2026: безвиз 90 дней, маршрут, цены', kind: 'guide' },
   ],
+  'kenya': [
+    { slug: 'kenya-guide-2026', title: 'Кения 2026: сафари, виза eTA, бюджет', kind: 'guide' },
+  ],
 };
 
 // EU/Шенген hub — связываем все европейские направления с шенгенским гайдом
