@@ -6,6 +6,7 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Footer from '../../components/Footer.astro';
 import TableOfContents from '../../components/post/TableOfContents.astro';
 import authorPhoto from '../../assets/author/nikita.jpg';
+import { DIRECTIONS } from '../../data/directions.js';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -83,6 +84,13 @@ function extractFAQs(body: string): Array<{ q: string; a: string }> {
 }
 
 const faqs = extractFAQs(post.body);
+
+// «Куда дальше» — ведёт читателя из поста в конвертящие узлы (packing-чеклист,
+// калькулятор) и связывает pillar↔visa↔хаб → глубина/dwell (вес Яндекса).
+// Страну поста выводим из RELATED_POSTS: пост = первый related-пост направления.
+const primaryDir = DIRECTIONS.find(d => d.relatedPosts?.[0]?.slug === post.slug) ?? null;
+const planVP = primaryDir ? (primaryDir.cases?.vP || primaryDir.cases?.acc || primaryDir.cases?.nom) : null;
+const siblingPosts = primaryDir ? primaryDir.relatedPosts.filter(p => p.slug !== post.slug).slice(0, 3) : [];
 
 const ldJson: any = {
   "@context": "https://schema.org",
@@ -222,6 +230,37 @@ if (post.data.howto) {
       <div class="prose">
         <Content />
       </div>
+
+      <nav class="post-next" aria-label="Куда дальше">
+        {primaryDir ? (
+          <>
+            <h2 class="post-next-title">Спланировать поездку {planVP}</h2>
+            <ul class="post-next-grid">
+              <li><a href={`/packing/${primaryDir.slug}/`}><b>Чек-лист вещей в дорогу</b><span>Что взять по сезону и месяцам</span></a></li>
+              <li><a href={`/visa/${primaryDir.slug}/`}><b>Виза и въезд для россиян</b><span>Нужна ли виза, сроки, документы</span></a></li>
+              <li><a href={`/${primaryDir.slug}/`}><b>Когда ехать</b><span>Сезоны, погода и цены по месяцам</span></a></li>
+              <li><a href="/calculator/"><b>Рассчитать бюджет</b><span>Перелёт, жильё и еда на поездку</span></a></li>
+            </ul>
+          </>
+        ) : (
+          <>
+            <h2 class="post-next-title">Куда дальше</h2>
+            <ul class="post-next-grid">
+              <li><a href="/countries/"><b>Подобрать направление</b><span>Фильтр по визе, бюджету и сезону</span></a></li>
+              <li><a href="/calculator/"><b>Рассчитать бюджет поездки</b><span>Перелёт, жильё и еда</span></a></li>
+              <li><a href="/packing/"><b>Чек-листы вещей по странам</b><span>Что взять под погоду месяца</span></a></li>
+            </ul>
+          </>
+        )}
+        {siblingPosts.length > 0 && (
+          <div class="post-next-read">
+            <h3>Ещё по теме</h3>
+            <ul>
+              {siblingPosts.map(p => <li><a href={`/blog/${p.slug}/`}>{p.title}</a></li>)}
+            </ul>
+          </div>
+        )}
+      </nav>
 
       <aside class="author-bio" aria-label="Об авторе">
         <Image src={authorPhoto} alt="Никита Зайцев — автор TravelTribe" width={96} height={96} format="webp" quality={80} class="bio-avatar-img" />
@@ -485,6 +524,20 @@ h1 {
   color: var(--gold-dim); font-size: 0.55rem; letter-spacing: 0.4em;
   line-height: 1;
 }
+
+.post-next { margin-top: 3rem; }
+.post-next-title { font-family: var(--ff-body); font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 1.2rem; text-align: center; scroll-margin-top: 80px; }
+.post-next-grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+.post-next-grid a { display: block; min-height: 44px; padding: 0.85rem 1rem; border: 1px solid var(--line); border-radius: 6px; color: var(--text); text-decoration: none; transition: border-color 0.15s ease; }
+.post-next-grid a:hover { border-color: var(--gold); }
+.post-next-grid b { display: block; font-weight: 600; font-size: 0.95rem; }
+.post-next-grid span { display: block; font-size: 0.78rem; color: var(--text-faint); margin-top: 0.15rem; line-height: 1.4; }
+.post-next-read { margin-top: 1.6rem; }
+.post-next-read h3 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin: 0 0 0.6rem; font-weight: 500; }
+.post-next-read ul { list-style: none; padding: 0; margin: 0; }
+.post-next-read li { margin-bottom: 0.4rem; }
+.post-next-read a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; font-size: 0.92rem; }
+@media (max-width: 600px) { .post-next-grid { grid-template-columns: 1fr; } }
 
 .post-footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
 .back-link { font-size: 0.82rem; color: var(--text-dim); letter-spacing: 0.04em; }
