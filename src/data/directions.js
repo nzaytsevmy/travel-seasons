@@ -96,6 +96,7 @@ const SLUG_OVERRIDES = {
   'Финляндия|Хельсинки, Лапландия, северное сияние': 'finland',
   'Кипр|Лимасол, Пафос, Айя-Напа': 'cyprus',
   'Камчатка|Вулканы, гейзеры, медведи': 'kamchatka',
+  'Карелия|Рускеала, Кижи, Валаам, озёра': 'karelia',
 };
 
 // Russian name in different cases (acc/prep) for natural headlines.
@@ -184,6 +185,7 @@ const COUNTRY_CASES = {
   'finland': { nom: 'Финляндия', acc: 'Финляндию', prep: 'Финляндии', vP: 'в Финляндию', loc: 'в Финляндии' },
   'cyprus': { nom: 'Кипр', acc: 'Кипр', prep: 'Кипре', vP: 'на Кипр', loc: 'на Кипре' },
   'kamchatka': { nom: 'Камчатка', acc: 'Камчатку', prep: 'Камчатке', vP: 'на Камчатку', loc: 'на Камчатке' },
+  'karelia': { nom: 'Карелия', acc: 'Карелию', prep: 'Карелии', vP: 'в Карелию', loc: 'в Карелии' },
 };
 
 // Map slug → array of related blog post slugs (which already exist in content/blog/).
@@ -269,6 +271,12 @@ const RELATED_POSTS = {
   ],
   'kamchatka': [
     { slug: 'kamchatka-guide-2026', title: 'Камчатка 2026: что посмотреть, когда ехать, цены', kind: 'guide' },
+  ],
+  'karelia': [
+    { slug: 'kareliya-guide-2026', title: 'Карелия 2026: что посмотреть, как добраться, цены', kind: 'guide' },
+    { slug: 'gornyy-park-ruskeala-2026', title: 'Горный парк Рускеала 2026: билеты, как добраться', kind: 'guide' },
+    { slug: 'ostrov-kizhi-2026', title: 'Остров Кижи 2026: метеор, билеты, что посмотреть', kind: 'guide' },
+    { slug: 'ostrov-valaam-2026', title: 'Остров Валаам 2026: как добраться, монастырь', kind: 'guide' },
   ],
   'morocco': [
     { slug: 'morocco-guide-2026', title: 'Марокко 2026: безвиз 90 дней, маршрут, цены', kind: 'guide' },
@@ -366,6 +374,7 @@ const DEST_VISUALS = {
   'finland':          { emoji: '🌌', g1: '#e0e7ff', g2: '#c7d2fe' },
   'cyprus':           { emoji: '🏖️', g1: '#fef3c7', g2: '#fde68a' },
   'kamchatka':        { emoji: '🌋', g1: '#fee2e2', g2: '#fecaca' },
+  'karelia':          { emoji: '🌲', g1: '#d1fae5', g2: '#a7f3d0' },
 };
 
 function findPrice(direction) {
