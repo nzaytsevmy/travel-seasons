@@ -26,6 +26,10 @@ const PAGES = [
   { slug: '/packing/japan/',                name: 'packing-country-japan' },  // консолидированный хаб: упаковка по сезонам
   { slug: '/blog/ozero-ritsa-2026/',        name: 'blog-ritsa' },             // support-страница Абхазии: POI + PricingCards
   { slug: '/blog/novoafonskaya-peschera-2026/', name: 'blog-novoafon' },      // support-страница Абхазии: POI + таблицы
+  { slug: '/blog/kareliya-guide-2026/',     name: 'blog-karelia' },           // пиллар Карелии: PricingCards + таблицы
+  { slug: '/blog/gornyy-park-ruskeala-2026/', name: 'blog-ruskeala' },        // POI Карелии: бюджет-таблицы
+  { slug: '/blog/ostrov-kizhi-2026/',       name: 'blog-kizhi' },             // POI Карелии
+  { slug: '/blog/ostrov-valaam-2026/',      name: 'blog-valaam' },            // POI Карелии
 ];
 
 for (const page of PAGES) {
