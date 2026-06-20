@@ -128,9 +128,12 @@ const { heading = 'Калькулятор дней 90/180' } = Astro.props as Pr
       }
     } catch (e) {}
 
-    root.addEventListener('input', function (e) {
+    // input + change: iOS Safari у нативного date-пикера шлёт change (input не всегда) → ловим оба.
+    function onDateEvent(e) {
       if (e.target && e.target.type === 'date') calc();
-    });
+    }
+    root.addEventListener('input', onDateEvent);
+    root.addEventListener('change', onDateEvent);
     root.addEventListener('click', function (e) {
       var del = e.target.closest && e.target.closest('[data-del]');
       var add = e.target.closest && e.target.closest('[data-add]');
@@ -142,7 +145,7 @@ const { heading = 'Калькулятор дней 90/180' } = Astro.props as Pr
         }
         renumber(); calc();
       } else if (add) {
-        makeRow(); renumber();
+        makeRow(); renumber(); calc();
       }
     });
 
