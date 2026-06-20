@@ -1,0 +1,241 @@
+---
+// Калькулятор дней 90/180 (Шенген/EES). Vanilla-JS остров, без фреймворка/гидрации.
+// SSR рендерит дефолтную разметку (одна пустая поездка + плейсхолдеры) → CLS 0.
+// JS считает дни в СКОЛЬЗЯЩЕМ 180-дневном окне от выбранной даты. Состояние — localStorage.
+// Это инструмент-помощник, НЕ YMYL-факт; окончательный счёт ведёт система EES на границе.
+interface Props { heading?: string; }
+const { heading = 'Калькулятор дней 90/180' } = Astro.props as Props;
+---
+<section class="eesc" aria-label={heading}>
+  <p class="eesc-lead">Введите даты прошлых и планируемых поездок в Шенген — посчитаю, сколько дней из 90 уже использовано в скользящем 180-дневном окне и сколько осталось на выбранную дату. Считается прямо в браузере, ничего никуда не отправляется.</p>
+
+  <div class="eesc-trips" data-trips>
+    <div class="eesc-trip">
+      <span class="eesc-num">1</span>
+      <label class="eesc-f"><span>Въезд</span><input type="date" data-in></label>
+      <label class="eesc-f"><span>Выезд</span><input type="date" data-out></label>
+      <button type="button" class="eesc-del" data-del aria-label="Удалить поездку">&#215;</button>
+    </div>
+  </div>
+
+  <button type="button" class="eesc-add" data-add>Добавить поездку</button>
+
+  <div class="eesc-check">
+    <label class="eesc-f"><span>Считать на дату</span><input type="date" data-checkdate></label>
+    <span class="eesc-check-hint">пусто = сегодня</span>
+  </div>
+
+  <div class="eesc-out" aria-live="polite">
+    <div class="eesc-stat"><b data-used>0</b><span>использовано из 90</span></div>
+    <div class="eesc-stat"><b data-left>90</b><span>дней осталось</span></div>
+    <p class="eesc-msg" data-msg>Добавьте хотя бы одну поездку с датами въезда и выезда.</p>
+  </div>
+
+  <p class="eesc-foot">Инструмент справочный — окончательный счёт ведёт система EES на границе. Для официальной проверки есть <a href="https://ec.europa.eu/assets/home/visa-calculator/calculator.htm" target="_blank" rel="noopener">калькулятор Еврокомиссии</a>.</p>
+</section>
+
+<script>
+  function initEesc(root) {
+    var DAY = 86400000;
+    var tripsBox = root.querySelector('[data-trips]');
+    var checkInput = root.querySelector('[data-checkdate]');
+    var elUsed = root.querySelector('[data-used]');
+    var elLeft = root.querySelector('[data-left]');
+    var elMsg = root.querySelector('[data-msg]');
+    var LS = 'eesc:trips:v1';
+
+    function toUTC(s) {
+      if (!s) return null;
+      var p = s.split('-').map(Number);
+      if (!p[0] || !p[1] || !p[2]) return null;
+      return Date.UTC(p[0], p[1] - 1, p[2]);
+    }
+    function todayUTC() {
+      var n = new Date();
+      return Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate());
+    }
+    function fmt(ms) {
+      var d = new Date(ms);
+      function z(x) { return (x < 10 ? '0' : '') + x; }
+      return z(d.getUTCDate()) + '.' + z(d.getUTCMonth() + 1) + '.' + d.getUTCFullYear();
+    }
+    function rows() { return Array.prototype.slice.call(tripsBox.querySelectorAll('.eesc-trip')); }
+    function renumber() {
+      rows().forEach(function (r, i) {
+        var n = r.querySelector('.eesc-num');
+        if (n) n.textContent = String(i + 1);
+      });
+    }
+    function collect() {
+      var trips = [];
+      rows().forEach(function (r) {
+        var a = toUTC(r.querySelector('[data-in]').value);
+        var b = toUTC(r.querySelector('[data-out]').value);
+        if (a != null && b != null && b >= a) trips.push([a, b]);
+      });
+      return trips;
+    }
+    function save() {
+      var data = rows().map(function (r) {
+        return [r.querySelector('[data-in]').value, r.querySelector('[data-out]').value];
+      });
+      try { localStorage.setItem(LS, JSON.stringify(data)); } catch (e) {}
+    }
+    function calc() {
+      var trips = collect();
+      var check = toUTC(checkInput.value);
+      if (check == null) check = todayUTC();
+      var winStart = check - 179 * DAY;
+      var used = 0;
+      trips.forEach(function (t) {
+        var s = Math.max(t[0], winStart);
+        var e = Math.min(t[1], check);
+        if (e >= s) used += (e - s) / DAY + 1;
+      });
+      used = Math.round(used);
+      var left = Math.max(0, 90 - used);
+      elUsed.textContent = String(used);
+      elLeft.textContent = String(left);
+      elUsed.classList.toggle('eesc-over', used > 90);
+      if (!trips.length) {
+        elMsg.textContent = 'Добавьте хотя бы одну поездку с датами въезда и выезда.';
+      } else if (used > 90) {
+        elMsg.textContent = 'Превышение на ' + (used - 90) + ' дн. на ' + fmt(check) + ' — риск штрафа и отказа в будущей визе.';
+      } else if (used === 90) {
+        elMsg.textContent = 'Лимит исчерпан на ' + fmt(check) + ': въезжать нельзя, пока старые дни не выйдут из 180-дневного окна.';
+      } else {
+        elMsg.textContent = 'На ' + fmt(check) + ' доступно ещё до ' + left + ' дн. По мере того как старые поездки выходят из 180-дневного окна, дни возвращаются.';
+      }
+      save();
+    }
+    function makeRow(inV, outV) {
+      var r = document.createElement('div');
+      r.className = 'eesc-trip';
+      r.innerHTML = '<span class="eesc-num"></span>'
+        + '<label class="eesc-f"><span>Въезд</span><input type="date" data-in></label>'
+        + '<label class="eesc-f"><span>Выезд</span><input type="date" data-out></label>'
+        + '<button type="button" class="eesc-del" data-del aria-label="Удалить поездку">×</button>';
+      if (inV) r.querySelector('[data-in]').value = inV;
+      if (outV) r.querySelector('[data-out]').value = outV;
+      tripsBox.appendChild(r);
+    }
+
+    try {
+      var saved = JSON.parse(localStorage.getItem(LS) || '[]');
+      if (saved && saved.length) {
+        tripsBox.innerHTML = '';
+        saved.forEach(function (t) { makeRow(t[0], t[1]); });
+      }
+    } catch (e) {}
+
+    root.addEventListener('input', function (e) {
+      if (e.target && e.target.type === 'date') calc();
+    });
+    root.addEventListener('click', function (e) {
+      var del = e.target.closest && e.target.closest('[data-del]');
+      var add = e.target.closest && e.target.closest('[data-add]');
+      if (del) {
+        if (rows().length > 1) del.closest('.eesc-trip').remove();
+        else {
+          var ins = del.closest('.eesc-trip').querySelectorAll('input');
+          ins[0].value = ''; ins[1].value = '';
+        }
+        renumber(); calc();
+      } else if (add) {
+        makeRow(); renumber();
+      }
+    });
+
+    renumber();
+    calc();
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.eesc'), initEesc);
+</script>
+
+<style>
+  .eesc {
+    margin: 1.6rem 0 2rem;
+    font-family: var(--ff-display, inherit);
+    color: var(--text);
+  }
+  .eesc-lead {
+    font-size: .92rem; line-height: 1.55; color: var(--text-dim);
+    margin: 0 0 1.1rem;
+  }
+  .eesc-trips { display: flex; flex-direction: column; }
+  .eesc-trip {
+    display: flex; align-items: flex-end; gap: .8rem;
+    padding: .7rem 0;
+    border-top: 1px solid var(--line);
+  }
+  .eesc-num {
+    flex: 0 0 auto; align-self: center;
+    font-size: .8rem; font-weight: 700; color: var(--text-faint);
+    min-width: 1ch;
+  }
+  .eesc-f { display: flex; flex-direction: column; gap: .25rem; flex: 1 1 0; min-width: 0; }
+  .eesc-f > span {
+    font-size: .62rem; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--text-dim);
+  }
+  .eesc-f input[type="date"] {
+    min-height: 44px; padding: .35rem .55rem;
+    border: 1px solid var(--line); background: transparent;
+    font-family: var(--ff-display, inherit); font-size: .9rem; color: var(--text);
+    width: 100%;
+  }
+  .eesc-f input[type="date"]:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .eesc-del {
+    flex: 0 0 auto; align-self: center;
+    min-width: 44px; min-height: 44px;
+    border: 1px solid var(--line); background: transparent;
+    color: var(--text-dim); font-size: 1.1rem; line-height: 1; cursor: pointer;
+    transition: border-color .15s, color .15s;
+  }
+  .eesc-del:hover { color: var(--text); border-color: var(--text-dim); }
+  .eesc-del:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .eesc-add {
+    margin-top: .9rem; min-height: 44px; padding: .35rem .9rem;
+    border: 1px solid var(--line); background: transparent; cursor: pointer;
+    font-family: var(--ff-display, inherit); font-size: .82rem; font-weight: 600;
+    color: var(--text-dim);
+    transition: border-color .15s, color .15s;
+  }
+  .eesc-add:hover { color: var(--text); border-color: var(--gold); }
+  .eesc-add:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .eesc-check {
+    display: flex; align-items: flex-end; gap: .8rem;
+    margin-top: 1.4rem; padding-top: 1.1rem;
+    border-top: 2px solid var(--line-strong, #1b1914);
+  }
+  .eesc-check .eesc-f { flex: 0 0 auto; max-width: 200px; }
+  .eesc-check-hint { font-size: .72rem; color: var(--text-faint); padding-bottom: .7rem; }
+
+  .eesc-out {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem 2rem;
+    margin-top: 1.2rem; padding: 1.1rem 0 0;
+  }
+  .eesc-stat { display: flex; align-items: baseline; gap: .5rem; }
+  .eesc-stat b {
+    font-size: 2.1rem; font-weight: 800; line-height: 1; color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .eesc-stat b.eesc-over { color: var(--gold); }
+  .eesc-stat span { font-size: .82rem; color: var(--text-dim); }
+  .eesc-msg {
+    flex: 1 1 100%; margin: .7rem 0 0;
+    font-size: .9rem; line-height: 1.5; color: var(--text-dim);
+  }
+  .eesc-foot {
+    margin-top: 1.1rem; font-size: .76rem; color: var(--text-faint); line-height: 1.5;
+  }
+  .eesc-foot a { color: var(--text-dim); text-decoration: underline; text-underline-offset: 2px; }
+
+  @media (max-width: 560px) {
+    .eesc-trip { flex-wrap: wrap; gap: .5rem .8rem; }
+    .eesc-f { flex: 1 1 40%; }
+    .eesc-del { align-self: flex-end; }
+  }
+</style>
