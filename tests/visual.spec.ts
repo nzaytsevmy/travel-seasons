@@ -24,6 +24,8 @@ const PAGES = [
   { slug: '/blog/kuda-na-more-s-rebenkom-2026/', name: 'blog-kuda-more-deti' }, // дискавери-пилот: листикл + встроенный чеклист
   { slug: '/packing/',                      name: 'packing-landing' },        // /packing/ landing: 70 country cards
   { slug: '/packing/japan/',                name: 'packing-country-japan' },  // консолидированный хаб: упаковка по сезонам
+  { slug: '/blog/ozero-ritsa-2026/',        name: 'blog-ritsa' },             // support-страница Абхазии: POI + PricingCards
+  { slug: '/blog/novoafonskaya-peschera-2026/', name: 'blog-novoafon' },      // support-страница Абхазии: POI + таблицы
 ];
 
 for (const page of PAGES) {
