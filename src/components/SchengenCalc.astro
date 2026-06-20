@@ -43,6 +43,8 @@ const { heading = 'Калькулятор дней 90/180' } = Astro.props as Pr
     var elLeft = root.querySelector('[data-left]');
     var elMsg = root.querySelector('[data-msg]');
     var LS = 'eesc:trips:v1';
+    // Эталон строки — клонируем серверную (несёт Astro data-astro-cid → scoped-стили).
+    var rowTemplate = tripsBox.querySelector('.eesc-trip').cloneNode(true);
 
     function toUTC(s) {
       if (!s) return null;
@@ -109,14 +111,10 @@ const { heading = 'Калькулятор дней 90/180' } = Astro.props as Pr
       save();
     }
     function makeRow(inV, outV) {
-      var r = document.createElement('div');
-      r.className = 'eesc-trip';
-      r.innerHTML = '<span class="eesc-num"></span>'
-        + '<label class="eesc-f"><span>Въезд</span><input type="date" data-in></label>'
-        + '<label class="eesc-f"><span>Выезд</span><input type="date" data-out></label>'
-        + '<button type="button" class="eesc-del" data-del aria-label="Удалить поездку">×</button>';
-      if (inV) r.querySelector('[data-in]').value = inV;
-      if (outV) r.querySelector('[data-out]').value = outV;
+      var r = rowTemplate.cloneNode(true);
+      r.querySelector('.eesc-num').textContent = '';
+      r.querySelector('[data-in]').value = inV || '';
+      r.querySelector('[data-out]').value = outV || '';
       tripsBox.appendChild(r);
     }
 
@@ -234,8 +232,15 @@ const { heading = 'Калькулятор дней 90/180' } = Astro.props as Pr
   .eesc-foot a { color: var(--text-dim); text-decoration: underline; text-underline-offset: 2px; }
 
   @media (max-width: 560px) {
-    .eesc-trip { flex-wrap: wrap; gap: .5rem .8rem; }
-    .eesc-f { flex: 1 1 40%; }
-    .eesc-del { align-self: flex-end; }
+    .eesc-trip {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      grid-template-areas: "num in del" "num out del";
+      column-gap: .7rem; row-gap: .5rem;
+    }
+    .eesc-num { grid-area: num; align-self: center; }
+    .eesc-f:nth-of-type(1) { grid-area: in; }
+    .eesc-f:nth-of-type(2) { grid-area: out; }
+    .eesc-del { grid-area: del; align-self: center; }
   }
 </style>
