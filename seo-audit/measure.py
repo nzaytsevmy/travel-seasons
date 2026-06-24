@@ -24,10 +24,20 @@ TARGET_PAGES = [
 
 
 def yandex_token():
-    for line in open(Path.home() / ".config" / "tt" / "secrets.env"):
-        if line.startswith("YANDEX_OAUTH_TOKEN"):
-            return line.split("=", 1)[1].strip().strip('"').strip("'")
-    raise RuntimeError("YANDEX_OAUTH_TOKEN не найден")
+    # Keychain-first (macOS), fallback на secrets.env
+    try:
+        import keyring
+        v = keyring.get_password("tt-secrets", "YANDEX_OAUTH_TOKEN")
+        if v:
+            return v
+    except Exception:
+        pass
+    p = Path.home() / ".config" / "tt" / "secrets.env"
+    if p.exists():
+        for line in open(p):
+            if line.startswith("YANDEX_OAUTH_TOKEN"):
+                return line.split("=", 1)[1].strip().strip('"').strip("'")
+    raise RuntimeError("YANDEX_OAUTH_TOKEN не найден (Keychain/secrets.env)")
 
 
 def pull_gsc():
