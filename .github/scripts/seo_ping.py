@@ -42,8 +42,9 @@ def file_to_url(path: str) -> str | None:
     """Map a repo path to its public URL, or None if it doesn't have one."""
     p = path.replace("\\", "/")
 
-    if p.startswith("src/content/blog/") and p.endswith(".md"):
-        slug = p.rsplit("/", 1)[1][: -len(".md")]
+    if p.startswith("src/content/blog/") and (p.endswith(".md") or p.endswith(".mdx")):
+        ext = ".mdx" if p.endswith(".mdx") else ".md"
+        slug = p.rsplit("/", 1)[1][: -len(ext)]
         return f"{SITE}/blog/{slug}/"
 
     if p.startswith("src/pages/") and p.endswith(".astro"):
