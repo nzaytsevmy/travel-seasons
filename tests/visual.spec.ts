@@ -64,7 +64,13 @@ for (const page of PAGES) {
       const imgs = Array.from(document.querySelectorAll('img')) as HTMLImageElement[];
       await Promise.all(imgs.map(img => img.decode().catch(() => {})));
     });
-    await expect(pwPage).toHaveScreenshot(`${page.name}.png`, { fullPage: true });
+    // Листинговые страницы (home/blog-index) клипуем до вьюпорта вместо fullPage:
+    // fullPage снимает весь список постов → baseline 12-16 МБ И меняется на КАЖДЫЙ новый
+    // пост (раздувает git ~60 МБ/пост). Верхний регион ловит регрессии сетки/шапки;
+    // отдельные карточки покрыты своими baseline'ами + content-invariants. Контентные
+    // страницы остаются fullPage.
+    const listing = page.name === 'home' || page.name === 'blog-index';
+    await expect(pwPage).toHaveScreenshot(`${page.name}.png`, { fullPage: !listing });
   });
 
   test(`${page.name} — no overflow horizontal`, async ({ page: pwPage }) => {
