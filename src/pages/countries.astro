@@ -191,11 +191,12 @@ const ldJson = {
   .cf-row { display: flex; align-items: center; flex-wrap: wrap; gap: .35rem 1.1rem; }
   .cf-lbl { font-size: .66rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text-faint); flex: none; width: 4.4rem; }
   .cf-lbl--sort { width: auto; margin-left: .4rem; }
-  .cf-opts { display: flex; flex-wrap: wrap; gap: .15rem .9rem; }
-  .cf-t { font: inherit; font-size: .9rem; font-weight: 500; color: var(--text); background: none; border: none; padding: 0 .1rem; min-height: 44px; display: inline-flex; align-items: center; gap: .25rem; cursor: pointer; text-decoration: 2px underline transparent; text-underline-offset: 5px; }
+  .cf-opts { display: flex; flex-wrap: wrap; gap: .4rem; }
+  /* hairline-чипы как на главной (.fopts .t): рамка → читаются как кнопки; активный = gold-рамка + лёгкий фон */
+  .cf-t { font: inherit; font-size: .9rem; font-weight: 500; color: var(--text-faint); background: none; border: 1px solid var(--line); padding: 0 .7rem; min-height: 44px; display: inline-flex; align-items: center; gap: .25rem; cursor: pointer; text-decoration: none; transition: border-color .15s, color .15s, background .15s; }
   .cf-t i { font-style: normal; font-size: .7rem; color: var(--text-faint); }
-  .cf-t:hover { text-decoration-color: var(--line); }
-  .cf-t.on { color: var(--gold); text-decoration-color: var(--gold); }
+  .cf-t:hover { border-color: var(--text-faint); color: var(--text); }
+  .cf-t.on { border-color: var(--gold); color: var(--gold); background: rgba(142, 102, 24, 0.06); }
   .cf-t.on i { color: var(--gold); }
   .cf-sel { font: inherit; font-size: .9rem; min-height: 44px; padding: 0 1.6rem 0 .1rem; border: none; border-bottom: 2px solid var(--text); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' fill='none' stroke='%231b1914' stroke-width='1.8'%3E%3Cpath d='M1 1l3.5 3.5L8 1'/%3E%3C/svg%3E") right .1rem center no-repeat; -webkit-appearance: none; appearance: none; color: var(--text); cursor: pointer; }
   .cf-count { font-size: .85rem; color: var(--text-faint); margin: .1rem 0 0; }
