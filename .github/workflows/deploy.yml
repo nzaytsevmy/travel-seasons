@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
 
+# Сериализуем деплои: при быстрых мержах рейс «кто допушил последним» затирал прод
+# промежуточным SHA. Очередь по группе, без cancel — текущий rsync доезжает, последний main деплоится последним.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
 permissions:
   contents: read
 
