@@ -680,20 +680,36 @@ footer {
   white-space: nowrap;
 }
 
-/* Benefit-CTA — заметная кликабельная ссылка-действие внутри текста */
+/* Benefit-CTA — заметная кликабельная ссылка-действие; underline-reveal на hover (тренд-2026, CSS-only → INP-safe) */
 .aff-cta {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.3em;
   font-weight: 600;
   color: var(--gold);
   text-decoration: none;
-  border-bottom: 1.5px solid rgba(201, 151, 58, 0.35);
-  transition: border-color 0.15s, color 0.15s;
+  border-bottom: 1.5px solid rgba(201, 151, 58, 0.35);   /* в покое — тонкое подчёркивание (affordance клика) */
+  transition: color 0.15s;
 }
-.aff-cta:hover { color: var(--gold-dim); border-bottom-color: var(--gold); }
-.aff-cta::after { content: '→'; transition: transform 0.15s; display: inline-block; }
+/* золотая линия «прорисовывается» слева-направо поверх покойной — единственная стрелка через ::after */
+.aff-cta::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -1.5px;
+  height: 1.5px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+.aff-cta:hover { color: var(--gold-dim); }
+.aff-cta:hover::before { transform: scaleX(1); }
+.aff-cta::after { content: '→'; display: inline-block; transition: transform 0.15s; }
 .aff-cta:hover::after { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) {
+  .aff-cta::before, .aff-cta::after { transition: none; }
+}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    СЕТКА 2026 — web design канон (12-8-4, gutter 16px). Переиспользуемые утилиты,
