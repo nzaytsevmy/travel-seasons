@@ -80,7 +80,7 @@ const ldJson = {
     {
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type":"Question", "name":"Сколько стоит поездка из Москвы в 2026?", "acceptedAnswer":{"@type":"Answer","text":"Зависит от направления и сезона. Турция в комфортном варианте на 7 дней — около 90–110 тысяч ₽ на одного. Грузия — 50–70 тысяч ₽. Бали — 130–180 тысяч ₽."} },
+        { "@type":"Question", "name":"Сколько стоит поездка из Москвы в 2026?", "acceptedAnswer":{"@type":"Answer","text":"Зависит от направления и сезона. Турция в комфортном варианте на 7 дней — около 90–110 тысяч ₽ на одного. Грузия — 50–70 тысяч ₽. Бали — 130–180 тысяч ₽."} },
         { "@type":"Question", "name":"Как учитывается сезонность?", "acceptedAnswer":{"@type":"Answer","text":"Каждая страна имеет 12-месячный рейтинг: пик +30%, хорошо ±0%, нормально −15%, не сезон −30%. Подсвечивает лучший месяц."} },
         { "@type":"Question", "name":"Сравнение нескольких направлений?", "acceptedAnswer":{"@type":"Answer","text":"Да, до 3 стран с одинаковыми параметрами."} },
         { "@type":"Question", "name":"Откуда цены?", "acceptedAnswer":{"@type":"Answer","text":"Базовые — вручную по средней Aviasales / медиане Ostrovok. Реальные траты — 12 источников: Самокатус, make-trip, BudgetYourTrip, IndieTraveller и др."} },
@@ -119,7 +119,7 @@ const ldJson = {
         <p class="tc-byline">
           <a href="/about/" class="tc-byline-author">Никита Зайцев</a> ·
           <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
-          <span class="tc-byline-method">методика: базовые цены — медиана Aviasales / Островок, реальные траты — 12 источников (Самокатус, BudgetYourTrip, IndieTraveller и др.), курс ₽ в реальном времени · обновлено {DATA_UPDATED_RU}</span>
+          <span class="tc-byline-method">методика: базовые цены — медиана Aviasales / Островок, реальные траты — 12 источников (Самокатус, BudgetYourTrip, IndieTraveller и др.), курс ₽ в реальном времени · обновлено {DATA_UPDATED_RU}</span>
         </p>
       </div>
     </section>
@@ -200,7 +200,7 @@ const ldJson = {
                 </optgroup>
               ))}
             </select>
-            <span class="tc-rate" id="calcRateLabel">1 $ = 90 ₽ · загрузка курса…</span>
+            <span class="tc-rate" id="calcRateLabel">1 $ = 90 ₽ · загрузка курса…</span>
           </div>
         </form>
       </div>
@@ -247,11 +247,11 @@ const ldJson = {
           </li>
           <li class="tc-tip-row">
             <h3 class="tc-tip-title">Страховка не опция</h3>
-            <p class="tc-tip-body">Стоит 2 000 ₽, спасает от $20 000+ медрасходов в Европе или США.</p>
+            <p class="tc-tip-body">Стоит 2 000 ₽, спасает от $20 000+ медрасходов в Европе или США.</p>
           </li>
           <li class="tc-tip-row">
             <h3 class="tc-tip-title">eSIM вместо роуминга</h3>
-            <p class="tc-tip-body">Airalo 1 500 ₽ за 10 ГБ против МТС 5 000 ₽ за неделю.</p>
+            <p class="tc-tip-body">Airalo 1 500 ₽ за 10 ГБ против МТС 5 000 ₽ за неделю.</p>
           </li>
           <li class="tc-tip-row">
             <h3 class="tc-tip-title">Семья экономит</h3>
@@ -263,7 +263,7 @@ const ldJson = {
           </li>
           <li class="tc-tip-row">
             <h3 class="tc-tip-title">Виза не приговор</h3>
-            <p class="tc-tip-body">Шенген ~12 000 ₽. На фоне 150–200к поездки — 6–8%, не повод отказывать.</p>
+            <p class="tc-tip-body">Шенген ~12 000 ₽. На фоне 150–200к поездки — 6–8%, не повод отказывать.</p>
           </li>
         </ul>
 
@@ -306,7 +306,7 @@ const ldJson = {
           </details>
           <details class="tc-faq-item">
             <summary>Учитывает ли курс рубля?</summary>
-            <p>Да, в реальном времени через open exchange rates. Переключение ₽/$ одной кнопкой.</p>
+            <p>Да, в реальном времени через open exchange rates. Переключение ₽/$ одной кнопкой.</p>
           </details>
         </div>
       </div>
@@ -401,19 +401,19 @@ async function fetchRate() {
     const d = await r.json();
     if (d.result === 'success' && d.rates?.RUB) {
       RUB = d.rates.RUB;
-      if (rateEl) rateEl.textContent = `1 $ = ${RUB.toFixed(2)} ₽`;
+      if (rateEl) rateEl.textContent = `1 $ = ${RUB.toFixed(2)} ₽`;
       renderCalc();
       return;
     }
   } catch (e) {}
-  if (rateEl) rateEl.textContent = '1 $ ≈ 90 ₽';
+  if (rateEl) rateEl.textContent = '1 $ ≈ 90 ₽';
 }
 
 function fmt(usd) {
   if (!usd || isNaN(usd)) return '—';
   return calcCurrency === 'rub'
-    ? Math.round(usd * RUB).toLocaleString('ru-RU') + ' ₽'
-    : Math.round(usd).toLocaleString('en-US') + ' $';
+    ? Math.round(usd * RUB).toLocaleString('ru-RU') + ' ₽'
+    : Math.round(usd).toLocaleString('en-US') + ' $';
 }
 
 function aviasalesUrl(iata, monthNum) {
