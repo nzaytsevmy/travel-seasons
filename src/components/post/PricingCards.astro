@@ -1,7 +1,7 @@
 ---
-// Swiss comparison grid (BRANDBOOK §4/§5): hairlines, ноль radius/shadow.
-// Transposed grid 2026: три ряда (head / price / features), колонки = тарифы.
-// Container queries 12-8-4; без subgrid и display:contents.
+// Swiss comparison grid (BRANDBOOK §4/§5): hairlines only, no radius/shadow.
+// Card-first layout: каждая колонка цельная карточка (head -> price -> features),
+// с ровными рядами через subgrid на tablet/desktop.
 interface Tier {
   tier: string;
   price: string;
@@ -19,81 +19,88 @@ interface Props {
 const { tiers, caption } = Astro.props;
 const colClass = `pricing-cards--cols-${tiers.length}`;
 ---
-<div class="pricing-cards-wrap">
 <div
   class={`pricing-cards ${colClass}`}
   role="region"
   aria-label={caption || 'Сравнение'}
 >
   {tiers.map((t, i) => (
-    <div class={`pc-head ${t.featured ? 'pc-cell--featured' : ''}`}>
-      <span class="pc-idx">{String(i + 1).padStart(2, '0')}</span>
-      <span class="pc-tier">{t.tier}</span>
-      {(t.badge || t.featured) && <span class="pc-badge">{t.badge || 'Оптимально'}</span>}
-    </div>
+    <article class={`pc-card ${t.featured ? 'pc-card--featured' : ''}`}>
+      <div class="pc-head">
+        <span class="pc-idx">{String(i + 1).padStart(2, '0')}</span>
+        <span class="pc-tier">{t.tier}</span>
+        {(t.badge || t.featured) && <span class="pc-badge">{t.badge || 'Оптимально'}</span>}
+      </div>
+      <div class="pc-price-wrap">
+        <div class="pc-price">{t.price}</div>
+        {t.priceNote && <div class="pc-price-note">{t.priceNote}</div>}
+      </div>
+      <ul class="pc-features">
+        {t.features.map((f) => (
+          <li>
+            <span class="pc-check" aria-hidden="true">
+              <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 8.5 6.5 12 13 4.5"></polyline>
+              </svg>
+            </span>
+            <span>{f}</span>
+          </li>
+        ))}
+      </ul>
+    </article>
   ))}
-  {tiers.map((t) => (
-    <div class={`pc-price-wrap ${t.featured ? 'pc-cell--featured' : ''}`}>
-      <div class="pc-price">{t.price}</div>
-      {t.priceNote && <div class="pc-price-note">{t.priceNote}</div>}
-    </div>
-  ))}
-  {tiers.map((t) => (
-    <ul class={`pc-features ${t.featured ? 'pc-cell--featured' : ''}`}>
-      {t.features.map((f) => (
-        <li>
-          <span class="pc-check" aria-hidden="true">
-            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 8.5 6.5 12 13 4.5"></polyline>
-            </svg>
-          </span>
-          <span>{f}</span>
-        </li>
-      ))}
-    </ul>
-  ))}
-</div>
 </div>
 
 <style>
-/* Обёртка = query container (сам контейнер нельзя стилизовать из @container) */
-.pricing-cards-wrap {
-  container-type: inline-size;
-  container-name: pricing;
-  margin: 2rem 0 2.5rem;
-}
-
 .pricing-cards {
   display: grid;
-  margin: 0;
+  grid-template-columns: 1fr;
+  margin: 2rem 0 2.5rem;
   border-top: 2px solid var(--line);
+  row-gap: 0;
+  column-gap: 0;
+}
+
+.pc-card {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--line);
+  padding: 1.2rem 0;
+}
+
+.pc-card--featured {
+  border-top: 2px solid var(--gold);
+  margin-top: -1px;
 }
 
 .pc-head,
 .pc-price-wrap,
 .pc-features {
-  padding: 1.3rem 1.3rem 1.4rem;
+  padding: 0 0.2rem;
   min-width: 0;
 }
 
 .pc-head {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 0.5rem;
+  row-gap: 0.15rem;
   align-items: baseline;
-  flex-wrap: wrap;
-  gap: 0.5rem;
   font-size: 0.7rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  align-self: end;
 }
 
 .pc-price-wrap {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  padding-top: 0;
+  padding-top: 0.85rem;
   padding-bottom: 0.9rem;
   border-bottom: 1px solid var(--line);
+  /* Container для cqi-масштаба цены. На .pc-price-wrap (а не .pc-card),
+     чтобы не сломать subgrid-выравнивание рядов карточки. */
+  container-type: inline-size;
 }
 
 .pc-features {
@@ -106,21 +113,40 @@ const colClass = `pricing-cards--cols-${tiers.length}`;
   align-self: start;
 }
 
-.pc-idx { font-weight: 700; color: var(--gold); font-variant-numeric: tabular-nums; }
-.pc-tier { font-weight: 700; color: var(--text-dim); }
-.pc-cell--featured .pc-tier { color: var(--gold); }
-.pc-badge { font-size: 0.62rem; letter-spacing: 0.1em; font-weight: 700; color: var(--gold); }
+.pc-idx {
+  font-weight: 700;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+  grid-column: 1;
+  align-self: start;
+}
+.pc-tier {
+  font-weight: 700;
+  color: var(--text-dim);
+  grid-column: 2;
+  min-width: 0;
+}
+.pc-card--featured .pc-tier { color: var(--gold); }
+.pc-badge {
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: var(--gold);
+  grid-column: 2;
+}
 
 .pc-price {
-  font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+  /* cqi = доля ширины карточки: цена всегда умещается в одну строку,
+     не переносясь в узких десктоп-колонках; clamp держит верх/низ. */
+  font-size: clamp(1.2rem, 9.5cqi, 1.6rem);
   font-weight: 800;
   color: var(--text);
   line-height: 1.1;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums lining-nums;
-  text-wrap: balance;
+  white-space: nowrap;
 }
-.pc-cell--featured .pc-price { color: var(--gold); }
+.pc-card--featured .pc-price { color: var(--gold); }
 .pc-price-note { font-size: 0.76rem; color: var(--text-faint); }
 
 .pc-features li {
@@ -133,53 +159,53 @@ const colClass = `pricing-cards--cols-${tiers.length}`;
 }
 .pc-check { flex: 0 0 auto; color: var(--gold); margin-top: 2px; }
 
-.pc-cell--featured { border-left: 3px solid var(--gold); }
+/* Tablet: 2 columns */
+@media (min-width: 560px) {
+  .pricing-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto auto auto;
+  }
 
-/* ── Мобайл (<560): 1 колонка ── */
-@container pricing (max-width: 559px) {
-  .pricing-cards { grid-template-columns: 1fr; }
+  .pc-card {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 3;
+    padding: 1.25rem 1.3rem 1.35rem;
+    border-left: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    border-top: none;
+    margin-top: 0;
+  }
+
+  .pc-card:nth-child(2n + 1) { border-left: none; }
+  .pc-card--featured { border-left: 3px solid var(--gold); }
 
   .pc-head,
   .pc-price-wrap,
   .pc-features {
     padding-left: 0;
     padding-right: 0;
-    border-left: none;
   }
 
-  .pc-head {
-    padding-top: 1.2rem;
-    border-top: 1px solid var(--line);
-  }
-  .pc-head:first-child { border-top: none; }
-  .pc-cell--featured.pc-head {
-    border-top: 2px solid var(--gold);
-    margin-top: -1px;
-  }
-  .pc-head:first-child.pc-cell--featured { margin-top: 0; }
-  .pc-features { padding-bottom: 1.2rem; }
+  .pc-price-wrap { padding-top: 0; }
+  .pc-features { padding-bottom: 0; }
 }
 
-/* ── Планшет (560–799): 2 колонки ── */
-@container pricing (min-width: 560px) and (max-width: 799px) {
-  .pricing-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .pricing-cards > :nth-child(2n) { border-left: 1px solid var(--line); }
-  .pricing-cards > .pc-cell--featured { border-left: 3px solid var(--gold); }
-}
-
-/* ── Десктоп (≥800): N колонок по числу тарифов ── */
-@container pricing (min-width: 800px) {
+/* Desktop: N columns by tier count (2..5) */
+@media (min-width: 1024px) {
   .pricing-cards--cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pricing-cards--cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .pricing-cards--cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .pricing-cards--cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 
-  .pricing-cards--cols-2 > :nth-child(2n),
-  .pricing-cards--cols-3 > :not(:nth-child(3n+1)),
-  .pricing-cards--cols-4 > :not(:nth-child(4n+1)),
-  .pricing-cards--cols-5 > :not(:nth-child(5n+1)) {
-    border-left: 1px solid var(--line);
+  .pc-card { border-left: 1px solid var(--line); }
+  .pricing-cards--cols-2 .pc-card:nth-child(2n + 1),
+  .pricing-cards--cols-3 .pc-card:nth-child(3n + 1),
+  .pricing-cards--cols-4 .pc-card:nth-child(4n + 1),
+  .pricing-cards--cols-5 .pc-card:nth-child(5n + 1) {
+    border-left: none;
   }
-  .pricing-cards > .pc-cell--featured { border-left: 3px solid var(--gold); }
+
+  .pc-card--featured { border-left: 3px solid var(--gold); }
 }
 </style>
