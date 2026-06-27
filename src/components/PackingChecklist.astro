@@ -425,6 +425,8 @@ const title = heading || presetCfg.title;
   @media (max-width: 600px) {
     .pck-filters { gap: .9rem 1.2rem; }
     .pck-bar { flex-direction: column; align-items: stretch; }
+    /* в column flex-basis задаёт высоту: сбросить, иначе прогресс раздувается до 220px */
+    .pck-progress { flex: 0 0 auto; }
   }
 
   /* Печать: только чистый список без управления */
