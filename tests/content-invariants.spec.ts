@@ -77,3 +77,17 @@ test('Текст читателю: нет внутренних имён файл
   }
   expect(bad, JSON.stringify(bad, null, 2)).toEqual([]);
 });
+
+test('Партнёрские CTA: нет литеральной → в тексте .aff-cta (CSS ::after даёт одну — литерал = двойная)', () => {
+  // .aff-cta::after { content: '→' } рисует стрелку. Если автор впишет → в текст mdx — двойная.
+  const re = /<a\b[^>]*class="[^"]*aff-cta[^"]*"[^>]*>([^<]*)<\/a>/gi;
+  const bad: { file: string; text: string }[] = [];
+  for (const f of files) {
+    const html = readFileSync(f, 'utf8');
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(html))) {
+      if (m[1].includes('→')) bad.push({ file: f.replace(DIST, ''), text: m[1].trim().slice(0, 60) });
+    }
+  }
+  expect(bad, JSON.stringify(bad, null, 2)).toEqual([]);
+});
