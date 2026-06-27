@@ -918,7 +918,7 @@ header {
   max-width: 1400px; margin: 0 auto 2rem; padding: 2.4rem clamp(1rem, 4vw, 3rem) 0;
   display: flex; flex-direction: column; gap: 0.5rem;
 }
-header::before {
+header:not(.panel-header)::before {   /* eyebrow только у героя страницы; .panel-header — тоже <header>, не протекать в панель */
   content: "DEPARTURES · СЕЗОННОЕ ТАБЛО · 2026";
   font-family: var(--ff-mono); font-size: 11px; font-weight: 500;
   letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold);
