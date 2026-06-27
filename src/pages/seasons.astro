@@ -391,7 +391,6 @@ const pricesUpdatedAt = pricesData.updatedAt
         <span class="panel-block-label">Что важно знать</span>
         <p id="panelNegativeText"></p>
       </div>
-      <div class="panel-spacer"></div>
       <div id="panelPrice" class="panel-block panel-price" hidden>
         <span class="panel-block-label">Билет из Москвы</span>
         <p id="panelPriceText"></p>
@@ -918,7 +917,7 @@ header {
   max-width: 1400px; margin: 0 auto 2rem; padding: 2.4rem clamp(1rem, 4vw, 3rem) 0;
   display: flex; flex-direction: column; gap: 0.5rem;
 }
-header::before {
+header:not(.panel-header)::before {   /* eyebrow только у героя страницы; .panel-header — тоже <header>, не протекать в панель */
   content: "DEPARTURES · СЕЗОННОЕ ТАБЛО · 2026";
   font-family: var(--ff-mono); font-size: 11px; font-weight: 500;
   letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold);
@@ -1042,9 +1041,6 @@ h1 em { color: var(--gold); font-style: normal; }
 .panel-note p { color: var(--text); font-style: italic; }
 .panel-negative { border-left-color: var(--bad); }
 .panel-price { border-left-color: var(--peak); }
-
-/* прижимает цену к футеру, контент — к верху */
-.panel-spacer { flex: 1; min-height: 0; }
 
 .panel-footer {
   flex-shrink: 0;
