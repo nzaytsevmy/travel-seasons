@@ -58,7 +58,7 @@ const VISA_DETAILS = {
   'dominican-republic':  { duration: '30 дней (до 90)',        cost: '$10 в билете',  timing: 'e-Ticket онлайн' },
   'argentina':           { duration: '90 дней',                cost: 'бесплатно',     timing: 'штамп на границе' },
   'brazil':              { duration: '90 дней (до 180)',       cost: 'бесплатно',     timing: 'штамп на границе' },
-  'peru':                { duration: '183 дня',                cost: 'бесплатно',     timing: 'онлайн-рег. 72 ч с 2026' },
+  'peru':                { duration: '90 дней (за полгода)',   cost: 'бесплатно',     timing: 'онлайн-рег. 72 ч с 2026' },
   'chile':               { duration: '90 дней',                cost: 'бесплатно',     timing: 'Tarjeta Única' },
   'chile-patagonia':     { duration: '90 дней',                cost: 'бесплатно',     timing: 'Tarjeta Única (Чили)' },
   'chile-fjords':        { duration: '90 дней',                cost: 'бесплатно',     timing: 'Tarjeta Única (Чили)' },
