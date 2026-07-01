@@ -3,13 +3,14 @@ import Layout from '../../../layouts/Layout.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import Footer from '../../../components/Footer.astro';
 import { COUNTRIES, MONTHS, getCountryMonthPaths } from '../../../data/programmatic-seasons.js';
-import { DATA_UPDATED_RU } from '../../../data/meta.js';
+import { DATA_UPDATED_RU, yearForMonth } from '../../../data/meta.js';
 
 export function getStaticPaths() {
   return getCountryMonthPaths();
 }
 
 const { country, monthKey, monthMeta, data } = Astro.props;
+const yr = yearForMonth(monthMeta.num);
 const P = country.prep ?? 'в';  // предлог направления: 'на' для островов (Бали, Куба, Мальдивы)
 
 const url = `https://traveltribe.ru/seasons/${country.slug}/${monthKey}/`;
@@ -17,8 +18,8 @@ const url = `https://traveltribe.ru/seasons/${country.slug}/${monthKey}/`;
 // country×month интент, оба ранжируются и делят сигнал). /trips — канон-система
 // (полный каталог 852 + все топ-эрнеры), сюда и консолидируем сигнал.
 const canonicalUrl = `https://traveltribe.ru/trips/${monthKey}/${country.slug}/`;
-const title = `${country.name} в ${monthMeta.loc} 2026: погода, цены, что делать`;
-const description = `${country.name} в ${monthMeta.loc} 2026: ${data.weather.day} °C днём, море ${data.weather.sea} °C, бюджет от $${data.budget.low}/день. Сезон ${data.seasonLevel}, перелёт ${data.flight}. Что смотреть и стоит ли ехать.`;
+const title = `${country.name} в ${monthMeta.loc} ${yr}: погода, цены, что делать`;
+const description = `${country.name} в ${monthMeta.loc} ${yr}: ${data.weather.day} °C днём, море ${data.weather.sea} °C, бюджет от $${data.budget.low}/день. Сезон ${data.seasonLevel}, перелёт ${data.flight}. Что смотреть и стоит ли ехать.`;
 
 // TL;DR — кратко на основе данных
 const tldr = `В ${monthMeta.loc} ${P} ${country.nameLoc} ${data.weather.day} °C днём и ${data.weather.night} °C ночью, море ${data.weather.sea} °C. Сезон — ${data.seasonLevel}. Перелёт из Москвы: ${data.flight}. Бюджет: от $${data.budget.low}/день (эконом) до $${data.budget.high}/день (премиум). ${data.weatherDesc}`;
@@ -26,7 +27,7 @@ const tldr = `В ${monthMeta.loc} ${P} ${country.nameLoc} ${data.weather.day} °
 // FAQ — генерируется из данных, плюс универсальные вопросы
 const faqs = [
   {
-    q: `Какая погода ${P} ${country.nameLoc} в ${monthMeta.loc} 2026?`,
+    q: `Какая погода ${P} ${country.nameLoc} в ${monthMeta.loc} ${yr}?`,
     a: `Днём ${data.weather.day} °C, ночью ${data.weather.night} °C, море ${data.weather.sea} °C. Дождливых дней в месяц — около ${data.weather.rainDays}, влажность ${data.weather.humidity}%. ${data.weatherDesc}`,
   },
   {
@@ -34,7 +35,7 @@ const faqs = [
     a: `Бюджет на одного: эконом от $${data.budget.low}/день, комфорт $${data.budget.mid}/день, премиум от $${data.budget.high}/день. Перелёт из Москвы: ${data.flight}. Сезон ${data.seasonLevel} — цены ${data.seasonLevel === 'высокий' ? 'на максимуме' : data.seasonLevel === 'низкий' ? 'минимальные' : 'умеренные'}.`,
   },
   {
-    q: `Нужна ли виза ${P} ${country.nameAcc} россиянам в 2026?`,
+    q: `Нужна ли виза ${P} ${country.nameAcc} россиянам в ${yr}?`,
     a: country.visa,
   },
   {
@@ -45,7 +46,7 @@ const faqs = [
 
 if (data.events && data.events.length > 0) {
   faqs.push({
-    q: `Какие события и фестивали ${P} ${country.nameLoc} в ${monthMeta.loc} 2026?`,
+    q: `Какие события и фестивали ${P} ${country.nameLoc} в ${monthMeta.loc} ${yr}?`,
     a: data.events.map(e => `${e.name} (${e.dates}): ${e.note}`).join(' '),
   });
 }
@@ -65,7 +66,7 @@ const ldJson = {
       'mainEntityOfPage': { '@type': 'WebPage', '@id': url },
       'inLanguage': 'ru-RU',
       'about': { '@type': 'Place', 'name': country.name },
-      'temporalCoverage': `2026-${String(monthMeta.num).padStart(2, '0')}`,
+      'temporalCoverage': `${yr}-${String(monthMeta.num).padStart(2, '0')}`,
     },
     {
       '@type': 'BreadcrumbList',
@@ -100,8 +101,8 @@ const otherMonths = Object.keys(country.months).filter(m => m !== monthKey);
 
   <main id="main" class="seasons-page">
     <header class="seasons-header">
-      <p class="seasons-tag">{country.name} · {monthMeta.name} 2026</p>
-      <h1>{country.name} в {monthMeta.loc} 2026: погода, цены, что делать</h1>
+      <p class="seasons-tag">{country.name} · {monthMeta.name} {yr}</p>
+      <h1>{country.name} в {monthMeta.loc} {yr}: погода, цены, что делать</h1>
       <p class="seasons-tldr">{tldr}</p>
       <p class="seasons-byline">
         <a href="/about/" class="byline-author">Никита Зайцев</a> ·
@@ -176,7 +177,7 @@ const otherMonths = Object.keys(country.months).filter(m => m !== monthKey);
 
     {data.events && data.events.length > 0 && (
       <section class="seasons-section">
-        <h2 id="events">Какие события и фестивали {P} {country.nameLoc} в {monthMeta.loc} 2026?</h2>
+        <h2 id="events">Какие события и фестивали {P} {country.nameLoc} в {monthMeta.loc} {yr}?</h2>
         <div class="events-list">
           {data.events.map(e => (
             <div class="event">
@@ -209,7 +210,7 @@ const otherMonths = Object.keys(country.months).filter(m => m !== monthKey);
       <h2 id="visa">Виза {P} {country.nameAcc} для россиян</h2>
       <p>{country.visa}</p>
       {country.guideUrl && (
-        <p><a href={country.guideUrl}>Полный гайд по {country.nameLoc} 2026 →</a></p>
+        <p><a href={country.guideUrl}>Полный гайд по {country.nameLoc} {yr} →</a></p>
       )}
     </section>
 
@@ -242,8 +243,8 @@ const otherMonths = Object.keys(country.months).filter(m => m !== monthKey);
       <ul class="related-list">
         <li><a href="/seasons/">Сезоны для всех 70 стран</a> — выбор страны под месяц</li>
         <li><a href="/calculator/">Калькулятор бюджета поездки</a> — посчитай свою поездку</li>
-        {country.guideUrl && <li><a href={country.guideUrl}>Полный гайд по {country.nameLoc} 2026</a></li>}
-        {country.visaUrl && <li><a href={country.visaUrl}>Виза {P} {country.nameAcc} 2026</a></li>}
+        {country.guideUrl && <li><a href={country.guideUrl}>Полный гайд по {country.nameLoc} {yr}</a></li>}
+        {country.visaUrl && <li><a href={country.visaUrl}>Виза {P} {country.nameAcc} {yr}</a></li>}
       </ul>
     </section>
   </main>
