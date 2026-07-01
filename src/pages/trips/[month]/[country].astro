@@ -9,7 +9,7 @@ import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
 import { COUNTRIES as RICH_COUNTRIES } from '../../../data/programmatic-seasons.js';
 import { NICHE_TRIPS } from '../../../data/niche-trips.js';
 import { TP_LINKS, aviasalesRoute } from '../../../data/affiliate.js';
-import { DATA_UPDATED_RU } from '../../../data/meta.js';
+import { DATA_UPDATED_RU, yearForMonth } from '../../../data/meta.js';
 
 export async function getStaticPaths() {
   const paths = [];
@@ -24,6 +24,7 @@ export async function getStaticPaths() {
 const { m, d } = Astro.props;
 const url = `https://traveltribe.ru/trips/${m.slug}/${d.slug}/`;
 const monthIdx = MONTHS.findIndex((x) => x.slug === m.slug);
+const yr = yearForMonth(monthIdx + 1);
 const status = d.r[monthIdx];
 const text = d.t[monthIdx];
 // Богатые данные по месяцу (погода/события/что смотреть) — есть для части стран
@@ -101,9 +102,9 @@ const budgetSummary = hasPrices && weekTotal
   : 'Точные цены — в калькуляторе поездки.';
 
 const FAQS = [
-  { q: `Стоит ли ехать ${d.cases.vP} в ${m.prep} 2026?`, a: `${verdictForMonth} ${text}`.trim() },
-  { q: `Сколько стоит неделя ${d.cases.loc} в ${m.prep} 2026?`, a: budgetSummary },
-  { q: `Какая виза нужна россиянам ${d.cases.vP} в 2026?`, a: `${visaLine}. Детали — на странице визы.` },
+  { q: `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}?`, a: `${verdictForMonth} ${text}`.trim() },
+  { q: `Сколько стоит неделя ${d.cases.loc} в ${m.prep} ${yr}?`, a: budgetSummary },
+  { q: `Какая виза нужна россиянам ${d.cases.vP} в ${yr}?`, a: `${visaLine}. Детали — на странице визы.` },
   { q: `Когда лучше ехать ${d.cases.vP}?`, a: `Лучшие месяцы для поездки: ${bestMonthsStr}. Сравнить все 12 месяцев — таблица ниже.` },
 ];
 
@@ -114,8 +115,8 @@ const ldJson = {
       "@type": "Article",
       "@id": `${url}#article`,
       "url": url,
-      "headline": `${d.cases.nom} в ${m.prep} 2026: погода, цены, виза`,
-      "description": `Стоит ли ехать ${d.cases.vP} в ${m.prep} 2026: погода, цены на перелёт и отель, виза для россиян. ${lbl.verdict}.`,
+      "headline": `${d.cases.nom} в ${m.prep} ${yr}: погода, цены, виза`,
+      "description": `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}: погода, цены на перелёт и отель, виза для россиян. ${lbl.verdict}.`,
       "inLanguage": "ru-RU",
       "datePublished": "2026-05-10",
       "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://traveltribe.ru/about/" },
@@ -145,11 +146,11 @@ const ldJson = {
 const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
 ---
 <Layout
-  title={`${d.cases.nom} в ${m.prep} 2026: погода, цены, виза`}
-  description={`Стоит ли ехать ${d.cases.vP} в ${m.prep} 2026 — погода, цены, виза для россиян, бюджет на неделю. ${lbl.verdict}.`}
+  title={`${d.cases.nom} в ${m.prep} ${yr}: погода, цены, виза`}
+  description={`Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr} — погода, цены, виза для россиян, бюджет на неделю. ${lbl.verdict}.`}
   canonical={url}
   noindex={status === 'X' || NICHE_TRIPS.has(d.slug)}
-  ogTitle={`${d.cases.nom} в ${m.prep} 2026`}
+  ogTitle={`${d.cases.nom} в ${m.prep} ${yr}`}
   ogDescription={`${lbl.tag}. ${text.slice(0, 130)}`}
   ogType="article"
   ldJson={ldJson}
@@ -163,9 +164,9 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
   <main id="main" class="sw">
     <div class="wrap">
       <header class="hero grid">
-        <div class="idx"><span class={`st st-${lbl.cls}`}>{lbl.tag}</span><b>{monthCap} 2026</b></div>
+        <div class="idx"><span class={`st st-${lbl.cls}`}>{lbl.tag}</span><b>{monthCap} {yr}</b></div>
         <div class="meta">Сезоны и визы<br><b>актуальны на {DATA_UPDATED_RU}</b></div>
-        <h1 class="h1">{d.cases.nom} <span class="rd">в {m.prep}</span> 2026</h1>
+        <h1 class="h1">{d.cases.nom} <span class="rd">в {m.prep}</span> {yr}</h1>
         <p class="sub">{lbl.verdict}. {d.region} — {d.sub}.</p>
         <p class="byl">
           <a href="/about/" class="byl-a">Никита Зайцев</a> ·
@@ -265,7 +266,7 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
       {(status === 'P' || status === 'G') && !rich && (
         <section class="sec">
           <div class="shead"><h2><span class="no">05</span>Что делать {d.cases.loc} в {m.prep}</h2></div>
-          <p class="txt">{monthCap} 2026 — один из лучших месяцев для поездки {d.cases.vP}. Погода и цены сходятся в окне комфорта. Закладывайте 7–14 дней, бронировать минимум за 2 месяца до вылета — на пиковые даты места разлетаются быстро.</p>
+          <p class="txt">{monthCap} {yr} — один из лучших месяцев для поездки {d.cases.vP}. Погода и цены сходятся в окне комфорта. Закладывайте 7–14 дней, бронировать минимум за 2 месяца до вылета — на пиковые даты места разлетаются быстро.</p>
           <p class="txt">Сравнить с другими месяцами можно в <a href="/seasons/">таблице сезонов</a>, посчитать точный бюджет — в <a href="/calculator/">калькуляторе поездки</a>.</p>
         </section>
       )}
@@ -311,10 +312,10 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
 
       <section class="sec">
         <div class="shead">
-          <h2><span class="no">08</span>{monthCap} 2026 — другие направления</h2>
+          <h2><span class="no">08</span>{monthCap} {yr} — другие направления</h2>
           <a href={`/trips/${m.slug}/`}>Все направления {m.prep} →</a>
         </div>
-        <p class="txt">Что ещё работает в {m.prep} 2026 — смотри <a href={`/trips/${m.slug}/`}>обзор всех направлений {m.prep}</a> с ценами и визами.</p>
+        <p class="txt">Что ещё работает в {m.prep} {yr} — смотри <a href={`/trips/${m.slug}/`}>обзор всех направлений {m.prep}</a> с ценами и визами.</p>
       </section>
     </div>
   </main>

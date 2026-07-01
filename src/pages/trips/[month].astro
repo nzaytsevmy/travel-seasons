@@ -9,7 +9,7 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { data as regions } from '../../data/regions.js';
 import { PRICES } from '../../data/prices.js';
 import { regionMeta } from '../../data/regions-meta.js';
-import { DATA_UPDATED_RU } from '../../data/meta.js';
+import { DATA_UPDATED_RU, yearForMonth } from '../../data/meta.js';
 import { aviasalesRoute } from '../../data/affiliate.js';
 
 const MONTHS = [
@@ -37,6 +37,7 @@ export async function getStaticPaths() {
 const { month } = Astro.params;
 const monthIdx = MONTHS.findIndex(m => m.slug === month);
 const M = MONTHS[monthIdx];
+const yr = yearForMonth(monthIdx + 1);
 
 const SCORE = { P: 4, G: 3, O: 2, B: 1, X: 0 };
 const VISA_LABEL = { free: 'Безвиз', evisa: 'e-Visa', required: 'Виза' };
@@ -95,13 +96,13 @@ const SECTIONS = [
 ].filter(s => s.rows.length > 0);
 
 // SEO
-const title = `Куда поехать в ${M.name} 2026 — топ направлений`;
-const description = `Куда лететь в ${M.name} 2026: ${peak.length} направлений с пиком сезона, актуальные цены на перелёт из Москвы, виза для россиян, бюджет на день. Без воды.`;
+const title = `Куда поехать в ${M.name} ${yr} — топ направлений`;
+const description = `Куда лететь в ${M.name} ${yr}: ${peak.length} направлений с пиком сезона, актуальные цены на перелёт из Москвы, виза для россиян, бюджет на день. Без воды.`;
 const url = `https://traveltribe.ru/trips/${month}/`;
 
 const faqs = [
   {
-    q: `Куда лучше всего поехать в ${M.name} 2026?`,
+    q: `Куда лучше всего поехать в ${M.name} ${yr}?`,
     a: `В пиковом сезоне сейчас ${peak.length} направлений: ${peak.slice(0, 5).map(d => d.region).join(', ')} и другие. Полный список с ценами и визами — на этой странице.`,
   },
   {
@@ -131,7 +132,7 @@ const ldJson = {
     {
       "@type": "ItemList",
       "@id": `${url}#list`,
-      "name": `Лучшие направления для путешествия в ${M.name} 2026`,
+      "name": `Лучшие направления для путешествия в ${M.name} ${yr}`,
       "numberOfItems": top.length,
       "itemListElement": top.map((d, i) => ({
         "@type": "ListItem",
@@ -164,7 +165,7 @@ const noIdx = (n) => String(n).padStart(2, '0');
   title={title}
   description={description}
   canonical={url}
-  ogTitle={`Куда поехать в ${M.name} 2026`}
+  ogTitle={`Куда поехать в ${M.name} ${yr}`}
   ogDescription={description}
   ldJson={ldJson}
 >
@@ -176,7 +177,7 @@ const noIdx = (n) => String(n).padStart(2, '0');
   <main id="main" class="sw">
     <div class="wrap">
       <header class="hero grid">
-        <div class="idx">Календарь поездок<b>{M.nameNom} · 2026</b></div>
+        <div class="idx">Календарь поездок<b>{M.nameNom} · {yr}</b></div>
         <div class="meta">Сезоны и визы<br><b>актуальны на {DATA_UPDATED_RU}</b></div>
         <h1 class="h1">Куда поехать <span class="rd">в {M.name}</span></h1>
         <p class="sub"><b>{peak.length}</b> направлений с пиком сезона, <b>{good.length}</b> с хорошей погодой. Цены на перелёт из Москвы, виза для россиян и бюджет на день — по каждому направлению.</p>
@@ -259,7 +260,7 @@ const noIdx = (n) => String(n).padStart(2, '0');
       </section>
 
       <section class="sec">
-        <div class="shead"><h2><span class="no">{noIdx(SECTIONS.length + 2)}</span>Частые вопросы — {M.nameNom} 2026</h2></div>
+        <div class="shead"><h2><span class="no">{noIdx(SECTIONS.length + 2)}</span>Частые вопросы — {M.nameNom} {yr}</h2></div>
         <div class="faq">
           {faqs.map(f => (
             <details class="fi">
