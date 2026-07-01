@@ -55,6 +55,7 @@ export async function getStaticPaths() {
 }
 
 const { d } = Astro.props;
+const yr = new Date().getFullYear();
 // «Похожие направления» — превращает чтение одной страны в сессию из нескольких
 // (глубина/dwell/last-click = ПФ + показы партнёрских CTA). Матч по визе/бюджету/вайбу/сезону.
 const similar = similarDestinations(d.slug, 3);
@@ -114,11 +115,11 @@ const calcUrl = priceIdx >= 0 ? `/calculator/?r=${priceIdx}` : '/calculator/';
 // FAQ generated from data
 const faqs = [
   {
-    q: `Нужна ли виза ${d.cases.vP} для россиян в 2026?`,
+    q: `Нужна ли виза ${d.cases.vP} для россиян в ${yr}?`,
     a: `${vd.summary ?? VISA_SUMMARY[d.visa]} Срок пребывания: ${vd.duration}; стоимость: ${vd.cost}; оформление: ${vd.timing}.`,
   },
   {
-    q: `Сколько стоит поездка ${d.cases.vP} в 2026?`,
+    q: `Сколько стоит поездка ${d.cases.vP} в ${yr}?`,
     a: weekTotal
       ? `Эконом-вариант на 7 дней — от $${weekTotal} на человека (перелёт из Москвы $${flightFrom}, проживание от $${hotelFrom}/ночь, питание от $${foodFrom}/день). Бюджет на день: ${BUDGET_LABEL[d.budget]}.`
       : `Бюджет на день: ${BUDGET_LABEL[d.budget]}. Перелёт зависит от сезона и пересадок.`,
@@ -160,14 +161,14 @@ const imageNodes = schemaImages.map((im) => ({
 // чтобы две страницы не делили один интент. Без гайда хаб остаётся головным.
 const deepGuide = d.relatedPosts?.find((p) => p.kind === 'guide');
 const hubTitle = deepGuide
-  ? `${d.cases.nom} 2026: регионы, когда ехать и куда лететь`
-  : `${d.cases.nom} 2026 для россиян: когда ехать, цены, маршрут`;
+  ? `${d.cases.nom} ${yr}: регионы, когда ехать и куда лететь`
+  : `${d.cases.nom} ${yr} для россиян: когда ехать, цены, маршрут`;
 const hubDesc = (deepGuide
   ? `${d.cases.nom}: регионы и куда лететь, когда ехать по месяцам${bestMonths.length ? ` — ${bestMonths.slice(0, 3).map((m) => m.nom).join(', ')}` : ''}, бюджет по сезонам. Полный гайд для россиян — отдельно.`
-  : `${d.cases.nom} 2026 для россиян: ${VISA_LABEL[d.visa].toLowerCase()} (${vd.duration}), когда ехать — ${bestMonths.map((m) => m.nom).join(', ')}, бюджет от $${weekTotal || 'N/A'}/нед.`).slice(0, 155);
+  : `${d.cases.nom} ${yr} для россиян: ${VISA_LABEL[d.visa].toLowerCase()} (${vd.duration}), когда ехать — ${bestMonths.map((m) => m.nom).join(', ')}, бюджет от $${weekTotal || 'N/A'}/нед.`).slice(0, 155);
 const hubOgTitle = deepGuide
-  ? `${d.cases.nom} 2026 — регионы, сезоны, куда лететь`
-  : `${d.cases.nom} 2026 — когда ехать, цены, маршрут`;
+  ? `${d.cases.nom} ${yr} — регионы, сезоны, куда лететь`
+  : `${d.cases.nom} ${yr} — когда ехать, цены, маршрут`;
 
 const ldJson = {
   "@context": "https://schema.org",
@@ -252,9 +253,9 @@ if (guide?.itinerary?.length) {
 
     {/* MANIFEST — Swiss: 12-grid, idx/meta/H1/sub/vlist */}
     <section class="sl-manifest">
-      <div class="sl-idx">01 / {d.group}<b>{d.cases.nom} 2026</b></div>
-      <div class="sl-meta">{d.region}<br /><b>Обновлено V.2026</b></div>
-      <h1 class="sl-h1">{d.cases.nom} <span class="rd">2026</span></h1>
+      <div class="sl-idx">01 / {d.group}<b>{d.cases.nom} {yr}</b></div>
+      <div class="sl-meta">{d.region}<br /><b>Обновлено V.{yr}</b></div>
+      <h1 class="sl-h1">{d.cases.nom} <span class="rd">{yr}</span></h1>
       <p class="sl-sub">{d.sub} — виза, сезоны, бюджет, маршруты для россиян. Без воды, с реальными цифрами.</p>
 
       <div class="sl-vlist">
@@ -430,7 +431,7 @@ if (guide?.itinerary?.length) {
         )}
         {guide.data?.length > 0 && (
           <section class="sl-section">
-            <div class="sl-shead"><h2>{d.cases.nom} в цифрах — 2026</h2></div>
+            <div class="sl-shead"><h2>{d.cases.nom} в цифрах — {yr}</h2></div>
             <table class="sl-dash">
               <tbody>
                 {guide.data.map((row) => (
@@ -472,7 +473,7 @@ if (guide?.itinerary?.length) {
 
     {/* WHEN TO GO — читаемый помесячный разбор (реальные данные d.t) */}
     <section class="sl-section">
-      <div class="sl-shead"><h2>Когда ехать {d.cases.vP} в 2026 — по месяцам</h2></div>
+      <div class="sl-shead"><h2>Когда ехать {d.cases.vP} в {yr} — по месяцам</h2></div>
       <p class="sl-answer"><b>Коротко:</b> лучшие месяцы — {bestMonths.map(m => m.nom).join(', ') || '—'}{worstMonths.length ? `; хуже всего — ${worstMonths.map(m => m.nom).join(', ')}` : ''}. Ниже — погода, цены и сезон по каждому месяцу.</p>
       <ul class="sl-list">
         {monthsRanked.map((m) => (
@@ -554,7 +555,7 @@ if (guide?.itinerary?.length) {
       <ul class="sl-related">
         <li><a href="/seasons/"><b>Сравнение всех 70 направлений по сезонам</b></a></li>
         <li><a href={calcUrl}><b>Калькулятор бюджета поездки</b></a></li>
-        <li><a href={`/trips/${MONTHS[new Date().getMonth()].slug}/${d.slug}/`}><b>{d.cases.nom} в {MONTHS[new Date().getMonth()].prep} 2026</b></a></li>
+        <li><a href={`/trips/${MONTHS[new Date().getMonth()].slug}/${d.slug}/`}><b>{d.cases.nom} в {MONTHS[new Date().getMonth()].prep} {yr}</b></a></li>
         <li><a href={`/visa/${d.slug}/`}><b>Виза {d.cases.vP} — детально</b></a></li>
         <li><a href="/countries/"><b>Все страны на сайте</b></a></li>
       </ul>
