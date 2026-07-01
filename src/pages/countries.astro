@@ -1,4 +1,5 @@
 ---
+const brandYear = new Date().getFullYear();
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
@@ -61,7 +62,7 @@ const ldJson = {
   "@graph": [
     {
       "@type": "CollectionPage", "@id": `${url}#page`, "url": url,
-      "name": "Каталог направлений 2026 — 70 стран для поездки из России",
+      "name": `Каталог направлений ${brandYear} — 70 стран для поездки из России`,
       "description": "Каталог всех 70 направлений: виза для россиян, лучший сезон и цена всей поездки с перелётом. Фильтр по визе, бюджету, сезону и вайбу.",
       "inLanguage": "ru-RU", "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "mainEntity": {
@@ -79,7 +80,7 @@ const ldJson = {
 };
 ---
 <Layout
-  title="Направления 2026 — каталог 70 стран из России: виза, сезон, цена"
+  title={`Направления ${brandYear} — каталог 70 стран из России: виза, сезон, цена`}
   description="Все 70 направлений в одном каталоге: виза для россиян, лучший сезон и цена всей поездки с перелётом. Фильтр по визе, бюджету, сезону и вайбу — выбери и открой гайд."
   canonical={url}
   ogTitle="Каталог направлений · TravelTribe"

@@ -151,7 +151,7 @@ export async function getStaticPaths() {
   paths.push({
     params: { slug: 'hub-antarctica' },
     props: {
-      title: 'Антарктида 2026 — круизы, цены, маршрут из Москвы',
+      title: `Антарктида ${new Date().getFullYear()} — круизы, цены, маршрут из Москвы`,
       description: 'Цены круиза 750 000 – 4 500 000 ₽, виза в Аргентину не нужна, сезон ноябрь – март. Личный опыт.',
       tag: 'Антарктида',
       isPersonal: true,
@@ -161,7 +161,7 @@ export async function getStaticPaths() {
   paths.push({
     params: { slug: 'hub-japan' },
     props: {
-      title: 'Япония 2026 — виза, сезоны, бюджет для россиян',
+      title: `Япония ${new Date().getFullYear()} — виза, сезоны, бюджет для россиян`,
       description: 'Виза бесплатна (JVAC 970 ₽), бюджет $50 – 300 в день, лучший сезон момидзи в ноябре.',
       tag: 'Япония',
       isPersonal: false,
