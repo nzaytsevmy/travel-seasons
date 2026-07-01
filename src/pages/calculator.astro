@@ -1,4 +1,5 @@
 ---
+const brandYear = new Date().getFullYear();
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
 import BudgetBlock from '../components/BudgetBlock.astro';
@@ -52,9 +53,9 @@ const ldJson = {
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "Калькулятор бюджета путешествия 2026",
+      "name": `Калькулятор бюджета путешествия ${brandYear}`,
       "url": "https://traveltribe.ru/calculator/",
-      "description": "Интерактивный калькулятор стоимости поездки из Москвы на 2026: 70 направлений, сравнение, сезонный коэффициент по месяцам, виза в расчёте, реальные траты по 12 источникам.",
+      "description": `Интерактивный калькулятор стоимости поездки из Москвы на ${brandYear}: 70 направлений, сравнение, сезонный коэффициент по месяцам, виза в расчёте, реальные траты по 12 источникам.`,
       "inLanguage": "ru-RU",
       "applicationCategory": "TravelApplication",
       "operatingSystem": "Any",
@@ -66,7 +67,7 @@ const ldJson = {
     },
     {
       "@type": "HowTo",
-      "name": "Как посчитать бюджет путешествия из Москвы в 2026",
+      "name": `Как посчитать бюджет путешествия из Москвы в ${brandYear}`,
       "totalTime": "PT2M",
       "estimatedCost": { "@type": "MonetaryAmount", "currency": "RUB", "value": "0" },
       "step": [
@@ -98,7 +99,7 @@ const ldJson = {
 };
 ---
 <Layout
-  title="Калькулятор путешествия 2026: бюджет поездки по 70 странам"
+  title={`Калькулятор путешествия ${brandYear}: бюджет поездки по 70 странам`}
   description="Калькулятор путешествия 2026: бюджет поездки из Москвы по 70 странам — перелёт, жильё, еда, виза. Реальные траты из 12 источников, курс ЦБ РФ."
   canonical="https://traveltribe.ru/calculator/"
   ogTitle="Калькулятор бюджета — TravelTribe"

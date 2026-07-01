@@ -69,16 +69,17 @@ const allPosts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.val
 const posts = allPosts.slice(0, 3);
 const readingTime = (body) => Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
 
-const desc = 'Куда поехать из России в 2026: визы, сезоны и реальные цены с перелётом по 70 направлениям — в одной таблице. Автор был лично на 7 континентах.';
+const brandYear = new Date().getFullYear();
+const desc = `Куда поехать из России в ${brandYear}: визы, сезоны и реальные цены с перелётом по 70 направлениям — в одной таблице. Автор был лично на 7 континентах.`;
 const ldJson = {
   '@context': 'https://schema.org',
   '@graph': [
-    { '@type': 'WebPage', '@id': 'https://traveltribe.ru/#webpage', url: 'https://traveltribe.ru/', name: 'TravelTribe — куда поехать из России в 2026', description: desc, isPartOf: { '@id': 'https://traveltribe.ru/#website' }, about: { '@id': 'https://traveltribe.ru/#org' }, inLanguage: 'ru-RU' },
-    { '@type': 'ItemList', name: 'Куда поехать из России в 2026 — направления', itemListElement: rows.map((r, i) => ({ '@type': 'ListItem', position: i + 1, name: r.nom, url: `https://traveltribe.ru/${r.slug}/` })) },
+    { '@type': 'WebPage', '@id': 'https://traveltribe.ru/#webpage', url: 'https://traveltribe.ru/', name: `TravelTribe — куда поехать из России в ${brandYear}`, description: desc, isPartOf: { '@id': 'https://traveltribe.ru/#website' }, about: { '@id': 'https://traveltribe.ru/#org' }, inLanguage: 'ru-RU' },
+    { '@type': 'ItemList', name: `Куда поехать из России в ${brandYear} — направления`, itemListElement: rows.map((r, i) => ({ '@type': 'ListItem', position: i + 1, name: r.nom, url: `https://traveltribe.ru/${r.slug}/` })) },
   ],
 };
 ---
-<Layout title="Куда поехать из России в 2026: визы, сезоны, цены · TravelTribe" description={desc} canonical="https://traveltribe.ru/" ldJson={ldJson}>
+<Layout title={`Куда поехать из России в ${brandYear}: визы, сезоны, цены · TravelTribe`} description={desc} canonical="https://traveltribe.ru/" ldJson={ldJson}>
 <div class="sw">
 
   <main id="main">
@@ -207,7 +208,7 @@ const ldJson = {
 
   <footer class="sw-foot"><div class="wrap ft">
     <nav class="fnav" aria-label="Подвал"><a href="/countries/">Направления</a><a href="/visa/">Визы</a><a href="/seasons/">Сезоны</a><a href="/trips/">Поездки</a><a href="/calculator/">Калькулятор</a><a href="/packing/">Чек-листы</a><a href="/blog/">Блог</a><a href="/about/">Об авторе</a></nav>
-    <div class="fbot"><div>© 2026 TravelTribe — Никита Зайцев</div><div>Telegram <a href="https://t.me/traveltriberu" rel="noopener" target="_blank">@traveltriberu</a> · Aviasales · Ostrovok</div></div>
+    <div class="fbot"><div>© {brandYear} TravelTribe — Никита Зайцев</div><div>Telegram <a href="https://t.me/traveltriberu" rel="noopener" target="_blank">@traveltriberu</a> · Aviasales · Ostrovok</div></div>
   </div></footer>
 </div>
 </Layout>
