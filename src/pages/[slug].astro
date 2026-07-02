@@ -360,9 +360,9 @@ if (guide?.itinerary?.length) {
             <div class="sl-shead"><h2>Как добраться {d.cases.vP}</h2></div>
             <p class="sl-answer">{guide.getThere}</p>
             {!guide.compare && !guide.noFlightCta && d.price?.iata && flightFrom && (
-              <p class="sl-cta">
-                <a href={aviasalesRoute('MOW', d.price.iata)} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить билеты Москва — {d.cases.nom} от ${flightFrom} →</a>
-                
+              <p class="sl-cta sl-cta--primary">
+                <a href={aviasalesRoute('MOW', d.price.iata)} class="aff-btn" rel="sponsored noopener" target="_blank">Сравнить билеты Москва — {d.cases.nom} от ${flightFrom} →</a>
+
                 <span class="sl-trust">все авиакомпании в одной выдаче · оплата картами РФ</span>
               </p>
             )}
@@ -915,6 +915,8 @@ if (guide?.itinerary?.length) {
   gap: .35rem .7rem;
   font-size: .95rem; line-height: 1.5;
 }
+/* primary с заливной кнопкой: center вместо baseline (WebKit-баг baseline у кнопок с min-height) */
+.sl-cta--primary { align-items: center; }
 .sl-aff {
   font-weight: 800;
   color: var(--gold);            /* gold в покое — CTA сразу читается как кликабельный (не только на hover) */
