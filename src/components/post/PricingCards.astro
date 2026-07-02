@@ -9,6 +9,8 @@ interface Tier {
   featured?: boolean;
   badge?: string;
   features: string[];
+  ctaLabel?: string;   // per-row CTA: текст действия («Подобрать под даты →»)
+  ctaHref?: string;    // per-row CTA: партнёрская ссылка (посимвольно, с erid)
 }
 
 interface Props {
@@ -17,7 +19,8 @@ interface Props {
 }
 
 const { tiers, caption } = Astro.props;
-const colClass = `pricing-cards--cols-${tiers.length}`;
+const hasCta = tiers.some((t) => t.ctaHref);
+const colClass = `pricing-cards--cols-${tiers.length}${hasCta ? ' pricing-cards--cta' : ''}`;
 ---
 <div
   class={`pricing-cards ${colClass}`}
@@ -47,6 +50,15 @@ const colClass = `pricing-cards--cols-${tiers.length}`;
           </li>
         ))}
       </ul>
+      {hasCta && (
+        <div class="pc-cta-wrap">
+          {t.ctaHref && (
+            <a class="pc-cta" href={t.ctaHref} rel="sponsored noopener" target="_blank">
+              {t.ctaLabel || 'Подобрать →'}
+            </a>
+          )}
+        </div>
+      )}
     </article>
   ))}
 </div>
@@ -159,12 +171,28 @@ const colClass = `pricing-cards--cols-${tiers.length}`;
 }
 .pc-check { flex: 0 0 auto; color: var(--gold); margin-top: 2px; }
 
+/* Per-row CTA — тот же паттерн, что .sl-aff: gold + 2px underline, тач ≥44px */
+.pc-cta-wrap { padding: 0.55rem 0.2rem 0; align-self: start; }
+.pc-cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--gold);
+  text-decoration: 2px underline var(--gold);
+  text-underline-offset: 4px;
+  letter-spacing: -0.005em;
+}
+.pc-cta:hover { color: var(--gold-dim); }
+
 /* Tablet: 2 columns */
 @media (min-width: 560px) {
   .pricing-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: auto auto auto;
   }
+  .pricing-cards--cta { grid-template-rows: auto auto auto auto; }
 
   .pc-card {
     display: grid;
@@ -176,13 +204,15 @@ const colClass = `pricing-cards--cols-${tiers.length}`;
     border-top: none;
     margin-top: 0;
   }
+  .pricing-cards--cta .pc-card { grid-row: span 4; }
 
   .pc-card:nth-child(2n + 1) { border-left: none; }
   .pc-card--featured { border-left: 3px solid var(--gold); }
 
   .pc-head,
   .pc-price-wrap,
-  .pc-features {
+  .pc-features,
+  .pc-cta-wrap {
     padding-left: 0;
     padding-right: 0;
   }
