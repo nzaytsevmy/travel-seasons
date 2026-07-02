@@ -13,7 +13,7 @@ import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { Image, getImage } from 'astro:assets';
-import { DIRECTIONS, MONTHS } from '../data/directions.js';
+import { DIRECTIONS, MONTHS, VISITED } from '../data/directions.js';
 import { PRICES } from '../data/prices.js';
 import { getVisaDetails } from '../data/visa-details.js';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
@@ -96,6 +96,8 @@ const VISA_SUMMARY = {
 };
 // Реальные верифицированные визовые специфики на страну (visa-details.js)
 const vd = getVisaDetails(d.slug, d.visa);
+// Никита был здесь лично? (E-E-A-T-сигнал в шапке; список — VISITED в directions.js)
+const visited = VISITED.has(d.slug);
 
 // Best months for this destination
 const rank = { P: 4, G: 3, O: 2, B: 1, X: 0 };
@@ -257,6 +259,7 @@ if (guide?.itinerary?.length) {
       <div class="sl-meta">{d.region}<br /><b>Обновлено V.{yr}</b></div>
       <h1 class="sl-h1">{d.cases.nom} <span class="rd">{yr}</span></h1>
       <p class="sl-sub">{d.sub} — виза, сезоны, бюджет, маршруты для россиян. Без воды, с реальными цифрами.</p>
+      {visited && <p class="sl-visited">Был здесь лично</p>}
 
       <div class="sl-vlist">
         <div class="sl-vi"><span><b>01</b> Виза</span><div>{VISA_LABEL[d.visa]}</div></div>
@@ -637,6 +640,15 @@ if (guide?.itinerary?.length) {
   max-width: 56ch;
   line-height: 1.5;
 }
+.sl-visited {
+  grid-column: 9 / 13; grid-row: 3;
+  align-self: start; justify-self: end;
+  margin-top: 1.4rem; height: max-content;
+  font-size: .7rem; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--gold); border: 1px solid var(--gold);
+  padding: .42rem .7rem; white-space: nowrap;
+}
 
 .sl-vlist {
   grid-column: 1 / 13; grid-row: 4;
@@ -673,10 +685,11 @@ if (guide?.itinerary?.length) {
 }
 
 @media (max-width: 760px) {
-  .sl-idx, .sl-meta, .sl-h1, .sl-sub, .sl-vlist {
+  .sl-idx, .sl-meta, .sl-h1, .sl-sub, .sl-vlist, .sl-visited {
     grid-column: 1 / -1; grid-row: auto;
   }
   .sl-meta { text-align: left; margin-top: .6rem; }
+  .sl-visited { justify-self: start; margin-top: 1rem; }
   .sl-h1 { margin-top: 1.1rem; }
   .sl-vlist { grid-template-columns: repeat(2, 1fr); }
   .sl-vi:nth-child(2n) { border-right: none; }
