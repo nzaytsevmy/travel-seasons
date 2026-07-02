@@ -423,6 +423,17 @@ for (const r of regions) {
 export const DIRECTIONS = enriched;
 export function bySlug(slug) { return DIRECTIONS.find(d => d.slug === slug); }
 
+// Страны, где Никита был ЛИЧНО (E-E-A-T «был здесь лично» на хабе).
+// Источник — его само-написанные «был сам» в country-guides.js (его слова, не выдумка)
+// + Япония (география из личного CLAUDE.md + папка азиатского тура на Я.Диске).
+// ⛔ Не помечаем без явного подтверждения: наличие папки на Я.Диске ≠ был (часть — сток).
+export const VISITED = new Set([
+  'bali', 'new-zealand', 'australia-east', 'usa', 'ecuador', 'vietnam', 'hong-kong',
+  'india-goa', 'cambodia', 'malaysia', 'south-korea', 'peru', 'bolivia', 'chile',
+  'argentina', 'brazil', 'mexico', 'turkey', 'south-africa', 'iceland', 'norway',
+  'china', 'nepal', 'kyrgyzstan', 'chile-patagonia', 'japan',
+]);
+
 export const MONTHS = [
   { slug: 'january',   nom: 'январь',   prep: 'январе',   gen: 'января'   },
   { slug: 'february',  nom: 'февраль',  prep: 'феврале',  gen: 'февраля'  },
