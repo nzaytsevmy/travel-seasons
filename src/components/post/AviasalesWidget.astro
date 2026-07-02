@@ -38,7 +38,7 @@ const href = aviasalesUrl(q ? `?${q}` : '');
     <h3 class="tp-cta-title">{title}</h3>
     <p class="tp-cta-sub">Сравнить цены на Aviasales — все авиакомпании в одной выдаче, оплата российскими картами тоже работает.</p>
   </div>
-  <a class="tp-cta-btn" href={href} target="_blank" rel="noopener sponsored">
+  <a class="tp-cta-btn aff-btn" href={href} target="_blank" rel="noopener sponsored">
     <span>{buttonText}</span>
   </a>
   <p class="tp-cta-disc">Aviasales. Партнёрская ссылка, цена для тебя не меняется.</p>
@@ -74,24 +74,13 @@ const href = aviasalesUrl(q ? `?${q}` : '');
     color: var(--text-dim);
     line-height: 1.5;
   }
+  /* База — глобальный .aff-btn; здесь только слот в сетке и виджет-специфика */
   .tp-cta-btn {
     grid-area: btn;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 48px;
     padding: 0.7rem 1.2rem;
-    background: var(--gold);
-    color: #fff !important;
-    font-weight: 700;
     font-size: 0.9rem;
-    letter-spacing: 0.02em;
-    text-decoration: none !important;
-    transition: filter 0.15s, transform 0.06s;
     white-space: nowrap;
   }
-  .tp-cta-btn:hover { filter: brightness(1.05); }
-  .tp-cta-btn:active { transform: scale(0.98); }
   .tp-cta-disc {
     grid-area: disc;
     margin: 0;

@@ -711,6 +711,28 @@ footer {
   .aff-cta::before, .aff-cta::after { transition: none; }
 }
 
+/* Заливная primary-CTA — брендбук-исключение (явное «да» Никиты 2026-07-02):
+   ОДНА на страницу/секцию, только главное партнёрское действие; вторичные — hairline.
+   Прямоугольная (0 скруглений/теней), контраст #fff на gold = 18.7:1. */
+.aff-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.7rem 1.4rem;
+  background: var(--gold);
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  text-decoration: none !important;
+  transition: filter 0.15s, transform 0.06s;
+}
+.aff-btn:hover { filter: brightness(1.05); }
+.aff-btn:active { transform: scale(0.98); }
+.aff-btn:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .aff-btn { transition: none; } }
+
 /* ─────────────────────────────────────────────────────────────────────────────
    СЕТКА 2026 — web design канон (12-8-4, gutter 16px). Переиспользуемые утилиты,
    применять на новых лейаутах. Колонки fluid (fr), gutters фиксированные.

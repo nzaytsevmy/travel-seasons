@@ -53,7 +53,7 @@ const colClass = `pricing-cards--cols-${tiers.length}${hasCta ? ' pricing-cards-
       {hasCta && (
         <div class="pc-cta-wrap">
           {t.ctaHref && (
-            <a class="pc-cta" href={t.ctaHref} rel="sponsored noopener" target="_blank">
+            <a class={t.featured ? 'aff-btn' : 'pc-cta'} href={t.ctaHref} rel="sponsored noopener" target="_blank">
               {t.ctaLabel || 'Подобрать →'}
             </a>
           )}
