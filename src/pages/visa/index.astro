@@ -204,8 +204,8 @@ const ldJson = {
 };
 ---
 <Layout
-  title="Визовый реестр 2026 — визы для россиян по 70 направлениям"
-  description={`Визы для россиян в 2026: ${byVisa.free.length} стран без визы, ${byVisa.evisa.length} с eVisa онлайн, ${byVisa.required.length} требуют визу. Стоимость, сроки оформления, нужные документы и куда подавать — по 70 направлениям мира.`}
+  title="Визовый реестр 2026 — визы для россиян по 70+ направлениям"
+  description={`Визы для россиян в 2026: ${byVisa.free.length} стран без визы, ${byVisa.evisa.length} с eVisa онлайн, ${byVisa.required.length} требуют визу. Стоимость, сроки оформления, нужные документы и куда подавать — по 70+ направлениям мира.`}
   canonical={url}
   ogTitle="Визовый реестр 2026 · TravelTribe"
   ogDescription={`${byVisa.free.length} без визы · ${byVisa.evisa.length} eVisa · ${byVisa.required.length} требуют визу`}
@@ -346,7 +346,7 @@ const ldJson = {
       <ol class="va-changes-list">
         <li class="va-change-item">
           <time class="va-change-date">14 мая 2026</time>
-          <div class="va-change-text"><strong>Реестр обновлён.</strong> Все 70 направлений сверены через МИД РФ, посольства, VFS Global, BLS, GVCW, JVAC и официальные иммиграционные сайты стран.</div>
+          <div class="va-change-text"><strong>Реестр обновлён.</strong> Все 70+ направлений сверены через МИД РФ, посольства, VFS Global, BLS, GVCW, JVAC и официальные иммиграционные сайты стран.</div>
         </li>
         <li class="va-change-item">
           <time class="va-change-date">7 мая 2026</time>
@@ -432,7 +432,7 @@ const ldJson = {
       </div>
       <p class="va-filter-count" id="visaFilterCount" aria-live="polite" aria-atomic="true">Показано: <strong>{DIRECTIONS.length}</strong> из {DIRECTIONS.length} направлений</p>
       <noscript>
-        <p class="va-noscript">⚠️ Фильтры работают с включённым JavaScript. Список всех 70 стран ниже доступен полностью.</p>
+        <p class="va-noscript">⚠️ Фильтры работают с включённым JavaScript. Список всех 70+ стран ниже доступен полностью.</p>
       </noscript>
     </section>
 
@@ -803,7 +803,7 @@ const ldJson = {
     btn.addEventListener('click', async () => {
       const url = window.location.href;
       const title = 'Визовый реестр 2026 · TravelTribe';
-      const text = 'Актуальная сводка визовых правил для россиян по 70 направлениям.';
+      const text = 'Актуальная сводка визовых правил для россиян по 70+ направлениям.';
       if (navigator.share) {
         try { await navigator.share({ title, text, url }); } catch (e) { /* user cancelled */ }
       } else if (navigator.clipboard) {
