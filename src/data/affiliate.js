@@ -56,7 +56,31 @@ export const TP_LINKS = {
 
 // Aviasales deep-link под конкретный маршрут (origin/destination IATA) —
 // поднимает конверсию: пользователь сразу видит свой перелёт, а не главную.
-// Пример: aviasalesRoute('MOW','DXB') для Москва→Дубай.
-export function aviasalesRoute(originIata, destIata) {
-  return aviasalesUrl(`?origin_iata=${originIata}&destination_iata=${destIata}`);
+// subId (опционально) — постраничная атрибуция в кабинете TP (выживает внутри &u=).
+// Пример: aviasalesRoute('MOW','DXB','hub_uae') для Москва→Дубай со страницы хаба.
+export function aviasalesRoute(originIata, destIata, subId) {
+  const sub = subId ? `&sub_id=${subId}` : '';
+  return aviasalesUrl(`?origin_iata=${originIata}&destination_iata=${destIata}${sub}`);
 }
+
+// Дип-линк через tpk.mx: &u=<encoded target> пробрасывается у ВСЕХ партнёров
+// (curl-трейс 2026-07-02: cherehapa/ostrovok/yandexTravel/sutochno/tripster —
+// erid и партнёрские маркеры сохраняются). sub_id ВНУТРИ target доезжает до
+// Cherehapa и Aviasales; Ostrovok перетирает своим (там только дип, без метки).
+export function tpkDeep(linkKey, targetUrl) {
+  const base = TP_LINKS[linkKey];
+  return base + (base.includes('?') ? '&' : '?') + 'u=' + encodeURIComponent(targetUrl);
+}
+
+// Cherehapa: подбор с предвыбранной страной (проверено: /travel/?country=georgia —
+// 200, SSR-title под страну) + постраничный sub_id (латиница/цифры/_).
+export const cherehapaCountry = (countrySlug, subId) =>
+  tpkDeep('cherehapa', `https://cherehapa.ru/travel/?country=${countrySlug}${subId ? `&sub_id=${subId}` : ''}`);
+
+// Ostrovok: страница города (проверено: /hotel/georgia/tbilisi/ → 200 с маркерами).
+export const ostrovokCity = (countrySlug, citySlug) =>
+  tpkDeep('ostrovok', `https://ostrovok.ru/hotel/${countrySlug}/${citySlug}/`);
+
+// Tripster: экскурсии направления (проверено: /experience/abkhazia/ → 200).
+export const tripsterDest = (destSlug) =>
+  tpkDeep('tripster', `https://experience.tripster.ru/experience/${destSlug}/`);

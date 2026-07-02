@@ -22,7 +22,12 @@ import BudgetBlock from '../components/BudgetBlock.astro';
 import EssentialsCard from '../components/EssentialsCard.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
 import CountryMap from '../components/CountryMap.astro';
-import { TP_LINKS, aviasalesRoute } from '../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, tripsterDest } from '../data/affiliate.js';
+
+// РФ-инвентарь жилья: на этих хабах вместо Островка — Яндекс Путешествия (сильнее по РФ).
+const RU_STAY = new Set(['abkhazia', 'kamchatka', 'karelia']);
+// Направления, где самостоятельные ездят за рулём — аренда авто как отдельный блок.
+const CAR_RENTAL = new Set(['georgia', 'armenia', 'abkhazia', 'karelia', 'new-zealand', 'uae', 'bali']);
 import { similarDestinations } from '../data/similar.js';
 import { getGuide } from '../data/country-guides.js';
 import { buildEssentialsFaq } from '../data/essentials-faq.js';
@@ -98,6 +103,8 @@ const VISA_SUMMARY = {
 const vd = getVisaDetails(d.slug, d.visa);
 // Никита был здесь лично? (E-E-A-T-сигнал в шапке; список — VISITED в directions.js)
 const visited = VISITED.has(d.slug);
+// Постраничная атрибуция кликов в кабинете TP (только латиница/цифры/_).
+const subId = 'hub_' + d.slug.replaceAll('-', '_');
 
 // Best months for this destination
 const rank = { P: 4, G: 3, O: 2, B: 1, X: 0 };
@@ -361,7 +368,7 @@ if (guide?.itinerary?.length) {
             <p class="sl-answer">{guide.getThere}</p>
             {!guide.compare && !guide.noFlightCta && d.price?.iata && flightFrom && (
               <p class="sl-cta sl-cta--primary">
-                <a href={aviasalesRoute('MOW', d.price.iata)} class="aff-btn" rel="sponsored noopener" target="_blank">Сравнить билеты Москва — {d.cases.nom} от ${flightFrom} →</a>
+                <a href={aviasalesRoute('MOW', d.price.iata, subId)} class="aff-btn" rel="sponsored noopener" target="_blank">Сравнить билеты Москва — {d.cases.nom} от ${flightFrom} →</a>
 
                 <span class="sl-trust">все авиакомпании в одной выдаче · оплата картами РФ</span>
               </p>
@@ -378,11 +385,22 @@ if (guide?.itinerary?.length) {
                   <div class="sl-cc-name">{o.name}</div>
                   {o.sub && <div class="sl-cc-sub">{o.sub}</div>}
                   <p class="sl-cc-for">{o.for}</p>
-                  <a class="sl-aff sl-cc-cta" href={o.flightIata ? aviasalesRoute('MOW', o.flightIata) : o.href} rel="sponsored noopener" target="_blank">{o.ctaLabel} →</a>
+                  <a class="sl-aff sl-cc-cta" href={o.flightIata ? aviasalesRoute('MOW', o.flightIata, subId) : o.href} rel="sponsored noopener" target="_blank">{o.ctaLabel} →</a>
                 </div>
               ))}
             </div>
             {guide.compare.note && <p class="sl-cc-mark"> — {guide.compare.note}</p>}
+          </section>
+        )}
+        {CAR_RENTAL.has(d.slug) && (
+          <section class="sl-section">
+            <div class="sl-shead"><h2>Аренда авто</h2></div>
+            <p class="sl-answer">Свои колёса {d.cases.loc} — это свобода маршрута: смотровые, пляжи и деревни, куда автобус не ходит.</p>
+            <p class="sl-cta">
+              <a href={TP_LINKS.economybookings} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить цены прокатов {d.cases.loc} →</a>
+
+              <span class="sl-trust">один поиск по нескольким прокатным компаниям</span>
+            </p>
           </section>
         )}
         {guide.stay?.length > 0 && (
@@ -392,8 +410,12 @@ if (guide?.itinerary?.length) {
               {guide.stay.map((s) => <li><b>{s.t}</b> — {s.d}</li>)}
             </ul>
             <p class="sl-cta">
-              <a href={TP_LINKS.ostrovok} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать отель {d.cases.loc} на Островке →</a>
-              
+              {RU_STAY.has(d.slug) ? (
+                <a href={TP_LINKS.yandexTravel} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc} на Яндекс Путешествиях →</a>
+              ) : (
+                <a href={TP_LINKS.ostrovok} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать отель {d.cases.loc} на Островке →</a>
+              )}
+
               <span class="sl-trust">оплата российскими картами · цены в ₽</span>
             </p>
           </section>
@@ -496,6 +518,21 @@ if (guide?.itinerary?.length) {
       <div class="sl-shead"><h2>Что взять {d.cases.vP}</h2></div>
       <p class="sl-answer">Чек-лист по месяцам: одежда под погоду, документы, аптечка, техника, переходник. <a href={`/packing/${d.slug}/`} class="sl-link"><b>Открыть чек-лист {d.cases.gen || d.cases.prep || d.cases.nom} →</b></a></p>
     </section>
+
+    {/* РФ-хабы без гид-секций: компакт-блок жильё/экскурсии/авто */}
+    {RU_STAY.has(d.slug) && !guide?.stay?.length && (
+      <section class="sl-section">
+        <div class="sl-shead"><h2>Жильё и экскурсии</h2></div>
+        <p class="sl-cta sl-cta--stack">
+          <a href={TP_LINKS.yandexTravel} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc} на Яндекс Путешествиях →</a>
+          <a href={d.slug === 'abkhazia' ? tripsterDest('abkhazia') : TP_LINKS.tripster} class="sl-aff" rel="sponsored noopener" target="_blank">Экскурсии {d.cases.loc} с местными гидами →</a>
+          {CAR_RENTAL.has(d.slug) && (
+            <a href={TP_LINKS.economybookings} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить цены прокатов авто →</a>
+          )}
+          <span class="sl-trust">оплата российскими картами · цены и отзывы видно до оплаты</span>
+        </p>
+      </section>
+    )}
 
     {/* RELATED POSTS */}
     {d.relatedPosts.length > 0 && (
@@ -917,6 +954,8 @@ if (guide?.itinerary?.length) {
 }
 /* primary с заливной кнопкой: center вместо baseline (WebKit-баг baseline у кнопок с min-height) */
 .sl-cta--primary { align-items: center; }
+/* компакт-блок РФ-хабов: каждая ссылка своей строкой */
+.sl-cta--stack { flex-direction: column; align-items: flex-start; gap: .1rem; }
 .sl-aff {
   font-weight: 800;
   color: var(--gold);            /* gold в покое — CTA сразу читается как кликабельный (не только на hover) */
