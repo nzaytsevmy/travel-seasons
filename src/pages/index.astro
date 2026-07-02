@@ -35,7 +35,7 @@ function seasonLabel(r) {
   g.push([s, p]);
   return g.map(([a, b]) => (a === b ? MON_ABBR[a] : `${MON_ABBR[a]}–${MON_ABBR[b]}`)).join(', ');
 }
-// Все 70 направлений на РЕАЛЬНЫХ данных: цена ВСЕЙ поездки с перелётом (prices.js, комфорт),
+// Все 70+ направлений на РЕАЛЬНЫХ данных: цена ВСЕЙ поездки с перелётом (prices.js, комфорт),
 // виза (DIRECTIONS), месяцы (DIRECTIONS.r: P = пик), вайб (ACTIVITY_TAGS). Без выдумок.
 const rows = DIRECTIONS.map((d) => {
   const budget = d.price?.flight ? tripCost(d.price) : null; // вся поездка с перелётом, ₽
@@ -70,7 +70,7 @@ const posts = allPosts.slice(0, 3);
 const readingTime = (body) => Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
 
 const brandYear = new Date().getFullYear();
-const desc = `Куда поехать из России в ${brandYear}: визы, сезоны и реальные цены с перелётом по 70 направлениям — в одной таблице. Автор был лично на 7 континентах.`;
+const desc = `Куда поехать из России в ${brandYear}: визы, сезоны и реальные цены с перелётом по 70+ направлениям — в одной таблице. Автор был лично на 7 континентах.`;
 const ldJson = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -88,7 +88,7 @@ const ldJson = {
       <div class="idx">Авторский тревел-журнал</div>
       <p class="meta"><b>Был лично на 7 континентах</b><br>60+ стран · цены с перелётом, не пересказ · обновлено V.2026</p>
       <h1 class="h1">Вся польза<br>о поездках —<br><span class="rd">на виду.</span></h1>
-      <p class="sub">Визы, сезоны и реальные цены с перелётом по 70 направлениям — в одной таблице. Куда, когда и за сколько видно сразу. Ничего копать не нужно.</p>
+      <p class="sub">Визы, сезоны и реальные цены с перелётом по 70+ направлениям — в одной таблице. Куда, когда и за сколько видно сразу. Ничего копать не нужно.</p>
       <p class="vlist-cap">Разделы сайта</p>
       <ul class="vlist">
         <li class="vi"><a href="/visa/"><span class="vi-n">01</span><span class="vi-l">Визы РФ <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
@@ -96,7 +96,7 @@ const ldJson = {
         <li class="vi"><a href="/calculator/"><span class="vi-n">03</span><span class="vi-l">Цена с перелётом <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
         <li class="vi"><a href="/trips/"><span class="vi-n">04</span><span class="vi-l">Поездки <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
         <li class="vi"><a href="/packing/"><span class="vi-n">05</span><span class="vi-l">Чек-листы <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
-        <li class="vi"><a href="/countries/"><span class="vi-n">06</span><span class="vi-l">70 направлений <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
+        <li class="vi"><a href="/countries/"><span class="vi-n">06</span><span class="vi-l">70+ направлений <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
       </ul>
     </div></section>
 
@@ -158,7 +158,7 @@ const ldJson = {
         </div>
       </div>
 
-      <div class="visaband"><span class="vt"><b>Виза для россиян 2026</b> — по каждой из 70 стран: безвиз, e-Visa или консульство. В таблице выше виза видна в каждой строке.</span><a href="/visa/">Все визы и что изменилось →</a></div>
+      <div class="visaband"><span class="vt"><b>Виза для россиян 2026</b> — по каждой из 70+ стран: безвиз, e-Visa или консульство. В таблице выше виза видна в каждой строке.</span><a href="/visa/">Все визы и что изменилось →</a></div>
     </div></section>
 
     <!-- Инструменты -->
