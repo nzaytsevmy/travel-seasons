@@ -28,6 +28,9 @@ howto:
 ---
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 import PricingCards from '../../components/post/PricingCards.astro';
+import { cherehapaCountry } from '../../data/affiliate.js';
+
+export const chGeorgia = cherehapaCountry('georgia', 'georgia_insurance_2026');
 
 С января 2026 у поездки в Грузию появилось новое жёсткое условие, про которое многие узнают уже в аэропорту: без медицинской страховки на рейс могут не посадить. Я сам летал в Тбилиси и оформлял полис заранее — это пять минут и пара сотен рублей в день, но если забыть, теряешь и билет, и бронь. Разбираю, какое покрытие требует закон, где реально проверяют полис и сколько он стоит.
 
@@ -80,7 +83,7 @@ import PricingCards from '../../components/post/PricingCards.astro';
 
 **Порядка 150 ₽ в день, на неделю — около 1 000–1 500 ₽** на одного человека. Конкретная цена зависит от возраста, суммы покрытия и опций (спорт, активный отдых). Полис на минимальные требования Грузии — из самых доступных: по отзывам туристов, недельная страховка обходилась примерно в 50 €.
 
-Удобнее всего сравнить страховщиков и купить онлайн под нужные даты — <a href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5" class="aff-cta" rel="sponsored">Подобрать полис от 30 000 лари без франшизы</a>: агрегатор показывает цены разных компаний, фильтрует по покрытию и оформляет полис сразу в PDF. Принимает оплату из России.
+Удобнее всего сравнить страховщиков и купить онлайн под нужные даты — <a href={chGeorgia} class="aff-cta" rel="sponsored">Подобрать полис от 30 000 лари без франшизы</a>: агрегатор показывает цены разных компаний, фильтрует по покрытию и оформляет полис сразу в PDF. Принимает оплату из России.
 
 Какое покрытие брать — зависит от формата поездки. Я для себя раскладываю так:
 
@@ -97,7 +100,7 @@ import PricingCards from '../../components/post/PricingCards.astro';
         'На неделю выходит порядка 1 000–1 500 ₽',
       ],
       ctaLabel: 'Подобрать под мои даты →',
-      ctaHref: 'https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5',
+      ctaHref: chGeorgia,
     },
     {
       tier: 'С запасом',
@@ -111,7 +114,7 @@ import PricingCards from '../../components/post/PricingCards.astro';
         'Требование закона закрывает с большим запасом',
       ],
       ctaLabel: 'Сравнить цены →',
-      ctaHref: 'https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5',
+      ctaHref: chGeorgia,
     },
     {
       tier: 'Горы и активность',
@@ -123,7 +126,7 @@ import PricingCards from '../../components/post/PricingCards.astro';
         'Оформляется в том же подборе — просто отметьте опции',
       ],
       ctaLabel: 'Собрать полис с опциями →',
-      ctaHref: 'https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5',
+      ctaHref: chGeorgia,
     },
   ]}
 />
@@ -147,7 +150,7 @@ import PricingCards from '../../components/post/PricingCards.astro';
 3. **Добавьте опции при необходимости** — активный отдых, горы (Казбеги, треккинг), аренда авто.
 4. **Оплатите и сохраните PDF** — полис придёт на почту; держите его в телефоне и распечатайте одну копию для регистрации.
 
-<a href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5" class="aff-cta" rel="sponsored">Оформить страховку для Грузии онлайн</a>
+<a href={chGeorgia} class="aff-cta" rel="sponsored">Оформить страховку для Грузии онлайн</a>
 
 Дальше пригодятся ещё два практичных разбора: [как платить в Грузии, раз карты РФ не работают](/blog/pay-georgia-2026/) и [eSIM и связь за границей](/blog/esim-zagranicey-2026/). А если выбираете между направлениями — страховка обязательна и [для шенгенской визы](/blog/schengen-insurance-2026/), и [на Кубе](/blog/cuba-insurance-2026/).
 
