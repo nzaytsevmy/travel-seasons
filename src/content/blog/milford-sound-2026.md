@@ -193,7 +193,7 @@ howto:
 
 ![Водопад по отвесной стене, вид с воды из каяка](./_images/milford-kayak.jpg)
 
-Каяк, треккинг и горные серпантины — это ровно те активности, которые базовый полис не покрывает. <a href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F%3Fsub_id%3Dmilford_sound_2026" class="aff-cta" rel="sponsored">Собрать страховку с активным отдыхом</a> занимает пару минут и стоит меньше одного ужина в Квинстауне.
+Каяк, треккинг и горные серпантины — это ровно те активности, которые базовый полис не покрывает. <a href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F%3Fsub_id%3Dmilford_sound_2026" class="aff-cta" rel="sponsored">Собрать страховку с активным отдыхом</a> занимает пару минут — дольше выбирать, чем оформлять.
 
 ---
 
