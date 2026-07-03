@@ -78,6 +78,20 @@ test('Текст читателю: нет внутренних имён файл
   expect(bad, JSON.stringify(bad, null, 2)).toEqual([]);
 });
 
+test('Монетизация: каждый блог-пост содержит ≥1 партнёрскую ссылку (rel=sponsored)', () => {
+  // Правило Фазы 7 (план монетизации, 2026-07-02): травел-пост без CTA = потерянный трафик.
+  // Только /blog/<slug>/ — листинги (/blog/, /blog/tag/*, пагинация) не считаются.
+  const re = /rel="?[^">]*sponsored/;
+  const bad: string[] = [];
+  for (const f of files) {
+    const rel = f.replace(DIST, '');
+    const m = rel.match(/^\/blog\/([^/]+)\/index\.html$/);
+    if (!m || m[1] === 'tag' || /^page/.test(m[1])) continue;
+    if (!re.test(readFileSync(f, 'utf8'))) bad.push(rel);
+  }
+  expect(bad, `посты без партнёрских ссылок:\n${bad.join('\n')}`).toEqual([]);
+});
+
 test('Партнёрские CTA: нет литеральной → в тексте .aff-cta (CSS ::after даёт одну — литерал = двойная)', () => {
   // .aff-cta::after { content: '→' } рисует стрелку. Если автор впишет → в текст mdx — двойная.
   const re = /<a\b[^>]*class="[^"]*aff-cta[^"]*"[^>]*>([^<]*)<\/a>/gi;
