@@ -1,0 +1,36 @@
+---
+// Мобильная прилипающая CTA-панель (только <768px): ОДНО контекстное действие
+// страницы — билет на хабе, страховка на визовых/сборах. Fixed → CLS 0;
+// z-index ниже cookie-баннера (60); резерв под панель через body-padding,
+// чтобы не перекрывать контент у футера.
+interface Props {
+  href: string;
+  label: string;
+}
+const { href, label } = Astro.props;
+---
+<div class="sticky-cta">
+  <a class="aff-btn sticky-cta-btn" href={href} rel="sponsored noopener" target="_blank">{label}</a>
+</div>
+
+<style>
+  .sticky-cta {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 50;
+    display: none;
+    padding: 0.55rem 0.9rem calc(0.55rem + env(safe-area-inset-bottom));
+    background: var(--bg);
+    border-top: 1px solid var(--line);
+  }
+  .sticky-cta-btn { width: 100%; }
+  @media (max-width: 767px) {
+    .sticky-cta { display: block; }
+  }
+</style>
+
+<style is:global>
+  @media (max-width: 767px) {
+    body:has(.sticky-cta) { padding-bottom: 76px; }
+  }
+</style>
