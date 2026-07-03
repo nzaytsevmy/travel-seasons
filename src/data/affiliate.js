@@ -77,6 +77,11 @@ export function tpkDeep(linkKey, targetUrl) {
 export const cherehapaCountry = (countrySlug, subId) =>
   tpkDeep('cherehapa', `https://cherehapa.ru/travel/?country=${countrySlug}${subId ? `&sub_id=${subId}` : ''}`);
 
+// Cherehapa: страница подбора без страны (для страниц, где страна не одна /
+// слаг у партнёра не проверен) + постраничный sub_id (доезжает — проверено).
+export const cherehapaTravel = (subId) =>
+  tpkDeep('cherehapa', `https://cherehapa.ru/travel/${subId ? `?sub_id=${subId}` : ''}`);
+
 // Ostrovok: страница города (проверено: /hotel/georgia/tbilisi/ → 200 с маркерами).
 export const ostrovokCity = (countrySlug, citySlug) =>
   tpkDeep('ostrovok', `https://ostrovok.ru/hotel/${countrySlug}/${citySlug}/`);

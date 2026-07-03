@@ -14,7 +14,8 @@ import { getWeatherBucket } from '../../../data/country-month-bucket.js';
 import { ACTIVITY_TAGS, ACTIVITY_LABEL, ACTIVITY_GEAR } from '../../../data/country-activity-tags.js';
 import { PLUG_TYPES, plugAdvice } from '../../../data/country-plug-types.js';
 import { DATA_UPDATED_RU } from '../../../data/meta.js';
-import { TP_LINKS, aviasalesRoute } from '../../../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, cherehapaTravel } from '../../../data/affiliate.js';
+import StickyCta from '../../../components/StickyCta.astro';
 import { getHolidaysByMonth } from '../../../data/country-holidays.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
 import { regionsRich } from '../../../data/regions-rich.js';
@@ -490,6 +491,8 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 
     <p class="pmu-updated">Актуально на: {DATA_UPDATED_RU}</p>
   </main>
+
+  <StickyCta href={cherehapaTravel(`packing_${d.slug.replaceAll('-', '_')}`)} label={`Страховка ${d.cases.vP} — под даты →`} />
 
   <Footer />
 </Layout>

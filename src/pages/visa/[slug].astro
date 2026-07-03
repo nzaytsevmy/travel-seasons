@@ -5,7 +5,8 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { Picture } from 'astro:assets';
 import { DIRECTIONS } from '../../data/directions.js';
 import { getVisaDetails, VISA_DETAILS } from '../../data/visa-details.js';
-import { TP_LINKS, aviasalesRoute } from '../../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, cherehapaTravel } from '../../data/affiliate.js';
+import StickyCta from '../../components/StickyCta.astro';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../../data/meta.js';
 
 const destPhotos = import.meta.glob('../../assets/destinations/*.jpg', { eager: true, import: 'default' });
@@ -354,6 +355,8 @@ const ldJson = {
       <p class="visa-disclaimer">Визовые правила меняются. Данные сверены на {DATA_UPDATED_RU}; перед поездкой обязательно проверьте актуальные требования на сайте посольства или консульства {d.cases.nom}.</p>
     </section>
   </main>
+
+  <StickyCta href={cherehapaTravel(`visa_${d.slug.replaceAll('-', '_')}`)} label={d.visa === 'required' ? 'Страховка для визы — сравнить цены →' : 'Оформить страховку в поездку →'} />
 
   <Footer />
 </Layout>

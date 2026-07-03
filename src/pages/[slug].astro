@@ -18,6 +18,7 @@ import { PRICES } from '../data/prices.js';
 import { getVisaDetails } from '../data/visa-details.js';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
 import AviasalesWidget from '../components/post/AviasalesWidget.astro';
+import StickyCta from '../components/StickyCta.astro';
 import BudgetBlock from '../components/BudgetBlock.astro';
 import EssentialsCard from '../components/EssentialsCard.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
@@ -28,6 +29,8 @@ import { TP_LINKS, aviasalesRoute, tripsterDest } from '../data/affiliate.js';
 const RU_STAY = new Set(['abkhazia', 'kamchatka', 'karelia']);
 // Направления, где самостоятельные ездят за рулём — аренда авто как отдельный блок.
 const CAR_RENTAL = new Set(['georgia', 'armenia', 'abkhazia', 'karelia', 'new-zealand', 'uae', 'bali']);
+// Пакетный интент (чартер+отель): рядом с авторскими турами — сравнение пакетных.
+const PACKAGE_TOUR = new Set(['turkey', 'egypt', 'uae', 'thailand', 'vietnam', 'hainan', 'cuba', 'dominican-republic', 'maldives']);
 import { similarDestinations } from '../data/similar.js';
 import { getGuide } from '../data/country-guides.js';
 import { buildEssentialsFaq } from '../data/essentials-faq.js';
@@ -566,14 +569,16 @@ if (guide?.itinerary?.length) {
 
     <BudgetBlock slug={d.slug} />
 
-    <AviasalesWidget title={`Найти билеты — ${d.cases.vP}`} subid={`hub-${d.slug}`} />
+    <AviasalesWidget title={`Найти билеты — ${d.cases.vP}`} subid={subId} />
 
     {/* Авторские туры (YouTravel) */}
     <section class="sl-section">
       <div class="sl-shead"><h2>Поехать с экспертом</h2></div>
-      <p class="sl-cta">
+      <p class={`sl-cta ${PACKAGE_TOUR.has(d.slug) ? 'sl-cta--stack' : ''}`}>
         <a href={TP_LINKS.youtravel} class="sl-aff" rel="sponsored noopener" target="_blank">Авторские туры {d.cases.vP} →</a>
-        
+        {PACKAGE_TOUR.has(d.slug) && (
+          <a href={TP_LINKS.travelata} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить пакетные туры {d.cases.vP} →</a>
+        )}
         <span class="sl-trust">маршрут, логистика и малая группа уже собраны</span>
       </p>
     </section>
@@ -603,6 +608,12 @@ if (guide?.itinerary?.length) {
 
     <p class="sl-updated">Актуально на: {DATA_UPDATED_RU} · обновляется каждые 4–6 недель</p>
   </main>
+
+  {d.price?.iata && flightFrom ? (
+    <StickyCta href={aviasalesRoute('MOW', d.price.iata, subId)} label={`Билеты ${d.cases.vP} от $${flightFrom} →`} />
+  ) : RU_STAY.has(d.slug) && (
+    <StickyCta href={TP_LINKS.yandexTravel} label={`Подобрать жильё ${d.cases.loc} →`} />
+  )}
 
   <Footer />
 </Layout>
