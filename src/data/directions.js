@@ -97,6 +97,7 @@ const SLUG_OVERRIDES = {
   'Кипр|Лимасол, Пафос, Айя-Напа': 'cyprus',
   'Камчатка|Вулканы, гейзеры, медведи': 'kamchatka',
   'Карелия|Рускеала, Кижи, Валаам, озёра': 'karelia',
+  'Дагестан|Сулакский каньон, Дербент, горы': 'dagestan',
 };
 
 // Russian name in different cases (acc/prep) for natural headlines.
@@ -185,6 +186,7 @@ const COUNTRY_CASES = {
   'cyprus': { nom: 'Кипр', acc: 'Кипр', prep: 'Кипре', vP: 'на Кипр', loc: 'на Кипре' },
   'kamchatka': { nom: 'Камчатка', acc: 'Камчатку', prep: 'Камчатке', vP: 'на Камчатку', loc: 'на Камчатке' },
   'karelia': { nom: 'Карелия', acc: 'Карелию', prep: 'Карелии', vP: 'в Карелию', loc: 'в Карелии' },
+  'dagestan': { nom: 'Дагестан', acc: 'Дагестан', prep: 'Дагестане', vP: 'в Дагестан', loc: 'в Дагестане' },
 };
 
 // Map slug → array of related blog post slugs (which already exist in content/blog/).
@@ -374,6 +376,7 @@ const DEST_VISUALS = {
   'cyprus':           { emoji: '🏖️', g1: '#fef3c7', g2: '#fde68a' },
   'kamchatka':        { emoji: '🌋', g1: '#fee2e2', g2: '#fecaca' },
   'karelia':          { emoji: '🌲', g1: '#d1fae5', g2: '#a7f3d0' },
+  'dagestan':         { emoji: '⛰️', g1: '#fef3c7', g2: '#fde68a' },
 };
 
 function findPrice(direction) {
