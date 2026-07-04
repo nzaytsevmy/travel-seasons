@@ -193,6 +193,7 @@ const COUNTRY_CASES = {
 const RELATED_POSTS = {
   'abkhazia': [
     { slug: 'abkhazia-2026', title: 'Абхазия 2026: стоит ли ехать, цены, как добраться', kind: 'guide' },
+    { slug: 'zagranpasport-v-abhaziyu-2026', title: 'Нужен ли загранпаспорт в Абхазию — документы на границе', kind: 'visa' },
   ],
   'japan': [
     { slug: 'japan-guide-2026', title: 'Япония 2026: гайд без воды', kind: 'guide' },
