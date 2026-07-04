@@ -1,0 +1,250 @@
+---
+// /bezviz/ — интент-лендинг «куда без визы россиянам 2026».
+// Данные целиком из реестра направлений + визовых деталей; редакционный
+// decision-контент, НЕ дубль каталога /countries/ (там фильтруемый грид всего).
+import Layout from '../layouts/Layout.astro';
+import Footer from '../components/Footer.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { DIRECTIONS } from '../data/directions.js';
+import { getVisaDetails } from '../data/visa-details.js';
+import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
+import StickyCta from '../components/StickyCta.astro';
+
+const url = 'https://traveltribe.ru/bezviz/';
+const monthIdx = new Date().getMonth();
+const MONTH_RU = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'][monthIdx];
+
+// РФ-направления и «по внутреннему паспорту» — отдельная витрина
+const NO_FOREIGN_PASSPORT = ['abkhazia', 'armenia', 'kazakhstan', 'kyrgyzstan'];
+const RF_HOME = ['karelia', 'kamchatka'];
+
+const free = DIRECTIONS.filter(d => d.visa === 'free' && !RF_HOME.includes(d.slug));
+const rank = { P: 0, G: 1, O: 2, B: 3, X: 4 };
+const rows = free
+  .map(d => ({ d, v: getVisaDetails(d.slug) || {}, season: d.r?.[monthIdx] || 'O' }))
+  .sort((a, b) => (rank[a.season] ?? 2) - (rank[b.season] ?? 2) || a.d.cases.nom.localeCompare(b.d.cases.nom, 'ru'));
+
+const noPassport = NO_FOREIGN_PASSPORT
+  .map(slug => DIRECTIONS.find(d => d.slug === slug))
+  .filter(Boolean)
+  .map(d => ({ d, v: getVisaDetails(d.slug) || {} }));
+
+const BUDGET_LABEL = { low: 'бюджетно', mid: 'средний', high: 'дорого' };
+const SEASON_LABEL = { P: 'пик сезона', G: 'хороший сезон' };
+
+const seasonNowCount = rows.filter(r => r.season === 'P' || r.season === 'G').length;
+
+const faqs = [
+  {
+    q: 'Сколько стран пускают россиян без визы в 2026 году?',
+    a: `По данным Ассоциации туроператоров России, в 2026 году россиянам открыто 114 направлений без визы. На этой странице — ${free.length + RF_HOME.length} из них: те, которые я разобрал детально, с ценами, сезонами и гайдами.`,
+  },
+  {
+    q: 'Куда можно поехать вообще без загранпаспорта?',
+    a: 'По внутреннему паспорту РФ пускают Абхазия, Казахстан и Киргизия, а в Армению — при въезде через аэропорт. Плюс вся Россия: Карелия, Камчатка и другие направления внутри страны.',
+  },
+  {
+    q: 'Что значит «безвиз» на практике?',
+    a: 'Виза не оформляется заранее: на границе ставят штамп (или не ставят вовсе) и пускают на ограниченный срок — от 30 до 365 дней в зависимости от страны. Паспорт обычно должен действовать ещё 3–6 месяцев после поездки, могут спросить обратный билет и бронь жилья.',
+  },
+  {
+    q: 'Нужна ли страховка, если виза не нужна?',
+    a: 'Для въезда — почти нигде, но есть исключения: Грузия с 1 января 2026 требует полис с покрытием от 30 000 лари. И везде без исключения лечение без полиса — за свой счёт.',
+  },
+  {
+    q: 'Визовые правила меняются?',
+    a: `Да, регулярно — в обе стороны: Саудовская Аравия открыла безвиз с 11 мая 2026, а Черногория, наоборот, объявила о введении виз для россиян до конца сентября 2026. Таблица на этой странице сверяется с первоисточниками; дата последней проверки — ${DATA_UPDATED_RU}.`,
+  },
+];
+
+const title = `Куда без визы россиянам в 2026: ${free.length + RF_HOME.length} направлений с условиями`;
+const description = `Куда поехать без визы россиянам в 2026: ${free.length + RF_HOME.length} проверенных направлений — сколько дней можно находиться, условия на границе, где хватит внутреннего паспорта и куда сезон прямо сейчас.`;
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${url}#webpage`,
+      "url": url,
+      "name": title,
+      "description": description,
+      "inLanguage": "ru-RU",
+      "dateModified": `${DATA_UPDATED}T00:00:00+03:00`,
+      "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".bv-lede"] }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Куда без визы", "item": url }
+      ]
+    },
+    {
+      "@type": "ItemList",
+      "name": "Безвизовые направления для россиян 2026",
+      "numberOfItems": rows.length,
+      "itemListElement": rows.map((r, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "name": r.d.cases.nom,
+        "url": `https://traveltribe.ru/${r.d.slug}/`
+      }))
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": faqs.map(f => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": f.a }
+      }))
+    }
+  ]
+};
+---
+<Layout title={title} description={description} canonical={url} ldJson={ldJson}>
+  <Breadcrumbs crumbs={[{ label: 'Куда без визы' }]} />
+  <main id="main" class="bv">
+
+    <header class="bv-head">
+      <p class="bv-eyebrow">Безвиз · 2026</p>
+      <h1 class="bv-h1">Куда поехать без визы россиянам в 2026</h1>
+      <p class="bv-lede">В 2026 году россиян пускают без визы в <b>114 направлений</b> — <a href="https://www.atorus.ru/article/bezvizovye-strany-dlya-rossiyan-v-2026-godu-114-napravleniy-ot-gosudarstva-v-chetyrekh-polushariyakh-65811" rel="noopener" target="_blank">данные АТОР</a>. Здесь — <b>{free.length + RF_HOME.length}</b>, которые я разобрал детально: сколько дней можно находиться, что спросят на границе и куда сезон прямо в {MONTH_RU}. У {seasonNowCount} из них сезон сейчас.</p>
+      <p class="bv-byline">Собрал <a href="/about/">Никита Зайцев</a> · был на 7 континентах, 60+ стран · данные проверены: {DATA_UPDATED_RU}</p>
+    </header>
+
+    <section class="bv-section">
+      <h2>Вообще без загранпаспорта</h2>
+      <p class="bv-answer">Четыре заграничных направления пускают по <b>внутреннему паспорту РФ</b> — плюс вся Россия, где загран не нужен по определению.</p>
+      <ul class="bv-nopass">
+        {noPassport.map(({ d, v }) => (
+          <li>
+            <a href={`/${d.slug}/`}><b>{d.cases.nom}</b></a>
+            <span>{v.duration}{d.slug === 'armenia' ? ' · внутренний паспорт — только при въезде через аэропорт' : ''}{d.slug === 'abkhazia' ? ' · штамп не ставят' : ''}</span>
+          </li>
+        ))}
+        <li>
+          <a href="/karelia/"><b>Карелия</b></a>, <a href="/kamchatka/"><b>Камчатка</b></a> и вся Россия
+          <span>паспорт РФ, никаких лимитов</span>
+        </li>
+      </ul>
+      <p class="bv-note">Про главный «безпаспортный» хит — отдельный разбор: <a href="/blog/zagranpasport-v-abhaziyu-2026/">нужен ли загранпаспорт в Абхазию</a>.</p>
+    </section>
+
+    <section class="bv-section">
+      <h2>Все безвизовые направления: сроки и условия</h2>
+      <p class="bv-answer">Отсортировано по сезону: сверху — куда хорошо ехать в {MONTH_RU}. «Сколько дней» — максимальный срок без визы; условия — что реально происходит на границе.</p>
+
+      <div class="bv-table-wrap">
+        <table class="bv-table">
+          <thead>
+            <tr><th>Направление</th><th>Сколько дней</th><th>Условия</th><th>Бюджет</th><th>Сезон в {MONTH_RU}</th></tr>
+          </thead>
+          <tbody>
+            {rows.map(({ d, v, season }) => (
+              <tr>
+                <td data-label="Направление"><a href={`/${d.slug}/`}><b>{d.cases.nom}</b></a></td>
+                <td data-label="Сколько дней">{v.duration || '—'}</td>
+                <td data-label="Условия">{v.timing || 'штамп на границе'}</td>
+                <td data-label="Бюджет">{BUDGET_LABEL[d.budget] || '—'}</td>
+                <td data-label={`Сезон в ${MONTH_RU}`}>{SEASON_LABEL[season] ? <b class={`bv-season bv-season--${season}`}>{SEASON_LABEL[season]}</b> : <span class="bv-season-off">не сезон</span>}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="bv-note">Сроки действия паспорта, обратные билеты и брони проверяют выборочно, но требования формально действуют — детали по каждой стране в <a href="/visa/">реестре виз</a> и на страницах направлений.</p>
+    </section>
+
+    <section class="bv-section">
+      <h2>Что оформить до вылета, раз виза не нужна</h2>
+      <p class="bv-answer">Два пункта закрывают 90% проблем на месте: <b>страховка</b> (ОМС за границей не работает, а Грузия с 2026 требует полис на въезде) и <b>билеты, купленные заранее</b> — на границе могут спросить обратный.</p>
+      <p class="bv-cta-row">
+        <a class="aff-btn" href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F%3Fsub_id%3Dbezviz" rel="sponsored noopener" target="_blank">Собрать страховку под поездку →</a>
+        <a class="bv-aff" href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Fsub_id%3Dbezviz" rel="sponsored noopener" target="_blank">Сравнить билеты по 114 направлениям →</a>
+        <span class="bv-trust">оплата картами РФ · цена не меняется, блог получает комиссию</span>
+      </p>
+    </section>
+
+    <section class="bv-section">
+      <h2>FAQ</h2>
+      <div class="bv-faq">
+        {faqs.map(f => (
+          <details class="bv-faq-i">
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <section class="bv-section">
+      <h2>Что почитать дальше</h2>
+      <ul class="bv-related">
+        <li><a href="/visa/"><b>Реестр виз по 70+ странам</b></a> — где нужна виза, сколько стоит и как долго делается</li>
+        <li><a href="/countries/"><b>Каталог направлений с фильтрами</b></a> — подбор по бюджету, сезону и вайбу</li>
+        <li><a href="/calculator/"><b>Калькулятор бюджета</b></a> — сколько реально стоит вся поездка</li>
+      </ul>
+    </section>
+  </main>
+
+  <StickyCta href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F%3Fsub_id%3Dbezviz" label="Страховка в поездку — под даты →" />
+
+  <Footer />
+</Layout>
+
+<style>
+  .bv { max-width: var(--container, 1100px); margin: 0 auto; padding: 0 1rem 4rem; }
+  .bv-head { padding: 1.2rem 0 2rem; }
+  .bv-eyebrow { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin: 0 0 .6rem; }
+  .bv-h1 { font-size: clamp(1.7rem, 4.5vw, 2.6rem); line-height: 1.15; margin: 0 0 .9rem; letter-spacing: -.01em; }
+  .bv-lede { font-size: 1.05rem; line-height: 1.6; max-width: 62ch; margin: 0 0 .8rem; }
+  .bv-byline { font-size: .85rem; color: var(--text-dim); margin: 0; }
+
+  .bv-section { border-top: 1px solid var(--line-strong, var(--line)); padding-top: 1.6rem; margin-top: 2.4rem; }
+  .bv-section h2 { font-size: 1.35rem; margin: 0 0 .7rem; scroll-margin-top: 80px; }
+  .bv-answer { max-width: 62ch; line-height: 1.6; margin: 0 0 1.1rem; }
+  .bv-note { font-size: .88rem; color: var(--text-dim); max-width: 62ch; }
+
+  .bv-nopass { list-style: none; margin: 0 0 1rem; padding: 0; }
+  .bv-nopass li { display: flex; flex-wrap: wrap; gap: .35rem .8rem; align-items: baseline; padding: .7rem .1rem; border-bottom: 1px solid var(--line); font-size: .98rem; }
+  .bv-nopass a { color: var(--gold); text-decoration: 2px underline var(--gold); text-underline-offset: 3px; }
+  .bv-nopass span { color: var(--text-dim); font-size: .88rem; }
+
+  .bv-table-wrap { overflow-x: auto; }
+  .bv-table { width: 100%; border-collapse: collapse; border-top: 2px solid var(--line-strong, var(--line)); font-size: .92rem; }
+  .bv-table th { text-align: left; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); font-weight: 700; padding: .55rem .6rem .55rem 0; border-bottom: 1px solid var(--line); }
+  .bv-table td { padding: .55rem .6rem .55rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .bv-table a { color: var(--text); text-decoration: 2px underline var(--gold); text-underline-offset: 3px; }
+  .bv-table a:hover { color: var(--gold); }
+  .bv-season--P { color: var(--gold); }
+  .bv-season--G { color: var(--text); }
+  .bv-season-off { color: var(--text-faint); }
+
+  /* Мобайл: таблица → карточки (канон, не горизонтальный скролл) */
+  @media (max-width: 700px) {
+    .bv-table thead { display: none; }
+    .bv-table, .bv-table tbody, .bv-table tr, .bv-table td { display: block; width: 100%; }
+    .bv-table tr { border-bottom: 1px solid var(--line-strong, var(--line)); padding: .55rem 0; }
+    .bv-table td { border: none; padding: .18rem 0; }
+    .bv-table td::before { content: attr(data-label) ' · '; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-faint); }
+    .bv-table td:first-child::before { content: ''; }
+    .bv-table td:first-child { font-size: 1.02rem; }
+  }
+
+  .bv-cta-row { display: flex; flex-direction: column; align-items: flex-start; gap: .6rem; margin: 0; }
+  .bv-aff { font-weight: 700; color: var(--gold); text-decoration: 2px underline var(--gold); text-underline-offset: 4px; display: inline-flex; align-items: center; min-height: 44px; }
+  .bv-aff:hover { color: var(--gold-dim); }
+  .bv-trust { font-size: .78rem; color: var(--text-dim); }
+
+  .bv-faq { border-top: 1px solid var(--line-strong, var(--line)); }
+  .bv-faq-i { border-bottom: 1px solid var(--line); }
+  .bv-faq-i summary { cursor: pointer; padding: .85rem .1rem; font-weight: 600; list-style: none; }
+  .bv-faq-i summary::-webkit-details-marker { display: none; }
+  .bv-faq-i p { margin: 0 0 1rem; color: var(--text-dim); line-height: 1.6; max-width: 68ch; }
+
+  .bv-related { list-style: none; margin: 0; padding: 0; }
+  .bv-related li { padding: .55rem 0; border-bottom: 1px solid var(--line); font-size: .95rem; color: var(--text-dim); }
+  .bv-related a { color: var(--text); text-decoration: 2px underline var(--gold); text-underline-offset: 3px; }
+</style>
