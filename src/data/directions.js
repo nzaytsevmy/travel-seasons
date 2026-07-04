@@ -274,6 +274,9 @@ const RELATED_POSTS = {
   'kamchatka': [
     { slug: 'kamchatka-guide-2026', title: 'Камчатка 2026: что посмотреть, когда ехать, цены', kind: 'guide' },
   ],
+  'dagestan': [
+    { slug: 'dagestan-guide-2026', title: 'Отдых в Дагестане 2026: маршрут, цены, без машины', kind: 'guide' },
+  ],
   'karelia': [
     { slug: 'kareliya-guide-2026', title: 'Карелия 2026: что посмотреть, как добраться, цены', kind: 'guide' },
     { slug: 'gornyy-park-ruskeala-2026', title: 'Горный парк Рускеала 2026: билеты, как добраться', kind: 'guide' },
