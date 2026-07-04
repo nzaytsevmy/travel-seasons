@@ -2,7 +2,7 @@
 title: "Нужен ли загранпаспорт в Абхазию в 2026 — нет, и вот почему"
 description: "Загранпаспорт в Абхазию не нужен: россиян пускают по внутреннему паспорту РФ. Документы для детей, правило для машины и почему загран брать даже вредно."
 pubDate: 2026-07-04
-coverImage: "./_images/abkhazia/zagranpasport-cover.webp"
+coverImage: "./_images/abkhazia/ritsa-2.jpg"
 author: "Никита Зайцев"
 tags: ["Абхазия", "Документы", "Безвиз", "2026"]
 sourceType: "compilation"
