@@ -177,7 +177,7 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
       <header class="hero grid">
         <div class="idx"><span class={`st st-${lbl.cls}`}>{lbl.tag}</span><b>{monthCap} {yr}</b></div>
         <div class="meta">Сезоны и визы<br><b>актуальны на {DATA_UPDATED_RU}</b></div>
-        <h1 class="h1">{reframe ? <>Стоит ли ехать {d.cases.vP} <span class="rd">в {m.prep}</span> {yr}</> : <>{d.cases.nom} <span class="rd">в {m.prep}</span> {yr}</>}</h1>
+        <h1 class="h1">{reframe ? <>Стоит ли ехать {d.cases.vP}{' '}<span class="rd">в {m.prep}</span>{' '}{yr}</> : <>{d.cases.nom} <span class="rd">в {m.prep}</span> {yr}</>}</h1>
         <p class="sub">{lbl.verdict}. {d.region} — {d.sub}.</p>
         <p class="byl">
           <a href="/about/" class="byl-a">Никита Зайцев</a> ·
