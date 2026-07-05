@@ -24,6 +24,17 @@ export async function getStaticPaths() {
 const { m, d } = Astro.props;
 const url = `https://traveltribe.ru/trips/${m.slug}/${d.slug}/`;
 const monthIdx = MONTHS.findIndex((x) => x.slug === m.slug);
+
+// Погодный рефрейм — ПИЛОТ (Рост Фаза 4, 2026-07-05). Данные: weather-интент на этих
+// страницах даёт показы без кликов (виджет выдачи отвечает сам; у /trips/july/turkey/
+// 740 показов и CTR 0.4%), decision-интент «стоит ли ехать» виджет НЕ закрывает.
+// Топ-10 страниц по показам GSC: рефрейм title/H1 → замер CTR через 2-3 недели →
+// раскат на все trips при подтверждении. Остальные страницы = контрольная группа.
+const WEATHER_REFRAME_PILOT = new Set([
+  'july/turkey', 'july/italy-north', 'july/japan', 'july/spain', 'july/italy-south',
+  'july/norway', 'august/japan', 'june/greece', 'june/armenia', 'december/new-zealand',
+]);
+const reframe = WEATHER_REFRAME_PILOT.has(`${m.slug}/${d.slug}`);
 const yr = yearForMonth(monthIdx + 1);
 const status = d.r[monthIdx];
 const text = d.t[monthIdx];
@@ -146,7 +157,7 @@ const ldJson = {
 const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
 ---
 <Layout
-  title={`${d.cases.nom} в ${m.prep} ${yr}: погода, цены, виза`}
+  title={reframe ? `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}: цены, толпы, что взять` : `${d.cases.nom} в ${m.prep} ${yr}: погода, цены, виза`}
   description={`Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr} — погода, цены, виза для россиян, бюджет на неделю. ${lbl.verdict}.`}
   canonical={url}
   noindex={status === 'X' || NICHE_TRIPS.has(d.slug)}
@@ -166,7 +177,7 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
       <header class="hero grid">
         <div class="idx"><span class={`st st-${lbl.cls}`}>{lbl.tag}</span><b>{monthCap} {yr}</b></div>
         <div class="meta">Сезоны и визы<br><b>актуальны на {DATA_UPDATED_RU}</b></div>
-        <h1 class="h1">{d.cases.nom} <span class="rd">в {m.prep}</span> {yr}</h1>
+        <h1 class="h1">{reframe ? <>Стоит ли ехать {d.cases.vP} <span class="rd">в {m.prep}</span> {yr}</> : <>{d.cases.nom} <span class="rd">в {m.prep}</span> {yr}</>}</h1>
         <p class="sub">{lbl.verdict}. {d.region} — {d.sub}.</p>
         <p class="byl">
           <a href="/about/" class="byl-a">Никита Зайцев</a> ·
