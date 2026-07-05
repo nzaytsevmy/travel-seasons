@@ -98,6 +98,7 @@ const SLUG_OVERRIDES = {
   'Камчатка|Вулканы, гейзеры, медведи': 'kamchatka',
   'Карелия|Рускеала, Кижи, Валаам, озёра': 'karelia',
   'Дагестан|Сулакский каньон, Дербент, горы': 'dagestan',
+  'Алтай|Чуйский тракт, Телецкое, горы': 'altai',
 };
 
 // Russian name in different cases (acc/prep) for natural headlines.
@@ -187,6 +188,7 @@ const COUNTRY_CASES = {
   'kamchatka': { nom: 'Камчатка', acc: 'Камчатку', prep: 'Камчатке', vP: 'на Камчатку', loc: 'на Камчатке' },
   'karelia': { nom: 'Карелия', acc: 'Карелию', prep: 'Карелии', vP: 'в Карелию', loc: 'в Карелии' },
   'dagestan': { nom: 'Дагестан', acc: 'Дагестан', prep: 'Дагестане', vP: 'в Дагестан', loc: 'в Дагестане' },
+  'altai': { nom: 'Алтай', acc: 'Алтай', prep: 'Алтае', vP: 'на Алтай', loc: 'на Алтае' },
 };
 
 // Map slug → array of related blog post slugs (which already exist in content/blog/).
@@ -276,6 +278,9 @@ const RELATED_POSTS = {
   ],
   'dagestan': [
     { slug: 'dagestan-guide-2026', title: 'Отдых в Дагестане 2026: маршрут, цены, без машины', kind: 'guide' },
+  ],
+  'altai': [
+    { slug: 'altai-guide-2026', title: 'Отдых на Алтае 2026: маршрут, цены, когда ехать', kind: 'guide' },
   ],
   'karelia': [
     { slug: 'kareliya-guide-2026', title: 'Карелия 2026: что посмотреть, как добраться, цены', kind: 'guide' },
@@ -380,6 +385,7 @@ const DEST_VISUALS = {
   'kamchatka':        { emoji: '🌋', g1: '#fee2e2', g2: '#fecaca' },
   'karelia':          { emoji: '🌲', g1: '#d1fae5', g2: '#a7f3d0' },
   'dagestan':         { emoji: '⛰️', g1: '#fef3c7', g2: '#fde68a' },
+  'altai':            { emoji: '🏔️', g1: '#e0f2fe', g2: '#bae6fd' },
 };
 
 function findPrice(direction) {

@@ -26,9 +26,9 @@ import CountryMap from '../components/CountryMap.astro';
 import { TP_LINKS, aviasalesRoute, tripsterDest } from '../data/affiliate.js';
 
 // РФ-инвентарь жилья: на этих хабах вместо Островка — Яндекс Путешествия (сильнее по РФ).
-const RU_STAY = new Set(['abkhazia', 'kamchatka', 'karelia', 'dagestan']);
+const RU_STAY = new Set(['abkhazia', 'kamchatka', 'karelia', 'dagestan', 'altai']);
 // Направления, где самостоятельные ездят за рулём — аренда авто как отдельный блок.
-const CAR_RENTAL = new Set(['georgia', 'armenia', 'abkhazia', 'karelia', 'dagestan', 'new-zealand', 'uae', 'bali']);
+const CAR_RENTAL = new Set(['georgia', 'armenia', 'abkhazia', 'karelia', 'dagestan', 'altai', 'new-zealand', 'uae', 'bali']);
 // Пакетный интент (чартер+отель): рядом с авторскими турами — сравнение пакетных.
 const PACKAGE_TOUR = new Set(['turkey', 'egypt', 'uae', 'thailand', 'vietnam', 'hainan', 'cuba', 'dominican-republic', 'maldives']);
 import { similarDestinations } from '../data/similar.js';
