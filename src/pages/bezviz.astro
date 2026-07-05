@@ -34,10 +34,20 @@ const SEASON_LABEL = { P: 'пик сезона', G: 'хороший сезон' 
 
 const seasonNowCount = rows.filter(r => r.season === 'P' || r.season === 'G').length;
 
+// Русское склонение: 41 направление / 42 направления / 45 направлений
+const plural = (n, one, few, many) => {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+  return many;
+};
+const total = free.length + RF_HOME.length;
+const totalWord = plural(total, 'направление', 'направления', 'направлений');
+
 const faqs = [
   {
     q: 'Сколько стран пускают россиян без визы в 2026 году?',
-    a: `По данным Ассоциации туроператоров России, в 2026 году россиянам открыто 114 направлений без визы. На этой странице — ${free.length + RF_HOME.length} из них: те, которые я разобрал детально, с ценами, сезонами и гайдами.`,
+    a: `По данным Ассоциации туроператоров России, в 2026 году россиянам открыто 114 направлений без визы. На этой странице — ${total} из них: те, которые я разобрал детально, с ценами, сезонами и гайдами.`,
   },
   {
     q: 'Куда можно поехать вообще без загранпаспорта?',
@@ -57,8 +67,8 @@ const faqs = [
   },
 ];
 
-const title = `Куда без визы россиянам в 2026: ${free.length + RF_HOME.length} направлений с условиями`;
-const description = `Куда поехать без визы россиянам в 2026: ${free.length + RF_HOME.length} проверенных направлений — сколько дней можно находиться, условия на границе, где хватит внутреннего паспорта и куда сезон прямо сейчас.`;
+const title = `Куда без визы россиянам в 2026: ${total} ${totalWord} с условиями`;
+const description = `Куда поехать без визы россиянам в 2026: ${total} проверенных ${totalWord} — сколько дней можно находиться, условия на границе, где хватит внутреннего паспорта и куда сезон прямо сейчас.`;
 
 const ldJson = {
   "@context": "https://schema.org",
@@ -110,7 +120,7 @@ const ldJson = {
     <header class="bv-head">
       <p class="bv-eyebrow">Безвиз · 2026</p>
       <h1 class="bv-h1">Куда поехать без визы россиянам в 2026</h1>
-      <p class="bv-lede">В 2026 году россиян пускают без визы в <b>114 направлений</b> — <a href="https://www.atorus.ru/article/bezvizovye-strany-dlya-rossiyan-v-2026-godu-114-napravleniy-ot-gosudarstva-v-chetyrekh-polushariyakh-65811" rel="noopener" target="_blank">данные АТОР</a>. Здесь — <b>{free.length + RF_HOME.length}</b>, которые я разобрал детально: сколько дней можно находиться, что спросят на границе и куда сезон прямо в {MONTH_RU}. У {seasonNowCount} из них сезон сейчас.</p>
+      <p class="bv-lede">В 2026 году россиян пускают без визы в <b>114 направлений</b> — <a href="https://www.atorus.ru/article/bezvizovye-strany-dlya-rossiyan-v-2026-godu-114-napravleniy-ot-gosudarstva-v-chetyrekh-polushariyakh-65811" rel="noopener" target="_blank">данные АТОР</a>. Здесь — <b>{total}</b>, которые я разобрал детально: сколько дней можно находиться, что спросят на границе и куда сезон прямо в {MONTH_RU}. У {seasonNowCount} из них сезон сейчас.</p>
       <p class="bv-byline">Собрал <a href="/about/">Никита Зайцев</a> · был на 7 континентах, 60+ стран · данные проверены: {DATA_UPDATED_RU}</p>
     </header>
 

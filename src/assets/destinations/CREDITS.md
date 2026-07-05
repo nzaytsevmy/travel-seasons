@@ -49,4 +49,5 @@
 | usa.jpg | США — Гранд-Каньон | [Pexels 29548242](https://www.pexels.com/photo/29548242/) | — | Pexels License |
 | vietnam.jpg | Вьетнам — бухта Халонг | [Pexels 28356818](https://www.pexels.com/photo/28356818/) | — | Pexels License |
 | dagestan.jpg | Дагестан — Сулакский каньон (аэро) | [Pexels 9675972](https://www.pexels.com/photo/9675972/) | Nadezhda Moryak | Pexels License |
+| altai.jpg | Алтай — Чуйский тракт, серпантин | [Pexels 33805577](https://www.pexels.com/photo/33805577/) | — | Pexels License |
 | blog/_images/dagestan-cover.jpg | Дагестан — катера на Сулаке (обложка пиллара) | [Pexels 8577817](https://www.pexels.com/photo/8577817/) | — | Pexels License |

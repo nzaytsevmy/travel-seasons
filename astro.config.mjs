@@ -47,10 +47,8 @@ export default defineConfig({
     '/japan_momiji': '/blog/japan-guide-2026/',
     '/japan-momiji': '/blog/japan-guide-2026/',
     '/mexico_old': '/blog/',
-    // Старый tour-лендинг /altai (живые бэклинки leadgid 2024 → сейчас 404).
-    // Altai как направление на сайте нет → ведём на homepage-chooser «куда поехать»,
-    // чтобы не терять ссылочный вес в 404. Цель пересмотреть, если добавим Алтай.
-    '/altai': '/',
+    // /altai: legacy-редирект старого тур-лендинга снят 2026-07 — направление
+    // добавлено на сайт, бэклинки leadgid 2024 теперь ведут на тематический хаб.
   },
   build: {
     // Все стили inline в HTML — убирает render-blocking CSS (164ms по GTmetrix).

@@ -14,5 +14,6 @@ export const NICHE_TRIPS = new Set([
   'costa-rica-panama',    // Центр. Америка
   'canada-rockies',       // виза для РФ практически закрыта
   'dagestan',             // новое направление: пиллар-first, trips вернуть после кликов на пилларе
+  'altai',                // новое направление: пиллар-first, как dagestan
   'canada-east',          // виза для РФ практически закрыта
 ]);
