@@ -1,0 +1,265 @@
+---
+// /compare/<a>-vs-<b>/ — кураторские пары decision-intent («турция или египет»).
+// Swiss-канон BRANDBOOK.md (hairlines, gold accent, без border-radius/shadow).
+import Layout from '../../layouts/Layout.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import CompareTable from '../../components/CompareTable.astro';
+import StickyCta from '../../components/StickyCta.astro';
+import { COMPARE_PAIRS } from '../../data/compare-pairs.js';
+import { buildCompareEntry, compareEntries } from '../../data/compare-logic.js';
+import { MONTHS } from '../../data/directions.js';
+import { similarDestinations } from '../../data/similar.js';
+import { DATA_UPDATED_RU } from '../../data/meta.js';
+import { cherehapaTravel, aviasalesRoute } from '../../data/affiliate.js';
+
+export async function getStaticPaths() {
+  return COMPARE_PAIRS.map((p) => ({
+    params: { pair: `${p.a}-vs-${p.b}` },
+    props: { pairDef: p },
+  }));
+}
+
+const { pairDef } = Astro.props;
+const monthIdx = new Date().getMonth();
+const month = MONTHS[monthIdx];
+
+const a = buildCompareEntry(pairDef.a, monthIdx);
+const b = buildCompareEntry(pairDef.b, monthIdx);
+if (!a || !b) throw new Error(`compare pair references unknown slug: ${pairDef.a} / ${pairDef.b}`);
+
+const diff = compareEntries(a, b);
+const url = `https://traveltribe.ru/compare/${pairDef.a}-vs-${pairDef.b}/`;
+const title = `${a.nom} или ${b.nom}: что выбрать в 2026`;
+const description = `${a.nom} vs ${b.nom} — виза, бюджет в сутки, перелёт и сезон по месяцам бок-о-бок. ${pairDef.angle}.`.slice(0, 155);
+
+const cheaperEntry = diff.cheaper === a.slug ? a : diff.cheaper === b.slug ? b : null;
+const pricierEntry = diff.cheaper === a.slug ? b : diff.cheaper === b.slug ? a : null;
+const easierEntry = diff.easierVisa === a.slug ? a : diff.easierVisa === b.slug ? b : null;
+const betterNowEntry = diff.betterNow === a.slug ? a : diff.betterNow === b.slug ? b : null;
+
+const verdictPoints = [];
+if (cheaperEntry && pricierEntry && diff.cheaperPct) {
+  verdictPoints.push(`Дешевле — ${cheaperEntry.nom}, примерно на ${diff.cheaperPct}% в сутки по среднему уровню комфорта.`);
+}
+if (easierEntry) {
+  verdictPoints.push(`Проще с визой — ${easierEntry.nom}: ${easierEntry.visaFree ? 'виза не нужна вообще' : 'условия мягче'}.`);
+}
+if (betterNowEntry) {
+  verdictPoints.push(`Сейчас, в ${month.prep}, лучше сезон ${betterNowEntry.loc} (${betterNowEntry.nowLabel.toLowerCase()}).`);
+}
+if (!verdictPoints.length) {
+  verdictPoints.push('По деньгам и визе направления сопоставимы — выбирай по сезону и личным приоритетам ниже.');
+}
+
+// Похожие направления (той же логикой, что на хабах) — предлагаем ещё вариант
+// в тему, но НЕ придумываем несуществующую страницу сравнения.
+const moreLikeA = similarDestinations(a.slug, 3, monthIdx).filter((s) => s.slug !== b.slug);
+
+const FAQS = [
+  {
+    q: `${a.nom} или ${b.nom} — что дешевле?`,
+    a: cheaperEntry
+      ? `${cheaperEntry.nom} дешевле по бюджету в сутки — примерно на ${diff.cheaperPct}% (уровень «комфорт»). Точную сумму под свои даты и число дней считай в калькуляторе.`
+      : `Разница в бюджете в сутки между ${a.nom} и ${b.nom} небольшая — сопоставимый уровень цен на комфортном уровне.`,
+  },
+  {
+    q: `Куда нужна виза — ${a.nom} или ${b.nom}?`,
+    a: `${a.nom}: ${a.visaFree ? 'виза не нужна' : (a.visa ? `${a.visa.duration}, ${a.visa.cost}` : 'см. страницу визы')}. ${b.nom}: ${b.visaFree ? 'виза не нужна' : (b.visa ? `${b.visa.duration}, ${b.visa.cost}` : 'см. страницу визы')}.`,
+  },
+  {
+    q: `Куда лучше ехать в ${month.prep} — ${a.nom} или ${b.nom}?`,
+    a: betterNowEntry
+      ? `В ${month.prep} лучше сезон ${betterNowEntry.loc} — ${betterNowEntry.nowLabel.toLowerCase()}. У второго направления — ${(betterNowEntry.slug === a.slug ? b : a).nowLabel.toLowerCase()}.`
+      : `В ${month.prep} у обоих направлений похожая сезонная ситуация: ${a.nom} — ${a.nowLabel.toLowerCase()}, ${b.nom} — ${b.nowLabel.toLowerCase()}.`,
+  },
+];
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": `${url}#page`,
+      "name": title,
+      "description": description,
+      "url": url,
+      "inLanguage": "ru-RU",
+      "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+      "datePublished": "2026-07-06",
+      "dateModified": DATA_UPDATED_RU,
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".cmpg-tldr"] },
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${url}#faq`,
+      "mainEntity": FAQS.map((f) => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } })),
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Сравнить", "item": "https://traveltribe.ru/compare/" },
+        { "@type": "ListItem", "position": 3, "name": `${a.nom} или ${b.nom}`, "item": url },
+      ],
+    },
+  ],
+};
+---
+<Layout title={title} description={description} canonical={url} ldJson={ldJson}>
+  <Breadcrumbs crumbs={[{ label: 'Сравнить', href: '/compare/' }, { label: `${a.nom} или ${b.nom}` }]} />
+
+  <main id="main" class="cmpg">
+    <section class="cmpg-manifest">
+      <div class="cmpg-idx">01 / Сравнение<b>{pairDef.angle}</b></div>
+      <div class="cmpg-meta">Компаратор<br /><b>Обновлено {DATA_UPDATED_RU}</b></div>
+      <h1 class="cmpg-h1">{a.nom} <span class="rd">или</span> {b.nom}</h1>
+      <p class="cmpg-tldr">{verdictPoints[0]}</p>
+    </section>
+
+    <section class="cmpg-section">
+      <div class="cmpg-shead"><h2>Бок о бок</h2></div>
+      <CompareTable a={a} b={b} monthLabel={month.nom} />
+    </section>
+
+    <section class="cmpg-section">
+      <div class="cmpg-shead"><h2>Вывод</h2></div>
+      <ul class="cmpg-verdict">
+        {verdictPoints.map((v) => <li>{v}</li>)}
+      </ul>
+      <p class="cmpg-disclaimer">Сравнение по данным сайта: виза — {DATA_UPDATED_RU}, бюджет — кросс-источниковая агрегация 2026 (или оценка по нашим ценам, если кросс-источника нет), сезон — по многолетним наблюдениям. Точные цифры под свои даты — в <a href="/calculator/" class="cmpg-link">калькуляторе</a>.</p>
+    </section>
+
+    <section class="cmpg-section">
+      <div class="cmpg-shead"><h2>Забронировать</h2></div>
+      <p class="cmpg-cta">
+        <a class="aff-btn" href={cherehapaTravel(`compare_${pairDef.a}_${pairDef.b}`)} rel="sponsored noopener" target="_blank">Оформить страховку под поездку →</a>
+      </p>
+      <p class="cmpg-cta">
+        {a.iata && <a class="cmpg-aff-link" href={aviasalesRoute('MOW', a.iata, `compare_${pairDef.a}`)} rel="sponsored noopener" target="_blank">Билет в {a.nom} →</a>}
+        {b.iata && <a class="cmpg-aff-link" href={aviasalesRoute('MOW', b.iata, `compare_${pairDef.b}`)} rel="sponsored noopener" target="_blank">Билет в {b.nom} →</a>}
+      </p>
+    </section>
+
+    <section class="cmpg-section">
+      <div class="cmpg-shead"><h2>FAQ</h2></div>
+      <div class="cmpg-faq">
+        {FAQS.map((f) => (
+          <details class="cmpg-faq-i">
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <section class="cmpg-section">
+      <div class="cmpg-shead"><h2>Что почитать дальше</h2></div>
+      <ul class="cmpg-related">
+        <li><a href={`/${a.slug}/`}><b>{a.nom} 2026 — виза, бюджет, маршруты</b></a><span>карточка направления</span></li>
+        <li><a href={`/${b.slug}/`}><b>{b.nom} 2026 — виза, бюджет, маршруты</b></a><span>карточка направления</span></li>
+        <li><a href="/compare/"><b>Сравнить другие направления</b></a><span>компаратор</span></li>
+        <li><a href="/calculator/"><b>Калькулятор бюджета</b></a><span>точная сумма под твои даты</span></li>
+        {moreLikeA.map((s) => (
+          <li><a href={`/${s.slug}/`}><b>{s.nom}</b></a><span>{s.why || 'похоже на ' + a.nom}</span></li>
+        ))}
+      </ul>
+    </section>
+
+    <p class="cmpg-updated">Актуально на: {DATA_UPDATED_RU}</p>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.cmpg {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 clamp(1.1rem, 3vw, 2.6rem) clamp(2rem, 4vw, 4rem);
+  font-family: var(--ff-display);
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--text);
+}
+.cmpg-manifest {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0 clamp(.8rem, 2vw, 1.6rem);
+  padding: clamp(1rem, 2vw, 1.8rem) 0 clamp(1.2rem, 2.5vw, 2rem);
+}
+.cmpg-idx {
+  grid-column: 1 / 7; grid-row: 1;
+  font-size: .74rem; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase;
+  color: var(--gold);
+}
+.cmpg-idx b { display: block; color: var(--text); font-size: .74rem; font-weight: 600; margin-top: .2rem; }
+.cmpg-meta {
+  grid-column: 8 / 13; grid-row: 1;
+  text-align: right; align-self: start;
+  font-size: .8rem; color: var(--text-dim); line-height: 1.5;
+}
+.cmpg-meta b { color: var(--text); font-weight: 600; }
+.cmpg-h1 {
+  grid-column: 1 / 13; grid-row: 2;
+  font-weight: 800;
+  font-size: clamp(2rem, 5.5vw, 4.2rem);
+  line-height: 1.02;
+  letter-spacing: -.03em;
+  margin: clamp(1rem, 2vw, 1.6rem) 0 0;
+  text-wrap: balance;
+}
+.cmpg-h1 .rd { color: var(--gold); font-weight: 500; }
+.cmpg-tldr {
+  grid-column: 1 / 10; grid-row: 3;
+  font-size: clamp(1rem, 1.3vw, 1.15rem);
+  color: var(--text);
+  line-height: 1.55;
+  margin-top: 1.3rem;
+}
+
+.cmpg-section { border-top: 2px solid #1b1914; padding: clamp(1.4rem, 3vw, 2.2rem) 0; scroll-margin-top: 80px; }
+.cmpg-shead h2 {
+  font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+  font-weight: 800;
+  letter-spacing: -.015em;
+  margin: 0 0 1rem;
+}
+.cmpg-verdict { list-style: none; margin: 0; padding: 0; }
+.cmpg-verdict li {
+  padding: .7rem 0;
+  border-top: 1px solid var(--line);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+.cmpg-verdict li:first-child { border-top: none; padding-top: 0; }
+.cmpg-disclaimer { margin-top: 1rem; font-size: .78rem; color: var(--text-faint); line-height: 1.6; }
+.cmpg-link, a.cmpg-link { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
+
+.cmpg-cta { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1.2rem; margin: 0 0 .6rem; }
+.cmpg-aff-link {
+  color: var(--gold);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.cmpg-faq-i { border-top: 1px solid var(--line); padding: .9rem 0; }
+.cmpg-faq-i summary { font-weight: 700; cursor: pointer; min-height: 44px; display: flex; align-items: center; }
+.cmpg-faq-i p { margin: .6rem 0 0; color: var(--text-dim); line-height: 1.6; }
+
+.cmpg-related { list-style: none; margin: 0; padding: 0; }
+.cmpg-related li {
+  border-top: 1px solid var(--line);
+  padding: .8rem 0;
+  display: flex; flex-direction: column;
+}
+.cmpg-related a { color: var(--text); text-decoration: none; }
+.cmpg-related a b { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
+.cmpg-related span { font-size: .82rem; color: var(--text-faint); margin-top: .15rem; }
+
+.cmpg-updated { margin-top: 2rem; font-size: .72rem; color: var(--text-faint); }
+</style>

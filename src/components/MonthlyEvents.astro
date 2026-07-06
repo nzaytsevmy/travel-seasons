@@ -65,6 +65,7 @@ const closedCount = events.filter(e => e.tag === 'closed').length;
       )))}
     </tbody>
   </table>
+  <p class="me-more"><a href="/events/">Праздники и фестивали по всем странам →</a></p>
 </section>
 
 <style>
@@ -161,6 +162,9 @@ const closedCount = events.filter(e => e.tag === 'closed').length;
 .me-r--closed .me-ename { color: var(--text); }
 .me-r--fest .me-tc { color: var(--text); }
 .me-r--culture .me-tc { color: var(--text-dim); }
+
+.me-more { margin: .9rem 0 0; font-size: .84rem; }
+.me-more a { color: var(--gold); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 
 /* MOBILE: таблица → строки-блоки (Swiss-канон) */
 @media (max-width: 760px) {

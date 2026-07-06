@@ -10,6 +10,7 @@ import { COUNTRIES as RICH_COUNTRIES } from '../../../data/programmatic-seasons.
 import { NICHE_TRIPS } from '../../../data/niche-trips.js';
 import { TP_LINKS, aviasalesRoute } from '../../../data/affiliate.js';
 import { DATA_UPDATED_RU, yearForMonth } from '../../../data/meta.js';
+import TripSaveButton from '../../../components/TripSaveButton.astro';
 
 export async function getStaticPaths() {
   const paths = [];
@@ -184,6 +185,7 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
           <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
           <span>был лично на 7 континентах</span>
         </p>
+        <TripSaveButton slug={d.slug} nom={d.cases.nom} monthIdx={monthIdx} />
       </header>
 
       <p class="lead">{text}</p>

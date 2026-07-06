@@ -32,6 +32,8 @@ const CAR_RENTAL = new Set(['georgia', 'armenia', 'abkhazia', 'karelia', 'dagest
 // Пакетный интент (чартер+отель): рядом с авторскими турами — сравнение пакетных.
 const PACKAGE_TOUR = new Set(['turkey', 'egypt', 'uae', 'thailand', 'vietnam', 'hainan', 'cuba', 'dominican-republic', 'maldives']);
 import { similarDestinations } from '../data/similar.js';
+import { COMPARE_PAIRS } from '../data/compare-pairs.js';
+import TripSaveButton from '../components/TripSaveButton.astro';
 import { getGuide } from '../data/country-guides.js';
 import { buildEssentialsFaq } from '../data/essentials-faq.js';
 import { hasEssentials } from '../data/country-essentials.js';
@@ -68,6 +70,13 @@ const yr = new Date().getFullYear();
 // (глубина/dwell/last-click = ПФ + показы партнёрских CTA). Матч по визе/бюджету/вайбу/сезону.
 const similar = similarDestinations(d.slug, 3);
 const url = `https://traveltribe.ru/${d.slug}/`;
+
+// Готовый разбор пары для /compare/ — только если курировано в compare-pairs.js
+// (не создаём выдуманную ссылку на несуществующую страницу).
+const comparePairDef = COMPARE_PAIRS.find((p) => p.a === d.slug || p.b === d.slug);
+const compareOtherSlug = comparePairDef && (comparePairDef.a === d.slug ? comparePairDef.b : comparePairDef.a);
+const compareOther = compareOtherSlug && DIRECTIONS.find((x) => x.slug === compareOtherSlug);
+const compareUrl = comparePairDef ? `/compare/${comparePairDef.a}-vs-${comparePairDef.b}/` : `/compare/?a=${d.slug}`;
 
 // Resolve cover photo if downloaded
 const coverPath = `../assets/destinations/${d.slug}.jpg`;
@@ -270,6 +279,7 @@ if (guide?.itinerary?.length) {
       <h1 class="sl-h1">{d.cases.nom} <span class="rd">{yr}</span></h1>
       <p class="sl-sub">{d.sub} — виза, сезоны, бюджет, маршруты для россиян. Без воды, с реальными цифрами.</p>
       {visited && <p class="sl-visited">Был здесь лично</p>}
+      <TripSaveButton slug={d.slug} nom={d.cases.nom} />
 
       <div class="sl-vlist">
         <div class="sl-vi"><span><b>01</b> Виза</span><div>{VISA_LABEL[d.visa]}</div></div>
@@ -602,6 +612,7 @@ if (guide?.itinerary?.length) {
         <li><a href={calcUrl}><b>Калькулятор бюджета поездки</b></a></li>
         <li><a href={`/trips/${MONTHS[new Date().getMonth()].slug}/${d.slug}/`}><b>{d.cases.nom} в {MONTHS[new Date().getMonth()].prep} {yr}</b></a></li>
         <li><a href={`/visa/${d.slug}/`}><b>Виза {d.cases.vP} — детально</b></a></li>
+        <li><a href={compareUrl}><b>{compareOther ? `${d.cases.nom} или ${compareOther.cases.nom}` : `Сравнить ${d.cases.nom} с другим направлением`}</b></a></li>
         <li><a href="/countries/"><b>Все страны на сайте</b></a></li>
       </ul>
     </section>
