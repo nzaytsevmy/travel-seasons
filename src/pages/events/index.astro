@@ -1,0 +1,139 @@
+---
+// /events/ — годовой хаб: 12 месяцев + топ-события года. Swiss-канон.
+import Layout from '../../layouts/Layout.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { MONTHS, bySlug } from '../../data/directions.js';
+import { HOLIDAYS, getEventsByMonth, getTopEventsOfYear } from '../../data/country-holidays.js';
+import { DATA_UPDATED_RU } from '../../data/meta.js';
+
+// Русское склонение: 1 событие / 2 события / 5 событий (см. bezviz.astro).
+const plural = (n, one, few, many) => {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+  return many;
+};
+const monthCounts = MONTHS.map((m, i) => {
+  const count = getEventsByMonth(i + 1).length;
+  return { ...m, count, word: plural(count, 'событие', 'события', 'событий') };
+});
+const top = getTopEventsOfYear(8).map((e) => ({ ...e, nom: bySlug(e.slug)?.cases?.nom || e.slug }));
+const totalCountries = Object.keys(HOLIDAYS).length;
+const countryWord = plural(totalCountries, 'стране', 'странам', 'странам');
+
+const url = 'https://traveltribe.ru/events/';
+const title = 'Фестивали и праздники мира по месяцам 2026';
+const description = `Календарь событий по ${totalCountries} странам: что закрыто, какие фестивали стоит успеть и когда лучше не ехать — по месяцам, с датами.`;
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": `${url}#page`,
+      "name": title,
+      "description": description,
+      "url": url,
+      "inLanguage": "ru-RU",
+      "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "События", "item": url },
+      ],
+    },
+  ],
+};
+---
+<Layout title={title} description={description} canonical={url} ldJson={ldJson}>
+  <Breadcrumbs crumbs={[{ label: 'События' }]} />
+
+  <main id="main" class="evh">
+    <section class="evh-hero">
+      <div class="evh-idx">01 / Календарь<b>{totalCountries} {plural(totalCountries, 'страна', 'страны', 'стран')}</b></div>
+      <h1 class="evh-h1">Что празднуют и когда закрыто</h1>
+      <p class="evh-lede">Государственные праздники, фестивали и сезонные явления по месяцам — чтобы не прилететь в закрытую страну и не пропустить то, ради чего стоит планировать даты. Обновлено {DATA_UPDATED_RU}.</p>
+    </section>
+
+    <section class="evh-section">
+      <div class="evh-shead"><h2>Месяцы</h2></div>
+      <ul class="evh-months">
+        {monthCounts.map((m) => (
+          <li>
+            <a href={`/events/${m.slug}/`}>
+              <b>{m.nom.charAt(0).toUpperCase() + m.nom.slice(1)}</b>
+              <span>{m.count} {m.word}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="evh-section">
+      <div class="evh-shead"><h2>Самое заметное в году</h2></div>
+      <ul class="evh-top">
+        {top.map((e) => (
+          <li>
+            <a href={`/events/${MONTHS[e.month - 1].slug}/`}><b>{e.name}</b></a>
+            <span>{e.nom} · {e.dates}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="evh-section">
+      <div class="evh-shead"><h2>Что почитать дальше</h2></div>
+      <ul class="evh-related">
+        <li><a href="/trips/"><b>Куда ехать по месяцам</b></a><span>календарь направлений</span></li>
+        <li><a href="/seasons/"><b>Таблица сезонов 70+ направлений</b></a><span>погода и цены по месяцам</span></li>
+        <li><a href="/compare/"><b>Сравнить направления</b></a><span>компаратор</span></li>
+      </ul>
+    </section>
+
+    <p class="evh-updated">Актуально на: {DATA_UPDATED_RU}</p>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.evh {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 clamp(1.1rem, 3vw, 2.6rem) clamp(2rem, 4vw, 4rem);
+  font-family: var(--ff-display);
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--text);
+}
+.evh-hero { padding: clamp(1.2rem, 2.5vw, 2rem) 0 clamp(1.6rem, 3vw, 2.4rem); }
+.evh-idx { font-size: .74rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--gold); }
+.evh-idx b { display: block; color: var(--text); font-size: .74rem; font-weight: 600; margin-top: .2rem; }
+.evh-h1 { font-weight: 800; font-size: clamp(2rem, 5.5vw, 4rem); line-height: 1.02; letter-spacing: -.03em; margin: 1rem 0 0; text-wrap: balance; }
+.evh-lede { font-size: clamp(1rem, 1.3vw, 1.15rem); color: var(--text); line-height: 1.55; margin-top: 1rem; max-width: 680px; }
+
+.evh-section { border-top: 2px solid #1b1914; padding: clamp(1.4rem, 3vw, 2.2rem) 0; scroll-margin-top: 80px; }
+.evh-shead h2 { font-size: clamp(1.2rem, 2.4vw, 1.6rem); font-weight: 800; letter-spacing: -.015em; margin: 0 0 1rem; }
+
+.evh-months { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); }
+.evh-months li { border-top: 1px solid var(--line); }
+.evh-months li:nth-child(3n) { }
+.evh-months a {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: .8rem 1rem .8rem 0;
+  text-decoration: none; color: var(--text); min-height: 44px;
+}
+.evh-months a b { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; font-weight: 700; }
+.evh-months a span { font-size: .78rem; color: var(--text-faint); }
+@media (max-width: 640px) { .evh-months { grid-template-columns: repeat(2, 1fr); } }
+
+.evh-top, .evh-related { list-style: none; margin: 0; padding: 0; }
+.evh-top li, .evh-related li { border-top: 1px solid var(--line); padding: .8rem 0; display: flex; flex-direction: column; }
+.evh-top a, .evh-related a { color: var(--text); text-decoration: none; }
+.evh-top a b, .evh-related a b { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
+.evh-top span, .evh-related span { font-size: .82rem; color: var(--text-faint); margin-top: .15rem; }
+
+.evh-updated { margin-top: 2rem; font-size: .72rem; color: var(--text-faint); }
+</style>

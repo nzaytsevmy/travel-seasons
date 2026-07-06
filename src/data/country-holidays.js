@@ -402,3 +402,27 @@ export function getHolidaysByMonth(slug) {
   }
   return byMonth;
 }
+
+// Кросс-страновой срез: все события месяца (1-12) по ВСЕМ странам — для /events/<month>/.
+// Каждый элемент помечен slug страны, чтобы линковать на её хаб.
+export function getEventsByMonth(monthNum) {
+  const out = [];
+  for (const slug of Object.keys(HOLIDAYS)) {
+    for (const ev of HOLIDAYS[slug]) {
+      if (ev.month === monthNum) out.push({ slug, ...ev });
+    }
+  }
+  return out;
+}
+
+// Топ событий года по значимости (closed > fest > culture) — для годового хаба /events/.
+export function getTopEventsOfYear(n = 8) {
+  const TAG_WEIGHT = { closed: 3, fest: 2, culture: 1 };
+  const all = [];
+  for (const slug of Object.keys(HOLIDAYS)) {
+    for (const ev of HOLIDAYS[slug]) all.push({ slug, ...ev });
+  }
+  return all
+    .sort((a, b) => (TAG_WEIGHT[b.tag] || 0) - (TAG_WEIGHT[a.tag] || 0))
+    .slice(0, n);
+}
