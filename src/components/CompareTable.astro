@@ -1,0 +1,173 @@
+---
+// Swiss-канон (только hairlines, gold accent, без border-radius/shadow) —
+// сравнение двух направлений бок-о-бок. Принимает готовые entry-объекты
+// из src/data/compare-logic.js (buildCompareEntry), не сырые DIRECTIONS.
+// Мобильная раскладка: label — заголовок на всю ширину, A/B — колонки под ним
+// (grid-template-areas), чтобы не терять привязку значения к стране (брендбук:
+// таблицы на мобайле → блоки, а не горизонтальный скролл).
+import { RANK_LABEL } from '../data/compare-logic.js';
+
+interface Props {
+  a: any;
+  b: any;
+  monthLabel: string;
+}
+const { a, b, monthLabel } = Astro.props;
+
+const MONTH_LETTERS = ['Я','Ф','М','А','М','И','И','А','С','О','Н','Д'];
+const fmtRub = (n) => n?.toLocaleString('ru-RU') + ' ₽';
+const fmtUsd = (n) => '$' + n;
+---
+<div class="cmp-table">
+  <div class="cmp-row cmp-row--head">
+    <div class="cmp-cell cmp-cell--label"></div>
+    <div class="cmp-cell cmp-cell--a">
+      <span class="cmp-flag">{a.emoji}</span> {a.nom}
+      {a.visited && <span class="cmp-visited">был лично</span>}
+    </div>
+    <div class="cmp-cell cmp-cell--b">
+      <span class="cmp-flag">{b.emoji}</span> {b.nom}
+      {b.visited && <span class="cmp-visited">был лично</span>}
+    </div>
+  </div>
+
+  <div class="cmp-row">
+    <div class="cmp-cell cmp-cell--label">Виза</div>
+    <div class="cmp-cell cmp-cell--a">
+      {a.visaFree
+        ? <span class="cmp-good">Не нужна</span>
+        : a.visa ? <>{a.visa.duration} · {a.visa.cost}</> : <span class="cmp-muted">См. страницу визы</span>}
+    </div>
+    <div class="cmp-cell cmp-cell--b">
+      {b.visaFree
+        ? <span class="cmp-good">Не нужна</span>
+        : b.visa ? <>{b.visa.duration} · {b.visa.cost}</> : <span class="cmp-muted">См. страницу визы</span>}
+    </div>
+  </div>
+
+  {a.budget && b.budget && (
+    <div class="cmp-row">
+      <div class="cmp-cell cmp-cell--label">
+        Бюджет/сутки
+        {(a.budget.source === 'estimate' || b.budget.source === 'estimate') && <span class="cmp-note">оценка</span>}
+      </div>
+      <div class="cmp-cell cmp-cell--a">
+        {a.budget.currency === 'RUB' ? fmtRub(a.budget.midrange) : fmtUsd(a.budget.midrange)}
+        <span class="cmp-sub">от {a.budget.currency === 'RUB' ? fmtRub(a.budget.budget) : fmtUsd(a.budget.budget)} бюджетно</span>
+      </div>
+      <div class="cmp-cell cmp-cell--b">
+        {b.budget.currency === 'RUB' ? fmtRub(b.budget.midrange) : fmtUsd(b.budget.midrange)}
+        <span class="cmp-sub">от {b.budget.currency === 'RUB' ? fmtRub(b.budget.budget) : fmtUsd(b.budget.budget)} бюджетно</span>
+      </div>
+    </div>
+  )}
+
+  {(a.flightFrom || b.flightFrom) && (
+    <div class="cmp-row">
+      <div class="cmp-cell cmp-cell--label">Перелёт от</div>
+      <div class="cmp-cell cmp-cell--a">{a.flightFrom ? fmtUsd(a.flightFrom) + ' one-way' : '—'}</div>
+      <div class="cmp-cell cmp-cell--b">{b.flightFrom ? fmtUsd(b.flightFrom) + ' one-way' : '—'}</div>
+    </div>
+  )}
+
+  {(a.plug || b.plug) && (
+    <div class="cmp-row">
+      <div class="cmp-cell cmp-cell--label">Розетка</div>
+      <div class="cmp-cell cmp-cell--a">{a.plug ? <>Тип {a.plug.types} · {a.plug.voltage}</> : '—'}</div>
+      <div class="cmp-cell cmp-cell--b">{b.plug ? <>Тип {b.plug.types} · {b.plug.voltage}</> : '—'}</div>
+    </div>
+  )}
+
+  <div class="cmp-row">
+    <div class="cmp-cell cmp-cell--label">Сейчас ({monthLabel})</div>
+    <div class="cmp-cell cmp-cell--a"><span class={`cmp-tag cmp-tag--${a.nowCode}`}>{a.nowLabel}</span></div>
+    <div class="cmp-cell cmp-cell--b"><span class={`cmp-tag cmp-tag--${b.nowCode}`}>{b.nowLabel}</span></div>
+  </div>
+
+  <div class="cmp-row cmp-row--heat">
+    <div class="cmp-cell cmp-cell--label">Сезон по месяцам</div>
+    <div class="cmp-cell cmp-cell--a cmp-cell--heat">
+      <div class="cmp-heat">
+        {a.r.map((code, i) => <span class={`cmp-hcell cmp-hcell--${code}`} title={RANK_LABEL[code]}>{MONTH_LETTERS[i]}</span>)}
+      </div>
+    </div>
+    <div class="cmp-cell cmp-cell--b cmp-cell--heat">
+      <div class="cmp-heat">
+        {b.r.map((code, i) => <span class={`cmp-hcell cmp-hcell--${code}`} title={RANK_LABEL[code]}>{MONTH_LETTERS[i]}</span>)}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.cmp-table {
+  font-family: var(--ff-display);
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--text);
+  border-top: 1px solid #1b1914;
+}
+.cmp-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(0, 1.4fr) minmax(0, 1.4fr);
+  grid-template-areas: "label a b";
+  border-bottom: 1px solid var(--line);
+}
+.cmp-row--head {
+  border-bottom: 1px solid #1b1914;
+  font-weight: 800;
+}
+.cmp-cell { padding: .85rem 1rem .85rem 0; font-size: .92rem; line-height: 1.4; }
+.cmp-cell--label {
+  grid-area: label;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding-right: .5rem;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+.cmp-cell--a { grid-area: a; }
+.cmp-cell--b { grid-area: b; }
+.cmp-note {
+  font-size: .62rem; font-weight: 500; text-transform: none; letter-spacing: 0;
+  color: var(--text-faint); font-style: italic;
+}
+.cmp-flag { font-size: 1.1em; margin-right: .3rem; }
+.cmp-visited {
+  display: inline-block; margin-left: .5rem; font-size: .62rem; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase; color: var(--gold); vertical-align: middle;
+}
+.cmp-good { color: var(--good-text, var(--gold)); font-weight: 700; }
+.cmp-muted { color: var(--text-faint); }
+.cmp-sub { display: block; font-size: .74rem; color: var(--text-faint); margin-top: .15rem; }
+
+.cmp-tag { display: inline-block; padding: .2rem .55rem; font-size: .74rem; font-weight: 700; border: 1px solid var(--line); }
+.cmp-tag--P { color: var(--peak-text); border-color: var(--peak-text); }
+.cmp-tag--G { color: var(--good-text); border-color: var(--good-text); }
+.cmp-tag--O { color: var(--ok-text); border-color: var(--ok-text); }
+.cmp-tag--B, .cmp-tag--X { color: var(--bad-text); border-color: var(--bad-text); }
+
+.cmp-heat { display: flex; gap: 2px; }
+.cmp-hcell { flex: 1 1 0; text-align: center; font-size: .64rem; font-weight: 700; padding: .4rem 0; color: #fff; min-width: 0; }
+.cmp-hcell--P { background: var(--peak); }
+.cmp-hcell--G { background: var(--good); }
+.cmp-hcell--O { background: var(--ok); color: var(--text); }
+.cmp-hcell--B { background: var(--bad); }
+.cmp-hcell--X { background: var(--text-faint); }
+
+@media (max-width: 640px) {
+  .cmp-row {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "label label" "a b";
+    padding: .7rem 0;
+  }
+  .cmp-row--head { grid-template-areas: "a b"; }
+  .cmp-row--head .cmp-cell--label { display: none; }
+  .cmp-cell--label { padding: 0 0 .35rem; }
+  .cmp-cell--a, .cmp-cell--b { padding: 0 .5rem 0 0; }
+  .cmp-cell--b { padding-right: 0; padding-left: .5rem; border-left: 1px solid var(--line); }
+}
+</style>

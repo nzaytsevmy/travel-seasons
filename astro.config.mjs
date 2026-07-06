@@ -97,6 +97,10 @@ export default defineConfig({
         && !page.includes('/og/')
         // юр-страницы noindex (privacy/cookie/terms) — не в sitemap (только индексируемые)
         && !page.includes('/legal/')
+        // /my/ — персональный дашборд из localStorage, noindex, не в sitemap
+        && !page.includes('/my/')
+        // /data/trip/*.json — служебный endpoint для /my/, не HTML-страница
+        && !page.includes('/data/trip/')
         // нишевые trips-направления noindex (≈0 трафика) — не в sitemap
         && ![...NICHE_TRIPS].some((s) => page.includes(`/trips/`) && page.endsWith(`/${s}/`))
         // /seasons/[c]/[m]/ — дубль /trips/[m]/[c]/; canonical ведёт на trips,
@@ -113,7 +117,7 @@ export default defineConfig({
         if (url === 'https://traveltribe.ru/') {
           return { ...item, priority: 1.0, changefreq: 'daily' };
         }
-        if (url === 'https://traveltribe.ru/seasons/' || url === 'https://traveltribe.ru/calculator/') {
+        if (url === 'https://traveltribe.ru/seasons/' || url === 'https://traveltribe.ru/calculator/' || url === 'https://traveltribe.ru/compare/') {
           return { ...item, priority: 0.9, changefreq: 'weekly' };
         }
         // Blog index and trips — high priority, weekly

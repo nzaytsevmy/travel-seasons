@@ -1,0 +1,81 @@
+---
+// «Планирую сюда» — сохраняет направление (+ месяц, если известен со страницы)
+// в localStorage (tt_trip), чтобы собрать дашборд на /my/. Без бэкенда,
+// без аккаунта — честно: хранится только в этом браузере.
+interface Props {
+  slug: string;
+  nom: string;
+  monthIdx?: number | null;
+}
+const { slug, nom, monthIdx = null } = Astro.props;
+---
+<div class="tsb-wrap">
+  <button type="button" class="tsb" data-slug={slug} data-month={monthIdx ?? ''} data-nom={nom}>
+    <span class="tsb-txt">Планирую сюда →</span>
+  </button>
+  <a href="/my/" class="tsb-open" hidden>Открыть «Моя поездка» →</a>
+</div>
+
+<script>
+  function initTsb(wrap: HTMLElement) {
+    const btn = wrap.querySelector<HTMLButtonElement>('.tsb');
+    const open = wrap.querySelector<HTMLAnchorElement>('.tsb-open');
+    if (!btn) return;
+    const slug = btn.dataset.slug || '';
+    const monthIdx = btn.dataset.month ? Number(btn.dataset.month) : null;
+    const nom = btn.dataset.nom || '';
+    const txt = btn.querySelector<HTMLElement>('.tsb-txt');
+
+    function current(): any {
+      try { return JSON.parse(localStorage.getItem('tt_trip') || 'null'); } catch { return null; }
+    }
+    function refresh() {
+      const t = current();
+      const saved = Boolean(t && t.slug === slug);
+      if (txt) txt.textContent = saved ? 'Убрать из «Моя поездка»' : 'Планирую сюда →';
+      btn.classList.toggle('is-saved', saved);
+      if (open) open.hidden = !saved;
+    }
+    btn.addEventListener('click', () => {
+      const already = current();
+      if (already && already.slug === slug) {
+        try { localStorage.removeItem('tt_trip'); } catch {}
+      } else {
+        const trip = { slug, nom, monthIdx, days: 7, people: 1, savedAt: Date.now() };
+        try { localStorage.setItem('tt_trip', JSON.stringify(trip)); } catch {}
+      }
+      refresh();
+    });
+    refresh();
+  }
+  document.querySelectorAll<HTMLElement>('.tsb-wrap').forEach(initTsb);
+</script>
+
+<style>
+.tsb-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem 1rem; }
+.tsb {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: .4rem 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--ff-display);
+  font-size: .92rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.tsb:hover { color: var(--gold-dim); }
+.tsb:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.tsb.is-saved { color: var(--text-dim); text-decoration: none; }
+.tsb-open {
+  display: inline-flex; align-items: center; min-height: 44px;
+  font-size: .84rem; font-weight: 600; color: var(--text-dim);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.tsb-open[hidden] { display: none; }
+.tsb-open:hover { color: var(--gold); }
+</style>
