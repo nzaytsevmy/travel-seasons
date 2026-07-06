@@ -1,0 +1,307 @@
+---
+// /my/ — «Моя поездка»: статический трип-дашборд, без бэкенда, без аккаунта.
+// Данные — из localStorage (tt_trip, записанный TripSaveButton) + JSON-выжимка
+// направления с build-time данными (/data/trip/<slug>.json). MVP: одна поездка,
+// без мульти/экспорта. Retention-механика: возврат к своему плану до вылета.
+// noindex — персональная страница, не контент для поиска.
+import Layout from '../../layouts/Layout.astro';
+import Footer from '../../components/Footer.astro';
+import { DIRECTIONS, MONTHS } from '../../data/directions.js';
+import { PRICES } from '../../data/prices.js';
+import { DATA_UPDATED_RU } from '../../data/meta.js';
+
+// slug → индекс в PRICES (для глубокой ссылки в калькулятор, тот же паттерн,
+// что использует [slug].astro: PRICES.findIndex по iata+name).
+const slugToPriceIdx = {};
+for (const d of DIRECTIONS) {
+  if (!d.price) continue;
+  const idx = PRICES.findIndex((p) => p.iata === d.price.iata && p.name === d.price.name);
+  if (idx >= 0) slugToPriceIdx[d.slug] = idx;
+}
+
+const url = 'https://traveltribe.ru/my/';
+const title = 'Моя поездка — TravelTribe';
+---
+<Layout title={title} description="Личный план поездки: виза, бюджет, сезон и чек-лист для сохранённого направления." canonical={url} noindex={true}>
+  <main id="main" class="myp">
+    <section class="myp-hero">
+      <div class="myp-idx">01 / Моя поездка</div>
+      <h1 class="myp-h1" id="mypTitle">Моя поездка</h1>
+      <p class="myp-lede" id="mypLede">
+        Нажми «Планирую сюда» на странице любого направления — здесь появится план: виза, бюджет, сезон и чек-лист в одном месте.
+      </p>
+    </section>
+
+    <div id="mypEmpty" class="myp-empty">
+      <ul class="myp-empty-links">
+        <li><a href="/countries/"><b>Все направления</b></a><span>выбрать куда</span></li>
+        <li><a href="/trips/"><b>Куда ехать по месяцам</b></a><span>календарь по сезону</span></li>
+        <li><a href="/compare/"><b>Сравнить направления</b></a><span>компаратор</span></li>
+      </ul>
+    </div>
+
+    <div id="mypDash" class="myp-dash" hidden>
+      <section class="myp-section">
+        <div class="myp-shead"><h2>Параметры поездки</h2></div>
+        <div class="myp-form">
+          <label class="myp-field">
+            <span>Месяц</span>
+            <select id="mypMonth">
+              {MONTHS.map((m, i) => <option value={i}>{m.nom.charAt(0).toUpperCase() + m.nom.slice(1)}</option>)}
+            </select>
+          </label>
+          <label class="myp-field">
+            <span>Дней</span>
+            <input type="number" id="mypDays" min="1" max="90" value="7" />
+          </label>
+          <label class="myp-field">
+            <span>Человек</span>
+            <input type="number" id="mypPeople" min="1" max="10" value="1" />
+          </label>
+          <label class="myp-field">
+            <span>Дата вылета (опционально)</span>
+            <input type="date" id="mypDate" />
+          </label>
+        </div>
+        <p class="myp-countdown" id="mypCountdown"></p>
+      </section>
+
+      <section class="myp-section">
+        <div class="myp-shead"><h2>Виза</h2></div>
+        <p class="myp-line" id="mypVisa"></p>
+      </section>
+
+      <section class="myp-section">
+        <div class="myp-shead"><h2>Бюджет</h2></div>
+        <p class="myp-line" id="mypBudget"></p>
+      </section>
+
+      <section class="myp-section">
+        <div class="myp-shead"><h2>Сезон</h2></div>
+        <p class="myp-line" id="mypSeason"></p>
+      </section>
+
+      <section class="myp-section" id="mypHolidaysWrap" hidden>
+        <div class="myp-shead"><h2>События в этом месяце</h2></div>
+        <ul class="myp-list" id="mypHolidays"></ul>
+      </section>
+
+      <section class="myp-section">
+        <div class="myp-shead"><h2>Сборы</h2></div>
+        <p class="myp-line" id="mypPacking"></p>
+      </section>
+
+      <section class="myp-section">
+        <div class="myp-shead"><h2>Дальше</h2></div>
+        <ul class="myp-list" id="mypLinks"></ul>
+      </section>
+
+      <p class="myp-remove"><button type="button" id="mypRemove">Убрать эту поездку</button></p>
+    </div>
+
+    <p class="myp-disclaimer">Хранится только в этом браузере — без аккаунта и без бэкенда. Очистишь localStorage — план пропадёт.</p>
+    <p class="myp-updated">Актуально на: {DATA_UPDATED_RU}</p>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script type="application/json" id="mypPriceIdx" set:html={JSON.stringify(slugToPriceIdx)} />
+<script>
+  const PRICE_IDX = JSON.parse(document.getElementById('mypPriceIdx').textContent);
+  const MONTHS = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+  const MONTH_PREP = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
+  const MONTH_NOM = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  const RANK_LABEL = { P: 'Пик сезона', G: 'Хорошо', O: 'Нормально', B: 'Не лучший месяц', X: 'Закрыто' };
+  const TAG_LABEL = { closed: 'выходные/закрыто', fest: 'фестиваль', culture: 'сезонное' };
+
+  function getTrip() {
+    try { return JSON.parse(localStorage.getItem('tt_trip') || 'null'); } catch { return null; }
+  }
+  function setTrip(t) {
+    try { localStorage.setItem('tt_trip', JSON.stringify(t)); } catch {}
+  }
+
+  function fmt(n, cur) { return cur === 'RUB' ? n.toLocaleString('ru-RU') + ' ₽' : '$' + n; }
+
+  function packingHasProgress(slug, monthSlug) {
+    const prefix = `pck:pmu-${slug}-${monthSlug}:`;
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(prefix) && localStorage.getItem(k) === '1') return true;
+    }
+    return false;
+  }
+
+  async function render() {
+    const trip = getTrip();
+    const empty = document.getElementById('mypEmpty');
+    const dash = document.getElementById('mypDash');
+    if (!trip) {
+      empty.hidden = false;
+      dash.hidden = true;
+      return;
+    }
+
+    const res = await fetch(`/data/trip/${trip.slug}.json`);
+    if (!res.ok) { empty.hidden = false; dash.hidden = true; return; }
+    const data = await res.json();
+
+    empty.hidden = true;
+    dash.hidden = false;
+
+    document.getElementById('mypTitle').textContent = data.nom;
+    document.getElementById('mypLede').textContent = `План поездки ${data.vP}. Сохранено ${new Date(trip.savedAt).toLocaleDateString('ru-RU')}.`;
+
+    const monthSel = document.getElementById('mypMonth');
+    const daysInp = document.getElementById('mypDays');
+    const peopleInp = document.getElementById('mypPeople');
+    const dateInp = document.getElementById('mypDate');
+    monthSel.value = trip.monthIdx != null ? String(trip.monthIdx) : '0';
+    daysInp.value = trip.days || 7;
+    peopleInp.value = trip.people || 1;
+    dateInp.value = trip.dateStart || '';
+
+    function save() {
+      trip.monthIdx = Number(monthSel.value);
+      trip.days = Math.max(1, Number(daysInp.value) || 7);
+      trip.people = Math.max(1, Number(peopleInp.value) || 1);
+      trip.dateStart = dateInp.value || null;
+      setTrip(trip);
+      draw();
+    }
+    [monthSel, daysInp, peopleInp, dateInp].forEach((el) => el.addEventListener('change', save));
+
+    document.getElementById('mypRemove').addEventListener('click', () => {
+      localStorage.removeItem('tt_trip');
+      render();
+    });
+
+    function draw() {
+      const monthIdx = Number(monthSel.value);
+      const monthSlug = MONTHS[monthIdx];
+
+      const countdownEl = document.getElementById('mypCountdown');
+      if (dateInp.value) {
+        const days = Math.ceil((new Date(dateInp.value) - new Date()) / 86400000);
+        countdownEl.textContent = days > 0 ? `До вылета: ${days} дн.` : (days === 0 ? 'Сегодня вылет!' : 'Дата уже прошла.');
+      } else {
+        countdownEl.textContent = '';
+      }
+
+      const visaEl = document.getElementById('mypVisa');
+      if (data.visaFree) {
+        visaEl.innerHTML = `<b>Не нужна</b> — безвизовый въезд.`;
+      } else if (data.visa) {
+        visaEl.innerHTML = `${data.visa.duration} · ${data.visa.cost} · ${data.visa.timing}. <a href="/visa/${data.slug}/">Детали визы →</a>`;
+      } else {
+        visaEl.innerHTML = `<a href="/visa/${data.slug}/">Смотри детали визы →</a>`;
+      }
+
+      const budgetEl = document.getElementById('mypBudget');
+      const days = Number(daysInp.value) || 7;
+      const people = Number(peopleInp.value) || 1;
+      if (data.budget) {
+        const total = data.budget.midrange * days * people;
+        budgetEl.innerHTML = `На ${days} дн. × ${people} чел. по среднему уровню — ориентир <b>${fmt(total, data.budget.currency)}</b> (без перелёта). ${data.flightFrom ? `Перелёт от $${data.flightFrom} one-way.` : ''} <a href="${PRICE_IDX[data.slug] != null ? '/calculator/?r=' + PRICE_IDX[data.slug] : '/calculator/'}">Точнее в калькуляторе →</a>`;
+      } else {
+        budgetEl.innerHTML = `<a href="/calculator/">Посчитать в калькуляторе →</a>`;
+      }
+
+      const seasonEl = document.getElementById('mypSeason');
+      const code = data.r[monthIdx];
+      const text = data.t[monthIdx] || '';
+      seasonEl.innerHTML = `<b>${RANK_LABEL[code] || code}</b> в ${MONTH_PREP[monthIdx]}. ${text}`;
+
+      const holEl = document.getElementById('mypHolidays');
+      const holWrap = document.getElementById('mypHolidaysWrap');
+      const monthEvents = (data.holidays || []).filter((h) => h.month === monthIdx + 1);
+      if (monthEvents.length) {
+        holWrap.hidden = false;
+        holEl.innerHTML = monthEvents.map((e) => `<li><b>${e.name}${e.dates ? ' — ' + e.dates : ''}</b><span>${TAG_LABEL[e.tag] || e.tag}${e.note ? ' · ' + e.note : ''}</span></li>`).join('');
+      } else {
+        holWrap.hidden = true;
+      }
+
+      const packEl = document.getElementById('mypPacking');
+      const packingUrl = `/packing/${data.slug}/${monthSlug}/`;
+      packEl.innerHTML = packingHasProgress(data.slug, monthSlug)
+        ? `Чек-лист начат ✓ <a href="${packingUrl}">Открыть →</a>`
+        : `Ещё не открыт. <a href="${packingUrl}">Открыть чек-лист →</a>`;
+
+      const linksEl = document.getElementById('mypLinks');
+      linksEl.innerHTML = `
+        <li><a href="/${data.slug}/"><b>${data.nom} — карточка направления</b></a><span>виза, бюджет, маршруты</span></li>
+        <li><a href="/events/${monthSlug}/"><b>События в ${MONTH_PREP[monthIdx]}</b></a><span>по всем странам</span></li>
+        <li><a href="/blog/ees-2026/"><b>Шенген 90/180</b></a><span>калькулятор дней, если едешь в ЕС</span></li>
+      `;
+    }
+    draw();
+  }
+
+  render();
+</script>
+
+<style>
+.myp {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 clamp(1.1rem, 3vw, 2.6rem) clamp(2rem, 4vw, 4rem);
+  font-family: var(--ff-display);
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--text);
+}
+.myp-hero { padding: clamp(1.2rem, 2.5vw, 2rem) 0 clamp(1.2rem, 2.5vw, 1.8rem); }
+.myp-idx { font-size: .74rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--gold); }
+.myp-h1 { font-weight: 800; font-size: clamp(2rem, 5.5vw, 3.4rem); line-height: 1.02; letter-spacing: -.03em; margin: .8rem 0 0; }
+.myp-lede { font-size: 1.05rem; color: var(--text-dim); line-height: 1.55; margin-top: .8rem; }
+
+.myp-empty-links { list-style: none; margin: 1.5rem 0 0; padding: 0; border-top: 2px solid #1b1914; }
+.myp-empty-links li { border-bottom: 1px solid var(--line); padding: .9rem 0; display: flex; flex-direction: column; }
+.myp-empty-links a { color: var(--text); text-decoration: none; }
+.myp-empty-links a b { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
+.myp-empty-links span { font-size: .82rem; color: var(--text-faint); margin-top: .15rem; }
+
+.myp-section { border-top: 2px solid #1b1914; padding: clamp(1.2rem, 2.5vw, 1.8rem) 0; scroll-margin-top: 80px; }
+.myp-shead h2 { font-size: clamp(1.1rem, 2vw, 1.4rem); font-weight: 800; letter-spacing: -.015em; margin: 0 0 .7rem; }
+.myp-line { font-size: 1rem; line-height: 1.6; margin: 0; }
+
+.myp-form { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem 1.5rem; }
+.myp-field { display: flex; flex-direction: column; gap: .35rem; }
+.myp-field span { font-size: .68rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text-dim); }
+.myp-field select, .myp-field input {
+  font-family: inherit; font-size: .95rem; color: var(--text);
+  background: var(--bg); border: none; border-bottom: 1px solid #1b1914;
+  padding: .6rem .1rem; min-height: 44px;
+}
+.myp-field select:focus-visible, .myp-field input:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+@media (max-width: 500px) { .myp-form { grid-template-columns: 1fr; } }
+.myp-countdown { margin: 1rem 0 0; font-weight: 700; color: var(--gold); }
+
+.myp-list { list-style: none; margin: 0; padding: 0; }
+
+.myp-remove { margin-top: 1.5rem; }
+#mypRemove {
+  background: none; border: 1px solid var(--line); cursor: pointer;
+  font-family: inherit; font-size: .84rem; color: var(--text-dim);
+  padding: .5rem .9rem; min-height: 44px;
+}
+#mypRemove:hover { color: var(--bad-text); border-color: var(--bad-text); }
+
+.myp-disclaimer { margin-top: 2rem; font-size: .78rem; color: var(--text-faint); line-height: 1.5; }
+.myp-updated { margin-top: .5rem; font-size: .72rem; color: var(--text-faint); }
+</style>
+
+<style is:global>
+/* Контент внутри #mypVisa/#mypBudget/#mypSeason/#mypPacking/#mypHolidays/#mypLinks
+   вставляется клиентским JS через innerHTML — Astro scoped-стили сюда не долетают
+   (тот же класс бага, что был в /compare/), поэтому глобальный блок. */
+.myp-line b { color: var(--gold); }
+.myp-line a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
+.myp-list li { border-top: 1px solid var(--line); padding: .7rem 0; display: flex; flex-direction: column; }
+.myp-list li:first-child { border-top: none; }
+.myp-list a { color: var(--text); text-decoration: none; }
+.myp-list a b, .myp-list b { color: var(--gold); }
+.myp-list a b { text-decoration: underline; text-underline-offset: 3px; }
+.myp-list span { display: block; font-size: .82rem; color: var(--text-faint); margin-top: .15rem; }
+</style>

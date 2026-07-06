@@ -1,0 +1,289 @@
+---
+// /compare/ — компаrator: выбери любые два направления из 70+, живое сравнение
+// виза/бюджет/перелёт/сезон без перезагрузки страницы. Ниже — кураторские пары
+// с разбором и вердиктом (/compare/<a>-vs-<b>/).
+import Layout from '../../layouts/Layout.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { DIRECTIONS } from '../../data/directions.js';
+import { COMPARE_PAIRS } from '../../data/compare-pairs.js';
+import { buildCompareEntry } from '../../data/compare-logic.js';
+import { DATA_UPDATED_RU, DATA_UPDATED } from '../../data/meta.js';
+
+const monthIdx = new Date().getMonth();
+const MONTH_NOM = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'][monthIdx];
+const MONTH_PREP = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'][monthIdx];
+
+// Группы для <select>, отсортированные — тот же паттерн, что calculator.astro.
+const groups = {};
+for (const d of DIRECTIONS) {
+  (groups[d.group] ||= []).push({ slug: d.slug, nom: d.cases.nom });
+}
+const sortedGroups = {};
+for (const g of Object.keys(groups).sort((x, y) => x.localeCompare(y, 'ru'))) {
+  sortedGroups[g] = groups[g].sort((x, y) => x.nom.localeCompare(y.nom, 'ru'));
+}
+
+// Весь датасет для клиентского рендера произвольной пары — считаем один раз
+// на сборке, дальше это чистый JSON (без выдумки, все поля из compare-logic.js).
+const DATA = {};
+for (const d of DIRECTIONS) DATA[d.slug] = buildCompareEntry(d.slug, monthIdx);
+
+// Быстрый lookup «есть ли готовый разбор пары» — не зависит от порядка a/b.
+const curatedSet = {};
+for (const p of COMPARE_PAIRS) {
+  curatedSet[`${p.a}|${p.b}`] = `${p.a}-vs-${p.b}`;
+  curatedSet[`${p.b}|${p.a}`] = `${p.a}-vs-${p.b}`;
+}
+
+const DEFAULT_A = COMPARE_PAIRS[0].a;
+const DEFAULT_B = COMPARE_PAIRS[0].b;
+
+const url = 'https://traveltribe.ru/compare/';
+const title = 'Сравнить направления 2026: виза, бюджет, сезон — куда лучше';
+const description = 'Компаратор направлений: выбери две страны и сравни визу, бюджет в сутки, перелёт и сезон по месяцам бок-о-бок. 70+ направлений.';
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "@id": `${url}#app`,
+      "name": "Компаратор направлений TravelTribe",
+      "url": url,
+      "description": description,
+      "inLanguage": "ru-RU",
+      "applicationCategory": "TravelApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "RUB" },
+      "featureList": ["70+ направлений", "Виза бок-о-бок", "Бюджет в сутки", "Перелёт от", "Сезон по месяцам"],
+      "dateModified": DATA_UPDATED,
+      "author": { "@id": "https://traveltribe.ru/about/#person" },
+      "publisher": { "@id": "https://traveltribe.ru/#org" },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Сравнить", "item": url },
+      ],
+    },
+  ],
+};
+---
+<Layout title={title} description={description} canonical={url} ldJson={ldJson} noTransitions={true}>
+  <Breadcrumbs crumbs={[{ label: 'Сравнить' }]} />
+
+  <main id="main" class="cp">
+    <section class="cp-hero">
+      <div class="cp-idx">01 / Компаратор<b>{MONTH_NOM} 2026</b></div>
+      <h1 class="cp-h1">Куда лучше — сравни сам</h1>
+      <p class="cp-lede">Выбери два направления — сразу увидишь визу, бюджет в сутки, перелёт и сезон бок о бок. Обновлено {DATA_UPDATED_RU}.</p>
+
+      <div class="cp-picker">
+        <div class="cp-field">
+          <label class="cp-field-label" for="cpA">Первое направление</label>
+          <select class="cp-select" id="cpA">
+            {Object.entries(sortedGroups).map(([label, items]) => (
+              <optgroup label={label}>
+                {items.map(({ slug, nom }) => <option value={slug} selected={slug === DEFAULT_A}>{nom}</option>)}
+              </optgroup>
+            ))}
+          </select>
+        </div>
+        <div class="cp-vs">vs</div>
+        <div class="cp-field">
+          <label class="cp-field-label" for="cpB">Второе направление</label>
+          <select class="cp-select" id="cpB">
+            {Object.entries(sortedGroups).map(([label, items]) => (
+              <optgroup label={label}>
+                {items.map(({ slug, nom }) => <option value={slug} selected={slug === DEFAULT_B}>{nom}</option>)}
+              </optgroup>
+            ))}
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="cp-section cp-result-wrap">
+      <div id="cpResult" class="cp-result"></div>
+    </section>
+
+    <section class="cp-section">
+      <div class="cp-shead"><h2>Готовые разборы</h2></div>
+      <p class="cp-sub">Кураторские пары с подробным вердиктом — на что смотреть при выборе.</p>
+      <ul class="cp-pairs">
+        {COMPARE_PAIRS.map((p) => {
+          const na = DATA[p.a]?.nom || p.a;
+          const nb = DATA[p.b]?.nom || p.b;
+          return (
+            <li><a href={`/compare/${p.a}-vs-${p.b}/`}><b>{na} или {nb}</b><span>{p.angle}</span></a></li>
+          );
+        })}
+      </ul>
+    </section>
+
+    <p class="cp-updated">Актуально на: {DATA_UPDATED_RU}</p>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script type="application/json" id="cpData" set:html={JSON.stringify(DATA)} />
+<script type="application/json" id="cpCurated" set:html={JSON.stringify(curatedSet)} />
+<script define:vars={{ monthNom: MONTH_NOM, monthPrep: MONTH_PREP }}>
+  const DATA = JSON.parse(document.getElementById('cpData').textContent);
+  const CURATED = JSON.parse(document.getElementById('cpCurated').textContent);
+  const selA = document.getElementById('cpA');
+  const selB = document.getElementById('cpB');
+  const resultEl = document.getElementById('cpResult');
+  const RANK_LABEL = { P: 'Пик сезона', G: 'Хорошо', O: 'Нормально', B: 'Не лучший месяц', X: 'Закрыто' };
+  const MONTH_LETTERS = ['Я','Ф','М','А','М','И','И','А','С','О','Н','Д'];
+  const fmt = (n, cur) => cur === 'RUB' ? n.toLocaleString('ru-RU') + ' ₽' : '$' + n;
+
+  function heat(r) {
+    return r.map((code, i) => `<span class="cmp-hcell cmp-hcell--${code}" title="${RANK_LABEL[code]}">${MONTH_LETTERS[i]}</span>`).join('');
+  }
+
+  function row(label, aVal, bVal, extraClass) {
+    return `<div class="cmp-row ${extraClass || ''}"><div class="cmp-cell cmp-cell--label">${label}</div><div class="cmp-cell cmp-cell--a">${aVal}</div><div class="cmp-cell cmp-cell--b">${bVal}</div></div>`;
+  }
+
+  function render() {
+    const a = DATA[selA.value];
+    const b = DATA[selB.value];
+    if (!a || !b) { resultEl.innerHTML = ''; return; }
+
+    if (selA.value === selB.value) {
+      resultEl.innerHTML = '<p class="cp-same">Выбери два разных направления.</p>';
+      return;
+    }
+
+    const visaCell = (e) => e.visaFree ? '<span class="cmp-good">Не нужна</span>' : (e.visa ? `${e.visa.duration} · ${e.visa.cost}` : '<span class="cmp-muted">См. страницу визы</span>');
+    const budgetCell = (e) => e.budget ? `${fmt(e.budget.midrange, e.budget.currency)}<span class="cmp-sub">от ${fmt(e.budget.budget, e.budget.currency)} бюджетно</span>` : '<span class="cmp-muted">нет данных</span>';
+    const flightCell = (e) => e.flightFrom ? `$${e.flightFrom} one-way` : '—';
+    const nowCell = (e) => `<span class="cmp-tag cmp-tag--${e.nowCode}">${e.nowLabel}</span>`;
+
+    let html = '<div class="cmp-table">';
+    html += `<div class="cmp-row cmp-row--head"><div class="cmp-cell cmp-cell--label"></div><div class="cmp-cell cmp-cell--a">${a.emoji} ${a.nom}${a.visited ? ' <span class="cmp-visited">был лично</span>' : ''}</div><div class="cmp-cell cmp-cell--b">${b.emoji} ${b.nom}${b.visited ? ' <span class="cmp-visited">был лично</span>' : ''}</div></div>`;
+    html += row('Виза', visaCell(a), visaCell(b));
+    html += row('Бюджет/сутки', budgetCell(a), budgetCell(b));
+    html += row('Перелёт от', flightCell(a), flightCell(b));
+    html += row(`Сейчас (${monthPrep})`, nowCell(a), nowCell(b));
+    html += `<div class="cmp-row cmp-row--heat"><div class="cmp-cell cmp-cell--label">Сезон по месяцам</div><div class="cmp-cell cmp-cell--a cmp-cell--heat"><div class="cmp-heat">${heat(a.r)}</div></div><div class="cmp-cell cmp-cell--b cmp-cell--heat"><div class="cmp-heat">${heat(b.r)}</div></div></div>`;
+    html += '</div>';
+
+    const key = `${a.slug}|${b.slug}`;
+    if (CURATED[key]) {
+      html += `<p class="cp-deep"><a href="/compare/${CURATED[key]}/">Читать разбор ${a.nom} vs ${b.nom} с вердиктом →</a></p>`;
+    }
+
+    resultEl.innerHTML = html;
+  }
+
+  function syncUrl() {
+    const u = new URL(window.location.href);
+    u.searchParams.set('a', selA.value);
+    u.searchParams.set('b', selB.value);
+    window.history.replaceState(null, '', u.toString());
+  }
+
+  function onChange() { render(); syncUrl(); }
+  selA.addEventListener('change', onChange);
+  selB.addEventListener('change', onChange);
+
+  const params = new URLSearchParams(window.location.search);
+  const pa = params.get('a'), pb = params.get('b');
+  if (pa && DATA[pa]) selA.value = pa;
+  if (pb && DATA[pb]) selB.value = pb;
+  render();
+</script>
+
+<style>
+.cp {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 clamp(1.1rem, 3vw, 2.6rem) clamp(2rem, 4vw, 4rem);
+  font-family: var(--ff-display);
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--text);
+}
+.cp-hero { padding: clamp(1.2rem, 2.5vw, 2rem) 0 clamp(1.6rem, 3vw, 2.4rem); }
+.cp-idx { font-size: .74rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--gold); }
+.cp-idx b { display: block; color: var(--text); font-size: .74rem; font-weight: 600; margin-top: .2rem; }
+.cp-h1 { font-weight: 800; font-size: clamp(2rem, 5.5vw, 4rem); line-height: 1.02; letter-spacing: -.03em; margin: 1rem 0 0; text-wrap: balance; }
+.cp-lede { font-size: clamp(1rem, 1.3vw, 1.15rem); color: var(--text); line-height: 1.55; margin-top: 1rem; max-width: 680px; }
+
+.cp-picker { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: end; margin-top: 1.6rem; }
+.cp-field { display: flex; flex-direction: column; gap: .35rem; }
+.cp-field-label { font-size: .68rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text-dim); }
+.cp-select {
+  font-family: inherit; font-size: .95rem; color: var(--text);
+  background: var(--bg); border: none; border-bottom: 1px solid #1b1914;
+  padding: .7rem .2rem; min-height: 44px; width: 100%;
+}
+.cp-select:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.cp-vs { font-weight: 800; color: var(--gold); font-size: 1rem; padding-bottom: .8rem; }
+@media (max-width: 640px) {
+  .cp-picker { grid-template-columns: 1fr; }
+  .cp-vs { padding-bottom: 0; text-align: center; }
+}
+
+.cp-section { border-top: 2px solid #1b1914; padding: clamp(1.4rem, 3vw, 2.2rem) 0; scroll-margin-top: 80px; }
+.cp-shead h2 { font-size: clamp(1.2rem, 2.4vw, 1.6rem); font-weight: 800; letter-spacing: -.015em; margin: 0 0 .4rem; }
+.cp-sub { color: var(--text-dim); font-size: .92rem; margin: 0 0 1rem; }
+.cp-same { color: var(--text-dim); padding: 1rem 0; }
+.cp-deep { margin-top: 1rem; }
+.cp-deep a { color: var(--gold); font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+
+.cp-pairs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); }
+.cp-pairs li { border-top: 1px solid var(--line); }
+.cp-pairs li:nth-child(2n) { border-left: 1px solid var(--line); }
+.cp-pairs a { display: block; padding: .8rem 1rem .8rem 0; text-decoration: none; color: var(--text); min-height: 44px; }
+.cp-pairs li:nth-child(2n) a { padding-left: 1rem; }
+.cp-pairs a b { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; font-weight: 700; }
+.cp-pairs a span { display: block; font-size: .8rem; color: var(--text-faint); margin-top: .15rem; }
+@media (max-width: 640px) {
+  .cp-pairs { grid-template-columns: 1fr; }
+  .cp-pairs li:nth-child(2n) { border-left: none; }
+  .cp-pairs li:nth-child(2n) a { padding-left: 0; }
+}
+
+.cp-updated { margin-top: 2rem; font-size: .72rem; color: var(--text-faint); }
+
+/* Live-рендер результата (JS innerHTML — Astro scoped-стили сюда не долетают,
+   поэтому глобальный блок, ограниченный контейнером .cp-result). */
+</style>
+<style is:global>
+.cp-result .cmp-table { font-family: var(--ff-display); font-variant-numeric: tabular-nums lining-nums; color: var(--text); border-top: 1px solid #1b1914; }
+.cp-result .cmp-row { display: grid; grid-template-columns: minmax(120px, 1fr) minmax(0, 1.4fr) minmax(0, 1.4fr); grid-template-areas: "label a b"; border-bottom: 1px solid var(--line); }
+.cp-result .cmp-row--head { border-bottom: 1px solid #1b1914; font-weight: 800; }
+.cp-result .cmp-cell { padding: .85rem 1rem .85rem 0; font-size: .92rem; line-height: 1.4; }
+.cp-result .cmp-cell--label { grid-area: label; font-size: .7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text-dim); padding-right: .5rem; display: flex; align-items: center; }
+.cp-result .cmp-cell--a { grid-area: a; }
+.cp-result .cmp-cell--b { grid-area: b; }
+.cp-result .cmp-visited { display: inline-block; margin-left: .5rem; font-size: .62rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--gold); vertical-align: middle; }
+.cp-result .cmp-good { color: var(--gold); font-weight: 700; }
+.cp-result .cmp-muted { color: var(--text-faint); }
+.cp-result .cmp-sub { display: block; font-size: .74rem; color: var(--text-faint); margin-top: .15rem; }
+.cp-result .cmp-tag { display: inline-block; padding: .2rem .55rem; font-size: .74rem; font-weight: 700; border: 1px solid var(--line); }
+.cp-result .cmp-tag--P { color: var(--peak-text); border-color: var(--peak-text); }
+.cp-result .cmp-tag--G { color: var(--good-text); border-color: var(--good-text); }
+.cp-result .cmp-tag--O { color: var(--ok-text); border-color: var(--ok-text); }
+.cp-result .cmp-tag--B, .cp-result .cmp-tag--X { color: var(--bad-text); border-color: var(--bad-text); }
+.cp-result .cmp-heat { display: flex; gap: 2px; }
+.cp-result .cmp-hcell { flex: 1 1 0; text-align: center; font-size: .64rem; font-weight: 700; padding: .4rem 0; color: #fff; min-width: 0; }
+.cp-result .cmp-hcell--P { background: var(--peak); }
+.cp-result .cmp-hcell--G { background: var(--good); }
+.cp-result .cmp-hcell--O { background: var(--ok); color: var(--text); }
+.cp-result .cmp-hcell--B { background: var(--bad); }
+.cp-result .cmp-hcell--X { background: var(--text-faint); }
+@media (max-width: 640px) {
+  .cp-result .cmp-row { grid-template-columns: 1fr 1fr; grid-template-areas: "label label" "a b"; padding: .7rem 0; }
+  .cp-result .cmp-row--head { grid-template-areas: "a b"; }
+  .cp-result .cmp-row--head .cmp-cell--label { display: none; }
+  .cp-result .cmp-cell--label { padding: 0 0 .35rem; }
+  .cp-result .cmp-cell--a, .cp-result .cmp-cell--b { padding: 0 .5rem 0 0; }
+  .cp-result .cmp-cell--b { padding-right: 0; padding-left: .5rem; border-left: 1px solid var(--line); }
+}
+</style>

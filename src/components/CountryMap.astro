@@ -71,8 +71,10 @@ const TYPE_LABEL: Record<string, string> = {
             <td class="cm-type" data-l="Тип">{p.type ? (TYPE_LABEL[p.type] || p.type) : '—'}</td>
             <td class="cm-coord r" data-l="Координаты">{p.lat.toFixed(4)}, {p.lng.toFixed(4)}</td>
             <td class="cm-links r" data-l="Карты">
-              <a href={ymaps} target="_blank" rel="noopener">Я</a>
-              <a href={gmaps} target="_blank" rel="noopener">G</a>
+              <span class="cm-links-wrap">
+                <a href={ymaps} target="_blank" rel="noopener">Я</a>
+                <a href={gmaps} target="_blank" rel="noopener">G</a>
+              </span>
             </td>
           </tr>
         );
@@ -287,6 +289,7 @@ const TYPE_LABEL: Record<string, string> = {
   white-space: nowrap;
 }
 .cm-links { white-space: nowrap; }
+.cm-links-wrap { display: inline-flex; }
 .cm-links a {
   display: inline-flex; align-items: center; justify-content: center;
   min-width: 44px;
@@ -297,8 +300,8 @@ const TYPE_LABEL: Record<string, string> = {
   color: var(--gold);
   text-decoration: 1px underline var(--gold);
   text-underline-offset: 4px;
-  margin-left: .4rem;
 }
+.cm-links-wrap a + a { margin-left: .4rem; }
 
 .cm-foot {
   display: flex; align-items: baseline; flex-wrap: wrap;
