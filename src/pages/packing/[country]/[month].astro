@@ -309,7 +309,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
           <div class="pmu-price-meta">База ${flightLow} × сезонный множитель {monthMult} ({rank.label.toLowerCase()})</div>
         </div>
         <p class="pmu-cta">
-          <a class="pmu-aff" href={aviasalesRoute('MOW', d.price.iata)} rel="sponsored noopener" target="_blank">Найти билет Москва — {d.cases.nom} →</a>
+          <a class="pmu-aff" href={aviasalesRoute('MOW', d.price.iata)} rel="sponsored noopener" target="_blank">Найти билет Москва — {d.cases.nom}</a>
           
           <span class="pmu-trust">актуальные цены под твои даты · оплата картами РФ</span>
         </p>
@@ -386,20 +386,20 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       <div class="pmu-shead"><h2>Документы и деньги</h2></div>
       <ul class="pmu-list">
         <li><b>Загранпаспорт</b> — срок действия 6+ месяцев на момент въезда.</li>
-        {needsVisa && visa && (<li><b>Виза:</b> {visa.duration}, {visa.cost}, {visa.timing}. <a href={`/visa/${d.slug}/`} class="pmu-link">детали визы →</a></li>)}
+        {needsVisa && visa && (<li><b>Виза:</b> {visa.duration}, {visa.cost}, {visa.timing}. <a href={`/visa/${d.slug}/`} class="pmu-link">детали визы</a></li>)}
         {!needsVisa && (<li><b>Виза не нужна</b> — {visa?.duration || 'безвизовый въезд'}.</li>)}
         <li><b>Карты:</b> Visa/MC российских банков не работают. UnionPay / МИР / иностранные — <a href="/cards/" class="pmu-link">карта платёжных систем</a>.</li>
         <li><b>Наличные:</b> $200–300 USD/EUR на непредвиденные.</li>
       </ul>
       {flightLow && d.price?.iata && (
         <p class="pmu-cta">
-          <a class="pmu-aff" href={aviasalesRoute('MOW', d.price.iata)} rel="sponsored noopener" target="_blank">Найти билет Москва — {d.cases.nom} от ${flightLow} →</a>
+          <a class="pmu-aff" href={aviasalesRoute('MOW', d.price.iata)} rel="sponsored noopener" target="_blank">Найти билет Москва — {d.cases.nom} от ${flightLow}</a>
           
           <span class="pmu-trust">все авиакомпании в одной выдаче · оплата картами РФ</span>
         </p>
       )}
       <p class="pmu-cta">
-        <a class="pmu-aff" href={TP_LINKS.cherehapa} rel="sponsored noopener" target="_blank">Оформить страховку {d.cases.vP} →</a>
+        <a class="pmu-aff" href={TP_LINKS.cherehapa} rel="sponsored noopener" target="_blank">Оформить страховку {d.cases.vP}</a>
         
         <span class="pmu-trust">сравнение цен · оплата картами РФ</span>
       </p>
@@ -414,7 +414,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         <li><b>eSIM вместо роуминга</b> — настройка за 5 минут, от $5/неделя.</li>
       </ul>
       <p class="pmu-cta">
-        <a class="pmu-aff" href={TP_LINKS.airalo} rel="sponsored noopener" target="_blank">Купить eSIM {d.cases.vP} →</a>
+        <a class="pmu-aff" href={TP_LINKS.airalo} rel="sponsored noopener" target="_blank">Купить eSIM {d.cases.vP}</a>
         
         <span class="pmu-trust">от $5/нед · оплата картами РФ</span>
       </p>
@@ -492,7 +492,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
     <p class="pmu-updated">Актуально на: {DATA_UPDATED_RU}</p>
   </main>
 
-  <StickyCta href={cherehapaTravel(`packing_${d.slug.replaceAll('-', '_')}`)} label={`Страховка ${d.cases.vP} — под даты →`} />
+  <StickyCta href={cherehapaTravel(`packing_${d.slug.replaceAll('-', '_')}`)} label={`Страховка ${d.cases.vP} — под даты`} />
 
   <Footer />
 </Layout>
@@ -635,6 +635,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
   letter-spacing: -.03em;
   margin: clamp(1rem, 2vw, 1.6rem) 0 0;
   text-wrap: balance;
+  overflow-wrap: break-word;
 }
 .pmu-h1 .rd { color: var(--gold); }
 .pmu-tldr {
@@ -696,7 +697,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 }
 
 .pmu-answer { font-size: 1rem; line-height: 1.6; color: var(--text); max-width: 72ch; margin: 0; }
-.pmu-link { color: var(--gold); text-decoration: 1px underline var(--gold); text-underline-offset: 3px; font-weight: 600; }
+.pmu-link { color: var(--gold); text-decoration: 1px underline var(--gold); text-underline-offset:.22em; font-weight: 600; }
 
 /* VLIST (quick facts) */
 .pmu-vlist {
@@ -777,7 +778,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 }
 .pmu-list li:first-child { border-top: none; }
 .pmu-list li b { font-weight: 800; color: var(--text); }
-.pmu-list a { color: var(--gold); text-decoration: 1px underline var(--gold); text-underline-offset: 3px; font-weight: 600; }
+.pmu-list a { color: var(--gold); text-decoration: 1px underline var(--gold); text-underline-offset:.22em; font-weight: 600; }
 
 .pmu-note {
   margin-top: .9rem;
@@ -785,7 +786,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
   color: var(--text-dim);
   line-height: 1.55;
 }
-.pmu-note a { color: var(--text); font-weight: 600; text-decoration: 1px underline var(--gold); text-underline-offset: 3px; }
+.pmu-note a { color: var(--text); font-weight: 600; text-decoration: 1px underline var(--gold); text-underline-offset:.22em; }
 
 /* ACTIVITY */
 .pmu-activity { margin-bottom: 1.2rem; }
@@ -806,8 +807,8 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 .pmu-aff {
   font-weight: 800;
   color: var(--text);
-  text-decoration: 2px underline var(--gold);
-  text-underline-offset: 4px;
+  text-decoration: underline 1px var(--gold);
+  text-underline-offset:.22em;
   display: inline-flex; align-items: center;
   min-height: 44px;
   letter-spacing: -.005em;
@@ -919,7 +920,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 .pmu-related a b {
   color: var(--gold);
   text-decoration: 1px underline var(--gold);
-  text-underline-offset: 3px;
+  text-underline-offset:.22em;
   font-weight: 700;
 }
 .pmu-related a span { display: block; color: var(--text-faint); font-size: .8rem; margin-top: .2rem; }

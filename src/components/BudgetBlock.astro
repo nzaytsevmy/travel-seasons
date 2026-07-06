@@ -33,7 +33,7 @@ const sampleSources = b.sources?.slice(0, compact ? 2 : 5) || [];
 <section class="budget-block" aria-label={`Реальные траты в ${b.country_ru}`}>
   {!compact && (
     <header class="bb-head">
-      <div class="bb-eyebrow">Реальные траты 2026</div>
+      <div class="bb-eyebrow">Реальные траты, 2026 год</div>
       <h2 class="bb-title">{title || `${b.country_ru}: сколько на самом деле тратят`}</h2>
       <p class="bb-sub">Кросс-источниковая агрегация по {sourceCount} источникам — российским и переведённым с английского.</p>
     </header>
@@ -70,7 +70,7 @@ const sampleSources = b.sources?.slice(0, compact ? 2 : 5) || [];
               {s.lang === 'en' && <span class="bb-lang-badge" title="перевод TravelTribe">EN→RU</span>}
             </span>
             {s.sample && <span class="bb-source-sample">{s.sample}</span>}
-            {s.url && <a href={s.url} target="_blank" rel="nofollow noopener" class="bb-source-link">оригинал →</a>}
+            {s.url && <a href={s.url} target="_blank" rel="nofollow noopener" class="bb-source-link">оригинал</a>}
           </li>
         ))}
       </ul>
@@ -99,10 +99,8 @@ const sampleSources = b.sources?.slice(0, compact ? 2 : 5) || [];
 }
 .bb-head { margin-bottom: 1.25rem; }
 .bb-eyebrow {
-  font-family: var(--ff-mono);
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-size: 0.8rem;
+  font-weight: 600;
   color: var(--gold-600, var(--gold));
   margin-bottom: 0.4rem;
 }

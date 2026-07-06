@@ -121,15 +121,15 @@ const ldJson = {
 
       <section class="sec">
         <div class="shead">
-          <h2><span class="no">00</span>Сейчас — {cur.nom} 2026</h2>
-          <a href={`/trips/${cur.slug}/`}>Все направления {cur.prep} →</a>
+          <h2>Сейчас — {cur.nom} 2026</h2>
+          <a href={`/trips/${cur.slug}/`}>Все направления {cur.prep}</a>
         </div>
         <p class="lead"><b>{cur.totalGood}</b> {plural(cur.totalGood)} в сезоне {cur.prep}.{cur.peak.length ? ` На пике: ${cur.peak.slice(0, 6).join(', ')}.` : ''}</p>
       </section>
 
       <section class="sec">
         <div class="shead">
-          <h2><span class="no">01</span>Все 12 месяцев</h2>
+          <h2>Все 12 месяцев</h2>
           <span class="cap">Сезон · виза · цены внутри</span>
         </div>
         <table class="mtbl">
@@ -140,7 +140,7 @@ const ldJson = {
                 <td class="mname"><a href={`/trips/${m.slug}/`}>{m.nom}</a>{m.slug === cur.slug && <span class="tag">сейчас</span>}</td>
                 <td class="num" data-l="В сезоне"><b>{m.totalGood}</b> <small>напр.</small></td>
                 <td class="mpeak" data-l="Пик">{m.peak.slice(0, 4).join(', ') || '—'}</td>
-                <td class="r"><a class="go" href={`/trips/${m.slug}/`}>Смотреть →</a></td>
+                <td class="r"><a class="go" href={`/trips/${m.slug}/`}>Открыть месяц</a></td>
               </tr>
             ))}
           </tbody>
@@ -148,7 +148,7 @@ const ldJson = {
       </section>
 
       <section class="sec">
-        <div class="shead"><h2><span class="no">02</span>Частые вопросы</h2></div>
+        <div class="shead"><h2>Частые вопросы</h2></div>
         <div class="faq">
           {faqs.map(f => (
             <details class="fi">
@@ -160,7 +160,7 @@ const ldJson = {
       </section>
 
       <section class="sec">
-        <div class="shead"><h2><span class="no">03</span>Что ещё посмотреть</h2></div>
+        <div class="shead"><h2>Что ещё посмотреть</h2></div>
         <ul class="vl">
           <li><a href="/seasons/">Полная таблица сезонов</a><span>70+ направлений × 12 месяцев в одной интерактивной таблице</span></li>
           <li><a href="/calculator/">Калькулятор бюджета</a><span>посчитать поездку с актуальным курсом ЦБ РФ</span></li>
@@ -195,24 +195,23 @@ const ldJson = {
 
 /* Hero — асимметрия, flush-left */
 .hero{padding:clamp(2rem,5vw,4rem) 0 clamp(1.2rem,2.5vw,2rem)}
-.idx{grid-column:1/6;grid-row:1;font-size:.74rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--gold)}
+.idx{grid-column:1/6;grid-row:1;font-size:.82rem;font-weight:600;color:var(--gold)}
 .idx b{display:block;color:var(--ink);font-size:.74rem;font-weight:500;margin-top:.2rem}
 .meta{grid-column:8/13;grid-row:1;text-align:right;align-self:start;font-size:.8rem;color:var(--mid);line-height:1.5}
 .meta b{color:var(--ink);font-weight:500}
-.h1{grid-column:1/13;grid-row:2;font-weight:700;font-size:clamp(2.4rem,7vw,6.4rem);line-height:1.02;letter-spacing:-.035em;margin-top:clamp(1.2rem,2.5vw,2rem);padding-bottom:.06em}
+.h1{grid-column:1/13;grid-row:2;font-weight:700;font-size:clamp(2.4rem,7vw,6.4rem);line-height:1.02;letter-spacing:-.035em;overflow-wrap:break-word;margin-top:clamp(1.2rem,2.5vw,2rem);padding-bottom:.06em}
 .h1 .rd{color:var(--gold)}
 .sub{grid-column:1/9;grid-row:3;font-size:clamp(1rem,1.3vw,1.18rem);color:var(--ink);margin-top:clamp(1.4rem,2vw,1.8rem);max-width:52ch;line-height:1.55}
 .byl{grid-column:1/13;grid-row:4;margin-top:1.4rem;font-size:.78rem;color:var(--mid)}
 .byl a{color:var(--mid)}
-.byl .byl-a{color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:3px}
+.byl .byl-a{color:var(--gold);text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
 
 /* Секции */
 .sec{padding:clamp(2.2rem,4.5vw,3.4rem) 0 0}
 .shead{display:flex;align-items:center;justify-content:space-between;gap:1rem;border-top:2px solid var(--line);padding-top:.8rem;margin-bottom:1.2rem}
 .shead h2{font-weight:700;font-size:clamp(1.4rem,2.6vw,2rem);letter-spacing:-.02em;display:flex;align-items:baseline;gap:.6rem}
-.no{font-size:.74rem;font-weight:700;color:var(--gold);letter-spacing:.04em}
-.shead a{font-size:.72rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:4px;display:inline-flex;align-items:center;min-height:44px;white-space:nowrap}
-.shead .cap{font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mid)}
+.shead a{font-size:.84rem;font-weight:600;color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto;display:inline-flex;align-items:center;min-height:44px}
+.shead .cap{font-size:.78rem;font-weight:500;color:var(--mid)}
 .lead{font-size:1.05rem;color:var(--ink);max-width:70ch;line-height:1.5}.lead b{color:var(--gold);font-weight:700}
 
 /* Таблица месяцев */
@@ -225,11 +224,11 @@ const ldJson = {
 .mtbl tr:last-child td{border-bottom:none}
 @media(hover:hover){.mtbl tbody tr:hover td{background:rgba(142,102,24,.07)}}
 .mname a{font-weight:700;font-size:1.15rem;letter-spacing:-.01em;color:var(--ink)}
-.mname a:hover{color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:3px}
+.mname a:hover{color:var(--gold);text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
 .tag{margin-left:.55rem;font-size:.58rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);vertical-align:1px}
 .mtbl td.num{font-weight:700;font-size:1.05rem;color:var(--ink)}.mtbl td.num small{font-size:.7rem;color:var(--mid);font-weight:500}
 .mpeak{color:var(--mid);font-size:.86rem;line-height:1.4}
-.go{color:var(--ink);font-weight:600;white-space:nowrap;text-decoration:2px underline transparent;text-underline-offset:3px}
+.go{color:var(--ink);font-weight:600;white-space:nowrap;text-decoration:underline 1px transparent;text-underline-offset:.22em}
 .go:hover{color:var(--gold);text-decoration-color:var(--gold)}
 .mtbl tr.now td{background:rgba(142,102,24,.05)}
 .mtbl tr.now .mname a{color:var(--gold)}
@@ -247,7 +246,7 @@ const ldJson = {
 .vl{list-style:none;border-top:1px solid var(--line)}
 .vl li{display:flex;flex-wrap:wrap;align-items:baseline;gap:.2rem .7rem;padding:.85rem 0;border-bottom:1px solid var(--hair)}
 .vl li:last-child{border-bottom:none}
-.vl a{font-weight:600;font-size:1.02rem;color:var(--ink);text-decoration:2px underline var(--gold);text-underline-offset:3px}
+.vl a{font-weight:600;font-size:1.02rem;color:var(--ink);text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
 .vl a:hover{color:var(--gold)}
 .vl span{color:var(--mid);font-size:.86rem}
 

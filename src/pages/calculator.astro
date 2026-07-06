@@ -114,7 +114,6 @@ const ldJson = {
     <!-- ───────────── HERO ──────────────────────────────────── -->
     <section class="tc-hero">
       <div class="tc-container">
-        <div class="tc-eyebrow">Калькулятор · 2026</div>
         <h1 class="tc-h1">Сколько стоит твоя поездка</h1>
         <p class="tc-lede">70+ направлений · сезонный коэффициент по 12 месяцам · сравнение до трёх стран · реальные траты путешественников из 12 источников.</p>
         <p class="tc-byline">
@@ -217,7 +216,7 @@ const ldJson = {
     {/* Авторские туры (YouTravel) — альтернатива самостоятельному расчёту */}
     <section class="tc-section">
       <div class="tc-container">
-        <p class="tc-tourcta">Считать и планировать не хочется? <a href={TP_LINKS.youtravel} rel="sponsored noopener" target="_blank"><strong>Авторский тур с экспертом →</strong></a> — бюджет, маршрут и малая группа уже собраны. </p>
+        <p class="tc-tourcta">Считать и планировать не хочется? <a href={TP_LINKS.youtravel} rel="sponsored noopener" target="_blank"><strong>Авторский тур с экспертом</strong></a> — бюджет, маршрут и малая группа уже собраны. </p>
       </div>
     </section>
 
@@ -271,14 +270,14 @@ const ldJson = {
         <a href="/blog/pay-abroad-2026/" class="tc-tip-callout">
           <span class="tc-tip-callout-text">
             <strong>Чем платить за границей в 2026</strong>
-            <span>Visa/MC РФ не работают, UnionPay из РФ массово отклоняют. Виртуальные USD/EUR-карты, UnionPay от АТБ, банки ЕАЭС, наличные — 4 рабочих способа подробно →</span>
+            <span>Visa/MC РФ не работают, UnionPay из РФ массово отклоняют. Виртуальные USD/EUR-карты, UnionPay от АТБ, банки ЕАЭС, наличные — 4 рабочих способа подробно</span>
           </span>
         </a>
 
         <a href="/compare/" class="tc-tip-callout">
           <span class="tc-tip-callout-text">
             <strong>Не можешь выбрать между двумя странами?</strong>
-            <span>Компаратор — виза, бюджет в сутки, перелёт и сезон по месяцам бок о бок для любых двух направлений →</span>
+            <span>Компаратор — виза, бюджет в сутки, перелёт и сезон по месяцам бок о бок для любых двух направлений</span>
           </span>
         </a>
       </div>
@@ -570,7 +569,6 @@ function renderSingle(pi) {
         <a href="${aviUrl}" target="_blank" rel="noopener sponsored" class="tc-cta-primary">
           <span class="tc-cta-icon"></span>
           <span class="tc-cta-text">Найти билет на Aviasales</span>
-          <span class="tc-cta-arrow">→</span>
         </a>
         <div class="tc-cta-side-row">
           <a href="${OSTROVOK}" target="_blank" rel="noopener sponsored" class="tc-cta-side">
@@ -654,10 +652,10 @@ function renderTable(piList) {
           <li><span class="tc-cmp-key">Перелёт</span><span class="tc-cmp-val">${fmt(r.flightTotal)}</span></li>
           <li><span class="tc-cmp-key">Отель × ${r.days}</span><span class="tc-cmp-val">${fmt(r.hotelTotal)}</span></li>
           <li><span class="tc-cmp-key">Питание</span><span class="tc-cmp-val">${fmt(r.foodTotal)}</span></li>
-          <li><span class="tc-cmp-key">Виза</span><span class="tc-cmp-val tc-cmp-visa">${visaLink ? `<a href="${visaLink}" target="_blank" rel="noopener">${visaText} →</a>` : visaText}</span></li>
+          <li><span class="tc-cmp-key">Виза</span><span class="tc-cmp-val tc-cmp-visa">${visaLink ? `<a href="${visaLink}" target="_blank" rel="noopener">${visaText}</a>` : visaText}</span></li>
         </ul>
 
-        <a href="${aviUrl}" target="_blank" rel="noopener sponsored" class="tc-cmp-cta">Найти билет →</a>
+        <a href="${aviUrl}" target="_blank" rel="noopener sponsored" class="tc-cmp-cta">Найти билет</a>
       </div>
     `;
   });
@@ -845,14 +843,6 @@ window.addEventListener('pageshow', (e) => {
   padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(1.5rem, 3vw, 2rem);
   text-align: center;
 }
-.tc-eyebrow {
-  font-family: var(--ff-mono);
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 1rem;
-}
 .tc-h1 {
   font-family: var(--ff-display);
   font-size: clamp(2.2rem, 5vw, 3.5rem);
@@ -878,7 +868,7 @@ window.addEventListener('pageshow', (e) => {
   letter-spacing: 0.01em;
 }
 .tc-byline a { color: var(--text-dim); text-decoration: underline; text-decoration-color: rgba(107,104,94,0.5); text-underline-offset: 2px; }
-.tc-byline a.tc-byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(142, 102, 24,0.5); text-underline-offset: 3px; }
+.tc-byline a.tc-byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(142, 102, 24,0.5); text-underline-offset:.22em; }
 .tc-byline .tc-byline-method { color: var(--text-faint); }
 
 /* ── FORM SECTION (horizontal bar) ────────────────────────────── */
@@ -1220,8 +1210,6 @@ window.addEventListener('pageshow', (e) => {
   transform: translateY(-2px);
 }
 .tc-cta-icon { font-size: 1.1em; }
-.tc-cta-arrow { transition: transform 0.2s; font-size: 1.1em; }
-.tc-cta-primary:hover .tc-cta-arrow { transform: translateX(4px); }
 
 .tc-cta-side-row {
   display: grid;
@@ -1474,7 +1462,7 @@ window.addEventListener('pageshow', (e) => {
 .tc-section { padding: clamp(2rem, 4vw, 3rem) 0 0; }
 .tc-section:last-of-type { padding-bottom: clamp(2.5rem, 5vw, 3.5rem); }
 .tc-tourcta { max-width: 680px; margin: 1.4rem auto 0; padding: 1rem 1.3rem; border: 1px solid var(--line); border-left: 3px solid var(--gold); font-size: 0.95rem; line-height: 1.6; color: var(--text-dim); }
-.tc-tourcta a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
+.tc-tourcta a { color: var(--gold); text-decoration: underline; text-underline-offset:.22em; }
 .tc-tourcta strong { color: var(--text); }
 .tc-section-head {
   display: flex; align-items: baseline; gap: 0.8rem;

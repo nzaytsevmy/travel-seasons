@@ -680,35 +680,21 @@ footer {
   white-space: nowrap;
 }
 
-/* Benefit-CTA — заметная кликабельная ссылка-действие; underline-reveal на hover (тренд-2026, CSS-only → INP-safe) */
+/* Benefit-CTA — заметная кликабельная ссылка-действие; инлайн, чтобы при переносе
+   на узком экране подчёркивание шло под каждой строкой (не border-bottom) */
 .aff-cta {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3em;
   font-weight: 600;
   color: var(--gold);
-  text-decoration: none;
-  border-bottom: 1.5px solid rgba(201, 151, 58, 0.6);   /* в покое — заметное подчёркивание: affordance клика читается на тач (нет hover) */
-  transition: color 0.15s;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, var(--gold) 55%, transparent);
+  text-underline-offset: 0.22em;
+  text-decoration-skip-ink: auto;
+  transition: color 0.15s, text-decoration-color 0.15s;
 }
-/* золотая линия «прорисовывается» слева-направо поверх покойной — единственная стрелка через ::after */
-.aff-cta::before {
-  content: '';
-  position: absolute;
-  left: 0; right: 0; bottom: -1.5px;
-  height: 1.5px;
-  background: var(--gold);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.25s ease;
-}
-.aff-cta:hover { color: var(--gold-dim); }
-.aff-cta:hover::before { transform: scaleX(1); }
-.aff-cta::after { content: '→'; display: inline-block; transition: transform 0.15s; }
-.aff-cta:hover::after { transform: translateX(3px); }
+.aff-cta:hover { color: var(--gold-dim); text-decoration-color: var(--gold); }
 @media (prefers-reduced-motion: reduce) {
-  .aff-cta::before, .aff-cta::after { transition: none; }
+  .aff-cta { transition: none; }
 }
 
 /* Заливная primary-CTA — брендбук-исключение (явное «да» Никиты 2026-07-02):
@@ -767,10 +753,10 @@ footer {
 .legal-doc ul li { padding-left: 1.2rem; position: relative; margin-bottom: 0.5rem; }
 .legal-doc ul li::before { content: '—'; position: absolute; left: 0; color: var(--gold); }
 .legal-doc strong { color: var(--text); font-weight: 600; }
-.legal-doc a { color: var(--gold); border-bottom: 1px solid rgba(142,102,24,0.3); }
-.legal-doc a:hover { border-color: var(--gold); }
-.legal-doc .legal-reset { margin-top: 0.5rem; font: inherit; font-size: 0.88rem; color: var(--gold); background: none; border: none; border-bottom: 1px solid rgba(142,102,24,0.3); padding: 0; cursor: pointer; }
-.legal-doc .legal-reset:hover { border-color: var(--gold); }
+.legal-doc a { color: var(--gold); text-decoration: underline 1px rgba(142,102,24,0.35); text-underline-offset: 0.22em; text-decoration-skip-ink: auto; }
+.legal-doc a:hover { text-decoration-color: var(--gold); }
+.legal-doc .legal-reset { margin-top: 0.5rem; font: inherit; font-size: 0.88rem; color: var(--gold); background: none; border: none; text-decoration: underline 1px rgba(142,102,24,0.35); text-underline-offset: 0.22em; padding: 0; cursor: pointer; }
+.legal-doc .legal-reset:hover { text-decoration-color: var(--gold); }
 .legal-doc .legal-reset:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 .legal-table { width: 100%; border-collapse: collapse; margin: 0.5rem 0 1.6rem; font-size: 0.88rem; }
 .legal-table th, .legal-table td { text-align: left; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--text-dim); line-height: 1.6; }

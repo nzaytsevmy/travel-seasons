@@ -76,7 +76,7 @@ const ldJson = {
 
   <main id="main" class="cp">
     <section class="cp-hero">
-      <div class="cp-idx">01 / Компаратор<b>{MONTH_NOM} 2026</b></div>
+      <div class="cp-idx">Компаратор<b>{MONTH_NOM} 2026</b></div>
       <h1 class="cp-h1">Куда лучше — сравни сам</h1>
       <p class="cp-lede">Выбери два направления — сразу увидишь визу, бюджет в сутки, перелёт и сезон бок о бок. Обновлено {DATA_UPDATED_RU}.</p>
 
@@ -175,7 +175,7 @@ const ldJson = {
 
     const key = `${a.slug}|${b.slug}`;
     if (CURATED[key]) {
-      html += `<p class="cp-deep"><a href="/compare/${CURATED[key]}/">Читать разбор ${a.nom} vs ${b.nom} с вердиктом →</a></p>`;
+      html += `<p class="cp-deep"><a href="/compare/${CURATED[key]}/">Читать разбор ${a.nom} vs ${b.nom} с вердиктом</a></p>`;
     }
 
     resultEl.innerHTML = html;
@@ -209,7 +209,7 @@ const ldJson = {
   color: var(--text);
 }
 .cp-hero { padding: clamp(1.2rem, 2.5vw, 2rem) 0 clamp(1.6rem, 3vw, 2.4rem); }
-.cp-idx { font-size: .74rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--gold); }
+.cp-idx { font-size:.82rem; font-weight: 700;   color: var(--gold); }
 .cp-idx b { display: block; color: var(--text); font-size: .74rem; font-weight: 600; margin-top: .2rem; }
 .cp-h1 { font-weight: 800; font-size: clamp(2rem, 5.5vw, 4rem); line-height: 1.02; letter-spacing: -.03em; margin: 1rem 0 0; text-wrap: balance; }
 .cp-lede { font-size: clamp(1rem, 1.3vw, 1.15rem); color: var(--text); line-height: 1.55; margin-top: 1rem; max-width: 680px; }
@@ -234,14 +234,14 @@ const ldJson = {
 .cp-sub { color: var(--text-dim); font-size: .92rem; margin: 0 0 1rem; }
 .cp-same { color: var(--text-dim); padding: 1rem 0; }
 .cp-deep { margin-top: 1rem; }
-.cp-deep a { color: var(--gold); font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+.cp-deep a { color: var(--gold); font-weight: 700; text-decoration: underline; text-underline-offset:.22em; }
 
 .cp-pairs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); }
 .cp-pairs li { border-top: 1px solid var(--line); }
 .cp-pairs li:nth-child(2n) { border-left: 1px solid var(--line); }
 .cp-pairs a { display: block; padding: .8rem 1rem .8rem 0; text-decoration: none; color: var(--text); min-height: 44px; }
 .cp-pairs li:nth-child(2n) a { padding-left: 1rem; }
-.cp-pairs a b { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; font-weight: 700; }
+.cp-pairs a b { color: var(--gold); text-decoration: underline; text-underline-offset:.22em; font-weight: 700; }
 .cp-pairs a span { display: block; font-size: .8rem; color: var(--text-faint); margin-top: .15rem; }
 @media (max-width: 640px) {
   .cp-pairs { grid-template-columns: 1fr; }

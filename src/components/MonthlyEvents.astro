@@ -9,9 +9,8 @@ interface Props {
   slug: string;
   countryNom?: string;
   countryNameVp?: string;
-  idx?: string;
 }
-const { slug, countryNom, countryNameVp, idx = '05' } = Astro.props;
+const { slug, countryNom, countryNameVp } = Astro.props;
 const events = getHolidays(slug);
 if (!events.length) return null as any;
 
@@ -35,7 +34,6 @@ const closedCount = events.filter(e => e.tag === 'closed').length;
 
 <section class="me" aria-label={`Праздники и события — ${countryNom || slug}`}>
   <header class="me-h">
-    <span class="me-n">{idx}</span>
     <h2 class="me-t">События по месяцам{countryNom ? ` — ${countryNom}` : ''}</h2>
   </header>
   <p class="me-s">
@@ -65,7 +63,7 @@ const closedCount = events.filter(e => e.tag === 'closed').length;
       )))}
     </tbody>
   </table>
-  <p class="me-more"><a href="/events/">Праздники и фестивали по всем странам →</a></p>
+  <p class="me-more"><a href="/events/">Праздники и фестивали по всем странам</a></p>
 </section>
 
 <style>
@@ -81,10 +79,6 @@ const closedCount = events.filter(e => e.tag === 'closed').length;
   padding-top: .8rem;
   display: flex; align-items: baseline; gap: .8rem;
   margin-bottom: .35rem;
-}
-.me-n {
-  font-size: .74rem; font-weight: 700; color: var(--gold);
-  letter-spacing: .04em;
 }
 .me-t {
   font-weight: 800;
@@ -164,7 +158,7 @@ const closedCount = events.filter(e => e.tag === 'closed').length;
 .me-r--culture .me-tc { color: var(--text-dim); }
 
 .me-more { margin: .9rem 0 0; font-size: .84rem; }
-.me-more a { color: var(--gold); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.me-more a { color: var(--gold); font-weight: 600; text-decoration: underline; text-underline-offset:.22em; }
 
 /* MOBILE: таблица → строки-блоки (Swiss-канон) */
 @media (max-width: 760px) {

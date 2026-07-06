@@ -118,7 +118,6 @@ const ldJson = {
   <main id="main" class="bv">
 
     <header class="bv-head">
-      <p class="bv-eyebrow">Безвиз · 2026</p>
       <h1 class="bv-h1">Куда поехать без визы россиянам в 2026</h1>
       <p class="bv-lede">В 2026 году россиян пускают без визы в <b>114 направлений</b> — <a href="https://www.atorus.ru/article/bezvizovye-strany-dlya-rossiyan-v-2026-godu-114-napravleniy-ot-gosudarstva-v-chetyrekh-polushariyakh-65811" rel="noopener" target="_blank">данные АТОР</a>. Здесь — <b>{total}</b>, которые я разобрал детально: сколько дней можно находиться, что спросят на границе и куда сезон прямо в {MONTH_RU}. У {seasonNowCount} из них сезон сейчас.</p>
       <p class="bv-byline">Собрал <a href="/about/">Никита Зайцев</a> · был на 7 континентах, 60+ стран · данные проверены: {DATA_UPDATED_RU}</p>
@@ -171,8 +170,8 @@ const ldJson = {
       <h2>Что оформить до вылета, раз виза не нужна</h2>
       <p class="bv-answer">Два пункта закрывают 90% проблем на месте: <b>страховка</b> (ОМС за границей не работает, а Грузия с 2026 требует полис на въезде) и <b>билеты, купленные заранее</b> — на границе могут спросить обратный.</p>
       <p class="bv-cta-row">
-        <a class="aff-btn" href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F%3Fsub_id%3Dbezviz" rel="sponsored noopener" target="_blank">Собрать страховку под поездку →</a>
-        <a class="bv-aff" href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Fsub_id%3Dbezviz" rel="sponsored noopener" target="_blank">Сравнить билеты по 114 направлениям →</a>
+        <a class="aff-btn" href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F%3Fsub_id%3Dbezviz" rel="sponsored noopener" target="_blank">Собрать страховку под поездку</a>
+        <a class="bv-aff" href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Fsub_id%3Dbezviz" rel="sponsored noopener" target="_blank">Сравнить билеты по 114 направлениям</a>
         <span class="bv-trust">оплата картами РФ · цена не меняется, блог получает комиссию</span>
       </p>
     </section>
@@ -199,7 +198,7 @@ const ldJson = {
     </section>
   </main>
 
-  <StickyCta href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F%3Fsub_id%3Dbezviz" label="Страховка в поездку — под даты →" />
+  <StickyCta href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F%3Fsub_id%3Dbezviz" label="Страховка в поездку — под даты" />
 
   <Footer />
 </Layout>
@@ -207,7 +206,6 @@ const ldJson = {
 <style>
   .bv { max-width: var(--container, 1100px); margin: 0 auto; padding: 0 1rem 4rem; }
   .bv-head { padding: 1.2rem 0 2rem; }
-  .bv-eyebrow { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin: 0 0 .6rem; }
   .bv-h1 { font-size: clamp(1.7rem, 4.5vw, 2.6rem); line-height: 1.15; margin: 0 0 .9rem; letter-spacing: -.01em; }
   .bv-lede { font-size: 1.05rem; line-height: 1.6; max-width: 62ch; margin: 0 0 .8rem; }
   .bv-byline { font-size: .85rem; color: var(--text-dim); margin: 0; }
@@ -219,14 +217,14 @@ const ldJson = {
 
   .bv-nopass { list-style: none; margin: 0 0 1rem; padding: 0; }
   .bv-nopass li { display: flex; flex-wrap: wrap; gap: .35rem .8rem; align-items: baseline; padding: .7rem .1rem; border-bottom: 1px solid var(--line); font-size: .98rem; }
-  .bv-nopass a { color: var(--gold); text-decoration: 2px underline var(--gold); text-underline-offset: 3px; }
+  .bv-nopass a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset:.22em; }
   .bv-nopass span { color: var(--text-dim); font-size: .88rem; }
 
   .bv-table-wrap { overflow-x: auto; }
   .bv-table { width: 100%; border-collapse: collapse; border-top: 2px solid var(--line-strong, var(--line)); font-size: .92rem; }
   .bv-table th { text-align: left; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); font-weight: 700; padding: .55rem .6rem .55rem 0; border-bottom: 1px solid var(--line); }
   .bv-table td { padding: .55rem .6rem .55rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
-  .bv-table a { color: var(--text); text-decoration: 2px underline var(--gold); text-underline-offset: 3px; }
+  .bv-table a { color: var(--text); text-decoration: underline 1px var(--gold); text-underline-offset:.22em; }
   .bv-table a:hover { color: var(--gold); }
   .bv-season--P { color: var(--gold); }
   .bv-season--G { color: var(--text); }
@@ -244,7 +242,7 @@ const ldJson = {
   }
 
   .bv-cta-row { display: flex; flex-direction: column; align-items: flex-start; gap: .6rem; margin: 0; }
-  .bv-aff { font-weight: 700; color: var(--gold); text-decoration: 2px underline var(--gold); text-underline-offset: 4px; display: inline-flex; align-items: center; min-height: 44px; }
+  .bv-aff { font-weight: 700; color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset:.22em; display: inline-flex; align-items: center; min-height: 44px; }
   .bv-aff:hover { color: var(--gold-dim); }
   .bv-trust { font-size: .78rem; color: var(--text-dim); }
 
@@ -256,5 +254,5 @@ const ldJson = {
 
   .bv-related { list-style: none; margin: 0; padding: 0; }
   .bv-related li { padding: .55rem 0; border-bottom: 1px solid var(--line); font-size: .95rem; color: var(--text-dim); }
-  .bv-related a { color: var(--text); text-decoration: 2px underline var(--gold); text-underline-offset: 3px; }
+  .bv-related a { color: var(--text); text-decoration: underline 1px var(--gold); text-underline-offset:.22em; }
 </style>

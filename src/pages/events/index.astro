@@ -53,7 +53,7 @@ const ldJson = {
 
   <main id="main" class="evh">
     <section class="evh-hero">
-      <div class="evh-idx">01 / Календарь<b>{totalCountries} {plural(totalCountries, 'страна', 'страны', 'стран')}</b></div>
+      <div class="evh-idx">Календарь<b>{totalCountries} {plural(totalCountries, 'страна', 'страны', 'стран')}</b></div>
       <h1 class="evh-h1">Что празднуют и когда закрыто</h1>
       <p class="evh-lede">Государственные праздники, фестивали и сезонные явления по месяцам — чтобы не прилететь в закрытую страну и не пропустить то, ради чего стоит планировать даты. Обновлено {DATA_UPDATED_RU}.</p>
     </section>
@@ -109,7 +109,7 @@ const ldJson = {
   color: var(--text);
 }
 .evh-hero { padding: clamp(1.2rem, 2.5vw, 2rem) 0 clamp(1.6rem, 3vw, 2.4rem); }
-.evh-idx { font-size: .74rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--gold); }
+.evh-idx { font-size:.82rem; font-weight: 700;   color: var(--gold); }
 .evh-idx b { display: block; color: var(--text); font-size: .74rem; font-weight: 600; margin-top: .2rem; }
 .evh-h1 { font-weight: 800; font-size: clamp(2rem, 5.5vw, 4rem); line-height: 1.02; letter-spacing: -.03em; margin: 1rem 0 0; text-wrap: balance; }
 .evh-lede { font-size: clamp(1rem, 1.3vw, 1.15rem); color: var(--text); line-height: 1.55; margin-top: 1rem; max-width: 680px; }
@@ -125,14 +125,14 @@ const ldJson = {
   padding: .8rem 1rem .8rem 0;
   text-decoration: none; color: var(--text); min-height: 44px;
 }
-.evh-months a b { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; font-weight: 700; }
+.evh-months a b { color: var(--gold); text-decoration: underline; text-underline-offset:.22em; font-weight: 700; }
 .evh-months a span { font-size: .78rem; color: var(--text-faint); }
 @media (max-width: 640px) { .evh-months { grid-template-columns: repeat(2, 1fr); } }
 
 .evh-top, .evh-related { list-style: none; margin: 0; padding: 0; }
 .evh-top li, .evh-related li { border-top: 1px solid var(--line); padding: .8rem 0; display: flex; flex-direction: column; }
 .evh-top a, .evh-related a { color: var(--text); text-decoration: none; }
-.evh-top a b, .evh-related a b { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
+.evh-top a b, .evh-related a b { color: var(--gold); text-decoration: underline; text-underline-offset:.22em; }
 .evh-top span, .evh-related span { font-size: .82rem; color: var(--text-faint); margin-top: .15rem; }
 
 .evh-updated { margin-top: 2rem; font-size: .72rem; color: var(--text-faint); }
