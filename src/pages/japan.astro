@@ -170,7 +170,7 @@ const ldJson = {
       <div class="jp-shead"><span class="jp-n">06</span><h2>Бюджет — реальные цифры 2026</h2></div>
       <div class="jp-tiers">
         <article class="jp-tier">
-          <div class="jp-tier-l">Эконом</div>
+          <div class="jp-tier-top"><span class="jp-tier-idx">01</span><div class="jp-tier-l">Эконом</div></div>
           <div class="jp-tier-p">$50–80<small> / день</small></div>
           <div class="jp-tier-n">минимум на двоих</div>
           <ul>
@@ -181,7 +181,7 @@ const ldJson = {
           </ul>
         </article>
         <article class="jp-tier jp-tier--mid">
-          <div class="jp-tier-l">Комфорт <span class="jp-tier-badge">большинство туристов</span></div>
+          <div class="jp-tier-top"><span class="jp-tier-idx">02</span><div class="jp-tier-l">Комфорт <span class="jp-tier-badge">большинство туристов</span></div></div>
           <div class="jp-tier-p">$150–250<small> / день</small></div>
           <div class="jp-tier-n">первый раз — оптимально</div>
           <ul>
@@ -192,7 +192,7 @@ const ldJson = {
           </ul>
         </article>
         <article class="jp-tier">
-          <div class="jp-tier-l">Премиум</div>
+          <div class="jp-tier-top"><span class="jp-tier-idx">03</span><div class="jp-tier-l">Премиум</div></div>
           <div class="jp-tier-p">$300+<small> / день</small></div>
           <div class="jp-tier-n">без компромиссов</div>
           <ul>
@@ -467,6 +467,11 @@ const ldJson = {
 }
 .jp-tier:first-child { padding-left: 0; }
 .jp-tier:last-child { border-right: none; padding-right: 0; }
+.jp-tier-top { display: flex; align-items: baseline; gap: .5rem; }
+.jp-tier-idx {
+  font-size: .68rem; font-weight: 700; color: var(--gold);
+  letter-spacing: .04em;
+}
 .jp-tier-l {
   font-size: .68rem; font-weight: 700;
   letter-spacing: .06em; text-transform: uppercase;
@@ -530,10 +535,11 @@ const ldJson = {
   .jp-tiers { grid-template-columns: 1fr; }
   .jp-tier {
     border-right: none;
-    border-top: 1px solid var(--line-hair);
+    border-top: 2px solid var(--line-strong);
     padding-left: 0; padding-right: 0;
+    padding-top: 1.3rem;
   }
-  .jp-tier:first-child { border-top: none; }
+  .jp-tier:first-child { border-top: none; padding-top: 0; }
 }
 
 /* POSTS grid — 2 кол hairline */
