@@ -23,9 +23,14 @@ const { crumbs } = Astro.props;
 </nav>
 
 <style>
+/* Контейнер = контейнер шапки (SwissHeader .wrap: max-width 1280 + edge-гаттер),
+   чтобы крошки вставали ровно под логотип на всех страницах и ширинах.
+   Раньше был max-width:760 (под узкую колонку блога) → на широких программных
+   страницах крошки висели по центру с большим отступом слева. */
 .breadcrumbs {
-  padding: 0.75rem 2rem;
-  max-width: 760px;
+  padding-block: 0.75rem;
+  padding-inline: clamp(1.1rem, 3vw, 2.6rem);
+  max-width: 1280px;
   margin: 0 auto;
 }
 ol {
