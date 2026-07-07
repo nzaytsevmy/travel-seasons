@@ -28,8 +28,11 @@ jobs:
 
       - run: npm run build
 
+      # Явный порт 4322: `astro preview` по умолчанию поднимается на 4321, а гейт
+      # ждёт/тестит на 4322 — из-за этого «Wait for server» висел бесконечно
+      # (прогоны отваливались по 6-часовому таймауту). Совпадает с pre-push-хуком.
       - name: Start preview server
-        run: npm run preview &
+        run: npx astro preview --port 4322 &
         env:
           NODE_ENV: production
 
@@ -41,8 +44,12 @@ jobs:
           done
           echo "✖ preview-сервер не поднялся за 120с"; exit 1
 
-      - name: Run visual regression tests
-        run: npm run check:visual
+      # Пиксельные скриншот-эталоны платформозависимы (`-darwin.png`), а раннер —
+      # Linux: их тут нет и сгенерировать негде. Поэтому в CI гоняем только
+      # platform-независимые проверки (overflow / битые картинки / CSS-escape).
+      # Пиксельную регрессию держит pre-push-хук на macOS (darwin-эталоны).
+      - name: Run visual regression tests (platform-independent)
+        run: npx playwright test --grep-invert "— visual"
         env:
           PREVIEW_URL: http://localhost:4322
 
