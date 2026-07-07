@@ -173,7 +173,7 @@ const ldJson = {
     const flightCell = (e) => e.flightFrom ? `$${e.flightFrom} one-way` : '—';
     const nowCell = (e) => `<span class="cmp-tag cmp-tag--${e.nowCode}">${e.nowLabel}</span>`;
 
-    let html = '<div class="cmp-table" role="table">';
+    let html = `<div class="cmp-table" role="group" aria-label="Сравнение: ${a.nom} и ${b.nom}">`;
     html += `<div class="cmp-row cmp-row--head"><div class="cmp-cell cmp-cell--label"></div><div class="cmp-cell cmp-cell--a">${a.emoji} ${a.nom}${a.visited ? ' <span class="cmp-visited">был лично</span>' : ''}</div><div class="cmp-cell cmp-cell--b">${b.emoji} ${b.nom}${b.visited ? ' <span class="cmp-visited">был лично</span>' : ''}</div></div>`;
     html += row('Виза', visaCell(a), visaCell(b));
     html += row('Бюджет/сутки', budgetCell(a), budgetCell(b));
