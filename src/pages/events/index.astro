@@ -5,6 +5,7 @@ import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { MONTHS, bySlug } from '../../data/directions.js';
 import { HOLIDAYS, getEventsByMonth, getTopEventsOfYear } from '../../data/country-holidays.js';
+import Byline from '../../components/Byline.astro';
 import { DATA_UPDATED_RU } from '../../data/meta.js';
 
 // Русское склонение: 1 событие / 2 события / 5 событий (см. bezviz.astro).
@@ -56,6 +57,7 @@ const ldJson = {
       <div class="evh-idx">Календарь<b>{totalCountries} {plural(totalCountries, 'страна', 'страны', 'стран')}</b></div>
       <h1 class="evh-h1">Что празднуют и когда закрыто</h1>
       <p class="evh-lede">Государственные праздники, фестивали и сезонные явления по месяцам — чтобы не прилететь в закрытую страну и не пропустить то, ради чего стоит планировать даты. Обновлено {DATA_UPDATED_RU}.</p>
+      <Byline />
     </section>
 
     <section class="evh-section">
@@ -119,7 +121,6 @@ const ldJson = {
 
 .evh-months { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); }
 .evh-months li { border-top: 1px solid var(--line); }
-.evh-months li:nth-child(3n) { }
 .evh-months a {
   display: flex; justify-content: space-between; align-items: baseline;
   padding: .8rem 1rem .8rem 0;

@@ -82,6 +82,11 @@ export const cherehapaCountry = (countrySlug, subId) =>
 export const cherehapaTravel = (subId) =>
   tpkDeep('cherehapa', `https://cherehapa.ru/travel/${subId ? `?sub_id=${subId}` : ''}`);
 
+// Яндекс Путешествия с постраничным sub_id (тот же формат, что в altai-пилларе) —
+// хабам нужна атрибуция клика; раньше висел голый TP_LINKS.yandexTravel без sub_id.
+export const yandexTravelSub = (subId) =>
+  tpkDeep('yandexTravel', `https://travel.yandex.ru/${subId ? `?sub_id=${subId}` : ''}`);
+
 // Ostrovok: страница города (проверено: /hotel/georgia/tbilisi/ → 200 с маркерами).
 export const ostrovokCity = (countrySlug, citySlug) =>
   tpkDeep('ostrovok', `https://ostrovok.ru/hotel/${countrySlug}/${citySlug}/`);

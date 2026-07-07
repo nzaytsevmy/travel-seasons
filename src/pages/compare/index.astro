@@ -8,6 +8,8 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { DIRECTIONS } from '../../data/directions.js';
 import { COMPARE_PAIRS } from '../../data/compare-pairs.js';
 import { buildCompareEntry } from '../../data/compare-logic.js';
+import { aviasalesRoute, cherehapaTravel } from '../../data/affiliate.js';
+import Byline from '../../components/Byline.astro';
 import { DATA_UPDATED_RU, DATA_UPDATED } from '../../data/meta.js';
 
 const monthIdx = new Date().getMonth();
@@ -27,7 +29,12 @@ for (const g of Object.keys(groups).sort((x, y) => x.localeCompare(y, 'ru'))) {
 // Весь датасет для клиентского рендера произвольной пары — считаем один раз
 // на сборке, дальше это чистый JSON (без выдумки, все поля из compare-logic.js).
 const DATA = {};
-for (const d of DIRECTIONS) DATA[d.slug] = buildCompareEntry(d.slug, monthIdx);
+for (const d of DIRECTIONS) {
+  const e = buildCompareEntry(d.slug, monthIdx);
+  e.flightCta = e.iata ? aviasalesRoute('MOW', e.iata, `compare_${d.slug}`) : null;
+  DATA[d.slug] = e;
+}
+const insuranceCta = cherehapaTravel('compare');
 
 // Быстрый lookup «есть ли готовый разбор пары» — не зависит от порядка a/b.
 const curatedSet = {};
@@ -79,6 +86,7 @@ const ldJson = {
       <div class="cp-idx">Компаратор<b>{MONTH_NOM} 2026</b></div>
       <h1 class="cp-h1">Куда лучше — сравни сам</h1>
       <p class="cp-lede">Выбери два направления — сразу увидишь визу, бюджет в сутки, перелёт и сезон бок о бок. Обновлено {DATA_UPDATED_RU}.</p>
+      <Byline />
 
       <div class="cp-picker">
         <div class="cp-field">
@@ -106,7 +114,7 @@ const ldJson = {
     </section>
 
     <section class="cp-section cp-result-wrap">
-      <div id="cpResult" class="cp-result"></div>
+      <div id="cpResult" class="cp-result" aria-live="polite"></div>
     </section>
 
     <section class="cp-section">
@@ -131,7 +139,7 @@ const ldJson = {
 
 <script type="application/json" id="cpData" set:html={JSON.stringify(DATA)} />
 <script type="application/json" id="cpCurated" set:html={JSON.stringify(curatedSet)} />
-<script define:vars={{ monthNom: MONTH_NOM, monthPrep: MONTH_PREP }}>
+<script define:vars={{ monthNom: MONTH_NOM, monthPrep: MONTH_PREP, insuranceCta }}>
   const DATA = JSON.parse(document.getElementById('cpData').textContent);
   const CURATED = JSON.parse(document.getElementById('cpCurated').textContent);
   const selA = document.getElementById('cpA');
@@ -139,10 +147,11 @@ const ldJson = {
   const resultEl = document.getElementById('cpResult');
   const RANK_LABEL = { P: 'Пик сезона', G: 'Хорошо', O: 'Нормально', B: 'Не лучший месяц', X: 'Закрыто' };
   const MONTH_LETTERS = ['Я','Ф','М','А','М','И','И','А','С','О','Н','Д'];
+  const MONTH_FULL = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
   const fmt = (n, cur) => cur === 'RUB' ? n.toLocaleString('ru-RU') + ' ₽' : '$' + n;
 
   function heat(r) {
-    return r.map((code, i) => `<span class="cmp-hcell cmp-hcell--${code}" title="${RANK_LABEL[code]}">${MONTH_LETTERS[i]}</span>`).join('');
+    return r.map((code, i) => `<span class="cmp-hcell cmp-hcell--${code}" role="img" aria-label="${MONTH_FULL[i]}: ${RANK_LABEL[code]}" title="${RANK_LABEL[code]}">${MONTH_LETTERS[i]}</span>`).join('');
   }
 
   function row(label, aVal, bVal, extraClass) {
@@ -164,7 +173,7 @@ const ldJson = {
     const flightCell = (e) => e.flightFrom ? `$${e.flightFrom} one-way` : '—';
     const nowCell = (e) => `<span class="cmp-tag cmp-tag--${e.nowCode}">${e.nowLabel}</span>`;
 
-    let html = '<div class="cmp-table">';
+    let html = `<div class="cmp-table" role="group" aria-label="Сравнение: ${a.nom} и ${b.nom}">`;
     html += `<div class="cmp-row cmp-row--head"><div class="cmp-cell cmp-cell--label"></div><div class="cmp-cell cmp-cell--a">${a.emoji} ${a.nom}${a.visited ? ' <span class="cmp-visited">был лично</span>' : ''}</div><div class="cmp-cell cmp-cell--b">${b.emoji} ${b.nom}${b.visited ? ' <span class="cmp-visited">был лично</span>' : ''}</div></div>`;
     html += row('Виза', visaCell(a), visaCell(b));
     html += row('Бюджет/сутки', budgetCell(a), budgetCell(b));
@@ -177,6 +186,12 @@ const ldJson = {
     if (CURATED[key]) {
       html += `<p class="cp-deep"><a href="/compare/${CURATED[key]}/">Читать разбор ${a.nom} vs ${b.nom} с вердиктом</a></p>`;
     }
+
+    const ctas = [];
+    if (a.flightCta) ctas.push(`<a class="cp-aff" href="${a.flightCta}" rel="sponsored noopener" target="_blank">Билет в ${a.nom}${a.flightFrom ? ' от $' + a.flightFrom : ''}</a>`);
+    if (b.flightCta) ctas.push(`<a class="cp-aff" href="${b.flightCta}" rel="sponsored noopener" target="_blank">Билет в ${b.nom}${b.flightFrom ? ' от $' + b.flightFrom : ''}</a>`);
+    ctas.push(`<a class="cp-aff" href="${insuranceCta}" rel="sponsored noopener" target="_blank">Оформить страховку под поездку</a>`);
+    html += `<div class="cp-cta-row">${ctas.join('')}</div><p class="cp-cta-trust">оплата картами РФ · цена не меняется, блог получает комиссию</p>`;
 
     resultEl.innerHTML = html;
   }
@@ -235,6 +250,11 @@ const ldJson = {
 .cp-same { color: var(--text-dim); padding: 1rem 0; }
 .cp-deep { margin-top: 1rem; }
 .cp-deep a { color: var(--gold); font-weight: 700; text-decoration: underline; text-underline-offset:.22em; }
+
+.cp-cta-row { display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; margin-top: 1.4rem; }
+.cp-aff { font-weight: 700; color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset:.22em; display: inline-flex; align-items: center; min-height: 44px; }
+.cp-aff:hover { color: var(--gold-dim); }
+.cp-cta-trust { margin: .3rem 0 0; font-size: .74rem; color: var(--text-faint); }
 
 .cp-pairs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); }
 .cp-pairs li { border-top: 1px solid var(--line); }

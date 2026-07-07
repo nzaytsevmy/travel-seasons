@@ -5,12 +5,12 @@ import Layout from '../../layouts/Layout.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import CompareTable from '../../components/CompareTable.astro';
-import StickyCta from '../../components/StickyCta.astro';
+import Byline from '../../components/Byline.astro';
 import { COMPARE_PAIRS } from '../../data/compare-pairs.js';
 import { buildCompareEntry, compareEntries } from '../../data/compare-logic.js';
 import { MONTHS } from '../../data/directions.js';
 import { similarDestinations } from '../../data/similar.js';
-import { DATA_UPDATED_RU } from '../../data/meta.js';
+import { DATA_UPDATED_RU, DATA_UPDATED } from '../../data/meta.js';
 import { cherehapaTravel, aviasalesRoute } from '../../data/affiliate.js';
 
 export async function getStaticPaths() {
@@ -87,7 +87,7 @@ const ldJson = {
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "datePublished": "2026-07-06",
-      "dateModified": DATA_UPDATED_RU,
+      "dateModified": DATA_UPDATED,
       "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".cmpg-tldr"] },
     },
     {
@@ -115,6 +115,7 @@ const ldJson = {
       <div class="cmpg-meta">Компаратор<br /><b>Обновлено {DATA_UPDATED_RU}</b></div>
       <h1 class="cmpg-h1">{a.nom} <span class="rd">или</span> {b.nom}</h1>
       <p class="cmpg-tldr">{verdictPoints[0]}</p>
+      <div class="cmpg-byline-row"><Byline note={`${a.nom} и ${b.nom}`} /></div>
     </section>
 
     <section class="cmpg-section">
@@ -136,8 +137,8 @@ const ldJson = {
         <a class="aff-btn" href={cherehapaTravel(`compare_${pairDef.a}_${pairDef.b}`)} rel="sponsored noopener" target="_blank">Оформить страховку под поездку</a>
       </p>
       <p class="cmpg-cta">
-        {a.iata && <a class="cmpg-aff-link" href={aviasalesRoute('MOW', a.iata, `compare_${pairDef.a}`)} rel="sponsored noopener" target="_blank">Билет в {a.nom}</a>}
-        {b.iata && <a class="cmpg-aff-link" href={aviasalesRoute('MOW', b.iata, `compare_${pairDef.b}`)} rel="sponsored noopener" target="_blank">Билет в {b.nom}</a>}
+        {a.iata && <a class="cmpg-aff-link" href={aviasalesRoute('MOW', a.iata, `compare_${pairDef.a}`)} rel="sponsored noopener" target="_blank">Билет в {a.nom}{a.flightFrom ? ` от $${a.flightFrom}` : ''}</a>}
+        {b.iata && <a class="cmpg-aff-link" href={aviasalesRoute('MOW', b.iata, `compare_${pairDef.b}`)} rel="sponsored noopener" target="_blank">Билет в {b.nom}{b.flightFrom ? ` от $${b.flightFrom}` : ''}</a>}
       </p>
     </section>
 
@@ -217,6 +218,8 @@ const ldJson = {
   line-height: 1.55;
   margin-top: 1.3rem;
 }
+
+.cmpg-byline-row { grid-column: 1 / 13; grid-row: 4; margin-top: .5rem; }
 
 .cmpg-section { border-top: 2px solid #1b1914; padding: clamp(1.4rem, 3vw, 2.2rem) 0; scroll-margin-top: 80px; }
 .cmpg-shead h2 {

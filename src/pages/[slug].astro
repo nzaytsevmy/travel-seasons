@@ -23,7 +23,7 @@ import BudgetBlock from '../components/BudgetBlock.astro';
 import EssentialsCard from '../components/EssentialsCard.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
 import CountryMap from '../components/CountryMap.astro';
-import { TP_LINKS, aviasalesRoute, tripsterDest } from '../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, tripsterDest, yandexTravelSub } from '../data/affiliate.js';
 
 // РФ-инвентарь жилья: на этих хабах вместо Островка — Яндекс Путешествия (сильнее по РФ).
 const RU_STAY = new Set(['abkhazia', 'kamchatka', 'karelia', 'dagestan', 'altai']);
@@ -424,7 +424,7 @@ if (guide?.itinerary?.length) {
             </ul>
             <p class="sl-cta">
               {RU_STAY.has(d.slug) ? (
-                <a href={TP_LINKS.yandexTravel} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc} на Яндекс Путешествиях</a>
+                <a href={yandexTravelSub(`hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc} на Яндекс Путешествиях</a>
               ) : (
                 <a href={TP_LINKS.ostrovok} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать отель {d.cases.loc} на Островке</a>
               )}
@@ -537,7 +537,7 @@ if (guide?.itinerary?.length) {
       <section class="sl-section">
         <div class="sl-shead"><h2>Жильё и экскурсии</h2></div>
         <p class="sl-cta sl-cta--stack">
-          <a href={TP_LINKS.yandexTravel} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc} на Яндекс Путешествиях</a>
+          <a href={yandexTravelSub(`hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc} на Яндекс Путешествиях</a>
           <a href={d.slug === 'abkhazia' ? tripsterDest('abkhazia') : TP_LINKS.tripster} class="sl-aff" rel="sponsored noopener" target="_blank">Экскурсии {d.cases.loc} с местными гидами</a>
           {CAR_RENTAL.has(d.slug) && (
             <a href={TP_LINKS.economybookings} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить цены прокатов авто</a>
@@ -623,7 +623,7 @@ if (guide?.itinerary?.length) {
   {d.price?.iata && flightFrom ? (
     <StickyCta href={aviasalesRoute('MOW', d.price.iata, subId)} label={`Билеты ${d.cases.vP} от $${flightFrom}`} />
   ) : RU_STAY.has(d.slug) && (
-    <StickyCta href={TP_LINKS.yandexTravel} label={`Подобрать жильё ${d.cases.loc}`} />
+    <StickyCta href={yandexTravelSub(`hub_${d.slug}`)} label={`Подобрать жильё ${d.cases.loc}`} />
   )}
 
   <Footer />

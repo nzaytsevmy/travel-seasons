@@ -405,6 +405,9 @@ function findPrice(direction) {
   });
 }
 
+// Российские регионы: загранпаспорт не нужен, в списки «безвизовых стран» не входят
+const RUSSIA_REGIONS = new Set(['karelia', 'kamchatka', 'dagestan', 'altai']);
+
 let groupLabel = '';
 const enriched = [];
 for (const r of regions) {
@@ -421,6 +424,7 @@ for (const r of regions) {
     region: r.region,
     sub: r.sub,
     visa: r.visa,
+    domestic: RUSSIA_REGIONS.has(slug),
     budget: r.budget,
     r: r.r,
     t: r.t,
