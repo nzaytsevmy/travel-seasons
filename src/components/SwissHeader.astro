@@ -1,7 +1,7 @@
 ---
 // Единый Swiss-хедер для всего сайта (брендбук). Самодостаточный: свои токены,
 // Golos, бургер, active по текущему URL. Подключается один раз в Layout.astro.
-import '@fontsource-variable/golos-text/index.css';
+// (Golos @font-face объявлен в Layout.astro — font-display:optional, один раз на сайт.)
 const path = (Astro.url.pathname.replace(/\/+$/, '') || '/');
 const is = (href) => {
   const h = (href.replace(/\/+$/, '') || '/');
