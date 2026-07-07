@@ -15,10 +15,11 @@ interface Props {
 const { a, b, monthLabel } = Astro.props;
 
 const MONTH_LETTERS = ['Я','Ф','М','А','М','И','И','А','С','О','Н','Д'];
+const MONTH_FULL = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
 const fmtRub = (n) => n?.toLocaleString('ru-RU') + ' ₽';
 const fmtUsd = (n) => '$' + n;
 ---
-<div class="cmp-table">
+<div class="cmp-table" role="table" aria-label={`Сравнение: ${a.nom} и ${b.nom}`}>
   <div class="cmp-row cmp-row--head">
     <div class="cmp-cell cmp-cell--label"></div>
     <div class="cmp-cell cmp-cell--a">
@@ -88,12 +89,12 @@ const fmtUsd = (n) => '$' + n;
     <div class="cmp-cell cmp-cell--label">Сезон по месяцам</div>
     <div class="cmp-cell cmp-cell--a cmp-cell--heat">
       <div class="cmp-heat">
-        {a.r.map((code, i) => <span class={`cmp-hcell cmp-hcell--${code}`} title={RANK_LABEL[code]}>{MONTH_LETTERS[i]}</span>)}
+        {a.r.map((code, i) => <span class={`cmp-hcell cmp-hcell--${code}`} role="img" aria-label={`${MONTH_FULL[i]}: ${RANK_LABEL[code]}`} title={RANK_LABEL[code]}>{MONTH_LETTERS[i]}</span>)}
       </div>
     </div>
     <div class="cmp-cell cmp-cell--b cmp-cell--heat">
       <div class="cmp-heat">
-        {b.r.map((code, i) => <span class={`cmp-hcell cmp-hcell--${code}`} title={RANK_LABEL[code]}>{MONTH_LETTERS[i]}</span>)}
+        {b.r.map((code, i) => <span class={`cmp-hcell cmp-hcell--${code}`} role="img" aria-label={`${MONTH_FULL[i]}: ${RANK_LABEL[code]}`} title={RANK_LABEL[code]}>{MONTH_LETTERS[i]}</span>)}
       </div>
     </div>
   </div>

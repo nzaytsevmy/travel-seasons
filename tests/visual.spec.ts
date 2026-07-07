@@ -32,6 +32,12 @@ const PAGES = [
   { slug: '/blog/ostrov-valaam-2026/',      name: 'blog-valaam' },            // POI Карелии
   { slug: '/turkey/',                       name: 'country-hub-turkey' },     // хаб страны: manifest + TripSaveButton + aff-CTA
   { slug: '/trips/july/turkey/',            name: 'trips-july-turkey' },      // trips-детальная: findcta + TripSaveButton
+  { slug: '/bezviz/',                       name: 'bezviz' },                 // интент-лендинг: таблица безвиза + МИД-источники
+  { slug: '/compare/',                      name: 'compare-index' },          // компаратор-тул: пикер + динамический результат + CTA
+  { slug: '/compare/turkey-vs-egypt/',      name: 'compare-pair' },           // кураторская пара: CompareTable + byline + CTA
+  { slug: '/events/',                       name: 'events-index' },           // годовой хаб событий + byline
+  { slug: '/events/july/',                  name: 'events-july' },            // месяц: списки событий + byline + CTA
+  { slug: '/my/',                           name: 'my' },                     // «Моя поездка» (noindex, клиентское состояние)
 ];
 
 for (const page of PAGES) {

@@ -138,23 +138,9 @@ if (faqs.length >= 2) {
   });
 }
 
-if (post.data.howto) {
-  const h = post.data.howto;
-  ldJson["@graph"].push({
-    "@type": "HowTo",
-    "@id": `${url}#howto`,
-    "name": h.name,
-    ...(h.description ? { "description": h.description } : {}),
-    ...(h.totalTime ? { "totalTime": h.totalTime } : {}),
-    ...(h.estimatedCost ? { "estimatedCost": { "@type": "MonetaryAmount", "currency": h.estimatedCost.currency, "value": h.estimatedCost.value } } : {}),
-    "step": h.steps.map((s, i) => ({
-      "@type": "HowToStep",
-      "position": i + 1,
-      "name": s.name,
-      "text": s.text,
-    })),
-  });
-}
+// HowTo-schema НЕ эмитим: Google убрал HowTo из rich-результатов (сентябрь 2023),
+// а без видимого пошагового блока на странице это schema-без-контента = спам-сигнал
+// (CLAUDE.md). Данные howto оставлены в frontmatter под будущий видимый блок.
 ---
 <Layout
   title={post.data.title}

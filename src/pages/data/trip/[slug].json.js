@@ -30,7 +30,7 @@ export async function GET({ params }) {
     visa: VISA_DETAILS[d.slug] || null,
     budget,
     flightFrom: d.price?.flight?.[0] ?? null,
-    iata: d.price?.iata ?? null,
+    iata: d.iata ?? null,
     plug: PLUG_TYPES[d.slug] || null,
     r: d.r,
     t: d.t,
