@@ -69,7 +69,6 @@ const BAR_CLASS: Record<string, string> = { P:'s-P', G:'s-G', O:'s-O', B:'s-B', 
   </div>
   <div class="card-footer">
     <div class="card-price">От <strong>{price}</strong></div>
-    <div class="card-arrow" aria-hidden="true">→</div>
   </div>
 </a>
 
@@ -135,10 +134,4 @@ const BAR_CLASS: Record<string, string> = { P:'s-P', G:'s-G', O:'s-O', B:'s-B', 
 }
 .card-price { font-size: 0.75rem; color: var(--text-dim); }
 .card-price strong { color: var(--text); font-size: 0.88rem; }
-.card-arrow {
-  color: var(--text-faint);
-  /* override global transition for transform */
-  transition: transform 0.15s ease, color 0.25s ease;
-}
-.card:hover .card-arrow { transform: translateX(3px); color: var(--gold); }
 </style>

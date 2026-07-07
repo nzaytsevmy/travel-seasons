@@ -159,7 +159,6 @@ const ldJson = {
   ]
 };
 
-const noIdx = (n) => String(n).padStart(2, '0');
 ---
 <Layout
   title={title}
@@ -197,7 +196,7 @@ const noIdx = (n) => String(n).padStart(2, '0');
       {SECTIONS.map((s, si) => (
         <section class="sec">
           <div class="shead">
-            <h2><span class="no">{noIdx(si + 1)}</span>{s.title}</h2>
+            <h2>{s.title}</h2>
             <span class="cap">{s.rows.length} {plural(s.rows.length)}</span>
           </div>
           <p class="sintro">{s.intro}</p>
@@ -217,7 +216,7 @@ const noIdx = (n) => String(n).padStart(2, '0');
                   <span class={`visa ${VISA_CLS[d.visa]}`}>{VISA_LABEL[d.visa]}</span>
                   <span class="bud" title={BUDGET_WORD[d.budget]}><span aria-hidden="true">{BUDGET_SYM[d.budget]}</span><span class="vh">{BUDGET_WORD[d.budget]}</span></span>
                   {d.flight && d.iata
-                    ? <a class="find" href={aviasalesRoute('MOW', d.iata)} rel="sponsored noopener" target="_blank" aria-label={`Найти перелёт Москва — ${d.region} на Aviasales`}>от ${d.flight} · найти →</a>
+                    ? <a class="find" href={aviasalesRoute('MOW', d.iata)} rel="sponsored noopener" target="_blank" aria-label={`Найти перелёт Москва — ${d.region} на Aviasales`}>от ${d.flight} · найти билет</a>
                     : (d.flight ? <span class="fprice">от ${d.flight}</span> : <span class="fdash" aria-hidden="true">—</span>)}
                 </div>
               </li>
@@ -227,7 +226,7 @@ const noIdx = (n) => String(n).padStart(2, '0');
       ))}
 
       <section class="sec">
-        <div class="shead"><h2><span class="no">{noIdx(SECTIONS.length + 1)}</span>Быстрый выбор</h2></div>
+        <div class="shead"><h2>Быстрый выбор</h2></div>
         <div class="picks">
           <div class="pick">
             <h3>Самые дешёвые перелёты</h3>
@@ -236,7 +235,7 @@ const noIdx = (n) => String(n).padStart(2, '0');
                 <li>
                   <span class="pk-n">{d.region}</span>
                   {d.iata
-                    ? <a class="find" href={aviasalesRoute('MOW', d.iata)} rel="sponsored noopener" target="_blank" aria-label={`Найти перелёт Москва — ${d.region} на Aviasales`}>от ${d.flight} · найти →</a>
+                    ? <a class="find" href={aviasalesRoute('MOW', d.iata)} rel="sponsored noopener" target="_blank" aria-label={`Найти перелёт Москва — ${d.region} на Aviasales`}>от ${d.flight} · найти билет</a>
                     : <span class="fprice">от ${d.flight}</span>}
                 </li>
               ))}
@@ -260,7 +259,7 @@ const noIdx = (n) => String(n).padStart(2, '0');
       </section>
 
       <section class="sec">
-        <div class="shead"><h2><span class="no">{noIdx(SECTIONS.length + 2)}</span>Частые вопросы — {M.nameNom} {yr}</h2></div>
+        <div class="shead"><h2>Частые вопросы — {M.nameNom} {yr}</h2></div>
         <div class="faq">
           {faqs.map(f => (
             <details class="fi">
@@ -272,7 +271,7 @@ const noIdx = (n) => String(n).padStart(2, '0');
       </section>
 
       <section class="sec">
-        <div class="shead"><h2><span class="no">{noIdx(SECTIONS.length + 3)}</span>Что делать дальше</h2></div>
+        <div class="shead"><h2>Что делать дальше</h2></div>
         <ul class="vl wide">
           <li><a href="/seasons/">Полная таблица сезонов</a><span>все 70+ направлений × 12 месяцев</span></li>
           <li><a href="/calculator/">Калькулятор бюджета</a><span>посчитать поездку под свои даты и курс</span></li>
@@ -313,17 +312,17 @@ const noIdx = (n) => String(n).padStart(2, '0');
 .grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:0 clamp(.8rem,2vw,1.6rem)}
 
 .hero{padding:clamp(2rem,5vw,4rem) 0 clamp(1.2rem,2.5vw,2rem)}
-.idx{grid-column:1/6;grid-row:1;font-size:.74rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--gold)}
+.idx{grid-column:1/6;grid-row:1;font-size:.82rem;font-weight:600;color:var(--gold)}
 .idx b{display:block;color:var(--ink);font-size:.74rem;font-weight:500;margin-top:.2rem}
 .meta{grid-column:8/13;grid-row:1;text-align:right;align-self:start;font-size:.8rem;color:var(--mid);line-height:1.5}
 .meta b{color:var(--ink);font-weight:500}
-.h1{grid-column:1/13;grid-row:2;font-weight:700;font-size:clamp(2.4rem,7vw,6.4rem);line-height:1.02;letter-spacing:-.035em;margin-top:clamp(1.2rem,2.5vw,2rem);padding-bottom:.06em}
+.h1{grid-column:1/13;grid-row:2;font-weight:700;font-size:clamp(2.4rem,7vw,6.4rem);line-height:1.02;letter-spacing:-.035em;overflow-wrap:break-word;margin-top:clamp(1.2rem,2.5vw,2rem);padding-bottom:.06em}
 .h1 .rd{color:var(--gold)}
 .sub{grid-column:1/10;grid-row:3;font-size:clamp(1rem,1.3vw,1.18rem);color:var(--ink);margin-top:clamp(1.4rem,2vw,1.8rem);max-width:60ch;line-height:1.55}
 .sub b{color:var(--gold);font-weight:700}
 .byl{grid-column:1/13;grid-row:4;margin-top:1.4rem;font-size:.78rem;color:var(--mid)}
 .byl a{color:var(--mid)}
-.byl .byl-a{color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:3px}
+.byl .byl-a{color:var(--gold);text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
 
 /* Легенда */
 .legend{margin-top:.5rem;padding:.8rem 0;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);font-size:.8rem;color:var(--mid);line-height:1.7;max-width:96ch}
@@ -335,8 +334,7 @@ const noIdx = (n) => String(n).padStart(2, '0');
 .sec{padding:clamp(2rem,4vw,3rem) 0 0}
 .shead{display:flex;align-items:center;justify-content:space-between;gap:1rem;border-top:2px solid var(--line);padding-top:.8rem;margin-bottom:.5rem}
 .shead h2{font-weight:700;font-size:clamp(1.4rem,2.6vw,2rem);letter-spacing:-.02em;display:flex;align-items:baseline;gap:.6rem}
-.no{font-size:.74rem;font-weight:700;color:var(--gold);letter-spacing:.04em}
-.shead .cap{font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);white-space:nowrap}
+.shead .cap{font-size:.78rem;font-weight:500;color:var(--mid)}
 .sintro{font-size:.92rem;color:var(--mid);line-height:1.55;max-width:74ch;margin-bottom:1.1rem}
 
 /* Index-rows (не карточки): широкая левая колонка + узкая правая мета */
@@ -346,14 +344,14 @@ const noIdx = (n) => String(n).padStart(2, '0');
 @media(hover:hover){.irow:hover{background:rgba(142,102,24,.05)}}
 .ileft{min-width:0}
 .inm{font-weight:700;font-size:1.15rem;letter-spacing:-.01em;line-height:1.2}
-.inm a:hover{color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:3px}
+.inm a:hover{color:var(--gold);text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
 .isub{font-weight:400;font-size:.78rem;color:var(--mid);margin-left:.5rem;letter-spacing:0}
 .idesc{color:var(--mid);font-size:.9rem;line-height:1.5;margin-top:.35rem;max-width:70ch}
 .iright{display:flex;align-items:baseline;gap:1.1rem;justify-self:end;white-space:nowrap}
 .visa{font-size:.72rem;font-weight:600;letter-spacing:.02em;text-transform:uppercase}
 .visa.free{color:var(--gold)}.visa.evisa{color:var(--ink)}.visa.visa{color:#56534c}
 .bud{font-weight:700;color:var(--ink);letter-spacing:.05em;font-size:.95rem}
-.find{color:var(--ink);font-weight:600;text-decoration:2px underline var(--gold);text-underline-offset:3px}
+.find{color:var(--ink);font-weight:600;text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
 .find:hover{color:var(--gold)}
 .fprice{color:var(--mid);font-weight:600}
 .fdash{color:var(--hair)}
@@ -365,12 +363,12 @@ const noIdx = (n) => String(n).padStart(2, '0');
 .vl li{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:.2rem .7rem;padding:.7rem 0;border-bottom:1px solid var(--hair)}
 .vl li:last-child{border-bottom:none}
 .pk-n,.pk-l{font-weight:600;font-size:1rem;color:var(--ink)}
-.pk-l{text-decoration:2px underline var(--gold);text-underline-offset:3px}
+.pk-l{text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
 .pk-l:hover{color:var(--gold)}
 .pk-s{color:var(--mid);font-size:.8rem}
 .adm-row{margin-top:.5rem;font-size:.66rem;color:var(--mid)}
 .vl.wide li{justify-content:flex-start}
-.vl.wide a{font-weight:600;font-size:1.02rem;color:var(--ink);text-decoration:2px underline var(--gold);text-underline-offset:3px}
+.vl.wide a{font-weight:600;font-size:1.02rem;color:var(--ink);text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
 .vl.wide a:hover{color:var(--gold)}
 .vl.wide span{color:var(--mid);font-size:.86rem}
 
@@ -387,7 +385,7 @@ const noIdx = (n) => String(n).padStart(2, '0');
 .mnav{margin-top:clamp(2.2rem,4.5vw,3.4rem);padding-top:.9rem;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;gap:.3rem 1.1rem}
 .mnav-l{font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mid)}
 .mnav-t{display:flex;flex-wrap:wrap;gap:.2rem 1rem}
-.t{font-size:.9rem;font-weight:600;color:var(--ink);min-height:44px;display:inline-flex;align-items:center;text-decoration:2px underline transparent;text-underline-offset:5px}
+.t{font-size:.9rem;font-weight:600;color:var(--ink);min-height:44px;display:inline-flex;align-items:center;text-decoration:underline 1px transparent;text-underline-offset:.22em}
 .t:hover{text-decoration-color:var(--hair)}
 .t.on{color:var(--gold);text-decoration-color:var(--gold)}
 

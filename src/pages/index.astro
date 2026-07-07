@@ -8,6 +8,7 @@ import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import { DIRECTIONS } from '../data/directions.js';
 import { TP_LINKS } from '../data/affiliate.js';
+import { DATA_UPDATED_RU } from '../data/meta.js';
 import authorPhoto from '../assets/author/nikita.jpg';
 
 import { ACTIVITY_TAGS } from '../data/country-activity-tags.js';
@@ -86,23 +87,22 @@ const ldJson = {
     <!-- Манифест -->
     <section class="manifest"><div class="wrap grid">
       <div class="idx">Авторский тревел-журнал</div>
-      <p class="meta"><b>Был лично на 7 континентах</b><br>60+ стран · цены с перелётом, не пересказ · обновлено V.2026</p>
+      <p class="meta"><b>Был лично на 7 континентах</b><br>60+ стран · цены с перелётом, не пересказ · обновлено {DATA_UPDATED_RU}</p>
       <h1 class="h1">Вся польза<br>о поездках —<br><span class="rd">на виду.</span></h1>
       <p class="sub">Визы, сезоны и реальные цены с перелётом по 70+ направлениям — в одной таблице. Куда, когда и за сколько видно сразу. Ничего копать не нужно.</p>
-      <p class="vlist-cap">Разделы сайта</p>
       <ul class="vlist">
-        <li class="vi"><a href="/visa/"><span class="vi-n">01</span><span class="vi-l">Визы РФ <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
-        <li class="vi"><a href="/seasons/"><span class="vi-n">02</span><span class="vi-l">Когда ехать <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
-        <li class="vi"><a href="/calculator/"><span class="vi-n">03</span><span class="vi-l">Цена с перелётом <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
-        <li class="vi"><a href="/trips/"><span class="vi-n">04</span><span class="vi-l">Поездки <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
-        <li class="vi"><a href="/packing/"><span class="vi-n">05</span><span class="vi-l">Чек-листы <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
-        <li class="vi"><a href="/countries/"><span class="vi-n">06</span><span class="vi-l">70+ направлений <span class="vi-ar" aria-hidden="true">→</span></span></a></li>
+        <li class="vi"><a href="/visa/"><span class="vi-l">Визы РФ</span></a></li>
+        <li class="vi"><a href="/seasons/"><span class="vi-l">Когда ехать</span></a></li>
+        <li class="vi"><a href="/calculator/"><span class="vi-l">Цена с перелётом</span></a></li>
+        <li class="vi"><a href="/trips/"><span class="vi-l">Поездки</span></a></li>
+        <li class="vi"><a href="/packing/"><span class="vi-l">Чек-листы</span></a></li>
+        <li class="vi"><a href="/countries/"><span class="vi-l">70+ направлений</span></a></li>
       </ul>
     </div></section>
 
     <!-- Фильтры + дашборд -->
     <section><div class="wrap grid">
-      <div class="shead"><div><h2>Куда поехать из России</h2></div><a href="/countries/">Все направления →</a></div>
+      <div class="shead"><div><h2>Куда поехать из России</h2></div><a href="/countries/">Смотреть все направления</a></div>
       <div class="filters" role="search">
         <div class="fg"><span class="fl">Когда</span><select class="t" id="fMonth" aria-label="Месяц поездки">
           <option value="0">любой</option>
@@ -129,19 +129,19 @@ const ldJson = {
               <td data-l="Поездка"><span class="price">≈ {fmt(r.budget)}&nbsp;₽ <small>за неделю</small></span></td>
               <td data-l="Виза"><span class={`visa ${VISA_CLASS[r.visa]}`}>{VISA_LABEL[r.visa]}</span></td>
               <td data-l="Сезон" class="season">{r.season}</td>
-              <td class="flight r"><a class="fly" href={`/${r.slug}/`}>Подробнее →</a></td>
+              <td class="flight r"><a class="fly" href={`/${r.slug}/`}>Подробнее</a></td>
             </tr>
           ))}
-          <tr id="moreRow" hidden><td colspan="5" class="more-cell"><a href="/countries/">Ещё <b id="moreN"></b> в сезоне → все направления</a></td></tr>
+          <tr id="moreRow" hidden><td colspan="5" class="more-cell"><a href="/countries/">Ещё <b id="moreN"></b> в сезоне — показать все</a></td></tr>
         </tbody>
       </table></div>
       <p class="nomatch" id="noMatch">Под эти фильтры ничего не нашлось — попробуйте ослабить один: другой месяц, бюджет повыше или другой вайб.</p>
-      <p class="dfoot">Цена — ориентир всей поездки в комфорте на одного: перелёт из Москвы + жильё, еда и транспорт за 7 ночей (медиана Aviasales/Островок и траты из источников 2026, курс ≈90 ₽/$). Зависит от дат и сезона — <a href="/calculator/">посчитайте точно →</a></p>
+      <p class="dfoot">Цена — ориентир всей поездки в комфорте на одного: перелёт из Москвы + жильё, еда и транспорт за 7 ночей (медиана Aviasales/Островок и траты из источников 2026, курс ≈90 ₽/$). Зависит от дат и сезона — <a href="/calculator/">посчитайте точно в калькуляторе</a></p>
 
       <!-- Авторские туры (YouTravel) — альтернатива DIY -->
       <div class="tourcta">
         <span class="tourcta-t"><b>Не хочешь планировать сам?</b> Авторский тур с экспертом — маршрут, логистика и малая группа уже собраны.</span>
-        <a class="tourcta-a" href={TP_LINKS.youtravel} rel="sponsored noopener" target="_blank">Смотреть авторские туры →</a>
+        <a class="tourcta-a" href={TP_LINKS.youtravel} rel="sponsored noopener" target="_blank">Смотреть авторские туры</a>
         
       </div>
 
@@ -149,44 +149,43 @@ const ldJson = {
       <div class="gear">
         <div class="gear-h"><h2>Собраться в дорогу</h2></div>
         <div class="gear-grid">
-          <div class="gi"><div class="gl">Билеты</div><div class="gt">Авиабилеты</div><div class="gd">Сравнить цены и поймать дешёвый</div><a class="cta" href={TP_LINKS.aviasales} rel="sponsored noopener" target="_blank">Найти билет&nbsp;→</a></div>
-          <div class="gi"><div class="gl">Жильё</div><div class="gt">Отели и апарты</div><div class="gd">Оплата картой РФ, бесплатная отмена</div><a class="cta" href={TP_LINKS.ostrovok} rel="sponsored noopener" target="_blank">Подобрать жильё →</a></div>
-          <div class="gi"><div class="gl">Страховка</div><div class="gt">Мед. страховка</div><div class="gd">Под визу и погранусловия</div><a class="cta" href={TP_LINKS.cherehapa} rel="sponsored noopener" target="_blank">Оформить →</a></div>
-          <div class="gi"><div class="gl">Авто</div><div class="gt">Прокат авто</div><div class="gd">Локальные и межд. прокатчики</div><a class="cta" href={TP_LINKS.economybookings} rel="sponsored noopener" target="_blank">Сравнить прокат →</a></div>
-          <div class="gi"><div class="gl">Связь</div><div class="gt">eSIM в роуминг</div><div class="gd">Интернет с прилёта, от $5 за неделю</div><a class="cta" href={TP_LINKS.airalo} rel="sponsored noopener" target="_blank">Подключить eSIM&nbsp;→</a></div>
-          <div class="gi"><div class="gl">Карты</div><div class="gt">Какие карты работают</div><div class="gd">МИР, UnionPay и иностранные — по странам</div><a class="cta" href="/cards/">Проверить карту&nbsp;→</a></div>
+          <div class="gi"><div class="gl">Билеты</div><div class="gt">Авиабилеты</div><div class="gd">Сравнить цены и поймать дешёвый</div><a class="cta" href={TP_LINKS.aviasales} rel="sponsored noopener" target="_blank">Найти билет</a></div>
+          <div class="gi"><div class="gl">Жильё</div><div class="gt">Отели и апарты</div><div class="gd">Оплата картой РФ, бесплатная отмена</div><a class="cta" href={TP_LINKS.ostrovok} rel="sponsored noopener" target="_blank">Подобрать жильё</a></div>
+          <div class="gi"><div class="gl">Страховка</div><div class="gt">Мед. страховка</div><div class="gd">Под визу и погранусловия</div><a class="cta" href={TP_LINKS.cherehapa} rel="sponsored noopener" target="_blank">Оформить страховку</a></div>
+          <div class="gi"><div class="gl">Авто</div><div class="gt">Прокат авто</div><div class="gd">Локальные и межд. прокатчики</div><a class="cta" href={TP_LINKS.economybookings} rel="sponsored noopener" target="_blank">Сравнить прокат</a></div>
+          <div class="gi"><div class="gl">Связь</div><div class="gt">eSIM в роуминг</div><div class="gd">Интернет с прилёта, от $5 за неделю</div><a class="cta" href={TP_LINKS.airalo} rel="sponsored noopener" target="_blank">Подключить eSIM</a></div>
+          <div class="gi"><div class="gl">Карты</div><div class="gt">Какие карты работают</div><div class="gd">МИР, UnionPay и иностранные — по странам</div><a class="cta" href="/cards/">Проверить карту</a></div>
         </div>
       </div>
 
-      <div class="visaband"><span class="vt"><b>Виза для россиян 2026</b> — по каждой из 70+ стран: безвиз, e-Visa или консульство. В таблице выше виза видна в каждой строке.</span><a href="/visa/">Все визы и что изменилось →</a></div>
+      <div class="visaband"><span class="vt"><b>Виза для россиян 2026</b> — по каждой из 70+ стран: безвиз, e-Visa или консульство. В таблице выше виза видна в каждой строке.</span><a href="/visa/">Что изменилось по визам</a></div>
     </div></section>
 
     <!-- Инструменты -->
     <section class="sec"><div class="wrap grid">
-      <div class="shead"><div><h2>Инструменты — не на слово</h2></div><a href="/seasons/">Все сезоны →</a></div>
+      <div class="shead"><div><h2>Инструменты — не на слово</h2></div><a href="/seasons/">Таблица сезонов целиком</a></div>
       <div class="tools">
         <div class="tcard"><div class="tt">Когда ехать в каждую страну</div><div class="ts">Пример строки «Бали» — по месяцам:</div>
           <div class="heat" id="heat" data-pat={JSON.stringify(baliPat)}></div>
           <div class="heatlbl"><span>Я</span><span>Ф</span><span>М</span><span>А</span><span>М</span><span>И</span><span>И</span><span>А</span><span>С</span><span>О</span><span>Н</span><span>Д</span></div>
           <div class="lg"><span><i style="background:var(--gold)"></i>пик</span><span><i style="background:var(--ink)"></i>хорошо</span><span><i style="background:#9b9789"></i>норм</span><span><i style="background:var(--hair)"></i>не сезон</span></div>
-          <div class="tl"><a href="/seasons/">Сезоны по месяцам →</a><a href="/visa/">Визы РФ →</a></div>
+          <div class="tl"><a href="/seasons/">Сезоны по месяцам</a><a href="/visa/">Визы для россиян</a></div>
         </div>
         <div class="tcard bud"><div class="tt">Калькулятор бюджета</div><div class="ts">Бали, комфорт на неделю с перелётом:</div>
           <div class="br"><span>Перелёт из Москвы</span><b>≈ {fmt(baliFlight)}&nbsp;₽</b></div>
           <div class="br"><span>Неделя на месте (комфорт)</span><b>≈ {fmt(baliStay)}&nbsp;₽</b></div>
           <div class="br"><span>Вся поездка</span><b>≈ {fmt(baliTrip)}&nbsp;₽</b></div>
-          <div class="tl"><a href="/calculator/">Посчитать свою поездку →</a></div>
+          <div class="tl"><a href="/calculator/">Посчитать свою поездку</a></div>
         </div>
       </div>
     </div></section>
 
     <!-- Свежие истории -->
     <section class="sec"><div class="wrap grid">
-      <div class="shead"><div><h2>Свежие истории</h2></div><a href="/blog/">Все статьи →</a></div>
+      <div class="shead"><div><h2>Свежие истории</h2></div><a href="/blog/">Весь блог</a></div>
       <div class="posts">
         {posts.map((p, i) => (
           <a class="post" href={`/blog/${p.slug}/`}>
-            <div class="pn">{String(i + 1).padStart(2, '0')}</div>
             <div class="ph"><Image src={p.data.coverImage} alt={p.data.title} width={760} height={507} formats={['webp']} /></div>
             <div class="tg">{(p.data.tags || []).slice(0, 2).join(' · ')}</div>
             <h3>{p.data.title}</h3>
@@ -200,8 +199,8 @@ const ldJson = {
     <!-- Сообщество + автор -->
     <section><div class="wrap grid">
       <div class="comm">
-        <div class="tg2"><div class="k">Telegram</div><h3>Свежие истории и апдейты виз — раньше, чем на сайте</h3><a href="https://t.me/traveltriberu" rel="noopener" target="_blank">Подписаться @traveltriberu →</a></div>
-        <div class="au"><div class="au-ph"><Image src={authorPhoto} alt="Никита Зайцев" width={156} height={156} formats={['webp']} /></div><div><div class="nm">Никита Зайцев</div><p>Был на всех 7 континентах, 60+ стран. Пишу только то, где был сам.</p><a class="method" href="/about/">Как я считаю бюджет и проверяю визы →</a></div></div>
+        <div class="tg2"><div class="k">Telegram</div><h3>Свежие истории и апдейты виз — раньше, чем на сайте</h3><a href="https://t.me/traveltriberu" rel="noopener" target="_blank">Подписаться на @traveltriberu</a></div>
+        <div class="au"><div class="au-ph"><Image src={authorPhoto} alt="Никита Зайцев" width={156} height={156} formats={['webp']} /></div><div><div class="nm">Никита Зайцев</div><p>Был на всех 7 континентах, 60+ стран. Пишу только то, где был сам.</p><a class="method" href="/about/">Как я считаю бюджет и проверяю визы</a></div></div>
       </div>
     </div></section>
   </main>
@@ -234,31 +233,28 @@ const ldJson = {
 /* Верхнее меню вынесено в общий компонент SwissHeader.astro (через Layout). */
 
 .manifest{padding:clamp(2rem,5vw,4.5rem) 0 clamp(1.2rem,2.5vw,2rem)}
-.idx{grid-column:1/5;grid-row:1;font-size:.74rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--gold)}
+.idx{grid-column:1/5;grid-row:1;font-size:.86rem;font-weight:600;color:var(--gold)}
 .idx b{display:block;color:var(--ink);font-size:.74rem;font-weight:500;margin-top:.2rem}
 .meta{grid-column:8/13;grid-row:1;text-align:right;align-self:start;font-size:.8rem;color:var(--mid);line-height:1.5}
 .meta b{color:var(--ink);font-weight:500}
 .h1{grid-column:1/13;grid-row:2;font-weight:700;font-size:clamp(2.4rem,7vw,6.4rem);line-height:1.02;letter-spacing:-.035em;margin-top:clamp(1.2rem,2.5vw,2rem);padding-bottom:.06em}
 .h1 .rd{color:var(--gold)}
 .sub{grid-column:1/8;grid-row:3;font-size:clamp(1rem,1.3vw,1.18rem);color:var(--ink);margin-top:clamp(1.5rem,2vw,1.9rem);max-width:46ch}
-.vlist-cap{grid-column:1/13;grid-row:4;margin-top:1.8rem;font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mid)}
-.vlist{grid-column:1/13;grid-row:5;margin-top:.5rem;display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);list-style:none}
+.vlist{grid-column:1/13;grid-row:4;margin-top:2rem;display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);list-style:none}
 .vi{border-right:1px solid var(--hair)}
-.vi-n{display:block;font-size:.62rem;font-weight:700;color:var(--gold);letter-spacing:.04em;margin-bottom:.22rem}
-.vi-l{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;font-size:.92rem;font-weight:600;line-height:1.25}
-.vi-ar{color:var(--gold);font-weight:600;white-space:nowrap}
+.vi-l{display:block;font-size:.92rem;font-weight:600;line-height:1.25}
 .vi:first-child{padding-left:0}.vi:last-child{border-right:none}
 .vi a{display:block;color:inherit;min-height:48px;padding:.7rem 1rem}
 .vi a:hover,.vi a:focus-visible{background:rgba(142,102,24,.05)}
 .vi a:hover .vi-l,.vi a:focus-visible .vi-l{color:var(--gold)}
-@media(max-width:760px){.idx,.h1,.sub,.meta,.vlist-cap,.vlist{grid-column:1/-1;grid-row:auto}.meta{text-align:left;margin-top:.6rem}.h1{margin-top:1.1rem}.vlist{grid-template-columns:repeat(2,1fr)}.vi{border-bottom:1px solid var(--hair)}.vi:nth-child(2n){border-right:none}.vi:nth-child(5),.vi:nth-child(6){border-bottom:none}.vi:nth-child(odd) a{padding-left:0}}
+@media(max-width:760px){.idx,.h1,.sub,.meta,.vlist{grid-column:1/-1;grid-row:auto}.meta{text-align:left;margin-top:.6rem}.h1{margin-top:1.1rem}.vlist{grid-template-columns:repeat(2,1fr)}.vi{border-bottom:1px solid var(--hair)}.vi:nth-child(2n){border-right:none}.vi:nth-child(5),.vi:nth-child(6){border-bottom:none}.vi:nth-child(odd) a{padding-left:0}}
 
 .filters{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:.7rem 1.8rem;padding:.7rem 0;border-bottom:1px solid var(--line)}
 .fg{display:flex;align-items:center;gap:.6rem}
 .fright{display:flex;align-items:center;gap:1.2rem;margin-left:auto}                                        /* сортировку — в правый «кластер результата» (другой тип контрола) */
 .fl{font-size:.66rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
 .fopts{display:flex;gap:.4rem}
-.t{font-family:var(--ff);font-size:.84rem;font-weight:500;color:var(--ink);background:none;border:none;padding:0 .15rem;min-height:44px;display:inline-flex;align-items:center;cursor:pointer;text-decoration:2px underline transparent;text-underline-offset:5px}
+.t{font-family:var(--ff);font-size:.84rem;font-weight:500;color:var(--ink);background:none;border:none;padding:0 .15rem;min-height:44px;display:inline-flex;align-items:center;cursor:pointer;text-decoration:underline 1px transparent;text-underline-offset:.22em}
 .t:hover{text-decoration-color:var(--hair)}.t.on{color:var(--gold);text-decoration-color:var(--gold)}
 /* чипы-переключатели (бюджет/вайб/сортировка): hairline-рамка → читаются как кнопки; активный = gold-рамка + лёгкий фон (язык .pck-chip) */
 .fopts .t{border:1px solid var(--hair);padding:0 .7rem;color:var(--mid);text-decoration:none;transition:border-color .15s,color .15s,background .15s}
@@ -290,7 +286,7 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .th{width:62px;height:46px;flex:none}
 .th img{display:block;width:100%;height:100%;object-fit:cover}
 .nm{display:block;font-weight:600;font-size:1.15rem;letter-spacing:-.01em;line-height:1.15}
-.nm:hover{text-decoration:2px underline var(--gold);text-underline-offset:3px}
+.nm:hover{text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
 @media(hover:hover){.dash tbody tr:hover .nm{color:var(--gold)}}
 .vibe{display:block;font-size:.74rem;color:var(--mid);margin-top:.15rem}
 .sq{display:inline-block;margin-top:.22rem;font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
@@ -300,12 +296,12 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .visa{font-size:.74rem;font-weight:600;letter-spacing:.02em;text-transform:uppercase}
 .visa.free{color:var(--gold)}.visa.evisa{color:var(--ink)}.visa.visa{color:#56534c}
 .season{font-size:.86rem}.flight{font-size:.86rem;color:var(--mid)}
-.fly{color:var(--ink);font-weight:600;white-space:nowrap;text-decoration:2px underline transparent;text-underline-offset:3px}
+.fly{color:var(--ink);font-weight:600;white-space:nowrap;text-decoration:underline 1px transparent;text-underline-offset:.22em}
 .fly:hover{color:var(--gold);text-decoration-color:var(--gold)}
 .dash tr[hidden]{display:none}
 .nomatch{grid-column:1/-1;display:none;color:var(--mid);padding:1.4rem 0;font-size:.92rem}
-.dfoot{grid-column:1/-1;font-size:.72rem;color:var(--mid);padding:.8rem 0 0}.dfoot a{color:var(--gold);border-bottom:1px solid var(--gold)}
-.more-cell{padding:1.1rem 0!important}.more-cell::before{content:none!important}.more-cell a{color:var(--gold);font-weight:600;text-decoration:2px underline var(--gold);text-underline-offset:3px}.more-cell b{color:var(--gold)}
+.dfoot{grid-column:1/-1;font-size:.72rem;color:var(--mid);padding:.8rem 0 0}.dfoot a{color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto}
+.more-cell{padding:1.1rem 0!important}.more-cell::before{content:none!important}.more-cell a{color:var(--gold);font-weight:600;text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto}.more-cell b{color:var(--gold)}
 @media(max-width:760px){
   .dash thead{position:absolute;left:-9999px}
   .dash,.dash tbody,.dash tr{display:block;width:100%}
@@ -341,16 +337,19 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .gi .gl{font-size:.66rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
 .gi .gt{font-weight:700;font-size:1.05rem;margin:.25rem 0 .15rem}
 .gi .gd{font-size:.78rem;color:var(--mid);margin-bottom:.4rem}
-.gi a.cta{font-size:.82rem;font-weight:600;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:3px;display:inline-flex;align-items:center;min-height:44px}
+.gi a.cta{font-size:.82rem;font-weight:600;color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto;display:inline-flex;align-items:center;min-height:44px}
+.gi a.cta:hover{text-decoration-color:var(--gold)}
 @media(max-width:760px){.gear-grid{grid-template-columns:repeat(2,1fr)}.gi{border-top:none;border-right:1px solid var(--hair)}.gi:nth-child(2n){border-right:none}.gi:nth-child(2n+1){padding-left:0}.gi:nth-child(n+3){border-top:1px solid var(--hair)}}
 @media(max-width:640px){.gear-grid{grid-template-columns:1fr}.gi{border-right:none;border-top:1px solid var(--hair);padding-left:0}.gi:first-child{border-top:none}}
 
 .visaband{grid-column:1/-1;margin-top:2.4rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:1.1rem 0}
 .visaband .vt{font-weight:600;font-size:1.02rem;max-width:64ch}.visaband .vt b{color:var(--gold)}
-.visaband a{font-size:.74rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:4px;display:inline-flex;align-items:center;min-height:44px;white-space:nowrap}
+.visaband a{font-size:.86rem;font-weight:600;color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto;display:inline-flex;align-items:center;min-height:44px}
+.visaband a:hover{text-decoration-color:var(--gold)}
 .tourcta{grid-column:1/-1;margin-top:2.4rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem 1rem;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:1.1rem 0}
 .tourcta-t{font-size:1.02rem;color:var(--ink);max-width:62ch}.tourcta-t b{color:var(--gold)}
-.tourcta-a{font-size:.74rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:4px;display:inline-flex;align-items:center;min-height:44px;white-space:nowrap}
+.tourcta-a{font-size:.86rem;font-weight:600;color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto;display:inline-flex;align-items:center;min-height:44px}
+.tourcta-a:hover{text-decoration-color:var(--gold)}
 .tourcta .adm{font-size:.6rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
 
 .sec{padding:clamp(2.4rem,5vw,4rem) 0 0}
@@ -358,7 +357,8 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 @media(max-width:760px){.shead{flex-direction:column;align-items:flex-start;gap:.2rem;margin-bottom:.5rem}}
 .shead .n{font-size:.74rem;font-weight:600;color:var(--gold);margin-right:.8rem}
 .shead h2{display:inline;font-weight:700;font-size:clamp(1.4rem,2.6vw,2rem);letter-spacing:-.02em}
-.shead a{font-size:.72rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:4px;display:inline-flex;align-items:center;min-height:44px}
+.shead a{font-size:.84rem;font-weight:600;color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto;display:inline-flex;align-items:center;min-height:44px}
+.shead a:hover{text-decoration-color:var(--gold)}
 
 .tools{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:0 clamp(1rem,2vw,2.4rem)}
 .tcard{border-top:1px solid var(--line);padding:1.2rem 0}
@@ -367,17 +367,16 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .heatlbl{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:.25rem;font-size:.56rem;color:var(--mid);text-align:center;font-weight:500}
 .lg{display:flex;gap:1rem;margin-top:.7rem;font-size:.7rem;color:var(--mid);font-weight:500}.lg i{width:9px;height:9px;display:inline-block;margin-right:.3rem;vertical-align:middle}
 .bud .br{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--hair);font-size:.9rem}
-.tl{display:flex;flex-wrap:wrap;gap:1.2rem;margin-top:1.1rem}.tl a{font-size:.78rem;font-weight:600;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:4px;display:inline-flex;align-items:center;min-height:44px}
+.tl{display:flex;flex-wrap:wrap;gap:1.2rem;margin-top:1.1rem}.tl a{font-size:.78rem;font-weight:600;color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto;display:inline-flex;align-items:center;min-height:44px}
 @media(max-width:760px){.tools{grid-template-columns:1fr}}
 
 .posts{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
 .post{border-top:1px solid var(--line);padding-top:.7rem}
-.post .pn{font-size:.7rem;font-weight:600;color:var(--gold)}
 .post .ph{aspect-ratio:3/2;margin:.7rem 0;overflow:hidden}.post .ph img{transition:transform .6s}.post:hover .ph img{transform:scale(1.04)}
 .post .tg{font-size:.66rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--mid)}
 .post h3{font-weight:600;font-size:1.15rem;line-height:1.15;letter-spacing:-.01em;margin:.3rem 0}
 .post .mt{font-size:.76rem;color:var(--mid)}.post .pers{color:var(--gold);font-weight:600}
-.topics{grid-column:1/-1;font-size:.8rem;color:var(--mid);margin-top:1rem}.topics a{color:var(--ink);font-weight:500;text-decoration:2px underline transparent;text-underline-offset:3px}.topics a:hover{text-decoration-color:var(--gold)}
+.topics{grid-column:1/-1;font-size:.8rem;color:var(--mid);margin-top:1rem}.topics a{color:var(--ink);font-weight:500;text-decoration:underline 1px transparent;text-underline-offset:.22em}.topics a:hover{text-decoration-color:var(--gold)}
 @media(max-width:760px){.posts{grid-template-columns:1fr}}
 /* Ровный ритм секций на мобиле — единый зазор 2.4rem (было manifest→финдер 1.2, comm 2.0) */
 @media(max-width:760px){.manifest{padding-bottom:2.4rem}.comm{margin-top:2.4rem}}
@@ -386,17 +385,17 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .tg2{padding:1.6rem 2rem 1.8rem 0;border-right:1px solid var(--hair)}
 .tg2 .k{font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
 .tg2 h3{font-weight:700;font-size:clamp(1.4rem,2.4vw,1.9rem);letter-spacing:-.02em;margin:.5rem 0 1rem;max-width:20ch}
-.tg2 a{font-size:.8rem;font-weight:600;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:4px;display:inline-flex;align-items:center;min-height:44px}
+.tg2 a{font-size:.8rem;font-weight:600;color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto;display:inline-flex;align-items:center;min-height:44px}
 .au{padding:1.6rem 0 1.8rem 2rem;align-self:center;display:flex;gap:1.1rem;align-items:flex-start}
 .au-ph{width:78px;height:78px;flex:none;overflow:hidden}.au-ph img{filter:grayscale(.3) contrast(1.03)}
 .au .nm{font-weight:700;font-size:1.2rem}.au p{font-size:.85rem;color:var(--mid);margin-top:.4rem;max-width:32ch}
-.au .method{display:inline-flex;align-items:center;min-height:44px;margin-top:.4rem;font-size:.76rem;font-weight:600;color:var(--gold);text-decoration:2px underline var(--gold);text-underline-offset:3px}
+.au .method{display:inline-flex;align-items:center;min-height:44px;margin-top:.4rem;font-size:.76rem;font-weight:600;color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto}
 @media(max-width:760px){.comm{grid-template-columns:1fr}.tg2{border-right:none;border-bottom:1px solid var(--hair);padding:1.4rem 0}.au{padding:1.4rem 0}}
 
 .sw-foot{border-top:1px solid var(--line);margin-top:clamp(2rem,4vw,3.5rem);display:block;max-width:none;margin-inline:0;padding:0}
 .ft{display:flex;flex-direction:column;gap:1.1rem;padding-block:1.6rem;font-size:.74rem;color:var(--mid);font-weight:500}
 .fnav{display:flex;flex-wrap:wrap;gap:.1rem 1.4rem}
-.fnav a{min-height:44px;display:inline-flex;align-items:center;color:var(--ink);text-decoration:2px underline transparent;text-underline-offset:4px}
+.fnav a{min-height:44px;display:inline-flex;align-items:center;color:var(--ink);text-decoration:underline 1px transparent;text-underline-offset:.22em}
 .fnav a:hover,.fnav a:focus-visible{text-decoration-color:var(--gold)}
 .fbot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.6rem 1rem}
 .fbot a{color:inherit;text-decoration:underline}

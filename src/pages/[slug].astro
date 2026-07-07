@@ -274,28 +274,28 @@ if (guide?.itinerary?.length) {
 
     {/* MANIFEST — Swiss: 12-grid, idx/meta/H1/sub/vlist */}
     <section class="sl-manifest">
-      <div class="sl-idx">01 / {d.group}<b>{d.cases.nom} {yr}</b></div>
-      <div class="sl-meta">{d.region}<br /><b>Обновлено V.{yr}</b></div>
+      <div class="sl-idx">{d.group}<b>{d.cases.nom} {yr}</b></div>
+      <div class="sl-meta">{d.region}<br /><b>Обновлено {DATA_UPDATED_RU}</b></div>
       <h1 class="sl-h1">{d.cases.nom} <span class="rd">{yr}</span></h1>
       <p class="sl-sub">{d.sub} — виза, сезоны, бюджет, маршруты для россиян. Без воды, с реальными цифрами.</p>
       {visited && <p class="sl-visited">Был здесь лично</p>}
       <TripSaveButton slug={d.slug} nom={d.cases.nom} />
 
       <div class="sl-vlist">
-        <div class="sl-vi"><span><b>01</b> Виза</span><div>{VISA_LABEL[d.visa]}</div></div>
-        <div class="sl-vi"><span><b>02</b> Бюджет</span><div>{BUDGET_LABEL[d.budget].split('—')[0].trim()}</div></div>
+        <div class="sl-vi"><span>Виза</span><div>{VISA_LABEL[d.visa]}</div></div>
+        <div class="sl-vi"><span>Бюджет</span><div>{BUDGET_LABEL[d.budget].split('—')[0].trim()}</div></div>
         {flightFrom ? (
-          <div class="sl-vi"><span><b>03</b> Перелёт от</span><div>${flightFrom}</div></div>
+          <div class="sl-vi"><span>Перелёт от</span><div>${flightFrom}</div></div>
         ) : (
-          <div class="sl-vi"><span><b>03</b> Сроки визы</span><div>{vd.duration.split(/[,;(]/)[0].trim()}</div></div>
+          <div class="sl-vi"><span>Сроки визы</span><div>{vd.duration.split(/[,;(]/)[0].trim()}</div></div>
         )}
-        <div class="sl-vi"><span><b>04</b> Лучше</span><div>{bestMonths[0] ? bestMonths[0].nom.charAt(0).toUpperCase() + bestMonths[0].nom.slice(1) : 'круглый год'}</div></div>
+        <div class="sl-vi"><span>Лучше</span><div>{bestMonths[0] ? bestMonths[0].nom.charAt(0).toUpperCase() + bestMonths[0].nom.slice(1) : 'круглый год'}</div></div>
         {weekTotal ? (
-          <div class="sl-vi"><span><b>05</b> Неделя от</span><div>${weekTotal}</div></div>
+          <div class="sl-vi"><span>Неделя от</span><div>${weekTotal}</div></div>
         ) : (
-          <div class="sl-vi"><span><b>05</b> Стоимость визы</span><div>{vd.cost}</div></div>
+          <div class="sl-vi"><span>Стоимость визы</span><div>{vd.cost}</div></div>
         )}
-        <div class="sl-vi"><span><b>06</b> Регион</span><div>{d.region}</div></div>
+        <div class="sl-vi"><span>Регион</span><div>{d.region}</div></div>
       </div>
     </section>
 
@@ -316,7 +316,7 @@ if (guide?.itinerary?.length) {
       <section class="sl-section">
         <a href={`/blog/${deepGuide.slug}/`} class="sl-guidelink">
           <span class="sl-gl-k">Полный гайд по стране</span>
-          <span class="sl-gl-t">{deepGuide.title} →</span>
+          <span class="sl-gl-t">{deepGuide.title}</span>
         </a>
       </section>
     )}
@@ -328,12 +328,12 @@ if (guide?.itinerary?.length) {
         <a href={`/visa/${d.slug}/`} class="sl-action">
           <div class="sl-a-l">Виза</div>
           <div class="sl-a-v">{VISA_LABEL[d.visa]}</div>
-          <div class="sl-a-s">Документы и сроки →</div>
+          <div class="sl-a-s">Документы и сроки</div>
         </a>
         <a href={calcUrl} class="sl-action">
           <div class="sl-a-l">Бюджет</div>
           <div class="sl-a-v">{BUDGET_LABEL[d.budget].split('—')[0].trim()}</div>
-          <div class="sl-a-s">{weekTotal ? `от $${weekTotal} за неделю · ` : ''}Калькулятор →</div>
+          <div class="sl-a-s">{weekTotal ? `от $${weekTotal} за неделю · ` : ''}Калькулятор</div>
         </a>
         {bestMonths.length > 0 && (
           <a href={`/trips/${bestMonths[0].slug}/${d.slug}/`} class="sl-action">
@@ -346,7 +346,7 @@ if (guide?.itinerary?.length) {
           <a href={d.price?.iata ? aviasalesRoute('MOW', d.price.iata) : '/calculator/'} class="sl-action" rel={d.price?.iata ? 'sponsored noopener' : undefined} target={d.price?.iata ? '_blank' : undefined}>
             <div class="sl-a-l">Перелёт от</div>
             <div class="sl-a-v">${flightFrom}</div>
-            <div class="sl-a-s">{d.price?.iata ? 'Найти билет → ' : 'эконом, в одну сторону'}</div>
+            <div class="sl-a-s">{d.price?.iata ? 'Найти билет' : 'эконом, в одну сторону'}</div>
           </a>
         )}
       </div>
@@ -381,7 +381,7 @@ if (guide?.itinerary?.length) {
             <p class="sl-answer">{guide.getThere}</p>
             {!guide.compare && !guide.noFlightCta && d.price?.iata && flightFrom && (
               <p class="sl-cta sl-cta--primary">
-                <a href={aviasalesRoute('MOW', d.price.iata, subId)} class="aff-btn" rel="sponsored noopener" target="_blank">Сравнить билеты Москва — {d.cases.nom} от ${flightFrom} →</a>
+                <a href={aviasalesRoute('MOW', d.price.iata, subId)} class="aff-btn" rel="sponsored noopener" target="_blank">Сравнить билеты Москва — {d.cases.nom} от ${flightFrom}</a>
 
                 <span class="sl-trust">все авиакомпании в одной выдаче · оплата картами РФ</span>
               </p>
@@ -398,7 +398,7 @@ if (guide?.itinerary?.length) {
                   <div class="sl-cc-name">{o.name}</div>
                   {o.sub && <div class="sl-cc-sub">{o.sub}</div>}
                   <p class="sl-cc-for">{o.for}</p>
-                  <a class="sl-aff sl-cc-cta" href={o.flightIata ? aviasalesRoute('MOW', o.flightIata, subId) : o.href} rel="sponsored noopener" target="_blank">{o.ctaLabel} →</a>
+                  <a class="sl-aff sl-cc-cta" href={o.flightIata ? aviasalesRoute('MOW', o.flightIata, subId) : o.href} rel="sponsored noopener" target="_blank">{o.ctaLabel}</a>
                 </div>
               ))}
             </div>
@@ -410,7 +410,7 @@ if (guide?.itinerary?.length) {
             <div class="sl-shead"><h2>Аренда авто</h2></div>
             <p class="sl-answer">Свои колёса {d.cases.loc} — это свобода маршрута: смотровые, пляжи и деревни, куда автобус не ходит.</p>
             <p class="sl-cta">
-              <a href={TP_LINKS.economybookings} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить цены прокатов {d.cases.loc} →</a>
+              <a href={TP_LINKS.economybookings} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить цены прокатов {d.cases.loc}</a>
 
               <span class="sl-trust">один поиск по нескольким прокатным компаниям</span>
             </p>
@@ -424,9 +424,9 @@ if (guide?.itinerary?.length) {
             </ul>
             <p class="sl-cta">
               {RU_STAY.has(d.slug) ? (
-                <a href={TP_LINKS.yandexTravel} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc} на Яндекс Путешествиях →</a>
+                <a href={TP_LINKS.yandexTravel} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc} на Яндекс Путешествиях</a>
               ) : (
-                <a href={TP_LINKS.ostrovok} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать отель {d.cases.loc} на Островке →</a>
+                <a href={TP_LINKS.ostrovok} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать отель {d.cases.loc} на Островке</a>
               )}
 
               <span class="sl-trust">оплата российскими картами · цены в ₽</span>
@@ -460,7 +460,7 @@ if (guide?.itinerary?.length) {
             </ul>
             {guide.insuranceCta && (
               <p class="sl-cta">
-                <a href={TP_LINKS.cherehapa} class="sl-aff" rel="sponsored noopener" target="_blank">Оформить страховку {d.cases.vP} →</a>
+                <a href={TP_LINKS.cherehapa} class="sl-aff" rel="sponsored noopener" target="_blank">Оформить страховку {d.cases.vP}</a>
                 
                 <span class="sl-trust">{guide.insuranceNote || 'сравнение цен · оплата картами РФ'}</span>
               </p>
@@ -529,7 +529,7 @@ if (guide?.itinerary?.length) {
     {/* PACKING CHECK-LIST */}
     <section class="sl-section">
       <div class="sl-shead"><h2>Что взять {d.cases.vP}</h2></div>
-      <p class="sl-answer">Чек-лист по месяцам: одежда под погоду, документы, аптечка, техника, переходник. <a href={`/packing/${d.slug}/`} class="sl-link"><b>Открыть чек-лист {d.cases.gen || d.cases.prep || d.cases.nom} →</b></a></p>
+      <p class="sl-answer">Чек-лист по месяцам: одежда под погоду, документы, аптечка, техника, переходник. <a href={`/packing/${d.slug}/`} class="sl-link"><b>Открыть чек-лист {d.cases.gen || d.cases.prep || d.cases.nom}</b></a></p>
     </section>
 
     {/* РФ-хабы без гид-секций: компакт-блок жильё/экскурсии/авто */}
@@ -537,10 +537,10 @@ if (guide?.itinerary?.length) {
       <section class="sl-section">
         <div class="sl-shead"><h2>Жильё и экскурсии</h2></div>
         <p class="sl-cta sl-cta--stack">
-          <a href={TP_LINKS.yandexTravel} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc} на Яндекс Путешествиях →</a>
-          <a href={d.slug === 'abkhazia' ? tripsterDest('abkhazia') : TP_LINKS.tripster} class="sl-aff" rel="sponsored noopener" target="_blank">Экскурсии {d.cases.loc} с местными гидами →</a>
+          <a href={TP_LINKS.yandexTravel} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc} на Яндекс Путешествиях</a>
+          <a href={d.slug === 'abkhazia' ? tripsterDest('abkhazia') : TP_LINKS.tripster} class="sl-aff" rel="sponsored noopener" target="_blank">Экскурсии {d.cases.loc} с местными гидами</a>
           {CAR_RENTAL.has(d.slug) && (
-            <a href={TP_LINKS.economybookings} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить цены прокатов авто →</a>
+            <a href={TP_LINKS.economybookings} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить цены прокатов авто</a>
           )}
           <span class="sl-trust">оплата российскими картами · цены и отзывы видно до оплаты</span>
         </p>
@@ -585,9 +585,9 @@ if (guide?.itinerary?.length) {
     <section class="sl-section">
       <div class="sl-shead"><h2>Поехать с экспертом</h2></div>
       <p class={`sl-cta ${PACKAGE_TOUR.has(d.slug) ? 'sl-cta--stack' : ''}`}>
-        <a href={TP_LINKS.youtravel} class="sl-aff" rel="sponsored noopener" target="_blank">Авторские туры {d.cases.vP} →</a>
+        <a href={TP_LINKS.youtravel} class="sl-aff" rel="sponsored noopener" target="_blank">Авторские туры {d.cases.vP}</a>
         {PACKAGE_TOUR.has(d.slug) && (
-          <a href={TP_LINKS.travelata} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить пакетные туры {d.cases.vP} →</a>
+          <a href={TP_LINKS.travelata} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить пакетные туры {d.cases.vP}</a>
         )}
         <span class="sl-trust">маршрут, логистика и малая группа уже собраны</span>
       </p>
@@ -621,9 +621,9 @@ if (guide?.itinerary?.length) {
   </main>
 
   {d.price?.iata && flightFrom ? (
-    <StickyCta href={aviasalesRoute('MOW', d.price.iata, subId)} label={`Билеты ${d.cases.vP} от $${flightFrom} →`} />
+    <StickyCta href={aviasalesRoute('MOW', d.price.iata, subId)} label={`Билеты ${d.cases.vP} от $${flightFrom}`} />
   ) : RU_STAY.has(d.slug) && (
-    <StickyCta href={TP_LINKS.yandexTravel} label={`Подобрать жильё ${d.cases.loc} →`} />
+    <StickyCta href={TP_LINKS.yandexTravel} label={`Подобрать жильё ${d.cases.loc}`} />
   )}
 
   <Footer />
@@ -666,8 +666,7 @@ if (guide?.itinerary?.length) {
 }
 .sl-idx {
   grid-column: 1 / 5; grid-row: 1;
-  font-size: .74rem; font-weight: 700;
-  letter-spacing: .04em; text-transform: uppercase;
+  font-size: .82rem; font-weight: 600;
   color: var(--gold);
 }
 .sl-idx b {
@@ -689,6 +688,7 @@ if (guide?.itinerary?.length) {
   letter-spacing: -.035em;
   margin: clamp(1.2rem, 2.5vw, 2rem) 0 0;
   text-wrap: balance;
+  overflow-wrap: break-word;
 }
 .sl-h1 .rd { color: var(--gold); }
 .sl-sub {
@@ -703,14 +703,17 @@ if (guide?.itinerary?.length) {
   grid-column: 9 / 13; grid-row: 3;
   align-self: start; justify-self: end;
   margin-top: 1.4rem; height: max-content;
-  font-size: .7rem; font-weight: 700;
-  letter-spacing: .08em; text-transform: uppercase;
+  font-size: .78rem; font-weight: 600;
   color: var(--gold); border: 1px solid var(--gold);
-  padding: .42rem .7rem; white-space: nowrap;
+  padding: .42rem .7rem;
 }
 
-.sl-vlist {
+.sl-manifest > :global(.tsb-wrap) {
   grid-column: 1 / 13; grid-row: 4;
+  margin-top: 1.2rem;
+}
+.sl-vlist {
+  grid-column: 1 / 13; grid-row: 5;
   margin-top: 1.8rem;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -730,11 +733,6 @@ if (guide?.itinerary?.length) {
   color: var(--text-dim);
   margin-bottom: .35rem;
 }
-.sl-vi span b {
-  color: var(--gold);
-  margin-right: .35rem;
-  font-weight: 700;
-}
 .sl-vi > div {
   font-weight: 800;
   font-size: .98rem;
@@ -744,7 +742,8 @@ if (guide?.itinerary?.length) {
 }
 
 @media (max-width: 760px) {
-  .sl-idx, .sl-meta, .sl-h1, .sl-sub, .sl-vlist, .sl-visited {
+  .sl-idx, .sl-meta, .sl-h1, .sl-sub, .sl-vlist, .sl-visited,
+  .sl-manifest > :global(.tsb-wrap) {
     grid-column: 1 / -1; grid-row: auto;
   }
   .sl-meta { text-align: left; margin-top: .6rem; }
@@ -789,9 +788,9 @@ if (guide?.itinerary?.length) {
   max-width: 76ch;
 }
 .sl-answer b { color: var(--text); font-weight: 800; }
-.sl-link { color: var(--gold); text-decoration: 1px underline var(--gold); text-underline-offset: 4px; font-weight: 700; }
+.sl-link { color: var(--gold); text-decoration: underline 1px color-mix(in srgb, var(--gold) 55%, transparent); text-underline-offset: .22em; text-decoration-skip-ink: auto; font-weight: 700; }
 .sl-byline { font-size: .76rem; color: var(--text-dim); margin: 0; letter-spacing: .01em; }
-.sl-byline a { color: var(--text); text-decoration: 1px underline rgba(86,82,74,.4); text-underline-offset: 3px; }
+.sl-byline a { color: var(--text); text-decoration: 1px underline rgba(86,82,74,.4); text-underline-offset:.22em; }
 .sl-byline a.byline-author { color: var(--gold); text-decoration: 1px underline var(--gold); }
 .sl-guidelink {
   display: flex; flex-direction: column; gap: .15rem;
@@ -801,7 +800,7 @@ if (guide?.itinerary?.length) {
   text-decoration: none; color: var(--text);
 }
 .sl-guidelink:hover { background: color-mix(in srgb, var(--gold) 11%, transparent); }
-.sl-gl-k { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); }
+.sl-gl-k { font-size: .78rem; color: var(--text-dim); }
 .sl-gl-t { font-size: 1rem; font-weight: 700; color: var(--gold); }
 .sl-byline .byline-fresh { color: var(--text-faint); }
 
@@ -967,7 +966,7 @@ if (guide?.itinerary?.length) {
   .sl-heat { grid-template-columns: repeat(6, 1fr); }
 }
 
-/* CTA — Swiss: gold 2px underline, тач ≥44px */
+/* CTA — Swiss: gold, тонкое подчёркивание, тач ≥44px */
 .sl-cta {
   margin: 1.2rem 0 0;
   display: flex; flex-wrap: wrap; align-items: baseline;
@@ -981,13 +980,14 @@ if (guide?.itinerary?.length) {
 .sl-aff {
   font-weight: 800;
   color: var(--gold);            /* gold в покое — CTA сразу читается как кликабельный (не только на hover) */
-  text-decoration: 2px underline var(--gold);
-  text-underline-offset: 4px;
+  text-decoration: underline 1px color-mix(in srgb, var(--gold) 55%, transparent);
+  text-underline-offset: .22em;
+  text-decoration-skip-ink: auto;
   display: inline-flex; align-items: center;
   min-height: 44px;
   letter-spacing: -.005em;
 }
-.sl-aff:hover { color: var(--gold-dim); }
+.sl-aff:hover { color: var(--gold-dim); text-decoration-color: var(--gold); }
 .ad-mark {
   font-size: .6rem; font-weight: 600;
   letter-spacing: .06em; text-transform: uppercase;
@@ -1062,7 +1062,7 @@ if (guide?.itinerary?.length) {
 .sl-related a b {
   color: var(--gold);
   text-decoration: 1px underline var(--gold);
-  text-underline-offset: 3px;
+  text-underline-offset:.22em;
   font-weight: 700;
 }
 .sl-related a span { display: block; color: var(--text-faint); font-size: .8rem; margin-top: .2rem; }

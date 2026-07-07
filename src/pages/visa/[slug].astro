@@ -356,7 +356,7 @@ const ldJson = {
     </section>
   </main>
 
-  <StickyCta href={cherehapaTravel(`visa_${d.slug.replaceAll('-', '_')}`)} label={d.visa === 'required' ? 'Страховка для визы — сравнить цены →' : 'Оформить страховку в поездку →'} />
+  <StickyCta href={cherehapaTravel(`visa_${d.slug.replaceAll('-', '_')}`)} label={d.visa === 'required' ? 'Страховка для визы — сравнить цены' : 'Оформить страховку в поездку'} />
 
   <Footer />
 </Layout>
@@ -427,12 +427,13 @@ const ldJson = {
 .visa-header h1 {
   font-family: var(--ff-display); font-size: clamp(2.2rem, 5vw, 3.8rem);
   font-weight: 300; line-height: 1.1; letter-spacing: -0.01em;
+  overflow-wrap: break-word;
 }
 .visa-header h1 em { color: var(--gold); font-style: italic; }
 .visa-sub { color: var(--text-dim); font-size: 1rem; line-height: 1.7; margin: 1rem auto 0; max-width: 580px; }
 .visa-byline { font-size: 0.78rem; color: var(--text-faint); margin: 1rem auto 0; letter-spacing: 0.02em; }
 .visa-byline a { color: var(--text-dim); text-decoration: none; }
-.visa-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+.visa-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset:.22em; }
 .visa-byline .byline-fresh { color: var(--text-faint); }
 
 .quick-tldr {
@@ -463,13 +464,13 @@ const ldJson = {
 }
 .visa-facts li strong, .visa-list li strong { color: var(--text); }
 
-.visa-related a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+.visa-related a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset:.22em; }
 
 .visa-prep-lead { color: var(--text-faint); font-size: 0.88rem; margin-bottom: 0.8rem; }
 .visa-prep-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.7rem; }
 .visa-prep-list li { color: var(--text-dim); line-height: 1.7; font-size: 0.95rem; padding-left: 1rem; border-left: 2px solid var(--line); }
 .visa-prep-list li strong { color: var(--text); }
-.visa-prep-list a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+.visa-prep-list a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset:.22em; }
 .visa-prep-list a:hover { text-decoration-color: var(--gold); }
 
 .visa-months {

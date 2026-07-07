@@ -242,8 +242,6 @@ const ldJson = {
         <span>Версия 14.05.2026</span>
       </div>
 
-      <div class="va-classification">FILED UNDER · ВИЗОВЫЕ РЕЖИМЫ</div>
-
       <h1 class="va-title">
         <span class="va-title-line">Визовый</span>
         <span class="va-title-line va-title-line--italic">реестр</span>
@@ -258,7 +256,6 @@ const ldJson = {
       <div class="va-cta-row">
         <a class="va-cta va-cta--primary" href="https://t.me/traveltriberu?utm_source=traveltribe&utm_medium=visa-hero" target="_blank" rel="noopener">
           <span class="va-cta-label">Telegram-канал</span>
-          <span class="va-cta-arrow" aria-hidden="true">→</span>
         </a>
         <a class="va-cta va-cta--secondary" href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Fsub_id%3Dvisa_index" target="_blank" rel="nofollow noopener sponsored">
           <span class="va-cta-label">Найти билеты</span>
@@ -270,7 +267,6 @@ const ldJson = {
         </a>
         <button type="button" class="va-cta va-cta--share" id="visaShareBtn" aria-label="Поделиться реестром">
           <span class="va-cta-label">Поделиться</span>
-          <span class="va-cta-arrow" aria-hidden="true">↗</span>
         </button>
       </div>
 
@@ -422,7 +418,7 @@ const ldJson = {
 
     {/* ─── QUICK-FILTER CHIPS — фильтры по визовому режиму, бюджету и сроку ─── */}
     <section class="va-filters" aria-label="Фильтры по реестру" data-reveal>
-      <div class="va-filters-label">Фильтры →</div>
+      <div class="va-filters-label">Фильтры</div>
       <div class="va-filters-chips" role="group" aria-label="Выбор визового режима и условий">
         <button type="button" class="va-chip va-chip--active" data-filter="all" aria-pressed="true">Все ({DIRECTIONS.length})</button>
         <button type="button" class="va-chip" data-filter="free" aria-pressed="false">Без визы ({byVisa.free.length})</button>
@@ -433,7 +429,7 @@ const ldJson = {
         <button type="button" class="va-chip" data-cost="cheap" aria-pressed="false">До $50</button>
         <button type="button" class="va-chip" data-duration="long" aria-pressed="false">60+ дней</button>
         <span class="va-chip-divider" aria-hidden="true">·</span>
-        <button type="button" class="va-chip" data-sort="cost" aria-pressed="false">Сначала дешёвые →</button>
+        <button type="button" class="va-chip" data-sort="cost" aria-pressed="false">Сначала дешёвые</button>
       </div>
       <p class="va-filter-count" id="visaFilterCount" aria-live="polite" aria-atomic="true">Показано: <strong>{DIRECTIONS.length}</strong> из {DIRECTIONS.length} направлений</p>
       <noscript>
@@ -444,7 +440,7 @@ const ldJson = {
     {/* ─── SEARCH — filing tray style ─── */}
     <section class="va-search-wrap" aria-label="Поиск страны">
       <label class="va-search-label" for="visaSearch">
-        <span class="va-search-prefix">Запрос →</span>
+        <span class="va-search-prefix">Запрос</span>
       </label>
       <div class="va-search-field">
         <input type="search" id="visaSearch" placeholder="Япония, Турция, Грузия…" autocomplete="off" aria-label="Поиск страны" />
@@ -553,7 +549,6 @@ const ldJson = {
               <span class="va-related-name">Китай 2026 — безвиз 30 дней</span>
               <span class="va-related-desc">Полный гайд: маршрут, бюджет, оплата без карт</span>
             </span>
-            <span class="va-related-arrow" aria-hidden="true">→</span>
           </a>
         </li>
         <li class="va-related-item">
@@ -563,7 +558,6 @@ const ldJson = {
               <span class="va-related-name">Шенген 2026 для россиян</span>
               <span class="va-related-desc">Какая страна одобряет, документы, EES</span>
             </span>
-            <span class="va-related-arrow" aria-hidden="true">→</span>
           </a>
         </li>
         <li class="va-related-item">
@@ -573,7 +567,6 @@ const ldJson = {
               <span class="va-related-name">Виза в Японию 2026</span>
               <span class="va-related-desc">Туристическая через турагентство, документы, сроки</span>
             </span>
-            <span class="va-related-arrow" aria-hidden="true">→</span>
           </a>
         </li>
         <li class="va-related-item">
@@ -583,7 +576,6 @@ const ldJson = {
               <span class="va-related-name">EES — биометрия на границе</span>
               <span class="va-related-desc">Что изменилось с октября 2025, как проходить</span>
             </span>
-            <span class="va-related-arrow" aria-hidden="true">→</span>
           </a>
         </li>
         <li class="va-related-item">
@@ -593,7 +585,6 @@ const ldJson = {
               <span class="va-related-name">Как платить за границей в 2026</span>
               <span class="va-related-desc">UnionPay, Alipay, виртуальные карты, наличные</span>
             </span>
-            <span class="va-related-arrow" aria-hidden="true">→</span>
           </a>
         </li>
         <li class="va-related-item">
@@ -603,7 +594,6 @@ const ldJson = {
               <span class="va-related-name">Турция 2026 — безвиз 60 дней</span>
               <span class="va-related-desc">Регионы, бюджет all-inclusive, перелёт из Москвы</span>
             </span>
-            <span class="va-related-arrow" aria-hidden="true">→</span>
           </a>
         </li>
       </ul>
@@ -1084,19 +1074,6 @@ const ldJson = {
   }
   .va-meta-dot { color: var(--sepia); opacity: 0.6; }
 
-  .va-classification {
-    font-family: var(--ff-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.18em;
-    color: var(--stamp-red);
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-    display: inline-block;
-    padding: 0.25rem 0.7rem;
-    border: 1px solid var(--stamp-red);
-    background: var(--stamp-red-soft);
-  }
-
   .va-title {
     font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
     font-size: clamp(2.8rem, 7vw, 5.2rem);
@@ -1129,13 +1106,10 @@ const ldJson = {
     color: var(--sepia);
     margin-top: 1.4rem;
     padding-bottom: 0;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
     line-height: 1.2;
-    transition: letter-spacing 0.7s ease, color 0.7s ease;
+    transition: color 0.7s ease;
   }
   .va-title:hover .va-title-line--small {
-    letter-spacing: 0.28em;
     color: var(--stamp-red);
   }
   @media (prefers-reduced-motion: reduce) {
@@ -1490,12 +1464,6 @@ const ldJson = {
     line-height: 1.4;
     font-style: italic;
   }
-  .va-related-arrow {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: 1.2rem;
-    color: var(--stamp-red);
-    font-style: italic;
-  }
 
   /* ──────────────── CTA ROW — Telegram + Aviasales ──────────────── */
   .va-cta-row {
@@ -1523,7 +1491,6 @@ const ldJson = {
   .va-cta--secondary { color: var(--customs-blue); }
   .va-cta--secondary:hover { background: var(--customs-blue); color: var(--paper); transform: translateY(-1px); }
   .va-cta-label { font-weight: 500; }
-  .va-cta-arrow { font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif; font-size: 1.1em; font-style: italic; }
   .va-cta-meta {
     font-size: 0.7em;
     opacity: 0.7;

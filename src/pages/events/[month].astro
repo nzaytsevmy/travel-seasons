@@ -110,7 +110,7 @@ const ldJson = {
 
   <main id="main" class="evt">
     <section class="evt-manifest">
-      <div class="evt-idx">01 / События<b>{events.length} {eventWord} · {countryCount} {countryWord}</b></div>
+      <div class="evt-idx">События<b>{events.length} {eventWord} · {countryCount} {countryWord}</b></div>
       <div class="evt-meta">Календарь<br /><b>Обновлено {DATA_UPDATED_RU}</b></div>
       <h1 class="evt-h1">Праздники и фестивали <span class="rd">в {m.prep}</span></h1>
       {editorial && <p class="evt-tldr">{editorial.intro}</p>}
@@ -223,7 +223,7 @@ const ldJson = {
   gap: 0 clamp(.8rem, 2vw, 1.6rem);
   padding: clamp(1rem, 2vw, 1.8rem) 0 clamp(1.2rem, 2.5vw, 2rem);
 }
-.evt-idx { grid-column: 1 / 7; grid-row: 1; font-size: .74rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--gold); }
+.evt-idx { grid-column: 1 / 7; grid-row: 1; font-size:.82rem; font-weight: 700;   color: var(--gold); }
 .evt-idx b { display: block; color: var(--text); font-size: .74rem; font-weight: 600; margin-top: .2rem; }
 .evt-meta { grid-column: 8 / 13; grid-row: 1; text-align: right; align-self: start; font-size: .8rem; color: var(--text-dim); line-height: 1.5; }
 .evt-meta b { color: var(--text); font-weight: 600; }
@@ -260,7 +260,7 @@ const ldJson = {
 .evt-tag--fest { color: var(--gold); border-color: var(--gold); }
 .evt-tag--culture { color: var(--good-text); border-color: var(--good-text); }
 .evt-link { color: var(--text); text-decoration: none; white-space: nowrap; }
-.evt-link b { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; font-weight: 700; }
+.evt-link b { color: var(--gold); text-decoration: underline; text-underline-offset:.22em; font-weight: 700; }
 .evt-name { grid-column: 1 / -1; font-size: .92rem; color: var(--text); }
 .evt-desc { grid-column: 1 / -1; font-size: .82rem; color: var(--text-faint); }
 
@@ -274,14 +274,14 @@ const ldJson = {
 .evt-faq-i p { margin: .6rem 0 0; color: var(--text-dim); line-height: 1.6; }
 
 .evt-monthnav { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
-.evt-monthnav-side { color: var(--gold); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; min-height: 44px; display: inline-flex; align-items: center; }
-.evt-monthnav-mid { color: var(--text-dim); text-decoration: underline; text-underline-offset: 3px; min-height: 44px; display: inline-flex; align-items: center; }
+.evt-monthnav-side { color: var(--gold); font-weight: 700; text-decoration: underline; text-underline-offset:.22em; min-height: 44px; display: inline-flex; align-items: center; }
+.evt-monthnav-mid { color: var(--text-dim); text-decoration: underline; text-underline-offset:.22em; min-height: 44px; display: inline-flex; align-items: center; }
 .evt-monthnav-side--right { margin-left: auto; }
 
 .evt-related { list-style: none; margin: 0; padding: 0; }
 .evt-related li { border-top: 1px solid var(--line); padding: .8rem 0; display: flex; flex-direction: column; }
 .evt-related a { color: var(--text); text-decoration: none; }
-.evt-related a b { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
+.evt-related a b { color: var(--gold); text-decoration: underline; text-underline-offset:.22em; }
 .evt-related span { font-size: .82rem; color: var(--text-faint); margin-top: .15rem; }
 
 .evt-updated { margin-top: 2rem; font-size: .72rem; color: var(--text-faint); }

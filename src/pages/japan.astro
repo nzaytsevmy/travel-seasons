@@ -105,8 +105,8 @@ const ldJson = {
   <main id="main" class="jp">
     {/* MANIFEST */}
     <section class="jp-manifest">
-      <div class="jp-idx">01 / Страна<b>Япония 2026</b></div>
-      <div class="jp-meta">Был в ноябре 2023<br /><b>Обновлено V.2026</b></div>
+      <div class="jp-idx">Страна<b>Япония 2026</b></div>
+      <div class="jp-meta">Был в ноябре 2023<br /><b>Обновлено {DATA_UPDATED_RU}</b></div>
       <h1 class="jp-h1">Япония <span class="rd">2026</span></h1>
       <p class="jp-sub">Виза, сезоны, бюджет, маршруты — всё что нужно для первой поездки из России. Без воды, с реальными цифрами из чеков.</p>
 
@@ -145,7 +145,7 @@ const ldJson = {
       <p class="jp-note"><a href="/seasons/">Таблица сезонов</a> — Япония и 38 других направлений с оптимальными окнами.</p>
     </section>
 
-    <MonthlyEvents slug="japan" countryNom="Япония" countryNameVp="в Японии" idx="04" />
+    <MonthlyEvents slug="japan" countryNom="Япония" countryNameVp="в Японии" />
 
     {/* ВИЗА */}
     <section class="jp-section">
@@ -157,9 +157,9 @@ const ldJson = {
         <li><b>Документы:</b> загранпаспорт, фото <b>4.5 × 4.5 см</b> (не Шенген!), банковская выписка $100/день минимум $2000, авиабилеты, бронь отеля (с ноября 2024 — можно не выкупать)</li>
         <li><b>Отказы:</b> &lt;5%, главная причина — неправильный формат фото или незаполненные поля анкеты</li>
       </ul>
-      <p class="jp-note"><a href="/blog/japan-visa-2026/">Полный пошаговый гайд по визе →</a></p>
+      <p class="jp-note"><a href="/blog/japan-visa-2026/">Полный пошаговый гайд по визе</a></p>
       <p class="jp-cta">
-        <a class="jp-aff" href={TP_LINKS.cherehapa} rel="sponsored noopener" target="_blank">Оформить страховку для визы в Японию →</a>
+        <a class="jp-aff" href={TP_LINKS.cherehapa} rel="sponsored noopener" target="_blank">Оформить страховку для визы в Японию</a>
         
         <span class="jp-trust">от 110 ₽/день · подходит под требования JVAC · оплата картами РФ</span>
       </p>
@@ -205,7 +205,7 @@ const ldJson = {
       </div>
       <p class="jp-after">Перелёт Москва ↔ Токио с пересадкой: <b>$500–900</b> в обычные даты, <b>$1100–1500</b> на Golden Week. Иена в 2026 слабая (~7 ¥/₽), что делает Японию доступнее обычного. <a href="/calculator/">Калькулятор бюджета</a> — точная сумма под твои даты.</p>
       <p class="jp-cta">
-        <a class="jp-aff" href={aviasalesRoute('MOW','HND')} rel="sponsored noopener" target="_blank">Найти билет Москва — Токио от $500 →</a>
+        <a class="jp-aff" href={aviasalesRoute('MOW','HND')} rel="sponsored noopener" target="_blank">Найти билет Москва — Токио от $500</a>
         
         <span class="jp-trust">все авиакомпании в одной выдаче · оплата картами РФ</span>
       </p>
@@ -213,7 +213,7 @@ const ldJson = {
 
     <CountryMap slug="japan" countryNom="Япония" idx="07" />
 
-    <EssentialsCard slug="japan" countryName="Япония" idx="08" />
+    <EssentialsCard slug="japan" countryName="Япония" />
 
     {/* ГЛАВНЫЕ ГАЙДЫ */}
     <section class="jp-section">
@@ -224,32 +224,28 @@ const ldJson = {
           <div class="jp-pt">Главный гайд · ноябрь 2023</div>
           <h3>Япония 2026: гайд без воды для россиян</h3>
           <p>Бюджет, аэропорты Токио, доставка багажа, IC-карты, Tax Free, что нельзя ввозить (Корвалол депортируют).</p>
-          <span class="jp-pa">Читать →</span>
         </a>
         <a href="/blog/japan-visa-2026/" class="jp-post">
           <div class="jp-pn">02</div>
           <div class="jp-pt">Виза · обновлено</div>
           <h3>Виза в Японию для россиян 2026</h3>
           <p>Пошагово через JVAC: документы, фото 4.5×4.5 (не Шенген), банковская выписка, неоплаченные брони — что изменилось в 2024–2026.</p>
-          <span class="jp-pa">Читать →</span>
         </a>
         <a href="/blog/japan-golden-week-2026/" class="jp-post">
           <div class="jp-pn">03</div>
           <div class="jp-pt">Golden Week 2026</div>
           <h3>Золотая неделя в Японии 2026</h3>
           <p>29 апреля — 6 мая, 8 дней подряд. Цены ×3, что закрыто, что работает, альтернативные даты, стратегия если уже купили билеты.</p>
-          <span class="jp-pa">Читать →</span>
         </a>
         <a href="/blog/pay-abroad-2026/" class="jp-post">
           <div class="jp-pn">04</div>
           <div class="jp-pt">Деньги за границей</div>
           <h3>Как платить в Японии россиянину 2026</h3>
           <p>Visa/MC российских банков не работают. JCB и UnionPay Газпромбанка местами. Виртуальная карта USD/EUR за 2 минуты. Сравнение всех способов с цифрами.</p>
-          <span class="jp-pa">Читать →</span>
         </a>
       </div>
       <p class="jp-cta">
-        <a class="jp-aff" href={TP_LINKS.ostrovok} rel="sponsored noopener" target="_blank">Подобрать отель в Токио или Киото →</a>
+        <a class="jp-aff" href={TP_LINKS.ostrovok} rel="sponsored noopener" target="_blank">Подобрать отель в Токио или Киото</a>
         
         <span class="jp-trust">цены в ₽ · оплата картами РФ · бесплатная отмена</span>
       </p>
@@ -305,8 +301,7 @@ const ldJson = {
 }
 .jp-idx {
   grid-column: 1 / 5; grid-row: 1;
-  font-size: .74rem; font-weight: 700;
-  letter-spacing: .04em; text-transform: uppercase;
+  font-size: .82rem; font-weight: 600;
   color: var(--gold);
 }
 .jp-idx b {
@@ -326,7 +321,8 @@ const ldJson = {
   font-size: clamp(2.4rem, 7vw, 6.4rem);
   line-height: .94;
   letter-spacing: -.035em;
-  margin: clamp(1.2rem, 2.5vw, 2rem) 0 0;
+  margin: clamp(1.2rem, 2.5vw, 2rem) 0 0;;
+  overflow-wrap: break-word;
 }
 .jp-h1 .rd { color: var(--gold); }
 .jp-sub {
@@ -422,7 +418,7 @@ const ldJson = {
   letter-spacing: .01em;
   padding-bottom: .5rem;
 }
-.jp-byline a { color: var(--text); text-decoration: 1px underline rgba(86,82,74,.4); text-underline-offset: 3px; }
+.jp-byline a { color: var(--text); text-decoration: 1px underline rgba(86,82,74,.4); text-underline-offset:.22em; }
 .jp-byline a.byline-author { color: var(--gold); text-decoration: 1px underline var(--gold); }
 .jp-byline .byline-fresh { color: var(--text-faint); }
 
@@ -451,7 +447,7 @@ const ldJson = {
 .jp-note a {
   color: var(--gold);
   text-decoration: 1px underline var(--gold);
-  text-underline-offset: 4px;
+  text-underline-offset:.22em;
 }
 
 /* TIERS бюджета — 3 кол hairline */
@@ -529,7 +525,7 @@ const ldJson = {
 .jp-after a {
   color: var(--gold);
   text-decoration: 1px underline var(--gold);
-  text-underline-offset: 4px;
+  text-underline-offset:.22em;
 }
 @media (max-width: 760px) {
   .jp-tiers { grid-template-columns: 1fr; }
@@ -587,14 +583,6 @@ const ldJson = {
   line-height: 1.55;
   margin: 0 0 .85rem;
   flex: 1;
-}
-.jp-pa {
-  font-size: .78rem; font-weight: 700;
-  letter-spacing: .04em;
-  color: var(--gold);
-  text-decoration: 1px underline var(--gold);
-  text-underline-offset: 4px;
-  margin-top: auto;
 }
 @media (max-width: 760px) {
   .jp-posts { grid-template-columns: 1fr; }
@@ -670,7 +658,7 @@ const ldJson = {
 .jp-related a {
   color: var(--gold);
   text-decoration: 1px underline var(--gold);
-  text-underline-offset: 3px;
+  text-underline-offset:.22em;
   font-weight: 700;
 }
 
@@ -685,8 +673,8 @@ const ldJson = {
 .jp-aff {
   font-weight: 800;
   color: var(--text);
-  text-decoration: 2px underline var(--gold);
-  text-underline-offset: 4px;
+  text-decoration: underline 1px var(--gold);
+  text-underline-offset:.22em;
   display: inline-flex; align-items: center;
   min-height: 44px;
   letter-spacing: -.005em;

@@ -178,7 +178,7 @@ const ldJson = {
                   </li>
                 ))}
               </ul>
-              <span class="pl-top-cta">Полный чек-лист<span class="pl-arr" aria-hidden="true">→</span></span>
+              <span class="pl-top-cta">Полный чек-лист</span>
             </a>
           </li>
         ))}
@@ -496,8 +496,6 @@ const ldJson = {
   gap: 0.4rem;
   border-top: 1px dashed var(--line);
 }
-.pl-arr { transition: transform 0.18s var(--ease-out); display: inline-block; }
-.pl-top-card:hover .pl-arr { transform: translateX(3px); }
 
 /* ─── SEARCH ─── чистый input с иконкой, без shadow */
 .pl-search {
@@ -646,7 +644,7 @@ html.dark-theme .pl-badge-visa-required { background: rgba(245, 158, 11, 0.18); 
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pl-crosslink, .pl-top-card, .pl-arr, .pl-search, .pl-all-link {
+  .pl-crosslink, .pl-top-card, .pl-search, .pl-all-link {
     transition: none !important;
   }
   .pl-top-card:hover { transform: none; }

@@ -10,9 +10,8 @@ import { getCustoms } from '../data/country-customs.js';
 interface Props {
   slug: string;
   countryName?: string;
-  idx?: string;
 }
-const { slug, countryName, idx = '06' } = Astro.props;
+const { slug, countryName } = Astro.props;
 
 const plug = PLUG_TYPES[slug];
 const ess = getEssentials(slug);
@@ -28,18 +27,18 @@ const allSources = [
 const updated = ess?.updated || cust?.updated || null;
 
 // Короткие практики — 4 ячейки value-list
-const quick: { idx: string; k: string; main: string; meta?: string; note?: string }[] = [];
-if (plug) quick.push({ idx: '01', k: 'Розетки', main: `Тип ${plug.types}`, meta: `${plug.voltage} · ${plug.hz}`, note: 'Переходник нужен, если техника не USB-зарядка.' });
-if (ess?.water) quick.push({ idx: '02', k: 'Вода из-под крана', main: ess.water.tap_drinkable ? 'Можно пить' : 'Только бутилированная', meta: ess.water.note });
+const quick: { k: string; main: string; meta?: string; note?: string }[] = [];
+if (plug) quick.push({ k: 'Розетки', main: `Тип ${plug.types}`, meta: `${plug.voltage} · ${plug.hz}`, note: 'Переходник нужен, если техника не USB-зарядка.' });
+if (ess?.water) quick.push({ k: 'Вода из-под крана', main: ess.water.tap_drinkable ? 'Можно пить' : 'Только бутилированная', meta: ess.water.note });
 if (ess?.tipping) {
   const tipMain = (/нет/i.test(ess.tipping.restaurants) && /нет/i.test(ess.tipping.taxi)) ? 'Не приняты' : 'По ситуации';
-  quick.push({ idx: '03', k: 'Чаевые', main: tipMain, meta: `Рестораны: ${ess.tipping.restaurants}. Такси: ${ess.tipping.taxi}.`, note: ess.tipping.hotel ? `Отели: ${ess.tipping.hotel}.` : undefined });
+  quick.push({ k: 'Чаевые', main: tipMain, meta: `Рестораны: ${ess.tipping.restaurants}. Такси: ${ess.tipping.taxi}.`, note: ess.tipping.hotel ? `Отели: ${ess.tipping.hotel}.` : undefined });
 }
 if (ess?.taxi_apps?.length) {
   const names = ess.taxi_apps.map(t => t.name).join(' · ');
   const head = ess.taxi_apps[0];
   const tail = ess.taxi_apps.slice(1).map(t => `${t.name} — ${t.note}`).join('. ');
-  quick.push({ idx: '04', k: 'Такси-приложения', main: names, meta: head ? `${head.name} — ${head.note}.` : undefined, note: tail || undefined });
+  quick.push({ k: 'Такси-приложения', main: names, meta: head ? `${head.name} — ${head.note}.` : undefined, note: tail || undefined });
 }
 
 // Экстренные номера — data-таблица
@@ -48,12 +47,11 @@ if (ess?.emergency?.police) dash.push({ k: 'Полиция', v: ess.emergency.po
 if (ess?.emergency?.ambulance_fire) dash.push({ k: 'Скорая · пожарные', v: ess.emergency.ambulance_fire });
 if (ess?.emergency?.ambulance) dash.push({ k: 'Скорая', v: ess.emergency.ambulance });
 if (ess?.emergency?.fire) dash.push({ k: 'Пожарные', v: ess.emergency.fire });
-if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ', v: ess.emergency.embassy_ru_phone, link: ess.emergency.embassy_ru_url ? { href: ess.emergency.embassy_ru_url, label: 'сайт →' } : undefined });
+if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ', v: ess.emergency.embassy_ru_phone, link: ess.emergency.embassy_ru_url ? { href: ess.emergency.embassy_ru_url, label: 'сайт' } : undefined });
 ---
 
 <section class="ec" aria-label={`Бытовая практика — ${countryName || slug}`}>
   <header class="ec-h">
-    <span class="ec-n">{idx}</span>
     <h2 class="ec-t">Что нужно знать на месте{countryName ? ` — ${countryName}` : ''}</h2>
   </header>
   <p class="ec-s">Розетки, чаевые, экстренные номера, вода, такси, таможня — фактами.</p>
@@ -62,7 +60,7 @@ if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ'
     <div class={`ec-vl ec-vl--cols-${Math.min(4, quick.length)}`}>
       {quick.map((q) => (
         <div class="ec-vi">
-          <span class="ec-vk"><b>{q.idx}</b>{q.k}</span>
+          <span class="ec-vk">{q.k}</span>
           <div class="ec-vm">{q.main}</div>
           {q.meta && <div class="ec-vd">{q.meta}</div>}
           {q.note && <div class="ec-vn">{q.note}</div>}
@@ -73,7 +71,7 @@ if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ'
 
   {dash.length > 0 && (
     <div class="ec-section">
-      <h3 class="ec-th"><b>05</b>Экстренные номера</h3>
+      <h3 class="ec-th">Экстренные номера</h3>
       <table class="ec-dash">
         <tbody>
           {dash.map((r) => (
@@ -92,7 +90,7 @@ if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ'
 
   {cust?.forbidden?.length > 0 && (
     <div class="ec-section">
-      <h3 class="ec-th"><b>07</b>Таможня — нельзя ввозить</h3>
+      <h3 class="ec-th">Таможня — нельзя ввозить</h3>
       <ul class="ec-cus">
         {cust.forbidden.map((item) => (
           <li><span class="ec-x" aria-hidden="true">×</span>{item}</li>
@@ -103,7 +101,7 @@ if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ'
 
   {cust?.limits && (
     <div class="ec-section">
-      <h3 class="ec-th"><b>08</b>Лимиты ввоза</h3>
+      <h3 class="ec-th">Лимиты ввоза</h3>
       <div class="ec-vl ec-vl--cols-4">
         {cust.limits.cash && <div class="ec-vi"><span class="ec-vk">Наличные</span><div class="ec-vm">{cust.limits.cash.replace(/^до /, '')}</div><div class="ec-vd">без декларации</div></div>}
         {cust.limits.alcohol && <div class="ec-vi"><span class="ec-vk">Алкоголь</span><div class="ec-vm">{cust.limits.alcohol}</div></div>}
@@ -147,10 +145,6 @@ if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ'
   padding-top: .8rem;
   display: flex; align-items: baseline; gap: .8rem;
   margin-bottom: .35rem;
-}
-.ec-n {
-  font-size: .74rem; font-weight: 700; color: var(--gold);
-  letter-spacing: .04em;
 }
 .ec-t {
   font-weight: 800;
@@ -196,11 +190,6 @@ if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ'
   color: var(--text-dim);
   margin-bottom: .45rem;
 }
-.ec-vk b {
-  color: var(--gold);
-  margin-right: .4rem;
-  font-weight: 700;
-}
 .ec-vm {
   font-weight: 800;
   font-size: 1.05rem;
@@ -230,10 +219,6 @@ if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ'
   color: var(--text);
   display: flex; align-items: baseline; gap: .6rem;
 }
-.ec-th b {
-  font-size: .74rem; font-weight: 700; color: var(--gold);
-  letter-spacing: .04em; font-style: normal;
-}
 
 /* dash — Swiss data table */
 .ec-dash {
@@ -260,8 +245,9 @@ if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ'
   font-size: .76rem;
   font-weight: 700;
   color: var(--gold);
-  text-decoration: 1px underline var(--gold);
-  text-underline-offset: 4px;
+  text-decoration: underline 1px color-mix(in srgb, var(--gold) 55%, transparent);
+  text-underline-offset: 0.22em;
+  text-decoration-skip-ink: auto;
 }
 
 /* customs list */
@@ -313,8 +299,9 @@ if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ'
 }
 .ec-foot a {
   color: var(--gold);
-  text-decoration: 1px underline var(--gold);
-  text-underline-offset: 4px;
+  text-decoration: underline 1px color-mix(in srgb, var(--gold) 55%, transparent);
+  text-underline-offset: 0.22em;
+  text-decoration-skip-ink: auto;
 }
 .ec-sep { color: var(--text-faint); margin: 0 .3rem; }
 .ec-upd {

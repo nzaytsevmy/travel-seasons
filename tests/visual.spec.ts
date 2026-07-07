@@ -30,6 +30,8 @@ const PAGES = [
   { slug: '/blog/gornyy-park-ruskeala-2026/', name: 'blog-ruskeala' },        // POI Карелии: бюджет-таблицы
   { slug: '/blog/ostrov-kizhi-2026/',       name: 'blog-kizhi' },             // POI Карелии
   { slug: '/blog/ostrov-valaam-2026/',      name: 'blog-valaam' },            // POI Карелии
+  { slug: '/turkey/',                       name: 'country-hub-turkey' },     // хаб страны: manifest + TripSaveButton + aff-CTA
+  { slug: '/trips/july/turkey/',            name: 'trips-july-turkey' },      // trips-детальная: findcta + TripSaveButton
 ];
 
 for (const page of PAGES) {
