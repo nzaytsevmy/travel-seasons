@@ -260,8 +260,14 @@ const ldJson = {
 .fopts .t{border:1px solid var(--hair);padding:0 .7rem;color:var(--mid);text-decoration:none;transition:border-color .15s,color .15s,background .15s}
 .fopts .t:hover{border-color:var(--mid);color:var(--ink);text-decoration:none}
 .fopts .t.on{border-color:var(--gold);color:var(--gold);background:rgba(142,102,24,.06)}
-select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:none;border-bottom:2px solid var(--ink);border-radius:0;padding:0 1.2rem 0 .15rem;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' fill='none' stroke='%2315140f' stroke-width='1.8'%3E%3Cpath d='M1 1l3.5 3.5L8 1'/%3E%3C/svg%3E") right .1rem center no-repeat}
+select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:none;border-bottom:2px solid var(--ink);border-radius:0;padding:0 1.2rem 0 .15rem;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' fill='none' stroke='%2315140f' stroke-width='1.8'%3E%3Cpath d='M1 1l3.5 3.5L8 1'/%3E%3C/svg%3E") right .1rem center no-repeat;width:6.2em}                     /* фикс-ширина: intrinsic-width select по опциям расходится между Chromium и WebKit («сентябрь») — без width точка переноса .filters плывёт по движку */
 .fcount{font-size:.8rem;font-weight:600;border-left:1px solid var(--hair);padding-left:1rem;white-space:nowrap}.fcount b{color:var(--gold);font-size:1.5rem;font-weight:700;margin-right:.2rem;vertical-align:-1px}
+/* Промежуточная зона (761–1100px): natural flex-wrap слишком чувствителен к суб-пиксельным
+   расхождениям Chromium/WebKit (шрифт, select) — .fright либо делит строку с чипами (Safari),
+   либо переносится (Chrome). Детерминируем: .fright всегда своей строкой, без сюрпризов по движку. */
+@media(max-width:1100px) and (min-width:761px){
+  .fright{margin-left:0;flex-basis:100%;justify-content:space-between;border-top:1px solid var(--hair);padding-top:.6rem;margin-top:.2rem}
+}
 /* Мобайл: фильтры в столбик, подписи фикс-ширины → опции выровнены ровной колонкой */
 @media(max-width:760px){
   /* подпись НАД чипами → опции на всю ширину (влезают в один ряд, без сирот), тесный ритм */
