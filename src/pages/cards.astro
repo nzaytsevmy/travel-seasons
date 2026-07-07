@@ -89,7 +89,7 @@ const ldJson = {
 
   <main id="main" class="cards-wrap">
     <header class="cards-hero">
-      <div class="cards-hero__eyebrow">Обновлено · {formattedDate}</div>
+      <div class="cards-hero__eyebrow">Обновлено {formattedDate}</div>
       <h1>Карты за границей в&nbsp;2026</h1>
       <p class="cards-hero__lede">
         Где сейчас принимают <strong>МИР</strong>, <strong>UnionPay</strong> российских банков
@@ -180,7 +180,7 @@ const ldJson = {
                 </li>
               </ul>
 
-              <p class="ccard__pick"><span>→</span> {c.pick}</p>
+              <p class="ccard__pick"><span>—</span> {c.pick}</p>
             </summary>
 
             <div class="ccard__body">
@@ -358,9 +358,7 @@ document.addEventListener('astro:page-load', _initCards);
     margin-bottom: 2rem;
   }
   .cards-hero__eyebrow {
-    font-size: 0.7rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
+    font-size: 0.8rem;
     color: var(--gold-dim);
     margin-bottom: 1rem;
   }
@@ -382,7 +380,7 @@ document.addEventListener('astro:page-load', _initCards);
   .cards-hero__lede strong { color: var(--text); font-weight: 600; }
   .cards-byline { font-size: 0.76rem; color: var(--text-faint); margin: 0.8rem 0 0; letter-spacing: 0.01em; }
   .cards-byline a { color: var(--text-dim); text-decoration: none; }
-  .cards-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+  .cards-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset:.22em; }
   .cards-byline .byline-fresh { color: var(--text-faint); }
   .cards-faq { max-width: 760px; margin: 3rem auto 0; }
   .cards-faq h2 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1.1rem; color: var(--text); }
@@ -736,7 +734,7 @@ document.addEventListener('astro:page-load', _initCards);
     color: var(--gold);
     text-decoration: underline;
     text-decoration-color: rgba(201, 151, 58, 0.5);
-    text-underline-offset: 3px;
+    text-underline-offset:.22em;
   }
 
   /* ── Mobile ── */

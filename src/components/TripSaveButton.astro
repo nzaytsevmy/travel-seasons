@@ -1,5 +1,5 @@
 ---
-// «Планирую сюда» — сохраняет направление (+ месяц, если известен со страницы)
+// «Хочу сюда» — сохраняет направление (+ месяц, если известен со страницы)
 // в localStorage (tt_trip), чтобы собрать дашборд на /my/. Без бэкенда,
 // без аккаунта — честно: хранится только в этом браузере.
 interface Props {
@@ -11,9 +11,9 @@ const { slug, nom, monthIdx = null } = Astro.props;
 ---
 <div class="tsb-wrap">
   <button type="button" class="tsb" data-slug={slug} data-month={monthIdx ?? ''} data-nom={nom}>
-    <span class="tsb-txt">Планирую сюда →</span>
+    <span class="tsb-txt">Хочу сюда</span>
   </button>
-  <a href="/my/" class="tsb-open" hidden>Открыть «Моя поездка» →</a>
+  <a href="/my/" class="tsb-open" hidden>Открыть мою поездку</a>
 </div>
 
 <script>
@@ -32,7 +32,7 @@ const { slug, nom, monthIdx = null } = Astro.props;
     function refresh() {
       const t = current();
       const saved = Boolean(t && t.slug === slug);
-      if (txt) txt.textContent = saved ? 'Убрать из «Моя поездка»' : 'Планирую сюда →';
+      if (txt) txt.textContent = saved ? 'Убрать из планов' : 'Хочу сюда';
       btn.classList.toggle('is-saved', saved);
       if (open) open.hidden = !saved;
     }
@@ -65,8 +65,10 @@ const { slug, nom, monthIdx = null } = Astro.props;
   font-size: .92rem;
   font-weight: 700;
   color: var(--gold);
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  text-align: left;
+  text-decoration: underline 1px color-mix(in srgb, var(--gold) 55%, transparent);
+  text-underline-offset: 0.22em;
+  text-decoration-skip-ink: auto;
 }
 .tsb:hover { color: var(--gold-dim); }
 .tsb:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
@@ -74,7 +76,7 @@ const { slug, nom, monthIdx = null } = Astro.props;
 .tsb-open {
   display: inline-flex; align-items: center; min-height: 44px;
   font-size: .84rem; font-weight: 600; color: var(--text-dim);
-  text-decoration: underline; text-underline-offset: 3px;
+  text-decoration: underline 1px; text-underline-offset: 0.22em; text-decoration-skip-ink: auto;
 }
 .tsb-open[hidden] { display: none; }
 .tsb-open:hover { color: var(--gold); }

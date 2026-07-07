@@ -193,10 +193,7 @@ const pricesUpdatedAt = pricesData.updatedAt
   </div>
 
   <div class="mission">
-    <span class="mission-pill pill-os">⊹ Open Source</span>
-    <span class="mission-pill pill-free">✓ Бесплатно навсегда</span>
-    <span class="mission-pill pill-uni">◈ Без воды и рекламы</span>
-    <span class="mission-sep">·</span>
+    <span class="mission-note">Открытый код · бесплатно навсегда · без воды и рекламы</span>
     <span style="font-size:0.75rem;color:var(--text-dim)">Кликни на месяц — открой полную карточку</span>
   </div>
 
@@ -209,7 +206,7 @@ const pricesUpdatedAt = pricesData.updatedAt
       aria-label="Поиск по таблице"
       autocomplete="off"
     />
-    <span class="controls-label">Месяц →</span>
+    <span class="controls-label">Месяц</span>
     <button class="month-btn" data-month="0" aria-pressed="false">Янв</button>
     <button class="month-btn" data-month="1" aria-pressed="false">Фев</button>
     <button class="month-btn" data-month="2" aria-pressed="false">Мар</button>
@@ -348,12 +345,12 @@ const pricesUpdatedAt = pricesData.updatedAt
 
     <h2 style="margin-top:1.5rem">Куда поехать без визы или с eVisa?</h2>
     <p><strong>Без визы для россиян:</strong> <a href="/turkey/">Турция</a>, <a href="/georgia/">Грузия</a>, <a href="/armenia/">Армения</a>, <a href="/uzbekistan/">Узбекистан</a>, <a href="/kazakhstan/">Казахстан</a>, <a href="/kyrgyzstan/">Кыргызстан</a>, <a href="/uae/">ОАЭ</a>, <a href="/thailand/">Таиланд</a>, <a href="/vietnam/">Вьетнам</a>, <a href="/maldives/">Мальдивы</a>, <a href="/south-africa/">ЮАР</a>, <a href="/morocco/">Марокко</a>, <a href="/cuba/">Куба</a>, <a href="/dominican-republic/">Доминикана</a>, <a href="/mexico/">Мексика</a>, <a href="/chile-patagonia/">Чили</a>, <a href="/switzerland/">Швейцария</a> по Шенгену.<br /><strong>С eVisa онлайн:</strong> <a href="/bali/">Индонезия (Бали)</a>, <a href="/sri-lanka/">Шри-Ланка</a>, <a href="/india-goa/">Индия (Гоа)</a>, <a href="/kenya/">Кения</a>, <a href="/egypt/">Египет</a>, <a href="/south-korea/">Южная Корея</a>, <a href="/tajikistan/">Таджикистан</a>.<br /><strong>Стандартная виза:</strong> <a href="/japan/">Япония</a>, страны Шенгена, <a href="/canada-east/">Канада</a>, <a href="/australia-north/">Австралия</a>.</p>
-    <p class="faq-hubs"><a href="/visa/"><strong>Все визовые требования по странам →</strong></a> · <a href="/countries/"><strong>Каталог всех 70+ направлений →</strong></a></p>
+    <p class="faq-hubs"><a href="/visa/"><strong>Все визовые требования по странам</strong></a> · <a href="/countries/"><strong>Каталог всех 70+ направлений</strong></a></p>
 
     <p class="faq-note">Виза и бюджет актуальны для граждан России на 2026 год. Всегда уточняйте визовые требования на сайте консульства перед покупкой билетов.</p>
 
     <h2 style="margin-top:1.5rem">Что взять в поездку</h2>
-    <p>Чек-листы по 70+ странам и 12 месяцам — одежда под погоду, документы, аптечка, техника, переходник. <a href="/packing/"><strong>Открыть чек-листы поездок →</strong></a></p>
+    <p>Чек-листы по 70+ странам и 12 месяцам — одежда под погоду, документы, аптечка, техника, переходник. <a href="/packing/"><strong>Открыть чек-листы поездок</strong></a></p>
   </section>
 
   <AviasalesWidget title="Найти билеты — куда планируешь поехать?" subid="seasons" />
@@ -363,7 +360,7 @@ const pricesUpdatedAt = pricesData.updatedAt
       <strong>Open Source проект о путешествиях.</strong> Знаешь направление которого здесь нет?<br />
       Добавь регион, фичу или исправь данные — любой вклад приветствуется.
     </p>
-    <a class="contribute-btn" href="https://github.com/nzaytsevmy/traveltribe-feedback" target="_blank" rel="noopener">→ Contribute on GitHub</a>
+    <a class="contribute-btn" href="https://github.com/nzaytsevmy/traveltribe-feedback" target="_blank" rel="noopener">Contribute on GitHub</a>
   </div>
   </main>
 
@@ -401,7 +398,7 @@ const pricesUpdatedAt = pricesData.updatedAt
       <a id="panelAviasales" class="panel-cta panel-cta-primary" href="#" target="_blank" rel="noopener sponsored">Найти билет на Aviasales</a>
       <span class="ad-mark panel-ad-mark">партнёрская ссылка, цена не меняется</span>
       <div class="panel-cta-row">
-        <a id="panelBlog" class="panel-cta panel-cta-secondary" href="#" hidden>Гид по стране →</a>
+        <a id="panelBlog" class="panel-cta panel-cta-secondary" href="#" hidden>Гид по стране</a>
         <button id="panelShare" class="panel-cta panel-cta-secondary" type="button">Поделиться</button>
       </div>
     </footer>
@@ -607,7 +604,7 @@ function openPanel(cell) {
   const guideBtn = document.getElementById('panelBlog');
   if (slug) {
     guideBtn.href = `/${slug}/`;
-    guideBtn.textContent = blog ? 'Полный гид по стране →' : 'Виза, сезоны и бюджет →';
+    guideBtn.textContent = blog ? 'Полный гид по стране' : 'Виза, сезоны и бюджет';
     guideBtn.removeAttribute('hidden');
   } else {
     guideBtn.setAttribute('hidden', '');
@@ -918,21 +915,15 @@ header {
   max-width: 1400px; margin: 0 auto 2rem; padding: 2.4rem clamp(1rem, 4vw, 3rem) 0;
   display: flex; flex-direction: column; gap: 0.5rem;
 }
-header:not(.panel-header)::before {   /* eyebrow только у героя страницы; .panel-header — тоже <header>, не протекать в панель */
-  content: "DEPARTURES · СЕЗОННОЕ ТАБЛО · 2026";
-  font-family: var(--ff-mono); font-size: 11px; font-weight: 500;
-  letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold);
-  margin-bottom: 0.4rem;
-}
 h1 {
   font-family: var(--ff-mono); font-size: clamp(2.3rem, 6vw, 4.6rem); font-weight: 700;
   letter-spacing: -0.03em; line-height: 0.94; text-transform: uppercase;
 }
 h1 em { color: var(--gold); font-style: normal; }
-.subtitle { color: var(--gold-dim); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; margin-top: 0.7rem; }
+.subtitle { color: var(--gold-dim); font-size: 0.82rem; margin-top: 0.7rem; }
 .seasons-byline { font-size: 0.76rem; color: var(--text-faint); margin-top: 0.6rem; letter-spacing: 0.01em; }
 .seasons-byline a { color: var(--text-dim); text-decoration: underline; text-decoration-color: rgba(86,82,74,0.5); text-underline-offset: 2px; }
-.seasons-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset: 3px; }
+.seasons-byline a.byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(201,151,58,0.5); text-underline-offset:.22em; }
 .seasons-byline .byline-fresh { color: var(--text-faint); }
 
 /* Answer-first TL;DR — прямой ответ + как читать таблицу (критичный контент в начале) */
@@ -946,14 +937,7 @@ h1 em { color: var(--gold); font-style: normal; }
 .tldr-box strong { color: var(--text); font-weight: 600; }
 
 .mission { max-width: 1400px; margin: 0 auto 1.5rem; padding: 0 clamp(1rem, 4vw, 3rem); display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
-.mission-pill {
-  display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.64rem;
-  letter-spacing: 0.05em; padding: 0.22rem 0.6rem; border-radius: var(--radius-pill); border: 1px solid;
-  text-transform: uppercase;
-}
-.pill-os   { color: var(--text); border-color: var(--gold); background: rgba(201,151,58,0.10); font-weight: 700; }
-.pill-free { color: var(--text); border-color: var(--text); background: transparent; font-weight: 700; }
-.pill-uni  { color: var(--text); border-color: var(--text-dim); background: transparent; font-weight: 700; }
+.mission-note { font-size: 0.78rem; color: var(--text-dim); font-weight: 500; }
 .mission-sep { color: var(--gold-dim); font-size: 0.8rem; }
 
 .footer-contribute {
