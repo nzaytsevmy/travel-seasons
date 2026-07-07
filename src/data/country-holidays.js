@@ -69,7 +69,7 @@ export const HOLIDAYS = {
 
   'malaysia': [
     { month: 1, name: 'Тайпусам (Thaipusam)', dates: 'плавающая (~январь)', tag: 'fest',
-      note: '2026: ~3 февраля; крупнейшее индуистское паломничество в Бату-Кейвз' },
+      note: '2026: 1 февраля; крупнейшее индуистское паломничество в Бату-Кейвз' },
     { month: 2, name: 'Китайский Новый год', dates: 'плавающая', tag: 'closed',
       note: '2026: 17 февраля; в KL, Penang всё закрыто 2-3 дня' },
     { month: 4, name: 'Ураза-Байрам (Hari Raya Aidilfitri)', dates: 'плавающая', tag: 'closed',
@@ -151,7 +151,7 @@ export const HOLIDAYS = {
 
   'bali': [
     { month: 3, name: 'Ньепи (День молчания, индуистский Новый год)', dates: 'плавающая (~март)', tag: 'closed',
-      note: 'весь Бали в тишине 24 часа; аэропорт закрыт; запрет выходить из отеля. 2026: 11 марта' },
+      note: 'весь Бали в тишине 24 часа; аэропорт закрыт; запрет выходить из отеля. 2026: 19 марта' },
     { month: 4, name: 'Галунган', dates: 'плавающая (каждые 210 дней)', tag: 'fest',
       note: 'праздник победы добра над злом; деревни украшены пенджорами' },
     { month: 5, name: 'Кунинган', dates: '10 дней после Галунгана', tag: 'fest',
@@ -416,13 +416,28 @@ export function getEventsByMonth(monthNum) {
 }
 
 // Топ событий года по значимости (closed > fest > culture) — для годового хаба /events/.
+// Дедуп по названию (одно событие в нескольких странах — напр. Чуньцзе в Китае и Хайнане)
+// + максимум одно событие на страну, чтобы список не забивался одной страной.
 export function getTopEventsOfYear(n = 8) {
   const TAG_WEIGHT = { closed: 3, fest: 2, culture: 1 };
+  const norm = (s) => (s || '').toLowerCase().replace(/[^a-zа-я0-9]/gi, '');
   const all = [];
   for (const slug of Object.keys(HOLIDAYS)) {
     for (const ev of HOLIDAYS[slug]) all.push({ slug, ...ev });
   }
-  return all
-    .sort((a, b) => (TAG_WEIGHT[b.tag] || 0) - (TAG_WEIGHT[a.tag] || 0))
-    .slice(0, n);
+  const sorted = all.sort((a, b) =>
+    (TAG_WEIGHT[b.tag] || 0) - (TAG_WEIGHT[a.tag] || 0) || a.month - b.month
+  );
+  const seenName = new Set();
+  const seenCountry = new Set();
+  const out = [];
+  for (const ev of sorted) {
+    const nameKey = norm(ev.name);
+    if (seenName.has(nameKey) || seenCountry.has(ev.slug)) continue;
+    seenName.add(nameKey);
+    seenCountry.add(ev.slug);
+    out.push(ev);
+    if (out.length >= n) break;
+  }
+  return out;
 }

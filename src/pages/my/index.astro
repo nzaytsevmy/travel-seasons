@@ -111,7 +111,6 @@ const title = 'Моя поездка — TravelTribe';
   const PRICE_IDX = JSON.parse(document.getElementById('mypPriceIdx').textContent);
   const MONTHS = ['january','february','march','april','may','june','july','august','september','october','november','december'];
   const MONTH_PREP = ['январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
-  const MONTH_NOM = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
   const RANK_LABEL = { P: 'Пик сезона', G: 'Хорошо', O: 'Нормально', B: 'Не лучший месяц', X: 'Закрыто' };
   const TAG_LABEL = { closed: 'выходные/закрыто', fest: 'фестиваль', culture: 'сезонное' };
 
@@ -157,7 +156,7 @@ const title = 'Моя поездка — TravelTribe';
     const daysInp = document.getElementById('mypDays');
     const peopleInp = document.getElementById('mypPeople');
     const dateInp = document.getElementById('mypDate');
-    monthSel.value = trip.monthIdx != null ? String(trip.monthIdx) : '0';
+    monthSel.value = trip.monthIdx != null ? String(trip.monthIdx) : String(new Date().getMonth());
     daysInp.value = trip.days || 7;
     peopleInp.value = trip.people || 1;
     dateInp.value = trip.dateStart || '';

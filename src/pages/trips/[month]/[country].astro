@@ -1,7 +1,6 @@
 ---
 // Страница «направление × месяц» — Swiss / International Typographic по BRANDBOOK.md.
 // Типографический hero (без градиента/эмодзи), hairline-таблицы, сезон передан весом/золотом.
-import '@fontsource-variable/golos-text/index.css';
 import Layout from '../../../layouts/Layout.astro';
 import Footer from '../../../components/Footer.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
@@ -127,7 +126,7 @@ const ldJson = {
       "@type": "Article",
       "@id": `${url}#article`,
       "url": url,
-      "headline": `${d.cases.nom} в ${m.prep} ${yr}: погода, цены, виза`,
+      "headline": reframe ? `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}: цены и толпы` : `${d.cases.nom} в ${m.prep} ${yr}: погода, цены, виза`,
       "description": `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}: погода, цены на перелёт и отель, виза для россиян. ${lbl.verdict}.`,
       "inLanguage": "ru-RU",
       "datePublished": "2026-05-10",
@@ -158,11 +157,11 @@ const ldJson = {
 const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
 ---
 <Layout
-  title={reframe ? `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}: цены, толпы, что взять` : `${d.cases.nom} в ${m.prep} ${yr}: погода, цены, виза`}
+  title={reframe ? `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}: цены и толпы` : `${d.cases.nom} в ${m.prep} ${yr}: погода, цены, виза`}
   description={`Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr} — погода, цены, виза для россиян, бюджет на неделю. ${lbl.verdict}.`}
   canonical={url}
   noindex={status === 'X' || NICHE_TRIPS.has(d.slug)}
-  ogTitle={`${d.cases.nom} в ${m.prep} ${yr}`}
+  ogTitle={reframe ? `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}` : `${d.cases.nom} в ${m.prep} ${yr}`}
   ogDescription={`${lbl.tag}. ${text.slice(0, 130)}`}
   ogType="article"
   ldJson={ldJson}
