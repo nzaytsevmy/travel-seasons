@@ -20,3 +20,32 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run build
+
+  # Гейт свежести: правка контента/данных обязана бампать DATA_UPDATED (meta.js),
+  # иначе sitemap lastmod и byline «данные проверены …» соврут о дате. Ловит
+  # застой даты (было: 5 релизов подряд на замороженной 2026-06-29).
+  freshness-gate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: DATA_UPDATED freshness gate
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          CHANGED=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          CONTENT=$(echo "$CHANGED" | grep -E '^src/(content|data)/' | grep -vE '^src/data/(prices-cache\.json|meta\.js)$' || true)
+          if [ -z "$CONTENT" ]; then
+            echo "✔ контент/данные не менялись — бамп даты не требуется"; exit 0
+          fi
+          if echo "$CHANGED" | grep -qx 'src/data/meta.js'; then
+            echo "✔ контент/данные изменены и DATA_UPDATED (meta.js) бампнут"
+          else
+            echo "✖ изменён контент/данные, но src/data/meta.js (DATA_UPDATED) не тронут."
+            echo "  Бампни дату актуальности — иначе sitemap lastmod и byline соврут о свежести."
+            echo "$CONTENT" | sed 's/^/    /'
+            exit 1
+          fi

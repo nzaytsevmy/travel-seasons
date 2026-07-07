@@ -11,6 +11,8 @@ permissions:
 jobs:
   visual:
     runs-on: ubuntu-latest
+    # Без лимита job наследовал дефолтные 6 ч — зависший прогон крутился часами.
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
 
@@ -33,7 +35,11 @@ jobs:
 
       - name: Wait for server
         run: |
-          until curl -sf http://localhost:4322/ > /dev/null; do sleep 2; done
+          for i in $(seq 1 60); do
+            curl -sf http://localhost:4322/ > /dev/null && exit 0
+            sleep 2
+          done
+          echo "✖ preview-сервер не поднялся за 120с"; exit 1
 
       - name: Run visual regression tests
         run: npm run check:visual

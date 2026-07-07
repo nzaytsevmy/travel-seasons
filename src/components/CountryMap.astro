@@ -3,16 +3,15 @@
 // Lazy-load из CDN через IntersectionObserver (карта инициализируется только когда видна).
 // Pins — gold круг с номером 01..N, белый контур (без box-shadow по брендбуку).
 //
-// Usage: <CountryMap slug="japan" countryNom="Япония" idx="07" />
+// Usage: <CountryMap slug="japan" countryNom="Япония" />
 
 import { getPois } from '../data/country-pois.js';
 
 interface Props {
   slug: string;
   countryNom?: string;
-  idx?: string;
 }
-const { slug, countryNom, idx = '04' } = Astro.props;
+const { slug, countryNom } = Astro.props;
 const data = getPois(slug);
 if (!data?.pois?.length) return null as any;
 
@@ -30,7 +29,6 @@ const TYPE_LABEL: Record<string, string> = {
 
 <section class="cm" aria-label={`Карта — ${countryNom || slug}`}>
   <header class="cm-h">
-    <span class="cm-n">{idx}</span>
     <h2 class="cm-t">Где смотреть{countryNom ? ` — ${countryNom}` : ''}</h2>
     <span class="cm-meta">{data.visited ? 'Реальный маршрут' : 'Обзорная карта'} · {data.pois.length} точек</span>
   </header>
@@ -185,10 +183,6 @@ const TYPE_LABEL: Record<string, string> = {
   padding-top: .8rem;
   display: flex; align-items: baseline; flex-wrap: wrap; gap: .4rem .9rem;
   margin-bottom: .35rem;
-}
-.cm-n {
-  font-size: .74rem; font-weight: 700; color: var(--gold);
-  letter-spacing: .04em;
 }
 .cm-t {
   font-weight: 800;

@@ -2,11 +2,10 @@
 // из уже существующих источников (никаких новых чисел, только агрегация).
 // Используется и в статичных /compare/<pair>/ (Astro), и встраивается как
 // JSON в /compare/ для клиентского пикера произвольной пары.
-import { bySlug } from './directions.js';
+import { bySlug, VISITED } from './directions.js';
 import { VISA_DETAILS } from './visa-details.js';
 import realBudgets from './real-budgets-2026.json';
 import { PLUG_TYPES } from './country-plug-types.js';
-import { VISITED } from './directions.js';
 
 export const RANK = { P: 4, G: 3, O: 2, B: 1, X: 0 };
 export const RANK_LABEL = { P: 'Пик сезона', G: 'Хорошо', O: 'Нормально', B: 'Не лучший месяц', X: 'Закрыто' };
@@ -60,9 +59,11 @@ export function compareEntries(a, b) {
     }
   }
 
-  const visaScore = (e) => (e.visaFree ? 0 : (e.visa ? 1 : 0.5));
+  // null = визовых данных нет; вердикт «виза проще» выносим только когда обе стороны известны,
+  // иначе отсутствие данных ошибочно читалось бы как «проще».
+  const visaScore = (e) => (e.visaFree ? 0 : (e.visa ? 1 : null));
   const sa = visaScore(a), sb = visaScore(b);
-  if (sa !== sb) out.easierVisa = sa < sb ? a.slug : b.slug;
+  if (sa !== null && sb !== null && sa !== sb) out.easierVisa = sa < sb ? a.slug : b.slug;
 
   if (a.goodNow !== b.goodNow) out.betterNow = a.goodNow ? a.slug : (b.goodNow ? b.slug : null);
 

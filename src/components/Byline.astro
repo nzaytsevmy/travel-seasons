@@ -1,0 +1,18 @@
+---
+// Видимый byline для содержательных страниц (E-E-A-T): автор → /about/, Telegram,
+// дата актуальности. Классы .byline-author/.byline-fresh — канон репо.
+import { DATA_UPDATED_RU } from '../data/meta.js';
+const { note } = Astro.props;
+---
+<p class="byline">
+  <a href="/about/" class="byline-author">Никита Зайцев</a> ·
+  <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
+  <span class="byline-fresh">обновлено {DATA_UPDATED_RU}{note ? ` · ${note}` : ''}</span>
+</p>
+
+<style>
+  .byline { font-size: .78rem; line-height: 1.5; color: var(--text-faint); margin: .6rem 0 0; }
+  .byline a { color: var(--text-dim); text-decoration: underline 1px rgba(107,104,94,.5); text-underline-offset: 2px; }
+  .byline a.byline-author { color: var(--gold); text-decoration: underline 1px rgba(142,102,24,.5); text-underline-offset: .22em; }
+  .byline-fresh { color: var(--text-faint); }
+</style>

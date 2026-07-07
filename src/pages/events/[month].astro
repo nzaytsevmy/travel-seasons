@@ -8,7 +8,9 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { MONTHS, bySlug } from '../../data/directions.js';
 import { getEventsByMonth } from '../../data/country-holidays.js';
 import { EVENTS_MONTHLY_INTRO } from '../../data/events-monthly-intro.js';
-import { DATA_UPDATED_RU } from '../../data/meta.js';
+import { aviasalesRoute, cherehapaTravel } from '../../data/affiliate.js';
+import Byline from '../../components/Byline.astro';
+import { DATA_UPDATED_RU, DATA_UPDATED } from '../../data/meta.js';
 
 export async function getStaticPaths() {
   return MONTHS.map((m, i) => ({ params: { month: m.slug }, props: { m, monthIdx: i } }));
@@ -45,6 +47,14 @@ const countryWord = plural(countryCount, 'страна', 'страны', 'стр
 const prevIdx = (monthIdx + 11) % 12;
 const nextIdx = (monthIdx + 1) % 12;
 
+// Партнёрские CTA: билеты в топ-фестивальные направления месяца (deep-link) + страховка.
+const festCtas = fest
+  .map((e) => { const d = bySlug(e.slug); return d?.iata ? { nom: e.nom, iata: d.iata, from: d.price?.flight?.[0] || null } : null; })
+  .filter(Boolean)
+  .slice(0, 2)
+  .map((e) => ({ label: `Билет в ${e.nom}${e.from ? ` от $${e.from}` : ''}`, href: aviasalesRoute('MOW', e.iata, `events_${m.slug}`) }));
+const insuranceCta = cherehapaTravel(`events_${m.slug}`);
+
 const url = `https://traveltribe.ru/events/${m.slug}/`;
 const title = `Фестивали и праздники мира в ${m.prep} 2026`;
 const description = `Что закрыто, что стоит успеть и какие фестивали идут в ${m.prep}: ${events.length} ${eventWord} по ${countryCount} странам — с датами и практическими нюансами.`.slice(0, 155);
@@ -80,7 +90,7 @@ const ldJson = {
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "datePublished": "2026-07-06",
-      "dateModified": DATA_UPDATED_RU,
+      "dateModified": DATA_UPDATED,
       "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".evt-tldr"] },
     },
     {
@@ -114,6 +124,7 @@ const ldJson = {
       <div class="evt-meta">Календарь<br /><b>Обновлено {DATA_UPDATED_RU}</b></div>
       <h1 class="evt-h1">Праздники и фестивали <span class="rd">в {m.prep}</span></h1>
       {editorial && <p class="evt-tldr">{editorial.intro}</p>}
+      <div class="evt-byline-row"><Byline /></div>
     </section>
 
     {closed.length > 0 && (
@@ -171,6 +182,18 @@ const ldJson = {
         <p class="evt-verdict">{editorial.verdict}</p>
       </section>
     )}
+
+    <section class="evt-section">
+      <div class="evt-shead"><h2>Собраться на праздник</h2></div>
+      <p class="evt-note">Фестивальные даты поднимают цены на билеты и жильё — берите заранее. Страховку тоже стоит оформить до вылета.</p>
+      <p class="evt-cta-row">
+        {festCtas.map((c) => (
+          <a class="evt-aff" href={c.href} rel="sponsored noopener" target="_blank">{c.label}</a>
+        ))}
+        <a class="evt-aff" href={insuranceCta} rel="sponsored noopener" target="_blank">Оформить страховку под поездку</a>
+      </p>
+      <span class="evt-cta-trust">оплата картами РФ · цена не меняется, блог получает комиссию</span>
+    </section>
 
     <section class="evt-section">
       <div class="evt-shead"><h2>FAQ</h2></div>
@@ -231,10 +254,16 @@ const ldJson = {
 .evt-h1 .rd { color: var(--gold); }
 .evt-tldr { grid-column: 1 / 11; grid-row: 3; font-size: clamp(1rem, 1.3vw, 1.15rem); color: var(--text); line-height: 1.6; margin-top: 1.3rem; }
 
+.evt-byline-row { grid-column: 1 / 13; grid-row: 4; margin-top: .5rem; }
+
 .evt-section { border-top: 2px solid #1b1914; padding: clamp(1.4rem, 3vw, 2.2rem) 0; scroll-margin-top: 80px; }
 .evt-shead h2 { font-size: clamp(1.2rem, 2.4vw, 1.6rem); font-weight: 800; letter-spacing: -.015em; margin: 0 0 .5rem; }
 .evt-note { font-size: .88rem; color: var(--text-dim); margin: 0 0 1rem; }
 .evt-verdict { font-size: 1rem; line-height: 1.6; }
+.evt-cta-row { display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; margin: 0; }
+.evt-aff { font-weight: 700; color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset:.22em; display: inline-flex; align-items: center; min-height: 44px; }
+.evt-aff:hover { color: var(--gold-dim); }
+.evt-cta-trust { display: block; margin-top: .3rem; font-size: .74rem; color: var(--text-faint); }
 
 .evt-list { list-style: none; margin: 0; padding: 0; }
 .evt-list li {
