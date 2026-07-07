@@ -251,7 +251,7 @@ const ldJson = {
 
 .filters{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:.7rem 1.8rem;padding:.7rem 0;border-bottom:1px solid var(--line)}
 .fg{display:flex;align-items:center;gap:.6rem}
-.fright{display:flex;align-items:center;gap:1.2rem;margin-left:auto}                                        /* сортировку — в правый «кластер результата» (другой тип контрола) */
+.fright{display:flex;align-items:center;gap:1.2rem;width:100%;justify-content:space-between;border-top:1px solid var(--hair);padding-top:.7rem;margin-top:.3rem}   /* всегда своя строка с hairline-разделителем — margin-left:auto тянул блок к правому краю 1280px-контейнера, оставляя пустой провал на любом обычном десктопе (аудит 2026-07-07) */
 .fl{font-size:.66rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
 .fopts{display:flex;gap:.4rem}
 .t{font-family:var(--ff);font-size:.84rem;font-weight:500;color:var(--ink);background:none;border:none;padding:0 .15rem;min-height:44px;display:inline-flex;align-items:center;cursor:pointer;text-decoration:underline 1px transparent;text-underline-offset:.22em}
@@ -262,12 +262,6 @@ const ldJson = {
 .fopts .t.on{border-color:var(--gold);color:var(--gold);background:rgba(142,102,24,.06)}
 select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:none;border-bottom:2px solid var(--ink);border-radius:0;padding:0 1.2rem 0 .15rem;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' fill='none' stroke='%2315140f' stroke-width='1.8'%3E%3Cpath d='M1 1l3.5 3.5L8 1'/%3E%3C/svg%3E") right .1rem center no-repeat;width:6.2em}                     /* фикс-ширина: intrinsic-width select по опциям расходится между Chromium и WebKit («сентябрь») — без width точка переноса .filters плывёт по движку */
 .fcount{font-size:.8rem;font-weight:600;border-left:1px solid var(--hair);padding-left:1rem;white-space:nowrap}.fcount b{color:var(--gold);font-size:1.5rem;font-weight:700;margin-right:.2rem;vertical-align:-1px}
-/* Промежуточная зона (761–1100px): natural flex-wrap слишком чувствителен к суб-пиксельным
-   расхождениям Chromium/WebKit (шрифт, select) — .fright либо делит строку с чипами (Safari),
-   либо переносится (Chrome). Детерминируем: .fright всегда своей строкой, без сюрпризов по движку. */
-@media(max-width:1100px) and (min-width:761px){
-  .fright{margin-left:0;flex-basis:100%;justify-content:space-between;border-top:1px solid var(--hair);padding-top:.6rem;margin-top:.2rem}
-}
 /* Мобайл: фильтры в столбик, подписи фикс-ширины → опции выровнены ровной колонкой */
 @media(max-width:760px){
   /* подпись НАД чипами → опции на всю ширину (влезают в один ряд, без сирот), тесный ритм */
