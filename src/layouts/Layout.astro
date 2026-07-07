@@ -177,9 +177,13 @@ const finalLd = {
 
   <!-- Шрифты: один гротеск Golos Text (variable). @font-face с font-display:optional
        объявлен здесь (не через fontsource index.css со swap → это и давало CLS).
-       preload cyrillic-сабсета — чтобы Golos успел в окно ~100мс и был виден с первого
-       кадра. Newsreader/Onest убраны при Swiss-миграции 2026-05-23. JetBrains Mono — в global.css. -->
+       preload cyrillic + latin — двух сабсетов, что реально используются на любой странице
+       (кириллица + цифры/латиница). Под optional браузер применяет шрифт, только если тот
+       готов в окно ~100мс; без preload на длинных страницах часть текста рендерилась в
+       fallback → разъезд высоты (blog-japan). cyrillic-ext/latin-ext (редкие глифы) не
+       преложены намеренно. Newsreader/Onest убраны 2026-05-23. JetBrains Mono — в global.css. -->
   <link rel="preload" as="font" type="font/woff2" href={golosCyr} crossorigin="anonymous" />
+  <link rel="preload" as="font" type="font/woff2" href={golosLat} crossorigin="anonymous" />
   <style set:html={golosFontFace}></style>
 
   <script type="application/ld+json" set:html={JSON.stringify(finalLd)} />
