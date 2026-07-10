@@ -213,6 +213,9 @@ const RELATED_POSTS = {
   'hainan': [
     { slug: 'hainan-guide-2026', title: 'Хайнань 2026: безвиз, Alipay, VPN, цены', kind: 'guide' },
   ],
+  'india-goa': [
+    { slug: 'goa-guide-2026', title: 'Отдых на Гоа 2026: сезон, цены, Северный или Южный', kind: 'guide' },
+  ],
   'china': [
     { slug: 'china-guide-2026', title: 'Китай 2026 россиянам: безвиз 30 дней, цены, маршрут', kind: 'guide' },
     { slug: 'hainan-guide-2026', title: 'Хайнань 2026 — тропический Китай', kind: 'guide' },
