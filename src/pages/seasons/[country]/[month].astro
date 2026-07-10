@@ -101,7 +101,6 @@ const otherMonths = Object.keys(country.months).filter(m => m !== monthKey);
 
   <main id="main" class="seasons-page">
     <header class="seasons-header">
-      <p class="seasons-tag">{country.name} · {monthMeta.name} {yr}</p>
       <h1>{country.name} в {monthMeta.loc} {yr}: погода, цены, что делать</h1>
       <p class="seasons-tldr">{tldr}</p>
       <p class="seasons-byline">
@@ -260,10 +259,6 @@ const otherMonths = Object.keys(country.months).filter(m => m !== monthKey);
 }
 
 .seasons-header { margin-bottom: 2.5rem; }
-.seasons-tag {
-  font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--gold); margin: 0 0 0.8rem;
-}
 .seasons-header h1 {
   font-family: var(--ff-body);
   font-size: clamp(1.8rem, 4vw, 2.6rem);

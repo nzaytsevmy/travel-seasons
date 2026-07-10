@@ -111,7 +111,6 @@ const ldJson = {
 
   <main id="main" class="cmpg">
     <section class="cmpg-manifest">
-      <div class="cmpg-idx">Сравнение<b>{pairDef.angle}</b></div>
       <div class="cmpg-meta">Компаратор<br /><b>Обновлено {DATA_UPDATED_RU}</b></div>
       <h1 class="cmpg-h1">{a.nom} <span class="rd">или</span> {b.nom}</h1>
       <p class="cmpg-tldr">{verdictPoints[0]}</p>
@@ -188,13 +187,6 @@ const ldJson = {
   gap: 0 clamp(.8rem, 2vw, 1.6rem);
   padding: clamp(1rem, 2vw, 1.8rem) 0 clamp(1.2rem, 2.5vw, 2rem);
 }
-.cmpg-idx {
-  grid-column: 1 / 7; grid-row: 1;
-  font-size:.82rem; font-weight: 700;
-   
-  color: var(--gold);
-}
-.cmpg-idx b { display: block; color: var(--text); font-size: .74rem; font-weight: 600; margin-top: .2rem; }
 .cmpg-meta {
   grid-column: 8 / 13; grid-row: 1;
   text-align: right; align-self: start;

@@ -33,9 +33,8 @@ const sampleSources = b.sources?.slice(0, compact ? 2 : 5) || [];
 <section class="budget-block" aria-label={`Реальные траты в ${b.country_ru}`}>
   {!compact && (
     <header class="bb-head">
-      <div class="bb-eyebrow">Реальные траты, 2026 год</div>
       <h2 class="bb-title">{title || `${b.country_ru}: сколько на самом деле тратят`}</h2>
-      <p class="bb-sub">Кросс-источниковая агрегация по {sourceCount} источникам — российским и переведённым с английского.</p>
+      <p class="bb-sub">Собрано по {sourceCount} источникам — российским и переведённым с английского.</p>
     </header>
   )}
 
@@ -98,12 +97,6 @@ const sampleSources = b.sources?.slice(0, compact ? 2 : 5) || [];
   margin: 2rem 0;
 }
 .bb-head { margin-bottom: 1.25rem; }
-.bb-eyebrow {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--gold-600, var(--gold));
-  margin-bottom: 0.4rem;
-}
 .bb-title {
   font-family: var(--ff-display);
   font-size: clamp(1.3rem, 2.5vw, 1.7rem);
