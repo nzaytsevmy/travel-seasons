@@ -57,7 +57,7 @@ export const regionsRich = {
   },
   'egypt': {
     events: [null, null, 'Hurghada IRONMAN', null, null, null, null, null, null, null, null, null],
-    notes:  ['Январь — пик пляжного сезона, +24°C, дайвинг идеальный', null, 'Март — лучший месяц для Каира и пирамид: жары нет, толп тоже', null, null, null, null, null, null, null, 'Ноябрь — оптимум: тепло, цены ниже декабря на 30%', null],
+    notes:  ['Январь — пик пляжного сезона, +24°C, дайвинг идеальный', null, 'Март — лучший месяц для Каира и пирамид: жары нет, толп тоже', null, null, null, null, null, null, null, 'Ноябрь — лучшее время: тепло, цены ниже декабря на 30%', null],
     negatives: [null, null, null, null, null, null, null, null, null, null, null, 'но новогодние праздники — цены ×2, очереди ко всем достопримечательностям']
   },
   'morocco': {
@@ -193,7 +193,7 @@ export const regionsRich = {
   },
   'guatemala': {
     events: [null, null, 'Семана Санта в Антигуа', null, null, null, null, null, null, null, null, null],
-    notes:  [null, null, 'Антигуа на Семана Санту — ковры из цветных опилок на улицах, must-see', null, null, null, null, null, null, null, null, null],
+    notes:  [null, null, 'Антигуа на Семана Санту — ковры из цветных опилок на улицах, обязательно увидеть', null, null, null, null, null, null, null, null, null],
     negatives: [null, null, null, null, null, null, null, null, null, null, null, null]
   },
   'costa-rica': {
