@@ -94,7 +94,7 @@ export const POIS = {
       { name: 'Касабланка',   lat: 33.5731, lng: -7.5898, type: 'city',    note: 'мечеть Хасана II, экономический центр' },
       { name: 'Эссауира',     lat: 31.5125, lng: -9.7700, type: 'beach',   note: 'ветреная атлантическая, сёрф' },
       { name: 'Атлас (Имлиль)', lat: 31.1372, lng: -7.9189, type: 'nature',  note: 'базовый лагерь Toubkal (4167м)' },
-      { name: 'Айт-Бен-Хадду', lat: 31.0470, lng: -7.1314, type: 'culture', note: 'ksar UNESCO, локация Game of Thrones' }
+      { name: 'Айт-Бен-Хадду', lat: 31.0470, lng: -7.1314, type: 'culture', note: 'ksar UNESCO, место съёмок «Игры престолов»' }
     ],
     sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
   },
