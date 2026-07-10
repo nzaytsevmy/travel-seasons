@@ -141,7 +141,7 @@
 - 10+ FAQ
 - HowTo schema если процедура (виза, оплата, eSIM)
 - 3-5 фото (cover + inline)
-- 3-5 партнёрских ссылок контекстно (Aviasales, Ostrovok, Cherehapa, Airalo, Tripster)
+- 3-5 партнёрских ссылок контекстно (Aviasales, Ostrovok, Cherehapa, Airalo, YouTravel)
 - 2-3 internal links
 - Personal experience > compilation (+2 балла к ранжированию)
 
