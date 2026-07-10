@@ -39,9 +39,6 @@ export const TP_LINKS = {
   // ⚠ erid НЕОБХОДИМО получить от YouTravel/ОРД и подставить (38-ФЗ) — пока его нет.
   youtravel:  'https://travelme.g2afse.com/click?pid=1163&offer_id=1',
   // ─── РФ-направления (внутренний туризм) — все tpk.mx с erid (38-ФЗ) ───
-  // Tripster: экскурсии и авторские туры по РФ от местных гидов — ключевая
-  // монетизация внутренних направлений (морские прогулки, вертолёты, треккинги).
-  tripster:    'https://tripster.tpk.mx/UmtUx08Y?erid=2VtzqucRv9m',
   // Суточно: посуточная аренда жилья в РФ (частный сектор, апартаменты).
   sutochno:    'https://sutochno.tpk.mx/9wjPjf99?erid=2VtzqusFnyD',
   // Туту: ж/д + авиа + туры по РФ (поезда — Карелия, Байкал; внутр. перелёты).
@@ -64,7 +61,7 @@ export function aviasalesRoute(originIata, destIata, subId) {
 }
 
 // Дип-линк через tpk.mx: &u=<encoded target> пробрасывается у ВСЕХ партнёров
-// (curl-трейс 2026-07-02: cherehapa/ostrovok/yandexTravel/sutochno/tripster —
+// (curl-трейс 2026-07-02: cherehapa/ostrovok/yandexTravel/sutochno —
 // erid и партнёрские маркеры сохраняются). sub_id ВНУТРИ target доезжает до
 // Cherehapa и Aviasales; Ostrovok перетирает своим (там только дип, без метки).
 export function tpkDeep(linkKey, targetUrl) {
@@ -90,7 +87,3 @@ export const yandexTravelSub = (subId) =>
 // Ostrovok: страница города (проверено: /hotel/georgia/tbilisi/ → 200 с маркерами).
 export const ostrovokCity = (countrySlug, citySlug) =>
   tpkDeep('ostrovok', `https://ostrovok.ru/hotel/${countrySlug}/${citySlug}/`);
-
-// Tripster: экскурсии направления (проверено: /experience/abkhazia/ → 200).
-export const tripsterDest = (destSlug) =>
-  tpkDeep('tripster', `https://experience.tripster.ru/experience/${destSlug}/`);

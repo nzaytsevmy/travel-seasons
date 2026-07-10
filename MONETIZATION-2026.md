@@ -62,7 +62,7 @@ Awin Global Affiliate Report · Aviasales/Travelpayouts offer docs.
 
 ### 7. Диверсификация партнёров под intent
 - На каждый pillar: **перелёт (Aviasales) + отель (Ostrovok) + страховка (Cherehapa) +
-  связь (Airalo/Drimsim) + карта (PlatipoMiru) + экскурсии (Tripster/GetYourGuide)**.
+  связь (Airalo/Drimsim) + карта (PlatipoMiru) + авторские туры (YouTravel)**.
 - Match под раздел: билет — в «как добраться», страховка — в «здоровье/FAQ» и т.д.
 - Больше релевантных точек = больше шансов на коммуникацию с разными читателями.
 

@@ -247,14 +247,8 @@ const ldJson = {
 .cp-section { border-top: 2px solid #1b1914; padding: clamp(1.4rem, 3vw, 2.2rem) 0; scroll-margin-top: 80px; }
 .cp-shead h2 { font-size: clamp(1.2rem, 2.4vw, 1.6rem); font-weight: 800; letter-spacing: -.015em; margin: 0 0 .4rem; }
 .cp-sub { color: var(--text-dim); font-size: .92rem; margin: 0 0 1rem; }
-.cp-same { color: var(--text-dim); padding: 1rem 0; }
-.cp-deep { margin-top: 1rem; }
-.cp-deep a { color: var(--gold); font-weight: 700; text-decoration: underline; text-underline-offset:.22em; }
-
-.cp-cta-row { display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; margin-top: 1.4rem; }
-.cp-aff { font-weight: 700; color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset:.22em; display: inline-flex; align-items: center; min-height: 44px; }
-.cp-aff:hover { color: var(--gold-dim); }
-.cp-cta-trust { margin: .3rem 0 0; font-size: .74rem; color: var(--text-faint); }
+/* .cp-same/.cp-deep/.cp-cta-row/.cp-aff/.cp-cta-trust — рендерятся JS'ом в #cpResult,
+   поэтому их стили в глобальном блоке ниже (scoped сюда не долетает). */
 
 .cp-pairs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); }
 .cp-pairs li { border-top: 1px solid var(--line); }
@@ -275,6 +269,13 @@ const ldJson = {
    поэтому глобальный блок, ограниченный контейнером .cp-result). */
 </style>
 <style is:global>
+.cp-result .cp-same { color: var(--text-dim); padding: 1rem 0; }
+.cp-result .cp-deep { margin-top: 1rem; }
+.cp-result .cp-deep a { color: var(--gold); font-weight: 700; text-decoration: underline; text-underline-offset:.22em; }
+.cp-result .cp-cta-row { display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; margin-top: 1.4rem; }
+.cp-result .cp-aff { font-weight: 700; color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset:.22em; display: inline-flex; align-items: center; min-height: 44px; }
+.cp-result .cp-aff:hover { color: var(--gold-dim); }
+.cp-result .cp-cta-trust { margin: .3rem 0 0; font-size: .74rem; color: var(--text-faint); }
 .cp-result .cmp-table { font-family: var(--ff-display); font-variant-numeric: tabular-nums lining-nums; color: var(--text); border-top: 1px solid #1b1914; }
 .cp-result .cmp-row { display: grid; grid-template-columns: minmax(120px, 1fr) minmax(0, 1.4fr) minmax(0, 1.4fr); grid-template-areas: "label a b"; border-bottom: 1px solid var(--line); }
 .cp-result .cmp-row--head { border-bottom: 1px solid #1b1914; font-weight: 800; }
