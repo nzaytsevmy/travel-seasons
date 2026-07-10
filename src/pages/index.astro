@@ -109,7 +109,7 @@ const ldJson = {
           ))}
         </select></div>
         <div class="fg"><span class="fl">Поездка ₽</span><div class="fopts" data-g="b" role="group" aria-label="Бюджет поездки"><button class="t" data-v="low" type="button" aria-pressed="false">до 100к</button><button class="t" data-v="mid" type="button" aria-pressed="false">100–200к</button><button class="t" data-v="high" type="button" aria-pressed="false">200к+</button></div></div>
-        <div class="fg"><span class="fl">Вайб</span><div class="fopts" data-g="vibe" role="group" aria-label="Вайб поездки"><button class="t" data-v="beach" type="button" aria-pressed="false">пляж</button><button class="t" data-v="mountains" type="button" aria-pressed="false">горы</button><button class="t" data-v="city" type="button" aria-pressed="false">город</button><button class="t" data-v="nature" type="button" aria-pressed="false">природа</button></div></div>
+        <div class="fg"><span class="fl">Настроение</span><div class="fopts" data-g="vibe" role="group" aria-label="Настроение поездки"><button class="t" data-v="beach" type="button" aria-pressed="false">пляж</button><button class="t" data-v="mountains" type="button" aria-pressed="false">горы</button><button class="t" data-v="city" type="button" aria-pressed="false">город</button><button class="t" data-v="nature" type="button" aria-pressed="false">природа</button></div></div>
         <div class="fright">
           <div class="fg fg-sort"><span class="fl">Сортировка</span><div class="fopts" id="sortOpts" role="group" aria-label="Сортировка"><button class="t on" data-s="rel" type="button" aria-pressed="true">рекомендую</button><button class="t" data-s="asc" type="button" aria-pressed="false">дешевле</button><button class="t" data-s="desc" type="button" aria-pressed="false">дороже</button></div></div>
           <div class="fcount"><b id="fCountN">{nowRows.length}</b><span id="fCountW">{nowWord}</span></div>
@@ -133,7 +133,7 @@ const ldJson = {
           <tr id="moreRow" hidden><td colspan="5" class="more-cell"><a href="/countries/">Ещё <b id="moreN"></b> в сезоне — показать все</a></td></tr>
         </tbody>
       </table></div>
-      <p class="nomatch" id="noMatch">Под эти фильтры ничего не нашлось — попробуйте ослабить один: другой месяц, бюджет повыше или другой вайб.</p>
+      <p class="nomatch" id="noMatch">Под эти фильтры ничего не нашлось — попробуйте ослабить один: другой месяц, бюджет повыше или другое настроение.</p>
       <p class="dfoot">Цена — ориентир всей поездки в комфорте на одного: перелёт из Москвы + жильё, еда и транспорт за 7 ночей (медиана Aviasales/Островок и траты из источников 2026, курс ≈90 ₽/$). Зависит от дат и сезона — <a href="/calculator/">посчитайте точно в калькуляторе</a></p>
 
       <!-- Авторские туры (YouTravel) — альтернатива DIY -->
@@ -150,7 +150,7 @@ const ldJson = {
           <div class="gi"><div class="gl">Билеты</div><div class="gt">Авиабилеты</div><div class="gd">Сравнить цены и поймать дешёвый</div><a class="cta" href={TP_LINKS.aviasales} rel="sponsored noopener" target="_blank">Найти билет</a></div>
           <div class="gi"><div class="gl">Жильё</div><div class="gt">Отели и апарты</div><div class="gd">Оплата картой РФ, бесплатная отмена</div><a class="cta" href={TP_LINKS.ostrovok} rel="sponsored noopener" target="_blank">Подобрать жильё</a></div>
           <div class="gi"><div class="gl">Страховка</div><div class="gt">Мед. страховка</div><div class="gd">Под визу и погранусловия</div><a class="cta" href={TP_LINKS.cherehapa} rel="sponsored noopener" target="_blank">Оформить страховку</a></div>
-          <div class="gi"><div class="gl">Авто</div><div class="gt">Прокат авто</div><div class="gd">Локальные и межд. прокатчики</div><a class="cta" href={TP_LINKS.economybookings} rel="sponsored noopener" target="_blank">Сравнить прокат</a></div>
+          <div class="gi"><div class="gl">Авто</div><div class="gt">Прокат авто</div><div class="gd">Местные и международные прокатчики</div><a class="cta" href={TP_LINKS.economybookings} rel="sponsored noopener" target="_blank">Сравнить прокат</a></div>
           <div class="gi"><div class="gl">Связь</div><div class="gt">eSIM в роуминг</div><div class="gd">Интернет с прилёта, от $5 за неделю</div><a class="cta" href={TP_LINKS.airalo} rel="sponsored noopener" target="_blank">Подключить eSIM</a></div>
           <div class="gi"><div class="gl">Карты</div><div class="gt">Какие карты работают</div><div class="gd">МИР, UnionPay и иностранные — по странам</div><a class="cta" href="/cards/">Проверить карту</a></div>
         </div>
@@ -444,7 +444,7 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
       const sl = document.getElementById('seasonlead');
       if (sl) sl.innerHTML = n
         ? `Сейчас, <b>${state.m ? 'в ' + PREP[state.m] : 'в любой месяц'}</b>, в сезоне ${n}: ${names.join(', ')}${n > names.length ? ' и др' : ''}.`
-        : 'Под эти фильтры ничего не нашлось — ослабьте один: месяц, бюджет или вайб.';
+        : 'Под эти фильтры ничего не нашлось — ослабьте один: месяц, бюджет или настроение.';
     }
     const fMonth = document.getElementById('fMonth');
     if (fMonth) fMonth.value = String(state.m); // месяц по дате пользователя, а не по дате сборки

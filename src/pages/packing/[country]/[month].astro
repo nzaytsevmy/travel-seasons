@@ -135,9 +135,9 @@ const FAQS = [
   {
     q: `Сколько стоит перелёт ${d.cases.vP} в ${m.prep}?`,
     a: flightMonth
-      ? `Ориентир для ${m.prep}: от $${flightMonth} one-way из Москвы (база $${flightLow} × сезонный множитель ${monthMult}). В ${m.prep} ${d.cases.loc} ${(status==='P'?'пик сезона, цены на максимуме':status==='G'?'хороший сезон, цены средние':status==='B'?'низкий сезон, минимум за год':status==='O'?'нормальный сезон':'инфраструктура частично закрыта')}. Конкретно под даты — в калькуляторе.`
+      ? `Ориентир для ${m.prep}: от $${flightMonth} в одну сторону из Москвы (база $${flightLow} × сезонный множитель ${monthMult}). В ${m.prep} ${d.cases.loc} ${(status==='P'?'пик сезона, цены на максимуме':status==='G'?'хороший сезон, цены средние':status==='B'?'низкий сезон, минимум за год':status==='O'?'нормальный сезон':'инфраструктура частично закрыта')}. Конкретно под даты — в калькуляторе.`
       : flightLow
-        ? `Минимум — от $${flightLow} one-way из Москвы. ${rank.price}`
+        ? `Минимум — от $${flightLow} в одну сторону из Москвы. ${rank.price}`
         : `Цены варьируются по сезону. ${rank.price} Поиск — Aviasales.`,
   },
   {
@@ -304,7 +304,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       <section class="pmu-section">
         <div class="pmu-shead"><h2>Перелёт Москва — {d.cases.nom} в {m.prep}</h2></div>
         <div class="pmu-price">
-          <div class="pmu-price-main">от <b>${flightMonth}</b> one-way</div>
+          <div class="pmu-price-main">от <b>${flightMonth}</b> в одну сторону</div>
           <div class="pmu-price-meta">База ${flightLow} × сезонный множитель {monthMult} ({rank.label.toLowerCase()})</div>
         </div>
         <p class="pmu-cta">
