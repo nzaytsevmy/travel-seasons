@@ -274,7 +274,6 @@ if (guide?.itinerary?.length) {
 
     {/* MANIFEST — Swiss: 12-grid, idx/meta/H1/sub/vlist */}
     <section class="sl-manifest">
-      <div class="sl-idx">{d.group}<b>{d.cases.nom} {yr}</b></div>
       <div class="sl-meta">{d.region}<br /><b>Обновлено {DATA_UPDATED_RU}</b></div>
       <h1 class="sl-h1">{d.cases.nom} <span class="rd">{yr}</span></h1>
       <p class="sl-sub">{d.sub} — виза, сезоны, бюджет, маршруты для россиян. Без воды, с реальными цифрами.</p>
@@ -663,15 +662,6 @@ if (guide?.itinerary?.length) {
   gap: 0 clamp(.8rem, 2vw, 1.6rem);
   padding: clamp(1rem, 2vw, 1.8rem) 0 clamp(1.2rem, 2.5vw, 2rem);
 }
-.sl-idx {
-  grid-column: 1 / 5; grid-row: 1;
-  font-size: .82rem; font-weight: 600;
-  color: var(--gold);
-}
-.sl-idx b {
-  display: block; color: var(--text); font-size: .74rem;
-  font-weight: 600; margin-top: .2rem;
-}
 .sl-meta {
   grid-column: 8 / 13; grid-row: 1;
   text-align: right; align-self: start;
@@ -741,7 +731,7 @@ if (guide?.itinerary?.length) {
 }
 
 @media (max-width: 760px) {
-  .sl-idx, .sl-meta, .sl-h1, .sl-sub, .sl-vlist, .sl-visited,
+  .sl-meta, .sl-h1, .sl-sub, .sl-vlist, .sl-visited,
   .sl-manifest > :global(.tsb-wrap) {
     grid-column: 1 / -1; grid-row: auto;
   }

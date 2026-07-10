@@ -42,7 +42,6 @@ const closedCountryCount = new Set(closed.map((e) => e.slug)).size;
 const closedWord = plural(closedCountryCount, 'стране', 'странах', 'странах');
 const eventWord = plural(events.length, 'событие', 'события', 'событий');
 const countryCount = new Set(events.map((e) => e.slug)).size;
-const countryWord = plural(countryCount, 'страна', 'страны', 'стран');
 
 const prevIdx = (monthIdx + 11) % 12;
 const nextIdx = (monthIdx + 1) % 12;
@@ -120,7 +119,6 @@ const ldJson = {
 
   <main id="main" class="evt">
     <section class="evt-manifest">
-      <div class="evt-idx">События<b>{events.length} {eventWord} · {countryCount} {countryWord}</b></div>
       <div class="evt-meta">Календарь<br /><b>Обновлено {DATA_UPDATED_RU}</b></div>
       <h1 class="evt-h1">Праздники и фестивали <span class="rd">в {m.prep}</span></h1>
       {editorial && <p class="evt-tldr">{editorial.intro}</p>}
@@ -246,8 +244,6 @@ const ldJson = {
   gap: 0 clamp(.8rem, 2vw, 1.6rem);
   padding: clamp(1rem, 2vw, 1.8rem) 0 clamp(1.2rem, 2.5vw, 2rem);
 }
-.evt-idx { grid-column: 1 / 7; grid-row: 1; font-size:.82rem; font-weight: 700;   color: var(--gold); }
-.evt-idx b { display: block; color: var(--text); font-size: .74rem; font-weight: 600; margin-top: .2rem; }
 .evt-meta { grid-column: 8 / 13; grid-row: 1; text-align: right; align-self: start; font-size: .8rem; color: var(--text-dim); line-height: 1.5; }
 .evt-meta b { color: var(--text); font-weight: 600; }
 .evt-h1 { grid-column: 1 / 13; grid-row: 2; font-weight: 800; font-size: clamp(2rem, 5.5vw, 4.4rem); line-height: 1.0; letter-spacing: -.03em; margin: clamp(1rem, 2vw, 1.6rem) 0 0; text-wrap: balance; }

@@ -247,7 +247,6 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 
     {/* MANIFEST */}
     <section class="pmu-manifest">
-      <div class="pmu-idx">01 / Чек-лист<b>{d.cases.nom} · {monthCap} 2026</b></div>
       <div class="pmu-meta">{d.region}<br /><b>Обновлено {DATA_UPDATED_RU}</b></div>
       <h1 class="pmu-h1">Что взять {d.cases.vP} <span class="rd">в {m.prep}</span></h1>
       <p class="pmu-tldr">
@@ -611,16 +610,6 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
   gap: 0 clamp(.8rem, 2vw, 1.6rem);
   padding: clamp(1rem, 2vw, 1.8rem) 0 clamp(1.2rem, 2.5vw, 2rem);
 }
-.pmu-idx {
-  grid-column: 1 / 7; grid-row: 1;
-  font-size: .74rem; font-weight: 700;
-  letter-spacing: .04em; text-transform: uppercase;
-  color: var(--gold);
-}
-.pmu-idx b {
-  display: block; color: var(--text); font-size: .74rem;
-  font-weight: 600; margin-top: .2rem;
-}
 .pmu-meta {
   grid-column: 8 / 13; grid-row: 1;
   text-align: right; align-self: start;
@@ -674,7 +663,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 .pmu-byline .byline-fresh { color: var(--text-faint); }
 
 @media (max-width: 760px) {
-  .pmu-idx, .pmu-meta, .pmu-h1, .pmu-tldr, .pmu-byline {
+  .pmu-meta, .pmu-h1, .pmu-tldr, .pmu-byline {
     grid-column: 1 / -1; grid-row: auto;
   }
   .pmu-meta { text-align: left; margin-top: .6rem; }

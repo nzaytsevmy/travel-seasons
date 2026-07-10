@@ -105,7 +105,6 @@ const ldJson = {
   <main id="main" class="jp">
     {/* MANIFEST */}
     <section class="jp-manifest">
-      <div class="jp-idx">Страна<b>Япония 2026</b></div>
       <div class="jp-meta">Был в ноябре 2023<br /><b>Обновлено {DATA_UPDATED_RU}</b></div>
       <h1 class="jp-h1">Япония <span class="rd">2026</span></h1>
       <p class="jp-sub">Виза, сезоны, бюджет, маршруты — всё что нужно для первой поездки из России. Без воды, с реальными цифрами из чеков.</p>
@@ -299,15 +298,6 @@ const ldJson = {
   gap: 0 clamp(.8rem, 2vw, 1.6rem);
   padding: clamp(2rem, 5vw, 4.5rem) 0 clamp(1.2rem, 2.5vw, 2rem);
 }
-.jp-idx {
-  grid-column: 1 / 5; grid-row: 1;
-  font-size: .82rem; font-weight: 600;
-  color: var(--gold);
-}
-.jp-idx b {
-  display: block; color: var(--text); font-size: .74rem;
-  font-weight: 600; margin-top: .2rem;
-}
 .jp-meta {
   grid-column: 8 / 13; grid-row: 1;
   text-align: right; align-self: start;
@@ -369,7 +359,7 @@ const ldJson = {
   letter-spacing: -.005em;
 }
 @media (max-width: 760px) {
-  .jp-idx, .jp-meta, .jp-h1, .jp-sub, .jp-vlist {
+  .jp-meta, .jp-h1, .jp-sub, .jp-vlist {
     grid-column: 1 / -1; grid-row: auto;
   }
   .jp-meta { text-align: left; margin-top: .6rem; }
