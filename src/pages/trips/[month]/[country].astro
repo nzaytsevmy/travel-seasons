@@ -199,7 +199,7 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
           {weekTotal && <li><span class="fk">Неделя эконом</span><span class="fv">от ${weekTotal} на человека</span></li>}
         </ul>
         {flightFrom > 0 && iata && (
-          <p class="findcta"><a class="find" href={aviasalesRoute('MOW', iata)} rel="sponsored noopener" target="_blank">Найти перелёт Москва — {iata} от ${flightFrom}</a> </p>
+          <p class="findcta"><a class="find" href={aviasalesRoute('MOW', iata)} rel="sponsored noopener" target="_blank">Найти перелёт Москва — {d.cases.nom} от ${flightFrom}</a> </p>
         )}
       </section>
 
@@ -285,7 +285,7 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
       {(status === 'O' || status === 'B') && bestMonths.length > 0 && (
         <section class="sec">
           <div class="shead"><h2>Когда лучше ехать {d.cases.vP}</h2></div>
-          <p class="txt">{monthCap} — не лучший месяц для этого направления. Оптимальные окна:</p>
+          <p class="txt">{monthCap} — не лучший месяц для этого направления. Лучшие месяцы:</p>
           <ul class="vl wide">
             {bestMonths.map((bm) => (
               <li><a href={`/trips/${bm.slug}/${d.slug}/`}>{bm.nom.charAt(0).toUpperCase() + bm.nom.slice(1)}</a><span>{bm.status === 'P' ? 'пик сезона' : 'хороший месяц'}</span></li>

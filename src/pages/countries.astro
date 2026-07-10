@@ -63,7 +63,7 @@ const ldJson = {
     {
       "@type": "CollectionPage", "@id": `${url}#page`, "url": url,
       "name": `Каталог направлений ${brandYear} — 70+ стран для поездки из России`,
-      "description": "Каталог всех 70+ направлений: виза для россиян, лучший сезон и цена всей поездки с перелётом. Фильтр по визе, бюджету, сезону и вайбу.",
+      "description": "Каталог всех 70+ направлений: виза для россиян, лучший сезон и цена всей поездки с перелётом. Фильтр по визе, бюджету, сезону и настроению.",
       "inLanguage": "ru-RU", "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "mainEntity": {
         "@type": "ItemList", "numberOfItems": DIRECTIONS.length,
@@ -81,7 +81,7 @@ const ldJson = {
 ---
 <Layout
   title={`Направления ${brandYear} — каталог 70+ стран из России: виза, сезон, цена`}
-  description="Все 70+ направлений в одном каталоге: виза для россиян, лучший сезон и цена всей поездки с перелётом. Фильтр по визе, бюджету, сезону и вайбу — выбери и открой гайд."
+  description="Все 70+ направлений в одном каталоге: виза для россиян, лучший сезон и цена всей поездки с перелётом. Фильтр по визе, бюджету, сезону и настроению — выбери и открой гайд."
   canonical={url}
   ogTitle="Каталог направлений · TravelTribe"
   ogDescription="70+ стран с визой, сезоном и ценой поездки — фильтруй и выбирай"
@@ -116,7 +116,7 @@ const ldJson = {
         <button type="button" class="cf-t" data-v="mid">100–200к</button>
         <button type="button" class="cf-t" data-v="high">200к+</button>
       </div></div>
-      <div class="cf-row"><span class="cf-lbl">Вайб</span><div class="cf-opts" data-g="vibe">
+      <div class="cf-row"><span class="cf-lbl">Настроение</span><div class="cf-opts" data-g="vibe">
         <button type="button" class="cf-t" data-v="beach">Пляж</button>
         <button type="button" class="cf-t" data-v="mountains">Горы</button>
         <button type="button" class="cf-t" data-v="city">Город</button>
@@ -137,7 +137,7 @@ const ldJson = {
       <p class="cf-count"><b id="catN">{stats.total}</b> <span id="catW">направлений</span></p>
     </section>
 
-    <p class="cat-empty" id="catEmpty" hidden>Под эти фильтры ничего не нашлось — ослабь один: визу, бюджет, сезон или вайб.</p>
+    <p class="cat-empty" id="catEmpty" hidden>Под эти фильтры ничего не нашлось — ослабь один: визу, бюджет, сезон или настроение.</p>
 
     {/* ─── Сетка направлений ─── */}
     <div class="cgrid" id="cgrid">

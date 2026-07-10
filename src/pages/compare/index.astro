@@ -48,7 +48,7 @@ const DEFAULT_B = COMPARE_PAIRS[0].b;
 
 const url = 'https://traveltribe.ru/compare/';
 const title = 'Сравнить направления 2026: виза, бюджет, сезон — куда лучше';
-const description = 'Компаратор направлений: выбери две страны и сравни визу, бюджет в сутки, перелёт и сезон по месяцам бок-о-бок. 70+ направлений.';
+const description = 'Сравнение направлений: выбери две страны и сравни визу, бюджет в сутки, перелёт и сезон по месяцам бок-о-бок. 70+ направлений.';
 
 const ldJson = {
   "@context": "https://schema.org",
@@ -56,7 +56,7 @@ const ldJson = {
     {
       "@type": "WebApplication",
       "@id": `${url}#app`,
-      "name": "Компаратор направлений TravelTribe",
+      "name": "Сравнение направлений TravelTribe",
       "url": url,
       "description": description,
       "inLanguage": "ru-RU",
@@ -169,7 +169,7 @@ const ldJson = {
 
     const visaCell = (e) => e.visaFree ? '<span class="cmp-good">Не нужна</span>' : (e.visa ? `${e.visa.duration} · ${e.visa.cost}` : '<span class="cmp-muted">См. страницу визы</span>');
     const budgetCell = (e) => e.budget ? `${fmt(e.budget.midrange, e.budget.currency)}<span class="cmp-sub">от ${fmt(e.budget.budget, e.budget.currency)} бюджетно</span>` : '<span class="cmp-muted">нет данных</span>';
-    const flightCell = (e) => e.flightFrom ? `$${e.flightFrom} one-way` : '—';
+    const flightCell = (e) => e.flightFrom ? `$${e.flightFrom} в одну сторону` : '—';
     const nowCell = (e) => `<span class="cmp-tag cmp-tag--${e.nowCode}">${e.nowLabel}</span>`;
 
     let html = `<div class="cmp-table" role="group" aria-label="Сравнение: ${a.nom} и ${b.nom}">`;

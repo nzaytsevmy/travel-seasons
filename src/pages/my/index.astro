@@ -35,7 +35,7 @@ const title = 'Моя поездка — TravelTribe';
       <ul class="myp-empty-links">
         <li><a href="/countries/"><b>Все направления</b></a><span>выбрать куда</span></li>
         <li><a href="/trips/"><b>Куда ехать по месяцам</b></a><span>календарь по сезону</span></li>
-        <li><a href="/compare/"><b>Сравнить направления</b></a><span>компаратор</span></li>
+        <li><a href="/compare/"><b>Сравнить направления</b></a><span>две страны бок о бок</span></li>
       </ul>
     </div>
 
@@ -201,7 +201,7 @@ const title = 'Моя поездка — TravelTribe';
       const people = Number(peopleInp.value) || 1;
       if (data.budget) {
         const total = data.budget.midrange * days * people;
-        budgetEl.innerHTML = `На ${days} дн. × ${people} чел. по среднему уровню — ориентир <b>${fmt(total, data.budget.currency)}</b> (без перелёта). ${data.flightFrom ? `Перелёт от $${data.flightFrom} one-way.` : ''} <a href="${PRICE_IDX[data.slug] != null ? '/calculator/?r=' + PRICE_IDX[data.slug] : '/calculator/'}">Точнее в калькуляторе</a>`;
+        budgetEl.innerHTML = `На ${days} дн. × ${people} чел. по среднему уровню — ориентир <b>${fmt(total, data.budget.currency)}</b> (без перелёта). ${data.flightFrom ? `Перелёт от $${data.flightFrom} в одну сторону.` : ''} <a href="${PRICE_IDX[data.slug] != null ? '/calculator/?r=' + PRICE_IDX[data.slug] : '/calculator/'}">Точнее в калькуляторе</a>`;
       } else {
         budgetEl.innerHTML = `<a href="/calculator/">Посчитать в калькуляторе</a>`;
       }
