@@ -153,11 +153,12 @@ def fetch_yandex(c: dict) -> dict:
         if qt:
             queries[qt] = c2
         pos = ind.get("AVG_SHOW_POSITION")
-        if pos is not None and th["striking_pos_min"] <= pos <= th["striking_pos_max"] and sh >= th["striking_min_impr"]:
+        if qt and pos is not None and th["striking_pos_min"] <= pos <= th["striking_pos_max"] and sh >= th["striking_min_impr"]:
             striking.append({"query": qt, "position": round(pos, 1), "shows": sh, "clicks": c2})
     striking.sort(key=lambda x: -x["shows"])
     return {"ok": True, "sqi": s.get("sqi"), "pages": s.get("searchable_pages_count"),
-            "shows": shows, "clicks": clicks, "queries": queries, "striking": striking[:10]}
+            "shows": shows, "clicks": clicks, "queries": queries,
+            "striking": striking[:10], "striking_total": len(striking)}
 
 
 def recrawl(c: dict, slug: str):
@@ -297,6 +298,7 @@ def fetch_gsc(c: dict) -> dict:
         "q_up": movers(q_cur, q_prev, qclean)[0],
         "q_down": movers(q_cur, q_prev, qclean)[1],
         "striking": striking[:10],
+        "striking_total": len(striking),
     }
 
 
@@ -503,7 +505,10 @@ def weekly_mode(c) -> None:
                     clicks=y["clicks"], y_queries=y["queries"])
     if g["ok"]:
         snap.update(g_clicks=g["clicks"], g_impr=g["impr"], g_ctr=g["ctr"], g_pos=g["pos"])
-    snap["striking_count"] = len(strk_g) + len(strk_y)
+    # Полный счётчик, НЕ len(strk_g)+len(strk_y) — те обрезаны до топ-10 каждый
+    # для отчёта; тренд в history.jsonl должен видеть реальный объём.
+    snap["striking_count"] = (g.get("striking_total", 0) if g["ok"] else 0) + \
+                              (y.get("striking_total", 0) if y["ok"] else 0)
     STATE_FILE.write_text(json.dumps(snap, ensure_ascii=False), encoding="utf-8")
     hist = {"date": str(TODAY)}
     hist.update({k: snap.get(k) for k in
