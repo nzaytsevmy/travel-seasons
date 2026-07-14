@@ -32,6 +32,13 @@ DEFAULT_CFG = {
         "pages_drop_pct": 8, "sqi_drop_pct": 10, "clicks_drop_pct_wow": 25,
         # striking distance (B1): TRAFFIC-2026 — поз 6-15, шаг вверх = ×2-3 CTR
         "striking_pos_min": 6, "striking_pos_max": 15, "striking_min_impr": 50,
+        # zero-click подозрение (B2, канон SERP-first): поз ≤10 — уже неплохо
+        # ранжируемся, но кликов почти нет = вероятна SERP-фича (AI-ответ,
+        # колдунщик), не проблема сниппета/позиции.
+        "zero_click_pos_max": 10, "zero_click_min_impr": 100, "zero_click_ctr_ratio": 0.25,
+        # Яндекс: не натягиваем гугловскую CTR-кривую (другой SERP, другое
+        # поведение) — просто «почти ноль кликов при decent позиции».
+        "zero_click_yandex_max_clicks": 2,
     },
     # дата выпуска OAuth-токена Яндекса (≈1 год жизни) — для self-check истечения
     "yandex_token_issued": "2026-05-05",
@@ -142,7 +149,7 @@ def fetch_yandex(c: dict) -> dict:
         return {"ok": False, "err": e1 or e2}
     s = s or {}
     th = c["thresholds"]
-    queries, shows, clicks, striking = {}, 0, 0, []
+    queries, shows, clicks, striking, zero_click = {}, 0, 0, [], []
     for it in (q or {}).get("queries", []):
         ind = it.get("indicators", {})
         c2 = int(ind.get("TOTAL_CLICKS") or 0)
@@ -153,12 +160,18 @@ def fetch_yandex(c: dict) -> dict:
         if qt:
             queries[qt] = c2
         pos = ind.get("AVG_SHOW_POSITION")
-        if qt and pos is not None and th["striking_pos_min"] <= pos <= th["striking_pos_max"] and sh >= th["striking_min_impr"]:
-            striking.append({"query": qt, "position": round(pos, 1), "shows": sh, "clicks": c2})
+        if qt and pos is not None:
+            if th["striking_pos_min"] <= pos <= th["striking_pos_max"] and sh >= th["striking_min_impr"]:
+                striking.append({"query": qt, "position": round(pos, 1), "shows": sh, "clicks": c2})
+            if pos <= th["zero_click_pos_max"] and sh >= th["zero_click_min_impr"] \
+                    and c2 <= th["zero_click_yandex_max_clicks"]:
+                zero_click.append({"query": qt, "position": round(pos, 1), "shows": sh, "clicks": c2})
     striking.sort(key=lambda x: -x["shows"])
+    zero_click.sort(key=lambda x: -x["shows"])
     return {"ok": True, "sqi": s.get("sqi"), "pages": s.get("searchable_pages_count"),
             "shows": shows, "clicks": clicks, "queries": queries,
-            "striking": striking[:10], "striking_total": len(striking)}
+            "striking": striking[:10], "striking_total": len(striking),
+            "zero_click": zero_click[:10], "zero_click_total": len(zero_click)}
 
 
 def recrawl(c: dict, slug: str):
@@ -273,18 +286,26 @@ def fetch_gsc(c: dict) -> dict:
 
     # Striking distance (B1): поз 6-15 с показами≥порога, сортировка по потенциалу
     # клика при выходе в топ-3 — impressions × (ctr_benchmark(3) − текущий ctr).
+    # Zero-click (B2, канон SERP-first): поз ≤10, показы≥порога, но CTR аномально
+    # ниже ожидаемого для этой позиции — вероятна SERP-фича (AI Overview/сниппет),
+    # не проблема сниппета. Один проход по pgq_cur на оба сигнала.
     th = c["thresholds"]
-    striking = []
+    striking, zero_click = [], []
     for r in (pgq_cur or []):
         pos, impr = r["position"], r["impressions"]
-        if not (th["striking_pos_min"] <= pos <= th["striking_pos_max"]) or impr < th["striking_min_impr"]:
-            continue
         ctr = r["clicks"] / impr if impr else 0
-        potential = impr * max(0, ctr_benchmark(3) - ctr)
         page, query = r["keys"]
-        striking.append({"query": qclean(query), "page": pclean(page), "position": round(pos, 1),
-                          "impressions": impr, "ctr": round(ctr * 100, 2), "potential": round(potential, 1)})
+        if th["striking_pos_min"] <= pos <= th["striking_pos_max"] and impr >= th["striking_min_impr"]:
+            potential = impr * max(0, ctr_benchmark(3) - ctr)
+            striking.append({"query": qclean(query), "page": pclean(page), "position": round(pos, 1),
+                              "impressions": impr, "ctr": round(ctr * 100, 2), "potential": round(potential, 1)})
+        if pos <= th["zero_click_pos_max"] and impr >= th["zero_click_min_impr"] \
+                and ctr < th["zero_click_ctr_ratio"] * ctr_benchmark(pos):
+            zero_click.append({"query": qclean(query), "page": pclean(page), "position": round(pos, 1),
+                                "impressions": impr, "ctr": round(ctr * 100, 2),
+                                "benchmark": round(ctr_benchmark(pos) * 100, 2)})
     striking.sort(key=lambda x: -x["potential"])
+    zero_click.sort(key=lambda x: -x["impressions"])
 
     return {
         "ok": True,
@@ -299,6 +320,8 @@ def fetch_gsc(c: dict) -> dict:
         "q_down": movers(q_cur, q_prev, qclean)[1],
         "striking": striking[:10],
         "striking_total": len(striking),
+        "zero_click": zero_click[:10],
+        "zero_click_total": len(zero_click),
     }
 
 
@@ -463,6 +486,24 @@ def weekly_mode(c) -> None:
         L += ["", "🎯 Striking distance: кандидатов нет (поз 6-15, показы≥"
                    f"{c['thresholds']['striking_min_impr']})."]
 
+    # Zero-click подозрение (B2): позиция хорошая, кликов почти нет —
+    # вероятна SERP-фича (AI Overview/Нейро/колдунщик), не проблема сниппета.
+    zc_g = g.get("zero_click", []) if g["ok"] else []
+    zc_y = y.get("zero_click", []) if y["ok"] else []
+    if zc_g or zc_y:
+        L += ["", "━━━ 🚫 Zero-click подозрение (поз ≤10, CTR аномально низкий) ━━━"]
+        for s in zc_g[:3]:
+            L.append(f"• G: «{s['query']}» {s['page']} — поз {s['position']}, "
+                     f"показы {s['impressions']}, CTR {s['ctr']}% (ориентир ~{s['benchmark']}%)")
+        for s in zc_y[:3]:
+            L.append(f"• Я: «{s['query']}» — поз {s['position']}, показы {s['shows']}, "
+                     f"кликов {s['clicks']}")
+        L.append("  → переписать title/сниппет бесполезно если это SERP-фича — "
+                 "смотреть живую выдачу, пивот на неопределяемые AI интенты")
+    else:
+        L += ["", "🚫 Zero-click: аномалий нет (поз≤10, показы≥"
+                   f"{c['thresholds']['zero_click_min_impr']})."]
+
     if recrawled:
         qn = f", квота {quota}" if quota is not None else ""
         L.append(f"♻️ Авто-переобход: {len(recrawled)} постов ✅{qn}")
@@ -505,14 +546,17 @@ def weekly_mode(c) -> None:
                     clicks=y["clicks"], y_queries=y["queries"])
     if g["ok"]:
         snap.update(g_clicks=g["clicks"], g_impr=g["impr"], g_ctr=g["ctr"], g_pos=g["pos"])
-    # Полный счётчик, НЕ len(strk_g)+len(strk_y) — те обрезаны до топ-10 каждый
+    # Полные счётчики, НЕ len(strk_g)+len(strk_y) — те обрезаны до топ-10 каждый
     # для отчёта; тренд в history.jsonl должен видеть реальный объём.
     snap["striking_count"] = (g.get("striking_total", 0) if g["ok"] else 0) + \
                               (y.get("striking_total", 0) if y["ok"] else 0)
+    snap["zero_click_count"] = (g.get("zero_click_total", 0) if g["ok"] else 0) + \
+                                (y.get("zero_click_total", 0) if y["ok"] else 0)
     STATE_FILE.write_text(json.dumps(snap, ensure_ascii=False), encoding="utf-8")
     hist = {"date": str(TODAY)}
     hist.update({k: snap.get(k) for k in
-                 ("sqi", "pages", "shows", "clicks", "g_clicks", "g_impr", "g_ctr", "g_pos", "striking_count")})
+                 ("sqi", "pages", "shows", "clicks", "g_clicks", "g_impr", "g_ctr", "g_pos",
+                  "striking_count", "zero_click_count")})
     with HISTORY_FILE.open("a", encoding="utf-8") as f:
         f.write(json.dumps(hist, ensure_ascii=False) + "\n")
     send_telegram(c, report)
