@@ -127,7 +127,7 @@ const ldJson = {
               <td data-l="Поездка"><span class="price">≈ {fmt(r.budget)}&nbsp;₽ <small>за неделю</small></span></td>
               <td data-l="Виза"><span class={`visa ${VISA_CLASS[r.visa]}`}>{VISA_LABEL[r.visa]}</span></td>
               <td data-l="Сезон" class="season">{r.season}</td>
-              <td class="flight r"><a class="fly" href={`/${r.slug}/`}>Подробнее</a></td>
+              <td class="flight r"><a class="fly" href={`/${r.slug}/`} aria-label={`Подробнее: ${r.nom}`}>Подробнее</a></td>
             </tr>
           ))}
           <tr id="moreRow" hidden><td colspan="5" class="more-cell"><a href="/countries/">Ещё <b id="moreN"></b> в сезоне — показать все</a></td></tr>
