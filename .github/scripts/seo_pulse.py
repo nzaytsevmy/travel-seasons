@@ -16,11 +16,12 @@ SEO Pulse 10/10 — двух-движковый actionable монитор travel
 """
 from datetime import date, datetime, timedelta
 from pathlib import Path
-import argparse, json, os, re, sys, time, urllib.parse, urllib.request, urllib.error
+import argparse, json, os, re, subprocess, sys, time, urllib.parse, urllib.request, urllib.error
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 BLOG_DIR = REPO_ROOT / "src" / "content" / "blog"
 PULSE_DIR = REPO_ROOT / "seo-pulse"
+RADAR_DIR = REPO_ROOT / "radar"
 STATE_FILE = PULSE_DIR / "_state.json"
 HISTORY_FILE = PULSE_DIR / "history.jsonl"
 CONFIG_FILE = PULSE_DIR / "config.json"
@@ -39,6 +40,10 @@ DEFAULT_CFG = {
         # Яндекс: не натягиваем гугловскую CTR-кривую (другой SERP, другое
         # поведение) — просто «почти ноль кликов при decent позиции».
         "zero_click_yandex_max_clicks": 2,
+        # watchdog (C5): Radar коммитит отчёты сам по cron — если механизм
+        # молча сломается (как уже было раз — scheduled-task исчезла), никто
+        # не узнает без независимой проверки отсюда.
+        "radar_stale_days": 8,
     },
     # дата выпуска OAuth-токена Яндекса (≈1 год жизни) — для self-check истечения
     "yandex_token_issued": "2026-05-05",
@@ -365,6 +370,40 @@ def token_expiry_warn(c) -> str:
     return ""
 
 
+def radar_watchdog(c) -> str:
+    """Dead-man switch на Quality Radar: тот сам коммитит отчёты по своему cron,
+    но если механизм молча сломается (уже было раз — scheduled-task исчезла
+    без следа, Radar молчал 2 недели прежде чем кто-то заметил) — независимая
+    проверка отсюда должна это поймать.
+
+    Дата — из git log, НЕ mtime файла: свежий checkout в CI сбрасывает mtime
+    на момент чекаута, а не на момент коммита — по mtime watchdog был бы вечно
+    зелёным вне зависимости от реальной свежести."""
+    try:
+        out = subprocess.run(
+            ["git", "log", "-1", "--format=%cI", "--", "radar/RADAR-*.md"],
+            cwd=REPO_ROOT, capture_output=True, text=True, timeout=10,
+        )
+        if out.returncode != 0:
+            print(f"radar_watchdog: git log вернул {out.returncode}: {out.stderr.strip()}", file=sys.stderr)
+        ts = out.stdout.strip()
+    except Exception as e:
+        print(f"radar_watchdog: git недоступен: {e}", file=sys.stderr)
+        return ""  # не алертить на пустом месте
+    if not ts:
+        if RADAR_DIR.exists() and (RADAR_DIR / "SKILL.md").exists():
+            return "📡 Radar: скилл есть, но ни одного отчёта в git-истории ещё нет — проверь, отработал ли первый прогон quality-radar.yml"
+        return ""  # Radar ещё не подключён к репо — рано алертить
+    try:
+        last = datetime.fromisoformat(ts).date()
+    except ValueError:
+        return ""
+    days = (TODAY - last).days
+    if days > c["thresholds"]["radar_stale_days"]:
+        return f"📡 Radar молчит {days} дн. (последний отчёт {last}) — проверь workflow quality-radar.yml"
+    return ""
+
+
 # ─── режимы ──────────────────────────────────────────────────────────────────
 def collect_posts():
     posts = []
@@ -514,6 +553,9 @@ def weekly_mode(c) -> None:
     w = token_expiry_warn(c)
     if w:
         L += ["", w]
+    rw = radar_watchdog(c)
+    if rw:
+        L += ["", rw]
     pending = [p for p in fresh if 14 <= p["age"] <= c["recrawl_max_age"]]
     if pending:
         L += ["", "━━━ Проверить вручную ━━━"]
