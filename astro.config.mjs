@@ -13,14 +13,16 @@ import { DATA_UPDATED } from './src/data/meta.js';
 import { DIRECTIONS, MONTHS } from './src/data/directions.js';
 import { NICHE_TRIPS } from './src/data/niche-trips.js';
 
-// Trips closed (status='X' — направление недоступно в месяц) → noindex,
-// исключаем из sitemap. Остальные trips-страницы индексируются после
-// расширения шаблона (FAQ, бюджет 7/14/21, 12-month grid).
+// Trips/packing closed (status='X' — направление недоступно в месяц) → noindex,
+// исключаем из sitemap (noindex-URL в sitemap = противоречивый сигнал).
+// Остальные trips-страницы индексируются после расширения шаблона
+// (FAQ, бюджет 7/14/21, 12-month grid).
 const CLOSED_TRIPS = new Set();
 for (let i = 0; i < MONTHS.length; i++) {
   for (const d of DIRECTIONS) {
     if (d.r[i] === 'X') {
       CLOSED_TRIPS.add(`https://traveltribe.ru/trips/${MONTHS[i].slug}/${d.slug}/`);
+      CLOSED_TRIPS.add(`https://traveltribe.ru/packing/${d.slug}/${MONTHS[i].slug}/`);
     }
   }
 }
