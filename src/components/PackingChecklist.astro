@@ -298,6 +298,10 @@ const title = heading || presetCfg.title;
 </script>
 
 <style>
+  /* [hidden] обязан перебивать display:flex/inline-block ниже (.pck-item/.pck-liq) —
+     иначе фильтры визуально ничего не скрывают (Quality Radar W27, P1). */
+  [hidden] { display: none !important; }
+
   .pck {
     margin: 1.6rem 0 2rem;
     font-family: var(--ff-display);
