@@ -134,9 +134,15 @@ for (const f of htmlFiles) {
     if (!hm) continue;
     let href = (hm[2] ?? hm[3] ?? hm[4] ?? '').split('#')[0];
     if (!href) continue;
-    const text = m[2].replace(/<[^>]+>/g, '').trim();
+    // Итеративный strip: один проход <[^>]+>/g не убирает вложенные конструкции
+    // вида "<<script>script>" (после первого прохода остаётся "<script>").
+    let text = m[2], prevText;
+    do { prevText = text; text = text.replace(/<[^>]*>/g, ''); } while (text !== prevText);
+    text = text.trim();
     if (href.startsWith('/')) href = ORIGIN + href;
-    if (!href.startsWith(ORIGIN)) continue;
+    // Точное совпадение хоста, не substring — иначе "https://traveltribe.ru.evil.com/"
+    // тоже прошёл бы startsWith(ORIGIN) и попал в граф внутренних ссылок.
+    if (href !== ORIGIN && !href.startsWith(ORIGIN + '/')) continue;
     const clean = href.split('?')[0];
     const norm = clean.endsWith('/') || /\.\w+$/.test(clean) ? clean : clean + '/';
     page.links.push(norm);
