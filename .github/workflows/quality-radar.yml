@@ -47,6 +47,10 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Временно для диагностики: run 29340045344 упал is_error:true за 2.6с,
+          # $0 стоимости, без видимого текста причины — action по умолчанию скрывает
+          # полный SDK-вывод. Снять после того, как первый прогон пройдёт целиком.
+          show_full_output: true
           prompt: |
             Выполни процедуру еженедельного аудита прода traveltribe.ru из radar/SKILL.md
             в этом репозитории. Прочитай файл целиком и следуй ему буквально:
