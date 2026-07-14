@@ -24,7 +24,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      # fetch-depth:0 — radar_watchdog (C5) читает git log по radar/RADAR-*.md
+      # для C5; дефолтный fetch-depth:1 даёт историю только из ОДНОГО коммита
+      # (тем main, который случайно оказался HEAD при чекауте) — если это не
+      # сам радар-коммит (обычно так и есть, main двигают и другие workflow),
+      # git log ничего не найдёт и watchdog будет ложно кричать «отчётов нет».
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Generate SEO pulse report
         env:
