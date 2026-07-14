@@ -16,7 +16,7 @@ SEO Pulse 10/10 — двух-движковый actionable монитор travel
 """
 from datetime import date, datetime, timedelta
 from pathlib import Path
-import argparse, json, os, re, sys, urllib.parse, urllib.request, urllib.error
+import argparse, json, os, re, sys, time, urllib.parse, urllib.request, urllib.error
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 BLOG_DIR = REPO_ROOT / "src" / "content" / "blog"
@@ -27,25 +27,51 @@ CONFIG_FILE = PULSE_DIR / "config.json"
 TODAY = date.today()
 DRY = os.environ.get("PULSE_DRY") == "1"
 
-HOST = "https:traveltribe.ru:443"
-GSC_SITE = "sc-domain:traveltribe.ru"
-INDEX_MAX = 30
-
 DEFAULT_CFG = {
     "thresholds": {"pages_drop_pct": 8, "sqi_drop_pct": 10, "clicks_drop_pct_wow": 25},
     # дата выпуска OAuth-токена Яндекса (≈1 год жизни) — для self-check истечения
     "yandex_token_issued": "2026-05-05",
+    "host": "https:traveltribe.ru:443",
+    "gsc_site": "sc-domain:traveltribe.ru",
+    "recrawl_max_age": 30,
+    "row_limit": 200,
+    "timeouts": {"yandex": 20, "gsc_token": 20, "gsc_query": 25, "telegram": 15},
 }
 
 
 def cfg() -> dict:
-    c = dict(DEFAULT_CFG)
+    c = json.loads(json.dumps(DEFAULT_CFG))  # deep copy — timeouts/thresholds вложены
     if CONFIG_FILE.exists():
         try:
-            c.update(json.loads(CONFIG_FILE.read_text()))
+            override = json.loads(CONFIG_FILE.read_text())
+            for k, v in override.items():
+                if isinstance(v, dict) and isinstance(c.get(k), dict):
+                    c[k].update(v)
+                else:
+                    c[k] = v
         except Exception:
             pass
     return c
+
+
+def http_open(req, timeout, attempts=3, backoff=2):
+    """Ретрай на сеть/5xx/429 (up to `attempts` раз, экспоненциальный backoff).
+    НЕ ретраит прочие 4xx — протухший токен/бэд-реквест не станет валиднее
+    от повтора, а должен алертиться сразу, не после 3×timeout ожидания."""
+    last_err = None
+    for i in range(attempts):
+        try:
+            return urllib.request.urlopen(req, timeout=timeout)
+        except urllib.error.HTTPError as e:
+            if e.code == 429 or e.code >= 500:
+                last_err = e
+            else:
+                raise
+        except urllib.error.URLError as e:
+            last_err = e
+        if i < attempts - 1:
+            time.sleep(backoff * (i + 1))
+    raise last_err
 
 
 def parse_frontmatter(text: str) -> dict:
@@ -63,27 +89,27 @@ def parse_frontmatter(text: str) -> dict:
 
 
 # ─── Яндекс.Вебмастер ────────────────────────────────────────────────────────
-def yapi(path: str, method="GET", body=None):
+def yapi(c: dict, path: str, method="GET", body=None):
     tok = os.environ.get("YANDEX_OAUTH_TOKEN")
     uid = os.environ.get("YANDEX_USER_ID")
     if not tok or not uid:
         return None, "YANDEX_OAUTH_TOKEN/USER_ID не заданы"
-    url = f"https://api.webmaster.yandex.net/v4/user/{uid}/hosts/{HOST}{path}"
+    url = f"https://api.webmaster.yandex.net/v4/user/{uid}/hosts/{c['host']}{path}"
     data = json.dumps(body).encode() if body is not None else None
     req = urllib.request.Request(url, data=data, method=method)
     req.add_header("Authorization", f"OAuth {tok}")
     if data:
         req.add_header("Content-Type", "application/json")
     try:
-        with urllib.request.urlopen(req, timeout=20) as r:
+        with http_open(req, timeout=c["timeouts"]["yandex"]) as r:
             return json.loads(r.read()), None
     except Exception as e:
         return None, str(e)
 
 
-def fetch_yandex() -> dict:
-    s, e1 = yapi("/summary/")
-    q, e2 = yapi("/search-queries/popular/?order_by=TOTAL_SHOWS&limit=100"
+def fetch_yandex(c: dict) -> dict:
+    s, e1 = yapi(c, "/summary/")
+    q, e2 = yapi(c, "/search-queries/popular/?order_by=TOTAL_SHOWS&limit=100"
                  "&query_indicator=TOTAL_SHOWS&query_indicator=TOTAL_CLICKS")
     if s is None and q is None:
         return {"ok": False, "err": e1 or e2}
@@ -91,18 +117,18 @@ def fetch_yandex() -> dict:
     queries, shows, clicks = {}, 0, 0
     for it in (q or {}).get("queries", []):
         ind = it.get("indicators", {})
-        c = int(ind.get("TOTAL_CLICKS") or 0)
+        c2 = int(ind.get("TOTAL_CLICKS") or 0)
         shows += int(ind.get("TOTAL_SHOWS") or 0)
-        clicks += c
+        clicks += c2
         qt = it.get("query_text") or it.get("query_id")
         if qt:
-            queries[qt] = c
+            queries[qt] = c2
     return {"ok": True, "sqi": s.get("sqi"), "pages": s.get("searchable_pages_count"),
             "shows": shows, "clicks": clicks, "queries": queries}
 
 
-def recrawl(slug: str):
-    r, _ = yapi("/recrawl/queue/", "POST",
+def recrawl(c: dict, slug: str):
+    r, _ = yapi(c, "/recrawl/queue/", "POST",
                 {"url": f"https://traveltribe.ru/blog/{slug}/"})
     return r
 
@@ -124,7 +150,7 @@ def gsc_creds():
     return None, None, None, None
 
 
-def gsc_token():
+def gsc_token(c: dict):
     cid, csec, rtok, src = gsc_creds()
     if not cid:
         return None, "GSC не настроен (нет GOOGLE_* секретов и ~/.config/gsc)"
@@ -134,7 +160,7 @@ def gsc_token():
     try:
         req = urllib.request.Request("https://oauth2.googleapis.com/token",
                                      data=body, method="POST")
-        with urllib.request.urlopen(req, timeout=20) as r:
+        with http_open(req, timeout=c["timeouts"]["gsc_token"]) as r:
             return json.loads(r.read())["access_token"], None
     except urllib.error.HTTPError as e:
         # Тело ошибки несёт причину (invalid_grant = токен протух/отозван;
@@ -150,23 +176,23 @@ def gsc_token():
         return None, f"GSC refresh failed: {e}"
 
 
-def gsc_query(token, start, end, dims):
-    site = urllib.parse.quote(GSC_SITE, safe="")
+def gsc_query(c: dict, token, start, end, dims):
+    site = urllib.parse.quote(c["gsc_site"], safe="")
     url = f"https://searchconsole.googleapis.com/webmasters/v3/sites/{site}/searchAnalytics/query"
     body = json.dumps({"startDate": start.isoformat(), "endDate": end.isoformat(),
-                        "dimensions": dims, "rowLimit": 200}).encode()
+                        "dimensions": dims, "rowLimit": c["row_limit"]}).encode()
     req = urllib.request.Request(url, data=body, method="POST")
     req.add_header("Authorization", f"Bearer {token}")
     req.add_header("Content-Type", "application/json")
     try:
-        with urllib.request.urlopen(req, timeout=25) as r:
+        with http_open(req, timeout=c["timeouts"]["gsc_query"]) as r:
             return json.loads(r.read()).get("rows", []), None
     except Exception as e:
         return None, str(e)
 
 
-def fetch_gsc() -> dict:
-    token, err = gsc_token()
+def fetch_gsc(c: dict) -> dict:
+    token, err = gsc_token(c)
     if not token:
         return {"ok": False, "err": err}
     end = TODAY - timedelta(days=2)          # лаг GSC 2 дня
@@ -178,14 +204,19 @@ def fetch_gsc() -> dict:
         c = sum(r["clicks"] for r in rows)
         return i, c
 
-    tot_cur, e1 = gsc_query(token, cur0, cur1, [])
+    tot_cur, e1 = gsc_query(c, token, cur0, cur1, [])
     if tot_cur is None:
         return {"ok": False, "err": e1}
     tc = tot_cur[0] if tot_cur else {}
-    pg_cur, _ = gsc_query(token, cur0, cur1, ["page"])
-    pg_prev, _ = gsc_query(token, prev0, prev1, ["page"])
-    q_cur, _ = gsc_query(token, cur0, cur1, ["query"])
-    q_prev, _ = gsc_query(token, prev0, prev1, ["query"])
+    # Прошлый 7д-период тем же необрезанным (без dims) запросом — точный тотал,
+    # не сумма по top-N страниц/запросов. Даёт alert-режиму свежую WoW-базу без
+    # зависимости от _state.json (тот пишется только по понедельникам).
+    tot_prev, _ = gsc_query(c, token, prev0, prev1, [])
+    tp = tot_prev[0] if tot_prev else {}
+    pg_cur, _ = gsc_query(c, token, cur0, cur1, ["page"])
+    pg_prev, _ = gsc_query(c, token, prev0, prev1, ["page"])
+    q_cur, _ = gsc_query(c, token, cur0, cur1, ["query"])
+    q_prev, _ = gsc_query(c, token, prev0, prev1, ["query"])
 
     def movers(cur, prev, key_clean):
         pv = {r["keys"][0]: r for r in (prev or [])}
@@ -206,6 +237,7 @@ def fetch_gsc() -> dict:
         "ok": True,
         "impr": round(tc.get("impressions", 0)),
         "clicks": round(tc.get("clicks", 0)),
+        "clicks_prev": round(tp.get("clicks", 0)),
         "ctr": round(tc.get("ctr", 0) * 100, 2),
         "pos": round(tc.get("position", 0), 1),
         "pages_up": movers(pg_cur, pg_prev, pclean)[0],
@@ -272,9 +304,16 @@ def collect_posts():
 
 
 def alert_mode(c) -> None:
-    """Лёгкий ежедневный: только summary, шлёт ТОЛЬКО при проблеме."""
-    y = fetch_yandex()
-    g = fetch_gsc()
+    """Лёгкий ежедневный: только summary, шлёт ТОЛЬКО при проблеме.
+
+    Google-клики сравниваются со свежим прошлым 7д-окном из самого API
+    (fetch_gsc → clicks_prev), не из _state.json — тот пишется только по
+    понедельникам, поэтому вт-вс сверялись бы с недельной давности снимком
+    вместо вчерашнего. Яндекс (pages/ИКС) сравнивается с последним недельным
+    снимком осознанно — эти метрики двигаются медленно, а у API Вебмастера
+    нет своего диапазонного запроса для честного rolling-сравнения."""
+    y = fetch_yandex(c)
+    g = fetch_gsc(c)
     prev = load_state()
     th = c["thresholds"]
     alerts = []
@@ -291,7 +330,7 @@ def alert_mode(c) -> None:
     if not g["ok"]:
         alerts.append(f"⚠️ GSC слеп: {g['err']}")
     else:
-        pc = prev.get("g_clicks")
+        pc = g.get("clicks_prev")
         if pc and g["clicks"] < pc * (1 - th["clicks_drop_pct_wow"] / 100):
             alerts.append(f"🔻 Google клики 7д: {pc} → {g['clicks']} "
                           f"(−{round((1-g['clicks']/pc)*100)}%)")
@@ -305,22 +344,22 @@ def alert_mode(c) -> None:
     msg = f"*⚠️ TravelTribe SEO ALERT — {TODAY}*\n\n" + "\n".join(alerts)
     print(msg)
     if not DRY:
-        send_telegram(msg)
+        send_telegram(c, msg)
 
 
 def weekly_mode(c) -> None:
     posts = collect_posts()
-    y = fetch_yandex()
-    g = fetch_gsc()
+    y = fetch_yandex(c)
+    g = fetch_gsc(c)
     prev = load_state()
 
     # авто-переобход
-    fresh = [p for p in posts if p["age"] <= INDEX_MAX]
+    fresh = [p for p in posts if p["age"] <= c["recrawl_max_age"]]
     recrawled, quota = [], None
     for p in fresh:
         if DRY:
             recrawled.append(p["slug"]); continue
-        r = recrawl(p["slug"])
+        r = recrawl(c, p["slug"])
         if r and "task_id" in r:
             recrawled.append(p["slug"])
             quota = r.get("quota_remainder", quota)
@@ -365,7 +404,7 @@ def weekly_mode(c) -> None:
     w = token_expiry_warn(c)
     if w:
         L += ["", w]
-    pending = [p for p in fresh if 14 <= p["age"] <= INDEX_MAX]
+    pending = [p for p in fresh if 14 <= p["age"] <= c["recrawl_max_age"]]
     if pending:
         L += ["", "━━━ Проверить вручную ━━━"]
         for p in pending:
@@ -403,10 +442,10 @@ def weekly_mode(c) -> None:
                  ("sqi", "pages", "shows", "clicks", "g_clicks", "g_impr", "g_ctr", "g_pos")})
     with HISTORY_FILE.open("a", encoding="utf-8") as f:
         f.write(json.dumps(hist, ensure_ascii=False) + "\n")
-    send_telegram(report)
+    send_telegram(c, report)
 
 
-def send_telegram(text: str) -> None:
+def send_telegram(c: dict, text: str) -> None:
     token = os.environ.get("TG_BOT_TOKEN")
     chat_id = os.environ.get("TG_CHAT_ID")
     if not token or not chat_id:
@@ -428,7 +467,7 @@ def send_telegram(text: str) -> None:
             try:
                 req = urllib.request.Request(
                     url, data=urllib.parse.urlencode(d).encode(), method="POST")
-                with urllib.request.urlopen(req, timeout=15) as resp:
+                with http_open(req, timeout=c["timeouts"]["telegram"]) as resp:
                     if json.loads(resp.read()).get("ok"):
                         break
             except Exception as e:
