@@ -68,18 +68,38 @@ jobs:
               `git pull --rebase --autostash origin main`, затем push, до 3 попыток
               с паузой 5с между ними при неудаче (та же гонка возможна, что и у
               seo-pulse.yml — другие workflow пушат в main тем же часом).
-            - Telegram (секреты TG_BOT_TOKEN/TG_CHAT_ID в env) — только если есть
-              реальная дельта с прошлого прогона (новые находки/смена статуса).
-              Если дельты нет — не слать, тишина это нормальный результат.
+            - Telegram: у тебя НЕТ доступа к токену бота (осознанно — секрет не передан
+              этому шагу отдельно, чтобы содержимое живой веб-страницы не могло его
+              выманить). Если есть реальная дельта с прошлого прогона (новые находки/
+              смена статуса) — запиши готовый текст уведомления в файл
+              /tmp/radar-tg-message.txt (НЕ в репозиторий — это временный файл
+              раннера, не коммить его). Если дельты нет — не создавай файл вообще,
+              тишина это нормальный результат.
+            - Если нужное действие заблокировано доступными тебе инструментами — не
+              пытайся обойти ограничение, заверши задачу и честно опиши в отчёте, что
+              не удалось сделать и почему.
             - Auto-fix запрещён: только отчёт и предложенный фикс текстом, код
               компонентов/контент/schema не трогать.
           claude_args: |
-            --max-turns 60
+            --max-turns 60 --allowedTools "Write,Edit,Bash(git config *),Bash(git add *),Bash(git commit *),Bash(git pull *),Bash(git push *),Bash(git status *),Bash(git diff *),Bash(git log *),Bash(npx *),Bash(npm *),Bash(node *),Bash(mkdir *),Bash(ls *),Bash(cat *),Bash(pwd)"
+
+      # Детерминированный шаг, не агент — токен бота никогда не проходит через
+      # LLM-контекст (защита от эксфильтрации через prompt injection с живой
+      # страницы, которую агент читает на шаге выше).
+      - name: Send Telegram delta (if any)
+        if: success()
         env:
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
-          YANDEX_OAUTH_TOKEN: ${{ secrets.YANDEX_OAUTH_TOKEN }}
-          YANDEX_USER_ID: ${{ secrets.YANDEX_USER_ID }}
+        run: |
+          if [ -f /tmp/radar-tg-message.txt ]; then
+            curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
+              --data-urlencode "chat_id=${TG_CHAT_ID}" \
+              --data-urlencode "text=$(cat /tmp/radar-tg-message.txt)" \
+              >/dev/null || true
+          else
+            echo "Нет файла /tmp/radar-tg-message.txt — дельты не было, тишина."
+          fi
 
       - name: Alert on job failure
         if: failure()
