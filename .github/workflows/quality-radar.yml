@@ -5,13 +5,18 @@ on:
     - cron: '0 7 * * 1'    # Пн 07:00 UTC = 10:00 МСК — час после SEO Pulse (0 6 * * 1)
   workflow_dispatch: {}
 
-permissions:
-  contents: write
-
 jobs:
   radar:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    # На уровне job, не workflow — принцип наименьших привилегий (единственная
+    # job сейчас, но если появятся другие — им не нужны contents/id-token).
+    permissions:
+      contents: write
+      # claude-code-action меняет OIDC-токен раннера на скоуп-токен через
+      # Anthropic-сервис — без этого падает на первом же шаге с "Could not
+      # fetch an OIDC token" (проверено живым прогоном 14.07.2026, run 29335966071).
+      id-token: write
     steps:
       # fetch-depth:0 — агент сам делает git pull --rebase перед push; shallow-clone
       # может дать "refusing to merge unrelated histories" в редких edge-case
