@@ -1,0 +1,88 @@
+name: Quality Radar
+
+on:
+  schedule:
+    - cron: '0 7 * * 1'    # Пн 07:00 UTC = 10:00 МСК — час после SEO Pulse (0 6 * * 1)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      # fetch-depth:0 — агент сам делает git pull --rebase перед push; shallow-clone
+      # может дать "refusing to merge unrelated histories" в редких edge-case
+      # (ручное вмешательство/много промежуточных коммитов за неделю).
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # Radar краулит живой прод (traveltribe.ru), не dist/ — chromium достаточно
+      # для @360/@1280 интерактивных проверок (webkit не нужен, в отличие от
+      # пиксельной визуальной регрессии).
+      - name: Install Playwright (chromium)
+        run: npx playwright install --with-deps chromium
+
+      - name: Git identity for radar commits
+        run: |
+          git config user.name "quality-radar-bot"
+          git config user.email "quality-radar@traveltribe.ru"
+
+      - name: Run Quality Radar
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Выполни процедуру еженедельного аудита прода traveltribe.ru из radar/SKILL.md
+            в этом репозитории. Прочитай файл целиком и следуй ему буквально:
+
+            - Дедуп сначала: прочитать radar/findings.json, свериться, нет ли уже
+              актуального отчёта этой недели без изменений в main с момента генерации.
+            - Скоуп/анти-скоуп — строго по таблице в SKILL.md, не дублировать check:seo/
+              content-invariants/lighthouse/visual-tests/SEO Pulse.
+            - Live-краул https://traveltribe.ru (не localhost/dist/build) — Playwright
+              @360 и @1280, триггерить интерактив (фильтры/калькулятор/сравнение),
+              ассерт видимости ПОСЛЕ клика (offsetParent/computed display), не просто
+              DOM-наличие.
+            - Обновить radar/findings.json (дедуп по id: перепроверить open-находки,
+              добавить новые, НЕ репортить повторно fixed/wontfix).
+            - Записать/обновить radar/RADAR-<год>-W<неделя>.md по формату из SKILL.md.
+            - Скрин-доказательства P1/P2 находок → radar/assets/.
+            - Никогда не открывать PR — коммитить report+findings.json+assets ПРЯМО
+              в main. Git identity уже настроен (quality-radar-bot). Push с ретраем:
+              `git pull --rebase --autostash origin main`, затем push, до 3 попыток
+              с паузой 5с между ними при неудаче (та же гонка возможна, что и у
+              seo-pulse.yml — другие workflow пушат в main тем же часом).
+            - Telegram (секреты TG_BOT_TOKEN/TG_CHAT_ID в env) — только если есть
+              реальная дельта с прошлого прогона (новые находки/смена статуса).
+              Если дельты нет — не слать, тишина это нормальный результат.
+            - Auto-fix запрещён: только отчёт и предложенный фикс текстом, код
+              компонентов/контент/schema не трогать.
+          claude_args: |
+            --max-turns 60
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          YANDEX_OAUTH_TOKEN: ${{ secrets.YANDEX_OAUTH_TOKEN }}
+          YANDEX_USER_ID: ${{ secrets.YANDEX_USER_ID }}
+
+      - name: Alert on job failure
+        if: failure()
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TG_CHAT_ID}" \
+            --data-urlencode "text=🚨 Quality Radar: GHA job упал (run ${{ github.run_id }}). Проверь Actions." \
+            >/dev/null || true
