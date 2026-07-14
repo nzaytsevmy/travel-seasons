@@ -1,0 +1,72 @@
+[
+  {
+    "id": "packing-filter-hidden-not-applied",
+    "severity": "P1",
+    "url": "https://traveltribe.ru/packing/egypt/june/",
+    "file": "src/components/PackingChecklist.astro",
+    "status": "fixed",
+    "first_seen": "2026-06-29",
+    "last_seen": "2026-07-14",
+    "note": "[hidden] перебивался display:flex/inline-block — фильтры визуально не скрывали пункты (21 из 89 протекало на дефолтной загрузке). Исправлено PR #73 (14.07.2026): [hidden]{display:none!important}. Проверено DOM-ассертами (0 протечек, SSR-дефолт + интерактивный клик фильтра) и пересобранными visual-бейзлайнами."
+  },
+  {
+    "id": "direction-count-hardcoded-70-vs-72",
+    "severity": "P2",
+    "url": "https://traveltribe.ru/countries/",
+    "file": "src/data/directions.js",
+    "status": "fixed",
+    "first_seen": "2026-06-29",
+    "last_seen": "2026-07-02",
+    "note": "«70 направлений» захардкожено в ~25 местах (title/meta/JSON-LD/Nav/Layout/копирайт) при факте DIRECTIONS.length=72. Исправлено PR #52 (02.07.2026) — заменено на «70+» по всему сайту (future-proof, не устаревает при росте каталога)."
+  },
+  {
+    "id": "currency-nbsp-wrap-countries",
+    "severity": "P3",
+    "url": "https://traveltribe.ru/countries/",
+    "file": "src/pages/countries.astro:158",
+    "status": "open",
+    "first_seen": "2026-06-29",
+    "last_seen": "2026-06-29",
+    "note": "Пробел вместо &nbsp; перед ₽ — латентный перенос строки. НЕ перепроверялось живьём с момента находки W27 (29.06) — статус может быть устаревшим, перепроверить в первом прогоне после возрождения Radar."
+  },
+  {
+    "id": "calculator-touch-target-40px",
+    "severity": "P3",
+    "url": "https://traveltribe.ru/calculator/",
+    "file": null,
+    "status": "open",
+    "first_seen": "2026-06-29",
+    "last_seen": "2026-06-29",
+    "note": "Тач-таргеты калькулятора 40px (<44px минимума брендбука). НЕ перепроверялось живьём с момента находки W27 — перепроверить в первом прогоне."
+  },
+  {
+    "id": "seasons-mobile-sheet-radius-16px",
+    "severity": "P3",
+    "url": "https://traveltribe.ru/seasons/",
+    "file": null,
+    "status": "open",
+    "first_seen": "2026-06-29",
+    "last_seen": "2026-06-29",
+    "note": "Radius мобильного шита сезонов 16px (>12px лимита брендбука для текстовых секций). НЕ перепроверялось живьём — перепроверить в первом прогоне."
+  },
+  {
+    "id": "seasons-panel-cta-brand-anchor",
+    "severity": "P3",
+    "url": "https://traveltribe.ru/seasons/",
+    "file": null,
+    "status": "open",
+    "first_seen": "2026-06-29",
+    "last_seen": "2026-06-29",
+    "note": "CTA-анкор панелей сезонов — бренд-имя вместо benefit-формулы («…на Aviasales» вместо «…от 71 019 ₽», канон MONETIZATION-2026.md). НЕ перепроверялось живьём — перепроверить в первом прогоне."
+  },
+  {
+    "id": "cards-virtualcard-cta-no-erid",
+    "severity": "needs-review",
+    "url": "https://traveltribe.ru/cards/",
+    "file": null,
+    "status": "needs-review",
+    "first_seen": "2026-06-29",
+    "last_seen": "2026-06-29",
+    "note": "CTA «виртуальная карта» (platipomiru.com) — rel=sponsored без erid. Не однозначный баг — нужно уточнить у партнёра, даёт ли он erid (требование 38-ФЗ), решение владельца."
+  }
+]
