@@ -8,7 +8,7 @@ import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
 import { COUNTRIES as RICH_COUNTRIES } from '../../../data/programmatic-seasons.js';
 import { NICHE_TRIPS } from '../../../data/niche-trips.js';
 import { TP_LINKS, aviasalesRoute } from '../../../data/affiliate.js';
-import { DATA_UPDATED_RU, yearForMonth } from '../../../data/meta.js';
+import { DATA_UPDATED, DATA_UPDATED_RU, yearForMonth } from '../../../data/meta.js';
 import TripSaveButton from '../../../components/TripSaveButton.astro';
 
 export async function getStaticPaths() {
@@ -130,6 +130,9 @@ const ldJson = {
       "description": `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}: погода, цены на перелёт и отель, виза для россиян. ${lbl.verdict}.`,
       "inLanguage": "ru-RU",
       "datePublished": "2026-05-10",
+      // Реальная дата обновления данных (цены/визы/сезоны) — та же, что видимая
+      // «актуальны на …» и lastmod в sitemap. Не косметика даты.
+      "dateModified": DATA_UPDATED,
       "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://traveltribe.ru/about/" },
       "publisher": { "@id": "https://traveltribe.ru/#org" }
     },
