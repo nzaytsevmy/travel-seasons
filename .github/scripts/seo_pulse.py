@@ -28,7 +28,11 @@ TODAY = date.today()
 DRY = os.environ.get("PULSE_DRY") == "1"
 
 DEFAULT_CFG = {
-    "thresholds": {"pages_drop_pct": 8, "sqi_drop_pct": 10, "clicks_drop_pct_wow": 25},
+    "thresholds": {
+        "pages_drop_pct": 8, "sqi_drop_pct": 10, "clicks_drop_pct_wow": 25,
+        # striking distance (B1): TRAFFIC-2026 — поз 6-15, шаг вверх = ×2-3 CTR
+        "striking_pos_min": 6, "striking_pos_max": 15, "striking_min_impr": 50,
+    },
     # дата выпуска OAuth-токена Яндекса (≈1 год жизни) — для self-check истечения
     "yandex_token_issued": "2026-05-05",
     "host": "https:traveltribe.ru:443",
@@ -74,6 +78,28 @@ def http_open(req, timeout, attempts=3, backoff=2):
     raise last_err
 
 
+# Ориентировочная кривая органического CTR по позиции — индустриальный
+# усреднённый ориентир (десктоп+мобайл смешаны; реальный CTR гуляет по
+# вертикали/типу запроса), НЕ измерение конкретно traveltribe.ru. Используется
+# только как относительный сигнал приоритизации (striking distance / B2
+# zero-click), не как точная цифра для отчётности наружу.
+CTR_BENCHMARK = {
+    1: 0.28, 2: 0.15, 3: 0.11, 4: 0.08, 5: 0.07,
+    6: 0.05, 7: 0.04, 8: 0.03, 9: 0.03, 10: 0.025,
+}
+
+
+def ctr_benchmark(position: float) -> float:
+    p = max(1, round(position))
+    if p in CTR_BENCHMARK:
+        return CTR_BENCHMARK[p]
+    if p <= 15:
+        return 0.015
+    if p <= 20:
+        return 0.01
+    return 0.005
+
+
 def parse_frontmatter(text: str) -> dict:
     if not text.startswith("---"):
         return {}
@@ -110,21 +136,28 @@ def yapi(c: dict, path: str, method="GET", body=None):
 def fetch_yandex(c: dict) -> dict:
     s, e1 = yapi(c, "/summary/")
     q, e2 = yapi(c, "/search-queries/popular/?order_by=TOTAL_SHOWS&limit=100"
-                 "&query_indicator=TOTAL_SHOWS&query_indicator=TOTAL_CLICKS")
+                 "&query_indicator=TOTAL_SHOWS&query_indicator=TOTAL_CLICKS"
+                 "&query_indicator=AVG_SHOW_POSITION")
     if s is None and q is None:
         return {"ok": False, "err": e1 or e2}
     s = s or {}
-    queries, shows, clicks = {}, 0, 0
+    th = c["thresholds"]
+    queries, shows, clicks, striking = {}, 0, 0, []
     for it in (q or {}).get("queries", []):
         ind = it.get("indicators", {})
         c2 = int(ind.get("TOTAL_CLICKS") or 0)
-        shows += int(ind.get("TOTAL_SHOWS") or 0)
+        sh = int(ind.get("TOTAL_SHOWS") or 0)
+        shows += sh
         clicks += c2
         qt = it.get("query_text") or it.get("query_id")
         if qt:
             queries[qt] = c2
+        pos = ind.get("AVG_SHOW_POSITION")
+        if pos is not None and th["striking_pos_min"] <= pos <= th["striking_pos_max"] and sh >= th["striking_min_impr"]:
+            striking.append({"query": qt, "position": round(pos, 1), "shows": sh, "clicks": c2})
+    striking.sort(key=lambda x: -x["shows"])
     return {"ok": True, "sqi": s.get("sqi"), "pages": s.get("searchable_pages_count"),
-            "shows": shows, "clicks": clicks, "queries": queries}
+            "shows": shows, "clicks": clicks, "queries": queries, "striking": striking[:10]}
 
 
 def recrawl(c: dict, slug: str):
@@ -217,6 +250,9 @@ def fetch_gsc(c: dict) -> dict:
     pg_prev, _ = gsc_query(c, token, prev0, prev1, ["page"])
     q_cur, _ = gsc_query(c, token, cur0, cur1, ["query"])
     q_prev, _ = gsc_query(c, token, prev0, prev1, ["query"])
+    # page+query вместе — нужен URL конкретного запроса для striking distance (B1),
+    # чистый ["query"] выше даёт только агрегат по всем страницам сразу.
+    pgq_cur, _ = gsc_query(c, token, cur0, cur1, ["page", "query"])
 
     def movers(cur, prev, key_clean):
         pv = {r["keys"][0]: r for r in (prev or [])}
@@ -233,6 +269,22 @@ def fetch_gsc(c: dict) -> dict:
 
     pclean = lambda u: u.replace("https://traveltribe.ru", "") or "/"
     qclean = lambda q: q
+
+    # Striking distance (B1): поз 6-15 с показами≥порога, сортировка по потенциалу
+    # клика при выходе в топ-3 — impressions × (ctr_benchmark(3) − текущий ctr).
+    th = c["thresholds"]
+    striking = []
+    for r in (pgq_cur or []):
+        pos, impr = r["position"], r["impressions"]
+        if not (th["striking_pos_min"] <= pos <= th["striking_pos_max"]) or impr < th["striking_min_impr"]:
+            continue
+        ctr = r["clicks"] / impr if impr else 0
+        potential = impr * max(0, ctr_benchmark(3) - ctr)
+        page, query = r["keys"]
+        striking.append({"query": qclean(query), "page": pclean(page), "position": round(pos, 1),
+                          "impressions": impr, "ctr": round(ctr * 100, 2), "potential": round(potential, 1)})
+    striking.sort(key=lambda x: -x["potential"])
+
     return {
         "ok": True,
         "impr": round(tc.get("impressions", 0)),
@@ -244,6 +296,7 @@ def fetch_gsc(c: dict) -> dict:
         "pages_down": movers(pg_cur, pg_prev, pclean)[1],
         "q_up": movers(q_cur, q_prev, qclean)[0],
         "q_down": movers(q_cur, q_prev, qclean)[1],
+        "striking": striking[:10],
     }
 
 
@@ -394,6 +447,20 @@ def weekly_mode(c) -> None:
     else:
         L.append(f"⚠️ *Google слеп*: {g['err']}")
 
+    # Striking distance (B1): поз 6-15 — шаг вверх в топ-3 = ×2-3 CTR (TRAFFIC-2026)
+    strk_g = g.get("striking", []) if g["ok"] else []
+    strk_y = y.get("striking", []) if y["ok"] else []
+    if strk_g or strk_y:
+        L += ["", "━━━ 🎯 Striking distance (поз 6-15) ━━━"]
+        for s in strk_g[:3]:
+            L.append(f"• G: «{s['query']}» {s['page']} — поз {s['position']}, "
+                     f"показы {s['impressions']}, CTR {s['ctr']}%")
+        for s in strk_y[:3]:
+            L.append(f"• Я: «{s['query']}» — поз {s['position']}, показы {s['shows']}")
+    else:
+        L += ["", "🎯 Striking distance: кандидатов нет (поз 6-15, показы≥"
+                   f"{c['thresholds']['striking_min_impr']})."]
+
     if recrawled:
         qn = f", квота {quota}" if quota is not None else ""
         L.append(f"♻️ Авто-переобход: {len(recrawled)} постов ✅{qn}")
@@ -436,10 +503,11 @@ def weekly_mode(c) -> None:
                     clicks=y["clicks"], y_queries=y["queries"])
     if g["ok"]:
         snap.update(g_clicks=g["clicks"], g_impr=g["impr"], g_ctr=g["ctr"], g_pos=g["pos"])
+    snap["striking_count"] = len(strk_g) + len(strk_y)
     STATE_FILE.write_text(json.dumps(snap, ensure_ascii=False), encoding="utf-8")
     hist = {"date": str(TODAY)}
     hist.update({k: snap.get(k) for k in
-                 ("sqi", "pages", "shows", "clicks", "g_clicks", "g_impr", "g_ctr", "g_pos")})
+                 ("sqi", "pages", "shows", "clicks", "g_clicks", "g_impr", "g_ctr", "g_pos", "striking_count")})
     with HISTORY_FILE.open("a", encoding="utf-8") as f:
         f.write(json.dumps(hist, ensure_ascii=False) + "\n")
     send_telegram(c, report)
