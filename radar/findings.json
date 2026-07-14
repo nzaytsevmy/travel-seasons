@@ -26,38 +26,38 @@
     "file": "src/pages/countries.astro:158",
     "status": "open",
     "first_seen": "2026-06-29",
-    "last_seen": "2026-06-29",
-    "note": "Пробел вместо &nbsp; перед ₽ — латентный перенос строки. НЕ перепроверялось живьём с момента находки W27 (29.06) — статус может быть устаревшим, перепроверить в первом прогоне после возрождения Radar."
+    "last_seen": "2026-07-14",
+    "note": "Пробел (U+0020) вместо &nbsp; перед ₽ в `≈ ${fmt(c.budgetRub)} ₽` — подтверждено живьём W29 (charCode 32 перед ₽). Сейчас не рвётся визуально: прогнано 74 карточки @360px, 0 обёрнутых (высота ячейки = 1 line-height у всех). Риск латентный — держит из-за случайной ширины сетки, не из-за корректности разметки."
   },
   {
     "id": "calculator-touch-target-40px",
     "severity": "P3",
     "url": "https://traveltribe.ru/calculator/",
-    "file": null,
+    "file": "src/pages/calculator.astro:1615",
     "status": "open",
     "first_seen": "2026-06-29",
-    "last_seen": "2026-06-29",
-    "note": "Тач-таргеты калькулятора 40px (<44px минимума брендбука). НЕ перепроверялось живьём с момента находки W27 — перепроверить в первом прогоне."
+    "last_seen": "2026-07-14",
+    "note": "Подтверждено живьём @360px: `.tc-seg-btn` (Эконом/Комфорт/Люкс, ₽/$) — min-height 40px (calculator.astro:1615), <44px минимума брендбука. Остальные тач-таргеты страницы (степперы ±, чекбоксы упаковки через label) ≥44px — точечная находка, не системная."
   },
   {
     "id": "seasons-mobile-sheet-radius-16px",
     "severity": "P3",
     "url": "https://traveltribe.ru/seasons/",
-    "file": null,
+    "file": "src/pages/seasons.astro:1104",
     "status": "open",
     "first_seen": "2026-06-29",
-    "last_seen": "2026-06-29",
-    "note": "Radius мобильного шита сезонов 16px (>12px лимита брендбука для текстовых секций). НЕ перепроверялось живьём — перепроверить в первом прогоне."
+    "last_seen": "2026-07-14",
+    "note": "Подтверждено живьём: `.cell-panel` (мобильный bottom-sheet ячейки таблицы) — border-radius: 16px 16px 0 0 (seasons.astro:1104), >12px лимита брендбука для текстовых секций."
   },
   {
     "id": "seasons-panel-cta-brand-anchor",
     "severity": "P3",
     "url": "https://traveltribe.ru/seasons/",
-    "file": null,
+    "file": "src/pages/seasons.astro:398",
     "status": "open",
     "first_seen": "2026-06-29",
-    "last_seen": "2026-06-29",
-    "note": "CTA-анкор панелей сезонов — бренд-имя вместо benefit-формулы («…на Aviasales» вместо «…от 71 019 ₽», канон MONETIZATION-2026.md). НЕ перепроверялось живьём — перепроверить в первом прогоне."
+    "last_seen": "2026-07-14",
+    "note": "Подтверждено живьём кликом по ячейке: кнопка #panelAviasales — статичный текст «Найти билет на Aviasales» (seasons.astro:398), не обновляется JS даже когда цена месяца уже известна и показана рядом (priceText). Benefit-формула («…от 71 019 ₽») технически доступна на этот момент клика — просто не подставляется в текст кнопки."
   },
   {
     "id": "cards-virtualcard-cta-no-erid",
@@ -66,7 +66,17 @@
     "file": null,
     "status": "needs-review",
     "first_seen": "2026-06-29",
-    "last_seen": "2026-06-29",
-    "note": "CTA «виртуальная карта» (platipomiru.com) — rel=sponsored без erid. Не однозначный баг — нужно уточнить у партнёра, даёт ли он erid (требование 38-ФЗ), решение владельца."
+    "last_seen": "2026-07-14",
+    "note": "Подтверждено живьём: href=\"https://platipomiru.com/?utm_source=traveltribe&utm_medium=cpa\", rel=\"sponsored noopener\" — без erid. Не однозначный баг — нужно уточнить у партнёра, даёт ли он erid (требование 38-ФЗ), решение владельца."
+  },
+  {
+    "id": "calculator-eyebrow-caps-labels",
+    "severity": "needs-review",
+    "url": "https://traveltribe.ru/calculator/",
+    "file": "src/pages/calculator.astro:1095,1362,1443",
+    "status": "needs-review",
+    "first_seen": "2026-07-14",
+    "last_seen": "2026-07-14",
+    "note": "На /calculator/ пережили sitewide-зачистку eyebrow-капсов (коммиты c88750c/539d4c6, калькулятор явно назван в описании) три моно-uppercase+letter-spacing лейбла: `.tc-hero-label` «Итого на поездку» (11px/0.2em, calculator.astro:1095) над главной суммой, `.tc-cmp-total-label` «Итого» (10px/0.2em, :1362) и `.tc-aux-label` «Партнёры:» (10px/0.18em, :1443) в режиме сравнения стран — визуально идентичны запрещённому канону паттерну (см. скрин radar/assets/calculator-eyebrow-caps-labels.png). content-invariants это не ловит (регэксп только на eyebrow сразу перед <h1>, тут лейблы над числом/секцией, не над заголовком). Needs-review, не однозначный баг: возможно это статус/стат-лейбл (как визовые пилюли, которые коммит explicitly оставил — «это смысл, не декор»), а не декоративный eyebrow — нужно решение владельца, входит ли этот паттерн под запрет."
   }
 ]
