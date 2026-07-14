@@ -14,7 +14,7 @@ Search Central (канон Google) · разбор факторов Яндекс
 
 ## 🚦 ОБЯЗАТЕЛЬНЫЙ гейт перед коммитом (любая правка страницы/контента)
 
-Коммит без всех 5 пунктов запрещён. Доказано рабочим в сессии 2026-05-16.
+Коммит без всех 6 пунктов запрещён. Доказано рабочим в сессии 2026-05-16.
 
 1. **build** — `npm run build`, exit 0, 0 ошибок кроме известных 14 `Cannot compress` (pre-existing).
 2. **Visual @402 + @1280** — Playwright-скрин КАЖДОГО изменённого типа, оба вьюпорта.
@@ -24,7 +24,9 @@ Search Central (канон Google) · разбор факторов Яндекс
 4. **Schema-валидация по `dist/`** — JSON-LD парсится; FAQPage(name+acceptedAnswer.text),
    Article/BlogPosting(headline+datePublished+author), Org/WebSite/Person; нет дублей @id;
    все `author/founder/publisher` `@id` резолвятся в графе страницы.
-5. **Playwright-регресс** зелёный. Эталоны устаревают — если фейлы на нетронутых страницах,
+5. **SEO site-audit** — `npm run check:seo` (скан всего `dist/`: canonical, noindex-vs-sitemap,
+   OG-карточки, Article dateModified, generic-анкоры, orphan). 0 находок; тоже входит в pre-push.
+6. **Playwright-регресс** зелёный. Эталоны устаревают — если фейлы на нетронутых страницах,
    сначала A/B на чистом HEAD (доказать pre-existing), `--update-snapshots` только после
    ручной визуальной верификации текущего рендера. Молча не двигать threshold (маскирует регресс).
 
