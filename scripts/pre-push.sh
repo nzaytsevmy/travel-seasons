@@ -11,6 +11,12 @@ npm run build > /tmp/pre-push-build.log 2>&1 || {
   exit 1
 }
 
+echo "→ pre-push: SEO site audit (canonical/sitemap/og/schema-dates/orphans)"
+npm run check:seo > /tmp/pre-push-seo.log 2>&1 || {
+  echo "✗ SEO audit failed. См. /tmp/pre-push-seo.log"
+  exit 1
+}
+
 echo "→ pre-push: starting preview server"
 pkill -f "astro preview" 2>/dev/null || true
 sleep 1
