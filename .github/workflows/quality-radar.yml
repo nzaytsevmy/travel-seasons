@@ -80,13 +80,6 @@ jobs:
               не удалось сделать и почему.
             - Auto-fix запрещён: только отчёт и предложенный фикс текстом, код
               компонентов/контент/schema не трогать.
-          # Временно для диагностики: run 29344285936 упёрся в --max-turns 60
-          # (61 ход сделал, реальная работа, $2.27 — не блокировка прав, а нехватка
-          # запаса), плюс 8 оставшихся permission_denials без видимого текста —
-          # show_full_output снова включаю чтобы увидеть их. Первый прогон
-          # (нет существующего отчёта, полный краул с нуля) закономерно тяжелее
-          # штатных еженедельных — те будут легче за счёт дедупа по findings.json.
-          show_full_output: true
           claude_args: |
             --max-turns 150 --allowedTools "Write,Edit,Bash(git config *),Bash(git add *),Bash(git commit *),Bash(git pull *),Bash(git push *),Bash(git status *),Bash(git diff *),Bash(git log *),Bash(npx *),Bash(npm *),Bash(node *),Bash(mkdir *),Bash(ls *),Bash(cat *),Bash(pwd)"
 
