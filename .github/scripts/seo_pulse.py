@@ -662,6 +662,17 @@ def weekly_mode(c) -> None:
             L.append(f"  ▶ {r.get('prompt','')}")
         L.append('  (сделано → в seo-pulse/config.json у пункта "done": true)')
 
+    # Месячные напоминания (D2): повторяющиеся ручные дела без публичного API
+    # (напр. «Видимость в Алисе AI» в Вебмастере — API нет, только глазами).
+    # В отличие от roadmap (одноразовый, done→исчез) — показываются в первый
+    # прогон каждого месяца снова. Гейт day<=7: weekly крутится по понедельникам,
+    # значит это первый понедельник месяца.
+    nudges = c.get("monthly_nudges", [])
+    if nudges and (DRY or TODAY.day <= 7):
+        L += ["", "━━━ 📅 Ежемесячно (руками) ━━━"]
+        for n in nudges:
+            L.append(f"• {n}")
+
     report = "\n".join(L)
     print(report)
     if DRY:
