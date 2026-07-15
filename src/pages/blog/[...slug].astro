@@ -18,11 +18,15 @@ const { Content, headings } = await post.render();
 const url = `https://traveltribe.ru/blog/${post.slug}/`;
 const coverUrl = typeof post.data.coverImage === 'string' ? post.data.coverImage : `https://traveltribe.ru${post.data.coverImage.src}`;
 
-// Preload mobile-sized hero cover для LCP <2.5s (тот же 640px webp,
-// который Picture сам выберет на mobile-vh — попадание в кэш).
+// Preload hero cover для LCP <2.5s: АДАПТИВНЫЙ srcset, точно совпадающий с <Picture>
+// ниже (те же widths/sizes/format/quality), чтобы preload попал ровно в тот вариант,
+// который браузер реально выберет. Раньше preload был фиксированный 640px по
+// предположению «Picture возьмёт 640 на mobile» — но на mobile-эмуляции Lighthouse
+// (высокий DPR, 100vw) браузер берёт 960/1280, а preload грузил 640 → мимо кэша,
+// LCP-картинка качалась отдельным поздним запросом (japan-guide держался на грани 0.85).
 const heroPreload = typeof post.data.coverImage === 'string' ? null : await getImage({
   src: post.data.coverImage,
-  width: 640,
+  widths: [640, 960, 1280],
   format: 'webp',
   quality: 65,
 });
@@ -152,7 +156,8 @@ if (faqs.length >= 2) {
   ogImage={ogImageUrl}
   ogImageAlt={post.data.title}
   ldJson={ldJson}
-  preloadImage={heroPreload?.src}
+  preloadImageSrcset={heroPreload?.srcSet.attribute}
+  preloadImageSizes="100vw"
 >
   <script is:inline>document.body.classList.add('post-page')</script>
   <Breadcrumbs crumbs={[{ label: 'Блог', href: '/blog/' }, { label: post.data.title }]} />
