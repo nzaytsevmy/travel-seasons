@@ -44,7 +44,26 @@ DEFAULT_CFG = {
         # молча сломается (как уже было раз — scheduled-task исчезла), никто
         # не узнает без независимой проверки отсюда.
         "radar_stale_days": 8,
+        # content decay (B3): месячно — медленная эрозия за 28д vs пред. 28д.
+        # Ключевой фильтр — ПОКАЗЫ, не клики: клики упали при держащихся показах
+        # (≥impr_hold_ratio×пред.) = реальное угасание (сниппет/конкуренты/SERP-
+        # фича съели CTR) → рефреш. Клики упали ВМЕСТЕ с показами = сезон кончился
+        # (travel-сезонность!), не рефрешить. Квалификация по показам≥min_prev_impr,
+        # не по кликам — 10 кликов/28д это шум малых чисел (закон малых чисел).
+        "decay_clicks_drop_pct": 30, "decay_min_prev_impr": 100,
+        "decay_impr_hold_ratio": 0.8,
+        # мягкий пол абс. кликов — глушит однокликовый шум; ровно 5, чтобы потеря
+        # ОДНОГО клика (5→4=20%) не пробивала 30%-порог, нужно ≥2 клика вниз.
+        # Значимость всё равно держат ПОКАЗЫ (≥min_prev_impr), не клики.
+        "decay_min_prev_clicks": 5,
+        # запуск раз в ~месяц по состоянию (last_decay_run в _state.json), а не по
+        # day<=7 — переживает сбой одного понедельника (иначе месяц теряется).
+        "decay_interval_days": 25, "decay_min_site_age_days": 60,
     },
+    # первый коммит репозитория (жёсткий пол существования сайта) — decay не гоняем,
+    # пока сайту < decay_min_site_age_days, иначе пред. 28д-окно предшествует запуску
+    # и математика грязная (сравнение полного окна с частично-пустым).
+    "site_launch_date": "2026-04-27",
     # дата выпуска OAuth-токена Яндекса (≈1 год жизни) — для self-check истечения
     "yandex_token_issued": "2026-05-05",
     "host": "https:traveltribe.ru:443",
@@ -243,7 +262,7 @@ def gsc_query(c: dict, token, start, end, dims):
         return None, str(e)
 
 
-def fetch_gsc(c: dict) -> dict:
+def fetch_gsc(c: dict, decay: bool = False) -> dict:
     token, err = gsc_token(c)
     if not token:
         return {"ok": False, "err": err}
@@ -312,6 +331,37 @@ def fetch_gsc(c: dict) -> dict:
     striking.sort(key=lambda x: -x["potential"])
     zero_click.sort(key=lambda x: -x["impressions"])
 
+    # Content decay (B3, месячно): 28д vs пред. 28д по страницам. Кандидат на
+    # рефреш = клики просели ≥порога ПРИ держащихся показах (иначе сезонность).
+    decay_cand, decay_ran = [], False
+    if decay:
+        d_cur, e_cur = gsc_query(c, token, end - timedelta(days=27), end, ["page"])
+        d_prev, e_prev = gsc_query(c, token, end - timedelta(days=55), end - timedelta(days=28), ["page"])
+        # decay_ran=True только если ОБА запроса реально вернули данные (None = сбой
+        # сети/5xx). Иначе пустой decay_cand неотличим от «ничего не просело» — и
+        # вызывающий по ошибке продвинет last_decay_run, потеряв месяц (баг из ревью).
+        decay_ran = d_cur is not None and d_prev is not None
+        prevmap = {r["keys"][0]: r for r in (d_prev or [])}
+        for r in (d_cur or []):
+            pv = prevmap.get(r["keys"][0])
+            if not pv:
+                continue
+            pc, cc = pv["clicks"], r["clicks"]
+            pi, ci = pv["impressions"], r["impressions"]
+            if pi < th["decay_min_prev_impr"] or pc < th["decay_min_prev_clicks"] or pc <= 0:
+                continue
+            drop = (pc - cc) / pc
+            impr_held = ci >= th["decay_impr_hold_ratio"] * pi
+            if drop >= th["decay_clicks_drop_pct"] / 100 and impr_held:
+                decay_cand.append({
+                    "page": pclean(r["keys"][0]),
+                    "clicks_prev": round(pc), "clicks_cur": round(cc),
+                    "drop_pct": round(drop * 100),
+                    "impr_cur": round(ci), "impr_prev": round(pi),
+                    "pos_prev": round(pv["position"], 1), "pos_cur": round(r["position"], 1),
+                })
+        decay_cand.sort(key=lambda x: -(x["clicks_prev"] - x["clicks_cur"]))  # по объёму потери
+
     return {
         "ok": True,
         "impr": round(tc.get("impressions", 0)),
@@ -327,6 +377,9 @@ def fetch_gsc(c: dict) -> dict:
         "striking_total": len(striking),
         "zero_click": zero_click[:10],
         "zero_click_total": len(zero_click),
+        "decay": decay_cand[:8],
+        "decay_total": len(decay_cand),
+        "decay_ran": decay_ran,
     }
 
 
@@ -466,9 +519,28 @@ def alert_mode(c) -> None:
 
 def weekly_mode(c) -> None:
     posts = collect_posts()
-    y = fetch_yandex(c)
-    g = fetch_gsc(c)
     prev = load_state()
+    # Content decay (B3) — месячно по СОСТОЯНИЮ (устойчиво к сбою одного Пн, иначе
+    # месяц теряется): гоняем если с прошлого decay-прогона прошло ≥ interval дней
+    # И сайту ≥ min_site_age. DRY всегда гоняет — чтобы секция была видна на тесте.
+    th = c["thresholds"]
+    last_decay = prev.get("last_decay_run")
+    # fromisoformat строгий — битая дата (ручная правка _state.json / кривой конфиг)
+    # иначе уронила бы ВЕСЬ отчёт, не только decay. Битый last_decay → форс-запуск
+    # (безвредно, decay идемпотентен); битый launch_date → age=-1 → decay пропущен
+    # (безопаснее форса на возможно-молодом сайте), но отчёт живёт.
+    try:
+        days_since_decay = (TODAY - date.fromisoformat(last_decay)).days if last_decay else 10**6
+    except ValueError:
+        days_since_decay = 10**6
+    try:
+        site_age = (TODAY - date.fromisoformat(c["site_launch_date"])).days
+    except (ValueError, KeyError):
+        site_age = -1
+    run_decay = DRY or (days_since_decay >= th["decay_interval_days"]
+                        and site_age >= th["decay_min_site_age_days"])
+    y = fetch_yandex(c)
+    g = fetch_gsc(c, decay=run_decay)
 
     # авто-переобход
     fresh = [p for p in posts if p["age"] <= c["recrawl_max_age"]]
@@ -543,6 +615,21 @@ def weekly_mode(c) -> None:
         L += ["", "🚫 Zero-click: аномалий нет (поз≤10, показы≥"
                    f"{c['thresholds']['zero_click_min_impr']})."]
 
+    # Content decay (B3): показывается только в decay-прогон (≈раз в месяц) —
+    # в обычные недели секции нет вовсе, чтобы не шуметь.
+    if run_decay and g["ok"]:
+        dec = g.get("decay", [])
+        if dec:
+            L += ["", "━━━ 📉 Content decay (28д, кандидаты на рефреш) ━━━"]
+            for d in dec[:5]:
+                L.append(f"• {d['page']} — клики {d['clicks_prev']}→{d['clicks_cur']} "
+                         f"(−{d['drop_pct']}%), показы держатся {d['impr_cur']}, "
+                         f"поз {d['pos_prev']}→{d['pos_cur']}")
+            L.append("  → показы есть, клики ушли: обновить текст/факты, освежить дату публикации")
+        else:
+            L += ["", "📉 Content decay: просевших страниц нет (28д, показы≥"
+                       f"{th['decay_min_prev_impr']}, клики −{th['decay_clicks_drop_pct']}%+)."]
+
     if recrawled:
         qn = f", квота {quota}" if quota is not None else ""
         L.append(f"♻️ Авто-переобход: {len(recrawled)} постов ✅{qn}")
@@ -594,6 +681,11 @@ def weekly_mode(c) -> None:
                               (y.get("striking_total", 0) if y["ok"] else 0)
     snap["zero_click_count"] = (g.get("zero_click_total", 0) if g["ok"] else 0) + \
                                 (y.get("zero_click_total", 0) if y["ok"] else 0)
+    # last_decay_run: продвигаем ТОЛЬКО если decay реально отработал по живым данным
+    # — g["ok"] И оба GSC-запроса decay вернули данные (decay_ran). Иначе сетевой
+    # сбой на decay-запросах молча сдвинул бы дату на месяц вперёд без данных.
+    # На прочих неделях переносим прежнюю дату, иначе интервал собьётся.
+    snap["last_decay_run"] = str(TODAY) if (run_decay and g["ok"] and g.get("decay_ran")) else last_decay
     STATE_FILE.write_text(json.dumps(snap, ensure_ascii=False), encoding="utf-8")
     hist = {"date": str(TODAY)}
     hist.update({k: snap.get(k) for k in
