@@ -74,9 +74,9 @@
     "severity": "needs-review",
     "url": "https://traveltribe.ru/calculator/",
     "file": "src/pages/calculator.astro:1095,1362,1443",
-    "status": "needs-review",
+    "status": "fixed",
     "first_seen": "2026-07-14",
-    "last_seen": "2026-07-14",
-    "note": "На /calculator/ пережили sitewide-зачистку eyebrow-капсов (коммиты c88750c/539d4c6, калькулятор явно назван в описании) три моно-uppercase+letter-spacing лейбла: `.tc-hero-label` «Итого на поездку» (11px/0.2em, calculator.astro:1095) над главной суммой, `.tc-cmp-total-label` «Итого» (10px/0.2em, :1362) и `.tc-aux-label` «Партнёры:» (10px/0.18em, :1443) в режиме сравнения стран — визуально идентичны запрещённому канону паттерну (см. скрин radar/assets/calculator-eyebrow-caps-labels.png). content-invariants это не ловит (регэксп только на eyebrow сразу перед <h1>, тут лейблы над числом/секцией, не над заголовком). Needs-review, не однозначный баг: возможно это статус/стат-лейбл (как визовые пилюли, которые коммит explicitly оставил — «это смысл, не декор»), а не декоративный eyebrow — нужно решение владельца, входит ли этот паттерн под запрет."
+    "last_seen": "2026-07-15",
+    "note": "На /calculator/ пережили sitewide-зачистку eyebrow-капсов (коммиты c88750c/539d4c6, калькулятор явно назван в описании) три моно-uppercase+letter-spacing лейбла: `.tc-hero-label` «Итого на поездку» (11px/0.2em, calculator.astro:1095) над главной суммой, `.tc-cmp-total-label` «Итого» (10px/0.2em, :1362) и `.tc-aux-label` «Партнёры:» (10px/0.18em, :1443) в режиме сравнения стран — визуально идентичны запрещённому канону паттерну (см. скрин radar/assets/calculator-eyebrow-caps-labels.png). content-invariants это не ловит (регэксп только на eyebrow сразу перед <h1>, тут лейблы над числом/секцией, не над заголовком). Needs-review, не однозначный баг: возможно это статус/стат-лейбл (как визовые пилюли, которые коммит explicitly оставил — «это смысл, не декор»), а не декоративный eyebrow — нужно решение владельца, входит ли этот паттерн под запрет. — РЕШЕНО (Никита, 2026-07-15): владелец выбрал чистить. Де-eyebrow в PR #83 (mono+uppercase+широкий letter-spacing сняты, sentence-case faint caption). visual (linux CI) зелёный, /calculator/ вне visual-теста."
   }
 ]
