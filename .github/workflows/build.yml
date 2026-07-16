@@ -36,16 +36,46 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          CHANGED=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          # core.quotePath=false обязателен: иначе git экранирует не-ASCII пути в
+          # "src/content/\320\262..." — строка начинается с кавычки, grep '^src/' мимо,
+          # и файл с кириллическим слагом молча минует гейт целиком.
+          CHANGED=$(git -c core.quotePath=false diff --name-only "$BASE_SHA" "$HEAD_SHA")
           CONTENT=$(echo "$CHANGED" | grep -E '^src/(content|data)/' | grep -vE '^src/data/(prices-cache\.json|meta\.js)$' || true)
-          if [ -z "$CONTENT" ]; then
-            echo "✔ контент/данные не менялись — бамп даты не требуется"; exit 0
+          # Исключение: в посте изменены ТОЛЬКО title/description фронтматтера. Это работа
+          # над сниппетом выдачи, фактура не тронута — бамп DATA_UPDATED был бы ЛОЖНЫМ
+          # сигналом свежести: byline программных страниц (visa/hub/seasons/calculator)
+          # заявляет ею «цены и визовые правила проверены на дату X», а lastmod постов и
+          # так живёт от updatedDate, не от DATA_UPDATED (см. astro.config.mjs — там же
+          # прямо сказано, что иначе sitemap инфлирует свежесть всех URL).
+          # Любая правка тела/фактуры и любые src/data/*.js ловятся как раньше.
+          SUBSTANTIVE=$(
+            while IFS= read -r f; do
+              [ -z "$f" ] && continue
+              # Скобки у шаблонов case обязательны: без ведущей `(` bash принимает
+              # закрывающую `)` за конец подстановки $( ... ) — синтаксическая ошибка.
+              # Исключение — только текстовые посты: у бинарников (картинки в
+              # src/content/blog/_images/) дифф не даёт строк +/-, и они молча
+              # сошли бы за «не фактуру». Они падают в общий случай, как раньше.
+              case "$f" in
+                (src/content/*.md|src/content/*.mdx)
+                  FDIFF=$(git -c core.quotePath=false diff -U0 "$BASE_SHA" "$HEAD_SHA" -- "$f") || exit 3
+                  OTHER=$(printf '%s\n' "$FDIFF" \
+                    | grep -E '^[+-]' | grep -vE '^(\+\+\+|---)' \
+                    | grep -vE '^[+-](title|description):' || true)
+                  if [ -n "$OTHER" ]; then printf '%s\n' "$f"; fi
+                  ;;
+                (*) printf '%s\n' "$f" ;;
+              esac
+            done <<< "$CONTENT"
+          ) || { echo "✖ не удалось прочитать git diff — гейт не может судить о свежести"; exit 1; }
+          if [ -z "$SUBSTANTIVE" ]; then
+            echo "✔ фактура не менялась (контент не тронут либо правлены только title/description) — бамп даты не требуется"; exit 0
           fi
           if echo "$CHANGED" | grep -qx 'src/data/meta.js'; then
-            echo "✔ контент/данные изменены и DATA_UPDATED (meta.js) бампнут"
+            echo "✔ фактура изменена и DATA_UPDATED (meta.js) бампнут"
           else
-            echo "✖ изменён контент/данные, но src/data/meta.js (DATA_UPDATED) не тронут."
+            echo "✖ изменена фактура, но src/data/meta.js (DATA_UPDATED) не тронут."
             echo "  Бампни дату актуальности — иначе sitemap lastmod и byline соврут о свежести."
-            echo "$CONTENT" | sed 's/^/    /'
+            echo "$SUBSTANTIVE" | sed 's/^/    /'
             exit 1
           fi
