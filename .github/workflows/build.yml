@@ -41,14 +41,17 @@ jobs:
           # и файл с кириллическим слагом молча минует гейт целиком.
           CHANGED=$(git -c core.quotePath=false diff --name-only "$BASE_SHA" "$HEAD_SHA")
           CONTENT=$(echo "$CHANGED" | grep -E '^src/(content|data)/' | grep -vE '^src/data/(prices-cache\.json|meta\.js)$' || true)
-          # Исключение: в посте изменены ТОЛЬКО title/description фронтматтера. Это работа
-          # над сниппетом выдачи, фактура не тронута — бамп DATA_UPDATED был бы ЛОЖНЫМ
-          # сигналом свежести: byline программных страниц (visa/hub/seasons/calculator)
-          # заявляет ею «цены и визовые правила проверены на дату X», а lastmod постов и
-          # так живёт от updatedDate, не от DATA_UPDATED (см. astro.config.mjs — там же
-          # прямо сказано, что иначе sitemap инфлирует свежесть всех URL).
-          # Любая правка тела/фактуры и любые src/data/*.js ловятся как раньше.
-          SUBSTANTIVE=$(
+          # У поста и у программных данных РАЗНЫЕ носители свежести, гейт их не смешивает:
+          #  • пост  → его собственный updatedDate (из неё astro.config.mjs берёт sitemap
+          #    lastmod — там прямо сказано, что иначе sitemap инфлирует свежесть всех URL);
+          #  • src/data/*.js → DATA_UPDATED (meta.js), её byline программных страниц
+          #    (visa/hub/seasons/calculator) заявляет как «цены и визовые правила
+          #    проверены на дату X».
+          # Требовать бамп DATA_UPDATED за правку поста — значит заставлять врать о
+          # проверке цен, которой не было.
+          # Помечаем разбор префиксом: POST = пост правлен без бампа updatedDate,
+          # DATA = фактура данных, ждёт DATA_UPDATED.
+          VERDICT=$(
             while IFS= read -r f; do
               [ -z "$f" ] && continue
               # Скобки у шаблонов case обязательны: без ведущей `(` bash принимает
@@ -57,25 +60,46 @@ jobs:
               # src/content/blog/_images/) дифф не даёт строк +/-, и они молча
               # сошли бы за «не фактуру». Они падают в общий случай, как раньше.
               case "$f" in
-                (src/content/*.md|src/content/*.mdx)
-                  FDIFF=$(git -c core.quotePath=false diff -U0 "$BASE_SHA" "$HEAD_SHA" -- "$f") || exit 3
-                  OTHER=$(printf '%s\n' "$FDIFF" \
-                    | grep -E '^[+-]' | grep -vE '^(\+\+\+|---)' \
-                    | grep -vE '^[+-](title|description):' || true)
-                  if [ -n "$OTHER" ]; then printf '%s\n' "$f"; fi
+                (src/content/*)
+                  ST=$(git -c core.quotePath=false diff --name-status "$BASE_SHA" "$HEAD_SHA" -- "$f" | cut -f1) || exit 3
+                  # Новый контент поста (сам .mdx и его обложка) соврать о свежести не
+                  # может: его дата — pubDate во фронтматтере, она же уходит в sitemap.
+                  # Бампать нечего. ЗАМЕНА существующего файла ниже ловится как раньше.
+                  if [ "$ST" = "A" ]; then continue; fi
+                  case "$f" in
+                    (*.md|*.mdx)
+                      FDIFF=$(git -c core.quotePath=false diff -U0 "$BASE_SHA" "$HEAD_SHA" -- "$f") || exit 3
+                      # title/description — работа над сниппетом выдачи, фактура не тронута.
+                      OTHER=$(printf '%s\n' "$FDIFF" \
+                        | grep -E '^[+-]' | grep -vE '^(\+\+\+|---)' \
+                        | grep -vE '^[+-](title|description|updatedDate):' || true)
+                      if [ -n "$OTHER" ] && ! printf '%s\n' "$FDIFF" | grep -qE '^\+updatedDate:'; then
+                        printf 'POST %s\n' "$f"
+                      fi
+                      ;;
+                    # Перерисованная картинка существующего поста: дифф бинарника не даёт
+                    # строк +/-, судить о ней по тексту нельзя — оставляем строгий разбор.
+                    (*) printf 'DATA %s\n' "$f" ;;
+                  esac
                   ;;
-                (*) printf '%s\n' "$f" ;;
+                (*) printf 'DATA %s\n' "$f" ;;
               esac
             done <<< "$CONTENT"
           ) || { echo "✖ не удалось прочитать git diff — гейт не может судить о свежести"; exit 1; }
-          if [ -z "$SUBSTANTIVE" ]; then
-            echo "✔ фактура не менялась (контент не тронут либо правлены только title/description) — бамп даты не требуется"; exit 0
+          STALE_POSTS=$(printf '%s\n' "$VERDICT" | sed -n 's/^POST //p')
+          DATA_TOUCHED=$(printf '%s\n' "$VERDICT" | sed -n 's/^DATA //p')
+          FAIL=0
+          if [ -n "$STALE_POSTS" ]; then
+            echo "✖ правлено тело поста, но updatedDate не бампнут:"
+            printf '%s\n' "$STALE_POSTS" | sed 's/^/    /'
+            echo "  Бампни updatedDate этих постов — из неё sitemap берёт lastmod."
+            FAIL=1
           fi
-          if echo "$CHANGED" | grep -qx 'src/data/meta.js'; then
-            echo "✔ фактура изменена и DATA_UPDATED (meta.js) бампнут"
-          else
-            echo "✖ изменена фактура, но src/data/meta.js (DATA_UPDATED) не тронут."
-            echo "  Бампни дату актуальности — иначе sitemap lastmod и byline соврут о свежести."
-            echo "$SUBSTANTIVE" | sed 's/^/    /'
-            exit 1
+          if [ -n "$DATA_TOUCHED" ] && ! echo "$CHANGED" | grep -qx 'src/data/meta.js'; then
+            echo "✖ изменена фактура данных, но src/data/meta.js (DATA_UPDATED) не тронут:"
+            printf '%s\n' "$DATA_TOUCHED" | sed 's/^/    /'
+            echo "  Бампни дату актуальности — иначе byline «данные проверены …» соврёт."
+            FAIL=1
           fi
+          if [ "$FAIL" = 1 ]; then exit 1; fi
+          echo "✔ свежесть в порядке: у правленых постов бампнут updatedDate, у фактуры данных — DATA_UPDATED"
