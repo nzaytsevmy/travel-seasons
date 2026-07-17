@@ -19,7 +19,9 @@ jobs:
   # скриншоты на ubuntu СТАБИЛЬНЫ между прогонами (иначе linux-эталоны дадут флейки,
   # что хуже нынешнего состояния). Запуск вручную: gh workflow run visual-tests.yml -f gen_linux=true
   gen-linux-baselines:
-    if: github.event_name == 'workflow_dispatch' && inputs.gen_linux == 'true'
+    # inputs с type: boolean в контексте — БУЛЕВО, а не строка: сравнение с 'true'
+    # всегда ложно, из-за этого джоба молча скипалась при первом запуске 17.07.2026.
+    if: github.event_name == 'workflow_dispatch' && inputs.gen_linux
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
