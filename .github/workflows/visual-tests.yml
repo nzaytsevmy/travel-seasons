@@ -97,10 +97,13 @@ jobs:
 
       # Пиксельные скриншот-эталоны платформозависимы (`-darwin.png`), а раннер —
       # Linux: их тут нет и сгенерировать негде. Поэтому в CI гоняем только
-      # platform-независимые проверки (overflow / битые картинки / CSS-escape).
-      # Пиксельную регрессию держит pre-push-хук на macOS (darwin-эталоны).
-      - name: Run visual regression tests (platform-independent)
-        run: npx playwright test --grep-invert "— visual"
+      # Полный прогон, включая пиксельную регрессию: в репо теперь есть linux-эталоны
+      # (сняты на этом же раннере, проверены на стабильность прогоном 2 в
+      # gen-linux-baselines — расхождений нет). Playwright сам берёт *-linux.png на
+      # ubuntu по суффиксу платформы. Раньше здесь стоял --grep-invert "— visual" —
+      # скриншоты в CI не сравнивались вообще, потому что linux-эталонов не было.
+      - name: Run visual regression tests
+        run: npx playwright test
         env:
           PREVIEW_URL: http://localhost:4322
 
