@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -208,4 +208,68 @@ test('llms-full.txt: нет внутренних идентификаторов 
     строк: (text.match(new RegExp(re.source, 'gm')) || []).length,
   }));
   expect(found, JSON.stringify(found, null, 2)).toEqual([]);
+});
+
+// Вес hero-обложки — единственное, что реально предсказывает провал mobile Lighthouse.
+// Замер 17.07.2026 (LCP-ресурс → perf): 277 КБ → 0.82 ✗ · 188 КБ → 0.81 ✗ ·
+// 168 КБ → 0.88 · 137 КБ → 0.96 · 101 КБ → 0.95 · 67 КБ → 0.95. Граница провала
+// лежит между 168 и 188 КБ; порог 150 КБ даёт запас.
+//
+// Ориентация обложки САМА ПО СЕБЕ не предсказывает: bolivia — портрет 1280x1920 и
+// даёт 0.95, а zagranpasport — ландшафт и весит 137 КБ. Портрет лишь коррелирует,
+// потому что несёт в 2.4 раза больше пикселей на ту же отрисованную ширину. Поэтому
+// гейт меряет байты, а не aspect-ratio — иначе ловил бы здоровые посты и пропускал
+// тяжёлый ландшафт.
+//
+// Зачем гейт: japan-guide падал в CI и ронял чужие PR, а vietnam-guide (0.82) не
+// входит в lighthouserc.mobile.json — то есть просто не проходил планку молча.
+test('hero-обложка: вес варианта под мобайл не выше 150 КБ (LCP)', () => {
+  const MAX_KB = 150;
+  // Какой вариант берёт браузер — не смоделировано, а СВЕРЕНО с Lighthouse 17.07.2026:
+  // bolivia 960w=100КБ (намерено 101), vietnam 960w=277 (277), peru 960w=67 (67),
+  // bali 960w=168 (168). То есть при sizes=100vw и вьюпорте 412 выбирается наименьший
+  // вариант >= ~824px, а не >= 412*2.625. У japan варианта >=824 просто не было
+  // (срcset «640w, 900w») → браузер брал весь портрет 900px = 188 КБ. Отсюда правило.
+  const NEED_W = 412 * 2;
+  const heavy: { page: string; kb: number; file: string; width: number }[] = [];
+  const broken: { page: string; why: string }[] = [];
+  for (const f of files) {
+    if (!/\/blog\/[^/]+\/index\.html$/.test(f)) continue;
+    if (f.includes('/tag/')) continue;
+    const html = readFileSync(f, 'utf8');
+    // Ищем hero-source ПОСЛЕ маркера post-cover, а не первый на странице: если
+    // когда-нибудь выше обложки появится другой <picture>, гейт не должен молча
+    // начать мерить чужую картинку. Сейчас (проверено по 51 странице) source один
+    // и всегда в post-cover.
+    const coverAt = html.indexOf('post-cover');
+    if (coverAt < 0) continue; // страницы без hero (не пост) — не наш случай
+    // HTML части страниц не минифицирован (astro-compress), поэтому кавычки у type
+    // опциональны. У srcset кавычки есть всегда: значение содержит пробелы и запятые,
+    // минификатор их убрать не может (проверено: 0 из 51 без кавычек).
+    const src = html.slice(coverAt).match(/<source[^>]*type=["']?image\/webp["']?[^>]*>/i);
+    if (!src) { broken.push({ page: f.replace(DIST, ''), why: 'у post-cover нет <source webp>' }); continue; }
+    // Калибровка NEED_W верна только при sizes=100vw. Сменится sizes — гейт обязан
+    // упасть и потребовать перекалибровки, а не тихо мерить не тот вариант.
+    if (!/sizes=["']?100vw/i.test(src[0])) {
+      broken.push({ page: f.replace(DIST, ''), why: 'sizes у hero не 100vw — перекалибруй NEED_W в этом тесте' }); continue;
+    }
+    const ss = src[0].match(/srcset=["']([^"']+)["']/i);
+    if (!ss) { broken.push({ page: f.replace(DIST, ''), why: 'у hero-source нет srcset' }); continue; }
+    // Берём только w-дескрипторы: случайный "2x" при parseInt дал бы width=2 и
+    // сломал бы выбор варианта.
+    const variants = [...ss[1].matchAll(/([^\s,]+)\s+(\d+)w/g)]
+      .map((m) => ({ url: m[1], width: parseInt(m[2], 10) }))
+      .sort((a, b) => a.width - b.width);
+    if (!variants.length) { broken.push({ page: f.replace(DIST, ''), why: 'в srcset нет w-вариантов' }); continue; }
+    const picked = variants.find((v) => v.width >= NEED_W) || variants[variants.length - 1];
+    const asset = join(DIST, picked.url.replace(/^\//, ''));
+    // Битый путь = LCP-ресурса нет. Это провал гейта, а не повод молча пропустить.
+    if (!existsSync(asset)) { broken.push({ page: f.replace(DIST, ''), why: `файл из srcset не существует: ${picked.url}` }); continue; }
+    const kb = statSync(asset).size / 1024;
+    if (kb > MAX_KB) {
+      heavy.push({ page: f.replace(DIST, ''), kb: Math.round(kb), file: picked.url.split('/').pop()!, width: picked.width });
+    }
+  }
+  expect(broken, JSON.stringify(broken, null, 2)).toEqual([]);
+  expect(heavy, JSON.stringify(heavy, null, 2)).toEqual([]);
 });
