@@ -4,11 +4,60 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      gen_linux:
+        description: 'Снять linux-эталоны и проверить их стабильность (одноразово)'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
 jobs:
+  # Одноразовая ручная джоба: снять linux-эталоны на самом раннере (darwin-снимки
+  # с мака сюда не годятся — другие шрифты/сглаживание) и заодно проверить, что
+  # скриншоты на ubuntu СТАБИЛЬНЫ между прогонами (иначе linux-эталоны дадут флейки,
+  # что хуже нынешнего состояния). Запуск вручную: gh workflow run visual-tests.yml -f gen_linux=true
+  gen-linux-baselines:
+    if: github.event_name == 'workflow_dispatch' && inputs.gen_linux == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npm run build
+      - name: Start preview server
+        run: npx astro preview --port 4322 &
+        env:
+          NODE_ENV: production
+      - name: Wait for server
+        run: |
+          for i in $(seq 1 60); do
+            curl -sf http://localhost:4322/ > /dev/null && exit 0
+            sleep 2
+          done
+          echo "✖ preview не поднялся"; exit 1
+      - name: Snap linux baselines (прогон 1 — генерация)
+        run: npx playwright test -g "— visual" --update-snapshots
+        env:
+          PREVIEW_URL: http://localhost:4322
+      - name: Проверка стабильности (прогон 2 — сравнение с только что снятыми)
+        run: npx playwright test -g "— visual"
+        env:
+          PREVIEW_URL: http://localhost:4322
+      - name: Upload linux baselines
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-baselines
+          path: tests/visual.spec.ts-snapshots/*-linux.png
+          retention-days: 3
+
   visual:
     runs-on: ubuntu-latest
     # Без лимита job наследовал дефолтные 6 ч — зависший прогон крутился часами.
