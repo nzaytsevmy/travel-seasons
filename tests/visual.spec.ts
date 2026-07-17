@@ -78,7 +78,14 @@ for (const page of PAGES) {
     // отдельные карточки покрыты своими baseline'ами + content-invariants. Контентные
     // страницы остаются fullPage.
     const listing = page.name === 'home' || page.name === 'blog-index';
-    await expect(pwPage).toHaveScreenshot(`${page.name}.png`, { fullPage: !listing });
+    // timeout 20с (дефолт expect — 5с). toHaveScreenshot крутит цикл стабилизации
+    // (снимок → сравнить с предыдущим → повтор до совпадения двух подряд, внутри
+    // ждёт и шрифты). На двух самых длинных fullPage (blog-japan, country-hub-turkey)
+    // в webkit на linux-раннере 5с не хватало — падал на «waiting for fonts». 20с
+    // даёт циклу дойти до совпадения. Строгость (maxDiffPixelRatio/threshold) та же:
+    // это НЕ ослабление сравнения, а запас времени на устаканивание. timeout — опция
+    // ВЫЗОВА (в конфиге expect.toHaveScreenshot этого ключа в текущей версии нет).
+    await expect(pwPage).toHaveScreenshot(`${page.name}.png`, { fullPage: !listing, timeout: 20_000 });
   });
 
   test(`${page.name} — no overflow horizontal`, async ({ page: pwPage }) => {
