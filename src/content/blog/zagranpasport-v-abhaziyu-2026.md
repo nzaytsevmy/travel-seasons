@@ -58,9 +58,9 @@ sourceType: "compilation"
 
 ## Что ещё взять кроме паспорта?
 
-**Наличные и медицинскую страховку.** Карты в Абхазии почти не принимают, банкоматов мало — валюта российский рубль, везите наличными. А полис ОМС там не работает: медицина для туристов платная, экстренная эвакуация в Сочи обходится в десятки тысяч рублей. <a href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F%3Fsub_id%3Dzagranpasport_abhazia" class="aff-cta" rel="sponsored">Оформить страховку в Абхазию онлайн</a> — пара минут, оплата картой РФ.
+**Наличные и медицинскую страховку.** Карты в Абхазии почти не принимают, банкоматов мало — валюта российский рубль, везите наличными. А полис ОМС там не работает: медицина для туристов платная, экстренная эвакуация в Сочи обходится в десятки тысяч рублей. <a href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5&sub_id=zagranpasport_abhazia&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F" class="aff-cta" rel="sponsored">Оформить страховку в Абхазию онлайн</a> — пара минут, оплата картой РФ.
 
-Билеты стоит посмотреть заранее: прямой рейс Москва — Сухум летает от ~6 200 ₽, дешевле выходит до Адлера плюс граница. <a href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Forigin_iata%3DMOW%26destination_iata%3DSUI%26sub_id%3Dzagranpasport_abhazia" class="aff-cta" rel="sponsored">Сравнить билеты в Сухум и Адлер</a> — все авиакомпании в одной выдаче.
+Билеты стоит посмотреть заранее: прямой рейс Москва — Сухум летает от ~6 200 ₽, дешевле выходит до Адлера плюс граница. <a href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=zagranpasport_abhazia&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Forigin_iata%3DMOW%26destination_iata%3DSUI" class="aff-cta" rel="sponsored">Сравнить билеты в Сухум и Адлер</a> — все авиакомпании в одной выдаче.
 
 ---
 
