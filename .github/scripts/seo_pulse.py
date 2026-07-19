@@ -402,6 +402,107 @@ def q_movers_yandex(cur: dict, prev: dict):
     return up, down
 
 
+# ─── Travelpayouts: доход/клики по партнёрам + здоровье атрибуции (WoW) ───────
+TP_STATS_URL = "https://api.travelpayouts.com/statistics/v1/execute_query"
+
+
+def tpapi(body):
+    tok = os.environ.get("TRAVELPAYOUTS_TOKEN")
+    if not tok:
+        return None, "TRAVELPAYOUTS_TOKEN не задан"
+    req = urllib.request.Request(TP_STATS_URL, data=json.dumps(body).encode(), method="POST")
+    req.add_header("X-Access-Token", tok)
+    req.add_header("Content-Type", "application/json")
+    try:
+        with urllib.request.urlopen(req, timeout=20) as r:
+            return json.loads(r.read()), None
+    except Exception as e:
+        return None, str(e)
+
+
+def _tp_window(d_from, d_to):
+    """Сумма кликов/продаж/дохода по партнёрам за [d_from, d_to)."""
+    res, err = tpapi({
+        "fields": ["campaign_name_ru", "redirects_count", "paid_actions_count", "paid_profit_rub_sum"],
+        "filters": [{"field": "date", "op": "ge", "value": str(d_from)},
+                    {"field": "date", "op": "lt", "value": str(d_to)}],
+        "group": ["campaign_name_ru"], "limit": 100})
+    if err:
+        return None, err
+    by = {}
+    for r in res.get("results", []):
+        by[r.get("campaign_name_ru") or "—"] = {
+            "clicks": int(r.get("redirects_count") or 0),
+            "sales": int(r.get("paid_actions_count") or 0),
+            "rev": float(r.get("paid_profit_rub_sum") or 0)}
+    return by, None
+
+
+def fetch_tp_stats() -> dict:
+    d_7 = TODAY - timedelta(days=7)
+    d_14 = TODAY - timedelta(days=14)
+    d_next = TODAY + timedelta(days=1)          # вкл. сегодня
+    cur, e1 = _tp_window(d_7, d_next)
+    if cur is None:
+        return {"ok": False, "err": e1}
+    prev, _ = _tp_window(d_14, d_7)
+    prev = prev or {}
+    # sub_id-срезы за 7 дней (топ по доходу) + здоровье атрибуции
+    subs, _ = tpapi({
+        "fields": ["sub_id", "redirects_count", "paid_profit_rub_sum"],
+        "filters": [{"field": "date", "op": "ge", "value": str(d_7)},
+                    {"field": "sub_id", "op": "ne", "value": ""}],
+        "group": ["sub_id"], "limit": 500})
+    sub_rows = [(r.get("sub_id"), int(r.get("redirects_count") or 0), float(r.get("paid_profit_rub_sum") or 0))
+                for r in (subs or {}).get("results", [])]
+    sub_rows.sort(key=lambda x: (-x[2], -x[1]))
+    tot_clicks = sum(v["clicks"] for v in cur.values())
+    attributed = sum(c for _, c, _ in sub_rows)
+    return {"ok": True, "by": cur, "prev": prev,
+            "tot_clicks": tot_clicks,
+            "tot_rev": sum(v["rev"] for v in cur.values()),
+            "prev_rev": sum(v["rev"] for v in prev.values()),
+            "sales": sum(v["sales"] for v in cur.values()),
+            "top_subs": sub_rows[:5],
+            "att_share": round(100 * attributed / tot_clicks) if tot_clicks else 0}
+
+
+def link_rot_check() -> list:
+    """GET-пинг партнёрских редиректоров из affiliate.js (следует редиректам).
+    Мёртв = 404/410 ИЛИ домен недоступен (DNS/refused). Тайм-аут/anti-bot/3xx/403 —
+    НЕ алертим (иначе живой сайт, блокирующий ботов, даёт ложную тревогу еженедельно).
+    Урок Tripster: мёртвый редирект = прямая потеря денег."""
+    try:
+        aff = (REPO_ROOT / "src" / "data" / "affiliate.js").read_text()
+    except Exception:
+        return []
+    urls = set(re.findall(r"https://[a-z0-9.-]+\.(?:tpk\.mx|pxf\.io)/[A-Za-z0-9/]+", aff))
+    for host in ("drimsim.ru", "platipomiru.com"):
+        if host in aff:
+            urls.add(f"https://{host}/")
+    ua = "Mozilla/5.0 (compatible; TravelTribeMonitor/1.0)"
+    dead = []
+    for u in sorted(urls):
+        req = urllib.request.Request(u, method="GET")
+        req.add_header("User-Agent", ua)
+        try:
+            with urllib.request.urlopen(req, timeout=12) as r:
+                code = r.status
+        except urllib.error.HTTPError as e:
+            code = e.code
+        except urllib.error.URLError as e:
+            reason = str(getattr(e, "reason", "")).lower()
+            if any(k in reason for k in ("name or service", "nodename", "getaddrinfo",
+                                         "refused", "no route", "not known")):
+                dead.append((u, "домен недоступен"))
+            continue          # тайм-аут и прочее — неизвестно, не мёртв
+        except Exception:
+            continue
+        if code in (404, 410):
+            dead.append((u, code))
+    return dead
+
+
 def load_state() -> dict:
     if STATE_FILE.exists():
         try:
@@ -630,6 +731,33 @@ def weekly_mode(c) -> None:
             L += ["", "📉 Content decay: просевших страниц нет (28д, показы≥"
                        f"{th['decay_min_prev_impr']}, клики −{th['decay_clicks_drop_pct']}%+)."]
 
+    # Travelpayouts — деньги/клики по партнёрам + здоровье атрибуции (WoW)
+    tp = fetch_tp_stats()
+    if tp["ok"]:
+        L.append(f"💰 *Travelpayouts 7д* — доход {tp['tot_rev']:.0f}₽"
+                 f"{arrow(round(tp['tot_rev']), round(tp['prev_rev']))}  "
+                 f"клики {tp['tot_clicks']}  продажи {tp['sales']}  "
+                 f"атрибуция {tp['att_share']}%")
+        earners = sorted(((v['rev'], v['clicks'], v['sales'], n) for n, v in tp["by"].items()),
+                         reverse=True)
+        top = [f"{n} {rev:.0f}₽/{cl}кл" for rev, cl, sa, n in earners[:4] if cl]
+        if top:
+            L.append("   " + " · ".join(top))
+        if tp["top_subs"]:
+            L.append("   срезы: " + ", ".join(
+                f"{s} {rev:.0f}₽" for s, cl, rev in tp["top_subs"] if s))
+        if tp["att_share"] < 60:
+            L.append(f"   ⚠️ атрибуция {tp['att_share']}% — часть кликов без sub_id "
+                     f"(sub_id внутри &u=? метка на шортлинк)")
+    else:
+        L.append(f"⚠️ *Travelpayouts слеп*: {tp['err']}")
+
+    # Link-rot: мёртвый партнёрский редиректор = прямая потеря денег (урок Tripster)
+    dead = link_rot_check()
+    if dead:
+        L.append("🔗 *Мёртвые партнёрские ссылки:* " +
+                 ", ".join(f"{u} ({c or 'нет ответа'})" for u, c in dead))
+
     if recrawled:
         qn = f", квота {quota}" if quota is not None else ""
         L.append(f"♻️ Авто-переобход: {len(recrawled)} постов ✅{qn}")
@@ -697,11 +825,15 @@ def weekly_mode(c) -> None:
     # сбой на decay-запросах молча сдвинул бы дату на месяц вперёд без данных.
     # На прочих неделях переносим прежнюю дату, иначе интервал собьётся.
     snap["last_decay_run"] = str(TODAY) if (run_decay and g["ok"] and g.get("decay_ran")) else last_decay
+    if tp["ok"]:
+        snap.update(tp_rev=round(tp["tot_rev"]), tp_clicks=tp["tot_clicks"],
+                    tp_sales=tp["sales"], tp_att=tp["att_share"])
     STATE_FILE.write_text(json.dumps(snap, ensure_ascii=False), encoding="utf-8")
     hist = {"date": str(TODAY)}
     hist.update({k: snap.get(k) for k in
                  ("sqi", "pages", "shows", "clicks", "g_clicks", "g_impr", "g_ctr", "g_pos",
-                  "striking_count", "zero_click_count")})
+                  "striking_count", "zero_click_count",
+                  "tp_rev", "tp_clicks", "tp_sales", "tp_att")})
     with HISTORY_FILE.open("a", encoding="utf-8") as f:
         f.write(json.dumps(hist, ensure_ascii=False) + "\n")
     send_telegram(c, report)
