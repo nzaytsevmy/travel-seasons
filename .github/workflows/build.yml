@@ -72,12 +72,20 @@ jobs:
                   case "$f" in
                     (*.md|*.mdx)
                       FDIFF=$(git -c core.quotePath=false diff -U0 "$BASE_SHA" "$HEAD_SHA" -- "$f") || exit 3
-                      # title/description — работа над сниппетом выдачи, фактура не тронута.
-                      OTHER=$(printf '%s\n' "$FDIFF" \
-                        | grep -E '^[+-]' | grep -vE '^(\+\+\+|---)' \
-                        | grep -vE '^[+-](title|description|updatedDate):' || true)
-                      if [ -n "$OTHER" ] && ! printf '%s\n' "$FDIFF" | grep -qE '^\+updatedDate:'; then
-                        printf 'POST %s\n' "$f"
+                      # aff-only exemption: если в теле поста тронут ТОЛЬКО партнёрский URL
+                      # (tpk.mx/pxf.io) — проза и фактура те же (напр. sub_id переставлен на
+                      # шортлинк ради атрибуции), свежесть не требуется, как и для title/desc.
+                      # Хелпер маскирует aff-URL и сверяет мультимножества +/- строк.
+                      if printf '%s\n' "$FDIFF" | python3 .github/scripts/aff_only.py; then
+                        : # только партнёрский URL — фактура/проза не менялись, exempt
+                      else
+                        # title/description — работа над сниппетом выдачи, фактура не тронута.
+                        OTHER=$(printf '%s\n' "$FDIFF" \
+                          | grep -E '^[+-]' | grep -vE '^(\+\+\+|---)' \
+                          | grep -vE '^[+-](title|description|updatedDate):' || true)
+                        if [ -n "$OTHER" ] && ! printf '%s\n' "$FDIFF" | grep -qE '^\+updatedDate:'; then
+                          printf 'POST %s\n' "$f"
+                        fi
                       fi
                       ;;
                     (*)
