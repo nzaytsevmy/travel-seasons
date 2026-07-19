@@ -308,7 +308,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
           <div class="pmu-price-meta">База ${flightLow} × сезонный множитель {monthMult} ({rank.label.toLowerCase()})</div>
         </div>
         <p class="pmu-cta">
-          <a class="pmu-aff" href={aviasalesRoute('MOW', d.price.iata)} rel="sponsored noopener" target="_blank">Найти билет Москва — {d.cases.nom}</a>
+          <a class="pmu-aff" href={aviasalesRoute('MOW', d.price.iata, `packing_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Найти билет Москва — {d.cases.nom}</a>
           
           <span class="pmu-trust">актуальные цены под твои даты · оплата картами РФ</span>
         </p>
@@ -392,7 +392,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       </ul>
       {flightLow && d.price?.iata && (
         <p class="pmu-cta">
-          <a class="pmu-aff" href={aviasalesRoute('MOW', d.price.iata)} rel="sponsored noopener" target="_blank">Найти билет Москва — {d.cases.nom} от ${flightLow}</a>
+          <a class="pmu-aff" href={aviasalesRoute('MOW', d.price.iata, `packing_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Найти билет Москва — {d.cases.nom} от ${flightLow}</a>
           
           <span class="pmu-trust">все авиакомпании в одной выдаче · оплата картами РФ</span>
         </p>

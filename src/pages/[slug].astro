@@ -342,7 +342,7 @@ if (guide?.itinerary?.length) {
           </a>
         )}
         {flightFrom && (
-          <a href={d.price?.iata ? aviasalesRoute('MOW', d.price.iata) : '/calculator/'} class="sl-action" rel={d.price?.iata ? 'sponsored noopener' : undefined} target={d.price?.iata ? '_blank' : undefined}>
+          <a href={d.price?.iata ? aviasalesRoute('MOW', d.price.iata, subId) : '/calculator/'} class="sl-action" rel={d.price?.iata ? 'sponsored noopener' : undefined} target={d.price?.iata ? '_blank' : undefined}>
             <div class="sl-a-l">Перелёт от</div>
             <div class="sl-a-v">${flightFrom}</div>
             <div class="sl-a-s">{d.price?.iata ? 'Найти билет' : 'эконом, в одну сторону'}</div>

@@ -202,7 +202,7 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
           {weekTotal && <li><span class="fk">Неделя эконом</span><span class="fv">от ${weekTotal} на человека</span></li>}
         </ul>
         {flightFrom > 0 && iata && (
-          <p class="findcta"><a class="find" href={aviasalesRoute('MOW', iata)} rel="sponsored noopener" target="_blank">Найти перелёт Москва — {d.cases.nom} от ${flightFrom}</a> </p>
+          <p class="findcta"><a class="find" href={aviasalesRoute('MOW', iata, `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Найти перелёт Москва — {d.cases.nom} от ${flightFrom}</a> </p>
         )}
       </section>
 

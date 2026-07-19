@@ -214,7 +214,7 @@ const ldJson = {
                   <span class={`visa ${VISA_CLS[d.visa]}`}>{VISA_LABEL[d.visa]}</span>
                   <span class="bud" title={BUDGET_WORD[d.budget]}><span aria-hidden="true">{BUDGET_SYM[d.budget]}</span><span class="vh">{BUDGET_WORD[d.budget]}</span></span>
                   {d.flight && d.iata
-                    ? <a class="find" href={aviasalesRoute('MOW', d.iata)} rel="sponsored noopener" target="_blank" aria-label={`Найти перелёт Москва — ${d.region} на Aviasales`}>от ${d.flight} · найти билет</a>
+                    ? <a class="find" href={aviasalesRoute('MOW', d.iata, `trips_${month.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank" aria-label={`Найти перелёт Москва — ${d.region} на Aviasales`}>от ${d.flight} · найти билет</a>
                     : (d.flight ? <span class="fprice">от ${d.flight}</span> : <span class="fdash" aria-hidden="true">—</span>)}
                 </div>
               </li>
@@ -233,7 +233,7 @@ const ldJson = {
                 <li>
                   <span class="pk-n">{d.region}</span>
                   {d.iata
-                    ? <a class="find" href={aviasalesRoute('MOW', d.iata)} rel="sponsored noopener" target="_blank" aria-label={`Найти перелёт Москва — ${d.region} на Aviasales`}>от ${d.flight} · найти билет</a>
+                    ? <a class="find" href={aviasalesRoute('MOW', d.iata, `trips_${month.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank" aria-label={`Найти перелёт Москва — ${d.region} на Aviasales`}>от ${d.flight} · найти билет</a>
                     : <span class="fprice">от ${d.flight}</span>}
                 </li>
               ))}

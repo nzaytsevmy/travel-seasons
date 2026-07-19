@@ -4,6 +4,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Footer from '../components/Footer.astro';
 import PricingCards from '../components/post/PricingCards.astro';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
+import { cherehapaTravel, aviasalesRoute } from '../data/affiliate.js';
 
 const url = 'https://traveltribe.ru/antarctica/';
 
@@ -194,12 +195,13 @@ const ldJson = {
         <li><strong>Аддис-Абеба</strong> (Ethiopian Airlines) — 19 часов, <strong>65 000–85 000 ₽</strong>, экзотика</li>
       </ul>
       <p>Из Буэнос-Айреса до Ушуая — внутренний рейс Aerolíneas Argentinas, 3.5 часа, 8 000–12 000 ₽. Закладывайте минимум 1 ночь между перелётами в БА — иначе пропустите стыковочный, потеряете $400 и день.</p>
+      <p><a href={aviasalesRoute('MOW', 'USH', 'hub_antarctica')} class="aff-btn" rel="sponsored noopener" target="_blank">Сравнить маршруты Москва — Ушуайя от 70 000 ₽</a></p>
     </section>
 
     <section class="hub-section">
       <h2>Виза и страховка</h2>
       <p><strong>Виза в Аргентину для россиян не нужна</strong> — безвиз 90 дней с 2009 года. Условия: загранпаспорт со сроком действия минимум 6 месяцев, обратный билет, бронь отеля на первые ночи.</p>
-      <p><strong>Страховка обязательна — минимум $200 000 + эвакуация</strong>. Все круизные операторы проверяют на стойке регистрации, без неё на корабль не пустят. Эвакуация из Антарктики стоит реально дорого: один сломавшийся пассажир на моём корабле обошёлся страховой в $80 000. Цена страховки: ~$50–80 за круиз 10–12 дней. <a href="https://cherehapa.ru/?partnerId=43c9ad00" target="_blank" rel="noopener sponsored">Cherehapa</a> сравнивает 20 страховых, есть фильтр «круизы и Антарктика».</p>
+      <p><strong>Страховка обязательна — минимум $200 000 + эвакуация</strong>. Все круизные операторы проверяют на стойке регистрации, без неё на корабль не пустят. Эвакуация из Антарктики стоит реально дорого: один сломавшийся пассажир на моём корабле обошёлся страховой в $80 000. Цена страховки: ~$50–80 за круиз 10–12 дней. <a href={cherehapaTravel('hub_antarctica')} target="_blank" rel="noopener sponsored">Собрать полис с покрытием от $200 000 под круиз</a> — сравнение 20 страховых, есть фильтр «круизы и Антарктика».</p>
     </section>
 
     <section class="hub-section">

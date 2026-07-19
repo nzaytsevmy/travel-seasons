@@ -9,10 +9,14 @@ export const TP_MARKER_SHORT = '546042';
 // (проверено 2026-06-04). Параметр &u= переопределяет destination на aviasales.RU и
 // пробрасывает deep-link origin/destination; трекинг + erid (2Vtzqxkn4LF) сохраняются.
 // Гео/locale на .com НЕ работают — только &u= (подтверждено curl-трейсом редиректа).
-const AVIASALES_TPK = 'https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&u=';
+const AVIASALES_TPK = 'https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF';
 // Оборачивает целевой aviasales.ru-URL в tpk.mx-redirect (трекинг кликов + erid + .ru).
-// query — строка вида '?destination_iata=DPS&sub_id=hub-bali' или '' для главной.
-export const aviasalesUrl = (query) => AVIASALES_TPK + encodeURIComponent('https://www.aviasales.ru/' + (query || ''));
+// subId — ПАРАМЕТРОМ ШОРТЛИНКА (до &u=): статистика TP пишет SubID с этапа редиректа;
+// sub_id внутри &u= доезжает только до лендинга и в статистику TP не попадает
+// (проверено 19.07.2026 statistics API: за 7 недель записался ровно один sub_id —
+// тестовый ?sub_id= на шортлинке Островка; все продовые метки внутри &u= потерялись).
+export const aviasalesUrl = (query, subId) =>
+  AVIASALES_TPK + (subId ? `&sub_id=${subId}` : '') + '&u=' + encodeURIComponent('https://www.aviasales.ru/' + (query || ''));
 
 // Партнёрские ссылки — единая точка. Все tpk.mx с erid (38-ФЗ); drimsim — direct RU
 // (tpk.mx не пробрасывает lang=ru), erid у партнёра нет.
@@ -53,37 +57,42 @@ export const TP_LINKS = {
 
 // Aviasales deep-link под конкретный маршрут (origin/destination IATA) —
 // поднимает конверсию: пользователь сразу видит свой перелёт, а не главную.
-// subId (опционально) — постраничная атрибуция в кабинете TP (выживает внутри &u=).
+// subId — постраничная атрибуция; кладётся ПАРАМЕТРОМ ШОРТЛИНКА (см. aviasalesUrl).
 // Пример: aviasalesRoute('MOW','DXB','hub_uae') для Москва→Дубай со страницы хаба.
 export function aviasalesRoute(originIata, destIata, subId) {
-  const sub = subId ? `&sub_id=${subId}` : '';
-  return aviasalesUrl(`?origin_iata=${originIata}&destination_iata=${destIata}${sub}`);
+  return aviasalesUrl(`?origin_iata=${originIata}&destination_iata=${destIata}`, subId);
 }
 
 // Дип-линк через tpk.mx: &u=<encoded target> пробрасывается у ВСЕХ партнёров
 // (curl-трейс 2026-07-02: cherehapa/ostrovok/yandexTravel/sutochno —
-// erid и партнёрские маркеры сохраняются). sub_id ВНУТРИ target доезжает до
-// Cherehapa и Aviasales; Ostrovok перетирает своим (там только дип, без метки).
-export function tpkDeep(linkKey, targetUrl) {
+// erid и партнёрские маркеры сохраняются).
+// subId — ПАРАМЕТРОМ ШОРТЛИНКА (?sub_id=X&u=...), НЕ внутри target: статистика TP
+// пишет SubID с этапа редиректа. Вывод v4 «Ostrovok перетирает sub_id» был
+// инвертирован: «перетирание» на лендинге = запись в TP; «выживание» внутри &u= =
+// мимо статистики TP (проверено 19.07.2026: единственный записавшийся sub_id за
+// 7 недель — тестовый на шортлинке Островка, все метки внутри &u= потерялись).
+export function tpkDeep(linkKey, targetUrl, subId) {
   const base = TP_LINKS[linkKey];
-  return base + (base.includes('?') ? '&' : '?') + 'u=' + encodeURIComponent(targetUrl);
+  const sub = subId ? `sub_id=${subId}&` : '';
+  return base + (base.includes('?') ? '&' : '?') + sub + 'u=' + encodeURIComponent(targetUrl);
 }
 
 // Cherehapa: подбор с предвыбранной страной (проверено: /travel/?country=georgia —
 // 200, SSR-title под страну) + постраничный sub_id (латиница/цифры/_).
 export const cherehapaCountry = (countrySlug, subId) =>
-  tpkDeep('cherehapa', `https://cherehapa.ru/travel/?country=${countrySlug}${subId ? `&sub_id=${subId}` : ''}`);
+  tpkDeep('cherehapa', `https://cherehapa.ru/travel/?country=${countrySlug}`, subId);
 
 // Cherehapa: страница подбора без страны (для страниц, где страна не одна /
-// слаг у партнёра не проверен) + постраничный sub_id (доезжает — проверено).
+// слаг у партнёра не проверен) + постраничный sub_id.
 export const cherehapaTravel = (subId) =>
-  tpkDeep('cherehapa', `https://cherehapa.ru/travel/${subId ? `?sub_id=${subId}` : ''}`);
+  tpkDeep('cherehapa', 'https://cherehapa.ru/travel/', subId);
 
 // Яндекс Путешествия с постраничным sub_id (тот же формат, что в altai-пилларе) —
 // хабам нужна атрибуция клика; раньше висел голый TP_LINKS.yandexTravel без sub_id.
 export const yandexTravelSub = (subId) =>
-  tpkDeep('yandexTravel', `https://travel.yandex.ru/${subId ? `?sub_id=${subId}` : ''}`);
+  tpkDeep('yandexTravel', 'https://travel.yandex.ru/', subId);
 
 // Ostrovok: страница города (проверено: /hotel/georgia/tbilisi/ → 200 с маркерами).
-export const ostrovokCity = (countrySlug, citySlug) =>
-  tpkDeep('ostrovok', `https://ostrovok.ru/hotel/${countrySlug}/${citySlug}/`);
+// subId теперь пишется (метка на шортлинке; прежнее «перетирает» касалось лендинга).
+export const ostrovokCity = (countrySlug, citySlug, subId) =>
+  tpkDeep('ostrovok', `https://ostrovok.ru/hotel/${countrySlug}/${citySlug}/`, subId);
