@@ -40,7 +40,7 @@ jobs:
           # "src/content/\320\262..." — строка начинается с кавычки, grep '^src/' мимо,
           # и файл с кириллическим слагом молча минует гейт целиком.
           CHANGED=$(git -c core.quotePath=false diff --name-only "$BASE_SHA" "$HEAD_SHA")
-          CONTENT=$(echo "$CHANGED" | grep -E '^src/(content|data)/' | grep -vE '^src/data/(prices-cache\.json|meta\.js)$' || true)
+          CONTENT=$(echo "$CHANGED" | grep -E '^src/(content|data)/' | grep -vE '^src/data/(prices-cache\.json|meta\.js|affiliate\.js)$' || true)
           # У поста и у программных данных РАЗНЫЕ носители свежести, гейт их не смешивает:
           #  • пост  → его собственный updatedDate (из неё astro.config.mjs берёт sitemap
           #    lastmod — там прямо сказано, что иначе sitemap инфлирует свежесть всех URL);
@@ -49,6 +49,9 @@ jobs:
           #    проверены на дату X».
           # Требовать бамп DATA_UPDATED за правку поста — значит заставлять врать о
           # проверке цен, которой не было.
+          # affiliate.js исключён (как meta.js/prices-cache.json): это трекинг-плумбинг
+          # партнёрских ссылок (erid/sub_id/дип-линки), а НЕ датированная фактура цен/виз.
+          # Его правка byline «данные проверены на дату X» не затрагивает — бампать нечего.
           # Помечаем разбор префиксом: POST = пост правлен без бампа updatedDate,
           # DATA = фактура данных, ждёт DATA_UPDATED.
           VERDICT=$(

@@ -320,7 +320,7 @@ const ldJson = {
         </li>
         {flightFrom > 0 && d.iata && (
           <li>
-            <strong>Перелёт.</strong> Билеты Москва → {d.cases.nom} от&nbsp;${flightFrom}. <a href={aviasalesRoute('MOW', d.iata)} rel="sponsored noopener" target="_blank">Найти на Aviasales</a> — сравнивает 100+ агентств за раз.
+            <strong>Перелёт.</strong> Билеты Москва → {d.cases.nom} от&nbsp;${flightFrom}. <a href={aviasalesRoute('MOW', d.iata, `visa_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Найти на Aviasales</a> — сравнивает 100+ агентств за раз.
           </li>
         )}
         <li>
