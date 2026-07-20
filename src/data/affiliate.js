@@ -27,8 +27,9 @@ export const TP_LINKS = {
   // eSIM-провайдеры (оба ведут на RU-сайты).
   // Airalo: direct партнёрский URL + erid (38-ФЗ маркировка рекламы РФ)
   airalo:     'https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_&u=https%3A%2F%2Fairalo.com%2Fru',
-  // Drimsim: direct URL с tracking id (через tpk.mx lang=ru не пробрасывается)
-  drimsim:    'https://drimsim.ru/?utm_travelpayouts_track_id=9681f36432214f3785fa2431a-546042',
+  // Drimsim: eSIM, принимает карты РФ/СБП. tpk.mx-шортлинк даёт постраничный sub_id
+  // на шортлинке (атрибуция); редиректит на w1.drimsim.com, TP-маркер = erid по ОРД.
+  drimsim:    'https://drimsim.tpk.mx/ELmQp51R',
   // PlatipoMiru: виртуальные карты USD/EUR для россиян (Visa/MC иностранного эмитента).
   // CPA-партнёрка. erid НЕОБХОДИМО получить от партнёра и подставить вместо TBD (38-ФЗ).
   platipomiru: 'https://platipomiru.com/?utm_source=traveltribe&utm_medium=cpa',
@@ -49,6 +50,9 @@ export const TP_LINKS = {
   tutu:        'https://tutu.tpk.mx/f99ezU4z?erid=2Vtzqunoq8B',
   // Яндекс Путешествия: отели РФ (альтернатива Островку, сильный РФ-инвентарь).
   yandexTravel:'https://yandex.tpk.mx/ubagzDqF?erid=2VtzqvB3eMM',
+  // Отелло (2ГИС на инвентаре Островка, ТОЛЬКО РФ): 13% с брони — лучшая ставка на
+  // РФ-отели (Островок 6%, Яндекс 9%). Первым на РФ-хабах (RU_STAY). erid встроен.
+  otello:      'https://otello.tpk.mx/sVtfBPMj?erid=2VtzqvGybUj',
   // Level.Travel: пакетные туры (как Travelata, второй источник предложений).
   level:       'https://level.tpk.mx/CraFALLJ?erid=2VtzquiMsH9',
   // Tiqets: билеты в музеи/достопримечательности (загран + крупные РФ-города).
@@ -96,3 +100,8 @@ export const yandexTravelSub = (subId) =>
 // subId теперь пишется (метка на шортлинке; прежнее «перетирает» касалось лендинга).
 export const ostrovokCity = (countrySlug, citySlug, subId) =>
   tpkDeep('ostrovok', `https://ostrovok.ru/hotel/${countrySlug}/${citySlug}/`, subId);
+
+// Отелло: подбор РФ-жилья (2ГИС). Шортлинк уже ведёт на лендинг (deep-link &u= не
+// нужен) — sub_id вешаем прямо на шортлинк (&sub_id=), как приняла статистика TP 19.07.
+export const otelloStay = (subId) =>
+  TP_LINKS.otello + (subId ? `&sub_id=${subId}` : '');
