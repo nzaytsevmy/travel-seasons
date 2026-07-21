@@ -104,7 +104,17 @@ jobs:
                            | grep -qF "$base"; then
                         : # hero-обложка — свежесть несёт pubDate/updatedDate поста, не DATA_UPDATED
                       else
-                        printf 'DATA %s\n' "$f"
+                        # Не обложка. Растровое фото в теле поста (jpg/webp/png/…) —
+                        # такая же косметика, как обложка: поворот/перекадрирование/
+                        # пережатие не трогает цены и визы, свежесть несёт дата поста.
+                        # Датированные инфографики репо — .svg (season-matrix/ees-flow/
+                        # choice-matrix …); они падают в DATA и остаются строгими.
+                        case "$base" in
+                          (*.jpg|*.jpeg|*.png|*.webp|*.avif|*.gif)
+                            : # inline-фото поста — свежесть несёт дата поста, exempt
+                            ;;
+                          (*) printf 'DATA %s\n' "$f" ;;
+                        esac
                       fi
                       ;;
                   esac
