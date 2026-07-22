@@ -6,9 +6,17 @@ test.beforeEach(async ({ page }) => {
   await page.route(/mc\.yandex\.ru|analytics\.ahrefs\.com|googletagmanager|google-analytics/, route => route.abort());
 });
 
-// 8 ключевых страниц для visual regression.
-// Меняется любое — baseline снимок ловит diff.
-const PAGES: { slug: string; name: string; dynamic?: boolean }[] = [
+// Страницы для visual regression.
+// ПОЛИТИКА: пиксельно снимаем ШАБЛОНЫ (лендинги, хабы, тулы) и две статьи-канарейки.
+// Обычные статьи помечены content: true и пиксельно НЕ снимаются — их текст мы
+// намеренно обновляем ради свежести (Яндекс её поощряет), и каждый такой рефреш
+// ломал бы эталон и тянул пересъёмку linux. Их держат структурные тесты ниже
+// (no-overflow / no-broken-images / no-css-escapes), они от правок текста не падают.
+// Канарейки на блоговую вёрстку (пиксельные, правишь — пересними эталон):
+//   blog-kamchatka — единственный пост со всеми блоговыми компонентами сразу
+//                    (AffiliateNote + PricingCards + FlightRoutes + TOC);
+//   blog-novoafon  — прозовые markdown-таблицы (18 строк) + AffiliateNote.
+const PAGES: { slug: string; name: string; dynamic?: boolean; content?: boolean }[] = [
   { slug: '/',                              name: 'home' },
   // dynamic: листинг блога меняется на КАЖДЫЙ новый пост (featured-карточка, счётчик
   // статей, облако тегов) → пиксельный снапшот тут даёт ложный фейл каждую публикацию
@@ -19,22 +27,22 @@ const PAGES: { slug: string; name: string; dynamic?: boolean }[] = [
   { slug: '/seasons/',                      name: 'seasons' },
   { slug: '/trips/',                        name: 'trips' },
   { slug: '/countries/',                    name: 'countries' },
-  { slug: '/blog/japan-guide-2026/',        name: 'blog-japan' },
-  { slug: '/blog/bolivia-guide-2026/',      name: 'blog-bolivia' },   // 4-кол таблица сезонов + PricingCards
-  { slug: '/blog/peru-guide-2026/',         name: 'blog-peru' },      // wide table (Inca Trail vs Salkantay vs Lares)
+  { slug: '/blog/japan-guide-2026/',        name: 'blog-japan', content: true },
+  { slug: '/blog/bolivia-guide-2026/',      name: 'blog-bolivia', content: true },   // 4-кол таблица сезонов + PricingCards
+  { slug: '/blog/peru-guide-2026/',         name: 'blog-peru', content: true },      // wide table (Inca Trail vs Salkantay vs Lares)
   { slug: '/blog/kamchatka-guide-2026/',    name: 'blog-kamchatka' }, // РФ-пилот: TOC + FlightRoutes + богатые сезоны
-  { slug: '/blog/chto-vzyat-na-more-2026/', name: 'blog-more-checklist' }, // пиллар + интерактив-чеклист (sea preset, locked)
+  { slug: '/blog/chto-vzyat-na-more-2026/', name: 'blog-more-checklist', content: true }, // пиллар + интерактив-чеклист (sea preset, locked)
   { slug: '/packing/egypt/june/',           name: 'packing-egypt-june' },  // [month] + встроенный чеклист (sea)
-  { slug: '/blog/ees-2026/',                name: 'blog-ees' },            // YMYL explainer + тул-таблица (SEO-аудit)
-  { slug: '/blog/kuda-na-more-s-rebenkom-2026/', name: 'blog-kuda-more-deti' }, // дискавери-пилот: листикл + встроенный чеклист
+  { slug: '/blog/ees-2026/',                name: 'blog-ees', content: true },            // YMYL explainer + тул-таблица (SEO-аудit)
+  { slug: '/blog/kuda-na-more-s-rebenkom-2026/', name: 'blog-kuda-more-deti', content: true }, // дискавери-пилот: листикл + встроенный чеклист
   { slug: '/packing/',                      name: 'packing-landing' },        // /packing/ landing: 70 country cards
   { slug: '/packing/japan/',                name: 'packing-country-japan' },  // консолидированный хаб: упаковка по сезонам
-  { slug: '/blog/ozero-ritsa-2026/',        name: 'blog-ritsa' },             // support-страница Абхазии: POI + PricingCards
+  { slug: '/blog/ozero-ritsa-2026/',        name: 'blog-ritsa', content: true },             // support-страница Абхазии: POI + PricingCards
   { slug: '/blog/novoafonskaya-peschera-2026/', name: 'blog-novoafon' },      // support-страница Абхазии: POI + таблицы
-  { slug: '/blog/kareliya-guide-2026/',     name: 'blog-karelia' },           // пиллар Карелии: PricingCards + таблицы
-  { slug: '/blog/gornyy-park-ruskeala-2026/', name: 'blog-ruskeala' },        // POI Карелии: бюджет-таблицы
-  { slug: '/blog/ostrov-kizhi-2026/',       name: 'blog-kizhi' },             // POI Карелии
-  { slug: '/blog/ostrov-valaam-2026/',      name: 'blog-valaam' },            // POI Карелии
+  { slug: '/blog/kareliya-guide-2026/',     name: 'blog-karelia', content: true },           // пиллар Карелии: PricingCards + таблицы
+  { slug: '/blog/gornyy-park-ruskeala-2026/', name: 'blog-ruskeala', content: true },        // POI Карелии: бюджет-таблицы
+  { slug: '/blog/ostrov-kizhi-2026/',       name: 'blog-kizhi', content: true },             // POI Карелии
+  { slug: '/blog/ostrov-valaam-2026/',      name: 'blog-valaam', content: true },            // POI Карелии
   { slug: '/turkey/',                       name: 'country-hub-turkey' },     // хаб страны: manifest + TripSaveButton + aff-CTA
   { slug: '/trips/july/turkey/',            name: 'trips-july-turkey' },      // trips-детальная: findcta + TripSaveButton
   { slug: '/bezviz/',                       name: 'bezviz' },                 // интент-лендинг: таблица безвиза + МИД-источники
@@ -50,6 +58,7 @@ for (const page of PAGES) {
     // Динамические листинги пиксельно не сравниваем (см. коммент к PAGES): их структуру
     // держат тесты no-overflow / no-broken-images / no-css-escapes ниже.
     test.skip(!!page.dynamic, 'динамический листинг: снапшот меняется на каждый пост');
+    test.skip(!!page.content, 'контентная статья: пиксельный снапшот ломался бы от каждого обновления текста');
     await pwPage.goto(page.slug);
     // Дай шрифтам и lazy-картинкам подгрузиться
     await pwPage.waitForLoadState('networkidle', { timeout: 20_000 }).catch(() => {});
