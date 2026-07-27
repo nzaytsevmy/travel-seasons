@@ -9,6 +9,7 @@
 // URL conflicts: /japan/ и /antarctica/ — explicit static pages в Astro
 // перебивают dynamic [slug]. Они исключены из getStaticPaths.
 
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
@@ -26,6 +27,12 @@ import CountryMap from '../components/CountryMap.astro';
 import { TP_LINKS, aviasalesRoute, otelloStay } from '../data/affiliate.js';
 
 // РФ-инвентарь жилья: на этих хабах вместо Островка — Яндекс Путешествия (сильнее по РФ).
+// Подпись к связанному гайду должна отражать РЕАЛЬНЫЙ sourceType статьи:
+// «личный опыт автора» под compilation-гайдом — ложное заявление об опыте
+// (бьёт по E-E-A-T и просто неправда). Берём тип из самой статьи.
+const _posts = await getCollection('blog');
+const POST_SOURCE = Object.fromEntries(_posts.map(p => [p.slug, p.data.sourceType]));
+
 const RU_STAY = new Set(['abkhazia', 'kamchatka', 'karelia', 'dagestan', 'altai']);
 // Направления, где самостоятельные ездят за рулём — аренда авто как отдельный блок.
 const CAR_RENTAL = new Set(['georgia', 'armenia', 'abkhazia', 'karelia', 'dagestan', 'altai', 'new-zealand', 'uae', 'bali']);
@@ -554,7 +561,8 @@ if (guide?.itinerary?.length) {
             <li>
               <a href={`/blog/${p.slug}/`}>
                 <b>{p.title}</b>
-                <span>{p.kind === 'visa' ? 'про визу пошагово' : p.kind === 'season' ? 'про конкретный сезон' : 'личный опыт автора'}</span>
+                <span>{p.kind === 'visa' ? 'про визу пошагово' : p.kind === 'season' ? 'про конкретный сезон'
+                  : (POST_SOURCE[p.slug] === 'personal' || POST_SOURCE[p.slug] === 'hybrid') ? 'личный опыт автора' : 'подробный разбор'}</span>
               </a>
             </li>
           ))}
