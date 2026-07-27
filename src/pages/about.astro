@@ -3,16 +3,22 @@ import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
 import authorPhoto from '../assets/author/nikita.jpg';
+import { DATA_UPDATED } from '../data/meta.js';
 
 const ldJson = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "AboutPage",
+      // ProfilePage вторым типом (не отдельной нодой — гейт репо запрещает дубли):
+      // Google поддерживает его для страниц авторов, которые делятся личным опытом,
+      // и связывает Person из статей с этой страницей. Для YMYL-тем (визы, страховка)
+      // авторство — условие входа. Источник: галерея структурированных данных Google.
+      "@type": ["AboutPage", "ProfilePage"],
       "url": "https://traveltribe.ru/about/",
       "name": "О проекте TravelTribe и авторе",
       "description": "TravelTribe — авторский тревел-блог Никиты Зайцева о путешествиях из России. Методология, источники данных, опыт автора.",
       "inLanguage": "ru-RU",
+      "dateModified": DATA_UPDATED,
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "about": { "@id": "https://traveltribe.ru/about/#person" },
       "mainEntity": { "@id": "https://traveltribe.ru/about/#person" }
