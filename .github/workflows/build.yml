@@ -121,6 +121,19 @@ jobs:
                       ;;
                   esac
                   ;;
+                (src/data/directions.js)
+                  # В directions.js лежит и фактура (цены/визы/сезоны), и перелинковка
+                  # «хаб → блог-гайд». Добавление ссылки на статью фактуру не трогает,
+                  # и бампать за него DATA_UPDATED = врать о проверке цен. Хелпер
+                  # сравнивает файл БЕЗ блока RELATED_POSTS: одинаково → это перелинковка.
+                  git -c core.quotePath=false show "$BASE_SHA:$f" > /tmp/_d_base.js 2>/dev/null || : > /tmp/_d_base.js
+                  git -c core.quotePath=false show "$HEAD_SHA:$f" > /tmp/_d_head.js 2>/dev/null || : > /tmp/_d_head.js
+                  if python3 .github/scripts/links_only.py /tmp/_d_base.js /tmp/_d_head.js; then
+                    : # тронута только перелинковка — фактура та же, свежесть не требуется
+                  else
+                    printf 'DATA %s\n' "$f"
+                  fi
+                  ;;
                 (*) printf 'DATA %s\n' "$f" ;;
               esac
             done <<< "$CONTENT"
