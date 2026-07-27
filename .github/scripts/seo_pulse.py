@@ -262,6 +262,28 @@ def gsc_query(c: dict, token, start, end, dims):
         return None, str(e)
 
 
+# Календарные страницы (/packing/<country>/<month>/, /trips/<month>/<country>/) теряют
+# клики, когда их месяц проходит: страница ещё ранжируется (показы держатся), но
+# читателю нужен уже следующий месяц. Это не эрозия качества и рефреш её не лечит —
+# кейс 2026-07: /packing/hainan/june/ клики 20→4 при 143 показах, хотя июльская
+# версия того же шаблона давала CTR 17%. Общий фильтр «клики упали вместе с
+# показами» такое не ловит, поэтому отсекаем отдельно.
+_MONTHS = ["january", "february", "march", "april", "may", "june", "july",
+           "august", "september", "october", "november", "december"]
+
+
+def _is_past_month_page(url: str, today) -> bool:
+    parts = [p for p in url.split("/") if p]
+    for p in parts:
+        if p in _MONTHS:
+            m = _MONTHS.index(p) + 1
+            # окно актуальности месяца считаем закрытым, когда он позади текущего
+            # (декабрь в январе не считаем «прошедшим» — это следующий сезон)
+            diff = (today.month - m) % 12
+            return 1 <= diff <= 6
+    return False
+
+
 def fetch_gsc(c: dict, decay: bool = False) -> dict:
     token, err = gsc_token(c)
     if not token:
@@ -350,6 +372,8 @@ def fetch_gsc(c: dict, decay: bool = False) -> dict:
             pi, ci = pv["impressions"], r["impressions"]
             if pi < th["decay_min_prev_impr"] or pc < th["decay_min_prev_clicks"] or pc <= 0:
                 continue
+            if _is_past_month_page(r["keys"][0], end):
+                continue  # календарная страница, месяц позади — не эрозия, а смена спроса
             drop = (pc - cc) / pc
             impr_held = ci >= th["decay_impr_hold_ratio"] * pi
             if drop >= th["decay_clicks_drop_pct"] / 100 and impr_held:
