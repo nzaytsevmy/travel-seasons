@@ -147,11 +147,28 @@ jobs:
             echo "  Бампни updatedDate этих постов — из неё sitemap берёт lastmod."
             FAIL=1
           fi
-          if [ -n "$DATA_TOUCHED" ] && ! echo "$CHANGED" | grep -qx 'src/data/meta.js'; then
-            echo "✖ изменена фактура данных, но src/data/meta.js (DATA_UPDATED) не тронут:"
-            printf '%s\n' "$DATA_TOUCHED" | sed 's/^/    /'
-            echo "  Бампни дату актуальности — иначе byline «данные проверены …» соврёт."
-            FAIL=1
+          if [ -n "$DATA_TOUCHED" ]; then
+            # Гейт защищает ОДНО: чтобы byline «данные проверены на дату X» не соврал.
+            # Бамп meta.js — обычный способ это обеспечить, но не единственный: если
+            # фактуру правят вторым PR за тот же день, DATA_UPDATED уже стоит датой
+            # коммита, byline верен, а новой даты просто не существует. Требовать бамп
+            # здесь — толкать либо на завтрашнюю дату (враньё о проверке, которой ещё
+            # не было), либо на косметическую правку meta.js ради зелёного. Поэтому
+            # сверяем ЗНАЧЕНИЕ с датой коммита, а не факт присутствия файла в диффе.
+            DU=$(git -c core.quotePath=false show "$HEAD_SHA:src/data/meta.js" 2>/dev/null \
+                  | sed -n "s/^export const DATA_UPDATED = '\([0-9][0-9-]*\)'.*/\1/p" | head -1)
+            CDATE=$(git show -s --format=%cd --date=format:%Y-%m-%d "$HEAD_SHA")
+            if echo "$CHANGED" | grep -qx 'src/data/meta.js'; then
+              : # дата актуальности бампнута в этом же PR — обычный путь
+            elif [ -n "$DU" ] && [ "$DU" = "$CDATE" ]; then
+              echo "ℹ DATA_UPDATED уже равен дате коммита ($DU) — byline актуален, второй бамп за день не нужен"
+            else
+              echo "✖ изменена фактура данных, но src/data/meta.js (DATA_UPDATED) не тронут:"
+              printf '%s\n' "$DATA_TOUCHED" | sed 's/^/    /'
+              echo "  DATA_UPDATED=${DU:-?}, дата коммита=$CDATE."
+              echo "  Бампни дату актуальности — иначе byline «данные проверены …» соврёт."
+              FAIL=1
+            fi
           fi
           if [ "$FAIL" = 1 ]; then exit 1; fi
           echo "✔ свежесть в порядке: у правленых постов бампнут updatedDate, у фактуры данных — DATA_UPDATED"
