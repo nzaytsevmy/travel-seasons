@@ -493,8 +493,11 @@ def fetch_tp_stats() -> dict:
 
 def link_rot_check() -> list:
     """GET-пинг партнёрских редиректоров из affiliate.js (следует редиректам).
-    Мёртв = 404/410 ИЛИ домен недоступен (DNS/refused). Тайм-аут/anti-bot/3xx/403 —
-    НЕ алертим (иначе живой сайт, блокирующий ботов, даёт ложную тревогу еженедельно).
+    Не отвечает = 404/410, домен недоступен (DNS/refused) или рвётся TLS.
+    Тайм-аут/anti-bot/3xx/403 — НЕ алертим (иначе живой сайт, блокирующий ботов,
+    даёт ложную тревогу еженедельно). Каждая цель проверяется до 3 раз с паузой:
+    28.07.2026 travelme.g2afse.com не отвечал около часа и сам ожил, разовый сбой
+    сети тревогу поднимать не должен.
     Урок Tripster: мёртвый редирект = прямая потеря денег."""
     try:
         aff = (REPO_ROOT / "src" / "data" / "affiliate.js").read_text()
@@ -514,8 +517,9 @@ def link_rot_check() -> list:
             continue
         urls.add(f"https://{host}/")
     ua = "Mozilla/5.0 (compatible; TravelTribeMonitor/1.0)"
-    dead = []
-    for u in sorted(urls):
+
+    def probe(u):
+        """None = отвечает. Иначе строка/код с причиной непригодности."""
         req = urllib.request.Request(u, method="GET")
         req.add_header("User-Agent", ua)
         try:
@@ -527,18 +531,33 @@ def link_rot_check() -> list:
             reason = str(getattr(e, "reason", "")).lower()
             if any(k in reason for k in ("name or service", "nodename", "getaddrinfo",
                                          "refused", "no route", "not known")):
-                dead.append((u, "домен недоступен"))
-            elif any(k in reason for k in ("ssl", "eof occurred", "reset by peer",
-                                           "connection reset", "handshake", "wrong version")):
+                return "домен недоступен"
+            if any(k in reason for k in ("ssl", "eof occurred", "reset by peer",
+                                         "connection reset", "handshake", "wrong version")):
                 # Хост резолвится и порт принимает соединение, но рукопожатие рвётся.
-                # Именно так умер travelme.g2afse.com: DNS в порядке, TCP есть,
-                # TLS обрывается — и старый код относил это к «неизвестно».
-                dead.append((u, "TLS-соединение рвётся"))
-            continue          # тайм-аут и прочее — неизвестно, не мёртв
+                # Именно так вёл себя travelme.g2afse.com 28.07.2026: DNS в порядке,
+                # TCP есть, TLS обрывается — старый код относил это к «неизвестно».
+                return "TLS-соединение рвётся"
+            return None       # тайм-аут и прочее — неизвестно, не считаем поломкой
         except Exception:
-            continue
-        if code in (404, 410):
-            dead.append((u, code))
+            return None
+        return code if code in (404, 410) else None
+
+    dead = []
+    for u in sorted(urls):
+        # Три попытки с паузой. Разовый сетевой сбой не должен поднимать тревогу:
+        # 28.07.2026 travelme.g2afse.com не отвечал около часа и сам ожил.
+        # Ждать ВТОРОГО прогона нельзя — проверка недельная, и молчать две недели
+        # про реально мёртвую денежную ссылку дороже одного лишнего сообщения.
+        why = None
+        for attempt in range(3):
+            if attempt:
+                time.sleep(5)
+            why = probe(u)
+            if why is None:
+                break
+        if why is not None:
+            dead.append((u, why))
     return dead
 
 
@@ -794,7 +813,9 @@ def weekly_mode(c) -> None:
     # Link-rot: мёртвый партнёрский редиректор = прямая потеря денег (урок Tripster)
     dead = link_rot_check()
     if dead:
-        L.append("🔗 *Мёртвые партнёрские ссылки:* " +
+        # «не отвечают», а не «мёртвые»: недельный снимок не отличает закрытый
+        # оффер от временного простоя сети — решение остаётся за человеком.
+        L.append("🔗 *Партнёрские ссылки не отвечают* (проверить оффер): " +
                  ", ".join(f"{u} ({c or 'нет ответа'})" for u, c in dead))
 
     if recrawled:
