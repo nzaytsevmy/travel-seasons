@@ -1,0 +1,164 @@
+---
+// /izmeneniya/ — лента изменений визовых и въездных правил.
+//
+// Зачем страница существует: правила меняются быстрее, чем обновляются гайды, и
+// человек обычно узнаёт об изменении уже на границе. Здесь одно место, где видно
+// что поменялось, когда и по какому источнику. Каждый пункт ведёт на разбор.
+//
+// Данные — src/data/visa-changes.js, там же правила ведения ленты.
+// Свежесть несёт дата САМОГО изменения (`date`), а не DATA_UPDATED: это не
+// таблица цен, а хронология событий.
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { CHANGES_SORTED, IMPACT_LABEL, formatDateRu } from '../data/visa-changes.js';
+import { bySlug } from '../data/directions.js';
+
+const url = 'https://traveltribe.ru/izmeneniya/';
+const title = 'Изменения визовых правил 2026: что поменялось и когда';
+const description = 'Что изменилось во въездных правилах для россиян: сроки безвиза, сборы, страховка, подача документов. Каждый пункт с датой и ссылкой на первоисточник.';
+
+const latest = CHANGES_SORTED[0];
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": `${url}#page`,
+      "url": url,
+      "name": title,
+      "description": description,
+      "inLanguage": "ru-RU",
+      "dateModified": latest.checked,
+      "author": { "@id": "https://traveltribe.ru/about/#person" },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Изменения визовых правил", "item": url },
+      ],
+    },
+    {
+      "@type": "ItemList",
+      "itemListElement": CHANGES_SORTED.map((c, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "name": c.title,
+      })),
+    },
+  ],
+};
+
+const countryName = (slug) => bySlug(slug)?.cases?.nom ?? slug;
+---
+<Layout title={title} description={description} canonical={url} ldJson={ldJson}>
+  <Breadcrumbs crumbs={[{ label: 'Изменения визовых правил' }]} />
+  <main id="main" class="ch">
+
+    <header class="ch-head">
+      <h1 class="ch-h1">Что изменилось во въездных правилах</h1>
+      <p class="ch-lead">
+        Правила меняются быстрее, чем обновляются гайды, и обычно человек узнаёт об этом
+        уже на границе. Здесь я собираю изменения по мере того, как проверяю их сам —
+        с датой и ссылкой на первоисточник, а не на пересказ.
+      </p>
+      <p class="ch-byline">
+        Ведёт <a href="/about/">Никита Зайцев</a> · последняя проверка: {formatDateRu(latest.checked)} ·
+        <a href="/izmeneniya/rss.xml">RSS</a>
+      </p>
+    </header>
+
+    <ol class="ch-list">
+      {CHANGES_SORTED.map((c) => (
+        <li class="ch-item" id={c.id}>
+          <div class="ch-meta">
+            <time datetime={c.date}>{formatDateRu(c.date)}</time>
+            <span class={`ch-impact ch-impact--${c.impact}`}>{IMPACT_LABEL[c.impact]}</span>
+            <span class="ch-status">{c.status}</span>
+          </div>
+
+          <h2 class="ch-title">{c.title}</h2>
+          <p class="ch-what">{c.what}</p>
+
+          {/* Разделители склеиваем без переносов строк: JSX сохраняет пробелы между
+              выражениями, и «источник , источник» получает пробел перед запятой. */}
+          <p class="ch-refs">
+            {c.countries.length > 0 && (
+              <span class="ch-refs-group">Разбор: {c.countries.map((s, i) => (
+                <Fragment>{i > 0 ? ', ' : ''}<a href={`/visa/${s}/`}>{countryName(s)}</a></Fragment>
+              ))}</span>
+            )}
+            <span class="ch-refs-group">Источник: {c.sources.map((src, i) => (
+              <Fragment>{i > 0 ? ', ' : ''}<a href={src.url} rel="nofollow noopener" target="_blank">{src.name}</a></Fragment>
+            ))}</span>
+          </p>
+        </li>
+      ))}
+    </ol>
+
+    <section class="ch-section">
+      <h2>Как я это проверяю</h2>
+      <p class="ch-what">
+        Режим въезда, срок и основание беру на сайте Консульского департамента МИД России:
+        там указана дата вступления соглашения в силу и точная формула срока. Свежие изменения,
+        которые первоисточник ещё не оформил, — из отраслевых источников вроде АТОР, где факт
+        подтверждают туроператоры. Блогам и поисковой выдаче не верю: на них уже ловились ошибки,
+        последняя — про несуществующую электронную визу ЕС.
+      </p>
+      <p class="ch-what">
+        Срок пишу так, как он сформулирован в соглашении: «90 дней в течение каждого периода
+        в 180 дней». Подмена этого на «90 дней в год» — самая частая ошибка в рунете, и из-за
+        неё человек считает, что после выезда счётчик обнуляется.
+      </p>
+    </section>
+
+    <section class="ch-section">
+      <h2>Куда дальше</h2>
+      <ul class="ch-links">
+        <li><a href="/visa/">Визы по странам</a> — что нужно и сколько стоит</li>
+        <li><a href="/bezviz/">Куда без визы</a> — сроки и условия по направлениям</li>
+        <li><a href="https://t.me/traveltriberu" rel="noopener" target="_blank">@traveltriberu</a> — пишу туда, когда что-то меняется</li>
+      </ul>
+    </section>
+
+  </main>
+</Layout>
+
+<style>
+  .ch { max-width: 780px; margin: 0 auto; padding: 0 var(--gutter, 16px) 4rem; }
+
+  .ch-head { padding-bottom: 1.6rem; }
+  .ch-h1 { font-size: clamp(1.6rem, 4vw, 2.3rem); line-height: 1.15; margin: 0 0 .9rem; }
+  .ch-lead { max-width: 62ch; line-height: 1.6; margin: 0 0 1rem; }
+  .ch-byline { font-size: .85rem; color: var(--text-dim); margin: 0; }
+  .ch-byline a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
+
+  .ch-list { list-style: none; margin: 0; padding: 0; counter-reset: none; }
+  .ch-item { border-top: 1px solid var(--line-strong, var(--line)); padding: 1.5rem 0; scroll-margin-top: 80px; }
+
+  .ch-meta { display: flex; flex-wrap: wrap; gap: .5rem .9rem; align-items: baseline;
+             font-size: .74rem; letter-spacing: .06em; text-transform: uppercase;
+             color: var(--text-faint); margin-bottom: .5rem; }
+  .ch-impact--high { color: var(--gold); font-weight: 700; }
+  .ch-status { color: var(--text-dim); text-transform: none; letter-spacing: 0; font-size: .8rem; }
+
+  .ch-title { font-size: 1.2rem; line-height: 1.3; margin: 0 0 .55rem; scroll-margin-top: 80px; }
+  .ch-what { max-width: 62ch; line-height: 1.6; margin: 0 0 .7rem; }
+
+  .ch-refs { display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; font-size: .85rem;
+             color: var(--text-dim); margin: 0; }
+  .ch-refs a { color: var(--text); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
+  .ch-refs a:hover { color: var(--gold); }
+
+  .ch-section { border-top: 1px solid var(--line-strong, var(--line)); padding-top: 1.6rem; margin-top: 2.4rem; }
+  .ch-section h2 { font-size: 1.35rem; margin: 0 0 .7rem; scroll-margin-top: 80px; }
+
+  .ch-links { list-style: none; margin: 0; padding: 0; }
+  .ch-links li { padding: .6rem 0; border-bottom: 1px solid var(--line); font-size: .98rem; }
+  .ch-links a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
+
+  @media (max-width: 700px) {
+    .ch-refs { flex-direction: column; gap: .25rem; }
+  }
+</style>
