@@ -6,6 +6,7 @@ import Layout from '../../layouts/Layout.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { data as regions } from '../../data/regions.js';
+import { NOUN } from '../../data/plural.js';
 import { PRICES } from '../../data/prices.js';
 import { regionMeta } from '../../data/regions-meta.js';
 import { DATA_UPDATED_RU, yearForMonth } from '../../data/meta.js';
@@ -96,13 +97,13 @@ const SECTIONS = [
 
 // SEO
 const title = `Куда поехать в ${M.name} ${yr} — топ направлений`;
-const description = `Куда лететь в ${M.name} ${yr}: ${peak.length} направлений с пиком сезона, актуальные цены на перелёт из Москвы, виза для россиян, бюджет на день. Без воды.`;
+const description = `Куда лететь в ${M.name} ${yr}: ${peak.length} ${NOUN.direction(peak.length)} с пиком сезона, актуальные цены на перелёт из Москвы, виза для россиян, бюджет на день. Без воды.`;
 const url = `https://traveltribe.ru/trips/${month}/`;
 
 const faqs = [
   {
     q: `Куда лучше всего поехать в ${M.name} ${yr}?`,
-    a: `В пиковом сезоне сейчас ${peak.length} направлений: ${peak.slice(0, 5).map(d => d.region).join(', ')} и другие. Полный список с ценами и визами — на этой странице.`,
+    a: `В пиковом сезоне сейчас ${peak.length} ${NOUN.direction(peak.length)}: ${peak.slice(0, 5).map(d => d.region).join(', ')} и другие. Полный список с ценами и визами — на этой странице.`,
   },
   {
     q: `Куда дешевле всего лететь в ${M.name}?`,
