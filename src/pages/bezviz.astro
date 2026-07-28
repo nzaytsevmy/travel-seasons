@@ -183,7 +183,7 @@ const ldJson = {
         <li><b>МИД РФ:</b> <a href="https://www.mid.ru" rel="noopener" target="_blank">mid.ru</a> — консульская информация и рекомендации по странам</li>
         <li><b>МИД РФ, поездки:</b> <a href="https://www.kdmid.ru" rel="noopener" target="_blank">kdmid.ru</a> — визовые правила стран мира</li>
       </ul>
-      <p class="bv-note"><b>Важно:</b> визовые правила меняются, иногда за недели. Перед поездкой обязательно сверьте актуальные требования на сайте МИД РФ или посольства страны. Мы не отвечаем за изменения между обновлениями.</p>
+      <p class="bv-note"><b>Важно:</b> визовые правила меняются, иногда за недели. Что поменялось за последнее время — в <a href="/izmeneniya/">ленте изменений</a>, каждый пункт с датой и первоисточником. Перед поездкой обязательно сверьте актуальные требования на сайте МИД РФ или посольства страны. Мы не отвечаем за изменения между обновлениями.</p>
     </section>
 
     <section class="bv-section">
@@ -224,6 +224,9 @@ const ldJson = {
   .bv-section h2 { font-size: 1.35rem; margin: 0 0 .7rem; scroll-margin-top: 80px; }
   .bv-answer { max-width: 62ch; line-height: 1.6; margin: 0 0 1.1rem; }
   .bv-note { font-size: .88rem; color: var(--text-dim); max-width: 62ch; }
+  /* Без этого ссылка внутри примечания наследует серый цвет текста и теряется:
+     проверено в браузере — было rgb(86,82,74) без подчёркивания. */
+  .bv-note a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
 
   .bv-nopass { list-style: none; margin: 0 0 1rem; padding: 0; }
   .bv-nopass li { display: flex; flex-wrap: wrap; gap: .35rem .8rem; align-items: baseline; padding: .7rem .1rem; border-bottom: 1px solid var(--line); font-size: .98rem; }

@@ -619,7 +619,7 @@ const ldJson = {
           <li><strong>eVisa порталы:</strong> evisa.gov.kh (Камбоджа), eta.gov.lk (Шри-Ланка), etakenya.go.ke (Кения), indianvisaonline.gov.in (Индия), evisa.imigrasi.go.id (Индонезия)</li>
         </ul>
         <p class="va-sources-disclaimer">
-          <strong>Важно:</strong> визовые правила меняются ежемесячно. Реестр обновляется раз в 4–6 недель. Перед поездкой <strong>обязательно</strong> сверьте актуальную информацию через сайт МИД РФ или посольства страны назначения. TravelTribe не несёт ответственности за устаревшие данные между обновлениями.
+          <strong>Важно:</strong> визовые правила меняются ежемесячно. Реестр обновляется раз в 4–6 недель, а что именно поменялось — видно в <a href="/izmeneniya/">ленте изменений</a>. Перед поездкой <strong>обязательно</strong> сверьте актуальную информацию через сайт МИД РФ или посольства страны назначения. TravelTribe не несёт ответственности за устаревшие данные между обновлениями.
         </p>
       </div>
     </section>
@@ -1387,6 +1387,8 @@ const ldJson = {
     font-style: italic;
   }
   .va-sources-disclaimer strong { color: var(--stamp-red); font-style: normal; font-weight: 600; }
+  /* Ссылка в дисклеймере иначе наследует серый и не читается как ссылка. */
+  .va-sources-disclaimer a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
 
   /* Related pillars */
   .va-related {
