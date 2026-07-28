@@ -500,10 +500,19 @@ def link_rot_check() -> list:
         aff = (REPO_ROOT / "src" / "data" / "affiliate.js").read_text()
     except Exception:
         return []
+    # Шортлинки TP/Impact проверяем целиком: так ловится и мёртвый оффер (404),
+    # а не только отвалившийся домен.
     urls = set(re.findall(r"https://[a-z0-9.-]+\.(?:tpk\.mx|pxf\.io)/[A-Za-z0-9/]+", aff))
-    for host in ("drimsim.ru", "platipomiru.com"):
-        if host in aff:
-            urls.add(f"https://{host}/")
+    # Все ОСТАЛЬНЫЕ партнёрские хосты — корнем, без трекинг-пути: пинг полной
+    # партнёрской ссылки засчитывается как клик и накручивал бы статистику.
+    # Раньше здесь был жёсткий список из двух хостов, поэтому travelme.g2afse.com
+    # (авторские туры) не проверялся ВООБЩЕ — его смерть нашли руками 28.07.2026,
+    # когда все 10 CTA уже вели на страницу ошибки. Список партнёров растёт,
+    # перечислять хосты вручную — гарантия повторить это на следующем партнёре.
+    for host in set(re.findall(r"https://([a-z0-9.\-]+)/", aff)):
+        if host.endswith(("tpk.mx", "pxf.io")):
+            continue
+        urls.add(f"https://{host}/")
     ua = "Mozilla/5.0 (compatible; TravelTribeMonitor/1.0)"
     dead = []
     for u in sorted(urls):
@@ -519,6 +528,12 @@ def link_rot_check() -> list:
             if any(k in reason for k in ("name or service", "nodename", "getaddrinfo",
                                          "refused", "no route", "not known")):
                 dead.append((u, "домен недоступен"))
+            elif any(k in reason for k in ("ssl", "eof occurred", "reset by peer",
+                                           "connection reset", "handshake", "wrong version")):
+                # Хост резолвится и порт принимает соединение, но рукопожатие рвётся.
+                # Именно так умер travelme.g2afse.com: DNS в порядке, TCP есть,
+                # TLS обрывается — и старый код относил это к «неизвестно».
+                dead.append((u, "TLS-соединение рвётся"))
             continue          # тайм-аут и прочее — неизвестно, не мёртв
         except Exception:
             continue
