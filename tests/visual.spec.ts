@@ -30,7 +30,7 @@ const PAGES: { slug: string; name: string; dynamic?: boolean; content?: boolean 
   { slug: '/blog/japan-guide-2026/',        name: 'blog-japan', content: true },
   { slug: '/blog/bolivia-guide-2026/',      name: 'blog-bolivia', content: true },   // 4-кол таблица сезонов + PricingCards
   { slug: '/blog/peru-guide-2026/',         name: 'blog-peru', content: true },      // wide table (Inca Trail vs Salkantay vs Lares)
-  { slug: '/blog/kamchatka-guide-2026/',    name: 'blog-kamchatka' }, // РФ-пилот: TOC + FlightRoutes + богатые сезоны
+  { slug: '/blog/kamchatka-guide-2026/',    name: 'blog-kamchatka', content: true }, // РФ-пилот: TOC + FlightRoutes + богатые сезоны
   { slug: '/blog/chto-vzyat-na-more-2026/', name: 'blog-more-checklist', content: true }, // пиллар + интерактив-чеклист (sea preset, locked)
   { slug: '/packing/egypt/june/',           name: 'packing-egypt-june' },  // [month] + встроенный чеклист (sea)
   { slug: '/blog/ees-2026/',                name: 'blog-ees', content: true },            // YMYL explainer + тул-таблица (SEO-аудit)
@@ -38,7 +38,7 @@ const PAGES: { slug: string; name: string; dynamic?: boolean; content?: boolean 
   { slug: '/packing/',                      name: 'packing-landing' },        // /packing/ landing: 70 country cards
   { slug: '/packing/japan/',                name: 'packing-country-japan' },  // консолидированный хаб: упаковка по сезонам
   { slug: '/blog/ozero-ritsa-2026/',        name: 'blog-ritsa', content: true },             // support-страница Абхазии: POI + PricingCards
-  { slug: '/blog/novoafonskaya-peschera-2026/', name: 'blog-novoafon' },      // support-страница Абхазии: POI + таблицы
+  { slug: '/blog/novoafonskaya-peschera-2026/', name: 'blog-novoafon', content: true },      // support-страница Абхазии: POI + таблицы
   { slug: '/blog/kareliya-guide-2026/',     name: 'blog-karelia', content: true },           // пиллар Карелии: PricingCards + таблицы
   { slug: '/blog/gornyy-park-ruskeala-2026/', name: 'blog-ruskeala', content: true },        // POI Карелии: бюджет-таблицы
   { slug: '/blog/ostrov-kizhi-2026/',       name: 'blog-kizhi', content: true },             // POI Карелии
