@@ -4,6 +4,7 @@ import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { Image } from 'astro:assets';
 import { DIRECTIONS } from '../../data/directions.js';
+import { NOUN } from '../../data/plural.js';
 import { getVisaDetails } from '../../data/visa-details.js';
 
 const destPhotos = import.meta.glob('../../assets/destinations/*.jpg', { eager: true, import: 'default' });
@@ -48,11 +49,11 @@ const VISITED = new Set([
 const FAQ_ITEMS = [
   {
     q: 'Куда россиянину можно без визы в 2026?',
-    a: `Сейчас ${byVisa.free.length} направлений принимают по загранпаспорту: Турция (60 дней), Грузия (1 год), Армения (180 дней), ОАЭ (90 дней), Таиланд (60 дней, но скоро 30), Китай (30 дней до 31.12.2027), Куба, Доминикана, Сербия, Аргентина, Бразилия, Мексика (180 дней) и другие. Полный список — в разделе I выше.`,
+    a: `Сейчас ${byVisa.free.length} ${NOUN.direction(byVisa.free.length)} ${NOUN.accept(byVisa.free.length)} по загранпаспорту: Турция (60 дней), Грузия (1 год), Армения (180 дней), ОАЭ (90 дней), Таиланд (60 дней, но скоро 30), Китай (30 дней до 31.12.2027), Куба, Доминикана, Сербия, Аргентина, Бразилия, Мексика (180 дней) и другие. Полный список — в разделе I выше.`,
   },
   {
     q: 'Что такое eVisa и чем отличается от обычной визы?',
-    a: `eVisa оформляется онлайн через сайт миграционной службы за 1–3 дня. Не нужно посольство, биометрия, фото на паспорт. Стоит $20–80. ${byVisa.evisa.length} стран дают россиянам eVisa: Индия, Шри-Ланка, Кения, Камбоджа, Мадагаскар и другие. Обычная виза — через консульство, биометрия, до 30 дней, $35–200+.`,
+    a: `eVisa оформляется онлайн через сайт миграционной службы за 1–3 дня. Не нужно посольство, биометрия, фото на паспорт. Стоит $20–80. ${byVisa.evisa.length} ${NOUN.country(byVisa.evisa.length)} ${NOUN.give(byVisa.evisa.length)} россиянам eVisa: Индия, Шри-Ланка, Кения, Камбоджа, Мадагаскар и другие. Обычная виза — через консульство, биометрия, до 30 дней, $35–200+.`,
   },
   {
     q: 'Где взять визу быстро и дёшево в 2026?',
@@ -158,7 +159,7 @@ const ldJson = {
       "@id": `${url}#page`,
       "url": url,
       "name": "Визы для россиян 2026 — все направления TravelTribe",
-      "description": `Визовый реестр 2026: ${DIRECTIONS.length} направлений. ${byVisa.free.length} без визы · ${byVisa.evisa.length} eVisa · ${byVisa.required.length} требуют визу. Документы, цены, сроки.`,
+      "description": `Визовый реестр 2026: ${DIRECTIONS.length} ${NOUN.direction(DIRECTIONS.length)}. ${byVisa.free.length} без визы · ${byVisa.evisa.length} eVisa · ${byVisa.required.length} требуют визу. Документы, цены, сроки.`,
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "mainEntity": { "@id": `${url}#itemlist` },
@@ -170,7 +171,7 @@ const ldJson = {
     {
       "@type": "ItemList",
       "@id": `${url}#itemlist`,
-      "name": `Визовый реестр TravelTribe 2026 — ${DIRECTIONS.length} направлений`,
+      "name": `Визовый реестр TravelTribe 2026 — ${DIRECTIONS.length} ${NOUN.direction(DIRECTIONS.length)}`,
       "numberOfItems": DIRECTIONS.length,
       "itemListElement": DIRECTIONS.map((d, i) => ({
         "@type": "ListItem",
@@ -205,7 +206,7 @@ const ldJson = {
 ---
 <Layout
   title="Визовый реестр 2026 — визы для россиян по 70+ направлениям"
-  description={`Визы для россиян в 2026: ${byVisa.free.length} стран без визы, ${byVisa.evisa.length} с eVisa онлайн, ${byVisa.required.length} требуют визу. Стоимость, сроки оформления, нужные документы и куда подавать — по 70+ направлениям мира.`}
+  description={`Визы для россиян в 2026: ${byVisa.free.length} ${NOUN.country(byVisa.free.length)} без визы, ${byVisa.evisa.length} с eVisa онлайн, ${byVisa.required.length} требуют визу. Стоимость, сроки оформления, нужные документы и куда подавать — по 70+ направлениям мира.`}
   canonical={url}
   ogTitle="Визовый реестр 2026 · TravelTribe"
   ogDescription={`${byVisa.free.length} без визы · ${byVisa.evisa.length} eVisa · ${byVisa.required.length} требуют визу`}
@@ -249,7 +250,7 @@ const ldJson = {
       </h1>
 
       <p class="va-subtitle">
-        Сводка по {DIRECTIONS.length} направлениям. Что нужно для въезда, сколько стоит, сколько ждать.
+        Сводка по {DIRECTIONS.length} {NOUN.directionDat(DIRECTIONS.length)}. Что нужно для въезда, сколько стоит, сколько ждать.
         Если виза не нужна вовсе — есть отдельная <a href="/bezviz/">таблица безвизовых направлений</a>.
       </p>
 
@@ -313,7 +314,7 @@ const ldJson = {
 
       <div class="va-intro-body">
         <p class="va-intro-lede">
-          С 2022 года визовая карта мира перерисовывается каждые 3–6 месяцев. Здесь — актуальный реестр на май 2026: <strong>{byVisa.free.length} стран принимают по загранпаспорту, {byVisa.evisa.length} дают eVisa онлайн, {byVisa.required.length} требуют полноценную визу</strong>. Реестр обновляется при изменении правил, последняя сверка — 14 мая 2026.
+          С 2022 года визовая карта мира перерисовывается каждые 3–6 месяцев. Здесь — актуальный реестр на май 2026: <strong>{byVisa.free.length} {NOUN.country(byVisa.free.length)} {NOUN.accept(byVisa.free.length)} по загранпаспорту, {byVisa.evisa.length} дают eVisa онлайн, {byVisa.required.length} требуют полноценную визу</strong>. Реестр обновляется при изменении правил, последняя сверка — 14 мая 2026.
         </p>
 
         <p>

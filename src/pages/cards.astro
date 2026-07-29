@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { countries, regionLabels, lastGlobalUpdate, issuingBanks } from '../data/cards-countries.js';
+import { NOUN } from '../data/plural.js';
 import { TP_LINKS } from '../data/affiliate.js';
 
 const url = 'https://traveltribe.ru/cards/';
@@ -29,7 +30,7 @@ const sorted = [...countries].sort((a, b) => {
 const faqs = [
   {
     q: 'Какая карта работает у россиян за границей в 2026?',
-    a: `Универсального решения нет — зависит от страны. Где-то принимают только UnionPay российских банков, где-то карту МИР, где-то ничего российского не работает и нужна карта зарубежного банка или наличные. Конкретный статус по каждой из ${countries.length} стран — в таблице выше, с источниками.`,
+    a: `Универсального решения нет — зависит от страны. Где-то принимают только UnionPay российских банков, где-то карту МИР, где-то ничего российского не работает и нужна карта зарубежного банка или наличные. Конкретный статус по каждой из ${countries.length} ${NOUN.country(countries.length) === 'страна' ? 'страны' : 'стран'} — в таблице выше, с источниками.`,
   },
   {
     q: 'Что такое UnionPay российского банка и где он принимается?',
@@ -92,7 +93,7 @@ const ldJson = {
       <h1>Карты за границей в&nbsp;2026</h1>
       <p class="cards-hero__lede">
         Где сейчас принимают <strong>МИР</strong>, <strong>UnionPay</strong> российских банков
-        и <strong>Visa&nbsp;/ Mastercard</strong> иностранных банков. {countries.length}&nbsp;стран,
+        и <strong>Visa&nbsp;/ Mastercard</strong> иностранных банков. {countries.length}&nbsp;{NOUN.country(countries.length)},
         источники в&nbsp;каждой карточке.
       </p>
       <p class="cards-byline">

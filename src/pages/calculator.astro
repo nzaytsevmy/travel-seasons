@@ -965,6 +965,8 @@ window.addEventListener('pageshow', (e) => {
 .tc-seg-btn {
   flex: 1 1 0;
   min-width: 0;
+  /* Канон тач-таргета ≥44px: замер Radar давал 40px на @360. */
+  min-height: 44px;
   background: transparent;
   border: none;
   color: var(--text-dim);
