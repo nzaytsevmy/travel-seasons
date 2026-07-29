@@ -4,6 +4,7 @@
 // файлы всегда синхронны контенту и имеют актуальную дату.
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { DATA_UPDATED } from '../src/data/meta.js';
+import { NOUN } from '../src/data/plural.js';
 import { HOLIDAYS } from '../src/data/country-holidays.js';
 
 const ROOT = new URL('../', import.meta.url);
@@ -98,7 +99,7 @@ const llms = `# TravelTribe
 
 > Авторский тревел-блог о путешествиях из России в 2026 году. Личный опыт, реальные бюджеты, актуальные визовые правила и сезонность для 70+ направлений. Автор — Никита Зайцев, Telegram @traveltriberu.
 
-Обновлено: ${DATA_UPDATED} · ${posts.length} статей
+Обновлено: ${DATA_UPDATED} · ${posts.length} ${NOUN.post(posts.length)}
 
 Сайт построен как практический справочник для россиян: что работает прямо сейчас, без воды и устаревших советов. Каждый гайд содержит конкретные цифры (визовые сборы, цены, перелёты), пошаговые инструкции и FAQ-блок с прямыми ответами. YMYL-темы (визы, безопасность, деньги) обновляются при изменении правил.
 

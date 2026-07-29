@@ -6,6 +6,7 @@
 // Usage: <CountryMap slug="japan" countryNom="Япония" />
 
 import { getPois } from '../data/country-pois.js';
+import { NOUN } from '../data/plural.js';
 
 interface Props {
   slug: string;
@@ -30,7 +31,7 @@ const TYPE_LABEL: Record<string, string> = {
 <section class="cm" aria-label={`Карта — ${countryNom || slug}`}>
   <header class="cm-h">
     <h2 class="cm-t">Где смотреть{countryNom ? ` — ${countryNom}` : ''}</h2>
-    <span class="cm-meta">{data.visited ? 'Реальный маршрут' : 'Обзорная карта'} · {data.pois.length} точек</span>
+    <span class="cm-meta">{data.visited ? 'Реальный маршрут' : 'Обзорная карта'} · {data.pois.length} {NOUN.point(data.pois.length)}</span>
   </header>
   <p class="cm-s">
     {data.visited
@@ -39,7 +40,7 @@ const TYPE_LABEL: Record<string, string> = {
   </p>
 
   <div class="cm-frame">
-    <div id={mapId} class="cm-map" role="application" aria-roledescription={`Интерактивная карта: ${data.pois.length} точек, ${countryNom || slug}`}></div>
+    <div id={mapId} class="cm-map" role="application" aria-roledescription={`Интерактивная карта: ${data.pois.length} ${NOUN.point(data.pois.length)}, ${countryNom || slug}`}></div>
     <noscript>
       <p class="cm-noscript">Карта требует JavaScript. Координаты точек — в таблице ниже.</p>
     </noscript>
