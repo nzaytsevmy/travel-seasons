@@ -273,3 +273,28 @@ test('hero-обложка: вес варианта под мобайл не вы
   expect(broken, JSON.stringify(broken, null, 2)).toEqual([]);
   expect(heavy, JSON.stringify(heavy, null, 2)).toEqual([]);
 });
+
+test('Аналитика: window.ym никто не перехватывает (счётчик и цели живы)', () => {
+  // 30.07.2026 на проде window.ym не существовало вовсе (hasOwnProperty === false),
+  // хотя tag.js грузился. Обработчик исходящих ссылок защищён проверкой
+  // `"function" == typeof window.ym`, поэтому единственная цель сайта не срабатывала
+  // ни разу. Причина — интеграция partytown с forward:['ym',…]: она подменяет
+  // window.ym пересылкой в Web Worker, куда аналитику намеренно НЕ выносили
+  // (Вебвизору нужен DOM, это записано в комментарии самого Layout.astro).
+  // Скриптов type="text/partytown" в репозитории ноль, то есть воркер грузился впустую.
+  // Ищем именно подключение, а не слово: в Layout.astro осталось упоминание в
+  // комментарии, и оно безвредно.
+  const RE = /~partytown|type=["']?text\/partytown|partytown-sw\.js|partytown-sandbox/i;
+  const bad = files.filter((f) => RE.test(readFileSync(f, 'utf8')));
+  expect(bad.slice(0, 5), `partytown подключён на ${bad.length} стр. — он перехватывает window.ym`).toEqual([]);
+});
+
+test('Аналитика: инлайн-снипет создаёт очередь window.ym до загрузки tag.js', () => {
+  // Без стаба ym(…, 'init', …) на строке ниже падает, и счётчик не инициализируется.
+  const home = join(DIST, 'index.html');
+  const html = readFileSync(home, 'utf8');
+  // Минификатор переименовывает аргументы, поэтому ищем форму, а не буквы:
+  // t[c]=t[c]||function(){(t[c].a=t[c].a||[]).push(arguments)}
+  expect(html).toMatch(/(\w)\[(\w)\]=\1\[\2\]\|\|function\(\)\{\(\1\[\2\]\.a=\1\[\2\]\.a\|\|\[\]\)\.push/);
+  expect(html).toContain('mc.yandex.ru/metrika/tag.js');
+});

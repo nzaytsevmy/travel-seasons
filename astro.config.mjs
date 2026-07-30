@@ -2,7 +2,6 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
 import icon from 'astro-icon';
-import partytown from '@astrojs/partytown';
 import compress from 'astro-compress';
 import brokenLinks from 'astro-broken-links-checker';
 import { readFileSync, readdirSync } from 'node:fs';
@@ -71,13 +70,16 @@ export default defineConfig({
   integrations: [
     mdx(),
     icon({ include: { lucide: ['*'] } }),
-    // Partytown: Я.Метрика + Ahrefs в Web Worker, не main thread.
-    // Освобождает main thread на 200-400 ms (TBT/INP).
-    partytown({
-      config: {
-        forward: ['ym', 'dataLayer.push', 'gtag'],
-      },
-    }),
+    // Partytown снят 30.07.2026. Он был настроен на forward:['ym',…], то есть
+    // подменял window.ym пересылкой в Web Worker — а аналитику в воркер намеренно
+    // НЕ выносили (Вебвизору нужен DOM, об этом прямо сказано в Layout.astro).
+    // Скриптов type="text/partytown" в репозитории не было ни одного, поэтому
+    // воркер грузился впустую: 2582 байта инлайна на каждой из 2339 страниц плюс
+    // два запроса partytown-sandbox-sw.html за визит. Итог проверки на проде:
+    // window.ym не существовал вовсе, а обработчик исходящих ссылок защищён
+    // условием `"function" == typeof window.ym` — единственная цель сайта не
+    // срабатывала ни разу. Сторож от возврата: тест в content-invariants.spec.ts.
+    //
     // astro-compress: минификация HTML/CSS/JS/SVG/JSON на build.
     // -5-15% размер страниц.
     compress({
