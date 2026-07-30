@@ -194,6 +194,44 @@ const title = heading || presetCfg.title;
       return v ? v.split(',').filter(Boolean) : [];
     }
 
+    // Набор фильтров сохраняем отдельным ключом. Ключи галочек (pck:<uid>:<item>)
+    // не трогаем — они уже лежат у людей в браузере.
+    const AXES = ['trip', 'duration', 'who', 'kid', 'transport'];
+    const filtersKey = `pck:${uid}:__filters`;
+
+    function saveFilters() {
+      const state: Record<string, string> = {};
+      for (const a of AXES) {
+        const v = sel(a)?.value;
+        if (v) state[a] = v;
+      }
+      try { localStorage.setItem(filtersKey, JSON.stringify(state)); } catch {}
+      // Дублируем в адрес: так ссылку на свой набор можно отправить себе же на телефон.
+      try {
+        const u = new URL(window.location.href);
+        for (const a of AXES) state[a] ? u.searchParams.set(`pck_${a}`, state[a]) : u.searchParams.delete(`pck_${a}`);
+        history.replaceState(null, '', u);
+      } catch {}
+    }
+
+    // Адрес важнее сохранённого: если человеку прислали ссылку, показываем присланное.
+    function restoreFilters() {
+      let state: Record<string, string> = {};
+      try { state = JSON.parse(localStorage.getItem(filtersKey) || '{}') || {}; } catch {}
+      try {
+        const q = new URL(window.location.href).searchParams;
+        for (const a of AXES) { const v = q.get(`pck_${a}`); if (v) state[a] = v; }
+      } catch {}
+      for (const a of AXES) {
+        const v = state[a];
+        if (!v) continue;
+        const inp = root.querySelector<HTMLInputElement>(
+          `input[name="pck-${a}-${uid}"][value="${CSS.escape(v)}"]`,
+        );
+        if (inp) inp.checked = true;
+      }
+    }
+
     function apply() {
       const trip = sel('trip')?.value || lockedTrip || 'sea';
       const durInput = sel('duration');
@@ -247,7 +285,7 @@ const title = heading || presetCfg.title;
     }
 
     root.querySelectorAll<HTMLInputElement>('input[data-filter]').forEach((inp) =>
-      inp.addEventListener('change', apply),
+      inp.addEventListener('change', () => { saveFilters(); apply(); }),
     );
 
     root.querySelectorAll<HTMLButtonElement>('.pck-btn').forEach((btn) =>
@@ -291,6 +329,7 @@ const title = heading || presetCfg.title;
       }),
     );
 
+    restoreFilters();
     apply();
   }
 
