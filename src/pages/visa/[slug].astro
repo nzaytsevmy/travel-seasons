@@ -322,7 +322,7 @@ const ldJson = {
         <li>
           <strong>Медстраховка.</strong> {d.visa === 'required'
             ? 'Для визы её прикладывают к пакету документов — покрытие обычно от €30 000.'
-            : 'Виза не нужна, но без страховки лечение за границей оплачиваешь из кармана.'} Сравнить полисы: <a href={TP_LINKS.cherehapa} rel="sponsored noopener" target="_blank">Cherehapa</a> — от 70&nbsp;₽/день, оплата картой РФ.
+            : 'Виза не нужна, но без страховки лечение за границей оплачиваешь из кармана.'} Сравнить полисы: <a href={cherehapaTravel(`visa_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Cherehapa</a> — от 70&nbsp;₽/день, оплата картой РФ.
         </li>
         {flightFrom > 0 && d.iata && (
           <li>

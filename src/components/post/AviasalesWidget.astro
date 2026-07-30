@@ -24,13 +24,18 @@ const {
 } = Astro.props;
 
 // Ссылка через tpk.mx-обёртку: трекинг кликов (свежий sub-id на клик) + erid + .ru.
-// destination/origin/sub_id уходят в целевой aviasales.ru-URL через &u=.
+// origin/destination уходят в целевой aviasales.ru-URL через &u=, а МЕТКА — вторым
+// аргументом aviasalesUrl, то есть параметром шортлинка. Раньше метку клали сюда же,
+// в params, и она уезжала внутрь &u=: до лендинга доезжала, а в статистику TP не
+// попадала (проверено 19.07.2026 — за 7 недель записалась ровно одна метка, и та с
+// шортлинка). Из-за этого срезы по страницам были пустыми.
 const params = new URLSearchParams();
 if (origin) params.set('origin_iata', origin);
 if (destination) params.set('destination_iata', destination);
-if (subid) params.set('sub_id', subid);
 const q = params.toString();
-const href = aviasalesUrl(q ? `?${q}` : '');
+// Без явного subid берём метку из адреса страницы — иначе клик уходит безымянным.
+const pageSub = (Astro.url?.pathname || '').replace(/^\/+|\/+$/g, '').replace(/[^a-zA-Z0-9]+/g, '_');
+const href = aviasalesUrl(q ? `?${q}` : '', subid || pageSub || 'home');
 ---
 
 <aside class="tp-cta" aria-label="Поиск билетов через Aviasales">
