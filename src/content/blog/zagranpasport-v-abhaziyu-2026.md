@@ -2,7 +2,7 @@
 title: "Нужен ли загранпаспорт в Абхазию в 2026 — нет, и вот почему"
 description: "Загранпаспорт в Абхазию не нужен: россиян пускают по внутреннему паспорту РФ. Документы для детей, правило для машины и почему загран брать даже вредно."
 pubDate: 2026-07-04
-updatedDate: 2026-07-28
+updatedDate: 2026-07-30
 coverImage: "./_images/abkhazia/ritsa-2.jpg"
 author: "Никита Зайцев"
 tags: ["Абхазия", "Документы", "Безвиз", "2026"]
@@ -85,7 +85,7 @@ sourceType: "compilation"
 
 **Наличные и медицинскую страховку.** Карты в Абхазии почти не принимают, банкоматов мало — валюта российский рубль, везите наличными. А полис ОМС там не работает: медицина для туристов платная, экстренная эвакуация в Сочи обходится в десятки тысяч рублей. <a href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5&sub_id=zagranpasport_abhazia&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F" class="aff-cta" rel="sponsored">Оформить страховку в Абхазию онлайн</a> — пара минут, оплата картой РФ.
 
-Билеты стоит посмотреть заранее: прямой рейс Москва — Сухум летает от ~6 200 ₽, дешевле выходит до Адлера плюс граница. <a href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=zagranpasport_abhazia&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Forigin_iata%3DMOW%26destination_iata%3DSUI" class="aff-cta" rel="sponsored">Сравнить билеты в Сухум и Адлер</a> — все авиакомпании в одной выдаче.
+Билеты стоит посмотреть заранее: прямой рейс Москва — Сухум летает от ~6 200 ₽, дешевле выходит до Адлера плюс граница. <a href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=zagranpasport_abhazia&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Forigin_iata%3DMOW%26destination_iata%3DSUI" class="aff-cta" rel="sponsored">Сравнить билеты в Сухум и Адлер</a> — все авиакомпании в одной выдаче. До Адлера многие едут поездом, это дешевле самолёта и без багажных лимитов: <a href="https://tutu.tpk.mx/f99ezU4z?erid=2Vtzqunoq8B&sub_id=zagranpasport_abhazia&u=https%3A%2F%2Fwww.tutu.ru%2Fpoezda%2F" class="aff-cta" rel="sponsored">Посмотреть расписание поездов</a> — места на юг летом разбирают за месяц-полтора.
 
 ---
 
