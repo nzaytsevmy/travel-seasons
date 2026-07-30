@@ -34,7 +34,14 @@ const { slug, nom, monthIdx = null } = Astro.props;
       const saved = Boolean(t && t.slug === slug);
       if (txt) txt.textContent = saved ? 'Убрать из планов' : 'Хочу сюда';
       btn.classList.toggle('is-saved', saved);
-      if (open) open.hidden = !saved;
+      // Ссылку на дашборд показываем, если сохранено ХОТЬ ЧТО-ТО, а не только эта
+      // страна. Иначе человек, сохранивший Перу и ушедший читать про Грузию,
+      // вернуться к своей поездке не может: других ссылок на /my/ на сайте нет —
+      // ни в шапке, ни в подвале (проверено по dist 30.07.2026: ноль видимых).
+      if (open) {
+        open.hidden = !t;
+        open.textContent = saved ? 'Открыть мою поездку' : 'Моя поездка: ' + (t && t.nom ? t.nom : 'открыть');
+      }
     }
     btn.addEventListener('click', () => {
       const already = current();
