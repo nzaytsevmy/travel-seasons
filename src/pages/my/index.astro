@@ -94,6 +94,13 @@ const title = 'Моя поездка — TravelTribe';
         <p class="myp-line" id="mypPacking"></p>
       </section>
 
+      {/* Шенгенские дни. Показываем, только если человек что-то считал в
+          калькуляторе 90/180 — цифру берём оттуда, а не пересчитываем. */}
+      <section class="myp-section" id="mypSchengenWrap" hidden>
+        <div class="myp-shead"><h2>Шенгенские дни</h2></div>
+        <p class="myp-line" id="mypSchengen"></p>
+      </section>
+
       <section class="myp-section">
         <div class="myp-shead"><h2>Дальше</h2></div>
         <ul class="myp-list" id="mypLinks"></ul>
@@ -143,13 +150,24 @@ const title = 'Моя поездка — TravelTribe';
 
   function fmt(n, cur) { return cur === 'RUB' ? n.toLocaleString('ru-RU') + ' ₽' : '$' + n; }
 
-  function packingHasProgress(slug, monthSlug) {
-    const prefix = `pck:pmu-${slug}-${monthSlug}:`;
+  // Итог сборов пишет сам виджет (ключ __progress) — здесь мы только читаем,
+  // чтобы цифры на дашборде и в чек-листе не разъезжались. Для тех, кто отмечал
+  // пункты до появления этого ключа, остаётся старая проверка «хоть что-то есть».
+  function packingProgress(slug, monthSlug) {
+    const uid = `pmu-${slug}-${monthSlug}`;
+    try {
+      const raw = localStorage.getItem(`pck:${uid}:__progress`);
+      if (raw) {
+        const p = JSON.parse(raw);
+        if (p && typeof p.d === 'number' && typeof p.t === 'number') return p;
+      }
+    } catch {}
+    const prefix = `pck:${uid}:`;
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k && k.startsWith(prefix) && localStorage.getItem(k) === '1') return true;
+      if (k && k.startsWith(prefix) && localStorage.getItem(k) === '1') return { d: null, t: null };
     }
-    return false;
+    return null;
   }
 
   function drawPicker(trips) {
@@ -264,9 +282,30 @@ const title = 'Моя поездка — TravelTribe';
 
       const packEl = document.getElementById('mypPacking');
       const packingUrl = `/packing/${data.slug}/${monthSlug}/`;
-      packEl.innerHTML = packingHasProgress(data.slug, monthSlug)
-        ? `Чек-лист начат ✓ <a href="${packingUrl}">Открыть чек-лист</a>`
-        : `Ещё не открыт. <a href="${packingUrl}">Открыть чек-лист</a>`;
+      const prog = packingProgress(data.slug, monthSlug);
+      const label = !prog
+        ? 'Ещё не открыт.'
+        : prog.d === null
+          ? 'Чек-лист начат ✓'
+          : prog.d >= prog.t
+            ? `Собрано ${prog.d} из ${prog.t} — всё готово ✓`
+            : `Собрано ${prog.d} из ${prog.t}`;
+      packEl.innerHTML = `${label} <a href="${packingUrl}">Открыть чек-лист</a>`;
+
+      // Шенгенские дни — из итога, записанного калькулятором 90/180.
+      const schWrap = document.getElementById('mypSchengenWrap');
+      const schEl = document.getElementById('mypSchengen');
+      let sch = null;
+      try { sch = JSON.parse(localStorage.getItem('eesc:summary:v1') || 'null'); } catch {}
+      if (schWrap && schEl && sch && typeof sch.left === 'number') {
+        const on = sch.check ? ' на ' + new Date(sch.check).toLocaleDateString('ru-RU') : '';
+        schEl.innerHTML = sch.used > 90
+          ? `Превышение: использовано ${sch.used} из 90${on}. <a href="/blog/ees-2026/">Пересчитать</a>`
+          : `Использовано ${sch.used} из 90, осталось ${sch.left}${on}. <a href="/blog/ees-2026/">Пересчитать</a>`;
+        schWrap.hidden = false;
+      } else if (schWrap) {
+        schWrap.hidden = true;
+      }
 
       const linksEl = document.getElementById('mypLinks');
       linksEl.innerHTML = `

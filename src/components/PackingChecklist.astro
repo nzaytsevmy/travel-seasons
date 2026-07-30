@@ -270,6 +270,9 @@ const title = heading || presetCfg.title;
       const done = vis.filter((li) => li.querySelector<HTMLInputElement>('.pck-cb')?.checked).length;
       if (progTxt) progTxt.textContent = `Собрано ${done} из ${vis.length}`;
       if (progBar) progBar.style.width = vis.length ? `${Math.round((done / vis.length) * 100)}%` : '0%';
+      // Итог кладём рядом, чтобы дашборд /my/ показал ту же цифру и не повторял
+      // у себя логику фильтров — иначе числа разойдутся при любой правке правил.
+      try { localStorage.setItem(`pck:${uid}:__progress`, JSON.stringify({ d: done, t: vis.length })); } catch {}
     }
 
     // restore checkbox state

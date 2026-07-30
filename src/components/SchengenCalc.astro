@@ -100,6 +100,15 @@ const { heading = 'Калькулятор дней 90/180' } = Astro.props as Pr
       var left = Math.max(0, 90 - used);
       elUsed.textContent = String(used);
       elLeft.textContent = String(left);
+      // Итог кладём рядом с поездками: дашборд /my/ показывает ту же цифру и не
+      // повторяет у себя расчёт скользящего окна — иначе числа разъедутся.
+      try {
+        if (trips.length) {
+          localStorage.setItem('eesc:summary:v1', JSON.stringify({ used: used, left: left, check: check }));
+        } else {
+          localStorage.removeItem('eesc:summary:v1');
+        }
+      } catch (e) {}
       elUsed.classList.toggle('eesc-over', used > 90);
       if (!trips.length) {
         elMsg.textContent = 'Добавьте хотя бы одну поездку с датами въезда и выезда.';
