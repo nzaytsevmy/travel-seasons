@@ -11,7 +11,7 @@ import { ACTIVITY_TAGS, ACTIVITY_LABEL, ACTIVITY_GEAR } from '../../data/country
 import { PLUG_TYPES, plugAdvice } from '../../data/country-plug-types.js';
 import { getWeatherBucket } from '../../data/country-month-bucket.js';
 import { DATA_UPDATED_RU } from '../../data/meta.js';
-import { TP_LINKS } from '../../data/affiliate.js';
+import { TP_LINKS, aviasalesUrl, cherehapaTravel } from '../../data/affiliate.js';
 
 export async function getStaticPaths() {
   return DIRECTIONS.map((d) => ({ params: { country: d.slug }, props: { d } }));
@@ -123,8 +123,8 @@ const ldJson = {
         <li><strong>Загранпаспорт</strong> — срок действия 6+ месяцев на момент въезда.</li>
         {needsVisa && visa && (<li><strong>Виза/eVisa:</strong> {visa.duration}, {visa.cost}, {visa.timing}. Детали — <a href={`/visa/${d.slug}/`}>на странице визы {d.cases.prep}</a>.</li>)}
         {!needsVisa && (<li><strong>Виза не нужна</strong> — {visa?.duration || 'безвизовый въезд'}, {visa?.timing || 'штамп на границе'}.</li>)}
-        <li><strong>Обратный билет</strong> или бронь выезда (часто проверяют на регистрации). Поиск рейсов — <a href={TP_LINKS.aviasales} target="_blank" rel="sponsored noopener">Aviasales</a> .</li>
-        <li><strong>Страховка</strong> {needsVisa ? '(обязательна для визы)' : '(рекомендую — медпомощь платная)'}. Оформить — <a href={TP_LINKS.cherehapa} target="_blank" rel="sponsored noopener">Cherehapa</a> .</li>
+        <li><strong>Обратный билет</strong> или бронь выезда (часто проверяют на регистрации). Поиск рейсов — <a href={aviasalesUrl('', `packing_${d.slug.replaceAll('-', '_')}`)} target="_blank" rel="sponsored noopener">Aviasales</a> .</li>
+        <li><strong>Страховка</strong> {needsVisa ? '(обязательна для визы)' : '(рекомендую — медпомощь платная)'}. Оформить — <a href={cherehapaTravel(`packing_${d.slug.replaceAll('-', '_')}`)} target="_blank" rel="sponsored noopener">Cherehapa</a> .</li>
         <li><strong>Копии</strong> паспорта и виз в облаке + бумажные отдельно от оригиналов.</li>
       </ul>
     </section>

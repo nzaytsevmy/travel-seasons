@@ -175,7 +175,7 @@ iPhone 14 Pro и новее, Pixel 7 Pro+, Samsung S23 Ultra+ снимают а�
 
 Через Дубай (Emirates, Etihad): Москва → Дубай → Окленд. Около 24 часов в воздухе плюс пересадка, цена **1700–2400 USD** туда-обратно. Самый частый маршрут. Через Доху (Qatar Airways): Москва → Доха → Окленд или Крайстчерч. Чуть дольше — 26 часов, но сервис выше по отзывам Skytrax (Qatar в топ-3 авиакомпаний 2024), **1800–2500 USD**. Через Сингапур (Singapore Airlines): через Стамбул и Сингапур, 30+ часов, дорого, но Singapore Airlines — №1 World's Best Airline по Skytrax 2025. Через Гонконг (Cathay Pacific): через Дубай или Бангкок, 28+ часов, **1600–2200 USD** — иногда самый дешёвый вариант.
 
-Сравнить актуальные цены и пересадки удобнее всего через Aviasales — он агрегирует Emirates, Qatar, Cathay, Singapore Airlines в одной выдаче. <a href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Forigin_iata%3DMOW%26destination_iata%3DAKL" class="aff-cta" rel="sponsored">Найти билет Москва — Окленд</a>: на дальнем маршруте с двумя пересадками агрегатор сравнивает все авиакомпании и стыковки сразу — видно, где разница в цене и где короче пересадка, cookie 30 дней, так что можно мониторить и забронировать позже.
+Сравнить актуальные цены и пересадки удобнее всего через Aviasales — он агрегирует Emirates, Qatar, Cathay, Singapore Airlines в одной выдаче. <a href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=aurora_new_zealand_2026&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Forigin_iata%3DMOW%26destination_iata%3DAKL" class="aff-cta" rel="sponsored">Найти билет Москва — Окленд</a>: на дальнем маршруте с двумя пересадками агрегатор сравнивает все авиакомпании и стыковки сразу — видно, где разница в цене и где короче пересадка, cookie 30 дней, так что можно мониторить и забронировать позже.
 
 ### Внутренние перелёты
 
@@ -205,9 +205,9 @@ iPhone 14 Pro и новее, Pixel 7 Pro+, Samsung S23 Ultra+ снимают а�
 | 6 | Те Анау → Квинстаун (2 ч) | Квинстаун | Резерв на случай облачности |
 | 7 | Квинстаун → перелёт обратно | — | Вылет в Окленд / домой |
 
-Аренда машины — **40–70 USD/день** в Jucy, Apex или Hertz, <a href="https://economybookings.tpk.mx/xlSFNA6p?erid=2VtzqxYvA5V" class="aff-cta" rel="sponsored">сравнить прокат авто в Новой Зеландии</a>: агрегатор сводит локальных и международных прокатчиков с ценой под даты, бронь без предоплаты — без машины охоту за авророй по тёмным точкам не построить. Пробег по маршруту примерно 1500 км. Бензин в НЗ дорогой, заложите ещё ~150 USD на топливо.
+Аренда машины — **40–70 USD/день** в Jucy, Apex или Hertz, <a href="https://economybookings.tpk.mx/xlSFNA6p?erid=2VtzqxYvA5V&sub_id=aurora_new_zealand_2026" class="aff-cta" rel="sponsored">сравнить прокат авто в Новой Зеландии</a>: агрегатор сводит локальных и международных прокатчиков с ценой под даты, бронь без предоплаты — без машины охоту за авророй по тёмным точкам не построить. Пробег по маршруту примерно 1500 км. Бензин в НЗ дорогой, заложите ещё ~150 USD на топливо.
 
-**Где бронировать жильё.** Booking из РФ не проходит, но новозеландские отели и YHA-хостелы есть в Ostrovok — принимает Visa/MC/МИР, программа Guru со скидками до 40%. <a href="https://ostrovok.tpk.mx/xtyTcUcY?erid=2VtzqvE1cv3" class="aff-cta" rel="sponsored">Забронировать жильё в Новой Зеландии</a>
+**Где бронировать жильё.** Booking из РФ не проходит, но новозеландские отели и YHA-хостелы есть в Ostrovok — принимает Visa/MC/МИР, программа Guru со скидками до 40%. <a href="https://ostrovok.tpk.mx/xtyTcUcY?erid=2VtzqvE1cv3&sub_id=aurora_new_zealand_2026" class="aff-cta" rel="sponsored">Забронировать жильё в Новой Зеландии</a>
 
 ---
 

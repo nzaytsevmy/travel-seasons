@@ -105,3 +105,19 @@ export const ostrovokCity = (countrySlug, citySlug, subId) =>
 // нужен) — sub_id вешаем прямо на шортлинк (&sub_id=), как приняла статистика TP 19.07.
 export const otelloStay = (subId) =>
   TP_LINKS.otello + (subId ? `&sub_id=${subId}` : '');
+
+// Суточно: посуточная аренда у частников. Дип-линк по региону — поддомен партнёра
+// (проверено curl 30.07.2026: abkhazia.sutochno.ru → 200, erid и TP-маркер доезжают).
+// Абхазия — крупнейший кластер трафика сайта, а жильё там в основном частный сектор,
+// поэтому Суточно уместнее отельных агрегаторов.
+export const sutochnoRegion = (regionUrl, subId) => tpkDeep('sutochno', regionUrl, subId);
+
+// Туту: поиск поездов (проверено curl 30.07.2026: tutu.ru/poezda/ → 200, erid и метка
+// TP доезжают). URL под конкретный маршрут у Туту не открывается — /poezda/moskva/adler/
+// и rasp.php отдают 404, поэтому ведём на общий поиск и подпись даём соответствующую.
+export const tutuTrains = (subId) => tpkDeep('tutu', 'https://www.tutu.ru/poezda/', subId);
+
+// Островок без города (общий поиск) + постраничная метка. Отдельно от ostrovokCity:
+// там, где страна поездки заранее неизвестна (чек-листы, сборы), город подставить нечего.
+export const ostrovokSearch = (subId) =>
+  TP_LINKS.ostrovok + (subId ? `&sub_id=${subId}` : '');

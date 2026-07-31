@@ -26,24 +26,56 @@ const { slug, nom, monthIdx = null } = Astro.props;
     const nom = btn.dataset.nom || '';
     const txt = btn.querySelector<HTMLElement>('.tsb-txt');
 
+    const MAX = 5;
+
+    // Раньше хранилась ОДНА поездка скаляром в tt_trip, и вторая страна молча
+    // затирала первую. Теперь список в tt_trips, свежие первыми. Старый ключ
+    // читаем при первом запуске и продолжаем писать первой поездкой: у человека
+    // может быть открыта закэшированная страница прошлой сборки, которая знает
+    // только tt_trip.
+    function all(): any[] {
+      try {
+        const raw = localStorage.getItem('tt_trips');
+        if (raw) { const a = JSON.parse(raw); if (Array.isArray(a)) return a; }
+      } catch {}
+      try {
+        const one = JSON.parse(localStorage.getItem('tt_trip') || 'null');
+        if (one && one.slug) { save([one]); return [one]; }
+      } catch {}
+      return [];
+    }
+    function save(list: any[]) {
+      const cut = list.slice(0, MAX);
+      try { localStorage.setItem('tt_trips', JSON.stringify(cut)); } catch {}
+      try {
+        if (cut.length) localStorage.setItem('tt_trip', JSON.stringify(cut[0]));
+        else localStorage.removeItem('tt_trip');
+      } catch {}
+    }
     function current(): any {
-      try { return JSON.parse(localStorage.getItem('tt_trip') || 'null'); } catch { return null; }
+      return all().find((t) => t && t.slug === slug) || null;
     }
     function refresh() {
-      const t = current();
-      const saved = Boolean(t && t.slug === slug);
+      const list = all();
+      const saved = list.some((x) => x && x.slug === slug);
+      const t = list[0] || null;
       if (txt) txt.textContent = saved ? 'Убрать из планов' : 'Хочу сюда';
       btn.classList.toggle('is-saved', saved);
-      if (open) open.hidden = !saved;
+      // Ссылку на дашборд показываем, если сохранено ХОТЬ ЧТО-ТО, а не только эта
+      // страна. Иначе человек, сохранивший Перу и ушедший читать про Грузию,
+      // вернуться к своей поездке не может: других ссылок на /my/ на сайте нет —
+      // ни в шапке, ни в подвале (проверено по dist 30.07.2026: ноль видимых).
+      if (open) {
+        open.hidden = !t;
+        open.textContent = saved ? 'Открыть мою поездку' : 'Моя поездка: ' + (t && t.nom ? t.nom : 'открыть');
+      }
     }
     btn.addEventListener('click', () => {
-      const already = current();
-      if (already && already.slug === slug) {
-        try { localStorage.removeItem('tt_trip'); } catch {}
-      } else {
-        const trip = { slug, nom, monthIdx, days: 7, people: 1, savedAt: Date.now() };
-        try { localStorage.setItem('tt_trip', JSON.stringify(trip)); } catch {}
-      }
+      const list = all();
+      const i = list.findIndex((x) => x && x.slug === slug);
+      if (i >= 0) list.splice(i, 1);
+      else list.unshift({ slug, nom, monthIdx, days: 7, people: 1, savedAt: Date.now() });
+      save(list);
       refresh();
     });
     refresh();
