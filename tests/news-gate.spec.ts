@@ -137,6 +137,11 @@ test('очистка HTML режет скрипты даже с пробелом
   expect(out).toContain('видимый текст');
   expect(out).not.toContain('987654');
 
+  // Закрывающий тег может нести и мусорные атрибуты: «</script foo=bar>» парсер
+  // тоже закроет. Первая версия правки этого не ловила, CodeQL указал точнее.
+  expect(stripHtml('<script>var a=33333;</script\t\n foo=bar>x')).not.toContain('33333');
+  expect(stripHtml('<style>.a{top:44444px}</style bar>y')).not.toContain('44444');
+
   // Обычная форма и атрибуты в открывающем теге тоже не должны ломать очистку.
   expect(stripHtml('<script type="application/ld+json">{"x":11111}</script>a')).not.toContain('11111');
   expect(stripHtml('<style media="print">.a{width:22222px}</style >b')).not.toContain('22222');
