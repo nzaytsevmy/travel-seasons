@@ -63,8 +63,23 @@ jobs:
 
       - name: Deploy
         run: |
+          # Два прохода, и это не перестраховка.
+          # Astro даёт ассетам имя по содержимому (cover.D2h5mlPF_Z1IPP4R.jpg). Любая
+          # пересборка картинки меняет хэш, старый файл пропадает из dist/, и общий
+          # rsync --delete стирал его с сервера. А HTML у людей в браузере лежит в кэше:
+          # на этом хостинге (nginx REG.RU) заголовок Cache-Control для HTML не отдаётся
+          # вовсе — public/_headers это формат Netlify, здесь он не применяется. Итог:
+          # закэшированная страница ссылается на уже удалённый файл и показывает битую
+          # картинку. Именно так 31.07.2026 поехала карточка Roys Peak на главной.
+          # Ассеты неизменяемы по своей природе, поэтому их НЕ удаляем — только досылаем.
+          rsync -avz \
+            -e "ssh -i ~/.ssh/deploy_key" \
+            dist/_astro/ \
+            u3502181@server290.hosting.reg.ru:/var/www/u3502181/data/www/traveltribe.ru/_astro/
+          # Всё остальное синхронизируем с удалением — иначе накопятся страницы-призраки.
           rsync -avz --delete \
             --exclude='.well-known' \
+            --exclude='_astro' \
             -e "ssh -i ~/.ssh/deploy_key" \
             dist/ \
             u3502181@server290.hosting.reg.ru:/var/www/u3502181/data/www/traveltribe.ru/
@@ -78,6 +93,48 @@ jobs:
             [ "$code" = "200" ] || { echo "✖ smoke-check: $url вернул $code"; exit 1; }
           done
           echo "✔ прод отвечает 200 на ключевых маршрутах"
+
+      - name: Проверить, что картинки на проде не битые
+        run: |
+          # Локальный визуал-гейт этот класс поломок не ловит в принципе: там HTML и
+          # файлы всегда из одной сборки. Битые картинки возникают ИМЕННО на проде,
+          # когда страница ссылается на ассет, которого на сервере нет. Поэтому
+          # проверяем живой сайт после выкатки.
+          python3 - <<'PYCHECK'
+          import re, html, sys, urllib.request, urllib.error
+          PAGES = ["/", "/blog/", "/countries/", "/trips/"]
+          bad, checked = [], set()
+          for page in PAGES:
+              url = "https://traveltribe.ru" + page
+              try:
+                  t = urllib.request.urlopen(url, timeout=30).read().decode("utf-8", "replace")
+              except Exception as e:
+                  print("✖ не открылась страница %s: %s" % (page, e)); sys.exit(1)
+              urls = set()
+              for tag in re.findall(r"<img[^>]*>", t):
+                  for attr in ("src", "srcset"):
+                      m = re.search(attr + r'=("([^"]*)"|([^\s>]+))', tag)
+                      if not m: continue
+                      raw = html.unescape(m.group(2) or m.group(3) or "")
+                      for part in raw.split(","):
+                          u = part.strip().split(" ")[0]
+                          if u.startswith("/"): urls.add(u)
+              for u in sorted(urls):
+                  if u in checked: continue
+                  checked.add(u)
+                  try:
+                      code = urllib.request.urlopen(
+                          urllib.request.Request("https://traveltribe.ru" + u, method="HEAD"), timeout=20).status
+                  except urllib.error.HTTPError as e: code = e.code
+                  except Exception as e: code = str(e)[:40]
+                  if code != 200: bad.append((page, code, u))
+          print("проверено картинок: %d" % len(checked))
+          if bad:
+              print("✖ битые картинки на проде:")
+              for page, code, u in bad[:20]: print("   %s  %s  %s" % (code, page, u))
+              sys.exit(1)
+          print("✔ все картинки на ключевых страницах отдаются")
+          PYCHECK
 
       - name: Collect changed files
         id: changed
