@@ -289,6 +289,17 @@ test('Аналитика: window.ym никто не перехватывает (
   expect(bad.slice(0, 5), `partytown подключён на ${bad.length} стр. — он перехватывает window.ym`).toEqual([]);
 });
 
+test('Аналитика: клик в Telegram шлёт свою цель, но канал не метится как рекламный', () => {
+  // 31.07.2026 живой прогон на проде: клик по ссылке t.me не порождал НИ ОДНОЙ цели —
+  // главный канал возврата был невидим в статистике. Очевидный ход (дописать 't.me'
+  // в AFF) не годится: тот же список метит ссылки rel="sponsored" в _refLinksNewTab,
+  // а свой канал не рекламная ссылка. Поэтому отдельный список и отдельная цель.
+  const home = readFileSync(join(DIST, 'index.html'), 'utf8');
+  expect(home, 'нет цели на клик в Telegram').toContain('telegram_click');
+  const affList = home.match(/AFF=\[[^\]]*\]/)?.[0] ?? '';
+  expect(affList, 't.me попал в AFF — ссылки на свой канал получат rel=sponsored').not.toContain('t.me');
+});
+
 test('Аналитика: инлайн-снипет создаёт очередь window.ym до загрузки tag.js', () => {
   // Без стаба ym(…, 'init', …) на строке ниже падает, и счётчик не инициализируется.
   const home = join(DIST, 'index.html');
