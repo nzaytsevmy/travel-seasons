@@ -147,7 +147,10 @@ jobs:
 
           Собрано роботом, отобрано scripts/news-gate.mjs. Разбор отбраковки — в
           логе прогона ${{ github.run_id }}."
-          git push -q origin "HEAD:$BR"
+          # Явный токен в URL: полагаться на креды, сохранённые checkout-ом,
+          # нельзя — первый прогон упал на «Password authentication is not
+          # supported» уже после того, как собрал заметки.
+          git push -q "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:$BR"
           URL=$(gh pr create --base main --head "$BR" \
             --title "content(news): заметки за $(date -u +%d.%m.%Y) ($N)" \
             --body "Автоматический сбор. Каждая заметка прошла \`scripts/news-gate.mjs\`: источник на разрешённом домене и реально отдаёт содержимое, числа найдены на странице первоисточника, дословных совпадений нет, ссылок помимо источников нет, не дубль, оценка не ниже порога.
