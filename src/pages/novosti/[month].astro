@@ -1,0 +1,93 @@
+---
+// /novosti/YYYY-MM/ — архив месяца. Страницы строятся только для месяцев,
+// которые уже ушли из ленты (src/data/news.js), поэтому пересечения контента
+// между /novosti/ и архивом не возникает.
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import NewsItem from '../../components/NewsItem.astro';
+import { getCollection } from 'astro:content';
+import { archiveKeys, entriesOfMonth, monthTitleRu } from '../../data/news.js';
+
+export async function getStaticPaths() {
+  const all = await getCollection('news');
+  return archiveKeys(all).map((month) => ({ params: { month } }));
+}
+
+const { month } = Astro.params;
+const all = await getCollection('news');
+const items = entriesOfMonth(all, month);
+
+const rendered = await Promise.all(
+  items.map(async (entry) => ({ entry, Content: (await entry.render()).Content }))
+);
+
+const others = archiveKeys(all).filter((k) => k !== month);
+const monthRu = monthTitleRu(month);
+const url = `https://traveltribe.ru/novosti/${month}/`;
+const title = `Новости путешествий: ${monthRu.toLowerCase()}`;
+const description = `Что менялось во въездных правилах, доступе к местам и перелётах в ${monthRu.toLowerCase()}. Каждая заметка со ссылкой на первоисточник.`;
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": `${url}#page`,
+      "url": url,
+      "name": title,
+      "description": description,
+      "inLanguage": "ru-RU",
+      "author": { "@id": "https://traveltribe.ru/about/#person" },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Новости", "item": "https://traveltribe.ru/novosti/" },
+        { "@type": "ListItem", "position": 3, "name": monthRu, "item": url },
+      ],
+    },
+  ],
+};
+---
+<Layout title={title} description={description} canonical={url} ldJson={ldJson}>
+  <Breadcrumbs crumbs={[{ label: 'Новости', href: '/novosti/' }, { label: monthRu }]} />
+  <main id="main" class="nv">
+
+    <header class="nv-head">
+      <h1 class="nv-h1">Новости за {monthRu.toLowerCase()}</h1>
+      <p class="nv-lead">
+        Архив: {items.length === 1 ? 'одна заметка' : `${items.length} заметок`} за месяц.
+        Свежее — в <a href="/novosti/">ленте новостей</a>.
+      </p>
+    </header>
+
+    <ol class="nv-list">
+      {rendered.map(({ entry, Content }) => <NewsItem entry={entry} Content={Content} />)}
+    </ol>
+
+    {others.length > 0 && (
+      <section class="nv-section">
+        <h2>Другие месяцы</h2>
+        <ul class="nv-links">
+          {others.map((k) => <li><a href={`/novosti/${k}/`}>{monthTitleRu(k)}</a></li>)}
+        </ul>
+      </section>
+    )}
+
+  </main>
+</Layout>
+
+<style>
+  .nv { max-width: 780px; margin: 0 auto; padding: 0 var(--gutter, 16px) 4rem; }
+  .nv-head { padding-bottom: 1.6rem; }
+  .nv-h1 { font-size: clamp(1.6rem, 4vw, 2.3rem); line-height: 1.15; margin: 0 0 .9rem; }
+  .nv-lead { max-width: 62ch; line-height: 1.6; margin: 0; }
+  .nv-lead a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
+  .nv-list { list-style: none; margin: 0; padding: 0; }
+  .nv-section { border-top: 1px solid var(--line-strong, var(--line)); padding-top: 1.6rem; margin-top: 2.4rem; }
+  .nv-section h2 { font-size: 1.35rem; margin: 0 0 .7rem; scroll-margin-top: 80px; }
+  .nv-links { list-style: none; margin: 0; padding: 0; }
+  .nv-links li { padding: .6rem 0; border-bottom: 1px solid var(--line); font-size: .98rem; }
+  .nv-links a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
+</style>
