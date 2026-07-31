@@ -193,6 +193,24 @@ export function gradeNote(note, minScore) {
 // ── сеть ──────────────────────────────────────────────────────────────────────
 
 /**
+ * Текст страницы без разметки. Закрывающий тег по спецификации HTML может
+ * нести и пробелы, и мусорные атрибуты: «</script >», «</script\t\n bar>» —
+ * всё это валидно и всё это парсер закроет. Регулярка, ждущая ровно
+ * «</script>», такой кусок пропускает, содержимое скрипта утекает в текст, и
+ * число из JS может «подтвердить» заметку, хотя человеку на странице оно не
+ * показано. Поэтому граница по имени тега и любые символы до «>».
+ * Поймано CodeQL (js/bad-tag-filter) — для гейта это дыра, а не придирка.
+ */
+export function stripHtml(html) {
+  return html
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script\b[^>]*>/gi, ' ')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style\b[^>]*>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ');
+}
+
+/**
  * Скачивает источники САМ, а не верит модели. Страница, закрытая от ботов или
  * отдающая пустоту, считается неподтверждающей: факт без проверяемого источника
  * в ленту не идёт.
@@ -209,12 +227,7 @@ export async function fetchSources(note, { timeoutMs = 20000 } = {}) {
       });
       if (!res.ok) return { ok: false, reason: `источник отдал ${res.status}: ${s.url}`, texts };
       const html = await res.text();
-      const text = html
-        .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-        .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-        .replace(/<[^>]+>/g, ' ')
-        .replace(/&nbsp;/g, ' ')
-        .replace(/\s+/g, ' ');
+      const text = stripHtml(html);
       if (text.trim().length < 400) {
         return { ok: false, reason: `на странице нет читаемого текста (JS-only или блок ботов): ${s.url}`, texts };
       }
