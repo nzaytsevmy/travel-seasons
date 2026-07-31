@@ -24,7 +24,7 @@ import BudgetBlock from '../components/BudgetBlock.astro';
 import EssentialsCard from '../components/EssentialsCard.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
 import CountryMap from '../components/CountryMap.astro';
-import { TP_LINKS, aviasalesRoute, otelloStay } from '../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, otelloStay, cherehapaTravel, ostrovokSearch } from '../data/affiliate.js';
 
 // РФ-инвентарь жилья: на этих хабах вместо Островка — Яндекс Путешествия (сильнее по РФ).
 // Подпись к связанному гайду должна отражать РЕАЛЬНЫЙ sourceType статьи:
@@ -416,7 +416,7 @@ if (guide?.itinerary?.length) {
             <div class="sl-shead"><h2>Аренда авто</h2></div>
             <p class="sl-answer">Свои колёса {d.cases.loc} — это свобода маршрута: смотровые, пляжи и деревни, куда автобус не ходит.</p>
             <p class="sl-cta">
-              <a href={TP_LINKS.economybookings} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить цены прокатов {d.cases.loc}</a>
+              <a href={`${TP_LINKS.economybookings}&sub_id=hub_${d.slug}`} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить цены прокатов {d.cases.loc}</a>
 
               <span class="sl-trust">один поиск по нескольким прокатным компаниям</span>
             </p>
@@ -432,7 +432,7 @@ if (guide?.itinerary?.length) {
               {RU_STAY.has(d.slug) ? (
                 <a href={otelloStay(`hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc} на Отелло (2ГИС)</a>
               ) : (
-                <a href={TP_LINKS.ostrovok} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать отель {d.cases.loc} на Островке</a>
+                <a href={ostrovokSearch(`hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать отель {d.cases.loc} на Островке</a>
               )}
 
               <span class="sl-trust">оплата российскими картами · цены в ₽</span>
@@ -466,7 +466,7 @@ if (guide?.itinerary?.length) {
             </ul>
             {guide.insuranceCta && (
               <p class="sl-cta">
-                <a href={TP_LINKS.cherehapa} class="sl-aff" rel="sponsored noopener" target="_blank">Оформить страховку {d.cases.vP}</a>
+                <a href={cherehapaTravel(`hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Оформить страховку {d.cases.vP}</a>
                 
                 <span class="sl-trust">{guide.insuranceNote || 'сравнение цен · оплата картами РФ'}</span>
               </p>
@@ -545,7 +545,7 @@ if (guide?.itinerary?.length) {
         <p class="sl-cta sl-cta--stack">
           <a href={otelloStay(`hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc} на Отелло (2ГИС)</a>
           {CAR_RENTAL.has(d.slug) && (
-            <a href={TP_LINKS.economybookings} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить цены прокатов авто</a>
+            <a href={`${TP_LINKS.economybookings}&sub_id=hub_${d.slug}`} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить цены прокатов авто</a>
           )}
           <span class="sl-trust">оплата российскими картами · цены и отзывы видно до оплаты</span>
         </p>
@@ -593,7 +593,7 @@ if (guide?.itinerary?.length) {
       <p class={`sl-cta ${PACKAGE_TOUR.has(d.slug) ? 'sl-cta--stack' : ''}`}>
         <a href={TP_LINKS.youtravel} class="sl-aff" rel="sponsored noopener" target="_blank">Авторские туры {d.cases.vP}</a>
         {PACKAGE_TOUR.has(d.slug) && (
-          <a href={TP_LINKS.travelata} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить пакетные туры {d.cases.vP}</a>
+          <a href={`${TP_LINKS.travelata}&sub_id=hub_${d.slug}`} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить пакетные туры {d.cases.vP}</a>
         )}
         <span class="sl-trust">маршрут, логистика и малая группа уже собраны</span>
       </p>

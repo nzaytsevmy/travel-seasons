@@ -194,7 +194,8 @@ const finalLd = {
   <!-- Аналитика: базовая Яндекс.Метрика (обезличенная статистика + ПФ) и Ahrefs (cookieless)
        грузятся на production-домене для работы/улучшения Сайта (тот же законный интерес, что
        и техлоги хостинга). ВЕБВИЗОР (детальная запись сессий) — ТОЛЬКО после cookie-согласия
-       (152-ФЗ). На localhost/preview не стартует. Main-thread (не partytown): Вебвизору нужен DOM. -->
+       (152-ФЗ). На localhost/preview не стартует. Только main-thread: Вебвизору нужен DOM,
+       а вынос ym в Web Worker ломает и счётчик, и цели (проверено 30.07.2026). -->
   <script is:inline>
     (function () {
       var h = window.location.hostname;

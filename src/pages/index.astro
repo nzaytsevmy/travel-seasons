@@ -6,7 +6,7 @@ import Layout from '../layouts/Layout.astro';
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import { DIRECTIONS } from '../data/directions.js';
-import { TP_LINKS } from '../data/affiliate.js';
+import { TP_LINKS, aviasalesUrl, ostrovokSearch, cherehapaTravel } from '../data/affiliate.js';
 import { DATA_UPDATED_RU } from '../data/meta.js';
 import authorPhoto from '../assets/author/nikita.jpg';
 
@@ -147,10 +147,10 @@ const ldJson = {
       <div class="gear">
         <div class="gear-h"><h2>Собраться в дорогу</h2></div>
         <div class="gear-grid">
-          <div class="gi"><div class="gl">Билеты</div><div class="gt">Авиабилеты</div><div class="gd">Сравнить цены и поймать дешёвый</div><a class="cta" href={TP_LINKS.aviasales} rel="sponsored noopener" target="_blank">Найти билет</a></div>
-          <div class="gi"><div class="gl">Жильё</div><div class="gt">Отели и апарты</div><div class="gd">Оплата картой РФ, бесплатная отмена</div><a class="cta" href={TP_LINKS.ostrovok} rel="sponsored noopener" target="_blank">Подобрать жильё</a></div>
-          <div class="gi"><div class="gl">Страховка</div><div class="gt">Мед. страховка</div><div class="gd">Под визу и погранусловия</div><a class="cta" href={TP_LINKS.cherehapa} rel="sponsored noopener" target="_blank">Оформить страховку</a></div>
-          <div class="gi"><div class="gl">Авто</div><div class="gt">Прокат авто</div><div class="gd">Местные и международные прокатчики</div><a class="cta" href={TP_LINKS.economybookings} rel="sponsored noopener" target="_blank">Сравнить прокат</a></div>
+          <div class="gi"><div class="gl">Билеты</div><div class="gt">Авиабилеты</div><div class="gd">Сравнить цены и поймать дешёвый</div><a class="cta" href={aviasalesUrl('', 'home')} rel="sponsored noopener" target="_blank">Найти билет</a></div>
+          <div class="gi"><div class="gl">Жильё</div><div class="gt">Отели и апарты</div><div class="gd">Оплата картой РФ, бесплатная отмена</div><a class="cta" href={ostrovokSearch('home')} rel="sponsored noopener" target="_blank">Подобрать жильё</a></div>
+          <div class="gi"><div class="gl">Страховка</div><div class="gt">Мед. страховка</div><div class="gd">Под визу и погранусловия</div><a class="cta" href={cherehapaTravel('home')} rel="sponsored noopener" target="_blank">Оформить страховку</a></div>
+          <div class="gi"><div class="gl">Авто</div><div class="gt">Прокат авто</div><div class="gd">Местные и международные прокатчики</div><a class="cta" href={`${TP_LINKS.economybookings}&sub_id=home`} rel="sponsored noopener" target="_blank">Сравнить прокат</a></div>
           <div class="gi"><div class="gl">Связь</div><div class="gt">eSIM в роуминг</div><div class="gd">Интернет с прилёта, от $5 за неделю</div><a class="cta" href={TP_LINKS.airalo} rel="sponsored noopener" target="_blank">Подключить eSIM</a></div>
           <div class="gi"><div class="gl">Карты</div><div class="gt">Какие карты работают</div><div class="gd">МИР, UnionPay и иностранные — по странам</div><a class="cta" href="/cards/">Проверить карту</a></div>
         </div>
