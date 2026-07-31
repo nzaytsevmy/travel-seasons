@@ -8,6 +8,7 @@ import {
   checkYmylForm,
   checkDedup,
   gradeNote,
+  stripHtml,
 } from '../scripts/news-gate.mjs';
 
 // Гейт ленты /novosti/. Публикация автоматическая, поэтому эти проверки —
@@ -125,4 +126,18 @@ test('оценка ниже порога — отбой', () => {
 test('заметка без источников вообще — отбой', () => {
   const noSrc = { ...baseNote, data: { ...baseNote.data, sources: [] } };
   expect(checkDomains(noSrc, ALLOWED).ok).toBe(false);
+});
+
+test('очистка HTML режет скрипты даже с пробелом в закрывающем теге', () => {
+  // CodeQL js/bad-tag-filter: «</script >» — валидный закрывающий тег. Регулярка
+  // без \s* его пропускала, и содержимое скрипта утекало в «текст страницы»,
+  // где число из JS могло «подтвердить» заметку. Для гейта это дыра, не придирка.
+  const html = '<p>видимый текст</p><script >var secret = 987654;</script ><p>ещё текст</p>';
+  const out = stripHtml(html);
+  expect(out).toContain('видимый текст');
+  expect(out).not.toContain('987654');
+
+  // Обычная форма и атрибуты в открывающем теге тоже не должны ломать очистку.
+  expect(stripHtml('<script type="application/ld+json">{"x":11111}</script>a')).not.toContain('11111');
+  expect(stripHtml('<style media="print">.a{width:22222px}</style >b')).not.toContain('22222');
 });
