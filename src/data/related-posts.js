@@ -8,6 +8,7 @@ export const RELATED_POSTS = {
   'abkhazia': [
     { slug: 'abkhazia-2026', title: 'Абхазия 2026: стоит ли ехать, цены, как добраться', kind: 'guide' },
     { slug: 'zagranpasport-v-abhaziyu-2026', title: 'Нужен ли загранпаспорт в Абхазию — документы на границе', kind: 'visa' },
+    { slug: 'skolko-stoit-nedelya-v-rossii-2026', title: 'Сколько стоит неделя в России и Абхазии 2026: пять направлений', kind: 'guide' },
   ],
   'japan': [
     { slug: 'japan-guide-2026', title: 'Япония 2026: гайд без воды', kind: 'guide' },
@@ -90,18 +91,22 @@ export const RELATED_POSTS = {
   ],
   'kamchatka': [
     { slug: 'kamchatka-guide-2026', title: 'Камчатка 2026: что посмотреть, когда ехать, цены', kind: 'guide' },
+    { slug: 'skolko-stoit-nedelya-v-rossii-2026', title: 'Сколько стоит неделя в России и Абхазии 2026: пять направлений', kind: 'guide' },
   ],
   'dagestan': [
     { slug: 'dagestan-guide-2026', title: 'Отдых в Дагестане 2026: маршрут, цены, без машины', kind: 'guide' },
+    { slug: 'skolko-stoit-nedelya-v-rossii-2026', title: 'Сколько стоит неделя в России и Абхазии 2026: пять направлений', kind: 'guide' },
   ],
   'altai': [
     { slug: 'altai-guide-2026', title: 'Отдых на Алтае 2026: маршрут, цены, когда ехать', kind: 'guide' },
+    { slug: 'skolko-stoit-nedelya-v-rossii-2026', title: 'Сколько стоит неделя в России и Абхазии 2026: пять направлений', kind: 'guide' },
   ],
   'karelia': [
     { slug: 'kareliya-guide-2026', title: 'Карелия 2026: что посмотреть, как добраться, цены', kind: 'guide' },
     { slug: 'gornyy-park-ruskeala-2026', title: 'Горный парк Рускеала 2026: билеты, как добраться', kind: 'guide' },
     { slug: 'ostrov-kizhi-2026', title: 'Остров Кижи 2026: метеор, билеты, что посмотреть', kind: 'guide' },
     { slug: 'ostrov-valaam-2026', title: 'Остров Валаам 2026: как добраться, монастырь', kind: 'guide' },
+    { slug: 'skolko-stoit-nedelya-v-rossii-2026', title: 'Сколько стоит неделя в России и Абхазии 2026: пять направлений', kind: 'guide' },
   ],
   'morocco': [
     { slug: 'morocco-guide-2026', title: 'Марокко 2026: безвиз 90 дней, маршрут, цены', kind: 'guide' },
