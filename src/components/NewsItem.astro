@@ -1,0 +1,64 @@
+---
+// Одна заметка ленты /novosti/. Общая для ленты и для архива месяца, чтобы
+// разметка и микроразметка не разъехались между двумя шаблонами.
+//
+// Картинок у заметок нет сознательно: чужие фото — авторские права, а
+// сгенерированные к новости — фальшь. Карточка типографская.
+import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu } from '../data/news.js';
+import { bySlug } from '../data/directions.js';
+
+const { entry, Content } = Astro.props;
+const d = entry.data;
+const countryName = (slug) => bySlug(slug)?.cases?.nom ?? slug;
+---
+<li class="nv-item" id={entry.slug}>
+  <div class="nv-meta">
+    <time datetime={d.date.toISOString().slice(0, 10)}>{formatDateRu(d.date)}</time>
+    <span class="nv-topic">{TOPIC_LABEL[d.topic]}</span>
+    {d.impact === 'high' && <span class="nv-impact">{IMPACT_LABEL.high}</span>}
+    {d.status && <span class="nv-status">{d.status}</span>}
+  </div>
+
+  <h2 class="nv-title">{d.title}</h2>
+  <div class="nv-body"><Content /></div>
+
+  {/* Разделители склеиваем без переносов строк: JSX сохраняет пробелы между
+      выражениями, и «источник , источник» получает пробел перед запятой. */}
+  <p class="nv-refs">
+    {d.countries.length > 0 && (
+      <span class="nv-refs-group">Разбор: {d.countries.map((s, i) => (
+        <Fragment>{i > 0 ? ', ' : ''}<a href={`/visa/${s}/`}>{countryName(s)}</a></Fragment>
+      ))}</span>
+    )}
+    <span class="nv-refs-group">Источник: {d.sources.map((src, i) => (
+      <Fragment>{i > 0 ? ', ' : ''}<a href={src.url} rel="nofollow noopener" target="_blank">{src.name}</a></Fragment>
+    ))}</span>
+    <span class="nv-refs-group nv-checked">Сверено {formatDateRu(d.checked)}</span>
+  </p>
+</li>
+
+<style>
+  .nv-item { border-top: 1px solid var(--line-strong, var(--line)); padding: 1.5rem 0; scroll-margin-top: 80px; }
+
+  .nv-meta { display: flex; flex-wrap: wrap; gap: .5rem .9rem; align-items: baseline;
+             font-size: .74rem; letter-spacing: .06em; text-transform: uppercase;
+             color: var(--text-faint); margin-bottom: .5rem; }
+  .nv-impact { color: var(--gold); font-weight: 700; }
+  .nv-status { color: var(--text-dim); text-transform: none; letter-spacing: 0; font-size: .8rem; }
+
+  .nv-title { font-size: 1.2rem; line-height: 1.3; margin: 0 0 .55rem; scroll-margin-top: 80px; }
+  .nv-body { max-width: 62ch; line-height: 1.6; }
+  .nv-body :global(p) { margin: 0 0 .7rem; }
+  .nv-body :global(a) { color: var(--text); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
+  .nv-body :global(a:hover) { color: var(--gold); }
+
+  .nv-refs { display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; font-size: .85rem;
+             color: var(--text-dim); margin: 0; }
+  .nv-refs a { color: var(--text); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
+  .nv-refs a:hover { color: var(--gold); }
+  .nv-checked { color: var(--text-faint); }
+
+  @media (max-width: 700px) {
+    .nv-refs { flex-direction: column; gap: .25rem; }
+  }
+</style>

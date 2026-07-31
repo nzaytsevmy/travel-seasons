@@ -25,4 +25,34 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { blog };
+// Лента новостей /novosti/. Заметка — не отдельная страница, а пункт ленты:
+// 2–4 заметки в день с личным URL дали бы ~1000 тонких страниц в год, а это
+// прямой риск фильтра за малополезные страницы на весь домен.
+//
+// ПРАВИЛА ВЕДЕНИЯ (те же, что у ленты изменений в src/data/visa-changes.js —
+// нарушение делает ленту бесполезной):
+//  1. `sources` — только первоисточник: МИД, посольство, авиавласти, нацпарк,
+//     перевозчик, научный институт. Медиа допустимо как наводка «где искать»,
+//     но факт берётся у того, кто его объявил.
+//  2. `date` — дата САМОГО события, `checked` — когда мы сверили факт руками.
+//  3. Не писать волатильный статус, который протухнет за дни.
+//  4. `status` обязателен для темы visa: путать «действует» и «принято, но не
+//     вступило» опаснее всего — человек планирует поездку по правилу, которого
+//     ещё нет.
+const news = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    checked: z.coerce.date(),
+    topic: z.enum(['visa', 'nature', 'transport']),
+    impact: z.enum(['high', 'medium']).default('medium'),
+    // Оценка по news/RUBRIC.md, её ставит вторая модель. Ниже minScore не публикуем.
+    score: z.number().min(0).max(5),
+    status: z.enum(['действует', 'принято, не вступило', 'отменено']).optional(),
+    countries: z.array(z.string()).default([]),
+    sources: z.array(z.object({ name: z.string(), url: z.string().url() })).min(1),
+  }),
+});
+
+export const collections = { blog, news };
