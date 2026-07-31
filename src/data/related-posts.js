@@ -64,10 +64,16 @@ export const RELATED_POSTS = {
     { slug: 'peru-guide-2026', title: 'Перу 2026 — соседний маршрут (Мачу-Пикчу)', kind: 'guide' },
     { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
   ],
+  'argentina': [
+    { slug: 'patagonia-2026', title: 'Патагония своим ходом: Фицрой, Перито-Морено и переход в Чили', kind: 'guide' },
+    { slug: 'chile-guide-2026', title: 'Чили 2026: Патагония и Атакама за $1500, безвиз', kind: 'guide' },
+    { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
+  ],
   'chile': [
     { slug: 'chile-guide-2026', title: 'Чили 2026: Патагония и Атакама за $1500, безвиз', kind: 'guide' },
     { slug: 'peru-guide-2026', title: 'Перу 2026 — соседний маршрут (Мачу-Пикчу)', kind: 'guide' },
     { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
+    { slug: 'patagonia-2026', title: 'Патагония своим ходом: Фицрой, Перито-Морено и переход в Чили', kind: 'guide' },
   ],
   'peru': [
     { slug: 'peru-guide-2026', title: 'Перу 2026 россиянам: 12 дней за $1200, Мачу-Пикчу', kind: 'guide' },
