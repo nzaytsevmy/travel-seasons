@@ -53,6 +53,7 @@ export const RELATED_POSTS = {
   ],
   'ecuador': [
     { slug: 'galapagos-2026', title: 'Галапагосы 2026: что я видел и сколько стоит', kind: 'guide' },
+    { slug: 'amazonia-ecuador-2026', title: 'Амазония после Галапагосов: джунгли Эквадора, цены и кого видно', kind: 'guide' },
   ],
   'new-zealand': [
     { slug: 'aurora-new-zealand-2026', title: 'Южное сияние в Новой Зеландии 2026', kind: 'guide' },
