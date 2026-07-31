@@ -1,0 +1,149 @@
+---
+// /novosti/ — лента новостей о путешествиях, природе и правилах въезда.
+//
+// Заметка — пункт ленты, а не своя страница: 2–4 заметки в день с личным URL
+// дали бы ~1000 тонких страниц в год. Прошедшие месяцы уезжают в /novosti/YYYY-MM/,
+// здесь остаётся всё, что ещё не заархивировано (см. src/data/news.js — граница
+// намеренно по концу месяца, чтобы не возникло дня, когда заметка не видна нигде).
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import NewsItem from '../../components/NewsItem.astro';
+import { getCollection } from 'astro:content';
+import { freshEntries, archiveKeys, monthTitleRu, formatDateRu } from '../../data/news.js';
+
+const all = await getCollection('news');
+const fresh = freshEntries(all);
+const archives = archiveKeys(all);
+
+const rendered = await Promise.all(
+  fresh.map(async (entry) => ({ entry, Content: (await entry.render()).Content }))
+);
+
+const url = 'https://traveltribe.ru/novosti/';
+const title = 'Новости путешествий 2026: визы, природа, транспорт';
+const description = 'Что произошло за последние дни: изменения въездных правил, новости нацпарков и дикой природы, доступ к местам и перелёты. Каждая заметка со ссылкой на первоисточник.';
+
+const lastChecked = fresh.length ? fresh[0].data.checked : null;
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "CollectionPage",
+      "@id": `${url}#page`,
+      "url": url,
+      "name": title,
+      "description": description,
+      "inLanguage": "ru-RU",
+      ...(lastChecked ? { "dateModified": lastChecked.toISOString().slice(0, 10) } : {}),
+      "author": { "@id": "https://traveltribe.ru/about/#person" },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Новости", "item": url },
+      ],
+    },
+    {
+      "@type": "ItemList",
+      "itemListElement": fresh.map((e, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "name": e.data.title,
+      })),
+    },
+  ],
+};
+---
+<Layout title={title} description={description} canonical={url} ldJson={ldJson}>
+  <Breadcrumbs crumbs={[{ label: 'Новости' }]} />
+  <main id="main" class="nv">
+
+    <header class="nv-head">
+      <h1 class="nv-h1">Новости путешествий</h1>
+      <p class="nv-lead">
+        Короткие заметки о том, что меняется прямо сейчас: въездные правила, доступ
+        к местам и перелёты, а ещё находки о дикой природе, ради которых, собственно,
+        и едут. Каждый факт беру у того, кто его объявил, и ссылку оставляю рядом,
+        чтобы можно было проверить самому.
+      </p>
+      <p class="nv-byline">
+        Ведёт <a href="/about/">Никита Зайцев</a>
+        {lastChecked && <Fragment> · последняя проверка: {formatDateRu(lastChecked)}</Fragment>} ·
+        <a href="/novosti/rss.xml">RSS</a>
+      </p>
+    </header>
+
+    {rendered.length > 0 ? (
+      <ol class="nv-list">
+        {rendered.map(({ entry, Content }) => <NewsItem entry={entry} Content={Content} />)}
+      </ol>
+    ) : (
+      <p class="nv-empty">
+        Свежих заметок пока нет. Так бывает: если за день не случилось ничего, что
+        меняет чьи-то планы, я ничего не публикую.
+      </p>
+    )}
+
+    {archives.length > 0 && (
+      <section class="nv-section">
+        <h2>Архив</h2>
+        <ul class="nv-links">
+          {archives.map((k) => (
+            <li><a href={`/novosti/${k}/`}>{monthTitleRu(k)}</a></li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <section class="nv-section">
+      <h2>Что сюда попадает, а что нет</h2>
+      <p class="nv-what">
+        Попадает то, что меняет чьи-то планы (правило въезда, сбор, закрытие или
+        открытие места, отмена рейсов) и то, что просто удивительно и про природу.
+        Не попадает: подборки «топ-10», рейтинги, опросы, маркетинговые релизы
+        и внутренняя кухня турбизнеса. Не попадает и то, что протухнет за неделю.
+      </p>
+      <p class="nv-what">
+        Источник у каждой заметки — тот, кто объявил факт: министерство, посольство,
+        авиавласти, администрация парка, научный институт. Отраслевые издания я читаю,
+        но как наводку, где искать, а не как источник цифры. Поисковой выдаче и блогам
+        не верю: на них уже ловились ошибки.
+      </p>
+    </section>
+
+    <section class="nv-section">
+      <h2>Куда дальше</h2>
+      <ul class="nv-links">
+        <li><a href="/izmeneniya/">Изменения въездных правил</a> — разобранная хронология, а не лента</li>
+        <li><a href="/visa/">Визы по странам</a> — что нужно и сколько стоит</li>
+        <li><a href="/blog/">Блог</a> — длинные разборы поездок со своими фото</li>
+        <li><a href="https://t.me/traveltriberu" rel="noopener" target="_blank">@traveltriberu</a> — то же самое, только в телеграме</li>
+      </ul>
+    </section>
+
+  </main>
+</Layout>
+
+<style>
+  .nv { max-width: 780px; margin: 0 auto; padding: 0 var(--gutter, 16px) 4rem; }
+
+  .nv-head { padding-bottom: 1.6rem; }
+  .nv-h1 { font-size: clamp(1.6rem, 4vw, 2.3rem); line-height: 1.15; margin: 0 0 .9rem; }
+  .nv-lead { max-width: 62ch; line-height: 1.6; margin: 0 0 1rem; }
+  .nv-byline { font-size: .85rem; color: var(--text-dim); margin: 0; }
+  .nv-byline a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
+
+  .nv-list { list-style: none; margin: 0; padding: 0; }
+  .nv-empty { max-width: 62ch; line-height: 1.6; color: var(--text-dim);
+              border-top: 1px solid var(--line-strong, var(--line)); padding-top: 1.5rem; }
+
+  .nv-section { border-top: 1px solid var(--line-strong, var(--line)); padding-top: 1.6rem; margin-top: 2.4rem; }
+  .nv-section h2 { font-size: 1.35rem; margin: 0 0 .7rem; scroll-margin-top: 80px; }
+  .nv-what { max-width: 62ch; line-height: 1.6; margin: 0 0 .7rem; }
+
+  .nv-links { list-style: none; margin: 0; padding: 0; }
+  .nv-links li { padding: .6rem 0; border-bottom: 1px solid var(--line); font-size: .98rem; }
+  .nv-links a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
+</style>

@@ -17,7 +17,10 @@ export async function GET(context) {
       // Дата события, а не публикации: читателю важно, когда изменилось правило.
       pubDate: new Date(`${c.date}T09:00:00Z`),
       description: `${c.status.charAt(0).toUpperCase()}${c.status.slice(1)} · ${formatDateRu(c.date)}. ${c.what}`,
-      link: `/izmeneniya/#${c.id}`,
+      // Абсолютный URL: при trailingSlash:'always' слэш дописывается в конец
+      // строки, то есть после якоря («#id/»), и подписчик попадает на верх
+      // страницы, а не на пункт, ради которого кликнул.
+      link: new URL('/izmeneniya/', context.site).href + `#${c.id}`,
     })),
   });
 }
