@@ -52,3 +52,4 @@
 | altai.jpg | Алтай — Чуйский тракт, серпантин | [Pexels 33805577](https://www.pexels.com/photo/33805577/) | — | Pexels License |
 | blog/_images/dagestan-cover.jpg | Дагестан — катера на Сулаке (обложка пиллара) | [Pexels 8577817](https://www.pexels.com/photo/8577817/) | Adam Khasbulatov | Pexels License |
 | blog/_images/goa/cover.jpg | Гоа — закат на Палолеме (обложка пиллара) | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:A_Perfect_Evening_(87407161).jpeg) | Alexandre Ultré | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) — атрибуция обязательна |
+| blog/_images/week-cost/cover.jpg | Абхазия — побережье Гагры (обложка сравнения цен) | [Pexels 28302994](https://www.pexels.com/photo/28302994/) | — | Pexels License |
