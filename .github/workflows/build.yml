@@ -40,7 +40,17 @@ jobs:
           # "src/content/\320\262..." — строка начинается с кавычки, grep '^src/' мимо,
           # и файл с кириллическим слагом молча минует гейт целиком.
           CHANGED=$(git -c core.quotePath=false diff --name-only "$BASE_SHA" "$HEAD_SHA")
-          CONTENT=$(echo "$CHANGED" | grep -E '^src/(content|data)/' | grep -vE '^src/(data/(prices-cache\.json|meta\.js|affiliate\.js|related-posts\.js|visa-changes\.js|news\.js|news-images\.js)|content/config\.ts)$' | grep -vE '^src/content/news/' || true)
+          # ⛔ ЧЁРНОГО СПИСКА БОЛЬШЕ НЕТ. Он правился шесть раз за историю репозитория:
+          # каждый новый служебный файл ронял CI, пока кто-то руками не дописывал
+          # сюда очередную регулярку. Это была не защита, а ловушка для следующего.
+          # Теперь наоборот: файл САМ объявляет, что несёт датированную фактуру, —
+          # меткой «@freshness: DATA_UPDATED» в шапке (для JSON рядом кладётся файл
+          # <имя>.freshness). Нет метки — значит плумбинг, и бампать за него нечего.
+          # Новый файл в src/data/ больше не роняет сборку и не требует правок гейта.
+          #
+          # Заметки ленты (src/content/news/) сюда не попадают по построению: у них
+          # своя `date` и своя `checked`, обе видны читателю в карточке.
+          CONTENT=$(echo "$CHANGED" | grep -E '^src/(content/blog|data)/' || true)
           # У поста и у программных данных РАЗНЫЕ носители свежести, гейт их не смешивает:
           #  • пост  → его собственный updatedDate (из неё astro.config.mjs берёт sitemap
           #    lastmod — там прямо сказано, что иначе sitemap инфлирует свежесть всех URL);
@@ -138,6 +148,13 @@ jobs:
                       ;;
                   esac
                   ;;
+                (src/data/*)
+                  # Метка внутри файла решает: фактура или плумбинг.
+                  if ! { grep -q '@freshness: DATA_UPDATED' "$f" 2>/dev/null \
+                         || [ -f "${f%.*}.freshness" ]; }; then
+                    continue
+                  fi
+                  case "$f" in
                 (src/data/directions.js)
                   # В directions.js лежит и фактура (цены/визы/сезоны), и перелинковка
                   # «хаб → блог-гайд». Добавление ссылки на статью фактуру не трогает,
@@ -152,6 +169,8 @@ jobs:
                   fi
                   ;;
                 (*) printf 'DATA %s\n' "$f" ;;
+                  esac
+                  ;;
               esac
             done <<< "$CONTENT"
           ) || { echo "✖ не удалось прочитать git diff — гейт не может судить о свежести"; exit 1; }
