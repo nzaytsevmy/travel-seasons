@@ -154,6 +154,16 @@ jobs:
                          || [ -f "${f%.*}.freshness" ]; }; then
                     continue
                   fi
+                  # Появление самой метки — не правка фактуры. Иначе получается
+                  # курица и яйцо: размечаешь файлы и обязан заявить проверку
+                  # данных, которой не делал. Тот же приём, что для партнёрских
+                  # ссылок: если в диффе нет ничего, кроме строк метки, — пропускаем.
+                  DDIFF=$(git -c core.quotePath=false diff -U0 "$BASE_SHA" "$HEAD_SHA" -- "$f" \
+                          | grep -E '^[+-]' | grep -vE '^(\+\+\+|---)' || true)
+                  if [ -n "$DDIFF" ] && ! printf '%s\n' "$DDIFF" \
+                       | grep -qvE '^[+-]//( @freshness: DATA_UPDATED|   )'; then
+                    continue
+                  fi
                   case "$f" in
                 (src/data/directions.js)
                   # В directions.js лежит и фактура (цены/визы/сезоны), и перелинковка
