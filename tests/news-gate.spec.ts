@@ -11,6 +11,8 @@ import {
   stripHtml,
   checkDepthLink,
   checkTldr,
+  checkOwnPhoto,
+  loadPublished,
 } from '../scripts/news-gate.mjs';
 
 // Гейт ленты /novosti/. Публикация автоматическая, поэтому эти проверки —
@@ -115,13 +117,10 @@ test('визовая заметка без честного статуса — �
   expect(checkYmylForm(baseNote).ok).toBe(true);
 });
 
-test('дубль по источнику или по заголовку — отбой', () => {
+test('дубль по заголовку — отбой', () => {
   const published = [
-    { title: 'Нумбата понизили в Красном списке', sources: ['https://iucn.org/press-release/x'] },
+    { slug: 'a', title: 'Нумбата понизили в Красном списке', sources: ['https://iucn.org/press-release/x'] },
   ];
-  const sameSource = { ...baseNote, data: { ...baseNote.data, title: 'Совсем другой заголовок' } };
-  expect(checkDedup(sameSource, published).ok).toBe(false);
-
   const sameTitle = { ...baseNote, data: { ...baseNote.data,
     title: '  нумбата  ПОНИЗИЛИ в красном списке ',
     sources: [{ name: 'IUCN', url: 'https://iucn.org/press-release/other' }] } };
@@ -131,6 +130,43 @@ test('дубль по источнику или по заголовку — от
     title: 'Другая новость про другое',
     sources: [{ name: 'IUCN', url: 'https://iucn.org/press-release/other' }] } };
   expect(checkDedup(fresh, published).ok).toBe(true);
+});
+
+// Раньше правило было «тот же источник = дубль», и оно било по живым заметкам:
+// нумбат и пустынная лягушка пришли из ОДНОГО обновления Красного списка, но это
+// две разные новости. Теперь общий источник сам по себе не приговор — дубль
+// только если вдобавок совпадает больше половины значимых слов заголовка.
+test('один пресс-релиз даёт две разные новости — пропускаем, а повтор ловим', () => {
+  const published = [
+    { slug: 'numbat', title: 'Нумбата понизили в Красном списке', sources: ['https://iucn.org/press-release/x'] },
+  ];
+  const otherStory = { ...baseNote, data: { ...baseNote.data,
+    title: 'Пустынную лягушку впервые внесли в Красный список' } };
+  expect(checkDedup(otherStory, published).ok).toBe(true);
+
+  const rewordedSame = { ...baseNote, data: { ...baseNote.data,
+    title: 'Нумбата понизили в списке Красном' } };
+  expect(checkDedup(rewordedSame, published).ok).toBe(false);
+});
+
+// Заметка без своего снимка неизбежно берёт запасной кадр из архива по теме, а
+// он у соседних заметок одной темы один и тот же — так в ленте и оказались три
+// одинаковые картинки подряд.
+test('заметка без своего снимка — отбой', () => {
+  expect(checkOwnPhoto(baseNote).ok).toBe(false);
+  const withPhoto = { ...baseNote, data: { ...baseNote.data, image: './_images/x.jpg' } };
+  expect(checkOwnPhoto(withPhoto).ok).toBe(true);
+});
+
+// Дедуп сравнивает заметку со списком уже опубликованного, и робот кладёт
+// свежие заметки в ту же папку. Без `slug` вызывающий не может исключить
+// заметку из сравнения с самой собой — и тогда каждая заметка сама себе дубль.
+test('список опубликованного помечает заметки slug-ом', () => {
+  const published = loadPublished(process.cwd());
+  expect(published.length).toBeGreaterThan(0);
+  const fromFeed = published.filter((p) => p.slug);
+  expect(fromFeed.length).toBeGreaterThan(0);
+  expect(new Set(fromFeed.map((p) => p.slug)).size).toBe(fromFeed.length);
 });
 
 test('оценка ниже порога — отбой', () => {
