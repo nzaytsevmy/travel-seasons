@@ -40,7 +40,7 @@ jobs:
           # "src/content/\320\262..." — строка начинается с кавычки, grep '^src/' мимо,
           # и файл с кириллическим слагом молча минует гейт целиком.
           CHANGED=$(git -c core.quotePath=false diff --name-only "$BASE_SHA" "$HEAD_SHA")
-          CONTENT=$(echo "$CHANGED" | grep -E '^src/(content|data)/' | grep -vE '^src/(data/(prices-cache\.json|meta\.js|affiliate\.js|related-posts\.js|visa-changes\.js|news\.js)|content/config\.ts)$' || true)
+          CONTENT=$(echo "$CHANGED" | grep -E '^src/(content|data)/' | grep -vE '^src/(data/(prices-cache\.json|meta\.js|affiliate\.js|related-posts\.js|visa-changes\.js|news\.js|news-images\.js)|content/config\.ts)$' | grep -vE '^src/content/news/' || true)
           # У поста и у программных данных РАЗНЫЕ носители свежести, гейт их не смешивает:
           #  • пост  → его собственный updatedDate (из неё astro.config.mjs берёт sitemap
           #    lastmod — там прямо сказано, что иначе sitemap инфлирует свежесть всех URL);
@@ -56,6 +56,13 @@ jobs:
           # дата нашей сверки (`checked`), они и показываются читателю. DATA_UPDATED
           # описывает срез цен и визовых таблиц, а не хронологию — требовать его бамп
           # за добавление одной записи в ленту значит врать о пересмотре всех данных.
+          # src/content/news/** исключён по логике visa-changes.js: заметка ленты
+          # несёт свежесть САМА. У каждой своя `date` (когда событие произошло) и
+          # своя `checked` (когда мы сверили факт), и обе видны читателю прямо в
+          # карточке. Требовать сверх этого updatedDate — значит просить третью
+          # дату, которой в схеме нет и которая читателю ничего не добавит.
+          # news-images.js — подбор иллюстрации по стране и теме, не фактура цен
+          # и виз; бампать за него «данные проверены на дату X» было бы враньём.
           # news.js и content/config.ts исключены по той же причине, что meta.js:
           # это схема коллекции и хелперы формата даты, а не датированная фактура.
           # Бампать за них DATA_UPDATED значило бы заявить читателю «цены и визовые
