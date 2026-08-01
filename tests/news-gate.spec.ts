@@ -9,6 +9,8 @@ import {
   checkDedup,
   gradeNote,
   stripHtml,
+  checkDepthLink,
+  checkTldr,
 } from '../scripts/news-gate.mjs';
 
 // Гейт ленты /novosti/. Публикация автоматическая, поэтому эти проверки —
@@ -83,6 +85,19 @@ test('заявленное число не найдено на странице 
   expect(checkCorroboration('Численность выросла до 9500 особей', [page]).ok).toBe(false);
 });
 
+test('год не считается заявленным фактом и не валит заметку', () => {
+  // Живой прогон 01.08.2026 отбраковал верную заметку про перепись тигров: «2025»
+  // не нашлось на странице, потому что источник писал «this year». Год — контекст
+  // фразы, а не цифра, которую заметка утверждает.
+  const page = 'Nepal completed its tiger census this year, counting 355 individuals.';
+  expect(checkCorroboration('Перепись 2025 года насчитала 355 тигров', [page]).ok).toBe(true);
+
+  // Настоящие числа проверяться не перестают.
+  expect(checkCorroboration('Перепись 2025 года насчитала 999 тигров', [page]).ok).toBe(false);
+  // И четырёхзначное не-годом остаётся под проверкой.
+  expect(checkCorroboration('Мостки длиной 2750 метров', [page]).ok).toBe(false);
+});
+
 test('волатильная формулировка — отбой', () => {
   const volatile1 = { ...baseNote, body: 'Аэропорт сегодня работает штатно, задержек нет.' };
   expect(checkVolatility(volatile1).ok).toBe(false);
@@ -145,4 +160,32 @@ test('очистка HTML режет скрипты даже с пробелом
   // Обычная форма и атрибуты в открывающем теге тоже не должны ломать очистку.
   expect(stripHtml('<script type="application/ld+json">{"x":11111}</script>a')).not.toContain('11111');
   expect(stripHtml('<style media="print">.a{width:22222px}</style >b')).not.toContain('22222');
+});
+
+test('заметка-тупик без ссылки вглубь сайта — отбой', () => {
+  // Яндекс даёт поведенческим 30–45% формулы, а 92% трафика сайта оттуда.
+  // Заметка, из которой некуда идти, гонит человека обратно в выдачу — это
+  // прямой минус, а не нейтральный исход.
+  const deadEnd = { ...baseNote, body: 'Текст без единой ссылки на свои страницы.' };
+  expect(checkDepthLink(deadEnd).ok).toBe(false);
+
+  const linked = { ...baseNote, body: 'Подробности в [гиде по Чили](/blog/chile-guide-2026/).' };
+  expect(checkDepthLink(linked).ok).toBe(true);
+
+  // Ссылка на внешний источник вглубь сайта не ведёт и не считается.
+  const external = { ...baseNote, body: 'Смотри [первоисточник](https://iucn.org/press-release/x).' };
+  expect(checkDepthLink(external).ok).toBe(false);
+
+  // Ссылка на саму ленту — тоже не «вглубь», это круг на месте.
+  const selfLoop = { ...baseNote, body: 'Ещё в [ленте](/novosti/).' };
+  expect(checkDepthLink(selfLoop).ok).toBe(false);
+});
+
+test('капсула-ответ обязательна и уложена в 40–60 слов', () => {
+  const ok = { ...baseNote, data: { ...baseNote.data,
+    tldr: 'Сорок слов ровно столько сколько нужно чтобы ответить сразу и не заставлять читателя искать ответ в теле заметки потому что именно эту капсулу извлекает нейроответ и по ней человек решает читать ли дальше а значит она обязана нести суть' } };
+  expect(checkTldr(ok).ok).toBe(true);
+
+  expect(checkTldr({ ...baseNote, data: { ...baseNote.data, tldr: undefined } }).ok).toBe(false);
+  expect(checkTldr({ ...baseNote, data: { ...baseNote.data, tldr: 'Слишком коротко.' } }).ok).toBe(false);
 });

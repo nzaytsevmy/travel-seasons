@@ -1,3 +1,6 @@
+// @freshness: DATA_UPDATED — файл несёт датированную фактуру (цены, правила,
+//   погода). Правишь его — бампни DATA_UPDATED в meta.js, иначе подпись
+//   «данные проверены на дату X» соврёт. Гейт свежести ищет именно эту метку.
 // POI (Points of Interest) для CountryMap.astro.
 // Координаты в WGS84. center/zoom — для bbox карты OSM.
 //
