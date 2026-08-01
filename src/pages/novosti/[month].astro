@@ -63,7 +63,7 @@ const ldJson = {
     </header>
 
     <ol class="nv-list">
-      {rendered.map(({ entry, Content }) => <NewsItem entry={entry} Content={Content} />)}
+      {rendered.map(({ entry, Content }, i) => <NewsItem entry={entry} Content={Content} index={i} />)}
     </ol>
 
     {others.length > 0 && (
