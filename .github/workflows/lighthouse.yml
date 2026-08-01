@@ -15,11 +15,15 @@ jobs:
       fail-fast: false
       matrix:
         preset: [desktop, mobile]
-        # 20 адресов по 3 замера на каждый — 13 минут подряд. Делим пополам и
-        # считаем параллельно; число замеров на адрес не трогаем, иначе вырастет
-        # разброс и гейт начнёт врать.
-        shard: [1, 2]
-    name: ${{ matrix.preset }} (${{ matrix.shard }}/2)
+        # 20 адресов по 3 замера на каждый. Делим на четыре части и считаем
+        # параллельно: на двух частях замер занимал 13 минут, из них около шести
+        # — сама сборка. Ниже сборки не опуститься, поэтому четыре части это
+        # практический предел, дальше дробить бессмысленно.
+        #
+        # Число замеров на адрес не трогаем: срезать его — самый лёгкий способ
+        # ускориться и самый плохой, вырастет разброс и гейт начнёт врать.
+        shard: [1, 2, 3, 4]
+    name: ${{ matrix.preset }} (${{ matrix.shard }}/4)
     steps:
       - uses: actions/checkout@v4
         with:
@@ -44,17 +48,21 @@ jobs:
         env:
           PRESET: ${{ matrix.preset }}
           SHARD: ${{ matrix.shard }}
+          SHARDS: '4'
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
         run: |
           npm install -g @lhci/cli
           CONF=./lighthouserc.json
           [ "$PRESET" = "mobile" ] && CONF=./lighthouserc.mobile.json
           # Свой кусок списка адресов; остальное берётся из конфига как было.
+          # Раскладываем по кругу, а не подряд: тяжёлые страницы в списке идут
+          # рядом, и нарезка ломтями свалила бы их все в одну часть.
           URLS=$(node -e "
             const all = require('$CONF').ci.collect.url;
-            const half = Math.ceil(all.length / 2);
-            const part = Number(process.env.SHARD) === 1 ? all.slice(0, half) : all.slice(half);
+            const n = Number(process.env.SHARDS), i = Number(process.env.SHARD);
+            const part = all.filter((_, k) => k % n === i - 1);
+            if (part.length === 0) { console.error('пустая часть — адресов меньше, чем частей'); process.exit(1); }
             console.log(part.map((u) => '--collect.url=' + u).join(' '));
           ")
-          echo "часть $SHARD: $(echo "$URLS" | wc -w) адресов"
+          echo "часть $SHARD из $SHARDS: $(echo "$URLS" | wc -w) адресов"
           lhci autorun --config="$CONF" $URLS
