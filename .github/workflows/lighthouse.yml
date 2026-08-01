@@ -44,6 +44,7 @@ jobs:
         env:
           PRESET: ${{ matrix.preset }}
           SHARD: ${{ matrix.shard }}
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
         run: |
           npm install -g @lhci/cli
           CONF=./lighthouserc.json
@@ -57,5 +58,3 @@ jobs:
           ")
           echo "часть $SHARD: $(echo "$URLS" | wc -w) адресов"
           lhci autorun --config="$CONF" $URLS
-        env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
