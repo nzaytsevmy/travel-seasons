@@ -6,7 +6,8 @@ import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import NewsItem from '../../components/NewsItem.astro';
 import { getCollection } from 'astro:content';
-import { archiveKeys, entriesOfMonth, monthTitleRu } from '../../data/news.js';
+import { archiveKeys, entriesOfMonth, monthTitleRu, formatDateRu } from '../../data/news.js';
+import { plural } from '../../data/plural.js';
 
 export async function getStaticPaths() {
   const all = await getCollection('news');
@@ -27,6 +28,10 @@ const url = `https://traveltribe.ru/novosti/${month}/`;
 const title = `Новости путешествий: ${monthRu.toLowerCase()}`;
 const description = `Что менялось во въездных правилах, доступе к местам и перелётах в ${monthRu.toLowerCase()}. Каждая заметка со ссылкой на первоисточник.`;
 
+// Самая поздняя проверка внутри месяца. Именно она, а не дата сборки: архив
+// замороженный, и помечать его «обновлён сегодня» — враньё поисковику.
+const lastChecked = items.reduce((a, e) => (e.data.checked > a ? e.data.checked : a), items[0].data.checked);
+
 const ldJson = {
   "@context": "https://schema.org",
   "@graph": [
@@ -37,7 +42,9 @@ const ldJson = {
       "name": title,
       "description": description,
       "inLanguage": "ru-RU",
+      "dateModified": lastChecked.toISOString().slice(0, 10),
       "author": { "@id": "https://traveltribe.ru/about/#person" },
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".nv-tldr"] },
     },
     {
       "@type": "BreadcrumbList",
@@ -46,6 +53,14 @@ const ldJson = {
         { "@type": "ListItem", "position": 2, "name": "Новости", "item": "https://traveltribe.ru/novosti/" },
         { "@type": "ListItem", "position": 3, "name": monthRu, "item": url },
       ],
+    },
+    {
+      "@type": "ItemList",
+      "itemListElement": items.map((e, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "name": e.data.title,
+      })),
     },
   ],
 };
@@ -57,13 +72,17 @@ const ldJson = {
     <header class="nv-head">
       <h1 class="nv-h1">Новости за {monthRu.toLowerCase()}</h1>
       <p class="nv-lead">
-        Архив: {items.length === 1 ? 'одна заметка' : `${items.length} заметок`} за месяц.
+        Архив: {items.length} {plural(items.length, 'заметка', 'заметки', 'заметок')} за месяц.
         Свежее — в <a href="/novosti/">ленте новостей</a>.
+      </p>
+      <p class="nv-byline">
+        Ведёт <a href="/about/">Никита Зайцев</a> · последняя проверка: {formatDateRu(lastChecked)} ·
+        <a href="/novosti/rss.xml">RSS</a>
       </p>
     </header>
 
     <ol class="nv-list">
-      {rendered.map(({ entry, Content }, i) => <NewsItem entry={entry} Content={Content} index={i} />)}
+      {rendered.map(({ entry, Content }, i) => <NewsItem entry={entry} Content={Content} index={i} base={url} />)}
     </ol>
 
     {others.length > 0 && (
@@ -82,8 +101,10 @@ const ldJson = {
   .nv { max-width: 780px; margin: 0 auto; padding: 0 var(--gutter, 16px) 4rem; }
   .nv-head { padding-bottom: 1.6rem; }
   .nv-h1 { font-size: clamp(1.6rem, 4vw, 2.3rem); line-height: 1.15; margin: 0 0 .9rem; }
-  .nv-lead { max-width: 62ch; line-height: 1.6; margin: 0; }
+  .nv-lead { max-width: 62ch; line-height: 1.6; margin: 0 0 1rem; }
   .nv-lead a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
+  .nv-byline { font-size: .85rem; color: var(--text-dim); margin: 0; }
+  .nv-byline a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
   .nv-list { list-style: none; margin: 0; padding: 0; }
   .nv-section { border-top: 1px solid var(--line-strong, var(--line)); padding-top: 1.6rem; margin-top: 2.4rem; }
   .nv-section h2 { font-size: 1.35rem; margin: 0 0 .7rem; scroll-margin-top: 80px; }
