@@ -16,14 +16,14 @@ import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu } from '../data/news.js';
 import { pickNewsImage, newsImageNote } from '../data/news-images.js';
 import { bySlug } from '../data/directions.js';
 
-const { entry, Content } = Astro.props;
+const { entry, Content, index = 0 } = Astro.props;
 const d = entry.data;
 const countryName = (slug) => bySlug(slug)?.cases?.nom ?? slug;
 // Страна заметки не обязана быть направлением сайта: робот ставит её ради
 // подбора фото, а визовой страницы может не быть вовсе. Ссылку даём только на
 // существующие — иначе получаем битый адрес (поймано на Намибии и Австралии).
 const linkedCountries = (d.countries ?? []).filter((s) => bySlug(s));
-const cover = pickNewsImage(d);
+const cover = pickNewsImage(d, entry.slug, index);
 // Подпись под кадром. Для стока честно называем, ЧТО на фото и чей он: иначе
 // иллюстрация к теме читается как снимок с места события. Для своего архива —
 // прежняя оговорка.
