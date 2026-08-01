@@ -3,13 +3,6 @@ title: "Пустынную лягушку с намибийского побер
 date: 2026-07-09
 checked: 2026-07-31
 tldr: "Пустынную лягушку с побережья Намибии и ЮАР перевели из «близкого к уязвимому» в «уязвимый». Виноваты добыча алмазов, стройка энергетики и спрос на неё как на домашнее животное после вирусного ролика. Падение численности за десятилетие оценивают в 20%."
-image: "./_images/2026-07-09-desert-rain-frog.jpg"
-imageAlt: "Побережье пустыни Намиб, где живёт пустынная лягушка"
-imageCredit: "без указания автора"
-imageLicense: "CC0"
-imageLicenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
-imageSource: "https://www.rawpixel.com/image/3305576/free-photo-image-desert-sand-sand"
-imageTitle: "Namib Desert, Namibia"
 photoQuery: "Namib desert Namibia"
 topic: nature
 impact: medium
@@ -19,6 +12,12 @@ countries:
 sources:
   - name: IUCN
     url: https://iucn.org/press-release/202607/desert-frog-deep-sea-molluscs-remarkable-species-risk-iucn-red-list
+image: "./_images/2026-07-09-desert-rain-frog.jpg"
+imageAlt: "Пустынную лягушку с намибийского побережья признали уязвимым видом"
+imageCredit: "Keith Hardy keithhardy2001"
+imageLicense: "CC0"
+imageLicenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/deed.en/"
+imageSource: "https://commons.wikimedia.org/w/index.php?curid=62198199"
 ---
 
 Ту самую лягушку из вирусного ролика, которая пищит как игрушка, перевели из категории «близкий к уязвимому» в «уязвимый». Живёт она узкой полосой прибрежного тумана на границе Намибии и ЮАР и больше нигде.
