@@ -14,12 +14,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0     # дата актуальности считается из истории git
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
+
+      # Сломанное расписание CI не падает красным — оно просто не запускается, и
+      # проверки нет в списке. Секунда здесь дешевле, чем выкладка без проверки.
+      - name: Расписания CI без повторов ключей
+        run: node scripts/check-workflows.mjs
+
+      # Обработка 208 картинок — 115 секунд каждой сборки, и результат для одного
+      # и того же файла всегда один и тот же. Astro складывает его сюда, локально
+      # поэтому пересборка занимает минуту, а не семь. Ключ по самим картинкам:
+      # добавили кадр — переиспользуем всё остальное, а не начинаем заново.
+      - name: Кэш обработанных картинок
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.astro
+          key: astro-assets-${{ runner.os }}-${{ hashFiles('src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.png') }}
+          restore-keys: astro-assets-${{ runner.os }}-
+
       - run: npm run build
+        env:
+          SKIP_HTML_MIN: '1'   # минификация нужна проду, а не проверке
 
   # Гейт свежести: правка контента/данных обязана бампать DATA_UPDATED (meta.js),
   # иначе sitemap lastmod и byline «данные проверены …» соврут о дате. Ловит
