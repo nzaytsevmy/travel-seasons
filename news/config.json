@@ -3,7 +3,6 @@
   "maxPerDay": 4,
   "minScore": 4,
   "note": "paused=true — робот собирает и открывает PR, но авто-мерж не срабатывает. Рубильник на случай, когда лента начала выдавать мусор.",
-
   "allowedSourceDomains": [
     "kdmid.ru",
     "mid.ru",
@@ -41,20 +40,179 @@
     "u.ae",
     "gov.sg",
     "canada.ca",
-    "state.gov"
+    "state.gov",
+    "noaa.gov",
+    "usgs.gov",
+    "nasa.gov",
+    "esa.int",
+    "nationalgeographic.org",
+    "si.edu",
+    "zsl.org",
+    "kew.org",
+    "audubon.org",
+    "galapagos.gob.ec",
+    "parksaustralia.gov.au",
+    "environment.gov.au",
+    "mfaapsny.org",
+    "goturkiye.com",
+    "egymonuments.gov.eg",
+    "police.ge",
+    "sciencemag.org",
+    "biorxiv.org",
+    "royalsocietypublishing.org"
   ],
-
   "radar": [
-    { "name": "IUCN — пресс-релизы", "url": "https://iucn.org/press-releases", "topic": "nature" },
-    { "name": "EurekAlert — экология и биология", "url": "https://www.eurekalert.org/news-releases/browse?section=bio", "topic": "nature" },
-    { "name": "NPS — новости парков США", "url": "https://www.nps.gov/aboutus/news/index.htm", "topic": "transport" },
-    { "name": "CONAF — Чили", "url": "https://www.conaf.cl/noticias/", "topic": "transport" },
-    { "name": "Parques Nacionales — Аргентина", "url": "https://www.argentina.gob.ar/parquesnacionales/noticias", "topic": "transport" },
-    { "name": "UNESCO — объекты наследия", "url": "https://whc.unesco.org/en/news/", "topic": "nature" },
-    { "name": "АТОР", "url": "https://www.atorus.ru/news", "topic": "visa" },
-    { "name": "Консульский департамент МИД", "url": "https://www.kdmid.ru/", "topic": "visa" }
+    {
+      "name": "IUCN — пресс-релизы",
+      "url": "https://iucn.org/press-releases",
+      "topic": "nature"
+    },
+    {
+      "name": "EurekAlert — экология и биология",
+      "url": "https://www.eurekalert.org/news-releases/browse?section=bio",
+      "topic": "nature"
+    },
+    {
+      "name": "NPS — новости парков США",
+      "url": "https://www.nps.gov/aboutus/news/index.htm",
+      "topic": "transport"
+    },
+    {
+      "name": "CONAF — Чили",
+      "url": "https://www.conaf.cl/noticias/",
+      "topic": "transport"
+    },
+    {
+      "name": "Parques Nacionales — Аргентина",
+      "url": "https://www.argentina.gob.ar/parquesnacionales/noticias",
+      "topic": "transport"
+    },
+    {
+      "name": "UNESCO — объекты наследия",
+      "url": "https://whc.unesco.org/en/news/",
+      "topic": "nature"
+    },
+    {
+      "name": "АТОР",
+      "url": "https://www.atorus.ru/news",
+      "topic": "visa"
+    },
+    {
+      "name": "Консульский департамент МИД",
+      "url": "https://www.kdmid.ru/",
+      "topic": "visa"
+    },
+    {
+      "name": "National Geographic — животные",
+      "url": "https://www.nationalgeographic.com/animals/",
+      "topic": "nature"
+    },
+    {
+      "name": "National Geographic — путешествия",
+      "url": "https://www.nationalgeographic.com/travel/",
+      "topic": "transport"
+    },
+    {
+      "name": "Smithsonian Magazine",
+      "url": "https://www.smithsonianmag.com/rss/smart-news/",
+      "topic": "nature"
+    },
+    {
+      "name": "Mongabay — полевая экожурналистика",
+      "url": "https://news.mongabay.com/",
+      "topic": "nature"
+    },
+    {
+      "name": "New Scientist — живое",
+      "url": "https://www.newscientist.com/subject/life/",
+      "topic": "nature"
+    },
+    {
+      "name": "BBC Future",
+      "url": "https://www.bbc.com/future",
+      "topic": "nature"
+    },
+    {
+      "name": "Atlas Obscura",
+      "url": "https://www.atlasobscura.com/feeds/latest",
+      "topic": "transport"
+    },
+    {
+      "name": "Live Science — животные",
+      "url": "https://www.livescience.com/animals",
+      "topic": "nature"
+    },
+    {
+      "name": "ScienceDaily — растения и животные",
+      "url": "https://www.sciencedaily.com/news/plants_animals/",
+      "topic": "nature"
+    },
+    {
+      "name": "Audubon — птицы",
+      "url": "https://www.audubon.org/news",
+      "topic": "nature"
+    },
+    {
+      "name": "Phys.org — биология",
+      "url": "https://phys.org/biology-news/",
+      "topic": "nature"
+    },
+    {
+      "name": "Nature — новости",
+      "url": "https://www.nature.com/news",
+      "topic": "nature"
+    },
+    {
+      "name": "NOAA — океан и климат",
+      "url": "https://www.noaa.gov/news-releases",
+      "topic": "nature"
+    },
+    {
+      "name": "National Geographic Society — экспедиции",
+      "url": "https://www.nationalgeographic.org/society/press/",
+      "topic": "nature"
+    },
+    {
+      "name": "Галапагосский нацпарк",
+      "url": "https://galapagos.gob.ec/noticias/",
+      "topic": "transport"
+    },
+    {
+      "name": "Parks Australia",
+      "url": "https://parksaustralia.gov.au/news/",
+      "topic": "transport"
+    },
+    {
+      "name": "МИД Абхазии",
+      "url": "https://mfaapsny.org/ru/",
+      "topic": "visa"
+    },
+    {
+      "name": "Go Türkiye — офиц. турпортал",
+      "url": "https://goturkiye.com/",
+      "topic": "visa"
+    },
+    {
+      "name": "Египет — Минтуризма и древностей",
+      "url": "https://egymonuments.gov.eg/en/news",
+      "topic": "transport"
+    },
+    {
+      "name": "Таиланд — TAT Newsroom",
+      "url": "https://www.tatnews.org/",
+      "topic": "visa"
+    },
+    {
+      "name": "ОАЭ — офиц. портал по визам",
+      "url": "https://u.ae/en/information-and-services/visa-and-emirates-id",
+      "topic": "visa"
+    },
+    {
+      "name": "Погранслужба ФСБ",
+      "url": "http://ps.fsb.ru/",
+      "topic": "visa"
+    }
   ],
-
-  "_domains": "allowedSourceDomains — единственные домены, на которые заметке разрешено ссылаться. Медиа сюда НЕ добавляем: они радар, а не источник цифры.",
-  "_radar": "radar — где робот ищет поводы. Ссылаться на них нельзя, если домена нет в allowedSourceDomains."
+  "_domains": "allowedSourceDomains — единственные домены, на которые заметке разрешено ссылаться. Сюда идут ОРГАНИЗАЦИИ: министерства, посольства, нацпарки, научные институты и журналы. Издания (National Geographic, BBC, Mongabay) сюда НЕ добавляем: сегодня их редполитика одна, завтра другая, а гейт должен опираться на того, кто отвечает за факт.",
+  "_radar": "radar — где робот ищет поводы. Издания сюда добавлять МОЖНО и нужно: они подсказывают, что искать. Ссылаться на них нельзя, если домена нет в allowedSourceDomains — текст пишется от того, кто факт объявил."
 }
