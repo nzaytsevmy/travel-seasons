@@ -3,6 +3,14 @@ title: "Торрес-дель-Пайне переписал билеты: теп
 date: 2026-05-01
 checked: 2026-07-31
 tldr: "С 1 мая Торрес-дель-Пайне продаёт билеты по новой схеме: на один день или на два и более сроком до десяти. Покупка только онлайн, на входе билетов нет. Однодневная вылазка и многодневный трек теперь стоят заметно по-разному, так что решать надо до приезда."
+image: "./_images/2026-05-01-torres-del-paine-tariff.jpg"
+imageAlt: "Скалы Торрес-дель-Пайне в чилийской Патагонии"
+imageCredit: "Miguel Vieira"
+imageLicense: "CC BY"
+imageLicenseUrl: "https://creativecommons.org/licenses/by/2.0/"
+imageSource: "https://commons.wikimedia.org/w/index.php?curid=9055832"
+imageTitle: "Enicognathus ferrugineus -Torres del Paine National Park- Chile-8"
+photoQuery: "torres del paine"
 topic: transport
 impact: high
 score: 5

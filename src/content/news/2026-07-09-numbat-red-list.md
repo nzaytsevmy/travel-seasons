@@ -3,6 +3,14 @@ title: "Нумбата понизили в Красном списке — ре�
 date: 2026-07-09
 checked: 2026-07-31
 tldr: "Австралийский нумбат переехал в Красном списке из «под угрозой исчезновения» в «близкий к уязвимому» — движение вниз по шкале, что бывает нечасто. За этим сорок лет работы: вытравливание кошек и лис, ограждённые участки, разведение в зоопарке Перта. Численность выросла с трёхсот особей до двух-трёх тысяч."
+image: "./_images/2026-07-09-numbat-red-list.jpg"
+imageAlt: "Нумбат — сумчатый муравьед из Западной Австралии"
+imageCredit: "britishlibrary"
+imageLicense: "CC0"
+imageLicenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+imageSource: "https://www.rawpixel.com/image/562431/numbat-shade-drawing"
+imageTitle: "Numbat Voyages Dans Les Deux"
+photoQuery: "numbat"
 topic: nature
 impact: medium
 score: 5

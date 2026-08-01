@@ -3,6 +3,14 @@ title: "Пустынную лягушку с намибийского побер
 date: 2026-07-09
 checked: 2026-07-31
 tldr: "Пустынную лягушку с побережья Намибии и ЮАР перевели из «близкого к уязвимому» в «уязвимый». Виноваты добыча алмазов, стройка энергетики и спрос на неё как на домашнее животное после вирусного ролика. Падение численности за десятилетие оценивают в 20%."
+image: "./_images/2026-07-09-desert-rain-frog.jpg"
+imageAlt: "Побережье пустыни Намиб, где живёт пустынная лягушка"
+imageCredit: "без указания автора"
+imageLicense: "CC0"
+imageLicenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+imageSource: "https://www.rawpixel.com/image/3305576/free-photo-image-desert-sand-sand"
+imageTitle: "Namib Desert, Namibia"
+photoQuery: "Namib desert Namibia"
 topic: nature
 impact: medium
 score: 4

@@ -3,6 +3,14 @@ title: "Тропы Эль-Чальтена стали платными, а Flexi
 date: 2026-06-01
 checked: 2026-07-31
 tldr: "Тропы вокруг Эль-Чальтена, десятилетиями бесплатные, с 1 июня платные: 50 000 песо в день для иностранца, билет только онлайн. Считать стоит внимательно — Flexipass действует сразу в обеих зонах парка, и день в Чальтене плюс день на Перито-Морено выходят в те же деньги, что три дня по нему."
+image: "./_images/2026-06-01-los-glaciares-tariff.jpg"
+imageAlt: "Массив Фицрой в аргентинской Патагонии"
+imageCredit: "lamblukas"
+imageLicense: "CC BY"
+imageLicenseUrl: "https://creativecommons.org/licenses/by/2.0/"
+imageSource: "https://commons.wikimedia.org/w/index.php?curid=157172357"
+imageTitle: "Rio Blanco near Fitz Roy, Patagonia, El Chalten, Argentina"
+photoQuery: "fitz roy patagonia"
 topic: transport
 impact: high
 score: 5

@@ -20,7 +20,13 @@ const { entry, Content } = Astro.props;
 const d = entry.data;
 const countryName = (slug) => bySlug(slug)?.cases?.nom ?? slug;
 const cover = pickNewsImage(d);
-const coverNote = newsImageNote(d);
+// Подпись под кадром. Для стока честно называем, ЧТО на фото и чей он: иначе
+// иллюстрация к теме читается как снимок с места события. Для своего архива —
+// прежняя оговорка.
+const coverNote = d.imageCredit
+  ? [d.imageTitle, `фото: ${d.imageCredit}`, d.imageLicense].filter(Boolean).join(' · ')
+  : newsImageNote(d);
+const coverLink = d.imageSource ?? null;
 const iso = (x) => new Date(x).toISOString().slice(0, 10);
 ---
 <li class="nv-item" id={entry.slug}>
@@ -39,7 +45,11 @@ const iso = (x) => new Date(x).toISOString().slice(0, 10);
     <figure class="nv-fig">
       <Image src={cover} alt={d.imageAlt ?? d.title} widths={[480, 800]}
              sizes="(max-width: 700px) 100vw, 700px" loading="lazy" formats={['webp']} />
-      {coverNote && <figcaption>{coverNote}</figcaption>}
+      {coverNote && (
+        <figcaption>
+          {coverLink ? <a href={coverLink} rel="nofollow noopener" target="_blank">{coverNote}</a> : coverNote}
+        </figcaption>
+      )}
     </figure>
   )}
 

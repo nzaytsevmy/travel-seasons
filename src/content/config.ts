@@ -59,6 +59,15 @@ const news = defineCollection({
     // src/data/news-images.js из уже отснятого, чужие фото не берём.
     image: img().optional(),
     imageAlt: z.string().optional(),
+    // Атрибуция обязательна, если кадр не наш: свободная лицензия почти всегда
+    // требует указать автора и лицензию. Без этих полей гейт заметку не пустит.
+    imageCredit: z.string().optional(),
+    imageLicense: z.string().optional(),
+    imageLicenseUrl: z.string().optional(),
+    imageSource: z.string().optional(),
+    imageTitle: z.string().optional(),
+    // Запрос для поиска фото — по-английски: сток ищет по английским тегам.
+    photoQuery: z.string().optional(),
   }),
 });
 
