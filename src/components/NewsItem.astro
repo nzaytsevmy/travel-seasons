@@ -2,14 +2,26 @@
 // Одна заметка ленты /novosti/. Общая для ленты и для архива месяца, чтобы
 // разметка и микроразметка не разъехались между двумя шаблонами.
 //
-// Картинок у заметок нет сознательно: чужие фото — авторские права, а
-// сгенерированные к новости — фальшь. Карточка типографская.
+// Устройство карточки продиктовано замерами 2026, а не вкусом:
+//  · капсула-ответ первой строкой — её извлекает нейроответ, а человек по ней
+//    решает, читать ли дальше;
+//  · картинка — без неё заметка не попадает ни в дзен-ленту (наш фид требует
+//    enclosure), ни в Discover, и заметно реже отбирается в ИИ-выдачу;
+//  · имя автора — упоминания бренда коррелируют с цитированием втрое сильнее
+//    обратных ссылок, а брендовых запросов у сайта пока ноль;
+//  · NewsArticle на каждую заметку — те самые «структурные элементы».
+// Фото только свои, из уже отснятого: чужие права не трогаем.
+import { Image } from 'astro:assets';
 import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu } from '../data/news.js';
+import { pickNewsImage, newsImageNote } from '../data/news-images.js';
 import { bySlug } from '../data/directions.js';
 
 const { entry, Content } = Astro.props;
 const d = entry.data;
 const countryName = (slug) => bySlug(slug)?.cases?.nom ?? slug;
+const cover = pickNewsImage(d);
+const coverNote = newsImageNote(d);
+const iso = (x) => new Date(x).toISOString().slice(0, 10);
 ---
 <li class="nv-item" id={entry.slug}>
   <div class="nv-meta">
@@ -20,6 +32,17 @@ const countryName = (slug) => bySlug(slug)?.cases?.nom ?? slug;
   </div>
 
   <h2 class="nv-title">{d.title}</h2>
+
+  {d.tldr && <p class="nv-tldr">{d.tldr}</p>}
+
+  {cover && (
+    <figure class="nv-fig">
+      <Image src={cover} alt={d.imageAlt ?? d.title} widths={[480, 800]}
+             sizes="(max-width: 700px) 100vw, 700px" loading="lazy" formats={['webp']} />
+      {coverNote && <figcaption>{coverNote}</figcaption>}
+    </figure>
+  )}
+
   <div class="nv-body"><Content /></div>
 
   {/* Разделители склеиваем без переносов строк: JSX сохраняет пробелы между
@@ -33,8 +56,25 @@ const countryName = (slug) => bySlug(slug)?.cases?.nom ?? slug;
     <span class="nv-refs-group">Источник: {d.sources.map((src, i) => (
       <Fragment>{i > 0 ? ', ' : ''}<a href={src.url} rel="nofollow noopener" target="_blank">{src.name}</a></Fragment>
     ))}</span>
-    <span class="nv-refs-group nv-checked">Сверено {formatDateRu(d.checked)}</span>
+    <span class="nv-refs-group nv-checked">
+      <a href="/about/">Никита Зайцев</a>, сверено {formatDateRu(d.checked)}
+    </span>
   </p>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "@id": `https://traveltribe.ru/novosti/#${entry.slug}`,
+    "headline": d.title,
+    "description": d.tldr ?? d.title,
+    "datePublished": iso(d.date),
+    "dateModified": iso(d.checked),
+    "inLanguage": "ru-RU",
+    "author": { "@id": "https://traveltribe.ru/about/#person" },
+    "publisher": { "@id": "https://traveltribe.ru/#organization" },
+    "isAccessibleForFree": true,
+    "citation": d.sources.map((x) => x.url),
+  })} />
 </li>
 
 <style>
@@ -47,6 +87,18 @@ const countryName = (slug) => bySlug(slug)?.cases?.nom ?? slug;
   .nv-status { color: var(--text-dim); text-transform: none; letter-spacing: 0; font-size: .8rem; }
 
   .nv-title { font-size: 1.2rem; line-height: 1.3; margin: 0 0 .55rem; scroll-margin-top: 80px; }
+
+  /* Капсула-ответ. Золотая линия слева отделяет ответ от контекста —
+     глаз видит границу без второго шрифта и без заливки. */
+  .nv-tldr {
+    max-width: 62ch; line-height: 1.6; margin: 0 0 .9rem;
+    padding-left: .9rem; border-left: 3px solid var(--gold);
+  }
+
+  /* Картинка после капсулы, а не перед: сначала ответ, потом иллюстрация. */
+  .nv-fig { margin: 0 0 .9rem; }
+  .nv-fig :global(img) { width: 100%; height: auto; display: block; }
+  .nv-fig figcaption { font-size: .74rem; color: var(--text-faint); margin-top: .35rem; }
   .nv-body { max-width: 62ch; line-height: 1.6; }
   .nv-body :global(p) { margin: 0 0 .7rem; }
   .nv-body :global(a) { color: var(--text); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }

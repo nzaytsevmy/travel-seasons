@@ -41,7 +41,7 @@ const blog = defineCollection({
 //     ещё нет.
 const news = defineCollection({
   type: 'content',
-  schema: z.object({
+  schema: ({ image: img }) => z.object({
     title: z.string(),
     date: z.coerce.date(),
     checked: z.coerce.date(),
@@ -52,6 +52,13 @@ const news = defineCollection({
     status: z.enum(['действует', 'принято, не вступило', 'отменено']).optional(),
     countries: z.array(z.string()).default([]),
     sources: z.array(z.object({ name: z.string(), url: z.string().url() })).min(1),
+    // Капсула-ответ: 40–60 слов прямого ответа ДО контекста. Именно её извлекают
+    // нейроответы, и именно её читает человек, решая, читать ли дальше.
+    tldr: z.string().optional(),
+    // Конкретный кадр, если он есть. Обычно пусто: картинку подбирает
+    // src/data/news-images.js из уже отснятого, чужие фото не берём.
+    image: img().optional(),
+    imageAlt: z.string().optional(),
   }),
 });
 
