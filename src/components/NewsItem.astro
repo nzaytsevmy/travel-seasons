@@ -19,6 +19,10 @@ import { bySlug } from '../data/directions.js';
 const { entry, Content } = Astro.props;
 const d = entry.data;
 const countryName = (slug) => bySlug(slug)?.cases?.nom ?? slug;
+// Страна заметки не обязана быть направлением сайта: робот ставит её ради
+// подбора фото, а визовой страницы может не быть вовсе. Ссылку даём только на
+// существующие — иначе получаем битый адрес (поймано на Намибии и Австралии).
+const linkedCountries = (d.countries ?? []).filter((s) => bySlug(s));
 const cover = pickNewsImage(d);
 // Подпись под кадром. Для стока честно называем, ЧТО на фото и чей он: иначе
 // иллюстрация к теме читается как снимок с места события. Для своего архива —
@@ -58,8 +62,8 @@ const iso = (x) => new Date(x).toISOString().slice(0, 10);
   {/* Разделители склеиваем без переносов строк: JSX сохраняет пробелы между
       выражениями, и «источник , источник» получает пробел перед запятой. */}
   <p class="nv-refs">
-    {d.countries.length > 0 && (
-      <span class="nv-refs-group">Разбор: {d.countries.map((s, i) => (
+    {linkedCountries.length > 0 && (
+      <span class="nv-refs-group">Разбор: {linkedCountries.map((s, i) => (
         <Fragment>{i > 0 ? ', ' : ''}<a href={`/visa/${s}/`}>{countryName(s)}</a></Fragment>
       ))}</span>
     )}
