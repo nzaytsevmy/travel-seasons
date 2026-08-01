@@ -68,13 +68,25 @@ function domainAllowed(host, allowed) {
  * 1. Ссылаться можно только на домены из белого списка. Главный сценарий
  *    подставы: скрапленная страница подсовывает свою ссылку, модель её цитирует.
  */
-export function checkDomains(note, allowed) {
+export function checkDomains(note, allowed, media = []) {
   const sources = note.data.sources ?? [];
   if (sources.length === 0) return fail('нет ни одного источника');
+  // Издания (National Geographic, Smithsonian, Mongabay и подобные) годятся
+  // как источник для природы и транспорта: там и живёт то интересное, ради чего
+  // лента затевалась, а числа гейт всё равно сверяет по самой странице.
+  //
+  // ⛔ Для визовых заметок — нет. По ним человек планирует поездку и тратит
+  // деньги, и пересказ издания тут не годится: нужен тот, кто правило объявил.
+  const ymyl = note.data.topic === 'visa';
   for (const s of sources) {
     const host = hostOf(s.url);
     if (!host) return fail(`нечитаемый URL источника: ${s.url}`);
-    if (!domainAllowed(host, allowed)) return fail(`домен вне белого списка: ${host}`);
+    if (domainAllowed(host, allowed)) continue;
+    if (!ymyl && domainAllowed(host, media)) continue;
+    if (ymyl && domainAllowed(host, media)) {
+      return fail(`визовый факт со слов издания (${host}) — нужен тот, кто правило объявил`);
+    }
+    return fail(`домен вне белого списка: ${host}`);
   }
   return pass;
 }
@@ -319,9 +331,9 @@ export async function fetchSources(note, { timeoutMs = 20000, attempts = 3 } = {
 
 // ── прогон ────────────────────────────────────────────────────────────────────
 
-export async function runGate(note, { allowed, minScore, published, offline = false }) {
+export async function runGate(note, { allowed, media = [], minScore, published, offline = false }) {
   const checks = [
-    ['домены', () => checkDomains(note, allowed)],
+    ['домены', () => checkDomains(note, allowed, media)],
     ['ссылки в тексте', () => checkLinksSubset(note)],
     ['волатильность', () => checkVolatility(note)],
     ['YMYL-форма', () => checkYmylForm(note)],
@@ -397,7 +409,8 @@ if (isMain) {
     const slug = basename(f, '.md');
     const note = parseNote(readFileSync(join(dir, f), 'utf8'), slug);
     const r = await runGate(note, {
-      allowed: cfg.allowedSourceDomains, minScore: cfg.minScore, offline,
+      allowed: cfg.allowedSourceDomains, media: cfg.mediaSourceDomains ?? [],
+      minScore: cfg.minScore, offline,
       // Сравнивать заметку с ней же бессмысленно: она совпадёт сама с собой.
       published: published.filter((p) => p.slug !== slug),
     });
