@@ -220,6 +220,15 @@ jobs:
             git diff --staged --name-only
           fi
 
+      # ⛔ ПИКСЕЛЬНОЕ СРАВНЕНИЕ СЮДА НЕ ВХОДИТ, и это не экономия.
+      # Заметки живут только в своей ленте и лентах подписки, а лента скриншотами
+      # не снимается намеренно: это меняющийся список, эталон устаревал бы каждый
+      # день. Прогон 01.08.2026 это и показал — полный набор скриншотов упал на
+      # четырёх посторонних страницах, которых заметки коснуться не могут.
+      # Остаются проверки, которые к новому тексту относятся: сборка (она же
+      # ловит битые ссылки и негодный формат заметки), аудит SEO и инварианты
+      # контента — они сканируют весь готовый сайт без эталонов.
+      #
       # ⛔ ГЛАВНОЕ. Раньше здесь ничего не было: считалось, что заметки робота
       # проверит обычный CI после открытия PR. Он их не проверял НИ РАЗУ.
       # GitHub намеренно не запускает проверки на запросах, открытых его же
@@ -234,7 +243,7 @@ jobs:
       - name: Проверки перед публикацией
         if: steps.diff.outputs.changed == 'true'
         run: |
-          npx playwright install --with-deps chromium webkit
+          npx playwright install --with-deps chromium
           SKIP_HTML_MIN=1 npm run build
           npm run check:seo
           npx astro preview --port 4322 &
@@ -242,7 +251,7 @@ jobs:
             curl -sf http://localhost:4322/ > /dev/null && break
             sleep 2
           done
-          PREVIEW_URL=http://localhost:4322 npx playwright test
+          PREVIEW_URL=http://localhost:4322 npx playwright test tests/content-invariants.spec.ts
 
       - name: Открыть PR
         id: pr
