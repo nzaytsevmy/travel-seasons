@@ -46,26 +46,50 @@ const COUNTRY_ALIAS = {
 // выглядит стоковой подстановкой — такие кадры годятся, только когда заметка
 // действительно про это место.
 const BY_TOPIC = {
-  nature: ['kenya', 'karelia', 'kamchatka', 'galapagos'],
-  transport: ['patagonia', 'karelia', 'japan', 'antarctica'],
-  visa: ['schengen', 'turkey', 'georgia', 'uae'],
+  nature: ['kenya', 'karelia', 'galapagos', 'kamchatka', 'amazonia', 'australia',
+           'bolivia', 'peru', 'antarctica', 'sri-lanka'],
+  transport: ['patagonia', 'karelia', 'japan', 'antarctica', 'georgia', 'armenia',
+              'morocco', 'cappadocia', 'china', 'vietnam'],
+  visa: ['schengen', 'turkey', 'georgia', 'uae', 'thailand', 'egypt', 'china',
+         'vietnam', 'armenia', 'azerbaijan'],
 };
+
+// Запас нарочно широкий. С двумя кадрами на тему три заметки подряд неизбежно
+// получают повтор, и лента выглядит сломанной — именно это Никита и увидел.
+// Несуществующие папки отфильтруются сами, лишние имена вреда не делают.
 
 /**
  * Подбирает картинку: сначала по стране заметки, потом по теме.
  * Возвращает объект astro:assets (или undefined, если в репозитории пусто).
  */
-export function pickNewsImage(data) {
+export function pickNewsImage(data, slug = '', index = 0) {
   if (data.image) return data.image;
 
   for (const c of data.countries ?? []) {
     const key = COUNTRY_ALIAS[c] ?? c;
     if (BY_SLUG[key]) return BY_SLUG[key];
   }
-  for (const key of BY_TOPIC[data.topic] ?? []) {
-    if (BY_SLUG[key]) return BY_SLUG[key];
-  }
-  return Object.values(BY_SLUG)[0];
+
+  // Разные заметки одной темы обязаны получить РАЗНЫЕ кадры. Раньше запас
+  // отдавал всем первый подходящий, и две соседние заметки про природу шли с
+  // одинаковой картинкой подряд — лента выглядела сломанной. Выбираем по хешу
+  // слага: стабильно между сборками (эталоны не плывут) и различно между
+  // заметками.
+  // К хешу слага подмешиваем позицию в ленте: хеш сам по себе даёт коллизии
+  // (две заметки подряд получили один кадр), а сдвиг на индекс гарантирует, что
+  // СОСЕДНИЕ заметки различаются всегда, пока в запасе больше одного кадра.
+  const pool = (BY_TOPIC[data.topic] ?? []).filter((k) => BY_SLUG[k]);
+  if (pool.length) return BY_SLUG[pool[(hash(slug) + index) % pool.length]];
+
+  const all = Object.values(BY_SLUG);
+  return all.length ? all[(hash(slug) + index) % all.length] : undefined;
+}
+
+/** Мелкий стабильный хеш строки: нужен только для равномерного выбора из списка. */
+function hash(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return h;
 }
 
 /** Подпись под картинкой: честно говорим, что кадр из архива, а не с места события. */
