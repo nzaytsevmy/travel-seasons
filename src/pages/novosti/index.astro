@@ -7,6 +7,7 @@
 // намеренно по концу месяца, чтобы не возникло дня, когда заметка не видна нигде).
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Footer from '../../components/Footer.astro';
 import NewsItem from '../../components/NewsItem.astro';
 import { getCollection } from 'astro:content';
 import { freshEntries, archiveKeys, monthTitleRu, formatDateRu } from '../../data/news.js';
@@ -37,6 +38,10 @@ const ldJson = {
       "inLanguage": "ru-RU",
       ...(lastChecked ? { "dateModified": lastChecked.toISOString().slice(0, 10) } : {}),
       "author": { "@id": "https://traveltribe.ru/about/#person" },
+      // Капсула-ответ у каждой заметки — то, что зачитывает голосовой ответ и
+      // из чего собирается цитата в ИИ-выдаче. Паттерн тот же, что на одиннадцати
+      // других шаблонах сайта.
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".nv-tldr"] },
     },
     {
       "@type": "BreadcrumbList",
@@ -77,7 +82,7 @@ const ldJson = {
 
     {rendered.length > 0 ? (
       <ol class="nv-list">
-        {rendered.map(({ entry, Content }, i) => <NewsItem entry={entry} Content={Content} index={i} />)}
+        {rendered.map(({ entry, Content }, i) => <NewsItem entry={entry} Content={Content} index={i} base={url} />)}
       </ol>
     ) : (
       <p class="nv-empty">
@@ -124,6 +129,8 @@ const ldJson = {
     </section>
 
   </main>
+
+  <Footer />
 </Layout>
 
 <style>

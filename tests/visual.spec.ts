@@ -52,6 +52,9 @@ const PAGES: { slug: string; name: string; dynamic?: boolean; content?: boolean 
   { slug: '/turkey/',                       name: 'country-hub-turkey' },     // хаб страны: manifest + TripSaveButton + aff-CTA
   { slug: '/trips/july/turkey/',            name: 'trips-july-turkey' },      // trips-детальная: findcta + TripSaveButton
   { slug: '/bezviz/',                       name: 'bezviz', dynamic: true },   // сезонный блок «текущий месяц»
+  // Лента меняется каждый день, когда робот публикует: пиксельный эталон устарел
+  // бы к следующему утру. Структурные проверки при этом идут.
+  { slug: '/novosti/',                      name: 'novosti', dynamic: true },
   { slug: '/compare/',                      name: 'compare-index' },          // компаратор-тул: пикер + динамический результат + CTA
   { slug: '/compare/turkey-vs-egypt/',      name: 'compare-pair' },           // кураторская пара: CompareTable + byline + CTA
   { slug: '/events/',                       name: 'events-index' },           // годовой хаб событий + byline

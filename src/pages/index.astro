@@ -11,6 +11,7 @@ import { DATA_UPDATED_RU } from '../data/meta.js';
 import authorPhoto from '../assets/author/nikita.jpg';
 
 import { ACTIVITY_TAGS } from '../data/country-activity-tags.js';
+import { freshEntries, formatDateRu } from '../data/news.js';
 const covers = import.meta.glob('../assets/destinations/*.jpg', { eager: true, import: 'default' });
 
 const VISA_LABEL = { free: 'Безвиз', evisa: 'e-Visa', required: 'Виза' };
@@ -67,6 +68,11 @@ const baliPat = (DIRECTIONS.find((d) => d.slug === 'bali')?.r || []).map((c) => 
 // Свежие посты
 const allPosts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const posts = allPosts.slice(0, 3);
+
+// Три свежие заметки строками. Без картинок и без карточек: главная не должна
+// потяжелеть, а задача блока — увести читателя вглубь сайта. Глубина просмотра и
+// невозврат в поиск — главный вес Яндекса, откуда приходит почти весь трафик.
+const freshNews = freshEntries(await getCollection('news')).slice(0, 3);
 const readingTime = (body) => Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
 
 const brandYear = new Date().getFullYear();
@@ -192,6 +198,20 @@ const ldJson = {
         ))}
       </div>
       <p class="topics">Темы: <a href="/visa/">Визы</a> · <a href="/blog/pay-abroad-2026/">Деньги за границей</a> · <a href="/blog/esim-zagranicey-2026/">eSIM и связь</a> · <a href="/trips/">Поездки</a></p>
+
+      {freshNews.length > 0 && (
+        <div class="nvhome">
+          <div class="shead"><div><h2>Свежее в ленте</h2></div><a href="/novosti/">Все новости</a></div>
+          <ul class="nvhome-list">
+            {freshNews.map((e) => (
+              <li>
+                <time datetime={e.data.date.toISOString().slice(0, 10)}>{formatDateRu(e.data.date)}</time>
+                <a href={`/novosti/#${e.slug}`}>{e.data.title}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div></section>
 
     <!-- Сообщество + автор -->
@@ -372,6 +392,15 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .post .tg{font-size:.66rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--mid)}
 .post h3{font-weight:600;font-size:1.15rem;line-height:1.15;letter-spacing:-.01em;margin:.3rem 0}
 .post .mt{font-size:.76rem;color:var(--mid)}.post .pers{color:var(--gold);font-weight:600}
+/* Свежее в ленте: строки, а не карточки — блок не должен спорить с историями
+   выше и не должен добавлять главной вес. Только hairline и золото. */
+.nvhome{grid-column:1/-1;margin-top:2.4rem;padding-top:1.6rem;border-top:1px solid var(--line)}
+.nvhome-list{list-style:none;margin:0;padding:0}
+.nvhome-list li{display:flex;gap:.9rem;align-items:baseline;padding:.6rem 0;border-bottom:1px solid var(--line)}
+.nvhome-list time{flex:0 0 auto;font-size:.78rem;color:var(--mid);font-variant-numeric:tabular-nums}
+.nvhome-list a{color:var(--ink);text-decoration:underline 1px transparent;text-underline-offset:.22em}
+.nvhome-list a:hover{text-decoration-color:var(--gold)}
+@media(max-width:560px){.nvhome-list li{flex-direction:column;gap:.15rem}}
 .topics{grid-column:1/-1;font-size:.8rem;color:var(--mid);margin-top:1rem}.topics a{color:var(--ink);font-weight:500;text-decoration:underline 1px transparent;text-underline-offset:.22em}.topics a:hover{text-decoration-color:var(--gold)}
 @media(max-width:760px){.posts{grid-template-columns:1fr}}
 /* Ровный ритм секций на мобиле — единый зазор 2.4rem (было manifest→финдер 1.2, comm 2.0) */
