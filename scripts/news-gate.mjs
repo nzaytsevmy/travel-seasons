@@ -178,13 +178,24 @@ const normTitle = (s) => s.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').repla
 export function checkDedup(note, published) {
   const urls = new Set((note.data.sources ?? []).map((s) => s.url.replace(/\/+$/, '')));
   const title = normTitle(note.data.title ?? '');
+  const words = (x) => new Set(normTitle(x).split(' ').filter((w) => w.length > 3));
+  const mine = words(note.data.title ?? '');
   for (const p of published) {
-    if ((p.sources ?? []).some((u) => urls.has(u.replace(/\/+$/, '')))) {
-      return fail(`тот же источник уже опубликован: «${p.title}»`);
-    }
     const pt = normTitle(p.title ?? '');
     if (pt && (pt === title || pt.includes(title) || title.includes(pt))) {
       return fail(`заголовок повторяет уже опубликованный: «${p.title}»`);
+    }
+    // Один пресс-релиз может дать две РАЗНЫЕ новости: нумбат и пустынная лягушка
+    // пришли из одного обновления Красного списка, и обе законны. Поэтому сам по
+    // себе общий источник не дубль. Дубль — когда источник тот же И заголовки
+    // пересекаются больше чем наполовину по значимым словам.
+    if ((p.sources ?? []).some((u) => urls.has(u.replace(/\/+$/, '')))) {
+      const theirs = words(p.title ?? '');
+      const common = [...mine].filter((w) => theirs.has(w)).length;
+      const smaller = Math.min(mine.size, theirs.size) || 1;
+      if (common / smaller > 0.5) {
+        return fail(`та же новость из того же источника: «${p.title}»`);
+      }
     }
   }
   return pass;
@@ -218,6 +229,18 @@ export function checkTldr(note) {
   if (n < 25) return fail(`капсула короткая: ${n} слов, нужно 40–60`);
   if (n > 75) return fail(`капсула длинная: ${n} слов, нужно 40–60`);
   return pass;
+}
+
+/**
+ * 11. У заметки робота обязан быть СВОЙ снимок со стока. Запасной кадр из архива
+ *     подбирается по теме, а значит несколько заметок одной темы неизбежно
+ *     получают один и тот же — именно так в ленте оказались три одинаковые
+ *     картинки подряд. Требуем photoQuery и image: нет снимка — нет публикации.
+ *     Заметки, написанные руками, поле image заполняют сами и проверку проходят.
+ */
+export function checkOwnPhoto(note) {
+  if (note.data.image) return pass;
+  return fail('нет своего снимка: заполни photoQuery, чтобы сток нашёл кадр по теме');
 }
 
 /** 8. Порог интересности по news/RUBRIC.md. */
@@ -291,6 +314,7 @@ export async function runGate(note, { allowed, minScore, published, offline = fa
     ['оценка', () => gradeNote(note, minScore)],
     ['капсула-ответ', () => checkTldr(note)],
     ['ссылка вглубь', () => checkDepthLink(note)],
+    ['свой снимок', () => checkOwnPhoto(note)],
   ];
   for (const [name, fn] of checks) {
     const r = fn();
@@ -311,14 +335,22 @@ export async function runGate(note, { allowed, minScore, published, offline = fa
   return { ok: true, check: 'все' };
 }
 
-/** Уже опубликованное — чтобы не публиковать одно и то же дважды. */
+/**
+ * Уже опубликованное — чтобы не публиковать одно и то же дважды.
+ *
+ * ⛔ Читать ВСЕГДА. Робот кладёт свежие заметки в ту же папку, где лежат старые,
+ * и запускает проверку без аргументов. Если в этом случае список опубликованного
+ * пуст, дедупа нет вовсе — именно так одна новость про ЮНЕСКО вышла дважды.
+ * Заметку не сравнивают с ней же: за это отвечает `slug` у вызывающего.
+ */
 export function loadPublished(root) {
   const out = [];
   const dir = join(root, 'src/content/news');
   if (existsSync(dir)) {
     for (const f of readdirSync(dir).filter((x) => x.endsWith('.md'))) {
-      const n = parseNote(readFileSync(join(dir, f), 'utf8'), basename(f, '.md'));
-      out.push({ title: n.data.title, sources: (n.data.sources ?? []).map((s) => s.url) });
+      const slug = basename(f, '.md');
+      const n = parseNote(readFileSync(join(dir, f), 'utf8'), slug);
+      out.push({ slug, title: n.data.title, sources: (n.data.sources ?? []).map((s) => s.url) });
     }
   }
   const vc = join(root, 'src/data/visa-changes.js');
@@ -339,14 +371,20 @@ if (isMain) {
   const root = process.cwd();
   const cfg = JSON.parse(readFileSync(join(root, 'news/config.json'), 'utf8'));
   const dir = dirArg ? join(root, dirArg) : join(root, 'src/content/news');
-  const published = dirArg ? loadPublished(root) : [];
+  // ⛔ Раньше здесь стояло `dirArg ? loadPublished(root) : []`: при обычном
+  // запуске (робот зовёт скрипт БЕЗ аргумента) список опубликованного был пуст,
+  // и дедуп не работал вовсе — так одна новость про ЮНЕСКО вышла дважды.
+  const published = loadPublished(root);
 
   const files = readdirSync(dir).filter((f) => f.endsWith('.md'));
   let bad = 0;
   for (const f of files) {
-    const note = parseNote(readFileSync(join(dir, f), 'utf8'), basename(f, '.md'));
+    const slug = basename(f, '.md');
+    const note = parseNote(readFileSync(join(dir, f), 'utf8'), slug);
     const r = await runGate(note, {
-      allowed: cfg.allowedSourceDomains, minScore: cfg.minScore, published, offline,
+      allowed: cfg.allowedSourceDomains, minScore: cfg.minScore, offline,
+      // Сравнивать заметку с ней же бессмысленно: она совпадёт сама с собой.
+      published: published.filter((p) => p.slug !== slug),
     });
     if (r.ok) console.log(`  ok      ${f}`);
     else { bad++; console.log(`  ОТБОЙ   ${f} — ${r.check}: ${r.reason}`); }
