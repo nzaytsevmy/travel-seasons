@@ -276,28 +276,43 @@ export function stripHtml(html) {
  * отдающая пустоту, считается неподтверждающей: факт без проверяемого источника
  * в ленту не идёт.
  */
-export async function fetchSources(note, { timeoutMs = 20000 } = {}) {
+export async function fetchSources(note, { timeoutMs = 20000, attempts = 3 } = {}) {
   const texts = [];
   for (const s of note.data.sources ?? []) {
-    const ac = new AbortController();
-    const t = setTimeout(() => ac.abort(), timeoutMs);
-    try {
-      const res = await fetch(s.url, {
-        signal: ac.signal,
-        headers: { 'User-Agent': 'traveltribe-news-gate/1.0 (+https://traveltribe.ru/)' },
-      });
-      if (!res.ok) return { ok: false, reason: `источник отдал ${res.status}: ${s.url}`, texts };
-      const html = await res.text();
-      const text = stripHtml(html);
-      if (text.trim().length < 400) {
-        return { ok: false, reason: `на странице нет читаемого текста (JS-only или блок ботов): ${s.url}`, texts };
+    let last = null;
+    for (let i = 0; i < attempts; i++) {
+      // Случайный обрыв не должен стоить заметки. Замерено 01.08.2026: из четырёх
+      // прогонов подряд по одному и тому же набору один выбросил живую заметку с
+      // «источник недоступен» — сеть моргнула. Повторяем только временное:
+      // 404 и 403 повторять бессмысленно, страница правда не отдаётся.
+      if (i > 0) await new Promise((r) => setTimeout(r, 2000 * i));
+      const ac = new AbortController();
+      const t = setTimeout(() => ac.abort(), timeoutMs);
+      try {
+        const res = await fetch(s.url, {
+          signal: ac.signal,
+          headers: { 'User-Agent': 'traveltribe-news-gate/1.0 (+https://traveltribe.ru/)' },
+        });
+        if (!res.ok) {
+          last = { ok: false, reason: `источник отдал ${res.status}: ${s.url}`, texts };
+          if (res.status === 429 || res.status >= 500) continue;
+          return last;
+        }
+        const html = await res.text();
+        const text = stripHtml(html);
+        if (text.trim().length < 400) {
+          return { ok: false, reason: `на странице нет читаемого текста (JS-only или блок ботов): ${s.url}`, texts };
+        }
+        texts.push(text);
+        last = null;
+        break;
+      } catch (e) {
+        last = { ok: false, reason: `источник недоступен (${e.name}): ${s.url}`, texts };
+      } finally {
+        clearTimeout(t);
       }
-      texts.push(text);
-    } catch (e) {
-      return { ok: false, reason: `источник недоступен (${e.name}): ${s.url}`, texts };
-    } finally {
-      clearTimeout(t);
     }
+    if (last) return last;
   }
   return { ok: true, texts };
 }

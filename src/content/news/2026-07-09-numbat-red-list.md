@@ -3,13 +3,6 @@ title: "Нумбата понизили в Красном списке — ре�
 date: 2026-07-09
 checked: 2026-07-31
 tldr: "Австралийский нумбат переехал в Красном списке из «под угрозой исчезновения» в «близкий к уязвимому» — движение вниз по шкале, что бывает нечасто. За этим сорок лет работы: вытравливание кошек и лис, ограждённые участки, разведение в зоопарке Перта. Численность выросла с трёхсот особей до двух-трёх тысяч."
-image: "./_images/2026-07-09-numbat-red-list.jpg"
-imageAlt: "Нумбат — сумчатый муравьед из Западной Австралии"
-imageCredit: "britishlibrary"
-imageLicense: "CC0"
-imageLicenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
-imageSource: "https://www.rawpixel.com/image/562431/numbat-shade-drawing"
-imageTitle: "Numbat Voyages Dans Les Deux"
 photoQuery: "numbat"
 topic: nature
 impact: medium
@@ -19,6 +12,12 @@ countries:
 sources:
   - name: IUCN
     url: https://iucn.org/press-release/202607/desert-frog-deep-sea-molluscs-remarkable-species-risk-iucn-red-list
+image: "./_images/2026-07-09-numbat-red-list.jpg"
+imageAlt: "Нумбата понизили в Красном списке — редкий случай, когда зверя стало больше"
+imageCredit: "S J Bennett from Australia"
+imageLicense: "CC BY"
+imageLicenseUrl: "https://creativecommons.org/licenses/by/2.0/"
+imageSource: "https://commons.wikimedia.org/w/index.php?curid=102468234"
 ---
 
 В обновлении Красного списка от 9 июля австралийский нумбат переехал из категории «под угрозой исчезновения» в «близкий к уязвимому». Это движение вниз по шкале, а не вверх, и в новостях Красного списка так бывает нечасто: обычно всё едет в обратную сторону.
