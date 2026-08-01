@@ -64,6 +64,14 @@ jobs:
     runs-on: ubuntu-latest
     # Без лимита job наследовал дефолтные 6 ч — зависший прогон крутился часами.
     timeout-minutes: 40
+    # Прогон скриншотов делится на четыре части, каждая на своём раннере: было
+    # 10,4 минуты подряд, стало примерно три параллельно. Playwright сам режет
+    # набор по --shard и не требует, чтобы части были равными.
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    name: visual (${{ matrix.shard }}/4)
     steps:
       - uses: actions/checkout@v4
 
@@ -77,7 +85,18 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium webkit
 
+      # См. пояснение в build.yml: обработка картинок занимала 115 секунд в
+      # КАЖДОЙ сборке, а результат для одного файла всегда одинаковый.
+      - name: Кэш обработанных картинок
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.astro
+          key: astro-assets-${{ runner.os }}-${{ hashFiles('src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.png') }}
+          restore-keys: astro-assets-${{ runner.os }}-
+
       - run: npm run build
+        env:
+          SKIP_HTML_MIN: '1'   # на отрисовку страницы минификация не влияет
 
       # Явный порт 4322: `astro preview` по умолчанию поднимается на 4321, а гейт
       # ждёт/тестит на 4322 — из-за этого «Wait for server» висел бесконечно
@@ -103,7 +122,7 @@ jobs:
       # ubuntu по суффиксу платформы. Раньше здесь стоял --grep-invert "— visual" —
       # скриншоты в CI не сравнивались вообще, потому что linux-эталонов не было.
       - name: Run visual regression tests
-        run: npx playwright test
+        run: npx playwright test --shard=${{ matrix.shard }}/4
         env:
           PREVIEW_URL: http://localhost:4322
 
