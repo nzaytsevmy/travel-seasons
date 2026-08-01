@@ -225,3 +225,29 @@ test('капсула-ответ обязательна и уложена в 40�
   expect(checkTldr({ ...baseNote, data: { ...baseNote.data, tldr: undefined } }).ok).toBe(false);
   expect(checkTldr({ ...baseNote, data: { ...baseNote.data, tldr: 'Слишком коротко.' } }).ok).toBe(false);
 });
+
+// Радар смотрит на National Geographic, Smithsonian, Mongabay — а сослаться на
+// них было нельзя: в списке стоял только nationalgeographic.org, куда статьи не
+// попадают. Робот находил интересное и не мог его опубликовать, отсюда пустые
+// дни. Теперь такие издания разрешены — но ⛔ ТОЛЬКО для природы и транспорта.
+// Визовый факт по-прежнему только от того, кто его объявил: по нему человек
+// планирует поездку и тратит деньги.
+const MEDIA = ['nationalgeographic.com', 'smithsonianmag.com'];
+
+test('издание годится для природы, но не для визовой заметки', () => {
+  const fromMedia = (topic: string) => ({ ...baseNote, data: { ...baseNote.data, topic,
+    status: topic === 'visa' ? 'действует' : undefined,
+    sources: [{ name: 'NG', url: 'https://www.nationalgeographic.com/animals/x' }] } });
+
+  expect(checkDomains(fromMedia('nature'), ALLOWED, MEDIA).ok).toBe(true);
+  expect(checkDomains(fromMedia('transport'), ALLOWED, MEDIA).ok).toBe(true);
+
+  const visa = checkDomains(fromMedia('visa'), ALLOWED, MEDIA);
+  expect(visa.ok).toBe(false);
+  expect(visa.reason).toContain('визов');
+
+  // Совсем посторонний домен не проходит ни по одной теме.
+  const junk = { ...baseNote, data: { ...baseNote.data,
+    sources: [{ name: 'x', url: 'https://random-blog.example/post' }] } };
+  expect(checkDomains(junk, ALLOWED, MEDIA).ok).toBe(false);
+});
