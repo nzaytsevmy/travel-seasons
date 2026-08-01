@@ -6,6 +6,7 @@ import compress from 'astro-compress';
 import brokenLinks from 'astro-broken-links-checker';
 import { readFileSync, readdirSync } from 'node:fs';
 import remarkNumerals from './tools/remark-numerals.mjs';
+import { archivedMonths, monthKey } from './src/data/news.js';
 import rehypeTableWrap from './tools/rehype-table-wrap.mjs';
 import rehypeFaqAccordion from './tools/rehype-faq-accordion.mjs';
 import { DATA_UPDATED } from './src/data/meta.js';
@@ -37,6 +38,31 @@ for (const f of readdirSync(BLOG_DIR)) {
   const raw = (fm.match(/^updatedDate:\s*(.+)$/m)?.[1] || fm.match(/^pubDate:\s*(.+)$/m)?.[1] || '').replace(/['"]/g, '').trim();
   if (raw) blogLastmod[`https://traveltribe.ru/blog/${f.replace(/\.mdx?$/, '')}/`] = new Date(raw);
 }
+// Свежесть новостей — из самих заметок, а не из общей даты сайта. Единственный
+// ежедневный раздел стоял с пометкой «обновляется раз в год» и датой сборки: и
+// лента выглядела мёртвой, и замороженный архив притворялся свежим.
+// Границу «свежее / архив» берём из того же места, что и сама лента, иначе она
+// разъедется с тем, что видит читатель.
+const NEWS_DIR = new URL('./src/content/news/', import.meta.url);
+const newsChecked = [];
+for (const f of readdirSync(NEWS_DIR)) {
+  if (!/\.mdx?$/.test(f)) continue;
+  const fm = (readFileSync(new URL(f, NEWS_DIR), 'utf8').split(/^---\s*$/m)[1]) || '';
+  const date = (fm.match(/^date:\s*(.+)$/m)?.[1] || '').replace(/['"]/g, '').trim();
+  const checked = (fm.match(/^checked:\s*(.+)$/m)?.[1] || '').replace(/['"]/g, '').trim();
+  if (date && checked) newsChecked.push({ date: new Date(date), checked: new Date(checked) });
+}
+// archivedMonths ждёт записи коллекции и отдаёт МНОЖЕСТВО ключей месяцев,
+// а не «архивна ли эта дата» — оборачиваем свои данные в ту же форму.
+const newsArchived = archivedMonths(newsChecked.map((e) => ({ data: { date: e.date } })));
+const maxChecked = (list) => (list.length ? new Date(Math.max(...list.map((e) => e.checked))) : null);
+const newsFeedLastmod = maxChecked(newsChecked.filter((e) => !newsArchived.has(monthKey(e.date))));
+const newsMonthLastmod = {};
+for (const e of newsChecked.filter((x) => newsArchived.has(monthKey(x.date)))) {
+  const k = monthKey(e.date);
+  if (!newsMonthLastmod[k] || e.checked > newsMonthLastmod[k]) newsMonthLastmod[k] = e.checked;
+}
+
 const DATA_DATE = new Date(DATA_UPDATED + 'T00:00:00Z');
 
 export default defineConfig({
@@ -123,6 +149,14 @@ export default defineConfig({
       serialize(item) {
         const url = item.url;
         item = { ...item, lastmod: blogLastmod[url] || DATA_DATE };
+        // Лента новостей обновляется ежедневно, архив месяца — уже никогда.
+        if (url === 'https://traveltribe.ru/novosti/') {
+          return { ...item, lastmod: newsFeedLastmod || item.lastmod, priority: 0.8, changefreq: 'daily' };
+        }
+        const m = url.match(/^https:\/\/traveltribe\.ru\/novosti\/(\d{4}-\d{2})\/$/);
+        if (m) {
+          return { ...item, lastmod: newsMonthLastmod[m[1]] || item.lastmod, priority: 0.4, changefreq: 'yearly' };
+        }
         // Homepage and main tools — top priority, daily-ish updates
         if (url === 'https://traveltribe.ru/') {
           return { ...item, priority: 1.0, changefreq: 'daily' };

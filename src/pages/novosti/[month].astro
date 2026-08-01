@@ -4,6 +4,7 @@
 // между /novosti/ и архивом не возникает.
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Footer from '../../components/Footer.astro';
 import NewsItem from '../../components/NewsItem.astro';
 import { getCollection } from 'astro:content';
 import { archiveKeys, entriesOfMonth, monthTitleRu, formatDateRu } from '../../data/news.js';
@@ -95,6 +96,8 @@ const ldJson = {
     )}
 
   </main>
+
+  <Footer />
 </Layout>
 
 <style>
