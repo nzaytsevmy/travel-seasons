@@ -17,7 +17,13 @@ test.beforeEach(async ({ page }) => {
 //                    (AffiliateNote + PricingCards + FlightRoutes + TOC);
 //   blog-novoafon  — прозовые markdown-таблицы (18 строк) + AffiliateNote.
 const PAGES: { slug: string; name: string; dynamic?: boolean; content?: boolean }[] = [
-  { slug: '/',                              name: 'home' },
+  // dynamic: главная, /trips/ и /bezviz/ рендерят ТЕКУЩИЙ месяц через
+  // new Date().getMonth() («куда поехать в августе»). Первого числа любого
+  // месяца пиксельный эталон разъезжается сам, без единой правки кода —
+  // 01.08.2026 это уронило CI на двух PR подряд, и оба раза виноват был
+  // календарь, а не изменения. Структуру этих страниц держат тесты
+  // no-overflow / no-broken-images / no-css-escapes ниже.
+  { slug: '/',                              name: 'home', dynamic: true },
   // dynamic: листинг блога меняется на КАЖДЫЙ новый пост (featured-карточка, счётчик
   // статей, облако тегов) → пиксельный снапшот тут даёт ложный фейл каждую публикацию
   // и тянет пересъёмку linux-эталонов. Best practice — не снапшотить волатильный
@@ -25,7 +31,7 @@ const PAGES: { slug: string; name: string; dynamic?: boolean; content?: boolean 
   // карточек — baseline'ы самих постов. Итог: новый пост эталоны НЕ трогает.
   { slug: '/blog/',                         name: 'blog-index', dynamic: true },
   { slug: '/seasons/',                      name: 'seasons' },
-  { slug: '/trips/',                        name: 'trips' },
+  { slug: '/trips/',                        name: 'trips', dynamic: true },     // сезонный блок «текущий месяц»
   { slug: '/countries/',                    name: 'countries' },
   { slug: '/blog/japan-guide-2026/',        name: 'blog-japan', content: true },
   { slug: '/blog/bolivia-guide-2026/',      name: 'blog-bolivia', content: true },   // 4-кол таблица сезонов + PricingCards
@@ -45,7 +51,7 @@ const PAGES: { slug: string; name: string; dynamic?: boolean; content?: boolean 
   { slug: '/blog/ostrov-valaam-2026/',      name: 'blog-valaam', content: true },            // POI Карелии
   { slug: '/turkey/',                       name: 'country-hub-turkey' },     // хаб страны: manifest + TripSaveButton + aff-CTA
   { slug: '/trips/july/turkey/',            name: 'trips-july-turkey' },      // trips-детальная: findcta + TripSaveButton
-  { slug: '/bezviz/',                       name: 'bezviz' },                 // интент-лендинг: таблица безвиза + МИД-источники
+  { slug: '/bezviz/',                       name: 'bezviz', dynamic: true },   // сезонный блок «текущий месяц»
   { slug: '/compare/',                      name: 'compare-index' },          // компаратор-тул: пикер + динамический результат + CTA
   { slug: '/compare/turkey-vs-egypt/',      name: 'compare-pair' },           // кураторская пара: CompareTable + byline + CTA
   { slug: '/events/',                       name: 'events-index' },           // годовой хаб событий + byline

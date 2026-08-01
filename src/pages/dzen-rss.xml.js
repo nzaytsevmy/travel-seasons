@@ -1,5 +1,7 @@
 import { getCollection } from 'astro:content';
 import { getImage } from 'astro:assets';
+import { pickNewsImage } from '../data/news-images.js';
+import { monthKey, archivedMonths } from '../data/news.js';
 
 // Дзен-совместимый RSS feed (Native, не Турбо/Новости).
 // Документация: https://dzen.ru/help/ru/website/site-to-channel.html
@@ -90,7 +92,42 @@ export async function GET() {
   const posts = (await getCollection('blog'))
     .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
+  // Заметки ленты идут сюда наравне со статьями: у Дзена свой отбор, и короткий
+  // датированный материал с картинкой ему подходит. Ссылка ведёт на якорь —
+  // своей страницы у заметки нет, она пункт ленты.
+  const news = (await getCollection('news'))
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+    .slice(0, 30);
+  const archived = archivedMonths(news);
+
   const items = [];
+
+  for (const n of news) {
+    const key = monthKey(n.data.date);
+    const link = `${SITE}${archived.has(key) ? `/novosti/${key}/` : '/novosti/'}#${n.slug}`;
+    const img = pickNewsImage(n.data);
+    if (!img) continue;                       // без картинки Дзен материал не примет
+    const optimized = await getImage({ src: img, width: 1400, format: 'jpeg', quality: 82 });
+    const body = mdToHtml(n.body);
+    const lead = n.data.tldr ? `<p><b>${escapeXml(n.data.tldr)}</b></p>\n` : '';
+    const cta = `<p><a href="${link}">Читать на TravelTribe</a></p>`;
+
+    items.push(`    <item>
+      <title>${escapeXml(n.data.title)}</title>
+      <link>${link}</link>
+      <pdalink>${link}</pdalink>
+      <guid isPermaLink="true">${link}</guid>
+      <pubDate>${n.data.date.toUTCString()}</pubDate>
+      <description>${escapeXml(n.data.tldr ?? n.data.title)}</description>
+      <enclosure url="${SITE}${optimized.src}" type="image/jpeg"/>
+      <category>native</category>
+      <category>format-post</category>
+      <category>index</category>
+      <category>comment-all</category>
+      <content:encoded><![CDATA[${lead}${body}\n${cta}]]></content:encoded>
+    </item>`);
+  }
+
   for (const post of posts) {
     const link = `${SITE}/blog/${post.slug}/`;
 

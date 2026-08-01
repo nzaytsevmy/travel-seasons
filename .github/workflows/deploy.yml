@@ -24,7 +24,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          # 0, а не 2: дата актуальности данных считается из истории git
+          # (scripts/gen-freshness.mjs). На обрезанной истории git решит, что
+          # все файлы созданы в момент сборки, и подпись соврёт.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:

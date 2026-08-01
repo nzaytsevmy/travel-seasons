@@ -1,3 +1,6 @@
+// @freshness: DATA_UPDATED — файл несёт датированную фактуру (цены, правила,
+//   погода). Правишь его — бампни DATA_UPDATED в meta.js, иначе подпись
+//   «данные проверены на дату X» соврёт. Гейт свежести ищет именно эту метку.
 // Derived registry of all 70 destinations with stable slug, visa, budget, monthly
 // data, and prices. Built from data/regions.js + data/prices.js — single source
 // of truth for /visa/<slug>/ and /trips/<month>/<slug>/ programmatic pages.
