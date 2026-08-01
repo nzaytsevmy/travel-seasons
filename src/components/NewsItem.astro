@@ -11,12 +11,17 @@
 //    обратных ссылок, а брендовых запросов у сайта пока ноль;
 //  · NewsArticle на каждую заметку — те самые «структурные элементы».
 // Фото только свои, из уже отснятого: чужие права не трогаем.
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu } from '../data/news.js';
 import { pickNewsImage, newsImageNote } from '../data/news-images.js';
 import { bySlug } from '../data/directions.js';
 
-const { entry, Content, index = 0 } = Astro.props;
+// `base` — адрес страницы, на которой заметка сейчас показана: лента или архив
+// месяца. Заметка живёт якорем внутри страницы, поэтому её адрес обязан
+// собираться от текущей, иначе архивная заметка утверждает, что находится в
+// ленте, а canonical и RSS ведут в архив. Конфликт адресов в микроразметке —
+// сигнал для поиска.
+const { entry, Content, index = 0, base = 'https://traveltribe.ru/novosti/' } = Astro.props;
 const d = entry.data;
 const countryName = (slug) => bySlug(slug)?.cases?.nom ?? slug;
 // Страна заметки не обязана быть направлением сайта: робот ставит её ради
@@ -25,13 +30,21 @@ const countryName = (slug) => bySlug(slug)?.cases?.nom ?? slug;
 const linkedCountries = (d.countries ?? []).filter((s) => bySlug(s));
 const cover = pickNewsImage(d, entry.slug, index);
 // Подпись под кадром. Для стока честно называем, ЧТО на фото и чей он: иначе
-// иллюстрация к теме читается как снимок с места события. Для своего архива —
-// прежняя оговорка.
+// иллюстрация к теме читается как снимок с места события. Названия у кадра со
+// стока может не быть вовсе — тогда говорим прямо, что это иллюстрация, а не
+// оставляем читателя с одним именем автора.
 const coverNote = d.imageCredit
-  ? [d.imageTitle, `фото: ${d.imageCredit}`, d.imageLicense].filter(Boolean).join(' · ')
+  ? [d.imageTitle || 'Иллюстрация к теме', `фото: ${d.imageCredit}`, d.imageLicense]
+      .filter(Boolean).join(' · ')
   : newsImageNote(d);
 const coverLink = d.imageSource ?? null;
 const iso = (x) => new Date(x).toISOString().slice(0, 10);
+
+// Кадр для микроразметки отдельным дериватом 1600px. Дзен и Discover не берут
+// картинку уже 1200px — показывают мелкий эскиз, и переходов почти не остаётся.
+// В саму страницу этот файл не попадает, вес не растёт: он нужен только поиску.
+const wide = cover ? await getImage({ src: cover, width: 1600, format: 'webp' }) : null;
+const wideUrl = wide ? new URL(wide.src, 'https://traveltribe.ru').href : null;
 ---
 <li class="nv-item" id={entry.slug}>
   <div class="nv-meta">
@@ -47,6 +60,10 @@ const iso = (x) => new Date(x).toISOString().slice(0, 10);
 
   {cover && (
     <figure class="nv-fig">
+      {/* ⛔ Ширины 480 и 800 — и не больше. Кандидат 1200 добавляли ради Дзена и
+          Discover, но им нужен крупный кадр В РАЗМЕТКЕ, а не в самой странице:
+          в замере 01.08.2026 он утяжелил загрузку на мобильном с 1,74 до 2,63 с
+          при бюджете 2,5. Крупный кадр отдаётся отдельным дериватом выше. */}
       <Image src={cover} alt={d.imageAlt ?? d.title} widths={[480, 800]}
              sizes="(max-width: 700px) 100vw, 700px" loading="lazy" formats={['webp']} />
       {coverNote && (
@@ -78,29 +95,44 @@ const iso = (x) => new Date(x).toISOString().slice(0, 10);
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@type": "NewsArticle",
-    "@id": `https://traveltribe.ru/novosti/#${entry.slug}`,
+    "@id": `${base}#${entry.slug}`,
+    "mainEntityOfPage": { "@id": base },
     "headline": d.title,
     "description": d.tldr ?? d.title,
+    ...(wideUrl ? { "image": [wideUrl] } : {}),
     "datePublished": iso(d.date),
     "dateModified": iso(d.checked),
     "inLanguage": "ru-RU",
     "author": { "@id": "https://traveltribe.ru/about/#person" },
-    "publisher": { "@id": "https://traveltribe.ru/#organization" },
+    // ⛔ Именно #org. До 01.08.2026 здесь стояло #organization — узла с таким
+    // адресом в графе нет вовсе, и ссылка на издателя у каждой заметки вела в
+    // пустоту. Организация объявлена глобально в Layout.astro.
+    "publisher": { "@id": "https://traveltribe.ru/#org" },
     "isAccessibleForFree": true,
     "citation": d.sources.map((x) => x.url),
   })} />
 </li>
 
 <style>
-  .nv-item { border-top: 1px solid var(--line-strong, var(--line)); padding: 1.5rem 0; scroll-margin-top: 80px; }
+  /* Чернильная линейка отделяет записи, тонкая — блоки внутри записи. Разный вес
+     линии задаёт структуру без единого нового элемента. Токен объявляем локально,
+     как это уже сделано в двух других компонентах: глобального такого нет, и
+     задуманная граница молча рисовалась бледной. */
+  .nv-item { --line-strong: #1b1914;
+             border-top: 1px solid var(--line-strong); padding: 2rem 0 2.25rem; scroll-margin-top: 80px; }
 
+  /* Строка над заголовком: без капса — он выпилен по всему сайту 06.07.2026.
+     Дата моноширинной с табличными цифрами, чтобы столбик дат не плясал. */
   .nv-meta { display: flex; flex-wrap: wrap; gap: .5rem .9rem; align-items: baseline;
-             font-size: .74rem; letter-spacing: .06em; text-transform: uppercase;
-             color: var(--text-faint); margin-bottom: .5rem; }
+             font-size: .78rem; color: var(--text-faint); margin-bottom: .55rem; }
+  .nv-meta time { font-family: var(--ff-mono); font-variant-numeric: tabular-nums; }
   .nv-impact { color: var(--gold); font-weight: 700; }
-  .nv-status { color: var(--text-dim); text-transform: none; letter-spacing: 0; font-size: .8rem; }
+  .nv-status { color: var(--text-dim); font-size: .8rem; }
 
-  .nv-title { font-size: 1.2rem; line-height: 1.3; margin: 0 0 .55rem; scroll-margin-top: 80px; }
+  /* Заголовок крупнее: при прежних 1.2rem контраст к тексту был 1.2×, и лента
+     читалась одним длинным абзацем — глазу не за что зацепиться при прокрутке. */
+  .nv-title { font-size: clamp(1.35rem, 2.2vw, 1.55rem); line-height: 1.22;
+              letter-spacing: -.01em; margin: 0 0 .6rem; scroll-margin-top: 80px; }
 
   /* Капсула-ответ. Золотая линия слева отделяет ответ от контекста —
      глаз видит границу без второго шрифта и без заливки. */
@@ -109,9 +141,16 @@ const iso = (x) => new Date(x).toISOString().slice(0, 10);
     padding-left: .9rem; border-left: 3px solid var(--gold);
   }
 
-  /* Картинка после капсулы, а не перед: сначала ответ, потом иллюстрация. */
+  /* Картинка после капсулы, а не перед: сначала ответ, потом иллюстрация.
+     Одна пропорция на все кадры. Со стока приходят и 1600×1067, и 1600×1200 —
+     вертикальный ритм скакал на каждой заметке. Заодно сдвиг макета нулевой по
+     построению, и пропорция совпадает с той, что просит Discover. */
   .nv-fig { margin: 0 0 .9rem; }
-  .nv-fig :global(img) { width: 100%; height: auto; display: block; }
+  /* ⛔ height: auto обязателен. Без него высоту диктует атрибут height самого
+     тега, а `aspect-ratio` молча не применяется: в замере 01.08.2026 кадр был
+     748×1067 при объявленных 16/9. */
+  .nv-fig :global(img) { width: 100%; height: auto; aspect-ratio: 16 / 9;
+                         object-fit: cover; display: block; }
   .nv-fig figcaption { font-size: .74rem; color: var(--text-faint); margin-top: .35rem; }
   .nv-body { max-width: 62ch; line-height: 1.6; }
   .nv-body :global(p) { margin: 0 0 .7rem; }
