@@ -14,8 +14,8 @@
 // подбор из своего архива (src/data/news-images.js). Лучше свой кадр с честной
 // подписью, чем пустая карточка, которую не возьмут ни Дзен, ни Discover.
 
-import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { writeFileSync, mkdirSync, existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join, dirname, basename } from 'node:path';
 
 const UA = 'traveltribe-news/1.0 (https://traveltribe.ru)';
 const API = 'https://api.openverse.org/v1/images/';
@@ -44,6 +44,23 @@ export function fallbackQuery(data) {
     .filter((w) => w.length > 3 && !stop.has(w))
     .slice(0, 3);
   return [...(data.countries ?? []), ...words].join(' ').trim();
+}
+
+// Служебные слова из названий на стоках: они не говорят, ЧТО на кадре.
+const NOISE = new Set(['file', 'jpg', 'jpeg', 'png', 'img', 'dsc', 'the', 'a', 'of', 'in', 'on',
+  'at', 'and', 'national', 'park', 'parque', 'nacional', 'cropped', 'banner', 'panorama', 'view']);
+
+// Кадры про занятие человека, а не про место: на них крупным планом узнаваемые
+// люди. Чужие лица на своём сайте не размещаем, да и к новости про плату за вход
+// нужен вид парка, а не чей-то велопоход. Не запрет, а отодвигание в конец.
+const PEOPLE = /\b(cycl|bike|biking|hik|trek|climb|selfie|portrait|wedding|tourist|people|man|woman|girl|boy|kids?|children)/i;
+
+/** Сколько в названии слов сверх самого запроса. Меньше — кадр ближе к теме. */
+export function extraWords(title, query) {
+  const norm = (s) => s.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').split(/\s+/).filter(Boolean);
+  const asked = new Set(norm(query));
+  const extra = norm(title).filter((w) => w.length > 2 && !asked.has(w) && !NOISE.has(w) && !/^\d+$/.test(w)).length;
+  return extra + (PEOPLE.test(title) ? 3 : 0);
 }
 
 async function search(q, { wide = true, timeoutMs = 25000 } = {}) {
@@ -91,8 +108,23 @@ export async function findPhoto(data) {
     for (const wide of [true, false]) {
       hits = (await search(q, { wide }))
         .filter((x) => x.url && x.license in LICENSE_RANK)
-        .filter((x) => (x.width ?? 0) >= 1200)
-        .sort((a, b) => LICENSE_RANK[a.license] - LICENSE_RANK[b.license]);
+        .filter((x) => (x.width ?? 0) >= 1200);
+      // ⛔ Раньше отбор шёл ЧИСТО по лицензии, и это ставило рядом с заметкой
+      // случайный кадр: к плате за вход в Торрес-дель-Пайне встал зелёный
+      // попугай, снятый в том же парке, — у него была лицензия посвободнее.
+      //
+      // Сток помечает тегом парка всё, что в парке снято: пуму, гуанако, овец,
+      // карту, велосипедиста. Отличить кадр ПРО место от кадра, где место лишь
+      // упомянуто, помогает название: у первого кроме самого места в названии
+      // почти ничего нет, у второго — латинское имя вида и ещё полстроки.
+      // Поэтому сначала «лишних слов в названии меньше», и только потом
+      // лицензия и порядок выдачи.
+      hits = hits
+        .map((x, i) => ({ x, i, extra: extraWords(x.title ?? '', q) }))
+        .sort((a, b) => (a.extra - b.extra)
+          || (LICENSE_RANK[a.x.license] - LICENSE_RANK[b.x.license])
+          || (a.i - b.i))
+        .map((p) => p.x);
       if (hits.length) break;
     }
     if (hits.length) {
@@ -125,12 +157,47 @@ export async function fetchFirstWorking(data, slug, root = process.cwd()) {
   return null;
 }
 
-/** Скачивает кадр в src/content/news/_images/<slug>.jpg. */
+/**
+ * Скачивает кадр в src/content/news/_images/<slug>.jpg.
+ *
+ * Оригинал со стока весит около полумегабайта. Заметок 2–4 в день, и через год
+ * это полгигабайта в истории репозитория — история не чистится, вес останется
+ * навсегда. Поэтому кадр ужимаем сразу: 1600px по широкой стороне с запасом
+ * перекрывает требование Discover (не меньше 1200px), а сборка всё равно делает
+ * из него webp нужных размеров.
+ */
 export async function downloadPhoto(photo, slug, root = process.cwd()) {
   const res = await fetch(photo.url, { headers: { 'User-Agent': UA } });
   if (!res.ok) throw new Error(`фото не скачалось: ${res.status}`);
-  const buf = Buffer.from(await res.arrayBuffer());
-  if (buf.length < 20_000) throw new Error('файл подозрительно мал, это не фотография');
+  const raw = Buffer.from(await res.arrayBuffer());
+  if (raw.length < 20_000) throw new Error('файл подозрительно мал, это не фотография');
+
+  let buf = raw;
+  try {
+    const sharp = (await import('sharp')).default;
+    const src = sharp(raw).rotate();
+    // ⛔ Ширину в описании сток обещает по оригиналу, а отдать может файл меньше:
+    // по «alpine ibex» пришёл кадр 1024px при заявленных 1200+. Дзен и Discover
+    // такой не возьмут, поэтому меряем сам файл и уходим к следующему кандидату.
+    const { width = 0, height = 0 } = await src.metadata();
+    if (width < 1200) throw new Error(`кадр узкий: ${width}px при нужных 1200`);
+    // Баннерные обрезки с Викисклада приходят полосой 7:1 — в карточке ленты от
+    // такой остаётся щель. Держим кадр в разумных пропорциях, от вертикального
+    // 3:4 до широкого 21:9.
+    const ratio = height ? width / height : 0;
+    if (ratio > 2.4 || ratio < 0.75) {
+      throw new Error(`кадр узкий: пропорции ${width}×${height}, это полоса, а не фотография`);
+    }
+    buf = await src
+      .resize({ width: 1600, withoutEnlargement: true })
+      .jpeg({ quality: 82, mozjpeg: true })
+      .toBuffer();
+  } catch (e) {
+    // Узкий кадр — отказ, пусть возьмут следующего. Всё остальное (нет sharp,
+    // битый декодер) не повод терять заметку: кладём как скачали.
+    if (/кадр узкий/.test(e.message)) throw e;
+  }
+
   const rel = `_images/${slug}.jpg`;
   const abs = join(root, 'src/content/news', rel);
   if (!existsSync(dirname(abs))) mkdirSync(dirname(abs), { recursive: true });
@@ -148,4 +215,53 @@ export function frontmatterLines(photo, rel, alt) {
     `imageLicenseUrl: "${photo.licenseUrl}"`,
     `imageSource: "${photo.source}"`,
   ];
+}
+
+/** Вписывает строки картинки в конец фронтматтера, не трогая остальное. */
+export function insertPhotoFrontmatter(raw, lines) {
+  const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+  if (!m) throw new Error('нет frontmatter');
+  const fm = m[1].replace(/\s+$/, '');
+  return raw.replace(m[0], `---\n${fm}\n${lines.join('\n')}\n---\n`);
+}
+
+// ── Запуск ───────────────────────────────────────────────────────────────────
+//
+// ⛔ Этого шага долго не было вовсе: робот честно писал `photoQuery`, а искать по
+// нему кадр было некому — заметки уходили в ленту без своего снимка и получали
+// запасной кадр из архива по теме, один и тот же у соседей. Отсюда и взялись три
+// одинаковые картинки подряд.
+//
+// Скрипт не роняет прогон: заметку без кадра отбракует гейт проверкой «свой
+// снимок», и лучше потерять одну заметку, чем весь день.
+
+const isMain = process.argv[1] && import.meta.url.endsWith(basename(process.argv[1]));
+if (isMain) {
+  const root = process.cwd();
+  const dir = join(root, 'src/content/news');
+  const { parseNote } = await import('./news-gate.mjs');
+  let done = 0, skipped = 0, failed = 0;
+
+  for (const f of readdirSync(dir).filter((x) => x.endsWith('.md'))) {
+    const slug = basename(f, '.md');
+    const abs = join(dir, f);
+    const raw = readFileSync(abs, 'utf8');
+    let note;
+    try { note = parseNote(raw, slug); } catch { continue; }
+    if (note.data.image) { skipped++; continue; }
+
+    const got = await fetchFirstWorking(note.data, slug, root);
+    if (!got) {
+      failed++;
+      console.log(`  без кадра  ${f} — сток ничего не дал по запросу «${note.data.photoQuery ?? fallbackQuery(note.data)}»`);
+      continue;
+    }
+    // Подпись для незрячих — по-русски. `photoQuery` и название файла на стоке
+    // английские, в alt русскоязычного сайта им не место.
+    const alt = note.data.imageAlt || note.data.title;
+    writeFileSync(abs, insertPhotoFrontmatter(raw, frontmatterLines(got.photo, got.rel, alt)));
+    done++;
+    console.log(`  кадр       ${f} — ${got.photo.licenseLabel}, ${got.photo.creator}, ${Math.round(got.bytes / 1024)} КБ`);
+  }
+  console.log(`\nнайдено кадров ${done}, уже были ${skipped}, без кадра ${failed}`);
 }
