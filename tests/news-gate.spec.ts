@@ -83,6 +83,19 @@ test('заявленное число не найдено на странице 
   expect(checkCorroboration('Численность выросла до 9500 особей', [page]).ok).toBe(false);
 });
 
+test('год не считается заявленным фактом и не валит заметку', () => {
+  // Живой прогон 01.08.2026 отбраковал верную заметку про перепись тигров: «2025»
+  // не нашлось на странице, потому что источник писал «this year». Год — контекст
+  // фразы, а не цифра, которую заметка утверждает.
+  const page = 'Nepal completed its tiger census this year, counting 355 individuals.';
+  expect(checkCorroboration('Перепись 2025 года насчитала 355 тигров', [page]).ok).toBe(true);
+
+  // Настоящие числа проверяться не перестают.
+  expect(checkCorroboration('Перепись 2025 года насчитала 999 тигров', [page]).ok).toBe(false);
+  // И четырёхзначное не-годом остаётся под проверкой.
+  expect(checkCorroboration('Мостки длиной 2750 метров', [page]).ok).toBe(false);
+});
+
 test('волатильная формулировка — отбой', () => {
   const volatile1 = { ...baseNote, body: 'Аэропорт сегодня работает штатно, задержек нет.' };
   expect(checkVolatility(volatile1).ok).toBe(false);

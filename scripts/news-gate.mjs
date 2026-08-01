@@ -116,6 +116,13 @@ export function checkShingles(note, sourceTexts, n = 8) {
   return pass;
 }
 
+// Годы из проверки исключены. Живой прогон 01.08.2026 отбраковал верную заметку
+// про перепись тигров в Непале, потому что «2025» не нашлось на странице: источник
+// писал «this year». Год в заметке почти всегда контекст фразы, а не заявленный
+// факт, и его несёт отдельное поле `date`, которое видно читателю. Оставлять эту
+// проверку значит терять правильные заметки — а именно этого гейт делать не должен.
+const isYear = (s) => s.length === 4 && Number(s) >= 1900 && Number(s) <= 2100;
+
 /**
  * 4. Числа из заметки должны встречаться на странице источника. Ловит выдумку;
  *    неверную интерпретацию верного числа — не ловит, это честное ограничение.
@@ -123,7 +130,8 @@ export function checkShingles(note, sourceTexts, n = 8) {
 export function checkCorroboration(noteText, sourceTexts) {
   const nums = [...new Set((noteText.match(/\d[\d\s.,]*\d|\d/g) ?? [])
     .map((s) => s.replace(/[\s.,]/g, ''))
-    .filter((s) => s.length >= 3))];              // 2-3 и «сорок лет» не проверяем
+    .filter((s) => s.length >= 3)                 // 2-3 и «сорок лет» не проверяем
+    .filter((s) => !isYear(s)))];                 // год — контекст, а не заявленный факт
   if (nums.length === 0) return pass;
 
   const haystack = sourceTexts.join(' ').replace(/[\s.,'’]/g, '');
