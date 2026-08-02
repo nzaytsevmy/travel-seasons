@@ -24,7 +24,7 @@ import BudgetBlock from '../components/BudgetBlock.astro';
 import EssentialsCard from '../components/EssentialsCard.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
 import CountryMap from '../components/CountryMap.astro';
-import { TP_LINKS, aviasalesRoute, otelloStay, cherehapaTravel, ostrovokSearch } from '../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, otelloStay, cherehapaTravel, ostrovokCountry } from '../data/affiliate.js';
 
 // РФ-инвентарь жилья: на этих хабах вместо Островка — Яндекс Путешествия (сильнее по РФ).
 // Подпись к связанному гайду должна отражать РЕАЛЬНЫЙ sourceType статьи:
@@ -432,7 +432,7 @@ if (guide?.itinerary?.length) {
               {RU_STAY.has(d.slug) ? (
                 <a href={otelloStay(`hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc} на Отелло (2ГИС)</a>
               ) : (
-                <a href={ostrovokSearch(`hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать отель {d.cases.loc} на Островке</a>
+                <a href={ostrovokCountry(d.slug, `hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать отель {d.cases.loc} на Островке</a>
               )}
 
               <span class="sl-trust">оплата российскими картами · цены в ₽</span>
