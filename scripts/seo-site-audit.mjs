@@ -110,16 +110,67 @@ for (const f of htmlFiles) {
     if (!metaBy('name', 'twitter:card')[0]) findings.push(['twitter.no_card', url]);
   }
 
+  // Вопросы и капсула-ответ: три правила цитируемости.
+  //
+  // ⛔ Сравнивать вопрос из разметки с видимым текстом можно только после
+  // нормализации. У визовых страниц в видимом заголовке есть декоративный номер
+  // «01» и плюс — без очистки дюжина ложных срабатываний на пустом месте.
+  const norm = (s) => s
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&[a-z]+;|&#\d+;/gi, ' ')
+    .replace(/^\s*\d{1,2}[.)]?\s+/, '')
+    .replace(/[+−›>]\s*$/, '')
+    .replace(/\s+/g, ' ')
+    .trim().toLowerCase();
+  // Видимым считается вопрос и в аккордеоне, и обычным заголовком: поиску важно,
+  // что текст на странице есть, а не в каком он теге. На странице сезонов ответы
+  // стоят заголовками h2 — это законно.
+  // Два разных признака, и путать их нельзя.
+  //  · «есть ли на странице этот текст» — считаем широко: аккордеон, заголовок,
+  //    термин списка. Поиску важно наличие текста, а не тег.
+  //  · «похоже ли, что тут FAQ» — только аккордеон. Если считать заголовками,
+  //    правило начинает ругаться на любую страницу с двумя подзаголовками.
+  const visibleText = [
+    ...html.matchAll(/<summary[^>]*>([\s\S]*?)<\/summary>/gi),
+    ...html.matchAll(/<h[23][^>]*>([\s\S]*?)<\/h[23]>/gi),
+    ...html.matchAll(/<dt[^>]*>([\s\S]*?)<\/dt>/gi),
+  ].map((m) => norm(m[1]));
+  const accordions = [...html.matchAll(/<summary[^>]*>([\s\S]*?)<\/summary>/gi)].map((m) => norm(m[1]));
+  const schemaQuestions = [];
+  let hasSpeakable = false;
+
   for (const [, raw] of html.matchAll(/<script type=["']?application\/ld\+json["']?[^>]*>([\s\S]*?)<\/script>/gi)) {
     let j; try { j = JSON.parse(raw); } catch { findings.push(['jsonld.parse_error', url]); continue; }
     const nodes = Array.isArray(j) ? j : (j['@graph'] || [j]);
+    if (/SpeakableSpecification/.test(raw)) hasSpeakable = true;
     for (const n of nodes) {
+      for (const q of [].concat(n.mainEntity || [])) {
+        if (q && /Question/.test([].concat(q['@type'] || []).join(' ')) && q.name) schemaQuestions.push(norm(q.name));
+      }
       const t = [].concat(n['@type'] || []);
       if (t.some(x => /Article|BlogPosting/.test(x))) {
         if (n.datePublished && !n.dateModified) findings.push(['article.datemodified.missing', url]);
         if (n.dateModified && n.datePublished && n.dateModified < n.datePublished)
           findings.push(['article.dates.modified_before_published', url, `${n.dateModified} < ${n.datePublished}`]);
       }
+    }
+  }
+
+  if (!page.noindex && !isStub) {
+    // 1. Вопрос объявлен, а на странице его нет — по чеклисту это спам-флаг.
+    for (const q of schemaQuestions) {
+      if (!visibleText.some((s) => s.includes(q) || q.includes(s))) {
+        findings.push(['faq.schema_without_visible', url, q.slice(0, 60)]);
+      }
+    }
+    // 2. Вопрос виден, а для поиска его нет. Так молча терялись 22 вопроса.
+    if (accordions.length >= 2 && schemaQuestions.length === 0) {
+      findings.push(['faq.visible_without_schema', url, `видимых ${accordions.length}`]);
+    }
+    // 3. Капсула-ответ отрисована, а голосовой ответ не объявлен — страница вне
+    //    канала цитирования, хотя ответ на ней уже есть.
+    if (!hasSpeakable && /class=["']?[a-z-]*(tldr|lede)\b/i.test(html)) {
+      findings.push(['speakable.missing', url]);
     }
   }
 
