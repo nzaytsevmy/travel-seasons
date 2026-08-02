@@ -83,7 +83,10 @@ const FAQS = [
 const ldJson = {
   "@context": "https://schema.org",
   "@graph": [
-    { "@type": "CollectionPage", "@id": `${url}#page`, "name": title, "description": description, "url": url, "inLanguage": "ru-RU" },
+    // Капсула .tldr отрисована на странице, но объявлена не была — 74 страницы
+    // мимо голосового ответа.
+    { "@type": "CollectionPage", "@id": `${url}#page`, "name": title, "description": description, "url": url, "inLanguage": "ru-RU",
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".tldr"] } },
     { "@type": "FAQPage", "@id": `${url}#faq`, "mainEntity": FAQS.map((f) => ({ "@type": "Question", "name": f.q, "acceptedAnswer": { "@type": "Answer", "text": f.a } })) },
     { "@type": "BreadcrumbList", "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },

@@ -59,6 +59,10 @@ const ldJson = {
       '@id': `${url}#article`,
       'headline': title,
       'description': description,
+      // Капсула-ответ на странице есть с самого начала, а объявлена не была:
+      // 108 страниц с готовым ответом были не видны голосовому ответу и хуже
+      // отбирались в цитаты. Селектор тот же, что на /seasons/.
+      'speakable': { '@type': 'SpeakableSpecification', 'cssSelector': ['h1', '.seasons-tldr'] },
       'author': { '@id': 'https://traveltribe.ru/about/#person' },
       'publisher': { '@id': 'https://traveltribe.ru/#org' },
       'datePublished': '2026-05-13',
