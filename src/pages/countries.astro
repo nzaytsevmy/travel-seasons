@@ -64,7 +64,8 @@ const ldJson = {
       "@type": "CollectionPage", "@id": `${url}#page`, "url": url,
       "name": `Каталог направлений ${brandYear} — 70+ стран для поездки из России`,
       "description": "Каталог всех 70+ направлений: виза для россиян, лучший сезон и цена всей поездки с перелётом. Фильтр по визе, бюджету, сезону и настроению.",
-      "inLanguage": "ru-RU", "isPartOf": { "@id": "https://traveltribe.ru/#website" },
+      "inLanguage": "ru-RU",
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".cat-lede"] }, "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "mainEntity": {
         "@type": "ItemList", "numberOfItems": DIRECTIONS.length,
         "itemListElement": cards.map((c, i) => ({ "@type": "ListItem", "position": i + 1, "url": `https://traveltribe.ru/${c.slug}/`, "name": c.nom })),
