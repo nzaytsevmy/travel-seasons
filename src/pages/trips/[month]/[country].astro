@@ -1,4 +1,5 @@
 ---
+import livePrices from '../../../data/prices-cache.json';
 // Страница «направление × месяц» — Swiss / International Typographic по BRANDBOOK.md.
 // Типографический hero (без градиента/эмодзи), hairline-таблицы, сезон передан весом/золотом.
 import Layout from '../../../layouts/Layout.astro';
@@ -67,6 +68,17 @@ const bestMonths = MONTHS
   .slice(0, 4);
 
 const iata = d.iata || d.price?.iata;   // канон. IATA из regionMeta (через directions.js)
+
+// ⛔ Живая цена перелёта в рублях вместо ручной вилки в долларах. Выгрузка
+// обновляется каждый день по 70 направлениям на 12 месяцев вперёд, и до
+// 02.08.2026 её читала ровно одна страница из 2354. Это и есть тот самый
+// «уникальный датированный факт», за который цитируют: замер 28.07.2026 показал
+// 3,1% переходов у страницы с ценой и датой против 0,25% у страницы без.
+// Отель и еду выгрузка не покрывает — они остаются из ручных данных.
+const liveFlight = iata ? livePrices.prices?.[iata]?.[`${yr}-${String(monthIdx + 1).padStart(2, '0')}`] ?? null : null;
+const liveChecked = livePrices.updatedAt
+  ? new Date(livePrices.updatedAt).toLocaleDateString('ru-RU')
+  : null;
 const flightTiers = d.price?.flight || [0,0,0];
 const hotelTiers = d.price?.hotel || [0,0,0];
 const foodTiers = d.price?.food || [0,0,0];
@@ -108,9 +120,12 @@ const visaLine = ({
 const bestMonthsAll = MONTH_META.filter(mm => mm.status === 'P' || mm.status === 'G').map(mm => mm.nom);
 const bestMonthsStr = bestMonthsAll.length ? bestMonthsAll.join(', ') : 'нет ярко выраженного пика — едут круглый год';
 const verdictForMonth = lbl.verdict + (status === 'P' || status === 'G' ? '.' : '. ' + (bestMonthsAll.length ? 'Лучше выбрать: ' + bestMonthsAll.slice(0,3).join(', ') + '.' : ''));
-const budgetSummary = hasPrices && weekTotal
-  ? `Перелёт из Москвы от $${flightFrom}, отель эконом от $${hotelFrom}/ночь, еда от $${foodFrom}/день. Бюджет на неделю эконом — от $${weekTotal} на человека.`
-  : 'Точные цены — в калькуляторе поездки.';
+const budgetSummary = liveFlight
+  ? `Перелёт Москва — ${d.cases.nom} в ${m.prep}: от ${liveFlight.toLocaleString('ru-RU')} ₽, цена проверена ${liveChecked}.`
+    + (hasPrices ? ` Отель эконом от $${hotelFrom}/ночь, еда от $${foodFrom}/день.` : '')
+  : (hasPrices && weekTotal
+      ? `Перелёт из Москвы от $${flightFrom}, отель эконом от $${hotelFrom}/ночь, еда от $${foodFrom}/день. Бюджет на неделю эконом — от $${weekTotal} на человека.`
+      : 'Точные цены — в калькуляторе поездки.');
 
 const FAQS = [
   { q: `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}?`, a: `${verdictForMonth} ${text}`.trim() },
