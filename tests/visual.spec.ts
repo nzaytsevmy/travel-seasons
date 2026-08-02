@@ -30,7 +30,9 @@ const PAGES: { slug: string; name: string; dynamic?: boolean; content?: boolean 
   // контент. Структуру ленты держат тесты no-overflow / no-broken-images ниже, а вид
   // карточек — baseline'ы самих постов. Итог: новый пост эталоны НЕ трогает.
   { slug: '/blog/',                         name: 'blog-index', dynamic: true },
-  { slug: '/seasons/',                      name: 'seasons' },
+  // Страница печатает дату ежедневной выгрузки цен — эталон устаревает каждое
+  // утро. Проверено А/Б на чистом коде 02.08.2026: падает и без наших правок.
+  { slug: '/seasons/',                      name: 'seasons', dynamic: true },
   { slug: '/trips/',                        name: 'trips', dynamic: true },     // сезонный блок «текущий месяц»
   { slug: '/countries/',                    name: 'countries' },
   { slug: '/blog/japan-guide-2026/',        name: 'blog-japan', content: true },
