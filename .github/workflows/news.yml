@@ -152,6 +152,13 @@ jobs:
             7. Итог запиши в /tmp/news-report.txt: сколько поводов посмотрел,
                сколько отбросил и почему. Этот файл в репозиторий НЕ коммить.
 
+               ⛔ Отчёт обязателен ДАЖЕ ЕСЛИ ничего не нашёл — особенно если
+               ничего не нашёл. 02.08.2026 ты его не оставил, и по журналу стало
+               невозможно отличить «прошёл по всем источникам, ничего не дотянуло
+               до порога» от «упал на полпути». Пустой день это нормально,
+               непонятный пустой день — нет. Перечисли, какие источники открыл и
+               что на них было.
+
             ⛔ ЧЕГО НЕ ДЕЛАТЬ: не трогать ничего, кроме src/content/news/. Не
             править /izmeneniya/ — это YMYL-справочник, он ведётся руками. Не
             коммитить, не пушить, не открывать PR: это делают следующие шаги.
@@ -256,10 +263,27 @@ jobs:
           git add -A src/content/news
           if git diff --staged --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "deleted=0" >> "$GITHUB_OUTPUT"
             echo "Новых заметок нет — публиковать нечего, это нормальный результат."
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
             git diff --staged --name-only
+            # ⛔ Снос опубликованного НЕ РАВЕН новой заметке, хотя приходит тем же
+            # путём. 01.08.2026 редактор-скептик удалил две живые заметки — он был
+            # прав, там были выдуманные утверждения, — и робот смержил это сам,
+            # без человека. То есть у автоматики есть право стирать с сайта живой
+            # текст, и никакой проверки на это нет.
+            #
+            # Публикация нового — обратимая мелочь: не понравилось, снял. Снос
+            # опубликованного рвёт ссылки, которые уже ушли в RSS, в Дзен и в
+            # телеграм, и читатель приходит в никуда. Такое решение остаётся за
+            # человеком: PR открываем, мерж не делаем, в Telegram зовём.
+            DEL=$(git diff --staged --name-status --diff-filter=D -- 'src/content/news/*.md' | wc -l | tr -d ' ')
+            echo "deleted=$DEL" >> "$GITHUB_OUTPUT"
+            if [ "$DEL" != "0" ]; then
+              echo "⚠ правка удаляет $DEL опубликованных заметок — мерж только руками:"
+              git diff --staged --name-status --diff-filter=D -- 'src/content/news/*.md'
+            fi
           fi
 
       # ⛔ ПИКСЕЛЬНОЕ СРАВНЕНИЕ СЮДА НЕ ВХОДИТ, и это не экономия.
@@ -339,7 +363,7 @@ jobs:
 
       # Гейт отработал шагом «Проверки перед публикацией» — здесь только мерж.
       - name: Дождаться CI и смержить
-        if: steps.diff.outputs.changed == 'true' && steps.cfg.outputs.paused == 'false'
+        if: steps.diff.outputs.changed == 'true' && steps.cfg.outputs.paused == 'false' && steps.diff.outputs.deleted == '0'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUM: ${{ steps.pr.outputs.num }}
@@ -356,8 +380,17 @@ jobs:
           # публикацию наглухо.
           gh pr merge "$PR_NUM" --squash --delete-branch
 
+      - name: Удаление заметок ждёт человека
+        if: steps.diff.outputs.changed == 'true' && steps.diff.outputs.deleted != '0'
+        env:
+          PR_URL: ${{ steps.pr.outputs.url }}
+          DEL: ${{ steps.diff.outputs.deleted }}
+        run: |
+          echo "Правка удаляет $DEL опубликованных заметок — автоматически не мержим."
+          echo "Решение за человеком: $PR_URL"
+
       - name: PR оставлен на ручной мерж (рубильник)
-        if: steps.diff.outputs.changed == 'true' && steps.cfg.outputs.paused != 'false'
+        if: steps.diff.outputs.changed == 'true' && steps.cfg.outputs.paused != 'false' && steps.diff.outputs.deleted == '0'
         env:
           PR_URL: ${{ steps.pr.outputs.url }}
         run: echo "paused=true — PR $PR_URL открыт, но не мержится."
@@ -374,9 +407,12 @@ jobs:
           PAUSED: ${{ steps.cfg.outputs.paused }}
           PR_URL: ${{ steps.pr.outputs.url }}
           CHANGED: ${{ steps.diff.outputs.changed }}
+          DELETED: ${{ steps.diff.outputs.deleted }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          if [ "$CHANGED" != "true" ]; then
+          if [ "$CHANGED" = "true" ] && [ "$DELETED" != "0" ]; then
+            MSG="Новости: робот предлагает УДАЛИТЬ $DELETED опубликованных заметок. Сам этого не делает — посмотрите и решите: $PR_URL"
+          elif [ "$CHANGED" != "true" ]; then
             MSG="Новости: сегодня ничего не опубликовано — за неделю не нашлось повода, который проходит рубрику. Это нормальный день, а не сбой. Разбор: ${RUN_URL}"
           elif [ "$PAUSED" = "false" ]; then
             MSG="Новости: опубликовано на traveltribe.ru/novosti/ — $PR_URL"
