@@ -45,7 +45,12 @@ function stripMd(s: string): string {
 }
 
 function extractFAQs(body: string): Array<{ q: string; a: string }> {
-  const sectionMatch = body.match(/\n##\s+[^\n]*FAQ[^\n]*\n([\s\S]*?)(?=\n##\s|\n---\s*\n)/);
+  // ⛔ `|$` обязателен. Без него совпадению нужен следующий заголовок или
+  // разделитель после секции вопросов, и когда «## FAQ» — последняя секция
+  // статьи, разметка молча оказывается пустой. Аккордеон при этом рисуется:
+  // у него терминатора нет. Так потерялись 22 вопроса в статьях про Перу,
+  // Чили и Боливию — видимые вопросы есть, для поиска их нет.
+  const sectionMatch = body.match(/\n##\s+[^\n]*FAQ[^\n]*\n([\s\S]*?)(?=\n##\s|\n---\s*\n|$)/);
   if (!sectionMatch) return [];
   const block = sectionMatch[1];
 
