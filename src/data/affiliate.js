@@ -121,3 +121,40 @@ export const tutuTrains = (subId) => tpkDeep('tutu', 'https://www.tutu.ru/poezda
 // там, где страна поездки заранее неизвестна (чек-листы, сборы), город подставить нечего.
 export const ostrovokSearch = (subId) =>
   TP_LINKS.ostrovok + (subId ? `&sub_id=${subId}` : '');
+
+// ── Отели: страна вместо пустой формы ────────────────────────────────────────
+//
+// ⛔ Найдено 02.08.2026 при разборе «300 переходов, ноль продаж». На страницах
+// направлений и поездок стояла подпись «Подобрать отель в Кении», а ссылка вела
+// на ГЛАВНУЮ партнёра — без страны, без дат, пустая форма. Таких ссылок 953.
+// Человек кликал за отелями в Кении и начинал поиск с нуля: это холодный клик,
+// который по канону монетизации не конвертируется.
+//
+// Соответствия проверены запросом к самому партнёру (не догадка): 42 наших
+// слага он принимает как есть, остальные 32 — по таблице ниже. У него подчёркивания
+// (`new_zealand`, `united_arab_emirates`), а регионы сводятся к своей стране.
+const OSTROVOK_COUNTRY = {
+  'australia-east': 'australia', 'australia-north': 'australia',
+  'bali': 'indonesia', 'sumatra-kalimantan': 'indonesia', 'raja-ampat': 'indonesia',
+  'new-zealand': 'new_zealand', 'south-africa': 'south_africa',
+  'uae': 'united_arab_emirates', 'japan-hokkaido': 'japan',
+  // Гонконг отдельной страницы у партнёра нет — ведём в Китай, это ближайшее верное.
+  'hong-kong': 'china', 'hainan': 'china',
+  'south-korea': 'south_korea', 'india-goa': 'india', 'sri-lanka': 'sri_lanka',
+  'italy-north': 'italy', 'italy-south': 'italy',
+  'usa': 'united_states_of_america',
+  'canada-rockies': 'canada', 'canada-east': 'canada',
+  'dominican-republic': 'dominican_republic',
+  'guatemala-belize': 'guatemala', 'costa-rica-panama': 'costa_rica',
+  'chile-patagonia': 'chile', 'chile-fjords': 'chile',
+  'kamchatka': 'russia', 'karelia': 'russia', 'dagestan': 'russia', 'altai': 'russia',
+};
+
+/**
+ * Отели по стране направления. Если страна неизвестна — честно отдаём общий
+ * поиск, а не выдуманный адрес: битая ссылка хуже холодной.
+ */
+export const ostrovokCountry = (dirSlug, subId) => {
+  const c = OSTROVOK_COUNTRY[dirSlug] ?? dirSlug;
+  return c ? tpkDeep('ostrovok', `https://ostrovok.ru/hotel/${c}/`, subId) : ostrovokSearch(subId);
+};

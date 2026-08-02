@@ -7,7 +7,7 @@ import MonthlyEvents from '../components/MonthlyEvents.astro';
 import CountryMap from '../components/CountryMap.astro';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
 import { buildEssentialsFaq } from '../data/essentials-faq.js';
-import { TP_LINKS, aviasalesRoute, cherehapaTravel, ostrovokSearch } from '../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, cherehapaTravel, ostrovokCity } from '../data/affiliate.js';
 
 const url = 'https://traveltribe.ru/japan/';
 
@@ -244,7 +244,7 @@ const ldJson = {
         </a>
       </div>
       <p class="jp-cta">
-        <a class="jp-aff" href={ostrovokSearch('hub_japan')} rel="sponsored noopener" target="_blank">Подобрать отель в Токио или Киото</a>
+        <a class="jp-aff" href={ostrovokCity('japan', 'tokyo', 'hub_japan')} rel="sponsored noopener" target="_blank">Подобрать отель в Токио или Киото</a>
         
         <span class="jp-trust">цены в ₽ · оплата картами РФ · бесплатная отмена</span>
       </p>
