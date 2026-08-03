@@ -145,7 +145,7 @@ EES — Entry/Exit System — заработал в полном режиме н
 * **Семьи с детьми** — приоритетная зона есть в большинстве аэропортов; спрашивайте указатель Priority lane for families (приоритетная зона для семей).
 * **Интернет — с посадки, не после багажа.** Очередь на контроле может съесть 1–4 часа, а бесплатный Wi-Fi есть не во всех зонах прилёта. eSIM ставится ещё до вылета: <a href="https://drimsim.tpk.mx/ELmQp51R?sub_id=ees_shengen_2026" class="aff-cta" rel="sponsored">Drimsim с оплатой картой РФ</a> или <a href="https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_ees_shengen_2026&u=https%3A%2F%2Fairalo.com%2Fru" class="aff-cta" rel="sponsored">eSIM Airalo под страну</a>.
 
-И про полис: для шенгенской визы страховка с покрытием от 30 000 € обязательна ещё на этапе подачи документов — без неё до EES вы просто не доедете. <a href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5&sub_id=ees_shengen_2026&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F" class="aff-cta" rel="sponsored">Сравнить полисы для Шенгена онлайн</a> — фильтр по покрытию, оплата картой РФ.
+И про полис: для шенгенской визы страховка с покрытием от 30 000 € обязательна ещё на этапе подачи документов — без неё до EES вы просто не доедете. <a href="https://cherehapa.tpk.mx/fkM7suze?erid=2VtzquZTwb5&sub_id=ees_shengen_2026&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F" class="aff-cta" rel="sponsored">Сравнить полисы для Шенгена онлайн</a> — фильтр по покрытию, оплата картой РФ.
 
 ---
 

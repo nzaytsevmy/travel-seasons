@@ -223,7 +223,7 @@ coverPosition: "center 38%"
 
 Параллельно — репеллент с DEET 30%+ ([Off! Extreme или Mosquito-Free](https://www.cdc.gov/mosquitoes/prevention/protect-yourself.html)), длинные рукава по вечерам, в лодже — спать строго под москитной сеткой.
 
-**Медстраховка** на Уганду — обязательна. Я брал <a href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5&sub_id=uganda_safari_2026" class="aff-cta" rel="sponsored">Оформить страховку в Уганду</a> с покрытием **50 000 €** и опцией «активный отдых» (треккинг подпадает). Стоит ~1500 ₽ на 10 дней. Без неё страшно: эвакуация из Бвинди вертолётом до Кампалы — это $5000–8000 наличными на месте (ориентир по тарифам [AMREF Flying Doctors](https://www.flydoc.org/), 2025).
+**Медстраховка** на Уганду — обязательна. Я брал <a href="https://cherehapa.tpk.mx/fkM7suze?erid=2VtzquZTwb5&sub_id=uganda_safari_2026" class="aff-cta" rel="sponsored">Оформить страховку в Уганду</a> с покрытием **50 000 €** и опцией «активный отдых» (треккинг подпадает). Стоит ~1500 ₽ на 10 дней. Без неё страшно: эвакуация из Бвинди вертолётом до Кампалы — это $5000–8000 наличными на месте (ориентир по тарифам [AMREF Flying Doctors](https://www.flydoc.org/), 2025).
 
 ### Деньги и связь
 
@@ -280,7 +280,7 @@ coverPosition: "center 38%"
 
 * <a href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=uganda_safari_2026&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Forigin_iata%3DMOW%26destination_iata%3DEBB" class="aff-cta" rel="sponsored">Найти билет Москва — Энтеббе</a> — гибкий поиск по датам и пересадкам
 * <a href="https://ostrovok.tpk.mx/xtyTcUcY?erid=2VtzqvE1cv3&sub_id=uganda_safari_2026" class="aff-cta" rel="sponsored">Забронировать отель или лодж</a> — принимает российские карты
-* <a href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5&sub_id=uganda_safari_2026" class="aff-cta" rel="sponsored">Оформить страховку в Уганду</a> — для Уганды обязательно (малярия, тропики, эвакуация)
+* <a href="https://cherehapa.tpk.mx/fkM7suze?erid=2VtzquZTwb5&sub_id=uganda_safari_2026" class="aff-cta" rel="sponsored">Оформить страховку в Уганду</a> — для Уганды обязательно (малярия, тропики, эвакуация)
 * <a href="https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_uganda_safari_2026&u=https%3A%2F%2Fairalo.com%2Fru" class="aff-cta" rel="sponsored">Подключить eSIM на Уганду</a> — будет интернет с момента выхода из самолёта
 * Сверьтесь с [таблицей сезонов](/seasons/) — когда лучше лететь именно в вашем месяце
 * Прикиньте бюджет в [калькуляторе](/calculator/) — он учитывает курс и тип поездки
