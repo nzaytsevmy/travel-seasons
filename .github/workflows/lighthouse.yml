@@ -81,6 +81,13 @@ jobs:
           SHARD: ${{ matrix.shard }}
           SHARDS: '4'
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          # Сколько раз открывать каждую страницу. В конфиге стоит 3 — Lighthouse
+          # берёт медиану, потому что замер на общем раннере скачет. Это и было
+          # главным множителем времени: 8 прогонов по 7–9 минут.
+          # На заявке хватает одного захода: там нужен ответ «не сломал ли я
+          # скорость», а не точное число. По понедельникам и при ручном запуске
+          # остаётся 3 — там замер считается настоящим и идёт в отчёты.
+          RUNS: ${{ github.event_name == 'pull_request' && '1' || '3' }}
         run: |
           npm install -g @lhci/cli
           CONF=./lighthouserc.json
@@ -96,4 +103,5 @@ jobs:
             console.log(part.map((u) => '--collect.url=' + u).join(' '));
           ")
           echo "часть $SHARD из $SHARDS: $(echo "$URLS" | wc -w) адресов"
-          lhci autorun --config="$CONF" $URLS
+          echo "заходов на страницу: $RUNS"
+          lhci autorun --config="$CONF" --collect.numberOfRuns="$RUNS" $URLS
