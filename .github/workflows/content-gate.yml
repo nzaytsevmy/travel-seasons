@@ -1,0 +1,98 @@
+name: Content Gate
+
+# Инварианты контента и сторож ритма — на КАЖДОЙ заявке, без исключений.
+#
+# Зачем отдельный прогон. Эти тесты жили внутри «Visual Regression», а у той
+# стоит `paths-ignore: src/content/**` — фильтр правильный для пиксельного
+# сравнения (под эталоном 14 канареек, текста среди них нет), но он уносил с
+# собой и инварианты. Получалось наоборот: гейт, созданный ДЛЯ контента, не
+# запускался именно на правках контента.
+#
+# Проверено на живой заявке 03.08.2026: изменено четыре статьи, Playwright-тестов
+# запущено ноль. Правку тогда спасло только то, что я прогнал гейт руками.
+#
+# Что здесь ловится и почему это нельзя пропускать на текстовых правках:
+#   · видимая надпись «реклама» рядом с партнёрской ссылкой (38-ФЗ);
+#   · внутренние имена файлов в тексте читателю;
+#   · «от <не-цифра>» в блоке рейсов;
+#   · декоративная стрелка в конце ссылки или кнопки;
+#   · партнёрская ссылка без метки страницы или с двумя метками сразу;
+#   · жирный лид под заголовком-утверждением и перебор предложений с двумя тире.
+# Всё это — дефекты САМОГО ТЕКСТА. Скриншоты их не видят.
+#
+# Прогон дешёвый: один браузер, без матрицы и шардов, сами тесты идут секунды —
+# почти всё время занимает сборка, и та с кэшем картинок.
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  content-gate:
+    name: контент и функциональные тесты
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # Оба браузера: набор гоняется в четырёх окружениях, и WebKit среди них.
+      # Ставить один chromium значило бы уронить прогон на первом же webkit-тесте.
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium webkit
+
+      # Тот же кэш, что у сборки: обработка картинок занимает под две минуты,
+      # а результат для одного файла всегда одинаковый.
+      - name: Кэш обработанных картинок
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.astro
+          key: astro-assets-${{ runner.os }}-${{ hashFiles('src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.png') }}
+          restore-keys: astro-assets-${{ runner.os }}-
+
+      - run: npm run build
+        env:
+          SKIP_HTML_MIN: '1'   # инварианты читают текст, минификация им не мешает
+
+      # Порт 4322 — тот же, что у визуального гейта и предпушевого хука.
+      - name: Start preview server
+        run: npx astro preview --port 4322 &
+        env:
+          NODE_ENV: production
+
+      - name: Wait for server
+        run: |
+          for i in $(seq 1 60); do
+            curl -sf http://localhost:4322/ > /dev/null && exit 0
+            sleep 2
+          done
+          echo "✖ preview-сервер не поднялся за 120с"; exit 1
+
+      # Всё, кроме пиксельного сравнения: инварианты контента, сторож ритма,
+      # тесты гейта новостей, чек-листа сборов, калькулятора и личных страниц.
+      # Перечислять файлы поимённо нельзя — при таком делении 136 тестов в шести
+      # файлах осиротели бы молча (проверено подсчётом до правки).
+      - name: Всё, кроме пиксельного сравнения
+        run: npx playwright test --grep-invert "— visual"
+        env:
+          PREVIEW_URL: http://localhost:4322
+
+      - name: Upload report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-gate-report
+          path: |
+            tests/.html-report/
+            test-results/
+          retention-days: 14
