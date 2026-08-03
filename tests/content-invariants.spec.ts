@@ -114,7 +114,17 @@ test('Партнёрские CTA: нет литеральной → в текс�
 // поисковика начинает считаться жаргоном в тексте читателю.
 // Ровно эта ловушка уже описана и закрыта в гейте новостей — здесь оставался
 // наивный вариант, и на него указало сканирование кода GitHub.
-const SCRIPT_BLOCK = /<script\b[^>]*>[\s\S]*?<\/script\b[^>]*>/gi;
+// Внутри тега — [^<>], а не [^>]: иначе закрывающий тег проглатывает начало
+// следующего скрипта («</script <script>»), первый блок съедает границу второго,
+// и содержимое второго остаётся в «тексте читателю». Та же дыра была и в гейте
+// новостей, чинилась одновременно. Повтор до неизменности — на случай, если
+// удаление одного блока обнажило другой.
+const SCRIPT_BLOCK = /<script\b[^<>]*>[\s\S]*?<\/script\b[^<>]*>/gi;
+const stripScripts = (html: string) => {
+  let out = html, prev;
+  do { prev = out; out = out.replace(SCRIPT_BLOCK, ' '); } while (out !== prev);
+  return out;
+};
 
 test('Язык: нет жаргона в тексте читателю (простые человеческие слова)', () => {
   // Решение Никиты 2026-07-10: «сложные слова» → человеческие. SEO-термины
@@ -131,7 +141,7 @@ test('Язык: нет жаргона в тексте читателю (прос
   ];
   const bad: { file: string; word: string; ctx: string }[] = [];
   for (const f of files) {
-    const text = readFileSync(f, 'utf8').replace(SCRIPT_BLOCK, '');
+    const text = stripScripts(readFileSync(f, 'utf8'));
     for (const re of STOP) {
       const m = text.match(re);
       if (m) {
