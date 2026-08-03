@@ -28,6 +28,11 @@ jobs:
           # (scripts/gen-freshness.mjs). На обрезанной истории git решит, что
           # все файлы созданы в момент сборки, и подпись соврёт.
           fetch-depth: 0
+          # Полная история нужна дате актуальности (она считается по git log).
+          # blob:none качает граф коммитов без СТАРЫХ версий файлов: git log
+          # работает, а 2,1 ГБ истории эталонных скриншотов не едут вовсе.
+          # Замер 03.08.2026: выкачка занимала 14,4 мин из 24,6 мин выкладки.
+          filter: blob:none
 
       - uses: actions/setup-node@v4
         with:
@@ -104,13 +109,19 @@ jobs:
           # когда страница ссылается на ассет, которого на сервере нет. Поэтому
           # проверяем живой сайт после выкатки.
           python3 - <<'PYCHECK'
+          # Проверки идут в 16 потоков. Замер 03.08.2026: последовательно этот шаг
+          # занимал 3,7 мин из 24,6 мин всей выкладки — при том что это сотни
+          # независимых HEAD-запросов, каждый по несколько десятков миллисекунд.
+          # Ждали не сеть, а очередь. Что проверяем — не изменилось ни на байт.
           import re, html, sys, urllib.request, urllib.error
+          from concurrent.futures import ThreadPoolExecutor
+
           PAGES = ["/", "/blog/", "/countries/", "/trips/"]
-          bad, checked = [], set()
-          for page in PAGES:
-              url = "https://traveltribe.ru" + page
+          SITE = "https://traveltribe.ru"
+
+          def page_images(page):
               try:
-                  t = urllib.request.urlopen(url, timeout=30).read().decode("utf-8", "replace")
+                  t = urllib.request.urlopen(SITE + page, timeout=30).read().decode("utf-8", "replace")
               except Exception as e:
                   print("✖ не открылась страница %s: %s" % (page, e)); sys.exit(1)
               urls = set()
@@ -122,16 +133,30 @@ jobs:
                       for part in raw.split(","):
                           u = part.strip().split(" ")[0]
                           if u.startswith("/"): urls.add(u)
-              for u in sorted(urls):
-                  if u in checked: continue
-                  checked.add(u)
-                  try:
-                      code = urllib.request.urlopen(
-                          urllib.request.Request("https://traveltribe.ru" + u, method="HEAD"), timeout=20).status
-                  except urllib.error.HTTPError as e: code = e.code
-                  except Exception as e: code = str(e)[:40]
-                  if code != 200: bad.append((page, code, u))
-          print("проверено картинок: %d" % len(checked))
+              return page, urls
+
+          with ThreadPoolExecutor(max_workers=8) as ex:
+              pages = list(ex.map(page_images, PAGES))
+
+          # Один и тот же файл встречается на нескольких страницах — проверяем один раз,
+          # но помним, откуда он, чтобы в отчёте было видно пострадавшую страницу.
+          origin = {}
+          for page, urls in pages:
+              for u in urls: origin.setdefault(u, page)
+
+          def probe(u):
+              try:
+                  code = urllib.request.urlopen(
+                      urllib.request.Request(SITE + u, method="HEAD"), timeout=20).status
+              except urllib.error.HTTPError as e: code = e.code
+              except Exception as e: code = str(e)[:40]
+              return u, code
+
+          with ThreadPoolExecutor(max_workers=16) as ex:
+              results = list(ex.map(probe, sorted(origin)))
+
+          bad = [(origin[u], code, u) for u, code in results if code != 200]
+          print("проверено картинок: %d" % len(results))
           if bad:
               print("✖ битые картинки на проде:")
               for page, code, u in bad[:20]: print("   %s  %s  %s" % (code, page, u))
