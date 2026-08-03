@@ -20,9 +20,23 @@ for (const file of readdirSync(dir).filter((f) => /\.ya?ml$/.test(f))) {
   // Ключи, встреченные на каждом уровне отступа. Список элемента (`- `) и любой
   // ключ с меньшим отступом начинают новый блок, то есть сбрасывают накопленное.
   const seen = new Map();
+  // Внутри блочного скаляра (`run: |`, `<<'EOF'`) лежит не YAML, а скрипт. Его
+  // строки ключами не являются: два `try:` в питоне на одном отступе — обычный
+  // код, а не повтор ключа. Ложное срабатывание 03.08.2026 на распараллеленной
+  // проверке картинок; подгонять скрипт под сторож было бы хуже, чем починить
+  // сторож. Блок кончается, когда отступ вернулся на уровень самого ключа.
+  let blockIndent = null;
 
   lines.forEach((line, i) => {
+    if (blockIndent !== null) {
+      const indent = line.match(/^(\s*)/)[1].length;
+      if (!line.trim() || indent > blockIndent) return;
+      blockIndent = null;
+    }
     if (/^\s*#/.test(line) || !line.trim()) return;
+    // `ключ: |`, `ключ: >`, `ключ: |-` и т.п. открывают блочный скаляр.
+    const block = line.match(/^(\s*)(?:-\s+)?[A-Za-z_][\w.-]*:\s*[|>][+-]?\s*$/);
+    if (block) blockIndent = block[1].length;
     const m = line.match(/^(\s*)(-\s+)?([A-Za-z_][\w.-]*):(\s|$)/);
     if (!m) return;
     const [, pad, dash, key] = m;
