@@ -122,6 +122,18 @@ export const tutuTrains = (subId) => tpkDeep('tutu', 'https://www.tutu.ru/poezda
 export const ostrovokSearch = (subId) =>
   TP_LINKS.ostrovok + (subId ? `&sub_id=${subId}` : '');
 
+// Airalo: постраничная метка живёт ВНУТРИ sharedID после подчёркивания
+// (`sharedID=546042_<метка>`), а не отдельным параметром — формат партнёрской сети.
+// Голый TP_LINKS.airalo несёт `546042_` с пустым хвостом: клик засчитывается, но
+// страницу-источник не опознать. Аудит 03.08.2026: так стояли ВСЕ 31 ссылка на сайте.
+// Проверено curl: `sharedID=546042_georgia_guide_2026` → 200, редирект на airalo.com/ru.
+export const airaloSub = (subId) =>
+  TP_LINKS.airalo.replace('sharedID=546042_&', `sharedID=546042_${subId}&`);
+
+// Drimsim: шортлинк без query, поэтому метка вешается через `?`, а не `&`.
+export const drimsimSub = (subId) =>
+  TP_LINKS.drimsim + (subId ? `?sub_id=${subId}` : '');
+
 // ── Отели: страна вместо пустой формы ────────────────────────────────────────
 //
 // ⛔ Найдено 02.08.2026 при разборе «300 переходов, ноль продаж». На страницах
