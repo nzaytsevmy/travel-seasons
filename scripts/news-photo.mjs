@@ -119,6 +119,8 @@ export async function findPhoto(data) {
       // почти ничего нет, у второго — латинское имя вида и ещё полстроки.
       // Поэтому сначала «лишних слов в названии меньше», и только потом
       // лицензия и порядок выдачи.
+      // Отсев по названию до скачивания: не тратим сеть на карты и автомобили.
+      hits = hits.filter((x) => !titleRejection(x.title ?? ''));
       hits = hits
         .map((x, i) => ({ x, i, extra: extraWords(x.title ?? '', q) }))
         .sort((a, b) => (a.extra - b.extra)
@@ -157,6 +159,72 @@ export async function fetchFirstWorking(data, slug, root = process.cwd()) {
   return null;
 }
 
+// ── Это вообще фотография, и та ли? ─────────────────────────────────────────
+//
+// Проверка «свой снимок» у гейта смотрит ТОЛЬКО на то, что файл есть. 03.08.2026
+// это пропустило подряд четыре промаха: карту атолла вместо фотографии рифа,
+// аквариумную дораду вместо тропической рыбы, автомобиль Jaguar E-Type вместо
+// зверя и чёрного ягуара в вольере вместо обычного на воле. Каждый раз ловил
+// человек глазами, а робот считал, что всё хорошо.
+//
+// Два слоя. Первый — по названию: сток отдаёт пустые теги, но название почти
+// всегда честное («Jaguar E-Type», «Alif Dhaal Atoll», «Flags of France»).
+// Второй — по самим пикселям, и он ловит то, чего в названии нет.
+
+const NOT_A_PHOTO = /\b(maps?|mapa|karte|карт[аыу]|flags?|флаг\w*|coat of arms|герб\w*|logos?|логотип\w*|diagrams?|charts?|schemes?|схем\w*|blueprints?|drawings?|рисун\w+|paintings?|картин\w+|engravings?|гравюр\w*|sketch(es)?|posters?|плакат\w*|icons?|banknotes?|coins?|postage stamp|screenshots?|скриншот\w*)\b/i;
+
+// Не тот предмет. У стока «jaguar» — это чаще автомобиль, чем зверь.
+const WRONG_THING = /\b(e-type|xke|xjs|roadster|coupe|convertible|sedan|automobile|car show|motorcycle|locomotive|aircraft|jersey|football|fc\b)/i;
+
+// Зверь в неволе — не то же, что зверь в природе, и читатель разницу видит.
+const CAPTIVE = /\b(zoo|zoological|aquarium|аквариум|captive|enclosure|вольер|terrarium|safari park|circus|museum|музей|taxidermy|чучело|skeleton|skull|specimen|statue|sculpture|скульптура|monument|памятник|model|макет|replica)\b/i;
+
+/** Отказ по названию кадра или null, если название не подозрительное. */
+export function titleRejection(title = '') {
+  if (NOT_A_PHOTO.test(title)) return 'это не фотография, а схема или рисунок';
+  if (WRONG_THING.test(title)) return 'это другой предмет, а не природа';
+  if (CAPTIVE.test(title)) return 'снято в неволе, в музее или это макет';
+  return null;
+}
+
+/**
+ * Три числа, по которым фотография отличается от схемы. Замер 03.08.2026 на
+ * заведомо годных и заведомо плохих кадрах:
+ *
+ *   годные фотографии            заливки 0.24–0.67   белое 0.00–0.04
+ *   карта атолла                 заливки 0.92        белое 0.88
+ *   флаги (три разных)           заливки 0.65–0.83   белое 0.00–0.48
+ *
+ * Белое разделяет группы начисто, заливки — внахлёст. Первый порог по заливкам
+ * я поставил 0.60 по трём кадрам и на большей выборке сразу поймал ложное
+ * срабатывание: настоящее фото полога леса даёт 0.67, потому что кадр весь
+ * зелёный. Порог поднят до 0.80 — карты и флаги остаются за ним, однотонные
+ * фотографии проходят. Пропущенное здесь добирает отсев по названию.
+ */
+export async function photoStats(sharpModule, buf) {
+  const { data, info } = await sharpModule(buf)
+    .resize(96, 96, { fit: 'inside' }).removeAlpha().raw()
+    .toBuffer({ resolveWithObject: true });
+  const n = info.width * info.height;
+  const buckets = new Map();
+  let nearWhite = 0;
+  for (let i = 0; i < n; i++) {
+    const r = data[i * 3], g = data[i * 3 + 1], b = data[i * 3 + 2];
+    const key = ((r >> 4) << 8) | ((g >> 4) << 4) | (b >> 4);
+    buckets.set(key, (buckets.get(key) ?? 0) + 1);
+    if (Math.min(r, g, b) > 235) nearWhite++;
+  }
+  const top8 = [...buckets.values()].sort((a, b) => b - a).slice(0, 8).reduce((s, v) => s + v, 0);
+  return { flatShare: top8 / n, nearWhite: nearWhite / n };
+}
+
+/** Отказ по пикселям или null. */
+export function statsRejection({ flatShare, nearWhite }) {
+  if (nearWhite > 0.20) return `это схема на белом листе (${Math.round(nearWhite * 100)}% кадра белые)`;
+  if (flatShare > 0.80) return `это схема или флаг (${Math.round(flatShare * 100)}% кадра — сплошные заливки)`;
+  return null;
+}
+
 /**
  * Скачивает кадр в src/content/news/_images/<slug>.jpg.
  *
@@ -181,6 +249,10 @@ export async function downloadPhoto(photo, slug, root = process.cwd()) {
     // такой не возьмут, поэтому меряем сам файл и уходим к следующему кандидату.
     const { width = 0, height = 0 } = await src.metadata();
     if (width < 1200) throw new Error(`кадр узкий: ${width}px при нужных 1200`);
+    // Схему, флаг и карту отличаем по самим пикселям — в названии этого может
+    // не быть вовсе («Alif Dhaal Atoll» — карта, а по имени не догадаешься).
+    const bad = statsRejection(await photoStats(sharp, raw));
+    if (bad) throw new Error(`кадр узкий: ${bad}`);
     // Баннерные обрезки с Викисклада приходят полосой 7:1 — в карточке ленты от
     // такой остаётся щель. Держим кадр в разумных пропорциях, от вертикального
     // 3:4 до широкого 21:9.
