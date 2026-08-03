@@ -23,7 +23,11 @@ export const aviasalesUrl = (query, subId) =>
 export const TP_LINKS = {
   aviasales:  aviasalesUrl(),
   ostrovok:   'https://ostrovok.tpk.mx/xtyTcUcY?erid=2VtzqvE1cv3',
-  cherehapa:  'https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5',
+  // ⚠ Шортлинк сменился: в кабинете партнёрки на 03.08.2026 значится fkM7suze,
+  // а в проекте стоял GmVWjhCN. Старый ещё отвечает 200 и доносит erid, но
+  // клики по снятому шортлинку — риск, который не виден до потери денег.
+  // Проверено curl 03.08.2026: оба ведут на cherehapa.ru с erid, marker разный.
+  cherehapa:  'https://cherehapa.tpk.mx/fkM7suze?erid=2VtzquZTwb5',
   // eSIM-провайдеры (оба ведут на RU-сайты).
   // Airalo: direct партнёрский URL + erid (38-ФЗ маркировка рекламы РФ)
   airalo:     'https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_&u=https%3A%2F%2Fairalo.com%2Fru',
@@ -55,6 +59,14 @@ export const TP_LINKS = {
   otello:      'https://otello.tpk.mx/sVtfBPMj?erid=2VtzqvGybUj',
   // Level.Travel: пакетные туры (как Travelata, второй источник предложений).
   level:       'https://level.tpk.mx/CraFALLJ?erid=2VtzquiMsH9',
+  // Трипстер: экскурсии с местными жителями, авторские прогулки. Вертикаль
+  // «что делать на месте» — её на сайте не было вовсе, хотя это ровно тот
+  // интент, с которым читают гид по городу. Проверено curl 03.08.2026:
+  // ведёт на experience.tripster.ru, erid доезжает.
+  tripster:    'https://tripster.tpk.mx/cicJCuPT?erid=2VtzqxMZpjc',
+  // Спутник8: экскурсии и активности, второй источник предложений к Трипстеру.
+  // Проверено curl 03.08.2026: ведёт на sputnik8.com, erid доезжает.
+  sputnik8:    'https://sputnik8.tpk.mx/nIkABzG2?erid=2Vtzqugsszo',
   // Tiqets: билеты в музеи/достопримечательности (загран + крупные РФ-города).
   tiqets:      'https://tiqets.tpk.mx/QYpcZlVN?erid=2VtzqvKwa3R',
 };
