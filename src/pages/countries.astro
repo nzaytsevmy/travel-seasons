@@ -147,8 +147,13 @@ const ldJson = {
            data-name={c.nom.toLowerCase()} data-visa={c.visa} data-b={c.btier || ''}
            data-vibe={c.vibe.join(',')} data-r={c.r ? c.r.join('') : ''} data-budget={c.budgetRub || 0}>
           <span class="cd-ph">
+            {/* Карточка показывается от 170px на телефоне до 224px на планшете,
+                а файл ехал один и тот же в 600px — вдвое-втрое больше нужного по
+                площади на каждой из 74 карточек. Набор размеров и качество те же,
+                что на главной: обложки там те же самые, поэтому сборка готовит один
+                файл на оба места. Пропорцию держит .cd-ph, картинка её заполняет. */}
             {c.photo ? (
-              <Image src={c.photo} alt={c.nom} width={600} height={400} formats={['webp']} quality={72} loading={i < 6 ? 'eager' : 'lazy'} />
+              <Image src={c.photo} alt={c.nom} widths={[128, 256, 448, 720]} sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 224px" formats={['webp']} quality={72} loading={i < 6 ? 'eager' : 'lazy'} />
             ) : (
               <span class="cd-emoji" aria-hidden="true">{c.nom}</span>
             )}

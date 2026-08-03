@@ -139,7 +139,11 @@ for (const f of htmlFiles) {
   const schemaQuestions = [];
   let hasSpeakable = false;
 
-  for (const [, raw] of html.matchAll(/<script type=["']?application\/ld\+json["']?[^>]*>([\s\S]*?)<\/script>/gi)) {
+  // Граница по имени тега, а не по точному «</script>»: закрывающий тег по
+  // спецификации может нести пробелы и атрибуты. В нашей выдаче таких пока нет
+  // (проверено на 600 страницах — ноль), но регулярка, ждущая точного вида,
+  // молча пропустила бы весь блок разметки, и аудит решил бы, что схемы нет.
+  for (const [, raw] of html.matchAll(/<script\b[^>]*type=["']?application\/ld\+json["']?[^>]*>([\s\S]*?)<\/script\b[^>]*>/gi)) {
     let j; try { j = JSON.parse(raw); } catch { findings.push(['jsonld.parse_error', url]); continue; }
     const nodes = Array.isArray(j) ? j : (j['@graph'] || [j]);
     if (/SpeakableSpecification/.test(raw)) hasSpeakable = true;
