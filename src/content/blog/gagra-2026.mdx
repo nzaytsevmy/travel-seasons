@@ -29,7 +29,7 @@ howto:
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 import PricingCards from '../../components/post/PricingCards.astro';
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
-import { aviasalesUrl, cherehapaTravel, ostrovokSearch, TP_LINKS } from '../../data/affiliate.js';
+import { ostrovokCity, sutochnoRegion, cherehapaCountry, aviasalesRoute, aviasalesUrl, cherehapaTravel, ostrovokSearch, TP_LINKS } from '../../data/affiliate.js';
 
 Гагра — первый курорт, который видят почти все, кто едет в Абхазию: от границы с Россией до неё всего полчаса, а вдоль моря тянется набережная с пальмами, колоннадой и старыми санаториями. Это самое туристическое и самое противоречивое место страны: одни уезжают с восторгом от природы и закатов, другие — с разочарованием от обшарпанной инфраструктуры. Разбираю по делу: какие в Гагре пляжи, что реально стоит посмотреть, сколько закладывать денег в 2026 году и как добраться без нервов.
 
@@ -130,7 +130,7 @@ import { aviasalesUrl, cherehapaTravel, ostrovokSearch, TP_LINKS } from '../../d
  },
 ]} />
 
-<a href={aviasalesUrl('', 'gagra_2026')} class="aff-cta" rel="sponsored">Найти билет до Адлера</a> — цены и даты видно сразу, оплата картой РФ; дальше до Гагры — наземный трансфер.
+<a href={aviasalesRoute('MOW', 'AER', 'gagra_2026')} class="aff-cta" rel="sponsored">Найти билет Москва — Адлер</a> — цены и даты видно сразу, оплата картой РФ; дальше до Гагры — наземный трансфер.
 
 **От границы Псоу до Гагры** — несколько вариантов (цены 2025, [helper.travel](https://helper.travel/ru/gagra/transfer-taxi)):
 
@@ -179,7 +179,7 @@ import { aviasalesUrl, cherehapaTravel, ostrovokSearch, TP_LINKS } from '../../d
  ] },
 ]} />
 
-<a href={`${TP_LINKS.sutochno}&sub_id=gagra_2026`} class="aff-cta" rel="sponsored">Снять жильё в Гагре от 1500 ₽</a> — посуточно, с отзывами и фото; удобно сравнить Старую и Новую Гагру. Отели и гостевые дома с подтверждённым бронированием — <a href={ostrovokSearch('gagra_2026')} class="aff-cta" rel="sponsored">подобрать отель в Гагре</a>.
+<a href={sutochnoRegion('https://gagra.sutochno.ru/', 'gagra_2026')} class="aff-cta" rel="sponsored">Снять жильё в Гагре от 1500 ₽</a> — посуточно, с отзывами и фото; удобно сравнить Старую и Новую Гагру. Отели и гостевые дома с подтверждённым бронированием — <a href={ostrovokCity('abkhazia', 'gagra', 'gagra_2026')} class="aff-cta" rel="sponsored">подобрать отель в Гагре</a>.
 
 Практический совет: значительная часть частного жилья сдаётся **напрямую у хозяев за наличные**, без онлайн-брони. Это часто дешевле, но и рискованнее — на горячий сезон надёжнее забронировать заранее хотя бы первые ночи, а на месте уже искать вариант подешевле, если захочется.
 
@@ -215,7 +215,7 @@ import { aviasalesUrl, cherehapaTravel, ostrovokSearch, TP_LINKS } from '../../d
 
 ОМС в Абхазии не действует, а уровень местной медицины невысокий — при серьёзном случае везут в Сочи, и это дорого. Полис с покрытием эвакуации стоит копейки на фоне этих рисков.
 
-<a href={cherehapaTravel('gagra_2026')} class="aff-cta" rel="sponsored">Оформить страховку в Абхазию</a> — выбираете покрытие под даты поездки, оформление онлайн за пару минут, оплата картой РФ.
+<a href={cherehapaCountry('abkhazia', 'gagra_2026')} class="aff-cta" rel="sponsored">Оформить страховку в Абхазию</a> — выбираете покрытие под даты поездки, оформление онлайн за пару минут, оплата картой РФ.
 
 ---
 
