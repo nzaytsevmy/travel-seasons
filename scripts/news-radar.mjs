@@ -29,6 +29,7 @@ const PER_SOURCE = 6;      // сколько кандидатов берём с 
 const CONCURRENCY = 8;     // параллельных проверок
 const MIN_CHARS = 400;     // тот же порог, что у гейта
 const TIMEOUT = 15000;
+const FRESH_DAYS = 14;    // окно свежести: неделя по рубрике плюс запас
 
 async function get(url, timeoutMs = TIMEOUT) {
   const ac = new AbortController();
@@ -57,11 +58,49 @@ function extractArticleLinks(html, pageUrl) {
     if (parts.length < 2) continue;                       // раздел, а не статья
     const last = parts[parts.length - 1];
     if (!/[a-z]/i.test(last) || last.length < 12) continue; // слаг статьи длинный
-    if (/\.(jpg|png|webp|svg|pdf|xml|css|js)$/i.test(last)) continue;
+    if (/\.(jpg|png|webp|svg|pdf|xml|css|js|json|woff2?|ttf|ico|webmanifest)$/i.test(last)) continue;
+    if (/\/(page-data|wp-json|feeds?|rss)\//.test(path)) continue;
     if (/(subscribe|newsletter|privacy|terms|about|contact|login|account|shop|gift)/i.test(path)) continue;
     out.add(href);
   }
   return [...out];
+}
+
+/**
+ * Дата публикации статьи. Без неё сборщик выдавал модели читаемые, но старые
+ * материалы: 03.08.2026 первым кандидатом с National Geographic пришла статья
+ * годичной давности, и поймал это человек, а не робот. Читаемость проверялась,
+ * свежесть — нет.
+ *
+ * Порядок источников — от надёжного к запасному. Дата в адресе идёт последней:
+ * она бывает датой раздела, а не материала.
+ */
+export function publishedAt(html, url = '') {
+  const pats = [
+    /"datePublished"\s*:\s*"(\d{4}-\d{2}-\d{2})/i,
+    /<meta[^>]+(?:property|name)="article:published_time"[^>]+content="(\d{4}-\d{2}-\d{2})/i,
+    /<meta[^>]+itemprop="datePublished"[^>]+content="(\d{4}-\d{2}-\d{2})/i,
+    /<meta[^>]+name="(?:date|pubdate|publish-date|DC\.date\.issued)"[^>]+content="(\d{4}-\d{2}-\d{2})/i,
+    /<time[^>]+datetime="(\d{4}-\d{2}-\d{2})/i,
+  ];
+  for (const re of pats) {
+    const m = html.match(re);
+    if (m) return m[1];
+  }
+  // ScienceDaily: /releases/2026/07/260726015243.htm — день зашит в имя файла.
+  const sd = url.match(/\/releases\/(20\d\d)\/(\d\d)\/\d\d\d\d(\d\d)/);
+  if (sd) return `${sd[1]}-${sd[2]}-${sd[3]}`;
+  const u = url.match(/\/(20\d\d)\/(\d\d)\/(\d\d)\//) || url.match(/\/(20\d\d)\/(\d\d)\//);
+  if (u) return `${u[1]}-${u[2]}-${u[3] ?? '01'}`;
+  return null;
+}
+
+/** Сколько дней назад, или null если даты нет. */
+export function ageDays(date, today) {
+  if (!date) return null;
+  const d = Date.parse(date + 'T00:00:00Z');
+  if (Number.isNaN(d)) return null;
+  return Math.round((today - d) / 86400000);
 }
 
 function titleOf(html) {
@@ -99,16 +138,25 @@ async function main() {
   const checked = await mapLimit(flat, CONCURRENCY, async (c) => {
     const r = await get(c.url);
     const text = r.body ? stripHtml(r.body).trim() : '';
-    return { ...c, status: r.status, chars: text.length, title: r.body ? titleOf(r.body) : '' };
+    const date = r.body ? publishedAt(r.body, c.url) : null;
+    return { ...c, status: r.status, chars: text.length, date,
+      age: ageDays(date, Date.now()), title: r.body ? titleOf(r.body) : '' };
   });
 
   const good = checked.filter((c) => c.chars >= MIN_CHARS);
+  // Рубрика просит поводы за последнюю НЕДЕЛЮ, но материал может выйти в
+  // пятницу и попасть в сбор в понедельник — берём две недели с запасом.
+  const fresh = good.filter((c) => c.age !== null && c.age <= FRESH_DAYS);
+  const stale = good.filter((c) => c.age !== null && c.age > FRESH_DAYS);
+  const undated = good.filter((c) => c.age === null);
+
   const byTopic = new Map();
-  for (const c of good) {
+  for (const c of fresh) {
     const k = c.src.topic ?? 'nature';
     if (!byTopic.has(k)) byTopic.set(k, []);
     byTopic.get(k).push(c);
   }
+  for (const items of byTopic.values()) items.sort((a, b) => a.age - b.age);
 
   const lines = [];
   lines.push('ПОВОДЫ, ПРОВЕРЕННЫЕ НА ЧИТАЕМОСТЬ');
@@ -120,7 +168,22 @@ async function main() {
     for (const c of items) {
       lines.push(`  ${c.title || '(без заголовка)'}`);
       lines.push(`    ${c.url}`);
-      lines.push(`    источник: ${c.src.name} · знаков: ${c.chars}`);
+      lines.push(`    ${c.date} · ${c.age} дн. назад · ${c.src.name} · знаков: ${c.chars}`);
+    }
+    lines.push('');
+  }
+
+  if (undated.length) {
+    lines.push(`── без даты публикации (${undated.length}), брать только проверив дату руками ──`);
+    for (const c of undated.slice(0, 12)) lines.push(`  ${(c.title || c.url).slice(0, 78)}\n    ${c.url}`);
+    lines.push('');
+  }
+  if (stale.length) {
+    lines.push(`── СТАРОЕ, НЕ БРАТЬ (${stale.length}) ──`);
+    lines.push('  Читается, но это не новость. 03.08.2026 первым кандидатом с National');
+    lines.push('  Geographic пришла статья годичной давности, и поймал её человек.');
+    for (const c of stale.sort((a, b) => a.age - b.age).slice(0, 10)) {
+      lines.push(`  ${c.age} дн. — ${(c.title || c.url).slice(0, 66)}`);
     }
     lines.push('');
   }
@@ -142,7 +205,8 @@ async function main() {
     for (const [h, n] of [...hosts].sort((a, b) => b[1] - a[1])) lines.push(`  ${h}: ${n}`);
     lines.push('');
   }
-  lines.push(`ИТОГО: источников ${radar.length}, проверено статей ${checked.length}, годных ${good.length}.`);
+  lines.push(`ИТОГО: источников ${radar.length}, проверено ${checked.length}, `
+    + `свежих ${fresh.length}, старых ${stale.length}, без даты ${undated.length}.`);
 
   const text = lines.join('\n');
   const out = process.env.NEWS_RADAR_OUT ?? '/tmp/news-radar.txt';
