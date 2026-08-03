@@ -23,6 +23,11 @@ Search Central (канон Google) · разбор факторов Яндекс
    `build green ≠ feature works`. Длинные страницы — прицельный вьюпорт нужного блока, не только fullPage.
 3. **CWV (Lighthouse mobile)** на изменённых типах: **CLS < 0.1** (цель 0.000), LCP < 2.5s, TBT≈0.
    Любой новый блок (FAQ/byline/карточки) обязан давать CLS 0 — статичный in-flow, без сдвига.
+   ⚡ С 03.08.2026 в CI замер НЕ гоняется на правках только контента (`src/content/**`,
+   `news/**`, `*.md`, `llms*.txt`) — текст скорость страницы не меняет, а держал мерж
+   +10 мин. Правки кода, вёрстки, стилей и настроек сборки проверяются как раньше;
+   плюс полный прогон по расписанию в понедельник. Меняешь код — замер обязателен,
+   локально или руками через `workflow_dispatch`.
 4. **Schema-валидация по `dist/`** — JSON-LD парсится; FAQPage(name+acceptedAnswer.text),
    Article/BlogPosting(headline+datePublished+author), Org/WebSite/Person; нет дублей @id;
    все `author/founder/publisher` `@id` резолвятся в графе страницы.
