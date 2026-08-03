@@ -1,7 +1,6 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
-import icon from 'astro-icon';
 import compress from 'astro-compress';
 import brokenLinks from 'astro-broken-links-checker';
 import { readFileSync, readdirSync } from 'node:fs';
@@ -95,7 +94,6 @@ export default defineConfig({
   },
   integrations: [
     mdx(),
-    icon({ include: { lucide: ['*'] } }),
     // Partytown снят 30.07.2026. Он был настроен на forward:['ym',…], то есть
     // подменял window.ym пересылкой в Web Worker — а аналитику в воркер намеренно
     // НЕ выносили (Вебвизору нужен DOM, об этом прямо сказано в Layout.astro).
