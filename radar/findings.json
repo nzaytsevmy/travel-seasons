@@ -23,51 +23,51 @@
     "id": "currency-nbsp-wrap-countries",
     "severity": "P3",
     "url": "https://traveltribe.ru/countries/",
-    "file": "src/pages/countries.astro:158",
-    "status": "open",
+    "file": "src/pages/countries.astro",
+    "status": "fixed",
     "first_seen": "2026-06-29",
-    "last_seen": "2026-07-27",
-    "note": "Пробел (U+0020) вместо &nbsp; перед ₽ в `≈ ${fmt(c.budgetRub)} ₽` — подтверждено живьём W31 (charCode 32 перед ₽, 74/74 карточек, файл не менялся с W27). Визуально не рвётся: 0 обёрнутых ячеек @360px (высота = 1 line-height у всех). Риск латентный — держит из-за случайной ширины сетки, не из-за корректности разметки."
+    "last_seen": "2026-08-03",
+    "note": "Обычный пробел вместо &nbsp; перед ₽ в `≈ ${fmt(c.budgetRub)} ₽`. Исправлено PR #122 (29.07.2026). Подтверждено живьём W32: 74/74 карточек, charCode перед ₽ = 0x00A0 (nbsp) у всех, 0 обычных пробелов."
   },
   {
     "id": "calculator-touch-target-40px",
     "severity": "P3",
     "url": "https://traveltribe.ru/calculator/",
-    "file": "src/pages/calculator.astro:1615",
+    "file": "src/pages/calculator.astro:963-967,1609",
     "status": "open",
     "first_seen": "2026-06-29",
-    "last_seen": "2026-07-27",
-    "note": "Подтверждено живьём W31 @360px: `.tc-seg-btn` (Эконом/Комфорт/Люкс, ₽/$) — height 40px (измерено через getBoundingClientRect, calculator.astro:1615), <44px минимума брендбука. Файл не менялся с W30. Остальные тач-таргеты страницы ≥44px — точечная находка."
+    "last_seen": "2026-08-03",
+    "note": "PR #122 (29.07.2026) добавил `.tc-seg-btn{min-height:44px}` в базовое правило (calculator.astro:967, с комментарием «Канон тач-таргета ≥44px»), но не тронул mobile-override в `@media(max-width:640px)` на calculator.astro:1609: `.tc-seg-btn{min-height:40px; padding:0 0.5rem}` — этот блок идёт ПОСЛЕ базового правила и с той же специфичностью, поэтому побеждает именно на мобильной ширине, где и была находка. Подтверждено живьём W32 @360px через getBoundingClientRect: все 5 кнопок (Эконом/Комфорт/Люкс, ₽/$) — высота ровно 40px, фикс не долетел до брейкпоинта, на котором его и мерили. Ирония: соседний комментарий на :1606 прямо говорит «WCAG 2.2 / Apple HIG — минимум 44px тап-таргеты на тач-экранах», а значение ниже — 40px. Фикс одной строкой: заменить `min-height: 40px` на `min-height: 44px` на calculator.astro:1609 (или удалить строку — базовое правило и так даст 44px)."
   },
   {
     "id": "seasons-mobile-sheet-radius-16px",
     "severity": "P3",
     "url": "https://traveltribe.ru/seasons/",
-    "file": "src/pages/seasons.astro:1104",
-    "status": "open",
+    "file": "src/pages/seasons.astro",
+    "status": "fixed",
     "first_seen": "2026-06-29",
-    "last_seen": "2026-07-27",
-    "note": "Подтверждено живьём W31: `.cell-panel` (мобильный bottom-sheet ячейки таблицы) — border-radius: 16px 16px 0 0 (seasons.astro:1104, computed style), >12px лимита брендбука для текстовых секций. Файл не менялся с W30."
+    "last_seen": "2026-08-03",
+    "note": "`.cell-panel` (мобильный bottom-sheet) border-radius 16px → >12px лимита брендбука. Исправлено PR #122 (29.07.2026) — 16px → 12px. Подтверждено живьём W32: computed `borderTopLeftRadius` мобильной панели после клика по ячейке = 12px."
   },
   {
     "id": "seasons-panel-cta-brand-anchor",
     "severity": "P3",
     "url": "https://traveltribe.ru/seasons/",
-    "file": "src/pages/seasons.astro:398",
-    "status": "open",
+    "file": "src/pages/seasons.astro",
+    "status": "fixed",
     "first_seen": "2026-06-29",
-    "last_seen": "2026-07-27",
-    "note": "Подтверждено живьём W31 кликом по ячейке (Австралия/январь): кнопка #panelAviasales — статичный текст «Найти билет на Aviasales» (seasons.astro:398), не подставляет цену месяца в анкор, хотя цена («от 77 806 ₽ в одну сторону») уже отрисована рядом в момент клика (#panelPriceText). Файл не менялся с W27. Скрин: radar/assets/seasons-panel-cta-brand-anchor-w31.png."
+    "last_seen": "2026-08-03",
+    "note": "Кнопка панели была статичным «Найти билет на Aviasales», не подставляла цену. Исправлено PR #122 (29.07.2026) — текст теперь строится из той же цены, что рендерится в блоке рядом, с фолбэком «Найти билет на эти даты», если цены нет. Подтверждено живьём W32 кликом по ячейке (Австралия-восток/январь): кнопка «Найти билет от 76 857 ₽», рядом текст «от 76 857 ₽ в одну сторону · обновлено ежедневно» — числа совпадают."
   },
   {
     "id": "cards-virtualcard-cta-no-erid",
     "severity": "needs-review",
     "url": "https://traveltribe.ru/cards/",
-    "file": null,
+    "file": "src/data/affiliate.js:35",
     "status": "needs-review",
     "first_seen": "2026-06-29",
-    "last_seen": "2026-07-27",
-    "note": "Подтверждено живьём W31: href=\"https://platipomiru.com/?utm_source=traveltribe&utm_medium=cpa\", rel=\"sponsored noopener\" — без erid, без изменений. Не однозначный баг — нужно уточнить у партнёра, даёт ли он erid (требование 38-ФЗ), решение владельца."
+    "last_seen": "2026-08-03",
+    "note": "Подтверждено живьём W32: href=\"https://platipomiru.com/?utm_source=traveltribe&utm_medium=cpa\", rel=\"sponsored noopener\" — без erid, без изменений. Не однозначный баг — нужно уточнить у партнёра, даёт ли он erid (требование 38-ФЗ), решение владельца."
   },
   {
     "id": "calculator-eyebrow-caps-labels",
@@ -83,40 +83,40 @@
     "id": "seasons-direction-count-plural-mismatch",
     "severity": "P3",
     "url": "https://traveltribe.ru/seasons/",
-    "file": "src/pages/seasons.astro:101,180,237",
-    "status": "open",
+    "file": "src/pages/seasons.astro",
+    "status": "fixed",
     "first_seen": "2026-07-20",
-    "last_seen": "2026-07-27",
-    "note": "Подтверждено живьём W31, файл не менялся с W30. `destinationRows.length` (сейчас 74) подставлен в текст без склонения по числительному — родительный мн. «направлений» вместо правильного родительного/именительного ед. «направления» для чисел на 2-4 (кроме 12-14). Живьём подтверждено в 3 местах: сабтайтл под H1 («74 направлений · виза, бюджет и цены билетов», :180), ItemList JSON-LD description («74 направлений мира с анализом сезонности...», :101 — попадает в Schema.org, видимо ботам), скрытый a11y-caption таблицы («Сезоны для путешествий — 74 направлений мира», :237). Строка :191 «по 74 направлениям» — корректна (дательный после предлога «по» всегда мн.ч., это не баг). Скрин: radar/assets/seasons-direction-count-plural-mismatch.png. На главной (index.astro:56) и в блоге (blog/index.astro) для той же задачи уже есть рабочая функция согласования числительных (`plural`/`pl` с учётом %10/%100) — тот же паттерн стоит переиспользовать здесь. Не путать с direction-count-hardcoded-70-vs-72 (тот был про НЕВЕРНОЕ число, этот — про число верное, но с неправильным падежом/числом существительного)."
+    "last_seen": "2026-08-03",
+    "note": "`destinationRows.length` подставлялся без склонения («74 направлений» вместо «74 направления»). Исправлено PR #122 (29.07.2026) — добавлен общий модуль `src/data/plural.js` (функция `NOUN`), применён во всех местах seasons.astro (сабтайтл, JSON-LD description, a11y-caption). Подтверждено живьём W32: сабтайтл «74 направления · виза, бюджет и цены билетов», JSON-LD description «74 направления мира» — оба грамматически верны и используют NOUN.direction()."
   },
   {
     "id": "visa-country-count-plural-mismatch",
     "severity": "P3",
     "url": "https://traveltribe.ru/visa/",
-    "file": "src/pages/visa/index.astro:51,316",
-    "status": "open",
+    "file": "src/pages/visa/index.astro",
+    "status": "fixed",
     "first_seen": "2026-07-20",
-    "last_seen": "2026-07-27",
-    "note": "Подтверждено живьём W31, файл не менялся с W30. `byVisa.free.length` (сейчас 41, оканчивается на 1 — числительные на 1 кроме 11 требуют ЕДИНСТВЕННОГО числа существительного) подставлен во множественном числе. Живьём подтверждено: тело страницы, :316 — «41 стран принимают по загранпаспорту» (должно быть «41 страна принимает»); FAQ-ответ (попадает в FAQPage schema `acceptedAnswer.text`), :51 — «Сейчас 41 направлений принимают по загранпаспорту» (должно быть «41 направление принимает»). Не факт-баг (число верное) — падежное/числовое согласование. Тот же корень, что seasons-direction-count-plural-mismatch — переиспользовать готовую функцию согласования из index.astro/blog/index.astro."
+    "last_seen": "2026-08-03",
+    "note": "`byVisa.free.length` (число на 1, кроме 11) подставлялось во множественном числе («41 стран принимают»). Исправлено PR #122 (29.07.2026) тем же модулем `src/data/plural.js`. Подтверждено живьём W32: тело страницы — «41 страна принимает»; FAQ (в FAQPage schema) — «Сейчас 41 направление принимает» — оба грамматически верны."
   },
   {
     "id": "cards-country-count-plural-mismatch",
     "severity": "P3",
     "url": "https://traveltribe.ru/cards/",
-    "file": "src/pages/cards.astro:95",
-    "status": "open",
+    "file": "src/pages/cards.astro",
+    "status": "fixed",
     "first_seen": "2026-07-20",
-    "last_seen": "2026-07-27",
-    "note": "Подтверждено живьём W31, файл не менялся с W30. `countries.length` (сейчас 42) во множественном числе там, где числительные на 2-4 требуют родительного ед.: «42 стран, источники в каждой карточке» (:95, должно быть «42 страны»). Соседняя фраза в этом же файле (:32, FAQ-ответ «статус по каждой из 42 стран») — корректна, там родительный после предлога «из» и множественное число там как раз верно. Тот же корень, что seasons-direction-count-plural-mismatch."
+    "last_seen": "2026-08-03",
+    "note": "`countries.length` (число 2-4) подставлялось во множественном числе («42 стран»). Исправлено PR #122 (29.07.2026) тем же модулем `src/data/plural.js`. Подтверждено живьём W32: «42 страны, источники в каждой карточке» — грамматически верно."
   },
   {
     "id": "llms-txt-post-count-plural-mismatch",
     "severity": "P3",
     "url": "https://traveltribe.ru/llms.txt",
     "file": "scripts/gen-llms.mjs:101",
-    "status": "open",
+    "status": "fixed",
     "first_seen": "2026-07-20",
-    "last_seen": "2026-07-27",
-    "note": "Хардкод без склонения в шаблон-литерале генератора (scripts/gen-llms.mjs:101, не менялся с W30): `Обновлено: ${DATA_UPDATED} · ${posts.length} статей`. За неделю добавлено 5 постов (51→56, +Каппадокия/Армения/Азербайджан/Шри-Ланка/Roys Peak) — подтверждено живьём W31: сейчас на сайте «56 статей», и это СЛУЧАЙНО грамматически верно (56 оканчивается на 6 → «статей» корректно), но корень бага не устранён и вернётся, как только posts.length будет оканчиваться на 1 (напр. 61) или 2-4 (напр. 62-64) — тогда снова будет «61 статей»/«62 статей» вместо «61 статья»/«62 статьи». Соседняя строка :147 «Статей: ${posts.length}» не задета — label-формат, согласования не требует."
+    "last_seen": "2026-08-03",
+    "note": "Хардкод `${posts.length} статей` без склонения — раньше случайно совпадало с грамматикой на конкретных числах (51, 56), но было готово сломаться на числах вида 61/62-64. Исправлено PR #122 (29.07.2026): `${posts.length} ${NOUN.post(posts.length)}` через общий модуль `src/data/plural.js`. Подтверждено живьём W32: на сайте сейчас 60 постов, llms.txt отдаёт «Обновлено: 2026-08-03 · 60 статей» — корень (функция склонения, а не совпадение чисел) устранён, дальнейший рост числа постов не сломает текст."
   }
 ]
