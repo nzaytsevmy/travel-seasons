@@ -129,7 +129,17 @@ const ldJson = {
         <tbody>
           {rows.map((r) => (
             <tr data-r={r.r.join('')} data-b={tier(r.budget)} data-v={r.visa} data-vibe={r.vibe.join(',')} data-budget={r.budget} data-name={r.nom.toLowerCase()}>
-              <td class="cdest"><span class="dest"><span class="th"><Image src={r.cover} alt={r.nom} width={420} height={300} formats={['webp']} loading="lazy" /></span><span><a class="nm" href={`/${r.slug}/`}>{r.nom}</a><span class="vibe">{r.vibeRu}</span><span class="sq" hidden></span></span></span></td>
+              {/* Одна миниатюра на два совершенно разных показа: на телефоне она
+                  занимает почти всю ширину (355px на экране 390), на десктопе
+                  сжимается до 62px. Единственный файл в 420px не годится ни там,
+                  ни там — на телефоне он мельче нужного вдвое и мылит, на десктопе
+                  втрое крупнее нужного. Отсюда набор размеров и подсказка браузеру,
+                  какой из них брать. Пропорцию задаёт .th, картинка её заполняет
+                  с обрезкой, поэтому от смены размеров вёрстка не двигается.
+                  Набор размеров и качество СПЕЦИАЛЬНО совпадают со страницей стран:
+                  обложки там те же самые, и при совпадении всех параметров сборка
+                  готовит один файл на оба места, а не два. */}
+              <td class="cdest"><span class="dest"><span class="th"><Image src={r.cover} alt={r.nom} widths={[128, 256, 448, 720]} sizes="(max-width: 720px) 92vw, 62px" formats={['webp']} quality={72} loading="lazy" /></span><span><a class="nm" href={`/${r.slug}/`}>{r.nom}</a><span class="vibe">{r.vibeRu}</span><span class="sq" hidden></span></span></span></td>
               <td data-l="Поездка"><span class="price">≈ {fmt(r.budget)}&nbsp;₽ <small>за неделю</small></span></td>
               <td data-l="Виза"><span class={`visa ${VISA_CLASS[r.visa]}`}>{VISA_LABEL[r.visa]}</span></td>
               <td data-l="Сезон" class="season">{r.season}</td>
@@ -190,7 +200,9 @@ const ldJson = {
       <div class="posts">
         {posts.map((p, i) => (
           <a class="post" href={`/blog/${p.slug}/`}>
-            <div class="ph"><Image src={p.data.coverImage} alt={p.data.title} width={760} height={507} formats={['webp']} /></div>
+            {/* На планшете эта обложка показывается в 226px, а файл ехал в 760px.
+                Пропорцию держит .ph, поэтому меняются только размеры файла. */}
+            <div class="ph"><Image src={p.data.coverImage} alt={p.data.title} widths={[480, 760]} sizes="(max-width: 720px) 92vw, (max-width: 1100px) 30vw, 390px" formats={['webp']} /></div>
             <div class="tg">{(p.data.tags || []).slice(0, 2).join(' · ')}</div>
             <h3>{p.data.title}</h3>
             <div class="mt">{readingTime(p.body)} мин{p.data.sourceType === 'personal' && <span class="pers"> · был лично</span>}</div>
