@@ -14,7 +14,7 @@ import { getWeatherBucket } from '../../../data/country-month-bucket.js';
 import { ACTIVITY_TAGS, ACTIVITY_LABEL, ACTIVITY_GEAR } from '../../../data/country-activity-tags.js';
 import { PLUG_TYPES, plugAdvice } from '../../../data/country-plug-types.js';
 import { DATA_UPDATED_RU } from '../../../data/meta.js';
-import { TP_LINKS, aviasalesRoute, cherehapaTravel } from '../../../data/affiliate.js';
+import { airaloSub, TP_LINKS, aviasalesRoute, cherehapaTravel } from '../../../data/affiliate.js';
 import StickyCta from '../../../components/StickyCta.astro';
 import { getHolidaysByMonth } from '../../../data/country-holidays.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
@@ -413,7 +413,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         <li><b>eSIM вместо роуминга</b> — настройка за 5 минут, от $5/неделя.</li>
       </ul>
       <p class="pmu-cta">
-        <a class="pmu-aff" href={TP_LINKS.airalo} rel="sponsored noopener" target="_blank">Купить eSIM {d.cases.vP}</a>
+        <a class="pmu-aff" href={airaloSub(`packing_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Купить eSIM {d.cases.vP}</a>
         
         <span class="pmu-trust">от $5/нед · оплата картами РФ</span>
       </p>

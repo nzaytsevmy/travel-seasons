@@ -6,7 +6,7 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { Picture } from 'astro:assets';
 import { DIRECTIONS } from '../../data/directions.js';
 import { getVisaDetails, VISA_DETAILS } from '../../data/visa-details.js';
-import { TP_LINKS, aviasalesRoute, cherehapaTravel } from '../../data/affiliate.js';
+import { airaloSub, TP_LINKS, aviasalesRoute, cherehapaTravel } from '../../data/affiliate.js';
 import StickyCta from '../../components/StickyCta.astro';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../../data/meta.js';
 
@@ -332,7 +332,7 @@ const ldJson = {
           </li>
         )}
         <li>
-          <strong>Связь.</strong> eSIM вместо роуминга — подключается до вылета, без поиска местной симки. <a href={TP_LINKS.airalo} rel="sponsored noopener" target="_blank">Airalo</a> — от&nbsp;$5 за неделю.
+          <strong>Связь.</strong> eSIM вместо роуминга — подключается до вылета, без поиска местной симки. <a href={airaloSub(`visa_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Airalo</a> — от&nbsp;$5 за неделю.
         </li>
       </ul>
       
