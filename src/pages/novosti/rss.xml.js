@@ -7,12 +7,15 @@
 // адрес считаем через ту же функцию, что и страницы.
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
-import { archivedMonths, monthKey, formatDateRu, TOPIC_LABEL } from '../../data/news.js';
+import { archivedMonths, monthKey, formatDateRu, TOPIC_LABEL , addedAt } from '../../data/news.js';
 
 export async function GET(context) {
   const all = await getCollection('news');
   const archived = archivedMonths(all);
-  const sorted = [...all].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 60);
+  // Тот же порядок, что на странице: подписчик видит новое сверху.
+  const sorted = [...all]
+    .sort((a, b) => addedAt(b) - addedAt(a) || b.data.date.valueOf() - a.data.date.valueOf())
+    .slice(0, 60);
 
   return rss({
     title: 'TravelTribe — новости путешествий',

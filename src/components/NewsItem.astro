@@ -12,7 +12,7 @@
 //  · NewsArticle на каждую заметку — те самые «структурные элементы».
 // Фото только свои, из уже отснятого: чужие права не трогаем.
 import { Image, getImage } from 'astro:assets';
-import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu } from '../data/news.js';
+import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu, addedAt } from '../data/news.js';
 import { pickNewsImage, newsImageNote } from '../data/news-images.js';
 import { bySlug } from '../data/directions.js';
 
@@ -23,6 +23,9 @@ import { bySlug } from '../data/directions.js';
 // сигнал для поиска.
 const { entry, Content, index = 0, base = 'https://traveltribe.ru/novosti/' } = Astro.props;
 const d = entry.data;
+// Когда заметка появилась в ленте: явное поле, а у старых — дата сверки.
+const added = new Date(addedAt({ data: d }));
+const addedIso = added.toISOString().slice(0, 10);
 const countryName = (slug) => bySlug(slug)?.cases?.nom ?? slug;
 // Страна заметки не обязана быть направлением сайта: робот ставит её ради
 // подбора фото, а визовой страницы может не быть вовсе. Ссылку даём только на
@@ -48,7 +51,11 @@ const wideUrl = wide ? new URL(wide.src, 'https://traveltribe.ru').href : null;
 ---
 <li class="nv-item" id={entry.slug}>
   <div class="nv-meta">
-    <time datetime={d.date.toISOString().slice(0, 10)}>{formatDateRu(d.date)}</time>
+    {/* Дата на карточке — та же, по которой отсортирована лента: когда заметка
+        в ней появилась. Иначе список выглядит сломанным: сверху стоит «26 июля»,
+        под ним «31 июля», и читатель не понимает, по какому принципу это лежит.
+        Дата самого события осталась в тексте заметки. */}
+    <time datetime={addedIso}>{formatDateRu(added)}</time>
     <span class="nv-topic">{TOPIC_LABEL[d.topic]}</span>
     {d.impact === 'high' && <span class="nv-impact">{IMPACT_LABEL.high}</span>}
     {d.status && <span class="nv-status">{d.status}</span>}
@@ -100,7 +107,7 @@ const wideUrl = wide ? new URL(wide.src, 'https://traveltribe.ru').href : null;
     "headline": d.title,
     "description": d.tldr ?? d.title,
     ...(wideUrl ? { "image": [wideUrl] } : {}),
-    "datePublished": iso(d.date),
+    "datePublished": addedIso,
     "dateModified": iso(d.checked),
     "inLanguage": "ru-RU",
     "author": { "@id": "https://traveltribe.ru/about/#person" },
