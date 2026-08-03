@@ -230,6 +230,11 @@ jobs:
       # фото из интернета, а у стока лицензия и автор приходят машиночитаемыми.
       # Шага долго не было вовсе — агент писал photoQuery, а искать по нему было
       # некому, и заметки выходили без своего снимка.
+      # ⛔ Съёмка идёт ДО гейта СОЗНАТЕЛЬНО: одна из проверок гейта требует, чтобы
+      # у заметки уже был свой снимок. Переставить шаг после гейта нельзя — тогда
+      # ни одна заметка не пройдёт проверку на кадр и лента встанет совсем.
+      # Плата за такой порядок: кадры скачиваются и тем заметкам, которые гейт
+      # потом отбракует. Их подметает отдельный шаг ниже.
       - name: Найти кадр к каждой заметке
         run: node scripts/news-photo.mjs
 
@@ -252,6 +257,18 @@ jobs:
       - name: Ограничить число заметок за день
         run: node scripts/news-cap.mjs
 
+      # Страховка на случай, когда заметка исчезает уже после съёмки кадра
+      # (скептик снял, дневная норма отсекла, человек удалил руками).
+      - name: Убрать кадры без заметок
+        run: |
+          for img in src/content/news/_images/*.jpg; do
+            [ -e "$img" ] || continue
+            slug=$(basename "$img" .jpg)
+            if [ ! -f "src/content/news/$slug.md" ]; then
+              rm -f "$img" && echo "кадр без заметки удалён: $slug.jpg"
+            fi
+          done
+
       # ⛔ Пустой день обязан объяснять себя. Обе модели пишут отчёт во временный
       # файл (в репозиторий он не идёт и не должен), но раньше его никто не
       # выводил — и «робот отработал, новостей не было» выглядело в точности как
@@ -271,7 +288,18 @@ jobs:
         id: diff
         run: |
           git add -A src/content/news
-          if git diff --staged --quiet; then
+          # ⛔ Считаем ЗАМЕТКИ, а не файлы. Картинка без заметки — не новость,
+          # а мусор, и публиковать день ради неё нельзя (см. 03.08.2026 выше).
+          NEW=$(git diff --staged --name-status --diff-filter=A -- 'src/content/news/*.md' | wc -l | tr -d ' ')
+          echo "added=$NEW" >> "$GITHUB_OUTPUT"
+          if [ "$NEW" = "0" ] && ! git diff --staged --name-status --diff-filter=D -- 'src/content/news/*.md' | grep -q .; then
+            # Ни одной новой заметки и ни одного удаления: если что-то и лежит
+            # в индексе, это служебные файлы. Откатываем и считаем день пустым.
+            git reset -q src/content/news
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "deleted=0" >> "$GITHUB_OUTPUT"
+            echo "Новых заметок нет — публиковать нечего, это нормальный результат."
+          elif git diff --staged --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "deleted=0" >> "$GITHUB_OUTPUT"
             echo "Новых заметок нет — публиковать нечего, это нормальный результат."
@@ -354,7 +382,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BR=$(git rev-parse --abbrev-ref HEAD)
-          N=$(git diff --staged --name-only | wc -l | tr -d ' ')
+          # Число в заголовке — заметки, а не файлы: картинки его раздували.
+          N=${{ steps.diff.outputs.added }}
           git commit -q -m "content(news): заметки за $(date -u +%d.%m.%Y)
 
           Собрано роботом, отобрано scripts/news-gate.mjs. Разбор отбраковки — в
