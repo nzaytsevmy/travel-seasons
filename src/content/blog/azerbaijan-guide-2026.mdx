@@ -33,7 +33,7 @@ howto:
 import PricingCards from '../../components/post/PricingCards.astro';
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
-import { TP_LINKS, cherehapaTravel, aviasalesRoute, ostrovokCity } from '../../data/affiliate.js';
+import { drimsimSub, airaloSub, TP_LINKS, cherehapaTravel, aviasalesRoute, ostrovokCity } from '../../data/affiliate.js';
 
 export const aviaBaku = aviasalesRoute('MOW', 'GYD', 'azerbaijan_guide_2026');
 export const hotelsBaku = ostrovokCity('azerbaijan', 'baku', 'azerbaijan_guide_2026');
@@ -281,7 +281,7 @@ export const insurance = cherehapaTravel('azerbaijan_guide_2026');
   ]}
 />
 
-Если время ограничено и хочется увидеть максимум без логистических хлопот, разумно взять **готовый тур по стране** — Баку, Гобустан, Габала и горные районы одним маршрутом. Пакет с перелётом и отелем из Москвы иногда выходит дешевле раздельной брони — <a href={TP_LINKS.travelata} class="aff-cta" rel="sponsored">Подобрать тур в Азербайджан</a>: в высокий сезон готовый пакет часто удобнее и дешевле, оплата картой МИР.
+Если время ограничено и хочется увидеть максимум без логистических хлопот, разумно взять **готовый тур по стране** — Баку, Гобустан, Габала и горные районы одним маршрутом. Пакет с перелётом и отелем из Москвы иногда выходит дешевле раздельной брони — <a href={`${TP_LINKS.travelata}&sub_id=azerbaijan_guide_2026`} class="aff-cta" rel="sponsored">Подобрать тур в Азербайджан</a>: в высокий сезон готовый пакет часто удобнее и дешевле, оплата картой МИР.
 
 ---
 
@@ -291,7 +291,7 @@ export const insurance = cherehapaTravel('azerbaijan_guide_2026');
 
 Варианты:
 
-1. **eSIM** — подключить ещё до вылета, работает сразу по прилёту, удобно если не хочется искать салон. <a href={TP_LINKS.drimsim} class="aff-cta" rel="sponsored">Купить eSIM Drimsim для Азербайджана</a> — принимает карты РФ и СБП, или <a href={TP_LINKS.airalo} class="aff-cta" rel="sponsored">Купить eSIM Airalo</a> — пакет на Азербайджан от ~$5–9.
+1. **eSIM** — подключить ещё до вылета, работает сразу по прилёту, удобно если не хочется искать салон. <a href={drimsimSub('azerbaijan_guide_2026')} class="aff-cta" rel="sponsored">Купить eSIM Drimsim для Азербайджана</a> — принимает карты РФ и СБП, или <a href={airaloSub('azerbaijan_guide_2026')} class="aff-cta" rel="sponsored">Купить eSIM Airalo</a> — пакет на Азербайджан от ~$5–9.
 2. **Местная SIM** — операторы Azercell, Bakcell, Nar. Продаются в аэропорту и салонах по паспорту, туристический пакет с интернетом стоит недорого. Самый дешёвый вариант для долгой поездки.
 3. **Wi-Fi** — бесплатный в отелях, кафе и торговых центрах.
 

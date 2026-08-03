@@ -309,3 +309,50 @@ test('Аналитика: инлайн-снипет создаёт очеред�
   expect(html).toMatch(/(\w)\[(\w)\]=\1\[\2\]\|\|function\(\)\{\(\1\[\2\]\.a=\1\[\2\]\.a\|\|\[\]\)\.push/);
   expect(html).toContain('mc.yandex.ru/metrika/tag.js');
 });
+
+const unescapeAmp = (s: string) => s.replace(/&amp;|&#x26;|&#38;/gi, '&');
+
+test('Атрибуция: у каждой партнёрской ссылки есть метка страницы (иначе клик обезличен)', () => {
+  // Аудит 03.08.2026: у Airalo метка живёт ВНУТРИ sharedID после подчёркивания и на всех
+  // 31 ссылке хвост был пустым (`sharedID=546042_`) — клики засчитывались, но опознать
+  // страницу-источник было нельзя. Та же дыра нашлась ещё у семи партнёров через голый
+  // TP_LINKS.*. Тест ловит КЛАСС бага на всём dist, а не конкретные страницы.
+  //
+  // Исключения — только там, где метку физически выдаёт партнёр, а не мы:
+  //   platipomiru — своя CPA-ссылка без sub_id и без erid (erid ждём от партнёра);
+  //   g2afse (YouTravel) — другая сеть, свой формат метки, erid тоже ещё не выдан.
+  const SKIP = /platipomiru\.com|g2afse\.com/;
+  const bad: { file: string; href: string }[] = [];
+  for (const f of files) {
+    const html = readFileSync(f, 'utf8');
+    for (const m of html.matchAll(/<a\b[^>]*href="([^"]*)"[^>]*>/gi)) {
+      // Астро кодирует «&» и как &amp;, и как &#x26; — раскодировать надо оба,
+      // иначе тест объявляет обезличенными ссылки, у которых метка на месте.
+      const href = unescapeAmp(m[1]);
+      if (!/tpk\.mx|pxf\.io|aviasales\.ru\/\?/.test(href)) continue;
+      if (SKIP.test(href)) continue;
+      const labelled = /pxf\.io/.test(href)
+        ? /sharedID=546042_[a-z0-9_]+/.test(href)   // хвост после «_» обязан быть непустым
+        : /[?&]sub_id=[a-z0-9_]+/.test(href);
+      if (!labelled) bad.push({ file: f.replace(DIST, ''), href: href.slice(0, 110) });
+    }
+  }
+  expect(bad.slice(0, 15), `ссылок без метки страницы: ${bad.length}\n` +
+    JSON.stringify(bad.slice(0, 15), null, 2)).toEqual([]);
+});
+
+test('Атрибуция: у deep-link метка стоит ДО адреса назначения (иначе теряется)', () => {
+  // tpk.mx читает свои параметры до &u=; всё, что после, уезжает партнёру как часть URL.
+  const bad: { file: string; href: string }[] = [];
+  for (const f of files) {
+    const html = readFileSync(f, 'utf8');
+    for (const m of html.matchAll(/href="([^"]*tpk\.mx[^"]*)"/gi)) {
+      const href = unescapeAmp(m[1]);
+      if (!href.includes('&u=') || !href.includes('sub_id=')) continue;
+      if (href.indexOf('sub_id=') > href.indexOf('&u=')) {
+        bad.push({ file: f.replace(DIST, ''), href: href.slice(0, 110) });
+      }
+    }
+  }
+  expect(bad.slice(0, 15), JSON.stringify(bad.slice(0, 15), null, 2)).toEqual([]);
+});

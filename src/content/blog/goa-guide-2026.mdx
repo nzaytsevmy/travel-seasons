@@ -12,13 +12,13 @@ sourceType: "hybrid"
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import PricingCards from '../../components/post/PricingCards.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
-import { TP_LINKS, cherehapaCountry, aviasalesRoute, tpkDeep, ostrovokCity } from '../../data/affiliate.js';
+import { airaloSub, TP_LINKS, cherehapaCountry, aviasalesRoute, tpkDeep, ostrovokCity } from '../../data/affiliate.js';
 
 export const SUB = 'goa_guide_2026';
 export const aviaGoa = aviasalesRoute('MOW', 'GOI', SUB);
 export const insuranceGoa = cherehapaCountry('india', SUB);
-export const toursGoa = tpkDeep('travelata', 'https://travelata.ru/india/resorts/goa');
-export const hotelsGoa = ostrovokCity('india', 'goa');
+export const toursGoa = tpkDeep('travelata', 'https://travelata.ru/india/resorts/goa', 'goa_guide_2026');
+export const hotelsGoa = ostrovokCity('india', 'goa', 'goa_guide_2026');
 
 Про Гоа пишут одно и то же с 2010 года: пальмы, хиппи, дешёвое море. За это время сменился аэропорт, поменялись правила въезда, а российские карты перестали работать вообще. Половина статей в выдаче до сих пор считает рупию по курсу 2015 года.
 
@@ -273,7 +273,7 @@ export const hotelsGoa = ostrovokCity('india', 'goa');
 
 **Связь.** Местную симку (Jio, Airtel) туристу продадут, но нужны копия паспорта, действующая виза, фото и часто адрес проживания — то есть бронь отеля. Возни на полчаса в салоне. eSIM покупается до вылета за пару минут и работает с прилёта; для двухнедельной поездки разница в цене некритична.
 
-<p class="editorial-cta"><a class="aff-cta" href={TP_LINKS.airalo} rel="sponsored nofollow noopener" target="_blank">Купить eSIM для Индии заранее</a></p>
+<p class="editorial-cta"><a class="aff-cta" href={airaloSub('goa_guide_2026')} rel="sponsored nofollow noopener" target="_blank">Купить eSIM для Индии заранее</a></p>
 
 **Прививки.** Сертификат о вакцинации от жёлтой лихорадки требуют **только с тех, кто прилетает из эндемичных стран** Африки и Южной Америки. При прямом перелёте из России он не нужен ([CDC Travelers' Health, India](https://wwwnc.cdc.gov/travel/destinations/traveler/none/india)).
 
