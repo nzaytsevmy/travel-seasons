@@ -34,7 +34,7 @@ howto:
 import PricingCards from '../../components/post/PricingCards.astro';
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
-import { TP_LINKS, cherehapaTravel, aviasalesRoute, ostrovokCity } from '../../data/affiliate.js';
+import { drimsimSub, airaloSub, TP_LINKS, cherehapaTravel, aviasalesRoute, ostrovokCity } from '../../data/affiliate.js';
 
 export const aviaYerevan = aviasalesRoute('MOW', 'EVN', 'armenia_guide_2026');
 export const hotelsYerevan = ostrovokCity('armenia', 'yerevan', 'armenia_guide_2026');
@@ -266,7 +266,7 @@ export const insurance = cherehapaTravel('armenia_guide_2026');
   ]}
 />
 
-Дороги в Армении для самостоятельной поездки за рулём приятные, а виды — половина удовольствия, поэтому аренда машины здесь оправдана. <a href={TP_LINKS.economybookings} class="aff-cta" rel="sponsored">Сравнить цены на аренду авто</a> — на пик сезона машин мало, бронировать стоит заранее.
+Дороги в Армении для самостоятельной поездки за рулём приятные, а виды — половина удовольствия, поэтому аренда машины здесь оправдана. <a href={`${TP_LINKS.economybookings}&sub_id=armenia_guide_2026`} class="aff-cta" rel="sponsored">Сравнить цены на аренду авто</a> — на пик сезона машин мало, бронировать стоит заранее.
 
 ---
 
@@ -279,7 +279,7 @@ export const insurance = cherehapaTravel('armenia_guide_2026');
 - **Арени** — винная деревня рядом с Нораванком: здесь нашли древнейшую в мире винодельню, а сейчас дегустируют местное вино.
 - **Джермук** — горный курорт с водопадом и минеральными источниками, для спа и лечения.
 
-На юг удобнее всего либо на арендованной машине, либо **готовым многодневным туром** — логистика и ночёвки собраны за вас. Пакет с перелётом и программой из Москвы иногда выходит выгоднее раздельной брони — <a href={TP_LINKS.travelata} class="aff-cta" rel="sponsored">Подобрать тур в Армению</a>: в высокий сезон готовый тур часто удобнее и дешевле, оплата картой МИР.
+На юг удобнее всего либо на арендованной машине, либо **готовым многодневным туром** — логистика и ночёвки собраны за вас. Пакет с перелётом и программой из Москвы иногда выходит выгоднее раздельной брони — <a href={`${TP_LINKS.travelata}&sub_id=armenia_guide_2026`} class="aff-cta" rel="sponsored">Подобрать тур в Армению</a>: в высокий сезон готовый тур часто удобнее и дешевле, оплата картой МИР.
 
 ---
 
@@ -289,7 +289,7 @@ export const insurance = cherehapaTravel('armenia_guide_2026');
 
 Варианты:
 
-1. **eSIM** — подключить ещё до вылета, работает сразу по прилёту. <a href={TP_LINKS.drimsim} class="aff-cta" rel="sponsored">Купить eSIM Drimsim для Армении</a> — принимает карты РФ и СБП, или <a href={TP_LINKS.airalo} class="aff-cta" rel="sponsored">Купить eSIM Airalo</a> — пакет на Армению от ~$5.
+1. **eSIM** — подключить ещё до вылета, работает сразу по прилёту. <a href={drimsimSub('armenia_guide_2026')} class="aff-cta" rel="sponsored">Купить eSIM Drimsim для Армении</a> — принимает карты РФ и СБП, или <a href={airaloSub('armenia_guide_2026')} class="aff-cta" rel="sponsored">Купить eSIM Airalo</a> — пакет на Армению от ~$5.
 2. **Местная SIM** — операторы Team (бывший Beeline), Ucom, Viva-MTS. Продаются в аэропорту и салонах по паспорту, туристический пакет с интернетом стоит недорого. Самый дешёвый вариант для долгой поездки.
 3. **Wi-Fi** — бесплатный почти везде: кафе, отели, гестхаусы.
 

@@ -232,7 +232,7 @@ coverPosition: "center 38%"
 * **Карты** — Visa/Mastercard работают в крупных лоджах и в Кампале. В деревнях и парках — только cash.
 * **Банкоматы** — есть в Кампале и Мбараре, в Бвинди и QE NP — нет. Снимайте наличные заранее.
 * **Сим-карта** — **MTN Uganda** и **Airtel** в аэропорту Энтеббе. ~$10 за 30 ГБ на месяц. Регистрация по паспорту, 5 минут. Покрытие в парках местами скачет, но в лоджах wifi есть.
-* **eSIM как альтернатива** — <a href="https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_&u=https%3A%2F%2Fairalo.com%2Fru" class="aff-cta" rel="sponsored">Подключить eSIM на Уганду</a>: активируется до вылета, не надо стоять в очереди в аэропорту. 5 ГБ на 30 дней ≈ $19. Удобно если приземляетесь поздно или не хотите возиться с регистрацией.
+* **eSIM как альтернатива** — <a href="https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_uganda_safari_2026&u=https%3A%2F%2Fairalo.com%2Fru" class="aff-cta" rel="sponsored">Подключить eSIM на Уганду</a>: активируется до вылета, не надо стоять в очереди в аэропорту. 5 ГБ на 30 дней ≈ $19. Удобно если приземляетесь поздно или не хотите возиться с регистрацией.
 
 ### Что взять, что не брать
 
@@ -281,7 +281,7 @@ coverPosition: "center 38%"
 * <a href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=uganda_safari_2026&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Forigin_iata%3DMOW%26destination_iata%3DEBB" class="aff-cta" rel="sponsored">Найти билет Москва — Энтеббе</a> — гибкий поиск по датам и пересадкам
 * <a href="https://ostrovok.tpk.mx/xtyTcUcY?erid=2VtzqvE1cv3&sub_id=uganda_safari_2026" class="aff-cta" rel="sponsored">Забронировать отель или лодж</a> — принимает российские карты
 * <a href="https://cherehapa.tpk.mx/GmVWjhCN?erid=2VtzquZTwb5&sub_id=uganda_safari_2026" class="aff-cta" rel="sponsored">Оформить страховку в Уганду</a> — для Уганды обязательно (малярия, тропики, эвакуация)
-* <a href="https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_&u=https%3A%2F%2Fairalo.com%2Fru" class="aff-cta" rel="sponsored">Подключить eSIM на Уганду</a> — будет интернет с момента выхода из самолёта
+* <a href="https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_uganda_safari_2026&u=https%3A%2F%2Fairalo.com%2Fru" class="aff-cta" rel="sponsored">Подключить eSIM на Уганду</a> — будет интернет с момента выхода из самолёта
 * Сверьтесь с [таблицей сезонов](/seasons/) — когда лучше лететь именно в вашем месяце
 * Прикиньте бюджет в [калькуляторе](/calculator/) — он учитывает курс и тип поездки
 * Посмотрите [Японию в апреле](/blog/japan-guide-2026/) или [гайд по Хайнаню](/blog/hainan-guide-2026/) — если думаете о другом направлении

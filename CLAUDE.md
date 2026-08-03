@@ -16,7 +16,9 @@ Search Central (канон Google) · разбор факторов Яндекс
 
 Коммит без всех 6 пунктов запрещён. Доказано рабочим в сессии 2026-05-16.
 
-1. **build** — `npm run build`, exit 0, 0 ошибок кроме известных 14 `Cannot compress` (pre-existing).
+1. **build** — `npm run build`, exit 0, 0 ошибок кроме известных `Cannot compress` (pre-existing).
+   Их **45** на 03.08.2026 (A/B на чистом HEAD: столько же). Цифра дрейфует с ростом сайта —
+   при расхождении сверять A/B, а не считать своим регрессом; выросло после своей правки — это регресс.
 2. **Visual @402 + @1280** — Playwright-скрин КАЖДОГО изменённого типа, оба вьюпорта.
    `build green ≠ feature works`. Длинные страницы — прицельный вьюпорт нужного блока, не только fullPage.
 3. **CWV (Lighthouse mobile)** на изменённых типах: **CLS < 0.1** (цель 0.000), LCP < 2.5s, TBT≈0.
@@ -132,7 +134,8 @@ Search Central (канон Google) · разбор факторов Яндекс
 - llms.txt — curated индексные хабы (`/visa/`, `/countries/`, `/seasons/`), НЕ дамп 140 deep-URL.
 - Playwright visual baseline исторически устаревал — не принимать фейлы нетронутых страниц
   за свой регресс без A/B на чистом HEAD. blog-japan fullPage флейкует под параллелью (pre-existing).
-- Известный pre-existing хвост: 14 старых HTML не сжимаются astro-compress; calculator LCP ~2.7s
+- Известный pre-existing хвост: часть HTML не сжимается astro-compress (45 файлов на 03.08.2026,
+  было 14 — растёт вместе с сайтом, сверять A/B); calculator LCP ~2.7s
   (JS-heavy) — не блокеры, не выдавать за свежий регресс.
 - `FlightRoutes` САМ ставит «от» перед `priceFrom` (`isPrice`-гард: только если значение с цифры).
   В `priceFrom` НЕ дублировать «от». Текст-фразу без цифры («чаще в составе тура») гард оставит без «от» —
