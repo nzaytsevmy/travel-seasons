@@ -446,11 +446,28 @@ def tpapi(body):
 
 def _tp_window(d_from, d_to):
     """Сумма кликов/продаж/дохода по партнёрам за [d_from, d_to)."""
+    # ⛔ paid_* — это ТОЛЬКО уже выплаченные деньги. В тревеле выплата приходит
+    # после поездки, то есть спустя месяц-два, и молодой сайт по этим полям
+    # честно показывает ноль даже когда брони идут. Отчёт три недели подряд
+    # печатал «доход 0₽» и это читалось как «не зарабатываем», хотя мерил не то.
+    # open_actions_count / profit_rub_sum — брони в обработке, то есть реальный
+    # ответ на вопрос «работает ли монетизация вообще».
     res, err = tpapi({
-        "fields": ["campaign_name_ru", "redirects_count", "paid_actions_count", "paid_profit_rub_sum"],
+        "fields": ["campaign_name_ru", "redirects_count",
+                   "paid_actions_count", "paid_profit_rub_sum",
+                   "open_actions_count", "profit_rub_sum"],
         "filters": [{"field": "date", "op": "ge", "value": str(d_from)},
                     {"field": "date", "op": "lt", "value": str(d_to)}],
         "group": ["campaign_name_ru"], "limit": 100})
+    # Если партнёр не знает новых полей — не терять весь денежный блок,
+    # а откатиться на прежний набор. Слепой отчёт хуже неполного.
+    if err:
+        res, err = tpapi({
+            "fields": ["campaign_name_ru", "redirects_count",
+                       "paid_actions_count", "paid_profit_rub_sum"],
+            "filters": [{"field": "date", "op": "ge", "value": str(d_from)},
+                        {"field": "date", "op": "lt", "value": str(d_to)}],
+            "group": ["campaign_name_ru"], "limit": 100})
     if err:
         return None, err
     by = {}
@@ -458,7 +475,9 @@ def _tp_window(d_from, d_to):
         by[r.get("campaign_name_ru") or "—"] = {
             "clicks": int(r.get("redirects_count") or 0),
             "sales": int(r.get("paid_actions_count") or 0),
-            "rev": float(r.get("paid_profit_rub_sum") or 0)}
+            "rev": float(r.get("paid_profit_rub_sum") or 0),
+            "booked": int(r.get("open_actions_count") or 0),
+            "booked_rev": float(r.get("profit_rub_sum") or 0)}
     return by, None
 
 
@@ -480,6 +499,10 @@ def fetch_tp_stats() -> dict:
     sub_rows = [(r.get("sub_id"), int(r.get("redirects_count") or 0), float(r.get("paid_profit_rub_sum") or 0))
                 for r in (subs or {}).get("results", [])]
     sub_rows.sort(key=lambda x: (-x[2], -x[1]))
+    # Была ли хоть одна бронь за квартал. Без этого «0 за неделю» не отличить
+    # от «0 никогда»: первое — обычная неделя, второе — сломанная монетизация.
+    q, _ = _tp_window(TODAY - timedelta(days=90), d_next)
+    q = q or {}
     tot_clicks = sum(v["clicks"] for v in cur.values())
     attributed = sum(c for _, c, _ in sub_rows)
     return {"ok": True, "by": cur, "prev": prev,
@@ -487,6 +510,10 @@ def fetch_tp_stats() -> dict:
             "tot_rev": sum(v["rev"] for v in cur.values()),
             "prev_rev": sum(v["rev"] for v in prev.values()),
             "sales": sum(v["sales"] for v in cur.values()),
+            "booked": sum(v["booked"] for v in cur.values()),
+            "booked_rev": sum(v["booked_rev"] for v in cur.values()),
+            "q_clicks": sum(v["clicks"] for v in q.values()),
+            "q_booked": sum(v["booked"] for v in q.values()) + sum(v["sales"] for v in q.values()),
             "top_subs": sub_rows[:5],
             "att_share": round(100 * attributed / tot_clicks) if tot_clicks else 0}
 
@@ -792,11 +819,21 @@ def weekly_mode(c) -> None:
     # Travelpayouts — деньги/клики по партнёрам + здоровье атрибуции (WoW)
     tp = fetch_tp_stats()
     if tp["ok"]:
-        L.append(f"💰 *Travelpayouts 7д* — доход {tp['tot_rev']:.0f}₽"
-                 f"{arrow(round(tp['tot_rev']), round(tp['prev_rev']))}  "
-                 f"клики {tp['tot_clicks']}  продажи {tp['sales']}  "
-                 f"атрибуция {tp['att_share']}%")
-        earners = sorted(((v['rev'], v['clicks'], v['sales'], n) for n, v in tp["by"].items()),
+        # Порядок строк не косметика: сверху то, что отвечает на «работает ли
+        # монетизация», а не то, что уже выплачено. Выплата в тревеле приходит
+        # после поездки, и на молодом сайте она нулевая по определению.
+        L.append(f"💰 *Travelpayouts 7д* — брони {tp['booked']} на {tp['booked_rev']:.0f}₽  "
+                 f"клики {tp['tot_clicks']}  атрибуция {tp['att_share']}%")
+        L.append(f"   выплачено {tp['tot_rev']:.0f}₽"
+                 f"{arrow(round(tp['tot_rev']), round(tp['prev_rev']))} "
+                 f"({tp['sales']} закрытых) — деньги приходят после поездки, "
+                 f"ноль здесь у молодого сайта нормален")
+        # ⛔ Единственная строка, которая действительно должна пугать.
+        if tp["q_booked"] == 0 and tp["q_clicks"] >= 500:
+            L.append(f"   🚨 за 90 дней {tp['q_clicks']} кликов и НИ ОДНОЙ брони — "
+                     f"это не задержка выплат, это сломанная монетизация: "
+                     f"проверить, доезжает ли метка до партнёра, и те ли офферы под этот трафик")
+        earners = sorted(((v['booked_rev'], v['clicks'], v['booked'], n) for n, v in tp["by"].items()),
                          reverse=True)
         top = [f"{n} {rev:.0f}₽/{cl}кл" for rev, cl, sa, n in earners[:4] if cl]
         if top:
