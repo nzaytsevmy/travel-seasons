@@ -47,7 +47,14 @@ export function archivedMonths(entries, now = new Date()) {
   }));
 }
 
-const byDateDesc = (a, b) => b.data.date.valueOf() - a.data.date.valueOf();
+// Сортировка ленты: сначала дата события, при равенстве — дата проверки.
+// Без второго ключа порядок среди заметок одного дня решало имя файла, и
+// 03.08.2026 свежеопубликованная заметка встала второй за той, что вышла
+// двумя днями раньше с той же датой события. Читатель приходит за новым и
+// должен видеть новое сверху.
+const byDateDesc = (a, b) =>
+  b.data.date.valueOf() - a.data.date.valueOf() ||
+  b.data.checked.valueOf() - a.data.checked.valueOf();
 
 /** Что показывает /novosti/: всё, чей месяц ещё не уехал в архив. */
 export function freshEntries(entries, now = new Date()) {
