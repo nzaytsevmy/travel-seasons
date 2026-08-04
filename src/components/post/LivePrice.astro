@@ -1,0 +1,57 @@
+---
+/**
+ * Цена перелёта прямо из ежедневной выгрузки, а не текстом в статье.
+ *
+ * Зачем появился (04.08.2026). В капсуле гида по Грузии стояло «от 28 500 ₽»,
+ * вписанное руками 02.08. Через два дня выгрузка давала 30 769 ₽ — число
+ * протухло за два дня, а читатель по нему принимает решение о поездке.
+ * Захардкоженные цены в тексте протухают всегда, вопрос только в скорости.
+ *
+ * Второе, не менее важное: рядом с числом печатается ДАТА выгрузки. Цена без
+ * даты для поисковика не факт, а слух: в ответ Яндекса попадают числа, у
+ * которых видно, на когда они верны. Наш выигрыш по озеру Рица построен ровно
+ * на этом — цена с датой введения и способом оплаты.
+ *
+ * ⛔ Нет данных по направлению — не рисуем ничего. Придумывать цену нельзя.
+ */
+import prices from '../../data/prices-cache.json';
+
+interface Props {
+  /** Код аэропорта назначения, как в выгрузке: TBS, BUS, KUT… */
+  iata: string;
+  /** Показывать ли самый дешёвый месяц. По умолчанию да. */
+  cheapest?: boolean;
+}
+
+const { iata, cheapest = true } = Astro.props;
+
+const MONTHS_ROD = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+  'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+const MONTHS_PREP = ['январе', 'феврале', 'марте', 'апреле', 'мае', 'июне',
+  'июле', 'августе', 'сентябре', 'октябре', 'ноябре', 'декабре'];
+
+const byMonth: Record<string, number> | undefined = (prices as any).prices?.[iata];
+const updatedAt: string | undefined = (prices as any).updatedAt;
+
+const entries = byMonth ? Object.entries(byMonth).filter(([, v]) => typeof v === 'number' && v > 0) : [];
+const nearest = entries[0];
+const min = entries.length ? entries.reduce((a, b) => (b[1] < a[1] ? b : a)) : null;
+
+const fmt = (n: number) => n.toLocaleString('ru-RU');
+const monthName = (key: string, list: string[]) => list[Number(key.slice(5, 7)) - 1] ?? '';
+const upd = updatedAt ? new Date(updatedAt) : null;
+const updText = upd ? `${upd.getUTCDate()} ${MONTHS_ROD[upd.getUTCMonth()]}` : null;
+---
+{nearest && (
+  <span class="live-price">
+    <b>{fmt(nearest[1])}&nbsp;₽</b> в {monthName(nearest[0], MONTHS_PREP)}
+    {cheapest && min && min[0] !== nearest[0] && (
+      <>, дешевле всего в {monthName(min[0], MONTHS_PREP)} — <b>{fmt(min[1])}&nbsp;₽</b></>
+    )}
+    {updText && <span class="live-price__upd"> (выгрузка от {updText})</span>}
+  </span>
+)}
+
+<style>
+  .live-price__upd { color: var(--mid, #6b685e); font-size: 0.92em; white-space: nowrap; }
+</style>
