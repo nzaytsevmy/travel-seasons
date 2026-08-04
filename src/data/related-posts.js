@@ -8,6 +8,7 @@ export const RELATED_POSTS = {
   'abkhazia': [
     { slug: 'abkhazia-2026', title: 'Абхазия 2026: стоит ли ехать, цены, как добраться', kind: 'guide' },
     { slug: 'zagranpasport-v-abhaziyu-2026', title: 'Нужен ли загранпаспорт в Абхазию — документы на границе', kind: 'visa' },
+    { slug: 'chto-privezti-iz-abhazii-2026', title: 'Что привезти из Абхазии — еда, вино и что не пустят через границу', kind: 'guide' },
     { slug: 'skolko-stoit-nedelya-v-rossii-2026', title: 'Сколько стоит неделя в России и Абхазии 2026: пять направлений', kind: 'guide' },
   ],
   'japan': [
