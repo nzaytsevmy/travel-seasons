@@ -429,3 +429,42 @@ test('Скрипты: данные не разрывают страницу (н�
   expect(broken, `страницы, где скрипт разорван:\n${broken.slice(0, 10)
     .map((b) => `  ${b.file}: открытий ${b.open}, закрытий ${b.close}`).join('\n')}`).toEqual([]);
 });
+
+// ─── Сторож: статья кластера получает блок своего направления, а не общий ───
+//
+// Блок «Спланировать поездку» ведёт из статьи в чек-лист сборов, визовую страницу,
+// хаб направления и калькулятор — то есть в узлы, где человек и конвертится.
+// Направление статьи определялось условием «пост стоит ПЕРВЫМ в списке кластера».
+// Из-за этого 13 статей, стоящих в списке вторыми и ниже, получали общий блок
+// «Куда дальше» и теряли ещё и список соседей по теме: у страницы про загранпаспорт
+// в Абхазию оказалось 15 внутренних ссылок против 27 у соседней статьи того же
+// кластера. Замер 04.08.2026 по собранному сайту.
+//
+// ⛔ Чинить бланкетно нельзя: 9 статей (оплата за границей, eSIM, «сколько стоит
+// неделя») входят сразу в несколько кластеров, и страновой блок был бы для них
+// враньём — им общий блок положен по делу. Поэтому правило: своё направление у
+// статьи есть, если она первая в кластере ЛИБО входит ровно в один кластер.
+test('Кластер: статья одного направления ведёт в его чек-лист и визу, а не в общий блок', async () => {
+  const { RELATED_POSTS } = await import('../src/data/related-posts.js');
+  const where: Record<string, string[]> = {};
+  const firstOf = new Set<string>();
+  for (const [dir, posts] of Object.entries(RELATED_POSTS as Record<string, { slug: string }[]>)) {
+    if (posts[0]) firstOf.add(posts[0].slug);
+    for (const p of posts) (where[p.slug] ??= []).push(dir);
+  }
+  // однозначные: не первые, но живут ровно в одном кластере
+  const shouldHaveOwnBlock = Object.entries(where)
+    .filter(([slug, dirs]) => dirs.length === 1 && !firstOf.has(slug))
+    .map(([slug, dirs]) => ({ slug, dir: dirs[0] }));
+
+  const bad: string[] = [];
+  for (const { slug, dir } of shouldHaveOwnBlock) {
+    const f = join(DIST, 'blog', slug, 'index.html');
+    if (!existsSync(f)) continue;
+    const t = readFileSync(f, 'utf8');
+    if (!t.includes(`/packing/${dir}/`) || !t.includes(`/visa/${dir}/`)) {
+      bad.push(`${slug} → ожидался блок направления ${dir}`);
+    }
+  }
+  expect(bad, `статьи с общим блоком вместо своего:\n${bad.join('\n')}`).toEqual([]);
+});

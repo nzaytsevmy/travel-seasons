@@ -96,8 +96,20 @@ const faqs = extractFAQs(post.body);
 
 // «Куда дальше» — ведёт читателя из поста в конвертящие узлы (packing-чеклист,
 // калькулятор) и связывает pillar↔visa↔хаб → глубина/dwell (вес Яндекса).
-// Страну поста выводим из RELATED_POSTS: пост = первый related-пост направления.
-const primaryDir = DIRECTIONS.find(d => d.relatedPosts?.[0]?.slug === post.slug) ?? null;
+// Страну поста выводим из RELATED_POSTS. Раньше условие было «пост стоит ПЕРВЫМ
+// в списке кластера», и 13 статей, стоящих вторыми и ниже, получали общий блок
+// вместо своего, а заодно теряли список соседей по теме (он строится из того же
+// направления). У страницы про загранпаспорт в Абхазию из-за этого было 15
+// внутренних ссылок против 27 у соседней статьи того же кластера — замер 04.08.2026.
+//
+// ⛔ Бланкетно «любой пост из списка» чинить нельзя: 9 статей (оплата за границей,
+// eSIM, «сколько стоит неделя») входят сразу в несколько кластеров, и страновой
+// блок был бы для них враньём — им общий блок положен по делу.
+// Правило: сначала кластер, где пост стоит первым (его «дом»), иначе — кластер,
+// если он ровно один. Пост из нескольких кластеров остаётся с общим блоком.
+const ownDirs = DIRECTIONS.filter(d => d.relatedPosts?.some(p => p.slug === post.slug));
+const primaryDir = DIRECTIONS.find(d => d.relatedPosts?.[0]?.slug === post.slug)
+  ?? (ownDirs.length === 1 ? ownDirs[0] : null);
 const planVP = primaryDir ? (primaryDir.cases?.vP || primaryDir.cases?.acc || primaryDir.cases?.nom) : null;
 const siblingPosts = primaryDir ? primaryDir.relatedPosts.filter(p => p.slug !== post.slug).slice(0, 3) : [];
 
