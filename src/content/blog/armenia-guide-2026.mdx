@@ -35,6 +35,12 @@ import PricingCards from '../../components/post/PricingCards.astro';
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 import { drimsimSub, airaloSub, TP_LINKS, cherehapaTravel, aviasalesRoute, ostrovokCity } from '../../data/affiliate.js';
+import pricesCache from '../../data/prices-cache.json';
+
+{/* Цена в кнопке — из ежедневной выгрузки. Раньше стояло «от 9 000 ₽» руками,
+    а самый дешёвый месяц по выгрузке — 17380 ₽: кнопка обещала билет,
+    которого нет ни в одном месяце года. */}
+export const evnMin = (Math.min(...Object.values(pricesCache.prices.EVN).filter(Boolean))).toLocaleString('ru-RU') + ' ₽';
 
 export const aviaYerevan = aviasalesRoute('MOW', 'EVN', 'armenia_guide_2026');
 export const hotelsYerevan = ostrovokCity('armenia', 'yerevan', 'armenia_guide_2026');
@@ -100,7 +106,7 @@ export const insurance = cherehapaTravel('armenia_guide_2026');
 
 **Способы добраться:**
 
-1. **Прямой самолёт** — быстрее и проще всего, и по внутреннему паспорту. Сравнить цены и даты по всем авиакомпаниям сразу — <a href={aviaYerevan} class="aff-cta" rel="sponsored">Найти билет в Ереван от 9 000 ₽</a>: cookie держится 30 дней, можно поймать цену и забронировать позже.
+1. **Прямой самолёт** — быстрее и проще всего, и по внутреннему паспорту. Сравнить цены и даты по всем авиакомпаниям сразу — <a href={aviaYerevan} class="aff-cta" rel="sponsored">Найти билет в Ереван — от {evnMin} в самый дешёвый месяц</a>: cookie держится 30 дней, можно поймать цену и забронировать позже.
 2. **Со стыковкой** — иногда дешевле, но дольше и уже нужен загранпаспорт.
 3. **По земле через Грузию** — на машине или маршрутке из Тбилиси (около 6 часов до Еревана). Вариант для тех, кто едет по Кавказу маршрутом Грузия плюс Армения; нужен загран.
 
