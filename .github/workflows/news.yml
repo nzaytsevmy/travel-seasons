@@ -51,6 +51,12 @@ jobs:
       # Anthropic-сервис — без этого падает на первом шаге с «Could not fetch
       # an OIDC token» (грабли записаны в quality-radar.yml, не повторять).
       id-token: write
+      # ⛔ Без actions: write команда `gh workflow run deploy.yml` внизу получает
+      # 403 ВСЕГДА: блок permissions заменяет набор прав целиком, у невыписанных
+      # скоупов права нет. 05.08.2026 этот путь выполнился впервые: заметки
+      # смержились, вызов выкладки упал, прогон покраснел, а на сайт ничего не
+      # уехало — «прогон упал» при живых заметках в main.
+      actions: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -78,18 +84,37 @@ jobs:
       # ⛔ Второй (страховочный) запуск не должен удваивать дневную норму.
       # Дедупликация в гейте ловит ПОВТОР той же новости, но два разных набора
       # поводов за ночь она пропустит — и вместо четырёх заметок выйдет восемь.
+      #
+      # ⛔ Раньше эта проверка ВЫЧИСЛЯЛАСЬ, но её результат никто не читал —
+      # ни одного `if` по нему в файле не было. 05.08.2026 ровно так и вышло
+      # вдвое: ночной заход смержил заметку в 00:03 UTC, страховочный честно
+      # насчитал «уже опубликовано: 1», написал это в журнал и... собрал и
+      # смержил вторую. Теперь результат закрывает все шаги сбора (см. `if`
+      # ниже), а итог дня объясняет шаг уведомления.
+      #
+      # Два намеренных решения:
+      # · окно «8 часов назад», а не «с полуночи UTC»: ночной заход мержит
+      #   в районе полуночи с обеих сторон (05.08 — в 00:03, за три минуты
+      #   ДО полуночи он тоже реален), и календарное окно такой мерж теряет;
+      # · проверка только для страховочного крона: ночной заход по календарному
+      #   окну видел бы УТРЕННИЕ заметки того же UTC-дня и пропускал бы вечер.
       - name: Заметки за сегодня уже вышли?
         id: today
+        env:
+          FIRED_CRON: ${{ github.event.schedule }}
         run: |
-          TODAY=$(date -u +%Y-%m-%d)
-          N=$(git log --since="$TODAY 00:00" --diff-filter=A --name-only --format= \
-                -- 'src/content/news/*.md' | grep -c '\.md$' || true)
+          N=0
+          if [ "$FIRED_CRON" = "13 1 * * *" ]; then
+            N=$(git log --since="8 hours ago" --diff-filter=A --name-only --format= \
+                  -- 'src/content/news/*.md' | grep -c '\.md$' || true)
+          fi
           echo "already=$N" >> "$GITHUB_OUTPUT"
           if [ "$N" != "0" ]; then
-            echo "За сегодня уже опубликовано заметок: $N. Второй заход не нужен."
+            echo "Заметки уже вышли ночным заходом: $N. Второй заход не нужен."
           fi
 
       - name: Ветка и git identity
+        if: steps.today.outputs.already == '0'
         run: |
           git config user.name "news-bot"
           git config user.email "news@traveltribe.ru"
@@ -106,9 +131,11 @@ jobs:
       # привычные адреса отдают 404, — при том что статьи читаются на 6–12 тысяч
       # знаков. Сборщик такие сайты открывает, ручной подбор адреса — нет.
       - name: Собрать поводы и проверить их читаемость
+        if: steps.today.outputs.already == '0'
         run: node scripts/news-radar.mjs
 
       - name: Собрать кандидатов
+        if: steps.today.outputs.already == '0'
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -246,6 +273,7 @@ jobs:
       # заметкам в день, зато ловит ошибку, которая дороже всего стоит — она
       # уезжает на прод и живёт там, пока кто-нибудь не заметит.
       - name: Перепроверить чужими глазами
+        if: steps.today.outputs.already == '0'
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -295,12 +323,14 @@ jobs:
       # Плата за такой порядок: кадры скачиваются и тем заметкам, которые гейт
       # потом отбракует. Их подметает отдельный шаг ниже.
       - name: Найти кадр к каждой заметке
+        if: steps.today.outputs.already == '0'
         run: node scripts/news-photo.mjs
 
       # Детерминированная проверка. Скрипт САМ ходит на источники и не верит
       # ни одному утверждению агента.
       - name: Гейт — отбраковать непрошедшее
         id: gate
+        if: steps.today.outputs.already == '0'
         run: |
           set +e
           node scripts/news-gate.mjs > /tmp/gate.txt 2>&1
@@ -314,11 +344,13 @@ jobs:
           echo "left=$LEFT" >> "$GITHUB_OUTPUT"
 
       - name: Ограничить число заметок за день
+        if: steps.today.outputs.already == '0'
         run: node scripts/news-cap.mjs
 
       # Страховка на случай, когда заметка исчезает уже после съёмки кадра
       # (скептик снял, дневная норма отсекла, человек удалил руками).
       - name: Убрать кадры без заметок
+        if: steps.today.outputs.already == '0'
         run: |
           for img in src/content/news/_images/*.jpg; do
             [ -e "$img" ] || continue
@@ -334,7 +366,7 @@ jobs:
       # «робот сломался». 01.08.2026 два прогона подряд закончились нулём, и
       # понять причину по журналу было нельзя.
       - name: Показать, что нашли и что отбросили
-        if: always()
+        if: always() && steps.today.outputs.already == '0'
         run: |
           echo "── поводы, собранные и проверенные ─────────"
           tail -20 /tmp/news-radar.txt 2>/dev/null || echo "(сборщик не отработал)"
@@ -347,6 +379,7 @@ jobs:
 
       - name: Есть ли что публиковать
         id: diff
+        if: steps.today.outputs.already == '0'
         run: |
           git add -A src/content/news
           # ⛔ Считаем ЗАМЕТКИ, а не файлы. Картинка без заметки — не новость,
@@ -526,6 +559,7 @@ jobs:
           PR_URL: ${{ steps.pr.outputs.url }}
           CHANGED: ${{ steps.diff.outputs.changed }}
           DELETED: ${{ steps.diff.outputs.deleted }}
+          ALREADY: ${{ steps.today.outputs.already }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           # Дни молчания и наличие отчёта считаются здесь же, в шаге уведомления:
           # шаг diff мог не выполниться, если прогон упал раньше.
@@ -545,7 +579,13 @@ jobs:
           # Отчёт сборщика обязателен: без него пустой день неразбираем.
           if [ -s /tmp/news-report.txt ]; then REPORT="отчёт есть"; else REPORT="⚠ ОТЧЁТА НЕТ"; fi
 
-          if [ "$CHANGED" = "true" ] && [ "$DELETED" != "0" ]; then
+          # ⛔ Ветка пропуска идёт ПЕРВОЙ. Без неё страховочный заход, который
+          # ничего не собирал, попадал в ветку «сегодня ничего не опубликовано —
+          # нормальный день», хотя заметки вышли ночью этим же утром. Сообщение,
+          # которому нельзя верить, хуже молчания (см. 04.08.2026 ниже).
+          if [ -n "$ALREADY" ] && [ "$ALREADY" != "0" ]; then
+            MSG="Новости: страховочный заход убедился, что заметки уже вышли ночью ($ALREADY шт.), и второй раз не публиковал."
+          elif [ "$CHANGED" = "true" ] && [ "$DELETED" != "0" ]; then
             MSG="Новости: робот предлагает УДАЛИТЬ $DELETED опубликованных заметок. Сам этого не делает — посмотрите и решите: $PR_URL"
           elif [ "$CHANGED" != "true" ]; then
             if [ "$DAYS" -ge 3 ]; then
