@@ -47,6 +47,12 @@ def file_to_url(path: str) -> str | None:
         slug = p.rsplit("/", 1)[1][: -len(ext)]
         return f"{SITE}/blog/{slug}/"
 
+    # Заметки ленты. Появилось 10.08.2026 вместе с их собственными адресами: до
+    # этого заметка была пунктом ленты, пинговать было нечего, и робот новостей
+    # публиковал молча — поисковик узнавал о заметке сам, когда доходили руки.
+    if p.startswith("src/content/news/") and p.endswith(".md"):
+        return f"{SITE}/novosti/{p.rsplit('/', 1)[1][:-3]}/"
+
     if p.startswith("src/pages/") and p.endswith(".astro"):
         rel = p[len("src/pages/") :][: -len(".astro")]
         if rel == "index":
