@@ -2,16 +2,16 @@
 // заметки автоматически, а читатель подписывается без бота. Это и есть
 // механизм возвратов, ради которого лента затевалась.
 //
-// Ссылка ведёт на якорь: у заметки нет своей страницы, она пункт ленты. Пока
-// месяц свежий — якорь живёт на /novosti/, потом на архиве месяца, поэтому
-// адрес считаем через ту же функцию, что и страницы.
+// Ссылка ведёт на страницу заметки. До 10.08.2026 своей страницы не было, и
+// адрес приходилось собирать якорем к ленте или к архиву месяца — он менялся
+// под заметкой, когда её месяц уезжал в архив, а у подписчика в ленте оставался
+// старый. Теперь адрес у заметки один и навсегда.
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
-import { archivedMonths, monthKey, formatDateRu, TOPIC_LABEL , addedAt } from '../../data/news.js';
+import { formatDateRu, TOPIC_LABEL, addedAt, newsUrl } from '../../data/news.js';
 
 export async function GET(context) {
   const all = await getCollection('news');
-  const archived = archivedMonths(all);
   // Тот же порядок, что на странице: подписчик видит новое сверху.
   const sorted = [...all]
     .sort((a, b) => addedAt(b) - addedAt(a) || b.data.date.valueOf() - a.data.date.valueOf())
@@ -24,18 +24,13 @@ export async function GET(context) {
     site: context.site,
     customData: '<language>ru-ru</language>',
     items: sorted.map((e) => {
-      const key = monthKey(e.data.date);
-      const base = archived.has(key) ? `/novosti/${key}/` : '/novosti/';
       const head = e.data.status ? `${e.data.status} · ` : '';
       return {
         title: e.data.title,
         // Дата события, а не публикации: читателю важно, когда это произошло.
         pubDate: e.data.date,
         description: `${TOPIC_LABEL[e.data.topic]} · ${head}${formatDateRu(e.data.date)}. ${e.body.trim().split('\n')[0]}`,
-        // Абсолютный URL, а не путь: при trailingSlash:'always' @astrojs/rss
-        // дописывает слэш В КОНЕЦ строки, то есть ПОСЛЕ якоря («#slug/»), и
-        // ссылка ведёт на верх страницы вместо нужной заметки.
-        link: new URL(base, context.site).href + `#${e.slug}`,
+        link: new URL(newsUrl(e), context.site).href,
       };
     }),
   });

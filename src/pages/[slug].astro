@@ -18,6 +18,7 @@ import { DIRECTIONS, MONTHS, VISITED } from '../data/directions.js';
 import { PRICES } from '../data/prices.js';
 import { getVisaDetails } from '../data/visa-details.js';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
+import { newsForCountry, newsUrl, formatDateRu } from '../data/news.js';
 import AviasalesWidget from '../components/post/AviasalesWidget.astro';
 import StickyCta from '../components/StickyCta.astro';
 import BudgetBlock from '../components/BudgetBlock.astro';
@@ -73,6 +74,11 @@ export async function getStaticPaths() {
 
 const { d } = Astro.props;
 const yr = new Date().getFullYear();
+
+// Свежие заметки об этом направлении. Связь идёт по стране, проставленной у
+// заметки. Смысл блока — не «новости ради новостей»: хаб получает регулярно
+// обновляемый кусок, а заметка — переход на страницу, которая уже ранжируется.
+const countryNews = newsForCountry(await getCollection('news'), d.slug, 3);
 // «Похожие направления» — превращает чтение одной страны в сессию из нескольких
 // (глубина/dwell/last-click = ПФ + показы партнёрских CTA). Матч по визе/бюджету/вайбу/сезону.
 const similar = similarDestinations(d.slug, 3);
@@ -598,6 +604,24 @@ if (guide?.itinerary?.length) {
         <span class="sl-trust">маршрут, логистика и малая группа уже собраны</span>
       </p>
     </section>
+
+    {/* СВЕЖИЕ ЗАМЕТКИ О НАПРАВЛЕНИИ */}
+    {countryNews.length > 0 && (
+      <section class="sl-section">
+        <div class="sl-shead"><h2>Свежее о {d.cases.prep}</h2></div>
+        <ul class="sl-related">
+          {countryNews.map((n) => (
+            <li>
+              <a href={newsUrl(n)}>
+                <b>{n.data.title}</b>
+                <span>{formatDateRu(n.data.date)} · со ссылкой на первоисточник</span>
+              </a>
+            </li>
+          ))}
+          <li><a href="/novosti/"><b>Все новости путешествий</b></a></li>
+        </ul>
+      </section>
+    )}
 
     {/* RELATED LINKS */}
     {similar.length > 0 && (

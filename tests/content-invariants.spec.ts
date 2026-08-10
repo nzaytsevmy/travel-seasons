@@ -496,3 +496,37 @@ test('Разметка: в JSON-LD не утекли неподставленн�
   }
   expect(bad, `неподставленные выражения в разметке:\n${bad.slice(0, 10).join('\n')}`).toEqual([]);
 });
+
+// ─── Раздел новостей: у заметки есть свой адрес, и он ровно один ───
+//
+// До 10.08.2026 заметка была пунктом ленты без собственного адреса: двадцать
+// заметок жили по трём адресам, и раздел за 30 дней набрал в Google ноль
+// показов — ранжироваться было нечему. Теперь у каждой заметки своя страница;
+// эти два сторожа следят, чтобы связка не развалилась молча.
+test('Новости: у каждой заметки есть своя страница, и лента на неё ссылается', () => {
+  const feed = join(DIST, 'novosti/index.html');
+  expect(existsSync(feed), 'ленты новостей нет в сборке').toBe(true);
+  const html = readFileSync(feed, 'utf8');
+
+  const slugs = readdirSync(join(DIST, '..', 'src/content/news'))
+    .filter((f) => f.endsWith('.md'))
+    .map((f) => f.replace(/\.md$/, ''));
+  expect(slugs.length).toBeGreaterThan(0);
+
+  const noPage = slugs.filter((s) => !existsSync(join(DIST, 'novosti', s, 'index.html')));
+  expect(noPage, `заметки без своей страницы:\n${noPage.join('\n')}`).toEqual([]);
+
+  // Хотя бы одна ссылка с ленты в заметки должна быть — иначе страницы сироты.
+  // Сжатый HTML идёт одной строкой и без кавычек, поэтому ищем без них тоже.
+  const linked = slugs.filter((s) => new RegExp(`href="?/novosti/${s}/`).test(html));
+  expect(linked.length, 'лента не ссылается ни на одну заметку').toBeGreaterThan(0);
+});
+
+test('Новости: текст заметки объявлен статьёй только на своей странице', () => {
+  const listings = [join(DIST, 'novosti/index.html'),
+                    ...readdirSync(join(DIST, 'novosti'), { withFileTypes: true })
+                      .filter((e) => e.isDirectory() && /^\d{4}-\d{2}$/.test(e.name))
+                      .map((e) => join(DIST, 'novosti', e.name, 'index.html'))];
+  const bad = listings.filter((f) => existsSync(f) && readFileSync(f, 'utf8').includes('"NewsArticle"'));
+  expect(bad, `NewsArticle на листинге (должен быть только на странице заметки):\n${bad.join('\n')}`).toEqual([]);
+});

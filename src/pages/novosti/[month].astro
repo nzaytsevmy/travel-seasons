@@ -1,13 +1,16 @@
 ---
-// /novosti/YYYY-MM/ — архив месяца. Страницы строятся только для месяцев,
-// которые уже ушли из ленты (src/data/news.js), поэтому пересечения контента
-// между /novosti/ и архивом не возникает.
+// /novosti/YYYY-MM/ — архив месяца: список заметок со ссылками на их страницы.
+// Строится только для месяцев, которые уже ушли из ленты (src/data/news.js).
+//
+// ⛔ Раньше архив печатал каждую заметку месяца целиком. С 10.08.2026 полный
+// текст живёт на своей странице заметки, а архив остаётся тем, чем и был по
+// смыслу, — оглавлением месяца. Иначе один и тот же текст лежал по трём адресам.
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Footer from '../../components/Footer.astro';
-import NewsItem from '../../components/NewsItem.astro';
+import NewsCompact from '../../components/NewsCompact.astro';
 import { getCollection } from 'astro:content';
-import { archiveKeys, entriesOfMonth, monthTitleRu, formatDateRu } from '../../data/news.js';
+import { archiveKeys, entriesOfMonth, monthTitleRu, formatDateRu, newsUrl } from '../../data/news.js';
 import { plural } from '../../data/plural.js';
 
 export async function getStaticPaths() {
@@ -18,10 +21,6 @@ export async function getStaticPaths() {
 const { month } = Astro.params;
 const all = await getCollection('news');
 const items = entriesOfMonth(all, month);
-
-const rendered = await Promise.all(
-  items.map(async (entry) => ({ entry, Content: (await entry.render()).Content }))
-);
 
 const others = archiveKeys(all).filter((k) => k !== month);
 const monthRu = monthTitleRu(month);
@@ -61,6 +60,7 @@ const ldJson = {
         "@type": "ListItem",
         "position": i + 1,
         "name": e.data.title,
+        "url": `https://traveltribe.ru${newsUrl(e)}`,
       })),
     },
   ],
@@ -83,7 +83,7 @@ const ldJson = {
     </header>
 
     <ol class="nv-list">
-      {rendered.map(({ entry, Content }, i) => <NewsItem entry={entry} Content={Content} index={i} base={url} />)}
+      {items.map((entry) => <NewsCompact entry={entry} />)}
     </ol>
 
     {others.length > 0 && (
