@@ -288,3 +288,43 @@ test('лента: при одинаковой дате события сверх
   expect(order[1]).toBe('amboseli-elephants');
   expect(order[2]).toBe('iguazu-boardwalk');
 });
+
+// ── что вообще проверять ─────────────────────────────────────────────────────
+// ⛔ Баг 09–10.08.2026, лента молчала двое суток. Гейт брал ВСЮ папку новостей,
+// а не только сегодняшние заметки. Тайский туристический сайт закрылся от
+// ботов, и давно опубликованная заметка про ЮНЕСКО каждую ночь уходила в
+// «ОТБОЙ» → шаг workflow удалял её файл → защита «правка удаляет опубликованное,
+// мерж только руками» останавливала весь PR, а вместе с ним и свежие заметки.
+// Источник может умереть в любой день; это повод чинить ссылку, а не снимать с
+// сайта проверенный когда-то факт.
+test('в проверку попадают только новые заметки, опубликованные не трогаются', async () => {
+  const { filesToCheck } = await import('../scripts/news-gate.mjs');
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import('node:fs');
+  const { execFileSync } = await import('node:child_process');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+
+  const root = mkdtempSync(join(tmpdir(), 'news-gate-'));
+  try {
+    const dir = join(root, 'src/content/news');
+    mkdirSync(dir, { recursive: true });
+    const git = (...args: string[]) => execFileSync('git', args, { cwd: root });
+
+    writeFileSync(join(dir, '2026-07-27-published.md'), '---\ntitle: "Старая"\n---\n');
+    git('init', '-q');
+    git('add', '.');
+    git('-c', 'user.email=t@t', '-c', 'user.name=t', 'commit', '-qm', 'опубликовано');
+
+    writeFileSync(join(dir, '2026-08-09-fresh.md'), '---\ntitle: "Новая"\n---\n');
+
+    // Нетронутая опубликованная заметка в проверку не идёт.
+    expect(filesToCheck(root)).toEqual(['2026-08-09-fresh.md']);
+
+    // А правка опубликованной — идёт: редактору-скептику разрешено поправить
+    // слог на месте, и такая правка обязана пройти гейт, а не уехать мимо него.
+    writeFileSync(join(dir, '2026-07-27-published.md'), '---\ntitle: "Старая, поправленная"\n---\n');
+    expect(filesToCheck(root)).toEqual(['2026-07-27-published.md', '2026-08-09-fresh.md']);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
