@@ -328,3 +328,25 @@ test('в проверку попадают только новые заметк�
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+// Блок «свежее о направлении» на хабе страны собирается этой функцией. Если она
+// начнёт отдавать чужие страны или терять сортировку, хаб будет показывать
+// случайные заметки — заметить это глазами на 74 страницах невозможно.
+test('свежее о направлении: только заметки этой страны, новые сверху, не больше лимита', async () => {
+  const { newsForCountry } = await import('../src/data/news.js');
+  const mk = (slug: string, country: string, added: string) => ({
+    slug,
+    data: { countries: [country], date: new Date(added), checked: new Date(added), added: new Date(added) },
+  });
+  const entries = [
+    mk('old-thai', 'thailand', '2026-07-01'),
+    mk('new-thai', 'thailand', '2026-08-09'),
+    mk('mid-thai', 'thailand', '2026-08-01'),
+    mk('brazil-one', 'brazil', '2026-08-08'),
+  ];
+  expect(newsForCountry(entries as never, 'thailand').map((e: any) => e.slug))
+    .toEqual(['new-thai', 'mid-thai', 'old-thai']);
+  expect(newsForCountry(entries as never, 'thailand', 2).map((e: any) => e.slug))
+    .toEqual(['new-thai', 'mid-thai']);
+  expect(newsForCountry(entries as never, 'japan')).toEqual([]);
+});

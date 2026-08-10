@@ -1,23 +1,32 @@
 ---
 // /novosti/ — лента новостей о путешествиях, природе и правилах въезда.
 //
-// Заметка — пункт ленты, а не своя страница: 2–4 заметки в день с личным URL
-// дали бы ~1000 тонких страниц в год. Прошедшие месяцы уезжают в /novosti/YYYY-MM/,
-// здесь остаётся всё, что ещё не заархивировано (см. src/data/news.js — граница
-// намеренно по концу месяца, чтобы не возникло дня, когда заметка не видна нигде).
+// Витрина, а не свалка: целиком показываются только свежие заметки, остальные —
+// строкой со ссылкой на свою страницу. Прошедшие месяцы уезжают в
+// /novosti/YYYY-MM/ (граница намеренно по концу месяца, чтобы не возникло дня,
+// когда заметка не видна нигде).
+//
+// ⛔ Раньше здесь печатались ВСЕ заметки целиком, и у заметки не было своей
+// страницы вовсе. Замер 10.08.2026: страница весила 179 КБ, а раздел за 30 дней
+// набрал в Google ноль показов — ранжироваться было нечему, на двадцать заметок
+// приходилось три адреса.
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Footer from '../../components/Footer.astro';
 import NewsItem from '../../components/NewsItem.astro';
+import NewsCompact from '../../components/NewsCompact.astro';
 import { getCollection } from 'astro:content';
-import { freshEntries, archiveKeys, monthTitleRu, formatDateRu } from '../../data/news.js';
+import { freshEntries, archiveKeys, monthTitleRu, formatDateRu, newsUrl, FULL_ON_FEED } from '../../data/news.js';
 
 const all = await getCollection('news');
 const fresh = freshEntries(all);
 const archives = archiveKeys(all);
 
+const full = fresh.slice(0, FULL_ON_FEED);
+const rest = fresh.slice(FULL_ON_FEED);
+
 const rendered = await Promise.all(
-  fresh.map(async (entry) => ({ entry, Content: (await entry.render()).Content }))
+  full.map(async (entry) => ({ entry, Content: (await entry.render()).Content }))
 );
 
 const url = 'https://traveltribe.ru/novosti/';
@@ -56,6 +65,7 @@ const ldJson = {
         "@type": "ListItem",
         "position": i + 1,
         "name": e.data.title,
+        "url": `https://traveltribe.ru${newsUrl(e)}`,
       })),
     },
   ],
@@ -82,13 +92,22 @@ const ldJson = {
 
     {rendered.length > 0 ? (
       <ol class="nv-list">
-        {rendered.map(({ entry, Content }, i) => <NewsItem entry={entry} Content={Content} index={i} base={url} />)}
+        {rendered.map(({ entry, Content }, i) => <NewsItem entry={entry} Content={Content} index={i} />)}
       </ol>
     ) : (
       <p class="nv-empty">
         Свежих заметок пока нет. Так бывает: если за день не случилось ничего, что
         меняет чьи-то планы, я ничего не публикую.
       </p>
+    )}
+
+    {rest.length > 0 && (
+      <section class="nv-section">
+        <h2>Раньше в ленте</h2>
+        <ol class="nv-compact">
+          {rest.map((entry) => <NewsCompact entry={entry} />)}
+        </ol>
+      </section>
     )}
 
     {archives.length > 0 && (
@@ -143,6 +162,7 @@ const ldJson = {
   .nv-byline a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
 
   .nv-list { list-style: none; margin: 0; padding: 0; }
+  .nv-compact { list-style: none; margin: 0; padding: 0; }
   .nv-empty { max-width: 62ch; line-height: 1.6; color: var(--text-dim);
               border-top: 1px solid var(--line-strong, var(--line)); padding-top: 1.5rem; }
 

@@ -1,0 +1,209 @@
+---
+// /novosti/<slug>/ — своя страница заметки.
+//
+// ⛔ Раньше страницы не было СОЗНАТЕЛЬНО: заметка считалась пунктом ленты, чтобы
+// 2–4 публикации в день не дали тысячу тонких страниц в год. Замер 10.08.2026
+// показал, чем это кончилось: за 30 дней раздел набрал в Google ноль показов и
+// ноль кликов, а в выборке проиндексированного Яндексом его нет вовсе. Ранжи-
+// роваться было нечему — на двадцать заметок приходилось три адреса. Свой адрес
+// возвращает заметке шанс на длинный хвост и, что важнее, даёт мост к большой
+// статье о том же направлении: страница заметки ссылается на хаб страны, а хаб
+// показывает свежие заметки о ней.
+//
+// Тонкой страница при этом не остаётся: капсула-ответ, свой кадр, текст,
+// первоисточник, дата сверки и переход к разбору направления.
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Footer from '../../components/Footer.astro';
+import { Image, getImage } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu, addedAt, newsUrl } from '../../data/news.js';
+import { pickNewsImage, newsImageNote } from '../../data/news-images.js';
+import { bySlug } from '../../data/directions.js';
+
+export async function getStaticPaths() {
+  const all = await getCollection('news');
+  // Порядок тот же, что в ленте: он же задаёт «предыдущую / следующую».
+  const sorted = [...all].sort((a, b) => addedAt(b) - addedAt(a) || b.data.date.valueOf() - a.data.date.valueOf());
+  return sorted.map((entry, i) => ({
+    params: { slug: entry.slug },
+    props: { entry, around: [sorted[i - 1], sorted[i + 1]].filter(Boolean) },
+  }));
+}
+
+const { entry, around } = Astro.props;
+const d = entry.data;
+const { Content } = await entry.render();
+
+const url = `https://traveltribe.ru${newsUrl(entry)}`;
+const added = new Date(addedAt(entry));
+const addedIso = added.toISOString().slice(0, 10);
+const iso = (x) => new Date(x).toISOString().slice(0, 10);
+
+// Направления сайта, о которых эта заметка. Страна у заметки стоит всегда, но
+// направлением сайта она быть не обязана — ссылку даём только на существующие.
+const dirs = (d.countries ?? []).map((s) => bySlug(s)).filter(Boolean);
+const guides = dirs.flatMap((dir) => (dir.relatedPosts ?? []).slice(0, 2).map((p) => ({ ...p, dir })));
+
+const cover = pickNewsImage(d, entry.slug, 0);
+const coverNote = d.imageCredit
+  ? [d.imageTitle || 'Иллюстрация к теме', `фото: ${d.imageCredit}`, d.imageLicense].filter(Boolean).join(' · ')
+  : newsImageNote(d);
+const coverLink = d.imageSource ?? null;
+
+// Крупный дериват — для карточки в соцсетях и для поиска, в страницу не идёт.
+const wide = cover ? await getImage({ src: cover, width: 1600, format: 'webp' }) : null;
+const wideUrl = wide ? new URL(wide.src, 'https://traveltribe.ru').href : null;
+
+const title = d.title.length <= 60 ? d.title : d.title.slice(0, 57).replace(/[\s—,:-]+$/, '') + '…';
+const description = (d.tldr ?? d.title).slice(0, 155);
+
+const ldJson = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "NewsArticle",
+      "@id": `${url}#article`,
+      "mainEntityOfPage": { "@type": "WebPage", "@id": url },
+      "url": url,
+      "headline": d.title,
+      "description": d.tldr ?? d.title,
+      ...(wideUrl ? { "image": [wideUrl] } : {}),
+      "datePublished": addedIso,
+      "dateModified": iso(d.checked),
+      "inLanguage": "ru-RU",
+      "author": { "@id": "https://traveltribe.ru/about/#person" },
+      "publisher": { "@id": "https://traveltribe.ru/#org" },
+      "isAccessibleForFree": true,
+      "citation": d.sources.map((x) => x.url),
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".nv-tldr"] },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Новости", "item": "https://traveltribe.ru/novosti/" },
+        { "@type": "ListItem", "position": 3, "name": d.title, "item": url },
+      ],
+    },
+  ],
+};
+---
+<Layout title={title} description={description} canonical={url} ldJson={ldJson}
+        ogType="article" ogImage={wideUrl} ogImageAlt={d.imageAlt ?? d.title}>
+  <Breadcrumbs crumbs={[{ label: 'Новости', href: '/novosti/' }, { label: d.title }]} />
+  <main id="main" class="nvp">
+
+    <article>
+      <div class="nvp-meta">
+        <time datetime={addedIso}>{formatDateRu(added)}</time>
+        <span>{TOPIC_LABEL[d.topic]}</span>
+        {d.impact === 'high' && <span class="nvp-impact">{IMPACT_LABEL.high}</span>}
+        {d.status && <span class="nvp-status">{d.status}</span>}
+      </div>
+
+      <h1 class="nvp-h1">{d.title}</h1>
+
+      {d.tldr && <p class="nv-tldr">{d.tldr}</p>}
+
+      {cover && (
+        <figure class="nvp-fig">
+          <Image src={cover} alt={d.imageAlt ?? d.title} widths={[480, 800, 1200]}
+                 sizes="(max-width: 700px) 100vw, 700px" loading="eager" fetchpriority="high"
+                 formats={['webp']} />
+          {coverNote && (
+            <figcaption>
+              {coverLink ? <a href={coverLink} rel="nofollow noopener" target="_blank">{coverNote}</a> : coverNote}
+            </figcaption>
+          )}
+        </figure>
+      )}
+
+      <div class="nvp-body"><Content /></div>
+
+      <p class="nvp-refs">
+        <span class="nvp-refs-group">Источник: {d.sources.map((src, i) => (
+          <Fragment>{i > 0 ? ', ' : ''}<a href={src.url} rel="nofollow noopener" target="_blank">{src.name}</a></Fragment>
+        ))}</span>
+        <span class="nvp-refs-group nvp-checked">
+          <a href="/about/">Никита Зайцев</a>, сверено {formatDateRu(d.checked)}
+        </span>
+      </p>
+    </article>
+
+    {dirs.length > 0 && (
+      <section class="nvp-section">
+        <h2>Если собираетесь {dirs[0].cases.vP}</h2>
+        <ul class="nvp-links">
+          {dirs.map((dir) => (
+            <li><a href={`/${dir.slug}/`}>{dir.cases.nom}: сезоны, виза и бюджет</a></li>
+          ))}
+          {/* Падеж берём тот же, что на хабах: «Виза в Бразилию», а не «Виза Бразилии». */}
+          {dirs.map((dir) => (
+            <li><a href={`/visa/${dir.slug}/`}>Виза {dir.cases.vP}: что нужно и сколько стоит</a></li>
+          ))}
+          {guides.map((p) => (
+            <li><a href={`/blog/${p.slug}/`}>{p.title}</a></li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <section class="nvp-section">
+      <h2>Ещё из ленты</h2>
+      <ul class="nvp-links">
+        {around.map((e) => (
+          <li><a href={newsUrl(e)}>{e.data.title}</a></li>
+        ))}
+        <li><a href="/novosti/">Все новости путешествий</a></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .nvp { max-width: 780px; margin: 0 auto; padding: 0 var(--gutter, 16px) 4rem; }
+
+  .nvp-meta { display: flex; flex-wrap: wrap; gap: .5rem .9rem; align-items: baseline;
+              font-size: .78rem; color: var(--text-faint); margin-bottom: .55rem; }
+  .nvp-meta time { font-family: var(--ff-mono); font-variant-numeric: tabular-nums; }
+  .nvp-impact { color: var(--gold); font-weight: 700; }
+  .nvp-status { color: var(--text-dim); font-size: .8rem; }
+
+  .nvp-h1 { font-size: clamp(1.6rem, 4vw, 2.3rem); line-height: 1.15; margin: 0 0 .9rem; }
+
+  /* Класс тот же, что в ленте: на него ссылается speakable во всех шаблонах
+     раздела, и голосовой ответ зачитывает именно капсулу. */
+  .nv-tldr { max-width: 62ch; line-height: 1.6; margin: 0 0 1rem;
+             padding-left: .9rem; border-left: 3px solid var(--gold); }
+
+  .nvp-fig { margin: 0 0 1rem; }
+  /* height: auto обязателен — иначе пропорцию диктует атрибут height тега. */
+  .nvp-fig :global(img) { width: 100%; height: auto; aspect-ratio: 16 / 9;
+                          object-fit: cover; display: block; }
+  .nvp-fig figcaption { font-size: .74rem; color: var(--text-faint); margin-top: .35rem; }
+
+  .nvp-body { max-width: 62ch; line-height: 1.6; }
+  .nvp-body :global(p) { margin: 0 0 .8rem; }
+  .nvp-body :global(a) { color: var(--text); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
+  .nvp-body :global(a:hover) { color: var(--gold); }
+
+  .nvp-refs { display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; font-size: .85rem;
+              color: var(--text-dim); margin: 1.2rem 0 0; }
+  .nvp-refs a { color: var(--text); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
+  .nvp-refs a:hover { color: var(--gold); }
+  .nvp-checked { color: var(--text-faint); }
+
+  .nvp-section { border-top: 1px solid var(--line-strong, var(--line)); padding-top: 1.6rem; margin-top: 2.4rem; }
+  .nvp-section h2 { font-size: 1.35rem; margin: 0 0 .7rem; scroll-margin-top: 80px; }
+  .nvp-links { list-style: none; margin: 0; padding: 0; }
+  .nvp-links li { padding: .6rem 0; border-bottom: 1px solid var(--line); font-size: .98rem; }
+  .nvp-links a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
+
+  @media (max-width: 700px) {
+    .nvp-refs { flex-direction: column; gap: .25rem; }
+  }
+</style>

@@ -1,7 +1,7 @@
 import { getCollection } from 'astro:content';
 import { getImage } from 'astro:assets';
 import { pickNewsImage } from '../data/news-images.js';
-import { monthKey, archivedMonths } from '../data/news.js';
+import { newsUrl } from '../data/news.js';
 
 // Дзен-совместимый RSS feed (Native, не Турбо/Новости).
 // Документация: https://dzen.ru/help/ru/website/site-to-channel.html
@@ -93,18 +93,17 @@ export async function GET() {
     .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
   // Заметки ленты идут сюда наравне со статьями: у Дзена свой отбор, и короткий
-  // датированный материал с картинкой ему подходит. Ссылка ведёт на якорь —
-  // своей страницы у заметки нет, она пункт ленты.
+  // датированный материал с картинкой ему подходит. Ссылка ведёт на страницу
+  // заметки: у Дзена это ещё и `guid isPermaLink`, а прежний якорь к ленте
+  // менялся под заметкой, когда её месяц уезжал в архив.
   const news = (await getCollection('news'))
     .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
     .slice(0, 30);
-  const archived = archivedMonths(news);
 
   const items = [];
 
   for (const n of news) {
-    const key = monthKey(n.data.date);
-    const link = `${SITE}${archived.has(key) ? `/novosti/${key}/` : '/novosti/'}#${n.slug}`;
+    const link = `${SITE}${newsUrl(n)}`;
     const img = pickNewsImage(n.data);
     if (!img) continue;                       // без картинки Дзен материал не примет
     const optimized = await getImage({ src: img, width: 1400, format: 'jpeg', quality: 82 });

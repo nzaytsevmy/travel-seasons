@@ -57,6 +57,10 @@ const PAGES: { slug: string; name: string; dynamic?: boolean; content?: boolean 
   // Лента меняется каждый день, когда робот публикует: пиксельный эталон устарел
   // бы к следующему утру. Структурные проверки при этом идут.
   { slug: '/novosti/',                      name: 'novosti', dynamic: true },
+  // Страница заметки — свой тип с 10.08.2026. Пиксельный эталон не снимаем:
+  // набор заметок меняется ежедневно, и снимок конкретной был бы заложником
+  // робота. Структуру держат no-overflow / no-broken-images / no-css-escapes.
+  { slug: '/novosti/2026-05-01-torres-del-paine-tariff/', name: 'novosti-item', content: true },
   { slug: '/compare/',                      name: 'compare-index' },          // компаратор-тул: пикер + динамический результат + CTA
   { slug: '/compare/turkey-vs-egypt/',      name: 'compare-pair' },           // кураторская пара: CompareTable + byline + CTA
   { slug: '/events/',                       name: 'events-index' },           // годовой хаб событий + byline

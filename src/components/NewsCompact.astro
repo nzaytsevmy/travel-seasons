@@ -1,0 +1,38 @@
+---
+// Строка списка заметок: дата, заголовок-ссылка, первая фраза капсулы.
+//
+// Нужен там, где полные тексты подряд перестают читаться: лента показывает
+// целиком только свежие, архив месяца — один список. До 10.08.2026 обе страницы
+// печатали каждую заметку целиком, и лента на двадцати заметках весила 179 КБ
+// при 199 КБ у всего списка статей блога. Дальше она росла бы линейно.
+import { formatDateRu, addedAt, newsUrl } from '../data/news.js';
+
+const { entry } = Astro.props;
+const d = entry.data;
+const added = new Date(addedAt(entry));
+// Одна фраза, а не вся капсула: строка списка обязана оставаться строкой.
+// Предложение бывает и на четыре строки — тогда режем по границе слова.
+const first = (d.tldr ?? '').split(/(?<=\.)\s/)[0];
+const gist = first.length <= 130 ? first : first.slice(0, 127).replace(/[\s,;:—-]+\S*$/, '') + '…';
+---
+<li class="nvc">
+  <time datetime={added.toISOString().slice(0, 10)}>{formatDateRu(added)}</time>
+  <a href={newsUrl(entry)}>{d.title}</a>
+  {gist && <span class="nvc-gist">{gist}</span>}
+</li>
+
+<style>
+  .nvc { display: grid; grid-template-columns: 8.5rem 1fr; gap: .2rem .9rem;
+         padding: .85rem 0; border-bottom: 1px solid var(--line); }
+  .nvc time { font-family: var(--ff-mono); font-variant-numeric: tabular-nums;
+              font-size: .78rem; color: var(--text-faint); padding-top: .18rem; }
+  .nvc a { color: var(--text); text-decoration: underline 1px var(--gold);
+           text-underline-offset: .22em; font-size: 1rem; line-height: 1.35; }
+  .nvc a:hover { color: var(--gold); }
+  .nvc-gist { grid-column: 2; font-size: .86rem; color: var(--text-dim); line-height: 1.5; }
+
+  @media (max-width: 700px) {
+    .nvc { grid-template-columns: 1fr; gap: .25rem; }
+    .nvc-gist { grid-column: 1; }
+  }
+</style>

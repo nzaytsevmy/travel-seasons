@@ -77,3 +77,23 @@ export function archiveKeys(entries, now = new Date()) {
 export function entriesOfMonth(entries, key) {
   return entries.filter((e) => monthKey(e.data.date) === key).sort(byDateDesc);
 }
+
+// Сколько заметок лента показывает целиком. Дальше — компактный список: при
+// 2–4 заметках в день лента иначе растёт до сотен килобайт, и читатель на
+// телефоне листает её минутами. Замер 10.08.2026: 20 заметок = 179 КБ.
+export const FULL_ON_FEED = 8;
+
+/** Адрес заметки. У каждой он свой и не зависит от того, где заметка показана. */
+export const newsUrl = (slugOrEntry) =>
+  `/novosti/${typeof slugOrEntry === 'string' ? slugOrEntry : slugOrEntry.slug}/`;
+
+/**
+ * Свежие заметки про страну — для блока на странице направления.
+ * Связь идёт по полю `countries` заметки: там слаг направления сайта.
+ */
+export function newsForCountry(entries, slug, limit = 3) {
+  return entries
+    .filter((e) => (e.data.countries ?? []).includes(slug))
+    .sort(byDateDesc)
+    .slice(0, limit);
+}
