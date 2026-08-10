@@ -8,6 +8,7 @@
 // (tests/news-gate.spec.ts). Сеть — только в fetchSources и в CLI внизу.
 
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { join, basename } from 'node:path';
 
 // ── разбор заметки ────────────────────────────────────────────────────────────
@@ -394,6 +395,37 @@ export function loadPublished(root) {
   return out;
 }
 
+// ── что проверять ────────────────────────────────────────────────────────────
+
+/**
+ * Файлы для проверки: при обычном прогоне — только то, что робот тронул в этом
+ * заходе (новые заметки и правки существующих), при запуске с каталогом-
+ * аргументом (тесты, ручная проверка) — все.
+ *
+ * ⛔ Раньше здесь всегда стояло чтение всей папки, и 09–10.08.2026 лента встала
+ * на двое суток: тайский туристический сайт закрылся от ботов, давно
+ * опубликованная заметка про ЮНЕСКО каждую ночь уходила в «ОТБОЙ», шаг
+ * workflow удалял её файл, а защита «правка удаляет опубликованное — мерж
+ * только руками» останавливала весь PR вместе со свежими заметками. Источник
+ * может умереть в любой день; это повод чинить ссылку, а не снимать с сайта
+ * проверенный когда-то факт.
+ *
+ * ⛔ Именно «тронутое», а не «новое»: редактору-скептику разрешено править слог
+ * прямо в файле, и правка опубликованной заметки обязана пройти гейт, иначе
+ * лечение вышло бы хуже болезни — чужая правка уехала бы на прод без проверки.
+ */
+export function filesToCheck(root, dirArg) {
+  if (dirArg) return readdirSync(join(root, dirArg)).filter((f) => f.endsWith('.md'));
+  const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8' })
+    .split('\n').map((x) => x.trim()).filter((x) => x.endsWith('.md')).map((x) => basename(x));
+  const touched = [
+    ...git('ls-files', '--others', '--exclude-standard', '--', 'src/content/news'),
+    ...git('diff', '--name-only', '--', 'src/content/news'),
+    ...git('diff', '--name-only', '--staged', '--', 'src/content/news'),
+  ];
+  return [...new Set(touched)].sort();
+}
+
 // ── CLI ───────────────────────────────────────────────────────────────────────
 
 const isMain = process.argv[1] && import.meta.url.endsWith(basename(process.argv[1]));
@@ -409,7 +441,7 @@ if (isMain) {
   // и дедуп не работал вовсе — так одна новость про ЮНЕСКО вышла дважды.
   const published = loadPublished(root);
 
-  const files = readdirSync(dir).filter((f) => f.endsWith('.md'));
+  const files = filesToCheck(root, dirArg);
   let bad = 0;
   for (const f of files) {
     const slug = basename(f, '.md');
