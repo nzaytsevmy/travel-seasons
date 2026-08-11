@@ -81,8 +81,12 @@ async function grab(sharp, spec, dir, seen) {
       // ловит — фирменный знак нефтяной компании назывался «Gega Blu» и по
       // запросу «Gega waterfall» шёл первым. Зато ловит детализация: замерено
       // 11.08.2026 — у того логотипа 1.07, у трёх фотографий Абхазии 7.36–7.69.
+      // Порог 2.5, а не 4: ночные кадры честные, но тёмные — у снятого ночью
+      // Яоварата 4.97, у Фэнхуана 5.84, то есть при пороге 4 запас был почти
+      // нулевой и живой ночной кадр мог вылететь. У логотипа GEGA OIL — 1.07,
+      // так что 2.5 отсекает рисованное и не трогает ночную съёмку.
       const { entropy } = await src.stats();
-      if (entropy < 4) throw new Error(`рисунок, а не фото (детализация ${entropy.toFixed(2)})`);
+      if (entropy < 2.5) throw new Error(`рисунок, а не фото (детализация ${entropy.toFixed(2)})`);
       const buf = await src
         .resize({ width: 1600, withoutEnlargement: true })
         .jpeg({ quality: 82, mozjpeg: true })

@@ -92,6 +92,8 @@ howto:
 
 ## Как добраться до Милфорд-Саунд в 2026?
 
+![Милфорд-Саунд: пик Митре над фьордом, камни на отливе](./_images/milford-own/milford.jpg)
+
 Милфорд — тупик. Туда ведёт одна дорога (State Highway 94, Milford Road), и сама дорога — половина впечатления.
 
 **Откуда стартовать:**
@@ -238,3 +240,5 @@ howto:
 ---
 
 *Актуально на: 17 мая 2026. Стоимость визы и International Visitor Levy — по официальному сайту Immigration New Zealand. Цены на каяк-туры и круизы — операторы Roscos Milford Kayaks, Go Orange, Southern Discoveries, RealNZ на момент поездки. Цены на перелёты — Aviasales и официальные сайты авиакомпаний. Курсы валют ЦБ РФ.*
+
+*Фото: Wikimedia Commons / [CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/).*
