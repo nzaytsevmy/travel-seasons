@@ -426,6 +426,49 @@ def q_movers_yandex(cur: dict, prev: dict):
     return up, down
 
 
+# ─── Яндекс.Метрика: сколько к партнёру ушло ЛЮДЕЙ ───────────────────────────
+#
+# ⛔ «Клики», которые считает партнёрка, — это НЕ посетители. Замер 11.08.2026
+# за 31.07–11.08: партнёрка насчитала ~385 переходов, Метрика по цели «Переход
+# к партнёру» — 83. Разницу дают краулеры поисковиков и наши собственные
+# проверки: они обходят страницу и дёргают каждую партнёрскую ссылку, а
+# партнёрка засчитывает это переходом. Три недели подряд отчёт показывал рост
+# этих кликов как успех («225 → 300 → 358»), хотя людей столько не приходило, и
+# ноль продаж рядом читался как поломка. Поломки не было — была линейка, которая
+# мерила роботов.
+#
+# Поэтому главная цифра денежного блока — человеческие клики из Метрики, а
+# счётчик партнёрки идёт справочно, с явной пометкой.
+METRIKA_STAT_URL = "https://api-metrika.yandex.net/stat/v1/data"
+METRIKA_COUNTER = "95832375"
+METRIKA_GOAL_OUTBOUND = "566338531"       # цель «Переход к партнёру» (outbound_link)
+
+
+def fetch_metrika_clicks(c: dict, d_from, d_to):
+    """Визиты и достижения цели «Переход к партнёру» за период. (данные, ошибка)"""
+    tok = os.environ.get("METRIKA_OAUTH_TOKEN") or os.environ.get("YANDEX_OAUTH_TOKEN")
+    if not tok:
+        return None, "токен не задан"
+    qs = urllib.parse.urlencode({
+        "ids": METRIKA_COUNTER,
+        "metrics": f"ym:s:visits,ym:s:goal{METRIKA_GOAL_OUTBOUND}reaches",
+        "date1": str(d_from), "date2": str(d_to),
+    })
+    req = urllib.request.Request(f"{METRIKA_STAT_URL}?{qs}")
+    req.add_header("Authorization", f"OAuth {tok}")
+    try:
+        with http_open(req, timeout=c["timeouts"].get("metrika", 20)) as r:
+            res = json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        # 403 = у токена нет доступа к Метрике. Это не сбой прогона: пишем
+        # честно, что человеческих кликов не видим, и не выдаём роботов за людей.
+        return None, f"HTTP {e.code}" + (" — у токена нет доступа к Метрике" if e.code == 403 else "")
+    except Exception as e:
+        return None, str(e)
+    tot = (res.get("totals") or [0, 0])
+    return {"visits": int(tot[0] or 0), "clicks": int(tot[1] or 0)}, None
+
+
 # ─── Travelpayouts: доход/клики по партнёрам + здоровье атрибуции (WoW) ───────
 TP_STATS_URL = "https://api.travelpayouts.com/statistics/v1/execute_query"
 
@@ -818,19 +861,39 @@ def weekly_mode(c) -> None:
 
     # Travelpayouts — деньги/клики по партнёрам + здоровье атрибуции (WoW)
     tp = fetch_tp_stats()
+    m7 = None                      # человеческие клики недели; нужны и ниже, в историю
     if tp["ok"]:
+        # Сколько к партнёру ушло ЛЮДЕЙ — по Метрике. Именно эта цифра, а не
+        # счётчик партнёрки, отвечает на «работает ли монетизация» (см. коммент
+        # к fetch_metrika_clicks: партнёрка считает и обходы роботов тоже).
+        m7, m_err = fetch_metrika_clicks(c, TODAY - timedelta(days=7), TODAY)
+        m90, _ = fetch_metrika_clicks(c, TODAY - timedelta(days=90), TODAY)
+
         # Порядок строк не косметика: сверху то, что отвечает на «работает ли
         # монетизация», а не то, что уже выплачено. Выплата в тревеле приходит
         # после поездки, и на молодом сайте она нулевая по определению.
-        L.append(f"💰 *Travelpayouts 7д* — брони {tp['booked']} на {tp['booked_rev']:.0f}₽  "
-                 f"клики {tp['tot_clicks']}  атрибуция {tp['att_share']}%")
+        head = f"💰 *Партнёрка 7д* — брони {tp['booked']} на {tp['booked_rev']:.0f}₽"
+        if m7:
+            cr = 100 * m7["clicks"] / m7["visits"] if m7["visits"] else 0
+            L.append(f"{head} · людей кликнуло {m7['clicks']} из {m7['visits']} визитов ({cr:.1f}%)")
+            # Кратность показывает, насколько счётчик партнёрки оторван от людей.
+            if m7["clicks"]:
+                ratio = tp["tot_clicks"] / m7["clicks"]
+                L.append(f"   партнёрка насчитала {tp['tot_clicks']} переходов — в {ratio:.1f}× больше: "
+                         f"разницу дают обходы роботов, а не посетители")
+        else:
+            L.append(f"{head} · клики партнёрки {tp['tot_clicks']} (⚠️ вместе с обходами роботов)")
+            L.append(f"   людей не вижу: Метрика недоступна ({m_err}) — счётчик партнёрки "
+                     f"завышает клики в разы, судить по нему нельзя")
         L.append(f"   выплачено {tp['tot_rev']:.0f}₽"
                  f"{arrow(round(tp['tot_rev']), round(tp['prev_rev']))} "
                  f"({tp['sales']} закрытых) — деньги приходят после поездки, "
                  f"ноль здесь у молодого сайта нормален")
-        # ⛔ Единственная строка, которая действительно должна пугать.
-        if tp["q_booked"] == 0 and tp["q_clicks"] >= 500:
-            L.append(f"   🚨 за 90 дней {tp['q_clicks']} кликов и НИ ОДНОЙ брони — "
+        # ⛔ Единственная строка, которая действительно должна пугать. Порог — по
+        # ЧЕЛОВЕЧЕСКИМ кликам: на роботных «500 за квартал» набегает само собой, и
+        # тревога кричала бы каждую неделю ни о чём.
+        if m90 and tp["q_booked"] == 0 and m90["clicks"] >= 500:
+            L.append(f"   🚨 за 90 дней {m90['clicks']} живых кликов и НИ ОДНОЙ брони — "
                      f"это не задержка выплат, это сломанная монетизация: "
                      f"проверить, доезжает ли метка до партнёра, и те ли офферы под этот трафик")
         earners = sorted(((v['booked_rev'], v['clicks'], v['booked'], n) for n, v in tp["by"].items()),
@@ -925,12 +988,18 @@ def weekly_mode(c) -> None:
     if tp["ok"]:
         snap.update(tp_rev=round(tp["tot_rev"]), tp_clicks=tp["tot_clicks"],
                     tp_sales=tp["sales"], tp_att=tp["att_share"])
+    # ⛔ В тренде тоже разделяем: tp_clicks — счётчик партнёрки (с роботами),
+    # human_clicks — люди по Метрике. Сравнивать недели между собой можно только
+    # по второму: первый скачет от переобходов, а не от аудитории.
+    if m7:
+        snap.update(human_clicks=m7["clicks"], human_visits=m7["visits"])
     STATE_FILE.write_text(json.dumps(snap, ensure_ascii=False), encoding="utf-8")
     hist = {"date": str(TODAY)}
     hist.update({k: snap.get(k) for k in
                  ("sqi", "pages", "shows", "clicks", "g_clicks", "g_impr", "g_ctr", "g_pos",
                   "striking_count", "zero_click_count",
-                  "tp_rev", "tp_clicks", "tp_sales", "tp_att")})
+                  "tp_rev", "tp_clicks", "tp_sales", "tp_att",
+                  "human_clicks", "human_visits")})
     with HISTORY_FILE.open("a", encoding="utf-8") as f:
         f.write(json.dumps(hist, ensure_ascii=False) + "\n")
     send_telegram(c, report)
