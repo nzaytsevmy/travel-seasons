@@ -80,6 +80,11 @@ def shot_date(img):
 
 def contact_sheet(folder, out):
     files = sorted(listing(f'disk:/Контент/{folder}'), key=lambda i: i['name'])
+    if not files:
+        # Так падало на «Вьетнам»: в корне поездки одни RAW и видео, просматриваемых
+        # jpg нет вовсе, а PIL на пустом листе кидает «cannot write empty image».
+        sys.exit(f'в «{folder}» нет просматриваемых jpg — загляните в подпапки '
+                 f'(RAW/, Видео/) или возьмите другую поездку')
     cw, ch, cols = 300, 200, 6
     rows = (len(files) + cols - 1) // cols
     sheet = Image.new('RGB', (cw * cols, ch * rows), '#111')
