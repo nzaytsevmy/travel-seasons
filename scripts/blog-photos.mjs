@@ -48,10 +48,14 @@ export function parseSpec(arg) {
 
 /** Первый кандидат, который скачался и прошёл проверки. */
 async function grab(sharp, spec, dir) {
-  const mustRe = spec.must ? new RegExp(spec.must, 'i') : null;
+  // ⛔ Обязательное слово сравниваем подстрокой, а НЕ собираем из него регулярку:
+  // выражение из аргумента командной строки — это дыра, которую сканер
+  // безопасности справедливо пометил высокой (заявка 218, 11.08.2026). Для
+  // «имя города должно быть в названии кадра» регулярка и не нужна.
+  const must = spec.must ? spec.must.toLowerCase() : '';
   const cands = (await findPhoto({ photoQuery: spec.query, countries: [] }))
     .filter((p) => !NOT_A_SCENE.test(p.title ?? ''))
-    .filter((p) => !mustRe || mustRe.test(p.title ?? ''));
+    .filter((p) => !must || (p.title ?? '').toLowerCase().includes(must));
 
   for (const p of cands) {
     try {
