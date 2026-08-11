@@ -218,6 +218,24 @@ for (const u of smUrls) {
   if (u === ORIGIN + '/') continue;
   if (!inlinks.has(u)) findings.push(['orphan.no_incoming_links', u]);
 }
+// Внутренняя ссылка в никуда. Сборка о таком пишет предупреждением и спокойно
+// продолжает, поэтому битая ссылка доезжает до сайта: ссылка на несуществующий
+// раздел Австралии прожила в статье про города четыре выкладки (11.08.2026).
+// Здесь она валит гейт. Ссылки на файлы (/llms.txt, /rss.xml) в карту страниц
+// не попадают — их проверяем по наличию на диске.
+const broken = new Map(); // цель → страницы, где встретилась
+for (const [src, p] of pages) {
+  for (const l of new Set(p.links)) {
+    if (pages.has(l) || isIgnored(l)) continue;
+    const rel = l.slice(ORIGIN.length);
+    if (/\.\w+$/.test(rel) && existsSync(join(DIST, rel))) continue;
+    if (!broken.has(l)) broken.set(l, []);
+    broken.get(l).push(src);
+  }
+}
+for (const [target, srcs] of broken)
+  findings.push(['link.broken_internal', target, `со страницы ${srcs[0]}${srcs.length > 1 ? ` и ещё ${srcs.length - 1}` : ''}`]);
+
 // Индексируемые вне sitemap (кроме стабов с canonical≠self)
 for (const [u, p] of pages) {
   if (!p.noindex && !(p.canonical && p.canonical !== u) && !smUrls.has(u))
