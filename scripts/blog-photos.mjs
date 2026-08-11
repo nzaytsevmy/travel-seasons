@@ -12,6 +12,10 @@
 //     Руан. Отсюда обязательный `must`: имя места должно быть в названии кадра.
 //  2. Отсев по названию дешевле отсева по пикселям — не тратим сеть на карты,
 //     гербы и чертежи.
+//  2а. ЗАПРОС ДЕРЖАТЬ КОРОТКИМ — одно-два слова. «Ruskeala marble canyon
+//     Karelia» вернул пусто, «Ruskeala marble» — полную выдачу карьера
+//     (11.08.2026). Сток ищет по совпадению всех слов, лишнее слово убивает
+//     выдачу целиком; сужать надо через `must`, а не через длинный запрос.
 //  3. Проверка глазами обязательна всё равно. Скрипт сам собирает контактный
 //     лист, чтобы человек посмотрел двадцать кадров одним взглядом, а не
 //     открывал их по одному.
@@ -28,6 +32,7 @@
 // _credits.json рядом, контактный лист — в contact.jpg той же папки.
 
 import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 import { findPhoto } from './news-photo.mjs';
 
@@ -35,8 +40,12 @@ const UA = 'traveltribe-blog/1.0 (https://traveltribe.ru)';
 
 // Не фотография места: символика, картография, чертежи, музейные отпечатки,
 // сшитые панорамы (у них гнутся здания) и интерьеры вместо города.
+// `logo|oil|brand` — из статьи про Рицу 11.08.2026: по запросу «Gega waterfall»
+// пришёл фирменный знак нефтяной компании GEGA OIL с подписью «Gega Blu».
+// Название кадра не всегда выдаёт подделку, поэтому контактный лист и просмотр
+// глазами остаются обязательными — фильтр лишь снимает очевидный мусор.
 const NOT_A_SCENE =
-  /\b(coat of arms|crest|emblem|flag|map|mapa|satellite|from space|ESA|NASA|aerial|engraving|lithograph|postcard|rijksmuseum|RP-F|drawing|diagram|blueprint|1[89]\d\d|equirectangular|360|spherical|interior|indoor)\b/i;
+  /\b(coat of arms|crest|emblem|flag|map|mapa|satellite|from space|ESA|NASA|aerial|engraving|lithograph|postcard|rijksmuseum|RP-F|drawing|diagram|blueprint|logo|oil|brand|trademark|1[89]\d\d|equirectangular|360|spherical|interior|indoor)\b/i;
 
 export function parseSpec(arg) {
   const eq = arg.indexOf('=');
@@ -47,7 +56,7 @@ export function parseSpec(arg) {
 }
 
 /** Первый кандидат, который скачался и прошёл проверки. */
-async function grab(sharp, spec, dir) {
+async function grab(sharp, spec, dir, seen) {
   // ⛔ Обязательное слово сравниваем подстрокой, а НЕ собираем из него регулярку:
   // выражение из аргумента командной строки — это дыра, которую сканер
   // безопасности справедливо пометил высокой (заявка 218, 11.08.2026). Для
@@ -68,10 +77,22 @@ async function grab(sharp, spec, dir) {
       if (width < 1200) throw new Error(`узкий кадр ${width}px`);
       const ratio = height ? width / height : 0;
       if (ratio > 2.1 || ratio < 0.8) throw new Error(`полоса ${width}×${height}`);
+      // Отсев рисованного: логотипов, плакатов, схем. Фильтр по названию их не
+      // ловит — фирменный знак нефтяной компании назывался «Gega Blu» и по
+      // запросу «Gega waterfall» шёл первым. Зато ловит детализация: замерено
+      // 11.08.2026 — у того логотипа 1.07, у трёх фотографий Абхазии 7.36–7.69.
+      const { entropy } = await src.stats();
+      if (entropy < 4) throw new Error(`рисунок, а не фото (детализация ${entropy.toFixed(2)})`);
       const buf = await src
         .resize({ width: 1600, withoutEnlargement: true })
         .jpeg({ quality: 82, mozjpeg: true })
         .toBuffer();
+      // Один и тот же кадр приходит по разным запросам: «Yupshara gorge» и
+      // «Yupshara canyon» дали байт в байт одинаковую картинку под двумя
+      // именами (Рица, 11.08.2026). Два одинаковых кадра в статье — брак.
+      const hash = createHash('md5').update(buf).digest('hex');
+      if (seen.has(hash)) throw new Error(`дубль кадра «${seen.get(hash)}»`);
+      seen.set(hash, spec.key);
       writeFileSync(join(dir, `${spec.key}.jpg`), buf);
       return { photo: p, kb: Math.round(buf.length / 1024) };
     } catch { /* мёртвая ссылка или брак — следующий кандидат */ }
@@ -112,10 +133,11 @@ if (isMain) {
     ? JSON.parse(readFileSync(join(dir, '_credits.json'), 'utf8'))
     : {};
   const got = [];
+  const seen = new Map();   // хеш кадра → ключ, под которым он уже сохранён
 
   for (const arg of specs) {
     const spec = parseSpec(arg);
-    const r = await grab(sharp, spec, dir);
+    const r = await grab(sharp, spec, dir, seen);
     if (!r) {
       console.log(`✗ ${spec.key.padEnd(16)} ничего по «${spec.query}»`);
       continue;
