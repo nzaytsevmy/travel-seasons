@@ -530,3 +530,54 @@ test('Новости: текст заметки объявлен статьёй 
   const bad = listings.filter((f) => existsSync(f) && readFileSync(f, 'utf8').includes('"NewsArticle"'));
   expect(bad, `NewsArticle на листинге (должен быть только на странице заметки):\n${bad.join('\n')}`).toEqual([]);
 });
+
+// ── Стандарт иллюстраций (решение Никиты 11.08.2026) ────────────────────────
+//
+// Ревизия блога в тот день: 64 статьи, медиана — ТРИ картинки на двенадцать
+// разделов, то есть обложка, аватар автора и одна иллюстрация на весь текст.
+// У самой посещаемой статьи было двадцать разделов и три картинки. Для темы
+// «куда поехать» это закрытый канал: по таким запросам заметная доля переходов
+// приходит из поиска по картинкам, а сплошная простыня текста хуже удерживает.
+//
+// Гейт намеренно проверяет ТОЛЬКО статьи, тронутые в этом заходе. Если включить
+// его на весь блог сразу, красными станут пятьдесят статей и гейт начнут
+// обходить — планка держится тем, что её нельзя нарушить в своей же правке.
+// Тот же приём, что у гейта новостей после остановки ленты 09.08.2026.
+test('Иллюстрации: тронутая статья с 8+ разделами имеет ≥4 фото и описательные подписи', () => {
+  const root = join(DIST, '..');
+  const git = (...args: string[]) =>
+    execFileSync('git', args, { cwd: root, encoding: 'utf8' })
+      .split('\n')
+      .map((x) => x.trim())
+      .filter((x) => /^src\/content\/blog\/[^/]+\.mdx?$/.test(x));
+
+  const touched = [...new Set([
+    ...git('ls-files', '--others', '--exclude-standard', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', '--staged', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', 'origin/main...HEAD', '--', 'src/content/blog'),
+  ])];
+
+  const problems: string[] = [];
+  for (const rel of touched) {
+    const abs = join(root, rel);
+    if (!existsSync(abs)) continue;            // файл удалён в этом же заходе
+    const src = readFileSync(abs, 'utf8');
+    const h2 = (src.match(/^## /gm) ?? []).length;
+    if (h2 < 8) continue;                      // короткой заметке галерея не нужна
+
+    // Считаем и markdown-картинки, и вставки компонентами (PhotoGrid, Image).
+    const md = [...src.matchAll(/^!\[([^\]]*)\]\(([^)]+)\)/gm)];
+    const comp = (src.match(/<(?:Image|Picture|PhotoGrid)\b/g) ?? []).length;
+    if (md.length + comp < 4) {
+      problems.push(`${rel}: ${h2} разделов, но всего ${md.length + comp} иллюстраций (нужно ≥4)`);
+    }
+    // Подпись для незрячих и для поиска по картинкам: «фото», «img», пустая — не подпись.
+    for (const [, alt, path] of md) {
+      if (alt.trim().length < 15) {
+        problems.push(`${rel}: подпись «${alt}» у ${path} слишком короткая, опишите кадр словами`);
+      }
+    }
+  }
+  expect(problems, `не дотягивают до стандарта иллюстраций:\n${problems.join('\n')}`).toEqual([]);
+});
