@@ -545,17 +545,29 @@ test('Новости: текст заметки объявлен статьёй 
 // Тот же приём, что у гейта новостей после остановки ленты 09.08.2026.
 test('Иллюстрации: тронутая статья с 8+ разделами имеет ≥4 фото и описательные подписи', () => {
   const root = join(DIST, '..');
-  const git = (...args: string[]) =>
-    execFileSync('git', args, { cwd: root, encoding: 'utf8' })
-      .split('\n')
-      .map((x) => x.trim())
-      .filter((x) => /^src\/content\/blog\/[^/]+\.mdx?$/.test(x));
+  // ⛔ Каждый вызов в try/catch. В облачной сборке клон неполный: ссылки
+  // origin/main там нет, и `git diff origin/main...HEAD` падает с ошибкой —
+  // на этом гейт свалил три проверки сразу после добавления (11.08.2026).
+  // Недоступный источник — не повод ронять тест: до пуша всё равно отработает
+  // локальный прогон, где история полная.
+  const git = (...args: string[]) => {
+    try {
+      return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] })
+        .split('\n')
+        .map((x) => x.trim())
+        .filter((x) => /^src\/content\/blog\/[^/]+\.mdx?$/.test(x));
+    } catch {
+      return [];
+    }
+  };
 
+  const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : 'origin/main';
   const touched = [...new Set([
     ...git('ls-files', '--others', '--exclude-standard', '--', 'src/content/blog'),
     ...git('diff', '--name-only', '--', 'src/content/blog'),
     ...git('diff', '--name-only', '--staged', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', 'origin/main...HEAD', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', `${base}...HEAD`, '--', 'src/content/blog'),
+    ...git('diff', '--name-only', 'HEAD~1', 'HEAD', '--', 'src/content/blog'),
   ])];
 
   const problems: string[] = [];
