@@ -48,6 +48,43 @@ test('FlightRoutes: «от» только перед ценой (нет «от <
   expect(bad, JSON.stringify(bad, null, 2)).toEqual([]);
 });
 
+// Из редакционного канона первичек (12.08.2026, раздел в SEO-CHECKLIST-2026.md).
+// Правило BBC-дат, адаптация: вечнозелёная статья с «вчера»/«на днях» начинает
+// врать через неделю после публикации. Лента новостей живёт по своим датам и
+// исключена. Замер перед вводом гейта: на 66 статьях блога — 0 вхождений.
+test('Вечнозелёность: в статьях блога нет относительных дат', () => {
+  // JS \b не знает кириллицы (кириллица не входит в \w) — границы вручную.
+  const RE = /(^|[\s>«"(—-])(вчера|позавчера|на днях|на этой неделе|на прошлой неделе|в прошлом месяце)(?=$|[\s<».,!?:;)"])/i;
+  const bad: string[] = [];
+  for (const f of files) {
+    if (!f.includes('/blog/') || f.includes('/tag/') || /blog\/(index|\d+)\.html$/.test(f)) continue;
+    const html = readFileSync(f, 'utf8');
+    const main = html.match(/<article[\s>][\s\S]*?<\/article>/i)?.[0] ?? '';
+    const text = main.replace(/<[^>]+>/g, ' ');
+    const m = text.match(RE);
+    if (m) bad.push(`${f.replace(DIST, '')} — «${m[0]}»`);
+  }
+  expect(bad.slice(0, 10), bad.join('\n')).toEqual([]);
+});
+
+// Асессоры Google: преувеличенный заголовок = Low, «крайне» преувеличенный = Lowest
+// (QRG §4.0/§5.2). Проверяем title всех страниц блога.
+test('Заголовки: без «!!!», капс-криков и шок-слов', () => {
+  const bad: string[] = [];
+  // Аббревиатуры капсом легитимны; страницы меток берут имя метки как есть.
+  const ABBR = /^(ЮНЕСКО|ЕАЭС|АСЕАН|НАТО)$/;
+  for (const f of files) {
+    if (!f.includes('/blog/') || f.includes('/tag/')) continue;
+    const html = readFileSync(f, 'utf8');
+    const title = html.match(/<title>([^<]*)/i)?.[1] ?? '';
+    const caps = (title.match(/[А-ЯЁ]{5,}/g) ?? []).filter((w) => !ABBR.test(w));
+    if (/!{2,}/.test(title) || /(ШОК|СЕНСАЦИЯ|ВЫ НЕ ПОВЕРИТЕ)/i.test(title) || caps.length) {
+      bad.push(`${f.replace(DIST, '')} — «${title}»`);
+    }
+  }
+  expect(bad.slice(0, 10), bad.join('\n')).toEqual([]);
+});
+
 test('Партнёрские ссылки: нет видимой метки «реклама» (юр-страницы исключены)', () => {
   // A: элемент .ad-mark/.adm/-disc с текстом «реклам…»; B: маркер «реклама ·».
   // /legal/ исключаем — там «реклама/рекламы» легитимны в прозе (38-ФЗ, оферта).
