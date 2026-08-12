@@ -201,6 +201,10 @@ for (const f of htmlFiles) {
     const clean = href.split('?')[0];
     const norm = clean.endsWith('/') || /\.\w+$/.test(clean) ? clean : clean + '/';
     page.links.push(norm);
+    // ссылки с якорем собираем отдельно: выше фрагмент отрезан вместе с '#'
+    const rawHref = (hm[2] ?? hm[3] ?? hm[4] ?? '');
+    if (rawHref.startsWith('/') && rawHref.includes('#'))
+      (page.anchorLinks ??= []).push(rawHref);
     if (GENERIC.test(text)) findings.push(['anchor.generic_text', url, `"${text}" → ${norm}`]);
     else if (/^подробнее/i.test(text)) podrobneje.push([norm, text]);
     else if (text.length > 2) seenDescriptive.add(norm);
@@ -235,6 +239,34 @@ for (const [src, p] of pages) {
 }
 for (const [target, srcs] of broken)
   findings.push(['link.broken_internal', target, `со страницы ${srcs[0]}${srcs.length > 1 ? ` и ещё ${srcs.length - 1}` : ''}`]);
+
+// Ссылка на несуществующий якорь: страница открывается, но человек попадает
+// не туда, куда обещал текст. Сборка такого не видит вовсе. Найдено 12.08.2026
+// при доводке статьи об Антарктиде: хаб вёл на раздел, переименованный когда-то
+// давно. ⛔ Две ловушки, обе стоили ложного результата при первой проверке:
+// astro-compress срезает кавычки у атрибутов (искать href без кавычек тоже),
+// а кириллические якоря в HTML закодированы процентами — сравнивать после
+// decodeURIComponent, иначе рабочий якорь объявляется битым.
+const anchorsOf = new Map();  // URL страницы → набор её id
+for (const f of htmlFiles) {
+  const set = new Set();
+  for (const m of readFileSync(f, 'utf8').matchAll(/id="?([^"\s>]+)/g)) set.add(m[1]);
+  anchorsOf.set(urlOf(f), set);
+}
+for (const [src, p] of pages) {
+  for (const raw of p.anchorLinks ?? []) {
+    const [target, frag] = raw.split('#');
+    // ⛔ Ключи anchorsOf — абсолютные (urlOf даёт ORIGIN+путь), а href в разметке
+    // относительный. Без ORIGIN сравнение не совпадает НИКОГДА и проверка молча
+    // пропускает всё — поймано оракулом 12.08.2026 на нарочно сломанном якоре.
+    const page = ORIGIN + (target.endsWith('/') ? target : target + '/');
+    if (!anchorsOf.has(page)) continue;              // саму страницу ловит проверка выше
+    let anchor = frag;
+    try { anchor = decodeURIComponent(frag); } catch { /* кривой процент — сравним как есть */ }
+    if (!anchorsOf.get(page).has(anchor) && !anchorsOf.get(page).has(frag))
+      findings.push(['link.broken_anchor', src, `${page}#${anchor}`]);
+  }
+}
 
 // Индексируемые вне sitemap (кроме стабов с canonical≠self)
 for (const [u, p] of pages) {
