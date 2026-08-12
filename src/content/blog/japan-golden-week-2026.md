@@ -66,7 +66,7 @@ coverPosition: "center 42%"
 
 По данным Aviasales и Skyscanner, средняя цена туда-обратно Москва — Токио (NRT/HND) с пересадкой (<a href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=japan_golden_week_2026&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Forigin_iata%3DMOW%26destination_iata%3DTYO" class="aff-cta" rel="sponsored">найти билет Москва — Токио</a> — сравнивает все авиакомпании сразу, cookie 30 дней, можно забронировать позже):
 
-- Низкий сезон (январь, февраль): **$500–650**
+- Низкий сезон (январь, февраль): **$500–650** (≈41–54 тыс. ₽, курс ЦБ 13.08.2026)
 - Обычный апрель / июнь: **$700–900**
 - **Golden Week 2026 (вылет 28–29 апреля, обратно 5–7 мая): $1100–1500**
 

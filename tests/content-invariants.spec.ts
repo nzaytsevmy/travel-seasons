@@ -109,6 +109,35 @@ test('Свежесть: «обновлено» не убегает от даты
   expect(bad, bad.join('\n')).toEqual([]);
 });
 
+test('Деньги: рублёвая конвертация не расходится с валютой на порядок', () => {
+  // Курсы ЦБ на 13.08.2026 — база сравнения. Полоса широкая (±40%): курс со
+  // временем уходит, задача гейта — ловить опечатку и потерянный ноль, а не
+  // требовать ежедневной переоценки.
+  const RATE: Record<string, number> = { $: 82.9977, '€': 95.7793, AUD: 58.6047 };
+  // ⚠️ Число НЕ должно перескакивать строку: первая версия проверки включала
+  // \s в цифры и склеила «$50» последней строкой списка с «≈ 200 000 ₽» итога
+  // строкой ниже — ложная тревога. Пробелы разрешены только внутри строки.
+  const re = /(\$|€|AUD ?)\s?([\d  ]+(?:[–-][\d  ]+)?)[^≈₽\n]{0,40}≈\s?([\d  ]+(?:[–-][\d  ]+)?)\s*(тыс\.\s*)?₽/g;
+  const num = (s: string) => Number(s.replace(/[  ]/g, ''));
+  const bad: string[] = [];
+  for (const f of blogSources()) {
+    for (const m of readFileSync(f, 'utf8').matchAll(re)) {
+      const rate = RATE[m[1].trim()] ?? RATE.$;
+      const src = m[2].split(/[–-]/).filter((x: string) => x.trim()).map(num);
+      const dst = m[3].split(/[–-]/).filter((x: string) => x.trim()).map(num);
+      if (src.length !== dst.length) continue;
+      const mult = m[4] ? 1000 : 1;
+      src.forEach((a: number, i: number) => {
+        const got = dst[i] * mult;
+        const exp = a * rate;
+        if (Math.abs(got - exp) / exp > 0.4)
+          bad.push(`${f.split('/').pop()} — ${m[1]}${a} указано как ${got} ₽, по курсу ≈${Math.round(exp)} ₽`);
+      });
+    }
+  }
+  expect(bad, bad.join('\n')).toEqual([]);
+});
+
 test('Заголовки: без «!!!», капс-криков и шок-слов', () => {
   const bad: string[] = [];
   // Аббревиатуры капсом легитимны; страницы меток берут имя метки как есть.
