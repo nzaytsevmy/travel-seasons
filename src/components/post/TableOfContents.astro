@@ -12,16 +12,37 @@ const { headings, minH2Count = 4 } = Astro.props;
 const items = headings.filter((h) => h.depth === 2 && !/^FAQ$/i.test(h.text));
 const show = items.length >= minH2Count;
 ---
+{/* На телефоне оглавление стояло между заголовком и ответом и занимало
+    треть экрана (301 px на статье про страховку) — человек, пришедший за
+    ответом, первым делом получал список ссылок. На узких экранах свёрнуто
+    в одну строку, разворачивается по тапу; на десктопе как было, раскрытым.
+    <details open> + CSS-снятие open на мобиле не работает, поэтому
+    состояние выставляется скриптом по ширине окна до первой отрисовки. */}
 {show && (
   <nav class="toc" aria-label="Содержание статьи">
-    <p class="toc-label">Содержание</p>
-    <ol class="toc-list">
-      {items.map((h) => (
-        <li><a href={`#${h.slug}`}>{h.text}</a></li>
-      ))}
-    </ol>
+    <details class="toc-details" open>
+      <summary class="toc-label">Содержание</summary>
+      <ol class="toc-list">
+        {items.map((h) => (
+          <li><a href={`#${h.slug}`}>{h.text}</a></li>
+        ))}
+      </ol>
+    </details>
   </nav>
 )}
+
+<script is:inline>
+  (function () {
+    // Ширину берём числом и проверяем, что она вообще известна: matchMedia в
+    // окне нулевой ширины (скрытая вкладка, предпросмотр) отвечает «да» и
+    // свернул бы оглавление на десктопе.
+    var w = window.innerWidth || document.documentElement.clientWidth;
+    if (w > 0 && w <= 767) {
+      var d = document.querySelector('.toc-details');
+      if (d) d.removeAttribute('open');
+    }
+  })();
+</script>
 
 <style>
 .toc {
@@ -62,11 +83,34 @@ const show = items.length >= minH2Count;
 .toc-list a:hover {
   color: var(--gold);
 }
+.toc-details > summary { cursor: pointer; list-style: none; }
+.toc-details > summary::-webkit-details-marker { display: none; }
+/* Треугольник рисуем сами: у нативного маркера нельзя задать цвет и отступ. */
+.toc-details > summary::after {
+  content: '';
+  display: none;
+  width: 0.42rem; height: 0.42rem;
+  margin-left: 0.5rem;
+  border-right: 1.5px solid var(--gold);
+  border-bottom: 1.5px solid var(--gold);
+  transform: rotate(45deg) translateY(-1px);
+  transition: transform 0.15s;
+}
+.toc-details[open] > summary::after { transform: rotate(-135deg) translateY(-1px); }
 @media (max-width: 600px) {
   .toc {
     padding: 0.85rem 1rem;
     margin: 1rem 0 2rem;
   }
   .toc-list li { font-size: 0.83rem; }
+}
+@media (max-width: 767px) {
+  /* Свёрнутое оглавление — одна строка вместо трети экрана. Строка-заголовок
+     остаётся не ниже 44 px: это минимальная площадь нажатия. */
+  .toc-details > summary {
+    display: flex; align-items: center; min-height: 44px; margin: 0;
+  }
+  .toc-details > summary::after { display: inline-block; }
+  .toc-details[open] > .toc-list { margin-top: 0.4rem; }
 }
 </style>
