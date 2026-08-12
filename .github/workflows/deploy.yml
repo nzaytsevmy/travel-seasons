@@ -184,3 +184,17 @@ jobs:
           YANDEX_OAUTH_TOKEN: ${{ secrets.YANDEX_OAUTH_TOKEN }}
           YANDEX_USER_ID: ${{ secrets.YANDEX_USER_ID }}
         run: python3 .github/scripts/seo_ping.py
+
+      # Новые заметки ленты — в канал MAX. Пока секретов нет, шаг тихо
+      # пропускается. TLS MAX подписан НУЦ Минцифры — тянем корень и отдаём
+      # скрипту; не скачался — скрипт скажет об этом сам при первой отправке.
+      - name: Post news to MAX channel
+        env:
+          CHANGED_FILES: ${{ steps.changed.outputs.files }}
+          MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
+          MAX_CHAT_ID: ${{ secrets.MAX_CHAT_ID }}
+          MAX_CA_FILE: /tmp/russian_trusted_root_ca.pem
+        run: |
+          curl -sS --max-time 20 -o /tmp/russian_trusted_root_ca.pem \
+            https://gu-st.ru/content/lending/russian_trusted_root_ca_pem.crt || true
+          python3 .github/scripts/max_post.py
