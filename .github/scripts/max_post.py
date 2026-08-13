@@ -104,7 +104,10 @@ def main() -> int:
         if not token:
             print("нет MAX_BOT_TOKEN")
             return 1
-        print(json.dumps(api("POST", "/subscriptions", token, {}), ensure_ascii=False, indent=2))
+        # GET /chats — список каналов и чатов, куда бот добавлен. Проверено живым
+        # запросом 13.08.2026: /subscriptions — про вебхуки, а не про чаты.
+        for c in api("GET", "/chats", token).get("chats", []):
+            print(f"{c.get('chat_id')}\t{c.get('type')}\t{c.get('title')}")
         return 0
 
     if not token or not chat_id:
