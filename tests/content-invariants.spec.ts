@@ -109,6 +109,29 @@ test('Свежесть: «обновлено» не убегает от даты
   expect(bad, bad.join('\n')).toEqual([]);
 });
 
+test('Навигация: строка «ещё по направлению» — до трёх ссылок, без дублей и самоссылок', () => {
+  // Строка ставится под капсулой-ответом и должна оставаться короткой: она
+  // стоит в начале чтения, длинный список там крадёт внимание у ответа.
+  // ⚠️ Ищем по элементу, а не по началу атрибута: сборщик срезает кавычки И
+  // меняет порядок атрибутов — регулярка «<nav class=country-row» уже один раз
+  // насчитала 5 строк вместо 46.
+  const RE = /<nav[^>]*\bcountry-row\b[^>]*>([\s\S]*?)<\/nav>/;
+  const LINK = /href="?(\/[^"\s>]+)"?\s*>/g;
+  const bad: string[] = [];
+  for (const f of files) {
+    if (!f.includes('/blog/') || f.includes('/tag/') || /blog\/(index|\d+)\.html$/.test(f)) continue;
+    const m = readFileSync(f, 'utf8').match(RE);
+    if (!m) continue;
+    const page = f.replace(DIST, '').replace(/index\.html$/, '');
+    const hrefs = [...m[1].matchAll(LINK)].map((x) => x[1]);
+    if (!hrefs.length) bad.push(`${page} — строка есть, ссылок нет`);
+    if (hrefs.length > 3) bad.push(`${page} — ${hrefs.length} ссылок, максимум 3`);
+    if (new Set(hrefs).size !== hrefs.length) bad.push(`${page} — дубль внутри строки`);
+    if (hrefs.includes(page)) bad.push(`${page} — ссылка на саму себя`);
+  }
+  expect(bad, bad.join('\n')).toEqual([]);
+});
+
 test('Деньги: рублёвая конвертация не расходится с валютой на порядок', () => {
   // Курсы ЦБ на 13.08.2026 — база сравнения. Полоса широкая (±40%): курс со
   // временем уходит, задача гейта — ловить опечатку и потерянный ноль, а не

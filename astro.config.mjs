@@ -8,6 +8,7 @@ import remarkNumerals from './tools/remark-numerals.mjs';
 import { archivedMonths, monthKey } from './src/data/news.js';
 import rehypeTableWrap from './tools/rehype-table-wrap.mjs';
 import rehypeFaqAccordion from './tools/rehype-faq-accordion.mjs';
+import rehypeCountryRow from './tools/rehype-country-row.mjs';
 import { DATA_UPDATED } from './src/data/meta.js';
 import { DIRECTIONS, MONTHS } from './src/data/directions.js';
 import { NICHE_TRIPS } from './src/data/niche-trips.js';
@@ -90,7 +91,7 @@ export default defineConfig({
   },
   markdown: {
     remarkPlugins: [remarkNumerals],
-    rehypePlugins: [rehypeTableWrap, rehypeFaqAccordion],
+    rehypePlugins: [rehypeTableWrap, rehypeFaqAccordion, rehypeCountryRow],
   },
   integrations: [
     mdx(),
