@@ -672,6 +672,61 @@ test('Новости: текст заметки объявлен статьёй 
 // его на весь блог сразу, красными станут пятьдесят статей и гейт начнут
 // обходить — планка держится тем, что её нельзя нарушить в своей же правке.
 // Тот же приём, что у гейта новостей после остановки ленты 09.08.2026.
+test('Язык: в тронутой статье нет слов-паразитов, штампов и канцелярита', () => {
+  // Список из редакционного ТЗ, присланного Никитой 13.08.2026. Наши правила
+  // говорили «чистый русский» общими словами — и два таких слова спокойно
+  // доехали до готовой статьи про Сингапур: поймал их список, а не проверка.
+  //
+  // ⛔ Проверяем ТОЛЬКО тронутые в заходе статьи, как гейт иллюстраций. Замер
+  // 13.08.2026: 243 вхождения на 67 статей, медиана 3, чистых статей всего 5.
+  // Гейт «ноль везде» покрасил бы 62 статьи разом — такие гейты обходят, а не
+  // чинят. Старое чистится ревизиями, новое не пропускается.
+  const PARASITES = ['просто', 'очень', 'достаточно', 'уже', 'ведь'];
+  const CLICHES = [
+    'как показывает практика', 'согласно исследованиям', 'эксперты сходятся',
+    'трудно переоценить', 'в заключение', 'подводя итог',
+  ];
+  const OFFICE = ['осуществляется', 'посредством', 'в рамках', 'является одним из'];
+  const root = join(DIST, '..');
+  const git = (...args: string[]) => {
+    try {
+      return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] })
+        .split('\n').map((x: string) => x.trim())
+        .filter((x: string) => /^src\/content\/blog\/[^/]+\.mdx?$/.test(x));
+    } catch {
+      return [];
+    }
+  };
+  const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : 'origin/main';
+  const touched = [...new Set([
+    ...git('ls-files', '--others', '--exclude-standard', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', '--staged', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', `${base}...HEAD`, '--', 'src/content/blog'),
+    ...git('diff', '--name-only', 'HEAD~1', 'HEAD', '--', 'src/content/blog'),
+  ])];
+
+  const bad: string[] = [];
+  for (const rel of touched) {
+    const abs = join(root, rel);
+    if (!existsSync(abs)) continue;
+    const src = readFileSync(abs, 'utf8');
+    const body = src.split('---').slice(2).join('---');
+    // JS \b не знает кириллицы — границы слова руками, как в гейте дат.
+    const hits = (list: string[]) => list.flatMap((w) => {
+      const re = new RegExp(`(^|[\\s(«—-])${w}([\\s.,;:!?»)]|$)`, 'gim');
+      return (body.match(re) ?? []).map(() => w);
+    });
+    const p = hits(PARASITES);
+    const c = hits(CLICHES);
+    const o = hits(OFFICE);
+    if (p.length) bad.push(`${rel}: слова-паразиты — ${[...new Set(p)].join(', ')} (${p.length})`);
+    if (c.length) bad.push(`${rel}: штампы — ${[...new Set(c)].join(', ')}`);
+    if (o.length) bad.push(`${rel}: канцелярит — ${[...new Set(o)].join(', ')}`);
+  }
+  expect(bad, bad.join('\n')).toEqual([]);
+});
+
 test('Иллюстрации: тронутая статья с 8+ разделами имеет ≥4 фото и описательные подписи', () => {
   const root = join(DIST, '..');
   // ⛔ Каждый вызов в try/catch. В облачной сборке клон неполный: ссылки
