@@ -275,6 +275,21 @@ if (faqs.length >= 2) {
         <Content />
       </div>
 
+      {/* Подписка на канал. Ставится СРАЗУ после текста — в точке, где читатель
+          получил обещанное и решает, уходить ли. Выше её ставить нельзя: она
+          отодвинет ответ, ради которого пришли из поиска.
+          Замер 13.08.2026: переходов в канал 7 за 30 дней при 6117 визитах
+          (0,11%), при этом ссылок на канал на странице статьи было ВОСЕМЬ —
+          в подписи автора, в справке об авторе, в подвале, в дисклеймере. То
+          есть дело не в числе ссылок, а в том, что ни одна из них ничего не
+          обещает: это голый ник. Здесь — одна ссылка с понятной причиной. */}
+      <aside class="tg-sub">
+        <p class="tg-sub-text">
+          Пишу про поездки и правила въезда в Telegram — там короче и чаще, чем на сайте.
+        </p>
+        <a class="tg-sub-link" href="https://t.me/traveltriberu" target="_blank" rel="noopener">Читать @traveltriberu</a>
+      </aside>
+
       <nav class="post-next" aria-label="Куда дальше">
         {primaryDir ? (
           <>
@@ -481,6 +496,44 @@ if (faqs.length >= 2) {
 .ptag:hover { background: rgba(201,151,58,0.12); }
 .post-date { font-size: 0.7rem; color: var(--text-faint); letter-spacing: 0.04em; }
 .post-updated { font-size: 0.7rem; color: var(--gold-dim); letter-spacing: 0.04em; margin-left: 0.4rem; }
+/* Подписка на канал — волосяная рамка, без фона и скруглений, как весь
+   editorial-канон. Высота фиксированная, блок статичный: сдвига вёрстки нет. */
+.tg-sub {
+  max-width: 720px;
+  margin: 2.5rem auto 0;
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1.5rem;
+}
+.tg-sub-text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+  flex: 1 1 260px;
+}
+.tg-sub-link {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1.2rem;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-size: 0.92rem;
+  text-decoration: none;
+}
+.tg-sub-link:hover { background: var(--gold); color: var(--bg); }
+@media (max-width: 767px) {
+  .tg-sub { padding-inline: 1.1rem; }
+  .tg-sub-link { width: 100%; justify-content: center; }
+}
+
 .author-bio {
   display: flex; gap: 1rem; align-items: flex-start;
   margin-top: 3rem; padding: 1.4rem;
