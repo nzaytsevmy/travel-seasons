@@ -13,6 +13,13 @@ const blog = defineCollection({
     tripDate: z.string().optional(),
     tripPlace: z.string().optional(),
     sourceType: z.enum(['personal', 'compilation', 'hybrid']).default('hybrid'),
+    // Паспорт статьи (решение Никиты 13.08.2026): без замера спроса и без
+    // адверсарной проверки статья не выходит. Поля необязательные в схеме,
+    // потому что 67 старых статей их не имеют, — обязательность проверяет
+    // гейт и только на статьях, тронутых в заходе.
+    demand: z.string().optional(),   // «8 005/мес, Вордстат 13.07–11.08.2026»
+    reviewed: z.coerce.date().optional(),  // дата адверсарной проверки фактов
+
     coverPosition: z.string().default('center'),
     coverPositionCard: z.string().default('center'),
     howto: z.object({

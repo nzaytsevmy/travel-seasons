@@ -672,6 +672,53 @@ test('Новости: текст заметки объявлен статьёй 
 // его на весь блог сразу, красными станут пятьдесят статей и гейт начнут
 // обходить — планка держится тем, что её нельзя нарушить в своей же правке.
 // Тот же приём, что у гейта новостей после остановки ленты 09.08.2026.
+test('Паспорт статьи: новая статья не выходит без замера спроса и адверсарной проверки', () => {
+  // Решение Никиты 13.08.2026: канон семантики — критичный, а не желательный.
+  // Тема без замера спроса и статья без второй пары глаз не публикуются.
+  // Машина не может оценить «десять из десяти для человека» — она проверяет
+  // следы того, что работа сделана: замер спроса записан, дата разбора
+  // проставлена, иллюстраций хватает (отдельный гейт ниже).
+  //
+  // ⛔ Только НОВЫЕ статьи: датой отсечки взят день ввода правила. Старые 67
+  // паспорта не имеют и красить их нельзя — гейт, красящий легаси, обходят.
+  const RULE_FROM = Date.parse('2026-08-13T00:00:00Z');
+  const root = join(DIST, '..');
+  const git = (...args: string[]) => {
+    try {
+      return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] })
+        .split('\n').map((x: string) => x.trim())
+        .filter((x: string) => /^src\/content\/blog\/[^/]+\.mdx?$/.test(x));
+    } catch {
+      return [];
+    }
+  };
+  const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : 'origin/main';
+  const touched = [...new Set([
+    ...git('ls-files', '--others', '--exclude-standard', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', '--staged', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', `${base}...HEAD`, '--', 'src/content/blog'),
+    ...git('diff', '--name-only', 'HEAD~1', 'HEAD', '--', 'src/content/blog'),
+  ])];
+
+  const bad: string[] = [];
+  for (const rel of touched) {
+    const abs = join(root, rel);
+    if (!existsSync(abs)) continue;
+    const src = readFileSync(abs, 'utf8');
+    const fm = src.split('---')[1] ?? '';
+    const pub = fm.match(/^pubDate:\s*(\d{4}-\d{2}-\d{2})/m)?.[1];
+    if (!pub || Date.parse(pub + 'T00:00:00Z') < RULE_FROM) continue;  // старая статья
+    if (!/^demand:\s*\S/m.test(fm)) {
+      bad.push(`${rel}: нет замера спроса (поле demand: «сколько запросов, чем и когда мерили»)`);
+    }
+    if (!/^reviewed:\s*\d{4}-\d{2}-\d{2}/m.test(fm)) {
+      bad.push(`${rel}: нет даты адверсарной проверки фактов (поле reviewed)`);
+    }
+  }
+  expect(bad, bad.join('\n')).toEqual([]);
+});
+
 test('Язык: в тронутой статье нет слов-паразитов, штампов и канцелярита', () => {
   // Список из редакционного ТЗ, присланного Никитой 13.08.2026. Наши правила
   // говорили «чистый русский» общими словами — и два таких слова спокойно
