@@ -7,6 +7,7 @@ import Footer from '../../components/Footer.astro';
 import TableOfContents from '../../components/post/TableOfContents.astro';
 import authorPhoto from '../../assets/author/nikita.jpg';
 import { DIRECTIONS } from '../../data/directions.js';
+import { directionForTags } from '../../data/article-country.js';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -108,8 +109,39 @@ const faqs = extractFAQs(post.body);
 // Правило: сначала кластер, где пост стоит первым (его «дом»), иначе — кластер,
 // если он ровно один. Пост из нескольких кластеров остаётся с общим блоком.
 const ownDirs = DIRECTIONS.filter(d => d.relatedPosts?.some(p => p.slug === post.slug));
+// Третьим заходом — метки статьи. Замер 13.08.2026: по кластерам направление
+// находилось у 42 статей из 66, остальные 24 получали общий блок «Куда дальше»
+// со ссылкой на список стран вместо своей страны (в том числе Гагра, Рица,
+// пещера — где страна очевидна). По меткам добирается 10 из этих 24.
 const primaryDir = DIRECTIONS.find(d => d.relatedPosts?.[0]?.slug === post.slug)
-  ?? (ownDirs.length === 1 ? ownDirs[0] : null);
+  ?? (ownDirs.length === 1 ? ownDirs[0] : null)
+  ?? directionForTags(post.data.tags || []);
+// Хлебные крошки. Было «Главная / Блог / <весь заголовок>»: страны в цепочке
+// нет, последнее звено переносится на три строки на телефоне. Стало
+// «Главная / Блог / Япония / Виза» — четыре звена, это в границах требований
+// Яндекса (2–4), страна кликабельна и ведёт на свой раздел.
+const THEME: Array<[RegExp, string]> = [
+  [/страховк/i, 'Страховка'],
+  [/виза|документ|загранпаспорт/i, 'Виза'],
+  [/сезон|событ|погода/i, 'Сезоны'],
+  [/сбор|чек-лист|что взять/i, 'Сборы'],
+  [/деньг|карт|платеж/i, 'Деньги'],
+];
+const tagsLower = (post.data.tags || []).map((t: string) => String(t).toLowerCase()).join(' ');
+// Слаг сильнее меток: у гайда по Австралии есть метка «Виза», и по меткам он
+// получал тему «Виза», хотя это гайд по стране.
+const SLUG_THEME: Array<[RegExp, string]> = [
+  [/-guide-/, 'Гайд'], [/-visa-|zagranpasport/, 'Виза'],
+  [/insurance|strahovka/, 'Страховка'], [/pay-|cards/, 'Деньги'],
+];
+const themeLabel = SLUG_THEME.find(([re]) => re.test(post.slug))?.[1]
+  ?? THEME.find(([re]) => re.test(tagsLower))?.[1] ?? 'Гайд';
+const crumbs = primaryDir
+  ? [{ label: 'Блог', href: '/blog/' },
+     { label: primaryDir.region.split(/[&(,—-]/)[0].trim(), href: `/${primaryDir.slug}/` },
+     { label: themeLabel }]
+  : [{ label: 'Блог', href: '/blog/' }, { label: post.data.title }];
+
 const planVP = primaryDir ? (primaryDir.cases?.vP || primaryDir.cases?.acc || primaryDir.cases?.nom) : null;
 const siblingPosts = primaryDir ? primaryDir.relatedPosts.filter(p => p.slug !== post.slug).slice(0, 3) : [];
 
@@ -140,8 +172,12 @@ const ldJson: any = {
       "@type": "BreadcrumbList",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
-        { "@type": "ListItem", "position": 2, "name": "Блог", "item": "https://traveltribe.ru/blog/" },
-        { "@type": "ListItem", "position": 3, "name": post.data.title, "item": url }
+        // Разметка строится из ТЕХ ЖЕ крошек, что видит читатель: расхождение
+        // видимой цепочки и разметки поисковики считают сигналом рассинхрона.
+        ...crumbs.map((c, i) => ({
+          "@type": "ListItem", "position": i + 2, "name": c.label,
+          "item": c.href ? `https://traveltribe.ru${c.href}` : url,
+        }))
       ]
     }
   ]
@@ -177,7 +213,7 @@ if (faqs.length >= 2) {
   preloadImageSizes="100vw"
 >
   <script is:inline>document.body.classList.add('post-page')</script>
-  <Breadcrumbs crumbs={[{ label: 'Блог', href: '/blog/' }, { label: post.data.title }]} />
+  <Breadcrumbs crumbs={crumbs} />
   <main id="main" class="post-page">
     <div class="post-cover">
       <Picture

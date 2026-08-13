@@ -770,3 +770,43 @@ footer {
   .legal-table td:first-child { white-space: normal; font-weight: 600; }
 }
 .legal-doc code { font-size: 0.82rem; background: var(--bg2); border: 1px solid var(--line); padding: 0.08rem 0.35rem; color: var(--text-dim); }
+
+/* ── Строка «ещё по направлению» под капсулой-ответом ──────────────────────
+   Ставится плагином разметки сразу после капсулы: ответ остаётся первым, а
+   следующий шаг виден без прокрутки. Только волосяные линии, без фона и
+   скруглений — как весь editorial-канон. Высота строки фиксированная, блок
+   статичный: сдвига вёрстки не даёт. */
+:where(.prose) .country-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 1rem;
+  margin: 1.4rem 0 2rem;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+:where(.prose) .country-row-label {
+  color: var(--text-faint);
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+}
+:where(.prose) .country-row a {
+  color: var(--gold);
+  text-decoration: none;
+  border-bottom: 1px solid var(--gold-dim);
+  padding: 0.15rem 0;
+}
+:where(.prose) .country-row a:hover { border-bottom-color: var(--gold); }
+@media (max-width: 767px) {
+  /* На телефоне ссылки в столбик: площадь нажатия 44 px, промахов нет. */
+  :where(.prose) .country-row { flex-direction: column; align-items: flex-start; gap: 0; }
+  :where(.prose) .country-row a {
+    display: block; width: 100%;
+    min-height: 44px; line-height: 44px;
+    border-bottom: 1px solid var(--line);
+  }
+  :where(.prose) .country-row a:last-child { border-bottom: none; }
+}
