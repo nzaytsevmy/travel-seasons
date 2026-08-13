@@ -29,6 +29,7 @@ import ssl
 import subprocess
 import sys
 import time
+import uuid
 import urllib.request
 
 API = "https://platform-api2.max.ru"
@@ -52,6 +53,36 @@ def api(method: str, path: str, token: str, body: dict | None = None) -> dict:
     )
     with urllib.request.urlopen(req, timeout=30, context=ssl_ctx()) as r:
         return json.loads(r.read() or "{}")
+
+
+def upload_photo(token: str, path: str) -> str | None:
+    """Залить jpg заметки и вернуть её метку для вложения.
+
+    Ссылкой картинку отдать нельзя: на сайте лежит webp, а платформа его не
+    принимает (JPG/PNG/GIF/TIFF/BMP/HEIC). Поэтому шлём исходный файл из репо.
+    Адрес заливки одноразовый и живёт на другом хосте — там обычные корни,
+    сертификат Минцифры не нужен.
+    """
+    if not os.path.exists(path):
+        return None
+    try:
+        url = api("POST", "/uploads?type=image", token)["url"]
+        data = open(path, "rb").read()
+        b = uuid.uuid4().hex
+        body = (
+            f'--{b}\r\nContent-Disposition: form-data; name="data"; '
+            f'filename="photo.jpg"\r\nContent-Type: image/jpeg\r\n\r\n'
+        ).encode() + data + f"\r\n--{b}--\r\n".encode()
+        req = urllib.request.Request(
+            url, data=body, method="POST",
+            headers={"Content-Type": f"multipart/form-data; boundary={b}"},
+        )
+        with urllib.request.urlopen(req, timeout=90) as r:
+            photos = json.loads(r.read())["photos"]
+        return list(photos.values())[0]["token"]
+    except Exception as e:  # картинка не залилась — заметку всё равно шлём
+        print(f"MAX: картинка не ушла ({type(e).__name__}) — отправляю без неё")
+        return None
 
 
 def new_news_files() -> list[str]:
@@ -80,14 +111,16 @@ def parse_note(path: str) -> tuple[str, str, str]:
     return field("title"), field("tldr"), f"{SITE}/novosti/{slug}/"
 
 
-def post_note(token: str, chat_id: str, title: str, tldr: str, url: str) -> None:
-    payload = {
-        "text": f"{title}\n\n{tldr}",
-        "attachments": [{
-            "type": "inline_keyboard",
-            "payload": {"buttons": [[{"type": "link", "text": "Читать на сайте", "url": url}]]},
-        }],
-    }
+def post_note(token: str, chat_id: str, title: str, tldr: str, url: str,
+              photo: str | None = None) -> None:
+    attachments: list[dict] = []
+    if photo:
+        attachments.append({"type": "image", "payload": {"token": photo}})
+    attachments.append({
+        "type": "inline_keyboard",
+        "payload": {"buttons": [[{"type": "link", "text": "Читать на сайте", "url": url}]]},
+    })
+    payload = {"text": f"{title}\n\n{tldr}", "attachments": attachments}
     if os.environ.get("MAX_DRY_RUN"):
         print(f"DRY-RUN → chat {chat_id}:")
         print(json.dumps(payload, ensure_ascii=False, indent=2))
@@ -124,9 +157,13 @@ def main() -> int:
         if not title:
             print(f"MAX: у {p} не разобрался заголовок — пропуск")
             continue
+        photo = None
+        if not os.environ.get("MAX_DRY_RUN"):
+            photo = upload_photo(token, p[: -len(".md")].replace(
+                "src/content/news/", "src/content/news/_images/") + ".jpg")
         if i:
             time.sleep(1)  # лимит платформы: ≤2 сообщений в секунду
-        post_note(token, chat_id, title, tldr, url)
+        post_note(token, chat_id, title, tldr, url, photo)
     return 0
 
 
