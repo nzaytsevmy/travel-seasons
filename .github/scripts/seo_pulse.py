@@ -802,9 +802,26 @@ def weekly_mode(c) -> None:
         import json as _json, subprocess as _sp
         _out = _sp.run(["node", "-e",
                         "import('./scripts/revision-queue.mjs').then(m=>{const r=m.buildQueue();"
-                        "console.log(JSON.stringify(r.filter(x=>x.overdue>=0).slice(0,8)))})"],
+                        "const t=Date.now();const fresh=r.filter(x=>(t-Date.parse(x.checked))/864e5<=90).length;"
+                        "console.log(JSON.stringify({late:r.filter(x=>x.overdue>=0).slice(0,8),"
+                        "total:r.length,fresh}))})"],
                        capture_output=True, text=True, timeout=60, cwd=str(REPO_ROOT))
-        _late = _json.loads(_out.stdout.strip() or "[]")
+        _q = _json.loads(_out.stdout.strip() or "{}")
+        _late = _q.get("late", [])
+        # Доля статей, сверенных за последние 90 дней. Ведущий показатель к
+        # цитированию в нейроответе: он берёт свежий датированный факт, а не
+        # текст вообще. Смотреть надо динамику, разовое число ничего не значит.
+        _tot, _fresh = _q.get("total", 0), _q.get("fresh", 0)
+        if _tot:
+            _share = round(_fresh * 100 / _tot)
+            _prev_share = prev.get("checked_share")
+            L.append(f"🧪 *Свежесть фактов* — сверено за 90 дней: {_fresh} из {_tot} ({_share}%)"
+                     f"{arrow(_share, _prev_share)}")
+            L.append("")
+            _fresh_stat = {"checked_share": _share, "checked_fresh": _fresh, "checked_total": _tot}
+        else:
+            _fresh_stat = {}
+        globals()["_FRESH_STAT"] = _fresh_stat
         if _late:
             L.append(f"🕗 *Пора сверить факты — {len(_late)} статей*")
             for _r in _late[:5]:
@@ -1034,13 +1051,15 @@ def weekly_mode(c) -> None:
     # по второму: первый скачет от переобходов, а не от аудитории.
     if m7:
         snap.update(human_clicks=m7["clicks"], human_visits=m7["visits"])
+    snap.update(globals().get("_FRESH_STAT") or {})
     STATE_FILE.write_text(json.dumps(snap, ensure_ascii=False), encoding="utf-8")
     hist = {"date": str(TODAY)}
     hist.update({k: snap.get(k) for k in
                  ("sqi", "pages", "shows", "clicks", "g_clicks", "g_impr", "g_ctr", "g_pos",
                   "striking_count", "zero_click_count",
                   "tp_rev", "tp_clicks", "tp_sales", "tp_att",
-                  "human_clicks", "human_visits")})
+                  "human_clicks", "human_visits",
+                  "checked_share", "checked_fresh", "checked_total")})
     with HISTORY_FILE.open("a", encoding="utf-8") as f:
         f.write(json.dumps(hist, ensure_ascii=False) + "\n")
     send_telegram(c, report)
