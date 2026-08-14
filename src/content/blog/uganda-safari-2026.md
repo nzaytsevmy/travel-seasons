@@ -227,7 +227,7 @@ coverPosition: "center 38%"
 
 Параллельно — репеллент с DEET 30%+ ([Off! Extreme или Mosquito-Free](https://www.cdc.gov/mosquitoes/prevention/protect-yourself.html)), длинные рукава по вечерам, в лодже — спать строго под москитной сеткой.
 
-**Медстраховка** на Уганду — обязательна. Я брал <a href="https://cherehapa.tpk.mx/fkM7suze?erid=2VtzquZTwb5&sub_id=uganda_safari_2026" class="aff-cta" rel="sponsored">Оформить страховку в Уганду</a> с покрытием **50 000 €** и опцией «активный отдых» (треккинг подпадает). Стоит ~1500 ₽ на 10 дней. Без неё страшно: эвакуация из Бвинди вертолётом до Кампалы — это $5000–8000 наличными на месте (ориентир по тарифам [AMREF Flying Doctors](https://www.flydoc.org/), 2025).
+**Медстраховка** на Уганду — обязательна. Я брал <a href="https://cherehapa.tpk.mx/fkM7suze?erid=2VtzquZTwb5&sub_id=uganda_safari_2026" class="aff-cta" rel="sponsored">Оформить страховку в Уганду</a> — Cherehapa, оплата картой РФ, полис в PDF; с покрытием **50 000 €** и опцией «активный отдых» (треккинг подпадает). Стоит ~1500 ₽ на 10 дней. Без неё страшно: эвакуация из Бвинди вертолётом до Кампалы — это $5000–8000 наличными на месте (ориентир по тарифам [AMREF Flying Doctors](https://www.flydoc.org/), 2025).
 
 ### Деньги и связь
 
