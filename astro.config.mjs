@@ -134,6 +134,8 @@ export default defineConfig({
         && !page.includes('/legal/')
         // /my/ — персональный дашборд из localStorage, noindex, не в sitemap
         && !page.includes('/my/')
+        // /status/ — служебная панель состояния статей, noindex, не в sitemap
+        && !page.includes('/status/')
         // /data/trip/*.json — служебный endpoint для /my/, не HTML-страница
         && !page.includes('/data/trip/')
         // нишевые trips-направления noindex (≈0 трафика) — не в sitemap

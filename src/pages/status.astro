@@ -1,0 +1,74 @@
+---
+// Панель состояния статей: что пора сверять заново.
+//
+// Служебная страница для автора, а не для читателя: noindex, вне карты сайта,
+// ссылок на неё с сайта нет. Живёт внутри сайта, а не в отдельной админке,
+// намеренно — правда о статьях лежит в самих статьях, и заводить вторую
+// систему, которая хранит то же самое, значит гарантированно её рассинхронить.
+//
+// Строится при каждой сборке из паспорта статей: последняя сверка берётся из
+// журнала проверок, срок считается по типу темы. Ничего не проставляется
+// руками, поэтому и устареть панель не может.
+import Layout from '../layouts/Layout.astro';
+import { buildQueue } from '../../scripts/revision-queue.mjs';
+
+const rows = buildQueue();
+const late = rows.filter((r) => r.overdue >= 0);
+const soon = rows.filter((r) => r.overdue < 0 && r.overdue >= -30);
+const ok = rows.length - late.length - soon.length;
+const fmt = (r: { overdue: number }) => (r.overdue >= 0 ? `просрочка ${r.overdue}` : `через ${-r.overdue}`);
+---
+
+<Layout
+  title="Панель состояния статей"
+  description="Служебная страница: какие статьи пора сверять заново."
+  noindex={true}
+>
+  <main class="status">
+    <h1>Что пора сверять</h1>
+    <p class="lead">
+      Статей всего {rows.length}. Просрочено <b>{late.length}</b>, срок подходит в ближайший месяц у {soon.length},
+      остальные {ok} в порядке. Срок считается сам: последняя сверка плюс интервал по типу темы —
+      90 дней у виз и денег, 180 у сезонного, 365 у остального.
+    </p>
+
+    {[['Просрочено', late], ['Срок подходит', soon]].map(([title, list]) => (
+      (list as typeof rows).length > 0 && (
+        <section>
+          <h2>{title} — {(list as typeof rows).length}</h2>
+          <table>
+            <thead>
+              <tr><th>Статья</th><th>Интервал</th><th>Сверено</th><th>Откуда дата</th><th>Срок</th><th>Дней</th></tr>
+            </thead>
+            <tbody>
+              {(list as typeof rows).map((r) => (
+                <tr class={r.overdue >= 0 ? 'late' : ''}>
+                  <td><a href={`/blog/${r.slug}/`}>{r.title}</a></td>
+                  <td>{r.interval} дн.</td>
+                  <td>{r.checked}</td>
+                  <td>{r.source}</td>
+                  <td>{r.due}</td>
+                  <td>{fmt(r)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )
+    ))}
+  </main>
+</Layout>
+
+<style>
+  .status { max-width: 60rem; margin: 0 auto; padding: 2rem 1rem 4rem; }
+  h1 { font-size: 1.6rem; margin: 0 0 0.75rem; }
+  .lead { color: var(--muted); max-width: 44rem; line-height: 1.6; }
+  h2 { font-size: 1.05rem; margin: 2.5rem 0 0.75rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+  th, td { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
+  td a { color: var(--text); }
+  tr.late td:last-child { color: var(--gold-dim); font-weight: 600; }
+  /* Узкий экран: таблица уезжает в свой скролл, страница не едет вбок. */
+  section { overflow-x: auto; }
+</style>

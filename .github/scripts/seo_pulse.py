@@ -793,6 +793,30 @@ def weekly_mode(c) -> None:
 
     L = [f"*TravelTribe SEO Pulse — {TODAY}*", ""]
 
+    # Очередь ревизий — первой строкой, до всех метрик. Устаревший факт вредит
+    # сильнее, чем просевшая позиция: 14.08.2026 сверка десяти статей нашла
+    # расхождения в девяти, включая несуществующий курортный сбор и визу США,
+    # подорожавшую вдвое. Список считает тот же инструмент, что и панель
+    # состояния, поэтому расходиться им нечем.
+    try:
+        import json as _json, subprocess as _sp
+        _out = _sp.run(["node", "-e",
+                        "import('./scripts/revision-queue.mjs').then(m=>{const r=m.buildQueue();"
+                        "console.log(JSON.stringify(r.filter(x=>x.overdue>=0).slice(0,8)))})"],
+                       capture_output=True, text=True, timeout=60, cwd=str(REPO_ROOT))
+        _late = _json.loads(_out.stdout.strip() or "[]")
+        if _late:
+            L.append(f"🕗 *Пора сверить факты — {len(_late)} статей*")
+            for _r in _late[:5]:
+                L.append(f"   {_r['slug']} — просрочка {_r['overdue']} дн. (интервал {_r['interval']})")
+            if len(_late) > 5:
+                L.append(f"   …и ещё {len(_late) - 5}")
+            L.append("   Полный список: https://traveltribe.ru/status/")
+            L.append("")
+    except Exception as _e:  # отчёт не должен падать из-за одной секции
+        L.append(f"🕗 очередь ревизий недоступна: {_e}")
+        L.append("")
+
     # Яндекс
     if y["ok"]:
         L.append(f"🔸 *Яндекс* — страницы {y['pages']}{arrow(y['pages'], prev.get('pages'))}  "

@@ -3,6 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildQueue } from '../scripts/revision-queue.mjs';
 
 // Инвариант-гейт по СБОРКЕ (dist/): ловит КЛАССЫ багов на ЛЮБОМ посте, в т.ч. вне
 // PAGES-списка скриншот-гейта. Без baseline — чистые assert'ы.
@@ -783,6 +784,45 @@ test('Язык: в тронутой статье нет слов-паразит�
     if (p.length) bad.push(`${rel}: слова-паразиты — ${[...new Set(p)].join(', ')} (${p.length})`);
     if (c.length) bad.push(`${rel}: штампы — ${[...new Set(c)].join(', ')}`);
     if (o.length) bad.push(`${rel}: канцелярит — ${[...new Set(o)].join(', ')}`);
+  }
+  expect(bad, bad.join('\n')).toEqual([]);
+});
+
+test('Свежесть: тронутую статью нельзя выложить с просроченной сверкой', () => {
+  // Мягкий гейт: срабатывает ТОЛЬКО на статьях, которые трогали в этом заходе.
+  // Жёсткий вариант («ни одной просроченной на сайте») остановил бы работу
+  // целиком: на 14.08.2026 просрочено десять статей из 68, и чинить их разом
+  // никто не станет — такие гейты обходят, а не выполняют. Смысл здесь в
+  // другом: нельзя тихо поправить запятую в статье, где визовые правила
+  // годичной давности. Тронул — сверь, или объясни правку в журнале.
+  const root = join(DIST, '..');
+  const git = (...args: string[]) => {
+    try {
+      return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] })
+        .split('\n').map((x: string) => x.trim())
+        .filter((x: string) => /^src\/content\/blog\/[^/]+\.mdx?$/.test(x));
+    } catch {
+      return [];
+    }
+  };
+  const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : 'origin/main';
+  const touched = [...new Set([
+    ...git('ls-files', '--others', '--exclude-standard', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', '--staged', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', `${base}...HEAD`, '--', 'src/content/blog'),
+    ...git('diff', '--name-only', 'HEAD~1', 'HEAD', '--', 'src/content/blog'),
+  ])];
+  if (!touched.length) return;
+
+  const queue = buildQueue();
+  const bad: string[] = [];
+  for (const rel of touched) {
+    const slug = rel.split('/').pop()!.replace(/\.mdx?$/, '');
+    const row = queue.find((r: { slug: string }) => r.slug === slug);
+    if (row && row.overdue > 0) {
+      bad.push(`${slug}: сверка просрочена на ${row.overdue} дн. (последняя ${row.checked}, интервал ${row.interval}) — сверить факты и записать в журнал`);
+    }
   }
   expect(bad, bad.join('\n')).toEqual([]);
 });
