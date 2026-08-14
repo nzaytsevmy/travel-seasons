@@ -730,7 +730,14 @@ test('Язык: в тронутой статье нет слов-паразит�
   // 13.08.2026: 243 вхождения на 67 статей, медиана 3, чистых статей всего 5.
   // Гейт «ноль везде» покрасил бы 62 статьи разом — такие гейты обходят, а не
   // чинят. Старое чистится ревизиями, новое не пропускается.
-  const PARASITES = ['просто', 'очень', 'достаточно', 'уже', 'ведь'];
+  const PARASITES = ['просто', 'очень', 'достаточно', 'ведь'];
+  // ⛔ «Уже» — не паразит, а служебное слово со смыслом «раньше, чем ожидалось»
+  // (решение Никиты 14.08.2026). Нулевой порог дважды остановил живые фразы в
+  // статье про двадцать направлений — «про эту бумагу узнают уже в аэропорту»,
+  // «перелёт добирают уже на месте», — и обе замены вышли суше оригинала.
+  // Синонима у слова нет, поэтому вместо запрета — лимит на статью: одиночное
+  // употребление осмысленно, три подряд это уже вода.
+  const SOFT = { 'уже': 2 };
   const CLICHES = [
     'как показывает практика', 'согласно исследованиям', 'эксперты сходятся',
     'трудно переоценить', 'в заключение', 'подводя итог',
@@ -769,9 +776,57 @@ test('Язык: в тронутой статье нет слов-паразит�
     const p = hits(PARASITES);
     const c = hits(CLICHES);
     const o = hits(OFFICE);
+    for (const [w, limit] of Object.entries(SOFT)) {
+      const n = hits([w]).length;
+      if (n > limit) bad.push(`${rel}: «${w}» ${n} раз при лимите ${limit} — оставить осмысленные, остальные убрать`);
+    }
     if (p.length) bad.push(`${rel}: слова-паразиты — ${[...new Set(p)].join(', ')} (${p.length})`);
     if (c.length) bad.push(`${rel}: штампы — ${[...new Set(c)].join(', ')}`);
     if (o.length) bad.push(`${rel}: канцелярит — ${[...new Set(o)].join(', ')}`);
+  }
+  expect(bad, bad.join('\n')).toEqual([]);
+});
+
+test('Деньги: у кнопок есть потолок, а не только минимум', () => {
+  // Канон монетизации требует минимум три денежные точки и НЕ задаёт верхней
+  // границы. 14.08.2026 в обзоре двадцати направлений вышло тринадцать кнопок —
+  // по одной на каждое открытое направление плюс страховка и финал. Каждая по
+  // отдельности уместна, вместе это уже витрина, а витрину читатель листает
+  // мимо. Порог: не меньше 150 слов текста на одну кнопку (у той статьи 185).
+  const MIN_WORDS_PER_CTA = 150;
+  const root = join(DIST, '..');
+  const git = (...args: string[]) => {
+    try {
+      return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] })
+        .split('\n').map((x: string) => x.trim())
+        .filter((x: string) => /^src\/content\/blog\/[^/]+\.mdx?$/.test(x));
+    } catch {
+      return [];
+    }
+  };
+  const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : 'origin/main';
+  const touched = [...new Set([
+    ...git('ls-files', '--others', '--exclude-standard', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', '--staged', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', `${base}...HEAD`, '--', 'src/content/blog'),
+    ...git('diff', '--name-only', 'HEAD~1', 'HEAD', '--', 'src/content/blog'),
+  ])];
+
+  const bad: string[] = [];
+  for (const rel of touched) {
+    const abs = join(root, rel);
+    if (!existsSync(abs)) continue;
+    const body = readFileSync(abs, 'utf8').split('---').slice(2).join('---');
+    const ctas = (body.match(/class="aff-cta"/g) ?? []).length;
+    if (ctas < 2) continue;
+    // Слова считаем по прозе: без разметки ссылок, картинок и выражений в фигурных скобках.
+    const prose = body.replace(/<[^>]+>/g, ' ').replace(/!\[[^\]]*\]\([^)]*\)/g, ' ').replace(/\{[^}]*\}/g, ' ');
+    const words = (prose.match(/[А-Яа-яЁёA-Za-z]+/g) ?? []).length;
+    const per = Math.round(words / ctas);
+    if (per < MIN_WORDS_PER_CTA) {
+      bad.push(`${rel}: ${ctas} денежных кнопок на ${words} слов — по одной на ${per}, нужно не чаще одной на ${MIN_WORDS_PER_CTA}`);
+    }
   }
   expect(bad, bad.join('\n')).toEqual([]);
 });
