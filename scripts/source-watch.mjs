@@ -48,7 +48,9 @@ export function collectSources() {
 /** Отпечаток содержимого: только текст, без разметки, цифр и лишних пробелов. */
 export function fingerprint(html) {
   const text = html
-    .replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<!--[\s\S]*?-->/g, ' ')
+    // Регистр обязателен: страница с <SCRIPT> отдала бы код внутрь отпечатка,
+    // и сторож кричал бы на каждой сборке чужого сайта.
+    .replace(/<script[\s\S]*?<\/script\s*>|<style[\s\S]*?<\/style\s*>|<!--[\s\S]*?-->/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&[a-z]+;|&#\d+;/gi, ' ')
     .replace(/\d[\d\s.,:/-]*/g, ' ')   // счётчики, даты сборки, идентификаторы сессии
