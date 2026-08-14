@@ -787,6 +787,66 @@ test('Язык: в тронутой статье нет слов-паразит�
   expect(bad, bad.join('\n')).toEqual([]);
 });
 
+test('Журнал проверок: записи заполнены и дата обновления им не противоречит', () => {
+  // Журнал введён 14.08.2026, чтобы свежесть статьи была видна читателю и
+  // подтверждена первоисточниками, а дата обновления перестала быть словом на
+  // веру. Схема статьи уже требует дату, текст и хотя бы один источник со
+  // ссылкой — здесь ловим то, что схеме не видно: отписки в одно слово, даты
+  // из будущего и рассинхрон с датой обновления.
+  const root = join(DIST, '..');
+  const git = (...args: string[]) => {
+    try {
+      return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] })
+        .split('\n').map((x: string) => x.trim())
+        .filter((x: string) => /^src\/content\/blog\/[^/]+\.mdx?$/.test(x));
+    } catch {
+      return [];
+    }
+  };
+  const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : 'origin/main';
+  const touched = [...new Set([
+    ...git('ls-files', '--others', '--exclude-standard', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', '--staged', '--', 'src/content/blog'),
+    ...git('diff', '--name-only', `${base}...HEAD`, '--', 'src/content/blog'),
+    ...git('diff', '--name-only', 'HEAD~1', 'HEAD', '--', 'src/content/blog'),
+  ])];
+
+  const bad: string[] = [];
+  const today = new Date().toISOString().slice(0, 10);
+  for (const rel of touched) {
+    const abs = join(root, rel);
+    if (!existsSync(abs)) continue;
+    const src = readFileSync(abs, 'utf8');
+    const fm = src.split('---')[1] ?? '';
+    if (!/^checks:/m.test(fm)) continue;
+
+    const dates = [...fm.matchAll(/^\s+- date:\s*(\d{4}-\d{2}-\d{2})/gm)].map((m) => m[1]);
+    const whats = [...fm.matchAll(/^\s+what:\s*"([^"]*)"/gm)].map((m) => m[1]);
+    const changed = [...fm.matchAll(/^\s+changed:\s*"([^"]*)"/gm)].map((m) => m[1]);
+    if (dates.length !== whats.length || dates.length !== changed.length) {
+      bad.push(`${rel}: в журнале ${dates.length} дат, ${whats.length} описаний и ${changed.length} итогов — записи неполные`);
+      continue;
+    }
+    for (let i = 0; i < dates.length; i++) {
+      if (dates[i] > today) bad.push(`${rel}: запись журнала датирована будущим (${dates[i]})`);
+      if (whats[i].length < 15) bad.push(`${rel}: в записи ${dates[i]} не сказано, что сверяли`);
+      if (changed[i].length < 10) bad.push(`${rel}: в записи ${dates[i]} не сказано, что изменилось («без изменений» — тоже ответ)`);
+      // Первое предложение уходит наверх страницы отдельной строкой: длинное
+      // отодвигает ответ, ради которого пришли из поиска (первая версия заняла
+      // на телефоне шесть строк).
+      const head = changed[i].split(/(?<=\.)\s/)[0] ?? changed[i];
+      if (head.length > 90) bad.push(`${rel}: первая фраза записи ${dates[i]} длиной ${head.length} — она идёт наверх страницы, нужно до 90`);
+    }
+    const upd = fm.match(/^updatedDate:\s*(\d{4}-\d{2}-\d{2})/m)?.[1];
+    const last = dates.slice().sort().at(-1);
+    if (upd && last && upd > last) {
+      bad.push(`${rel}: дата обновления ${upd} новее последней сверки ${last} — свежесть без проверки`);
+    }
+  }
+  expect(bad, bad.join('\n')).toEqual([]);
+});
+
 test('Деньги: у кнопок есть потолок, а не только минимум', () => {
   // Канон монетизации требует минимум три денежные точки и НЕ задаёт верхней
   // границы. 14.08.2026 в обзоре двадцати направлений вышло тринадцать кнопок —

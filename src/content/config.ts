@@ -20,6 +20,21 @@ const blog = defineCollection({
     demand: z.string().optional(),   // «8 005/мес, Вордстат 13.07–11.08.2026»
     reviewed: z.coerce.date().optional(),  // дата адверсарной проверки фактов
 
+    // Журнал проверок (решение Никиты 14.08.2026). Запись появляется ТОЛЬКО
+    // после настоящей сверки: утверждение о проверке обязано быть проверкой.
+    // Даёт три вещи сразу — видимую читателю свежесть с датой, ссылки на
+    // первоисточники в теле страницы и честную дату обновления: она считается
+    // из последней записи, а не хранится отдельным полем, которое нечем сверить.
+    checks: z.array(z.object({
+      date: z.coerce.date(),
+      what: z.string(),                    // что сверяли
+      changed: z.string(),                 // что изменилось; «без изменений» — нормальный ответ
+      sources: z.array(z.object({          // первоисточники, по которым сверяли
+        name: z.string(),
+        url: z.string().url(),
+      })).min(1),
+    })).optional(),
+
     coverPosition: z.string().default('center'),
     coverPositionCard: z.string().default('center'),
     howto: z.object({

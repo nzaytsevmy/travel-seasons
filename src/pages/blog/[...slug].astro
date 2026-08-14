@@ -34,6 +34,21 @@ const heroPreload = typeof post.data.coverImage === 'string' ? null : await getI
 const ogImageUrl = `https://traveltribe.ru/og/${post.slug}.png`;
 const wordCount = post.body.trim().split(/\s+/).length;
 
+// Журнал проверок. Дата обновления считается ИЗ НЕГО, а не хранится отдельно:
+// поле, которое нечем сверить, соблазняет подкрутить дату без правок, а это
+// прямо запрещено и нам, и поиском. Есть журнал — дата равна последней сверке;
+// нет журнала — прежнее поведение, чтобы 67 старых статей не поехали.
+const checks = [...(post.data.checks ?? [])].sort((a, b) => a.date.valueOf() - b.date.valueOf());
+const lastCheck = checks.at(-1) ?? null;
+const shownUpdated = lastCheck?.date ?? post.data.updatedDate ?? null;
+const dateRu = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).replace(' г.', '');
+// Наверх идёт только суть — первое предложение записи. Полный текст остаётся в
+// журнале: строка над заголовком раздела не должна отодвигать ответ, ради
+// которого пришли из поиска (первая версия заняла шесть строк на телефоне).
+const checkedShort = lastCheck
+  ? (lastCheck.changed.split(/(?<=\.)\s/)[0] ?? lastCheck.changed).replace(/\s+$/, '')
+  : null;
+
 function stripMd(s: string): string {
   return s
     .replace(/!\[[^\]]*\]\([^)]+\)/g, '')
@@ -157,7 +172,7 @@ const ldJson: any = {
       "image": coverUrl,
       "author": { "@id": "https://traveltribe.ru/about/#person" },
       "datePublished": post.data.pubDate.toISOString(),
-      "dateModified": (post.data.updatedDate ?? post.data.pubDate).toISOString(),
+      "dateModified": (shownUpdated ?? post.data.pubDate).toISOString(),
       "publisher": { "@id": "https://traveltribe.ru/#org" },
       "mainEntityOfPage": { "@type": "WebPage", "@id": url },
       "inLanguage": "ru-RU",
@@ -240,9 +255,9 @@ if (faqs.length >= 2) {
         <time class="post-date" datetime={post.data.pubDate.toISOString()}>
           {post.data.pubDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
         </time>
-        {post.data.updatedDate && post.data.updatedDate.valueOf() !== post.data.pubDate.valueOf() && (
-          <time class="post-updated" datetime={post.data.updatedDate.toISOString()}>
-            · обновлено {post.data.updatedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+        {shownUpdated && shownUpdated.valueOf() !== post.data.pubDate.valueOf() && (
+          <time class="post-updated" datetime={shownUpdated.toISOString()}>
+            · обновлено {dateRu(shownUpdated)}
           </time>
         )}
       </div>
@@ -255,6 +270,17 @@ if (faqs.length >= 2) {
         </a>
         · <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>
       </p>
+
+      {/* Строка последней сверки — вверху, а не только в журнале внизу: в ответы
+          нейросетей попадает в основном верхняя треть страницы, и датированный
+          факт должен быть там. Одна строка, ответ ради которого пришли, не
+          отодвигает. */}
+      {lastCheck && (
+        <p class="post-checked">
+          Сверено {dateRu(lastCheck.date)}: {checkedShort}
+          {' '}<a href="#journal">как проверяли</a>
+        </p>
+      )}
 
       {post.data.tripDate && post.data.tripPlace && (
         <p class="trip-marker">
@@ -289,6 +315,26 @@ if (faqs.length >= 2) {
         </p>
         <a class="tg-sub-link" href="https://t.me/traveltriberu" target="_blank" rel="noopener">Читать @traveltriberu</a>
       </aside>
+
+      {checks.length > 0 && (
+        <section class="journal" id="journal" aria-labelledby="journal-title">
+          <h2 class="journal-title" id="journal-title">Что и когда проверяли</h2>
+          <ol class="journal-list">
+            {[...checks].reverse().map((c) => (
+              <li class="journal-item">
+                <time class="journal-date" datetime={c.date.toISOString().slice(0, 10)}>{dateRu(c.date)}</time>
+                <p class="journal-what">{c.what}</p>
+                <p class="journal-changed">{c.changed}</p>
+                <p class="journal-src">
+                  Первоисточники: {c.sources.map((s, i) => (
+                    <>{i > 0 && ', '}<a href={s.url} target="_blank" rel="noopener nofollow">{s.name}</a></>
+                  ))}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
 
       <nav class="post-next" aria-label="Куда дальше">
         {primaryDir ? (
@@ -571,6 +617,28 @@ h1 {
 .post-author .author-link { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--text); text-decoration: none; }
 .post-author .author-link:hover span { color: var(--gold); }
 .author-mini { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; object-position: center 30%; border: 1px solid rgba(201,151,58,0.4); }
+
+/* Строка последней сверки: тише байлайна, но читаемая. Без плашки и рамки —
+   она стоит над заголовком раздела и не должна спорить с ним за внимание. */
+.post-checked {
+  max-width: 42rem; margin: 0 auto 1.6rem; text-align: center;
+  font-size: 0.84rem; line-height: 1.5; color: var(--muted);
+}
+.post-checked a { color: var(--gold-dim); border-bottom: 1px solid rgba(201,151,58,0.35); }
+
+/* Журнал проверок: тонкие линейки, как у ленты изменений виз. */
+/* Без своей верхней линии: над журналом уже стоит разделитель блока подписки,
+   две линии подряд читаются как дефект вёрстки. */
+.journal { max-width: 42rem; margin: 2.5rem auto 0; }
+.journal-title { font-size: 1.05rem; letter-spacing: 0.01em; margin: 0 0 1.25rem; }
+.journal-list { list-style: none; margin: 0; padding: 0; }
+.journal-item { padding: 0.9rem 0; border-bottom: 1px solid var(--line); }
+.journal-item:last-child { border-bottom: 0; }
+.journal-date { display: block; font-size: 0.76rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--gold-dim); }
+.journal-what { margin: 0.35rem 0 0; font-size: 0.94rem; color: var(--text); }
+.journal-changed { margin: 0.2rem 0 0; font-size: 0.94rem; color: var(--muted); }
+.journal-src { margin: 0.35rem 0 0; font-size: 0.82rem; color: var(--muted); }
+.journal-src a { color: var(--gold-dim); border-bottom: 1px solid rgba(201,151,58,0.35); }
 
 .trip-marker {
   display: inline-flex; align-items: center; gap: 0.5rem;
