@@ -47,6 +47,39 @@ const UA = 'traveltribe-blog/1.0 (https://traveltribe.ru)';
 const NOT_A_SCENE =
   /\b(coat of arms|crest|emblem|flag|map|mapa|satellite|from space|ESA|NASA|aerial|engraving|lithograph|postcard|rijksmuseum|RP-F|drawing|diagram|blueprint|logo|oil|brand|trademark|1[89]\d\d|equirectangular|360|spherical|interior|indoor)\b/i;
 
+// Второй сток. Openverse собирает свободные кадры из Викисклада и архивов —
+// там честные, но часто тусклые снимки: по грузинским горам 17.08.2026 он отдал
+// белёсое небо и невыразительные склоны, а по «Georgian wine cellar» — погреб в
+// Англии. Pixabay по тем же темам даёт цвет: из 36 кандидатов по шести запросам
+// половина годилась сразу. Поэтому кандидаты берутся из обоих и Pixabay идёт
+// первым, а фильтры, отсев дублей и просмотр глазами остаются те же.
+//
+// Ключ живёт в окружении; нет ключа — работаем как раньше, на одном Openverse.
+async function findPixabay(query) {
+  const key = process.env.PIXABAY_API_KEY;
+  if (!key) return [];
+  const url = `https://pixabay.com/api/?key=${key}&q=${encodeURIComponent(query)}`
+    + '&image_type=photo&per_page=20&order=popular&safesearch=true&min_width=1600';
+  try {
+    const res = await fetch(url, { headers: { 'User-Agent': UA } });
+    if (!res.ok) return [];
+    const j = await res.json();
+    return (j.hits ?? []).map((h) => ({
+      url: h.largeImageURL,
+      // У Pixabay нет названия кадра — роль названия играют метки. По ним же
+      // проверяется обязательное слово, поэтому место сверяется по данным
+      // источника, а не по нашей догадке.
+      title: h.tags,
+      creator: h.user,
+      licenseLabel: 'Pixabay',
+      licenseUrl: 'https://pixabay.com/service/license-summary/',
+      source: h.pageURL,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export function parseSpec(arg) {
   const eq = arg.indexOf('=');
   if (eq < 0) throw new Error(`не разобрать «${arg}», нужно ключ=запрос`);
@@ -62,7 +95,10 @@ async function grab(sharp, spec, dir, seen) {
   // безопасности справедливо пометил высокой (заявка 218, 11.08.2026). Для
   // «имя города должно быть в названии кадра» регулярка и не нужна.
   const must = spec.must ? spec.must.toLowerCase() : '';
-  const cands = (await findPhoto({ photoQuery: spec.query, countries: [] }))
+  const cands = [
+    ...await findPixabay(spec.query),
+    ...await findPhoto({ photoQuery: spec.query, countries: [] }),
+  ]
     .filter((p) => !NOT_A_SCENE.test(p.title ?? ''))
     .filter((p) => !must || (p.title ?? '').toLowerCase().includes(must));
 

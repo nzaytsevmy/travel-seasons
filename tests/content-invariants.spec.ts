@@ -33,6 +33,53 @@ const blogSources = () =>
     .filter((n) => /\.mdx?$/.test(n))
     .map((n) => join(BLOG_SRC, n));
 
+// Какие статьи тронуты в этом заходе — общая мерка для всех проверок текста ниже.
+//
+// ⛔ «Тронута» — это изменился ТЕКСТ или факты, а не любой байт файла.
+// 17.08.2026 сокращение описаний под выдачу задело 27 статей одной служебной
+// строкой в шапке, и проверки потребовали заодно вычистить слова-паразиты в
+// пятнадцати статьях, а проверка свежести — заново сверить факты во всех
+// двадцати семи. Пересверка уже проверенного стоит дня работы и ничего не даёт,
+// а гейт, который краснеет от правки поискового описания, начинают обходить.
+// Поэтому правка одной шапочной строки статью не «трогает»: текст тот же.
+const REPO = join(DIST, '..');
+
+const gitLines = (...args: string[]): string[] => {
+  try {
+    return execFileSync('git', args, { cwd: REPO, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] })
+      .split('\n').map((x: string) => x.trim())
+      .filter((x: string) => /^src\/content\/blog\/[^/]+\.mdx?$/.test(x));
+  } catch {
+    return [];
+  }
+};
+
+/** Текст статьи без служебных строк шапки, правка которых ничего не меняет по сути. */
+const meaningful = (src: string) => src.replace(/^description:.*$/gm, '');
+
+function touchedPosts(): string[] {
+  const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : 'origin/main';
+  const all = [...new Set([
+    ...gitLines('ls-files', '--others', '--exclude-standard', '--', 'src/content/blog'),
+    ...gitLines('diff', '--name-only', '--', 'src/content/blog'),
+    ...gitLines('diff', '--name-only', '--staged', '--', 'src/content/blog'),
+    ...gitLines('diff', '--name-only', `${base}...HEAD`, '--', 'src/content/blog'),
+    ...gitLines('diff', '--name-only', 'HEAD~1', 'HEAD', '--', 'src/content/blog'),
+  ])];
+  return all.filter((rel) => {
+    const abs = join(REPO, rel);
+    if (!existsSync(abs)) return true;
+    let was: string;
+    try {
+      was = execFileSync('git', ['show', `${base}:${rel}`],
+        { cwd: REPO, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] });
+    } catch {
+      return true;   // в основе такой статьи нет — значит новая, проверяем целиком
+    }
+    return meaningful(was) !== meaningful(readFileSync(abs, 'utf8'));
+  });
+}
+
 // Инварианты зависят только от сборки, не от вьюпорта — один прогон достаточно.
 test.beforeEach(({}, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-desktop', 'build-output инвариант — один прогон');
@@ -686,23 +733,7 @@ test('Паспорт статьи: новая статья не выходит �
   // паспорта не имеют и красить их нельзя — гейт, красящий легаси, обходят.
   const RULE_FROM = Date.parse('2026-08-13T00:00:00Z');
   const root = join(DIST, '..');
-  const git = (...args: string[]) => {
-    try {
-      return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] })
-        .split('\n').map((x: string) => x.trim())
-        .filter((x: string) => /^src\/content\/blog\/[^/]+\.mdx?$/.test(x));
-    } catch {
-      return [];
-    }
-  };
-  const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : 'origin/main';
-  const touched = [...new Set([
-    ...git('ls-files', '--others', '--exclude-standard', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', '--staged', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', `${base}...HEAD`, '--', 'src/content/blog'),
-    ...git('diff', '--name-only', 'HEAD~1', 'HEAD', '--', 'src/content/blog'),
-  ])];
+  const touched = touchedPosts();
 
   const bad: string[] = [];
   for (const rel of touched) {
@@ -745,23 +776,7 @@ test('Язык: в тронутой статье нет слов-паразит�
   ];
   const OFFICE = ['осуществляется', 'посредством', 'в рамках', 'является одним из'];
   const root = join(DIST, '..');
-  const git = (...args: string[]) => {
-    try {
-      return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] })
-        .split('\n').map((x: string) => x.trim())
-        .filter((x: string) => /^src\/content\/blog\/[^/]+\.mdx?$/.test(x));
-    } catch {
-      return [];
-    }
-  };
-  const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : 'origin/main';
-  const touched = [...new Set([
-    ...git('ls-files', '--others', '--exclude-standard', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', '--staged', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', `${base}...HEAD`, '--', 'src/content/blog'),
-    ...git('diff', '--name-only', 'HEAD~1', 'HEAD', '--', 'src/content/blog'),
-  ])];
+  const touched = touchedPosts();
 
   const bad: string[] = [];
   for (const rel of touched) {
@@ -796,23 +811,7 @@ test('Свежесть: тронутую статью нельзя выложи�
   // другом: нельзя тихо поправить запятую в статье, где визовые правила
   // годичной давности. Тронул — сверь, или объясни правку в журнале.
   const root = join(DIST, '..');
-  const git = (...args: string[]) => {
-    try {
-      return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] })
-        .split('\n').map((x: string) => x.trim())
-        .filter((x: string) => /^src\/content\/blog\/[^/]+\.mdx?$/.test(x));
-    } catch {
-      return [];
-    }
-  };
-  const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : 'origin/main';
-  const touched = [...new Set([
-    ...git('ls-files', '--others', '--exclude-standard', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', '--staged', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', `${base}...HEAD`, '--', 'src/content/blog'),
-    ...git('diff', '--name-only', 'HEAD~1', 'HEAD', '--', 'src/content/blog'),
-  ])];
+  const touched = touchedPosts();
   if (!touched.length) return;
 
   const queue = buildQueue();
@@ -827,6 +826,47 @@ test('Свежесть: тронутую статью нельзя выложи�
   expect(bad, bad.join('\n')).toEqual([]);
 });
 
+test('Описание страницы влезает в выдачу — не длиннее 160 знаков', () => {
+  // Поиск обрезает описание примерно на 160 знаках, и последняя мысль до
+  // читателя не доходит. 17.08.2026 таких страниц было 92: 82 статьи и десяток
+  // разделов, включая визовый и страновой. Считаем по СБОРКЕ, а не по
+  // исходникам: у программных страниц описание собирается из данных страны и
+  // вылезает за предел только на некоторых сочетаниях.
+  // ⛔ Разбирать тег строго «сначала name, потом content» НЕЛЬЗЯ: сжатие HTML
+  // переставляет свойства и снимает кавычки — в сборке лежит
+  // `<meta content="…" name=description>`. Первая версия проверки искала
+  // обратный порядок, не находила НИ ОДНОЙ страницы из 2400 и всегда была
+  // зелёной. Подложил описание в 240 знаков — проверка промолчала.
+  // Поэтому: берём каждый тег целиком, ищем свойство в любом месте и с любыми
+  // кавычками, а длину меряем по расшифрованному тексту (`&amp;` — один знак
+  // для читателя, а не пять).
+  const LIMIT = 160;
+  const decode = (s: string) => s
+    .replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#3?9;/g, "'")
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ');
+  const metaDescription = (html: string): string | null => {
+    for (const tag of html.match(/<meta\b[^>]*>/gi) ?? []) {
+      if (!/\bname\s*=\s*["']?description["'\s>]/i.test(tag)) continue;
+      const c = tag.match(/\bcontent\s*=\s*("([^"]*)"|'([^']*)'|([^\s>]+))/i);
+      if (c) return decode(c[2] ?? c[3] ?? c[4] ?? '');
+    }
+    return null;
+  };
+  const bad: string[] = [];
+  let withDescription = 0;
+  for (const f of files) {
+    if (!f.endsWith('index.html')) continue;
+    const d = metaDescription(readFileSync(f, 'utf8'));
+    if (d === null) continue;
+    withDescription++;
+    if (d.length > LIMIT) bad.push(`${f.replace(DIST, '')} — ${d.length} знаков`);
+  }
+  // Само-проверка линейки: если описания вдруг перестали находиться, проверка
+  // зелёная не потому, что всё хорошо, а потому, что она ослепла.
+  expect(withDescription, 'описания не нашлись ни на одной странице — сломан разбор тега').toBeGreaterThan(100);
+  expect(bad.slice(0, 10), `${bad.length} страниц с длинным описанием:\n${bad.slice(0, 10).join('\n')}`).toEqual([]);
+});
+
 test('Журнал проверок: записи заполнены и дата обновления им не противоречит', () => {
   // Журнал введён 14.08.2026, чтобы свежесть статьи была видна читателю и
   // подтверждена первоисточниками, а дата обновления перестала быть словом на
@@ -834,23 +874,7 @@ test('Журнал проверок: записи заполнены и дата
   // ссылкой — здесь ловим то, что схеме не видно: отписки в одно слово, даты
   // из будущего и рассинхрон с датой обновления.
   const root = join(DIST, '..');
-  const git = (...args: string[]) => {
-    try {
-      return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] })
-        .split('\n').map((x: string) => x.trim())
-        .filter((x: string) => /^src\/content\/blog\/[^/]+\.mdx?$/.test(x));
-    } catch {
-      return [];
-    }
-  };
-  const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : 'origin/main';
-  const touched = [...new Set([
-    ...git('ls-files', '--others', '--exclude-standard', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', '--staged', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', `${base}...HEAD`, '--', 'src/content/blog'),
-    ...git('diff', '--name-only', 'HEAD~1', 'HEAD', '--', 'src/content/blog'),
-  ])];
+  const touched = touchedPosts();
 
   const bad: string[] = [];
   const today = new Date().toISOString().slice(0, 10);
@@ -895,23 +919,7 @@ test('Деньги: у кнопок есть потолок, а не тольк�
   // мимо. Порог: не меньше 150 слов текста на одну кнопку (у той статьи 185).
   const MIN_WORDS_PER_CTA = 150;
   const root = join(DIST, '..');
-  const git = (...args: string[]) => {
-    try {
-      return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] })
-        .split('\n').map((x: string) => x.trim())
-        .filter((x: string) => /^src\/content\/blog\/[^/]+\.mdx?$/.test(x));
-    } catch {
-      return [];
-    }
-  };
-  const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : 'origin/main';
-  const touched = [...new Set([
-    ...git('ls-files', '--others', '--exclude-standard', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', '--staged', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', `${base}...HEAD`, '--', 'src/content/blog'),
-    ...git('diff', '--name-only', 'HEAD~1', 'HEAD', '--', 'src/content/blog'),
-  ])];
+  const touched = touchedPosts();
 
   const bad: string[] = [];
   for (const rel of touched) {
@@ -938,25 +946,7 @@ test('Иллюстрации: тронутая статья с 8+ раздела
   // на этом гейт свалил три проверки сразу после добавления (11.08.2026).
   // Недоступный источник — не повод ронять тест: до пуша всё равно отработает
   // локальный прогон, где история полная.
-  const git = (...args: string[]) => {
-    try {
-      return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] })
-        .split('\n')
-        .map((x) => x.trim())
-        .filter((x) => /^src\/content\/blog\/[^/]+\.mdx?$/.test(x));
-    } catch {
-      return [];
-    }
-  };
-
-  const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : 'origin/main';
-  const touched = [...new Set([
-    ...git('ls-files', '--others', '--exclude-standard', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', '--staged', '--', 'src/content/blog'),
-    ...git('diff', '--name-only', `${base}...HEAD`, '--', 'src/content/blog'),
-    ...git('diff', '--name-only', 'HEAD~1', 'HEAD', '--', 'src/content/blog'),
-  ])];
+  const touched = touchedPosts();
 
   const problems: string[] = [];
   for (const rel of touched) {
