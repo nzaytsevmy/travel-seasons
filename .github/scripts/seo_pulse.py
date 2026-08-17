@@ -825,7 +825,8 @@ def weekly_mode(c) -> None:
         if _late:
             L.append(f"🕗 *Пора сверить факты — {len(_late)} статей*")
             for _r in _late[:5]:
-                L.append(f"   {_r['slug']} — просрочка {_r['overdue']} дн. (интервал {_r['interval']})")
+                _v = _r.get("visits", 0)
+                L.append(f"   {_r['slug']} — {_v} визитов, просрочка {_r['overdue']} дн.")
             if len(_late) > 5:
                 L.append(f"   …и ещё {len(_late) - 5}")
             L.append("   Полный список: https://traveltribe.ru/status/")
