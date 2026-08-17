@@ -49,9 +49,9 @@ howto:
 import PricingCards from '../../components/post/PricingCards.astro';
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
-import { aviasalesRoute, yandexTravelSub, tpkDeep } from '../../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, yandexTravelSub, tpkDeep } from '../../data/affiliate.js';
 
-export const tours = tpkDeep('tripster', 'https://experience.tripster.ru/experience/Irkutsk/', 'baikal_winter');
+export const tours = TP_LINKS.youtravel;
 export const excursions = tpkDeep('sputnik8', 'https://www.sputnik8.com/ru/baikal', 'baikal_winter');
 export const flights = aviasalesRoute('MOW', 'IKT', 'baikal_winter');
 export const stay = yandexTravelSub('baikal_winter');
@@ -68,7 +68,7 @@ export const stay = yandexTravelSub('baikal_winter');
 
 <div class="editorial-cta">
 
-Большинство едет сюда организованно, и на то есть причина: по льду без местного водителя не проехать, а маршрут меняется каждый день по ледовой обстановке. <a href={tours} class="aff-cta" rel="sponsored">Посмотреть авторские туры и экскурсии по Байкалу</a> — Tripster показывает программы с ценой, длительностью и отзывами, оплата картой России, у части гидов бронь без предоплаты.
+Большинство едет сюда организованно, и на то есть причина: по льду без местного водителя не проехать, а маршрут меняется каждый день по ледовой обстановке. <a href={tours} class="aff-cta" rel="sponsored">Поехать на зимний Байкал с местным экспертом</a> — авторский тур малой группой: выезды на лёд, транспорт и жильё уже собраны в маршрут, оплата картой РФ.
 
 </div>
 
