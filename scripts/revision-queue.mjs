@@ -21,13 +21,27 @@
 // Тип определяется по слагу и меткам, но статья может переопределить его
 // полем `revisit` (число дней) — например, для темы с известной датой перемен.
 
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 // ⛔ Путь берём от рабочего каталога, а не от адреса этого файла: при сборке
 // модуль оказывается внутри dist, и адрес относительно него указывает в пустоту
 // (`dist/src/content/blog` — сборка падала ровно на этом).
 const DIR = join(process.cwd(), 'src/content/blog');
+const TRAFFIC = join(process.cwd(), 'seo-pulse/traffic.json');
+
+// Посещаемость снимается отдельной задачей (ключа счётчика в сборке нет) и
+// лежит рядом файлом. Нет файла — очередь работает как раньше, просто без
+// приоритета: сортировка по одной просрочке ставит наверх статьи, которые
+// никто не читает, и первым чинится не то. 17.08.2026 в её топе висели два
+// японских гайда с 6 и 40 визитами, пока чилийский с 502 стоял ниже.
+function loadTraffic() {
+  try {
+    return existsSync(TRAFFIC) ? JSON.parse(readFileSync(TRAFFIC, 'utf8')) : { posts: {} };
+  } catch {
+    return { posts: {} };
+  }
+}
 
 const FAST = /viza|visa|zagranpasport|documents|strahovka|insurance|cards|pay-|price|cena|nalog|sbor/i;
 const SEASON = /season|sezon|pogoda|weather|month|mesyats|avgust|sentyabr|oktyabr|noyabr|dekabr|yanvar|fevral|mart|aprel|may|iyun|iyul|zatmenie|perseid/i;
@@ -54,6 +68,7 @@ function lastChecked(fm) {
 }
 
 export function buildQueue(today = new Date().toISOString().slice(0, 10)) {
+  const traffic = loadTraffic();
   const rows = [];
   for (const name of readdirSync(DIR).filter((n) => /\.mdx?$/.test(n))) {
     const src = readFileSync(join(DIR, name), 'utf8');
@@ -66,11 +81,19 @@ export function buildQueue(today = new Date().toISOString().slice(0, 10)) {
     if (!date) continue;
     const due = new Date(Date.parse(date + 'T00:00:00Z') + interval * 864e5).toISOString().slice(0, 10);
     const overdue = Math.round((Date.parse(today) - Date.parse(due)) / 864e5);
-    rows.push({ slug, title: field(fm, 'title') ?? slug, interval, checked: date, source, due, overdue });
+    const t = traffic.posts?.[slug] ?? { visits: 0, partner: 0 };
+    // Цена простоя: сколько людей читает устаревшее и насколько давно оно
+    // устарело. Доля просрочки ограничена двойным интервалом — иначе забытая
+    // статья без читателей вечно перевешивает живую.
+    const lateness = Math.min(Math.max(overdue, 0) / interval, 2);
+    const cost = Math.round(t.visits * lateness);
+    rows.push({ slug, title: field(fm, 'title') ?? slug, interval, checked: date, source, due, overdue,
+                visits: t.visits, partner: t.partner, cost });
   }
-  // Сортировка по просрочке: чем дольше висит, тем выше. Внутри одинаковой
-  // просрочки первыми идут быстро портящиеся темы — там цена ошибки выше.
-  return rows.sort((a, b) => b.overdue - a.overdue || a.interval - b.interval);
+  // Сортировка по цене простоя, а не по одной просрочке: первым чинится то,
+  // что реально читают. При равной цене выше идёт просроченное дольше, потом
+  // быстро портящиеся темы.
+  return rows.sort((a, b) => b.cost - a.cost || b.overdue - a.overdue || a.interval - b.interval);
 }
 
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split('/').pop())) {
@@ -80,6 +103,6 @@ if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split('/').pop()
   console.log(`Статей: ${rows.length}. Просрочено: ${late.length}. Подходит срок (14 дней): ${soon.length}.\n`);
   for (const r of [...late, ...soon].slice(0, 40)) {
     const mark = r.overdue >= 0 ? `просрочка ${r.overdue} дн.` : `через ${-r.overdue} дн.`;
-    console.log(`${String(r.interval).padStart(3)} дн. | сверено ${r.checked} (${r.source.padEnd(15)}) | ${mark.padEnd(20)} | ${r.slug}`);
+    console.log(`${String(r.visits).padStart(5)} визитов | ${String(r.partner).padStart(3)} к партнёру | ${mark.padEnd(20)} | ${r.slug}`);
   }
 }

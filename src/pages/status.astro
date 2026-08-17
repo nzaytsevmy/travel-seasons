@@ -29,7 +29,9 @@ const fmt = (r: { overdue: number }) => (r.overdue >= 0 ? `просрочка ${
     <p class="lead">
       Статей всего {rows.length}. Просрочено <b>{late.length}</b>, срок подходит в ближайший месяц у {soon.length},
       остальные {ok} в порядке. Срок считается сам: последняя сверка плюс интервал по типу темы —
-      90 дней у виз и денег, 180 у сезонного, 365 у остального.
+      90 дней у виз и денег, 180 у сезонного, 365 у остального. Порядок — по цене простоя:
+      сколько людей читает устаревшее и насколько давно оно устарело. Посещаемость за 30 дней
+      снимается отдельной задачей, поэтому она может отставать на несколько дней.
     </p>
 
     {[['Просрочено', late], ['Срок подходит', soon]].map(([title, list]) => (
@@ -38,15 +40,16 @@ const fmt = (r: { overdue: number }) => (r.overdue >= 0 ? `просрочка ${
           <h2>{title} — {(list as typeof rows).length}</h2>
           <table>
             <thead>
-              <tr><th>Статья</th><th>Интервал</th><th>Сверено</th><th>Откуда дата</th><th>Срок</th><th>Дней</th></tr>
+              <tr><th>Статья</th><th>Визиты</th><th>К партнёру</th><th>Интервал</th><th>Сверено</th><th>Срок</th><th>Дней</th></tr>
             </thead>
             <tbody>
               {(list as typeof rows).map((r) => (
                 <tr class={r.overdue >= 0 ? 'late' : ''}>
                   <td><a href={`/blog/${r.slug}/`}>{r.title}</a></td>
+                  <td>{r.visits}</td>
+                  <td>{r.partner}</td>
                   <td>{r.interval} дн.</td>
                   <td>{r.checked}</td>
-                  <td>{r.source}</td>
                   <td>{r.due}</td>
                   <td>{fmt(r)}</td>
                 </tr>

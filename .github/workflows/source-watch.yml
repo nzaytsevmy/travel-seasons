@@ -33,6 +33,11 @@ jobs:
         with:
           node-version: 20
 
+      - name: Снять посещаемость статей
+        env:
+          METRIKA_OAUTH_TOKEN: ${{ secrets.METRIKA_OAUTH_TOKEN }}
+        run: node scripts/traffic-snapshot.mjs
+
       - name: Проверить первоисточники
         id: watch
         run: |
@@ -66,12 +71,12 @@ jobs:
         run: |
           git config user.name "source-watch-bot"
           git config user.email "source-watch@traveltribe.ru"
-          git add seo-pulse/source-snapshots.json
+          git add seo-pulse/source-snapshots.json seo-pulse/traffic.json
           if git diff --cached --quiet; then
             echo "Слепки не изменились — коммит не нужен"
             exit 0
           fi
-          git commit -m "source-watch: слепки первоисточников $(date -u +%Y-%m-%d)"
+          git commit -m "source-watch: слепки первоисточников и посещаемость $(date -u +%Y-%m-%d)"
           for i in 1 2 3; do
             git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push && break
             sleep 5
