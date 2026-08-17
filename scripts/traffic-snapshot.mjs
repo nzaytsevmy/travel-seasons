@@ -27,25 +27,41 @@ if (!token) {
   process.exit(0);   // не роняем задачу: очередь переживёт отсутствие файла
 }
 
-const url = `${API}?ids=${COUNTER}`
-  + `&metrics=ym:s:visits,ym:s:goal${GOAL_PARTNER}reaches`
-  + '&dimensions=ym:s:startURLPath&sort=-ym:s:visits&limit=500'
-  + '&date1=30daysAgo&date2=yesterday';
-
-const res = await fetch(url, { headers: { Authorization: `OAuth ${token}` } });
-if (!res.ok) {
-  console.error(`счётчик ответил ${res.status} — слепок не снят`);
-  process.exit(0);
+// ⛔ Считаем ДВА числа, и приоритет строится на втором. 17.08.2026 гайд по Чили
+// показывал 502 визита и стоял первым в очереди ревизий — а внутри оказалось
+// 487 прямых заходов по одной секунде из Chrome под Windows при том, что живая
+// аудитория сайта сидит в Яндекс Браузере. Живых читателей там было 15.
+// Роботный поток на одну страницу перевешивал в очереди всё остальное.
+async function pull(extraFilter) {
+  const url = `${API}?ids=${COUNTER}`
+    + `&metrics=ym:s:visits,ym:s:goal${GOAL_PARTNER}reaches`
+    + '&dimensions=ym:s:startURLPath&sort=-ym:s:visits&limit=500'
+    + (extraFilter ? `&filters=${encodeURIComponent(extraFilter)}` : '')
+    + '&date1=30daysAgo&date2=yesterday';
+  const res = await fetch(url, { headers: { Authorization: `OAuth ${token}` } });
+  if (!res.ok) {
+    console.error(`счётчик ответил ${res.status} — слепок не снят`);
+    process.exit(0);
+  }
+  return res.json();
 }
-const data = await res.json();
+
+const all = await pull(null);
+const organic = await pull("ym:s:lastTrafficSource=='organic'");
 
 const rows = {};
-for (const r of data.data ?? []) {
-  const path = r.dimensions[0].name;
-  const m = path.match(/^\/blog\/([^/]+)\/$/);
-  if (!m) continue;
-  rows[m[1]] = { visits: Math.round(r.metrics[0]), partner: Math.round(r.metrics[1]) };
-}
+const put = (data, key) => {
+  for (const r of data.data ?? []) {
+    const m = r.dimensions[0].name.match(/^\/blog\/([^/]+)\/$/);
+    if (!m) continue;
+    rows[m[1]] ??= { visits: 0, live: 0, partner: 0 };
+    rows[m[1]][key] = Math.round(r.metrics[0]);
+    if (key === 'live') rows[m[1]].partner = Math.round(r.metrics[1]);
+  }
+};
+put(all, 'visits');
+put(organic, 'live');
 
 writeFileSync(OUT, JSON.stringify({ updated: new Date().toISOString().slice(0, 10), posts: rows }, null, 2) + '\n');
-console.log(`снято статей: ${Object.keys(rows).length}, всего визитов: ${Object.values(rows).reduce((s, x) => s + x.visits, 0)}`);
+const sum = (k) => Object.values(rows).reduce((s, x) => s + (x[k] ?? 0), 0);
+console.log(`снято статей: ${Object.keys(rows).length}, визитов всего ${sum('visits')}, из них живых (из поиска) ${sum('live')}`);

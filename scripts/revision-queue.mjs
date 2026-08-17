@@ -81,14 +81,18 @@ export function buildQueue(today = new Date().toISOString().slice(0, 10)) {
     if (!date) continue;
     const due = new Date(Date.parse(date + 'T00:00:00Z') + interval * 864e5).toISOString().slice(0, 10);
     const overdue = Math.round((Date.parse(today) - Date.parse(due)) / 864e5);
-    const t = traffic.posts?.[slug] ?? { visits: 0, partner: 0 };
+    const t = traffic.posts?.[slug] ?? { visits: 0, live: 0, partner: 0 };
+    // Считаем по живым читателям из поиска, а не по всем визитам: прямой поток
+    // роботов на одну страницу иначе перевешивает весь сайт (гайд по Чили,
+    // 17.08.2026 — 502 визита, из них 15 живых).
+    const live = t.live ?? t.visits;
     // Цена простоя: сколько людей читает устаревшее и насколько давно оно
     // устарело. Доля просрочки ограничена двойным интервалом — иначе забытая
     // статья без читателей вечно перевешивает живую.
     const lateness = Math.min(Math.max(overdue, 0) / interval, 2);
-    const cost = Math.round(t.visits * lateness);
+    const cost = Math.round(live * lateness);
     rows.push({ slug, title: field(fm, 'title') ?? slug, interval, checked: date, source, due, overdue,
-                visits: t.visits, partner: t.partner, cost });
+                visits: t.visits, live, partner: t.partner, cost });
   }
   // Сортировка по цене простоя, а не по одной просрочке: первым чинится то,
   // что реально читают. При равной цене выше идёт просроченное дольше, потом
@@ -103,6 +107,6 @@ if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split('/').pop()
   console.log(`Статей: ${rows.length}. Просрочено: ${late.length}. Подходит срок (14 дней): ${soon.length}.\n`);
   for (const r of [...late, ...soon].slice(0, 40)) {
     const mark = r.overdue >= 0 ? `просрочка ${r.overdue} дн.` : `через ${-r.overdue} дн.`;
-    console.log(`${String(r.visits).padStart(5)} визитов | ${String(r.partner).padStart(3)} к партнёру | ${mark.padEnd(20)} | ${r.slug}`);
+    console.log(`${String(r.live).padStart(4)} живых (из ${String(r.visits).padStart(4)}) | ${String(r.partner).padStart(3)} к партнёру | ${mark.padEnd(18)} | ${r.slug}`);
   }
 }
