@@ -118,7 +118,7 @@ const ldJson = {
         <div class="fg"><span class="fl">Настроение</span><div class="fopts" data-g="vibe" role="group" aria-label="Настроение поездки"><button class="t" data-v="beach" type="button" aria-pressed="false">пляж</button><button class="t" data-v="mountains" type="button" aria-pressed="false">горы</button><button class="t" data-v="city" type="button" aria-pressed="false">город</button><button class="t" data-v="nature" type="button" aria-pressed="false">природа</button></div></div>
         <div class="fright">
           <div class="fg fg-sort"><span class="fl">Сортировка</span><div class="fopts" id="sortOpts" role="group" aria-label="Сортировка"><button class="t on" data-s="rel" type="button" aria-pressed="true">рекомендую</button><button class="t" data-s="asc" type="button" aria-pressed="false">дешевле</button><button class="t" data-s="desc" type="button" aria-pressed="false">дороже</button></div></div>
-          <div class="fcount"><b id="fCountN">{nowRows.length}</b><span id="fCountW">{nowWord}</span></div>
+          <div class="fcount"><b id="fCountN">{nowRows.length}</b><span id="fCountW">{nowWord}</span></div><button class="freset" id="fReset" type="button" hidden>Сбросить</button>
         </div>
       </div>
 
@@ -275,8 +275,19 @@ const ldJson = {
 .vi a{display:block;color:inherit;min-height:48px;padding:.7rem 1rem}
 .vi a:hover,.vi a:focus-visible{background:rgba(142,102,24,.05)}
 .vi a:hover .vi-l,.vi a:focus-visible .vi-l{color:var(--gold)}
-@media(max-width:760px){.h1,.sub,.meta,.vlist{grid-column:1/-1;grid-row:auto}.meta{text-align:left;margin-top:.6rem}.h1{margin-top:1.1rem}.vlist{grid-template-columns:repeat(2,1fr)}.vi{border-bottom:1px solid var(--hair)}.vi:nth-child(2n){border-right:none}.vi:nth-child(5),.vi:nth-child(6){border-bottom:none}.vi:nth-child(odd) a{padding-left:0}}
+@media(max-width:760px){.h1,.sub,.meta,.vlist{grid-column:1/-1;grid-row:auto}.meta{text-align:left;margin-top:.6rem}.h1{margin-top:.7rem;font-size:clamp(2.1rem,6.2vw,6.4rem)}.sub{margin-top:1rem}.manifest{padding:clamp(1.1rem,3vw,4.5rem) 0 .6rem}.vlist{margin-top:1.2rem;grid-template-columns:repeat(3,1fr)}.vi{border-bottom:1px solid var(--hair)}.vi:nth-child(3n){border-right:none}.vi:nth-child(4),.vi:nth-child(5),.vi:nth-child(6){border-bottom:none}.vi:nth-child(3n+1) a{padding-left:0}.vi a{padding:.6rem .5rem;min-height:44px}.vi-l{font-size:.85rem}}
 
+/* Область нажатия по WCAG 2.2 §2.5.8: управляющие элементы не мельче 24×24,
+   у кнопок и переключателей — от 44 px. Замер 18.08.2026 нашёл на главной
+   девять целей мельче нормы; правим ПЛОЩАДЬ нажатия отступами, размер шрифта
+   и вид не трогаем. Ссылки внутри предложения прозой под критерий не подпадают
+   (исключение inline) — их не раздуваем, иначе поедут межстрочные интервалы. */
+.more-cell a{display:inline-block;padding:.8rem 0;min-height:44px}
+.topics a{display:inline-block;padding:.45rem 0;min-height:26px}
+.fbot a{display:inline-block;padding:.35rem 0;min-height:26px}
+.freset{font:inherit;font-size:.82rem;line-height:1;padding:.55rem .9rem;min-height:44px;cursor:pointer;border:1px solid var(--hair);background:transparent;color:var(--mid)}
+.freset:hover,.freset:focus-visible{border-color:var(--gold);color:var(--gold)}
+.freset[hidden]{display:none}
 .filters{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:.7rem 1.8rem;padding:.7rem 0;border-bottom:1px solid var(--line)}
 .fg{display:flex;align-items:center;gap:.6rem}
 .fright{display:flex;align-items:center;gap:1.2rem;width:100%;justify-content:space-between;border-top:1px solid var(--hair);padding-top:.7rem;margin-top:.3rem}   /* всегда своя строка с hairline-разделителем — margin-left:auto тянул блок к правому краю 1280px-контейнера, оставляя пустой провал на любом обычном десктопе (аудит 2026-07-07) */
@@ -293,7 +304,7 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 /* Мобайл: фильтры в столбик, подписи фикс-ширины → опции выровнены ровной колонкой */
 @media(max-width:760px){
   /* подпись НАД чипами → опции на всю ширину (влезают в один ряд, без сирот), тесный ритм */
-  .filters{flex-direction:column;align-items:stretch;gap:.7rem;margin-top:.5rem;padding:.3rem 0}
+  .filters{flex-direction:column;align-items:stretch;gap:.55rem;margin-top:.2rem;padding:.2rem 0}
   .fg{flex-direction:column;align-items:flex-start;gap:.35rem}
   .fright{margin-left:0;flex-direction:column;align-items:flex-start;gap:.5rem;border-top:1px solid var(--hair);padding-top:.7rem}
   .fl{width:auto}
@@ -313,7 +324,7 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .dest{display:flex;align-items:center;gap:.9rem}
 .th{width:62px;height:46px;flex:none}
 .th img{display:block;width:100%;height:100%;object-fit:cover}
-.nm{display:block;font-weight:600;font-size:1.15rem;letter-spacing:-.01em;line-height:1.15}
+.nm{display:block;font-weight:600;font-size:1.15rem;letter-spacing:-.01em;line-height:1.15;padding:.18rem 0;min-height:24px}
 .nm:hover{text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
 @media(hover:hover){.dash tbody tr:hover .nm{color:var(--gold)}}
 .vibe{display:block;font-size:.74rem;color:var(--mid);margin-top:.15rem}
@@ -324,7 +335,7 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .visa{font-size:.74rem;font-weight:600;letter-spacing:.02em;text-transform:uppercase}
 .visa.free{color:var(--gold)}.visa.evisa{color:var(--ink)}.visa.visa{color:#56534c}
 .season{font-size:.86rem}.flight{font-size:.86rem;color:var(--mid)}
-.fly{color:var(--ink);font-weight:600;white-space:nowrap;text-decoration:underline 1px transparent;text-underline-offset:.22em}
+.fly{display:inline-block;padding:.28rem .2rem;min-height:24px;color:var(--ink);font-weight:600;white-space:nowrap;text-decoration:underline 1px transparent;text-underline-offset:.22em}
 .fly:hover{color:var(--gold);text-decoration-color:var(--gold)}
 .dash tr[hidden]{display:none}
 .nomatch{grid-column:1/-1;display:none;color:var(--mid);padding:1.4rem 0;font-size:.92rem}
@@ -482,6 +493,7 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
       document.getElementById('fCountW').textContent = pl(n);
       document.getElementById('noMatch').style.display = n ? 'none' : 'block';
       if (moreRow) { if (n > CAP) { moreN.textContent = n - CAP; moreRow.hidden = false; } else moreRow.hidden = true; }
+      if (typeof syncReset === 'function') syncReset();
       const sl = document.getElementById('seasonlead');
       if (sl) sl.innerHTML = n
         ? `Сейчас, <b>${state.m ? 'в ' + PREP[state.m] : 'в любой месяц'}</b>, в сезоне ${n}: ${names.join(', ')}${n > names.length ? ' и др' : ''}.`
@@ -502,6 +514,24 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
       const b = e.target.closest('.t'); if (!b) return;
       sortOpts.querySelectorAll('.t').forEach((x) => { x.classList.remove('on'); x.setAttribute('aria-pressed', 'false'); });
       b.classList.add('on'); b.setAttribute('aria-pressed', 'true'); state.sort = b.dataset.s; apply();
+    });
+    // Сброс фильтров — третья эвристика Нильсена: у пользователя должен быть
+    // выход из состояния, в которое он себя загнал. Кнопка появляется только
+    // когда что-то отличается от исходного, чтобы не шуметь в спокойном виде.
+    const START = { m: state.m, b: null, vibe: null, sort: 'rel' };
+    const fReset = document.getElementById('fReset');
+    function syncReset() {
+      if (!fReset) return;
+      fReset.hidden = state.m === START.m && !state.b && !state.vibe && state.sort === START.sort;
+    }
+    if (fReset) fReset.addEventListener('click', () => {
+      Object.assign(state, START);
+      if (fMonth) fMonth.value = String(START.m);
+      document.querySelectorAll('.fopts[data-g] .t').forEach((x) => { x.classList.remove('on'); x.setAttribute('aria-pressed', 'false'); });
+      if (sortOpts) sortOpts.querySelectorAll('.t').forEach((x, i) => {
+        x.classList.toggle('on', i === 0); x.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+      });
+      apply();
     });
     apply();
     // мини-хитмэп Бали — из реальных данных DIRECTIONS (data-pat), не хардкод

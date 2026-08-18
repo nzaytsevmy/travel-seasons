@@ -50,8 +50,8 @@
      юрист): ужимаем только оформление — поля, межстрочный интервал, высоту кнопок.
      Кнопки остаются не ниже 44 px: это минимальная площадь нажатия. */
   @media (max-width: 767px) {
-    .cc { padding: 0.7rem 0.85rem; gap: 0.55rem 1rem; }
-    .cc-text { font-size: 0.78rem; line-height: 1.45; }
+    .cc { padding: 0.55rem 0.8rem; gap: 0.45rem 0.8rem; bottom: 0.4rem; }
+    .cc-text { font-size: 0.76rem; line-height: 1.35; }
     .cc-btn { padding: 0.45rem 1rem; min-height: 44px; }
   }
 </style>
@@ -60,10 +60,17 @@
   (function () {
     var el = document.getElementById('cookie-consent');
     if (!el) return;
-    if (window.__ttNeedConsent) el.hidden = false;
+    // Пока плашка висит, страница получает снизу ровно её высоту: иначе
+    // fixed-баннер накрывает нижний край содержимого. Отступ добавляется в
+    // конец документа, видимую область не двигает — сдвига макета нет.
+    function reserve(on) {
+      document.body.style.paddingBottom = on ? (el.offsetHeight + 16) + 'px' : '';
+    }
+    if (window.__ttNeedConsent) { el.hidden = false; reserve(true); window.addEventListener('resize', function () { if (!el.hidden) reserve(true); }); }
     function decide(value) {
       try { localStorage.setItem('tt_consent', value); } catch (e) {}
       el.hidden = true;
+      reserve(false);
       // Базовая Метрика уже работает. Согласие включает Вебвизор; запись стартует со
       // следующего перехода (флаг webvisor задаётся при init счётчика на загрузке страницы).
       if (value === 'granted' && typeof window.ttLoadAnalytics === 'function') window.ttLoadAnalytics(true);
