@@ -10,6 +10,7 @@
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join, basename } from 'node:path';
+import { snapshotKey } from './news-snapshot.mjs';
 
 // ── разбор заметки ────────────────────────────────────────────────────────────
 
@@ -295,8 +296,64 @@ export function stripHtml(html) {
  * отдающая пустоту, считается неподтверждающей: факт без проверяемого источника
  * в ленту не идёт.
  */
-export async function fetchSources(note, { timeoutMs = 20000, attempts = 3 } = {}) {
+/**
+ * Снимок первоисточника, снятый браузером. Нужен там, где министерство закрыто
+ * от любых серверов (японский МИД и посольства за Akamai, 19.08.2026): гейт
+ * обязан требовать первоисточник по визам — и одновременно не может его
+ * прочитать. Снимок кладётся руками через scripts/news-snapshot.mjs.
+ *
+ * Условия, без которых снимок не засчитывается:
+ *   1. живой запрос ДОЛЖЕН был упереться в блокировку (403/401/451 или
+ *      страница без читаемого текста). Открытый источник читается напрямую —
+ *      подменить живую страницу снимком нельзя;
+ *   2. адрес внутри снимка совпадает с адресом источника — иначе подмена;
+ *   3. дата снятия не из будущего и не старше SNAPSHOT_MAX_AGE_DAYS: визовый
+ *      факт протухает, и старый снимок хуже отсутствия снимка;
+ *   4. текста не меньше того же порога, что и у живой страницы.
+ */
+const SNAPSHOT_MAX_AGE_DAYS = 30;
+
+export function loadSnapshot(url, root, today = new Date()) {
+  let raw;
+  try {
+    raw = readFileSync(join(root, 'news/snapshots', `${snapshotKey(url)}.json`), 'utf8');
+  } catch {
+    return { ok: false, reason: 'снимка нет' };
+  }
+  let snap;
+  try {
+    snap = JSON.parse(raw);
+  } catch {
+    return { ok: false, reason: 'снимок не читается' };
+  }
+  const same = (a, b) => String(a ?? '').replace(/\/+$/, '') === String(b ?? '').replace(/\/+$/, '');
+  if (!same(snap.url, url)) return { ok: false, reason: `снимок снят с другого адреса: ${snap.url}` };
+  const captured = new Date(`${snap.capturedAt}T00:00:00Z`);
+  if (Number.isNaN(captured.getTime())) return { ok: false, reason: 'у снимка нет даты снятия' };
+  const days = Math.floor((today - captured) / 86400000);
+  if (days < 0) return { ok: false, reason: `дата снимка из будущего: ${snap.capturedAt}` };
+  if (days > SNAPSHOT_MAX_AGE_DAYS) {
+    return { ok: false, reason: `снимку ${days} дней, предел ${SNAPSHOT_MAX_AGE_DAYS} — переснять` };
+  }
+  if (String(snap.text ?? '').trim().length < 400) return { ok: false, reason: 'в снимке нет читаемого текста' };
+  return { ok: true, text: snap.text, capturedAt: snap.capturedAt };
+}
+
+/** Кладёт текст снимка в набор и оставляет видимую пометку — молча снимок не проходит. */
+function useSnapshot(url, root, texts, remarks, why) {
+  const snap = loadSnapshot(url, root);
+  if (!snap.ok) {
+    remarks.push(`${url} — закрыт от робота (${why}), снимок не подошёл: ${snap.reason}`);
+    return false;
+  }
+  texts.push(snap.text);
+  remarks.push(`${url} — закрыт от робота (${why}), зачтён снимок браузера от ${snap.capturedAt}`);
+  return true;
+}
+
+export async function fetchSources(note, { timeoutMs = 20000, attempts = 3, root = process.cwd() } = {}) {
   const texts = [];
+  const remarks = [];
   for (const s of note.data.sources ?? []) {
     let last = null;
     for (let i = 0; i < attempts; i++) {
@@ -313,14 +370,23 @@ export async function fetchSources(note, { timeoutMs = 20000, attempts = 3 } = {
           headers: { 'User-Agent': 'traveltribe-news-gate/1.0 (+https://traveltribe.ru/)' },
         });
         if (!res.ok) {
-          last = { ok: false, reason: `источник отдал ${res.status}: ${s.url}`, texts };
-          if (res.status === 429 || res.status >= 500) continue;
-          return last;
+          if (res.status === 429 || res.status >= 500) {
+            last = { ok: false, reason: `источник отдал ${res.status}: ${s.url}`, texts };
+            continue;
+          }
+          // 404 — страницы правда нет, снимок тут не спасает и не должен.
+          const blocked = res.status === 403 || res.status === 401 || res.status === 451;
+          const fallback = blocked ? useSnapshot(s.url, root, texts, remarks, res.status) : null;
+          if (fallback) { last = null; break; }
+          return { ok: false, reason: `источник отдал ${res.status}: ${s.url}`, texts, remarks };
         }
         const html = await res.text();
         const text = stripHtml(html);
         if (text.trim().length < 400) {
-          return { ok: false, reason: `на странице нет читаемого текста (JS-only или блок ботов): ${s.url}`, texts };
+          // Страница отдалась, но текста нет: приложение на JS или заглушка
+          // защиты. Снимок браузера видит ровно то, что видит человек.
+          if (useSnapshot(s.url, root, texts, remarks, 'страница без текста')) { last = null; break; }
+          return { ok: false, reason: `на странице нет читаемого текста (JS-only или блок ботов): ${s.url}`, texts, remarks };
         }
         texts.push(text);
         last = null;
@@ -331,14 +397,14 @@ export async function fetchSources(note, { timeoutMs = 20000, attempts = 3 } = {
         clearTimeout(t);
       }
     }
-    if (last) return last;
+    if (last) return { ...last, remarks };
   }
-  return { ok: true, texts };
+  return { ok: true, texts, remarks };
 }
 
 // ── прогон ────────────────────────────────────────────────────────────────────
 
-export async function runGate(note, { allowed, media = [], minScore, published, offline = false }) {
+export async function runGate(note, { allowed, media = [], minScore, published, offline = false, root = process.cwd() }) {
   const checks = [
     ['домены', () => checkDomains(note, allowed, media)],
     ['ссылки в тексте', () => checkLinksSubset(note)],
@@ -356,17 +422,18 @@ export async function runGate(note, { allowed, media = [], minScore, published, 
   }
   if (offline) return { ok: true, check: 'все, кроме сетевых' };
 
-  const fetched = await fetchSources(note);
-  if (!fetched.ok) return { ok: false, check: 'источник', reason: fetched.reason };
+  const fetched = await fetchSources(note, { root });
+  const remarks = fetched.remarks ?? [];
+  if (!fetched.ok) return { ok: false, check: 'источник', reason: fetched.reason, remarks };
 
   for (const [name, fn] of [
     ['дословные совпадения', () => checkShingles(note, fetched.texts)],
     ['подтверждение чисел', () => checkCorroboration(note.body, fetched.texts)],
   ]) {
     const r = fn();
-    if (!r.ok) return { ok: false, check: name, reason: r.reason };
+    if (!r.ok) return { ok: false, check: name, reason: r.reason, remarks };
   }
-  return { ok: true, check: 'все' };
+  return { ok: true, check: 'все', remarks };
 }
 
 /**
@@ -448,12 +515,13 @@ if (isMain) {
     const note = parseNote(readFileSync(join(dir, f), 'utf8'), slug);
     const r = await runGate(note, {
       allowed: cfg.allowedSourceDomains, media: cfg.mediaSourceDomains ?? [],
-      minScore: cfg.minScore, offline,
+      minScore: cfg.minScore, offline, root,
       // Сравнивать заметку с ней же бессмысленно: она совпадёт сама с собой.
       published: published.filter((p) => p.slug !== slug),
     });
     if (r.ok) console.log(`  ok      ${f}`);
     else { bad++; console.log(`  ОТБОЙ   ${f} — ${r.check}: ${r.reason}`); }
+    for (const note of r.remarks ?? []) console.log(`          ↳ ${note}`);
   }
   console.log(`\nпроверено ${files.length}, отбраковано ${bad}`);
   process.exit(bad > 0 ? 1 : 0);

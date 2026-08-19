@@ -13,7 +13,12 @@ import {
   checkTldr,
   checkOwnPhoto,
   loadPublished,
+  loadSnapshot,
 } from '../scripts/news-gate.mjs';
+import { writeSnapshot, snapshotKey } from '../scripts/news-snapshot.mjs';
+import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 // Гейт ленты /novosti/. Публикация автоматическая, поэтому эти проверки —
 // единственное, что стоит между скрапленной страницей и продом.
@@ -349,4 +354,88 @@ test('свежее о направлении: только заметки это
   expect(newsForCountry(entries as never, 'thailand', 2).map((e: any) => e.slug))
     .toEqual(['new-thai', 'mid-thai']);
   expect(newsForCountry(entries as never, 'japan')).toEqual([]);
+});
+
+// ── Снимок первоисточника, снятый браузером ──────────────────────────────────
+//
+// 19.08.2026 японский МИД и все японские посольства ушли за Akamai: 403 любому
+// серверу, из любого места, с любым User-Agent. Гейт требует первоисточник по
+// визам — и сам же его не может прочитать, то есть выбрасывал министерства и
+// оставлял пересказы. Снимок закрывает эту дыру, но он же сам дыра, если
+// принимать его без условий. Тесты ниже стерегут именно условия.
+
+const LONG = 'текст страницы министерства '.repeat(20); // заведомо больше 400 знаков
+
+function tempRoot() {
+  const dir = mkdtempSync(join(tmpdir(), 'tt-snap-'));
+  mkdirSync(join(dir, 'news/snapshots'), { recursive: true });
+  return dir;
+}
+
+test('снимка нет — источник не подтверждён', () => {
+  const root = tempRoot();
+  try {
+    const r = loadSnapshot('https://www.mofa.go.jp/a.html', root);
+    expect(r.ok).toBe(false);
+    expect(r.reason).toContain('нет');
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('свежий снимок того же адреса засчитывается', () => {
+  const root = tempRoot();
+  try {
+    const url = 'https://www.mofa.go.jp/a.html';
+    writeSnapshot(root, { url, title: 'МИД', text: LONG, capturedAt: '2026-08-19' });
+    const r = loadSnapshot(url, root, new Date('2026-08-20T00:00:00Z'));
+    expect(r.ok).toBe(true);
+    expect(r.capturedAt).toBe('2026-08-19');
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('снимок, снятый с другого адреса, не подходит под источник', () => {
+  const root = tempRoot();
+  try {
+    // Файл лежит под именем нужного адреса, а внутри — чужая страница.
+    // Без сверки адреса так подменяется любой источник любым текстом.
+    const url = 'https://www.mofa.go.jp/a.html';
+    const body = { url: 'https://example.org/other', title: 'чужое', capturedAt: '2026-08-19', text: LONG };
+    writeFileSync(join(root, 'news/snapshots', `${snapshotKey(url)}.json`), JSON.stringify(body), 'utf8');
+    const r = loadSnapshot(url, root, new Date('2026-08-20T00:00:00Z'));
+    expect(r.ok).toBe(false);
+    expect(r.reason).toContain('другого адреса');
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('снимок старше месяца не годится: визовый факт протухает', () => {
+  const root = tempRoot();
+  try {
+    const url = 'https://www.mofa.go.jp/a.html';
+    writeSnapshot(root, { url, title: 'МИД', text: LONG, capturedAt: '2026-06-01' });
+    const r = loadSnapshot(url, root, new Date('2026-08-19T00:00:00Z'));
+    expect(r.ok).toBe(false);
+    expect(r.reason).toContain('переснять');
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('дата снятия из будущего не принимается', () => {
+  const root = tempRoot();
+  try {
+    const url = 'https://www.mofa.go.jp/a.html';
+    writeSnapshot(root, { url, title: 'МИД', text: LONG, capturedAt: '2026-12-01' });
+    const r = loadSnapshot(url, root, new Date('2026-08-19T00:00:00Z'));
+    expect(r.ok).toBe(false);
+    expect(r.reason).toContain('будущего');
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('обрывок страницы вместо снимка не принимается', () => {
+  const root = tempRoot();
+  try {
+    const url = 'https://www.mofa.go.jp/a.html';
+    const body = { url, title: 'МИД', capturedAt: '2026-08-19', text: 'коротко' };
+    writeFileSync(join(root, 'news/snapshots', `${snapshotKey(url)}.json`), JSON.stringify(body), 'utf8');
+    const r = loadSnapshot(url, root, new Date('2026-08-19T00:00:00Z'));
+    expect(r.ok).toBe(false);
+    expect(r.reason).toContain('читаемого текста');
+  } finally { rmSync(root, { recursive: true, force: true }); }
 });
