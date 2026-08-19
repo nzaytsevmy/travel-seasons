@@ -35,8 +35,22 @@ jobs:
       # Radar краулит живой прод (traveltribe.ru), не dist/ — chromium достаточно
       # для @360/@1280 интерактивных проверок (webkit не нужен, в отличие от
       # пиксельной визуальной регрессии).
-      - name: Install Playwright (chromium)
-        run: npx playwright install --with-deps chromium
+      # Кеш браузеров: без него каждый прогон лезет в apt за системными
+      # пакетами и рискует повиснуть на недоступном зеркале Ubuntu — 19.08.2026
+      # так пропали два прогона по 40 минут.
+      - name: Кеш браузеров Playwright
+        id: pw-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-chromium-${{ hashFiles('package-lock.json') }}
+      - name: Install Playwright browser
+        run: |
+          if [ "${{ steps.pw-cache.outputs.cache-hit }}" = "true" ]; then
+            npx playwright install chromium
+          else
+            npx playwright install --with-deps chromium
+          fi
 
       - name: Git identity for radar commits
         run: |

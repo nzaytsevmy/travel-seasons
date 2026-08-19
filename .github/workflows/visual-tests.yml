@@ -56,7 +56,28 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium webkit
+      # ⛔ Установка браузеров — не формальность, а самый долгий шаг конвейера.
+      # 19.08.2026 два прогона висели по 40 минут на «playwright install
+      # --with-deps»: apt перебирал недоступные зеркала Ubuntu (Ign: строками
+      # на весь лог) и упирался в таймаут задачи. До тестов дело не доходило
+      # вовсе. А ставятся браузеры в каждой заявке два десятка раз — четыре
+      # визуальных шарда плюс шестнадцать замеров скорости.
+      #
+      # Кеш снимает и время, и зависимость от чужих зеркал: при попадании
+      # системные пакеты не трогаем вовсе.
+      - name: Кеш браузеров Playwright
+        id: pw-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Install Playwright browsers
+        run: |
+          if [ "${{ steps.pw-cache.outputs.cache-hit }}" = "true" ]; then
+            npx playwright install chromium webkit
+          else
+            npx playwright install --with-deps chromium webkit
+          fi
       - run: npm run build
       - name: Start preview server
         run: npx astro preview --port 4322 &
@@ -107,8 +128,28 @@ jobs:
 
       - run: npm ci
 
+      # ⛔ Установка браузеров — не формальность, а самый долгий шаг конвейера.
+      # 19.08.2026 два прогона висели по 40 минут на «playwright install
+      # --with-deps»: apt перебирал недоступные зеркала Ubuntu (Ign: строками
+      # на весь лог) и упирался в таймаут задачи. До тестов дело не доходило
+      # вовсе. А ставятся браузеры в каждой заявке два десятка раз — четыре
+      # визуальных шарда плюс шестнадцать замеров скорости.
+      #
+      # Кеш снимает и время, и зависимость от чужих зеркал: при попадании
+      # системные пакеты не трогаем вовсе.
+      - name: Кеш браузеров Playwright
+        id: pw-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium webkit
+        run: |
+          if [ "${{ steps.pw-cache.outputs.cache-hit }}" = "true" ]; then
+            npx playwright install chromium webkit
+          else
+            npx playwright install --with-deps chromium webkit
+          fi
 
       # См. пояснение в build.yml: обработка картинок занимала 115 секунд в
       # КАЖДОЙ сборке, а результат для одного файла всегда одинаковый.
