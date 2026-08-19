@@ -19,6 +19,7 @@ import StickyCta from '../../../components/StickyCta.astro';
 import { getHolidaysByMonth } from '../../../data/country-holidays.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
 import { regionsRich } from '../../../data/regions-rich.js';
+import { getCollection } from 'astro:content';
 import { getGuide } from '../../../data/country-guides.js';
 import PackingChecklist from '../../../components/PackingChecklist.astro';
 
@@ -57,6 +58,8 @@ const coverImage = destPhotos[coverPath];
 
 // Реальный авторский опыт (E-E-A-T) — берём ТОЛЬКО что уже есть в repo, не выдумываем
 const rich = regionsRich[d.slug];
+const blogSlugs = new Set((await getCollection('blog')).map((e) => e.slug));
+const blogSlug = [`${d.slug}-guide-2026`, `${d.slug}-2026`].find((c) => blogSlugs.has(c));
 const personalMonthNote = rich?.notes?.[monthIdx] || null;  // конкретный комментарий под месяц
 const guide = getGuide(d.slug);
 const authorOverall = guide?.authorNote || null;             // общий «был сам» по стране
@@ -479,10 +482,11 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
     <section class="pmu-section">
       <div class="pmu-shead"><h2>Что почитать дальше</h2></div>
       <ul class="pmu-related">
+        {blogSlug && <li><a href={`/blog/${blogSlug}/`}><b>{d.cases.nom} 2026 — авторский разбор</b></a><span>маршруты, цены и что я понял на месте</span></li>}
         <li><a href={`/packing/${d.slug}/`}><b>Полный чек-лист {d.cases.gen || d.cases.nom}</b></a><span>все 12 месяцев на одной странице</span></li>
         <li><a href={`/${d.slug}/`}><b>{d.cases.nom} 2026 — виза, бюджет, маршруты</b></a><span>главная карточка страны</span></li>
         <li><a href={`/trips/${m.slug}/${d.slug}/`}><b>{d.cases.nom} в {m.prep} 2026</b></a><span>отдельный гайд по поездке</span></li>
-        <li><a href={`/visa/${d.slug}/`}><b>Виза {d.cases.vP} для россиян 2026</b></a><span>документы, сроки, стоимость</span></li>
+        {!d.domestic && <li><a href={`/visa/${d.slug}/`}><b>Виза {d.cases.vP} для россиян 2026</b></a><span>документы, сроки, стоимость</span></li>}
         <li><a href="/seasons/"><b>Таблица сезонов 70+ направлений</b></a><span>где ещё хорошо в {m.prep}</span></li>
         <li><a href="/packing/"><b>Все чек-листы по странам</b></a><span>70+ направлений</span></li>
       </ul>
