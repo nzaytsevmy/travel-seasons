@@ -10,6 +10,9 @@ import { COUNTRIES as RICH_COUNTRIES } from '../../../data/programmatic-seasons.
 import { NICHE_TRIPS } from '../../../data/niche-trips.js';
 import { TP_LINKS, aviasalesRoute, ostrovokCountry, cherehapaTravel } from '../../../data/affiliate.js';
 import { DATA_UPDATED, DATA_UPDATED_RU, yearForMonth } from '../../../data/meta.js';
+import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
+import { getWeatherBucket } from '../../../data/country-month-bucket.js';
+import { getBucket } from '../../../data/packing-weather-buckets.js';
 import TripSaveButton from '../../../components/TripSaveButton.astro';
 
 export async function getStaticPaths() {
@@ -177,6 +180,14 @@ const ldJson = {
 };
 
 const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
+// Погода — половина спроса на эти страницы. Замер 19.08.2026: «турция в
+// октябре» спрашивают 80 169 раз в месяц, и 36 664 из них — «погода в турции
+// в октябре». Заголовок страницы погоду обещал, а на странице стояла одна
+// строка про море. Цифры у нас были, но показывались только на сборах в
+// дорогу — здесь их не было вовсе.
+const monthWeather = getMonthlyWeather(d.slug, monthIdx);
+const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
+
 ---
 <Layout
   title={reframe ? `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}: цены и толпы` : `${d.cases.nom} в ${m.prep} ${yr}: погода, цены, виза`}
@@ -210,6 +221,22 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
       </header>
 
       <p class="lead">{text}</p>
+
+      <section class="sec">
+        <div class="shead"><h2>Погода {d.cases.loc} в {m.prep}</h2></div>
+        {monthWeather ? (
+          <>
+            <ul class="facts">
+              <li><span class="fk">Температура</span><span class="fv">{monthWeather.temp}</span></li>
+              <li><span class="fk">Осадки</span><span class="fv">{monthWeather.rain}</span></li>
+              <li><span class="fk">Тип климата</span><span class="fv">{weatherBucket.label}</span></li>
+            </ul>
+            <p class="wnote">Замер по городу {monthWeather.city}. Источник: {monthWeather.source}.</p>
+          </>
+        ) : (
+          <p class="wnote">{weatherBucket.summary}. Точные температуры по месяцам — в <a href="/seasons/">таблице сезонов</a>.</p>
+        )}
+      </section>
 
       <section class="sec">
         <div class="shead"><h2>Кратко: формат поездки</h2></div>
@@ -403,6 +430,12 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
 .fk{font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid);flex:none}
 .fv{font-size:1rem;font-weight:600;color:var(--ink);text-align:right}
 .fv a{color:var(--gold);text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
+.wnote {
+  font-size: .88rem;
+  color: var(--text-dim);
+  margin: .7rem 0 0;
+  line-height: 1.5;
+}
 .findcta{margin-top:1rem;font-size:.95rem}
 .find{color:var(--ink);font-weight:700;text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
 .find:hover{color:var(--gold)}
