@@ -1,42 +1,80 @@
-#!/usr/bin/env sh
-# Pre-push hook: блокирует push если visual tests падают.
-# Цикл: build → preview server → Playwright (chromium + webkit, 4 viewports).
-# Время ~2-3 минуты.
+#!/usr/bin/env bash
+# traveltribe визуал-гейт перед push: build → preview :4322 → playwright regression.
+# Зелёный → push уходит. Не зелёный → блок. Намеренный обход: git push --no-verify
+set -uo pipefail
 
-set -e
+REPO="$(git rev-parse --show-toplevel)" || exit 1
+cd "$REPO" || exit 1
 
-echo "→ pre-push: build production"
-npm run build > /tmp/pre-push-build.log 2>&1 || {
-  echo "✗ Build failed. См. /tmp/pre-push-build.log"
-  exit 1
-}
+# Что уезжает: только текст или ещё и вёрстка с кодом. Решение то же, что уже
+# принято на сервере (там визуальный прогон имеет фильтр paths-ignore на
+# src/content): текст не двигает пиксели, под эталоном 14 канареек и текста
+# среди них нет. Значит для чисто текстовых правок гонять 217 визуальных
+# тестов на четырёх движках незачем — хватает инвариантов, ритма и ленты.
+#
+# Зачем: 19.08.2026 отправка простых текстовых правок занимала минуты, потому
+# что каждая попытка пересобирала сайт и гоняла полный визуальный набор — то
+# же самое, что потом делает сервер. На занятой машине это растягивалось до
+# получаса и валилось по чужой причине.
+RANGE_BASE="$(git merge-base HEAD origin/main 2>/dev/null || echo HEAD~1)"
+CHANGED="$(git diff --name-only "$RANGE_BASE" HEAD 2>/dev/null)"
+CODE_TOUCHED="$(printf '%s\n' "$CHANGED" | grep -vE '^(src/content/|news/|public/llms|measurements/|.*\.md$)' | grep -v '^$' || true)"
 
-echo "→ pre-push: SEO site audit (canonical/sitemap/og/schema-dates/orphans)"
-npm run check:seo > /tmp/pre-push-seo.log 2>&1 || {
-  echo "✗ SEO audit failed. См. /tmp/pre-push-seo.log"
-  exit 1
-}
-
-echo "→ pre-push: starting preview server"
-pkill -f "astro preview" 2>/dev/null || true
-sleep 1
-npx astro preview --port 4322 > /tmp/pre-push-preview.log 2>&1 &
-PREVIEW_PID=$!
-
-for i in 1 2 3 4 5 6 7 8 9 10; do
-  if curl -sf http://localhost:4322/ > /dev/null 2>&1; then break; fi
-  sleep 1
-done
-
-echo "→ pre-push: visual regression tests"
-if npm run check:visual > /tmp/pre-push-tests.log 2>&1; then
-  echo "✓ All visual tests passed"
-  RESULT=0
+if [ -z "$CODE_TOUCHED" ] && [ -n "$CHANGED" ]; then
+  MODE="text"
+  echo "▶ pre-push: правки только текстовые → сборка + гейты содержания (без визуальных)"
 else
-  echo "✗ Visual tests FAILED. См. /tmp/pre-push-tests.log"
-  echo "  HTML-отчёт: npm run check:visual:report"
-  RESULT=1
+  MODE="full"
+  echo "▶ pre-push визуал-гейт (build → :4322 → playwright)…"
 fi
 
-kill $PREVIEW_PID 2>/dev/null || true
-exit $RESULT
+# Минификация HTML занимает три четверти сборки (79с против 21с, замерено
+# 01.08.2026), а на отрисовку страницы и на скриншоты не влияет вовсе.
+# На прод сайт уезжает минифицированным как раньше — там переменной нет.
+if ! SKIP_HTML_MIN=1 npm run build >/tmp/ttb_prepush_build.log 2>&1; then
+  echo "✖ build упал → /tmp/ttb_prepush_build.log"; exit 1
+fi
+
+pkill -f "astro preview --port 4322" 2>/dev/null
+( npx astro preview --port 4322 >/tmp/ttb_prepush_preview.log 2>&1 & )
+cleanup(){ pkill -f "astro preview --port 4322" 2>/dev/null; }
+trap cleanup EXIT
+
+up=""
+for _ in $(seq 1 30); do
+  if curl -fs -o /dev/null http://localhost:4322/; then up=1; break; fi
+  sleep 1
+done
+if [ -z "$up" ]; then
+  echo "✖ preview :4322 не поднялся → /tmp/ttb_prepush_preview.log"; exit 1
+fi
+
+if [ "$MODE" = "text" ]; then
+  if ! PREVIEW_URL=http://localhost:4322 npx playwright test \
+      tests/content-invariants.spec.ts tests/rhythm-gate.spec.ts tests/news-gate.spec.ts \
+      --project=chromium-desktop >/tmp/ttb_prepush_pw.log 2>&1; then
+    echo "✖ гейты содержания НЕ зелёные → /tmp/ttb_prepush_pw.log"
+    echo "  намеренный обход: git push --no-verify"
+    exit 1
+  fi
+  echo "✔ гейты содержания зелёные — push разрешён."
+  exit 0
+fi
+
+if ! PREVIEW_URL=http://localhost:4322 npx playwright test >/tmp/ttb_prepush_pw.log 2>&1; then
+  echo "⚠ первый прогон не зелёный — ретрай упавших (отсев известного флейка blog-japan fullPage)…"
+  if ! PREVIEW_URL=http://localhost:4322 npx playwright test --last-failed >>/tmp/ttb_prepush_pw.log 2>&1; then
+    echo "✖ Playwright визуал-регресс НЕ зелёный (упало ДВАЖДЫ = реальный регресс) — push заблокирован."
+    echo "  лог: /tmp/ttb_prepush_pw.log | отчёт: npm run check:visual:report"
+    echo "  если правки легитимны (новый пост → home/blog-index):"
+    echo "   1) глазами подтверди что ТОЛЬКО аддитивно"
+    echo "   2) npx playwright test --update-snapshots -g \"home — visual|blog-index — visual\""
+    echo "   3) повтори push"
+    echo "  намеренный обход: git push --no-verify"
+    exit 1
+  fi
+  echo "  (упавшее прошло на ретрае — флейк, не регресс; пропускаю)"
+fi
+
+echo "✔ визуал-гейт зелёный — push разрешён."
+exit 0

@@ -753,6 +753,57 @@ test('Паспорт статьи: новая статья не выходит �
   expect(bad, bad.join('\n')).toEqual([]);
 });
 
+/**
+ * Храповик качества.
+ *
+ * Замер 19.08.2026 показал закономерность: там, где гейт проверяет КАЖДУЮ статью
+ * (паспорт, иллюстрации), нарушений ноль; там, где только тронутые в заходе
+ * (журнал сверок, язык), нарушают семь из десяти — 51 и 57 статей из 71. Правило
+ * без сплошной проверки не соблюдается, это устройство проверки, а не лень авторов.
+ *
+ * Но и сплошной гейт «ноль везде» не годится: он покрасит полсотни статей разом,
+ * а такие гейты обходят, а не чинят (проверено 13.08.2026 на стоп-листе слов).
+ *
+ * Отсюда храповик: считаем нарушителей по ВСЕМ статьям и сравниваем с записанным
+ * числом. Стало больше — падение с именами новых нарушителей. Стало меньше —
+ * зелено и подсказка опустить планку. Старое чинится ревизиями, новое не
+ * добавляется. ⛔ Число в замере поднимать вручную нельзя: это маскировка
+ * регресса, и в заявке такая правка видна отдельной строкой.
+ */
+test('Качество: храповик — нарушителей не становится больше', () => {
+  const baseline = JSON.parse(readFileSync(join(REPO, 'tests/quality-baseline.json'), 'utf8'));
+  const posts = readdirSync(join(REPO, 'src/content/blog'))
+    .filter((f) => f.endsWith('.md') || f.endsWith('.mdx'));
+
+  const noJournal: string[] = [];
+  const stopWords: string[] = [];
+  for (const f of posts) {
+    const raw = readFileSync(join(REPO, 'src/content/blog', f), 'utf8');
+    const m = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+    if (!m) continue;
+    const [, fm, body] = m;
+    if (!/^checks:/m.test(fm)) noJournal.push(f);
+    if (/(^|[^а-яёА-ЯЁ])(просто|очень|достаточно|уже|ведь)([^а-яё]|$)/i.test(body)) stopWords.push(f);
+  }
+
+  const grown: string[] = [];
+  if (noJournal.length > baseline.withoutJournal) {
+    grown.push(`без журнала сверок: ${noJournal.length} против ${baseline.withoutJournal} в замере ${baseline.measuredAt}`);
+  }
+  if (stopWords.length > baseline.withStopWords) {
+    grown.push(`со словами-паразитами: ${stopWords.length} против ${baseline.withStopWords} в замере ${baseline.measuredAt}`);
+  }
+  expect(grown, grown.join('\n')).toEqual([]);
+
+  // Стало лучше — не падаем, но говорим вслух: планку надо опустить, иначе
+  // храповик перестаёт держать достигнутое.
+  if (noJournal.length < baseline.withoutJournal || stopWords.length < baseline.withStopWords) {
+    console.log(`  ↳ стало лучше: без журнала ${noJournal.length} (в замере ${baseline.withoutJournal}), ` +
+      `со словами-паразитами ${stopWords.length} (в замере ${baseline.withStopWords}). ` +
+      `Опустите числа в tests/quality-baseline.json.`);
+  }
+});
+
 test('Язык: в тронутой статье нет слов-паразитов, штампов и канцелярита', () => {
   // Список из редакционного ТЗ, присланного Никитой 13.08.2026. Наши правила
   // говорили «чистый русский» общими словами — и два таких слова спокойно
