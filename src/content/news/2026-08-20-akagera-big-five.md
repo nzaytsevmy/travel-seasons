@@ -6,7 +6,7 @@ added: 2026-08-20
 topic: nature
 impact: medium
 score: 4
-photoQuery: "Akagera savannah elephants"
+photoQuery: "zebra savannah Africa"
 tldr: "Парк, который после войны девяностых почти перестал существовать, снова полон зверя. Львы вернулись в две тысячи пятнадцатом после двадцати лет отсутствия, чёрные носороги в семнадцатом, белые в двадцать первом. Сейчас в Акагере больше сотни слонов, восемь десятков жирафов и два десятка львов."
 countries:
   - rwanda
@@ -14,11 +14,11 @@ sources:
   - name: National Geographic — Акагера в списке лучших мест 2026 года
     url: https://www.nationalgeographic.com/travel/best-of-the-world-2026/article/akagera-national-park-rwanda
 image: "./_images/2026-08-20-akagera-big-five.jpg"
-imageAlt: "Две зебры бегут по сухой саванне, на заднем плане холмы и пасущееся стадо"
-imageCredit: "Alex shema"
-imageLicense: "CC BY-SA"
-imageLicenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
-imageSource: "https://commons.wikimedia.org/w/index.php?curid=92285014"
+imageAlt: "Стадо зебр в золотой сухой траве саванны среди редких акаций"
+imageCredit: "safaritravelplus"
+imageLicense: "CC0"
+imageLicenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/deed.en/"
+imageSource: "https://commons.wikimedia.org/w/index.php?curid=73770744"
 ---
 
 Редкая история про природу, которая заканчивается хорошо. Национальный парк Акагера на северо-востоке Руанды основали ещё в тридцатые годы, но гражданская война девяностых почти его уничтожила: внутри границ парка селили людей, площадь для зверя сжималась, браконьерство росло.

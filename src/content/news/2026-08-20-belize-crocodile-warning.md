@@ -6,7 +6,7 @@ added: 2026-08-20
 topic: nature
 impact: medium
 score: 4
-photoQuery: "American crocodile lagoon"
+photoQuery: "crocodile close up eyes teeth"
 tldr: "За август у берегов Белиза два случая: на Кайе-Колкер крокодил преследовал купавшихся ночью туристов, а на Амбергрис-Кей четырёхметровый схватил пловца за голову и утащил под воду. Лесной департамент страны назвал причину прямо — крокодилов подкармливают, и они перестают бояться людей."
 countries:
   - belize
@@ -16,11 +16,11 @@ sources:
   - name: The San Pedro Sun — предупреждение Лесного департамента Белиза
     url: https://www.sanpedrosun.com/environment/2026/07/17/authorities-urge-public-to-respect-belizes-wildlife-its-the-law/
 image: "./_images/2026-08-20-belize-crocodile-warning.jpg"
-imageAlt: "Американский крокодил лежит на илистом берегу мутной реки, наполовину в воде"
-imageCredit: "Sandy_R"
-imageLicense: "CC BY"
-imageLicenseUrl: "https://creativecommons.org/licenses/by/2.0/"
-imageSource: "https://commons.wikimedia.org/w/index.php?curid=25872969"
+imageAlt: "Морда крокодила крупным планом: жёлтый глаз с вертикальным зрачком и ряд зубов"
+imageCredit: "Marley Sexton"
+imageLicense: "CC0"
+imageLicenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/deed.en/"
+imageSource: "https://commons.wikimedia.org/w/index.php?curid=146382779"
 ---
 
 У берегов Белиза за август два случая подряд, и оба ночью. На Кайе-Колкер крокодил кружил вокруг купавшихся туристов, пока их не вытащили из воды. На Амбергрис-Кей местный дайвер пошёл плавать в лагуну около двух часов ночи — четырёхметровый крокодил схватил его за голову и утащил под воду. Мужчину доставили в больницу в тяжёлом, но стабильном состоянии.

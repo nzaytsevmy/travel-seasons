@@ -6,7 +6,7 @@ added: 2026-08-20
 topic: nature
 impact: medium
 score: 4
-photoQuery: "jaguar rainforest"
+photoQuery: "Panthera onca face"
 tldr: "Турист снял на телефон, как гладит детёныша ягуара, отбившегося от матери в лесном заповеднике Белиза. Видео разошлось по сети, Лесной департамент начал розыск, и мужчина сам вернулся в страну и сдался властям. Итог — обвинение по закону об охране дикой природы и штраф в тысячу белизских долларов."
 countries:
   - belize
@@ -16,11 +16,11 @@ sources:
   - name: The San Pedro Sun — позиция Лесного департамента Белиза
     url: https://www.sanpedrosun.com/environment/2026/07/17/authorities-urge-public-to-respect-belizes-wildlife-its-the-law/
 image: "./_images/2026-08-20-belize-jaguar-fine.jpg"
-imageAlt: "Ягуар отдыхает в тени на утоптанной земле, хвост вытянут вдоль тела"
-imageCredit: "shankar s. from Dubai, united arab emirates"
+imageAlt: "Чёрный ягуар — меланистическая форма того же вида — идёт по зелени, розетки видны на тёмной шерсти"
+imageCredit: "Bardrock"
 imageLicense: "CC BY"
-imageLicenseUrl: "https://creativecommons.org/licenses/by/2.0/"
-imageSource: "https://commons.wikimedia.org/w/index.php?curid=69500728"
+imageLicenseUrl: "https://creativecommons.org/licenses/by/3.0/"
+imageSource: "https://commons.wikimedia.org/w/index.php?curid=7546245"
 ---
 
 История, которая объясняет, почему за такие кадры теперь наказывают. В лесном заповеднике Маунтин-Пайн-Ридж на западе Белиза машина спугнула самку ягуара с детёнышем. Туристы вышли и стали снимать малыша на телефон, один из них подошёл и погладил его.
