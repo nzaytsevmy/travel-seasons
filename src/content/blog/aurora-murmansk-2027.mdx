@@ -51,9 +51,9 @@ howto:
 import PricingCards from '../../components/post/PricingCards.astro';
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
-import { TP_LINKS, aviasalesRoute, tpkDeep, otelloStay } from '../../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, tpkDeep, otelloStay, youtravelSub } from '../../data/affiliate.js';
 
-export const tours = TP_LINKS.youtravel;
+export const tours = youtravelSub('aurora_murmansk_2027');
 export const excursions = tpkDeep('sputnik8', 'https://www.sputnik8.com/ru/murmansk/category/northern-lights', 'aurora_murmansk');
 export const flights = aviasalesRoute('MOW', 'MMK', 'aurora_murmansk');
 export const stay = otelloStay('aurora_murmansk');

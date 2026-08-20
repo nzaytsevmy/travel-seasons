@@ -8,7 +8,7 @@ import { DIRECTIONS } from '../data/directions.js';
 import { VISA_DETAILS } from '../data/visa-details.js';
 import realBudgets from '../data/real-budgets-2026.json';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
-import { TP_LINKS } from '../data/affiliate.js';
+import { TP_LINKS, youtravelSub } from '../data/affiliate.js';
 
 const groups: Record<string, Array<{i:number,name:string,iata:string}>> = {};
 PRICES.forEach((p, i) => {
@@ -232,7 +232,7 @@ const ldJson = {
     {/* Авторские туры (YouTravel) — альтернатива самостоятельному расчёту */}
     <section class="tc-section">
       <div class="tc-container">
-        <p class="tc-tourcta">Считать и планировать не хочется? <a href={TP_LINKS.youtravel} rel="sponsored noopener" target="_blank"><strong>Авторский тур с экспертом</strong></a> — бюджет, маршрут и малая группа уже собраны. </p>
+        <p class="tc-tourcta">Считать и планировать не хочется? <a href={youtravelSub('calculator')} rel="sponsored noopener" target="_blank"><strong>Авторский тур с экспертом</strong></a> — бюджет, маршрут и малая группа уже собраны. </p>
       </div>
     </section>
 

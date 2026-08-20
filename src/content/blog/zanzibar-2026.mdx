@@ -57,9 +57,9 @@ howto:
 import PricingCards from '../../components/post/PricingCards.astro';
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
-import { TP_LINKS, aviasalesRoute, ostrovokCountry, cherehapaTravel, airaloSub } from '../../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, ostrovokCountry, cherehapaTravel, airaloSub, youtravelSub } from '../../data/affiliate.js';
 
-export const tours = TP_LINKS.youtravel;
+export const tours = youtravelSub('zanzibar_2026');
 export const flights = aviasalesRoute('MOW', 'ZNZ', 'zanzibar_2026');
 export const stay = ostrovokCountry('tanzania', 'zanzibar_2026');
 export const insurance = cherehapaTravel('zanzibar_2026');
