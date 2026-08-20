@@ -9,7 +9,7 @@ import {
 interface Item {
   id: string; label: string; cat: string;
   trip: string[]; who: string[]; kid: string[];
-  minNights: number; liquid: boolean; transport: string[]; note?: string;
+  minNights: number; liquid: boolean; transport: string[]; note?: string; docs?: string[];
 }
 interface Props {
   preset?: 'sea' | 'city' | 'winter' | 'any';
@@ -17,14 +17,25 @@ interface Props {
   heading?: string;
   schema?: boolean;
   storageKey?: string;
+  /** Режим документов направления: 'ru' | 'id' | 'abroad'. Не задан — список общий. */
+  docsMode?: 'ru' | 'id' | 'abroad';
+  /** Денежная точка у пункта про страховку: {href, label}. Одна на весь список. */
+  insuranceCta?: { href: string; label: string } | null;
 }
 
-const { preset = 'any', extraItems = [], heading, schema = true, storageKey } = Astro.props as Props;
+const {
+  preset = 'any', extraItems = [], heading, schema = true, storageKey,
+  docsMode, insuranceCta = null,
+} = Astro.props as Props;
 const presetCfg = PRESETS[preset] || PRESETS.any;
 const lockedTrip = presetCfg.trip;            // null для 'any'
 const showTripFilter = !lockedTrip;
 const uid = storageKey || `pck-${preset}`;
-const allItems: Item[] = [...ITEMS, ...extraItems];
+// Пункты с осью docs показываем только на страницах, которые назвали свой режим.
+// Без режима (общий чек-лист вне страницы направления) список остаётся полным.
+const allItems: Item[] = [...ITEMS, ...extraItems].filter(
+  (it) => !it.docs?.length || !docsMode || it.docs.includes(docsMode),
+);
 
 // Дефолты для SSR (совпадают с тем, что JS посчитает на загрузке — отсюда CLS 0).
 const DEF = { trip: lockedTrip || 'sea', duration: 'week', who: 'adult', kid: 'preschool', transport: 'plane' };
@@ -165,6 +176,9 @@ const title = heading || presetCfg.title;
                 {it.liquid && <span class="pck-liq" hidden={DEF.transport !== 'plane'}>≤100 мл</span>}
                 {it.note && <span class="pck-note">{it.note}</span>}
               </label>
+              {insuranceCta && it.id === 'insurance' && (
+                <a class="pck-cta aff-cta" href={insuranceCta.href} rel="sponsored nofollow noopener" target="_blank">{insuranceCta.label}</a>
+              )}
             </li>
           ))}
         </ul>
@@ -424,6 +438,8 @@ const title = heading || presetCfg.title;
   .pck-list { list-style: none; margin: 0; padding: 0; }
   .pck-item {
     display: flex; align-items: flex-start; gap: .7rem;
+    flex-wrap: wrap;                  /* чтобы кнопка у пункта про страховку уходила
+                                         на свою строку, а не сжимала текст пункта */
     padding: .6rem 0;
     border-top: 1px solid var(--line);
   }
@@ -462,6 +478,27 @@ const title = heading || presetCfg.title;
     display: block;
     font-size: .8rem; color: var(--text-dim);
     line-height: 1.5; margin-top: .15rem;
+  }
+  /* Денежная точка внутри списка: стоит у пункта про страховку, потому что это
+     следующий шаг того же действия. Замер 20.08.2026: у страниц, где первая кнопка
+     идёт после 780 слов, конверсия 1,68%, у страниц с кнопкой после 75 слов — 3–7,5%.
+     Тач-цель 44px держим паддингом, чтобы на телефоне не промахивались по галочке. */
+  .pck-cta {
+    /* Своя строка: иначе кнопка встаёт в ряд с названием пункта и сплющивает его.
+       ⛔ Отступ слева даём padding'ом внутри 100%-ширины, а не margin'ом: в WebKit
+       ширина 100% + внешний отступ дают горизонтальный вылет страницы (поймано
+       визуальным гейтом на мобильном WebKit, в Chromium вылета не было). */
+    flex: 0 0 100%;
+    box-sizing: border-box;
+    display: none;                    /* на телефоне ту же страховку даёт липкая панель */
+    align-items: center;
+    margin: .1rem 0 .2rem;
+    padding: .1rem 0 .1rem 1.85rem;
+    min-height: 44px;
+    font-size: .82rem;
+  }
+  @media (min-width: 768px) {
+    .pck-cta { display: flex; }       /* панели здесь нет — кнопка нужна в тексте */
   }
   .pck-foot {
     margin-top: 1.2rem;

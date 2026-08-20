@@ -312,6 +312,18 @@ function findPrice(direction) {
 // Российские регионы: загранпаспорт не нужен, в списки «безвизовых стран» не входят
 const RUSSIA_REGIONS = new Set(['karelia', 'kamchatka', 'dagestan', 'altai']);
 
+// Куда россиян пускают по ВНУТРЕННЕМУ паспорту — это не Россия, но и не «загран нужен».
+// Проверено по консульскому департаменту МИД 20.08.2026 (порядок въезда в страны СНГ):
+// для Армении, Казахстана и Киргизии годятся внутренний, заграничный, служебный и
+// дипломатический паспорта; в Абхазию пускают по внутреннему на 90 дней.
+// ⛔ Детям это правило не наследуется: с 20 января 2026 свидетельство о рождении
+// исключено из документов для выезда, и только Абхазия принимает его до конца 2027 года.
+const ID_PASSPORT_COUNTRIES = new Set(['abkhazia', 'armenia', 'kazakhstan', 'kyrgyzstan']);
+
+// Режим документов направления — им чек-лист сборов решает, какие пункты показывать.
+export const docsModeFor = (slug) =>
+  RUSSIA_REGIONS.has(slug) ? 'ru' : ID_PASSPORT_COUNTRIES.has(slug) ? 'id' : 'abroad';
+
 let groupLabel = '';
 const enriched = [];
 for (const r of regions) {
@@ -329,6 +341,7 @@ for (const r of regions) {
     sub: r.sub,
     visa: r.visa,
     domestic: RUSSIA_REGIONS.has(slug),
+    docsMode: RUSSIA_REGIONS.has(slug) ? 'ru' : ID_PASSPORT_COUNTRIES.has(slug) ? 'id' : 'abroad',
     budget: r.budget,
     r: r.r,
     t: r.t,

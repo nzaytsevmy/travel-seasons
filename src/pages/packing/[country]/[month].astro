@@ -282,7 +282,16 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         а отметки сохраняются в браузере.
         {checklistPreset === 'sea' && <> Полный разбор по категориям — в гайде <a href="/blog/chto-vzyat-na-more-2026/" class="pmu-link">что взять на море</a>.</>}
       </p>
-      <PackingChecklist preset={checklistPreset} schema={false} storageKey={`pmu-${d.slug}-${m.slug}`} />
+      <PackingChecklist
+        preset={checklistPreset}
+        schema={false}
+        storageKey={`pmu-${d.slug}-${m.slug}`}
+        docsMode={d.docsMode}
+        insuranceCta={{
+          href: cherehapaTravel(`packing_${d.slug.replaceAll('-', '_')}_list`),
+          label: d.docsMode === 'ru' ? 'Подобрать полис для поездки по России' : `Подобрать полис ${d.cases.vP}`,
+        }}
+      />
     </section>
 
     {/* ПОГОДА — реальные цифры для топ-15, generic для остальных */}
@@ -387,10 +396,14 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
     <section class="pmu-section">
       <div class="pmu-shead"><h2>Документы и деньги</h2></div>
       <ul class="pmu-list">
-        <li><b>Загранпаспорт</b> — срок действия 6+ месяцев на момент въезда.</li>
+        {d.docsMode === 'ru' && (<li><b>Паспорт РФ</b> — загранпаспорт не нужен, это поездка по России.</li>)}
+        {d.docsMode === 'id' && (<li><b>Внутренний паспорт РФ</b> — взрослым его достаточно. Ребёнку до 14 лет нужен загранпаспорт: свидетельство о рождении для выезда не принимают с 20 января 2026 года{d.slug === 'abkhazia' ? ', и Абхазия — единственное исключение, там его принимают до конца 2027 года' : ''}.</li>)}
+        {d.docsMode === 'abroad' && (<li><b>Загранпаспорт</b> — срок действия 6+ месяцев на момент въезда.</li>)}
         {needsVisa && visa && (<li><b>Виза:</b> {visa.duration}, {visa.cost}, {visa.timing}. <a href={`/visa/${d.slug}/`} class="pmu-link">детали визы</a></li>)}
         {!needsVisa && (<li><b>Виза не нужна</b> — {visa?.duration || 'безвизовый въезд'}.</li>)}
-        <li><b>Карты:</b> Visa/MC российских банков не работают. UnionPay / МИР / иностранные — <a href="/cards/" class="pmu-link">карта платёжных систем</a>.</li>
+        {d.docsMode === 'ru'
+          ? (<li><b>Карты:</b> российские карты работают как дома, наличные нужны в глухих местах и на рынках.</li>)
+          : (<li><b>Карты:</b> Visa/MC российских банков не работают. UnionPay / МИР / иностранные — <a href="/cards/" class="pmu-link">карта платёжных систем</a>.</li>)}
         <li><b>Наличные:</b> $200–300 USD/EUR на непредвиденные.</li>
       </ul>
       {flightLow && d.price?.iata && (
@@ -495,6 +508,10 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
     <p class="pmu-updated">Актуально на: {DATA_UPDATED_RU}</p>
   </main>
 
+  {/* Липкая панель со страховкой остаётся: за 8 дней до правки она дала 7 переходов
+      к страховщику — больше, чем любая другая кнопка этих страниц (билеты — 2).
+      Контекстная ссылка в пункте чек-листа показывается только на ширинах от 768,
+      где панели нет: иначе две одинаковые кнопки попадают на один экран телефона. */}
   <StickyCta href={cherehapaTravel(`packing_${d.slug.replaceAll('-', '_')}`)} label={`Страховка ${d.cases.vP} — под даты`} />
 
   <Footer />
