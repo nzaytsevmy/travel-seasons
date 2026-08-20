@@ -79,7 +79,7 @@ export const regionMeta = {
   'Петра, Мёртвое море, Вади-Рам':              { slug: 'jordan',       iata: 'AMM', blogSlug: null },
   'Серенгети, Занзибар, Килиманджаро':          { slug: 'tanzania',     iata: 'JRO', blogSlug: null },
   'Антананариву, Нуси-Бе, Цинги':               { slug: 'madagascar',   iata: 'TNR', blogSlug: null },
-  'Гранд Бэ, Иль-о-Серф':                       { slug: 'mauritius',    iata: 'MRU', blogSlug: null },
+  'Гранд Бэ, Иль-о-Серф':                       { slug: 'mauritius',    iata: 'MRU', blogSlug: 'mauritius-2026' },
   'Маэ, Праслин, Ла-Диг':                       { slug: 'seychelles',   iata: 'SEZ', blogSlug: 'seychelles-2026' },
   'Виктория-Пик, Коулун, Лантау':               { slug: 'hong-kong',    iata: 'HKG', blogSlug: null },
   'Гагра, Сухум, Рица':                         { slug: 'abkhazia',     iata: null,  blogSlug: null },
