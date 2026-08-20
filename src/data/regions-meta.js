@@ -80,7 +80,7 @@ export const regionMeta = {
   'Серенгети, Занзибар, Килиманджаро':          { slug: 'tanzania',     iata: 'JRO', blogSlug: null },
   'Антананариву, Нуси-Бе, Цинги':               { slug: 'madagascar',   iata: 'TNR', blogSlug: null },
   'Гранд Бэ, Иль-о-Серф':                       { slug: 'mauritius',    iata: 'MRU', blogSlug: null },
-  'Маэ, Праслин, Ла-Диг':                       { slug: 'seychelles',   iata: 'SEZ', blogSlug: null },
+  'Маэ, Праслин, Ла-Диг':                       { slug: 'seychelles',   iata: 'SEZ', blogSlug: 'seychelles-2026' },
   'Виктория-Пик, Коулун, Лантау':               { slug: 'hong-kong',    iata: 'HKG', blogSlug: null },
   'Гагра, Сухум, Рица':                         { slug: 'abkhazia',     iata: null,  blogSlug: null },
   'Пекин, Шанхай, Сиань, Гуанчжоу':             { slug: 'china',        iata: 'PEK', blogSlug: 'china-guide-2026' },
