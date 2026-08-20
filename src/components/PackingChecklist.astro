@@ -484,12 +484,21 @@ const title = heading || presetCfg.title;
      идёт после 780 слов, конверсия 1,68%, у страниц с кнопкой после 75 слов — 3–7,5%.
      Тач-цель 44px держим паддингом, чтобы на телефоне не промахивались по галочке. */
   .pck-cta {
-    flex: 0 0 100%;                   /* своя строка: иначе встаёт в ряд с названием
-                                         пункта и сплющивает его в две строки */
-    display: inline-flex; align-items: center;
-    margin: .1rem 0 .2rem 1.85rem;
-    min-height: 44px; padding: .1rem 0;
+    /* Своя строка: иначе кнопка встаёт в ряд с названием пункта и сплющивает его.
+       ⛔ Отступ слева даём padding'ом внутри 100%-ширины, а не margin'ом: в WebKit
+       ширина 100% + внешний отступ дают горизонтальный вылет страницы (поймано
+       визуальным гейтом на мобильном WebKit, в Chromium вылета не было). */
+    flex: 0 0 100%;
+    box-sizing: border-box;
+    display: none;                    /* на телефоне ту же страховку даёт липкая панель */
+    align-items: center;
+    margin: .1rem 0 .2rem;
+    padding: .1rem 0 .1rem 1.85rem;
+    min-height: 44px;
     font-size: .82rem;
+  }
+  @media (min-width: 768px) {
+    .pck-cta { display: flex; }       /* панели здесь нет — кнопка нужна в тексте */
   }
   .pck-foot {
     margin-top: 1.2rem;
