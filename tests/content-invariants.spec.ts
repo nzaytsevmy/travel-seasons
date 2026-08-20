@@ -517,9 +517,29 @@ test('Атрибуция: у каждой партнёрской ссылки е
   // TP_LINKS.*. Тест ловит КЛАСС бага на всём dist, а не конкретные страницы.
   //
   // Исключения — только там, где метку физически выдаёт партнёр, а не мы:
-  //   platipomiru — своя CPA-ссылка без sub_id и без erid (erid ждём от партнёра);
-  //   g2afse (YouTravel) — другая сеть, свой формат метки, erid тоже ещё не выдан.
-  const SKIP = /platipomiru\.com|g2afse\.com/;
+  //   platipomiru — своя CPA-ссылка без sub_id и без erid (erid ждём от партнёра).
+  //
+  // ⛔ g2afse (YouTravel) из общего исключения выведен 20.08.2026. Это главная
+  // денежная кнопка дорогих направлений (средний чек около 100 000 ₽), и она
+  // висела вообще без метки: понять, какая страница принесла заказ, было нельзя.
+  // Метка у этой сети своя — `sub1` вместо `sub_id`, поэтому проверяется
+  // отдельным правилом ниже.
+  //
+  // Шесть страниц остаются без метки НАМЕРЕННО: у их статей в тексте живут
+  // слова-паразиты и нет журнала сверок, а правка файла делает статью
+  // «тронутой» и поднимает языковой гейт и гейт свежести разом. Чинить их надо
+  // в заходе, где у статьи пересверены факты, а не мимоходом — иначе получится
+  // ровно то, от чего эти гейты и заводились. Список поимённый и обязан
+  // сокращаться: добавлять в него новые страницы нельзя.
+  const G2AFSE_PENDING = new Set([
+    '/blog/cappadocia-2026/index.html',
+    '/blog/dagestan-guide-2026/index.html',
+    '/blog/gagra-2026/index.html',
+    '/blog/kamchatka-guide-2026/index.html',
+    '/blog/novoafonskaya-peschera-2026/index.html',
+    '/blog/ozero-ritsa-2026/index.html',
+  ]);
+  const SKIP = /platipomiru\.com/;
   const bad: { file: string; href: string }[] = [];
   for (const f of files) {
     const html = readFileSync(f, 'utf8');
@@ -527,12 +547,16 @@ test('Атрибуция: у каждой партнёрской ссылки е
       // Астро кодирует «&» и как &amp;, и как &#x26; — раскодировать надо оба,
       // иначе тест объявляет обезличенными ссылки, у которых метка на месте.
       const href = unescapeAmp(m[1]);
-      if (!/tpk\.mx|pxf\.io|aviasales\.ru\/\?/.test(href)) continue;
+      if (!/tpk\.mx|pxf\.io|aviasales\.ru\/\?|g2afse\.com/.test(href)) continue;
       if (SKIP.test(href)) continue;
+      const rel = f.replace(DIST, '');
+      if (/g2afse\.com/.test(href) && G2AFSE_PENDING.has(rel)) continue;
       const labelled = /pxf\.io/.test(href)
         ? /sharedID=546042_[a-z0-9_]+/.test(href)   // хвост после «_» обязан быть непустым
-        : /[?&]sub_id=[a-z0-9_]+/.test(href);
-      if (!labelled) bad.push({ file: f.replace(DIST, ''), href: href.slice(0, 110) });
+        : /g2afse\.com/.test(href)
+          ? /[?&]sub1=[a-z0-9_]+/.test(href)        // Affise: своя метка, sub1
+          : /[?&]sub_id=[a-z0-9_]+/.test(href);
+      if (!labelled) bad.push({ file: rel, href: href.slice(0, 110) });
     }
   }
   expect(bad.slice(0, 15), `ссылок без метки страницы: ${bad.length}\n` +

@@ -6,7 +6,7 @@ import Layout from '../layouts/Layout.astro';
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import { DIRECTIONS } from '../data/directions.js';
-import { airaloSub, TP_LINKS, aviasalesUrl, ostrovokSearch, cherehapaTravel } from '../data/affiliate.js';
+import { airaloSub, TP_LINKS, aviasalesUrl, ostrovokSearch, cherehapaTravel, youtravelSub } from '../data/affiliate.js';
 import { DATA_UPDATED_RU } from '../data/meta.js';
 import authorPhoto from '../assets/author/nikita.jpg';
 
@@ -155,7 +155,7 @@ const ldJson = {
       <!-- Авторские туры (YouTravel) — альтернатива DIY -->
       <div class="tourcta">
         <span class="tourcta-t"><b>Не хочешь планировать сам?</b> Авторский тур с экспертом — маршрут, логистика и малая группа уже собраны.</span>
-        <a class="tourcta-a" href={TP_LINKS.youtravel} rel="sponsored noopener" target="_blank">Смотреть авторские туры</a>
+        <a class="tourcta-a" href={youtravelSub('home')} rel="sponsored noopener" target="_blank">Смотреть авторские туры</a>
         
       </div>
 

@@ -49,9 +49,9 @@ howto:
 import PricingCards from '../../components/post/PricingCards.astro';
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
-import { TP_LINKS, aviasalesRoute, yandexTravelSub, tpkDeep } from '../../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, yandexTravelSub, tpkDeep, youtravelSub } from '../../data/affiliate.js';
 
-export const tours = TP_LINKS.youtravel;
+export const tours = youtravelSub('baikal_zimoy_2027');
 export const excursions = tpkDeep('sputnik8', 'https://www.sputnik8.com/ru/baikal', 'baikal_winter');
 export const flights = aviasalesRoute('MOW', 'IKT', 'baikal_winter');
 export const stay = yandexTravelSub('baikal_winter');

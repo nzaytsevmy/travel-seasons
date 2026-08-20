@@ -8,7 +8,7 @@ import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
 import { COUNTRIES as RICH_COUNTRIES } from '../../../data/programmatic-seasons.js';
 import { NICHE_TRIPS } from '../../../data/niche-trips.js';
-import { TP_LINKS, aviasalesRoute, ostrovokCountry, cherehapaTravel } from '../../../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, ostrovokCountry, cherehapaTravel, youtravelSub } from '../../../data/affiliate.js';
 import { DATA_UPDATED, DATA_UPDATED_RU, yearForMonth } from '../../../data/meta.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
 import { getWeatherBucket } from '../../../data/country-month-bucket.js';
@@ -352,7 +352,7 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
 
       <section class="sec">
         <div class="shead"><h2>Поехать с экспертом</h2></div>
-        <a href={TP_LINKS.youtravel} class="cta-row" rel="sponsored noopener" target="_blank">
+        <a href={youtravelSub(`trip_${d.slug}_${m.slug}`)} class="cta-row" rel="sponsored noopener" target="_blank">
           <span class="cta-t"><b>Авторские туры {d.cases.vP}</b><span>Готовый маршрут, логистика и малая группа с экспертом — не планировать самому</span></span>
                   </a>
         <p class="adm-row">YouTravel.me</p>

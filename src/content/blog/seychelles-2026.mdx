@@ -58,9 +58,9 @@ howto:
 ---
 
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
-import { TP_LINKS, aviasalesRoute, ostrovokCountry, cherehapaTravel, airaloSub } from '../../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, ostrovokCountry, cherehapaTravel, airaloSub, youtravelSub } from '../../data/affiliate.js';
 
-export const tours = TP_LINKS.youtravel;
+export const tours = youtravelSub('seychelles_2026');
 export const flights = aviasalesRoute('MOW', 'SEZ', 'seychelles_2026');
 export const stay = ostrovokCountry('seychelles', 'seychelles_2026');
 export const insurance = cherehapaTravel('seychelles_2026');
