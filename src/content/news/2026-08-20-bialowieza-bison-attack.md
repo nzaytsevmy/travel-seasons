@@ -6,7 +6,7 @@ added: 2026-08-20
 topic: nature
 impact: medium
 score: 4
-photoQuery: "Bison bonasus wisent"
+photoQuery: "European bison portrait close"
 tldr: "Турист подошёл к зубру метров на шесть, и тот сбил его с ног, а потом каждый раз бил, когда человек пытался подняться. Спас случайный фотограф: сначала крикнул лежать смирно, потом заслонил машиной. Итог — рваная рана голени и больница. Зубр весит под тонну и разгоняется быстрее человека."
 countries:
   - poland
@@ -14,11 +14,11 @@ sources:
   - name: Беловежский национальный парк — о поведении рядом с зубрами
     url: https://bpn.com.pl/
 image: "./_images/2026-08-20-bialowieza-bison-attack.jpg"
-imageAlt: "Европейский зубр в полный рост на заснеженном поле — видно массивный горб и короткие рога"
-imageCredit: "Michael Gäbler"
-imageLicense: "CC BY-SA"
-imageLicenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/"
-imageSource: "https://commons.wikimedia.org/w/index.php?curid=25265201"
+imageAlt: "Стадо зубров на опушке весеннего леса, один смотрит прямо в объектив"
+imageCredit: "Frank Vassen"
+imageLicense: "CC BY"
+imageLicenseUrl: "https://creativecommons.org/licenses/by/2.0/"
+imageSource: "https://commons.wikimedia.org/w/index.php?curid=30247705"
 ---
 
 Зубр выглядит медлительным, и это главная ловушка. В Беловежской пуще турист подошёл к животному метров на шесть ради кадра — зубр сбил его с ног и не дал подняться: каждый раз, когда человек приподнимался, следовал новый удар.
