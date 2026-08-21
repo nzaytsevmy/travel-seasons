@@ -108,6 +108,25 @@ for (const f of htmlFiles) {
         findings.push(['og.url_mismatch', url, `og:url=${tag.attrs.content}`]);
     }
     if (!metaBy('name', 'twitter:card')[0]) findings.push(['twitter.no_card', url]);
+
+    // ⛔ Длина заголовка и описания. Добавлено 21.08.2026 после аудита Ahrefs: он
+    // нашёл 3 длинных заголовка и 473 коротких описания, а наш аудит их не видел.
+    // Пороги взяты по внешнему аудиту, а не по канону: канонные 60 знаков дают
+    // 27 находок на живых страницах, где заголовок 61–66 — выдача их не режет, и
+    // гейт с таким порогом начнут обходить. Ловим реальные перекосы: title > 70,
+    // описание вне 100–160.
+    const titleText = (html.match(/<title>([^<]*)<\/title>/i) || [, ''])[1].trim();
+    if (titleText && titleText.length > 70) {
+      findings.push(['title.too_long', url, `${titleText.length} знаков`]);
+    }
+    const descTag = metaBy('name', 'description')[0];
+    const descText = descTag?.attrs?.content?.trim() || '';
+    if (descText && descText.length < 100) {
+      findings.push(['description.too_short', url, `${descText.length} знаков`]);
+    }
+    if (descText.length > 160) {
+      findings.push(['description.too_long', url, `${descText.length} знаков`]);
+    }
   }
 
   // Вопросы и капсула-ответ: три правила цитируемости.
@@ -272,6 +291,23 @@ for (const [src, p] of pages) {
 for (const [u, p] of pages) {
   if (!p.noindex && !(p.canonical && p.canonical !== u) && !smUrls.has(u))
     findings.push(['sitemap.missing_indexable', u]);
+}
+
+// ⛔ Вес картинок в сборке. Добавлено 21.08.2026: аудит Ahrefs нашёл 75 файлов
+// тяжелее 800 КБ (самый большой 1,78 МБ) — исходники направлений были до 3872 px
+// при максимальной используемой ширине 1600. Наш аудит вес не проверял вовсе.
+// Порог 800 КБ — не идеал, а граница, за которой файл заметен на мобильном интернете.
+{
+  const assetsDir = join(DIST, '_astro');
+  if (existsSync(assetsDir)) {
+    for (const f of readdirSync(assetsDir)) {
+      if (!/\.(jpe?g|png|webp)$/i.test(f)) continue;
+      const bytes = statSync(join(assetsDir, f)).size;
+      if (bytes > 800 * 1024) {
+        findings.push(['image.too_heavy', `/_astro/${f}`, `${Math.round(bytes / 1024)} КБ`]);
+      }
+    }
+  }
 }
 
 console.log(`Страниц: ${htmlFiles.length}; в sitemap: ${smUrls.size}`);
