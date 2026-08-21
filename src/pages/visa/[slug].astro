@@ -103,7 +103,7 @@ const skipGenericTail = hasSpecific || !!vd.summary;
 // Страновой summary (visa-details.js) переопределяет generic-по-типу, если задан.
 // metaDesc — чистый обрез по границе слова (без середины слова в description).
 const summary = vd.summary ?? visaSummary[d.visa];
-const metaDesc = summary.length > 158 ? summary.slice(0, 155).replace(/\s+\S*$/, '') + '…' : summary;
+const metaDesc = summary.length > 203 ? summary.slice(0, 200).replace(/\s+\S*$/, '') + '…' : summary;
 const costAnswer = noVisa
   ? (feeFree
       ? `Виза ${d.cases.vP} не нужна — въезд бесплатный, ${vd.timing}. Консульский сбор не платится.`

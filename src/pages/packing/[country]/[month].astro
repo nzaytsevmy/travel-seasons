@@ -117,7 +117,7 @@ const title = `Что взять ${d.cases.vP} в ${m.prep} 2026 — чек-ли
 // 473 страницы). Слепо добивать длину нельзя — хвост говорит, что внутри списка.
 const descBase = `Что брать ${d.cases.vP} в ${m.prep}: ${bucket.summary.split(',')[0].toLowerCase()}. Сезон — ${rank.tldr}.${monthEvents.length ? ' События: ' + monthEvents.map(e => e.name).slice(0,2).join(', ') + '.' : ''}`;
 const descTail = ' Список с галочками: документы, одежда под погоду, аптечка, техника.';
-const description = (descBase.length < 110 ? descBase + descTail : descBase).slice(0, 155);
+const description = (descBase.length < 110 ? descBase + descTail : descBase).slice(0, 200);
 
 const FAQS = [
   {

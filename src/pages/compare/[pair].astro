@@ -31,7 +31,7 @@ if (!a || !b) throw new Error(`compare pair references unknown slug: ${pairDef.a
 const diff = compareEntries(a, b);
 const url = `https://traveltribe.ru/compare/${pairDef.a}-vs-${pairDef.b}/`;
 const title = `${a.nom} или ${b.nom}: что выбрать в 2026`;
-const description = `${a.nom} vs ${b.nom} — виза, бюджет в сутки, перелёт и сезон по месяцам бок-о-бок. ${pairDef.angle}.`.slice(0, 155);
+const description = `${a.nom} vs ${b.nom} — виза, бюджет в сутки, перелёт и сезон по месяцам бок-о-бок. ${pairDef.angle}.`.slice(0, 200);
 
 const cheaperEntry = diff.cheaper === a.slug ? a : diff.cheaper === b.slug ? b : null;
 const pricierEntry = diff.cheaper === a.slug ? b : diff.cheaper === b.slug ? a : null;

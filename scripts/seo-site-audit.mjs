@@ -114,7 +114,11 @@ for (const f of htmlFiles) {
     // Пороги взяты по внешнему аудиту, а не по канону: канонные 60 знаков дают
     // 27 находок на живых страницах, где заголовок 61–66 — выдача их не режет, и
     // гейт с таким порогом начнут обходить. Ловим реальные перекосы: title > 70,
-    // описание вне 100–160.
+    // описание вне 100–200.
+    // ⛔ Верхняя граница описания 200, а не 160: Google режет около 155–160 и
+    // показывает начало, Яндекс выводит до 250. Короткое описание не ошибка для
+    // Google, но потерянное место в яндексовой выдаче — а Яндекс даёт нам втрое
+    // больше трафика. Суть при этом держим в первых 150 знаках.
     const titleText = (html.match(/<title>([^<]*)<\/title>/i) || [, ''])[1].trim();
     if (titleText && titleText.length > 70) {
       findings.push(['title.too_long', url, `${titleText.length} знаков`]);
@@ -124,7 +128,7 @@ for (const f of htmlFiles) {
     if (descText && descText.length < 100) {
       findings.push(['description.too_short', url, `${descText.length} знаков`]);
     }
-    if (descText.length > 160) {
+    if (descText.length > 200) {
       findings.push(['description.too_long', url, `${descText.length} знаков`]);
     }
   }
