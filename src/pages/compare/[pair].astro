@@ -80,6 +80,7 @@ const ldJson = {
   "@graph": [
     {
       "@type": "CollectionPage",
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".cmpg-tldr"] },
       "@id": `${url}#page`,
       "name": title,
       "description": description,
@@ -88,7 +89,6 @@ const ldJson = {
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "datePublished": "2026-07-06",
       "dateModified": DATA_UPDATED,
-      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".cmpg-tldr"] },
     },
     {
       "@type": "FAQPage",

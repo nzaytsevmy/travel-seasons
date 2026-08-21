@@ -70,12 +70,20 @@ const ldJson = {
   "@context": "https://schema.org",
   "@graph": [
     {
+      // ⛔ speakable живёт на WebPage, а не на WebApplication: у второго это свойство
+      // не определено, и валидатор schema.org даёт предупреждение (21.08.2026).
+      "@type": "WebPage",
+      "@id": "https://traveltribe.ru/calculator/#webpage",
+      "url": "https://traveltribe.ru/calculator/",
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".tc-lede"] },
+      "isPartOf": { "@id": "https://traveltribe.ru/#website" }
+    },
+    {
       "@type": "WebApplication",
       "name": `Калькулятор бюджета путешествия ${brandYear}`,
       "url": "https://traveltribe.ru/calculator/",
       "description": `Интерактивный калькулятор стоимости поездки из Москвы на ${brandYear}: 70+ направлений, сравнение, сезонный коэффициент по месяцам, виза в расчёте, реальные траты по 12 источникам.`,
       "inLanguage": "ru-RU",
-      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".tc-lede"] },
       "applicationCategory": "TravelApplication",
       "operatingSystem": "Any",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "RUB" },
