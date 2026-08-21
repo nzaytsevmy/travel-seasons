@@ -313,7 +313,11 @@ test('в проверку попадают только новые заметк�
   try {
     const dir = join(root, 'src/content/news');
     mkdirSync(dir, { recursive: true });
-    const git = (...args: string[]) => execFileSync('git', args, { cwd: root });
+    // Из pre-push git передаёт GIT_DIR/GIT_WORK_TREE, и временный репозиторий
+    // подменяется настоящим — тест падал при каждой отправке и проходил руками.
+    const env = { ...process.env };
+    for (const k of ['GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE', 'GIT_PREFIX', 'GIT_COMMON_DIR']) delete env[k];
+    const git = (...args: string[]) => execFileSync('git', args, { cwd: root, env });
 
     writeFileSync(join(dir, '2026-07-27-published.md'), '---\ntitle: "Старая"\n---\n');
     git('init', '-q');
