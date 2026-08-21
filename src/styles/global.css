@@ -107,6 +107,10 @@ html.light-theme:not(.dark-theme) {
 
 html { overflow-x: clip; }  /* clip вместо hidden — не ломает position:sticky в Safari (баг WebKit) */
 
+/* Переход по якорю не должен прятать заголовок под липкой шапкой: она 61px,
+   с запасом на увеличенный шрифт берём 80 — столько же уже стоит у .tc-section-title. */
+html { scroll-padding-top: 80px; }
+
 body {
   background-color: var(--bg);
   color: var(--text);
