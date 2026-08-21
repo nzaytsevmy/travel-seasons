@@ -197,9 +197,14 @@ const deepGuide = d.relatedPosts?.find((p) => p.kind === 'guide');
 const hubTitle = deepGuide
   ? `${d.cases.nom} ${yr}: регионы, когда ехать и куда лететь`
   : `${d.cases.nom} ${yr} для россиян: когда ехать, цены, маршрут`;
-const hubDesc = (deepGuide
+// ⛔ Хвост включается, только если без него описание короче 100 знаков: у стран с
+// коротким названием и одним-двумя лучшими месяцами выходило 92–99, и это ловил
+// внешний аудит (21.08.2026). Хвост говорит, что на странице, а не добивает длину.
+const hubDescTail = ' Что посмотреть, сколько дней закладывать и когда дешевле.';
+const hubDescBase = (deepGuide
   ? `${d.cases.nom}: регионы и куда лететь, когда ехать по месяцам${bestMonths.length ? ` — ${bestMonths.slice(0, 3).map((m) => m.nom).join(', ')}` : ''}, бюджет по сезонам. Полный гайд для россиян — отдельно.`
-  : `${d.cases.nom} ${yr} для россиян: ${VISA_LABEL[d.visa].toLowerCase()} (${vd.duration}), когда ехать — ${bestMonths.map((m) => m.nom).join(', ')}, бюджет от $${weekTotal || 'N/A'}/нед.`).slice(0, 155);
+  : `${d.cases.nom} ${yr} для россиян: ${VISA_LABEL[d.visa].toLowerCase()} (${vd.duration}), когда ехать — ${bestMonths.map((m) => m.nom).join(', ')}, бюджет от $${weekTotal || 'N/A'}/нед.`);
+const hubDesc = (hubDescBase.length < 100 ? hubDescBase + hubDescTail : hubDescBase).slice(0, 155);
 const hubOgTitle = deepGuide
   ? `${d.cases.nom} ${yr} — регионы, сезоны, куда лететь`
   : `${d.cases.nom} ${yr} — когда ехать, цены, маршрут`;
