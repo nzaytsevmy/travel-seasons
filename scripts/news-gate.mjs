@@ -481,9 +481,20 @@ export function loadPublished(root) {
  * прямо в файле, и правка опубликованной заметки обязана пройти гейт, иначе
  * лечение вышло бы хуже болезни — чужая правка уехала бы на прод без проверки.
  */
+// ⛔ Git передаёт хукам GIT_DIR, GIT_WORK_TREE и GIT_INDEX_FILE в окружении, и
+// дочерний `git` слушает ИХ, а не `cwd`. Из pre-push этот разбор смотрел бы не в
+// переданный каталог, а в тот репозиторий, откуда идёт отправка. Поймано
+// 21.08.2026: тест на эту функцию падал при каждом push и проходил при запуске
+// руками — разница была ровно в GIT_DIR.
+const GIT_ENV = (() => {
+  const e = { ...process.env };
+  for (const k of ['GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE', 'GIT_PREFIX', 'GIT_COMMON_DIR']) delete e[k];
+  return e;
+})();
+
 export function filesToCheck(root, dirArg) {
   if (dirArg) return readdirSync(join(root, dirArg)).filter((f) => f.endsWith('.md'));
-  const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8' })
+  const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8', env: GIT_ENV })
     .split('\n').map((x) => x.trim()).filter((x) => x.endsWith('.md')).map((x) => basename(x));
   const touched = [
     ...git('ls-files', '--others', '--exclude-standard', '--', 'src/content/news'),

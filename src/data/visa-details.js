@@ -102,7 +102,10 @@ const VISA_DETAILS = {
   'india-goa':           { duration: '30 дней (double)',       cost: 'бесплатно для РФ', timing: 'до 30 дней онлайн' },
   'sri-lanka':           { duration: '30 дней (double)',       cost: 'бесплатно для РФ', timing: '24–72 ч онлайн' },
   'cambodia':            { duration: '30 дней',                cost: '$36',           timing: '3 дня онлайн' },
-  'south-korea':         { duration: '90 дн, K-ETA 3 года',    cost: '~$8 (₩10 000)', timing: '24–72 ч K-ETA' },
+  // ⛔ Было «90 дн» — читалось как три месяца одним заездом. Министерство юстиции
+  // Республики Корея на странице K-ETA пишет про Россию иначе: «60 days in a row,
+  // not exceeding 90 days within 180 days». Сверено 21.08.2026.
+  'south-korea':         { duration: '60 дн подряд, до 90/180', cost: '~$8 (₩10 000)', timing: '24–72 ч K-ETA' },
   'jordan':              { duration: '30 дн (безвиз с 13.12.2025, до 90/год)', cost: 'бесплатно', timing: 'штамп на границе', summary: 'Виза в Иорданию россиянам с 13 декабря 2025 больше не нужна — безвиз до 30 дней (до 90/год), штамп на границе бесплатно. Условия въезда и что показать.' },
   'bali':                { duration: '30 + 30 дней',           cost: 'IDR 500k (~$35)', timing: 'VOA или eVOA 1–3 дня' },
   'sumatra-kalimantan':  { duration: '30 + 30 дней',           cost: 'IDR 500k (~$35)', timing: 'VOA / eVOA' },

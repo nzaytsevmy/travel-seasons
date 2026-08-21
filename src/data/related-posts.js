@@ -16,6 +16,9 @@ export const RELATED_POSTS = {
     { slug: 'japan-visa-2026', title: 'Виза в Японию для россиян 2026', kind: 'visa' },
     { slug: 'japan-golden-week-2026', title: 'Золотая неделя в Японии 2026', kind: 'season' },
   ],
+  'south-korea': [
+    { slug: 'south-korea-visa-2026', title: 'Виза в Южную Корею 2026: K-ETA, сроки, что спросят на границе', kind: 'visa' },
+  ],
   'antarctica': [
     { slug: 'antarctica-cruise-2026', title: 'Круиз в Антарктиду 2026: цена, маршрут, мой опыт', kind: 'guide' },
   ],

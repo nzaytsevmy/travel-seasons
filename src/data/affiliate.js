@@ -95,8 +95,20 @@ export function tpkDeep(linkKey, targetUrl, subId) {
 
 // Cherehapa: подбор с предвыбранной страной (проверено: /travel/?country=georgia —
 // 200, SSR-title под страну) + постраничный sub_id (латиница/цифры/_).
+//
+// ⛔ Слаг партнёра совпадает с нашим НЕ всегда, и промах не виден по коду ответа:
+// неизвестную страну партнёр молча отдаёт как общую форму подбора. Проверять надо
+// по SSR-заголовку. 21.08.2026: `south-korea` дал общий «Туристическая страховка
+// онлайн» — ровно как несуществующий слаг, — а страну открывает `korea`.
+// Это тот же холодный клик, из-за которого переделывали ссылки на отели.
+const CHEREHAPA_COUNTRY = {
+  'south-korea': 'korea',
+};
+
 export const cherehapaCountry = (countrySlug, subId) =>
-  tpkDeep('cherehapa', `https://cherehapa.ru/travel/?country=${countrySlug}`, subId);
+  tpkDeep('cherehapa',
+    `https://cherehapa.ru/travel/?country=${CHEREHAPA_COUNTRY[countrySlug] ?? countrySlug}`,
+    subId);
 
 // Cherehapa: страница подбора без страны (для страниц, где страна не одна /
 // слаг у партнёра не проверен) + постраничный sub_id.
