@@ -25,7 +25,7 @@ const title = `${country.name} в ${monthMeta.loc} ${yr}: погода, цены
 // последнюю фразу, только если она влезает.
 const descBase = `${country.name} в ${monthMeta.loc} ${yr}: ${data.weather.day} °C днём, море ${data.weather.sea} °C, бюджет от $${data.budget.low}/день. Сезон ${data.seasonLevel}, перелёт ${data.flight}.`;
 const descTail = ' Что смотреть и стоит ли ехать.';
-const description = (descBase + descTail).length <= 155 ? descBase + descTail : descBase.slice(0, 155);
+const description = (descBase + descTail).length <= 200 ? descBase + descTail : descBase.slice(0, 200);
 
 // TL;DR — кратко на основе данных
 const tldr = `В ${monthMeta.loc} ${P} ${country.nameLoc} ${data.weather.day} °C днём и ${data.weather.night} °C ночью, море ${data.weather.sea} °C. Сезон — ${data.seasonLevel}. Перелёт из Москвы: ${data.flight}. Бюджет: от $${data.budget.low}/день (эконом) до $${data.budget.high}/день (премиум). ${data.weatherDesc}`;

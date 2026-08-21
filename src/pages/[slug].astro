@@ -200,11 +200,14 @@ const hubTitle = deepGuide
 // ⛔ Хвост включается, только если без него описание короче 100 знаков: у стран с
 // коротким названием и одним-двумя лучшими месяцами выходило 92–99, и это ловил
 // внешний аудит (21.08.2026). Хвост говорит, что на странице, а не добивает длину.
+// ⛔ Потолок описания 200, а не 155 (21.08.2026). Google режет около 155–160 и
+// показывает начало, Яндекс выводит до 250 — на его выдаче короткое описание просто
+// теряет место. Суть держим в первых 150 знаках: тогда обрезка Google ничего не ломает.
 const hubDescTail = ' Что посмотреть, сколько дней закладывать и когда дешевле.';
 const hubDescBase = (deepGuide
   ? `${d.cases.nom}: регионы и куда лететь, когда ехать по месяцам${bestMonths.length ? ` — ${bestMonths.slice(0, 3).map((m) => m.nom).join(', ')}` : ''}, бюджет по сезонам. Полный гайд для россиян — отдельно.`
   : `${d.cases.nom} ${yr} для россиян: ${VISA_LABEL[d.visa].toLowerCase()} (${vd.duration}), когда ехать — ${bestMonths.map((m) => m.nom).join(', ')}, бюджет от $${weekTotal || 'N/A'}/нед.`);
-const hubDesc = (hubDescBase.length < 100 ? hubDescBase + hubDescTail : hubDescBase).slice(0, 155);
+const hubDesc = (hubDescBase.length < 100 ? hubDescBase + hubDescTail : hubDescBase).slice(0, 200);
 const hubOgTitle = deepGuide
   ? `${d.cases.nom} ${yr} — регионы, сезоны, куда лететь`
   : `${d.cases.nom} ${yr} — когда ехать, цены, маршрут`;
