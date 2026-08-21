@@ -38,6 +38,14 @@ const visaSummary = {
 
 // CTR-заголовок зеркалит интент «нужна ли виза в X»: для безвиза прямо отвечает
 // «не нужна» (а не вводящее в заблуждение «документы/цена»), для eVisa — «онлайн».
+// ⛔ У направлений с длинным названием («Канадские Скалистые горы») полный шаблон
+// вылезал за 60 знаков и попадал в аудит как «заголовок слишком длинный» (21.08.2026).
+// Хвост про документы и сроки отбрасываем — ключ и год важнее.
+const VISA_TITLE_SHORT = {
+  free: `Виза ${d.cases.vP} не нужна россиянам в 2026`,
+  evisa: `Виза ${d.cases.vP} 2026 — eVisa для россиян`,
+  required: `Виза ${d.cases.vP} для россиян в 2026`,
+};
 const VISA_TITLE = {
   free: `Виза ${d.cases.vP} не нужна россиянам в 2026 — безвиз`,
   evisa: `Виза ${d.cases.vP} 2026 — eVisa онлайн для россиян, цена`,
@@ -81,6 +89,9 @@ const VISA_STAY = {
 // Страновые verified-данные (visa-details.js) — цена/срок/оформление по конкретной
 // стране, не generic по типу. Это закрывает «сколько стоит виза в X» answer-first.
 const vd = getVisaDetails(d.slug, d.visa);
+// Заголовок: полный шаблон, а если он не влезает в выдачу — короткий.
+const visaTitleFull = vd.title ?? VISA_TITLE[d.visa];
+const visaTitle = visaTitleFull.length > 60 ? (vd.title ?? VISA_TITLE_SHORT[d.visa]) : visaTitleFull;
 // Разделяем два разных факта: noVisa = визы НЕ нужно (только тег 'free'); feeFree = нет
 // консульского сбора. Кипр (evisa, pro-visa) имеет cost:'бесплатно', но виза НУЖНА —
 // нельзя писать «виза не нужна» по строке cost. hasSpecific = есть страновые данные →
@@ -168,10 +179,10 @@ const ldJson = {
 };
 ---
 <Layout
-  title={vd.title ?? VISA_TITLE[d.visa]}
+  title={visaTitle}
   description={metaDesc}
   canonical={url}
-  ogTitle={vd.title ?? VISA_TITLE[d.visa]}
+  ogTitle={visaTitle}
   ogDescription={metaDesc}
   ogType="article"
   ldJson={ldJson}
