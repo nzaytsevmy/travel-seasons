@@ -54,8 +54,19 @@ const gitLines = (...args: string[]): string[] => {
   }
 };
 
-/** Текст статьи без служебных строк шапки, правка которых ничего не меняет по сути. */
-const meaningful = (src: string) => src.replace(/^description:.*$/gm, '');
+/** То, что человек читает как текст: заголовок и тело.
+ *  ⛔ Шапка целиком служебная: теги, обложка, даты, журнал сверок и описание
+ *  правятся без единого слова в прозе. Пока сравнивался весь файл, слияние
+ *  тегов в 15 статьях покрасило языковой гейт требованием чистить «просто»
+ *  и «уже» в текстах, которых правка не касалась. Гейт, краснеющий от
+ *  служебной строки, начинают обходить — поэтому «тронуто» = изменилась проза. */
+const meaningful = (src: string) => {
+  const m = src.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+  if (!m) return src;
+  const [, fm, body] = m;
+  const title = (fm.match(/^title:.*$/m) ?? [''])[0];
+  return `${title}\n${body}`;
+};
 
 function touchedPosts(): string[] {
   const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : 'origin/main';
