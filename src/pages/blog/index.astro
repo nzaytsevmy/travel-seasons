@@ -16,15 +16,24 @@ function readingTime(body: string) {
   return Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
 }
 
-// Облако-фильтр — только повторяющиеся теги (≥2 постов = осмысленный фильтр),
-// по убыванию частоты. Generic «2026» (почти на всех) и одиночные теги (страна-
-// специфичные: Вулканы, Уюни, Мачу-Пикчу…) убраны — их страницы остаются доступны
-// со страниц самих постов. Было ~60 тегов сплошным полотном.
+// Фильтр по темам. Порог — 3 статьи: на двух карточках фильтр не помогает выбрать,
+// а строку в списке занимает. Generic «2026» (у 65 из 73) не различает ничего.
+// Одиночные теги остаются доступны со страниц самих постов.
+// Видимых тем — восемь: они покрывают 79% статей, остальные раскрываются по кнопке.
+// Пилюли заменены на текстовые тогглы по брендбуку (§5: «Фильтры: текст-тогглы,
+// НЕ пилюли»; border-radius запрещён), хит-зона доведена до 44px.
+const TAG_MIN_POSTS = 3;
+const TAGS_VISIBLE = 8;
 const _tagFreq = {};
 allPosts.flatMap(p => p.data.tags).forEach(t => { _tagFreq[t] = (_tagFreq[t] || 0) + 1; });
 const allTags = Object.keys(_tagFreq)
-  .filter(t => _tagFreq[t] >= 2 && t !== '2026')
+  .filter(t => _tagFreq[t] >= TAG_MIN_POSTS && t !== '2026')
   .sort((a, b) => _tagFreq[b] - _tagFreq[a] || a.localeCompare(b, 'ru'));
+// На карточке теги — подпись, а не навигация: три штуки хватает, чтобы понять тему.
+// «2026» не различает ничего (стоит у 65 из 73) и на карточке только шумит.
+const cardTags = (tags: string[]) => tags.filter(t => t !== '2026').slice(0, 3);
+const topTags = allTags.slice(0, TAGS_VISIBLE);
+const restTags = allTags.slice(TAGS_VISIBLE);
 
 // Множественное число «статья» по последней цифре (русское правило)
 const _pc = allPosts.length, _d = _pc % 10, _h = _pc % 100;
@@ -74,12 +83,23 @@ const ldJson = {
       <p class="blog-lead">Реальные поездки, живые цены, без воды. {allPosts.length} {postWord}.</p>
     </header>
 
-    {allTags.length > 0 && (
-      <div class="tag-filter" role="navigation" aria-label="Фильтр по тегам">
-        {allTags.map(tag => (
-          <a href={`/blog/tag/${tag}/`} class="tag-pill">{tag}</a>
+    {topTags.length > 0 && (
+      <nav class="tag-filter" aria-label="Темы блога">
+        <span class="tf-label">Темы</span>
+        {topTags.map(tag => (
+          <a href={`/blog/tag/${tag}/`} class="tf-link">{tag}</a>
         ))}
-      </div>
+        {restTags.length > 0 && (
+          <details class="tf-more">
+            <summary>Ещё {restTags.length}</summary>
+            <div class="tf-rest">
+              {restTags.map(tag => (
+                <a href={`/blog/tag/${tag}/`} class="tf-link">{tag}</a>
+              ))}
+            </div>
+          </details>
+        )}
+      </nav>
     )}
 
     {featured && (
@@ -102,7 +122,7 @@ const ldJson = {
           </div>
           <div class="featured-body">
             <div class="post-tags">
-              {featured.data.tags.map(t => (
+              {cardTags(featured.data.tags).map(t => (
                 <span class="ptag">{t}</span>
               ))}
             </div>
@@ -139,7 +159,7 @@ const ldJson = {
               </div>
               <div class="post-body">
                 <div class="post-tags">
-                  {post.data.tags.map(t => <span class="ptag">{t}</span>)}
+                  {cardTags(post.data.tags).map(t => <span class="ptag">{t}</span>)}
                 </div>
                 <h3 class="post-title">{post.data.title}</h3>
                 <p class="post-desc">{post.data.description}</p>
@@ -182,20 +202,48 @@ const ldJson = {
 .blog-header h1 em { color: var(--gold); font-style: italic; }
 .blog-lead { color: var(--text-dim); font-size: 0.9rem; }
 
-/* ── Tag filter ── */
+/* ── Фильтр по темам ──
+   Брендбук §5: фильтры — текст-тогглы, не пилюли; border-radius и рамки запрещены.
+   Хит-зона 44px набирается вертикальным padding при межстрочном 1. */
 .tag-filter {
-  display: flex; flex-wrap: wrap; gap: 0.5rem;
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  column-gap: 1.1rem; row-gap: 0;
   margin-bottom: 2.5rem;
-  padding-bottom: 1.5rem;
+  padding-bottom: 1.1rem;
   border-bottom: 1px solid var(--line);
 }
-.tag-pill {
-  font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--text-dim); border: 1px solid var(--line);
-  padding: 0.3rem 0.75rem; border-radius: 20px;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
+.tf-label {
+  font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-dim); padding: 0.9rem 0; margin-right: 0.2rem;
 }
-.tag-pill:hover { color: var(--gold); border-color: rgba(201,151,58,0.5); background: rgba(201,151,58,0.07); }
+.tf-link {
+  font-size: 0.95rem; color: var(--text);
+  padding: 0.9rem 0; line-height: 1;       /* 14.4+14.4+15 ≈ 44px */
+  text-decoration: underline 1px color-mix(in srgb, var(--line) 90%, transparent);
+  text-underline-offset: 0.22em; text-decoration-skip-ink: auto;
+  transition: color 0.2s, text-decoration-color 0.2s;
+}
+.tf-link:hover, .tf-link:focus-visible {
+  color: var(--gold);
+  text-decoration-color: var(--gold);
+}
+.tf-more { display: contents; }
+.tf-more > summary {
+  font-size: 0.95rem; color: var(--text-dim); cursor: pointer;
+  padding: 0.9rem 0; line-height: 1; list-style: none;
+  text-decoration: underline 1px color-mix(in srgb, var(--line) 90%, transparent);
+  text-underline-offset: 0.22em;
+}
+.tf-more > summary::-webkit-details-marker { display: none; }
+.tf-more > summary:hover, .tf-more > summary:focus-visible {
+  color: var(--gold); text-decoration-color: var(--gold);
+}
+.tf-more[open] > summary { color: var(--gold); }
+.tf-rest {
+  flex-basis: 100%;
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  column-gap: 1.1rem; row-gap: 0;
+}
 
 /* ── Section labels ── */
 .section-label {
@@ -275,12 +323,15 @@ const ldJson = {
 .post-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.45rem; flex: 1; }
 
 /* ── Shared ── */
-.post-tags { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+/* Теги карточки — подпись, а не кнопки: брендбук §4 запрещает рамки и скругления,
+   плотность держим разделителем, а не коробочками. */
+.post-tags { display: block; }   /* не flex: разделитель должен переноситься вместе с тегом */
 .ptag {
-  font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--gold); border: 1px solid rgba(201,151,58,0.3);
-  padding: 0.12rem 0.4rem; border-radius: 2px;
+  font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--gold-dim);
 }
+/* точка приклеена к предыдущему тегу — иначе на узком экране уезжает в начало строки */
+.ptag:not(:last-child)::after { content: ' · '; color: var(--line); }
 .post-title { font-family: var(--ff-display); font-size: 1.15rem; font-weight: 400; line-height: 1.25; }
 .post-desc { color: var(--text-dim); font-size: 0.8rem; line-height: 1.6; flex: 1; }
 .post-meta {
