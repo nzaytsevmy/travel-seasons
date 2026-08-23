@@ -203,8 +203,21 @@ const finalLd = {
       function consent() { try { return localStorage.getItem('tt_consent'); } catch (e) { return null; } }
       var loaded = false;
       // withWebvisor=true только при согласии. Базовый счётчик (ПФ + трекинг кликов) — всегда.
+      // ⛔ Не считать автоматизацию. Замер 23.08.2026: прямыми заходами шло
+      //    1817 визитов за 28 дней с отказом 71,8% — вдвое хуже живых 13,6%,
+      //    из них 128 честно представлялись HeadlessChrome. Одна страница
+      //    (гайд по Чили) собирала по 30–60 таких заходов в день с 8 августа.
+      //    Метрика своим фильтром ловила только 430 из 1817, остальные шли
+      //    как люди и тянули поведенческие вниз — а это один из трёх факторов,
+      //    из которых Яндекс считает индекс качества сайта.
+      //    navigator.webdriver выставляет сам браузер, когда им управляют через
+      //    DevTools Protocol (Puppeteer/Playwright/Selenium) — у живого человека
+      //    он false. Поисковые роботы сюда не попадают: они не ходят через CDP
+      //    и представляются своим именем, а не HeadlessChrome.
+      var looksAutomated = navigator.webdriver === true ||
+        /HeadlessChrome|PhantomJS|Puppeteer|Playwright|Selenium/i.test(navigator.userAgent || '');
       window.ttLoadAnalytics = function (withWebvisor) {
-        if (loaded || !window.__analyticsEnabled) return;
+        if (loaded || !window.__analyticsEnabled || looksAutomated) return;
         loaded = true;
         // Ahrefs Web Analytics (cookieless)
         var s = document.createElement('script');
