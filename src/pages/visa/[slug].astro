@@ -215,7 +215,7 @@ const ldJson = {
     </div>
     <header class="visa-header">
       <div class={`visa-tag visa-tag--${d.visa}`}>{VISA_LABELS[d.visa]}</div>
-      <h1>Виза <em>{d.cases.vP}</em> в 2026 году</h1>
+      <h1>{vd.h1 ?? <>Виза <em>{d.cases.vP}</em> в 2026 году</>}</h1>
       <p class="visa-sub">{summary}</p>
       <p class="visa-byline">
         <a href="/about/" class="byline-author">Никита Зайцев</a> ·
