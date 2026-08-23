@@ -51,6 +51,8 @@ const PAGES: { slug: string; name: string; dynamic?: boolean; content?: boolean 
   { slug: '/blog/gornyy-park-ruskeala-2026/', name: 'blog-ruskeala', content: true },        // POI Карелии: бюджет-таблицы
   { slug: '/blog/ostrov-kizhi-2026/',       name: 'blog-kizhi', content: true },             // POI Карелии
   { slug: '/blog/ostrov-valaam-2026/',      name: 'blog-valaam', content: true },            // POI Карелии
+  // Лента «Свежее о стране» на хабе помечена data-volatile и в кадр не идёт (см. выше в тесте):
+  // сам шаблон хаба остаётся под пиксельным эталоном, волатильным был только этот один блок.
   { slug: '/turkey/',                       name: 'country-hub-turkey' },     // хаб страны: manifest + TripSaveButton + aff-CTA
   { slug: '/trips/july/turkey/',            name: 'trips-july-turkey' },      // trips-детальная: findcta + TripSaveButton
   { slug: '/bezviz/',                       name: 'bezviz', dynamic: true },   // сезонный блок «текущий месяц»
@@ -84,6 +86,16 @@ for (const page of PAGES) {
     });
     // Сбрось анимации (для стабильных скринов)
     await pwPage.addStyleTag({ content: '*, *::before, *::after { transition: none !important; animation: none !important; }' });
+    // Волатильные блоки (data-volatile) в пиксельный эталон НЕ берём: их наполняет робот
+    // новостей, и снимок устаревал бы к следующему утру. 23.08.2026 первая же заметка про
+    // Турцию удлинила /turkey/ с 14 546 до 14 802 px и уронила country-hub-turkey на всех
+    // четырёх движках — на ЧИСТОМ main, без чужих правок (A/B в изолированной копии).
+    // Почему display:none, а не mask: маска закрашивает прямоугольник, но НЕ фиксирует
+    // высоту страницы, а fullPage-снимок сверяет размер ДО сравнения пикселей — рост
+    // ленты на одну заметку всё равно давал бы жёсткий фейл.
+    // Структуру самого блока держат no-overflow / no-broken-images / no-css-escapes ниже:
+    // они идут по нетронутой странице, без этого стиля.
+    await pwPage.addStyleTag({ content: '[data-volatile] { display: none !important; }' });
     // Детерминизм fullPage: догрузить lazy-картинки и дать им декодироваться ДО скрина —
     // иначе на длинных постах (kamchatka и др.) картинки догружаются во время capture → флейк.
     await pwPage.evaluate(() => {
