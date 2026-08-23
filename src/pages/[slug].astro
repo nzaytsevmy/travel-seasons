@@ -614,8 +614,11 @@ if (guide?.itinerary?.length) {
     </section>
 
     {/* СВЕЖИЕ ЗАМЕТКИ О НАПРАВЛЕНИИ */}
+    {/* data-volatile: наполнение блока меняет робот новостей, поэтому в пиксельный
+        эталон он не идёт (tests/visual.spec.ts прячет [data-volatile] перед снимком).
+        На вёрстку и на боевой сайт атрибут не влияет. */}
     {countryNews.length > 0 && (
-      <section class="sl-section">
+      <section class="sl-section" data-volatile="news">
         <div class="sl-shead"><h2>Свежее о {d.cases.prep}</h2></div>
         <ul class="sl-related">
           {countryNews.map((n) => (
