@@ -447,15 +447,63 @@ if (faqs.length >= 2) {
   margin-bottom: 2.5rem;
 }
 
-/* Wide-таблицы (4+ колонок) — в ширине текста (720px), как обычные.
-   На десктопе колонки распределяются по auto-layout, на мобиле card-stack.
-   Если в широкой таблице (6+ колонок) текст не помещается — горизонтальный
-   скролл через .table-wrap overflow-x: auto. */
+/* Wide-таблицы (4+ колонок): на телефоне карточками, на компьютере таблицей.
+   ⛔ Раньше их держали строго в ширине текста, а не влезшие отдавали боковому
+   пролистыванию. Замер 23.08.2026 показал, чем это оборачивалось: трём таблицам
+   не хватало 82–278px, и ни у одной первая колонка не закреплялась — уехав
+   вправо, читатель видел числа без подписи строки. Признака, что справа есть
+   продолжение, тоже не было: таблица выглядела просто обрезанной.
+   Теперь они расширяются в поля до 190px с каждой стороны — тот же приём и тот
+   же лимит, что у карточек цен. Больше не берём намеренно: таблица, которая
+   заметно шире текста, рвёт ритм чтения. */
 .prose :global(.table-wrap.table-wide) {
-  width: 100%;
+  width: auto;
+  max-width: calc(100% + 2 * min(var(--bleed), 190px));
+  margin-left: calc(-1 * min(var(--bleed), 190px));
+  margin-right: calc(-1 * min(var(--bleed), 190px));
   font-size: 0.88rem;
   margin-top: 2rem;
   margin-bottom: 2rem;
+}
+/* Что делать, если таблица не влезла даже в поля: пролистывание остаётся, но
+   оно должно быть честным — первая колонка держится на месте, чтобы значения
+   не отрывались от подписи строки, а тень у её края показывает, что справа
+   есть ещё данные. Требование из разборов адаптивных таблиц у Nielsen Norman
+   Group и Smashing Magazine. */
+@media (min-width: 721px) {
+  .prose :global(.table-wrap.table-wide tbody td:first-child),
+  .prose :global(.table-wrap.table-wide thead th:first-child) {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: var(--bg);
+  }
+}
+/* Узкий ноутбук: полей по бокам мало, и таблице с длинными ячейками не хватает
+   считанных пикселей. У четырёх колонок на боковые отступы уходит около 110px —
+   ужимаем их, и таблица влезает целиком вместо пролистывания ради 19px. */
+@media (min-width: 721px) and (max-width: 1100px) {
+  .prose :global(.table-wrap.table-wide :is(th, td)) {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+/* Признак продолжения справа — чистым CSS, без скрипта. Два слоя фона: белые
+   «заглушки» приклеены к краям (background-attachment: local, едут вместе с
+   содержимым), тени приклеены к самой обёртке (scroll — стоят на месте). Пока
+   прокручивать нечего, заглушка закрывает тень; появилась прокрутка — тень
+   выходит из-под неё. Приём известен как CSS-only scroll shadows.
+   ⛔ Работает только при непрозрачном фоне: значение --bg должно совпадать
+   с фоном страницы, иначе по краям таблицы появится светлая полоса. */
+.prose :global(.table-wrap.table-wide) {
+  background:
+    linear-gradient(to right, var(--bg) 30%, rgba(0, 0, 0, 0)) left center,
+    linear-gradient(to left, var(--bg) 30%, rgba(0, 0, 0, 0)) right center,
+    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0)) left center,
+    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0)) right center;
+  background-repeat: no-repeat;
+  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+  background-attachment: local, local, scroll, scroll;
 }
 @media (max-width: 720px) {
   /* Editorial stacked pattern (как FlightRoutes): первая колонка = серифный
