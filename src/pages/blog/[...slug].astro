@@ -475,6 +475,26 @@ if (faqs.length >= 2) {
     top: -9999px;
     left: -9999px;
   }
+  /* ⛔ Глобальные правила узкой таблицы (global.css, ≤720px) закрепляют первую
+     колонку для горизонтальной прокрутки: sticky + max-width 9rem + тень справа.
+     В карточном режиме прокрутки нет, и эти правила ломают вид: заголовок сжат
+     до 144px и рвётся на три строки, а тень читается как вертикальная линия
+     посреди текста. Отменяем их — здесь первая ячейка это заголовок карточки. */
+  .prose :global(.table-wrap.table-wide tbody td:first-child),
+  .prose :global(.table-wrap.table-wide thead th:first-child) {
+    position: static;
+    min-width: 0;
+    max-width: none;
+    box-shadow: none;
+    background: transparent;
+  }
+  .prose :global(.table-wrap.table-wide :is(th, td)) {
+    min-width: 0;
+  }
+  /* Прокрутки в карточном режиме нет — обёртка не должна её обещать */
+  .prose :global(.table-wrap.table-wide) {
+    overflow-x: visible;
+  }
   .prose :global(.table-wrap.table-wide tbody) {
     border-top: 1px solid var(--line);
   }
@@ -510,16 +530,25 @@ if (faqs.length >= 2) {
     line-height: 1.5;
     position: relative;
   }
+  /* Подпись и значение в одну строку: столбиком каждая пара занимала две
+     строки, и таблица из четырёх позиций уходила на полтора экрана. Флекс с
+     переносом — длинное значение всё равно упадёт под подпись, короткое
+     встанет рядом. */
+  .prose :global(.table-wrap.table-wide tbody td:not(:first-child)) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 0.5rem;
+    row-gap: 0.1rem;
+  }
   .prose :global(.table-wrap.table-wide tbody td:not(:first-child))::before {
-    /* Bullet + label сверху */
     content: attr(data-label);
-    display: block;
+    flex: 0 0 auto;
     font-size: 0.62rem;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--text-faint);
-    margin-bottom: 0.15rem;
     padding-left: 0;
   }
   .prose :global(.table-wrap.table-wide tbody td:not(:first-child))::after {

@@ -115,7 +115,32 @@ export default function rehypeTableWrap() {
         const firstRow = tb ? findFirst(tb, 'tr') : null;
         if (firstRow) cols = findAll(firstRow, 'td').length;
       }
-      const wrapClasses = cols >= 3 ? ['table-wrap', 'table-wide'] : ['table-wrap'];
+      const wide = cols >= 3;
+      const wrapClasses = wide ? ['table-wrap', 'table-wide'] : ['table-wrap'];
+
+      // ⛔ Карточная раскладка ставит ячейкам display:block, а это стирает
+      // семантику таблицы: скринридер перестаёт объявлять строки и колонки и
+      // читает содержимое сплошным текстом. Роли возвращают её обратно —
+      // требование из разборов Smashing Magazine и Адриана Розелли по
+      // адаптивным таблицам. Ставим только там, где раскладка меняется.
+      if (wide) {
+        const setRole = (el, role) => {
+          if (!el.properties) el.properties = {};
+          el.properties.role = role;
+        };
+        setRole(node, 'table');
+        // findAll смотрит только прямых детей, поэтому строки берём из групп.
+        for (const group of ['thead', 'tbody']) {
+          const g = findFirst(node, group);
+          if (!g) continue;
+          setRole(g, 'rowgroup');
+          for (const tr of findAll(g, 'tr')) {
+            setRole(tr, 'row');
+            for (const cell of findAll(tr, 'td')) setRole(cell, 'cell');
+            for (const cell of findAll(tr, 'th')) setRole(cell, 'columnheader');
+          }
+        }
+      }
       const wrapper = {
         type: 'element',
         tagName: 'div',
