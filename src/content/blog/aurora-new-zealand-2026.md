@@ -5,7 +5,7 @@ pubDate: 2026-05-01
 updatedDate: 2026-07-25
 coverImage: "../../assets/blog/aurora-nz.jpg"
 author: "Никита Зайцев"
-tags: ["Новая Зеландия", "Сияние", "Фото", "Бюджет"]
+tags: ["Новая Зеландия", "Северное сияние", "Фото", "Бюджет"]
 sourceType: "personal"
 tripDate: "июль 2024"
 tripPlace: "Новая Зеландия — Текапо, Маунт-Кук, Южный остров"
