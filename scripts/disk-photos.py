@@ -20,7 +20,7 @@
   python3 scripts/disk-photos.py "Чили '25" --contact
   python3 scripts/disk-photos.py "Чили '25" --pick 12,40,77 --slug chile --names atacama,geysers,santiago
 """
-import argparse, io, json, os, sys, urllib.parse, urllib.request
+import argparse, io, json, os, subprocess, sys, tempfile, urllib.parse, urllib.request
 from pathlib import Path
 from PIL import Image, ImageOps
 
@@ -49,7 +49,7 @@ def listing(path):
             break
         offset += 200
     return [i for i in items if i['type'] == 'file'
-            and i['name'].lower().endswith(('.jpg', '.jpeg'))]
+            and i['name'].lower().endswith(('.jpg', '.jpeg', '.hif', '.heic'))]
 
 
 def fetch(path, preview=False):
@@ -60,7 +60,35 @@ def fetch(path, preview=False):
     else:
         u = f'{API}/resources/download?' + urllib.parse.urlencode({'path': path})
         href = json.load(req(u))['href']
-    return req(href).read()
+    # Диск рвёт отдачу на середине файла: на восьмом кадре из семнадцати пришёл
+    # IncompleteRead, и полученные раньше кадры пропали вместе с _own.json.
+    for attempt in range(4):
+        try:
+            data = req(href).read()
+            break
+        except Exception:
+            if attempt == 3:
+                raise
+            href = json.load(req(u))['href'] if not preview else href
+    if not preview and path.lower().endswith(('.hif', '.heic')):
+        data = heif_to_jpeg(data)
+    return data
+
+
+def heif_to_jpeg(data):
+    """PIL без pillow_heif не открывает .HIF, а он единственный формат в части папок.
+
+    ⚠ sips не применяет флаг поворота ([[feedback_heic_orientation_trap]]), но и не
+    стирает его: тег Orientation доезжает в JPEG, и exif_transpose выше доворачивает
+    кадр уже сам. Смотреть глазами всё равно обязательно.
+    """
+    with tempfile.TemporaryDirectory() as d:
+        src, dst = Path(d) / 'in.hif', Path(d) / 'out.jpg'
+        src.write_bytes(data)
+        subprocess.run(['sips', '-s', 'format', 'jpeg', '-s', 'formatOptions', '95',
+                        str(src), '--out', str(dst)],
+                       check=True, capture_output=True)
+        return dst.read_bytes()
 
 
 def shot_date(img):
@@ -78,17 +106,18 @@ def shot_date(img):
         return None
 
 
-def contact_sheet(folder, out):
+def contact_sheet(folder, out, first=1, last=None):
     files = sorted(listing(f'disk:/Контент/{folder}'), key=lambda i: i['name'])
     if not files:
         # Так падало на «Вьетнам»: в корне поездки одни RAW и видео, просматриваемых
         # jpg нет вовсе, а PIL на пустом листе кидает «cannot write empty image».
         sys.exit(f'в «{folder}» нет просматриваемых jpg — загляните в подпапки '
                  f'(RAW/, Видео/) или возьмите другую поездку')
+    page = files[first - 1:last]
     cw, ch, cols = 300, 200, 6
-    rows = (len(files) + cols - 1) // cols
+    rows = (len(page) + cols - 1) // cols
     sheet = Image.new('RGB', (cw * cols, ch * rows), '#111')
-    for n, it in enumerate(files):
+    for n, it in enumerate(page):
         try:
             im = Image.open(io.BytesIO(fetch(it['path'], preview=True)))
             im = ImageOps.exif_transpose(im)
@@ -97,10 +126,11 @@ def contact_sheet(folder, out):
         except Exception:
             pass
         if n % 20 == 0:
-            print(f'  {n}/{len(files)}', flush=True)
+            print(f'  {n}/{len(page)}', flush=True)
     sheet.save(out, 'JPEG', quality=80, optimize=True)
     print(f'\nконтактный лист: {out}')
-    print(f'кадров: {len(files)} · нумерация слева направо, {cols} в ряду, с 1')
+    print(f'кадров в папке: {len(files)} · на листе {first}–{first + len(page) - 1} · '
+          f'нумерация слева направо, {cols} в ряду')
     return files
 
 
@@ -133,10 +163,12 @@ if __name__ == '__main__':
     ap.add_argument('--slug', help='папка статьи в _images/')
     ap.add_argument('--names', help='имена файлов через запятую, по числу номеров')
     ap.add_argument('--out', default='/tmp/contact.jpg')
+    ap.add_argument('--first', type=int, default=1, help='с какого кадра начать лист')
+    ap.add_argument('--last', type=int, help='каким кадром закончить лист')
     ap.add_argument('--root', default=str(Path(__file__).resolve().parent.parent))
     a = ap.parse_args()
     if a.contact:
-        contact_sheet(a.folder, a.out)
+        contact_sheet(a.folder, a.out, a.first, a.last)
     elif a.pick:
         nums = [int(x) for x in a.pick.split(',')]
         names = a.names.split(',')
