@@ -16,6 +16,7 @@ import {
   loadSnapshot,
 } from '../scripts/news-gate.mjs';
 import { writeSnapshot, snapshotKey } from '../scripts/news-snapshot.mjs';
+import { looksLikeArticle } from '../scripts/news-radar.mjs';
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -464,4 +465,32 @@ test('адреса источников разбираются и не повт�
   for (const u of urls) expect(() => new URL(u)).not.toThrow();
   const dupes = urls.filter((u: string, i: number) => urls.indexOf(u) !== i);
   expect(dupes).toEqual([]);
+});
+
+// ⛔ 25.08.2026: треть свежих «поводов» оказалась разделами, а не статьями.
+// Отборщик ссылок судит по адресу — путь глубокий, слаг длинный, значит статья, —
+// и под это правило подходят «Climate crisis», «Personal Finance», «Avian
+// Influenza - Topic» и региональные страницы IUCN. Замер по 110 кандидатам:
+// 35 из них были разделами. Признак статьи ищем в самой странице, а не в адресе.
+test('раздел сайта не выдаёт себя за статью', () => {
+  const section = `<html><head><meta property="og:type" content="website">
+    <script type="application/ld+json">{"@type":"CollectionPage"}</script></head></html>`;
+  expect(looksLikeArticle(section)).toBe(false);
+  expect(looksLikeArticle('<html><head><title>Climate crisis</title></head></html>')).toBe(false);
+});
+
+test('статью узнаём по трём разным пометкам — издания размечают её по-разному', () => {
+  expect(looksLikeArticle('<meta property="og:type" content="article">')).toBe(true);
+  // The Jakarta Post и Daily Sabah пишут именно так
+  expect(looksLikeArticle('<meta property="og:type" content="news.article">')).toBe(true);
+  // Nature, Mongabay
+  expect(looksLikeArticle('<script type="application/ld+json">{"@type":"NewsArticle"}</script>')).toBe(true);
+  expect(looksLikeArticle('<script type="application/ld+json">{"@type":"BlogPosting"}</script>')).toBe(true);
+  // ⛔ Аргентинские нацпарки: ни og:type, ни JSON-LD, только эта мета. Уронить
+  // их фильтром значит потерять первоисточник ради чистоты списка.
+  expect(looksLikeArticle('<meta property="article:published_time" content="2026-08-24T10:00:00Z">')).toBe(true);
+});
+
+test('пустая страница статьёй не считается', () => {
+  expect(looksLikeArticle('')).toBe(false);
 });

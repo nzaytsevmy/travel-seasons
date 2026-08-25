@@ -21,11 +21,18 @@
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 import { stripHtml } from './news-gate.mjs';
 
 const UA = 'traveltribe-news-gate/1.0 (+https://traveltribe.ru/)';
 
 const PER_SOURCE = 6;      // сколько кандидатов берём с одной страницы
+// ⛔ Добор для источников, где первые ссылки — навигация. Замер 25.08.2026:
+// у IUCN и АТОР все шесть первых ссылок оказались разделами сайта, то есть эти
+// два источника не давали НИ ОДНОЙ статьи, а в отчёте выглядели живыми. Берём
+// следующие ссылки только там, где в первой шестёрке статей не нашлось: у
+// здоровых источников это не стоит ни одного лишнего запроса.
+const PER_SOURCE_RETRY = 12;
 const CONCURRENCY = 8;     // параллельных проверок
 const MIN_CHARS = 400;     // тот же порог, что у гейта
 const TIMEOUT = 15000;
@@ -103,6 +110,32 @@ export function ageDays(date, today) {
   return Math.round((today - d) / 86400000);
 }
 
+/**
+ * Статья это или раздел сайта. Отборщик ссылок судит по адресу — путь глубокий,
+ * слаг длинный, — и под это правило подходят «Climate crisis», «Personal
+ * Finance», «Avian Influenza - Topic» и региональные страницы IUCN. Замер
+ * 25.08.2026 по 110 свежим кандидатам: 35 из них были разделами, то есть треть
+ * списка, который человек читает как список поводов.
+ *
+ * Пометок три, потому что издания размечают статью по-разному: у большинства
+ * og:type, у Nature и Mongabay — JSON-LD, у аргентинских нацпарков нет ни того,
+ * ни другого, а есть только article:published_time. Хватает любой: дороже
+ * потерять первоисточник, чем оставить лишний раздел.
+ *
+ * ⛔ Найденное здесь НЕ выбрасывается молча. Nature при параллельной загрузке
+ * один раз отдал урезанный ответ без единой пометки — на живой странице все три
+ * на месте. Фильтр, который бы её выбросил, соврал бы тихо, поэтому раздел
+ * уезжает отдельным списком вниз отчёта, а не в никуда.
+ */
+export function looksLikeArticle(html) {
+  if (!html) return false;
+  const og = html.match(/<meta[^>]+(?:property|name)="og:type"[^>]+content="([^"]+)"/i);
+  if (og && /article/i.test(og[1])) return true;
+  if (/<meta[^>]+(?:property|name)="article:published_time"/i.test(html)) return true;
+  if (/"@type"\s*:\s*"[^"]*(?:Article|BlogPosting)"/i.test(html)) return true;
+  return false;
+}
+
 function titleOf(html) {
   const og = html.match(/<meta[^>]+property="og:title"[^>]+content="([^"]+)"/i);
   if (og) return og[1].trim();
@@ -128,8 +161,10 @@ async function main() {
 
   const pages = await mapLimit(radar, CONCURRENCY, async (src) => {
     const r = await get(src.url);
-    if (!r.body) return { src, status: r.status, links: [] };
-    return { src, status: r.status, links: extractArticleLinks(r.body, src.url).slice(0, PER_SOURCE) };
+    if (!r.body) return { src, status: r.status, links: [], rest: [] };
+    const all = extractArticleLinks(r.body, src.url);
+    return { src, status: r.status, links: all.slice(0, PER_SOURCE),
+      rest: all.slice(PER_SOURCE, PER_SOURCE + PER_SOURCE_RETRY) };
   });
 
   const flat = [];
@@ -140,8 +175,30 @@ async function main() {
     const text = r.body ? stripHtml(r.body).trim() : '';
     const date = r.body ? publishedAt(r.body, c.url) : null;
     return { ...c, status: r.status, chars: text.length, date,
-      age: ageDays(date, Date.now()), title: r.body ? titleOf(r.body) : '' };
+      age: ageDays(date, Date.now()), title: r.body ? titleOf(r.body) : '',
+      // Признак берём из этого же тела: второй запрос — второй способ промахнуться.
+      article: looksLikeArticle(r.body) };
   });
+
+  // Добор: источник, у которого в первой шестёрке нет ни одной статьи, получает
+  // второй заход по следующим ссылкам. Иначе он молча числится рабочим.
+  const gotArticle = new Set(checked.filter((c) => c.article).map((c) => c.src.url));
+  const retry = [];
+  for (const p of pages) {
+    if (gotArticle.has(p.src.url)) continue;
+    for (const url of p.rest ?? []) retry.push({ src: p.src, url });
+  }
+  if (retry.length) {
+    const more = await mapLimit(retry, CONCURRENCY, async (c) => {
+      const r = await get(c.url);
+      const text = r.body ? stripHtml(r.body).trim() : '';
+      const date = r.body ? publishedAt(r.body, c.url) : null;
+      return { ...c, status: r.status, chars: text.length, date,
+        age: ageDays(date, Date.now()), title: r.body ? titleOf(r.body) : '',
+        article: looksLikeArticle(r.body) };
+    });
+    checked.push(...more.filter((c) => c.article));
+  }
 
   const good = checked.filter((c) => c.chars >= MIN_CHARS);
   // Рубрика просит поводы за последнюю НЕДЕЛЮ, но материал может выйти в
@@ -150,8 +207,11 @@ async function main() {
   const stale = good.filter((c) => c.age !== null && c.age > FRESH_DAYS);
   const undated = good.filter((c) => c.age === null);
 
+  const sections = fresh.filter((c) => !c.article);
+  const articles = fresh.filter((c) => c.article);
+
   const byTopic = new Map();
-  for (const c of fresh) {
+  for (const c of articles) {
     const k = c.src.topic ?? 'nature';
     if (!byTopic.has(k)) byTopic.set(k, []);
     byTopic.get(k).push(c);
@@ -169,6 +229,17 @@ async function main() {
       lines.push(`  ${c.title || '(без заголовка)'}`);
       lines.push(`    ${c.url}`);
       lines.push(`    ${c.date} · ${c.age} дн. назад · ${c.src.name} · знаков: ${c.chars}`);
+    }
+    lines.push('');
+  }
+
+  if (sections.length) {
+    lines.push(`── похоже на раздел сайта, а не на статью (${sections.length}) ──`);
+    lines.push('  На странице нет ни одной пометки статьи. Обычно это рубрика вроде');
+    lines.push('  «Climate crisis» или «Personal Finance»: адрес выглядит как у статьи,');
+    lines.push('  а содержимое — список ссылок. Брать только убедившись глазами.');
+    for (const c of sections.slice(0, 15)) {
+      lines.push(`  ${(c.title || c.url).slice(0, 60)} — ${c.src.name}`);
     }
     lines.push('');
   }
@@ -206,7 +277,8 @@ async function main() {
     lines.push('');
   }
   lines.push(`ИТОГО: источников ${radar.length}, проверено ${checked.length}, `
-    + `свежих ${fresh.length}, старых ${stale.length}, без даты ${undated.length}.`);
+    + `свежих статей ${articles.length} (плюс ${sections.length} разделов), `
+    + `старых ${stale.length}, без даты ${undated.length}.`);
 
   const text = lines.join('\n');
   const out = process.env.NEWS_RADAR_OUT ?? '/tmp/news-radar.txt';
@@ -215,7 +287,12 @@ async function main() {
   console.log(`\nсписок записан: ${out}`);
 }
 
-main().catch((e) => {
-  console.error('сборщик поводов упал:', e);
-  process.exit(1);
-});
+// ⛔ Без этой проверки модуль обходил все источники при простом импорте: тест,
+// который хочет одну функцию, запускал бы получасовой обход.
+const isMain = process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+if (isMain) {
+  main().catch((e) => {
+    console.error('сборщик поводов упал:', e);
+    process.exit(1);
+  });
+}
