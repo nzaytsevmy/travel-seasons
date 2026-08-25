@@ -51,8 +51,18 @@ async function get(url, timeoutMs = TIMEOUT) {
   }
 }
 
-/** Ссылки на статьи с обзорной страницы: тот же домен, путь глубже раздела. */
-function extractArticleLinks(html, pageUrl) {
+/**
+ * Ссылки на статьи с обзорной страницы: тот же домен, путь глубже раздела.
+ *
+ * ⛔ Порядок важен не меньше отбора. Обходчик берёт первые шесть, а первыми в
+ * разметке идёт меню сайта: у IUCN первая ссылка на пресс-релиз стоит 31-й из
+ * 49. Расширять окно значит грузить чужие сайты десятками запросов ради одного
+ * источника, поэтому вперёд ставим то, что лежит в ТОМ ЖЕ разделе, что и сама
+ * страница: список релизов ссылается на релизы, лента новостей — на новости.
+ * Совпадения нет — порядок остаётся прежним, то есть для здоровых источников
+ * это ничего не меняет.
+ */
+export function extractArticleLinks(html, pageUrl) {
   let origin;
   try { origin = new URL(pageUrl).origin; } catch { return []; }
   const out = new Set();
@@ -70,7 +80,35 @@ function extractArticleLinks(html, pageUrl) {
     if (/(subscribe|newsletter|privacy|terms|about|contact|login|account|shop|gift)/i.test(path)) continue;
     out.add(href);
   }
+
   return [...out];
+}
+
+/**
+ * Ставит вперёд ссылки из того же раздела, что и сама страница: список релизов
+ * ссылается на релизы, лента новостей — на новости.
+ *
+ * ⛔ Применять это ко ВСЕМУ списку нельзя, проверено замером 25.08.2026: у
+ * ScienceDaily статьи лежат в /releases/, а список — в /news/, и приоритет
+ * раздела вытолкнул настоящие статьи из окна (было 5, стало 0). У The Guardian
+ * то же самое: 12 статей превратились в 5. Поэтому порядок меняем только внутри
+ * ДОБОРА — там, где первая шестёрка не дала ничего и терять нечего.
+ */
+export function preferSameSection(links, pageUrl) {
+  const firstSegment = (u) => {
+    try { return new URL(u).pathname.split('/').filter(Boolean)[0] ?? ''; } catch { return ''; }
+  };
+  const section = firstSegment(pageUrl);
+  if (!section) return [...links];
+  // «press-releases» и «press-release» — один раздел, поэтому сравниваем по началу.
+  const rank = (u) => {
+    const s = firstSegment(u);
+    return s && (s.startsWith(section) || section.startsWith(s)) ? 0 : 1;
+  };
+  return links
+    .map((u, i) => ({ u, i, r: rank(u) }))
+    .sort((a, b) => a.r - b.r || a.i - b.i)
+    .map((x) => x.u);
 }
 
 /**
@@ -163,8 +201,10 @@ async function main() {
     const r = await get(src.url);
     if (!r.body) return { src, status: r.status, links: [], rest: [] };
     const all = extractArticleLinks(r.body, src.url);
+    // В добор берём весь хвост, но вперёд ставим ссылки того же раздела: у IUCN
+    // первый пресс-релиз стоял 31-м из 49, за меню сайта.
     return { src, status: r.status, links: all.slice(0, PER_SOURCE),
-      rest: all.slice(PER_SOURCE, PER_SOURCE + PER_SOURCE_RETRY) };
+      rest: preferSameSection(all.slice(PER_SOURCE), src.url).slice(0, PER_SOURCE_RETRY) };
   });
 
   const flat = [];

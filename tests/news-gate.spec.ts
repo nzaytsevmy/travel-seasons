@@ -16,7 +16,7 @@ import {
   loadSnapshot,
 } from '../scripts/news-gate.mjs';
 import { writeSnapshot, snapshotKey } from '../scripts/news-snapshot.mjs';
-import { looksLikeArticle } from '../scripts/news-radar.mjs';
+import { looksLikeArticle, extractArticleLinks, preferSameSection } from '../scripts/news-radar.mjs';
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -493,4 +493,42 @@ test('статью узнаём по трём разным пометкам — 
 
 test('пустая страница статьёй не считается', () => {
   expect(looksLikeArticle('')).toBe(false);
+});
+
+// ⛔ 25.08.2026: у IUCN первая ссылка на пресс-релиз стоит 31-й из 49 — до неё
+// идёт меню сайта. Обходчик берёт первые шесть и добирает ещё двенадцать, то
+// есть не доходит. Расширять окно значит грузить чужие сайты десятками запросов
+// ради одного источника. Дешевле поставить вперёд то, что лежит в том же
+// разделе, что и сама страница: список релизов ссылается на релизы.
+test('ссылки из того же раздела, что и страница, идут первыми', () => {
+  const html = [
+    '<a href="/our-work/biodiversity-and-nature">меню</a>',
+    '<a href="/our-union/commissions/species-survival">меню</a>',
+    '<a href="/press-release/202608/global-land-restoration-gains-ground">релиз</a>',
+  ].join('');
+  const links = preferSameSection(extractArticleLinks(html, 'https://iucn.org/press-releases'),
+    'https://iucn.org/press-releases');
+  expect(links[0]).toContain('/press-release/');
+});
+
+test('без совпадения по разделу порядок ссылок не трогаем', () => {
+  // Mongabay отдаёт статьи с главной: раздела у страницы нет, сортировать нечего.
+  const html = '<a href="/2026/08/first-article-here">a</a><a href="/2026/08/second-article-here">b</a>';
+  const links = preferSameSection(extractArticleLinks(html, 'https://news.mongabay.com/'),
+    'https://news.mongabay.com/');
+  expect(links).toEqual([
+    'https://news.mongabay.com/2026/08/first-article-here',
+    'https://news.mongabay.com/2026/08/second-article-here',
+  ]);
+});
+
+// ⛔ Замер 25.08.2026: приоритет раздела, применённый ко ВСЕМУ списку, уронил
+// ScienceDaily с 5 статей до 0 — у него список в /news/, а статьи в /releases/.
+// Первая шестёрка обязана оставаться в порядке документа.
+test('первая шестёрка не переставляется: у ScienceDaily статьи в другом разделе', () => {
+  const html = '<a href="/news/plants_animals/category-page-here">раздел</a>'
+    + '<a href="/releases/2026/08/260825010101.htm">статья</a>';
+  const links = extractArticleLinks(html, 'https://www.sciencedaily.com/news/plants_animals/');
+  expect(links[0]).toContain('/news/');
+  expect(links[1]).toContain('/releases/');
 });
