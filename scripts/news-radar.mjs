@@ -284,9 +284,28 @@ async function main() {
     lines.push('');
   }
 
-  if (undated.length) {
-    lines.push(`── без даты публикации (${undated.length}), брать только проверив дату руками ──`);
-    for (const c of undated.slice(0, 12)) lines.push(`  ${(c.title || c.url).slice(0, 78)}\n    ${c.url}`);
+  // ⛔ 25.08.2026: этот раздел печатал 12 строк из 101 и без имени источника —
+  // то есть 89 материалов существовали только в счётчике. Так пропадали
+  // пресс-релизы IUCN: они читаются и распознаются как статьи, но даты в
+  // разметке у IUCN нет вовсе, ни в одном машиночитаемом месте.
+  //
+  // Печатаем все недатированные СТАТЬИ и с именем источника. Разделы сайта
+  // сюда же попадают десятками, поэтому их считаем отдельной строкой, а не
+  // печатаем: смотреть человеку надо на статьи.
+  const undatedArticles = undated.filter((c) => c.article);
+  const undatedSections = undated.length - undatedArticles.length;
+  if (undatedArticles.length) {
+    lines.push(`── без даты публикации (${undatedArticles.length}), дату проверить руками ──`);
+    lines.push('  Страница похожа на статью, но даты в разметке нет. У IUCN её нет вовсе,');
+    lines.push('  поэтому его пресс-релизы приходят только сюда. Дату смотреть на самой');
+    lines.push('  странице: без неё заметка не выйдет — гейт требует поле с датой события.');
+    for (const c of undatedArticles) {
+      lines.push(`  ${(c.title || c.url).slice(0, 66)} — ${c.src.name}`);
+      lines.push(`    ${c.url}`);
+    }
+    if (undatedSections) {
+      lines.push(`  (ещё ${undatedSections} без даты — это разделы сайта, не статьи, не печатаю)`);
+    }
     lines.push('');
   }
   if (stale.length) {
@@ -318,7 +337,8 @@ async function main() {
   }
   lines.push(`ИТОГО: источников ${radar.length}, проверено ${checked.length}, `
     + `свежих статей ${articles.length} (плюс ${sections.length} разделов), `
-    + `старых ${stale.length}, без даты ${undated.length}.`);
+    + `старых ${stale.length}, без даты ${undatedArticles.length} статей `
+    + `и ${undatedSections} разделов.`);
 
   const text = lines.join('\n');
   const out = process.env.NEWS_RADAR_OUT ?? '/tmp/news-radar.txt';
