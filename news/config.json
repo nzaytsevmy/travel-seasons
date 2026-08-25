@@ -221,30 +221,123 @@
       "url": "http://ps.fsb.ru/",
       "topic": "visa"
     },
-    "https://www.atorus.ru/news/press-centre",
-    "https://www.favt.gov.ru/novosti-novosti/",
-    "https://www.antaranews.com/tag/tourism",
-    "https://presidency.gov.mv/Press",
-    "https://www.tourism.gov.mv/news",
-    "https://www.tatnews.org/",
-    "https://www.mfa.gov.ge/news"
+    {
+      "name": "Antara — Индонезия, туризм",
+      "url": "https://www.antaranews.com/tag/tourism",
+      "topic": "transport"
+    },
+    {
+      "name": "МИД Грузии",
+      "url": "https://www.mfa.gov.ge/news",
+      "topic": "visa"
+    },
+    {
+      "name": "The Guardian — дикая природа",
+      "url": "https://www.theguardian.com/environment/wildlife",
+      "topic": "nature"
+    },
+    {
+      "name": "Al Jazeera — климат",
+      "url": "https://www.aljazeera.com/climate-crisis",
+      "topic": "nature"
+    },
+    {
+      "name": "France 24 — окружающая среда",
+      "url": "https://www.france24.com/en/environment/",
+      "topic": "nature"
+    },
+    {
+      "name": "ABC News — природа, Австралия",
+      "url": "https://www.abc.net.au/news/environment",
+      "topic": "nature"
+    },
+    {
+      "name": "The Japan Times — природа",
+      "url": "https://www.japantimes.co.jp/environment/",
+      "topic": "nature"
+    },
+    {
+      "name": "The Independent — климат",
+      "url": "https://www.independent.co.uk/climate-change/news",
+      "topic": "nature"
+    },
+    {
+      "name": "RNZ — природа, Новая Зеландия",
+      "url": "https://www.rnz.co.nz/news/environment",
+      "topic": "nature"
+    },
+    {
+      "name": "Euronews — зелёная повестка",
+      "url": "https://www.euronews.com/green",
+      "topic": "nature"
+    },
+    {
+      "name": "TimesLIVE — наука, ЮАР",
+      "url": "https://www.timeslive.co.za/news/sci-tech/",
+      "topic": "nature"
+    },
+    {
+      "name": "MercoPress — Южная Америка",
+      "url": "https://en.mercopress.com/environment",
+      "topic": "nature"
+    },
+    {
+      "name": "Los Angeles Times — природа",
+      "url": "https://www.latimes.com/environment",
+      "topic": "nature"
+    },
+    {
+      "name": "The Globe and Mail — путешествия",
+      "url": "https://www.theglobeandmail.com/life/travel/",
+      "topic": "transport"
+    },
+    {
+      "name": "The Jakarta Post — Индонезия",
+      "url": "https://www.thejakartapost.com/news",
+      "topic": "transport"
+    },
+    {
+      "name": "Daily Sabah — Турция",
+      "url": "https://www.dailysabah.com/turkey",
+      "topic": "transport"
+    },
+    {
+      "name": "The Indian Express — Индия",
+      "url": "https://indianexpress.com/section/india/",
+      "topic": "transport"
+    }
   ],
   "_domains": "allowedSourceDomains — единственные домены, на которые заметке разрешено ссылаться. Сюда идут ОРГАНИЗАЦИИ: министерства, посольства, нацпарки, научные институты и журналы. Издания (National Geographic, BBC, Mongabay) сюда НЕ добавляем: сегодня их редполитика одна, завтра другая, а гейт должен опираться на того, кто отвечает за факт.",
   "_radar": "radar — где робот ищет поводы. Издания сюда добавлять МОЖНО и нужно: они подсказывают, что искать. Ссылаться на них нельзя, если домена нет в allowedSourceDomains — текст пишется от того, кто факт объявил. ⛔ С 18.08.2026 отбор идёт под ранжирование: тема без замеренного спроса в ленту не попадает (порог — 3 000 запросов/мес по корневой фразе, Вордстат). Правила в NEWS-SELECTION-PROMPT.md. Причина: за 90 дней раздел собрал 9 визитов из поиска, а в топ-500 запросов сайта ноль природных тем.",
   "mediaSourceDomains": [
+    "abc.net.au",
+    "aljazeera.com",
     "amandala.com.bz",
     "antaranews.com",
     "atlasobscura.com",
     "bbc.com",
     "breakingbelizenews.com",
+    "dailysabah.com",
+    "euronews.com",
+    "france24.com",
+    "independent.co.uk",
+    "indianexpress.com",
+    "japantimes.co.jp",
+    "latimes.com",
     "livescience.com",
+    "mercopress.com",
     "mongabay.com",
     "nationalgeographic.com",
     "newscientist.com",
     "reuters.com",
+    "rnz.co.nz",
     "sanpedrosun.com",
     "sciencedaily.com",
-    "smithsonianmag.com"
+    "smithsonianmag.com",
+    "theglobeandmail.com",
+    "theguardian.com",
+    "thejakartapost.com",
+    "timeslive.co.za"
   ],
   "_snapshots": "news/snapshots — снимки страниц, снятые живым браузером. Нужны там, где ведомство закрыто от любых серверов: японский МИД и все японские посольства с 19.08.2026 отдают 403 и обычному curl, и headless-браузеру — открывается только настоящий Chrome. Гейт требует первоисточник по визам и при этом сам не мог его прочитать, то есть выбрасывал министерства и оставлял пересказы. Снимок кладётся руками: node scripts/news-snapshot.mjs <url> \"<заголовок>\" < текст.txt. ⛔ Снимок засчитывается ТОЛЬКО если живой запрос упёрся в блокировку (403/401/451 или страница без текста), адрес внутри снимка совпадает с адресом источника, дата снятия не из будущего и не старше 30 дней. Открытый источник всегда читается напрямую, снимком его подменить нельзя. Зачтённый снимок печатается в отчёте отдельной строкой — молча он не проходит."
 }

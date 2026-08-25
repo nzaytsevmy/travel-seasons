@@ -16,7 +16,7 @@ import {
   loadSnapshot,
 } from '../scripts/news-gate.mjs';
 import { writeSnapshot, snapshotKey } from '../scripts/news-snapshot.mjs';
-import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -442,4 +442,26 @@ test('обрывок страницы вместо снимка не прини�
     expect(r.ok).toBe(false);
     expect(r.reason).toContain('читаемого текста');
   } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+// ⛔ 25.08.2026: семь источников обходчика были записаны голыми строками вместо
+// объектов. Код читает у них `.url` и `.name`, получает undefined, fetch падает
+// с TypeError — и в отчёте семь раз подряд печаталось «undefined — err:TypeError
+// — undefined». Со стороны это выглядело как «обходчик выдохся»: список считался
+// из 37 источников, а работали 30. Молчаливая потеря семи источников хуже
+// падения, поэтому форма записи проверяется тестом.
+test('в обходчике нет источников с потерянным именем или адресом', () => {
+  const cfg = JSON.parse(readFileSync(join(process.cwd(), 'news/config.json'), 'utf8'));
+  const broken = (cfg.radar ?? [])
+    .map((s: unknown, i: number) => ({ i, s }))
+    .filter(({ s }: { s: any }) => !s || typeof s !== 'object' || !s.name || !s.url || !s.topic);
+  expect(broken.map(({ i, s }: { i: number; s: unknown }) => `${i}: ${JSON.stringify(s)}`)).toEqual([]);
+});
+
+test('адреса источников разбираются и не повторяются', () => {
+  const cfg = JSON.parse(readFileSync(join(process.cwd(), 'news/config.json'), 'utf8'));
+  const urls = (cfg.radar ?? []).map((s: any) => String(s.url).replace(/\/+$/, ''));
+  for (const u of urls) expect(() => new URL(u)).not.toThrow();
+  const dupes = urls.filter((u: string, i: number) => urls.indexOf(u) !== i);
+  expect(dupes).toEqual([]);
 });
