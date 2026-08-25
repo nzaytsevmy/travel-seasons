@@ -65,6 +65,15 @@ for (const e of newsChecked.filter((x) => newsArchived.has(monthKey(x.date)))) {
 
 const DATA_DATE = new Date(DATA_UPDATED + 'T00:00:00Z');
 
+// Дата для sitemap-index.xml — самая свежая запись из тех, что попадут в карту.
+// Если оставить дату справочных данных, указатель будет отставать от карты.
+const SITEMAP_INDEX_DATE = [
+  DATA_DATE,
+  ...Object.values(blogLastmod),
+  ...(newsFeedLastmod ? [newsFeedLastmod] : []),
+  ...Object.values(newsMonthLastmod),
+].reduce((a, b) => (b && b > a ? b : a), DATA_DATE);
+
 export default defineConfig({
   site: 'https://traveltribe.ru',
   trailingSlash: 'always',
@@ -157,7 +166,14 @@ export default defineConfig({
         && !CLOSED_TRIPS.has(page),
       changefreq: 'weekly',
       priority: 0.7,
-      lastmod: DATA_DATE,
+      // ⛔ Эта дата попадает НЕ на страницы, а в sitemap-index.xml — файл, с
+      //    которого поисковик начинает обход. Стояла DATA_DATE (дата проверки
+      //    справочных данных), и она не сдвигалась от новых статей блога:
+      //    25.08.2026 карта на сервере была свежая, статья в ней с 24.08, а
+      //    указатель заявлял 23.08 — Google читал его, решал «нового нет» и
+      //    внутрь не заходил («URL неизвестен Google» на прямой запрос).
+      //    Берём максимум из всех дат, которые реально попадут в карту.
+      lastmod: SITEMAP_INDEX_DATE,
       serialize(item) {
         const url = item.url;
         item = { ...item, lastmod: blogLastmod[url] || DATA_DATE };
