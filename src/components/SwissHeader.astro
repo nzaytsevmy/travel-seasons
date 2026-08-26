@@ -7,25 +7,63 @@ const is = (href) => {
   const h = (href.replace(/\/+$/, '') || '/');
   return h === '/' ? path === '/' : (path === h || path.startsWith(h + '/'));
 };
+// Меню собрано по вопросам читателя, а не по устройству сайта. Раньше в одном
+// ряду стояли девять пунктов трёх разных природ: разрезы содержания
+// (направления, визы, сезоны, поездки), инструменты (калькулятор, сравнение,
+// чек-лист) и форматы текста (блог, новости). Читателю не за что зацепиться —
+// он не знает, по какому признаку искать. Разбор тринадцати travel-сайтов
+// 26.08.2026: медиана пять пунктов, первым почти у всех «куда поехать»,
+// инструменты собраны под одно слово, названия — на языке читателя.
 const LINKS = [
-  ['/countries/', 'Направления'],
-  ['/visa/', 'Визы'],
-  ['/seasons/', 'Сезоны'],
-  ['/trips/', 'Поездки'],
-  ['/calculator/', 'Калькулятор'],
-  ['/compare/', 'Сравнить'],
-  ['/packing/', 'Чек-лист'],
-  ['/novosti/', 'Новости'],
-  ['/blog/', 'Блог'],
+  { href: '/countries/', label: 'Куда поехать', под: [
+    ['/countries/', 'Все направления', '70+ стран с фильтрами'],
+    ['/trips/',     'По месяцам',      'что работает в каждом месяце'],
+    ['/seasons/',   'Сезоны',          'когда лучше ехать'],
+    // Сравнение живёт здесь, а не в сборах: направления сравнивают, пока
+    // выбирают. В сборах его не нашёл бы тот, кто ещё не решил, куда едет.
+    ['/compare/',   'Сравнить',        'два направления рядом'],
+  ]},
+  { href: '/visa/', label: 'Визы' },
+  // «Сборы», а не «Подготовка»: человек говорит «собираюсь в поездку», а не
+  // «занимаюсь подготовкой». У Condé Nast и Nomadic Matt на этом месте тоже
+  // действие — Plan Your Trip, а не отглагольное существительное.
+  { href: '/packing/', label: 'Сборы', под: [
+    ['/packing/',    'Что взять',     'списки под страну и сезон'],
+    ['/calculator/', 'Сколько стоит', 'расчёт бюджета поездки'],
+  ]},
+  // «Статьи», а не «Журнал»: журнал — слово редакции, читатель говорит
+  // «почитать» или «статьи».
+  { href: '/blog/', label: 'Статьи', под: [
+    ['/blog/',    'Гайды и разборы', 'длинные тексты по странам'],
+    ['/novosti/', 'Новости',         'что изменилось на этой неделе'],
+  ]},
 ];
+
+// Пункт подсвечен, если открыт он сам или что-то из его списка.
+const activen = (п) => is(п.href) || (п.под || []).some(([h]) => is(h));
 ---
 <header class="sw-head">
   <div class="wrap nav">
     <a class="wm" href="/">TravelTribe</a>
     <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="navmenu" aria-label="Открыть меню"><span></span><span></span><span></span></button>
     <nav id="navmenu" aria-label="Основное меню"><ul>
-      {LINKS.map(([href, label]) => (
-        <li><a href={href} class={is(href) ? 'on' : ''} aria-current={is(href) ? 'page' : undefined}>{label}</a></li>
+      {LINKS.map((п) => (
+        <li>
+          {п.под ? (
+            <details class={activen(п) ? 'grp on' : 'grp'}>
+              <summary>{п.label}<svg class="v" viewBox="0 0 10 6" width="9" height="5" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></summary>
+              <ul class="sub">
+                {п.под.map(([h, имя, что]) => (
+                  <li><a href={h} class={is(h) ? 'on' : ''} aria-current={is(h) ? 'page' : undefined}>
+                    <span class="s-n">{имя}</span><span class="s-d">{что}</span>
+                  </a></li>
+                ))}
+              </ul>
+            </details>
+          ) : (
+            <a href={п.href} class={is(п.href) ? 'on' : ''} aria-current={is(п.href) ? 'page' : undefined}>{п.label}</a>
+          )}
+        </li>
       ))}
     </ul></nav>
   </div>
@@ -47,6 +85,36 @@ const LINKS = [
 .nav ul a{display:inline-flex;align-items:center;min-height:44px;text-decoration:underline 1px transparent;text-underline-offset:.22em;font-weight:500}
 .nav ul a:hover,.nav ul a:focus-visible{text-decoration-color:var(--gold)}
 .nav ul a.on{color:var(--gold);text-decoration-color:var(--gold)}
+/* Группы раскрываются нажатием, а не наведением: на тач наведение либо
+   срабатывает до клика, либо залипает после — оба раза меню ведёт себя
+   непредсказуемо. <details> работает одинаково мышью, пальцем и клавиатурой. */
+.grp{position:relative}
+.grp summary{display:inline-flex;align-items:center;gap:.34rem;min-height:44px;cursor:pointer;
+  list-style:none;font-weight:500;text-decoration:underline 1px transparent;text-underline-offset:.22em}
+.grp summary::-webkit-details-marker{display:none}
+.grp summary:hover,.grp summary:focus-visible{text-decoration-color:var(--gold)}
+.grp.on>summary{color:var(--gold);text-decoration-color:var(--gold)}
+.grp .v{transition:transform .18s ease;flex:none}
+.grp[open] .v{transform:rotate(180deg)}
+.sub{position:absolute;top:100%;left:-.9rem;min-width:16rem;background:var(--paper);
+  border:1px solid var(--line);padding:.3rem 0;margin:0;list-style:none;
+  display:block;flex-direction:column;gap:0;text-transform:none;letter-spacing:0}
+/* ⛔ Меню прижато к правому краю страницы, поэтому список, растущий вправо,
+   вылезает за экран: у «Журнала» на 134 пикселя, у «Подготовки» на 13 (замер
+   26.08). Растим влево у всех групп, кроме первой, — там место есть. */
+.nav ul li:not(:first-child) .sub{left:auto;right:-.9rem}
+.sub li{border-top:1px solid var(--hair)}
+.sub li:first-child{border-top:0}
+/* ⛔ Селектор с весом выше, чем у `.nav ul a`: иначе родительские правила
+   центрировали названия, а описания оставляли слева. */
+.nav ul .sub a{display:flex;flex-direction:column;align-items:flex-start;gap:.08rem;
+  padding:.55rem .9rem;min-height:44px;justify-content:center;
+  text-transform:none;letter-spacing:0;text-align:left;width:100%}
+.nav ul .sub a:hover,.nav ul .sub a:focus-visible{background:rgba(142,102,24,.07);text-decoration-color:transparent}
+.s-n{font-size:.88rem;font-weight:600;text-transform:none;letter-spacing:0;line-height:1.3}
+.s-d{font-size:.78rem;color:#6b685e;font-weight:400;text-transform:none;letter-spacing:0;line-height:1.35}
+.sub a.on .s-n{color:var(--gold)}
+
 .burger{display:none;width:44px;height:44px;flex-direction:column;justify-content:center;align-items:center;gap:5px;background:none;border:none;cursor:pointer;padding:0;margin:-.4rem -.6rem -.4rem 0}
 .burger span{display:block;width:24px;height:2px;background:var(--ink);transition:transform .2s ease,opacity .2s ease}
 .sw-head.open .burger span:nth-child(1){transform:translateY(7px) rotate(45deg)}
@@ -59,6 +127,13 @@ const LINKS = [
   .nav ul{flex-direction:column;gap:0;padding:.2rem var(--edge) 1rem}
   .nav ul li{border-top:1px solid var(--hair)}
   .nav ul a{min-height:52px;width:100%;font-size:.92rem;letter-spacing:.02em}
+  /* В бургере список уже вертикальный — группа разворачивается внутрь него,
+     а не всплывает поверх. */
+  .grp summary{min-height:52px;width:100%;justify-content:space-between;font-size:.92rem;letter-spacing:.02em}
+  .sub{position:static;border:0;min-width:0;padding:0 0 .4rem;background:transparent}
+  .sub li{border-top:0}
+  .sub a{padding:.45rem 0 .45rem 1rem;min-height:44px}
+  .s-n{font-size:.9rem}
 }
 </style>
 
