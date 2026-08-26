@@ -1,11 +1,16 @@
 ---
 // Хаб «Куда поехать по месяцам» — Swiss / International Typographic по BRANDBOOK.md.
 // Самодостаточный scoped-визуал: свои токены, только hairlines, один акцент gold, без эмодзи.
+import { Image, getImage } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { DIRECTIONS } from '../../data/directions.js';
 import { DATA_UPDATED_RU } from '../../data/meta.js';
+
+// Кадры направлений: те же файлы, что на страницах стран — новых не заводим.
+const destPhotos = import.meta.glob('../../assets/destinations/*.jpg', { eager: true, import: 'default' });
+const фотоНаправления = (slug) => destPhotos[`../../assets/destinations/${slug}.jpg`];
 
 const MONTHS = [
   { slug: 'january',   nom: 'Январь',   prep: 'январе',   short: 'Янв' },
@@ -25,11 +30,50 @@ const MONTHS = [
 const plural = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'направление' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'направления' : 'направлений'));
 
 // Для каждого месяца: топ-пик-направления (имена) + сколько всего в сезоне (P или G).
+// ⛔ Кадр берём у направления на пике — но следим, чтобы он не повторялся:
+//    у соседних месяцев пики совпадают, и на первой сборке Новая Зеландия
+//    стояла в двух карточках, а Австралия в трёх. Идём по списку пиков и
+//    берём первое ещё не занятое; если все заняты — разрешаем повтор,
+//    пустая карточка хуже.
+const занятыеКадры = new Set();
 const monthSummary = MONTHS.map((m, i) => {
-  const peak = DIRECTIONS.filter(d => d.r[i] === 'P').map(d => d.cases.nom);
+  const peakDirs = DIRECTIONS.filter(d => d.r[i] === 'P');
+  const peak = peakDirs.map(d => d.cases.nom);
   const totalGood = DIRECTIONS.filter(d => d.r[i] === 'P' || d.r[i] === 'G').length;
-  return { ...m, peak, totalGood };
+  const сКадром = peakDirs.filter(d => фотоНаправления(d.slug));
+  const photoDir = сКадром.find(d => !занятыеКадры.has(d.slug)) || сКадром[0] || null;
+  if (photoDir) занятыеКадры.add(photoDir.slug);
+  return { ...m, peak, peakCount: peakDirs.length, totalGood,
+           photo: photoDir ? фотоНаправления(photoDir.slug) : null,
+           photoName: photoDir ? photoDir.cases.nom : null };
 });
+
+// ── Разрезы: те же данные, что в фильтре на главной ──────────────────────
+const визовыеГруппы = [
+  { key: 'free',     name: 'Без визы',                  href: '/bezviz/',          test: d => d.visa === 'free' },
+  { key: 'evisa',    name: 'Виза онлайн или по прилёту', href: '/countries/?v=evisa', test: d => d.visa === 'evisa' },
+  { key: 'required', name: 'Виза заранее',              href: '/countries/?v=required', test: d => d.visa === 'required' },
+].map(г => {
+  const список = DIRECTIONS.filter(г.test);
+  const сФото = список.find(d => фотоНаправления(d.slug));
+  return { ...г, count: список.length, examples: список.slice(0, 4).map(d => d.cases.nom),
+           photo: сФото ? фотоНаправления(сФото.slug) : null };
+});
+
+const бюджетныеГруппы = [
+  { key: 'low',  name: 'До 100 тысяч',       href: '/countries/?b=low' },
+  { key: 'mid',  name: '100–200 тысяч',      href: '/countries/?b=mid' },
+  { key: 'high', name: 'Дороже 200 тысяч',   href: '/countries/?b=high' },
+].map(г => {
+  const список = DIRECTIONS.filter(d => d.budget === г.key);
+  const сФото = список.find(d => фотоНаправления(d.slug));
+  return { ...г, count: список.length, examples: список.slice(0, 4).map(d => d.cases.nom),
+           photo: сФото ? фотоНаправления(сФото.slug) : null };
+});
+
+const группыСвета = [...new Set(DIRECTIONS.map(d => d.group))]
+  .map(g => ({ name: g, count: DIRECTIONS.filter(d => d.group === g).length }))
+  .sort((a, b) => b.count - a.count);
 
 const curIdx = new Date().getMonth();   // месяц сборки = «сейчас»
 const cur = monthSummary[curIdx];
@@ -117,36 +161,96 @@ const ldJson = {
         </p>
       </header>
 
-      <section class="sec">
+      <section class="sec" aria-labelledby="h-now">
         <div class="shead">
-          <h2>Сейчас — {cur.nom} 2026</h2>
+          <h2 id="h-now">Сейчас — {cur.nom} 2026</h2>
           <a href={`/trips/${cur.slug}/`}>Все направления {cur.prep}</a>
         </div>
         <p class="lead"><b>{cur.totalGood}</b> {plural(cur.totalGood)} в сезоне {cur.prep}.{cur.peak.length ? ` На пике: ${cur.peak.slice(0, 6).join(', ')}.` : ''}</p>
       </section>
 
-      <section class="sec">
+      <section class="sec" aria-labelledby="h-months">
         <div class="shead">
-          <h2>Все 12 месяцев</h2>
+          <h2 id="h-months">Куда поехать в каждом месяце</h2>
           <span class="cap">Сезон · виза · цены внутри</span>
         </div>
-        <table class="mtbl">
-          <thead><tr><th>Месяц</th><th class="num">В сезоне</th><th>На пике сезона</th><th class="r" aria-hidden="true"></th></tr></thead>
-          <tbody>
-            {monthSummary.map((m) => (
-              <tr class={m.slug === cur.slug ? 'now' : undefined}>
-                <td class="mname"><a href={`/trips/${m.slug}/`}>{m.nom}</a>{m.slug === cur.slug && <span class="tag">сейчас</span>}</td>
-                <td class="num" data-l="В сезоне"><b>{m.totalGood}</b> <small>напр.</small></td>
-                <td class="mpeak" data-l="Пик">{m.peak.slice(0, 4).join(', ') || '—'}</td>
-                <td class="r"><a class="go" href={`/trips/${m.slug}/`}>Открыть месяц</a></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {/* ⛔ Ссылка стоит на названии месяца, а не оборачивает карточку:
+            обёрнутая карточка зачитывается вслух одной строкой со всем
+            содержимым. Нажимается при этом вся — за счёт растянутого слоя. */}
+        <ol class="mgrid">
+          {monthSummary.map((m) => (
+            <li class={m.slug === cur.slug ? 'mc mc-now' : 'mc'}>
+              {m.photo && (
+                <div class="mc-ph">
+                  <Image src={m.photo} alt={`${m.photoName} — пик сезона в ${m.prep}`}
+                         widths={[300, 600]} sizes="(max-width:560px) 50vw, (max-width:1000px) 33vw, 23vw"
+                         formats={['webp']} quality={72} loading="lazy" decoding="async" />
+                  <span class="mc-tag">{m.photoName}</span>
+                </div>
+              )}
+              <div class="mc-body">
+                <div class="mc-ttl">
+                  <h3 class="mc-name"><a href={`/trips/${m.slug}/`}>{m.nom}{m.slug === cur.slug && ' · сейчас'}</a></h3>
+                  <span class="mc-num">{m.totalGood} напр.</span>
+                </div>
+                <ol class="mc-peak">
+                  {m.peak.slice(0, 3).map((n, i) => (<li><b>{i + 1}</b>{n}</li>))}
+                </ol>
+                <span class="mc-go" aria-hidden="true">Открыть {m.nom.toLowerCase()}</span>
+              </div>
+            </li>
+          ))}
+        </ol>
       </section>
 
-      <section class="sec">
-        <div class="shead"><h2>Частые вопросы</h2></div>
+      <section class="sec" aria-labelledby="h-visa">
+        <div class="shead"><h2 id="h-visa">Нужна ли виза</h2></div>
+        <p class="lead">Что спросят на границе. Посчитано по нашей таблице виз на {DATA_UPDATED_RU}.</p>
+        <ul class="wgrid">
+          {визовыеГруппы.map(г => (
+            <li class="wc">
+              {г.photo && <div class="wc-ph"><Image src={г.photo} alt="" widths={[220]} sizes="112px"
+                            formats={['webp']} quality={70} loading="lazy" decoding="async" /></div>}
+              <div class="wc-body">
+                <h3 class="wc-name"><a href={г.href}>{г.name}</a></h3>
+                <span class="wc-num">{г.count} {plural(г.count)}</span>
+                <p class="wc-ex">{г.examples.join(', ')}…</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="sec" aria-labelledby="h-money">
+        <div class="shead"><h2 id="h-money">Сколько стоит поездка</h2></div>
+        <p class="lead">Вся поездка на двоих на неделю с перелётом — те же пороги, что в фильтре на главной.</p>
+        <ul class="wgrid">
+          {бюджетныеГруппы.map(г => (
+            <li class="wc">
+              {г.photo && <div class="wc-ph"><Image src={г.photo} alt="" widths={[220]} sizes="112px"
+                            formats={['webp']} quality={70} loading="lazy" decoding="async" /></div>}
+              <div class="wc-body">
+                <h3 class="wc-name"><a href={г.href}>{г.name}</a></h3>
+                <span class="wc-num">{г.count} {plural(г.count)}</span>
+                <p class="wc-ex">{г.examples.join(', ')}…</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="sec" aria-labelledby="h-groups">
+        <div class="shead"><h2 id="h-groups">По частям света</h2></div>
+        <p class="lead">Все {DIRECTIONS.length} {plural(DIRECTIONS.length)}, разложенные по {группыСвета.length} группам.</p>
+        <nav aria-labelledby="h-groups"><ul class="gcols">
+          {группыСвета.map(г => (
+            <li><a href="/countries/">{г.name}<span>{г.count}</span></a></li>
+          ))}
+        </ul></nav>
+      </section>
+
+      <section class="sec" aria-labelledby="h-faq">
+        <div class="shead"><h2 id="h-faq">Частые вопросы</h2></div>
         <div class="faq">
           {faqs.map(f => (
             <details class="fi">
@@ -157,8 +261,8 @@ const ldJson = {
         </div>
       </section>
 
-      <section class="sec">
-        <div class="shead"><h2>Что ещё посмотреть</h2></div>
+      <section class="sec" aria-labelledby="h-more">
+        <div class="shead"><h2 id="h-more">Что ещё посмотреть</h2></div>
         <ul class="vl">
           <li><a href="/seasons/">Полная таблица сезонов</a><span>70+ направлений × 12 месяцев в одной интерактивной таблице</span></li>
           <li><a href="/calculator/">Калькулятор бюджета</a><span>посчитать поездку с актуальным курсом ЦБ РФ</span></li>
@@ -199,7 +303,9 @@ const ldJson = {
 .h1 .rd{color:var(--gold)}
 .sub{grid-column:1/9;grid-row:3;font-size:clamp(1rem,1.3vw,1.18rem);color:var(--ink);margin-top:clamp(1.4rem,2vw,1.8rem);max-width:52ch;line-height:1.55}
 .byl{grid-column:1/13;grid-row:4;margin-top:1.4rem;font-size:.78rem;color:var(--mid)}
-.byl a{color:var(--mid)}
+.byl a{color:var(--mid);display:inline-flex;align-items:center;min-height:2.75rem}
+/* ⛔ Ссылки были высотой 19 точек — пальцем не попасть. Норма 44. */
+.mc-name a{display:inline-flex;align-items:center;min-height:2.75rem}
 .byl .byl-a{color:var(--gold);text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
 
 /* Секции */
@@ -211,23 +317,60 @@ const ldJson = {
 .lead{font-size:1.05rem;color:var(--ink);max-width:70ch;line-height:1.5}.lead b{color:var(--gold);font-weight:700}
 
 /* Таблица месяцев */
-.mtbl{width:100%;border-collapse:collapse;font-size:.92rem}
-.mtbl thead th{font-size:.64rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid);text-align:left;padding:.5rem .8rem .55rem 0;border-bottom:1px solid var(--line)}
-.mtbl thead th.num{width:8rem}.mtbl thead th.r{text-align:right;padding-right:0}
-.mtbl td{padding:.9rem .8rem;border-bottom:1px solid var(--hair);vertical-align:baseline}
-.mtbl td:first-child,.mtbl th:first-child{padding-left:0}
-.mtbl td.r{text-align:right;padding-right:0}
-.mtbl tr:last-child td{border-bottom:none}
-@media(hover:hover){.mtbl tbody tr:hover td{background:rgba(142,102,24,.07)}}
-.mname a{font-weight:700;font-size:1.15rem;letter-spacing:-.01em;color:var(--ink)}
-.mname a:hover{color:var(--gold);text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
-.tag{margin-left:.55rem;font-size:.58rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);vertical-align:1px}
-.mtbl td.num{font-weight:700;font-size:1.05rem;color:var(--ink)}.mtbl td.num small{font-size:.7rem;color:var(--mid);font-weight:500}
-.mpeak{color:var(--mid);font-size:.86rem;line-height:1.4}
-.go{color:var(--ink);font-weight:600;white-space:nowrap;text-decoration:underline 1px transparent;text-underline-offset:.22em}
-.go:hover{color:var(--gold);text-decoration-color:var(--gold)}
-.mtbl tr.now td{background:rgba(142,102,24,.05)}
-.mtbl tr.now .mname a{color:var(--gold)}
+/* ── Сетка месяцев: карточка с кадром, тройкой пиков и ссылкой ─────────── */
+.mgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(.7rem,1.4vw,1.15rem);list-style:none;padding:0;counter-reset:none}
+.mc{position:relative;display:flex;flex-direction:column;border:1px solid var(--hair);background:var(--paper)}
+.mc:hover{border-color:var(--line)}
+.mc:focus-within{outline:2px solid var(--gold);outline-offset:2px}
+/* ⛔ Растянутый слой делает нажимаемой всю карточку, но ссылкой остаётся
+   только заголовок — иначе программа чтения зачитает карточку целиком. */
+.mc-name a::before{content:'';position:absolute;inset:0;z-index:1}
+.mc-name a:focus-visible{outline:none}
+.mc-ph{position:relative;aspect-ratio:445/280;overflow:hidden;background:var(--hair)}
+.mc-ph img{display:block;width:100%;height:100%;object-fit:cover}
+.mc-tag{position:absolute;left:0;bottom:0;background:var(--paper);color:var(--ink);font-size:.62rem;
+  font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:.3rem .55rem}
+.mc-body{padding:.8rem .9rem .9rem;display:flex;flex-direction:column;gap:.55rem;flex:1}
+.mc-ttl{display:flex;justify-content:space-between;align-items:baseline;gap:.6rem}
+.mc-name{font-size:1.08rem;font-weight:700;letter-spacing:-.01em}
+.mc-name a{color:var(--ink)}
+.mc-name a:hover{color:var(--gold);text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
+.mc-num{font-size:.74rem;font-weight:700;color:var(--mid);white-space:nowrap}
+.mc-peak{list-style:none;padding:0;display:flex;flex-direction:column;gap:.3rem;flex:1}
+.mc-peak li{display:flex;gap:.5rem;font-size:.86rem;line-height:1.3;color:var(--ink)}
+.mc-peak li b{color:var(--gold);font-weight:700;font-size:.74rem;min-width:1.1em;padding-top:.14em}
+.mc-go{font-size:.8rem;font-weight:600;color:var(--gold);margin-top:auto}
+.mc-go::after{content:' →'}
+/* текущий месяц — вчетверо крупнее: он и есть ответ на «куда сейчас» */
+.mc-now{grid-column:span 2;grid-row:span 2}
+.mc-now .mc-ph{aspect-ratio:auto;flex:1 1 auto;min-height:20rem}
+.mc-now .mc-body{flex:0 0 auto;padding:1rem 1.1rem 1.1rem;gap:.7rem}
+.mc-now .mc-name{font-size:1.55rem}
+.mc-now .mc-name a{color:var(--gold)}
+.mc-now .mc-peak li{font-size:.97rem}
+
+/* ── Разрезы: виза и деньги ───────────────────────────────────────────── */
+.wgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(.7rem,1.4vw,1.15rem);list-style:none;padding:0;margin-top:1.1rem}
+.wc{position:relative;display:grid;grid-template-columns:7rem minmax(0,1fr);border:1px solid var(--hair);min-height:7rem}
+.wc:hover{border-color:var(--line)}
+.wc:focus-within{outline:2px solid var(--gold);outline-offset:2px}
+.wc-ph{overflow:hidden;background:var(--hair)}
+.wc-ph img{display:block;width:100%;height:100%;object-fit:cover}
+.wc-body{padding:.75rem .9rem;display:flex;flex-direction:column;gap:.28rem;min-width:0}
+.wc-name{font-size:.98rem;font-weight:700}
+.wc-name a{color:var(--ink)}
+.wc-name a::before{content:'';position:absolute;inset:0;z-index:1}
+.wc-name a:hover{color:var(--gold)}
+.wc-num{font-size:.72rem;font-weight:700;color:var(--mid)}
+.wc-ex{font-size:.82rem;color:var(--mid);line-height:1.4}
+
+/* ── Части света ──────────────────────────────────────────────────────── */
+.gcols{columns:4;column-gap:clamp(1.2rem,2.4vw,2rem);list-style:none;padding:0;margin-top:1.1rem}
+.gcols li{break-inside:avoid}
+.gcols a{display:flex;justify-content:space-between;align-items:center;gap:.8rem;min-height:2.75rem;
+  padding:.5rem 0;border-bottom:1px solid var(--hair);font-size:.92rem;color:var(--ink)}
+.gcols a:hover{color:var(--gold)}
+.gcols a span{font-size:.76rem;font-weight:700;color:var(--mid)}
 
 /* FAQ — hairline, не подушки */
 .faq{border-top:1px solid var(--line)}
@@ -240,25 +383,39 @@ const ldJson = {
 
 /* Value-list «что ещё» */
 .vl{list-style:none;border-top:1px solid var(--line)}
-.vl li{display:flex;flex-wrap:wrap;align-items:baseline;gap:.2rem .7rem;padding:.85rem 0;border-bottom:1px solid var(--hair)}
+.vl li{display:flex;flex-wrap:wrap;align-items:center;gap:.2rem .7rem;padding:.15rem 0;border-bottom:1px solid var(--hair)}
 .vl li:last-child{border-bottom:none}
-.vl a{font-weight:600;font-size:1.02rem;color:var(--ink);text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
+.vl a{font-weight:600;font-size:1.02rem;color:var(--ink);text-decoration:underline 1px var(--gold);
+  text-underline-offset:.22em;display:inline-flex;align-items:center;min-height:2.75rem}
 .vl a:hover{color:var(--gold)}
 .vl span{color:var(--mid);font-size:.86rem}
 
+@media(max-width:1100px){
+  .mgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  /* ⛔ Счётчик «58 напр.» рядом с названием перестаёт помещаться уже здесь,
+     а не только на телефоне — проверено на 1024. */
+  .mc-ttl{flex-direction:column;align-items:flex-start;gap:.05rem}
+  .mc-num{font-size:.72rem}
+  .wgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .gcols{columns:2}
+}
 @media(max-width:760px){
   .h1,.sub,.meta,.byl{grid-column:1/-1;grid-row:auto}
   .meta{text-align:left;margin-top:.6rem}
   .h1{margin-top:1.1rem}
-  /* Таблица месяцев → блоки */
-  .mtbl thead{position:absolute;left:-9999px}
-  .mtbl,.mtbl tbody,.mtbl tr,.mtbl td{display:block;width:100%}
-  .mtbl tr{border-bottom:1px solid var(--hair);padding:.9rem 0}
-  .mtbl tr:last-child{border-bottom:none}
-  .mtbl td{border:none;padding:.1rem 0}
-  .mtbl td.num{display:inline-block;font-size:.92rem}
-  .mtbl td.num small{font-size:.7rem}
-  .mtbl td.r{text-align:left;margin-top:.35rem}
-  .mtbl tr.now td,.mtbl tr:hover td{background:none}
+  .mgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mc-now{grid-column:span 2;grid-row:auto}
+  .mc-now .mc-ph{aspect-ratio:445/280;min-height:0}
+  .mc-now .mc-name{font-size:1.2rem}
+  .wgrid{grid-template-columns:1fr}
+  .gcols{columns:2}
+}
+@media(max-width:520px){
+  .mgrid{gap:.6rem}
+  .mc-name{font-size:.95rem}
+  .mc-peak li{font-size:.8rem}
+  .mc-body{padding:.65rem .7rem .7rem}
+  .mc-now .mc-name{font-size:1.02rem}
+  .gcols{columns:1}
 }
 </style>
