@@ -4,8 +4,8 @@ import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 
 const REPO = join(import.meta.dirname, '..');
-const ГАЙДЫ = ['armenia','bali','chile','egypt','georgia','hainan','kenya',
-                'morocco','sri-lanka','thailand','turkey','uae','vietnam'];
+const ГАЙДЫ = ['armenia','bali','bolivia','chile','china','egypt','georgia','hainan',
+                'kenya','morocco','peru','sri-lanka','thailand','turkey','uae','vietnam'];
 
 /** Данные точек читаем через node — файл на ES-модулях. */
 function точки(): Record<string, any> {
