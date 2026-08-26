@@ -27,16 +27,33 @@ for (let i = 0; i < MONTHS.length; i++) {
   }
 }
 
-// Реальный lastmod вместо даты сборки: посты — по updatedDate/pubDate
-// из frontmatter, программные страницы (visa/hub/seasons/trips/countries)
-// — по DATA_UPDATED. Иначе sitemap инфлирует свежесть всех URL.
+// Реальный lastmod вместо даты сборки: посты — по самой поздней из своих дат
+// (публикация, updatedDate, последняя запись журнала сверок), программные
+// страницы (visa/hub/seasons/trips/countries) — по DATA_UPDATED. Иначе sitemap
+// инфлирует свежесть всех URL.
+//
+// ⛔ Журнал сверок обязателен к учёту: без него карта отдавала дату первой
+// публикации у 62 статей из 82, и переработанная страница выглядела для поиска
+// месячной давности (26.08.2026, виза в Черногорию). Правило то же, что в
+// src/data/freshness.js, — но здесь фронтматтер ещё не разобран коллекцией,
+// поэтому читаем текстом.
 const BLOG_DIR = new URL('./src/content/blog/', import.meta.url);
 const blogLastmod = {};
 for (const f of readdirSync(BLOG_DIR)) {
   if (!/\.mdx?$/.test(f)) continue;
   const fm = (readFileSync(new URL(f, BLOG_DIR), 'utf8').split(/^---\s*$/m)[1]) || '';
-  const raw = (fm.match(/^updatedDate:\s*(.+)$/m)?.[1] || fm.match(/^pubDate:\s*(.+)$/m)?.[1] || '').replace(/['"]/g, '').trim();
-  if (raw) blogLastmod[`https://traveltribe.ru/blog/${f.replace(/\.mdx?$/, '')}/`] = new Date(raw);
+  const clean = (v) => (v || '').replace(/['"]/g, '').trim();
+  const dates = [
+    clean(fm.match(/^pubDate:\s*(.+)$/m)?.[1]),
+    clean(fm.match(/^updatedDate:\s*(.+)$/m)?.[1]),
+    // записи журнала идут с отступом внутри checks: — поля верхнего уровня
+    // (pubDate/updatedDate/tripDate) под этот вид не подходят
+    ...[...fm.matchAll(/^\s+-?\s*date:\s*(.+)$/gm)].map((m) => clean(m[1])),
+  ].filter(Boolean).map((d) => new Date(d)).filter((d) => !isNaN(d));
+  if (dates.length) {
+    blogLastmod[`https://traveltribe.ru/blog/${f.replace(/\.mdx?$/, '')}/`] =
+      new Date(Math.max(...dates.map((d) => d.valueOf())));
+  }
 }
 // Свежесть новостей — из самих заметок, а не из общей даты сайта. Единственный
 // ежедневный раздел стоял с пометкой «обновляется раз в год» и датой сборки: и

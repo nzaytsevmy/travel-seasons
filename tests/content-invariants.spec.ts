@@ -1061,3 +1061,70 @@ test('Иллюстрации: тронутая статья с 8+ раздела
   }
   expect(problems, `не дотягивают до стандарта иллюстраций:\n${problems.join('\n')}`).toEqual([]);
 });
+
+/**
+ * Свежесть в карте сайта и в лентах.
+ *
+ * 26.08.2026: переработанная статья про визу в Черногорию выросла с 846 слов до
+ * 2 431, а карта сайта продолжала отдавать дату первой публикации — 1 августа.
+ * Поисковик видит страницу месячной давности и может не переобойти её вовсе
+ * (та же беда, что с устаревшей датой указателя карты). Замер в тот день: у 62
+ * статей из 82 реальная правка свежее даты публикации.
+ *
+ * Причина одна на оба места: страница статьи давно считает дату обновления по
+ * журналу сверок, а карта сайта и ленты знали только pubDate/updatedDate.
+ * Проверяем сплошь и по СБОРКЕ: это инвариант генерации, а не правило о прозе,
+ * красить легаси тут нечем.
+ */
+const freshFromFrontmatter = (fm: string): string => {
+  const one = (re: RegExp) => fm.match(re)?.[1]?.replace(/['"]/g, '').trim() ?? '';
+  const pub = one(/^pubDate:\s*(.+)$/m);
+  const upd = one(/^updatedDate:\s*(.+)$/m);
+  // Записи журнала сверок идут с отступом внутри checks: — поле верхнего уровня
+  // (pubDate/updatedDate/tripDate) под этот вид не подходит.
+  const checks = [...fm.matchAll(/^\s+-?\s*date:\s*(.+)$/gm)].map((m) => m[1].replace(/['"]/g, '').trim());
+  return [pub, upd, ...checks].filter(Boolean).sort().at(-1)!;
+};
+
+test('Карта сайта: у статьи стоит дата последней сверки, а не первой публикации', () => {
+  const xml = readFileSync(join(DIST, 'sitemap-0.xml'), 'utf8');
+  const lastmod: Record<string, string> = {};
+  for (const m of xml.matchAll(/<loc>https:\/\/traveltribe\.ru\/blog\/([a-z0-9-]+)\/<\/loc><lastmod>([^<]+)<\/lastmod>/g)) {
+    lastmod[m[1]] = m[2].slice(0, 10);
+  }
+
+  const stale: string[] = [];
+  for (const abs of blogSources()) {
+    const slug = abs.split('/').pop()!.replace(/\.mdx?$/, '');
+    const fm = readFileSync(abs, 'utf8').split(/^---\s*$/m)[1] ?? '';
+    const fresh = freshFromFrontmatter(fm);
+    if (!fresh || !lastmod[slug]) continue;
+    if (lastmod[slug] < fresh) {
+      stale.push(`${slug}: в карте ${lastmod[slug]}, а сверяли ${fresh}`);
+    }
+  }
+  expect(stale, `карта сайта занижает свежесть:\n${stale.join('\n')}`).toEqual([]);
+});
+
+test('Лента блога: статьи идут по последней сверке, свежая переработка не тонет', () => {
+  const html = readFileSync(join(DIST, 'blog', 'index.html'), 'utf8');
+  const order: string[] = [];
+  for (const m of html.matchAll(/href="\/blog\/([a-z0-9-]+)\/"/g)) {
+    if (!order.includes(m[1])) order.push(m[1]);
+  }
+
+  const fresh: Record<string, string> = {};
+  for (const abs of blogSources()) {
+    const slug = abs.split('/').pop()!.replace(/\.mdx?$/, '');
+    fresh[slug] = freshFromFrontmatter(readFileSync(abs, 'utf8').split(/^---\s*$/m)[1] ?? '');
+  }
+
+  const listed = order.filter((s) => fresh[s]);
+  const wrong: string[] = [];
+  for (let i = 1; i < listed.length; i++) {
+    if (fresh[listed[i - 1]] < fresh[listed[i]]) {
+      wrong.push(`${listed[i]} (${fresh[listed[i]]}) стоит ниже ${listed[i - 1]} (${fresh[listed[i - 1]]})`);
+    }
+  }
+  expect(wrong, `лента не по свежести:\n${wrong.join('\n')}`).toEqual([]);
+});

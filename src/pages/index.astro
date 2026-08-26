@@ -12,6 +12,7 @@ import authorPhoto from '../assets/author/nikita.jpg';
 
 import { ACTIVITY_TAGS } from '../data/country-activity-tags.js';
 import { freshEntries, formatDateRu } from '../data/news.js';
+import { byFreshness } from '../data/freshness.js';
 const covers = import.meta.glob('../assets/destinations/*.jpg', { eager: true, import: 'default' });
 
 const VISA_LABEL = { free: 'Безвиз', evisa: 'e-Visa', required: 'Виза' };
@@ -66,7 +67,7 @@ const SEASON_IDX = { P: 0, G: 1, O: 2, B: 3 }; // пик / хорошо / нор
 const baliPat = (DIRECTIONS.find((d) => d.slug === 'bali')?.r || []).map((c) => SEASON_IDX[c] ?? 3);
 
 // Свежие посты
-const allPosts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const allPosts = (await getCollection('blog')).sort(byFreshness);
 const posts = allPosts.slice(0, 3);
 
 // Три свежие заметки строками. Без картинок и без карточек: главная не должна
