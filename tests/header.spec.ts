@@ -297,3 +297,33 @@ test('18. пункты выпадающего списка стоят вплот
     await page.mouse.move(700, 600);
   }
 });
+
+test('19. на главной раскрытый бургер читается — тёмный текст на своём листе', async ({ page }) => {
+  // ⛔ На главной шапка лежит поверх фотографии и красит пункты белым. Раскрытый
+  //    бургер рисовал их тем же белым на светлой панели — меню читалось как
+  //    блёклые тени (скриншот Никиты с телефона, 27.08.2026). В открытом
+  //    состоянии шапка обязана встать на непрозрачный лист с тёмным текстом.
+  await page.setViewportSize({ width: 402, height: 874 });
+  await page.goto('/');
+  await page.locator('#burger').click();
+  const шапка = page.locator('.sw-head');
+  await expect(шапка).toHaveClass(/open/);
+  // Фон доезжает переходом — ждём конца анимации, а не мгновенного значения.
+  await expect.poll(async () => page.evaluate(() => {
+    const ф = getComputedStyle(document.querySelector('.sw-head')).backgroundColor;
+    const а = ф.match(/rgba\([^)]*,\s*([\d.]+)\)/);
+    return а ? parseFloat(а[1]) : 1;
+  }), { message: 'у раскрытой шапки нет своего листа' }).toBeGreaterThan(0.9);
+  const м = await page.evaluate(() => {
+    const яркость = (ц) => {
+      const [r, g, b] = ц.match(/\d+/g).map(Number);
+      return (r * 299 + g * 587 + b * 114) / 1000;
+    };
+    return {
+      текст_светлый: яркость(getComputedStyle(document.querySelector('.sw-head .grp summary')).color) > 128,
+      марка_светлая: яркость(getComputedStyle(document.querySelector('.sw-head .wm')).color) > 128,
+    };
+  });
+  expect(м.текст_светлый, 'пункты меню светлые на светлом').toBe(false);
+  expect(м.марка_светлая, 'марка светлая на светлом').toBe(false);
+});
