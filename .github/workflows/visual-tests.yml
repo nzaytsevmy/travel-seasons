@@ -51,6 +51,13 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
+        with:
+          # ⛔ Даты в карте сайта считаются по истории правок: на обрезанной
+          #    истории их не будет вовсе, и проверка карты покраснеет на ровном
+          #    месте. blob:none берёт граф коммитов без старых версий файлов —
+          #    2,1 ГБ истории эталонных снимков не едут.
+          fetch-depth: 0
+          filter: blob:none
       - uses: actions/setup-node@v4
         with:
           node-version: 24
