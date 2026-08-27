@@ -153,12 +153,20 @@ for (const f of htmlFiles) {
   //    термин списка. Поиску важно наличие текста, а не тег.
   //  · «похоже ли, что тут FAQ» — только аккордеон. Если считать заголовками,
   //    правило начинает ругаться на любую страницу с двумя подзаголовками.
+  // ⛔ Шапку и подвал в разбор не берём: с 26.08.2026 выпадающие меню сделаны
+  //    на <details>, и проверка стала считать три пункта навигации вопросами
+  //    FAQ — 86 страниц покраснели разом, хотя ни на одной ничего не менялось.
+  //    Вопрос — это то, что стоит В СОДЕРЖАНИИ страницы, а не в её обвязке.
+  const тело = html
+    .replace(/<header[\s\S]*?<\/header>/gi, '')
+    .replace(/<footer[\s\S]*?<\/footer>/gi, '')
+    .replace(/<nav[\s\S]*?<\/nav>/gi, '');
   const visibleText = [
-    ...html.matchAll(/<summary[^>]*>([\s\S]*?)<\/summary>/gi),
-    ...html.matchAll(/<h[23][^>]*>([\s\S]*?)<\/h[23]>/gi),
-    ...html.matchAll(/<dt[^>]*>([\s\S]*?)<\/dt>/gi),
+    ...тело.matchAll(/<summary[^>]*>([\s\S]*?)<\/summary>/gi),
+    ...тело.matchAll(/<h[23][^>]*>([\s\S]*?)<\/h[23]>/gi),
+    ...тело.matchAll(/<dt[^>]*>([\s\S]*?)<\/dt>/gi),
   ].map((m) => norm(m[1]));
-  const accordions = [...html.matchAll(/<summary[^>]*>([\s\S]*?)<\/summary>/gi)].map((m) => norm(m[1]));
+  const accordions = [...тело.matchAll(/<summary[^>]*>([\s\S]*?)<\/summary>/gi)].map((m) => norm(m[1]));
   const schemaQuestions = [];
   let hasSpeakable = false;
 
