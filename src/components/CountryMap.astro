@@ -173,7 +173,7 @@ const TYPE_LABEL: Record<string, string> = {
 
 <style>
 .cm {
-  --line-strong: #1b1914;
+  --line-strong: #15171a;
   --line-hair: var(--line);
   margin: clamp(2.4rem, 5vw, 4rem) 0 0;
   font-family: var(--ff-display);
@@ -249,7 +249,7 @@ const TYPE_LABEL: Record<string, string> = {
   vertical-align: baseline;
 }
 .cm-r:last-child td { border-bottom: 1px solid var(--line-strong); }
-.cm-r:hover td { background: rgba(142, 102, 24, 0.07); }
+.cm-r:hover td { background: rgba(29, 64, 174, 0.07); }
 .cm-r td.r { text-align: right; padding-right: 0; }
 
 .cm-no {
@@ -324,7 +324,7 @@ const TYPE_LABEL: Record<string, string> = {
 /* Leaflet pin — Swiss: gold disc + ink border + white number, без shadow/радиуса */
 :global(.leaflet-container) {
   font-family: var(--ff-display, "Golos Text Variable", Helvetica, Arial, sans-serif);
-  background: #ece9df;
+  background: #e9ebec;
 }
 :global(.cm-pin) {
   background: transparent !important;
@@ -333,34 +333,34 @@ const TYPE_LABEL: Record<string, string> = {
 :global(.cm-pin-n) {
   display: flex; align-items: center; justify-content: center;
   width: 30px; height: 30px;
-  background: #8e6618;        /* var(--gold) — нельзя в global */
+  background: #1d40ae;        /* var(--gold) — нельзя в global */
   color: #fff;
   font-family: inherit;
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0;
   font-variant-numeric: tabular-nums lining-nums;
-  border: 2px solid #1b1914;
+  border: 2px solid #15171a;
 }
 :global(.leaflet-popup-content-wrapper) {
   border-radius: 0 !important;
-  background: #f4f2eb;
-  color: #1b1914;
+  background: #fbfbfa;
+  color: #15171a;
   font-family: var(--ff-display, Helvetica, Arial, sans-serif);
   font-size: .88rem;
   line-height: 1.45;
-  border: 1px solid #1b1914;
+  border: 1px solid #15171a;
   box-shadow: none !important;
 }
 :global(.leaflet-popup-tip) {
-  background: #f4f2eb;
-  border-right: 1px solid #1b1914;
-  border-bottom: 1px solid #1b1914;
+  background: #fbfbfa;
+  border-right: 1px solid #15171a;
+  border-bottom: 1px solid #15171a;
   box-shadow: none !important;
 }
 :global(.leaflet-popup-content) { margin: .55rem .8rem; }
 :global(.leaflet-popup-content b) { font-weight: 800; }
-:global(.cm-pop-n) { color: #56524a; font-size: .8rem; }
+:global(.cm-pop-n) { color: #52565c; font-size: .8rem; }
 
 @media (max-width: 760px) {
   .cm-map { aspect-ratio: 4 / 3; max-height: 360px; }
