@@ -42,7 +42,7 @@ const LINKS = [
 // Пункт подсвечен, если открыт он сам или что-то из его списка.
 const activen = (п) => is(п.href) || (п.под || []).some(([h]) => is(h));
 ---
-<header class="sw-head">
+<header class={path === '/' ? 'sw-head over' : 'sw-head'}>
   <!-- Верхний ярус: марка и то, ради чего человек остаётся. Раньше эта строка
        лежала ниже сгиба, и до неё доходили не все. Композиция снята с Wallpaper*:
        марка и служебное сверху, меню отдельной строкой под линией. -->
@@ -76,6 +76,20 @@ const activen = (п) => is(п.href) || (п.под || []).some(([h]) => is(h));
 </header>
 
 <style>
+/* ⛔ На главной шапка лежит ПОВЕРХ кадра во весь экран — как у живых блогов,
+   где первый экран это фотография, а не полоса меню над ней. Своего фона у неё
+   там нет, цвета берутся светлые, а страница узнаёт её высоту через --head-h,
+   чтобы поднять кадр под неё без сдвига разметки. */
+.sw-head.over{position:absolute;top:0;left:0;right:0;z-index:20;background:transparent;
+  border-bottom:none;color:#fff}
+.sw-head.over .band{border-bottom-color:rgba(255,255,255,.32)}
+.sw-head.over .wm,.sw-head.over .nav ul a,.sw-head.over .grp summary{color:#fff}
+.sw-head.over .nav ul a.on,.sw-head.over .grp.on summary{color:#fff;
+  text-decoration-color:rgba(255,255,255,.75)}
+.sw-head.over .burger span{background:#fff}
+/* Выпадающий список остаётся на своём листе — поверх фотографии он нечитаем. */
+.sw-head.over .nav .sub a,.sw-head.over .nav .sub .s-n{color:var(--ink)}
+.sw-head.over .nav .sub .s-d{color:var(--mid)}
 .sw-head{--paper:#f4f2eb;--ink:#1b1914;--gold:#8e6618;--hair:#cdc9bd;--line:#23211a;
   --ff:'Golos Text Variable','Golos Text',Helvetica,Arial,sans-serif;--edge:clamp(1.1rem,3vw,2.6rem);
   position:sticky;top:0;z-index:50;background:var(--paper);border-bottom:1px solid var(--line);
@@ -238,6 +252,15 @@ const activen = (п) => is(п.href) || (п.под || []).some(([h]) => is(h));
       if (!e.target.closest('.sw-head')) закрытьВсе(null);
     });
   })();
+
+  // Высота шапки нужна главной: там кадр поднимается под неё.
+  const шапка0 = document.querySelector('.sw-head.over');
+  if (шапка0) {
+    const мерить = () => document.documentElement.style
+      .setProperty('--head-h', Math.round(шапка0.getBoundingClientRect().height) + 'px');
+    мерить();
+    window.addEventListener('resize', мерить);
+  }
 
   const burger = document.getElementById('burger');
   const head = document.querySelector('.sw-head');
