@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync, statSync, existsSync, readdirSync } from 'node:fs';
+import { execSync } from 'node:child_process';
 
 // Время последнего изменения у файлов страниц.
 //
@@ -73,7 +74,21 @@ test('3. страницы вне карты сайта тоже получили
   expect(вне.length, 'страниц вне карты не нашлось — проверять нечего').toBeGreaterThan(50);
 
   const час = 3600 * 1000;
-  const свежие = вне.filter((f) => Date.now() - statSync(f).mtimeMs < час);
+  // ⛔ «Дата свежее часа» — это ещё не «проставлено сборкой»: страницу могли
+  //    честно править прямо перед отправкой. 28.08.2026 переезд палитры тронул
+  //    исходник /my/, его git-дата совпала со временем сборки, и гейт не пускал
+  //    легитимную правку. Свежая дата — беда только там, где последний коммит
+  //    по файлу СТАРШЕ этой даты: значит, дату дала не правка, а сборка.
+  const гитДата = (f: string) => {
+    try {
+      const src = execSync(`git log -1 --format=%ct -- ${JSON.stringify(f.replace('dist/', 'src/pages/').replace(/index\.html$/, 'index.astro'))}`,
+        { encoding: 'utf-8' }).trim();
+      return src ? +src * 1000 : 0;
+    } catch { return 0; }
+  };
+  const свежие = вне
+    .filter((f) => Date.now() - statSync(f).mtimeMs < час)
+    .filter((f) => Math.abs(statSync(f).mtimeMs - гитДата(f)) > 10 * 60 * 1000);
   expect(свежие.length,
     `${свежие.length} страниц вне карты помечены временем сборки, а не своей датой. ` +
     `Первые: ${свежие.slice(0, 3).join(', ')}`).toBe(0);
