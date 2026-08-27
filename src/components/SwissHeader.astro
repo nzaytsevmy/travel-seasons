@@ -126,7 +126,7 @@ const activen = (п) => is(п.href) || (п.под || []).some(([h]) => is(h));
   font-weight:600;letter-spacing:.13em;text-transform:uppercase;padding:0;margin:0}
 .nav ul li{margin:0}
 .nav ul a{display:inline-flex;align-items:center;min-height:44px;text-decoration:underline 1px transparent;text-underline-offset:.22em;font-weight:500}
-.nav ul a:hover,.nav ul a:focus-visible{text-decoration-color:var(--gold)}
+.nav ul a:focus-visible{text-decoration-color:var(--gold)}
 .nav ul a.on{color:var(--gold);text-decoration-color:var(--gold)}
 /* ⛔ Раскрытие только по нажатию — половина решения. С мышью человек ждёт,
    что список откроется под курсором и закроется, когда курсор уйдёт: без
@@ -138,7 +138,7 @@ const activen = (п) => is(п.href) || (п.под || []).some(([h]) => is(h));
 .grp summary{display:inline-flex;align-items:center;gap:.34rem;min-height:44px;cursor:pointer;
   list-style:none;font-weight:500;text-decoration:underline 1px transparent;text-underline-offset:.22em}
 .grp summary::-webkit-details-marker{display:none}
-.grp summary:hover,.grp summary:focus-visible{text-decoration-color:var(--gold)}
+.grp summary:focus-visible{text-decoration-color:var(--gold)}
 .grp.on>summary{color:var(--gold);text-decoration-color:var(--gold)}
 .grp .v{transition:transform .18s ease;flex:none}
 .grp[open] .v{transform:rotate(180deg)}
@@ -168,12 +168,21 @@ const activen = (п) => is(п.href) || (п.под || []).some(([h]) => is(h));
 .nav ul .sub a{display:flex;flex-direction:column;align-items:flex-start;gap:.12rem;
   padding:.78rem 1.05rem;min-height:44px;justify-content:center;
   text-transform:none;letter-spacing:0;text-align:left;width:100%}
-.nav ul .sub a:hover,.nav ul .sub a:focus-visible{background:rgba(29,64,174,.07);text-decoration-color:transparent}
+.nav ul .sub a:focus-visible{background:rgba(29,64,174,.07);text-decoration-color:transparent}
 .s-n{font-size:.92rem;font-weight:600;text-transform:none;letter-spacing:0;line-height:1.3}
 .s-d{font-size:.8rem;color:#5c626b;font-weight:400;text-transform:none;letter-spacing:0;line-height:1.35}
 .sub a.on .s-n{color:var(--gold)}
 
 @media (hover:hover) and (pointer:fine){
+  /* ⛔ Подсветка наведением живёт ТОЛЬКО здесь. На телефоне браузер делает
+     наведение из касания, и оно залипает: 27.08.2026 на бою раскрытая пальцем
+     группа «Куда поехать» осталась подчёркнутой синим, а три соседних пункта
+     нет — выглядело как выделенный раздел, которого никто не выбирал.
+     Подсветка с клавиатуры (:focus-visible) остаётся снаружи: она приходит не
+     от касания и залипнуть не может. */
+  .nav ul a:hover{text-decoration-color:var(--gold)}
+  .grp summary:hover{text-decoration-color:var(--gold)}
+  .nav ul .sub a:hover{background:rgba(29,64,174,.07);text-decoration-color:transparent}
   .grp:hover>summary{color:var(--gold)}
   /* Мостик под пунктом: без него курсор по дороге к списку проходит через
      зазор, наведение срывается и список схлопывается перед самым нажатием. */
