@@ -90,7 +90,11 @@ const activen = (п) => is(п.href) || (п.под || []).some(([h]) => is(h));
 .band{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;
   padding-block:.72rem;border-bottom:1px solid var(--hair)}
 .band .claim{margin-left:auto}
-.wm{font-weight:800;font-size:1.35rem;letter-spacing:-.03em;text-transform:uppercase;line-height:1}
+/* ⛔ line-height:1 обрезал строку по высоте букв — марка стала 142×22, ниже
+   минимума в 24 точки, и общая проверка размеров целей покраснела на всех
+   страницах во всех браузерах. Дать высоту явно. */
+.wm{display:inline-flex;align-items:center;min-height:32px;font-weight:800;font-size:1.35rem;
+  letter-spacing:-.03em;text-transform:uppercase;line-height:1.1}
 .claim{font-size:.74rem;color:#6b685e;letter-spacing:.02em;white-space:nowrap}
 
 /* Нижний ярус: меню по центру, разрядка как в журнальном оглавлении. */

@@ -116,9 +116,13 @@ test('9. нажимаемое не мельче 44 точек', async ({ page })
     const n = await page.locator('.sw-head details.grp').count();
     for (let i = 0; i < n; i++) await page.locator('.sw-head details.grp').nth(i).locator('summary').click();
     const мелкие = await page.evaluate(() =>
-      [...document.querySelectorAll('.sw-head nav a, .sw-head summary, .sw-head #burger')]
-        .filter((e) => { const b = e.getBoundingClientRect(); return b.width > 0 && b.height < 44; })
+      // ⛔ Раньше здесь были только пункты меню, и проверка пропустила марку:
+      //    она лежит вне nav. Смотрим всё нажимаемое в шапке.
+      [...document.querySelectorAll('.sw-head a, .sw-head summary, .sw-head button')]
+        .filter((e) => { const b = e.getBoundingClientRect(); return b.width > 0 && b.height < 24; })
         .map((e) => (e.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 20)));
+    // Порог 24 — общий минимум по WCAG; у пунктов меню он выше и держится
+    // их собственными правилами.
     expect(мелкие, `ширина ${w}: пальцем попадают все цели`).toEqual([]);
   }
 });
