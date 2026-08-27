@@ -100,11 +100,10 @@ const ldJson = {
       <div class="wrap grid hero-in">
       <h1 class="h1">Куда, когда,<br><span class="rd">за сколько</span></h1>
       <div class="me">
-        <Image src={authorPhoto} alt="Никита Зайцев" class="me-ph" width={112} height={112}
+        <Image src={authorPhoto} alt="Никита Зайцев" class="me-ph" width={88} height={88}
                formats={['webp']} quality={78} loading="eager" />
-        <p class="sub"><b>Я Никита, был лично в 60 странах и на семи континентах.</b>
-        Визы, сезоны и цены с перелётом — те, что платил сам, а не пересказ чужих подборок.
-        Обновлено {DATA_UPDATED_RU}.</p>
+        <p class="sub"><a href="/about/"><b>Никита</b></a> · 60 стран лично · цены, что платил
+        сам <span class="upd">· {DATA_UPDATED_RU}</span></p>
       </div>
       <ul class="vlist">
         <li class="vi"><a href="/visa/"><span class="vi-l">Визы РФ</span></a></li>
@@ -299,11 +298,21 @@ const ldJson = {
   line-height:1.02;letter-spacing:-.035em;padding-bottom:.06em;color:#fff}
 .sw .manifest .h1 .rd{color:#fff;text-decoration:underline;text-decoration-thickness:.055em;
   text-underline-offset:.12em;text-decoration-color:rgba(255,255,255,.55)}
-.me{grid-column:1/9;grid-row:2;display:flex;align-items:center;gap:1.05rem;
+.me{grid-column:1/10;grid-row:2;display:flex;align-items:center;gap:.7rem;
   margin-top:clamp(1.2rem,2vw,1.8rem)}
-.sw .me-ph{width:112px;height:112px;flex:none;object-fit:cover;object-position:50% 20%}
-.sub{font-size:clamp(.98rem,1.2vw,1.12rem);color:rgba(255,255,255,.92);max-width:48ch;margin:0}
+/* ⛔ Портрет ужат с 112 до 44 пикселей, представление сведено к одной строке.
+   Никита: «мне не нравится так много информации обо мне, будто людям пофиг
+   будет на это, а место занимает». Блок занимал 112 пикселей из 760 в первом
+   экране — седьмую часть — ради того, что человеку в этот момент не нужно.
+   Совсем убирать нельзя: «был лично» и «цены платил сам» — единственное, чем
+   мы отличаемся от агрегаторов, а видимое авторство держит доверие. */
+.sw .me-ph{width:44px;height:44px;flex:none;object-fit:cover;object-position:50% 20%}
+.sub{font-size:clamp(.95rem,1.1vw,1.04rem);color:rgba(255,255,255,.92);max-width:62ch;margin:0}
 .sub b{color:#fff;font-weight:600}
+.sub a{color:inherit;text-decoration:underline 1px rgba(255,255,255,.45);text-underline-offset:.2em}
+.sub a:hover,.sub a:focus-visible{text-decoration-color:#fff}
+/* Дата держит свежесть для поиска, но не тянет на себя взгляд. */
+.upd{color:rgba(255,255,255,.66);white-space:nowrap}
 .vlist{grid-column:1/13;grid-row:3;margin-top:clamp(1.3rem,2.4vw,2rem);display:grid;
   grid-template-columns:repeat(6,1fr);border-top:1px solid rgba(255,255,255,.4);
   border-bottom:1px solid rgba(255,255,255,.4);list-style:none}
@@ -321,7 +330,7 @@ const ldJson = {
   .sw .manifest > .hero-ph{object-position:40% 46%}
   .sw .manifest .h1{font-size:clamp(2.1rem,7.4vw,3.4rem)}
   .me{margin-top:1.1rem;gap:.8rem}
-  .sw .me-ph{width:76px;height:76px}
+  .sw .me-ph{width:40px;height:40px}
   .sub{font-size:.95rem}
   .vlist{margin-top:1.2rem;grid-template-columns:repeat(3,1fr)}
   .vi{border-bottom:1px solid rgba(255,255,255,.22)}
