@@ -35,22 +35,18 @@ if ! SKIP_HTML_MIN=1 npm run build >/tmp/ttb_prepush_build.log 2>&1; then
   echo "✖ build упал → /tmp/ttb_prepush_build.log"; exit 1
 fi
 
+# ⛔ Сервер поднимает сам прогон (webServer в playwright.config.ts), а не мы.
+#    Запущенный отсюда через ( … & ) он умирал посреди прогона, и проверки
+#    краснели с «соединение отклонено» на нетронутых страницах — 27.08 так
+#    пришло семь ложных падений, а одиннадцать эталонов записались страницами
+#    ошибки и чуть не закрепились как образец. Ещё причина не задавать
+#    PREVIEW_URL: эта переменная отключает webServer.
 pkill -f "astro preview --port 4322" 2>/dev/null
-( npx astro preview --port 4322 >/tmp/ttb_prepush_preview.log 2>&1 & )
 cleanup(){ pkill -f "astro preview --port 4322" 2>/dev/null; }
 trap cleanup EXIT
 
-up=""
-for _ in $(seq 1 30); do
-  if curl -fs -o /dev/null http://localhost:4322/; then up=1; break; fi
-  sleep 1
-done
-if [ -z "$up" ]; then
-  echo "✖ preview :4322 не поднялся → /tmp/ttb_prepush_preview.log"; exit 1
-fi
-
 if [ "$MODE" = "text" ]; then
-  if ! PREVIEW_URL=http://localhost:4322 npx playwright test \
+  if ! npx playwright test \
       tests/content-invariants.spec.ts tests/rhythm-gate.spec.ts tests/news-gate.spec.ts \
       --project=chromium-desktop >/tmp/ttb_prepush_pw.log 2>&1; then
     echo "✖ гейты содержания НЕ зелёные → /tmp/ttb_prepush_pw.log"
@@ -61,9 +57,9 @@ if [ "$MODE" = "text" ]; then
   exit 0
 fi
 
-if ! PREVIEW_URL=http://localhost:4322 npx playwright test >/tmp/ttb_prepush_pw.log 2>&1; then
+if ! npx playwright test >/tmp/ttb_prepush_pw.log 2>&1; then
   echo "⚠ первый прогон не зелёный — ретрай упавших (отсев известного флейка blog-japan fullPage)…"
-  if ! PREVIEW_URL=http://localhost:4322 npx playwright test --last-failed >>/tmp/ttb_prepush_pw.log 2>&1; then
+  if ! npx playwright test --last-failed >>/tmp/ttb_prepush_pw.log 2>&1; then
     echo "✖ Playwright визуал-регресс НЕ зелёный (упало ДВАЖДЫ = реальный регресс) — push заблокирован."
     echo "  лог: /tmp/ttb_prepush_pw.log | отчёт: npm run check:visual:report"
     echo "  если правки легитимны (новый пост → home/blog-index):"

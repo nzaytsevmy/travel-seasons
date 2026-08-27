@@ -13,6 +13,19 @@ export default defineConfig({
     // Доп. защита: блокируем сторонние трекеры даже если попали в HTML
     extraHTTPHeaders: { 'X-Playwright': '1' },
   },
+  // ⛔ Сервер поднимает сам прогон, а не человек в соседнем окне. Запущенный
+  //    руками `astro preview` умирает вместе с оболочкой, из которой стартовал,
+  //    и прогон начинает краснеть на нетронутых страницах: 27.08 так пришло
+  //    семь ложных падений подряд с «соединение отклонено», а до того одиннадцать
+  //    эталонов записались страницами ошибки — их чуть не закрепили как образец.
+  //    В CI адрес приходит снаружи, там поднимать нечего.
+  webServer: process.env.PREVIEW_URL ? undefined : {
+    command: 'npx astro preview --port 4322',
+    url: 'http://localhost:4322/',
+    reuseExistingServer: true,
+    timeout: 120_000,
+  },
+
   expect: {
     toHaveScreenshot: {
       maxDiffPixelRatio: 0.02,  // 2% разница — допуск на mini-pixel jitter
