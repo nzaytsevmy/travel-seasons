@@ -189,8 +189,15 @@ for (const page of PAGES) {
     const broken = await pwPage.evaluate(() => {
       const bad: { src: string; alt: string }[] = [];
       document.querySelectorAll('img').forEach((img: HTMLImageElement) => {
-        if (img.naturalWidth === 0 && (img.currentSrc || img.src)) {
-          bad.push({ src: (img.currentSrc || img.src).split('/').pop() || '', alt: img.alt.slice(0, 60) });
+        const адрес = img.currentSrc || img.src;
+        if (!адрес) return;
+        // ⛔ Карта тянет плитки с чужого сервера. Под нагрузкой часть из них
+        //    не успевает прийти, и проверка краснела на нетронутых страницах
+        //    (27.08: пять падений подряд, поодиночке те же страницы зелёные).
+        //    Здесь мы охраняем СВОИ картинки — чужой сервер нам не подчиняется.
+        if (!адрес.startsWith(location.origin) && !адрес.startsWith('data:')) return;
+        if (img.naturalWidth === 0) {
+          bad.push({ src: адрес.split('/').pop() || '', alt: img.alt.slice(0, 60) });
         }
       });
       return bad;

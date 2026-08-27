@@ -263,3 +263,37 @@ test('16. на телефоне поля марки сверху и снизу �
     expect(Math.abs(r.сверху - r.снизу), `ширина ${w}: поля марки ровные`).toBeLessThanOrEqual(2);
   }
 });
+
+test('18. пункты выпадающего списка стоят вплотную и не раздуты', async ({ page }) => {
+  // ⛔ Правило горизонтального ряда протекло в выпадающий список: зазор в
+  //    2,2rem, разделяющий «Куда поехать» и «Визы» наверху, разносил пункты
+  //    списка на 35 пикселей друг от друга. Пункт занимал 54 пикселя, а между
+  //    ними зияла пустота почти такой же высоты — список вытягивался втрое.
+  //    Причина в весе селектора: `.sub` из одного класса проигрывал `.nav ul`.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/visa/');
+  const группы = page.locator('.sw-head details.grp');
+  for (let i = 0; i < await группы.count(); i++) {
+    const группа = группы.nth(i);
+    await группа.locator('summary').hover();
+    await expect(группа.locator('.sub')).toBeVisible();
+    const м = await группа.locator('.sub').evaluate((ul) => {
+      const пункты = [...ul.children].map((e) => e.getBoundingClientRect());
+      return {
+        зазор: getComputedStyle(ul).rowGap,
+        высоты: пункты.map((r) => Math.round(r.height)),
+        промежутки: пункты.slice(1).map((r, j) => Math.round(r.top - пункты[j].bottom)),
+      };
+    });
+    expect(м.зазор, `зазор верхнего ряда протёк в список группы ${i + 1}`).toBe('0px');
+    for (const п of м.промежутки) {
+      expect(п, `пустота между пунктами группы ${i + 1}`).toBeLessThanOrEqual(1);
+    }
+    for (const в of м.высоты) {
+      // Нажимаемое — не меньше 44, читаемое с описанием — не больше 72.
+      expect(в, `высота пункта группы ${i + 1}`).toBeGreaterThanOrEqual(44);
+      expect(в, `высота пункта группы ${i + 1}`).toBeLessThanOrEqual(72);
+    }
+    await page.mouse.move(700, 600);
+  }
+});
