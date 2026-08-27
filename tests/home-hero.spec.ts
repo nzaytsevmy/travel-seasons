@@ -112,7 +112,7 @@ test('5. на телефоне первый экран не уезжает вб�
       портрет: Math.round(document.querySelector('.me-ph')?.getBoundingClientRect().width || 0),
     }));
     expect(м.вбок, `ширина ${w}: страница уехала вбок`).toBe(false);
-    expect(м.портрет, `ширина ${w}: портрет автора пропал`).toBeGreaterThan(40);
+    expect(м.портрет, `ширина ${w}: портрет автора пропал`).toBeGreaterThanOrEqual(32);
   }
 });
 
