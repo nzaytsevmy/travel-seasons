@@ -506,8 +506,7 @@ const ldJson = {
                       loading={isAboveFold ? 'eager' : 'lazy'}
                     />
                   ) : (
-                    <div class="va-card-fallback" style={`background: linear-gradient(135deg, ${d.visual.g1}, ${d.visual.g2})`}>
-                      <span class="va-card-emoji" aria-hidden="true">{d.visual.emoji}</span>
+                    <div class="va-card-fallback" style={`background: ${d.visual.g1}`}>
                     </div>
                   )}
                   <div class="va-card-stamp" aria-hidden="true">{VISA_META[vt].code}</div>
@@ -1946,8 +1945,7 @@ const ldJson = {
     display: flex; align-items: center; justify-content: center;
     transition: filter 0.4s ease;
   }
-  .va-card-emoji { font-size: 2.4rem; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15)); }
-
+  
   /* Маленький штамп на карточке — индикатор визового кода */
   .va-card-stamp {
     position: absolute;

@@ -146,3 +146,26 @@ function разобратьЦвет(s: string): number[] {
   const m = s.match(/\d+/g);
   return m ? m.slice(0, 3).map(Number) : [255, 255, 255];
 }
+
+
+test('6. развороты дневника на месте и по-русски', async ({ page }) => {
+  // ⛔ Главная в визуальном прогоне помечена изменчивой — снимка нет, и блоки
+  //    дневника не охраняет ничто. Плюс живой промах: «сезон до сентябрь» —
+  //    самодельное усечение месяца сломало падеж, увидели на снимке.
+  await page.goto('/');
+  await expect(page.locator('.jr .tape')).toBeVisible();
+  await expect(page.locator('.pola')).toHaveCount(3);
+  await expect(page.locator('.stamp')).toHaveCount(4);
+  await expect(page.locator('.prow')).toHaveCount(6);
+  await expect(page.locator('.anchor2 .anote')).toBeVisible();
+
+  const подписи = await page.locator('.pcap').allTextContents();
+  for (const т of подписи) {
+    expect(т, 'подпись полароида без сезона').toMatch(/сезон до /);
+    expect(т, `падеж месяца сломан: «${т.slice(0, 40)}»`)
+      .toMatch(/до (января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)/);
+  }
+  // тройка совпадает с порядком сезона — как таблица сортировала
+  const имена = await page.locator('.pola .pcap').allTextContents();
+  expect(имена.length).toBe(3);
+});
