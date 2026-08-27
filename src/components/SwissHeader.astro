@@ -139,8 +139,11 @@ const activen = (п) => is(п.href) || (п.под || []).some(([h]) => is(h));
 .sub li:first-child{border-top:0}
 /* ⛔ Селектор с весом выше, чем у `.nav ul a`: иначе родительские правила
    центрировали названия, а описания оставляли слева. */
-.nav ul .sub a{display:flex;flex-direction:column;align-items:flex-start;gap:.1rem;
-  padding:.62rem 1.05rem;min-height:44px;justify-content:center;
+/* Замер чужих меню (27.08, ширина 1440): шаг от пункта к пункту — Stripe 63,
+   Airbnb 60, GitHub 53 пикселя. Воздух у них стоит МЕЖДУ пунктами, у нас
+   вместо него волосяная линия, поэтому тот же воздух уходит внутрь пункта. */
+.nav ul .sub a{display:flex;flex-direction:column;align-items:flex-start;gap:.12rem;
+  padding:.78rem 1.05rem;min-height:44px;justify-content:center;
   text-transform:none;letter-spacing:0;text-align:left;width:100%}
 .nav ul .sub a:hover,.nav ul .sub a:focus-visible{background:rgba(142,102,24,.07);text-decoration-color:transparent}
 .s-n{font-size:.92rem;font-weight:600;text-transform:none;letter-spacing:0;line-height:1.3}
