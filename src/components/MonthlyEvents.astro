@@ -116,12 +116,21 @@ const closedCount = events.filter(e => e.tag === 'closed').length;
 
 .me-r td {
   padding: .85rem .8rem .9rem 0;
-  border-bottom: 1px solid var(--line-hair);
   vertical-align: baseline;
   color: var(--text);
   line-height: 1.5;
 }
-.me-r:last-child td { border-bottom: 1px solid var(--line-strong); }
+/* ⛔ Линии ячеек — правило ГОРИЗОНТАЛЬНОЙ таблицы, и живут они только здесь.
+   На телефоне ячейки становятся блоками во всю ширину, и та же линия рисуется
+   под каждой: 27.08.2026 под последней строкой их было четыре вместо одной —
+   под месяцем, под событием, под меткой и под самой строкой. Сбросить их в
+   мобильном блоке не выходит: `.me-r:last-child td` весит больше, чем
+   `.me-r td`, и переживает сброс. Та же ловушка, что была с выпадающим меню:
+   правило одного режима протекает в другой по весу селектора. */
+@media (min-width: 760.02px) {
+  .me-r td { border-bottom: 1px solid var(--line-hair); }
+  .me-r:last-child td { border-bottom: 1px solid var(--line-strong); }
+}
 .me-r:hover td { background: rgba(29, 64, 174, 0.07); }
 
 .me-mc {
@@ -170,7 +179,6 @@ const closedCount = events.filter(e => e.tag === 'closed').length;
   }
   .me-r:first-child { border-top: 1px solid var(--line-strong); }
   .me-r td {
-    border: none;
     padding: .15rem 0;
     text-align: left;
   }
