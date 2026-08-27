@@ -256,16 +256,19 @@ const ldJson = {
 
 <style is:global>
   /* Swiss-главная: фон только этой страницы (is:global грузится лишь на этом маршруте) */
-  body { background: #f4f2eb; }
+  body { background: #fbfbfa; }
 </style>
 
 <style>
-.sw{--paper:#f4f2eb;--ink:#1b1914;--mid:#6b685e;--line:#23211a;--hair:#cdc9bd;--gold:#8e6618;
+.sw{--paper:#fbfbfa;--ink:#15171a;--mid:#5c626b;--line:#15171a;--hair:#d9dbde;--gold:#1d40ae;
   --ff:'Golos Text Variable','Golos Text',Helvetica,Arial,sans-serif;--edge:clamp(1.1rem,3vw,2.6rem);
   background:var(--paper);color:var(--ink);font-family:var(--ff);font-weight:400;line-height:1.4;
   font-variant-numeric:tabular-nums lining-nums;-webkit-font-smoothing:antialiased}
 :where(.sw) :where(h1,h2,h3,h4,p,ul,li){margin:0}
-.sw :where(h1,h2,h3,h4,button,select,input){font-family:var(--ff);color:var(--ink)}
+/* Заголовки берут шрифт из --ff-head (антиква дневника, задана глобально),
+   органы управления остаются гротеском: форма — инструмент, не текст. */
+.sw :where(h1,h2,h3,h4){font-family:var(--ff-head,var(--ff));color:var(--ink)}
+.sw :where(button,select,input){font-family:var(--ff);color:var(--ink)}
 .sw img{display:block;width:100%;height:100%;object-fit:cover;filter:grayscale(.06) contrast(1.02)}
 .sw a{color:inherit;text-decoration:none}
 .sw :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
@@ -362,7 +365,7 @@ const ldJson = {
 /* чипы-переключатели (бюджет/вайб/сортировка): hairline-рамка → читаются как кнопки; активный = gold-рамка + лёгкий фон (язык .pck-chip) */
 .fopts .t{border:1px solid var(--hair);padding:0 .7rem;color:var(--mid);text-decoration:none;transition:border-color .15s,color .15s,background .15s}
 .fopts .t:hover{border-color:var(--mid);color:var(--ink);text-decoration:none}
-.fopts .t.on{border-color:var(--gold);color:var(--gold);background:rgba(142,102,24,.06)}
+.fopts .t.on{border-color:var(--gold);color:var(--gold);background:rgba(29,64,174,.06)}
 select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:none;border-bottom:2px solid var(--ink);border-radius:0;padding:0 1.2rem 0 .15rem;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' fill='none' stroke='%2315140f' stroke-width='1.8'%3E%3Cpath d='M1 1l3.5 3.5L8 1'/%3E%3C/svg%3E") right .1rem center no-repeat;width:6.2em}                     /* фикс-ширина: intrinsic-width select по опциям расходится между Chromium и WebKit («сентябрь») — без width точка переноса .filters плывёт по движку */
 .fcount{font-size:.8rem;font-weight:600;border-left:1px solid var(--hair);padding-left:1rem;white-space:nowrap}.fcount b{color:var(--gold);font-size:1.5rem;font-weight:700;margin-right:.2rem;vertical-align:-1px}
 /* Мобайл: фильтры в столбик, подписи фикс-ширины → опции выровнены ровной колонкой */
@@ -383,7 +386,7 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .dash thead th.r{text-align:right;padding-right:0}
 .dash td{padding:.95rem .8rem;border-bottom:1px solid var(--hair);vertical-align:middle}
 .dash td:first-child,.dash th:first-child{padding-left:0}.dash td.r{text-align:right;padding-right:0}
-@media(hover:hover){.dash tbody tr:hover td{background:rgba(142,102,24,.07)}}
+@media(hover:hover){.dash tbody tr:hover td{background:rgba(29,64,174,.07)}}
 .no{font-size:.72rem;font-weight:600;color:var(--gold);width:2.2rem}
 .dest{display:flex;align-items:center;gap:.9rem}
 .th{width:62px;height:46px;flex:none}

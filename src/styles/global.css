@@ -12,21 +12,21 @@
    Тёмная — opt-in через .dark-theme на <html>.
    ───────────────────────────────────────────────────────── */
 :root {
-  /* Swiss/брендбук: paper + ink + бренд-золото, один гротеск Golos, hairlines */
-  --bg:          #f4f2eb;   /* paper */
-  --bg2:         #faf8f1;   /* карточки */
-  --bg3:         #ece9df;   /* hover/active */
-  --line:        #cdc9bd;   /* hairline */
-  --gold:        #8e6618;   /* бренд-золото (нижняя граница AA) */
-  --gold-dim:    #6f4f12;
-  --gold-glow:   rgba(142, 102, 24, 0.12);
-  --text:        #1b1914;   /* ink */
-  --text-dim:    #56524a;
-  --text-faint:  #6b685e;
+  /* «Дорожный дневник» (28.08.2026): холодный лист, чернильный синий, антиква */
+  --bg:          #fbfbfa;   /* paper */
+  --bg2:         #f6f7f6;   /* карточки */
+  --bg3:         #e9ebec;   /* hover/active */
+  --line:        #d9dbde;   /* hairline */
+  --gold:        #1d40ae;   /* бренд-золото (нижняя граница AA) */
+  --gold-dim:    #1a3486;  /* чернила глуше */
+  --gold-glow:   rgba(29, 64, 174, 0.12);
+  --text:        #15171a;   /* ink */
+  --text-dim:    #52565c;
+  --text-faint:  #5c626b;
   /* Один гротеск Golos на всё — БЕЗ serif-fallback (иначе italic валится в Newsreader-сериф) */
-  --ff-display:  "Golos Text Variable", "Golos Text", Helvetica, Arial, sans-serif;
+  --ff-display:  "Old Standard TT", Georgia, "Times New Roman", serif; /* антиква дневника */
   --ff-body:     "Golos Text Variable", "Golos Text", Helvetica, Arial, sans-serif;
-  --ff-mono:     "JetBrains Mono", "Courier New", monospace;
+  --ff-mono:     "PT Mono", "Courier New", monospace; /* Паратайп */
   --green:       #22c55e;
   --blue:        #4a9eff;
   --yellow:      #f59e0b;
@@ -61,7 +61,7 @@ html.light-theme.dark-theme {  /* в случае двойного класса 
   --bg3:         #1a1610;
   --line:        rgba(201, 151, 58, 0.15);
   --gold:        oklch(0.74 0.11 68);
-  --gold-dim:    oklch(0.55 0.09 68);
+  --gold-dim:    oklch(0.55 0.09 262);
   --gold-glow:   oklch(0.74 0.11 68 / 0.18);
   --text:        oklch(0.92 0.015 70);
   --text-dim:    oklch(0.62 0.01 70);
@@ -134,7 +134,7 @@ input, select, textarea {
   font-size: max(16px, 1rem);
 }
 
-/* Фоновая grid-сетка убрана 2026-05-23: при Swiss-палитре (--line сплошной #cdc9bd)
+/* Фоновая grid-сетка убрана 2026-05-23: при Swiss-палитре (--line сплошной #d9dbde)
    она стала видимой и захламляла страницы. Чистый paper-фон, как на главной. */
 
 h1, h2, h3 { text-wrap: balance; }
@@ -757,9 +757,9 @@ footer {
 .legal-doc ul li { padding-left: 1.2rem; position: relative; margin-bottom: 0.5rem; }
 .legal-doc ul li::before { content: '—'; position: absolute; left: 0; color: var(--gold); }
 .legal-doc strong { color: var(--text); font-weight: 600; }
-.legal-doc a { color: var(--gold); text-decoration: underline 1px rgba(142,102,24,0.35); text-underline-offset: 0.22em; text-decoration-skip-ink: auto; }
+.legal-doc a { color: var(--gold); text-decoration: underline 1px rgba(29,64,174,0.35); text-underline-offset: 0.22em; text-decoration-skip-ink: auto; }
 .legal-doc a:hover { text-decoration-color: var(--gold); }
-.legal-doc .legal-reset { margin-top: 0.5rem; font: inherit; font-size: 0.88rem; color: var(--gold); background: none; border: none; text-decoration: underline 1px rgba(142,102,24,0.35); text-underline-offset: 0.22em; padding: 0; cursor: pointer; }
+.legal-doc .legal-reset { margin-top: 0.5rem; font: inherit; font-size: 0.88rem; color: var(--gold); background: none; border: none; text-decoration: underline 1px rgba(29,64,174,0.35); text-underline-offset: 0.22em; padding: 0; cursor: pointer; }
 .legal-doc .legal-reset:hover { text-decoration-color: var(--gold); }
 .legal-doc .legal-reset:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 .legal-table { width: 100%; border-collapse: collapse; margin: 0.5rem 0 1.6rem; font-size: 0.88rem; }
@@ -814,3 +814,18 @@ footer {
   }
   :where(.prose) .country-row a:last-child { border-bottom: none; }
 }
+
+
+/* ── Язык «дорожного дневника» (решение Никиты 28.08.2026) ──────────────────
+   Заголовки — антиква старой русской печати. Сознательно не из дефолтов
+   генераторов: Playfair/Inter/Space Grotesk — их почерк, и по нему машинную
+   страницу узнают («Banning Inter», 925studios, разбор 27–28.08.2026).
+   Georgia в запаске близка по ширине — подмена не двигает вёрстку.
+   Вес селектора: у страниц заголовки получают шрифт через var(--ff) правилом
+   вида `.sw :where(h1,…)` с весом (0,2,0) — поэтому здесь тоже два класса не
+   соберёшь, идём через тег с !important не... нет: просто перекрываем тем же
+   путём — переменной --ff-head, объявленной на :root и читаемой страницами. */
+:root { --ff-head: 'Old Standard TT', Georgia, 'Times New Roman', serif; }
+h1, h2, h3 { font-family: var(--ff-head); }
+.hand { font-family: 'Neucha', cursive; }
+.mono { font-family: 'PT Mono', monospace; }
