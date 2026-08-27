@@ -43,9 +43,15 @@ const LINKS = [
 const activen = (п) => is(п.href) || (п.под || []).some(([h]) => is(h));
 ---
 <header class="sw-head">
-  <div class="wrap nav">
+  <!-- Верхний ярус: марка и то, ради чего человек остаётся. Раньше эта строка
+       лежала ниже сгиба, и до неё доходили не все. Композиция снята с Wallpaper*:
+       марка и служебное сверху, меню отдельной строкой под линией. -->
+  <div class="wrap band">
     <a class="wm" href="/">TravelTribe</a>
+    {path !== '/' && <span class="claim">60+ стран лично · цены с перелётом</span>}
     <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="navmenu" aria-label="Открыть меню"><span></span><span></span><span></span></button>
+  </div>
+  <div class="wrap nav">
     <nav id="navmenu" aria-label="Основное меню"><ul>
       {LINKS.map((п) => (
         <li>
@@ -78,9 +84,19 @@ const activen = (п) => is(п.href) || (п.под || []).some(([h]) => is(h));
 .sw-head a{color:inherit;text-decoration:none}
 .sw-head :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .sw-head .wrap{max-width:1280px;margin-inline:auto;padding-inline:var(--edge)}
-.nav{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:.9rem}
-.wm{font-weight:700;font-size:1.05rem;letter-spacing:-.02em;text-transform:uppercase}
-.nav ul{list-style:none;display:flex;gap:1.4rem;font-size:.72rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;padding:0;margin:0}
+/* Верхний ярус: марка слева, обещание справа, между ними линия до меню. */
+/* ⛔ На главной эту же мысль несёт строка под заголовком — в шапке она была бы
+   вторым экземпляром на одном экране. Там строку не показываем. */
+.band{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;
+  padding-block:.72rem;border-bottom:1px solid var(--hair)}
+.band .claim{margin-left:auto}
+.wm{font-weight:800;font-size:1.35rem;letter-spacing:-.03em;text-transform:uppercase;line-height:1}
+.claim{font-size:.74rem;color:#6b685e;letter-spacing:.02em;white-space:nowrap}
+
+/* Нижний ярус: меню по центру, разрядка как в журнальном оглавлении. */
+.nav{display:flex;align-items:center;justify-content:center;gap:1rem;padding-block:0}
+.nav ul{list-style:none;display:flex;justify-content:center;gap:2.2rem;font-size:.74rem;
+  font-weight:600;letter-spacing:.13em;text-transform:uppercase;padding:0;margin:0}
 .nav ul li{margin:0}
 .nav ul a{display:inline-flex;align-items:center;min-height:44px;text-decoration:underline 1px transparent;text-underline-offset:.22em;font-weight:500}
 .nav ul a:hover,.nav ul a:focus-visible{text-decoration-color:var(--gold)}
@@ -122,6 +138,10 @@ const activen = (п) => is(п.href) || (п.под || []).some(([h]) => is(h));
 .sw-head.open .burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 @media(max-width:920px){
   .burger{display:flex}
+  /* ⛔ На телефоне строка про страны выталкивала кнопку меню за край экрана —
+     нажать её было нельзя. В узком ярусе остаются только марка и кнопка. */
+  .band .claim{display:none}
+  .band{padding-block:.6rem}
   #navmenu{position:absolute;left:0;right:0;top:100%;background:var(--paper);border-bottom:1px solid var(--line);display:none;max-height:calc(100vh - 54px);overflow:auto}
   .sw-head.open #navmenu{display:block}
   .nav ul{flex-direction:column;gap:0;padding:.2rem var(--edge) 1rem}

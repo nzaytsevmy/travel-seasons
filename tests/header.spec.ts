@@ -131,3 +131,28 @@ test('10. открытый раздел подсвечен, в том числе
   expect((подсвечена || '').trim(), 'группа «Куда поехать» подсвечена на странице сезонов')
     .toContain('Куда поехать');
 });
+
+test('11. на узком экране кнопка меню в пределах экрана', async ({ page }) => {
+  // ⛔ Строка про страны в верхнем ярусе выталкивала кнопку за край: нажать
+  //    её было нельзя вовсе. Мерим на шести ширинах, а не на одной.
+  for (const w of [360, 402, 640, 768, 920]) {
+    await page.setViewportSize({ width: w, height: 850 });
+    await page.goto('/visa/');
+    const r = await page.evaluate(() => {
+      const b = document.querySelector('#burger')!.getBoundingClientRect();
+      return { внутри: b.right <= innerWidth + 1 && b.left >= -1, ширина: Math.round(b.width) };
+    });
+    expect(r.внутри, `ширина ${w}: кнопка меню на экране`).toBe(true);
+    expect(r.ширина, `ширина ${w}: кнопка не схлопнута`).toBeGreaterThan(20);
+  }
+});
+
+test('12. обещание в шапке не дублирует то, что уже есть на странице', async ({ page }) => {
+  // ⛔ На главной та же мысль стоит под заголовком — два экземпляра на одном
+  //    экране читаются как ошибка вёрстки.
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/');
+  await expect(page.locator('.sw-head .claim')).toHaveCount(0);
+  await page.goto('/visa/');
+  await expect(page.locator('.sw-head .claim')).toHaveCount(1);
+});
