@@ -38,6 +38,21 @@ jobs:
           METRIKA_OAUTH_TOKEN: ${{ secrets.METRIKA_OAUTH_TOKEN }}
         run: node scripts/traffic-snapshot.mjs
 
+      - name: Перезамер правок денежной логики
+        run: node scripts/remeasure-check.mjs
+
+      - name: Отправить перезамер в Telegram
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: |
+          [ -s /tmp/remeasure.txt ] || exit 0
+          [ -z "$TG_BOT_TOKEN" ] && exit 0
+          curl -s --max-time 20 -o /dev/null \
+            "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TG_CHAT_ID}" \
+            --data-urlencode "text=$(cat /tmp/remeasure.txt)"
+
       - name: Проверить первоисточники
         id: watch
         run: |
