@@ -19,7 +19,7 @@ const ВНУТРИ = ['Все направления', 'По месяцам', '�
 //    это только тратит время. Но беды с размерами приходили из WebKit на
 //    телефоне: там марка съезжала, а кнопка меню уходила за край. Проверки,
 //    где важен сам движок, гоняем ещё и на телефонном WebKit.
-const ЗАВИСИТ_ОТ_ДВИЖКА = /^(9|11|16)\./;
+const ЗАВИСИТ_ОТ_ДВИЖКА = /^(9|11|16|19|20)\./;
 
 test.beforeEach(({}, testInfo) => {
   const проект = testInfo.project.name;
@@ -295,5 +295,61 @@ test('18. пункты выпадающего списка стоят вплот
       expect(в, `высота пункта группы ${i + 1}`).toBeLessThanOrEqual(72);
     }
     await page.mouse.move(700, 600);
+  }
+});
+
+test('19. на главной раскрытый бургер читается — тёмный текст на своём листе', async ({ page }) => {
+  // ⛔ На главной шапка лежит поверх фотографии и красит пункты белым. Раскрытый
+  //    бургер рисовал их тем же белым на светлой панели — меню читалось как
+  //    блёклые тени (скриншот Никиты с телефона, 27.08.2026). В открытом
+  //    состоянии шапка обязана встать на непрозрачный лист с тёмным текстом.
+  await page.setViewportSize({ width: 402, height: 874 });
+  await page.goto('/');
+  await page.locator('#burger').click();
+  const шапка = page.locator('.sw-head');
+  await expect(шапка).toHaveClass(/open/);
+  // Фон доезжает переходом — ждём конца анимации, а не мгновенного значения.
+  await expect.poll(async () => page.evaluate(() => {
+    const ф = getComputedStyle(document.querySelector('.sw-head')).backgroundColor;
+    const а = ф.match(/rgba\([^)]*,\s*([\d.]+)\)/);
+    return а ? parseFloat(а[1]) : 1;
+  }), { message: 'у раскрытой шапки нет своего листа' }).toBeGreaterThan(0.9);
+  const м = await page.evaluate(() => {
+    const яркость = (ц) => {
+      const [r, g, b] = ц.match(/\d+/g).map(Number);
+      return (r * 299 + g * 587 + b * 114) / 1000;
+    };
+    return {
+      текст_светлый: яркость(getComputedStyle(document.querySelector('.sw-head .grp summary')).color) > 128,
+      марка_светлая: яркость(getComputedStyle(document.querySelector('.sw-head .wm')).color) > 128,
+    };
+  });
+  expect(м.текст_светлый, 'пункты меню светлые на светлом').toBe(false);
+  expect(м.марка_светлая, 'марка светлая на светлом').toBe(false);
+});
+
+test('20. подсветка группы приходит от мыши и не остаётся от касания', async ({ page, isMobile }) => {
+  // ⛔ На телефоне браузер делает наведение из касания, и оно залипает: раскрыл
+  //    группу пальцем — подпись осталась подчёркнутой синим, будто под курсором.
+  //    27.08.2026 так и было на бою: у «Куда поехать» синяя черта, у трёх
+  //    соседних пунктов её нет — выглядело как выбранный раздел, которого никто
+  //    не выбирал.
+  //    Вторая половина проверки не менее важна первой: запереть подсветку можно
+  //    и тем, что убрать её вовсе. Поэтому на мыши она обязана быть.
+  await page.goto('/');
+  const подпись = page.locator('.sw-head details.grp > summary').first();
+  const цвет = () => подпись.evaluate((e) => getComputedStyle(e).textDecorationColor);
+
+  if (isMobile) {
+    await page.locator('#burger').tap();
+    await подпись.tap();
+    expect(await цвет(), 'после касания подпись осталась подчёркнутой — залипшее наведение')
+      .toMatch(/rgba\(0, 0, 0, 0\)|transparent/);
+  } else {
+    expect(await цвет(), 'до наведения подпись не подчёркнута')
+      .toMatch(/rgba\(0, 0, 0, 0\)|transparent/);
+    await подпись.hover();
+    expect(await цвет(), 'на мыши подсветка наведением пропала — починили удалением')
+      .toBe('rgb(29, 64, 174)');
   }
 });
