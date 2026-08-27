@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { readFileSync, statSync, existsSync } from 'node:fs';
+import { readFileSync, statSync, existsSync, readdirSync } from 'node:fs';
 
 // Время последнего изменения у файлов страниц.
 //
@@ -55,7 +55,31 @@ test('2. времена страниц разбросаны, а не слипл�
     `так выглядит время, проставленное сборкой, а не расчётом по изменениям`).toBeGreaterThan(5);
 });
 
-test('3. время не в будущем и не за пределами разумного', () => {
+test('3. страницы вне карты сайта тоже получили дату', () => {
+  // ⛔ Роботы ходят и туда: за 19–27.08.2026 на страницы вне карты пришлось
+  //    346 заходов из 5 070, причём 84 — на две юридические, не менявшиеся с
+  //    10 июля. Без даты они остаются с временем сборки и качаются заново.
+  const своё = new Set(страницы().map((с) => с.файл));
+  const все: string[] = [];
+  const обойти = (д: string) => {
+    for (const имя of readdirSync(д, { withFileTypes: true })) {
+      const п = `${д}/${имя.name}`;
+      if (имя.isDirectory()) обойти(п);
+      else if (имя.name === 'index.html') все.push(п);
+    }
+  };
+  обойти(КАТАЛОГ);
+  const вне = все.filter((f) => !своё.has(f));
+  expect(вне.length, 'страниц вне карты не нашлось — проверять нечего').toBeGreaterThan(50);
+
+  const час = 3600 * 1000;
+  const свежие = вне.filter((f) => Date.now() - statSync(f).mtimeMs < час);
+  expect(свежие.length,
+    `${свежие.length} страниц вне карты помечены временем сборки, а не своей датой. ` +
+    `Первые: ${свежие.slice(0, 3).join(', ')}`).toBe(0);
+});
+
+test('4. время не в будущем и не за пределами разумного', () => {
   const сейчас = Date.now();
   const год = 365 * 24 * 3600 * 1000;
   const плохие = страницы().filter((с) => {

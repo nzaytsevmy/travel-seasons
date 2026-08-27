@@ -23,8 +23,23 @@
 //
 // Запуск: node scripts/set-page-mtimes.mjs [каталог сборки]
 
-import { readFileSync, utimesSync, existsSync, statSync } from 'node:fs';
+import { readFileSync, utimesSync, existsSync, readdirSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
+
+/** Все собранные страницы каталога. */
+function все_страницы(корень) {
+  const out = [];
+  const обойти = (д) => {
+    for (const имя of readdirSync(д, { withFileTypes: true })) {
+      const п = join(д, имя.name);
+      if (имя.isDirectory()) обойти(п);
+      else if (имя.name === 'index.html') out.push(п);
+    }
+  };
+  обойти(корень);
+  return out;
+}
 
 const КАТАЛОГ = process.argv[2] || 'dist';
 const КАРТА = join(КАТАЛОГ, 'sitemap-0.xml');
@@ -36,6 +51,7 @@ if (!existsSync(КАРТА)) {
 
 const xml = readFileSync(КАРТА, 'utf8');
 let поставлено = 0, пропущено = 0;
+const изКарты = new Set();
 
 for (const m of xml.matchAll(/<loc>https:\/\/traveltribe\.ru([^<]*)<\/loc><lastmod>([^<]*)<\/lastmod>/g)) {
   const путь = m[1];
@@ -49,7 +65,48 @@ for (const m of xml.matchAll(/<loc>https:\/\/traveltribe\.ru([^<]*)<\/loc><lastm
 
   // Время доступа не важно, но utimes требует оба — ставим то же самое.
   utimesSync(файл, время, время);
+  изКарты.add(путь);
   поставлено++;
 }
 
-console.log(`время страниц: проставлено ${поставлено}, пропущено ${пропущено}`);
+// ⛔ Страницы вне карты сайта роботы всё равно обходят: за 19–27.08.2026 на них
+//    пришлось 346 заходов из 5 070, причём 84 — на две юридические страницы,
+//    которые не менялись с 10 июля. Без даты они остаются с временем сборки и
+//    перекачиваются каждый раз. Берём дату последней правки их исходника.
+const исходник = (путь) => {
+  const голый = путь.replace(/^\//, '').replace(/\/$/, '');
+  return [
+    `src/pages/${голый}.astro`,
+    `src/pages/${голый}/index.astro`,
+  ];
+};
+
+const датаФайла = (кандидаты) => {
+  for (const f of кандидаты) {
+    if (!existsSync(f)) continue;
+    try {
+      const d = execFileSync('git', ['log', '-1', '--format=%cI', '--', f],
+        { encoding: 'utf8' }).trim();
+      if (d) return new Date(d);
+    } catch { /* истории нет — пропускаем */ }
+  }
+  return null;
+};
+
+// Общая дата данных — запасной вариант для тех, чей исходник не нашёлся.
+let общая = null;
+try {
+  общая = new Date(JSON.parse(readFileSync('src/data/freshness.generated.json', 'utf8')).dataUpdated + 'T00:00:00Z');
+} catch { /* нет файла — оставим как есть */ }
+
+let вне = 0;
+for (const файл of все_страницы(КАТАЛОГ)) {
+  const путь = файл.replace(КАТАЛОГ, '').replace(/index\.html$/, '');
+  if (изКарты.has(путь)) continue;
+  const когда = датаФайла(исходник(путь)) || общая;
+  if (!когда || Number.isNaN(когда.valueOf())) continue;
+  utimesSync(файл, когда, когда);
+  вне++;
+}
+
+console.log(`время страниц: из карты ${поставлено}, по исходнику ${вне}, пропущено ${пропущено}`);
