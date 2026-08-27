@@ -10,6 +10,7 @@ import rehypeTableWrap from './tools/rehype-table-wrap.mjs';
 import rehypeFaqAccordion from './tools/rehype-faq-accordion.mjs';
 import rehypeCountryRow from './tools/rehype-country-row.mjs';
 import { DATA_UPDATED } from './src/data/meta.js';
+import ДАТЫ_НАПРАВЛЕНИЙ from './src/data/page-lastmod.generated.json' with { type: 'json' };
 import { DIRECTIONS, MONTHS } from './src/data/directions.js';
 import { NICHE_TRIPS } from './src/data/niche-trips.js';
 
@@ -67,8 +68,13 @@ for (const f of readdirSync(NEWS_DIR)) {
   const fm = (readFileSync(new URL(f, NEWS_DIR), 'utf8').split(/^---\s*$/m)[1]) || '';
   const date = (fm.match(/^date:\s*(.+)$/m)?.[1] || '').replace(/['"]/g, '').trim();
   const checked = (fm.match(/^checked:\s*(.+)$/m)?.[1] || '').replace(/['"]/g, '').trim();
-  if (date && checked) newsChecked.push({ date: new Date(date), checked: new Date(checked) });
+  if (date && checked) newsChecked.push({ date: new Date(date), checked: new Date(checked), slug: f.replace(/\.mdx?$/, '') });
 }
+// ⛔ У самой заметки даты не было: лента и архив месяца её получали, а страница
+//    заметки падала на общую справочную. Правка визовых правил делала вид, что
+//    все 70 заметок переписаны заново.
+const newsItemLastmod = {};
+for (const e of newsChecked) if (e.slug) newsItemLastmod[`https://traveltribe.ru/novosti/${e.slug}/`] = e.checked;
 // archivedMonths ждёт записи коллекции и отдаёт МНОЖЕСТВО ключей месяцев,
 // а не «архивна ли эта дата» — оборачиваем свои данные в ту же форму.
 const newsArchived = archivedMonths(newsChecked.map((e) => ({ data: { date: e.date } })));
@@ -81,6 +87,35 @@ for (const e of newsChecked.filter((x) => newsArchived.has(monthKey(x.date)))) {
 }
 
 const DATA_DATE = new Date(DATA_UPDATED + 'T00:00:00Z');
+
+// ⛔ Дата справочных данных ОДНА на весь сайт, и в карте она доставалась всем
+//    1665 программным страницам разом: тронул визовые правила одной страны —
+//    и весь сайт заявлял поиску «мы обновились». Замер 27.08.2026: у 1930 адресов
+//    из 2018 стояло 23 августа, Googlebot ушёл перепроверять их, а до статей,
+//    вышедших после 19-го, не добрался вовсе — на прямой запрос отвечал
+//    «адрес неизвестен». Теперь у страниц про страну — дата данных ЭТОЙ страны
+//    (scripts/gen-page-lastmod.mjs), у остальных прежняя общая.
+const датаНаправления = (slug) => {
+  const d = ДАТЫ_НАПРАВЛЕНИЙ.направления?.[slug];
+  return d ? new Date(d + 'T00:00:00Z') : DATA_DATE;
+};
+
+/** Направление, о котором страница: /packing/<страна>/…, /trips/<месяц>/<страна>/, /visa/<страна>/, /<страна>/ */
+const направлениеИз = (путь) => {
+  const p = путь.replace(/^https:\/\/traveltribe\.ru/, '');
+  const m = p.match(/^\/packing\/([a-z0-9-]+)\//) || p.match(/^\/visa\/([a-z0-9-]+)\/$/)
+         || p.match(/^\/trips\/[a-z]+\/([a-z0-9-]+)\/$/) || p.match(/^\/([a-z0-9-]+)\/$/);
+  return m && ДАТЫ_НАПРАВЛЕНИЙ.направления?.[m[1]] ? m[1] : null;
+};
+
+/** Сравнение двух направлений — по самой свежей из двух дат. */
+const датаСравнения = (путь) => {
+  const m = путь.match(/\/compare\/([a-z0-9-]+)-vs-([a-z0-9-]+)\/$/);
+  if (!m) return null;
+  const [a, b] = [m[1], m[2]].map((s) => ДАТЫ_НАПРАВЛЕНИЙ.направления?.[s]);
+  if (!a && !b) return null;
+  return new Date(((a > b ? a : b) || a || b) + 'T00:00:00Z');
+};
 
 // Дата для sitemap-index.xml — самая свежая запись из тех, что попадут в карту.
 // Если оставить дату справочных данных, указатель будет отставать от карты.
@@ -193,7 +228,9 @@ export default defineConfig({
       lastmod: SITEMAP_INDEX_DATE,
       serialize(item) {
         const url = item.url;
-        item = { ...item, lastmod: blogLastmod[url] || DATA_DATE };
+        const свой = направлениеИз(url);
+        item = { ...item, lastmod: blogLastmod[url] || newsItemLastmod[url] || датаСравнения(url)
+          || (свой ? датаНаправления(свой) : DATA_DATE) };
         // Лента новостей обновляется ежедневно, архив месяца — уже никогда.
         if (url === 'https://traveltribe.ru/novosti/') {
           return { ...item, lastmod: newsFeedLastmod || item.lastmod, priority: 0.8, changefreq: 'daily' };
