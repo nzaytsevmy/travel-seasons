@@ -117,7 +117,7 @@ const ldJson = {
     </section>
 
     <!-- Фильтры + дашборд -->
-    <section><div class="wrap grid">
+    <section class="sec"><div class="wrap grid">
       <div class="shead"><div><h2>Куда поехать из России</h2></div><a href="/countries/">Смотреть все направления</a></div>
       <div class="filters" role="search">
         <div class="fg"><span class="fl">Когда</span><select class="t" id="fMonth" aria-label="Месяц поездки">
@@ -151,7 +151,7 @@ const ldJson = {
                   Набор размеров и качество СПЕЦИАЛЬНО совпадают со страницей стран:
                   обложки там те же самые, и при совпадении всех параметров сборка
                   готовит один файл на оба места, а не два. */}
-              <td class="cdest"><span class="dest"><span class="th"><Image src={r.cover} alt={r.nom} widths={[128, 256, 448, 720]} sizes="(max-width: 720px) 92vw, 62px" formats={['webp']} quality={72} loading="lazy" /></span><span><a class="nm" href={`/${r.slug}/`}>{r.nom}</a><span class="vibe">{r.vibeRu}</span><span class="sq" hidden></span></span></span></td>
+              <td class="cdest"><span class="dest"><span class="th"><Image src={r.cover} alt={r.nom} widths={[128, 256, 448, 720]} sizes="(max-width: 720px) 92vw, 104px" formats={['webp']} quality={72} loading="lazy" /></span><span><a class="nm" href={`/${r.slug}/`}>{r.nom}</a><span class="vibe">{r.vibeRu}</span><span class="sq" hidden></span></span></span></td>
               <td data-l="Поездка"><span class="price">≈ {fmt(r.budget)}&nbsp;₽ <small>за неделю</small></span></td>
               <td data-l="Виза"><span class={`visa ${VISA_CLASS[r.visa]}`}>{VISA_LABEL[r.visa]}</span></td>
               <td data-l="Сезон" class="season">{r.season}</td>
@@ -386,7 +386,11 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 @media(hover:hover){.dash tbody tr:hover td{background:rgba(142,102,24,.07)}}
 .no{font-size:.72rem;font-weight:600;color:var(--gold);width:2.2rem}
 .dest{display:flex;align-items:center;gap:.9rem}
-.th{width:62px;height:46px;flex:none}
+/* ⛔ Было 62×46 — почти иконка: место занимает, а место не показывает.
+   Замер 27.08.2026 против US News: у них карточки направлений крупные,
+   у нас кадр меньше строки текста рядом. Пропорция 3:2 сохранена,
+   чтобы обрезка не поменялась. */
+.th{width:104px;height:70px;flex:none}
 .th img{display:block;width:100%;height:100%;object-fit:cover}
 .nm{display:block;font-weight:600;font-size:1.15rem;letter-spacing:-.01em;line-height:1.15;padding:.18rem 0;min-height:24px}
 .nm:hover{text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
@@ -455,7 +459,15 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .tourcta-a:hover{text-decoration-color:var(--gold)}
 .tourcta .adm{font-size:.6rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
 
+/* Ритм между блоками. ⛔ Замер 27.08.2026: секция «Куда поехать из России»
+   занимала 1562 пикселя — треть страницы — без единого разделителя, и отступа
+   сверху у неё не было вовсе. Глазу негде остановиться, и от этого страница
+   читается тяжелее, чем есть: слов на ней меньше, чем у US News (463 против
+   555), а ощущение обратное. */
 .sec{padding:clamp(2.4rem,5vw,4rem) 0 0}
+/* Хвост длинной секции — сноска про цену и предложение тура — отделяется
+   от таблицы воздухом, а не липнет к последней строке. */
+.tail{margin-top:clamp(1.6rem,3vw,2.6rem)}
 .shead{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:1rem;border-top:2px solid var(--line);padding-top:.8rem;margin-bottom:1.4rem}
 @media(max-width:760px){.shead{flex-direction:column;align-items:flex-start;gap:.2rem;margin-bottom:.5rem}}
 .shead .n{font-size:.74rem;font-weight:600;color:var(--gold);margin-right:.8rem}
