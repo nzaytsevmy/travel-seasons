@@ -25,6 +25,33 @@ const ЛИТЕР: [RegExp, string][] = [
   [/\[cite:\s*\d/i, 'метка цитаты Gemini «[cite: N]»'],
   [/\[span_\d/i, 'метка Gemini «[span_N]»'],
   [/:::\s*(writing|note|info)/i, 'обломок служебного разделителя «:::»'],
+  // Обращения чата к пользователю — второй проход по полному документу
+  // (research/wikipedia-signs-of-ai-writing.wiki, раздел «Communication
+  // intended for the user»): «I hope this helps», «Would you like…»,
+  // «Certainly!» и русские аналоги. В тексте сайта им взяться неоткуда,
+  // кроме вставки из чата — порог ноль.
+  [/I hope this helps/i, 'обращение чата «I hope this helps»'],
+  [/Would you like me to/i, 'обращение чата «Would you like me to…»'],
+  [/is there anything else/i, 'обращение чата «is there anything else»'],
+  [/as an AI (language )?model/i, 'самоописание «as an AI model»'],
+  [/(^|[>\s])(Надеюсь, это поможет|Чем ещё могу помочь|Хотите, я)/im, 'русское обращение чата'],
+  [/как (языковая модель|ИИ[- ]модель)/i, 'русское самоописание модели'],
+  [/utm_source=(chatgpt|openai|gemini|perplexity|copilot)/i, 'партнёрская метка перехода из чата в ссылке'],
+  [/referrer=grok\.com/i, 'метка перехода Grok в ссылке'],
+  // Полное чтение первоисточника (research/wikipedia-signs-of-ai-writing.wiki,
+  // 28.08.2026) добрало хвосты, которых не было в выжимке: маркеры Grok и
+  // Perplexity, лентикулярные сноски DeepSeek, стрелку возврата сноски,
+  // заглушки-шаблоны и катофф-дисклеймеры. У всех порог ноль.
+  [/grok[-_](card|render_citation)/i, 'служебная метка Grok'],
+  [/attributableIndex/i, 'служебная метка ChatGPT «attributableIndex»'],
+  [/ppl-ai-file-upload/i, 'файловая ссылка Perplexity'],
+  [/\[(attached_file|web):\s*\d/i, 'метка вложения Perplexity'],
+  [/【\d+†/, 'лентикулярная сноска DeepSeek'],
+  [/↩/, 'стрелка возврата сноски из чата'],
+  [/\[(вставьте|укажите|ваше имя|your name)/i, 'заглушка-шаблон, которую забыли заполнить'],
+  [/(INSERT_|PASTE_|_URL_HERE)/, 'заглушка адреса из чата'],
+  [/20\d\d-[Xx]{2}-[Xx]{2}/, 'дата-заглушка «20NN-XX-XX»'],
+  [/на момент (моего )?последнего обновления/i, 'катофф-дисклеймер модели'],
 ];
 
 // Маркдаун в ВИДИМОМ тексте — отдельно: символы легитимны в <code>/<pre>/<script>,
