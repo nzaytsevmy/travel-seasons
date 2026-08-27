@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname, sep } from 'node:path';
+import { видимыйТекст } from './visible-text';
 import { fileURLToPath } from 'node:url';
 import { buildQueue } from '../scripts/revision-queue.mjs';
 
@@ -1247,12 +1248,7 @@ test('Язык: главная и хабы чисты от примет — не
   expect(СТРАНИЦЫ.length, 'страниц вне блога в сборке').toBeGreaterThan(1000);
   for (const файл of СТРАНИЦЫ) {
     const п = dirname(файл).replace(DIST, '') || '/';
-    const видимый = readFileSync(файл, 'utf8')
-      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/&[a-z]+;|&#\d+;/gi, ' ')
-      .replace(/\s+/g, ' ');
+    const видимый = видимыйТекст(readFileSync(файл, 'utf8')).replace(/\s+/g, ' ');
     const чистое = безЦитатИИмён(видимый);
     const границей = (список: string[]) => список.flatMap((w) =>
       (видимый.match(new RegExp(`(^|[\\s(«—-])${w}([\\s.,;:!?»)]|$)`, 'gim')) ?? []).map(() => w));

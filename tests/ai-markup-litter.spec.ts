@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { видимыйТекст } from './visible-text';
 
 /**
  * Мусор разметки генераторов — по всем страницам сайта, не только тронутым.
@@ -81,12 +82,10 @@ test('на страницах нет служебного мусора гене�
     for (const [re, что] of ЛИТЕР) {
       if (re.test(html)) беды.push(`${ф.replace(DIST, '')}: ${что}`);
     }
-    // видимый текст: без script/style/code/pre и без атрибутов тегов
-    const видимый = html
-      .replace(/<script[\s\S]*?<\/script>/gi, '')
-      .replace(/<style[\s\S]*?<\/style>/gi, '')
-      .replace(/<(code|pre)[\s\S]*?<\/\1>/gi, '')
-      .replace(/<[^>]+>/g, '>');
+    // Видимый текст — общим разбором: наивные выражения пропускают закрывающий
+    // тег с пробелом и «>» внутри значения атрибута, и тогда содержимое скрипта
+    // утекает в «текст» (ложная тревога), а текст за атрибутом теряется (пропуск).
+    const видимый = видимыйТекст(html, '>');
     for (const [re, что] of МАРКДАУН) {
       if (re.test(видимый)) беды.push(`${ф.replace(DIST, '')}: ${что}`);
     }
