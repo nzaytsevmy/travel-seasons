@@ -84,6 +84,15 @@ const activen = (п) => is(п.href) || (п.под || []).some(([h]) => is(h));
   border-bottom:none;color:#fff}
 .sw-head.over .band{border-bottom-color:rgba(255,255,255,.32)}
 .sw-head.over .wm,.sw-head.over .nav ul a,.sw-head.over .grp summary{color:#fff}
+/* ⛔ Белые пункты уместны, пока шапка лежит ПОВЕРХ фотографии. Раскрытый
+   бургер рисует меню на светлой панели — и белым оно почти невидимо: Никита
+   прислал скриншот с телефона, пункты читались как блёклые тени. В открытом
+   состоянии меню живёт на своём листе и красится как обычная шапка. */
+.sw-head.over.open{background:var(--paper);border-bottom:1px solid var(--hair)}
+.sw-head.over.open .band{border-bottom-color:var(--hair)}
+.sw-head.over.open .wm,.sw-head.over.open .nav ul a,.sw-head.over.open .grp summary{color:var(--ink)}
+.sw-head.over.open .burger span{background:var(--ink)}
+.sw-head.over.open .nav ul a.on,.sw-head.over.open .grp.on summary{color:var(--gold)}
 .sw-head.over .nav ul a.on,.sw-head.over .grp.on summary{color:#fff;
   text-decoration-color:rgba(255,255,255,.75)}
 .sw-head.over .burger span{background:#fff}
