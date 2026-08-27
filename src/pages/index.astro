@@ -71,6 +71,29 @@ const baliPat = (DIRECTIONS.find((d) => d.slug === 'bali')?.r || []).map((c) => 
 const allPosts = (await getCollection('blog')).sort(byFreshness);
 const posts = allPosts.slice(0, 3);
 
+// ── Данные главной-дневника (макет утверждён 28.08.2026) ─────────────────────
+// Тройка месяца. Порядок тот же, каким сортировалась таблица: «пик раньше
+// хорошего, дальше порядок подборки» — иначе тройка спорила бы со списком.
+const rankOf = (r) => (r.r[month - 1] === 'P' ? 0 : r.r[month - 1] === 'G' ? 1 : 2);
+const top3 = [...nowRows].map((r, i) => [r, i])
+  .sort((a, b) => rankOf(a[0]) - rankOf(b[0]) || a[1] - b[1])
+  .slice(0, 3).map(([r]) => r);
+// Рукописная строка полароида: сезонная подсказка месту.
+const MON_SHORT = ['', 'января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const концСезона = (r) => {
+  // от текущего месяца ищем, где кончается полоса P/G
+  let m = month - 1;
+  for (let i = 0; i < 12; i++) { const n = (m + 1) % 12; if ('PG'.includes(r.r[n])) m = n; else break; }
+  return MON_SHORT[m + 1];
+};
+// Штампы: безвиз, куда далеко — ближний безвиз человек и так знает.
+const безвиз = rows.filter((r) => r.visa === 'free' && r.budget > 150000).slice(0, 4);
+// Талон: самые дешёвые недели.
+const дёшево = [...rows].sort((a, b) => a.budget - b.budget).slice(0, 6);
+// Кадр-якорь: Кения, пока идёт сафари-сезон; вне сезона — второй из тройки.
+const кения = rows.find((r) => r.slug === 'kenya');
+const якорь = (кения && 'PG'.includes(кения.r[month - 1])) ? кения : nowRows[1] || nowRows[0];
+
 // Три свежие заметки строками. Без картинок и без карточек: главная не должна
 // потяжелеть, а задача блока — увести читателя вглубь сайта. Глубина просмотра и
 // невозврат в поиск — главный вес Яндекса, откуда приходит почти весь трафик.
@@ -116,95 +139,64 @@ const ldJson = {
       </div>
     </section>
 
-    <!-- Фильтры + дашборд -->
-    <section><div class="wrap grid">
-      <div class="shead"><div><h2>Куда поехать из России</h2></div><a href="/countries/">Смотреть все направления</a></div>
-      <div class="filters" role="search">
-        <div class="fg"><span class="fl">Когда</span><select class="t" id="fMonth" aria-label="Месяц поездки">
-          <option value="0">любой</option>
-          {MONTHS_PREP.slice(1).map((_, i) => (
-            <option value={i + 1} selected={i + 1 === month}>{['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'][i]}</option>
+    <!-- Дневник: полоса доверия и вопросы-развороты -->
+    <section class="jr"><div class="wrap">
+      <p class="tape mono">60 СТРАН ЛИЧНО · 7 КОНТИНЕНТОВ · 70+ НАПРАВЛЕНИЙ С ЦЕНОЙ И ВИЗОЙ · 82 РАЗБОРА С ДАТАМИ ПРОВЕРКИ</p>
+
+      <div class="spread">
+        <div class="qside">
+          <h2 class="qq">Куда поехать <em>в {monthWord}?</em></h2>
+          <p class="qlead"><b>В сезоне {nowRows.length} {nowWord}.</b> Лучшие по погоде и цене — эти три.</p>
+          <a class="qmore" href="/countries/">Все {rows.length} с фильтрами</a>
+        </div>
+        <div class="polas">
+          {top3.map((r, i) => (
+            <a class={`pola p${i + 1}`} href={`/${r.slug}/`}>
+              <span class="pph"><Image src={r.cover} alt={r.nom} widths={[420, 640]} sizes="(max-width: 720px) 88vw, 300px" formats={['webp']} quality={72} loading="lazy" /></span>
+              <span class="hand pcap">{r.nom} — сезон до {концСезона(r)}<span class="pdat">≈ {fmt(r.budget)} ₽ за неделю · {VISA_LABEL[r.visa]}</span></span>
+            </a>
           ))}
-        </select></div>
-        <div class="fg"><span class="fl">Поездка ₽</span><div class="fopts" data-g="b" role="group" aria-label="Бюджет поездки"><button class="t" data-v="low" type="button" aria-pressed="false">до 100к</button><button class="t" data-v="mid" type="button" aria-pressed="false">100–200к</button><button class="t" data-v="high" type="button" aria-pressed="false">200к+</button></div></div>
-        <div class="fg"><span class="fl">Настроение</span><div class="fopts" data-g="vibe" role="group" aria-label="Настроение поездки"><button class="t" data-v="beach" type="button" aria-pressed="false">пляж</button><button class="t" data-v="mountains" type="button" aria-pressed="false">горы</button><button class="t" data-v="city" type="button" aria-pressed="false">город</button><button class="t" data-v="nature" type="button" aria-pressed="false">природа</button></div></div>
-        <div class="fright">
-          <div class="fg fg-sort"><span class="fl">Сортировка</span><div class="fopts" id="sortOpts" role="group" aria-label="Сортировка"><button class="t on" data-s="rel" type="button" aria-pressed="true">рекомендую</button><button class="t" data-s="asc" type="button" aria-pressed="false">дешевле</button><button class="t" data-s="desc" type="button" aria-pressed="false">дороже</button></div></div>
-          <div class="fcount"><b id="fCountN">{nowRows.length}</b><span id="fCountW">{nowWord}</span></div><button class="freset" id="fReset" type="button" hidden>Сбросить</button>
         </div>
       </div>
 
-      <p class="seasonlead" id="seasonlead">Сейчас, <b>в {monthWord}</b>, в сезоне: {nowNames.join(', ') || '—'}.</p>
-
-      <div class="dashwrap"><table class="dash" id="dash">
-        <thead><tr><th>Направление</th><th>Поездка с перелётом</th><th>Виза</th><th>Лучший сезон</th><th class="r" aria-label="Подробнее"></th></tr></thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr data-r={r.r.join('')} data-b={tier(r.budget)} data-v={r.visa} data-vibe={r.vibe.join(',')} data-budget={r.budget} data-name={r.nom.toLowerCase()}>
-              {/* Одна миниатюра на два совершенно разных показа: на телефоне она
-                  занимает почти всю ширину (355px на экране 390), на десктопе
-                  сжимается до 62px. Единственный файл в 420px не годится ни там,
-                  ни там — на телефоне он мельче нужного вдвое и мылит, на десктопе
-                  втрое крупнее нужного. Отсюда набор размеров и подсказка браузеру,
-                  какой из них брать. Пропорцию задаёт .th, картинка её заполняет
-                  с обрезкой, поэтому от смены размеров вёрстка не двигается.
-                  Набор размеров и качество СПЕЦИАЛЬНО совпадают со страницей стран:
-                  обложки там те же самые, и при совпадении всех параметров сборка
-                  готовит один файл на оба места, а не два. */}
-              <td class="cdest"><span class="dest"><span class="th"><Image src={r.cover} alt={r.nom} widths={[128, 256, 448, 720]} sizes="(max-width: 720px) 92vw, 62px" formats={['webp']} quality={72} loading="lazy" /></span><span><a class="nm" href={`/${r.slug}/`}>{r.nom}</a><span class="vibe">{r.vibeRu}</span><span class="sq" hidden></span></span></span></td>
-              <td data-l="Поездка"><span class="price">≈ {fmt(r.budget)}&nbsp;₽ <small>за неделю</small></span></td>
-              <td data-l="Виза"><span class={`visa ${VISA_CLASS[r.visa]}`}>{VISA_LABEL[r.visa]}</span></td>
-              <td data-l="Сезон" class="season">{r.season}</td>
-              <td class="flight r"><a class="fly" href={`/${r.slug}/`} aria-label={`Подробнее: ${r.nom}`}>Подробнее</a></td>
-            </tr>
+      <div class="spread">
+        <div class="qside">
+          <h2 class="qq">Куда пускают <em>без визы?</em></h2>
+          <p class="qlead"><b>Больше 50 стран</b> — с одним загранпаспортом. Дальние тоже.</p>
+          <a class="qmore" href="/bezviz/">Полный список с условиями</a>
+        </div>
+        <div class="stamps">
+          {безвиз.map((r) => (
+            <a class="stamp" href={`/${r.slug}/`}><b>{r.nom}</b><span class="mono">≈ {fmt(r.budget)} ₽ / НЕДЕЛЯ</span></a>
           ))}
-          <tr id="moreRow" hidden><td colspan="5" class="more-cell"><a href="/countries/">Ещё <b id="moreN"></b> в сезоне — показать все</a></td></tr>
-        </tbody>
-      </table></div>
-      <p class="nomatch" id="noMatch">Под эти фильтры ничего не нашлось — попробуйте ослабить один: другой месяц, бюджет повыше или другое настроение.</p>
-      <p class="dfoot">Цена — ориентир всей поездки в комфорте на одного: перелёт из Москвы + жильё, еда и транспорт за 7 ночей (медиана Aviasales/Островок и траты из источников 2026, курс ≈90 ₽/$). Зависит от дат и сезона — <a href="/calculator/">посчитайте точно в калькуляторе</a></p>
-
-      <!-- Авторские туры (YouTravel) — альтернатива DIY -->
-      <div class="tourcta">
-        <span class="tourcta-t"><b>Не хочешь планировать сам?</b> Авторский тур с экспертом — маршрут, логистика и малая группа уже собраны.</span>
-        <a class="tourcta-a" href={youtravelSub('home')} rel="sponsored noopener" target="_blank">Смотреть авторские туры</a>
-        
-      </div>
-
-      <!-- Монетизация -->
-      <div class="gear">
-        <div class="gear-h"><h2>Собраться в дорогу</h2></div>
-        <div class="gear-grid">
-          <div class="gi"><div class="gl">Билеты</div><div class="gt">Авиабилеты</div><div class="gd">Сравнить цены и поймать дешёвый</div><a class="cta" href={aviasalesUrl('', 'home')} rel="sponsored noopener" target="_blank">Найти билет</a></div>
-          <div class="gi"><div class="gl">Жильё</div><div class="gt">Отели и апарты</div><div class="gd">Оплата картой РФ, бесплатная отмена</div><a class="cta" href={ostrovokSearch('home')} rel="sponsored noopener" target="_blank">Подобрать жильё</a></div>
-          <div class="gi"><div class="gl">Страховка</div><div class="gt">Мед. страховка</div><div class="gd">Под визу и погранусловия</div><a class="cta" href={cherehapaTravel('home')} rel="sponsored noopener" target="_blank">Оформить страховку</a></div>
-          <div class="gi"><div class="gl">Авто</div><div class="gt">Прокат авто</div><div class="gd">Местные и международные прокатчики</div><a class="cta" href={`${TP_LINKS.economybookings}&sub_id=home`} rel="sponsored noopener" target="_blank">Сравнить прокат</a></div>
-          <div class="gi"><div class="gl">Связь</div><div class="gt">eSIM в роуминг</div><div class="gd">Интернет с прилёта, от $5 за неделю</div><a class="cta" href={airaloSub('home')} rel="sponsored noopener" target="_blank">Подключить eSIM</a></div>
-          <div class="gi"><div class="gl">Карты</div><div class="gt">Какие карты работают</div><div class="gd">МИР, UnionPay и иностранные — по странам</div><a class="cta" href="/cards/">Проверить карту</a></div>
         </div>
       </div>
 
-      <div class="visaband"><span class="vt"><b>Виза для россиян 2026</b> — по каждой из 70+ стран: безвиз, e-Visa или консульство. В таблице выше виза видна в каждой строке.</span><a href="/visa/">Что изменилось по визам</a></div>
-    </div></section>
-
-    <!-- Инструменты -->
-    <section class="sec"><div class="wrap grid">
-      <div class="shead"><div><h2>Инструменты — не на слово</h2></div><a href="/seasons/">Таблица сезонов целиком</a></div>
-      <div class="tools">
-        <div class="tcard"><div class="tt">Когда ехать в каждую страну</div><div class="ts">Пример строки «Бали» — по месяцам:</div>
-          <div class="heat" id="heat" data-pat={JSON.stringify(baliPat)}></div>
-          <div class="heatlbl"><span>Я</span><span>Ф</span><span>М</span><span>А</span><span>М</span><span>И</span><span>И</span><span>А</span><span>С</span><span>О</span><span>Н</span><span>Д</span></div>
-          <div class="lg"><span><i style="background:var(--gold)"></i>пик</span><span><i style="background:var(--ink)"></i>хорошо</span><span><i style="background:#9b9789"></i>норм</span><span><i style="background:var(--hair)"></i>не сезон</span></div>
-          <div class="tl"><a href="/seasons/">Сезоны по месяцам</a><a href="/visa/">Визы для россиян</a></div>
+      <div class="spread spread-last">
+        <div class="qside">
+          <h2 class="qq">Сколько стоит <em>неделя?</em></h2>
+          <p class="qlead"><b>От {fmt(дёшево[0].budget)} ₽.</b> Вся поездка: перелёт из Москвы, жильё, еда, транспорт.</p>
+          <a class="qmore" href="/calculator/">Посчитать свою</a>
         </div>
-        <div class="tcard bud"><div class="tt">Калькулятор бюджета</div><div class="ts">Бали, комфорт на неделю с перелётом:</div>
-          <div class="br"><span>Перелёт из Москвы</span><b>≈ {fmt(baliFlight)}&nbsp;₽</b></div>
-          <div class="br"><span>Неделя на месте (комфорт)</span><b>≈ {fmt(baliStay)}&nbsp;₽</b></div>
-          <div class="br"><span>Вся поездка</span><b>≈ {fmt(baliTrip)}&nbsp;₽</b></div>
-          <div class="tl"><a href="/calculator/">Посчитать свою поездку</a></div>
+        <div class="pass mono">
+          <div class="phead"><span>TRAVELTRIBE · ЭКОНОМ-НЕДЕЛЯ</span><span>МСК — МИР</span></div>
+          {дёшево.map((r) => (
+            <a class="prow" href={`/${r.slug}/`}><b>{r.nom}</b><span class="pv">{VISA_LABEL[r.visa]}</span><span class="pd"></span><span>{fmt(r.budget)} ₽</span></a>
+          ))}
+          <div class="pfoot">ЦЕНА = ПЕРЕЛЁТ + ЖИЛЬЁ + ЕДА + ТРАНСПОРТ · НА ОДНОГО · КУРС ЦБ</div>
         </div>
       </div>
     </div></section>
+
+    <!-- Кадр-якорь -->
+    <section class="anchor2">
+      <Image src={якорь.cover} alt={якорь.nom} widths={[900, 1400, 2000]} sizes="100vw" formats={['webp']} quality={70} loading="lazy" />
+      <div class="anote">
+        <b>{якорь.nom}: сезон до {концСезона(якорь)}</b>
+        <span>≈ {fmt(якорь.budget)} ₽ за неделю с перелётом · {VISA_LABEL[якорь.visa]}</span>
+        <a href={`/${якорь.slug}/`}>Разбор — {якорь.nom}</a>
+      </div>
+    </section>
 
     <!-- Свежие истории -->
     <section class="sec"><div class="wrap grid">
@@ -514,96 +506,80 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .fnav a:hover,.fnav a:focus-visible{text-decoration-color:var(--gold)}
 .fbot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.6rem 1rem}
 .fbot a{color:inherit;text-decoration:underline}
+
+/* ── Дневник: развороты, полароиды, штампы, талон ──────────────────────────
+   Канон приёмов — BRANDBOOK.md §2а. Повороты и «рукотворность» — предметные
+   метафоры поездки, не декор: монотонность одинаковых блоков — главная примета
+   машинной страницы (замер 27.08.2026). */
+.jr .tape{border-bottom:1.5px solid var(--line);padding:1rem 0;font-size:.82rem;
+  letter-spacing:.05em;color:var(--ink)}
+.mono{font-family:var(--ff-mono)}
+.spread{display:grid;grid-template-columns:4fr 8fr;gap:3rem;
+  border-bottom:1px solid var(--hair);padding:2.8rem 0}
+.spread-last{border-bottom:0}
+.qq{font-size:clamp(1.8rem,3.4vw,2.5rem);line-height:1.05;font-weight:700;
+  letter-spacing:-.01em;text-wrap:balance}
+.qq em{font-style:italic}
+.qlead{margin-top:.9rem;font-size:1rem;color:var(--ink);max-width:26ch}
+.qlead b{font-weight:600}
+.qmore{display:inline-block;margin-top:.6rem;padding:.4rem 0;min-height:24px;color:var(--ink);font-size:.95rem;
+  text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.22em}
+.qmore:hover,.qmore:focus-visible{color:var(--gold);text-decoration-color:var(--gold)}
+.polas{display:flex;gap:1.8rem;align-items:flex-start;flex-wrap:wrap}
+.pola{display:block;background:#fff;border:1px solid var(--hair);
+  padding:.65rem .65rem 0;box-shadow:0 1px 0 var(--hair)}
+.pola.p1{transform:rotate(-1.4deg)}
+.pola.p2{transform:rotate(1deg);margin-top:1.4rem}
+.pola.p3{transform:rotate(-.6deg);margin-top:.4rem}
+.pph{display:block;width:280px;aspect-ratio:4/3.35;overflow:hidden}
+.pph img{width:100%;height:100%;object-fit:cover}
+.hand{font-family:'Neucha',cursive}
+.pcap{display:block;font-size:1.22rem;line-height:1.12;padding:.5rem .15rem .6rem;color:var(--ink)}
+.pdat{display:block;font-family:var(--ff);font-size:.78rem;color:var(--mid);padding-top:.12rem}
+.pola:hover .pcap,.pola:focus-visible .pcap{color:var(--gold)}
+.stamps{display:flex;flex-wrap:wrap;gap:1.1rem;align-content:flex-start}
+.stamp{display:block;border:2px solid var(--gold);color:var(--gold);
+  padding:.8rem 1.05rem;border-radius:3px;transform:rotate(-1.8deg)}
+.stamp:nth-child(2){transform:rotate(1.3deg)}
+.stamp:nth-child(3){transform:rotate(-.5deg)}
+.stamp:nth-child(4){transform:rotate(1.9deg)}
+.stamp b{display:block;font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:.08em}
+.stamp span{font-size:.76rem}
+.stamp:hover,.stamp:focus-visible{background:rgba(29,64,174,.06)}
+.pass{background:#fff;border:1px solid var(--hair);max-width:600px;font-size:.92rem}
+.phead{display:flex;justify-content:space-between;padding:.75rem 1.1rem;
+  border-bottom:1.5px dashed var(--hair);font-size:.74rem;letter-spacing:.07em}
+.prow{display:flex;align-items:baseline;gap:.7rem;padding:.5rem 1.1rem;color:var(--ink)}
+.prow b{font-weight:600;font-family:var(--ff);white-space:nowrap}
+.prow .pv{font-size:.7rem;color:var(--mid);white-space:nowrap}
+.prow .pd{flex:1;border-bottom:1.5px dotted var(--hair);transform:translateY(-4px)}
+.prow:hover b,.prow:focus-visible b{color:var(--gold)}
+.pfoot{padding:.65rem 1.1rem .9rem;font-size:.68rem;color:var(--mid);
+  border-top:1.5px dashed var(--hair);margin-top:.35rem}
+.anchor2{position:relative;overflow:hidden}
+.anchor2 img{display:block;width:100%;height:clamp(320px,44vw,560px);object-fit:cover}
+.anote{position:absolute;right:clamp(1rem,5vw,3rem);bottom:2rem;background:#fff;
+  padding:1.05rem 1.3rem;max-width:340px;transform:rotate(-1deg);border:1px solid var(--hair)}
+.anote:before{content:'';position:absolute;top:-11px;left:34px;width:86px;height:22px;
+  background:rgba(233,231,215,.7);transform:rotate(-3deg);border:1px solid rgba(190,186,168,.45)}
+.anote b{font-family:var(--ff-head,Georgia);font-size:1.25rem;line-height:1.15;display:block}
+.anote span{display:block;font-size:.88rem;color:var(--mid);padding-top:.3rem}
+.anote a{display:inline-block;margin-top:.2rem;padding:.35rem 0;min-height:24px;color:var(--ink);font-size:.9rem;
+  text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.22em}
+.anote a:hover{color:var(--gold)}
+@media(max-width:960px){
+  .spread{grid-template-columns:1fr;gap:1.4rem;padding:2.2rem 0}
+  .pph{width:min(420px,100%)}
+  .pola.p2,.pola.p3{margin-top:0}
+}
+@media(max-width:760px){
+  .polas{gap:1.2rem}
+  .pola{width:100%;padding:.55rem .55rem 0}
+  .pph{width:100%}
+  .anote{position:static;transform:none;max-width:none;border-top:2px solid var(--line)}
+  .anote:before{display:none}
+  .anchor2 img{height:52vw}
+}
 </style>
 
-<script>
-  const dash = document.getElementById('dash');
-  if (dash) {
-    const tbody = dash.querySelector('tbody');
-    const moreRow = document.getElementById('moreRow'), moreN = document.getElementById('moreN');
-    const allRows = [...tbody.querySelectorAll('tr:not(#moreRow)')];
-    const CAP = 5;
-    const state = { m: new Date().getMonth() + 1, b: null, vibe: null, sort: 'rel' };
-    const PREP = ['', 'январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
-    const pl = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'направление' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'направления' : 'направлений'));
-    const qcode = (tr) => (state.m ? (tr.dataset.r[state.m - 1] || '') : ''); // код сезона выбранного месяца
-    const rank = (tr) => { const c = qcode(tr); return c === 'P' ? 0 : (c === 'G' ? 1 : 2); };
-    const ordered = () => {
-      if (state.sort === 'asc') return [...allRows].sort((a, b) => +a.dataset.budget - +b.dataset.budget);
-      if (state.sort === 'desc') return [...allRows].sort((a, b) => +b.dataset.budget - +a.dataset.budget);
-      if (state.m) { const idx = new Map(allRows.map((r, i) => [r, i])); return [...allRows].sort((a, b) => rank(a) - rank(b) || idx.get(a) - idx.get(b)); } // рекомендую: пик раньше хорошего
-      return allRows; // без месяца — порядок подборки
-    };
-    function apply() {
-      const list = ordered();
-      list.forEach((r) => tbody.insertBefore(r, moreRow)); // переставить под текущую сортировку
-      let n = 0, shown = 0; const names = [];
-      list.forEach((c) => {
-        const code = qcode(c);
-        const vibe = c.dataset.vibe ? c.dataset.vibe.split(',') : [];
-        let ok = true;
-        if (state.m && code !== 'P' && code !== 'G') ok = false; // в сезоне = пик ИЛИ хороший (не только пик)
-        if (state.b && c.dataset.b !== state.b) ok = false;
-        if (state.vibe && !vibe.includes(state.vibe)) ok = false; // вайб должен реально совпадать (без тегов — не под конкретный)
-        const sq = c.querySelector('.sq'); // бейдж качества сезона выбранного месяца
-        if (sq) {
-          if (state.m && (code === 'P' || code === 'G')) { sq.hidden = false; sq.textContent = code === 'P' ? 'пик сезона' : 'хороший сезон'; sq.className = 'sq ' + (code === 'P' ? 'peak' : 'good'); }
-          else sq.hidden = true;
-        }
-        if (ok) {
-          n++;
-          if (shown < CAP) { c.hidden = false; shown++; if (names.length < 6) names.push(c.querySelector('.nm').textContent); }
-          else c.hidden = true;
-        } else c.hidden = true;
-      });
-      document.getElementById('fCountN').textContent = n;
-      document.getElementById('fCountW').textContent = pl(n);
-      document.getElementById('noMatch').style.display = n ? 'none' : 'block';
-      if (moreRow) { if (n > CAP) { moreN.textContent = n - CAP; moreRow.hidden = false; } else moreRow.hidden = true; }
-      if (typeof syncReset === 'function') syncReset();
-      const sl = document.getElementById('seasonlead');
-      if (sl) sl.innerHTML = n
-        ? `Сейчас, <b>${state.m ? 'в ' + PREP[state.m] : 'в любой месяц'}</b>, в сезоне ${n}: ${names.join(', ')}${n > names.length ? ' и др' : ''}.`
-        : 'Под эти фильтры ничего не нашлось — ослабьте один: месяц, бюджет или настроение.';
-    }
-    const fMonth = document.getElementById('fMonth');
-    if (fMonth) fMonth.value = String(state.m); // месяц по дате пользователя, а не по дате сборки
-    fMonth.addEventListener('change', (e) => { state.m = +e.target.value; apply(); });
-    document.querySelectorAll('.fopts[data-g]').forEach((g) => g.addEventListener('click', (e) => {
-      const b = e.target.closest('.t'); if (!b) return;
-      const grp = g.dataset.g, was = b.classList.contains('on');
-      g.querySelectorAll('.t').forEach((x) => { x.classList.remove('on'); x.setAttribute('aria-pressed', 'false'); });
-      if (!was) { b.classList.add('on'); b.setAttribute('aria-pressed', 'true'); state[grp] = b.dataset.v; } else state[grp] = null;
-      apply();
-    }));
-    const sortOpts = document.getElementById('sortOpts');
-    if (sortOpts) sortOpts.addEventListener('click', (e) => {
-      const b = e.target.closest('.t'); if (!b) return;
-      sortOpts.querySelectorAll('.t').forEach((x) => { x.classList.remove('on'); x.setAttribute('aria-pressed', 'false'); });
-      b.classList.add('on'); b.setAttribute('aria-pressed', 'true'); state.sort = b.dataset.s; apply();
-    });
-    // Сброс фильтров — третья эвристика Нильсена: у пользователя должен быть
-    // выход из состояния, в которое он себя загнал. Кнопка появляется только
-    // когда что-то отличается от исходного, чтобы не шуметь в спокойном виде.
-    const START = { m: state.m, b: null, vibe: null, sort: 'rel' };
-    const fReset = document.getElementById('fReset');
-    function syncReset() {
-      if (!fReset) return;
-      fReset.hidden = state.m === START.m && !state.b && !state.vibe && state.sort === START.sort;
-    }
-    if (fReset) fReset.addEventListener('click', () => {
-      Object.assign(state, START);
-      if (fMonth) fMonth.value = String(START.m);
-      document.querySelectorAll('.fopts[data-g] .t').forEach((x) => { x.classList.remove('on'); x.setAttribute('aria-pressed', 'false'); });
-      if (sortOpts) sortOpts.querySelectorAll('.t').forEach((x, i) => {
-        x.classList.toggle('on', i === 0); x.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
-      });
-      apply();
-    });
-    apply();
-    // мини-хитмэп Бали — из реальных данных DIRECTIONS (data-pat), не хардкод
-    const col = ['var(--gold)','var(--ink)','#9b9789','var(--hair)'];
-    const h = document.getElementById('heat');
-    if (h) JSON.parse(h.dataset.pat || '[]').forEach((p) => { const d = document.createElement('div'); d.className = 'mh'; d.style.cssText = 'height:1.6rem;background:' + col[p]; h.appendChild(d); });
-  }
-</script>
+<!-- скрипт фильтров уехал на /countries/ вместе с таблицей -->
