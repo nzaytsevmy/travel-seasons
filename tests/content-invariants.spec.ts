@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, dirname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildQueue } from '../scripts/revision-queue.mjs';
 
@@ -1238,12 +1238,15 @@ test('Язык: главная и хабы чисты от примет — не
   //    замер главной дал 16,7% при пороге 14%, и обе «фразы» оказались
   //    склейкой ценников через тире-разделители. Мера с ложными тревогами
   //    хуже отсутствия меры.
-  const СТРАНИЦЫ = ['', 'countries', 'visa', 'seasons', 'calculator',
-                    'trips', 'packing', 'compare', 'about', 'blog'];
+  // Все страницы сайта, кроме статей блога и новостей: те охраняет проверка
+  // тронутых статей, и нулевой порог на старом тексте покрасил бы их разом.
+  const СТРАНИЦЫ = files
+    .filter((ф) => ф.endsWith(`${sep}index.html`))
+    .filter((ф) => !/[\\/](blog|novosti|news)[\\/]/.test(ф));
   const bad: string[] = [];
-  for (const п of СТРАНИЦЫ) {
-    const файл = join(DIST, п, 'index.html');
-    expect(existsSync(файл), `страница /${п}/ пропала из сборки`).toBe(true);
+  expect(СТРАНИЦЫ.length, 'страниц вне блога в сборке').toBeGreaterThan(1000);
+  for (const файл of СТРАНИЦЫ) {
+    const п = dirname(файл).replace(DIST, '') || '/';
     const видимый = readFileSync(файл, 'utf8')
       .replace(/<script[\s\S]*?<\/script>/gi, ' ')
       .replace(/<style[\s\S]*?<\/style>/gi, ' ')
@@ -1258,9 +1261,23 @@ test('Язык: главная и хабы чисты от примет — не
     const жёстко = [...границей(PARASITES), ...границей(CLICHES), ...границей(OFFICE),
                     ...спереди([...AD_TONE, ...SIGNIF, ...AI_VOCAB, ...VAGUE_SRC, ...WATER])];
     if (жёстко.length) bad.push(`/${п}/: ${[...new Set(жёстко)].join(', ')} (${жёстко.length})`);
+    // ⛔ Мягкий лимит здесь считает РАЗНЫЕ фразы, а не вхождения. Лимит «два
+    //    на страницу» откалиброван на статьях, где одно вхождение — одно место
+    //    в тексте. На программной странице шаблон повторяет одну и ту же фразу
+    //    в капсуле, в ответе и в сводке: 27.08.2026 «Пирамиды днём уже тяжело»
+    //    дало пять вхождений одной фразы и покрасило десять чистых страниц.
+    //    Считаем окружение слова, а не само слово.
     for (const [w, лимит] of Object.entries({ ...SOFT_TAILS, ...SOFT })) {
-      const n = границей([w]).length;
-      if (n > лимит) bad.push(`/${п}/: «${w}» ${n} раз при лимите ${лимит}`);
+      // Ключ места — восемнадцать БУКВ перед словом, без пробелов и знаков.
+      // Хвост брать нельзя: одна и та же фраза кончается по-разному в капсуле
+      // и в ответе на вопрос, а точка с запятой в перечне дробит её ещё раз.
+      const места = new Set<string>();
+      for (const m of видимый.matchAll(new RegExp(`(^|[\\s(«—-])${w}([\\s.,;:!?»)]|$)`, 'gim'))) {
+        const до = видимый.slice(Math.max(0, m.index! - 60), m.index!)
+          .toLowerCase().replace(/[^a-zа-яё]/g, '');
+        места.add(до.slice(-18));
+      }
+      if (места.size > лимит) bad.push(`/${п}/: «${w}» в ${места.size} разных местах при лимите ${лимит}`);
     }
   }
   expect(bad, bad.join('\n')).toEqual([]);
