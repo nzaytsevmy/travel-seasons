@@ -15,8 +15,17 @@ const ОЖИДАЕМЫЕ = ['Куда поехать', 'Визы', 'Сборы',
 const ВНУТРИ = ['Все направления', 'По месяцам', 'Сезоны', 'Сравнить',
                 'Что взять', 'Сколько стоит', 'Гайды и разборы', 'Новости'];
 
+// ⛔ Состав меню и разметку хватит посмотреть один раз — в четырёх браузерах
+//    это только тратит время. Но беды с размерами приходили из WebKit на
+//    телефоне: там марка съезжала, а кнопка меню уходила за край. Проверки,
+//    где важен сам движок, гоняем ещё и на телефонном WebKit.
+const ЗАВИСИТ_ОТ_ДВИЖКА = /^(9|11|16)\./;
+
 test.beforeEach(({}, testInfo) => {
-  test.skip(testInfo.project.name !== 'chromium-desktop', 'инвариант шапки — один прогон');
+  const проект = testInfo.project.name;
+  const годится = проект === 'chromium-desktop' ||
+    (проект === 'webkit-mobile' && ЗАВИСИТ_ОТ_ДВИЖКА.test(testInfo.title));
+  test.skip(!годится, 'разметку смотрим один раз, размеры — ещё и в WebKit');
 });
 
 test('1. верхний уровень: те пункты и в том порядке', async ({ page }) => {
@@ -61,14 +70,22 @@ test('5. все обещанные пункты на месте', async ({ page 
   expect(тексты.sort(), 'состав вложенных пунктов').toEqual([...ВНУТРИ].sort());
 });
 
-test('6. списки раскрываются нажатием и не требуют наведения', async ({ page }) => {
+test('6. на сенсорном экране списки раскрываются нажатием', async ({ browser }) => {
+  // ⛔ Проверять это обычной страницей нельзя: там работает наведение, и
+  //    Playwright наводит курсор перед нажатием — список успевает открыться
+  //    сам. Берём устройство без наведения, как настоящий телефон.
+  const ctx = await browser.newContext({ hasTouch: true, isMobile: true,
+    viewport: { width: 402, height: 850 } });
+  const page = await ctx.newPage();
   await page.goto('/');
+  await page.locator('#burger').tap();
   const группа = page.locator('.sw-head details.grp').first();
   await expect(группа.locator('.sub')).toBeHidden();
-  await группа.locator('summary').click();
+  await группа.locator('summary').tap();
   await expect(группа.locator('.sub')).toBeVisible();
-  await группа.locator('summary').click();
+  await группа.locator('summary').tap();
   await expect(группа.locator('.sub')).toBeHidden();
+  await ctx.close();
 });
 
 test('7. ни один список не вылезает за экран', async ({ page }) => {
@@ -159,4 +176,90 @@ test('12. обещание в шапке не дублирует то, что у
   await expect(page.locator('.sw-head .claim')).toHaveCount(0);
   await page.goto('/visa/');
   await expect(page.locator('.sw-head .claim')).toHaveCount(1);
+});
+
+test('13. с мышью список раскрывается наведением и закрывается уходом', async ({ page }) => {
+  // ⛔ Найдено на живом сайте 27.08: меню открывалось только нажатием, и
+  //    открытое не закрывалось, пока не нажмёшь по нему второй раз. С мышью
+  //    это читается как поломка. Наведение включено там, где есть курсор.
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/visa/');
+  const группа = page.locator('.sw-head details.grp').first();
+
+  await группа.locator('summary').hover();
+  await expect(группа.locator('.sub')).toBeVisible();
+
+  await page.mouse.move(20, 400);
+  await expect(группа.locator('.sub')).toBeHidden();
+});
+
+test('14. одновременно раскрыт не больше одного списка', async ({ page }) => {
+  // ⛔ На живом сайте два списка раскрывались вместе и налезали друг на друга.
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/visa/');
+  const группы = page.locator('.sw-head details.grp');
+  const n = await группы.count();
+  for (let i = 0; i < n; i++) {
+    await группы.nth(i).locator('summary').hover();
+    // Ждём меньше задержки закрытия по уходу курсора (180 мс): если соседа
+    // закрывает только она, а не переключение, здесь окажется два открытых.
+    await page.waitForTimeout(120);
+    const открытых = await page.locator('.sw-head details.grp[open]').count();
+    expect(открытых, `после наведения на пункт ${i + 1}`).toBeLessThanOrEqual(1);
+  }
+});
+
+test('17. с мышью нажатие на пункт ведёт на страницу раздела', async ({ page }) => {
+  // ⛔ Список уже раскрыт наведением, и обычное переключение схлопнуло бы его
+  //    ровно в момент нажатия. Поэтому нажатие уводит на раздел — но тогда
+  //    адрес обязан совпадать со ссылкой этого пункта.
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/visa/');
+  const группы = page.locator('.sw-head details.grp');
+  const n = await группы.count();
+  expect(n).toBeGreaterThan(0);
+  for (let i = 0; i < n; i++) {
+    await page.goto('/visa/');
+    const группа = page.locator('.sw-head details.grp').nth(i);
+    const адрес = await группа.getAttribute('data-href');
+    expect(адрес, `у пункта ${i + 1} нет адреса раздела`).toBeTruthy();
+    await группа.locator('summary').click();
+    await page.waitForURL(`**${адрес}`, { timeout: 5000 });
+  }
+});
+
+test('15. Esc и нажатие мимо шапки закрывают открытое', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/visa/');
+  const группа = page.locator('.sw-head details.grp').first();
+
+  // Открываем наведением — с мышью это основной способ.
+  await группа.locator('summary').hover();
+  await expect(page.locator('.sw-head details.grp[open]')).toHaveCount(1);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.sw-head details.grp[open]')).toHaveCount(0);
+
+  // Курсор всё ещё стоит на пункте, повторное наведение на то же место
+  // ничего не пошлёт — сначала уводим мышь в сторону.
+  await page.mouse.move(640, 600);
+  await группа.locator('summary').hover();
+  await expect(page.locator('.sw-head details.grp[open]')).toHaveCount(1);
+  await page.mouse.click(30, 600);
+  await expect(page.locator('.sw-head details.grp[open]')).toHaveCount(0);
+});
+
+test('16. на телефоне поля марки сверху и снизу совпадают', async ({ page }) => {
+  // ⛔ Выравнивание по базовой линии годится, пока в ряду только текст. Рядом
+  //    с маркой стоит кнопка меню другой высоты — поля разъехались, и это
+  //    было видно глазом. Записанная ловушка WebKit, наступил на неё снова.
+  for (const w of [360, 402, 640]) {
+    await page.setViewportSize({ width: w, height: 850 });
+    await page.goto('/');
+    const r = await page.evaluate(() => {
+      const b = document.querySelector('.sw-head .band')!.getBoundingClientRect();
+      const m = document.querySelector('.sw-head .wm')!.getBoundingClientRect();
+      return { сверху: m.top - b.top, снизу: b.bottom - m.bottom };
+    });
+    expect(Math.abs(r.сверху - r.снизу), `ширина ${w}: поля марки ровные`).toBeLessThanOrEqual(2);
+  }
 });
