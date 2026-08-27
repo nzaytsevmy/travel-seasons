@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "astro dev",
-    "prebuild": "node scripts/gen-freshness.mjs && node scripts/gen-llms.mjs",
+    "prebuild": "node scripts/gen-freshness.mjs && node scripts/gen-page-lastmod.mjs && node scripts/gen-llms.mjs",
     "build": "astro build",
     "gen:llms": "node scripts/gen-llms.mjs",
     "preview": "astro preview",
