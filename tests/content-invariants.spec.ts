@@ -25,6 +25,17 @@ function allHtml(dir: string): string[] {
 
 const files = allHtml(DIST);
 
+/** Стили лежат отдельными файлами — приметы дизайна живут там же, где вёрстка. */
+function allCss(dir: string): string[] {
+  const out: string[] = [];
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    const p = join(dir, e.name);
+    if (e.isDirectory()) out.push(...allCss(p));
+    else if (e.name.endsWith('.css')) out.push(p);
+  }
+  return out;
+}
+
 // Исходники статей блога — часть правил проверяется по .md/.mdx, а не по вёрстке:
 // даты во фронтматтере в собранный HTML не попадают.
 const BLOG_SRC = fileURLToPath(new URL('../src/content/blog', import.meta.url));
@@ -1251,6 +1262,42 @@ test('Язык: главная и хабы чисты от примет — не
       const n = границей([w]).length;
       if (n > лимит) bad.push(`/${п}/: «${w}» ${n} раз при лимите ${лимит}`);
     }
+  }
+  expect(bad, bad.join('\n')).toEqual([]);
+});
+
+test('Вид: ни машинных шрифтов, ни палитры из типовых генераций', () => {
+  // ⛔ Приметы машинного ДИЗАЙНА мы разбирали отдельно от текста, но не
+  //    охраняли ничем. Здесь заперты две вещи, у которых ложных тревог не
+  //    бывает: наборные шрифты, которые генераторы ставят по умолчанию, и
+  //    цвета трёх типовых палитр (тёплый крем с терракотой, индиго-фиолетовый
+  //    акцент, запрещённая брендбуком пара крем + старое золото).
+  //
+  // ⛔ Служебные цвета светофора (#22c55e, #4a9eff, #f59e0b, #ef4444) сюда НЕ
+  //    входят: это сигнал «хорошо / так себе / плохо» у сезонов, а не украшение.
+  //    Первый заход списка их поймал — и дал 2471 ложную тревогу на ровном месте.
+  //
+  // ⛔ Шрифт ищем ТОЛЬКО внутри объявления font-family и до ближайшего
+  //    разделителя. Поиск по всему файлу нашёл «Inter» внутри слова «pointer»
+  //    в описании курсора и обвинил чистую страницу.
+  const ШРИФТЫ = ['Inter', 'Space Grotesk', 'Poppins', 'Montserrat', 'DM Sans',
+                  'Plus Jakarta', 'Nunito', 'Raleway', 'Lato'];
+  const ЦВЕТА = ['#f4f2eb', '#f4f1ea', '#8e6618', '#e07a5f',
+                 '#6366f1', '#8b5cf6', '#7c3aed', '#a855f7'];
+  const все = [...files, ...allCss(DIST)];
+  const bad: string[] = [];
+  for (const ф of все) {
+    const t = readFileSync(ф, 'utf-8');
+    for (const объявление of t.match(/font-family\s*:[^;{}"']*/gi) ?? []) {
+      for (const ш of ШРИФТЫ) {
+        if (new RegExp(`(^|[\\s,:'"])${ш}([\\s,;'"]|$)`, 'i').test(объявление)) {
+          bad.push(`${ф.replace(DIST, '')}: шрифт «${ш}» — набор по умолчанию у генераторов`);
+        }
+      }
+    }
+    const низ = t.toLowerCase();
+    for (const c of ЦВЕТА) if (низ.includes(c)) bad.push(`${ф.replace(DIST, '')}: цвет ${c} из типовой палитры генераций`);
+    if (bad.length > 8) break;
   }
   expect(bad, bad.join('\n')).toEqual([]);
 });
