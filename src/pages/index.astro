@@ -9,6 +9,7 @@ import { DIRECTIONS } from '../data/directions.js';
 import { airaloSub, TP_LINKS, aviasalesUrl, ostrovokSearch, cherehapaTravel, youtravelSub } from '../data/affiliate.js';
 import { DATA_UPDATED_RU } from '../data/meta.js';
 import authorPhoto from '../assets/author/nikita.jpg';
+import heroCover from '../assets/destinations/georgia.jpg';
 
 import { ACTIVITY_TAGS } from '../data/country-activity-tags.js';
 import { freshEntries, formatDateRu } from '../data/news.js';
@@ -90,11 +91,21 @@ const ldJson = {
 <div class="sw">
 
   <main id="main">
-    <!-- Манифест -->
-    <section class="manifest"><div class="wrap grid">
-      <p class="meta"><b>Был лично на 7 континентах</b><br>60+ стран · цены с перелётом, не пересказ · обновлено {DATA_UPDATED_RU}</p>
+    <!-- Манифест: кадр во весь экран, текст поверх -->
+    <section class="manifest">
+      <Image src={heroCover} alt="Троицкая церковь в Гергети под Казбеком, Грузия" class="hero-ph"
+             widths={[900, 1400, 2000]} sizes="100vw" formats={['webp']} quality={72}
+             loading="eager" fetchpriority="high" />
+      <div class="veil"></div>
+      <div class="wrap grid hero-in">
       <h1 class="h1">Вся польза<br>о поездках —<br><span class="rd">на виду.</span></h1>
-      <p class="sub">Визы, сезоны и реальные цены с перелётом по 70+ направлениям — в одной таблице. Куда, когда и за сколько видно сразу. Ничего копать не нужно.</p>
+      <div class="me">
+        <Image src={authorPhoto} alt="Никита Зайцев" class="me-ph" width={112} height={112}
+               formats={['webp']} quality={78} loading="eager" />
+        <p class="sub"><b>Я Никита, был лично в 60 странах и на семи континентах.</b>
+        Визы, сезоны и цены с перелётом — те, что платил сам, а не пересказ чужих подборок.
+        Обновлено {DATA_UPDATED_RU}.</p>
+      </div>
       <ul class="vlist">
         <li class="vi"><a href="/visa/"><span class="vi-l">Визы РФ</span></a></li>
         <li class="vi"><a href="/seasons/"><span class="vi-l">Когда ехать</span></a></li>
@@ -103,7 +114,8 @@ const ldJson = {
         <li class="vi"><a href="/packing/"><span class="vi-l">Чек-листы</span></a></li>
         <li class="vi"><a href="/countries/"><span class="vi-l">70+ направлений</span></a></li>
       </ul>
-    </div></section>
+      </div>
+    </section>
 
     <!-- Фильтры + дашборд -->
     <section><div class="wrap grid">
@@ -263,20 +275,62 @@ const ldJson = {
 
 /* Верхнее меню вынесено в общий компонент SwissHeader.astro (через Layout). */
 
-.manifest{padding:clamp(2rem,5vw,4.5rem) 0 clamp(1.2rem,2.5vw,2rem)}
-.meta{grid-column:8/13;grid-row:1;text-align:right;align-self:start;font-size:.8rem;color:var(--mid);line-height:1.5}
-.meta b{color:var(--ink);font-weight:500}
-.h1{grid-column:1/13;grid-row:2;font-weight:700;font-size:clamp(2.4rem,7vw,6.4rem);line-height:1.02;letter-spacing:-.035em;margin-top:clamp(1.2rem,2.5vw,2rem);padding-bottom:.06em}
-.h1 .rd{color:var(--gold)}
-.sub{grid-column:1/8;grid-row:3;font-size:clamp(1rem,1.3vw,1.18rem);color:var(--ink);margin-top:clamp(1.5rem,2vw,1.9rem);max-width:46ch}
-.vlist{grid-column:1/13;grid-row:4;margin-top:2rem;display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);list-style:none}
-.vi{border-right:1px solid var(--hair)}
-.vi-l{display:block;font-size:.92rem;font-weight:600;line-height:1.25}
+/* Первый экран — кадр во весь экран, текст поверх.
+   ⛔ Замер 27.08.2026: у восьми живых травел-блогов в первом экране от 1 до 65
+   фотографий, у нас было НОЛЬ при самом крупном заголовке из всех — выходил
+   типографский плакат, а не сайт о поездках. Кадр здесь несёт смысл, а не
+   украшает: человек попадает не в справочник, а в место. */
+.manifest{position:relative;min-height:min(88svh, 760px);padding-top:var(--head-h, 100px);display:flex;align-items:flex-end;
+  padding:0 0 clamp(1.4rem,3vw,2.6rem);overflow:hidden}
+/* Прямой потомок: иначе портрет автора внутри тоже стал бы фоном во весь экран. */
+.sw .manifest > .hero-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  object-position:58% 52%;z-index:0}
+/* Вуаль держит контраст текста: без неё белое по светлому небу читается на 2,1:1
+   при норме 4,5 (WCAG 2.2 AA). Снизу плотнее — там мелкий текст и ссылки. */
+/* Плотность подобрана замером, а не на глаз: со слабой вуалью белый заголовок
+   на светлом небе давал 2,35 к 1 при норме 3,0 для крупного текста, а подпись
+   3,90 при норме 4,5 (WCAG 2.2 AA). Замер считает худший участок фона под
+   каждой строкой, а не средний — светлого пятна достаточно, чтобы текст пропал. */
+.veil{position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg,rgba(10,12,14,.46) 0%,rgba(10,12,14,.40) 24%,
+    rgba(10,12,14,.58) 52%,rgba(10,12,14,.74) 78%,rgba(10,12,14,.9) 100%)}
+.hero-in{width:100%;position:relative;z-index:2}
+.sw .manifest .h1{grid-column:1/13;grid-row:1;font-weight:700;font-size:clamp(2.4rem,7vw,6.4rem);
+  line-height:1.02;letter-spacing:-.035em;padding-bottom:.06em;color:#fff}
+.sw .manifest .h1 .rd{color:#fff;text-decoration:underline;text-decoration-thickness:.055em;
+  text-underline-offset:.12em;text-decoration-color:rgba(255,255,255,.55)}
+.me{grid-column:1/9;grid-row:2;display:flex;align-items:center;gap:1.05rem;
+  margin-top:clamp(1.2rem,2vw,1.8rem)}
+.sw .me-ph{width:112px;height:112px;flex:none;object-fit:cover;object-position:50% 20%}
+.sub{font-size:clamp(.98rem,1.2vw,1.12rem);color:rgba(255,255,255,.92);max-width:48ch;margin:0}
+.sub b{color:#fff;font-weight:600}
+.vlist{grid-column:1/13;grid-row:3;margin-top:clamp(1.3rem,2.4vw,2rem);display:grid;
+  grid-template-columns:repeat(6,1fr);border-top:1px solid rgba(255,255,255,.4);
+  border-bottom:1px solid rgba(255,255,255,.4);list-style:none}
+.vi{border-right:1px solid rgba(255,255,255,.22)}
+.vi-l{display:block;font-size:.92rem;font-weight:600;line-height:1.25;color:#fff}
 .vi:first-child{padding-left:0}.vi:last-child{border-right:none}
 .vi a{display:block;color:inherit;min-height:48px;padding:.7rem 1rem}
-.vi a:hover,.vi a:focus-visible{background:rgba(142,102,24,.05)}
-.vi a:hover .vi-l,.vi a:focus-visible .vi-l{color:var(--gold)}
-@media(max-width:760px){.h1,.sub,.meta,.vlist{grid-column:1/-1;grid-row:auto}.meta{text-align:left;margin-top:.6rem}.h1{margin-top:.7rem;font-size:clamp(2.1rem,6.2vw,6.4rem)}.sub{margin-top:1rem}.manifest{padding:clamp(1.1rem,3vw,4.5rem) 0 .6rem}.vlist{margin-top:1.2rem;grid-template-columns:repeat(3,1fr)}.vi{border-bottom:1px solid var(--hair)}.vi:nth-child(3n){border-right:none}.vi:nth-child(4),.vi:nth-child(5),.vi:nth-child(6){border-bottom:none}.vi:nth-child(3n+1) a{padding-left:0}.vi a{padding:.6rem .5rem;min-height:44px}.vi-l{font-size:.85rem}}
+.vi a:hover,.vi a:focus-visible{background:rgba(255,255,255,.12)}
+/* ⛔ Горизонтальный кадр на вертикальном экране обрезается по бокам: держим
+   экран ниже и сдвигаем точку кадрирования к церкви, иначе в кадр попадает
+   пустой склон. Портрет уменьшается, но остаётся — он и есть доверие. */
+@media(max-width:760px){
+  .sw .manifest .h1,.sub,.vlist,.me{grid-column:1/-1;grid-row:auto}
+  .manifest{min-height:min(80svh, 620px);padding-bottom:1.1rem}
+  .sw .manifest > .hero-ph{object-position:40% 46%}
+  .sw .manifest .h1{font-size:clamp(2.1rem,7.4vw,3.4rem)}
+  .me{margin-top:1.1rem;gap:.8rem}
+  .sw .me-ph{width:76px;height:76px}
+  .sub{font-size:.95rem}
+  .vlist{margin-top:1.2rem;grid-template-columns:repeat(3,1fr)}
+  .vi{border-bottom:1px solid rgba(255,255,255,.22)}
+  .vi:nth-child(3n){border-right:none}
+  .vi:nth-child(4),.vi:nth-child(5),.vi:nth-child(6){border-bottom:none}
+  .vi:nth-child(3n+1) a{padding-left:0}
+  .vi a{padding:.6rem .5rem;min-height:44px}
+  .vi-l{font-size:.85rem}
+}
 
 /* Область нажатия по WCAG 2.2 §2.5.8: управляющие элементы не мельче 24×24,
    у кнопок и переключателей — от 44 px. Замер 18.08.2026 нашёл на главной
@@ -428,7 +482,7 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .topics{grid-column:1/-1;font-size:.8rem;color:var(--mid);margin-top:1rem}.topics a{color:var(--ink);font-weight:500;text-decoration:underline 1px transparent;text-underline-offset:.22em}.topics a:hover{text-decoration-color:var(--gold)}
 @media(max-width:760px){.posts{grid-template-columns:1fr}}
 /* Ровный ритм секций на мобиле — единый зазор 2.4rem (было manifest→финдер 1.2, comm 2.0) */
-@media(max-width:760px){.manifest{padding-bottom:2.4rem}.comm{margin-top:2.4rem}}
+@media(max-width:760px){.comm{margin-top:2.4rem}}
 
 .comm{grid-column:1/-1;display:grid;grid-template-columns:1.4fr 1fr;border-top:2px solid var(--line);margin-top:clamp(2rem,4vw,3.5rem)}
 .tg2{padding:1.6rem 2rem 1.8rem 0;border-right:1px solid var(--hair)}
