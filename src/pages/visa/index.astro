@@ -31,6 +31,31 @@ const ОТВЕТ = [
   { код: 'консульство', n: byVisa.required.length, дёшево: дешевейший(byVisa.required) },
 ].filter((x) => x.дёшево);
 
+// ⛔ Начальные счётчики кнопок считаются ПРИ СБОРКЕ, а не скриптом после
+//    загрузки. Скрипт вписывал их в разметку уже отрисованной страницы, и два
+//    снимка подряд на одной машине выходили разными — облачный прогон дважды
+//    объявил страницу нестабильной. Заодно числа теперь видны без JavaScript.
+const стоимостьВизы = (d) => {
+  const c = (getVisaDetails(d.slug)?.cost || '').toLowerCase();
+  if (/бесплат/.test(c)) return 'free';
+  const n = Number((c.match(/\d+/) || [999])[0]);
+  return n <= 50 ? 'cheap' : '';
+};
+const долгий = (d) => {
+  const t = getVisaDetails(d.slug)?.duration || '';
+  return /(6[0-9]|[7-9][0-9]|[1-9]\d{2,})\s*(дн|дней)/i.test(t) || /год|мес/i.test(t);
+};
+const цена = (d) => (d.price?.flight && d.price?.hotel && d.price?.food ? tripCost(d.price) : 0);
+const СЧЁТ = {
+  all: DIRECTIONS.length,
+  free: byVisa.free.length, evisa: byVisa.evisa.length, required: byVisa.required.length,
+  costFree: DIRECTIONS.filter((d) => стоимостьВизы(d) === 'free').length,
+  costCheap: DIRECTIONS.filter((d) => стоимостьВизы(d) === 'cheap').length,
+  durLong: DIRECTIONS.filter(долгий).length,
+  tripLow: DIRECTIONS.filter((d) => { const c = цена(d); return c > 0 && c < 100000; }).length,
+  tripMid: DIRECTIONS.filter((d) => { const c = цена(d); return c > 0 && c <= 200000; }).length,
+};
+
 const VISA_META = {
   free: {
     title: 'Без визы',
@@ -342,14 +367,14 @@ const ldJson = {
     <section class="va-filters" aria-label="Фильтры по реестру" data-reveal>
       <div class="va-filters-label">Фильтры</div>
       <div class="va-filters-chips" role="group" aria-label="Выбор визового режима и условий">
-        <button type="button" class="va-chip va-chip--active" data-filter="all" aria-pressed="true">Все<b class="va-chip-n"></b></button>
-        <button type="button" class="va-chip" data-filter="free" aria-pressed="false">Без визы<b class="va-chip-n"></b></button>
-        <button type="button" class="va-chip" data-filter="evisa" aria-pressed="false">eVisa<b class="va-chip-n"></b></button>
-        <button type="button" class="va-chip" data-filter="required" aria-pressed="false">Виза<b class="va-chip-n"></b></button>
+        <button type="button" class="va-chip va-chip--active" data-filter="all" aria-pressed="true">Все<b class="va-chip-n">{СЧЁТ.all}</b></button>
+        <button type="button" class="va-chip" data-filter="free" aria-pressed="false">Без визы<b class="va-chip-n">{СЧЁТ.free}</b></button>
+        <button type="button" class="va-chip" data-filter="evisa" aria-pressed="false">eVisa<b class="va-chip-n">{СЧЁТ.evisa}</b></button>
+        <button type="button" class="va-chip" data-filter="required" aria-pressed="false">Виза<b class="va-chip-n">{СЧЁТ.required}</b></button>
         <span class="va-chip-divider" aria-hidden="true">·</span>
-        <button type="button" class="va-chip" data-cost="free" aria-pressed="false">Бесплатно<b class="va-chip-n"></b></button>
-        <button type="button" class="va-chip" data-cost="cheap" aria-pressed="false">До $50<b class="va-chip-n"></b></button>
-        <button type="button" class="va-chip" data-duration="long" aria-pressed="false">60+ дней<b class="va-chip-n"></b></button>
+        <button type="button" class="va-chip" data-cost="free" aria-pressed="false">Бесплатно<b class="va-chip-n">{СЧЁТ.costFree}</b></button>
+        <button type="button" class="va-chip" data-cost="cheap" aria-pressed="false">До $50<b class="va-chip-n">{СЧЁТ.costCheap}</b></button>
+        <button type="button" class="va-chip" data-duration="long" aria-pressed="false">60+ дней<b class="va-chip-n">{СЧЁТ.durLong}</b></button>
         <span class="va-chip-divider" aria-hidden="true">·</span>
         <button type="button" class="va-chip" data-sort="cost" aria-pressed="false">Дешёвая виза<b class="va-chip-n"></b></button>
         {/* ⛔ Фильтр и сортировка по цене ПОЕЗДКИ добавлены вместе с ценой в
@@ -357,8 +382,8 @@ const ldJson = {
             фильтра по данным, которые они же показывают в карточке, и это
             прямая причина ухода — человек видит число, но не может им
             распорядиться. */}
-        <button type="button" class="va-chip" data-trip="low" aria-pressed="false">Поездка до 100 тыс.<b class="va-chip-n"></b></button>
-        <button type="button" class="va-chip" data-trip="mid" aria-pressed="false">100–200 тыс.<b class="va-chip-n"></b></button>
+        <button type="button" class="va-chip" data-trip="low" aria-pressed="false">Поездка до 100 тыс.<b class="va-chip-n">{СЧЁТ.tripLow}</b></button>
+        <button type="button" class="va-chip" data-trip="mid" aria-pressed="false">100–200 тыс.<b class="va-chip-n">{СЧЁТ.tripMid}</b></button>
         <button type="button" class="va-chip" data-sort="trip" aria-pressed="false">Сначала дешёвая поездка<b class="va-chip-n"></b></button>
         <button type="button" class="va-chip" id="visaReset">Сбросить</button>
       </div>
@@ -863,8 +888,10 @@ const ldJson = {
 
   // Event-delegation на document — robust против timing issues и SPA-навигации
   function initVisaFilters() {
-    // Счётчики показываем СРАЗУ, а не после первого нажатия.
-    обновитьСчётчики();
+    // ⛔ Начальные счётчики уже стоят в разметке — считаются при сборке.
+    //    Пересчёт скриптом на загрузке делал страницу нестабильной: два снимка
+    //    подряд на одной машине выходили разными. Скрипт трогает счётчики
+    //    только после нажатия.
     if ((window as any).__vaFiltersBound) return;
     (window as any).__vaFiltersBound = true;
 
