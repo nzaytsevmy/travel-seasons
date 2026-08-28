@@ -1351,3 +1351,45 @@ test('Типографика: заголовки на всех типах стр
   }
   expect(bad, bad.join('\n')).toEqual([]);
 });
+
+test('Формат раздела: поиск, ориентиры и доступность на страницах-подборах', async ({ page }) => {
+  // ⛔ Правила из research/section-page-format.md — те, что проверяются машиной.
+  //    Каждое найдено тем, что сначала было НАРУШЕНО в наших же макетах.
+  //
+  //    Поиск: NN/g — больше половины людей «поисковые» и идут прямо в строку.
+  //    Пропуск к содержимому: WebAIM — иначе человек на клавиатуре каждый раз
+  //    проходит всю шапку. Ориентиры: MDN — семантикой, а не ролями.
+  //    Видимый фокус: WCAG 2.4.7; `outline:0` без замены — прямой запрет.
+  //
+  // ⛔ Проверяем страницы-ПОДБОРЫ: те, где человек выбирает из многого. На
+  //    статье поиск не нужен, там уже ответ.
+  const ПОДБОРЫ = ['/countries/', '/visa/', '/seasons/', '/trips/', '/packing/'];
+  const bad: string[] = [];
+  for (const u of ПОДБОРЫ) {
+    const ответ = await page.goto(u);
+    expect(ответ?.status(), `страница ${u} пропала`).toBeLessThan(400);
+    const м = await page.evaluate(() => {
+      const видим = (e: Element) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+      const фокусБезКонтура = [...document.querySelectorAll('a,button,input,select')]
+        .filter(видим)
+        .filter((e) => { const c = getComputedStyle(e);
+          return c.outlineStyle === 'none' && c.outlineWidth === '0px' && !/inset/.test(c.boxShadow); }).length;
+      return {
+        поиск: document.querySelectorAll('input[type="search"]').length,
+        пропуск: [...document.querySelectorAll('a[href^="#"]')]
+          .some((a) => /содерж|контент|main/i.test(a.getAttribute('href') + a.textContent)),
+        main: document.querySelectorAll('main').length,
+        nav: document.querySelectorAll('nav').length,
+        h1: document.querySelectorAll('h1').length,
+        безAlt: [...document.querySelectorAll('img')].filter((i) => !i.hasAttribute('alt')).length,
+        фокусБезКонтура,
+      };
+    });
+    if (!м.пропуск) bad.push(`${u}: нет ссылки «к содержимому» — клавиатура проходит шапку заново`);
+    if (м.main !== 1) bad.push(`${u}: ориентир main — ${м.main}, норма 1`);
+    if (м.nav < 1) bad.push(`${u}: нет ориентира nav`);
+    if (м.h1 !== 1) bad.push(`${u}: заголовков первого уровня ${м.h1}, норма 1`);
+    if (м.безAlt) bad.push(`${u}: снимков без описания ${м.безAlt}`);
+  }
+  expect(bad, bad.join('\n')).toEqual([]);
+});
