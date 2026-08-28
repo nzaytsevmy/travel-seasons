@@ -575,7 +575,7 @@ if (guide?.itinerary?.length) {
             <li>
               <a href={`/blog/${p.slug}/`}>
                 <b>{p.title}</b>
-                <span>{p.kind === 'visa' ? 'про визу пошагово' : p.kind === 'season' ? 'про конкретный сезон'
+                <span>{p.kind === 'visa' ? 'про визу пошагово' : p.kind === 'season' ? 'про конкретный сезон' : p.kind === 'insurance' ? 'про страховку и полис'
                   : (POST_SOURCE[p.slug] === 'personal' || POST_SOURCE[p.slug] === 'hybrid') ? 'личный опыт автора' : 'подробный разбор'}</span>
               </a>
             </li>
