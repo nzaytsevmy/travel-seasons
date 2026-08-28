@@ -1191,54 +1191,26 @@ const ldJson = {
     --line-doc-faint: rgba(21, 23, 26, 0.08);
     --ff-mono: 'PT Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
+    /* ⛔ Своего фона у раздела НЕТ. Он лежит на фоне сайта, как все остальные
+       страницы. Прежде здесь стоял `background: var(--paper)` плюс два слоя во
+       всю площадь — шумовая плитка через ::before с mix-blend-mode: multiply и
+       краевой градиент через ::after. Цвет фона совпадал с сайтовым, но
+       множащий слой затемнял его до заметного серого и обрывался ровными
+       краями: раздел выглядел наклейкой поверх сайта. `overflow: hidden`
+       держал эти слои и ушёл вместе с ними. */
     position: relative;
     max-width: 1240px;
     margin: 0 auto;
     padding: 2rem clamp(1rem, 4vw, 3rem) 4rem;
-    background: var(--paper);
     color: var(--ink);
-    overflow: hidden;
   }
 
-  /* Paper grain — SVG fractalNoise inline вместо 3× radial-gradient.
-     Один filter pass, статичный, кэшируется браузером. */
-  .visa-archive::before {
-    content: "";
-    position: absolute; inset: 0;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.48  0 0 0 0 0.41  0 0 0 0 0.33  0 0 0 0.18 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-    background-size: 220px 220px;
-    pointer-events: none;
-    mix-blend-mode: multiply;
-    opacity: 0.5;
-    z-index: 0;
-  }
-  /* Subtle paper edge */
-  .visa-archive::after {
-    content: "";
-    position: absolute; inset: 0;
-    background: linear-gradient(to bottom, rgba(122, 104, 85, 0.06), transparent 8%, transparent 92%, rgba(122, 104, 85, 0.06));
-    pointer-events: none;
-    z-index: 0;
-  }
   /* ⛔ Декоративный штамп исключён намеренно. Это правило поднимает содержимое
      над фоном, но у него тот же вес, что у `.va-stamp-bg`, и оно идёт позже —
      штамп терял `position:absolute`, вставал в поток и занимал 217 пикселей
      пустоты сверху, уводя ответ страницы за первый экран (замер 28.08.2026). */
   .visa-archive > *:not(.va-stamp-bg) { position: relative; z-index: 1; }
 
-  /* Corner accent stamp — небольшой, в правом верхнем углу */
-  .va-stamp-bg {
-    position: absolute;
-    top: 4rem; right: 1.5rem;
-    width: clamp(130px, 15vw, 190px);
-    height: clamp(130px, 15vw, 190px);
-    color: var(--stamp-red);
-    opacity: 0.18;
-    transform: rotate(-9deg);
-    pointer-events: none;
-    z-index: 0;
-  }
-  .va-stamp-bg svg { width: 100%; height: 100%; }
 
   /* ──────────────── DOCUMENT HEADER ──────────────── */
   .va-doc-head {
@@ -2351,7 +2323,6 @@ const ldJson = {
     --line-doc: rgba(240, 232, 216, 0.16);
     --line-doc-faint: rgba(240, 232, 216, 0.08);
   }
-  :global(.dark-theme) .va-stamp-bg { opacity: 0.05; }
   :global(.dark-theme) .va-card-photo img { filter: sepia(0.18) saturate(0.85) brightness(0.95); }
   :global(.dark-theme) .va-card-stamp { background: rgba(34, 28, 22, 0.92); }
 
@@ -2363,7 +2334,6 @@ const ldJson = {
     .va-faq-q { grid-template-columns: auto 1fr auto; gap: 0.7rem; padding: 0.9rem 0.5rem; }
     .va-faq-q-text { font-size: 0.98rem; }
     .va-faq-a { padding: 0 0.5rem 1rem 2.5rem; font-size: 0.95rem; }
-    .va-stamp-bg { right: 0.5rem; top: 3rem; opacity: 0.13; width: 110px; height: 110px; }
     /* ⛔ Мои мобильные правила стоят ЗДЕСЬ, а не выше: одноимённые правила
        ниже по файлу перебивали их при равном весе. */
     /* ⛔ Заголовок и подводка ужаты, кнопки отбора — в прокручиваемый ряд.
