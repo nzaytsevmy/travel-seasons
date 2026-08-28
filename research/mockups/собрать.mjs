@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'node:fs';
-const Д = '/private/tmp/claude-501/-Users-nikitazaytsev/38e2070a-66b9-42d0-b34d-dfecf3865931/scratchpad';
+const Д = new URL('.', import.meta.url).pathname;
 const данные = JSON.parse(readFileSync(`${Д}/visa-data.json`, 'utf8'));
 const ф = (n) => n.toLocaleString('ru-RU');
 const по = (t) => данные.filter((d) => d.visa === t);
@@ -130,7 +130,10 @@ function apply(){var n=0;
  if(st.c)ч.push(st.c==='free'?'виза бесплатна':'виза до $50');
  if(st.d)ч.push('60+ дней');
  if(st.s)ч.push('сначала дешёвая поездка');
- sum.innerHTML='Показано <b>'+n+'</b> из 74 · '+(ч.length?'отбор: '+ч.join(' · '):'отбор не задан');}
+ // ⛔ Текст отбора — ТЕКСТОВЫМ узлом, не разметкой: в него входит строка из
+ // поля поиска, и через innerHTML она исполнилась бы как HTML (нашёл CodeQL).
+ sum.innerHTML='Показано <b>'+n+'</b> из 74 · ';
+ sum.appendChild(document.createTextNode(ч.length?'отбор: '+ч.join(' · '):'отбор не задан'));}
 function подходит(c,o){var v=c.dataset.v,tr=+c.dataset.trip||0,cb=c.dataset.c||'',lg=c.dataset.d==='1',nm=c.dataset.name||'';
  var q2=('q' in o)?o.q:st.q, v2=('v' in o)?o.v:st.v, t2=('t' in o)?o.t:st.t, c2=('c' in o)?o.c:st.c, d2=('d' in o)?o.d:st.d;
  return (!q2||nm.indexOf(q2)>=0)&&(v2==='all'||v===v2)&&(!t2||(tr&&(t2==='low'?tr<100000:tr<=200000)))
@@ -303,7 +306,7 @@ ${секция('Виза онлайн', эв, 'Оформляется до вы�
 ${секция('Консульство', кс, 'Визовый центр: биометрия, документы.')}
 </div></main>`);
 
-writeFileSync(`${Д}/mock/a.html`, А);
-writeFileSync(`${Д}/mock/b.html`, Б);
-writeFileSync(`${Д}/mock/v.html`, В);
+writeFileSync(`${Д}/a.html`, А);
+writeFileSync(`${Д}/b.html`, Б);
+writeFileSync(`${Д}/v.html`, В);
 console.log('три макета собраны:', [А, Б, В].map((x) => Math.round(x.length / 1024) + ' КБ').join(' · '));
