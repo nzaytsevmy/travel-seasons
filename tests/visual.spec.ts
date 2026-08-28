@@ -63,6 +63,10 @@ const PAGES: { slug: string; name: string; dynamic?: boolean; content?: boolean 
   // набор заметок меняется ежедневно, и снимок конкретной был бы заложником
   // робота. Структуру держат no-overflow / no-broken-images / no-css-escapes.
   { slug: '/novosti/2026-05-01-torres-del-paine-tariff/', name: 'novosti-item', content: true },
+  // ⛔ Хаб виз добавлен 28.08.2026: это денежная страница, и на ней появился
+  //    блок-ответ первого экрана. До этого она не была канарейкой вовсе —
+  //    новый блок на всю ширину прошёл бы мимо пиксельного прогона.
+  { slug: '/visa/',                         name: 'visa-index' },
   { slug: '/compare/',                      name: 'compare-index' },          // компаратор-тул: пикер + динамический результат + CTA
   { slug: '/compare/turkey-vs-egypt/',      name: 'compare-pair' },           // кураторская пара: CompareTable + byline + CTA
   { slug: '/events/',                       name: 'events-index' },           // годовой хаб событий + byline

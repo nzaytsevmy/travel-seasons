@@ -12,6 +12,25 @@ const destPhotos = import.meta.glob('../../assets/destinations/*.jpg', { eager: 
 const byVisa = { free: [], evisa: [], required: [] };
 for (const d of DIRECTIONS) byVisa[d.visa].push(d);
 
+// Ответ первого экрана: сколько куда пускают и во что обходится самая дешёвая
+// поездка в каждой из трёх групп. Цена считается ровно как на главной и в
+// калькуляторе — перелёт из Москвы плюс неделя проживания с едой, на одного.
+const USD_RUB = 90, NIGHTS = 7;               // курс ≈ЦБ; неделя на месте
+const roundK = (n) => Math.round(n / 1000) * 1000;
+const tripCost = (p) => roundK(p.flight[1] * USD_RUB) + roundK((p.hotel[1] + p.food[1]) * NIGHTS * USD_RUB);
+const fmtRub = (n) => n.toLocaleString('ru-RU');
+const дешевейший = (список) => список
+  .filter((d) => d.price?.flight && d.price?.hotel && d.price?.food)
+  .map((d) => ({ slug: d.slug, nom: d.cases.nom, цена: tripCost(d.price) }))
+  .sort((a, b) => a.цена - b.цена)[0] || null;
+const ОТВЕТ = [
+  // ⛔ Российские регионы из примера исключены: на визовой странице «дешевле
+  //    всех без визы — Дагестан» читается насмешкой, визы туда не бывает вовсе.
+  { код: 'без визы',   n: byVisa.free.length,     дёшево: дешевейший(byVisa.free.filter((d) => !d.domestic)) },
+  { код: 'виза онлайн', n: byVisa.evisa.length,    дёшево: дешевейший(byVisa.evisa) },
+  { код: 'консульство', n: byVisa.required.length, дёшево: дешевейший(byVisa.required) },
+].filter((x) => x.дёшево);
+
 const VISA_META = {
   free: {
     title: 'Без визы',
@@ -250,10 +269,24 @@ const ldJson = {
         <span class="va-title-line va-title-line--small">для гражданина РФ</span>
       </h1>
 
-      <p class="va-subtitle">
-        Сводка по {DIRECTIONS.length} {NOUN.directionDat(DIRECTIONS.length)}. Что нужно для въезда, сколько стоит, сколько ждать.
-        Если виза не нужна вовсе — есть отдельная <a href="/bezviz/">таблица безвизовых направлений</a>.
-      </p>
+
+      <section class="va-answer" aria-label="Куда пускают без визы">
+        <h2 class="va-q">Куда пускают <em>без визы?</em></h2>
+        <p class="va-q-lead">
+          <b>{byVisa.free.length} {NOUN.direction(byVisa.free.length)} из {DIRECTIONS.length}</b> — только загранпаспорт.
+          Ещё {byVisa.evisa.length} открываются визой онлайн, и лишь {byVisa.required.length} требуют консульства.
+        </p>
+        <div class="va-stamps">
+          {ОТВЕТ.map((г) => (
+            <a class="va-stamp" href={`/${г.дёшево.slug}/`}>
+              <b>{г.код} · {г.n}</b>
+              <span>дешевле всех — {г.дёшево.nom}</span>
+              <span class="va-stamp-sum">≈ {fmtRub(г.дёшево.цена)} ₽ / НЕДЕЛЯ</span>
+            </a>
+          ))}
+        </div>
+        <a class="va-q-more" href="/bezviz/">Полный список безвизовых с условиями</a>
+      </section>
 
       <div class="va-cta-row">
         <a class="va-cta va-cta--primary" href="https://t.me/traveltriberu?utm_source=traveltribe&utm_medium=visa-hero" target="_blank" rel="noopener">
@@ -1037,7 +1070,11 @@ const ldJson = {
     pointer-events: none;
     z-index: 0;
   }
-  .visa-archive > * { position: relative; z-index: 1; }
+  /* ⛔ Декоративный штамп исключён намеренно. Это правило поднимает содержимое
+     над фоном, но у него тот же вес, что у `.va-stamp-bg`, и оно идёт позже —
+     штамп терял `position:absolute`, вставал в поток и занимал 217 пикселей
+     пустоты сверху, уводя ответ страницы за первый экран (замер 28.08.2026). */
+  .visa-archive > *:not(.va-stamp-bg) { position: relative; z-index: 1; }
 
   /* Corner accent stamp — небольшой, в правом верхнем углу */
   .va-stamp-bg {
@@ -1115,6 +1152,36 @@ const ldJson = {
   }
   @media (prefers-reduced-motion: reduce) {
     .va-title-line, .va-title-line--small { transition: none; }
+  }
+
+  /* Блок-ответ первого экрана — тот же приём, что на главной: вопрос,
+     ответ числом, три примера с ценой, ссылка на полный список. Штампы
+     повёрнуты на доли градуса — это оттиск в паспорте, а не карточка. */
+  .va-answer { margin: 1rem 0 1.8rem; }
+  .va-q { font-size: clamp(1.7rem, 3.2vw, 2.4rem); line-height: 1.05; font-weight: 700;
+    letter-spacing: -0.01em; text-wrap: balance; margin: 0; color: var(--ink); }
+  .va-q em { font-style: italic; }
+  .va-q-lead { margin: 0.7rem 0 1rem; font-size: 1rem; color: var(--ink); max-width: 46ch; }
+  .va-q-lead b { font-weight: 600; }
+  .va-stamps { display: flex; flex-wrap: wrap; gap: 1.1rem; align-content: flex-start; }
+  .va-stamp { display: block; border: 2px solid var(--gold); color: var(--gold);
+    padding: 0.7rem 1rem; border-radius: 3px; transform: rotate(-1.6deg); text-decoration: none; }
+  .va-stamp:nth-child(2) { transform: rotate(1.2deg); }
+  .va-stamp:nth-child(3) { transform: rotate(-0.5deg); }
+  .va-stamp b { display: block; font-weight: 700; font-size: 0.95rem;
+    text-transform: uppercase; letter-spacing: 0.08em; }
+  .va-stamp span { display: block; font-size: 0.78rem; }
+  .va-stamp-sum { font-family: var(--ff-mono); padding-top: 0.15rem; }
+  .va-stamp:hover, .va-stamp:focus-visible { background: rgba(29, 64, 174, 0.06); }
+  .va-q-more { display: inline-block; margin-top: 0.9rem; padding: 0.4rem 0; min-height: 24px;
+    color: var(--ink); font-size: 0.95rem; text-decoration: underline;
+    text-decoration-thickness: 1px; text-underline-offset: 0.22em; }
+  .va-q-more:hover, .va-q-more:focus-visible { color: var(--gold); text-decoration-color: var(--gold); }
+  @media (max-width: 640px) {
+    .va-stamps { gap: 0.6rem; }
+    /* Поворот на телефоне НЕ сбрасываем: он читается как оттиск и места не
+       занимает. Сброс здесь был бы мёртвой строкой — .va-stamp весит меньше,
+       чем .va-stamp:nth-child(2), и проиграл бы ему. */
   }
 
   .va-subtitle {
