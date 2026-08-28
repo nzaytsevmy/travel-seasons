@@ -250,10 +250,12 @@ const ldJson = {
 };
 ---
 <Layout
-  title="Визовый реестр 2026 — визы для россиян по 70+ направлениям"
+  {/* ⛔ Ключ в НАЧАЛЕ заголовка выдачи — канон проекта. «Визовый реестр» это
+      наше внутреннее имя, спроса у него нет, а стояло оно первым словом. */}
+  title="Виза для россиян 2026: куда пускают без визы и сколько стоит поездка"
   description={`Визы для россиян в 2026: ${byVisa.free.length} ${NOUN.country(byVisa.free.length)} без визы, ${byVisa.evisa.length} с eVisa онлайн, ${byVisa.required.length} требуют визу. Стоимость, сроки и документы по 70+ направлениям.`}
   canonical={url}
-  ogTitle="Визовый реестр 2026 · TravelTribe"
+  ogTitle="Виза для россиян 2026: куда без визы и сколько стоит · TravelTribe"
   ogDescription={`${byVisa.free.length} без визы · ${byVisa.evisa.length} eVisa · ${byVisa.required.length} требуют визу`}
   ldJson={ldJson}
 >
@@ -1406,6 +1408,10 @@ const ldJson = {
     line-height: 1.1;
     letter-spacing: -0.015em;
   }
+  /* ⛔ Ширина строки 45–85 знаков (Брингхерст, цель 65). Замер 28.08.2026 дал
+     86 у двух абзацев справки — на волосок за потолком, но правило есть
+     правило, и оно из открытых источников, а не из вкуса. */
+  .va-intro-body { max-width: 68ch; }
   .va-intro-body {
     font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
     font-size: 1.04rem;
