@@ -1173,7 +1173,7 @@ const ldJson = {
 
   .visa-archive {
     /* ⛔ ПАЛИТРА САЙТА, а не своя. У страницы был собственный цветовой мир —
-       пергамент #f4ede0, сепия и ржаво-красный #1d40ae, — оставшийся от старого
+       пергамент #f4ede0, сепия и ржаво-красный #a3372a, — оставшийся от старого
        «реестра». Переезд на язык дневника её не тронул, и страница жила
        по-своему: 83 элемента ржавого цвета при том, что брендбук называет
        единственным акцентом чернильный синий. Имена токенов оставлены прежними,
@@ -2130,12 +2130,11 @@ const ldJson = {
     opacity: 1;
     transform: rotate(-6deg) scale(1.05);
   }
-  /* Stamp cursor над cards — круглая печать с arrow вместо стандартного pointer */
-  @media (hover: hover) {
-    .va-card {
-      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><circle cx='16' cy='16' r='13.5' fill='rgba(244,237,224,0.92)' stroke='%23a3372a' stroke-width='2'/><circle cx='16' cy='16' r='10' fill='none' stroke='%23a3372a' stroke-width='0.6' stroke-dasharray='1.6 1.6'/><text x='16' y='20.5' text-anchor='middle' font-family='monospace' font-size='12' font-weight='700' fill='%23a3372a'>→</text></svg>") 16 16, pointer;
-    }
-  }
+  /* ⛔ Свой курсор-печать убран. В нём жили сразу три беды: ржавый цвет старого
+     реестра, ДЕКОРАТИВНАЯ СТРЕЛКА «→» — она запрещена каноном, но гейт её не
+     видел, потому что она внутри картинки курсора, а не в тексте ссылки, — и
+     подмена обычного указателя, которую человек не просил. В макете Б своего
+     курсора нет. */
   @media (prefers-reduced-motion: reduce) {
     .va-card { transition: background 0.25s; transform: none; }
     .va-card::after { display: none; }
