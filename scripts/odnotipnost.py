@@ -73,3 +73,45 @@ rows.sort(reverse=True)
 for avg,name,n,worst in rows:
     ex=worst[1][len(ROOT)+1:].replace('/index.html','')+' ↔ '+worst[2][len(ROOT)+1:].replace('/index.html','')
     print('%-24s %6d %7.0f%% %7.0f%%  %s' % (name,n,avg*100,worst[0]*100,ex[:60]))
+
+# ── Этап 4 промта (29.08.2026): второй замер — есть ли на странице СВОИ данные ──
+# Внешняя проверка показала: асессор ищет не «чем страницы отличаются», а есть ли
+# на странице то, чего нет у соседей. Для месячной страницы это месяце-специфичные
+# факты: температура месяца, осадки, цена месяца, события месяца.
+# Страница без единого такого факта — в красный список.
+
+def month_specific_facts(path):
+    """Считает ИЗМЕРЕННЫЕ факты месяца — не шаблонные.
+
+    ⛔ Первая версия считала любые «°C» и слова «высокий сезон» — их держит
+    шаблон на каждой странице, и красный список вышел пустым при 58 странах
+    без данных. Настоящий маркер измеренного факта — строка «Замер по <город>.
+    Источник: …», её печатает только реальный погодный блок."""
+    t = text(path)
+    facts = 0
+    # реальный погодный блок: замер по конкретному городу с источником
+    facts += len(re.findall(r'Замер по\s+\S+.{0,40}?Источник', t))
+    # осадки вида «115 мм / 4 дн» — есть только у реальных данных
+    facts += len(re.findall(r'\d+\s*мм\s*/\s*\d+\s*дн', t))
+    return facts
+
+if __name__ == '__main__' and os.environ.get('FACTS'):
+    import sys
+    red = []
+    sample_dirs = []
+    for d, dirs, fs in os.walk(ROOT + '/packing'):
+        if 'index.html' in fs and d.count('/') >= 3:  # dist/packing/страна/месяц
+            sample_dirs.append(d + '/index.html')
+    print('месячных страниц сборов: %d' % len(sample_dirs))
+    counts = {}
+    for p in sample_dirs:
+        n = month_specific_facts(p)
+        counts[p] = n
+        if n == 0:
+            red.append(p)
+    vals = sorted(counts.values())
+    print('фактов на страницу: медиана %d, мин %d, макс %d' % (
+        vals[len(vals)//2], vals[0], vals[-1]))
+    print('⛔ страниц БЕЗ единого месяце-специфичного факта: %d' % len(red))
+    for p in red[:10]:
+        print('   ' + p[len(ROOT)+1:].replace('/index.html',''))
