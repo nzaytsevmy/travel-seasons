@@ -218,7 +218,14 @@ const finalLd = {
   <script type="application/ld+json" set:html={JSON.stringify(finalLd)} />
 
   {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
-  {preloadImageSrcset && <link rel="preload" as="image" imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
+  {/* ⛔ href обязателен и при imagesrcset. Стандарт разрешает тег без него, но
+      робот Яндекса такой тег разбирает иначе и выдумывает адрес «страница +
+      preload»: выгрузка обхода 28.08.2026 показала 97 заходов на несуществующие
+      /preload-адреса, 25 из них в августе — бюджет обхода горел впустую.
+      Браузеры с поддержкой imagesrcset (все современные) href игнорируют и
+      берут вариант из набора, так что двойной загрузки нет; href — самый
+      лёгкий вариант, запас для странного клиента. */}
+  {preloadImageSrcset && <link rel="preload" as="image" href={preloadImageSrcset.split(' ')[0]} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
 
   <!-- Аналитика: базовая Яндекс.Метрика (обезличенная статистика + ПФ) и Ahrefs (cookieless)
        грузятся на production-домене для работы/улучшения Сайта (тот же законный интерес, что
