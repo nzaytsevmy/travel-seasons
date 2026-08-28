@@ -915,7 +915,11 @@ header {
   display: flex; flex-direction: column; gap: 0.5rem;
 }
 h1 {
-  font-family: var(--ff-mono); font-size: clamp(2.3rem, 6vw, 4.6rem); font-weight: 700;
+  /* ⛔ Антиква, а не моноширинный. Весь #main здесь набран моноширинным ради
+     таблицы месяцев — и заголовок утащило туда же: он выглядел строкой из
+     терминала, а не заголовком дневника. Таблицу не трогаем, она так и
+     задумана; поправлен только заголовок. */
+  font-family: var(--ff-head, var(--ff-display)); font-size: clamp(2.3rem, 6vw, 4.6rem); font-weight: 700;
   letter-spacing: -0.03em; line-height: 0.94; text-transform: uppercase;
 }
 h1 em { color: var(--gold); font-style: normal; }

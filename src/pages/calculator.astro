@@ -1510,7 +1510,8 @@ window.addEventListener('pageshow', (e) => {
   .tc-tip-row:nth-child(3n+1) { border-left: none; padding-left: 0; }
 }
 .tc-tip-title {
-  font-family: var(--ff-body);
+  /* ⛔ Антиква — хвост перехода на язык дневника. */
+  font-family: var(--ff-head, var(--ff-display));
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: -0.01em;
