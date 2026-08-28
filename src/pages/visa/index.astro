@@ -261,40 +261,22 @@ const ldJson = {
 
   <main id="main" class="visa-archive">
 
-    {/* ─── ДЕКОРАТИВНЫЙ ШТАМП В ФОНЕ ─── */}
-    <div class="va-stamp-bg" aria-hidden="true">
-      <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <path id="vaStampCircle" d="M 160, 160 m -120, 0 a 120,120 0 1,1 240,0 a 120,120 0 1,1 -240,0" />
-        </defs>
-        <circle cx="160" cy="160" r="138" fill="none" stroke="currentColor" stroke-width="2.5" />
-        <circle cx="160" cy="160" r="120" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" />
-        <text font-family="JetBrains Mono, monospace" font-size="13" letter-spacing="4" fill="currentColor">
-          <textPath href="#vaStampCircle" startOffset="0%">TRAVELTRIBE · ВИЗОВЫЙ РЕЕСТР · 2026 · ПРОВЕРЕНО · </textPath>
-        </text>
-        <text x="160" y="148" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" letter-spacing="2" fill="currentColor">14·05·2026</text>
-        <line x1="100" y1="160" x2="220" y2="160" stroke="currentColor" stroke-width="1.5" />
-        <text x="160" y="184" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" letter-spacing="3" fill="currentColor">RU · 070</text>
-      </svg>
-    </div>
-
     {/* ─── DOCUMENT HEADER ─── */}
     <header class="va-doc-head" data-reveal>
-      <div class="va-meta-line">
-        <span>РЕГ. № 070—2026</span>
-        <span class="va-meta-dot">·</span>
-        <span>TT-VISA-RU</span>
-        <span class="va-meta-dot">·</span>
-        <span>Версия 14.05.2026</span>
-      </div>
-
-      <h1 class="va-title">
-        <span class="va-title-line">Визовый</span>
-        <span class="va-title-line va-title-line--italic">реестр</span>
-        <span class="va-title-line va-title-line--small">для гражданина РФ</span>
-      </h1>
+      {/* ⛔ Заголовок говорит, ЧТО СТРАНИЦА ДЕЛАЕТ, а не как называется —
+          требование GOV.UK. Было «Визовый реестр для гражданина РФ»: имя
+          раздела, по которому не понять, на что здесь ответят. */}
+      <h1 class="va-title">Нужна ли виза и сколько стоит поездка?</h1>
+      <p class="va-lead">Отберите режим и бюджет — список ниже перестроится.
+      Цена недели считается с перелётом из Москвы, жильём, едой и транспортом.</p>
 
 
+      {/* ⛔ ЕДИНАЯ РАМКА ИНСТРУМЕНТА, как в макете Б: подпись, поиск, кнопки
+          отбора и сводка числами — один блок, а не четыре подряд. Инструмент
+          раздела обязан быть главным содержимым страницы (Baymard по 15
+          тревел-сайтам: у 25% сайтов это не так). */}
+      <div class="va-tool">
+        <div class="va-tool-title">Подбор по {DIRECTIONS.length} {NOUN.directionDat(DIRECTIONS.length)}</div>
     {/* ─── SEARCH — filing tray style ─── */}
       <section class="va-search-wrap" aria-label="Поиск страны">
         <label class="va-search-label" for="visaSearch">
@@ -307,25 +289,59 @@ const ldJson = {
         <p class="va-empty" id="visaEmpty" hidden>В реестре не значится. Попробуй другое название.</p>
       </section>
 
-      <section class="va-answer" aria-label="Куда пускают без визы">
-        <h2 class="va-q">Куда пускают <em>без визы?</em></h2>
-        <p class="va-q-lead">
-          <b>{byVisa.free.length} {NOUN.direction(byVisa.free.length)} из {DIRECTIONS.length}</b> — только загранпаспорт.
-          Ещё {byVisa.evisa.length} открываются визой онлайн, и лишь {byVisa.required.length} требуют консульства.
-        </p>
-        <div class="va-stamps">
-          {ОТВЕТ.map((г) => (
-            <a class="va-stamp" href={`/${г.дёшево.slug}/`}>
-              {/* ⛔ Счёт в штампе НЕ повторяем: он уже назван строкой выше, двумя
-                  строками раньше. Штамп несёт то, чего в ответе нет — пример и цену. */}
-              <b>{г.код}</b>
-              <span>{г.дёшево.nom} — дешевле всех</span>
-              <span class="va-stamp-sum">≈ {fmtRub(г.дёшево.цена)} ₽ / НЕДЕЛЯ</span>
-            </a>
-          ))}
-        </div>
-        <a class="va-q-more" href="/bezviz/">Полный список безвизовых с условиями</a>
+      {/* ⛔ Ответ строкой чисел, а не тремя оттисками. В макете Б это четыре
+          показателя в одну линию: сколько куда пускают и во что обходится самая
+          дешёвая поездка. Оттиски занимали втрое больше высоты и повторяли то,
+          что уже сказано счётчиками на кнопках. */}
+    {/* ⛔ ИНСТРУМЕНТ СТОИТ ДО СПРАВКИ. Он лежал на 4559 пикселе — за пятью
+            экранами от начала. NN/g: больше половины людей на сайте «поисковые» и
+            идут прямо в строку поиска; под сгибом они её не находят. Baymard по 15
+            тревел-сайтам: поиск обязан быть главным содержимым страницы, у 25%
+            сайтов это не так. Порядок теперь: ответ числом → инструмент → реестр →
+            справка. Подробнее — research/section-page-format.md. */}
+        {/* ─── QUICK-FILTER CHIPS — фильтры по визовому режиму, бюджету и сроку ─── */}
+        <section class="va-filters" aria-label="Фильтры по реестру" data-reveal>
+          <div class="va-filters-label">Фильтры</div>
+          <div class="va-filters-chips" role="group" aria-label="Выбор визового режима и условий">
+            <button type="button" class="va-chip va-chip--active" data-filter="all" aria-pressed="true">Все<b class="va-chip-n">{СЧЁТ.all}</b></button>
+            <button type="button" class="va-chip" data-filter="free" aria-pressed="false">Без визы<b class="va-chip-n">{СЧЁТ.free}</b></button>
+            <button type="button" class="va-chip" data-filter="evisa" aria-pressed="false">eVisa<b class="va-chip-n">{СЧЁТ.evisa}</b></button>
+            <button type="button" class="va-chip" data-filter="required" aria-pressed="false">Виза<b class="va-chip-n">{СЧЁТ.required}</b></button>
+            <span class="va-chip-divider" aria-hidden="true">·</span>
+            <button type="button" class="va-chip" data-cost="free" aria-pressed="false">Бесплатно<b class="va-chip-n">{СЧЁТ.costFree}</b></button>
+            <button type="button" class="va-chip" data-cost="cheap" aria-pressed="false">До $50<b class="va-chip-n">{СЧЁТ.costCheap}</b></button>
+            <button type="button" class="va-chip" data-duration="long" aria-pressed="false">60+ дней<b class="va-chip-n">{СЧЁТ.durLong}</b></button>
+            <span class="va-chip-divider" aria-hidden="true">·</span>
+            <button type="button" class="va-chip" data-sort="cost" aria-pressed="false">Дешёвая виза<b class="va-chip-n"></b></button>
+            {/* ⛔ Фильтр и сортировка по цене ПОЕЗДКИ добавлены вместе с ценой в
+                карточке. Baymard (200 000+ часов наблюдений): у 38% сайтов нет
+                фильтра по данным, которые они же показывают в карточке, и это
+                прямая причина ухода — человек видит число, но не может им
+                распорядиться. */}
+            <button type="button" class="va-chip" data-trip="low" aria-pressed="false">Поездка до 100 тыс.<b class="va-chip-n">{СЧЁТ.tripLow}</b></button>
+            <button type="button" class="va-chip" data-trip="mid" aria-pressed="false">100–200 тыс.<b class="va-chip-n">{СЧЁТ.tripMid}</b></button>
+            <button type="button" class="va-chip" data-sort="trip" aria-pressed="false">Сначала дешёвая поездка<b class="va-chip-n"></b></button>
+            <button type="button" class="va-chip" id="visaReset">Сбросить</button>
+          </div>
+          <p class="va-filter-count" id="visaFilterCount" aria-live="polite" aria-atomic="true">Показано: <strong>{DIRECTIONS.length}</strong> из {DIRECTIONS.length} направлений</p>
+          <noscript>
+            <p class="va-noscript">⚠️ Фильтры работают с включённым JavaScript. Список всех 70+ стран ниже доступен полностью.</p>
+          </noscript>
+        </section>
+
+        {/* ⛔ РЕЕСТР ИДЁТ СРАЗУ ЗА ИНСТРУМЕНТОМ, справка — после него. Он лежал
+            за вступительной статьёй, перечнем изменений и двенадцатью вопросами:
+            на 4675 пикселе десктопа и 7156 телефона. Человек приходит сюда с одним
+            вопросом «нужна ли виза» — сначала ответ и список, потом объяснения. */}
+
+      <section class="va-answer" aria-label="Сводка по визовым режимам">
+        <div class="va-n"><b>{byVisa.free.length}</b><span>без визы</span></div>
+        <div class="va-n"><b>{byVisa.evisa.length}</b><span>виза онлайн</span></div>
+        <div class="va-n"><b>{byVisa.required.length}</b><span>консульство</span></div>
+        <div class="va-n"><b>{fmtRub(ОТВЕТ[0].дёшево.цена)} ₽</b><span>дешевле всех — {ОТВЕТ[0].дёшево.nom}</span></div>
       </section>
+      </div>
+      <p class="va-next">Ниже — сам реестр. Он перестраивается отбором выше.</p>
 
       <div class="va-cta-row">
         <a class="va-cta va-cta--primary" href="https://t.me/traveltriberu?utm_source=traveltribe&utm_medium=visa-hero" target="_blank" rel="noopener">
@@ -357,46 +373,6 @@ const ldJson = {
     </header>
 
 
-    {/* ⛔ ИНСТРУМЕНТ СТОИТ ДО СПРАВКИ. Он лежал на 4559 пикселе — за пятью
-        экранами от начала. NN/g: больше половины людей на сайте «поисковые» и
-        идут прямо в строку поиска; под сгибом они её не находят. Baymard по 15
-        тревел-сайтам: поиск обязан быть главным содержимым страницы, у 25%
-        сайтов это не так. Порядок теперь: ответ числом → инструмент → реестр →
-        справка. Подробнее — research/section-page-format.md. */}
-    {/* ─── QUICK-FILTER CHIPS — фильтры по визовому режиму, бюджету и сроку ─── */}
-    <section class="va-filters" aria-label="Фильтры по реестру" data-reveal>
-      <div class="va-filters-label">Фильтры</div>
-      <div class="va-filters-chips" role="group" aria-label="Выбор визового режима и условий">
-        <button type="button" class="va-chip va-chip--active" data-filter="all" aria-pressed="true">Все<b class="va-chip-n">{СЧЁТ.all}</b></button>
-        <button type="button" class="va-chip" data-filter="free" aria-pressed="false">Без визы<b class="va-chip-n">{СЧЁТ.free}</b></button>
-        <button type="button" class="va-chip" data-filter="evisa" aria-pressed="false">eVisa<b class="va-chip-n">{СЧЁТ.evisa}</b></button>
-        <button type="button" class="va-chip" data-filter="required" aria-pressed="false">Виза<b class="va-chip-n">{СЧЁТ.required}</b></button>
-        <span class="va-chip-divider" aria-hidden="true">·</span>
-        <button type="button" class="va-chip" data-cost="free" aria-pressed="false">Бесплатно<b class="va-chip-n">{СЧЁТ.costFree}</b></button>
-        <button type="button" class="va-chip" data-cost="cheap" aria-pressed="false">До $50<b class="va-chip-n">{СЧЁТ.costCheap}</b></button>
-        <button type="button" class="va-chip" data-duration="long" aria-pressed="false">60+ дней<b class="va-chip-n">{СЧЁТ.durLong}</b></button>
-        <span class="va-chip-divider" aria-hidden="true">·</span>
-        <button type="button" class="va-chip" data-sort="cost" aria-pressed="false">Дешёвая виза<b class="va-chip-n"></b></button>
-        {/* ⛔ Фильтр и сортировка по цене ПОЕЗДКИ добавлены вместе с ценой в
-            карточке. Baymard (200 000+ часов наблюдений): у 38% сайтов нет
-            фильтра по данным, которые они же показывают в карточке, и это
-            прямая причина ухода — человек видит число, но не может им
-            распорядиться. */}
-        <button type="button" class="va-chip" data-trip="low" aria-pressed="false">Поездка до 100 тыс.<b class="va-chip-n">{СЧЁТ.tripLow}</b></button>
-        <button type="button" class="va-chip" data-trip="mid" aria-pressed="false">100–200 тыс.<b class="va-chip-n">{СЧЁТ.tripMid}</b></button>
-        <button type="button" class="va-chip" data-sort="trip" aria-pressed="false">Сначала дешёвая поездка<b class="va-chip-n"></b></button>
-        <button type="button" class="va-chip" id="visaReset">Сбросить</button>
-      </div>
-      <p class="va-filter-count" id="visaFilterCount" aria-live="polite" aria-atomic="true">Показано: <strong>{DIRECTIONS.length}</strong> из {DIRECTIONS.length} направлений</p>
-      <noscript>
-        <p class="va-noscript">⚠️ Фильтры работают с включённым JavaScript. Список всех 70+ стран ниже доступен полностью.</p>
-      </noscript>
-    </section>
-
-    {/* ⛔ РЕЕСТР ИДЁТ СРАЗУ ЗА ИНСТРУМЕНТОМ, справка — после него. Он лежал
-        за вступительной статьёй, перечнем изменений и двенадцатью вопросами:
-        на 4675 пикселе десктопа и 7156 телефона. Человек приходит сюда с одним
-        вопросом «нужна ли виза» — сначала ответ и список, потом объяснения. */}
     {/* ─── CLASSIFIED SECTIONS — три картотеки ─── */}
     {['free', 'evisa', 'required'].map((vt, vti) => (
       <section class={`va-section va-section--${vt}`} data-section={vt} data-reveal>
@@ -1323,7 +1299,30 @@ const ldJson = {
   /* Блок-ответ первого экрана — тот же приём, что на главной: вопрос,
      ответ числом, три примера с ценой, ссылка на полный список. Штампы
      повёрнуты на доли градуса — это оттиск в паспорте, а не карточка. */
-  .va-answer { margin: 1rem 0 1.8rem; }
+  .va-answer { display: flex; gap: 2rem; flex-wrap: wrap; margin: 1.1rem 0 0;
+    padding-top: 1rem; border-top: 1px dotted var(--line-doc, #d9dbde); }
+  .va-n b { display: block; font-family: var(--ff-mono); font-size: 2rem; font-weight: 700;
+    line-height: 1; color: var(--ink); }
+  .va-n span { display: block; font-size: 0.78rem; color: var(--text-dim, #5c626b);
+    letter-spacing: 0.04em; text-transform: uppercase; padding-top: 0.25rem; }
+  .va-tool { border: 2px solid var(--ink); background: #fff; padding: 1.1rem; margin-bottom: 1rem; }
+  /* ⛔ Внутри рамки инструмента — БЕЗ вложенных рамок и фонов. «Карточка в
+     карточке» стоит в нашем чек-листе примет машинной вёрстки (критерий 53), и
+     на телефоне эти вложения уводили сводку за первый экран: 1211 при 844. */
+  .va-tool .va-search-wrap,
+  .va-tool .va-filters { border: 0; background: none; padding: 0; margin: 0 0 0.8rem; box-shadow: none; }
+  .va-tool .va-filters-label { margin-bottom: 0.5rem; }
+  @media (max-width: 640px) {
+    .va-tool { padding: 0.8rem; }
+    .va-answer { gap: 0.9rem 1.4rem; }
+    .va-n b { font-size: 1.5rem; }
+    .va-n span { font-size: 0.68rem; }
+  }
+  .va-tool-title { font-family: var(--ff-mono); font-size: 0.72rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-dim, #5c626b); margin-bottom: 0.7rem; }
+  .va-next { font-size: 0.84rem; color: var(--text-dim, #5c626b); margin: 0 0 1.4rem; }
+
+  .va-lead { color: var(--text-dim, #5c626b); max-width: 56ch; margin: 0.6rem 0 1.2rem; }
   .va-q { font-size: clamp(1.7rem, 3.2vw, 2.4rem); line-height: 1.05; font-weight: 700;
     letter-spacing: -0.01em; text-wrap: balance; margin: 0; color: var(--ink); }
   .va-q em { font-style: italic; }
@@ -2345,7 +2344,16 @@ const ldJson = {
     .va-faq-q-text { font-size: 0.98rem; }
     .va-faq-a { padding: 0 0.5rem 1rem 2.5rem; font-size: 0.95rem; }
     .va-stamp-bg { right: 0.5rem; top: 3rem; opacity: 0.13; width: 110px; height: 110px; }
-    .va-title { font-size: clamp(2.4rem, 11vw, 3.4rem); }
+    /* ⛔ Мои мобильные правила стоят ЗДЕСЬ, а не выше: одноимённые правила
+       ниже по файлу перебивали их при равном весе. */
+    /* ⛔ Заголовок и подводка ужаты, кнопки отбора — в прокручиваемый ряд.
+       В три ряда одиннадцать кнопок занимали 296 пикселей и уводили сводку за
+       первый экран: 956 при экране 844. */
+    .va-title { font-size: clamp(1.5rem, 6.5vw, 2rem); }
+    .va-lead { margin: 0.5rem 0 0.9rem; font-size: 0.92rem; }
+    .va-filters-chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.35rem;
+      -webkit-overflow-scrolling: touch; }
+    .va-filters-chips > * { flex: 0 0 auto; }
     .va-title-line--small { font-size: 0.7rem; }
     .va-stats { grid-template-columns: 1fr; }
     .va-stats { border: 1px solid var(--ink); gap: 0; }
