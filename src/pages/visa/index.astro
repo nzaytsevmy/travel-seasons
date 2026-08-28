@@ -12,6 +12,50 @@ const destPhotos = import.meta.glob('../../assets/destinations/*.jpg', { eager: 
 const byVisa = { free: [], evisa: [], required: [] };
 for (const d of DIRECTIONS) byVisa[d.visa].push(d);
 
+// Ответ первого экрана: сколько куда пускают и во что обходится самая дешёвая
+// поездка в каждой из трёх групп. Цена считается ровно как на главной и в
+// калькуляторе — перелёт из Москвы плюс неделя проживания с едой, на одного.
+const USD_RUB = 90, NIGHTS = 7;               // курс ≈ЦБ; неделя на месте
+const roundK = (n) => Math.round(n / 1000) * 1000;
+const tripCost = (p) => roundK(p.flight[1] * USD_RUB) + roundK((p.hotel[1] + p.food[1]) * NIGHTS * USD_RUB);
+const fmtRub = (n) => n.toLocaleString('ru-RU');
+const дешевейший = (список) => список
+  .filter((d) => d.price?.flight && d.price?.hotel && d.price?.food)
+  .map((d) => ({ slug: d.slug, nom: d.cases.nom, цена: tripCost(d.price) }))
+  .sort((a, b) => a.цена - b.цена)[0] || null;
+const ОТВЕТ = [
+  // ⛔ Российские регионы из примера исключены: на визовой странице «дешевле
+  //    всех без визы — Дагестан» читается насмешкой, визы туда не бывает вовсе.
+  { код: 'без визы',   n: byVisa.free.length,     дёшево: дешевейший(byVisa.free.filter((d) => !d.domestic)) },
+  { код: 'виза онлайн', n: byVisa.evisa.length,    дёшево: дешевейший(byVisa.evisa) },
+  { код: 'консульство', n: byVisa.required.length, дёшево: дешевейший(byVisa.required) },
+].filter((x) => x.дёшево);
+
+// ⛔ Начальные счётчики кнопок считаются ПРИ СБОРКЕ, а не скриптом после
+//    загрузки. Скрипт вписывал их в разметку уже отрисованной страницы, и два
+//    снимка подряд на одной машине выходили разными — облачный прогон дважды
+//    объявил страницу нестабильной. Заодно числа теперь видны без JavaScript.
+const стоимостьВизы = (d) => {
+  const c = (getVisaDetails(d.slug)?.cost || '').toLowerCase();
+  if (/бесплат/.test(c)) return 'free';
+  const n = Number((c.match(/\d+/) || [999])[0]);
+  return n <= 50 ? 'cheap' : '';
+};
+const долгий = (d) => {
+  const t = getVisaDetails(d.slug)?.duration || '';
+  return /(6[0-9]|[7-9][0-9]|[1-9]\d{2,})\s*(дн|дней)/i.test(t) || /год|мес/i.test(t);
+};
+const цена = (d) => (d.price?.flight && d.price?.hotel && d.price?.food ? tripCost(d.price) : 0);
+const СЧЁТ = {
+  all: DIRECTIONS.length,
+  free: byVisa.free.length, evisa: byVisa.evisa.length, required: byVisa.required.length,
+  costFree: DIRECTIONS.filter((d) => стоимостьВизы(d) === 'free').length,
+  costCheap: DIRECTIONS.filter((d) => стоимостьВизы(d) === 'cheap').length,
+  durLong: DIRECTIONS.filter(долгий).length,
+  tripLow: DIRECTIONS.filter((d) => { const c = цена(d); return c > 0 && c < 100000; }).length,
+  tripMid: DIRECTIONS.filter((d) => { const c = цена(d); return c > 0 && c <= 200000; }).length,
+};
+
 const VISA_META = {
   free: {
     title: 'Без визы',
@@ -250,10 +294,38 @@ const ldJson = {
         <span class="va-title-line va-title-line--small">для гражданина РФ</span>
       </h1>
 
-      <p class="va-subtitle">
-        Сводка по {DIRECTIONS.length} {NOUN.directionDat(DIRECTIONS.length)}. Что нужно для въезда, сколько стоит, сколько ждать.
-        Если виза не нужна вовсе — есть отдельная <a href="/bezviz/">таблица безвизовых направлений</a>.
-      </p>
+
+    {/* ─── SEARCH — filing tray style ─── */}
+      <section class="va-search-wrap" aria-label="Поиск страны">
+        <label class="va-search-label" for="visaSearch">
+          <span class="va-search-prefix">Запрос</span>
+        </label>
+        <div class="va-search-field">
+          <input type="search" id="visaSearch" placeholder="Япония, Турция, Грузия…" autocomplete="off" aria-label="Поиск страны" />
+          <button type="button" class="va-search-clear" id="visaSearchClear" aria-label="Очистить" hidden>×</button>
+        </div>
+        <p class="va-empty" id="visaEmpty" hidden>В реестре не значится. Попробуй другое название.</p>
+      </section>
+
+      <section class="va-answer" aria-label="Куда пускают без визы">
+        <h2 class="va-q">Куда пускают <em>без визы?</em></h2>
+        <p class="va-q-lead">
+          <b>{byVisa.free.length} {NOUN.direction(byVisa.free.length)} из {DIRECTIONS.length}</b> — только загранпаспорт.
+          Ещё {byVisa.evisa.length} открываются визой онлайн, и лишь {byVisa.required.length} требуют консульства.
+        </p>
+        <div class="va-stamps">
+          {ОТВЕТ.map((г) => (
+            <a class="va-stamp" href={`/${г.дёшево.slug}/`}>
+              {/* ⛔ Счёт в штампе НЕ повторяем: он уже назван строкой выше, двумя
+                  строками раньше. Штамп несёт то, чего в ответе нет — пример и цену. */}
+              <b>{г.код}</b>
+              <span>{г.дёшево.nom} — дешевле всех</span>
+              <span class="va-stamp-sum">≈ {fmtRub(г.дёшево.цена)} ₽ / НЕДЕЛЯ</span>
+            </a>
+          ))}
+        </div>
+        <a class="va-q-more" href="/bezviz/">Полный список безвизовых с условиями</a>
+      </section>
 
       <div class="va-cta-row">
         <a class="va-cta va-cta--primary" href="https://t.me/traveltriberu?utm_source=traveltribe&utm_medium=visa-hero" target="_blank" rel="noopener">
@@ -284,58 +356,209 @@ const ldJson = {
       </div>
     </header>
 
-    {/* ─── STATS PANEL — три «карточки реестра» ─── */}
-    <section class="va-stats" aria-label="Сводка по визовым режимам" data-reveal>
-      <div class="va-stat va-stat--free">
-        <div class="va-stat-mark" aria-hidden="true">БВ</div>
-        <div class="va-stat-num">{byVisa.free.length}</div>
-        <div class="va-stat-label">без визы</div>
-        <div class="va-stat-note">визу не оформлять</div>
+
+    {/* ⛔ ИНСТРУМЕНТ СТОИТ ДО СПРАВКИ. Он лежал на 4559 пикселе — за пятью
+        экранами от начала. NN/g: больше половины людей на сайте «поисковые» и
+        идут прямо в строку поиска; под сгибом они её не находят. Baymard по 15
+        тревел-сайтам: поиск обязан быть главным содержимым страницы, у 25%
+        сайтов это не так. Порядок теперь: ответ числом → инструмент → реестр →
+        справка. Подробнее — research/section-page-format.md. */}
+    {/* ─── QUICK-FILTER CHIPS — фильтры по визовому режиму, бюджету и сроку ─── */}
+    <section class="va-filters" aria-label="Фильтры по реестру" data-reveal>
+      <div class="va-filters-label">Фильтры</div>
+      <div class="va-filters-chips" role="group" aria-label="Выбор визового режима и условий">
+        <button type="button" class="va-chip va-chip--active" data-filter="all" aria-pressed="true">Все<b class="va-chip-n">{СЧЁТ.all}</b></button>
+        <button type="button" class="va-chip" data-filter="free" aria-pressed="false">Без визы<b class="va-chip-n">{СЧЁТ.free}</b></button>
+        <button type="button" class="va-chip" data-filter="evisa" aria-pressed="false">eVisa<b class="va-chip-n">{СЧЁТ.evisa}</b></button>
+        <button type="button" class="va-chip" data-filter="required" aria-pressed="false">Виза<b class="va-chip-n">{СЧЁТ.required}</b></button>
+        <span class="va-chip-divider" aria-hidden="true">·</span>
+        <button type="button" class="va-chip" data-cost="free" aria-pressed="false">Бесплатно<b class="va-chip-n">{СЧЁТ.costFree}</b></button>
+        <button type="button" class="va-chip" data-cost="cheap" aria-pressed="false">До $50<b class="va-chip-n">{СЧЁТ.costCheap}</b></button>
+        <button type="button" class="va-chip" data-duration="long" aria-pressed="false">60+ дней<b class="va-chip-n">{СЧЁТ.durLong}</b></button>
+        <span class="va-chip-divider" aria-hidden="true">·</span>
+        <button type="button" class="va-chip" data-sort="cost" aria-pressed="false">Дешёвая виза<b class="va-chip-n"></b></button>
+        {/* ⛔ Фильтр и сортировка по цене ПОЕЗДКИ добавлены вместе с ценой в
+            карточке. Baymard (200 000+ часов наблюдений): у 38% сайтов нет
+            фильтра по данным, которые они же показывают в карточке, и это
+            прямая причина ухода — человек видит число, но не может им
+            распорядиться. */}
+        <button type="button" class="va-chip" data-trip="low" aria-pressed="false">Поездка до 100 тыс.<b class="va-chip-n">{СЧЁТ.tripLow}</b></button>
+        <button type="button" class="va-chip" data-trip="mid" aria-pressed="false">100–200 тыс.<b class="va-chip-n">{СЧЁТ.tripMid}</b></button>
+        <button type="button" class="va-chip" data-sort="trip" aria-pressed="false">Сначала дешёвая поездка<b class="va-chip-n"></b></button>
+        <button type="button" class="va-chip" id="visaReset">Сбросить</button>
       </div>
-      <div class="va-stat va-stat--evisa">
-        <div class="va-stat-mark" aria-hidden="true">EV</div>
-        <div class="va-stat-num">{byVisa.evisa.length}</div>
-        <div class="va-stat-label">eVisa</div>
-        <div class="va-stat-note">онлайн, 1–3 дня</div>
-      </div>
-      <div class="va-stat va-stat--required">
-        <div class="va-stat-mark" aria-hidden="true">ВЗ</div>
-        <div class="va-stat-num">{byVisa.required.length}</div>
-        <div class="va-stat-label">виза обязательна</div>
-        <div class="va-stat-note">консульство · до 30 дней</div>
-      </div>
+      <p class="va-filter-count" id="visaFilterCount" aria-live="polite" aria-atomic="true">Показано: <strong>{DIRECTIONS.length}</strong> из {DIRECTIONS.length} направлений</p>
+      <noscript>
+        <p class="va-noscript">⚠️ Фильтры работают с включённым JavaScript. Список всех 70+ стран ниже доступен полностью.</p>
+      </noscript>
     </section>
+
+    {/* ⛔ РЕЕСТР ИДЁТ СРАЗУ ЗА ИНСТРУМЕНТОМ, справка — после него. Он лежал
+        за вступительной статьёй, перечнем изменений и двенадцатью вопросами:
+        на 4675 пикселе десктопа и 7156 телефона. Человек приходит сюда с одним
+        вопросом «нужна ли виза» — сначала ответ и список, потом объяснения. */}
+    {/* ─── CLASSIFIED SECTIONS — три картотеки ─── */}
+    {['free', 'evisa', 'required'].map((vt, vti) => (
+      <section class={`va-section va-section--${vt}`} data-section={vt} data-reveal>
+        <header class="va-section-head">
+          <div class="va-section-stamp" aria-hidden="true">
+            <span class="vss-roman">{VISA_META[vt].section}</span>
+            <span class="vss-code">{VISA_META[vt].code}</span>
+            <span class="vss-count">{byVisa[vt].length}</span>
+          </div>
+          <div class="va-section-meta">
+            <div class="va-section-iso">{VISA_META[vt].iso}</div>
+            <h2 class="va-section-title">{VISA_META[vt].title}</h2>
+            <p class="va-section-desc">{VISA_META[vt].desc}</p>
+          </div>
+        </header>
+
+        <div class="va-grid">
+          {byVisa[vt].map((d, idx) => {
+            const photo = destPhotos[`../../assets/destinations/${d.slug}.jpg`];
+            const iso = ISO_CODE[d.slug] || 'XXX';
+            const num = String(idx + 1).padStart(3, '0');
+            const visited = VISITED.has(d.slug);
+            const details = getVisaDetails(d.slug, d.visa);
+            // Eager только для первых карточек ПЕРВОЙ группы (above-fold на мобайле,
+            // 2-кол сетка → ~2 ряда). idx сбрасывается в каждой группе, поэтому без vti===0
+            // получалось 9 eager × fetchpriority — приоритетный шторм убивал LCP.
+            const isAboveFold = vti === 0 && idx < 4;
+            const cb = costBucket(details.cost);
+            const isLong = isLongDuration(details.duration);
+            const altText = d.cases.nom + ' — ' + d.sub + ', виза для россиян 2026';
+            return (
+              <a href={`/visa/${d.slug}/`}
+                 class={`va-card ${visited ? 'va-card--visited' : ''}`}
+                 data-name={d.cases.nom.toLowerCase()}
+                 data-visa={d.visa}
+                 data-cost={cb}
+                 data-cost-usd={costUsd(details.cost)}
+                 data-ord={idx}
+                 data-duration-long={isLong ? '1' : '0'}
+                 data-trip={d.price?.flight && d.price?.hotel && d.price?.food ? tripCost(d.price) : ''}>
+                <div class="va-card-num">
+                  <span aria-label={`Карточка ${num} из ${byVisa[vt].length}`}>№ {num}</span>
+                  {visited && <span class="va-card-visited" title="Никита был лично" aria-label="Автор был в этой стране лично">✓</span>}
+                </div>
+                <div class="va-card-photo">
+                  {photo ? (
+                    <Image
+                      src={photo}
+                      alt={altText}
+                      widths={[280, 560]}
+                      sizes="(max-width: 700px) 50vw, 25vw"
+                      formats={['webp']}
+                      quality={70}
+                      loading={isAboveFold ? 'eager' : 'lazy'}
+                    />
+                  ) : (
+                    <div class="va-card-fallback" style={`background: ${d.visual.g1}`}>
+                    </div>
+                  )}
+                  <div class="va-card-stamp" aria-hidden="true">{VISA_META[vt].code}</div>
+                </div>
+                <div class="va-card-body">
+                  <h3 class="va-card-name">{d.cases.nom}</h3>
+                  {/* ⛔ Цена стоит СРАЗУ под именем, а не последней строкой.
+                      Замеры зон интереса на тревел-страницах: дольше и чаще
+                      всего смотрят на связку «имя — цена». Раньше она была
+                      четвёртым фактом, под сроком и стоимостью визы. */}
+                  {d.price?.flight && d.price?.hotel && d.price?.food && (
+                    <div class="va-card-trip">
+                      <span class="va-card-trip-sum">≈ {fmtRub(tripCost(d.price))} ₽</span>
+                      <span class="va-card-trip-per">неделя с перелётом</span>
+                    </div>
+                  )}
+                  <div class="va-card-iso">{iso}</div>
+                  <dl class="va-card-facts">
+                    <div class="va-fact">
+                      <dt>Срок</dt>
+                      <dd>{details.duration}</dd>
+                    </div>
+                    {/* «Цена» рядом с ценой недели читалась двусмысленно: это цена
+                        ВИЗЫ, а не поездки. Названо прямо. */}
+                    <div class="va-fact">
+                      <dt>Виза</dt>
+                      <dd>{details.cost}</dd>
+                    </div>
+                    <div class="va-fact">
+                      <dt>Оформление</dt>
+                      <dd>{details.timing}</dd>
+                    </div>
+                    {/* ⛔ Цена поездки — по правилу главной: каждый пример несёт свою
+                        цену. Без неё читатель узнаёт «виза не нужна» и уходит считать
+                        в другое место. Считается так же, как на главной и в
+                        калькуляторе: перелёт из Москвы плюс неделя на месте. */}
+                  </dl>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    ))}
 
     {/* ─── HUB INTRO — вступительная статья ─── */}
     <section class="va-intro" data-reveal>
       <div class="va-intro-meta">
         <span class="va-intro-tag">ОБЗОР · ВИЗОВАЯ ОБСТАНОВКА · МАЙ 2026</span>
       </div>
-      <h2 class="va-intro-title">Куда летать россиянам в 2026 — главное</h2>
+      <h2 class="va-intro-title">Что изменилось за полгода?</h2>
 
       <div class="va-intro-body">
         <p class="va-intro-lede">
-          С 2022 года визовая карта мира перерисовывается каждые 3–6 месяцев. Здесь — актуальный реестр на май 2026: <strong>{byVisa.free.length} {NOUN.country(byVisa.free.length)} {NOUN.accept(byVisa.free.length)} по загранпаспорту, {byVisa.evisa.length} дают eVisa онлайн, {byVisa.required.length} требуют полноценную визу</strong>. Реестр обновляется при изменении правил, последняя сверка — 14 мая 2026.
+          С 2022 года визовая карта мира перерисовывается каждые 3–6 месяцев: страны
+          открываются и закрываются быстрее, чем успевают устареть путеводители.
+          Ниже — что изменилось за полгода и что нужно на въезде в каждую из них.
         </p>
 
         <p>
-          <strong>Тренд 2026 — азиатские открытия.</strong> Китай с 15 сентября 2025 пустил россиян без визы на 30 дней, а в мае 2026 продлил режим до 31 декабря 2027. Это первый раз с 1999 года, когда Китай открывал безвиз для России. Гонконг как специальный административный район даёт 14 дней без визы. Хайнань — 30 дней по общему китайскому режиму. Таиланд с 2024 давал 60 дней вместо классических 30, но в мае 2026 правительство одобрило возврат к 30 дням — правило ждёт публикации в Royal Gazette, так что зимовку без долгосрочной визы планировать уже рискованно.
+          {/* ⛔ Без жирного ярлыка в начале: пять таких абзацев подряд — примета
+              машинного текста из документа Википедии. Жирным выделен ОДИН факт
+              абзаца, как принято на сайте, а не подпись-заголовок. */}
+          Китай пустил россиян без визы на <strong>30 дней</strong> с 15 сентября 2025,
+          а в мае 2026 продлил режим до 31 декабря 2027 — такого не было с 1999 года.
+          Гонконг как специальный административный район даёт 14 дней, Хайнань — 30
+          по общему китайскому режиму. Таиланд с 2024 давал 60 дней вместо классических
+          30, но в мае 2026 правительство одобрило возврат к 30: правило ждёт публикации
+          в Royal Gazette, и зимовку без долгосрочной визы планировать уже рискованно.
         </p>
 
         <p>
-          <strong>Шенген — медленный и дорогой.</strong> Стоимость подачи поднялась до €90 (с €80) с июня 2024. Сроки рассмотрения в Польше, Прибалтике, Скандинавии — 30–60 дней при процентном отказе 12–25%. Лучше работают Италия, Греция, Испания, Венгрия — там процент отказов ниже, выдают мультивизы на 6+ месяцев активным путешественникам. С октября 2025 действует EES (Entry/Exit System) — биометрическая регистрация на границе вместо штампов; первое прохождение занимает 5–10 минут.
+          Шенген подорожал и замедлился: подача стоит <strong>€90</strong> против €80
+          до июня 2024. В Польше, Прибалтике и Скандинавии ждут 30–60 дней и отказывают
+          в 12–25% случаев. Италия, Греция, Испания и Венгрия отказывают реже и активным
+          путешественникам выдают мультивизы на 6 месяцев и дольше. С октября 2025 на
+          границе работает EES — биометрия вместо штампа, первое прохождение занимает
+          5–10 минут.
         </p>
 
         <p>
-          <strong>США и Канада — длинные сроки через третьи страны.</strong> Консульства США в России не работают с 2022. Россияне подают B1/B2 в Варшаве, Стамбуле, Алматы, Белграде — ожидание интервью 6–12 месяцев, стоимость $185 + сборы третьих стран. Канада дешевле (CA$100) и быстрее (2–3 месяца через Варшаву), но требует доказать связи с РФ и регулярные туристические поездки. Альтернатива для тех, кто хочет в Северную Америку быстро, — Мексика (180 дней безвиз) с возможностью наземного въезда в США/Канаду через границу.
+          Консульства США в России не работают с 2022 года. Визу B1/B2 подают в Варшаве,
+          Стамбуле, Алматы или Белграде: интервью ждут <strong>6–12 месяцев</strong>,
+          платят $185 плюс сборы третьей страны. Канада дешевле — CA$100 и 2–3 месяца
+          через Варшаву, — но требует доказать связи с Россией и регулярные поездки.
+          Кто хочет в Северную Америку быстро, летит в Мексику: 180 дней без визы и
+          наземная граница с США и Канадой.
         </p>
 
         <p>
-          <strong>Что брать с собой — базовый комплект.</strong> Для всех виз — загранпаспорт от 6 месяцев действия с двумя пустыми страницами, фото 35×45 мм цветное, обратные билеты, бронь отеля (не возвратная букирование можно бесплатно — Booking, Agoda), банковская справка $50–100/день поездки. Для шенгена и Японии добавляется медстраховка от €30 000, справка с работы на бланке, выписка по счёту за 3 месяца. Для США и Канады — выписки за 6 месяцев, налоговая декларация, документы о собственности.
+          Для любой визы просят один и тот же набор: загранпаспорт от 6 месяцев с двумя
+          пустыми страницами, цветное фото 35×45 мм, обратные билеты, бронь отеля и
+          банковскую справку из расчёта <strong>$50–100 на день поездки</strong>. Бронь
+          берите с бесплатной отменой — её дают Booking и Agoda. Шенген и Япония просят
+          сверх этого медстраховку от €30 000, справку с работы на бланке и выписку по
+          счёту за три месяца. США и Канада — выписку за полгода, налоговую декларацию
+          и документы о собственности.
         </p>
 
         <p>
-          <strong>Как читать этот реестр.</strong> Каждая карточка ниже показывает три факта: <em>срок пребывания</em> · <em>стоимость</em> · <em>срок оформления</em>. Эти данные — для туристической визы, не для бизнес/учёба/работа. На карточку с галочкой <span class="va-intro-check">✓</span> я был лично — могу подтвердить процесс. Все цены — на май 2026 в местной валюте оригинала.
+          Каждая карточка ниже показывает три факта: <em>срок пребывания</em> ·
+          <em>стоимость</em> · <em>срок оформления</em>. Данные — для туристической визы,
+          не для рабочей, учебной или деловой. Галочка <span class="va-intro-check">✓</span>
+          на карточке значит, что я проходил это сам и могу подтвердить процесс.
+          Цены — на май 2026, в той валюте, в которой их берут.
         </p>
       </div>
     </section>
@@ -344,7 +567,7 @@ const ldJson = {
     <section class="va-changes" data-reveal>
       <header class="va-changes-head">
         <span class="va-changes-tag">ИЗМЕНЕНИЯ · ПОСЛЕДНИЕ 6 МЕСЯЦЕВ</span>
-        <h2 class="va-changes-title">Что менялось</h2>
+        <h2 class="va-changes-title">Когда и что поменяли?</h2>
       </header>
       <ol class="va-changes-list">
         <li class="va-change-item">
@@ -405,10 +628,11 @@ const ldJson = {
         <h2 class="va-faq-title">Часто спрашивают</h2>
       </header>
       <div class="va-faq-list">
+        {/* ⛔ Без нумерации 01–12: вопросы не последовательность, и номер ничего
+            не кодирует — это приём типовых машинных вёрсток, а не смысл. */}
         {FAQ_ITEMS.map((item, idx) => (
           <details class="va-faq-item" open={idx === 0}>
             <summary class="va-faq-q">
-              <span class="va-faq-num">{String(idx + 1).padStart(2, '0')}</span>
               <span class="va-faq-q-text">{item.q}</span>
               <span class="va-faq-q-mark" aria-hidden="true">+</span>
             </summary>
@@ -417,124 +641,6 @@ const ldJson = {
         ))}
       </div>
     </section>
-
-    {/* ─── QUICK-FILTER CHIPS — фильтры по визовому режиму, бюджету и сроку ─── */}
-    <section class="va-filters" aria-label="Фильтры по реестру" data-reveal>
-      <div class="va-filters-label">Фильтры</div>
-      <div class="va-filters-chips" role="group" aria-label="Выбор визового режима и условий">
-        <button type="button" class="va-chip va-chip--active" data-filter="all" aria-pressed="true">Все ({DIRECTIONS.length})</button>
-        <button type="button" class="va-chip" data-filter="free" aria-pressed="false">Без визы ({byVisa.free.length})</button>
-        <button type="button" class="va-chip" data-filter="evisa" aria-pressed="false">eVisa ({byVisa.evisa.length})</button>
-        <button type="button" class="va-chip" data-filter="required" aria-pressed="false">Виза ({byVisa.required.length})</button>
-        <span class="va-chip-divider" aria-hidden="true">·</span>
-        <button type="button" class="va-chip" data-cost="free" aria-pressed="false">Бесплатно</button>
-        <button type="button" class="va-chip" data-cost="cheap" aria-pressed="false">До $50</button>
-        <button type="button" class="va-chip" data-duration="long" aria-pressed="false">60+ дней</button>
-        <span class="va-chip-divider" aria-hidden="true">·</span>
-        <button type="button" class="va-chip" data-sort="cost" aria-pressed="false">Сначала дешёвые</button>
-      </div>
-      <p class="va-filter-count" id="visaFilterCount" aria-live="polite" aria-atomic="true">Показано: <strong>{DIRECTIONS.length}</strong> из {DIRECTIONS.length} направлений</p>
-      <noscript>
-        <p class="va-noscript">⚠️ Фильтры работают с включённым JavaScript. Список всех 70+ стран ниже доступен полностью.</p>
-      </noscript>
-    </section>
-
-    {/* ─── SEARCH — filing tray style ─── */}
-    <section class="va-search-wrap" aria-label="Поиск страны">
-      <label class="va-search-label" for="visaSearch">
-        <span class="va-search-prefix">Запрос</span>
-      </label>
-      <div class="va-search-field">
-        <input type="search" id="visaSearch" placeholder="Япония, Турция, Грузия…" autocomplete="off" aria-label="Поиск страны" />
-        <button type="button" class="va-search-clear" id="visaSearchClear" aria-label="Очистить" hidden>×</button>
-      </div>
-      <p class="va-empty" id="visaEmpty" hidden>В реестре не значится. Попробуй другое название.</p>
-    </section>
-
-    {/* ─── CLASSIFIED SECTIONS — три картотеки ─── */}
-    {['free', 'evisa', 'required'].map((vt, vti) => (
-      <section class={`va-section va-section--${vt}`} data-section={vt} data-reveal>
-        <header class="va-section-head">
-          <div class="va-section-stamp" aria-hidden="true">
-            <span class="vss-roman">{VISA_META[vt].section}</span>
-            <span class="vss-code">{VISA_META[vt].code}</span>
-            <span class="vss-count">{byVisa[vt].length}</span>
-          </div>
-          <div class="va-section-meta">
-            <div class="va-section-iso">{VISA_META[vt].iso}</div>
-            <h2 class="va-section-title">{VISA_META[vt].title}</h2>
-            <p class="va-section-desc">{VISA_META[vt].desc}</p>
-          </div>
-        </header>
-
-        <div class="va-grid">
-          {byVisa[vt].map((d, idx) => {
-            const photo = destPhotos[`../../assets/destinations/${d.slug}.jpg`];
-            const iso = ISO_CODE[d.slug] || 'XXX';
-            const num = String(idx + 1).padStart(3, '0');
-            const visited = VISITED.has(d.slug);
-            const details = getVisaDetails(d.slug, d.visa);
-            // Eager только для первых карточек ПЕРВОЙ группы (above-fold на мобайле,
-            // 2-кол сетка → ~2 ряда). idx сбрасывается в каждой группе, поэтому без vti===0
-            // получалось 9 eager × fetchpriority — приоритетный шторм убивал LCP.
-            const isAboveFold = vti === 0 && idx < 4;
-            const cb = costBucket(details.cost);
-            const isLong = isLongDuration(details.duration);
-            const altText = d.cases.nom + ' — ' + d.sub + ', виза для россиян 2026';
-            return (
-              <a href={`/visa/${d.slug}/`}
-                 class={`va-card ${visited ? 'va-card--visited' : ''}`}
-                 data-name={d.cases.nom.toLowerCase()}
-                 data-visa={d.visa}
-                 data-cost={cb}
-                 data-cost-usd={costUsd(details.cost)}
-                 data-ord={idx}
-                 data-duration-long={isLong ? '1' : '0'}>
-                <div class="va-card-num">
-                  <span aria-label={`Карточка ${num} из ${byVisa[vt].length}`}>№ {num}</span>
-                  {visited && <span class="va-card-visited" title="Никита был лично" aria-label="Автор был в этой стране лично">✓</span>}
-                </div>
-                <div class="va-card-photo">
-                  {photo ? (
-                    <Image
-                      src={photo}
-                      alt={altText}
-                      widths={[280, 560]}
-                      sizes="(max-width: 700px) 50vw, 25vw"
-                      formats={['webp']}
-                      quality={70}
-                      loading={isAboveFold ? 'eager' : 'lazy'}
-                    />
-                  ) : (
-                    <div class="va-card-fallback" style={`background: ${d.visual.g1}`}>
-                    </div>
-                  )}
-                  <div class="va-card-stamp" aria-hidden="true">{VISA_META[vt].code}</div>
-                </div>
-                <div class="va-card-body">
-                  <h3 class="va-card-name">{d.cases.nom}</h3>
-                  <div class="va-card-iso">{iso}</div>
-                  <dl class="va-card-facts">
-                    <div class="va-fact">
-                      <dt>Срок</dt>
-                      <dd>{details.duration}</dd>
-                    </div>
-                    <div class="va-fact">
-                      <dt>Цена</dt>
-                      <dd>{details.cost}</dd>
-                    </div>
-                    <div class="va-fact">
-                      <dt>Оформление</dt>
-                      <dd>{details.timing}</dd>
-                    </div>
-                  </dl>
-                </div>
-              </a>
-            );
-          })}
-        </div>
-      </section>
-    ))}
 
     {/* ─── RELATED PILLARS — глубокие гайды по визам ─── */}
     <section class="va-related" data-reveal>
@@ -644,8 +750,40 @@ const ldJson = {
 
 <script>
   // Active filter state — комбинируется с поиском
-  let filterState = { visa: 'all', cost: null as string | null, durationLong: false };
-  let sortState = { byCost: false };
+  let filterState = { visa: 'all', cost: null as string | null, durationLong: false, trip: null as string | null };
+  let sortState = { byCost: false, byTrip: false };
+
+  /** Подходит ли карточка при отборе с точечной подменой одного условия. */
+  function подходитЛи(card: HTMLElement, o: Record<string, unknown>) {
+    const q = 'q' in o ? String(o.q) : (document.getElementById('visaSearch') as HTMLInputElement | null)?.value.trim().toLowerCase() || '';
+    const visa = 'visa' in o ? o.visa : filterState.visa;
+    const cost = 'cost' in o ? o.cost : filterState.cost;
+    const dur = 'dur' in o ? o.dur : filterState.durationLong;
+    const trip = 'trip' in o ? o.trip : filterState.trip;
+    const tr = Number(card.dataset.trip) || 0;
+    return (!q || (card.dataset.name || '').includes(q))
+      && (visa === 'all' || card.dataset.visa === visa)
+      && (!cost || card.dataset.cost === cost)
+      && (!dur || card.dataset.durationLong === '1')
+      && (!trip || (tr > 0 && (trip === 'low' ? tr < 100000 : tr <= 200000)));
+  }
+
+  function обновитьСчётчики() {
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('.va-card'));
+    document.querySelectorAll<HTMLElement>('.va-chip').forEach((chip) => {
+      const место = chip.querySelector('.va-chip-n');
+      if (!место) return;
+      const o: Record<string, unknown> = {};
+      if (chip.dataset.filter) o.visa = chip.dataset.filter;
+      else if (chip.dataset.cost) o.cost = filterState.cost === chip.dataset.cost ? null : chip.dataset.cost;
+      else if (chip.dataset.duration) o.dur = !filterState.durationLong;
+      else if (chip.dataset.trip) o.trip = filterState.trip === chip.dataset.trip ? null : chip.dataset.trip;
+      else return;
+      const n = cards.filter((c) => подходитЛи(c, o)).length;
+      место.textContent = String(n);
+      (chip as HTMLButtonElement).disabled = n === 0 && chip.getAttribute('aria-pressed') !== 'true';
+    });
+  }
 
   function applyVisaFilters() {
     const cards = document.querySelectorAll<HTMLElement>('.va-card');
@@ -667,7 +805,12 @@ const ldJson = {
       const showVisa = filterState.visa === 'all' || visa === filterState.visa;
       const showCost = !filterState.cost || cost === filterState.cost;
       const showDuration = !filterState.durationLong || isLong;
-      const show = showSearch && showVisa && showCost && showDuration;
+      // Цена ПОЕЗДКИ: пороги те же, что на главной и в калькуляторе —
+      // до 100 тыс. и до 200 тыс. рублей за неделю с перелётом.
+      const trip = Number(card.dataset.trip) || 0;
+      const showTrip = !filterState.trip || (trip > 0 && (
+        filterState.trip === 'low' ? trip < 100000 : trip <= 200000));
+      const show = showSearch && showVisa && showCost && showDuration && showTrip;
       card.hidden = !show;
       if (show) visible++;
     });
@@ -681,6 +824,8 @@ const ldJson = {
       const strong = countLabel.querySelector('strong');
       if (strong) strong.textContent = String(visible);
     }
+    обновитьСчётчики();
+
     // Sync URL — bookmarkable filter state (resilience)
     updateUrlFromFilterState();
   }
@@ -731,9 +876,11 @@ const ldJson = {
     document.querySelectorAll<HTMLElement>('.va-section').forEach((sec) => {
       const cards = Array.from(sec.querySelectorAll<HTMLElement>('.va-card'));
       if (!cards.length) return;
-      cards.sort((a, b) => sortState.byCost
-        ? (Number(a.dataset.costUsd) || 0) - (Number(b.dataset.costUsd) || 0)
-        : (Number(a.dataset.ord) || 0) - (Number(b.dataset.ord) || 0));
+      cards.sort((a, b) => sortState.byTrip
+        ? (Number(a.dataset.trip) || Infinity) - (Number(b.dataset.trip) || Infinity)
+        : sortState.byCost
+          ? (Number(a.dataset.costUsd) || 0) - (Number(b.dataset.costUsd) || 0)
+          : (Number(a.dataset.ord) || 0) - (Number(b.dataset.ord) || 0));
       const parent = cards[0].parentElement;
       if (parent) cards.forEach((c) => parent.appendChild(c));
     });
@@ -741,6 +888,10 @@ const ldJson = {
 
   // Event-delegation на document — robust против timing issues и SPA-навигации
   function initVisaFilters() {
+    // ⛔ Начальные счётчики уже стоят в разметке — считаются при сборке.
+    //    Пересчёт скриптом на загрузке делал страницу нестабильной: два снимка
+    //    подряд на одной машине выходили разными. Скрипт трогает счётчики
+    //    только после нажатия.
     if ((window as any).__vaFiltersBound) return;
     (window as any).__vaFiltersBound = true;
 
@@ -781,10 +932,50 @@ const ldJson = {
         chip.classList.toggle('va-chip--active', filterState.durationLong);
         chip.setAttribute('aria-pressed', String(filterState.durationLong));
       }
+      // Цена ПОЕЗДКИ — отдельная от цены визы. Baymard: у 38% сайтов нет фильтра
+      // по данным, которые они же показывают в карточке; мы показали цену недели,
+      // значит обязаны дать по ней отбор и сортировку.
+      const fTrip = chip.dataset.trip;
+      if (fTrip) {
+        const был = chip.getAttribute('aria-pressed') === 'true';
+        filterState.trip = был ? null : fTrip;
+        allChips.forEach((c) => {
+          if (c.dataset.trip) {
+            c.classList.toggle('va-chip--active', !был && c === chip);
+            c.setAttribute('aria-pressed', String(!был && c === chip));
+          }
+        });
+      }
       if (chip.dataset.sort === 'cost') {
         sortState.byCost = !sortState.byCost;
+        sortState.byTrip = false;
         chip.classList.toggle('va-chip--active', sortState.byCost);
         chip.setAttribute('aria-pressed', String(sortState.byCost));
+        const др = document.querySelector<HTMLElement>('[data-sort="trip"]');
+        if (др) { др.classList.remove('va-chip--active'); др.setAttribute('aria-pressed', 'false'); }
+        applySort();
+      }
+      if (chip.dataset.sort === 'trip') {
+        sortState.byTrip = !sortState.byTrip;
+        sortState.byCost = false;
+        chip.classList.toggle('va-chip--active', sortState.byTrip);
+        chip.setAttribute('aria-pressed', String(sortState.byTrip));
+        const др = document.querySelector<HTMLElement>('[data-sort="cost"]');
+        if (др) { др.classList.remove('va-chip--active'); др.setAttribute('aria-pressed', 'false'); }
+        applySort();
+      }
+      // ⛔ Сброс одним движением: без него человек, загнавший себя в пустой
+      //    отбор, не знает, как вернуться.
+      if (chip.id === 'visaReset') {
+        filterState = { visa: 'all', cost: null, durationLong: false, trip: null };
+        sortState = { byCost: false, byTrip: false };
+        allChips.forEach((c) => {
+          const исход = c.dataset.filter === 'all';
+          c.classList.toggle('va-chip--active', исход);
+          c.setAttribute('aria-pressed', String(исход));
+        });
+        const поле = document.getElementById('visaSearch') as HTMLInputElement | null;
+        if (поле) поле.value = '';
         applySort();
       }
 
@@ -953,6 +1144,14 @@ const ldJson = {
   }
 
   /* Filter count + noscript fallback */
+  /* Живой счётчик на кнопке: сколько останется, если нажать именно её при
+     нынешнем остальном отборе. NN/g: состояние отбора сообщается счётчиками в
+     реальном времени. Пустой отбор гасит кнопку — не тыкать в заведомое
+     «ничего не найдено». */
+  .va-chip-n { font-family: var(--ff-mono); font-weight: 400; font-size: 0.82em;
+    opacity: 0.65; padding-left: 0.35rem; }
+  .va-chip:disabled { opacity: 0.4; cursor: not-allowed; }
+
   .va-filter-count {
     margin: 0.6rem 0 0;
     font-family: var(--ff-mono);
@@ -1037,7 +1236,11 @@ const ldJson = {
     pointer-events: none;
     z-index: 0;
   }
-  .visa-archive > * { position: relative; z-index: 1; }
+  /* ⛔ Декоративный штамп исключён намеренно. Это правило поднимает содержимое
+     над фоном, но у него тот же вес, что у `.va-stamp-bg`, и оно идёт позже —
+     штамп терял `position:absolute`, вставал в поток и занимал 217 пикселей
+     пустоты сверху, уводя ответ страницы за первый экран (замер 28.08.2026). */
+  .visa-archive > *:not(.va-stamp-bg) { position: relative; z-index: 1; }
 
   /* Corner accent stamp — небольшой, в правом верхнем углу */
   .va-stamp-bg {
@@ -1117,6 +1320,40 @@ const ldJson = {
     .va-title-line, .va-title-line--small { transition: none; }
   }
 
+  /* Блок-ответ первого экрана — тот же приём, что на главной: вопрос,
+     ответ числом, три примера с ценой, ссылка на полный список. Штампы
+     повёрнуты на доли градуса — это оттиск в паспорте, а не карточка. */
+  .va-answer { margin: 1rem 0 1.8rem; }
+  .va-q { font-size: clamp(1.7rem, 3.2vw, 2.4rem); line-height: 1.05; font-weight: 700;
+    letter-spacing: -0.01em; text-wrap: balance; margin: 0; color: var(--ink); }
+  .va-q em { font-style: italic; }
+  .va-q-lead { margin: 0.7rem 0 1rem; font-size: 1rem; color: var(--ink); max-width: 46ch; }
+  .va-q-lead b { font-weight: 600; }
+  .va-stamps { display: flex; flex-wrap: wrap; gap: 1.1rem; align-content: flex-start; }
+  .va-stamp { display: block; border: 2px solid var(--gold); color: var(--gold);
+    padding: 0.7rem 1rem; border-radius: 3px; transform: rotate(-1.6deg); text-decoration: none; }
+  .va-stamp:nth-child(2) { transform: rotate(1.2deg); }
+  .va-stamp:nth-child(3) { transform: rotate(-0.5deg); }
+  .va-stamp b { display: block; font-weight: 700; font-size: 0.95rem;
+    text-transform: uppercase; letter-spacing: 0.08em; }
+  .va-stamp span { display: block; font-size: 0.78rem; }
+  .va-stamp-sum { font-family: var(--ff-mono); padding-top: 0.15rem; }
+  .va-stamp:hover, .va-stamp:focus-visible { background: rgba(29, 64, 174, 0.06); }
+  .va-q-more { display: inline-block; margin-top: 0.9rem; padding: 0.4rem 0; min-height: 24px;
+    color: var(--ink); font-size: 0.95rem; text-decoration: underline;
+    text-decoration-thickness: 1px; text-underline-offset: 0.22em; }
+  .va-q-more:hover, .va-q-more:focus-visible { color: var(--gold); text-decoration-color: var(--gold); }
+  @media (max-width: 640px) {
+    /* На телефоне штампы в ряд с прокруткой: столбиком они уводили ответ за
+       первый экран (944 при экране 844, замер 28.08.2026). */
+    .va-stamps { gap: 0.55rem; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.3rem;
+      -webkit-overflow-scrolling: touch; }
+    .va-stamp { flex: 0 0 auto; }
+    /* Поворот на телефоне НЕ сбрасываем: он читается как оттиск и места не
+       занимает. Сброс здесь был бы мёртвой строкой — .va-stamp весит меньше,
+       чем .va-stamp:nth-child(2), и проиграл бы ему. */
+  }
+
   .va-subtitle {
     font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
     font-size: clamp(1rem, 1.4vw, 1.18rem);
@@ -1161,7 +1398,8 @@ const ldJson = {
     background: var(--stamp-red-soft);
   }
   .va-intro-title {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
+    /* ⛔ Антиква — хвост перехода на язык дневника. */
+    font-family: var(--ff-head, var(--ff-display));
     font-size: clamp(1.8rem, 3.5vw, 2.6rem);
     font-weight: 500;
     margin: 0.6rem 0 1.3rem;
@@ -1223,7 +1461,7 @@ const ldJson = {
     background: var(--customs-blue-soft);
   }
   .va-changes-title {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
+    font-family: var(--ff-head, var(--ff-display));
     font-size: clamp(1.5rem, 2.8vw, 2rem);
     font-style: italic;
     font-weight: 500;
@@ -1334,7 +1572,7 @@ const ldJson = {
     background: var(--customs-blue-soft);
   }
   .va-sources-title {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
+    font-family: var(--ff-head, var(--ff-display));
     font-size: clamp(1.6rem, 3vw, 2.2rem);
     font-style: italic;
     font-weight: 500;
@@ -1409,7 +1647,7 @@ const ldJson = {
     border: 1px solid var(--sepia);
   }
   .va-related-title {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
+    font-family: var(--ff-head, var(--ff-display));
     font-size: clamp(1.6rem, 3vw, 2.2rem);
     font-style: italic;
     font-weight: 500;
@@ -1595,7 +1833,7 @@ const ldJson = {
     margin-bottom: 0.9rem;
   }
   .va-faq-title {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
+    font-family: var(--ff-head, var(--ff-display));
     font-size: clamp(1.8rem, 3.5vw, 2.4rem);
     font-style: italic;
     font-weight: 500;
@@ -1977,7 +2215,7 @@ const ldJson = {
     gap: 0.15rem;
   }
   .va-card-name {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
+    font-family: var(--ff-head, var(--ff-display));
     font-size: 1.08rem;
     font-weight: 500;
     color: var(--ink);
@@ -1986,6 +2224,10 @@ const ldJson = {
     letter-spacing: -0.005em;
     text-wrap: balance;
   }
+  .va-card-trip { display: flex; align-items: baseline; gap: 0.4rem; flex-wrap: wrap; margin: 0.15rem 0 0.1rem; }
+  .va-card-trip-sum { font-family: var(--ff-mono); font-weight: 600; font-size: 1rem; color: var(--ink); }
+  .va-card-trip-per { font-size: 0.7rem; color: var(--text-dim, #5c626b); }
+
   .va-card-iso {
     font-family: var(--ff-mono);
     font-size: 0.66rem;
@@ -2032,6 +2274,11 @@ const ldJson = {
     margin: 0;
     line-height: 1.3;
   }
+  /* ⛔ Стоит ПОСЛЕ `.va-fact dd` намеренно: вес у них одинаковый, и правило,
+     поставленное раньше, молча проигрывает. Цена поездки — моноширинным, как
+     все числа на сайте. */
+  .va-fact--money dd { font-family: var(--ff-mono); font-weight: 600; color: var(--ink); }
+  .va-fact--money .va-per { font-size: 0.82em; color: var(--ink-dim, #5c626b); }
   /* Первая строка (срок) — слегка выделена */
   .va-fact:first-child dd {
     font-weight: 500;

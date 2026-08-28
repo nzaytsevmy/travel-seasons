@@ -676,7 +676,9 @@ if (faqs.length >= 2) {
 }
 
 h1 {
-  font-family: var(--ff-body);
+  /* ⛔ Антиква, а не текстовый шрифт: хвост перехода на язык дневника.
+     Глобальное правило h1,h2,h3 весит меньше и проигрывало этому. */
+  font-family: var(--ff-head, var(--ff-display));
   font-size: clamp(1.7rem, 4vw, 3rem);
   font-weight: 800;
   line-height: 1.1;
@@ -736,7 +738,8 @@ h1 {
 
 .prose { color: var(--text); line-height: 1.85; font-size: 1rem; }
 .prose :global(h2) {
-  font-family: var(--ff-body); font-size: 1.5rem; font-weight: 700;
+  /* ⛔ Антиква — хвост перехода на язык дневника. */
+  font-family: var(--ff-head, var(--ff-display)); font-size: 1.5rem; font-weight: 700;
   color: var(--text); line-height: 1.3; letter-spacing: -0.02em;
   margin: 2rem 0 1.5rem; text-align: center;
 }
@@ -775,7 +778,7 @@ h1 {
 }
 
 .post-next { margin-top: 3rem; }
-.post-next-title { font-family: var(--ff-body); font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 1.2rem; text-align: center; scroll-margin-top: 80px; }
+.post-next-title { font-family: var(--ff-head, var(--ff-display)); font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 1.2rem; text-align: center; scroll-margin-top: 80px; }
 .post-next-grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
 .post-next-grid a { display: block; min-height: 44px; padding: 0.85rem 1rem; border: 1px solid var(--line); border-radius: 6px; color: var(--text); text-decoration: none; transition: border-color 0.15s ease; }
 .post-next-grid a:hover { border-color: var(--gold); }

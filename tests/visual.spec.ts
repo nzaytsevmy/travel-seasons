@@ -63,6 +63,10 @@ const PAGES: { slug: string; name: string; dynamic?: boolean; content?: boolean 
   // набор заметок меняется ежедневно, и снимок конкретной был бы заложником
   // робота. Структуру держат no-overflow / no-broken-images / no-css-escapes.
   { slug: '/novosti/2026-05-01-torres-del-paine-tariff/', name: 'novosti-item', content: true },
+  // ⛔ Хаб виз добавлен 28.08.2026: это денежная страница, и на ней появился
+  //    блок-ответ первого экрана. До этого она не была канарейкой вовсе —
+  //    новый блок на всю ширину прошёл бы мимо пиксельного прогона.
+  { slug: '/visa/',                         name: 'visa-index' },
   { slug: '/compare/',                      name: 'compare-index' },          // компаратор-тул: пикер + динамический результат + CTA
   { slug: '/compare/turkey-vs-egypt/',      name: 'compare-pair' },           // кураторская пара: CompareTable + byline + CTA
   { slug: '/events/',                       name: 'events-index' },           // годовой хаб событий + byline
@@ -86,6 +90,15 @@ for (const page of PAGES) {
     });
     // Сбрось анимации (для стабильных скринов)
     await pwPage.addStyleTag({ content: '*, *::before, *::after { transition: none !important; animation: none !important; }' });
+    // ⛔ Блоки с появлением по прокрутке принудительно ПОКАЗЫВАЕМ. Гашения
+    //    переходов мало: до того, как наблюдатель прокрутки заметит блок, у него
+    //    стоит opacity 0, и полный снимок ловит страницу в случайном состоянии.
+    //    28.08.2026 облако дважды объявило страницу виз нестабильной — два
+    //    снимка подряд на ОДНОЙ машине выходили разными. Вылезло это после
+    //    перестановки блоков: реестр из 74 карточек с появлением по прокрутке
+    //    переехал наверх. Сама страница так и рисуется людям, которые просят
+    //    убрать движение, — снимаем именно этот вид.
+    await pwPage.addStyleTag({ content: '[data-reveal], [data-reveal].is-revealed { opacity: 1 !important; transform: none !important; }' });
     // Волатильные блоки (data-volatile) в пиксельный эталон НЕ берём: их наполняет робот
     // новостей, и снимок устаревал бы к следующему утру. 23.08.2026 первая же заметка про
     // Турцию удлинила /turkey/ с 14 546 до 14 802 px и уронила country-hub-turkey на всех

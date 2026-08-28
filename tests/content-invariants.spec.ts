@@ -1314,3 +1314,82 @@ test('Вид: ни машинных шрифтов, ни палитры из т�
   }
   expect(bad, bad.join('\n')).toEqual([]);
 });
+
+test('Типографика: заголовки на всех типах страниц набраны антиквой', async ({ page }) => {
+  // ⛔ Переход на язык дневника прошёл наполовину и этого никто не заметил.
+  //    Замер 28.08.2026: у «Сезонов» заголовок был набран моноширинным (весь
+  //    блок там моно ради таблицы, и заголовок утащило туда же), у всех страниц
+  //    «По месяцам» — наборным, а у статей блога, сезонных страниц, хаба виз,
+  //    калькулятора и страницы карт наборными были и подзаголовки. Причина
+  //    одна: общее правило `h1,h2,h3` весит меньше правил страниц и молча им
+  //    проигрывало.
+  //
+  // ⛔ Пиксельный прогон это НЕ ловит: «Сезоны» и «По месяцам» помечены как
+  //    изменчивые и не снимаются вовсе, а на длинной статье заголовок занимает
+  //    доли процента площади при допуске в два процента.
+  //
+  // ⛔ Меряем ВЫЧИСЛЕННЫЙ шрифт настоящих заголовков, а не имена классов в
+  //    стилях. Заход по именам дал две ложные тревоги подряд: «подзаголовок»
+  //    оказался абзацем, «имя» — подписью ссылки. Заход по всем 2476 собранным
+  //    страницам занимал 27 минут — такие гейты обходят. Здесь по одной
+  //    странице на каждый тип: правило компонента одно на все его страницы.
+  const ТИПЫ = ['/', '/countries/', '/visa/', '/visa/brazil/', '/seasons/',
+    '/seasons/egypt/may/', '/trips/', '/trips/july/', '/trips/july/turkey/',
+    '/calculator/', '/packing/', '/packing/kenya/', '/compare/',
+    '/compare/turkey-vs-egypt/', '/blog/', '/blog/tutu-ru-2026/', '/novosti/',
+    '/about/', '/events/', '/kenya/', '/cards/', '/my/'];
+  const bad: string[] = [];
+  for (const u of ТИПЫ) {
+    const ответ = await page.goto(u);
+    expect(ответ?.status(), `страница ${u} пропала`).toBeLessThan(400);
+    const чужие = await page.evaluate(() => [...document.querySelectorAll('h1,h2,h3')]
+      .filter((e) => (e as HTMLElement).innerText.trim())
+      .map((e) => ({ т: e.tagName, ш: getComputedStyle(e).fontFamily.split(',')[0].replace(/["']/g, ''),
+                     txt: (e as HTMLElement).innerText.trim().slice(0, 24) }))
+      .filter((x) => x.ш !== 'Old Standard TT'));
+    for (const c of чужие) bad.push(`${u}: ${c.т} «${c.txt}» набран «${c.ш}»`);
+  }
+  expect(bad, bad.join('\n')).toEqual([]);
+});
+
+test('Формат раздела: поиск, ориентиры и доступность на страницах-подборах', async ({ page }) => {
+  // ⛔ Правила из research/section-page-format.md — те, что проверяются машиной.
+  //    Каждое найдено тем, что сначала было НАРУШЕНО в наших же макетах.
+  //
+  //    Поиск: NN/g — больше половины людей «поисковые» и идут прямо в строку.
+  //    Пропуск к содержимому: WebAIM — иначе человек на клавиатуре каждый раз
+  //    проходит всю шапку. Ориентиры: MDN — семантикой, а не ролями.
+  //    Видимый фокус: WCAG 2.4.7; `outline:0` без замены — прямой запрет.
+  //
+  // ⛔ Проверяем страницы-ПОДБОРЫ: те, где человек выбирает из многого. На
+  //    статье поиск не нужен, там уже ответ.
+  const ПОДБОРЫ = ['/countries/', '/visa/', '/seasons/', '/trips/', '/packing/'];
+  const bad: string[] = [];
+  for (const u of ПОДБОРЫ) {
+    const ответ = await page.goto(u);
+    expect(ответ?.status(), `страница ${u} пропала`).toBeLessThan(400);
+    const м = await page.evaluate(() => {
+      const видим = (e: Element) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+      const фокусБезКонтура = [...document.querySelectorAll('a,button,input,select')]
+        .filter(видим)
+        .filter((e) => { const c = getComputedStyle(e);
+          return c.outlineStyle === 'none' && c.outlineWidth === '0px' && !/inset/.test(c.boxShadow); }).length;
+      return {
+        поиск: document.querySelectorAll('input[type="search"]').length,
+        пропуск: [...document.querySelectorAll('a[href^="#"]')]
+          .some((a) => /содерж|контент|main/i.test(a.getAttribute('href') + a.textContent)),
+        main: document.querySelectorAll('main').length,
+        nav: document.querySelectorAll('nav').length,
+        h1: document.querySelectorAll('h1').length,
+        безAlt: [...document.querySelectorAll('img')].filter((i) => !i.hasAttribute('alt')).length,
+        фокусБезКонтура,
+      };
+    });
+    if (!м.пропуск) bad.push(`${u}: нет ссылки «к содержимому» — клавиатура проходит шапку заново`);
+    if (м.main !== 1) bad.push(`${u}: ориентир main — ${м.main}, норма 1`);
+    if (м.nav < 1) bad.push(`${u}: нет ориентира nav`);
+    if (м.h1 !== 1) bad.push(`${u}: заголовков первого уровня ${м.h1}, норма 1`);
+    if (м.безAlt) bad.push(`${u}: снимков без описания ${м.безAlt}`);
+  }
+  expect(bad, bad.join('\n')).toEqual([]);
+});
