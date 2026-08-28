@@ -1073,7 +1073,7 @@ const ldJson = {
   .va-card:focus-visible {
     outline: 2px solid var(--stamp-red);
     outline-offset: -2px;
-    background: rgba(163, 55, 42, 0.06);
+    background: rgba(29, 64, 174, 0.06);
   }
   .va-faq-q:focus-visible {
     outline: 2px solid var(--stamp-red);
@@ -1172,18 +1172,24 @@ const ldJson = {
   }
 
   .visa-archive {
-    --paper: #f4ede0;
-    --paper-dark: #ebe1cf;
-    --ink: #1a1612;
-    --ink-soft: #3e352a;
-    --sepia: #7a6855;
-    --stamp-red: #a3372a;
-    --stamp-red-soft: rgba(163, 55, 42, 0.12);
-    --customs-blue: #1e3a64;
-    --customs-blue-soft: rgba(30, 58, 100, 0.12);
-    --line-doc: rgba(26, 22, 18, 0.18);
-    --line-doc-faint: rgba(26, 22, 18, 0.08);
-    --ff-mono: 'JetBrains Mono', 'Courier New', monospace;
+    /* ⛔ ПАЛИТРА САЙТА, а не своя. У страницы был собственный цветовой мир —
+       пергамент #f4ede0, сепия и ржаво-красный #1d40ae, — оставшийся от старого
+       «реестра». Переезд на язык дневника её не тронул, и страница жила
+       по-своему: 83 элемента ржавого цвета при том, что брендбук называет
+       единственным акцентом чернильный синий. Имена токенов оставлены прежними,
+       чтобы не переписывать 47 мест, но значения — сайтовые. */
+    --paper: #fbfbfa;
+    --paper-dark: #f2f2f0;
+    --ink: #15171a;
+    --ink-soft: #3a3f47;
+    --sepia: #5c626b;
+    --stamp-red: #1d40ae;
+    --stamp-red-soft: rgba(29, 64, 174, 0.10);
+    --customs-blue: #1d40ae;
+    --customs-blue-soft: rgba(29, 64, 174, 0.10);
+    --line-doc: #d9dbde;
+    --line-doc-faint: rgba(21, 23, 26, 0.08);
+    --ff-mono: 'PT Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
     position: relative;
     max-width: 1240px;
@@ -1258,9 +1264,12 @@ const ldJson = {
 
   .va-title {
     font-family: var(--ff-display); /* антиква дневника */
-    font-size: clamp(2.8rem, 7vw, 5.2rem);
-    line-height: 1.02;
-    margin: 0 0 1.2rem;
+    /* ⛔ Размер как в макете Б: 1,9–2,9rem. Было 2,8–5,2rem — заголовок занимал
+       170 пикселей против 50 у макета и отодвигал инструмент вниз. Крупная
+       антиква уместна на главной, где под ней кадр; здесь под ней работа. */
+    font-size: clamp(1.9rem, 4vw, 2.9rem);
+    line-height: 1.08;
+    margin: 0 0 0.4rem;
     color: var(--ink);
     font-weight: 500;
     letter-spacing: -0.02em;
@@ -1530,10 +1539,12 @@ const ldJson = {
     flex-wrap: wrap;
   }
   .va-chip {
-    font-family: var(--ff-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    /* ⛔ Как в макете Б: обычный текст, не прописные моноширинным. Прописные
+       делают кнопку вдвое шире при том же смысле — на телефоне одиннадцать
+       кнопок в три ряда против одного. */
+    font-family: var(--ff);
+    font-size: 0.82rem;
+    letter-spacing: 0;
     padding: 0.55rem 0.9rem;
     min-height: 36px;
     background: var(--paper);
@@ -1680,7 +1691,7 @@ const ldJson = {
     transition: background 0.2s, color 0.2s;
   }
   .va-related-item a:hover {
-    background: rgba(163, 55, 42, 0.04);
+    background: rgba(29, 64, 174, 0.04);
   }
   .va-related-item a:hover .va-related-name {
     color: var(--stamp-red);
@@ -1860,7 +1871,7 @@ const ldJson = {
     border-bottom: none;
   }
   .va-faq-item[open] {
-    background: rgba(163, 55, 42, 0.02);
+    background: rgba(29, 64, 174, 0.02);
   }
 
   .va-faq-q {
@@ -1875,7 +1886,7 @@ const ldJson = {
   }
   .va-faq-q::-webkit-details-marker { display: none; }
   .va-faq-q:hover {
-    background: rgba(163, 55, 42, 0.04);
+    background: rgba(29, 64, 174, 0.04);
   }
 
   .va-faq-num {
@@ -2100,7 +2111,7 @@ const ldJson = {
   .va-card.is-tilting { transition: background 0.25s ease, transform 0s; }
   .va-card[hidden] { display: none; }
   .va-card:hover {
-    background: rgba(163, 55, 42, 0.04);
+    background: rgba(29, 64, 174, 0.04);
   }
   /* Glare layer — пятно света следит за курсором */
   .va-card::after {
