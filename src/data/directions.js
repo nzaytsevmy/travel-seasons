@@ -203,6 +203,7 @@ const COUNTRY_CASES = {
 // EU/Шенген hub — связываем все европейские направления с шенгенским гайдом
 const SCHENGEN_POSTS = [
   { slug: 'schengen-visa-2026', title: 'Шенгенская виза 2026: куда дают', kind: 'visa' },
+  { slug: 'schengen-insurance-2026', title: 'Страховка для шенгенской визы 2026: €30 000 покрытия, цены', kind: 'visa' },
   { slug: 'ees-shengen-2026', title: 'EES в Шенгене 2026: биометрия для россиян', kind: 'visa' },
 ];
 const EUROPE_SLUGS = ['switzerland', 'italy-north', 'italy-south', 'spain', 'greece', 'croatia'];
