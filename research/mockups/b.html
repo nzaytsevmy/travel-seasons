@@ -503,10 +503,12 @@ function apply(){var n=0;
  if(st.c)ч.push(st.c==='free'?'виза бесплатна':'виза до $50');
  if(st.d)ч.push('60+ дней');
  if(st.s)ч.push('сначала дешёвая поездка');
- // ⛔ Текст отбора — ТЕКСТОВЫМ узлом, не разметкой: в него входит строка из
- // поля поиска, и через innerHTML она исполнилась бы как HTML (нашёл CodeQL).
- sum.innerHTML='Показано <b>'+n+'</b> из 74 · ';
- sum.appendChild(document.createTextNode(ч.length?'отбор: '+ч.join(' · '):'отбор не задан'));}
+ // ⛔ Сводка собирается УЗЛАМИ, без подстановки в разметку. В неё входит
+ // строка из поля поиска: через innerHTML введённое человеком исполнилось бы
+ // как разметка (нашёл CodeQL на всех трёх макетах).
+ sum.textContent=''; sum.appendChild(document.createTextNode('Показано '));
+ var жир=document.createElement('b'); жир.textContent=String(n); sum.appendChild(жир);
+ sum.appendChild(document.createTextNode(' из 74 · '+(ч.length?'отбор: '+ч.join(' · '):'отбор не задан')));}
 function подходит(c,o){var v=c.dataset.v,tr=+c.dataset.trip||0,cb=c.dataset.c||'',lg=c.dataset.d==='1',nm=c.dataset.name||'';
  var q2=('q' in o)?o.q:st.q, v2=('v' in o)?o.v:st.v, t2=('t' in o)?o.t:st.t, c2=('c' in o)?o.c:st.c, d2=('d' in o)?o.d:st.d;
  return (!q2||nm.indexOf(q2)>=0)&&(v2==='all'||v===v2)&&(!t2||(tr&&(t2==='low'?tr<100000:tr<=200000)))
