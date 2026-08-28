@@ -1,0 +1,559 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Макет А — Реестр</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Golos+Text:wght@400;500;600;700&family=PT+Mono&family=Neucha&display=swap" rel="stylesheet"><style>
+:root{--paper:#fbfbfa;--ink:#15171a;--dim:#5c626b;--gold:#1d40ae;--hair:#d9dbde;--sand:#efece4;
+--ff:'Golos Text',system-ui,sans-serif;--ff-head:'Old Standard TT',Georgia,serif;--ff-mono:'PT Mono',monospace;--ff-hand:'Neucha',cursive}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--ff);line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--ff-head);margin:0;line-height:1.08;font-weight:700}
+a{color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:0 clamp(1rem,4vw,3rem)}
+.mono{font-family:var(--ff-mono)}
+/* ⛔ Ссылка «к содержимому» видна только под фокусом с клавиатуры. WebAIM:
+   без неё человек на клавиатуре каждый раз проходит всю шапку заново. */
+.skip{position:absolute;left:-9999px;top:0;background:var(--ink);color:#fff;
+padding:.7rem 1rem;z-index:99;min-height:44px;display:inline-flex;align-items:center}
+.skip:focus{left:0}
+.top{border-bottom:1px solid var(--hair);padding:.9rem 0;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.top b{font-family:var(--ff-head);font-size:1.05rem;letter-spacing:0;text-transform:none;color:var(--ink)}
+.chip{display:inline-flex;align-items:center;min-height:32px;padding:.35rem .8rem;border:1px solid var(--hair);
+background:#fff;font:inherit;font-size:.82rem;cursor:pointer;border-radius:2px;color:var(--ink)}
+.chip[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip .n{font-family:var(--ff-mono);font-weight:400;font-size:.78em;color:var(--dim);padding-left:.35rem}
+.chip[aria-pressed=true] .n{color:#fff;opacity:.7}
+.chip:disabled{opacity:.4;cursor:not-allowed}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+/* ⛔ Поиск — первым, не в конце. NN/g: больше половины людей на сайте
+   «поисковые» и идут прямо в строку. Baymard по 15 тревел-сайтам: поиск
+   должен быть главным содержимым, у 25% сайтов это не так. */
+.find{display:flex;align-items:center;gap:.6rem;border:2px solid var(--ink);background:#fff;
+padding:.15rem .15rem .15rem .8rem;margin-bottom:.8rem;max-width:34rem}
+.find label{font-family:var(--ff-mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.find input{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:1rem;
+padding:.6rem .2rem;min-height:44px;color:var(--ink)}
+.find input::placeholder{color:var(--dim)}
+.find button{border:0;background:transparent;font:inherit;cursor:pointer;color:var(--dim);
+min-width:44px;min-height:44px;font-size:1.1rem}
+.sum{font-size:.82rem;color:var(--dim);margin-top:.7rem}
+.sum b{color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1px;background:var(--hair);border:1px solid var(--hair)}
+.card{background:var(--paper);padding:.9rem;display:flex;flex-direction:column;gap:.35rem;text-decoration:none;min-height:44px}
+.card:hover{background:#fff}
+.card h3{font-size:1.12rem}
+.card .iso{font-family:var(--ff-mono);font-size:.68rem;letter-spacing:.1em;color:var(--dim)}
+.f{display:flex;justify-content:space-between;gap:.5rem;font-size:.8rem;border-top:1px dotted var(--hair);padding-top:.3rem}
+.f dt{color:var(--dim)}
+.f dd{margin:0;text-align:right}
+.price{display:flex;align-items:baseline;gap:.45rem;flex-wrap:wrap;margin:.15rem 0 .1rem}
+.price .mono{font-size:1.02rem;font-weight:600}
+.price .per{font-size:.72rem;color:var(--dim)}
+.seen{color:var(--gold);font-size:.82em;padding-left:.3rem}
+/* ⛔ Видимый фокус с клавиатуры. Первый заход снял его через outline:0 — человек,
+   идущий табуляцией, переставал понимать, где он. WCAG 2.4.7. */
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.f--money .per{font-size:.82em;color:var(--dim)}
+.more{display:inline-block;margin-top:.9rem;padding:.4rem 0;min-height:24px;font-size:.95rem;
+text-decoration:underline;text-underline-offset:.22em}
+.next{border-top:1px solid var(--hair);margin-top:2rem;padding-top:.9rem;font-size:.82rem;color:var(--dim)}
+@media(max-width:640px){.grid{grid-template-columns:1fr 1fr}}
+</style></head>
+<body>
+<a class="skip" href="#main">Перейти к содержимому</a>
+<header class="top"><div class="wrap"><b>TravelTribe</b> · Визы</div></header>
+<main class="wrap" id="main">
+<style>
+.a-head{border-top:2px solid var(--ink);padding-top:1rem;margin-top:1.4rem}
+.a-meta{font-family:var(--ff-mono);font-size:.72rem;letter-spacing:.08em;color:var(--dim)}
+.a-h1{font-size:clamp(2.2rem,5.4vw,3.8rem);margin:.5rem 0 .2rem}
+.a-h1 em{font-style:italic;color:var(--gold)}
+.a-q{font-size:clamp(1.5rem,3vw,2.2rem);margin-top:1.4rem}
+.a-lead{margin:.7rem 0 1rem;max-width:52ch}
+.a-lead b{font-weight:600}
+.stamps{display:flex;flex-wrap:wrap;gap:1rem}
+.stamp{display:block;border:2px solid var(--gold);color:var(--gold);padding:.7rem 1rem;border-radius:3px;
+transform:rotate(-1.4deg);text-decoration:none;min-height:44px}
+.stamp:nth-child(2){transform:rotate(1.1deg)}.stamp:nth-child(3){transform:rotate(-.5deg)}
+.stamp b{display:block;font-size:.9rem;text-transform:uppercase;letter-spacing:.08em}
+.stamp span{display:block;font-size:.76rem}
+.stamp .mono{padding-top:.1rem}
+.a-filters{margin-top:2rem;padding:1rem;background:var(--sand)}
+</style>
+<div class="a-head">
+<div class="a-meta">РЕГ. № 070—2026 · TT-VISA-RU · СВЕРЕНО 14.05.2026</div>
+<h1 class="a-h1">Визовый <em>реестр</em></h1>
+<div class="find">
+<label for="q">Страна</label>
+<input type="search" id="q" placeholder="Япония, Турция, Грузия…" autocomplete="off">
+<button type="button" id="qx" aria-label="Очистить поиск" hidden>×</button>
+</div>
+<h2 class="a-q">Куда пускают без визы?</h2>
+<p class="a-lead"><b>41 направления из 74</b> — только загранпаспорт. Ещё 16 открываются визой онлайн, 17 требуют консульства.</p>
+<div class="stamps">
+<a class="stamp" href="/kyrgyzstan/"><b>без визы</b><span>Киргизия — дешевле всех</span><span class="mono">≈ 63 000 ₽ / НЕДЕЛЯ</span></a>
+<a class="stamp" href="/tajikistan/"><b>виза онлайн</b><span>Таджикистан — дешевле всех</span><span class="mono">≈ 72 000 ₽ / НЕДЕЛЯ</span></a>
+<a class="stamp" href="/greece/"><b>консульство</b><span>Греция — дешевле всех</span><span class="mono">≈ 152 000 ₽ / НЕДЕЛЯ</span></a>
+</div>
+<a class="more" href="/bezviz/">Полный список безвизовых с условиями</a>
+<p class="next">Ниже — реестр всех 74 направлений с отбором по режиму и цене поездки.</p>
+</div>
+<div class="a-filters"><nav class="chips" aria-label="Отбор направлений">
+<button class="chip" aria-pressed="true" data-v="all">Все <b class="n"></b></button>
+<button class="chip" aria-pressed="false" data-v="free">Без визы <b class="n"></b></button>
+<button class="chip" aria-pressed="false" data-v="evisa">Виза онлайн <b class="n"></b></button>
+<button class="chip" aria-pressed="false" data-v="required">Консульство <b class="n"></b></button>
+<button class="chip" aria-pressed="false" data-t="low">Поездка до 100 тыс. <b class="n"></b></button>
+<button class="chip" aria-pressed="false" data-t="mid">100–200 тыс. <b class="n"></b></button>
+<button class="chip" aria-pressed="false" data-c="free">Виза бесплатна <b class="n"></b></button>
+<button class="chip" aria-pressed="false" data-c="cheap">Виза до $50 <b class="n"></b></button>
+<button class="chip" aria-pressed="false" data-d="long">Пускают на 60+ дней <b class="n"></b></button>
+<button class="chip" aria-pressed="false" data-s="trip">Сначала дешёвая поездка</button>
+<button class="chip" id="reset" type="button">Сбросить</button>
+</nav>
+<p class="sum" id="sum">Показано <b>74</b> из 74 · отбор не задан</p></div>
+<section data-group style="margin-top:2.4rem">
+<h2 style="font-size:1.5rem">Без визы</h2><p style="color:var(--dim);font-size:.9rem;margin:.4rem 0 1rem;max-width:60ch">Загранпаспорт от 6 месяцев. Штамп на границе, никаких документов заранее.</p>
+<div class="grid"><a class="card" data-v="free" data-trip="188000" data-ord="0" data-name="юар" data-c="free" data-d="1" href="/visa/south-africa/">
+<h3>ЮАР<span class="seen" title="Никита был лично" aria-label="автор был лично">✓</span></h3>
+<div class="price"><span class="mono">≈ 188 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="198000" data-ord="1" data-name="оаэ" data-c="free" data-d="1" href="/visa/uae/">
+<h3>ОАЭ<span class="seen" title="Никита был лично" aria-label="автор был лично">✓</span></h3>
+<div class="price"><span class="mono">≈ 198 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90/180 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="117000" data-ord="2" data-name="турция" data-c="free" data-d="1" href="/visa/turkey/">
+<h3>Турция<span class="seen" title="Никита был лично" aria-label="автор был лично">✓</span></h3>
+<div class="price"><span class="mono">≈ 117 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>60 дней (макс 90/180)</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="144000" data-ord="3" data-name="марокко" data-c="free" data-d="1" href="/visa/morocco/">
+<h3>Марокко</h3>
+<div class="price"><span class="mono">≈ 144 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="194000" data-ord="4" data-name="израиль" data-c="cheap" data-d="1" href="/visa/israel/">
+<h3>Израиль</h3>
+<div class="price"><span class="mono">≈ 194 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90/180 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>25 шекелей</dd></div></dl></a><a class="card" data-v="free" data-trip="158000" data-ord="5" data-name="иордания" data-c="free" data-d="1" href="/visa/jordan/">
+<h3>Иордания</h3>
+<div class="price"><span class="mono">≈ 158 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 дн (безвиз с 13.12.2025, до 90/год)</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="310000" data-ord="6" data-name="маврикий" data-c="free" data-d="0" href="/visa/mauritius/">
+<h3>Маврикий</h3>
+<div class="price"><span class="mono">≈ 310 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>решает офицер</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="385000" data-ord="7" data-name="сейшелы" data-c="cheap" data-d="1" href="/visa/seychelles/">
+<h3>Сейшелы</h3>
+<div class="price"><span class="mono">≈ 385 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>€10 ETA</dd></div></dl></a><a class="card" data-v="free" data-trip="260000" data-ord="8" data-name="гонконг" data-c="free" data-d="0" href="/visa/hong-kong/">
+<h3>Гонконг</h3>
+<div class="price"><span class="mono">≈ 260 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>14 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="150000" data-ord="9" data-name="таиланд" data-c="free" data-d="1" href="/visa/thailand/">
+<h3>Таиланд</h3>
+<div class="price"><span class="mono">≈ 150 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>60 дней (урежут до 30)</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="131000" data-ord="10" data-name="вьетнам" data-c="free" data-d="0" href="/visa/vietnam/">
+<h3>Вьетнам</h3>
+<div class="price"><span class="mono">≈ 131 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>45 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="301000" data-ord="11" data-name="мальдивы" data-c="free" data-d="0" href="/visa/maldives/">
+<h3>Мальдивы</h3>
+<div class="price"><span class="mono">≈ 301 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="75000" data-ord="12" data-name="грузия" data-c="free" data-d="1" href="/visa/georgia/">
+<h3>Грузия<span class="seen" title="Никита был лично" aria-label="автор был лично">✓</span></h3>
+<div class="price"><span class="mono">≈ 75 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>365 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="84000" data-ord="13" data-name="армения" data-c="free" data-d="1" href="/visa/armenia/">
+<h3>Армения<span class="seen" title="Никита был лично" aria-label="автор был лично">✓</span></h3>
+<div class="price"><span class="mono">≈ 84 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>180 дней в году</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="63000" data-ord="14" data-name="киргизия" data-c="free" data-d="0" href="/visa/kyrgyzstan/">
+<h3>Киргизия</h3>
+<div class="price"><span class="mono">≈ 63 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 дней без рег. (до 90)</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="74000" data-ord="15" data-name="узбекистан" data-c="free" data-d="1" href="/visa/uzbekistan/">
+<h3>Узбекистан</h3>
+<div class="price"><span class="mono">≈ 74 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>60 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="71000" data-ord="16" data-name="абхазия" data-c="free" data-d="1" href="/visa/abkhazia/">
+<h3>Абхазия</h3>
+<div class="price"><span class="mono">≈ 71 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="74000" data-ord="17" data-name="казахстан" data-c="free" data-d="0" href="/visa/kazakhstan/">
+<h3>Казахстан</h3>
+<div class="price"><span class="mono">≈ 74 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 дней без рег. (до 90)</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="139000" data-ord="18" data-name="китай" data-c="free" data-d="0" href="/visa/china/">
+<h3>Китай</h3>
+<div class="price"><span class="mono">≈ 139 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="163000" data-ord="19" data-name="хайнань" data-c="free" data-d="0" href="/visa/hainan/">
+<h3>Хайнань</h3>
+<div class="price"><span class="mono">≈ 163 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="135000" data-ord="20" data-name="малайзия" data-c="free" data-d="0" href="/visa/malaysia/">
+<h3>Малайзия</h3>
+<div class="price"><span class="mono">≈ 135 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="145000" data-ord="21" data-name="филиппины" data-c="free" data-d="0" href="/visa/philippines/">
+<h3>Филиппины</h3>
+<div class="price"><span class="mono">≈ 145 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="108000" data-ord="22" data-name="сербия" data-c="free" data-d="0" href="/visa/serbia/">
+<h3>Сербия</h3>
+<div class="price"><span class="mono">≈ 108 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 дней (макс 90/180)</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="160000" data-ord="23" data-name="мексика" data-c="free" data-d="1" href="/visa/mexico/">
+<h3>Мексика</h3>
+<div class="price"><span class="mono">≈ 160 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>180 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>SAE бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="225000" data-ord="24" data-name="куба" data-c="free" data-d="1" href="/visa/cuba/">
+<h3>Куба</h3>
+<div class="price"><span class="mono">≈ 225 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="262000" data-ord="25" data-name="доминикана" data-c="cheap" data-d="0" href="/visa/dominican-republic/">
+<h3>Доминикана</h3>
+<div class="price"><span class="mono">≈ 262 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 дней (до 90)</dd></div>
+<div class="f"><dt>Виза</dt><dd>$10 в билете</dd></div></dl></a><a class="card" data-v="free" data-trip="154000" data-ord="26" data-name="гватемала и белиз" data-c="free" data-d="1" href="/visa/guatemala-belize/">
+<h3>Гватемала и Белиз</h3>
+<div class="price"><span class="mono">≈ 154 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="190000" data-ord="27" data-name="коста-рика и панама" data-c="free" data-d="1" href="/visa/costa-rica-panama/">
+<h3>Коста-Рика и Панама</h3>
+<div class="price"><span class="mono">≈ 190 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="245000" data-ord="28" data-name="чилийская патагония" data-c="free" data-d="1" href="/visa/chile-patagonia/">
+<h3>Чилийская Патагония</h3>
+<div class="price"><span class="mono">≈ 245 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней (за полгода)</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="230000" data-ord="29" data-name="чилийские фьорды" data-c="free" data-d="1" href="/visa/chile-fjords/">
+<h3>Чилийские фьорды</h3>
+<div class="price"><span class="mono">≈ 230 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней (за полгода)</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="208000" data-ord="30" data-name="перу" data-c="free" data-d="1" href="/visa/peru/">
+<h3>Перу</h3>
+<div class="price"><span class="mono">≈ 208 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней (за полгода)</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="180000" data-ord="31" data-name="боливия" data-c="free" data-d="1" href="/visa/bolivia/">
+<h3>Боливия</h3>
+<div class="price"><span class="mono">≈ 180 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней (за полгода)</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="217000" data-ord="32" data-name="чили" data-c="free" data-d="1" href="/visa/chile/">
+<h3>Чили</h3>
+<div class="price"><span class="mono">≈ 217 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней (за полгода)</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="232000" data-ord="33" data-name="аргентина" data-c="free" data-d="1" href="/visa/argentina/">
+<h3>Аргентина</h3>
+<div class="price"><span class="mono">≈ 232 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="212000" data-ord="34" data-name="эквадор" data-c="free" data-d="1" href="/visa/ecuador/">
+<h3>Эквадор</h3>
+<div class="price"><span class="mono">≈ 212 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="244000" data-ord="35" data-name="бразилия" data-c="free" data-d="1" href="/visa/brazil/">
+<h3>Бразилия</h3>
+<div class="price"><span class="mono">≈ 244 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней (до 180)</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="free" data-trip="1080000" data-ord="36" data-name="антарктида" data-c="cheap" data-d="0" href="/visa/antarctica/">
+<h3>Антарктида</h3>
+<div class="price"><span class="mono">≈ 1 080 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>круиз</dd></div>
+<div class="f"><dt>Виза</dt><dd>$6 000–25 000</dd></div></dl></a><a class="card" data-v="free" data-trip="123000" data-ord="37" data-name="камчатка" data-c="" data-d="1" href="/visa/kamchatka/">
+<h3>Камчатка</h3>
+<div class="price"><span class="mono">≈ 123 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>весь год</dd></div>
+<div class="f"><dt>Виза</dt><dd>не нужна</dd></div></dl></a><a class="card" data-v="free" data-trip="82000" data-ord="38" data-name="карелия" data-c="" data-d="1" href="/visa/karelia/">
+<h3>Карелия</h3>
+<div class="price"><span class="mono">≈ 82 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>весь год</dd></div>
+<div class="f"><dt>Виза</dt><dd>не нужна</dd></div></dl></a><a class="card" data-v="free" data-trip="62000" data-ord="39" data-name="дагестан" data-c="" data-d="1" href="/visa/dagestan/">
+<h3>Дагестан</h3>
+<div class="price"><span class="mono">≈ 62 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>весь год</dd></div>
+<div class="f"><dt>Виза</dt><dd>не нужна</dd></div></dl></a><a class="card" data-v="free" data-trip="84000" data-ord="40" data-name="алтай" data-c="" data-d="1" href="/visa/altai/">
+<h3>Алтай</h3>
+<div class="price"><span class="mono">≈ 84 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">БЕЗ ВИЗЫ</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>весь год</dd></div>
+<div class="f"><dt>Виза</dt><dd>не нужна</dd></div></dl></a></div></section>
+<section data-group style="margin-top:2.4rem">
+<h2 style="font-size:1.5rem">Виза онлайн</h2><p style="color:var(--dim);font-size:.9rem;margin:.4rem 0 1rem;max-width:60ch">Оформляется до вылета через сайт миграционной службы. $20–80, один-три дня.</p>
+<div class="grid"><a class="card" data-v="evisa" data-trip="122000" data-ord="0" data-name="бали" data-c="" data-d="0" href="/visa/bali/">
+<h3>Бали<span class="seen" title="Никита был лично" aria-label="автор был лично">✓</span></h3>
+<div class="price"><span class="mono">≈ 122 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">ВИЗА ОНЛАЙН</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 + 30 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>IDR 500k (~$35)</dd></div></dl></a><a class="card" data-v="evisa" data-trip="110000" data-ord="1" data-name="суматра и калимантан" data-c="" data-d="0" href="/visa/sumatra-kalimantan/">
+<h3>Суматра и Калимантан</h3>
+<div class="price"><span class="mono">≈ 110 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">ВИЗА ОНЛАЙН</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 + 30 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>IDR 500k (~$35)</dd></div></dl></a><a class="card" data-v="evisa" data-trip="221000" data-ord="2" data-name="раджа-ампат" data-c="" data-d="0" href="/visa/raja-ampat/">
+<h3>Раджа-Ампат</h3>
+<div class="price"><span class="mono">≈ 221 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">ВИЗА ОНЛАЙН</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 + 30 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>IDR 500k + Marine Park</dd></div></dl></a><a class="card" data-v="evisa" data-trip="207000" data-ord="3" data-name="кения" data-c="cheap" data-d="1" href="/visa/kenya/">
+<h3>Кения<span class="seen" title="Никита был лично" aria-label="автор был лично">✓</span></h3>
+<div class="price"><span class="mono">≈ 207 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">ВИЗА ОНЛАЙН</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 + 90 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>$30 eTA</dd></div></dl></a><a class="card" data-v="evisa" data-trip="138000" data-ord="4" data-name="египет" data-c="cheap" data-d="0" href="/visa/egypt/">
+<h3>Египет</h3>
+<div class="price"><span class="mono">≈ 138 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">ВИЗА ОНЛАЙН</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>$25 eVisa / $30 VOA</dd></div></dl></a><a class="card" data-v="evisa" data-trip="96000" data-ord="5" data-name="иран" data-c="cheap" data-d="0" href="/visa/iran/">
+<h3>Иран</h3>
+<div class="price"><span class="mono">≈ 96 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">ВИЗА ОНЛАЙН</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>тургруппы безвиз 15 дн / eVisa 30 дн</dd></div>
+<div class="f"><dt>Виза</dt><dd>eVisa €40–70</dd></div></dl></a><a class="card" data-v="evisa" data-trip="216000" data-ord="6" data-name="танзания" data-c="cheap" data-d="1" href="/visa/tanzania/">
+<h3>Танзания<span class="seen" title="Никита был лично" aria-label="автор был лично">✓</span></h3>
+<div class="price"><span class="mono">≈ 216 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">ВИЗА ОНЛАЙН</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>$50</dd></div></dl></a><a class="card" data-v="evisa" data-trip="197000" data-ord="7" data-name="мадагаскар" data-c="cheap" data-d="1" href="/visa/madagascar/">
+<h3>Мадагаскар</h3>
+<div class="price"><span class="mono">≈ 197 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">ВИЗА ОНЛАЙН</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>15/30/60 дн = €30/35/40</dd></div>
+<div class="f"><dt>Виза</dt><dd>€30+</dd></div></dl></a><a class="card" data-v="evisa" data-trip="163000" data-ord="8" data-name="южная корея" data-c="cheap" data-d="1" href="/visa/south-korea/">
+<h3>Южная Корея</h3>
+<div class="price"><span class="mono">≈ 163 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">ВИЗА ОНЛАЙН</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>60 дн подряд, до 90/180</dd></div>
+<div class="f"><dt>Виза</dt><dd>~$8 (₩10 000)</dd></div></dl></a><a class="card" data-v="evisa" data-trip="114000" data-ord="9" data-name="гоа (индия)" data-c="free" data-d="0" href="/visa/india-goa/">
+<h3>Гоа (Индия)</h3>
+<div class="price"><span class="mono">≈ 114 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">ВИЗА ОНЛАЙН</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 дней (double)</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно для РФ</dd></div></dl></a><a class="card" data-v="evisa" data-trip="130000" data-ord="10" data-name="шри-ланка" data-c="free" data-d="0" href="/visa/sri-lanka/">
+<h3>Шри-Ланка</h3>
+<div class="price"><span class="mono">≈ 130 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">ВИЗА ОНЛАЙН</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 дней (double)</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно для РФ</dd></div></dl></a><a class="card" data-v="evisa" data-trip="72000" data-ord="11" data-name="таджикистан" data-c="free" data-d="1" href="/visa/tajikistan/">
+<h3>Таджикистан</h3>
+<div class="price"><span class="mono">≈ 72 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">ВИЗА ОНЛАЙН</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a><a class="card" data-v="evisa" data-trip="126000" data-ord="12" data-name="камбоджа" data-c="cheap" data-d="0" href="/visa/cambodia/">
+<h3>Камбоджа</h3>
+<div class="price"><span class="mono">≈ 126 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">ВИЗА ОНЛАЙН</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>$36</dd></div></dl></a><a class="card" data-v="evisa" data-trip="242000" data-ord="13" data-name="сингапур" data-c="cheap" data-d="0" href="/visa/singapore/">
+<h3>Сингапур</h3>
+<div class="price"><span class="mono">≈ 242 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">ВИЗА ОНЛАЙН</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>30 дн e-Visa</dd></div>
+<div class="f"><dt>Виза</dt><dd>SGD 30 + AVA $60–100</dd></div></dl></a><a class="card" data-v="evisa" data-trip="117000" data-ord="14" data-name="непал" data-c="cheap" data-d="1" href="/visa/nepal/">
+<h3>Непал</h3>
+<div class="price"><span class="mono">≈ 117 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">ВИЗА ОНЛАЙН</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>15/30/90 дн = $30/50/125</dd></div>
+<div class="f"><dt>Виза</dt><dd>$30+</dd></div></dl></a><a class="card" data-v="evisa" data-trip="163000" data-ord="15" data-name="кипр" data-c="free" data-d="1" href="/visa/cyprus/">
+<h3>Кипр</h3>
+<div class="price"><span class="mono">≈ 163 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">ВИЗА ОНЛАЙН</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90 дней</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно</dd></div></dl></a></div></section>
+<section data-group style="margin-top:2.4rem">
+<h2 style="font-size:1.5rem">Консульство</h2><p style="color:var(--dim);font-size:.9rem;margin:.4rem 0 1rem;max-width:60ch">Через визовый центр: биометрия, документы, $35–200 и до 30 дней ожидания.</p>
+<div class="grid"><a class="card" data-v="required" data-trip="219000" data-ord="0" data-name="восточная австралия" data-c="" data-d="1" href="/visa/australia-east/">
+<h3>Восточная Австралия<span class="seen" title="Никита был лично" aria-label="автор был лично">✓</span></h3>
+<div class="price"><span class="mono">≈ 219 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">КОНСУЛЬСТВО</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>3/6/12 мес (subclass 600)</dd></div>
+<div class="f"><dt>Виза</dt><dd>AUD 250</dd></div></dl></a><a class="card" data-v="required" data-trip="212000" data-ord="1" data-name="северная австралия" data-c="" data-d="1" href="/visa/australia-north/">
+<h3>Северная Австралия<span class="seen" title="Никита был лично" aria-label="автор был лично">✓</span></h3>
+<div class="price"><span class="mono">≈ 212 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">КОНСУЛЬСТВО</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>3/6/12 мес (subclass 600)</dd></div>
+<div class="f"><dt>Виза</dt><dd>AUD 250</dd></div></dl></a><a class="card" data-v="required" data-trip="301000" data-ord="2" data-name="новая зеландия" data-c="" data-d="1" href="/visa/new-zealand/">
+<h3>Новая Зеландия<span class="seen" title="Никита был лично" aria-label="автор был лично">✓</span></h3>
+<div class="price"><span class="mono">≈ 301 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">КОНСУЛЬСТВО</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>9 мес/18 мес</dd></div>
+<div class="f"><dt>Виза</dt><dd>NZD 246 + NZD 100 IVL</dd></div></dl></a><a class="card" data-v="required" data-trip="192000" data-ord="3" data-name="япония" data-c="free" data-d="1" href="/visa/japan/">
+<h3>Япония<span class="seen" title="Никита был лично" aria-label="автор был лично">✓</span></h3>
+<div class="price"><span class="mono">≈ 192 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">КОНСУЛЬСТВО</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>15/30/90 дн (мульти до 3 лет)</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно + JVAC 970₽</dd></div></dl></a><a class="card" data-v="required" data-trip="212000" data-ord="4" data-name="хоккайдо" data-c="free" data-d="1" href="/visa/japan-hokkaido/">
+<h3>Хоккайдо<span class="seen" title="Никита был лично" aria-label="автор был лично">✓</span></h3>
+<div class="price"><span class="mono">≈ 212 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">КОНСУЛЬСТВО</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>15/30/90 дн (мульти до 3 лет)</dd></div>
+<div class="f"><dt>Виза</dt><dd>бесплатно + JVAC 970₽</dd></div></dl></a><a class="card" data-v="required" data-trip="187000" data-ord="5" data-name="финляндия" data-c="" data-d="0" href="/visa/finland/">
+<h3>Финляндия</h3>
+<div class="price"><span class="mono">≈ 187 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">КОНСУЛЬСТВО</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90/180 (закрыт туризм)</dd></div>
+<div class="f"><dt>Виза</dt><dd>€90 + VFS</dd></div></dl></a><a class="card" data-v="required" data-trip="261000" data-ord="6" data-name="швейцария" data-c="" data-d="0" href="/visa/switzerland/">
+<h3>Швейцария</h3>
+<div class="price"><span class="mono">≈ 261 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">КОНСУЛЬСТВО</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90/180 (Шенген)</dd></div>
+<div class="f"><dt>Виза</dt><dd>€90 + ~2400₽</dd></div></dl></a><a class="card" data-v="required" data-trip="215000" data-ord="7" data-name="северная италия" data-c="" data-d="0" href="/visa/italy-north/">
+<h3>Северная Италия</h3>
+<div class="price"><span class="mono">≈ 215 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">КОНСУЛЬСТВО</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90/180 (Шенген)</dd></div>
+<div class="f"><dt>Виза</dt><dd>€90 + €30</dd></div></dl></a><a class="card" data-v="required" data-trip="183000" data-ord="8" data-name="италия (центр и юг)" data-c="" data-d="0" href="/visa/italy-south/">
+<h3>Италия (центр и юг)</h3>
+<div class="price"><span class="mono">≈ 183 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">КОНСУЛЬСТВО</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90/180 (Шенген)</dd></div>
+<div class="f"><dt>Виза</dt><dd>€90 + €30</dd></div></dl></a><a class="card" data-v="required" data-trip="172000" data-ord="9" data-name="испания" data-c="" data-d="0" href="/visa/spain/">
+<h3>Испания</h3>
+<div class="price"><span class="mono">≈ 172 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">КОНСУЛЬСТВО</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90/180 (Шенген)</dd></div>
+<div class="f"><dt>Виза</dt><dd>€90 + €35 BLS</dd></div></dl></a><a class="card" data-v="required" data-trip="152000" data-ord="10" data-name="греция" data-c="" data-d="0" href="/visa/greece/">
+<h3>Греция</h3>
+<div class="price"><span class="mono">≈ 152 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">КОНСУЛЬСТВО</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90/180 (Шенген)</dd></div>
+<div class="f"><dt>Виза</dt><dd>€90 + €30</dd></div></dl></a><a class="card" data-v="required" data-trip="152000" data-ord="11" data-name="хорватия" data-c="" data-d="0" href="/visa/croatia/">
+<h3>Хорватия</h3>
+<div class="price"><span class="mono">≈ 152 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">КОНСУЛЬСТВО</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90/180 (Шенген)</dd></div>
+<div class="f"><dt>Виза</dt><dd>€90 + €30</dd></div></dl></a><a class="card" data-v="required" data-trip="323000" data-ord="12" data-name="исландия" data-c="cheap" data-d="0" href="/visa/iceland/">
+<h3>Исландия</h3>
+<div class="price"><span class="mono">≈ 323 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">КОНСУЛЬСТВО</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90/180 (через 3-ю)</dd></div>
+<div class="f"><dt>Виза</dt><dd>Шенген 3-й страны</dd></div></dl></a><a class="card" data-v="required" data-trip="285000" data-ord="13" data-name="норвегия" data-c="" data-d="0" href="/visa/norway/">
+<h3>Норвегия</h3>
+<div class="price"><span class="mono">≈ 285 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">КОНСУЛЬСТВО</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>90/180 (риск отказа)</dd></div>
+<div class="f"><dt>Виза</dt><dd>€90 + VFS</dd></div></dl></a><a class="card" data-v="required" data-trip="309000" data-ord="14" data-name="сша" data-c="" data-d="1" href="/visa/usa/">
+<h3>США<span class="seen" title="Никита был лично" aria-label="автор был лично">✓</span></h3>
+<div class="price"><span class="mono">≈ 309 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">КОНСУЛЬСТВО</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>6 мес/въезд, виза 3 года</dd></div>
+<div class="f"><dt>Виза</dt><dd>$185 MRV</dd></div></dl></a><a class="card" data-v="required" data-trip="256000" data-ord="15" data-name="канадские скалистые горы" data-c="" data-d="1" href="/visa/canada-rockies/">
+<h3>Канадские Скалистые горы</h3>
+<div class="price"><span class="mono">≈ 256 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">КОНСУЛЬСТВО</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>6 мес/въезд, виза 10 лет</dd></div>
+<div class="f"><dt>Виза</dt><dd>CA$100 + биом. CA$85</dd></div></dl></a><a class="card" data-v="required" data-trip="235000" data-ord="16" data-name="восточная канада" data-c="" data-d="1" href="/visa/canada-east/">
+<h3>Восточная Канада</h3>
+<div class="price"><span class="mono">≈ 235 000 ₽</span><span class="per">неделя с перелётом</span></div>
+<span class="iso">КОНСУЛЬСТВО</span>
+<dl style="margin:.35rem 0 0"><div class="f"><dt>Срок</dt><dd>6 мес/въезд, виза 10 лет</dd></div>
+<div class="f"><dt>Виза</dt><dd>CA$100 + биом. CA$85</dd></div></dl></a></div></section>
+</main><script>
+(function(){var st={v:'all',t:null,s:false,q:'',c:null,d:false};
+var cards=[].slice.call(document.querySelectorAll('.card'));
+var q=document.getElementById('q'),qx=document.getElementById('qx');
+var sum=document.getElementById('sum');
+function apply(){var n=0;
+ cards.forEach(function(c){var v=c.dataset.v,tr=+c.dataset.trip||0;
+  var name=(c.dataset.name||''),cb=c.dataset.c||'',lg=c.dataset.d==='1';
+  var ok=(!st.q||name.indexOf(st.q)>=0)&&(st.v==='all'||v===st.v)
+   &&(!st.t||(tr&&(st.t==='low'?tr<100000:tr<=200000)))
+   &&(!st.c||cb===st.c)&&(!st.d||lg);
+  c.hidden=!ok; if(ok)n++;});
+ document.querySelectorAll('[data-group]').forEach(function(g){
+  g.hidden=!g.querySelector('.card:not([hidden])');});
+ // Счётчик на каждом чипе: сколько останется, если нажать именно его, при
+ // нынешнем остальном отборе. Пустой отбор гасит кнопку — человек не тычет
+ // в заведомое «ничего не найдено».
+ counts();
+ var ч=[]; if(st.q)ч.push('поиск «'+st.q+'»');
+ // в подписи чипа теперь есть счётчик — вырезаем его, иначе сводка читается
+ // как «отбор: Консульство 17»
+ if(st.v!=='all'){var e0=document.querySelector('[data-v="'+st.v+'"]').cloneNode(true);
+  var n0=e0.querySelector('.n'); if(n0)n0.remove(); ч.push(e0.textContent.trim());}
+ if(st.t)ч.push(st.t==='low'?'до 100 тыс.':'100–200 тыс.');
+ if(st.c)ч.push(st.c==='free'?'виза бесплатна':'виза до $50');
+ if(st.d)ч.push('60+ дней');
+ if(st.s)ч.push('сначала дешёвая поездка');
+ // ⛔ Сводка собирается УЗЛАМИ, без подстановки в разметку. В неё входит
+ // строка из поля поиска: через innerHTML введённое человеком исполнилось бы
+ // как разметка (нашёл CodeQL на всех трёх макетах).
+ sum.textContent=''; sum.appendChild(document.createTextNode('Показано '));
+ var жир=document.createElement('b'); жир.textContent=String(n); sum.appendChild(жир);
+ sum.appendChild(document.createTextNode(' из 74 · '+(ч.length?'отбор: '+ч.join(' · '):'отбор не задан')));}
+function подходит(c,o){var v=c.dataset.v,tr=+c.dataset.trip||0,cb=c.dataset.c||'',lg=c.dataset.d==='1',nm=c.dataset.name||'';
+ var q2=('q' in o)?o.q:st.q, v2=('v' in o)?o.v:st.v, t2=('t' in o)?o.t:st.t, c2=('c' in o)?o.c:st.c, d2=('d' in o)?o.d:st.d;
+ return (!q2||nm.indexOf(q2)>=0)&&(v2==='all'||v===v2)&&(!t2||(tr&&(t2==='low'?tr<100000:tr<=200000)))
+  &&(!c2||cb===c2)&&(!d2||lg);}
+function counts(){
+ document.querySelectorAll('.chip').forEach(function(ch){
+  var el=ch.querySelector('.n'); if(!el)return;
+  var o={};
+  if(ch.dataset.v)o.v=ch.dataset.v;
+  else if(ch.dataset.t)o.t=(st.t===ch.dataset.t?null:ch.dataset.t);
+  else if(ch.dataset.c)o.c=(st.c===ch.dataset.c?null:ch.dataset.c);
+  else if(ch.dataset.d)o.d=!st.d; else return;
+  var n=cards.filter(function(c){return подходит(c,o);}).length;
+  el.textContent=n; ch.disabled=(n===0&&ch.getAttribute('aria-pressed')!=='true');});}
+function sort(){document.querySelectorAll('[data-group] .grid').forEach(function(g){
+ var cs=[].slice.call(g.children);
+ cs.sort(function(a,b){return st.s?((+a.dataset.trip||1e9)-(+b.dataset.trip||1e9)):((+a.dataset.ord)-(+b.dataset.ord));});
+ cs.forEach(function(c){g.appendChild(c);});});}
+document.addEventListener('click',function(e){var c=e.target.closest('.chip'); if(!c)return;
+ if(c.dataset.v){st.v=c.dataset.v;document.querySelectorAll('[data-v]').forEach(function(x){x.setAttribute('aria-pressed',String(x===c));});}
+ if(c.dataset.t){var on=c.getAttribute('aria-pressed')==='true';st.t=on?null:c.dataset.t;
+  document.querySelectorAll('[data-t]').forEach(function(x){x.setAttribute('aria-pressed',String(!on&&x===c));});}
+ if(c.dataset.c){var on2=c.getAttribute('aria-pressed')==='true';st.c=on2?null:c.dataset.c;
+  document.querySelectorAll('[data-c]').forEach(function(x){x.setAttribute('aria-pressed',String(!on2&&x===c));});}
+ if(c.dataset.d){st.d=c.getAttribute('aria-pressed')!=='true';c.setAttribute('aria-pressed',String(st.d));}
+ if(c.dataset.s){st.s=c.getAttribute('aria-pressed')!=='true';c.setAttribute('aria-pressed',String(st.s));sort();}
+ if(c.id==='reset'){st={v:'all',t:null,s:false,q:'',c:null,d:false};
+  document.querySelectorAll('.chip').forEach(function(x){x.setAttribute('aria-pressed',String(x.dataset.v==='all'));});
+  if(q){q.value='';} if(qx)qx.hidden=true; sort();}
+ apply();});
+if(q){q.addEventListener('input',function(){st.q=q.value.trim().toLowerCase();
+ if(qx)qx.hidden=!st.q; apply();});}
+if(qx){qx.addEventListener('click',function(){q.value='';st.q='';qx.hidden=true;apply();q.focus();});}
+apply();})();
+</script></body></html>
