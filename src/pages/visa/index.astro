@@ -279,8 +279,10 @@ const ldJson = {
         <div class="va-stamps">
           {ОТВЕТ.map((г) => (
             <a class="va-stamp" href={`/${г.дёшево.slug}/`}>
-              <b>{г.код} · {г.n}</b>
-              <span>дешевле всех — {г.дёшево.nom}</span>
+              {/* ⛔ Счёт в штампе НЕ повторяем: он уже назван строкой выше, двумя
+                  строками раньше. Штамп несёт то, чего в ответе нет — пример и цену. */}
+              <b>{г.код}</b>
+              <span>{г.дёшево.nom} — дешевле всех</span>
               <span class="va-stamp-sum">≈ {fmtRub(г.дёшево.цена)} ₽ / НЕДЕЛЯ</span>
             </a>
           ))}
@@ -317,38 +319,19 @@ const ldJson = {
       </div>
     </header>
 
-    {/* ─── STATS PANEL — три «карточки реестра» ─── */}
-    <section class="va-stats" aria-label="Сводка по визовым режимам" data-reveal>
-      <div class="va-stat va-stat--free">
-        <div class="va-stat-mark" aria-hidden="true">БВ</div>
-        <div class="va-stat-num">{byVisa.free.length}</div>
-        <div class="va-stat-label">без визы</div>
-        <div class="va-stat-note">визу не оформлять</div>
-      </div>
-      <div class="va-stat va-stat--evisa">
-        <div class="va-stat-mark" aria-hidden="true">EV</div>
-        <div class="va-stat-num">{byVisa.evisa.length}</div>
-        <div class="va-stat-label">eVisa</div>
-        <div class="va-stat-note">онлайн, 1–3 дня</div>
-      </div>
-      <div class="va-stat va-stat--required">
-        <div class="va-stat-mark" aria-hidden="true">ВЗ</div>
-        <div class="va-stat-num">{byVisa.required.length}</div>
-        <div class="va-stat-label">виза обязательна</div>
-        <div class="va-stat-note">консульство · до 30 дней</div>
-      </div>
-    </section>
 
     {/* ─── HUB INTRO — вступительная статья ─── */}
     <section class="va-intro" data-reveal>
       <div class="va-intro-meta">
         <span class="va-intro-tag">ОБЗОР · ВИЗОВАЯ ОБСТАНОВКА · МАЙ 2026</span>
       </div>
-      <h2 class="va-intro-title">Куда летать россиянам в 2026 — главное</h2>
+      <h2 class="va-intro-title">Что изменилось за полгода?</h2>
 
       <div class="va-intro-body">
         <p class="va-intro-lede">
-          С 2022 года визовая карта мира перерисовывается каждые 3–6 месяцев. Здесь — актуальный реестр на май 2026: <strong>{byVisa.free.length} {NOUN.country(byVisa.free.length)} {NOUN.accept(byVisa.free.length)} по загранпаспорту, {byVisa.evisa.length} дают eVisa онлайн, {byVisa.required.length} требуют полноценную визу</strong>. Реестр обновляется при изменении правил, последняя сверка — 14 мая 2026.
+          С 2022 года визовая карта мира перерисовывается каждые 3–6 месяцев: страны
+          открываются и закрываются быстрее, чем успевают устареть путеводители.
+          Ниже — что изменилось за полгода и что нужно на въезде в каждую из них.
         </p>
 
         <p>
@@ -377,7 +360,7 @@ const ldJson = {
     <section class="va-changes" data-reveal>
       <header class="va-changes-head">
         <span class="va-changes-tag">ИЗМЕНЕНИЯ · ПОСЛЕДНИЕ 6 МЕСЯЦЕВ</span>
-        <h2 class="va-changes-title">Что менялось</h2>
+        <h2 class="va-changes-title">Когда и что поменяли?</h2>
       </header>
       <ol class="va-changes-list">
         <li class="va-change-item">
@@ -438,10 +421,11 @@ const ldJson = {
         <h2 class="va-faq-title">Часто спрашивают</h2>
       </header>
       <div class="va-faq-list">
+        {/* ⛔ Без нумерации 01–12: вопросы не последовательность, и номер ничего
+            не кодирует — это приём типовых машинных вёрсток, а не смысл. */}
         {FAQ_ITEMS.map((item, idx) => (
           <details class="va-faq-item" open={idx === 0}>
             <summary class="va-faq-q">
-              <span class="va-faq-num">{String(idx + 1).padStart(2, '0')}</span>
               <span class="va-faq-q-text">{item.q}</span>
               <span class="va-faq-q-mark" aria-hidden="true">+</span>
             </summary>
