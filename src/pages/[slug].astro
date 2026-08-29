@@ -444,9 +444,9 @@ if (guide?.itinerary?.length) {
             </ul>
             <p class="sl-cta">
               {RU_STAY.has(d.slug) ? (
-                <a href={otelloStay(`hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc} на Отелло (2ГИС)</a>
+                <a href={otelloStay(`hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc}</a>
               ) : (
-                <a href={ostrovokCountry(d.slug, `hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать отель {d.cases.loc} на Островке</a>
+                <a href={ostrovokCountry(d.slug, `hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать отель {d.cases.loc}</a>
               )}
 
               <span class="sl-trust">оплата российскими картами · цены в ₽</span>
@@ -555,7 +555,7 @@ if (guide?.itinerary?.length) {
       <section class="sl-section">
         <div class="sl-shead"><h2>Жильё</h2></div>
         <p class="sl-cta sl-cta--stack">
-          <a href={otelloStay(`hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc} на Отелло (2ГИС)</a>
+          <a href={otelloStay(`hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc}</a>
           {CAR_RENTAL.has(d.slug) && (
             <a href={`${TP_LINKS.economybookings}&sub_id=hub_${d.slug}`} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить цены прокатов авто</a>
           )}
