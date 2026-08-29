@@ -108,8 +108,13 @@ const summary = vd.summary ?? visaSummary[d.visa];
 // россиянам не нужна…») и повторяли заголовок у 17 карточек. Видимый текст
 // не трогаем: режем только строку для выдачи, и только если повтор есть.
 const первыеСлова = (s) => s.split(/\s+/).slice(0, 3).join(' ').toLowerCase();
-const безПовтора = summary.toLowerCase().startsWith(первыеСлова(visaTitle)) && summary.includes('. ')
-  ? summary.slice(summary.indexOf('. ') + 2)
+// ⛔ 29.08.2026: срез до первой точки оставлял огрызок там, где второе
+// предложение короткое («Условия въезда и что показать.» — 30 знаков у Иордании
+// и Казахстана). Поиск такое описание выбрасывает и сочиняет своё. Режем только
+// если остаток сам по себе тянет на описание.
+const остаток = summary.includes('. ') ? summary.slice(summary.indexOf('. ') + 2) : summary;
+const безПовтора = summary.toLowerCase().startsWith(первыеСлова(visaTitle)) && остаток.length >= 80
+  ? остаток
   : summary;
 const metaDesc = безПовтора.length > 203 ? безПовтора.slice(0, 200).replace(/\s+\S*$/, '') + '…' : безПовтора;
 const costAnswer = noVisa

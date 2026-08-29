@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync, statSync, existsSync, readdirSync } from 'node:fs';
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 
 // Время последнего изменения у файлов страниц.
 //
@@ -114,7 +114,9 @@ test('3. страницы вне карты сайта тоже получили
     let последняя = 0;
     for (const src of исходники(f)) {
       try {
-        const t = execSync(`git log -1 --format=%ct -- ${JSON.stringify(src)}`, { encoding: 'utf-8' }).trim();
+        // Имя файла уходит отдельным доводом, а не склейкой в строку команды:
+        // склейку сканер кода справедливо метит как способ подсунуть шелл лишнее.
+        const t = execFileSync('git', ['log', '-1', '--format=%ct', '--', src], { encoding: 'utf-8' }).trim();
         if (t) последняя = Math.max(последняя, +t * 1000);
       } catch { /* нет истории — пропускаем */ }
     }
