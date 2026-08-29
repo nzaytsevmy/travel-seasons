@@ -55,7 +55,7 @@ function nearestPriceKey(monthIdx) {
 // Aviasales deep-link для месяца: формат MOW{DD}{MM}{IATA}1 (1 пассажир)
 // Aviasales через tpk.mx-обёртку (трекинг кликов + erid + .ru). Прямой ?marker со статичным
 // sub-id давал 0 кликов в TP (проверено 2026-06-04). search-путь /search/ уходит внутри &u=.
-const AVIASALES_TPK = 'https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&u=';
+const AVIASALES_TPK = 'https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=seasons_table&u=';
 function aviasalesUrl(iata, monthIdx) {
   if (!iata) return null;
   const yr = monthIdx >= currentMonth ? now.getFullYear() : now.getFullYear() + 1;
@@ -587,7 +587,7 @@ function openPanel(cell) {
   if (iata) {
     const yr = monthIdx >= new Date().getMonth() ? new Date().getFullYear() : new Date().getFullYear() + 1;
     const mm = String(monthIdx + 1).padStart(2, '0');
-    avBtn.href = 'https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&u=' + encodeURIComponent(`https://www.aviasales.ru/search/MOW15${mm}${iata}1`);
+    avBtn.href = 'https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=seasons_panel&u=' + encodeURIComponent(`https://www.aviasales.ru/search/MOW15${mm}${iata}1`);
     // Анкор с выгодой и цифрой вместо бренда: цена уже посчитана выше для
     // блока panelPrice, берём её же — «Найти билет от 18 000 ₽» кликают охотнее,
     // чем «Найти билет на Aviasales».

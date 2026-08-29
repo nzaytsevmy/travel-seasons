@@ -188,6 +188,22 @@ const ldJson = {
       </div>
     </div></section>
 
+
+    <!-- Что оформить до поездки: единственный денежный блок главной.
+         Стоит ПОСЛЕ разворотов выбора — манифест объясняет сайт, этот блок
+         помогает уже выбравшему. Строками в тексте, без коробов и картинок:
+         айтрекинг показывает, что блоки, похожие на рекламу, треть людей
+         не видит вовсе. -->
+    <section class="sec before"><div class="wrap">
+      <div class="shead"><div><h2>Что оформить до поездки</h2></div></div>
+      <ul class="blist">
+        <li><b>Страховка.</b> В Грузию и Шенген без полиса не пустят, в остальные страны лечение платное. Неделя стоит от 233 ₽ — <a href={cherehapaTravel('home')} rel="sponsored noopener" target="_blank">подобрать полис по датам</a>.</li>
+        <li><b>Билеты.</b> Цена месяца видна сразу, без перебора дат — <a href={aviasalesUrl('', 'home')} rel="sponsored noopener" target="_blank">посмотреть рейсы из Москвы</a>.</li>
+        <li><b>Карты и связь.</b> Российские карты за границей не работают: что выпустить заранее — <a href="/cards/">разбор карт</a>, интернет с прилёта — <a href={airaloSub('home')} rel="sponsored noopener" target="_blank">выбрать пакет eSIM</a>.</li>
+        <li><b>Готовый маршрут.</b> Когда собирать самому некогда, берут место в небольшой группе — <a href={youtravelSub('home')} rel="sponsored noopener" target="_blank">авторские туры по миру</a>.</li>
+      </ul>
+    </div></section>
+
     <!-- Кадр-якорь -->
     <section class="anchor2">
       <Image src={якорь.cover} alt={якорь.nom} widths={[900, 1400, 2000]} sizes="100vw" formats={['webp']} quality={70} loading="lazy" />
@@ -522,6 +538,10 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .qq em{font-style:italic}
 .qlead{margin-top:.9rem;font-size:1rem;color:var(--ink);max-width:26ch}
 .qlead b{font-weight:600}
+.before .blist{list-style:none;margin:0;padding:0;display:grid;gap:.9rem;max-width:56ch}
+.before .blist li{font-size:1rem;line-height:1.55;color:var(--ink)}
+.before .blist a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:3px}
+.before .blist a:hover,.before .blist a:focus-visible{color:var(--gold)}
 .qmore{display:inline-block;margin-top:.6rem;padding:.4rem 0;min-height:24px;color:var(--ink);font-size:.95rem;
   text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.22em}
 .qmore:hover,.qmore:focus-visible{color:var(--gold);text-decoration-color:var(--gold)}

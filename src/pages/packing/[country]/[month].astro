@@ -14,7 +14,7 @@ import { getWeatherBucket } from '../../../data/country-month-bucket.js';
 import { ACTIVITY_TAGS, ACTIVITY_LABEL, ACTIVITY_GEAR } from '../../../data/country-activity-tags.js';
 import { PLUG_TYPES, plugAdvice } from '../../../data/country-plug-types.js';
 import { DATA_UPDATED_RU } from '../../../data/meta.js';
-import { airaloSub, TP_LINKS, aviasalesRoute, cherehapaTravel } from '../../../data/affiliate.js';
+import { airaloSub, TP_LINKS, aviasalesRoute, cherehapaTravel, youtravelSub } from '../../../data/affiliate.js';
 import StickyCta from '../../../components/StickyCta.astro';
 import { getHolidaysByMonth } from '../../../data/country-holidays.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
@@ -508,6 +508,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         <li><a href="/seasons/"><b>Таблица сезонов 70+ направлений</b></a><span>где ещё хорошо в {m.prep}</span></li>
         <li><a href="/packing/"><b>Все чек-листы по странам</b></a><span>70+ направлений</span></li>
       </ul>
+      <p class="pmu-tour">Собирать маршрут самому не всегда хочется — тогда берут место в небольшой группе: <a href={youtravelSub(`packing_${d.slug.replaceAll('-', '_')}_${m.slug}`)} rel="sponsored noopener" target="_blank">авторские туры {d.cases.vP}</a>.</p>
     </section>
 
     <p class="pmu-updated">Актуально на: {DATA_UPDATED_RU}</p>

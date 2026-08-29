@@ -5,9 +5,17 @@
 Применять на КАЖДОМ посте и programmatic-шаблоне. Парный с `SEO-CHECKLIST-2026.md`
 (трафик) и 38-ФЗ-правилами в `CLAUDE.md` (легальность).
 
-Источники (2026): Travelpayouts blog (affiliate links that convert) · wecantrack
-(CTR/conversion benchmarks) · OptiMonk · VWO (travel bookings) · Stay22 community ·
-Awin Global Affiliate Report · Aviasales/Travelpayouts offer docs.
+⛔ **Куда и в каком виде ставить ссылки — по канону
+`research/monetization-placement-canon.md`.** Он собран 29.08.2026 по десяти
+первоисточникам (айтрекинг NN/g, разбор 2 млрд визитов Chartbeat, правила Google
+и Яндекса, W3C, замер Coalition for Better Ads на 25 000 человек, правила самого
+плательщика) и заменяет раздел про размещение здесь. Источники ниже —
+маркетинговые блоги партнёрок; их числа держим как ориентир, но спор решается
+каноном.
+
+Источники бенчмарков (2026): Travelpayouts blog · wecantrack · OptiMonk ·
+VWO · Stay22 community · Awin Global Affiliate Report · Aviasales/Travelpayouts
+offer docs.
 
 ---
 

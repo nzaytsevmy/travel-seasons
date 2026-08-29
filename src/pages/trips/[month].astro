@@ -10,7 +10,7 @@ import { NOUN } from '../../data/plural.js';
 import { PRICES } from '../../data/prices.js';
 import { regionMeta } from '../../data/regions-meta.js';
 import { DATA_UPDATED_RU, yearForMonth } from '../../data/meta.js';
-import { aviasalesRoute } from '../../data/affiliate.js';
+import { aviasalesRoute, cherehapaTravel, youtravelSub } from '../../data/affiliate.js';
 
 const MONTHS = [
   { slug: 'january',   name: 'январе',   nameNom: 'Январь',   short: 'Янв' },
@@ -243,6 +243,7 @@ const ldJson = {
               ))}
             </ul>
             <p class="adm-row">цены через Aviasales</p>
+            <p class="pk-extra">Полис берут вместе с билетом: цену считают по датам поездки — <a href={cherehapaTravel(`trips_${month.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">подобрать страховку на эти даты</a>. Готовый маршрут с группой — <a href={youtravelSub(`trips_${month.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">авторские туры на {M.nom}</a>.</p>
           </div>
           <div class="pick">
             <h3>Без визы для россиян</h3>

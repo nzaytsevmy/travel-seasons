@@ -79,12 +79,46 @@ test('3. страницы вне карты сайта тоже получили
   //    исходник /my/, его git-дата совпала со временем сборки, и гейт не пускал
   //    легитимную правку. Свежая дата — беда только там, где последний коммит
   //    по файлу СТАРШЕ этой даты: значит, дату дала не правка, а сборка.
+  // ⛔ Прямая подстановка dist → src находит исходник только у страниц, которые
+  //    лежат в репозитории файлом. Страницы из общего шаблона с параметром —
+  //    /packing/antarctica/april/ собирается из [country]/[month].astro — она не
+  //    находит вовсе, возвращает ноль, и гейт объявляет их «помеченными сборкой».
+  //    Всплыло 29.08.2026: правка шаблона сборов покрасила 25 закрытых месяцев
+  //    Антарктиды, которые намеренно живут вне карты сайта.
+  const исходники = (f: string): string[] => {
+    const прямой = f.replace('dist/', 'src/pages/').replace(/index\.html$/, 'index.astro');
+    if (existsSync(прямой)) return [прямой];
+    // Спускаемся по каталогам, принимая на каждом шаге и точное имя, и [параметр].
+    const сегменты = f.replace(/^dist\//, '').replace(/\/index\.html$/, '').split('/');
+    let каталоги = ['src/pages'];
+    for (let i = 0; i < сегменты.length; i++) {
+      const последний = i === сегменты.length - 1;
+      const следующие: string[] = [];
+      for (const к of каталоги) {
+        if (!existsSync(к)) continue;
+        for (const з of readdirSync(к, { withFileTypes: true })) {
+          const динамическая = /^\[.+\]/.test(з.name);
+          if (последний) {
+            const имя = з.name.replace(/\.astro$/, '');
+            if (з.isFile() && з.name.endsWith('.astro') && (имя === сегменты[i] || /^\[.+\]$/.test(имя))) следующие.push(`${к}/${з.name}`);
+            if (з.isDirectory() && (з.name === сегменты[i] || динамическая) && existsSync(`${к}/${з.name}/index.astro`)) следующие.push(`${к}/${з.name}/index.astro`);
+          } else if (з.isDirectory() && (з.name === сегменты[i] || динамическая)) следующие.push(`${к}/${з.name}`);
+        }
+      }
+      каталоги = следующие;
+      if (!каталоги.length) return [];
+    }
+    return каталоги.filter((x) => x.endsWith('.astro'));
+  };
   const гитДата = (f: string) => {
-    try {
-      const src = execSync(`git log -1 --format=%ct -- ${JSON.stringify(f.replace('dist/', 'src/pages/').replace(/index\.html$/, 'index.astro'))}`,
-        { encoding: 'utf-8' }).trim();
-      return src ? +src * 1000 : 0;
-    } catch { return 0; }
+    let последняя = 0;
+    for (const src of исходники(f)) {
+      try {
+        const t = execSync(`git log -1 --format=%ct -- ${JSON.stringify(src)}`, { encoding: 'utf-8' }).trim();
+        if (t) последняя = Math.max(последняя, +t * 1000);
+      } catch { /* нет истории — пропускаем */ }
+    }
+    return последняя;
   };
   const свежие = вне
     .filter((f) => Date.now() - statSync(f).mtimeMs < час)
