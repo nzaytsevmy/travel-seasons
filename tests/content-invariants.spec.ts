@@ -951,7 +951,12 @@ test('Язык: в тронутой статье нет слов-паразит�
     const abs = join(root, rel);
     if (!existsSync(abs)) continue;
     const src = readFileSync(abs, 'utf8');
-    const body = src.split('---').slice(2).join('---');
+    // ⛔ Цитаты чужих людей из проверки исключаются: их слова — факт, а не наш
+    //    текст, и править их ради гейта значит подделывать цитату. Найдено
+    //    29.08.2026: «очередь формируется очень быстро» — дословный отзыв
+    //    туриста, и гейт требовал его переписать.
+    const body = src.split('---').slice(2).join('---')
+      .split('\n').filter((s) => !/^\s*>\s*«/.test(s)).join('\n');
     // JS \b не знает кириллицы — границы слова руками, как в гейте дат.
     const hits = (list: string[]) => list.flatMap((w) => {
       const re = new RegExp(`(^|[\\s(«—-])${w}([\\s.,;:!?»)]|$)`, 'gim');
@@ -1024,9 +1029,15 @@ test('Описание страницы влезает в выдачу — не 
   // кавычками, а длину меряем по расшифрованному тексту (`&amp;` — один знак
   // для читателя, а не пять).
   const LIMIT = 200;
-  const decode = (s: string) => s
-    .replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#3?9;/g, "'")
-    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ');
+  // ⛔ Расшифровка одним проходом. Прежняя версия шла цепочкой замен и начинала
+  //    с `&amp;` — из-за этого `&amp;lt;` превращался в `<`, то есть текст
+  //    расшифровывался дважды. На длине это почти не сказывалось, но приём
+  //    неверный, и анализатор кода справедливо его пометил.
+  const СУЩНОСТИ: Record<string, string> = {
+    '&amp;': '&', '&quot;': '"', '&#39;': "'", '&#039;': "'",
+    '&lt;': '<', '&gt;': '>', '&nbsp;': ' ',
+  };
+  const decode = (s: string) => s.replace(/&(?:amp|quot|#0?39|lt|gt|nbsp);/g, (m) => СУЩНОСТИ[m] ?? m);
   const metaDescription = (html: string): string | null => {
     for (const tag of html.match(/<meta\b[^>]*>/gi) ?? []) {
       if (!/\bname\s*=\s*["']?description["'\s>]/i.test(tag)) continue;
