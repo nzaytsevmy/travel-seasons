@@ -1447,7 +1447,9 @@ test('Деньги: в тексте партнёрской ссылки нет �
   for (const ф of files) {
     const h = readFileSync(ф, 'utf8');
     for (const m of h.matchAll(/<a\b[^>]*href="https?:\/\/[^"]*(?:tpk\.mx|pxf\.io|platipomiru|drimsim)[^"]*"[^>]*>([\s\S]*?)<\/a>/g)) {
-      const текст = m[1].replace(/<[^>]+>/g, '').trim().toLowerCase().replace(/\.$/, '').trim();
+      // Разметку снимает общий разборщик: наивное выражение теряет текст за
+      // атрибутом с «>» и пропускает мусор из комментариев (см. visible-text.ts).
+      const текст = видимыйТекст(m[1], '').trim().toLowerCase().replace(/\.$/, '').trim();
       if (ИМЕНА.has(текст)) bad.push(`${ф.replace(DIST, '')}: ссылка показывает только «${текст}»`);
     }
   }
