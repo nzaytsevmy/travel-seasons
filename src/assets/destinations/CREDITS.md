@@ -53,3 +53,6 @@
 | blog/_images/dagestan-cover.jpg | Дагестан — катера на Сулаке (обложка пиллара) | [Pexels 8577817](https://www.pexels.com/photo/8577817/) | Adam Khasbulatov | Pexels License |
 | blog/_images/goa/cover.jpg | Гоа — закат на Палолеме (обложка пиллара) | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:A_Perfect_Evening_(87407161).jpeg) | Alexandre Ultré | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) — атрибуция обязательна |
 | blog/_images/week-cost/cover.jpg | Абхазия — побережье Гагры (обложка сравнения цен) | [Pexels 28302994](https://www.pexels.com/photo/28302994/) | — | Pexels License |
+| saudi-arabia.jpg | Саудовская Аравия — Элефант-Рок, Эль-Ула | [Pexels 11118464](https://www.pexels.com/photo/elephant-rock-in-saudi-arabia-11118464/) | Irfan Rahat | Pexels License |
+| oman.jpg | Оман — побережье Маската на закате | [Pexels 37989732](https://www.pexels.com/photo/aerial-view-of-coastal-scenery-in-muscat-oman-at-sunset-37989732/) | Beladiya Nikunj | Pexels License |
+| qatar.jpg | Катар — набережная Дохи и небоскрёбы | [Pexels 35158210](https://www.pexels.com/photo/stunning-doha-waterfront-with-skyline-view-35158210/) | Tawa | Pexels License |

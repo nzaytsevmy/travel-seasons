@@ -48,6 +48,21 @@ export const regionsRich = {
     notes:  [null, 'Кейптаун в феврале — мой топ: вино + +28°C + пляж Кампс-Бей', null, null, null, null, null, null, 'Сентябрь в Кейптауне — киты у Hermanus прямо с берега, без катера', null, null, null],
     negatives: [null, null, null, null, null, null, null, null, null, null, null, 'но декабрь — пик South African школьных каникул, Кейптаун забит']
   },
+  'saudi-arabia': {
+    events: [null, null, null, null, null, null, null, null, null, null, null, null],
+    notes:  ['Безвиз для россиян с 11 мая 2026 года', null, 'Лучший месяц для Эль-Улы', null, null, null, null, null, null, null, null, null],
+    negatives: [null, null, null, null, null, 'с июня по сентябрь в пустыне за +40°C', null, null, null, null, null, null]
+  },
+  'oman': {
+    events: [null, null, null, null, null, null, 'хариф в Салале', 'хариф в Салале, пик', 'хариф в Салале, конец', null, null, null],
+    notes:  [null, 'Черепахи на Рас-эль-Хадд', null, null, null, null, null, 'Единственное место Залива, где летом прохладно и зелено', null, null, null, null],
+    negatives: [null, null, null, null, 'вади пересыхают, север невыносим', null, null, null, null, null, null, null]
+  },
+  'qatar': {
+    events: [null, null, null, null, null, null, null, null, null, null, null, null],
+    notes:  ['Самый прохладный месяц: +23°C днём', null, null, null, null, null, null, null, null, null, null, null],
+    negatives: [null, null, null, null, null, null, 'июль +43°C и влажность', null, null, null, null, 'декабрь: события и цены на отели']
+  },
   'uae': {
     events: [null, null, null, null, null, null, null, null, null, null, 'Dubai Air Show чёт.года', 'Dubai Shopping Festival старт'],
     notes:  ['Январь в ОАЭ — единственное время когда хочется на улицу', 'Февраль идеален: тепло без жары, мало туристов', null, null, null, null, null, null, null, null, null, null],
