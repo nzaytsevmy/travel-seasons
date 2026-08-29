@@ -1352,6 +1352,90 @@ test('Типографика: заголовки на всех типах стр
   expect(bad, bad.join('\n')).toEqual([]);
 });
 
+test('Снимки: у каждой страницы сборов показан снимок страны', async ({ page }) => {
+  // ⛔ 74 снимка на 74 страны лежали в репозитории и не показывались НИ РАЗУ:
+  //    страница сборов рисовала на их месте пустой цветной прямоугольник.
+  //    Никита принял его за не загрузившееся фото и спросил «где фотки?»
+  //    (28.08.2026). Это второй случай той же беды — до него так же лежала
+  //    неподключённой карта мест, наполненная для 26 стран.
+  //
+  // ⛔ Поэтому мерим ДВЕ разные вещи. Статически — что тег снимка есть на
+  //    каждой из 74 страниц: пропажа на одной стране иначе не видна. Живьём —
+  //    что снимок реально ЗАГРУЗИЛСЯ (natural > 0): тег на месте, а файла нет —
+  //    ровно та же пустая коробка, только уже с разметкой.
+  const стр = readdirSync(join(DIST, 'packing'))
+    .filter((d) => existsSync(join(DIST, 'packing', d, 'index.html')));
+  expect(стр.length, 'страницы сборов пропали').toBeGreaterThan(60);
+  const без: string[] = [];
+  for (const s of стр) {
+    const h = readFileSync(join(DIST, 'packing', s, 'index.html'), 'utf8');
+    const герой = h.match(/<div class="pack-hero"[^>]*>([\s\S]*?)<\/div>/);
+    if (!герой) { без.push(`${s}: блока снимка нет вовсе`); continue; }
+    if (!/<img|<picture/.test(герой[1])) без.push(`${s}: пустая коробка вместо снимка`);
+  }
+  expect(без, без.join('\n')).toEqual([]);
+
+  for (const u of ['/packing/malaysia/', '/packing/turkey/']) {
+    const ответ = await page.goto(u);
+    expect(ответ?.status(), `страница ${u} пропала`).toBeLessThan(400);
+    const мёртвые = await page.evaluate(() => [...document.querySelectorAll('.pack-hero img')]
+      .filter((i) => !(i as HTMLImageElement).complete || (i as HTMLImageElement).naturalWidth === 0)
+      .map((i) => (i as HTMLImageElement).currentSrc || (i as HTMLImageElement).src));
+    expect(мёртвые, `${u}: снимок не загрузился — ${мёртвые.join(', ')}`).toEqual([]);
+  }
+});
+
+test('Вид: раздел не рисует своей подложки поверх фона сайта', async ({ page }) => {
+  // ⛔ У страницы виз остался «бумажный» слой от старого реестра: на всю
+  //    площадь блока лежала плитка шума (::before, mix-blend-mode: multiply)
+  //    плюс краевой градиент (::after). Цвет фона при этом БЫЛ сайтовым —
+  //    серым его делал именно множащий слой: он затемнял #fbfbfa и обрывался
+  //    ровными краями, отчего раздел выглядел наклейкой поверх сайта.
+  //    Никита показал это скриншотом 28.08.2026, третьей правкой подряд по
+  //    одной и той же странице.
+  //
+  // ⛔ Почему не поймал ни один прежний гейт: в разметке цвета правильные,
+  //    палитра сайтовая, беду даёт НАЛОЖЕНИЕ. А пиксельный прогон принял
+  //    подложку за эталон — она стояла с самого рождения страницы, и «не
+  //    изменилось» тут значит «не чинилось».
+  //
+  // ⛔ Мерим вычисленный стиль в браузере, а не текст правил: слой может
+  //    прийти из любого файла, и имена классов о нём ничего не говорят.
+  const ТИПЫ = ['/', '/countries/', '/visa/', '/visa/brazil/', '/seasons/',
+    '/seasons/egypt/may/', '/trips/', '/trips/july/', '/calculator/',
+    '/packing/', '/compare/', '/blog/', '/novosti/', '/about/', '/events/',
+    '/cards/'];
+  const bad: string[] = [];
+  for (const u of ТИПЫ) {
+    const ответ = await page.goto(u);
+    expect(ответ?.status(), `страница ${u} пропала`).toBeLessThan(400);
+    const найдено = await page.evaluate(() => {
+      const out: string[] = [];
+      const прозрачно = (c: string) => c === 'transparent' || c === 'rgba(0, 0, 0, 0)';
+      const фонСайта = getComputedStyle(document.body).backgroundColor;
+      const м = document.querySelector('main');
+      if (!м) return ['нет <main>'];
+      const с = getComputedStyle(м);
+      if (!прозрачно(с.backgroundColor) && с.backgroundColor !== фонСайта)
+        out.push(`свой фон ${с.backgroundColor} при фоне сайта ${фонСайта}`);
+      for (const где of ['::before', '::after']) {
+        const п = getComputedStyle(м, где);
+        // Слой во всю площадь: есть содержимое, лежит абсолютом и растянут.
+        const площадь = п.content !== 'none' && п.position === 'absolute'
+          && п.inset !== 'auto' && п.inset !== '';
+        if (!площадь) continue;
+        if (п.mixBlendMode !== 'normal')
+          out.push(`${где}: слой во всю площадь с наложением «${п.mixBlendMode}»`);
+        if (п.backgroundImage !== 'none')
+          out.push(`${где}: слой во всю площадь с подложкой-картинкой`);
+      }
+      return out;
+    });
+    for (const с of найдено) bad.push(`${u}: ${с}`);
+  }
+  expect(bad, bad.join('\n')).toEqual([]);
+});
+
 test('Формат раздела: поиск, ориентиры и доступность на страницах-подборах', async ({ page }) => {
   // ⛔ Правила из research/section-page-format.md — те, что проверяются машиной.
   //    Каждое найдено тем, что сначала было НАРУШЕНО в наших же макетах.

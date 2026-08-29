@@ -43,7 +43,7 @@ export const RELATED_POSTS = {
   ],
   'georgia': [
     { slug: 'georgia-guide-2026', title: 'Грузия 2026: виза 365 дней, страховка, цены, маршрут', kind: 'guide' },
-    { slug: 'georgia-insurance-2026', title: 'Страховка в Грузию: что требует закон и сколько стоит полис', kind: 'insurance' },
+    { slug: 'georgia-insurance-2026', title: 'Страховка в Грузию 2026: обязательна по закону, цены, как оформить', kind: 'insurance' },
     { slug: 'pay-georgia-2026', title: 'Как платить в Грузии: карты РФ не работают', kind: 'guide' },
     { slug: 'turkey-guide-2026', title: 'Турция 2026 — соседнее безвизовое направление', kind: 'guide' },
   ],
@@ -134,5 +134,20 @@ export const RELATED_POSTS = {
   ],
   'sri-lanka': [
     { slug: 'sri-lanka-guide-2026', title: 'Шри-Ланка 2026 для россиян: виза бесплатно, сезоны, цены', kind: 'guide' },
+  ],
+  'south-africa': [
+    { slug: 'south-africa-guide-2026', title: 'ЮАР 2026 для россиян: безвиз, декларация, Кейптаун и Крюгер', kind: 'guide' },
+  ],
+  'tanzania': [
+    { slug: 'zanzibar-2026', title: 'Занзибар 2026: прямые рейсы, обязательная страховка, сезоны', kind: 'guide' },
+  ],
+  'seychelles': [
+    { slug: 'seychelles-2026', title: 'Сейшелы 2026: когда ехать, какой берег, почём неделя', kind: 'guide' },
+  ],
+  'mauritius': [
+    { slug: 'mauritius-2026', title: 'Маврикий 2026: когда ехать, какой берег, почём неделя', kind: 'guide' },
+  ],
+  'nepal': [
+    { slug: 'nepal-everest-trek-2026', title: 'Базовый лагерь Эвереста и Гокио 2026: сезоны, пермиты, бюджет', kind: 'guide' },
   ],
 };
