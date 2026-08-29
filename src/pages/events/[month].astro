@@ -51,7 +51,7 @@ const festCtas = fest
   .map((e) => { const d = bySlug(e.slug); return d?.iata ? { nom: e.nom, iata: d.iata, from: d.price?.flight?.[0] || null } : null; })
   .filter(Boolean)
   .slice(0, 2)
-  .map((e) => ({ label: `Билет в ${e.nom}${e.from ? ` от $${e.from}` : ''}`, href: aviasalesRoute('MOW', e.iata, `events_${m.slug}`) }));
+  .map((e) => ({ label: `Билет в ${e.nom}${e.from ? ` от $${e.from}` : ''}`, href: aviasalesRoute('MOW', e.iata, `events_${m.slug}`, monthIdx) }));
 const insuranceCta = cherehapaTravel(`events_${m.slug}`);
 
 const url = `https://traveltribe.ru/events/${m.slug}/`;

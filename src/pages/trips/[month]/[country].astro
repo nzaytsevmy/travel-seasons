@@ -248,7 +248,7 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
           {weekTotal && <li><span class="fk">Неделя эконом</span><span class="fv">от ${weekTotal} на человека</span></li>}
         </ul>
         {flightFrom > 0 && iata && (
-          <p class="findcta"><a class="find" href={aviasalesRoute('MOW', iata, `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Найти перелёт Москва — {d.cases.nom} от ${flightFrom}</a> </p>
+          <p class="findcta"><a class="find" href={aviasalesRoute('MOW', iata, `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`, monthIdx)} rel="sponsored noopener" target="_blank">Найти перелёт Москва — {d.cases.nom} от ${flightFrom}</a> </p>
         )}
       </section>
 
