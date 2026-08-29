@@ -48,6 +48,9 @@ const regionBuckets = {
 
   // Пустыни / Ближний Восток
   'uae':                { hot: [4,5,6,7,8,9], default: 'desert-cool' }, // may-oct hot
+  'saudi-arabia':       { hot: [4,5,6,7,8], default: 'desert-cool' },   // may-sep hot
+  'oman':               { hot: [4,5,6,7,8], default: 'desert-cool' },   // may-sep hot
+  'qatar':              { hot: [4,5,6,7,8,9], default: 'desert-cool' }, // may-oct hot
   'egypt':              { hot: [5,6,7,8,9], default: 'desert-cool' },
   'jordan':             { hot: [5,6,7,8,9], default: 'desert-cool' },
   'morocco':            { hot: [5,6,7,8], default: 'desert-cool' },

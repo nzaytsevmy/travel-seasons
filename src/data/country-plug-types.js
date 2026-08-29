@@ -50,6 +50,9 @@ export const PLUG_TYPES = {
 
   // Ближний Восток
   'uae':                  { types: 'G',     voltage: '220 V', hz: '50 Hz' },
+  'saudi-arabia':         { types: 'G',     voltage: '220 V', hz: '60 Hz' },
+  'oman':                 { types: 'G',     voltage: '240 V', hz: '50 Hz' },
+  'qatar':                { types: 'G',     voltage: '240 V', hz: '50 Hz' },
   'turkey':               { types: 'C/F',   voltage: '230 V', hz: '50 Hz' },
   'egypt':                { types: 'C/F',   voltage: '220 V', hz: '50 Hz' },
   'jordan':               { types: 'B/C/D/F/G/J', voltage: '230 V', hz: '50 Hz' },
