@@ -56,6 +56,7 @@ export function countryLinks(direction, { skip = new Set(), selfPath = '' } = {}
   for (const p of direction.relatedPosts || []) {
     const label = p.kind === 'visa' ? 'виза и документы'
       : p.kind === 'season' ? 'сезоны и события'
+      : p.kind === 'insurance' ? 'страховка и полис'
       : 'гайд по стране';
     add(`/blog/${p.slug}/`, label);
   }
