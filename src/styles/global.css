@@ -699,6 +699,19 @@ footer {
   transition: color 0.15s, text-decoration-color 0.15s;
 }
 .aff-cta:hover { color: var(--gold-dim); text-decoration-color: var(--gold); }
+/* ⛔ Отдельно стоящая денежная ссылка — не «ссылка в предложении», и льгота
+   WCAG 2.5.8 на неё не распространяется: цель должна быть от 24 точек.
+   В разметке статьи такая ссылка на своей строке абзацем не оборачивается и
+   получала высоту строки — 20 точек. Замер 29.08.2026: 36 таких ссылок в
+   блоге. Внутри абзаца и списка правило не применяется — там льгота есть. */
+.prose > .aff-cta,
+.post-body > .aff-cta,
+th > .aff-cta,
+td > .aff-cta {
+  display: inline-block;
+  min-height: 24px;
+  line-height: 24px;
+}
 @media (prefers-reduced-motion: reduce) {
   .aff-cta { transition: none; }
 }
