@@ -8,7 +8,7 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { MONTHS, bySlug } from '../../data/directions.js';
 import { getEventsByMonth } from '../../data/country-holidays.js';
 import { EVENTS_MONTHLY_INTRO } from '../../data/events-monthly-intro.js';
-import { aviasalesRoute, cherehapaTravel } from '../../data/affiliate.js';
+import { aviasalesRoute, cherehapaTravel, youtravelSub } from '../../data/affiliate.js';
 import Byline from '../../components/Byline.astro';
 import { DATA_UPDATED_RU, DATA_UPDATED } from '../../data/meta.js';
 
@@ -189,6 +189,7 @@ const ldJson = {
           <a class="evt-aff" href={c.href} rel="sponsored noopener" target="_blank">{c.label}</a>
         ))}
         <a class="evt-aff" href={insuranceCta} rel="sponsored noopener" target="_blank">Оформить страховку под поездку</a>
+        <a class="evt-aff" href={youtravelSub(`events_${m.slug}`)} rel="sponsored noopener" target="_blank">Авторские туры на праздники</a>
       </p>
       <span class="evt-cta-trust">оплата картами РФ · цена не меняется, блог получает комиссию</span>
     </section>

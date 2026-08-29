@@ -6,7 +6,7 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { Picture } from 'astro:assets';
 import { DIRECTIONS } from '../../data/directions.js';
 import { getVisaDetails, VISA_DETAILS } from '../../data/visa-details.js';
-import { airaloSub, TP_LINKS, aviasalesRoute, cherehapaTravel } from '../../data/affiliate.js';
+import { airaloSub, TP_LINKS, aviasalesRoute, cherehapaCountry, cherehapaTravel, youtravelSub } from '../../data/affiliate.js';
 import StickyCta from '../../components/StickyCta.astro';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../../data/meta.js';
 
@@ -332,15 +332,18 @@ const ldJson = {
         <li>
           <strong>Медстраховка.</strong> {d.visa === 'required'
             ? 'Для визы её прикладывают к пакету документов — покрытие обычно от €30 000.'
-            : 'Виза не нужна, но без страховки лечение за границей оплачиваешь из кармана.'} Сравнить полисы: <a href={cherehapaTravel(`visa_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Cherehapa</a> — от 70&nbsp;₽/день, оплата картой РФ.
+            : 'Виза не нужна, но без страховки лечение за границей оплачиваешь из кармана.'} Цену считают по датам и стране: <a href={cherehapaCountry(d.slug, `visa_${d.slug.replaceAll('-', '_')}`)} class="aff-cta" rel="sponsored noopener" target="_blank">Подобрать полис {d.cases.vP}</a> — от 70&nbsp;₽/день, оплата картой РФ.
         </li>
         {flightFrom > 0 && d.iata && (
           <li>
-            <strong>Перелёт.</strong> Билеты Москва → {d.cases.nom} от&nbsp;${flightFrom}. <a href={aviasalesRoute('MOW', d.iata, `visa_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Найти на Aviasales</a> — сравнивает 100+ агентств за раз.
+            <strong>Перелёт.</strong> Билеты Москва → {d.cases.nom} от&nbsp;${flightFrom}. <a href={aviasalesRoute('MOW', d.iata, `visa_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">посмотреть цены на ближайшие даты</a> — сравнивает 100+ агентств за раз.
           </li>
         )}
         <li>
-          <strong>Связь.</strong> eSIM вместо роуминга — подключается до вылета, без поиска местной симки. <a href={airaloSub(`visa_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Airalo</a> — от&nbsp;$5 за неделю.
+          <strong>Связь.</strong> eSIM вместо роуминга — подключается до вылета, без поиска местной симки. <a href={airaloSub(`visa_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">выбрать пакет интернета</a> — от&nbsp;$5 за неделю.
+        </li>
+        <li>
+          <strong>Готовый маршрут.</strong> Когда собирать поездку самому некогда, берут место в небольшой группе с автором маршрута: <a href={youtravelSub(`visa_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">авторские туры {d.cases.vP}</a>.
         </li>
       </ul>
       
