@@ -146,7 +146,7 @@ coverPosition: "center 38%"
 
 Я брал Turkish: короче всех и удобные стыковки (один в Стамбуле 2 часа, обратно 4). Ethiopian самый дешёвый, но стыковки могут быть кривые, 8 часов в Аддис-Абебе ночью с пересадкой через выход — такое себе.
 
-Билеты — <a href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=uganda_safari_2026&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Forigin_iata%3DMOW%26destination_iata%3DEBB" class="aff-cta" rel="sponsored">Найти билет Москва — Энтеббе</a>: сравнивает все варианты с пересадками, цена та же что напрямую у авиакомпаний.
+Билеты — <a href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=uganda_safari_2026&u=https%3A%2F%2Fwww.aviasales.ru%2Fsearch%2FMOW1509EBB1" class="aff-cta" rel="sponsored">Найти билет Москва — Энтеббе</a>: сравнивает все варианты с пересадками, цена та же что напрямую у авиакомпаний.
 
 Аэропорт **Entebbe (EBB)** маленький и спокойный. От него до Кампалы 40 км по шоссе, такси через приложения **Bolt** или **SafeBoda** стоит около **120 000 UGX** (~ $32, или 3000 ₽). Можно договориться с водителем заранее через лоджу, берут $40–50, не торгуйтесь меньше $35 в одну сторону.
 
@@ -282,7 +282,7 @@ coverPosition: "center 38%"
 
 ## Что делать дальше
 
-* <a href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=uganda_safari_2026&u=https%3A%2F%2Fwww.aviasales.ru%2F%3Forigin_iata%3DMOW%26destination_iata%3DEBB" class="aff-cta" rel="sponsored">Найти билет Москва — Энтеббе</a> — гибкий поиск по датам и пересадкам
+* <a href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=uganda_safari_2026&u=https%3A%2F%2Fwww.aviasales.ru%2Fsearch%2FMOW1509EBB1" class="aff-cta" rel="sponsored">Найти билет Москва — Энтеббе</a> — гибкий поиск по датам и пересадкам
 * <a href="https://ostrovok.tpk.mx/xtyTcUcY?erid=2VtzqvE1cv3&sub_id=uganda_safari_2026" class="aff-cta" rel="sponsored">Забронировать отель или лодж</a> — принимает российские карты
 * <a href="https://cherehapa.tpk.mx/fkM7suze?erid=2VtzquZTwb5&sub_id=uganda_safari_2026" class="aff-cta" rel="sponsored">Оформить страховку в Уганду</a> — для Уганды обязательно (малярия, тропики, эвакуация)
 * <a href="https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_uganda_safari_2026&u=https%3A%2F%2Fairalo.com%2Fru" class="aff-cta" rel="sponsored">Подключить eSIM на Уганду</a> — будет интернет с момента выхода из самолёта

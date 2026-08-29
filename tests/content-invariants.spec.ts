@@ -26,6 +26,33 @@ function allHtml(dir: string): string[] {
 
 const files = allHtml(DIST);
 
+/** Открывающие теги <a>, содержащие фрагмент адреса.
+ *
+ * Не вырезаем <script> регулярным выражением: такой фильтр уже пропускал
+ * вложенные/регистровые варианты и получил два замечания CodeQL. Здесь ищем
+ * сам фрагмент и убеждаемся, что он находится внутри открывающего тега ссылки.
+ */
+function ссылкиСФрагментом(html: string, фрагмент: string): string[] {
+  const lower = html.toLowerCase();
+  const needle = фрагмент.toLowerCase();
+  const found = new Set<string>();
+  let from = 0;
+  while (from < lower.length) {
+    const at = lower.indexOf(needle, from);
+    if (at === -1) break;
+    const start = lower.lastIndexOf('<', at);
+    const end = start === -1 ? -1 : lower.indexOf('>', start);
+    const scriptOpen = lower.lastIndexOf('<script', start);
+    const scriptClose = lower.lastIndexOf('</script', start);
+    if (start !== -1 && end > at && scriptOpen <= scriptClose) {
+      const tag = html.slice(start, end + 1);
+      if (/^<a(?:\s|>)/i.test(tag) && /\bhref\s*=/i.test(tag)) found.add(tag);
+    }
+    from = at + needle.length;
+  }
+  return [...found];
+}
+
 /** Стили лежат отдельными файлами — приметы дизайна живут там же, где вёрстка. */
 function allCss(dir: string): string[] {
   const out: string[] = [];
@@ -505,6 +532,13 @@ test('llms-full.txt: нет внутренних идентификаторов 
     // молча. Ловим любой JSX-тег — в русской прозе «<» + латинская заглавная не
     // встречается, ложных срабатываний быть не должно.
     { what: 'имя JSX-компонента', re: /<[A-Z][A-Za-z0-9]*[\s/>]/m },
+    // 29.08.2026: денежные врезки писались в статьях обычной вёрсткой
+    // (<p>, <span class="cta-note">, <div class="editorial-cta">), а чистка знала
+    // только про компоненты с заглавной и <a>. В публичный файл для ИИ-ботов
+    // утекло 72 куска разметки и 60 обрывков встроенных картинок — вместе с
+    // именами CSS-классов рекламных блоков.
+    { what: 'сырая HTML-вёрстка', re: /<\/?(p|div|span|section|figure|figcaption|ul|ol|li|table|thead|tbody|tr|td|th|br|hr|em|strong|small|sup|sub|blockquote|details|summary)\b[^>]*>/m },
+    { what: 'обрывок встроенной картинки', re: /<\/?(svg|g|text|tspan|path|rect|circle|ellipse|line|polyline|polygon|defs|clipPath|use)\b[^>]*>/m },
   ];
   const found = FORBIDDEN.filter(({ re }) => re.test(text)).map(({ what, re }) => ({
     what,
@@ -1431,6 +1465,30 @@ test('Снимки: у каждой страницы сборов показан
   }
 });
 
+test('Факты: сумма обязательного полиса в Грузию одна на весь сайт', () => {
+  // ⛔ Требование грузинского закона — страховая сумма не ниже 30 000 ЛАРИ
+  //    (около 969 тыс ₽). Сайт хранил ещё и пересказ в долларах — «от 5 000 $
+  //    амбулаторно и 30 000 $ стационар», — и эти числа расходятся втрое.
+  //
+  // ⛔ Копий оказалось ТРИ, и находились они по одной: справочник виз (28.08),
+  //    страница безвиза (29.08) и журнал визовых изменений (29.08). Каждый раз
+  //    казалось, что беда закрыта. Поэтому проверка смотрит всю сборку разом.
+  //
+  // ⛔ Исключение — статья про саму страховку: там доллары стоят осознанно, в
+  //    сравнении «требование 30 000 лари ≈ 11 000 $, минимальный полис на
+  //    рынке 30 000 $ перекрывает его втрое».
+  const bad: string[] = [];
+  for (const ф of files) {
+    if (ф.includes('/blog/georgia-insurance-2026/')) continue;
+    const h = readFileSync(ф, 'utf8');
+    if (!/Грузи/.test(h)) continue;
+    if (/от 30 000 \$|30 000 \$ \(амбул|амбулаторная помощь от 5 000 \$/.test(h)) {
+      bad.push(`${ф.replace(DIST, '')}: сумма полиса в долларах вместо лари`);
+    }
+  }
+  expect(bad.slice(0, 15), bad.slice(0, 15).join('\n')).toEqual([]);
+});
+
 test('Деньги: в тексте партнёрской ссылки нет голого имени партнёра', () => {
   // ⛔ Замер 29.08.2026 по всей сборке: 406 ссылок из 10 446 показывали человеку
   //    только имя партнёра — «Aviasales», «Cherehapa», «Airalo». Это нарушает
@@ -1602,4 +1660,61 @@ test('Курсоры: в своих курсорах нет декоративн
     if (bad.length > 6) break;
   }
   expect(bad, bad.join('\n')).toEqual([]);
+});
+
+test('Деньги: месячная страница ведёт на перелёт в свой месяц', () => {
+  const месяцы = new Map([
+    ['january', 1], ['february', 2], ['march', 3], ['april', 4],
+    ['may', 5], ['june', 6], ['july', 7], ['august', 8],
+    ['september', 9], ['october', 10], ['november', 11], ['december', 12],
+  ]);
+  const примеры: string[] = [];
+  let проверено = 0;
+  let ошибок = 0;
+
+  for (const файл of files) {
+    const части = файл.slice(DIST.length + 1).split(sep);
+    const slug = части[0] === 'packing' ? части[2] : части[1];
+    const ожидаемый = месяцы.get(slug);
+    if (!ожидаемый || !['packing', 'trips', 'events'].includes(части[0])) continue;
+
+    const html = readFileSync(файл, 'utf8');
+    for (const тег of ссылкиСФрагментом(html, 'aviasales.tpk.mx')) {
+      let decoded = тег.replaceAll('&amp;', '&');
+      try { decoded = decodeURIComponent(decoded); } catch { /* покажет другой гейт адресов */ }
+      const дата = decoded.match(/\/search\/[A-Z]{3}\d{2}(\d{2})[A-Z]{3}1/i);
+      if (!дата) continue;
+      проверено++;
+      const фактический = Number(дата[1]);
+      if (фактический !== ожидаемый) {
+        ошибок++;
+        if (примеры.length < 20) {
+          примеры.push(`${файл.replace(DIST, '')}: страница ${slug}, ссылка на месяц ${фактический}`);
+        }
+      }
+    }
+  }
+
+  expect(проверено, 'не найдено ни одной датированной авиассылки').toBeGreaterThan(0);
+  expect(ошибок, `${ошибок} авиассылок ведут не на месяц страницы:\n${примеры.join('\n')}`).toBe(0);
+});
+
+// Требование Никиты 29.08.2026: предложение авторского тура стоит на КАЖДОМ
+// направлении, а не на части. Шаблон хабов его несёт, но у Японии и Антарктиды
+// свои страницы мимо шаблона — там тура не было вовсе, и увидеть это можно было
+// только пересчётом по сборке. Гейт считает по реестру направлений, поэтому
+// новая своя страница без тура упадёт сразу.
+//
+// Метка партнёра — домен сети (travelme.g2afse.com), а НЕ слово youtravel:
+// первый замер искал слово и показал ноль туров на всём сайте при 2 000 живых.
+test('Деньги: у каждого направления есть предложение авторского тура', async () => {
+  const { DIRECTIONS } = await import('../src/data/directions.js');
+  const без: string[] = [];
+  for (const d of DIRECTIONS as { slug: string }[]) {
+    const f = fileURLToPath(new URL(`../dist/${d.slug}/index.html`, import.meta.url));
+    if (!existsSync(f)) continue;
+    const html = readFileSync(f, 'utf8');
+    if (ссылкиСФрагментом(html, 'g2afse.com').length === 0) без.push(`/${d.slug}/`);
+  }
+  expect(без, `направления без ссылки на авторские туры:\n${без.join('\n')}`).toEqual([]);
 });
