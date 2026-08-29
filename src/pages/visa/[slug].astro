@@ -103,7 +103,15 @@ const skipGenericTail = hasSpecific || !!vd.summary;
 // Страновой summary (visa-details.js) переопределяет generic-по-типу, если задан.
 // metaDesc — чистый обрез по границе слова (без середины слова в description).
 const summary = vd.summary ?? visaSummary[d.visa];
-const metaDesc = summary.length > 203 ? summary.slice(0, 200).replace(/\s+\S*$/, '') + '…' : summary;
+// ⛔ Описание не должно начинаться словами заголовка — прямое требование
+// справки Яндекса. Страновые summary написаны как ответ («Виза в Турцию
+// россиянам не нужна…») и повторяли заголовок у 17 карточек. Видимый текст
+// не трогаем: режем только строку для выдачи, и только если повтор есть.
+const первыеСлова = (s) => s.split(/\s+/).slice(0, 3).join(' ').toLowerCase();
+const безПовтора = summary.toLowerCase().startsWith(первыеСлова(visaTitle)) && summary.includes('. ')
+  ? summary.slice(summary.indexOf('. ') + 2)
+  : summary;
+const metaDesc = безПовтора.length > 203 ? безПовтора.slice(0, 200).replace(/\s+\S*$/, '') + '…' : безПовтора;
 const costAnswer = noVisa
   ? (feeFree
       ? `Виза ${d.cases.vP} не нужна — въезд бесплатный, ${vd.timing}. Консульский сбор не платится.`
