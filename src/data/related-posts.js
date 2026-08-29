@@ -43,8 +43,8 @@ export const RELATED_POSTS = {
   ],
   'georgia': [
     { slug: 'georgia-guide-2026', title: 'Грузия 2026: виза 365 дней, страховка, цены, маршрут', kind: 'guide' },
-    { slug: 'georgia-insurance-2026', title: 'Страховка в Грузию 2026: обязательна по закону, цены, как оформить', kind: 'visa' },
-    { slug: 'pay-abroad-2026', title: 'Как платить в Грузии: карты РФ не работают', kind: 'guide' },
+    { slug: 'georgia-insurance-2026', title: 'Страховка в Грузию 2026: обязательна по закону, цены, как оформить', kind: 'insurance' },
+    { slug: 'pay-georgia-2026', title: 'Как платить в Грузии: карты РФ не работают', kind: 'guide' },
     { slug: 'turkey-guide-2026', title: 'Турция 2026 — соседнее безвизовое направление', kind: 'guide' },
   ],
   'turkey': [

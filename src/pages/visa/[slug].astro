@@ -318,7 +318,7 @@ const ldJson = {
         <h2>Подробные гайды о {d.cases.prep}</h2>
         <ul class="visa-related">
           {d.relatedPosts.map((p) => (
-            <li><a href={`/blog/${p.slug}/`}><strong>{p.title}</strong></a> — {p.kind === 'visa' ? 'детали по визе' : p.kind === 'season' ? 'про конкретный сезон'
+            <li><a href={`/blog/${p.slug}/`}><strong>{p.title}</strong></a> — {p.kind === 'visa' ? 'детали по визе' : p.kind === 'season' ? 'про конкретный сезон' : p.kind === 'insurance' ? 'про страховку и полис'
               : (POST_SOURCE[p.slug] === 'personal' || POST_SOURCE[p.slug] === 'hybrid') ? 'личный опыт автора' : 'подробный разбор'}</li>
           ))}
         </ul>
