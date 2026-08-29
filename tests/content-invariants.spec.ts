@@ -26,6 +26,33 @@ function allHtml(dir: string): string[] {
 
 const files = allHtml(DIST);
 
+/** Открывающие теги <a>, содержащие фрагмент адреса.
+ *
+ * Не вырезаем <script> регулярным выражением: такой фильтр уже пропускал
+ * вложенные/регистровые варианты и получил два замечания CodeQL. Здесь ищем
+ * сам фрагмент и убеждаемся, что он находится внутри открывающего тега ссылки.
+ */
+function ссылкиСФрагментом(html: string, фрагмент: string): string[] {
+  const lower = html.toLowerCase();
+  const needle = фрагмент.toLowerCase();
+  const found = new Set<string>();
+  let from = 0;
+  while (from < lower.length) {
+    const at = lower.indexOf(needle, from);
+    if (at === -1) break;
+    const start = lower.lastIndexOf('<', at);
+    const end = start === -1 ? -1 : lower.indexOf('>', start);
+    const scriptOpen = lower.lastIndexOf('<script', start);
+    const scriptClose = lower.lastIndexOf('</script', start);
+    if (start !== -1 && end > at && scriptOpen <= scriptClose) {
+      const tag = html.slice(start, end + 1);
+      if (/^<a(?:\s|>)/i.test(tag) && /\bhref\s*=/i.test(tag)) found.add(tag);
+    }
+    from = at + needle.length;
+  }
+  return [...found];
+}
+
 /** Стили лежат отдельными файлами — приметы дизайна живут там же, где вёрстка. */
 function allCss(dir: string): string[] {
   const out: string[] = [];
@@ -1635,6 +1662,43 @@ test('Курсоры: в своих курсорах нет декоративн
   expect(bad, bad.join('\n')).toEqual([]);
 });
 
+test('Деньги: месячная страница ведёт на перелёт в свой месяц', () => {
+  const месяцы = new Map([
+    ['january', 1], ['february', 2], ['march', 3], ['april', 4],
+    ['may', 5], ['june', 6], ['july', 7], ['august', 8],
+    ['september', 9], ['october', 10], ['november', 11], ['december', 12],
+  ]);
+  const примеры: string[] = [];
+  let проверено = 0;
+  let ошибок = 0;
+
+  for (const файл of files) {
+    const части = файл.slice(DIST.length + 1).split(sep);
+    const slug = части[0] === 'packing' ? части[2] : части[1];
+    const ожидаемый = месяцы.get(slug);
+    if (!ожидаемый || !['packing', 'trips', 'events'].includes(части[0])) continue;
+
+    const html = readFileSync(файл, 'utf8');
+    for (const тег of ссылкиСФрагментом(html, 'aviasales.tpk.mx')) {
+      let decoded = тег.replaceAll('&amp;', '&');
+      try { decoded = decodeURIComponent(decoded); } catch { /* покажет другой гейт адресов */ }
+      const дата = decoded.match(/\/search\/[A-Z]{3}\d{2}(\d{2})[A-Z]{3}1/i);
+      if (!дата) continue;
+      проверено++;
+      const фактический = Number(дата[1]);
+      if (фактический !== ожидаемый) {
+        ошибок++;
+        if (примеры.length < 20) {
+          примеры.push(`${файл.replace(DIST, '')}: страница ${slug}, ссылка на месяц ${фактический}`);
+        }
+      }
+    }
+  }
+
+  expect(проверено, 'не найдено ни одной датированной авиассылки').toBeGreaterThan(0);
+  expect(ошибок, `${ошибок} авиассылок ведут не на месяц страницы:\n${примеры.join('\n')}`).toBe(0);
+});
+
 // Требование Никиты 29.08.2026: предложение авторского тура стоит на КАЖДОМ
 // направлении, а не на части. Шаблон хабов его несёт, но у Японии и Антарктиды
 // свои страницы мимо шаблона — там тура не было вовсе, и увидеть это можно было
@@ -1649,8 +1713,8 @@ test('Деньги: у каждого направления есть предл
   for (const d of DIRECTIONS as { slug: string }[]) {
     const f = fileURLToPath(new URL(`../dist/${d.slug}/index.html`, import.meta.url));
     if (!existsSync(f)) continue;
-    const html = readFileSync(f, 'utf8').replace(/<script[\s\S]*?<\/script>/g, '');
-    if (!/g2afse\.com/i.test(html)) без.push(`/${d.slug}/`);
+    const html = readFileSync(f, 'utf8');
+    if (ссылкиСФрагментом(html, 'g2afse.com').length === 0) без.push(`/${d.slug}/`);
   }
   expect(без, `направления без ссылки на авторские туры:\n${без.join('\n')}`).toEqual([]);
 });
