@@ -505,6 +505,13 @@ test('llms-full.txt: нет внутренних идентификаторов 
     // молча. Ловим любой JSX-тег — в русской прозе «<» + латинская заглавная не
     // встречается, ложных срабатываний быть не должно.
     { what: 'имя JSX-компонента', re: /<[A-Z][A-Za-z0-9]*[\s/>]/m },
+    // 29.08.2026: денежные врезки писались в статьях обычной вёрсткой
+    // (<p>, <span class="cta-note">, <div class="editorial-cta">), а чистка знала
+    // только про компоненты с заглавной и <a>. В публичный файл для ИИ-ботов
+    // утекло 72 куска разметки и 60 обрывков встроенных картинок — вместе с
+    // именами CSS-классов рекламных блоков.
+    { what: 'сырая HTML-вёрстка', re: /<\/?(p|div|span|section|figure|figcaption|ul|ol|li|table|thead|tbody|tr|td|th|br|hr|em|strong|small|sup|sub|blockquote|details|summary)\b[^>]*>/m },
+    { what: 'обрывок встроенной картинки', re: /<\/?(svg|g|text|tspan|path|rect|circle|ellipse|line|polyline|polygon|defs|clipPath|use)\b[^>]*>/m },
   ];
   const found = FORBIDDEN.filter(({ re }) => re.test(text)).map(({ what, re }) => ({
     what,
