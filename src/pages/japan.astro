@@ -7,7 +7,7 @@ import MonthlyEvents from '../components/MonthlyEvents.astro';
 import CountryMap from '../components/CountryMap.astro';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
 import { buildEssentialsFaq } from '../data/essentials-faq.js';
-import { TP_LINKS, aviasalesRoute, cherehapaTravel, ostrovokCity } from '../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, cherehapaTravel, ostrovokCity, youtravelSub } from '../data/affiliate.js';
 
 const url = 'https://traveltribe.ru/japan/';
 
@@ -207,8 +207,8 @@ const ldJson = {
       <p class="jp-after">Перелёт Москва ↔ Токио с пересадкой: <b>$500–900</b> в обычные даты, <b>$1100–1500</b> на Golden Week. Иена в 2026 слабая (~7 ¥/₽), что делает Японию доступнее обычного. <a href="/calculator/">Калькулятор бюджета</a> — точная сумма под твои даты.</p>
       <p class="jp-cta">
         <a class="jp-aff" href={aviasalesRoute('MOW','HND','hub_japan')} rel="sponsored noopener" target="_blank">Найти билет Москва — Токио от $500</a>
-        
-        <span class="jp-trust">все авиакомпании в одной выдаче · оплата картами РФ</span>
+        <a class="jp-aff" href={youtravelSub('hub_japan')} rel="sponsored noopener" target="_blank">Авторские туры по Японии</a>
+        <span class="jp-trust">все авиакомпании в одной выдаче · оплата картами РФ · в туре маршрут и логистика собраны за вас</span>
       </p>
     </section>
 

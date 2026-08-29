@@ -1634,3 +1634,23 @@ test('Курсоры: в своих курсорах нет декоративн
   }
   expect(bad, bad.join('\n')).toEqual([]);
 });
+
+// Требование Никиты 29.08.2026: предложение авторского тура стоит на КАЖДОМ
+// направлении, а не на части. Шаблон хабов его несёт, но у Японии и Антарктиды
+// свои страницы мимо шаблона — там тура не было вовсе, и увидеть это можно было
+// только пересчётом по сборке. Гейт считает по реестру направлений, поэтому
+// новая своя страница без тура упадёт сразу.
+//
+// Метка партнёра — домен сети (travelme.g2afse.com), а НЕ слово youtravel:
+// первый замер искал слово и показал ноль туров на всём сайте при 2 000 живых.
+test('Деньги: у каждого направления есть предложение авторского тура', async () => {
+  const { DIRECTIONS } = await import('../src/data/directions.js');
+  const без: string[] = [];
+  for (const d of DIRECTIONS as { slug: string }[]) {
+    const f = fileURLToPath(new URL(`../dist/${d.slug}/index.html`, import.meta.url));
+    if (!existsSync(f)) continue;
+    const html = readFileSync(f, 'utf8').replace(/<script[\s\S]*?<\/script>/g, '');
+    if (!/g2afse\.com/i.test(html)) без.push(`/${d.slug}/`);
+  }
+  expect(без, `направления без ссылки на авторские туры:\n${без.join('\n')}`).toEqual([]);
+});
