@@ -363,7 +363,7 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
           <div class="shead"><h2>Подробные гайды о {d.cases.prep}</h2></div>
           <ul class="vl wide">
             {d.relatedPosts.map((p) => (
-              <li><a href={`/blog/${p.slug}/`}>{p.title}</a><span>{p.kind === 'visa' ? 'про визу' : p.kind === 'season' ? 'про конкретный сезон' : 'личный опыт'}</span></li>
+              <li><a href={`/blog/${p.slug}/`}>{p.title}</a><span>{p.kind === 'visa' ? 'про визу' : p.kind === 'season' ? 'про конкретный сезон' : p.kind === 'insurance' ? 'про страховку' : 'личный опыт'}</span></li>
             ))}
           </ul>
         </section>
