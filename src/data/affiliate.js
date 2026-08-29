@@ -79,8 +79,18 @@ export const TP_LINKS = {
 // поднимает конверсию: пользователь сразу видит свой перелёт, а не главную.
 // subId — постраничная атрибуция; кладётся ПАРАМЕТРОМ ШОРТЛИНКА (см. aviasalesUrl).
 // Пример: aviasalesRoute('MOW','DXB','hub_uae') для Москва→Дубай со страницы хаба.
-export function aviasalesRoute(originIata, destIata, subId) {
-  return aviasalesUrl(`?origin_iata=${originIata}&destination_iata=${destIata}`, subId);
+// ⛔ Проверено живьём 29.08.2026: адрес вида `?origin_iata=MOW&destination_iata=TBS`
+// партнёр ИГНОРИРУЕТ — человек попадает на главную и видит подборку отелей, а не
+// билеты. Рабочий формат — путь поиска `/search/<MOW><ДД><ММ><DEST>1`: он
+// открывает форму с уже подставленными городами и датой. Тот же формат много
+// месяцев работает в таблице сезонов, на хабах и в статьях стоял нерабочий.
+// День берём 15-м — середина месяца, как в таблице сезонов; месяц по умолчанию
+// следующий, чтобы дата не оказалась в прошлом.
+export function aviasalesRoute(originIata, destIata, subId, monthIdx) {
+  const сейчас = new Date();
+  const м = typeof monthIdx === 'number' ? monthIdx : (сейчас.getMonth() + 1) % 12;
+  const мм = String(м + 1).padStart(2, '0');
+  return aviasalesUrl(`search/${originIata}15${мм}${destIata}1`, subId);
 }
 
 // Дип-линк через tpk.mx: &u=<encoded target> пробрасывается у ВСЕХ партнёров

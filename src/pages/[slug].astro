@@ -26,6 +26,7 @@ import EssentialsCard from '../components/EssentialsCard.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
 import CountryMap from '../components/CountryMap.astro';
 import { TP_LINKS, aviasalesRoute, otelloStay, cherehapaCountry, ostrovokCountry, youtravelSub } from '../data/affiliate.js';
+import livePrices from '../data/prices-cache.json';
 
 // РФ-инвентарь жилья: на этих хабах вместо Островка — Яндекс Путешествия (сильнее по РФ).
 // Подпись к связанному гайду должна отражать РЕАЛЬНЫЙ sourceType статьи:
@@ -138,7 +139,16 @@ const monthsRanked = MONTHS
 const bestMonths = monthsRanked.filter(m => m.rank >= 3).slice(0, 3);
 const worstMonths = monthsRanked.filter(m => m.rank <= 1).slice(0, 2);
 
-const flightFrom = d.price?.flight?.[0];
+// ⛔ Цена перелёта берётся из ЖИВОЙ выгрузки, а не из прикидки в таблице цен.
+// Замер 29.08.2026: 16 карточек стран из 51 обещали вдвое меньше реального —
+// Грузия «от $100» при живом минимуме ≈$251, Мексика «от $550» при ≈$1062,
+// Бали «от $400» при ≈$669. Человек кликал на обещанную цену, видел вдвое
+// большую и уходил. На этой же цифре стоял и весь недельный бюджет.
+// Курс — тот же, по которому собран справочник бюджетов (90 ₽ за доллар).
+const КУРС = 90;
+const живыеМесяцы = d.price?.iata ? Object.values(livePrices.prices[d.price.iata] ?? {}).filter(Boolean) : [];
+const живойМинимум = живыеМесяцы.length ? Math.round(Math.min(...живыеМесяцы) / КУРС) : null;
+const flightFrom = живойМинимум ?? d.price?.flight?.[0];
 const hotelFrom = d.price?.hotel?.[0];
 const foodFrom = d.price?.food?.[0];
 const weekTotal = flightFrom ? flightFrom + (hotelFrom || 0) * 7 + (foodFrom || 0) * 7 : null;
