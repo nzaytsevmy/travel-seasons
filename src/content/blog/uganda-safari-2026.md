@@ -7,7 +7,7 @@ coverImage: "../../assets/blog/uganda-safari.jpg"
 author: "Никита Зайцев"
 tags: ["Уганда", "Сафари", "Гориллы", "Африка", "2026"]
 sourceType: "personal"
-tripDate: "февраль 2025"
+tripDate: "декабрь 2025"
 tripPlace: "Уганда — Бвинди, Королевы Елизаветы НП, Ишаша"
 coverPosition: "center 38%"
 ---
