@@ -119,8 +119,48 @@ const regionBuckets = {
  * Получить bucket для пары (countrySlug, monthIdx).
  * monthIdx — 0 (январь) … 11 (декабрь).
  */
+// ⛔ Введено 29.08.2026 (промт research/fix-all-prompt.md, этап 2).
+// Там, где есть НАСТОЯЩИЕ помесячные нормы (country-monthly-weather.js), бакет
+// выводится ИЗ них, а не из ручной таблицы регионов. Причина: ручная таблица
+// делила тропический год надвое, и Гоа в марте и ноябре получал один и тот же
+// список вещей — замер однотипности дал 44% дословных совпадений у таких пар.
+// Пороги ниже — по границам самих бакетов (summary в packing-weather-buckets.js).
+// Ручная таблица остаётся запасным путём для стран без данных.
+import { MONTHLY_WEATHER } from './country-monthly-weather.js';
+
+function bucketFromClimate(slug, monthIdx) {
+  const rec = MONTHLY_WEATHER[slug]?.months?.[monthIdx];
+  if (!rec) return null;
+  const t = rec.temp.match(/(-?\d+)\s*-\s*(-?\d+)/);
+  const r = rec.rain.match(/(\d+)\s*мм\s*\/\s*(\d+)\s*дн/);
+  if (!t || !r) return null;
+  const min = Number(t[1]), max = Number(t[2]);
+  const mm = Number(r[1]), days = Number(r[2]);
+
+  // высокогорье и джунгли из климата не выводятся — это свойства места,
+  // не месяца; для таких стран ручная таблица главнее (см. вызов ниже).
+  if (max >= 25) {
+    // тепло. Дождливость: муссон = много мм И много дней
+    if (mm >= 150 || days >= 12) return 'tropical-rainy';
+    if (max >= 34 && mm < 30) return 'desert-hot';   // сухой жар пустыни
+    return 'tropical-dry';
+  }
+  if (max >= 15) return 'temperate-warm';
+  if (min <= -8) return 'cold-extreme';
+  return 'temperate-cold';
+}
+
 export function getWeatherBucket(slug, monthIdx) {
   const cfg = regionBuckets[slug];
+
+  // Свойства места сильнее климата месяца: высокогорье и джунгли
+  // не переопределяем данными о температуре.
+  const placeBound = cfg && (cfg.altitude || cfg.jungle);
+  if (!placeBound) {
+    const fromData = bucketFromClimate(slug, monthIdx);
+    if (fromData) return fromData;
+  }
+
   if (!cfg) return 'temperate-warm';
 
   // Точные overrides по типу сезона:
