@@ -10,13 +10,16 @@ export const TP_MARKER_SHORT = '546042';
 // пробрасывает deep-link origin/destination; трекинг + erid (2Vtzqxkn4LF) сохраняются.
 // Гео/locale на .com НЕ работают — только &u= (подтверждено curl-трейсом редиректа).
 const AVIASALES_TPK = 'https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF';
+const cleanSubId = (value) => value
+  ? String(value).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '')
+  : '';
 // Оборачивает целевой aviasales.ru-URL в tpk.mx-redirect (трекинг кликов + erid + .ru).
 // subId — ПАРАМЕТРОМ ШОРТЛИНКА (до &u=): статистика TP пишет SubID с этапа редиректа;
 // sub_id внутри &u= доезжает только до лендинга и в статистику TP не попадает
 // (проверено 19.07.2026 statistics API: за 7 недель записался ровно один sub_id —
 // тестовый ?sub_id= на шортлинке Островка; все продовые метки внутри &u= потерялись).
 export const aviasalesUrl = (query, subId) =>
-  AVIASALES_TPK + (subId ? `&sub_id=${subId}` : '') + '&u=' + encodeURIComponent('https://www.aviasales.ru/' + (query || ''));
+  AVIASALES_TPK + (subId ? `&sub_id=${cleanSubId(subId)}` : '') + '&u=' + encodeURIComponent('https://www.aviasales.ru/' + (query || ''));
 
 // Партнёрские ссылки — единая точка. Все tpk.mx с erid (38-ФЗ); drimsim — direct RU
 // (tpk.mx не пробрасывает lang=ru), erid у партнёра нет.
@@ -105,26 +108,50 @@ export function aviasalesRoute(originIata, destIata, subId, monthIdx) {
 // 7 недель — тестовый на шортлинке Островка, все метки внутри &u= потерялись).
 export function tpkDeep(linkKey, targetUrl, subId) {
   const base = TP_LINKS[linkKey];
-  const sub = subId ? `sub_id=${subId}&` : '';
+  const sub = subId ? `sub_id=${cleanSubId(subId)}&` : '';
   return base + (base.includes('?') ? '&' : '?') + sub + 'u=' + encodeURIComponent(targetUrl);
 }
 
-// Cherehapa: подбор с предвыбранной страной (проверено: /travel/?country=georgia —
-// 200, SSR-title под страну) + постраничный sub_id (латиница/цифры/_).
-//
-// ⛔ Слаг партнёра совпадает с нашим НЕ всегда, и промах не виден по коду ответа:
-// неизвестную страну партнёр молча отдаёт как общую форму подбора. Проверять надо
-// по SSR-заголовку. 21.08.2026: `south-korea` дал общий «Туристическая страховка
-// онлайн» — ровно как несуществующий слаг, — а страну открывает `korea`.
-// Это тот же холодный клик, из-за которого переделывали ссылки на отели.
+// Cherehapa: форма читает `countries[0]`, а НЕ рекламировавшийся раньше
+// `?country=<slug>`. Старый параметр работал только для нескольких SEO-лендингов;
+// Австралия, Индонезия, Новая Зеландия и большинство других стран открывались
+// с пустым полем. Рабочий формат проверен в живой форме 30.08.2026, коды — из
+// официального API /api/travel/countries?isPrivate=true. Массив поддерживает
+// маршруты через две страны; Антарктида покрывается группой «Весь мир».
 const CHEREHAPA_COUNTRY = {
-  'south-korea': 'korea',
+  'australia-east': ['australia'],
+  'australia-north': ['australia'],
+  bali: ['indonesia'],
+  'sumatra-kalimantan': ['indonesia'],
+  'raja-ampat': ['indonesia'],
+  'japan-hokkaido': ['japan'],
+  'india-goa': ['india'],
+  'italy-north': ['italy'],
+  'italy-south': ['italy'],
+  'canada-rockies': ['canada'],
+  'canada-east': ['canada'],
+  'guatemala-belize': ['guatemala', 'belize'],
+  'costa-rica-panama': ['costa_rica', 'panama'],
+  'chile-patagonia': ['chile'],
+  'chile-fjords': ['chile'],
+  hainan: ['china'],
+  abkhazia: ['abhazia'],
+  kamchatka: ['russia'],
+  karelia: ['russia'],
+  dagestan: ['russia'],
+  altai: ['russia'],
 };
 
-export const cherehapaCountry = (countrySlug, subId) =>
-  tpkDeep('cherehapa',
-    `https://cherehapa.ru/travel/?country=${CHEREHAPA_COUNTRY[countrySlug] ?? countrySlug}`,
-    subId);
+export const cherehapaCountry = (countrySlug, subId) => {
+  const params = new URLSearchParams();
+  if (countrySlug === 'antarctica') {
+    params.set('countryGroups[0]', 'all-world');
+  } else {
+    const codes = CHEREHAPA_COUNTRY[countrySlug] ?? [countrySlug.replaceAll('-', '_')];
+    codes.forEach((code, index) => params.set(`countries[${index}]`, code));
+  }
+  return tpkDeep('cherehapa', `https://www.cherehapa.ru/?${params}`, subId);
+};
 
 // Cherehapa: страница подбора без страны (для страниц, где страна не одна /
 // слаг у партнёра не проверен) + постраничный sub_id.
@@ -144,7 +171,7 @@ export const ostrovokCity = (countrySlug, citySlug, subId) =>
 // Отелло: подбор РФ-жилья (2ГИС). Шортлинк уже ведёт на лендинг (deep-link &u= не
 // нужен) — sub_id вешаем прямо на шортлинк (&sub_id=), как приняла статистика TP 19.07.
 export const otelloStay = (subId) =>
-  TP_LINKS.otello + (subId ? `&sub_id=${subId}` : '');
+  TP_LINKS.otello + (subId ? `&sub_id=${cleanSubId(subId)}` : '');
 
 // Суточно: посуточная аренда у частников. Дип-линк по региону — поддомен партнёра
 // (проверено curl 30.07.2026: abkhazia.sutochno.ru → 200, erid и TP-маркер доезжают).
@@ -160,7 +187,7 @@ export const tutuTrains = (subId) => tpkDeep('tutu', 'https://www.tutu.ru/poezda
 // Островок без города (общий поиск) + постраничная метка. Отдельно от ostrovokCity:
 // там, где страна поездки заранее неизвестна (чек-листы, сборы), город подставить нечего.
 export const ostrovokSearch = (subId) =>
-  TP_LINKS.ostrovok + (subId ? `&sub_id=${subId}` : '');
+  TP_LINKS.ostrovok + (subId ? `&sub_id=${cleanSubId(subId)}` : '');
 
 // Airalo: постраничная метка живёт ВНУТРИ sharedID после подчёркивания
 // (`sharedID=546042_<метка>`), а не отдельным параметром — формат партнёрской сети.
@@ -168,7 +195,45 @@ export const ostrovokSearch = (subId) =>
 // страницу-источник не опознать. Аудит 03.08.2026: так стояли ВСЕ 31 ссылка на сайте.
 // Проверено curl: `sharedID=546042_georgia_guide_2026` → 200, редирект на airalo.com/ru.
 export const airaloSub = (subId) =>
-  TP_LINKS.airalo.replace('sharedID=546042_&', `sharedID=546042_${subId}&`);
+  TP_LINKS.airalo.replace('sharedID=546042_&', `sharedID=546042_${cleanSubId(subId)}&`);
+
+// Airalo: реальные страновые страницы из sitemap-v2-countries.xml, сверено
+// 30.08.2026. Для неподдерживаемых направлений возвращаем null: холодная ссылка
+// на общий каталог хуже отсутствия оффера. Комбинированным маршрутам — региональный
+// пакет Латинской Америки, а субрегионам — пакет родительской страны.
+const AIRALO_COUNTRY = {
+  'australia-east': 'australia',
+  'australia-north': 'australia',
+  bali: 'indonesia',
+  'sumatra-kalimantan': 'indonesia',
+  'raja-ampat': 'indonesia',
+  uae: 'united-arab-emirates',
+  'japan-hokkaido': 'japan',
+  'india-goa': 'india',
+  'italy-north': 'italy',
+  'italy-south': 'italy',
+  'canada-rockies': 'canada',
+  'canada-east': 'canada',
+  usa: 'united-states',
+  'guatemala-belize': 'latin-america',
+  'costa-rica-panama': 'latin-america',
+  'chile-patagonia': 'chile',
+  'chile-fjords': 'chile',
+  hainan: 'china',
+};
+const AIRALO_UNSUPPORTED = new Set([
+  'iran', 'cuba', 'abkhazia', 'antarctica',
+  'kamchatka', 'karelia', 'dagestan', 'altai',
+]);
+
+export const airaloCountry = (countrySlug, subId) => {
+  if (AIRALO_UNSUPPORTED.has(countrySlug)) return null;
+  const targetSlug = AIRALO_COUNTRY[countrySlug] ?? countrySlug;
+  return airaloSub(subId).replace(
+    encodeURIComponent('https://airalo.com/ru'),
+    encodeURIComponent(`https://airalo.com/ru/${targetSlug}-esim`),
+  );
+};
 
 // YouTravel: постраничная метка. Сеть Affise принимает sub1..sub5 на своей
 // стороне и в адрес назначения их НЕ пробрасывает — проверено 20.08.2026 с
@@ -186,11 +251,101 @@ export const airaloSub = (subId) =>
 // travelme.g2afse.com рвёт TLS-рукопожатие, а с хостинга сайта та же ссылка
 // отдаёт 302 на youtravel.me. «Ссылка мертва» с ноутбука — ложный вывод.
 export const youtravelSub = (subId) =>
-  TP_LINKS.youtravel + (subId ? `&sub1=${subId}` : '');
+  TP_LINKS.youtravel + (subId ? `&sub1=${cleanSubId(subId)}` : '');
+
+// YouTravel: SEO-каталоги стран и регионов из официальных sitemap, сверено
+// 30.08.2026. Affise принимает `redirect` как deep-link назначения; живой клик
+// проверен на Грузии. Значения здесь — не придуманные слаги: каждая страница
+// есть у партнёра; Камчатка/Карелия/Дагестан/Алтай дополнительно проверены 200+H1.
+const YOUTRAVEL_DESTINATION = {
+  'australia-east': 'country/австралия',
+  'australia-north': 'country/австралия',
+  bali: 'region/bali',
+  'sumatra-kalimantan': 'country/индонезия',
+  'raja-ampat': 'country/индонезия',
+  'new-zealand': 'country/новая_зеландия',
+  kenya: 'country/кения',
+  'south-africa': 'country/юар',
+  uae: 'country/оаэ',
+  'saudi-arabia': 'country/саудовская_аравия',
+  oman: 'country/оман',
+  qatar: 'country/катар',
+  turkey: 'country/турция',
+  egypt: 'country/египет',
+  morocco: 'country/марокко',
+  israel: 'country/израиль',
+  iran: 'country/иран',
+  jordan: 'country/иордания',
+  tanzania: 'country/танзания',
+  madagascar: 'country/мадагаскар',
+  mauritius: 'country/маврикий',
+  seychelles: 'country/сейшелы',
+  japan: 'country/япония',
+  'japan-hokkaido': 'country/япония',
+  'hong-kong': 'country/гонконг',
+  'south-korea': 'country/южная_корея',
+  thailand: 'country/таиланд',
+  vietnam: 'country/вьетнам',
+  'india-goa': 'region/goa',
+  'sri-lanka': 'country/шри-ланка',
+  maldives: 'country/мальдивы',
+  georgia: 'country/грузия',
+  armenia: 'country/армения',
+  kyrgyzstan: 'country/киргизия',
+  uzbekistan: 'country/узбекистан',
+  tajikistan: 'country/таджикистан',
+  abkhazia: 'country/abhazia',
+  kazakhstan: 'country/казахстан',
+  china: 'country/китай',
+  hainan: 'country/китай',
+  malaysia: 'country/малайзия',
+  philippines: 'country/филиппины',
+  cambodia: 'country/камбоджа',
+  singapore: 'country/сингапур',
+  nepal: 'country/непал',
+  serbia: 'country/сербия',
+  finland: 'country/финляндия',
+  cyprus: 'country/кипр',
+  switzerland: 'country/швейцария',
+  'italy-north': 'country/италия',
+  'italy-south': 'country/италия',
+  spain: 'country/испания',
+  greece: 'country/греция',
+  croatia: 'country/хорватия',
+  iceland: 'country/исландия',
+  norway: 'country/норвегия',
+  usa: 'country/сша',
+  'canada-rockies': 'country/канада',
+  'canada-east': 'country/канада',
+  mexico: 'country/мексика',
+  cuba: 'country/куба',
+  'dominican-republic': 'country/доминикана',
+  'guatemala-belize': 'region/centralnaya-amerika',
+  'costa-rica-panama': 'region/centralnaya-amerika',
+  'chile-patagonia': 'region/patagoniya',
+  'chile-fjords': 'country/чили',
+  peru: 'country/перу',
+  bolivia: 'country/боливия',
+  chile: 'country/чили',
+  argentina: 'country/аргентина',
+  ecuador: 'country/эквадор',
+  brazil: 'country/бразилия',
+  antarctica: 'country/antarctica',
+  kamchatka: 'region/kamchatka',
+  karelia: 'region/karelia',
+  dagestan: 'region/dagestan',
+  altai: 'region/altai',
+};
+
+export const youtravelCountry = (countrySlug, subId) => {
+  const destination = YOUTRAVEL_DESTINATION[countrySlug];
+  if (!destination) return youtravelSub(subId);
+  return youtravelSub(subId) + '&redirect=' + encodeURIComponent(`https://youtravel.me/tours/${destination}`);
+};
 
 // Drimsim: шортлинк без query, поэтому метка вешается через `?`, а не `&`.
 export const drimsimSub = (subId) =>
-  TP_LINKS.drimsim + (subId ? `?sub_id=${subId}` : '');
+  TP_LINKS.drimsim + (subId ? `?sub_id=${cleanSubId(subId)}` : '');
 
 // ── Отели: страна вместо пустой формы ────────────────────────────────────────
 //

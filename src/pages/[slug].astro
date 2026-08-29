@@ -25,7 +25,7 @@ import BudgetBlock from '../components/BudgetBlock.astro';
 import EssentialsCard from '../components/EssentialsCard.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
 import CountryMap from '../components/CountryMap.astro';
-import { TP_LINKS, aviasalesRoute, otelloStay, cherehapaCountry, ostrovokCountry, youtravelSub } from '../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, otelloStay, cherehapaCountry, ostrovokCountry, youtravelCountry } from '../data/affiliate.js';
 import livePrices from '../data/prices-cache.json';
 
 // РФ-инвентарь жилья: на этих хабах вместо Островка — Яндекс Путешествия (сильнее по РФ).
@@ -613,7 +613,7 @@ if (guide?.itinerary?.length) {
     <section class="sl-section">
       <div class="sl-shead"><h2>Поехать с экспертом</h2></div>
       <p class={`sl-cta ${PACKAGE_TOUR.has(d.slug) ? 'sl-cta--stack' : ''}`}>
-        <a href={youtravelSub(`hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Авторские туры {d.cases.vP}</a>
+        <a href={youtravelCountry(d.slug, `hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Авторские туры {d.cases.vP}</a>
         {PACKAGE_TOUR.has(d.slug) && (
           <a href={`${TP_LINKS.travelata}&sub_id=hub_${d.slug}`} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить пакетные туры {d.cases.vP}</a>
         )}

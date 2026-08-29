@@ -665,20 +665,6 @@ test('Атрибуция: у каждой партнёрской ссылки е
   // Метка у этой сети своя — `sub1` вместо `sub_id`, поэтому проверяется
   // отдельным правилом ниже.
   //
-  // Шесть страниц остаются без метки НАМЕРЕННО: у их статей в тексте живут
-  // слова-паразиты и нет журнала сверок, а правка файла делает статью
-  // «тронутой» и поднимает языковой гейт и гейт свежести разом. Чинить их надо
-  // в заходе, где у статьи пересверены факты, а не мимоходом — иначе получится
-  // ровно то, от чего эти гейты и заводились. Список поимённый и обязан
-  // сокращаться: добавлять в него новые страницы нельзя.
-  const G2AFSE_PENDING = new Set([
-    '/blog/cappadocia-2026/index.html',
-    '/blog/dagestan-guide-2026/index.html',
-    '/blog/gagra-2026/index.html',
-    '/blog/kamchatka-guide-2026/index.html',
-    '/blog/novoafonskaya-peschera-2026/index.html',
-    '/blog/ozero-ritsa-2026/index.html',
-  ]);
   const SKIP = /platipomiru\.com/;
   const bad: { file: string; href: string }[] = [];
   for (const f of files) {
@@ -690,7 +676,6 @@ test('Атрибуция: у каждой партнёрской ссылки е
       if (!/tpk\.mx|pxf\.io|aviasales\.ru\/\?|g2afse\.com/.test(href)) continue;
       if (SKIP.test(href)) continue;
       const rel = f.replace(DIST, '');
-      if (/g2afse\.com/.test(href) && G2AFSE_PENDING.has(rel)) continue;
       const labelled = /pxf\.io/.test(href)
         ? /sharedID=546042_[a-z0-9_]+/.test(href)   // хвост после «_» обязан быть непустым
         : /g2afse\.com/.test(href)
@@ -1697,6 +1682,98 @@ test('Деньги: месячная страница ведёт на перел
 
   expect(проверено, 'не найдено ни одной датированной авиассылки').toBeGreaterThan(0);
   expect(ошибок, `${ошибок} авиассылок ведут не на месяц страницы:\n${примеры.join('\n')}`).toBe(0);
+});
+
+test('Деньги: страновые CTA сохраняют выбранное направление у партнёра', () => {
+  // Проверяем не форму хелпера, а все реальные ссылки собранных шаблонов.
+  // Страница уже знает страну: общая форма после клика обнуляет information scent
+  // и заставляет человека повторить поиск. Неподдерживаемый оффер лучше не показывать.
+  const ошибки: string[] = [];
+  let страховок = 0;
+  let туров = 0;
+  let esim = 0;
+  let авиапоисков = 0;
+
+  const hrefИзТега = (тег: string) => {
+    const m = тег.match(/\bhref=(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
+    return unescapeAmp(m?.[1] ?? m?.[2] ?? m?.[3] ?? '');
+  };
+  const назначение = (href: string, key: 'u' | 'redirect') => {
+    try { return new URL(href).searchParams.get(key) ?? ''; }
+    catch { return ''; }
+  };
+
+  for (const файл of files) {
+    const части = файл.slice(DIST.length + 1).split(sep);
+    const страновая =
+      (части[0] === 'packing' && (части.length === 3 || части.length === 4)) ||
+      (части[0] === 'trips' && части.length === 4) ||
+      (части[0] === 'visa' && части.length === 3);
+    if (!страновая) continue;
+
+    const rel = '/' + части.join('/');
+    const html = readFileSync(файл, 'utf8');
+
+    for (const тег of ссылкиСФрагментом(html, 'cherehapa.tpk.mx')) {
+      страховок++;
+      const target = назначение(hrefИзТега(тег), 'u');
+      let выбраннаяСтрана = false;
+      try {
+        const параметры = new URL(target).searchParams;
+        выбраннаяСтрана = параметры.has('countries[0]') || параметры.has('countryGroups[0]');
+      } catch {}
+      if (!выбраннаяСтрана) {
+        ошибки.push(`${rel}: страховка открывает форму без страны — ${target}`);
+      }
+    }
+
+    for (const тег of ссылкиСФрагментом(html, 'travelme.g2afse.com')) {
+      туров++;
+      const href = hrefИзТега(тег);
+      const target = назначение(href, 'redirect');
+      if (!/^https:\/\/youtravel\.me\/tours\/(country|region)\//.test(target)) {
+        ошибки.push(`${rel}: авторский тур открывает общий каталог — ${target || href}`);
+      }
+    }
+
+    for (const тег of ссылкиСФрагментом(html, 'airalo.pxf.io')) {
+      esim++;
+      const target = назначение(hrefИзТега(тег), 'u');
+      if (!/^https:\/\/airalo\.com\/ru\/[a-z0-9-]+-esim\/?$/.test(target)) {
+        ошибки.push(`${rel}: eSIM открывает общий каталог — ${target}`);
+      }
+    }
+
+    if (части[0] === 'packing' && части.length === 3) {
+      for (const тег of ссылкиСФрагментом(html, 'aviasales.tpk.mx')) {
+        авиапоисков++;
+        const target = назначение(hrefИзТега(тег), 'u');
+        if (!/\/search\/[A-Z]{3}\d{4}[A-Z]{3}1/i.test(target)) {
+          ошибки.push(`${rel}: перелёт открывает пустой поиск — ${target}`);
+        }
+      }
+    }
+  }
+
+  expect(страховок, 'не найдено ни одной страновой ссылки на страховку').toBeGreaterThan(0);
+  expect(туров, 'не найдено ни одной страновой ссылки на авторские туры').toBeGreaterThan(0);
+  expect(esim, 'не найдено ни одной страновой ссылки на eSIM').toBeGreaterThan(0);
+  expect(авиапоисков, 'не найдено ни одной авиассылки на странице сборов по стране').toBeGreaterThan(0);
+  expect(ошибки.slice(0, 30), `${ошибки.length} холодных страновых CTA:\n${ошибки.slice(0, 30).join('\n')}`).toEqual([]);
+});
+
+test('Деньги: в партнёрских URL нет повреждённого percent-encoding', () => {
+  const ошибки: string[] = [];
+  for (const файл of files) {
+    const html = readFileSync(файл, 'utf8');
+    for (const тег of html.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*>/gi)) {
+      const href = unescapeAmp(тег[1]);
+      if (/tpk\.mx|pxf\.io|g2afse\.com/.test(href) && href.includes('%%')) {
+        ошибки.push(`${файл.replace(DIST, '')}: ${href.slice(0, 150)}`);
+      }
+    }
+  }
+  expect(ошибки, ошибки.join('\n')).toEqual([]);
 });
 
 // Требование Никиты 29.08.2026: предложение авторского тура стоит на КАЖДОМ
