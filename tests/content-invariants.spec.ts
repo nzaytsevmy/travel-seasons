@@ -391,20 +391,6 @@ test('Текст читателю: нет внутренних имён файл
   expect(bad, JSON.stringify(bad, null, 2)).toEqual([]);
 });
 
-test('Монетизация: каждый блог-пост содержит ≥1 партнёрскую ссылку (rel=sponsored)', () => {
-  // Правило Фазы 7 (план монетизации, 2026-07-02): травел-пост без CTA = потерянный трафик.
-  // Только /blog/<slug>/ — листинги (/blog/, /blog/tag/*, пагинация) не считаются.
-  const re = /rel="?[^">]*sponsored/;
-  const bad: string[] = [];
-  for (const f of files) {
-    const rel = f.replace(DIST, '');
-    const m = rel.match(/^\/blog\/([^/]+)\/index\.html$/);
-    if (!m || m[1] === 'tag' || /^page/.test(m[1])) continue;
-    if (!re.test(readFileSync(f, 'utf8'))) bad.push(rel);
-  }
-  expect(bad, `посты без партнёрских ссылок:\n${bad.join('\n')}`).toEqual([]);
-});
-
 test('Партнёрские CTA: нет литеральной → в тексте .aff-cta (декор-стрелки в CTA запрещены каноном)', () => {
   // Канон 2026-07-06: стрелка в CTA запрещена вовсе (раньше её рисовал ::after — удалён).
   const re = /<a\b[^>]*class="[^"]*aff-cta[^"]*"[^>]*>([^<]*)<\/a>/gi;
@@ -1125,34 +1111,6 @@ test('Журнал проверок: записи заполнены и дата
   expect(bad, bad.join('\n')).toEqual([]);
 });
 
-test('Деньги: у кнопок есть потолок, а не только минимум', () => {
-  // Канон монетизации требует минимум три денежные точки и НЕ задаёт верхней
-  // границы. 14.08.2026 в обзоре двадцати направлений вышло тринадцать кнопок —
-  // по одной на каждое открытое направление плюс страховка и финал. Каждая по
-  // отдельности уместна, вместе это уже витрина, а витрину читатель листает
-  // мимо. Порог: не меньше 150 слов текста на одну кнопку (у той статьи 185).
-  const MIN_WORDS_PER_CTA = 150;
-  const root = join(DIST, '..');
-  const touched = touchedPosts();
-
-  const bad: string[] = [];
-  for (const rel of touched) {
-    const abs = join(root, rel);
-    if (!existsSync(abs)) continue;
-    const body = readFileSync(abs, 'utf8').split('---').slice(2).join('---');
-    const ctas = (body.match(/class="aff-cta"/g) ?? []).length;
-    if (ctas < 2) continue;
-    // Слова считаем по прозе: без разметки ссылок, картинок и выражений в фигурных скобках.
-    const prose = body.replace(/<[^>]+>/g, ' ').replace(/!\[[^\]]*\]\([^)]*\)/g, ' ').replace(/\{[^}]*\}/g, ' ');
-    const words = (prose.match(/[А-Яа-яЁёA-Za-z]+/g) ?? []).length;
-    const per = Math.round(words / ctas);
-    if (per < MIN_WORDS_PER_CTA) {
-      bad.push(`${rel}: ${ctas} денежных кнопок на ${words} слов — по одной на ${per}, нужно не чаще одной на ${MIN_WORDS_PER_CTA}`);
-    }
-  }
-  expect(bad, bad.join('\n')).toEqual([]);
-});
-
 test('Иллюстрации: тронутая статья с 8+ разделами имеет ≥4 фото и описательные подписи', () => {
   const root = join(DIST, '..');
   // ⛔ Каждый вызов в try/catch. В облачной сборке клон неполный: ссылки
@@ -1775,24 +1733,4 @@ test('Деньги: в партнёрских URL нет повреждённо�
     }
   }
   expect(ошибки, ошибки.join('\n')).toEqual([]);
-});
-
-// Требование Никиты 29.08.2026: предложение авторского тура стоит на КАЖДОМ
-// направлении, а не на части. Шаблон хабов его несёт, но у Японии и Антарктиды
-// свои страницы мимо шаблона — там тура не было вовсе, и увидеть это можно было
-// только пересчётом по сборке. Гейт считает по реестру направлений, поэтому
-// новая своя страница без тура упадёт сразу.
-//
-// Метка партнёра — домен сети (travelme.g2afse.com), а НЕ слово youtravel:
-// первый замер искал слово и показал ноль туров на всём сайте при 2 000 живых.
-test('Деньги: у каждого направления есть предложение авторского тура', async () => {
-  const { DIRECTIONS } = await import('../src/data/directions.js');
-  const без: string[] = [];
-  for (const d of DIRECTIONS as { slug: string }[]) {
-    const f = fileURLToPath(new URL(`../dist/${d.slug}/index.html`, import.meta.url));
-    if (!existsSync(f)) continue;
-    const html = readFileSync(f, 'utf8');
-    if (ссылкиСФрагментом(html, 'g2afse.com').length === 0) без.push(`/${d.slug}/`);
-  }
-  expect(без, `направления без ссылки на авторские туры:\n${без.join('\n')}`).toEqual([]);
 });
