@@ -20,24 +20,44 @@ function pagePath(dist, file) {
   return rel.endsWith('/index.html') ? `/${rel.slice(0, -'index.html'.length)}` : `/${rel}`;
 }
 
-function htmlDecode(value) {
-  return value
-    .replace(/&amp;|&#x26;|&#38;/gi, '&')
-    .replace(/&quot;|&#34;/gi, '"')
-    .replace(/&#39;|&apos;/gi, "'");
-}
-
 function attr(tag, name) {
   const match = tag.match(new RegExp(`\\b${name}=(?:"([^"]*)"|'([^']*)')`, 'i'));
-  return htmlDecode(match?.[1] ?? match?.[2] ?? '');
+  return match?.[1] ?? match?.[2] ?? '';
+}
+
+// Разбираем query прямо из HTML-атрибута. Не декодируем всю строку в URL:
+// такая цепочка превращает &amp;amp; в управляющий &, что CodeQL справедливо
+// считает double-unescape. Здесь HTML-разделители только отделяют пары.
+function queryParam(href, wanted) {
+  const query = href.includes('?') ? href.slice(href.indexOf('?') + 1) : '';
+  for (const pair of query.split(/(?:&amp;|&#x26;|&#38;|&)/i)) {
+    const separator = pair.indexOf('=');
+    const rawKey = separator === -1 ? pair : pair.slice(0, separator);
+    if (decodeURIComponent(rawKey) !== wanted) continue;
+    const rawValue = separator === -1 ? '' : pair.slice(separator + 1);
+    try { return decodeURIComponent(rawValue.replace(/\+/g, ' ')); } catch { return ''; }
+  }
+  return '';
+}
+
+function isGenericBuiltHref(href, partner) {
+  const target = queryParam(href, 'u') || queryParam(href, 'redirect');
+  let targetUrl = null;
+  try { targetUrl = target ? new URL(target) : null; } catch { return true; }
+  const path = targetUrl?.pathname.replace(/\/+$/, '') ?? '';
+  if (partner === 'aviasales') return !targetUrl || !targetUrl.pathname.includes('/search/');
+  if (partner === 'cherehapa') return !targetUrl || !(targetUrl.searchParams.get('countries[0]') || targetUrl.searchParams.get('countryGroups[0]'));
+  if (partner === 'ostrovok') return !targetUrl || path === '' || path === '/hotel';
+  if (partner === 'airalo') return !targetUrl || !/\/ru\/[a-z0-9-]+-esim$/i.test(path);
+  if (partner === 'youtravel') return !targetUrl || !/\/tours\/(?:country|region)\//.test(path);
+  return false;
 }
 
 function hasAttribution(href, partner) {
-  const url = new URL(href);
-  if (partner === 'airalo') return /^546042_[a-z0-9_]+$/i.test(url.searchParams.get('sharedID') || '');
-  if (partner === 'youtravel') return !!url.searchParams.get('sub1');
-  if (partner === 'platipomiru') return url.searchParams.get('utm_source') === 'traveltribe';
-  return !!url.searchParams.get('sub_id');
+  if (partner === 'airalo') return /^546042_[a-z0-9_]+$/i.test(queryParam(href, 'sharedID'));
+  if (partner === 'youtravel') return !!queryParam(href, 'sub1');
+  if (partner === 'platipomiru') return queryParam(href, 'utm_source') === 'traveltribe';
+  return !!queryParam(href, 'sub_id');
 }
 
 export function auditMonetization(dist) {
@@ -60,7 +80,7 @@ export function auditMonetization(dist) {
       const partner = classifyPartner(href);
       if (!partner) continue;
       const relValue = attr(tag, 'rel').split(/\s+/).filter(Boolean);
-      const record = { path, ...partner, href, destination, generic: isGenericAffiliateUrl(href, partner.partner) };
+      const record = { path, ...partner, href, destination, generic: isGenericBuiltHref(href, partner.partner) };
       pageLinks.push(record);
       links.push(record);
 
