@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   evaluateChecks,
   isContentOnly,
@@ -63,4 +64,12 @@ test('слияние разрешено только когда каждый о�
     { name: 'build', status: 'completed', conclusion: 'success' },
     { name: 'scan', status: 'completed', conclusion: 'success' },
   ]).ready, true);
+});
+
+test('после auto-merge явно запускается production deploy', () => {
+  const workflow = readFileSync('.github/workflows/auto-merge.yml', 'utf8');
+
+  assert.match(workflow, /^\s{2}actions: write$/m);
+  assert.match(workflow, /actions\.createWorkflowDispatch/);
+  assert.match(workflow, /workflow_id: 'deploy\.yml'/);
 });
