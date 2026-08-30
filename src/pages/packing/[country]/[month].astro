@@ -14,7 +14,7 @@ import { getWeatherBucket } from '../../../data/country-month-bucket.js';
 import { ACTIVITY_TAGS, ACTIVITY_LABEL, ACTIVITY_GEAR } from '../../../data/country-activity-tags.js';
 import { PLUG_TYPES, plugAdvice } from '../../../data/country-plug-types.js';
 import { DATA_UPDATED_RU } from '../../../data/meta.js';
-import { airaloSub, TP_LINKS, aviasalesRoute, cherehapaTravel, youtravelSub } from '../../../data/affiliate.js';
+import { airaloCountry, aviasalesRoute, cherehapaCountry, youtravelCountry } from '../../../data/affiliate.js';
 import StickyCta from '../../../components/StickyCta.astro';
 import { getHolidaysByMonth } from '../../../data/country-holidays.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
@@ -82,6 +82,8 @@ const visa = VISA_DETAILS[d.slug];
 const needsVisa = d.visa !== 'free';
 const plug = PLUG_TYPES[d.slug];
 const tags = ACTIVITY_TAGS[d.slug] || [];
+const affiliateSubId = `packing_${d.slug.replaceAll('-', '_')}`;
+const esimHref = airaloCountry(d.slug, affiliateSubId);
 
 // Пресет интерактивного чек-листа: холодный бакет → зима, пляжная страна → море, иначе универсал.
 const PACK_COLD = ['temperate-cold', 'cold-extreme'];
@@ -293,7 +295,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         storageKey={`pmu-${d.slug}-${m.slug}`}
         docsMode={d.docsMode}
         insuranceCta={{
-          href: cherehapaTravel(`packing_${d.slug.replaceAll('-', '_')}_list`),
+          href: cherehapaCountry(d.slug, `${affiliateSubId}_list`),
           label: d.docsMode === 'ru' ? 'Подобрать полис для поездки по России' : `Подобрать полис ${d.cases.vP}`,
         }}
       />
@@ -419,7 +421,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         </p>
       )}
       <p class="pmu-cta">
-        <a class="pmu-aff" href={cherehapaTravel(`packing_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Оформить страховку {d.cases.vP}</a>
+        <a class="pmu-aff" href={cherehapaCountry(d.slug, affiliateSubId)} rel="sponsored noopener" target="_blank">Оформить страховку {d.cases.vP}</a>
         
         <span class="pmu-trust">сравнение цен · оплата картами РФ</span>
       </p>
@@ -433,11 +435,10 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         <li><b>Повербанк</b> 10 000 мА·ч в ручную кладь.</li>
         <li><b>eSIM вместо роуминга</b> — настройка за 5 минут, от $5/неделя.</li>
       </ul>
-      <p class="pmu-cta">
-        <a class="pmu-aff" href={airaloSub(`packing_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Купить eSIM {d.cases.vP}</a>
-        
+      {esimHref && <p class="pmu-cta">
+        <a class="pmu-aff" href={esimHref} rel="sponsored noopener" target="_blank">Купить eSIM {d.cases.vP}</a>
         <span class="pmu-trust">от $5/нед · оплата картами РФ</span>
-      </p>
+      </p>}
     </section>
 
     {/* АКТИВНОСТИ */}
@@ -508,7 +509,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         <li><a href="/seasons/"><b>Таблица сезонов 70+ направлений</b></a><span>где ещё хорошо в {m.prep}</span></li>
         <li><a href="/packing/"><b>Все чек-листы по странам</b></a><span>70+ направлений</span></li>
       </ul>
-      <p class="pmu-tour">Собирать маршрут самому не всегда хочется — тогда берут место в небольшой группе: <a href={youtravelSub(`packing_${d.slug.replaceAll('-', '_')}_${m.slug}`)} rel="sponsored noopener" target="_blank">авторские туры {d.cases.vP}</a>.</p>
+      <p class="pmu-tour">Собирать маршрут самому не всегда хочется — тогда берут место в небольшой группе: <a href={youtravelCountry(d.slug, `${affiliateSubId}_${m.slug}`)} rel="sponsored noopener" target="_blank">авторские туры {d.cases.vP}</a>.</p>
     </section>
 
     <p class="pmu-updated">Актуально на: {DATA_UPDATED_RU}</p>
@@ -518,7 +519,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       к страховщику — больше, чем любая другая кнопка этих страниц (билеты — 2).
       Контекстная ссылка в пункте чек-листа показывается только на ширинах от 768,
       где панели нет: иначе две одинаковые кнопки попадают на один экран телефона. */}
-  <StickyCta href={cherehapaTravel(`packing_${d.slug.replaceAll('-', '_')}`)} label={`Страховка ${d.cases.vP} — под даты`} />
+  <StickyCta href={cherehapaCountry(d.slug, affiliateSubId)} label={`Страховка ${d.cases.vP} — под даты`} />
 
   <Footer />
 </Layout>

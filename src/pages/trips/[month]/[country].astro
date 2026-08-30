@@ -8,7 +8,7 @@ import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
 import { COUNTRIES as RICH_COUNTRIES } from '../../../data/programmatic-seasons.js';
 import { NICHE_TRIPS } from '../../../data/niche-trips.js';
-import { TP_LINKS, aviasalesRoute, ostrovokCountry, cherehapaTravel, youtravelSub } from '../../../data/affiliate.js';
+import { aviasalesRoute, ostrovokCountry, cherehapaCountry, youtravelCountry } from '../../../data/affiliate.js';
 import { DATA_UPDATED, DATA_UPDATED_RU, yearForMonth } from '../../../data/meta.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
 import { getWeatherBucket } from '../../../data/country-month-bucket.js';
@@ -269,7 +269,7 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
             </tbody>
           </table>
           <p class="tnote">Перелёт из Москвы ${flightTiers[0]}–${flightTiers[2]}, отель ${hotelTiers[0]}–${hotelTiers[2]}/ночь, еда ${foodTiers[0]}–${foodTiers[2]}/день. Точный расчёт под маршрут — в <a href="/calculator/">калькуляторе поездки</a>.</p>
-          <p class="findcta"><a class="find" href={ostrovokCountry(d.slug, `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc}</a> — оплата картой РФ, бесплатная отмена · <a class="find" href={cherehapaTravel(`trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">страховка под визу</a> </p>
+          <p class="findcta"><a class="find" href={ostrovokCountry(d.slug, `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc}</a> — оплата картой РФ, бесплатная отмена · <a class="find" href={cherehapaCountry(d.slug, `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">страховка под визу</a> </p>
         </section>
       )}
 
@@ -352,7 +352,7 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
 
       <section class="sec">
         <div class="shead"><h2>Поехать с экспертом</h2></div>
-        <a href={youtravelSub(`trip_${d.slug}_${m.slug}`)} class="cta-row" rel="sponsored noopener" target="_blank">
+        <a href={youtravelCountry(d.slug, `trip_${d.slug}_${m.slug}`)} class="cta-row" rel="sponsored noopener" target="_blank">
           <span class="cta-t"><b>Авторские туры {d.cases.vP}</b><span>Готовый маршрут, логистика и малая группа с экспертом — не планировать самому</span></span>
                   </a>
         <p class="adm-row">YouTravel.me</p>

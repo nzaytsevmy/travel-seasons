@@ -12,7 +12,7 @@ import { ACTIVITY_TAGS, ACTIVITY_LABEL, ACTIVITY_GEAR } from '../../data/country
 import { PLUG_TYPES, plugAdvice } from '../../data/country-plug-types.js';
 import { getWeatherBucket } from '../../data/country-month-bucket.js';
 import { DATA_UPDATED_RU } from '../../data/meta.js';
-import { airaloSub, TP_LINKS, aviasalesUrl, cherehapaCountry, youtravelSub } from '../../data/affiliate.js';
+import { airaloCountry, aviasalesRoute, cherehapaCountry, youtravelCountry } from '../../data/affiliate.js';
 import StickyCta from '../../components/StickyCta.astro';
 
 export async function getStaticPaths() {
@@ -65,6 +65,8 @@ const needsVisa = d.visa !== 'free';
 const plug = PLUG_TYPES[d.slug];
 const tags = ACTIVITY_TAGS[d.slug] || [];
 const hasActivity = tags.some((t) => ACTIVITY_GEAR[t]);
+const affiliateSubId = `packing_${d.slug.replaceAll('-', '_')}`;
+const esimHref = airaloCountry(d.slug, affiliateSubId);
 
 const blogSlug = Object.values(regionMeta).find((rm) => rm.slug === d.slug)?.blogSlug;
 const rich = regionsRich[d.slug];
@@ -151,7 +153,7 @@ const ldJson = {
         {needsVisa && visa && (<li><strong>Виза/eVisa:</strong> {visa.duration}, {visa.cost}, {visa.timing}. Детали — <a href={`/visa/${d.slug}/`}>на странице визы {d.cases.prep}</a>.</li>)}
         {!needsVisa && (<li><strong>Виза не нужна</strong> — {visa?.duration || 'безвизовый въезд'}, {visa?.timing || 'штамп на границе'}.</li>)}
         <li><strong>Страховка</strong> {needsVisa ? '— без полиса не примут документы на визу' : '— медпомощь платная, счёт за вечер в больнице бывает больше стоимости поездки'}. Цену считают по датам и стране: <a href={cherehapaCountry(d.slug, `packing_${d.slug.replaceAll('-', '_')}`)} class="aff-cta" target="_blank" rel="sponsored noopener">Подобрать полис {d.cases.vP}</a> — оплата картой РФ, полис приходит в PDF.</li>
-        <li><strong>Обратный билет</strong> или бронь выезда — часто проверяют на регистрации. Цены на ближайшие даты: <a href={aviasalesUrl('', `packing_${d.slug.replaceAll('-', '_')}`)} target="_blank" rel="sponsored noopener">посмотреть рейсы {d.cases.vP}</a>.</li>
+        <li><strong>Обратный билет</strong> или бронь выезда — часто проверяют на регистрации. Цены на ближайшие даты: <a href={aviasalesRoute('MOW', d.iata, affiliateSubId)} target="_blank" rel="sponsored noopener">посмотреть рейсы {d.cases.vP}</a>.</li>
         <li><strong>Копии</strong> паспорта и виз в облаке + бумажные отдельно от оригиналов.</li>
       </ul>
     </section>
@@ -180,7 +182,7 @@ const ldJson = {
       <ul class="pack-list">
         {plug && (<li><strong>Переходник Type {plug.types}</strong> · {plug.voltage} · {plug.hz}. {plugAdvice(plug)}</li>)}
         <li><strong>Повербанк</strong> 10 000 мА·ч (в ручную кладь, не в багаж) + кабели.</li>
-        <li><strong>eSIM вместо роуминга</strong> — настройка за пять минут, от $5 за неделю. Обзор: <a href="/blog/esim-zagranicey-2026/">eSIM за границей 2026</a>. Тарифы по стране: <a href={airaloSub(`packing_${d.slug.replaceAll('-', '_')}`)} target="_blank" rel="sponsored noopener">выбрать пакет интернета</a>.</li>
+        {esimHref && <li><strong>eSIM вместо роуминга</strong> — настройка за пять минут, от $5 за неделю. Обзор: <a href="/blog/esim-zagranicey-2026/">eSIM за границей 2026</a>. Тарифы по стране: <a href={esimHref} target="_blank" rel="sponsored noopener">выбрать пакет интернета</a>.</li>}
       </ul>
     </section>
 
@@ -244,7 +246,7 @@ const ldJson = {
         <li><a href="/seasons/">Сезоны по месяцам — когда ехать</a></li>
         {pillarUrl && <li><a href={pillarUrl}>Авторский гайд {d.cases.prep}</a></li>}
         <li><a href="/packing/">Все чек-листы по странам</a></li>
-        <li>Не хочется собирать маршрут самому — <a href={youtravelSub(`packing_${d.slug.replaceAll('-', '_')}`)} target="_blank" rel="sponsored noopener">авторские туры {d.cases.vP} с небольшой группой</a>.</li>
+        <li>Не хочется собирать маршрут самому — <a href={youtravelCountry(d.slug, affiliateSubId)} target="_blank" rel="sponsored noopener">авторские туры {d.cases.vP} с небольшой группой</a>.</li>
       </ul>
     </section>
   <StickyCta href={cherehapaCountry(d.slug, `packing_${d.slug.replaceAll('-', '_')}`)} label={`Страховка ${d.cases.vP} — под даты`} />
