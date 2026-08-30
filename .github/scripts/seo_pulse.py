@@ -493,12 +493,15 @@ def _tp_window(d_from, d_to):
     # после поездки, то есть спустя месяц-два, и молодой сайт по этим полям
     # честно показывает ноль даже когда брони идут. Отчёт три недели подряд
     # печатал «доход 0₽» и это читалось как «не зарабатываем», хотя мерил не то.
-    # open_actions_count / profit_rub_sum — брони в обработке, то есть реальный
-    # ответ на вопрос «работает ли монетизация вообще».
+    # processing_actions_count / processing_profit_rub_sum — брони в обработке,
+    # то есть реальный ответ на вопрос «работает ли монетизация вообще».
+    # Старые open_actions_count / profit_rub_sum API больше не принимает: из-за
+    # fallback на paid_* первая pending-бронь TravelTribe 30.08.2026 выглядела
+    # как ноль.
     res, err = tpapi({
         "fields": ["campaign_name_ru", "redirects_count",
                    "paid_actions_count", "paid_profit_rub_sum",
-                   "open_actions_count", "profit_rub_sum"],
+                   "processing_actions_count", "processing_profit_rub_sum"],
         "filters": [{"field": "date", "op": "ge", "value": str(d_from)},
                     {"field": "date", "op": "lt", "value": str(d_to)}],
         "group": ["campaign_name_ru"], "limit": 100})
@@ -519,8 +522,8 @@ def _tp_window(d_from, d_to):
             "clicks": int(r.get("redirects_count") or 0),
             "sales": int(r.get("paid_actions_count") or 0),
             "rev": float(r.get("paid_profit_rub_sum") or 0),
-            "booked": int(r.get("open_actions_count") or 0),
-            "booked_rev": float(r.get("profit_rub_sum") or 0)}
+            "booked": int(r.get("processing_actions_count") or 0),
+            "booked_rev": float(r.get("processing_profit_rub_sum") or 0)}
     return by, None
 
 
@@ -535,19 +538,22 @@ def fetch_tp_stats() -> dict:
     prev = prev or {}
     # sub_id-срезы за 7 дней (топ по доходу) + здоровье атрибуции
     subs, _ = tpapi({
-        "fields": ["sub_id", "redirects_count", "paid_profit_rub_sum"],
+        "fields": ["sub_id", "redirects_count", "paid_profit_rub_sum",
+                   "processing_profit_rub_sum"],
         "filters": [{"field": "date", "op": "ge", "value": str(d_7)},
                     {"field": "sub_id", "op": "ne", "value": ""}],
         "group": ["sub_id"], "limit": 500})
-    sub_rows = [(r.get("sub_id"), int(r.get("redirects_count") or 0), float(r.get("paid_profit_rub_sum") or 0))
+    sub_rows = [(r.get("sub_id"), int(r.get("redirects_count") or 0),
+                 float(r.get("paid_profit_rub_sum") or 0),
+                 float(r.get("processing_profit_rub_sum") or 0))
                 for r in (subs or {}).get("results", [])]
-    sub_rows.sort(key=lambda x: (-x[2], -x[1]))
+    sub_rows.sort(key=lambda x: (-(x[2] + x[3]), -x[1]))
     # Была ли хоть одна бронь за квартал. Без этого «0 за неделю» не отличить
     # от «0 никогда»: первое — обычная неделя, второе — сломанная монетизация.
     q, _ = _tp_window(TODAY - timedelta(days=90), d_next)
     q = q or {}
     tot_clicks = sum(v["clicks"] for v in cur.values())
-    attributed = sum(c for _, c, _ in sub_rows)
+    attributed = sum(c for _, c, _, _ in sub_rows)
     return {"ok": True, "by": cur, "prev": prev,
             "tot_clicks": tot_clicks,
             "tot_rev": sum(v["rev"] for v in cur.values()),
@@ -923,7 +929,8 @@ def weekly_mode(c) -> None:
         # Порядок строк не косметика: сверху то, что отвечает на «работает ли
         # монетизация», а не то, что уже выплачено. Выплата в тревеле приходит
         # после поездки, и на молодом сайте она нулевая по определению.
-        head = f"💰 *Партнёрка 7д* — брони {tp['booked']} на {tp['booked_rev']:.0f}₽"
+        head = (f"💰 *Партнёрка 7д* — в обработке {tp['booked']} "
+                f"на потенциальные {tp['booked_rev']:.0f}₽")
         if m7:
             cr = 100 * m7["clicks"] / m7["visits"] if m7["visits"] else 0
             L.append(f"{head} · людей кликнуло {m7['clicks']} из {m7['visits']} визитов ({cr:.1f}%)")
@@ -954,7 +961,8 @@ def weekly_mode(c) -> None:
             L.append("   " + " · ".join(top))
         if tp["top_subs"]:
             L.append("   срезы: " + ", ".join(
-                f"{s} {rev:.0f}₽" for s, cl, rev in tp["top_subs"] if s))
+                f"{s} pending {processing:.0f}₽ / paid {paid:.0f}₽"
+                for s, cl, paid, processing in tp["top_subs"] if s))
         if tp["att_share"] < 60:
             # Подсказку «sub_id внутри &u=?» убрал 11.08.2026: эту дыру закрыли 19.07,
             # и с тех пор её стерегут два теста в content-invariants (метка есть у

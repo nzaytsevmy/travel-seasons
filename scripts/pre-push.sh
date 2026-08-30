@@ -36,7 +36,8 @@ if ! SKIP_HTML_MIN=1 npm run build >/tmp/ttb_prepush_build.log 2>&1; then
 fi
 
 if ! node scripts/monetization-site-audit.mjs dist >/tmp/ttb_prepush_money.log 2>&1 \
-  || ! node --test tests/monetization-contract.test.mjs tests/monetization-report.test.mjs >>/tmp/ttb_prepush_money.log 2>&1; then
+  || ! node --test tests/monetization-contract.test.mjs tests/monetization-report.test.mjs >>/tmp/ttb_prepush_money.log 2>&1 \
+  || ! python3 tests/test_seo_pulse_travelpayouts.py >>/tmp/ttb_prepush_money.log 2>&1; then
   echo "✖ денежный контракт НЕ зелёный → /tmp/ttb_prepush_money.log"
   exit 1
 fi
