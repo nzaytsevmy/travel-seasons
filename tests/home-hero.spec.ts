@@ -169,3 +169,21 @@ test('6. развороты дневника на месте и по-русск�
   const имена = await page.locator('.pola .pcap').allTextContents();
   expect(имена.length).toBe(3);
 });
+
+test('7. текст подготовки не прилипает к следующему кадру', async ({ page }) => {
+  // Между связанным списком и новым полноширинным разделом нужен внешний
+  // ритм: 32 px на телефоне и 48 px на десктопе по 8pt-шкале сайта.
+  for (const ширина of [402, 1280]) {
+    await page.setViewportSize({ width: ширина, height: 900 });
+    await page.goto('/');
+
+    const зазор = await page.evaluate(() => {
+      const текст = document.querySelector('.before .blist')!.getBoundingClientRect();
+      const кадр = document.querySelector('.anchor2')!.getBoundingClientRect();
+      return Math.round(кадр.top - текст.bottom);
+    });
+
+    const минимум = ширина <= 760 ? 32 : 48;
+    expect(зазор, `ширина ${ширина}: текст прилип к кадру`).toBeGreaterThanOrEqual(минимум);
+  }
+});
