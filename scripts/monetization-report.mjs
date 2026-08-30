@@ -2,13 +2,20 @@
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { classifyPage, computeRevenueMetrics, normalizeRevenueRow } from '../src/data/monetization.js';
+import {
+  classifyPage,
+  computeRevenueMetrics,
+  deduplicateRevenueRows,
+  isRevenueRowMature,
+  normalizeRevenueRow,
+} from '../src/data/monetization.js';
 
 function argsOf(argv) {
-  const args = { traffic: 'seo-pulse/traffic.json', revenue: '', output: '' };
+  const args = { traffic: 'seo-pulse/traffic.json', revenue: '', maturity: '', output: '' };
   for (let i = 0; i < argv.length; i += 1) {
     const key = argv[i];
     if (key === '--traffic' || key === '--revenue' || key === '--output') args[key.slice(2)] = argv[++i] ?? '';
+    if (key === '--maturity-config') args.maturity = argv[++i] ?? '';
   }
   return args;
 }
@@ -67,7 +74,8 @@ function sumBy(rows, key) {
 }
 
 function money(value) {
-  return `${new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)} ₽`;
+  const formatted = new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+  return `${formatted.replace(/^-/, '−')} ₽`;
 }
 
 function percent(numerator, denominator) {
@@ -85,25 +93,54 @@ function renderTable(groups) {
   return lines.join('\n');
 }
 
-export function buildReport({ trafficSnapshot, revenueRows = [] }) {
+export function buildReport({
+  trafficSnapshot,
+  revenueRows = [],
+  asOfDate = trafficSnapshot.updated || new Date().toISOString().slice(0, 10),
+  maturityDaysByPartner = {},
+}) {
   const traffic = flattenTraffic(trafficSnapshot);
-  const normalized = revenueRows.map(normalizeRevenueRow);
-  const approvedRevenue = normalized.reduce((sum, row) => sum + row.approvedRevenue, 0);
-  const reversedRevenue = normalized.reduce((sum, row) => sum + row.reversedRevenue, 0);
-  const approvedOrders = normalized.filter((row) => row.approvedRevenue > 0).length;
+  const normalized = deduplicateRevenueRows(revenueRows.map(normalizeRevenueRow));
+  const maturityConfigured = normalized.length > 0 && normalized.every((row) => {
+    const days = Number(maturityDaysByPartner[row.partner] ?? maturityDaysByPartner.default);
+    return Number.isFinite(days) && days >= 0;
+  });
+  const validClickDates = normalized.every((row) => Number.isFinite(Date.parse(row.clickDate)));
+  const mature = maturityConfigured && validClickDates
+    ? normalized.filter((row) => isRevenueRowMature(row, asOfDate, maturityDaysByPartner))
+    : [];
+  const decisionRows = mature.filter((row) => row.orderId && row.monetaryValueKnown);
+  const approvedRevenue = decisionRows.reduce((sum, row) => sum + row.approvedRevenue, 0);
+  const reversedRevenue = decisionRows.reduce((sum, row) => sum + row.reversedRevenue, 0);
+  const approvedOrders = decisionRows.filter((row) => row.approvedRevenue > 0).length;
   const organicSessions = traffic.reduce((sum, row) => sum + row.organic, 0);
   const clicks = traffic.reduce((sum, row) => sum + row.clicks, 0);
   const metrics = computeRevenueMetrics({ organicSessions, approvedRevenue, reversedRevenue, approvedOrders });
   const dated = trafficSnapshot.updated || new Date().toISOString().slice(0, 10);
-  const status = revenueRows.length
-    ? (approvedOrders > 0 ? 'Есть созревшие одобрения; решения принимаются по чистому доходу.' : 'Выгрузка подключена, но созревших одобрений пока нет.')
-    : 'Партнёрская выгрузка ещё не подана: финансовый результат считать доказанным нельзя.';
+  const missingOrderIds = normalized.filter((row) => !row.orderId).length;
+  const unknownMoney = normalized.filter((row) => !row.monetaryValueKnown).length;
+  const attributed = normalized.filter((row) => row.ctaId).length;
+  let status = 'Партнёрская выгрузка ещё не подана: финансовый результат считать доказанным нельзя.';
+  if (revenueRows.length && !maturityConfigured) {
+    status = 'Окно зрелости не задано для всех партнёров: финансовое решение запрещено.';
+  } else if (revenueRows.length && !validClickDates) {
+    status = 'Есть строки без корректной click_date: финансовое решение запрещено.';
+  } else if (missingOrderIds || unknownMoney) {
+    status = `Неполный денежный контракт: без order_id — ${missingOrderIds}, без рублёвой суммы — ${unknownMoney}; финансовое решение запрещено.`;
+  } else if (approvedOrders > 0) {
+    status = 'Есть зрелые одобрения; решения принимаются по чистому доходу после проверки экспериментальных guardrails.';
+  } else if (revenueRows.length) {
+    status = 'Выгрузка подключена, но зрелых одобрений пока нет.';
+  }
 
   return `# Монетизация TravelTribe — денежный baseline\n\n`
     + `Срез Метрики: **${dated}**. Главная метрика — одобренная комиссия после отмен на 1 000 органических визитов.\n\n`
     + `## Итог\n\n`
     + `- Органических визитов: **${organicSessions}**\n`
     + `- Человеческих переходов к партнёрам: **${clicks}** (${percent(clicks, organicSessions)})\n`
+    + `- Заказов после сведения статусов: **${normalized.length}** (сырых строк: ${revenueRows.length})\n`
+    + `- Зрелых заказов: **${mature.length} из ${normalized.length}**\n`
+    + `- Покрытие CTA-level атрибуцией: **${percent(attributed, normalized.length)}**\n`
     + `- Одобренных действий: **${metrics.approvedOrders}**\n`
     + `- Чистая одобренная комиссия: **${money(metrics.netApprovedRevenue)}**\n`
     + `- Доход на 1 000 органических визитов: **${metrics.revenuePerThousand == null ? 'недостаточно данных' : money(metrics.revenuePerThousand)}**\n`
@@ -118,7 +155,13 @@ if (process.argv[1] && resolve(process.argv[1]) === new URL(import.meta.url).pat
   const args = argsOf(process.argv.slice(2));
   const trafficSnapshot = JSON.parse(readFileSync(resolve(args.traffic), 'utf8'));
   const revenueRows = args.revenue ? parseCsv(readFileSync(resolve(args.revenue), 'utf8')) : [];
-  const report = buildReport({ trafficSnapshot, revenueRows });
+  const maturityDaysByPartner = args.maturity ? JSON.parse(readFileSync(resolve(args.maturity), 'utf8')) : {};
+  const report = buildReport({
+    trafficSnapshot,
+    revenueRows,
+    asOfDate: trafficSnapshot.updated,
+    maturityDaysByPartner,
+  });
   if (args.output) {
     writeFileSync(resolve(args.output), report);
     console.log(`денежный отчёт: ${args.output}`);

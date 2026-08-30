@@ -7,6 +7,7 @@ import {
   classifyPage,
   classifyPartner,
   computeRevenueMetrics,
+  deduplicateRevenueRows,
   isGenericAffiliateUrl,
   normalizeRevenueRow,
 } from '../src/data/monetization.js';
@@ -161,6 +162,12 @@ test('отмена вычитается из подтверждённой ком
   });
 });
 
+test('reversal может сделать когорту отрицательной и не прячется за нулём', () => {
+  assert.equal(computeRevenueMetrics({
+    organicSessions: 1000, approvedRevenue: 100, reversedRevenue: 150, approvedOrders: 1,
+  }).netApprovedRevenue, -50);
+});
+
 test('нулевой трафик не создаёт ложную бесконечную доходность', () => {
   assert.equal(computeRevenueMetrics({ organicSessions: 0, approvedRevenue: 100, reversedRevenue: 0 }).revenuePerThousand, null);
 });
@@ -170,8 +177,10 @@ test('строка партнёра нормализует статусы и р�
     date: '2026-08-30', partner: 'travelpayouts', sub_id: 'blog_georgia_tour_1',
     status: 'pending', commission_rub: '1 234,50', order_id: 'A-1',
   }), {
-    date: '2026-08-30', partner: 'travelpayouts', ctaId: 'blog_georgia_tour_1',
+    date: '2026-08-30', clickDate: '2026-08-30', decisionDate: '',
+    partner: 'travelpayouts', ctaId: 'blog_georgia_tour_1', currency: 'RUB',
     status: 'pending', approvedRevenue: 0, reversedRevenue: 0, orderId: 'A-1',
+    monetaryValueKnown: true,
   });
 });
 
@@ -182,4 +191,37 @@ test('отклонённая выплата попадает в reversals, а н
   });
   assert.equal(row.approvedRevenue, 0);
   assert.equal(row.reversedRevenue, 500);
+});
+
+test('повторные статусы заказа сводятся к последнему решению', () => {
+  const rows = [
+    normalizeRevenueRow({
+      click_date: '2026-07-01', decision_date: '2026-07-05', partner: 'tp',
+      sub_id: 'x', status: 'approved', commission_rub: '500', order_id: 'A-2',
+    }),
+    normalizeRevenueRow({
+      click_date: '2026-07-01', decision_date: '2026-07-20', partner: 'tp',
+      sub_id: 'x', status: 'cancelled', commission_rub: '500', order_id: 'A-2',
+    }),
+  ];
+  const deduplicated = deduplicateRevenueRows(rows);
+  assert.equal(deduplicated.length, 1);
+  assert.equal(deduplicated[0].status, 'cancelled');
+});
+
+test('одинаковые номера заказов разных партнёров не склеиваются', () => {
+  const rows = [
+    normalizeRevenueRow({ partner: 'tp', order_id: '1', status: 'approved', commission_rub: 10 }),
+    normalizeRevenueRow({ partner: 'airalo', order_id: '1', status: 'approved', commission_rub: 20 }),
+  ];
+  assert.equal(deduplicateRevenueRows(rows).length, 2);
+});
+
+test('валютная комиссия без рублёвого значения не превращается в ноль рублей', () => {
+  const row = normalizeRevenueRow({
+    click_date: '2026-07-01', decision_date: '2026-07-20', partner: 'tp',
+    sub_id: 'x', status: 'approved', commission: '20', currency: 'USD', order_id: 'A-3',
+  });
+  assert.equal(row.monetaryValueKnown, false);
+  assert.equal(row.approvedRevenue, 0);
 });
