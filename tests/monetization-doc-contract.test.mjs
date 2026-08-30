@@ -61,3 +61,24 @@ test('операционные правила не возвращают выду
   assert.doesNotMatch(operationalPrompts, /кнопк[аи] на 150 слов|главная касса[^\n]+авторские туры/i);
   assert.match(claude, /подтвержд[её]нн[^\n]+чист[^\n]+доход/i);
 });
+
+test('плановая статья наследует полный денежный канон и его гейты', async () => {
+  const prompt = await read('DAILY-ARTICLE-PROMPT.md');
+
+  for (const required of [
+    'MONETIZATION-2026.md',
+    'research/monetization-placement-canon.md',
+    'approved net revenue',
+    'intention-to-treat',
+    'npm run check:monetization',
+    'npm run check:monetization:browser',
+  ]) {
+    assert.match(prompt, new RegExp(required.replaceAll('/', '\\/'), 'i'), required);
+  }
+
+  assert.match(prompt, /intent[^\n]+none[^\n]+без[^\n]+партн[её]р/i);
+  assert.match(prompt, /CTR[^\n]+диагностик/i);
+  assert.match(prompt, /партн[её]рск[\s\S]{0,40}выгрузк[\s\S]{0,40}не[\s\S]{0,30}подключен/i);
+  assert.match(prompt, /не[^\n]+эксперимент[^\n]+без[^\n]+рандомиз/i);
+  assert.doesNotMatch(prompt, /у каждой денежной кнопки должна быть метка рекламы/i);
+});
