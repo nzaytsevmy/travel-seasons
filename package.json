@@ -14,7 +14,7 @@
     "check:visual:report": "playwright show-report tests/.html-report",
     "check:css": "stylelint \"src/**/*.{css,astro}\" --ignore-path .gitignore || true",
     "check:seo": "node scripts/seo-site-audit.mjs dist",
-    "check:monetization": "node scripts/monetization-site-audit.mjs dist && node --test tests/monetization-contract.test.mjs tests/monetization-report.test.mjs tests/monetization-doc-contract.test.mjs tests/daily-article-queue-contract.test.mjs",
+    "check:monetization": "node scripts/monetization-site-audit.mjs dist && node --test tests/monetization-contract.test.mjs tests/monetization-report.test.mjs tests/monetization-doc-contract.test.mjs tests/daily-article-queue-contract.test.mjs && python3 tests/test_seo_pulse_travelpayouts.py",
     "check:monetization:browser": "playwright test tests/monetization-browser.spec.ts --project=chromium-desktop",
     "report:monetization": "node scripts/monetization-report.mjs",
     "check:delivery": "node --test tests/auto-merge-policy.test.mjs",
