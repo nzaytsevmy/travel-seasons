@@ -30,16 +30,45 @@ test('CSV читает запятые в кавычках и не сдвигае
 test('отчёт показывает чистый доход, отмены и статус зрелости', () => {
   const report = buildReport({
     trafficSnapshot: traffic,
+    asOfDate: '2026-08-30',
+    maturityDaysByPartner: { tp: 30 },
     revenueRows: [
-      { date: '2026-08-30', partner: 'tp', sub_id: 'cta_1', status: 'approved', commission_rub: '1000', order_id: 'A-1' },
-      { date: '2026-08-30', partner: 'tp', sub_id: 'cta_2', status: 'cancelled', commission_rub: '250', order_id: 'A-2' },
-      { date: '2026-08-30', partner: 'tp', sub_id: 'cta_3', status: 'pending', commission_rub: '5000', order_id: 'A-3' },
+      { click_date: '2026-07-01', decision_date: '2026-07-20', partner: 'tp', sub_id: 'cta_1', status: 'approved', commission_rub: '1000', order_id: 'A-1' },
+      { click_date: '2026-07-02', decision_date: '2026-07-21', partner: 'tp', sub_id: 'cta_2', status: 'cancelled', commission_rub: '250', order_id: 'A-2' },
+      { click_date: '2026-08-20', partner: 'tp', sub_id: 'cta_3', status: 'pending', commission_rub: '5000', order_id: 'A-3' },
     ],
   });
   assert.match(report, /Чистая одобренная комиссия: \*\*750,00 ₽\*\*/);
   assert.match(report, /Одобренных действий: \*\*1\*\*/);
+  assert.match(report, /Зрелых заказов: \*\*2 из 3\*\*/);
+  assert.match(report, /Покрытие CTA-level атрибуцией: \*\*100,00%\*\*/);
   assert.match(report, /pending, отмены и сырые клики партнёра победой не считаются/);
   assert.doesNotMatch(report, /5[\s ]?750,00 ₽/);
+});
+
+test('последний статус заказа не удваивает одобренную и отменённую комиссию', () => {
+  const report = buildReport({
+    trafficSnapshot: traffic,
+    asOfDate: '2026-08-30',
+    maturityDaysByPartner: { tp: 30 },
+    revenueRows: [
+      { click_date: '2026-07-01', decision_date: '2026-07-05', partner: 'tp', sub_id: 'cta_1', status: 'approved', commission_rub: '1000', order_id: 'A-1' },
+      { click_date: '2026-07-01', decision_date: '2026-07-25', partner: 'tp', sub_id: 'cta_1', status: 'cancelled', commission_rub: '1000', order_id: 'A-1' },
+    ],
+  });
+  assert.match(report, /Одобренных действий: \*\*0\*\*/);
+  assert.match(report, /Чистая одобренная комиссия: \*\*−1[\s ]?000,00 ₽\*\*/);
+});
+
+test('без окна зрелости отчёт не разрешает денежное решение', () => {
+  const report = buildReport({
+    trafficSnapshot: traffic,
+    revenueRows: [
+      { click_date: '2026-07-01', partner: 'tp', sub_id: 'cta_1', status: 'approved', commission_rub: '1000', order_id: 'A-1' },
+    ],
+  });
+  assert.match(report, /окно зрелости не задано/i);
+  assert.match(report, /финансовое решение запрещено/i);
 });
 
 test('без партнёрской выгрузки отчёт не объявляет финансовый успех', () => {

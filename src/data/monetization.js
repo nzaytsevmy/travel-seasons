@@ -151,23 +151,69 @@ const numberFrom = (value) => {
 
 export function normalizeRevenueRow(row) {
   const status = clean(row.status);
-  const commission = Math.abs(numberFrom(row.commission_rub ?? row.commission ?? row.revenue));
+  const hasRubAmount = row.commission_rub != null && String(row.commission_rub).trim() !== '';
+  const currency = clean(row.currency || (hasRubAmount ? 'rub' : '')).toUpperCase() || 'RUB';
+  const monetaryValueKnown = hasRubAmount || currency === 'RUB';
+  const commission = monetaryValueKnown
+    ? Math.abs(numberFrom(hasRubAmount ? row.commission_rub : (row.commission ?? row.revenue)))
+    : 0;
   const approved = ['approved', 'confirmed', 'paid'].includes(status);
   const reversed = ['cancelled', 'canceled', 'rejected', 'reversed', 'declined'].includes(status);
+  const clickDate = String(row.click_date ?? row.date ?? row.created_at ?? '');
+  const decisionDate = String(row.decision_date ?? row.updated_at ?? row.status_date ?? '');
   return {
-    date: String(row.date ?? row.click_date ?? row.created_at ?? ''),
+    date: clickDate,
+    clickDate,
+    decisionDate,
     partner: clean(row.partner),
     ctaId: clean(row.sub_id ?? row.sub1 ?? row.shared_id ?? row.utm_content),
+    currency,
     status,
     approvedRevenue: approved ? commission : 0,
     reversedRevenue: reversed ? commission : 0,
     orderId: String(row.order_id ?? row.booking_id ?? row.action_id ?? ''),
+    monetaryValueKnown,
   };
+}
+
+export function deduplicateRevenueRows(rows) {
+  const result = [];
+  const byOrder = new Map();
+  const timestamp = (row) => {
+    const value = Date.parse(row.decisionDate || row.date || row.clickDate || '');
+    return Number.isFinite(value) ? value : Number.NEGATIVE_INFINITY;
+  };
+
+  for (const row of rows) {
+    if (!row.orderId) {
+      result.push(row);
+      continue;
+    }
+    const orderKey = `${row.partner}\0${row.orderId}`;
+    const currentIndex = byOrder.get(orderKey);
+    if (currentIndex == null) {
+      byOrder.set(orderKey, result.length);
+      result.push(row);
+      continue;
+    }
+    if (timestamp(row) >= timestamp(result[currentIndex])) result[currentIndex] = row;
+  }
+  return result;
+}
+
+export function isRevenueRowMature(row, asOfDate, maturityDaysByPartner = {}) {
+  const configured = maturityDaysByPartner[row.partner] ?? maturityDaysByPartner.default;
+  const days = Number(configured);
+  if (!Number.isFinite(days) || days < 0) return false;
+  const clickedAt = Date.parse(row.clickDate || row.date || '');
+  const asOf = Date.parse(asOfDate || '');
+  if (!Number.isFinite(clickedAt) || !Number.isFinite(asOf)) return false;
+  return asOf - clickedAt >= days * 86_400_000;
 }
 
 export function computeRevenueMetrics({ organicSessions = 0, approvedRevenue = 0, reversedRevenue = 0, approvedOrders = 0 }) {
   const sessions = Math.max(0, numberFrom(organicSessions));
-  const net = Math.max(0, numberFrom(approvedRevenue) - numberFrom(reversedRevenue));
+  const net = numberFrom(approvedRevenue) - numberFrom(reversedRevenue);
   return {
     organicSessions: sessions,
     approvedOrders: Math.max(0, numberFrom(approvedOrders)),
