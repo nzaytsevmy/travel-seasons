@@ -473,6 +473,9 @@ Search Central (канон Google) · разбор факторов Яндекс
     сравнения с утверждённым макетом). Урок 2026-05-22: Lighthouse 100 ≠ выглядит правильно. [[feedback_definition_of_done]] · [[feedback_visual_check]].
 12. **GIT / ДЕПЛОЙ** → не коммитить в main напрямую (ветка); pre-push визуал-гейт зелёный, без `--no-verify`;
     conventional commits; синк `public/llms.txt`+`llms-full.txt` и полный grep-консистентность при правках контента.
+    Внутренние PR владельца в `main` автоматически сливаются squash-методом, но только когда зелёны все
+    обязательные проверки: build, content gate, secret scan, CodeQL и — для кода/вёрстки — visual + Lighthouse.
+    Не просить ручной merge зелёной заявки; красный или отсутствующий гейт всегда блокирует автоматику.
     [[feedback_visual_regression]] · [[feedback_llms_txt_sync]] · [[feedback_full_consistency_check]].
     **Откат:** держать предыдущий рабочий коммит/build, уметь откатиться за минуты (`git revert`), **проверять прод
     после деплоя** (живой URL, не только зелёный гейт). **Коды ответа:** кастомная 404 по брендбуку, 301 при смене
