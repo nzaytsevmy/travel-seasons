@@ -1,0 +1,134 @@
+name: Auto Merge
+
+# Внутренние PR владельца не ждут ручной кнопки: эта job видит только метаданные
+# заявки и статусы CI, код из PR не исполняет. Слияние произойдёт лишь после всех
+# гейтов, перечисленных в scripts/auto-merge-policy.mjs.
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, reopened, synchronize, ready_for_review]
+
+concurrency:
+  group: auto-merge-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  merge-after-green:
+    name: слить после полного зелёного CI
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login == github.repository_owner &&
+      github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      # pull_request_target имеет write-права, поэтому берём ТОЛЬКО доверенный main.
+      # Код ветки PR здесь не checkout-им и не запускаем.
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Дождаться всех обязательных проверок и слить
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { pathToFileURL } = require('node:url');
+            const policyUrl = pathToFileURL(
+              `${process.env.GITHUB_WORKSPACE}/scripts/auto-merge-policy.mjs`,
+            ).href;
+            const { evaluateChecks, isContentOnly, requiredChecks } = await import(policyUrl);
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const number = context.payload.pull_request.number;
+            const initialSha = context.payload.pull_request.head.sha;
+            const initialBaseSha = context.payload.pull_request.base.sha;
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner,
+              repo,
+              pull_number: number,
+              per_page: 100,
+            });
+            const names = requiredChecks(files.map((file) => file.filename));
+
+            core.info(
+              `${isContentOnly(files.map((file) => file.filename)) ? 'текстовый' : 'полный'} гейт: ` +
+              `${names.length} обязательных проверок`,
+            );
+
+            const deadline = Date.now() + 42 * 60 * 1000;
+            while (Date.now() < deadline) {
+              const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: number });
+              if (pr.state !== 'open') {
+                core.info(`PR уже ${pr.state}; действие не требуется.`);
+                return;
+              }
+              if (pr.draft) {
+                core.info('PR стал черновиком; auto-merge остановлен.');
+                return;
+              }
+              if (pr.head.sha !== initialSha) {
+                core.info('В PR появился новый коммит; новый запуск проверит его отдельно.');
+                return;
+              }
+
+              const { data } = await github.rest.checks.listForRef({
+                owner,
+                repo,
+                ref: initialSha,
+                filter: 'latest',
+                per_page: 100,
+              });
+              const result = evaluateChecks(names, data.check_runs);
+
+              if (result.failed.length > 0) {
+                core.setFailed(`Красные обязательные проверки: ${result.failed.join(', ')}`);
+                return;
+              }
+              if (result.ready) {
+                // Не сливаем проверенный PR поверх уже изменившегося main: сначала
+                // подмешиваем свежую базу, после чего synchronize запустит все гейты заново.
+                const { data: base } = await github.rest.repos.getBranch({
+                  owner,
+                  repo,
+                  branch: pr.base.ref,
+                });
+                if (base.commit.sha !== initialBaseSha) {
+                  await github.rest.pulls.updateBranch({
+                    owner,
+                    repo,
+                    pull_number: number,
+                    expected_head_sha: initialSha,
+                  });
+                  core.info('main изменился во время CI; ветка обновлена и будет проверена заново.');
+                  return;
+                }
+
+                const merged = await github.rest.pulls.merge({
+                  owner,
+                  repo,
+                  pull_number: number,
+                  merge_method: 'squash',
+                  sha: initialSha,
+                });
+                if (!merged.data.merged) {
+                  core.setFailed(`GitHub не слил PR: ${merged.data.message}`);
+                  return;
+                }
+                core.info(`PR #${number} автоматически слит после полного зелёного CI.`);
+                return;
+              }
+
+              core.info(
+                `Ждём: отсутствуют ${result.missing.length}, выполняются ${result.pending.length}`,
+              );
+              await new Promise((resolve) => setTimeout(resolve, 20_000));
+            }
+
+            core.setFailed('Обязательные проверки не завершились за 42 минуты.');

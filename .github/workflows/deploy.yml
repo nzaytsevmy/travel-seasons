@@ -60,6 +60,12 @@ jobs:
           restore-keys: |
             astro-cache-${{ runner.os }}-
 
+      # После merge отдельную Build-job больше не запускаем: deploy всё равно
+      # собирает тот же SHA. Этот дешёвый сторож сохраняет единственную проверку,
+      # которая была только там, а лишняя сборка больше не занимает раннер.
+      - name: Расписания CI без повторов ключей
+        run: node scripts/check-workflows.mjs
+
       - run: npm run build
 
       - name: Setup SSH
