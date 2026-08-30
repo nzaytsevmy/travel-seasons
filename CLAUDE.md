@@ -476,6 +476,8 @@ Search Central (канон Google) · разбор факторов Яндекс
     Внутренние PR владельца в `main` автоматически сливаются squash-методом, но только когда зелёны все
     обязательные проверки: build, content gate, secret scan, CodeQL и — для кода/вёрстки — visual + Lighthouse.
     Не просить ручной merge зелёной заявки; красный или отсутствующий гейт всегда блокирует автоматику.
+    После auto-merge тот же workflow явно запускает `Deploy to REG.RU`; production build и live smoke-check
+    обязательны. На неявный `push` от `GITHUB_TOKEN` не рассчитывать — GitHub его не создаёт.
     [[feedback_visual_regression]] · [[feedback_llms_txt_sync]] · [[feedback_full_consistency_check]].
     **Откат:** держать предыдущий рабочий коммит/build, уметь откатиться за минуты (`git revert`), **проверять прод
     после деплоя** (живой URL, не только зелёный гейт). **Коды ответа:** кастомная 404 по брендбуку, 301 при смене
