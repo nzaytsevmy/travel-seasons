@@ -546,6 +546,7 @@ test('llms-full.txt: нет внутренних идентификаторов 
     строк: (text.match(new RegExp(re.source, 'gm')) || []).length,
   }));
   expect(found, JSON.stringify(found, null, 2)).toEqual([]);
+  expect(text.match(/[ \t]+$/gm) || [], 'генератор не оставляет пробелы в концах строк').toEqual([]);
 });
 
 // Вес hero-обложки — единственное, что реально предсказывает провал mobile Lighthouse.

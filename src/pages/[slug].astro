@@ -283,6 +283,7 @@ if (guide?.itinerary?.length) {
   ldJson={ldJson}
   preloadImageSrcset={heroPreload?.srcSet?.attribute}
   preloadImageSizes="100vw"
+  monetizationDestination={d.slug}
 >
   <Breadcrumbs crumbs={[{ label: 'Страны', href: '/countries/' }, { label: d.cases.nom }]} />
 
@@ -607,7 +608,7 @@ if (guide?.itinerary?.length) {
 
     <BudgetBlock slug={d.slug} />
 
-    <AviasalesWidget title={`Найти билеты — ${d.cases.vP}`} subid={subId} />
+    <AviasalesWidget origin="MOW" destination={d.price.iata} title={`Найти билеты — ${d.cases.vP}`} subid={subId} />
 
     {/* Авторские туры (YouTravel) */}
     <section class="sl-section">

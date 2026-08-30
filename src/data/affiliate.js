@@ -383,3 +383,15 @@ export const ostrovokCountry = (dirSlug, subId) => {
   const c = OSTROVOK_COUNTRY[dirSlug] ?? dirSlug;
   return c ? tpkDeep('ostrovok', `https://ostrovok.ru/hotel/${c}/`, subId) : ostrovokSearch(subId);
 };
+
+// Единый переход от общего оффера к проверенному страновому. Нужен старым
+// статьям: их вручную написанные ссылки остаются рабочим fallback без JS, а
+// общий денежный слой уточняет назначение до первого клика.
+export function destinationAffiliateUrl(partner, destination, subId) {
+  if (!destination) return null;
+  if (partner === 'cherehapa') return cherehapaCountry(destination, subId);
+  if (partner === 'ostrovok') return ostrovokCountry(destination, subId);
+  if (partner === 'airalo') return airaloCountry(destination, subId);
+  if (partner === 'youtravel') return youtravelCountry(destination, subId);
+  return null;
+}
