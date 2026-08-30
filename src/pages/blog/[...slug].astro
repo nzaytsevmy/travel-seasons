@@ -131,6 +131,19 @@ const ownDirs = DIRECTIONS.filter(d => d.relatedPosts?.some(p => p.slug === post
 const primaryDir = DIRECTIONS.find(d => d.relatedPosts?.[0]?.slug === post.slug)
   ?? (ownDirs.length === 1 ? ownDirs[0] : null)
   ?? directionForTags(post.data.tags || []);
+// У этих материалов намеренно несколько стран или весь рынок. Подставлять в
+// партнёрскую форму одну страну из навигационного кластера было бы скрытой
+// подменой обещания CTA, поэтому денежный контекст оставляем без destination.
+const MULTI_DESTINATION_POSTS = new Set([
+  'luchshie-goroda-dlya-molodyh-2026',
+  'patagonia-2026',
+  'safari-afrika-2026',
+  'schengen-insurance-2026',
+  'schengen-visa-2026',
+  'skolko-stoit-nedelya-v-rossii-2026',
+  'travelata-2026',
+]);
+const monetizationDestination = MULTI_DESTINATION_POSTS.has(post.slug) ? '' : primaryDir?.slug;
 // Хлебные крошки. Было «Главная / Блог / <весь заголовок>»: страны в цепочке
 // нет, последнее звено переносится на три строки на телефоне. Стало
 // «Главная / Блог / Япония / Виза» — четыре звена, это в границах требований
@@ -226,6 +239,7 @@ if (faqs.length >= 2) {
   ldJson={ldJson}
   preloadImageSrcset={heroPreload?.srcSet.attribute}
   preloadImageSizes="100vw"
+  monetizationDestination={monetizationDestination}
 >
   <script is:inline>document.body.classList.add('post-page')</script>
   <Breadcrumbs crumbs={crumbs} />

@@ -109,12 +109,13 @@ jobs:
       # Функциональные тесты (чек-лист, калькулятор, личные страницы, поездки)
       # проверяют КОД и нужны только на правках кода — они остались в
       # шардированном визуальном прогоне, который на таких правках и запускается.
-      - name: Инварианты контента, ритм и гейт новостей
+      - name: Инварианты контента, ритм, новости и денежное поведение
         run: |
           npx playwright test \
             tests/content-invariants.spec.ts \
             tests/rhythm-gate.spec.ts \
             tests/news-gate.spec.ts \
+            tests/monetization-browser.spec.ts \
             --project=chromium-desktop
         env:
           PREVIEW_URL: http://localhost:4322

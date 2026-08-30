@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import SwissHeader from '../components/SwissHeader.astro';
 import CookieConsent from '../components/CookieConsent.astro';
+import { classifyPage } from '../data/monetization.js';
 
 // Golos Text (variable, единственный гротеск бренда) — self-hosted @font-face
 // с font-display:optional (ниже, в <head>). Vite отдаёт хешированные URL
@@ -41,6 +42,7 @@ interface Props {
   preloadImageSizes?: string;
   noindex?: boolean;
   noTransitions?: boolean;
+  monetizationDestination?: string;
 }
 
 const {
@@ -58,7 +60,16 @@ const {
   preloadImageSizes = '100vw',
   noindex = false,
   noTransitions = false,
+  monetizationDestination,
 } = Astro.props;
+
+const monetizationPage = classifyPage(Astro.url.pathname);
+const monetizationContext = {
+  ...monetizationPage,
+  destination: monetizationDestination === undefined
+    ? monetizationPage.destination
+    : monetizationDestination,
+};
 
 const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-image.png?v=2';
 
@@ -281,7 +292,11 @@ const finalLd = {
        кастомных transition-анимаций не было. Все скрипты инициализируются на каждой
        полной загрузке (прямые вызовы init), astro:page-load-листенеры стали no-op. -->
 </head>
-<body>
+<body
+  data-page-type={monetizationContext.type}
+  data-monetization-intent={monetizationContext.intent}
+  data-destination={monetizationContext.destination}
+>
   <!-- Skip-link for keyboard / screen reader users -->
   <a href="#main" class="skip-link">Перейти к контенту</a>
 
@@ -316,20 +331,22 @@ const finalLd = {
     }
     _refLinksNewTab();
     document.addEventListener('astro:page-load', _refLinksNewTab);
-    // Трекинг партнёрских кликов в Метрику (цель outbound_link, партнёр в параметре).
-    // Делегирование = 1 listener, ловит и динамически добавленные ссылки. ym грузится по
-    // умолчанию (базовый счётчик), поэтому клики ловятся у всех. order_price — в UI Метрики.
+    // Собственные каналы считаем отдельно. Партнёрскую воронку с CTA-level
+    // параметрами ведёт модуль ниже; здесь её не дублируем.
     document.addEventListener('click', function (e) {
       var a = e.target.closest ? e.target.closest('a[href^="http"]') : null;
       if (!a) return;
       var host = _affHost(a);
       if (typeof window.ym !== 'function') return;
-      if (_isAff(a, host)) {
-        window.ym(95832375, 'reachGoal', 'outbound_link', { partner: host });
-      } else if (_isOwn(host)) {
+      if (_isOwn(host)) {
         window.ym(95832375, 'reachGoal', 'telegram_click', { from: location.pathname });
       }
     }, true);
+  </script>
+
+  <script>
+    import { initMonetizationTracking } from '../scripts/monetization-tracking.js';
+    initMonetizationTracking();
   </script>
 
   <!-- Cookie-баннер согласия (152-ФЗ) — на всём сайте, показывается до выбора -->
