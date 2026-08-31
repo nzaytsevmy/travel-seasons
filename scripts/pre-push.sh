@@ -28,11 +28,21 @@ else
   echo "▶ pre-push визуал-гейт (build → :4322 → playwright)…"
 fi
 
+if ! npm run check:delivery >/tmp/ttb_prepush_delivery.log 2>&1; then
+  echo "✖ delivery/agent-skills контракт НЕ зелёный → /tmp/ttb_prepush_delivery.log"
+  exit 1
+fi
+
 # Минификация HTML занимает три четверти сборки (79с против 21с, замерено
 # 01.08.2026), а на отрисовку страницы и на скриншоты не влияет вовсе.
 # На прод сайт уезжает минифицированным как раньше — там переменной нет.
 if ! SKIP_HTML_MIN=1 npm run build >/tmp/ttb_prepush_build.log 2>&1; then
   echo "✖ build упал → /tmp/ttb_prepush_build.log"; exit 1
+fi
+
+if ! npm run check:seo >/tmp/ttb_prepush_seo.log 2>&1; then
+  echo "✖ full-site SEO audit НЕ зелёный → /tmp/ttb_prepush_seo.log"
+  exit 1
 fi
 
 if ! node scripts/monetization-site-audit.mjs dist >/tmp/ttb_prepush_money.log 2>&1 \
