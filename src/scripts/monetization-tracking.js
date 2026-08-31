@@ -1,8 +1,10 @@
 import {
   addCtaAttribution,
+  addClickAttribution,
   buildCtaId,
   classifyPage,
   classifyPartner,
+  createClickId,
   isGenericAffiliateUrl,
 } from '../data/monetization.js';
 import { destinationAffiliateUrl } from '../data/affiliate.js';
@@ -69,6 +71,7 @@ export function prepareAffiliateLinks(doc = document, pathname = window.location
       }
     }
     if (known) anchor.href = addCtaAttribution(anchor.href, ctaId);
+    anchor.dataset.attributionHref = anchor.href;
     anchor.dataset.ctaPrepared = '1';
     anchor.dataset.ctaId = ctaId;
     anchor.dataset.partner = partner;
@@ -88,7 +91,7 @@ export function prepareAffiliateLinks(doc = document, pathname = window.location
   return links.filter((anchor) => anchor.dataset.ctaPrepared === '1');
 }
 
-export function monetizationPayload(anchor, pathname = window.location.pathname) {
+export function monetizationPayload(anchor, pathname = window.location.pathname, clickId = '') {
   return {
     page_path: pathname,
     page_type: anchor.dataset.pageType || 'unknown',
@@ -101,8 +104,13 @@ export function monetizationPayload(anchor, pathname = window.location.pathname)
     link_position: Number(anchor.dataset.linkPosition || 0),
     experiment_id: anchor.dataset.experimentId || '',
     variant: anchor.dataset.variant || '',
+    assignment_unit: anchor.ownerDocument?.body?.dataset.assignmentUnit || '',
+    click_id: clickId,
+    partner_join: classifyPartner(anchor.dataset.attributionHref || anchor.href)?.attribution === 'sub_id'
+      ? 'click_id'
+      : 'metrika_only',
     anchor: cleanText(anchor.textContent),
-    contract: 'revenue_v1',
+    contract: 'revenue_v2',
   };
 }
 
@@ -115,12 +123,22 @@ export function initMonetizationTracking(doc = document, win = window) {
   prepareAffiliateLinks(doc, win.location.pathname);
 
   doc.addEventListener('astro:page-load', () => prepareAffiliateLinks(doc, win.location.pathname));
-  doc.addEventListener('click', (event) => {
+  function recordAffiliateClick(event) {
     const anchor = event.target?.closest?.('a[data-cta-id]');
     if (!anchor) return;
-    const payload = monetizationPayload(anchor, win.location.pathname);
+    const clickId = createClickId(win.crypto);
+    const ctaId = anchor.dataset.ctaId || '';
+    const experimentId = anchor.dataset.experimentId || 'baseline';
+    const variant = anchor.dataset.variant || 'na';
+    const baseHref = anchor.dataset.attributionHref || anchor.href;
+    anchor.href = addClickAttribution(baseHref, { ctaId, experimentId, variant, clickId });
+    const payload = monetizationPayload(anchor, win.location.pathname, clickId);
     doc.dispatchEvent(new CustomEvent('tt:affiliate-click', { detail: payload }));
     if (typeof win.ym === 'function') win.ym(95832375, 'reachGoal', 'outbound_link', payload);
+  }
+  doc.addEventListener('click', recordAffiliateClick, true);
+  doc.addEventListener('auxclick', (event) => {
+    if (event.button === 1) recordAffiliateClick(event);
   }, true);
 }
 

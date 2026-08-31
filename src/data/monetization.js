@@ -1,6 +1,26 @@
 // Единый денежный контракт TravelTribe.
-// Здесь нет токенов, cookie и идентификаторов посетителя: только свойства
-// страницы и CTA, которые одинаково читают Метрика и отчёт партнёра.
+// Здесь нет cookie и идентификаторов посетителя. Click ID — случайный одноразовый
+// ключ конкретного перехода: он не позволяет узнать человека и нужен только для
+// точного join Метрики с действием партнёра.
+
+export const MONETIZATION_EXPERIMENT = Object.freeze({
+  id: 'monetization_aa_click_join_v1',
+  kind: 'aa',
+  variants: ['a', 'b'],
+  assignmentUnit: 'browser_device',
+  expectedAllocation: { a: 0.5, b: 0.5 },
+  srmAlpha: 0.01,
+  minimumSampleSize: 4000,
+  aaEquivalenceMargin: 0.2,
+  power: 0.8,
+  attributionThreshold: 0.95,
+  startedAt: '2026-08-31',
+  fixedEndAt: '2026-09-27',
+  requiredGuardrails: ['seo', 'cwv', 'errors'],
+});
+
+const ATTRIBUTION_CONTRACT = 'tt2';
+const CLICK_ID_RE = /^c[a-f0-9]{20}$/;
 
 const PARTNERS = [
   { host: 'aviasales.tpk.mx', partner: 'aviasales', offer: 'flight', attribution: 'sub_id' },
@@ -139,6 +159,61 @@ export function addCtaAttribution(href, ctaId) {
   return url.toString();
 }
 
+export function createClickId(cryptoObject = globalThis.crypto) {
+  const bytes = new Uint8Array(10);
+  if (!cryptoObject || typeof cryptoObject.getRandomValues !== 'function') {
+    throw new Error('Secure random source is required for click attribution');
+  }
+  cryptoObject.getRandomValues(bytes);
+  return `c${[...bytes].map((value) => value.toString(16).padStart(2, '0')).join('')}`;
+}
+
+export function buildClickAttribution({ ctaId, experimentId, variant, clickId }) {
+  const fields = [clean(ctaId).slice(0, 64), clean(experimentId).slice(0, 64), clean(variant).slice(0, 8), clean(clickId)];
+  if (!fields[0] || !fields[1] || !fields[2] || !CLICK_ID_RE.test(fields[3])) {
+    throw new Error('Incomplete click attribution contract');
+  }
+  return `${ATTRIBUTION_CONTRACT}__${fields.join('__')}`;
+}
+
+export function parseClickAttribution(value) {
+  const raw = String(value ?? '');
+  const parts = raw.split('__');
+  if (parts.length === 5 && parts[0] === ATTRIBUTION_CONTRACT) {
+    const [, ctaId, experimentId, variant, clickId] = parts;
+    const valid = Boolean(clean(ctaId) && clean(experimentId) && clean(variant) && CLICK_ID_RE.test(clickId));
+    if (valid) {
+      return {
+        contract: ATTRIBUTION_CONTRACT,
+        ctaId: clean(ctaId).slice(0, 64),
+        experimentId: clean(experimentId).slice(0, 64),
+        variant: clean(variant).slice(0, 8),
+        clickId,
+        joinSupported: true,
+      };
+    }
+  }
+  return {
+    contract: 'legacy',
+    ctaId: clean(raw).slice(0, 128),
+    experimentId: '',
+    variant: '',
+    clickId: '',
+    joinSupported: false,
+  };
+}
+
+export function addClickAttribution(href, attribution) {
+  const partner = classifyPartner(href);
+  // Точный action→click join сейчас документирован только у Travelpayouts:
+  // все его ссылки идут через tpk.mx и принимают sub_id. Другие сети сохраняют
+  // CTA-level метку; их нельзя молча объявлять click-level совместимыми.
+  if (!partner || partner.attribution !== 'sub_id') return href;
+  const url = new URL(href);
+  url.searchParams.set('sub_id', buildClickAttribution(attribution));
+  return url.toString();
+}
+
 const numberFrom = (value) => {
   if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
   const normalized = String(value ?? '')
@@ -150,29 +225,114 @@ const numberFrom = (value) => {
 };
 
 export function normalizeRevenueRow(row) {
-  const status = clean(row.status);
-  const hasRubAmount = row.commission_rub != null && String(row.commission_rub).trim() !== '';
+  const status = clean(row.status ?? row.state);
+  const rubAmount = [row.commission_rub, row.profit_rub, row.paid_profit_rub, row.processing_profit_rub]
+    .find((value) => value != null && String(value).trim() !== '');
+  const genericAmount = [row.commission, row.revenue, row.profit]
+    .find((value) => value != null && String(value).trim() !== '');
+  const hasRubAmount = rubAmount != null;
   const currency = clean(row.currency || (hasRubAmount ? 'rub' : '')).toUpperCase() || 'RUB';
-  const monetaryValueKnown = hasRubAmount || currency === 'RUB';
+  const monetaryValueKnown = hasRubAmount || (currency === 'RUB' && genericAmount != null);
   const commission = monetaryValueKnown
-    ? Math.abs(numberFrom(hasRubAmount ? row.commission_rub : (row.commission ?? row.revenue)))
+    ? Math.abs(numberFrom(hasRubAmount ? rubAmount : genericAmount))
     : 0;
   const approved = ['approved', 'confirmed', 'paid'].includes(status);
   const reversed = ['cancelled', 'canceled', 'rejected', 'reversed', 'declined'].includes(status);
-  const clickDate = String(row.click_date ?? row.date ?? row.created_at ?? '');
-  const decisionDate = String(row.decision_date ?? row.updated_at ?? row.status_date ?? '');
+  // Travelpayouts `date` / `created_at` — дата действия, не клика. Подменять ею
+  // click_date запрещено: зрелость когорты иначе считается от неверной точки.
+  const clickDate = String(row.click_date ?? row.clickDate ?? '');
+  const actionDate = String(row.action_date ?? row.booked_at ?? row.date ?? row.created_at_day ?? row.created_at ?? '');
+  const decisionDate = String(row.decision_date ?? row.decisionDate ?? row.state_updated_at ?? row.updated_at ?? row.status_date ?? '');
+  const rawAttribution = row.sub_id ?? row.subId ?? row.sub1 ?? row.shared_id ?? row.utm_content ?? '';
+  const attribution = parseClickAttribution(rawAttribution);
   return {
     date: clickDate,
     clickDate,
+    actionDate,
     decisionDate,
-    partner: clean(row.partner),
-    ctaId: clean(row.sub_id ?? row.sub1 ?? row.shared_id ?? row.utm_content),
+    partner: clean(row.partner ?? row.campaign_name_en ?? row.campaign_name ?? 'travelpayouts'),
+    ctaId: attribution.ctaId,
+    experimentId: attribution.experimentId,
+    variant: attribution.variant,
+    clickId: attribution.clickId,
+    attributionContract: attribution.contract,
     currency,
     status,
     approvedRevenue: approved ? commission : 0,
     reversedRevenue: reversed ? commission : 0,
-    orderId: String(row.order_id ?? row.booking_id ?? row.action_id ?? ''),
+    orderId: String(row.order_id ?? row.action_id ?? row.internal_action_id ?? row.booking_id ?? ''),
+    internalOrderId: String(row.internal_action_id ?? row.booking_id ?? ''),
     monetaryValueKnown,
+  };
+}
+
+const clickEventId = (row) => clean(row.click_id ?? row.clickId);
+const clickEventTime = (row) => String(row.event_time ?? row.eventTime ?? row.date_time ?? row.datetime ?? '');
+
+export function joinRevenueRowsToClicks(revenueRows, clickRows) {
+  const normalized = deduplicateRevenueRows(revenueRows.map((row) => (
+    Object.prototype.hasOwnProperty.call(row, 'attributionContract') ? row : normalizeRevenueRow(row)
+  )));
+  const byClick = new Map();
+  for (const click of clickRows) {
+    const clickId = clickEventId(click);
+    if (!CLICK_ID_RE.test(clickId)) continue;
+    const existing = byClick.get(clickId) ?? [];
+    const repeats = Math.max(1, Math.min(2, Number(click.event_count ?? 1)));
+    for (let i = 0; i < repeats; i += 1) existing.push(click);
+    byClick.set(clickId, existing);
+  }
+
+  let matched = 0;
+  let missing = 0;
+  let ambiguous = 0;
+  let mismatched = 0;
+  const rows = normalized.map((row) => {
+    if (!CLICK_ID_RE.test(row.clickId || '')) {
+      missing += 1;
+      return row;
+    }
+    const candidates = byClick.get(row.clickId) ?? [];
+    if (candidates.length === 0) {
+      missing += 1;
+      return row;
+    }
+    if (candidates.length !== 1) {
+      ambiguous += 1;
+      return row;
+    }
+    const click = candidates[0];
+    const eventExperiment = clean(click.experiment_id ?? click.experimentId);
+    const eventVariant = clean(click.variant);
+    if ((eventExperiment && eventExperiment !== row.experimentId) || (eventVariant && eventVariant !== row.variant)) {
+      mismatched += 1;
+      return row;
+    }
+    const eventTime = clickEventTime(click);
+    if (!Number.isFinite(Date.parse(eventTime))) {
+      missing += 1;
+      return row;
+    }
+    matched += 1;
+    return {
+      ...row,
+      date: eventTime,
+      clickDate: eventTime,
+      pagePath: String(click.page_path ?? click.pagePath ?? ''),
+      metrikaClick: true,
+    };
+  });
+  const total = rows.length;
+  return {
+    rows,
+    stats: {
+      total,
+      matched,
+      missing,
+      ambiguous,
+      mismatched,
+      coverage: total > 0 ? matched / total : null,
+    },
   };
 }
 
@@ -209,6 +369,124 @@ export function isRevenueRowMature(row, asOfDate, maturityDaysByPartner = {}) {
   const asOf = Date.parse(asOfDate || '');
   if (!Number.isFinite(clickedAt) || !Number.isFinite(asOf)) return false;
   return asOf - clickedAt >= days * 86_400_000;
+}
+
+function erfc(value) {
+  // Abramowitz & Stegun 7.1.26: достаточная точность для SRM-гейта.
+  const x = Math.abs(value);
+  const t = 1 / (1 + 0.3275911 * x);
+  const polynomial = (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t;
+  const erf = 1 - polynomial * Math.exp(-x * x);
+  return value >= 0 ? 1 - erf : 1 + erf;
+}
+
+function srmPValue(assignmentCounts, expectedAllocation, variants) {
+  const total = variants.reduce((sum, variant) => sum + numberFrom(assignmentCounts[variant]), 0);
+  if (!total || variants.length !== 2) return null;
+  let chiSquare = 0;
+  for (const variant of variants) {
+    const expected = total * numberFrom(expectedAllocation[variant]);
+    if (expected <= 0) return null;
+    chiSquare += ((numberFrom(assignmentCounts[variant]) - expected) ** 2) / expected;
+  }
+  return erfc(Math.sqrt(chiSquare / 2));
+}
+
+export function evaluateExperimentDecision({
+  experiment = {},
+  assignmentCounts = {},
+  joinStats = {},
+  revenueRows = [],
+  asOfDate = '',
+  maturityDaysByPartner = {},
+  guardrails = {},
+  effectInterval = null,
+}) {
+  const blockers = [];
+  const block = (code, message) => blockers.push({ code, message });
+  const variants = Array.isArray(experiment.variants) ? experiment.variants : [];
+  const totalAssigned = variants.reduce((sum, variant) => sum + numberFrom(assignmentCounts[variant]), 0);
+
+  if (!experiment.id || !['aa', 'ab'].includes(experiment.kind) || variants.length !== 2) {
+    block('experiment_config', 'Нужен предзарегистрированный двухвариантный A/A или A/B контракт.');
+  }
+  const effectPlan = experiment.kind === 'aa' ? experiment.aaEquivalenceMargin : experiment.minimumDetectableEffect;
+  if (!Number.isFinite(Number(experiment.minimumSampleSize)) || Number(experiment.minimumSampleSize) <= 0
+      || !Number.isFinite(Number(effectPlan)) || Number(effectPlan) <= 0
+      || Number(experiment.power) < 0.8 || !experiment.startedAt || !experiment.fixedEndAt) {
+    block('power_plan', 'До запуска нужны MDE или A/A margin, мощность не ниже 80%, размер выборки и фиксированные даты.');
+  } else if (totalAssigned < Number(experiment.minimumSampleSize)) {
+    block('insufficient_sample', `Назначено ${totalAssigned}, требуется ${Number(experiment.minimumSampleSize)}.`);
+  }
+
+  const srmAlpha = Number(experiment.srmAlpha);
+  const srmP = srmPValue(assignmentCounts, experiment.expectedAllocation ?? {}, variants);
+  if (!Number.isFinite(srmP) || !Number.isFinite(srmAlpha) || srmAlpha <= 0) {
+    block('srm_config', 'Нельзя проверить SRM без ожидаемого распределения и порога.');
+  } else if (srmP < srmAlpha) {
+    block('srm', `Необъяснённый SRM: p=${srmP.toFixed(6)}.`);
+  }
+
+  const attributionThreshold = Number(experiment.attributionThreshold);
+  if (!Number.isFinite(attributionThreshold) || attributionThreshold <= 0 || attributionThreshold > 1) {
+    block('attribution_config', 'Порог action→click join должен быть задан до запуска.');
+  } else if (!Number.isFinite(Number(joinStats.coverage)) || Number(joinStats.coverage) < attributionThreshold) {
+    block('attribution_coverage', `Покрытие join ниже ${(attributionThreshold * 100).toFixed(1)}%.`);
+  }
+  if (Number(joinStats.ambiguous) > 0 || Number(joinStats.mismatched) > 0) {
+    block('ambiguous_join', 'Есть неоднозначные или противоречивые action→click связи.');
+  }
+  if (Number(joinStats.total) === 0) block('no_actions', 'A/A ещё не проверил денежный action→click путь.');
+
+  const finalStatuses = new Set(['approved', 'confirmed', 'paid', 'cancelled', 'canceled', 'rejected', 'reversed', 'declined']);
+  for (const row of revenueRows) {
+    if (!row.orderId) block('missing_order_id', 'Есть действие без стабильного action/order ID.');
+    if (!row.clickId || !row.clickDate) block('missing_click_join', 'Есть действие без точного click ID или даты клика Метрики.');
+    if (!row.monetaryValueKnown) block('unknown_money', 'Есть действие без известной рублёвой суммы.');
+    const maturityDays = Number(maturityDaysByPartner[row.partner] ?? maturityDaysByPartner.default);
+    if (!Number.isFinite(maturityDays) || maturityDays < 0) {
+      block('maturity_config', `Не задано окно зрелости для ${row.partner || 'партнёра'}.`);
+    } else if (!isRevenueRowMature(row, asOfDate, maturityDaysByPartner) || !finalStatuses.has(row.status)) {
+      block('immature_revenue', 'Когорта ещё не созрела или содержит нефинальный статус.');
+    }
+  }
+
+  const requiredGuardrails = Array.isArray(experiment.requiredGuardrails) ? experiment.requiredGuardrails : [];
+  if (!requiredGuardrails.length) block('guardrail_config', 'Охранные метрики должны быть заданы до запуска.');
+  for (const name of requiredGuardrails) {
+    if (guardrails[name] !== true) block('guardrail', `Не пройден guardrail: ${name}.`);
+  }
+
+  if (Number.isFinite(Date.parse(experiment.fixedEndAt || '')) && Number.isFinite(Date.parse(asOfDate || ''))
+      && Date.parse(asOfDate) < Date.parse(experiment.fixedEndAt)) {
+    block('fixed_horizon', 'Фиксированный горизонт эксперимента ещё не завершён.');
+  }
+
+  let winnerAllowed = false;
+  if (experiment.kind === 'aa') {
+    const margin = Number(experiment.aaEquivalenceMargin);
+    if (!effectInterval || !Number.isFinite(Number(effectInterval.lower)) || !Number.isFinite(Number(effectInterval.upper))) {
+      block('aa_equivalence', 'A/A требует заранее заданного интервала разницы диагностической метрики.');
+    } else if (Number(effectInterval.lower) < -margin || Number(effectInterval.upper) > margin) {
+      block('aa_equivalence', 'A/A не подтвердил эквивалентность вариантов в заданном margin.');
+    }
+  } else if (experiment.kind === 'ab') {
+    if (!effectInterval || !Number.isFinite(Number(effectInterval.lower)) || !Number.isFinite(Number(effectInterval.upper))) {
+      block('effect_interval', 'A/B-решение требует доверительного интервала OEC.');
+    } else {
+      winnerAllowed = Number(effectInterval.lower) >= Number(experiment.minimumDetectableEffect);
+    }
+  }
+
+  const uniqueBlockers = [...new Map(blockers.map((item) => [`${item.code}\0${item.message}`, item])).values()];
+  const ready = uniqueBlockers.length === 0;
+  return {
+    ready,
+    status: ready ? (experiment.kind === 'aa' ? 'aa_validated' : 'decision_ready') : 'blocked',
+    winnerAllowed: ready && experiment.kind === 'ab' && winnerAllowed,
+    blockers: uniqueBlockers,
+    metrics: { totalAssigned, srmPValue: srmP, attributionCoverage: joinStats.coverage ?? null },
+  };
 }
 
 export function computeRevenueMetrics({ organicSessions = 0, approvedRevenue = 0, reversedRevenue = 0, approvedOrders = 0 }) {
