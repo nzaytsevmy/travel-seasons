@@ -2,6 +2,8 @@
 
 Основной операционный контракт для этого репозитория — [`CLAUDE.md`](./CLAUDE.md)
 (SEO-гейт, дизайн-канон, правила контента). Читай его перед правками страниц/контента.
+Повторяемые SEO-, visual- и revenue-процессы лежат в `.agents/skills/`; skill
+маршрутизирует работу, но не дублирует и не заменяет актуальные стандарты репозитория.
 
 ## Cursor Cloud specific instructions
 
@@ -19,22 +21,19 @@
 ### Тулчейн
 - Пакетный менеджер — **npm** (`package-lock.json`). `npm ci`/`npm install` запускают `postinstall`
   → `patch-package` (патч `patches/astro-broken-links-checker+1.1.0.patch`); запускать из корня репо.
-- Node: CI использует **20**; VM работает на Node 22 — Astro 5 совместим, сборка/тесты проходят.
+- Node: основные CI-гейты используют **24**; исключения проверяй в конкретном workflow.
 
 ### Запуск / сборка / линт / тест (команды — в `package.json` scripts)
 - **Dev-сервер:** `npm run dev` → http://localhost:4321 (для разработки).
-- **Build:** `npm run build` — ~1,5–2 мин, ~2326 страниц (замеры 17.07.2026). `prebuild` генерит `llms.txt`.
-  Пре-existing хвост: часть HTML не сжимается astro-compress — это не регресс (см. `CLAUDE.md`).
-  ⚠️ В `CLAUDE.md` записано «14 файлов», по факту сборки 17.07.2026 их **45** — число в каноне
-  устарело, на глаз ему не верить, считать по логу сборки.
+- **Build:** `npm run build`; `prebuild` генерит `llms.txt`. Число страниц и предупреждений
+  дрейфует — сверяй текущий лог и A/B на чистом `main`, правила смотри в `CLAUDE.md`.
 - **Lint (CSS):** `npm run check:css` — **неблокирующий** (`|| true`). stylelint спотыкается о
   frontmatter `.astro` (сотни pre-existing CssSyntaxError) — это НЕ реальный гейт, игнорировать.
 - **SEO-аудит:** `npm run check:seo` — сканирует `dist/`, поэтому **сначала `npm run build`**.
 - **Visual/functional тесты:** `npm run check:visual` (Playwright). Неочевидное:
   - baseURL тестов = **http://localhost:4322** (built preview), а НЕ dev-сервер 4321.
-  - Playwright config **НЕ поднимает webServer сам**. Перед тестами подними preview на 4322:
-    `npm run preview:test` (делает build+preview), либо после уже готового `dist/`
-    просто `npx astro preview --port 4322` в фоне.
+  - Playwright config сам поднимает preview на **http://localhost:4322** из готового `dist/`.
+    Сначала собери сайт; не запускай параллельный preview и не задавай `PREVIEW_URL` локально.
   - Нужны браузеры Playwright (chromium + webkit) — ставятся update-скриптом.
   - Часть webkit-mobile снапшотов может быть `skipped` — это норма, не падение.
   - **Скриншотные эталоны есть под обе платформы:** `*-darwin.png` (локальный pre-push на

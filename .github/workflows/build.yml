@@ -55,6 +55,9 @@ jobs:
         env:
           SKIP_HTML_MIN: '1'   # минификация нужна проду, а не проверке
 
+      - name: Full-site SEO audit
+        run: npm run check:seo
+
       - name: Денежный контракт и full-site аудит
         run: npm run check:monetization
 
