@@ -58,3 +58,22 @@ test('очередь различает новые URL, ревизии и вол
   assert.match(queue, /2[–-]3 недели/i);
   assert.match(queue, /не публиковать ради выполнения расписания/i);
 });
+
+test('Черногория: отпускной интент отделён от визового и связан в обе стороны', async () => {
+  const [vacation, visa] = await Promise.all([
+    read('src/content/blog/montenegro-after-november-2026.mdx'),
+    read('src/content/blog/montenegro-visa-2026.mdx'),
+  ]);
+
+  assert.match(vacation, /^title:\s*["']Отдых в Черногории после 1 ноября 2026:/m);
+  assert.match(vacation, /\/blog\/montenegro-visa-2026\//);
+  assert.match(visa, /\/blog\/montenegro-after-november-2026\//);
+  assert.match(vacation, /^## (?:Где жить|Какой курорт)/m);
+  assert.match(vacation, /^## Сколько стоит/m);
+  assert.match(vacation, /^## (?:Когда ехать|Что с сезоном)/m);
+  assert.match(vacation, /ostrovokCity\('montenegro',\s*'budva'/);
+  assert.doesNotMatch(vacation, /ostrovokCountry\('montenegro'/);
+
+  const images = vacation.match(/^!\[[^\]]+\]\([^)]+\)/gm) ?? [];
+  assert.ok(images.length >= 10, `в отпускном гайде ${images.length} иллюстраций, нужно не меньше 10`);
+});
