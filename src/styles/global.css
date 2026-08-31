@@ -687,7 +687,7 @@ footer {
 }
 
 /* Benefit-CTA — заметная кликабельная ссылка-действие; инлайн, чтобы при переносе
-   на узком экране подчёркивание шло под каждой строкой (не border-bottom) */
+   на узком экране подчёркивание шло под каждой строкой (не border-bottom). */
 .aff-cta {
   font-weight: 600;
   color: var(--gold);
@@ -699,11 +699,8 @@ footer {
   transition: color 0.15s, text-decoration-color 0.15s;
 }
 .aff-cta:hover { color: var(--gold-dim); text-decoration-color: var(--gold); }
-/* ⛔ Отдельно стоящая денежная ссылка — не «ссылка в предложении», и льгота
-   WCAG 2.5.8 на неё не распространяется: цель должна быть от 24 точек.
-   В разметке статьи такая ссылка на своей строке абзацем не оборачивается и
-   получала высоту строки — 20 точек. Замер 29.08.2026: 36 таких ссылок в
-   блоге. Внутри абзаца и списка правило не применяется — там льгота есть. */
+/* Отдельно стоящая денежная ссылка получает хотя бы базовый desktop-target;
+   полный мобильный контракт задаётся общим правилом ниже. */
 .prose > .aff-cta,
 .post-body > .aff-cta,
 th > .aff-cta,
@@ -711,6 +708,23 @@ td > .aff-cta {
   display: inline-block;
   min-height: 24px;
   line-height: 24px;
+}
+/* Старые шаблоны используют собственные имена классов (`find`, `pmu-aff`,
+   `jp-aff` и другие). После единой JS-разметки их связывает data-cta-id, поэтому
+   мобильный гейт покрывает весь денежный путь, а не только MDX с `.aff-cta`. */
+@media (max-width: 767px) {
+  a[data-cta-id],
+  a[data-cta-id].aff-cta {
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    max-width: 100%;
+    min-width: 44px;
+    min-height: 44px;
+    padding-block: 10px;
+    line-height: 24px;
+    vertical-align: middle;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .aff-cta { transition: none; }

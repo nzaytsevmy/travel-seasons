@@ -358,10 +358,6 @@ const finalLd = {
        Внутренние и информационные ссылки не трогаем. Re-run после SPA-перехода. -->
   <script is:inline>
     var AFF = ['aviasales.ru', 'tpk.mx', 'pxf.io', 'platipomiru.com', 'drimsim.ru', 'cherehapa.ru', 'airalo.com', 'travelata.ru'];
-    // Свои каналы: их тоже надо считать, но НЕ метить rel=sponsored — это не реклама,
-    // а возврат читателя. Поэтому отдельный список и отдельная цель, мимо _isAff.
-    var OWN = ['t.me'];
-    function _isOwn(host) { return !!host && OWN.some(function (d) { return host === d || host.endsWith('.' + d); }); }
     function _affHost(a) { try { return new URL(a.href).hostname.toLowerCase(); } catch (e) { return null; } }
     function _isAff(a, host) {
       if (!host || host.indexOf('traveltribe.ru') !== -1) return false;
@@ -379,17 +375,8 @@ const finalLd = {
     }
     _refLinksNewTab();
     document.addEventListener('astro:page-load', _refLinksNewTab);
-    // Собственные каналы считаем отдельно. Партнёрскую воронку с CTA-level
-    // параметрами ведёт модуль ниже; здесь её не дублируем.
-    document.addEventListener('click', function (e) {
-      var a = e.target.closest ? e.target.closest('a[href^="http"]') : null;
-      if (!a) return;
-      var host = _affHost(a);
-      if (typeof window.ym !== 'function') return;
-      if (_isOwn(host)) {
-        window.ym(95832375, 'reachGoal', 'telegram_click', { from: location.pathname });
-      }
-    }, true);
+    // Собственные каналы считает модуль ниже: он добавляет CTA-level контекст,
+    // но не рекламную разметку. Здесь оставлена только доразметка партнёров.
   </script>
 
   <script>

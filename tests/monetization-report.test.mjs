@@ -111,3 +111,50 @@ test('без уникального click join денежное решение �
   assert.match(report, /точного action→click join нет/i);
   assert.match(report, /финансовое решение запрещено/i);
 });
+
+test('отчёт показывает 28- и 90-дневную ценность читателя по зрелому доходу', () => {
+  const subId = 'tt2__blog_galapagos_aviasales_body_1__monetization_aa_click_join_v1__a__c00112233445566778899';
+  const report = buildReport({
+    trafficSnapshot: traffic,
+    asOfDate: '2026-10-30',
+    maturityDaysByPartner: { aviasales: 30 },
+    readerCohortCounts: {
+      new: { users: 80, sessions: 100 },
+      returning_28_89: { users: 20, sessions: 25 },
+      returning_90_plus: { users: 5, sessions: 10 },
+    },
+    audienceSourceCounts: {
+      telegram_current: { users: 3, sessions: 4 },
+      telegram_assisted_1_27: { users: 2, sessions: 3 },
+    },
+    revenueRows: [{
+      partner: 'aviasales', state: 'paid', commission_rub: '100', action_id: 'TP-3', sub_id: subId,
+    }],
+    clickRows: [{
+      click_id: 'c00112233445566778899', event_time: '2026-08-29T12:34:56+03:00',
+      page_path: '/blog/galapagos-2026/', reader_cohort: 'returning_28_89',
+      audience_source: 'telegram_current', event_count: 1,
+    }],
+  });
+  assert.match(report, /Ценность читательских когорт/);
+  assert.match(report, /returning_28_89 \| 20 \| 25 \| 1 \| 1 \| 100,00 ₽ \| 4[\s ]?000,00 ₽/);
+  assert.match(report, /returning_90_plus \| 5 \| 10 \| 0 \| 0 \| 0,00 ₽ \| 0,00 ₽/);
+  assert.match(report, /Telegram-assisted/);
+  assert.match(report, /telegram_current \| 3 \| 4 \| 1 \| 1 \| 100,00 ₽ \| 25[\s ]?000,00 ₽/);
+});
+
+test('старые сопоставленные клики без cohort-полей не выпадают из сверки', () => {
+  const subId = 'tt2__blog_galapagos_aviasales_body_1__monetization_aa_click_join_v1__a__c00112233445566778899';
+  const report = buildReport({
+    trafficSnapshot: traffic,
+    asOfDate: '2026-10-30',
+    maturityDaysByPartner: { aviasales: 30 },
+    revenueRows: [{
+      partner: 'aviasales', state: 'paid', commission_rub: '100', action_id: 'TP-4', sub_id: subId,
+    }],
+    clickRows: [{
+      click_id: 'c00112233445566778899', event_time: '2026-08-29T12:34:56+03:00', event_count: 1,
+    }],
+  });
+  assert.equal((report.match(/\| unknown \| 0 \| 0 \| 1 \| 1 \| 100,00 ₽ \| — \|/g) ?? []).length, 2);
+});

@@ -10,15 +10,19 @@ import {
 } from '../src/data/monetization.js';
 
 function argsOf(argv) {
-  const args = { traffic: 'seo-pulse/traffic.json', revenue: '', clicks: '', maturity: '', output: '' };
+  const args = { traffic: 'seo-pulse/traffic.json', revenue: '', clicks: '', maturity: '', input: '', output: '' };
   for (let i = 0; i < argv.length; i += 1) {
     const key = argv[i];
     if (key === '--traffic' || key === '--revenue' || key === '--output') args[key.slice(2)] = argv[++i] ?? '';
     if (key === '--click-events') args.clicks = argv[++i] ?? '';
     if (key === '--maturity-config') args.maturity = argv[++i] ?? '';
+    if (key === '--input') args.input = argv[++i] ?? '';
   }
   return args;
 }
+
+const READER_COHORT_ORDER = ['new', 'returning_1_27', 'returning_28_89', 'returning_90_plus', 'unknown'];
+const AUDIENCE_SOURCE_ORDER = ['telegram_current', 'telegram_assisted_1_27', 'telegram_assisted_28_89', 'unattributed', 'unknown'];
 
 function parseCsv(text) {
   const rows = [];
@@ -93,12 +97,37 @@ function renderTable(groups) {
   return lines.join('\n');
 }
 
+function renderValueTable({ counts = {}, clickRows = [], decisionRows = [], field, order }) {
+  const bucketOf = (row) => String(row[field] || 'unknown');
+  const keys = [...new Set([...order, ...Object.keys(counts)])]
+    .filter((key) => counts[key] || clickRows.some((row) => bucketOf(row) === key) || decisionRows.some((row) => bucketOf(row) === key));
+  if (!keys.length) return 'Данных для когорт ещё нет.';
+  const lines = [
+    '| когорта | пользователей | сессий | кликов | зрелых заказов | чистый доход | доход / 1 000 сессий |',
+    '|---|---:|---:|---:|---:|---:|---:|',
+  ];
+  for (const key of keys) {
+    const users = Number(counts[key]?.users ?? 0);
+    const sessions = Number(counts[key]?.sessions ?? 0);
+    const clicks = clickRows
+      .filter((row) => bucketOf(row) === key)
+      .reduce((sum, row) => sum + Math.max(1, Number(row.event_count ?? 1)), 0);
+    const cohortOrders = decisionRows.filter((row) => bucketOf(row) === key);
+    const net = cohortOrders.reduce((sum, row) => sum + row.approvedRevenue - row.reversedRevenue, 0);
+    const rpm = sessions > 0 ? net / sessions * 1000 : null;
+    lines.push(`| ${key} | ${users} | ${sessions} | ${clicks} | ${cohortOrders.length} | ${money(net)} | ${rpm == null ? '—' : money(rpm)} |`);
+  }
+  return lines.join('\n');
+}
+
 export function buildReport({
   trafficSnapshot,
   revenueRows = [],
   clickRows = [],
   asOfDate = trafficSnapshot.updated || new Date().toISOString().slice(0, 10),
   maturityDaysByPartner = {},
+  readerCohortCounts = {},
+  audienceSourceCounts = {},
 }) {
   const traffic = flattenTraffic(trafficSnapshot);
   const joined = joinRevenueRowsToClicks(revenueRows, clickRows);
@@ -118,6 +147,20 @@ export function buildReport({
   const organicSessions = traffic.reduce((sum, row) => sum + row.organic, 0);
   const clicks = traffic.reduce((sum, row) => sum + row.clicks, 0);
   const metrics = computeRevenueMetrics({ organicSessions, approvedRevenue, reversedRevenue, approvedOrders });
+  const readerValueTable = renderValueTable({
+    counts: readerCohortCounts,
+    clickRows,
+    decisionRows,
+    field: 'reader_cohort',
+    order: READER_COHORT_ORDER,
+  });
+  const telegramValueTable = renderValueTable({
+    counts: audienceSourceCounts,
+    clickRows,
+    decisionRows,
+    field: 'audience_source',
+    order: AUDIENCE_SOURCE_ORDER,
+  });
   const dated = trafficSnapshot.updated || new Date().toISOString().slice(0, 10);
   const missingOrderIds = normalized.filter((row) => !row.orderId).length;
   const unknownMoney = normalized.filter((row) => !row.monetaryValueKnown).length;
@@ -152,6 +195,10 @@ export function buildReport({
     + `- Статус: **${status}**\n\n`
     + `## По типам страниц\n\n${renderTable(sumBy(traffic, 'type'))}\n\n`
     + `## По намерению\n\n${renderTable(sumBy(traffic, 'intent'))}\n\n`
+    + `## Ценность читательских когорт\n\n${readerValueTable}\n\n`
+    + `## Telegram-assisted — наблюдательная атрибуция\n\n`
+    + `Вход по UTM и последующие возвраты показывают связанную цепочку, но без рандомизации не доказывают причинный вклад Telegram.\n\n`
+    + `${telegramValueTable}\n\n`
     + `## Правило решения\n\n`
     + `CTR используется для диагностики. Вариант остаётся на сайте постоянно только после созревшего роста чистого дохода; pending, отмены и сырые клики партнёра победой не считаются.\n`;
 }
@@ -159,15 +206,18 @@ export function buildReport({
 if (process.argv[1] && resolve(process.argv[1]) === new URL(import.meta.url).pathname) {
   const args = argsOf(process.argv.slice(2));
   const trafficSnapshot = JSON.parse(readFileSync(resolve(args.traffic), 'utf8'));
-  const revenueRows = args.revenue ? parseCsv(readFileSync(resolve(args.revenue), 'utf8')) : [];
-  const clickRows = args.clicks ? parseCsv(readFileSync(resolve(args.clicks), 'utf8')) : [];
+  const privateExport = args.input ? JSON.parse(readFileSync(resolve(args.input), 'utf8')) : {};
+  const revenueRows = args.revenue ? parseCsv(readFileSync(resolve(args.revenue), 'utf8')) : (privateExport.actions ?? []);
+  const clickRows = args.clicks ? parseCsv(readFileSync(resolve(args.clicks), 'utf8')) : (privateExport.clickEvents ?? []);
   const maturityDaysByPartner = args.maturity ? JSON.parse(readFileSync(resolve(args.maturity), 'utf8')) : {};
   const report = buildReport({
     trafficSnapshot,
     revenueRows,
     clickRows,
-    asOfDate: trafficSnapshot.updated,
+    asOfDate: privateExport.asOfDate || trafficSnapshot.updated,
     maturityDaysByPartner,
+    readerCohortCounts: privateExport.readerCohortCounts ?? {},
+    audienceSourceCounts: privateExport.audienceSourceCounts ?? {},
   });
   if (args.output) {
     writeFileSync(resolve(args.output), report);
