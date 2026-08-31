@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import SwissHeader from '../components/SwissHeader.astro';
 import CookieConsent from '../components/CookieConsent.astro';
-import { classifyPage } from '../data/monetization.js';
+import { classifyPage, MONETIZATION_EXPERIMENT } from '../data/monetization.js';
 
 // Golos Text (variable, единственный гротеск бренда) — self-hosted @font-face
 // с font-display:optional (ниже, в <head>). Vite отдаёт хешированные URL
@@ -296,7 +296,55 @@ const finalLd = {
   data-page-type={monetizationContext.type}
   data-monetization-intent={monetizationContext.intent}
   data-destination={monetizationContext.destination}
+  data-experiment-id={monetizationContext.intent === 'none' ? '' : MONETIZATION_EXPERIMENT.id}
+  data-experiment-kind={monetizationContext.intent === 'none' ? '' : MONETIZATION_EXPERIMENT.kind}
+  data-assignment-unit={monetizationContext.intent === 'none' ? '' : MONETIZATION_EXPERIMENT.assignmentUnit}
 >
+  <!-- A/A назначается до парсинга контента и кнопок. В локальном хранилище
+       браузера лежит только буква варианта, без идентификатора посетителя. -->
+  <script is:inline define:vars={{ monetizationExperiment: MONETIZATION_EXPERIMENT }}>
+    (function () {
+      var body = document.body;
+      if (!body || body.dataset.monetizationIntent === 'none') return;
+      var today = new Date().toISOString().slice(0, 10);
+      if (today < monetizationExperiment.startedAt || today > monetizationExperiment.fixedEndAt) return;
+      var variants = monetizationExperiment.variants || [];
+      var key = 'tt_exp:' + monetizationExperiment.id;
+      var variant = '';
+      try { variant = localStorage.getItem(key) || ''; } catch (e) {}
+      if (variants.indexOf(variant) === -1) {
+        var draw = new Uint32Array(1);
+        crypto.getRandomValues(draw);
+        variant = variants[draw[0] % variants.length] || '';
+        try { localStorage.setItem(key, variant); } catch (e) {}
+      }
+      if (!variant) return;
+      body.dataset.experimentVariant = variant;
+      window.__ttMonetizationAssignment = {
+        experimentId: monetizationExperiment.id,
+        variant: variant,
+        assignmentUnit: monetizationExperiment.assignmentUnit,
+      };
+      var payload = {
+        page_path: location.pathname,
+        page_type: body.dataset.pageType || 'unknown',
+        intent: body.dataset.monetizationIntent || 'unknown',
+        experiment_id: monetizationExperiment.id,
+        variant: variant,
+        assignment_unit: monetizationExperiment.assignmentUnit,
+        experiment_kind: monetizationExperiment.kind,
+        contract: 'revenue_v2',
+      };
+      document.dispatchEvent(new CustomEvent('tt:experiment-assignment', { detail: payload }));
+      if (typeof window.ym === 'function') {
+        var visitParams = { monetization_experiment: {} };
+        visitParams.monetization_experiment[monetizationExperiment.id] = variant;
+        window.ym(95832375, 'params', visitParams);
+        window.ym(95832375, 'reachGoal', 'experiment_assignment', payload);
+      }
+    })();
+  </script>
+
   <!-- Skip-link for keyboard / screen reader users -->
   <a href="#main" class="skip-link">Перейти к контенту</a>
 

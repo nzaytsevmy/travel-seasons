@@ -76,3 +76,38 @@ test('без партнёрской выгрузки отчёт не объяв�
   assert.match(report, /финансовый результат считать доказанным нельзя/);
   assert.match(report, /Доход на 1 000 органических визитов: \*\*0,00 ₽\*\*/);
 });
+
+test('сырая Travelpayouts-операция получает дату клика только после точного join с Метрикой', () => {
+  const subId = 'tt2__blog_galapagos_aviasales_body_1__monetization_aa_click_join_v1__a__c00112233445566778899';
+  const report = buildReport({
+    trafficSnapshot: traffic,
+    asOfDate: '2026-10-30',
+    maturityDaysByPartner: { aviasales: 30 },
+    revenueRows: [{
+      date: '2026-08-30', state_updated_at: '2026-10-01', partner: 'aviasales', state: 'paid',
+      profit_rub: '8084.64', action_id: 'TP-1', internal_action_id: 'BOOK-1', sub_id: subId,
+    }],
+    clickRows: [{
+      click_id: 'c00112233445566778899', event_time: '2026-08-29T12:34:56+03:00',
+      page_path: '/blog/galapagos-2026/', experiment_id: 'monetization_aa_click_join_v1', variant: 'a',
+    }],
+  });
+  assert.match(report, /Точный action→click join: \*\*100,00% \(1 из 1\)\*\*/);
+  assert.match(report, /Чистая одобренная комиссия: \*\*8[\s ]?084,64 ₽\*\*/);
+  assert.match(report, /Зрелых заказов: \*\*1 из 1\*\*/);
+});
+
+test('без уникального click join денежное решение запрещено даже при CTA-level sub_id', () => {
+  const report = buildReport({
+    trafficSnapshot: traffic,
+    asOfDate: '2026-10-30',
+    maturityDaysByPartner: { aviasales: 30 },
+    revenueRows: [{
+      click_date: '2026-08-29', partner: 'aviasales', status: 'paid', commission_rub: '100',
+      order_id: 'TP-2', sub_id: 'galapagos_2026',
+    }],
+  });
+  assert.match(report, /Точный action→click join: \*\*0,00% \(0 из 1\)\*\*/);
+  assert.match(report, /точного action→click join нет/i);
+  assert.match(report, /финансовое решение запрещено/i);
+});

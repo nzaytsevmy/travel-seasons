@@ -5,16 +5,16 @@ import { resolve } from 'node:path';
 import {
   classifyPage,
   computeRevenueMetrics,
-  deduplicateRevenueRows,
   isRevenueRowMature,
-  normalizeRevenueRow,
+  joinRevenueRowsToClicks,
 } from '../src/data/monetization.js';
 
 function argsOf(argv) {
-  const args = { traffic: 'seo-pulse/traffic.json', revenue: '', maturity: '', output: '' };
+  const args = { traffic: 'seo-pulse/traffic.json', revenue: '', clicks: '', maturity: '', output: '' };
   for (let i = 0; i < argv.length; i += 1) {
     const key = argv[i];
     if (key === '--traffic' || key === '--revenue' || key === '--output') args[key.slice(2)] = argv[++i] ?? '';
+    if (key === '--click-events') args.clicks = argv[++i] ?? '';
     if (key === '--maturity-config') args.maturity = argv[++i] ?? '';
   }
   return args;
@@ -96,11 +96,13 @@ function renderTable(groups) {
 export function buildReport({
   trafficSnapshot,
   revenueRows = [],
+  clickRows = [],
   asOfDate = trafficSnapshot.updated || new Date().toISOString().slice(0, 10),
   maturityDaysByPartner = {},
 }) {
   const traffic = flattenTraffic(trafficSnapshot);
-  const normalized = deduplicateRevenueRows(revenueRows.map(normalizeRevenueRow));
+  const joined = joinRevenueRowsToClicks(revenueRows, clickRows);
+  const normalized = joined.rows;
   const maturityConfigured = normalized.length > 0 && normalized.every((row) => {
     const days = Number(maturityDaysByPartner[row.partner] ?? maturityDaysByPartner.default);
     return Number.isFinite(days) && days >= 0;
@@ -127,6 +129,8 @@ export function buildReport({
     status = 'Есть строки без корректной click_date: финансовое решение запрещено.';
   } else if (missingOrderIds || unknownMoney) {
     status = `Неполный денежный контракт: без order_id — ${missingOrderIds}, без рублёвой суммы — ${unknownMoney}; финансовое решение запрещено.`;
+  } else if (normalized.length && (joined.stats.coverage !== 1 || joined.stats.ambiguous || joined.stats.mismatched)) {
+    status = `Точного action→click join нет у всех действий: сопоставлено ${joined.stats.matched} из ${joined.stats.total}; финансовое решение запрещено.`;
   } else if (approvedOrders > 0) {
     status = 'Есть зрелые одобрения; решения принимаются по чистому доходу после проверки экспериментальных guardrails.';
   } else if (revenueRows.length) {
@@ -141,6 +145,7 @@ export function buildReport({
     + `- Заказов после сведения статусов: **${normalized.length}** (сырых строк: ${revenueRows.length})\n`
     + `- Зрелых заказов: **${mature.length} из ${normalized.length}**\n`
     + `- Покрытие CTA-level атрибуцией: **${percent(attributed, normalized.length)}**\n`
+    + `- Точный action→click join: **${percent(joined.stats.matched, joined.stats.total)} (${joined.stats.matched} из ${joined.stats.total})**\n`
     + `- Одобренных действий: **${metrics.approvedOrders}**\n`
     + `- Чистая одобренная комиссия: **${money(metrics.netApprovedRevenue)}**\n`
     + `- Доход на 1 000 органических визитов: **${metrics.revenuePerThousand == null ? 'недостаточно данных' : money(metrics.revenuePerThousand)}**\n`
@@ -155,10 +160,12 @@ if (process.argv[1] && resolve(process.argv[1]) === new URL(import.meta.url).pat
   const args = argsOf(process.argv.slice(2));
   const trafficSnapshot = JSON.parse(readFileSync(resolve(args.traffic), 'utf8'));
   const revenueRows = args.revenue ? parseCsv(readFileSync(resolve(args.revenue), 'utf8')) : [];
+  const clickRows = args.clicks ? parseCsv(readFileSync(resolve(args.clicks), 'utf8')) : [];
   const maturityDaysByPartner = args.maturity ? JSON.parse(readFileSync(resolve(args.maturity), 'utf8')) : {};
   const report = buildReport({
     trafficSnapshot,
     revenueRows,
+    clickRows,
     asOfDate: trafficSnapshot.updated,
     maturityDaysByPartner,
   });

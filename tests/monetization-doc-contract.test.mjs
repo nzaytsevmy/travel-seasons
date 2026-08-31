@@ -18,6 +18,11 @@ test('денежный канон требует зрелой выручки и 
     'Sample Ratio Mismatch',
     'MDE',
     'окно зрелости',
+    'revenue_v2',
+    'click_id',
+    'action→click',
+    'experiment_assignment',
+    'localStorage',
   ]) {
     assert.match(standard, new RegExp(required.replaceAll('/', '\\/'), 'i'), required);
   }
@@ -72,6 +77,9 @@ test('плановая статья наследует полный денежн
     'intention-to-treat',
     'npm run check:monetization',
     'npm run check:monetization:browser',
+    'revenue_v2',
+    'click_id',
+    'action→click',
   ]) {
     assert.match(prompt, new RegExp(required.replaceAll('/', '\\/'), 'i'), required);
   }
