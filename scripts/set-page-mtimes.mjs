@@ -53,10 +53,43 @@ const xml = readFileSync(КАРТА, 'utf8');
 let поставлено = 0, пропущено = 0;
 const изКарты = new Set();
 
+// HTML на REG.RU отдаётся без Cache-Control, поэтому браузер вычисляет срок
+// свежести эвристически из Last-Modified. Дата только самой статьи здесь
+// недостаточна: общий layout, CSS или аналитика меняют HTML каждой страницы.
+// Берём последнюю git-дату всей общей оболочки и поднимаем до неё mtime всех
+// страниц. Если оболочка не менялась, старые точные даты и полезные 304
+// сохраняются; если менялась — браузер действительно увидит новый релиз.
+const ОБЩАЯ_ОБОЛОЧКА = [
+  'astro.config.mjs',
+  'src/layouts',
+  'src/components/SwissHeader.astro',
+  'src/components/CookieConsent.astro',
+  'src/styles/global.css',
+  'src/scripts/monetization-tracking.js',
+  'src/data/monetization.js',
+  'src/data/affiliate.js',
+];
+
+const gitДата = (пути) => {
+  try {
+    const d = execFileSync('git', ['log', '-1', '--format=%cI', '--', ...пути],
+      { encoding: 'utf8' }).trim();
+    return d ? new Date(d) : null;
+  } catch { return null; }
+};
+
+const датаОболочки = gitДата(ОБЩАЯ_ОБОЛОЧКА);
+const неРаньшеОболочки = (дата) => {
+  if (!дата || Number.isNaN(дата.valueOf())) return датаОболочки;
+  if (!датаОболочки || Number.isNaN(датаОболочки.valueOf())) return дата;
+  return дата > датаОболочки ? дата : датаОболочки;
+};
+
 for (const m of xml.matchAll(/<loc>https:\/\/traveltribe\.ru([^<]*)<\/loc><lastmod>([^<]*)<\/lastmod>/g)) {
   const путь = m[1];
-  const время = new Date(m[2]);
-  if (Number.isNaN(время.valueOf())) { пропущено++; continue; }
+  const времяСтраницы = new Date(m[2]);
+  if (Number.isNaN(времяСтраницы.valueOf())) { пропущено++; continue; }
+  const время = неРаньшеОболочки(времяСтраницы);
 
   const файл = путь.endsWith('/')
     ? join(КАТАЛОГ, путь, 'index.html')
@@ -125,11 +158,8 @@ const шаблонныйИсходник = (путь) => {
 const датаФайла = (кандидаты) => {
   for (const f of кандидаты) {
     if (!existsSync(f)) continue;
-    try {
-      const d = execFileSync('git', ['log', '-1', '--format=%cI', '--', f],
-        { encoding: 'utf8' }).trim();
-      if (d) return new Date(d);
-    } catch { /* истории нет — пропускаем */ }
+    const d = gitДата([f]);
+    if (d) return d;
   }
   return null;
 };
@@ -155,11 +185,15 @@ let вне = 0;
 for (const файл of все_страницы(КАТАЛОГ)) {
   const путь = файл.replace(КАТАЛОГ, '').replace(/index\.html$/, '');
   if (изКарты.has(путь)) continue;
-  const когда = (этоЗаглушка(файл) ? датаКонфига : null)
+  const датаСтраницы = (этоЗаглушка(файл) ? датаКонфига : null)
     || датаФайла(исходник(путь)) || датаФайла(шаблонныйИсходник(путь)) || общая;
+  const когда = неРаньшеОболочки(датаСтраницы);
   if (!когда || Number.isNaN(когда.valueOf())) continue;
   utimesSync(файл, когда, когда);
   вне++;
 }
 
-console.log(`время страниц: из карты ${поставлено}, по исходнику ${вне}, пропущено ${пропущено}`);
+const оболочка = датаОболочки && !Number.isNaN(датаОболочки.valueOf())
+  ? датаОболочки.toISOString()
+  : 'не определена';
+console.log(`время страниц: из карты ${поставлено}, по исходнику ${вне}, пропущено ${пропущено}, оболочка ${оболочка}`);
