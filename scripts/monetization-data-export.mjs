@@ -49,20 +49,32 @@ function metrikaUrl(params) {
 }
 
 export function normalizeMetrikaClickRows(apiRows) {
-  const result = [];
+  const byClick = new Map();
   for (const row of apiRows) {
     const dimensions = (row.dimensions ?? []).map((value) => value?.name ?? '');
-    const [dateTime, pagePath, , key, clickId] = dimensions;
-    if (key !== 'click_id' || !/^c[a-f0-9]{20}$/.test(clickId)) continue;
+    const [dateTime, pagePath, , key, rawValue] = dimensions;
+    let clickId = rawValue;
+    let readerCohort = '';
+    let audienceSource = '';
+    if (key === 'click_context') {
+      [clickId, readerCohort = '', audienceSource = ''] = String(rawValue).split('__');
+    } else if (key !== 'click_id') {
+      continue;
+    }
+    if (!/^c[a-f0-9]{20}$/.test(clickId)) continue;
     const eventCount = Number(row.metrics?.[0] ?? 0);
-    result.push({
+    const current = byClick.get(clickId) ?? {
       click_id: clickId,
       event_time: `${dateTime.replace(' ', 'T')}+03:00`,
       page_path: pagePath,
       event_count: Number.isFinite(eventCount) ? eventCount : 0,
-    });
+    };
+    current.event_count = Math.max(current.event_count, Number.isFinite(eventCount) ? eventCount : 0);
+    if (readerCohort) current.reader_cohort = readerCohort;
+    if (audienceSource) current.audience_source = audienceSource;
+    byClick.set(clickId, current);
   }
-  return result;
+  return [...byClick.values()];
 }
 
 export function normalizeAssignmentRows(apiRows, experimentId) {
@@ -74,6 +86,28 @@ export function normalizeAssignmentRows(apiRows, experimentId) {
     counts[variant] = (counts[variant] ?? 0) + Number(row.metrics?.[0] ?? 0);
   }
   return counts;
+}
+
+function normalizeVisitParamRows(apiRows, namespace, key) {
+  const counts = {};
+  for (const row of apiRows) {
+    const dimensions = (row.dimensions ?? []).map((value) => value?.name ?? '');
+    const [rowNamespace, rowKey, value] = dimensions;
+    if (rowNamespace !== namespace || rowKey !== key || !value) continue;
+    counts[value] = {
+      users: Number(row.metrics?.[0] ?? 0),
+      sessions: Number(row.metrics?.[1] ?? 0),
+    };
+  }
+  return counts;
+}
+
+export function normalizeReaderCohortRows(apiRows) {
+  return normalizeVisitParamRows(apiRows, 'reader_lifecycle', 'cohort');
+}
+
+export function normalizeAudienceSourceRows(apiRows) {
+  return normalizeVisitParamRows(apiRows, 'audience_source', 'bucket');
 }
 
 function partnerOf(row) {
@@ -128,7 +162,7 @@ export async function fetchMetrikaClicks({ token, dateFrom, dateTo }) {
     metrics: 'ym:ep:eventsNumber',
     sort: '-ym:ep:eventsNumber',
     dimensions: 'ym:ep:dateTime,ym:ep:eventURLPath,ym:ep:actionGoal,ym:ep:eventParamsLevel1,ym:ep:eventParamsLevel2',
-    filters: `ym:ep:actionGoal==${METRIKA_OUTBOUND_GOAL} AND ym:ep:eventParamsLevel1=='click_id'`,
+    filters: `ym:ep:actionGoal==${METRIKA_OUTBOUND_GOAL} AND (ym:ep:eventParamsLevel1=='click_context' OR ym:ep:eventParamsLevel1=='click_id')`,
   }, token);
   return normalizeMetrikaClickRows(rows);
 }
@@ -147,6 +181,29 @@ export async function fetchAssignmentCounts({ token, dateFrom, dateTo, experimen
     filters: `ym:s:lastTrafficSource=='organic' AND ym:s:paramsLevel1=='monetization_experiment' AND ym:s:paramsLevel2=='${experimentId}'`,
   }, token);
   return normalizeAssignmentRows(rows, experimentId);
+}
+
+async function fetchVisitParamCounts({ token, dateFrom, dateTo, namespace }) {
+  return fetchMetrikaRows({
+    ids: METRIKA_COUNTER,
+    date1: dateFrom,
+    date2: dateTo,
+    preset: 'content_visit_params',
+    metrics: 'ym:s:users,ym:s:visits',
+    sort: '-ym:s:visits',
+    dimensions: 'ym:s:paramsLevel1,ym:s:paramsLevel2,ym:s:paramsLevel3',
+    filters: `ym:s:lastTrafficSource=='organic' AND ym:s:paramsLevel1=='${namespace}'`,
+  }, token);
+}
+
+export async function fetchReaderCohortCounts({ token, dateFrom, dateTo }) {
+  const rows = await fetchVisitParamCounts({ token, dateFrom, dateTo, namespace: 'reader_lifecycle' });
+  return normalizeReaderCohortRows(rows);
+}
+
+export async function fetchAudienceSourceCounts({ token, dateFrom, dateTo }) {
+  const rows = await fetchVisitParamCounts({ token, dateFrom, dateTo, namespace: 'audience_source' });
+  return normalizeAudienceSourceRows(rows);
 }
 
 export async function fetchTravelpayoutsActions({ token, dateFrom, dateTo }) {
@@ -206,9 +263,11 @@ if (process.argv[1] && resolve(process.argv[1]) === new URL(import.meta.url).pat
   const metrikaToken = process.env.METRIKA_OAUTH_TOKEN || process.env.YANDEX_OAUTH_TOKEN;
   const travelpayoutsToken = process.env.TRAVELPAYOUTS_TOKEN;
   if (!metrikaToken || !travelpayoutsToken) throw new Error('Нужны METRIKA_OAUTH_TOKEN и TRAVELPAYOUTS_TOKEN.');
-  const [clickEvents, assignmentCounts, actions] = await Promise.all([
+  const [clickEvents, assignmentCounts, readerCohortCounts, audienceSourceCounts, actions] = await Promise.all([
     fetchMetrikaClicks({ token: metrikaToken, dateFrom: args.dateFrom, dateTo: args.dateTo }),
     fetchAssignmentCounts({ token: metrikaToken, dateFrom: args.dateFrom, dateTo: args.dateTo, experimentId: args.experimentId }),
+    fetchReaderCohortCounts({ token: metrikaToken, dateFrom: args.dateFrom, dateTo: args.dateTo }),
+    fetchAudienceSourceCounts({ token: metrikaToken, dateFrom: args.dateFrom, dateTo: args.dateTo }),
     fetchTravelpayoutsActions({ token: travelpayoutsToken, dateFrom: args.dateFrom, dateTo: args.actionsThrough || args.dateTo }),
   ]);
   const output = resolve(args.output);
@@ -222,6 +281,8 @@ if (process.argv[1] && resolve(process.argv[1]) === new URL(import.meta.url).pat
     experiment: args.experimentId === MONETIZATION_EXPERIMENT.id ? MONETIZATION_EXPERIMENT : { id: args.experimentId },
     asOfDate: args.actionsThrough || args.dateTo,
     assignmentCounts,
+    readerCohortCounts,
+    audienceSourceCounts,
     clickEvents,
     actions,
   }, null, 2)}\n`);

@@ -21,6 +21,81 @@ export const MONETIZATION_EXPERIMENT = Object.freeze({
 
 const ATTRIBUTION_CONTRACT = 'tt2';
 const CLICK_ID_RE = /^c[a-f0-9]{20}$/;
+const READER_STATE_KEY = 'tt_reader_lifecycle_v1';
+const AUDIENCE_STATE_KEY = 'tt_audience_attribution_v1';
+const DAY_MS = 86_400_000;
+
+function utcDay(value) {
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isFinite(date.getTime()) ? date.toISOString().slice(0, 10) : '';
+}
+
+function daysBetween(first, last) {
+  const start = Date.parse(`${first}T00:00:00Z`);
+  const end = Date.parse(`${last}T00:00:00Z`);
+  if (!Number.isFinite(start) || !Number.isFinite(end)) return null;
+  return Math.floor((end - start) / DAY_MS);
+}
+
+function storedJson(storage, key) {
+  try {
+    const value = JSON.parse(storage?.getItem?.(key) || 'null');
+    return value && typeof value === 'object' ? value : {};
+  } catch {
+    return {};
+  }
+}
+
+function storeJson(storage, key, value) {
+  try { storage?.setItem?.(key, JSON.stringify(value)); } catch { /* storage is optional */ }
+}
+
+// Анонимная долговечность читателя: в браузере остаются только календарные дни
+// первого/последнего визита и локальный счётчик. Уникального ID нет, наружу
+// передаётся только крупный бакет возраста аудитории.
+export function updateReaderLifecycle(storage, now = new Date()) {
+  const today = utcDay(now) || utcDay(new Date());
+  const stored = storedJson(storage, READER_STATE_KEY);
+  const storedAge = daysBetween(stored.firstSeen, today);
+  const firstSeen = storedAge != null && storedAge >= 0 ? stored.firstSeen : today;
+  const readerAgeDays = Math.max(0, daysBetween(firstSeen, today) ?? 0);
+  const visits = Math.max(0, Math.min(1_000_000, Number(stored.visits) || 0)) + 1;
+  storeJson(storage, READER_STATE_KEY, { firstSeen, lastSeen: today, visits });
+
+  let cohort = 'new';
+  if (readerAgeDays >= 90) cohort = 'returning_90_plus';
+  else if (readerAgeDays >= 28) cohort = 'returning_28_89';
+  else if (readerAgeDays >= 1) cohort = 'returning_1_27';
+  return { cohort, readerAgeDays };
+}
+
+// Telegram assist — наблюдательная, не причинная атрибуция. Сохраняем только
+// день последнего входа по utm_source=telegram и автоматически забываем его
+// после 90 дней. Ни Telegram ID, ни cookie, ни адрес пользователя не нужны.
+export function updateAudienceAttribution(storage, href, now = new Date()) {
+  const today = utcDay(now) || utcDay(new Date());
+  let isTelegramArrival = false;
+  try {
+    const url = new URL(String(href || ''), 'https://traveltribe.ru/');
+    isTelegramArrival = url.searchParams.get('utm_source')?.toLowerCase() === 'telegram';
+  } catch { /* malformed URL is unattributed */ }
+
+  const stored = storedJson(storage, AUDIENCE_STATE_KEY);
+  const lastTelegramAt = isTelegramArrival ? today : String(stored.lastTelegramAt || '');
+  const telegramAgeDays = daysBetween(lastTelegramAt, today);
+  if (isTelegramArrival) {
+    storeJson(storage, AUDIENCE_STATE_KEY, { lastTelegramAt: today });
+    return { source: 'telegram_current', telegramAgeDays: 0 };
+  }
+  if (telegramAgeDays != null && telegramAgeDays >= 0 && telegramAgeDays < 28) {
+    return { source: 'telegram_assisted_1_27', telegramAgeDays };
+  }
+  if (telegramAgeDays != null && telegramAgeDays >= 28 && telegramAgeDays < 90) {
+    return { source: 'telegram_assisted_28_89', telegramAgeDays };
+  }
+  if (lastTelegramAt) storeJson(storage, AUDIENCE_STATE_KEY, { lastTelegramAt: '' });
+  return { source: 'unattributed', telegramAgeDays: Math.max(0, telegramAgeDays ?? 0) };
+}
 
 const PARTNERS = [
   { host: 'aviasales.tpk.mx', partner: 'aviasales', offer: 'flight', attribution: 'sub_id' },
@@ -319,6 +394,10 @@ export function joinRevenueRowsToClicks(revenueRows, clickRows) {
       date: eventTime,
       clickDate: eventTime,
       pagePath: String(click.page_path ?? click.pagePath ?? ''),
+      readerCohort: clean(click.reader_cohort ?? click.readerCohort),
+      audienceSource: clean(click.audience_source ?? click.audienceSource),
+      reader_cohort: clean(click.reader_cohort ?? click.readerCohort),
+      audience_source: clean(click.audience_source ?? click.audienceSource),
       metrikaClick: true,
     };
   });

@@ -90,3 +90,30 @@ test('плановая статья наследует полный денежн
   assert.match(prompt, /не[^\n]+эксперимент[^\n]+без[^\n]+рандомиз/i);
   assert.doesNotMatch(prompt, /у каждой денежной кнопки должна быть метка рекламы/i);
 });
+
+test('канон фиксирует анонимную ценность читателя и наблюдательную Telegram-атрибуцию', async () => {
+  const [standard, prompt, claude] = await Promise.all([
+    read('MONETIZATION-2026.md'),
+    read('DAILY-ARTICLE-PROMPT.md'),
+    read('CLAUDE.md'),
+  ]);
+
+  for (const required of [
+    'reader_lifecycle',
+    'audience_source',
+    'returning_28_89',
+    'returning_90_plus',
+    'Telegram-assisted',
+    'utm_source=telegram&utm_medium=channel&utm_campaign=article&utm_content=<slug>',
+    'audience_v1',
+    '44 px',
+  ]) {
+    assert.match(standard, new RegExp(required.replaceAll('/', '\\/'), 'i'), required);
+  }
+
+  assert.match(standard, /без уникального идентификатора/i);
+  assert.match(standard, /наблюдательн/i);
+  assert.match(prompt, /utm_source=telegram&utm_medium=channel&utm_campaign=article&utm_content=<slug>/i);
+  assert.match(prompt, /Telegram-assisted[^\n]+не[^\n]+причин/i);
+  assert.match(claude, /reader_lifecycle[^\n]+audience_source/i);
+});

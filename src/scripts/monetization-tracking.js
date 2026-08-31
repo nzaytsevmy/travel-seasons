@@ -6,6 +6,8 @@ import {
   classifyPartner,
   createClickId,
   isGenericAffiliateUrl,
+  updateAudienceAttribution,
+  updateReaderLifecycle,
 } from '../data/monetization.js';
 import { destinationAffiliateUrl } from '../data/affiliate.js';
 
@@ -91,7 +93,35 @@ export function prepareAffiliateLinks(doc = document, pathname = window.location
   return links.filter((anchor) => anchor.dataset.ctaPrepared === '1');
 }
 
+export function prepareOwnChannelLinks(doc = document, pathname = window.location.pathname) {
+  const inferred = classifyPage(pathname);
+  const page = {
+    type: doc.body.dataset.pageType || inferred.type,
+    intent: doc.body.dataset.monetizationIntent || inferred.intent,
+  };
+  const counters = new Map();
+  const links = [...doc.querySelectorAll('a[href^="http"]')].filter(isOwnChannel);
+  for (const anchor of links) {
+    if (anchor.dataset.channelPrepared === '1') continue;
+    const placement = placementOf(anchor);
+    const ordinal = (counters.get(placement) ?? 0) + 1;
+    counters.set(placement, ordinal);
+    anchor.dataset.channelPrepared = '1';
+    anchor.dataset.channelCtaId = buildCtaId(pathname, 'telegram', placement, ordinal);
+    anchor.dataset.placement = placement;
+    anchor.dataset.linkPosition = String(ordinal);
+    anchor.dataset.pageType = page.type;
+    anchor.dataset.intent = page.intent;
+    anchor.target = '_blank';
+    anchor.relList.add('noopener');
+    anchor.relList.remove('sponsored');
+  }
+  return links;
+}
+
 export function monetizationPayload(anchor, pathname = window.location.pathname, clickId = '') {
+  const readerCohort = anchor.ownerDocument?.body?.dataset.readerCohort || 'unknown';
+  const audienceSource = anchor.ownerDocument?.body?.dataset.audienceSource || 'unattributed';
   return {
     page_path: pathname,
     page_type: anchor.dataset.pageType || 'unknown',
@@ -106,6 +136,9 @@ export function monetizationPayload(anchor, pathname = window.location.pathname,
     variant: anchor.dataset.variant || '',
     assignment_unit: anchor.ownerDocument?.body?.dataset.assignmentUnit || '',
     click_id: clickId,
+    click_context: `${clickId}__${readerCohort}__${audienceSource}`,
+    reader_cohort: readerCohort,
+    audience_source: audienceSource,
     partner_join: classifyPartner(anchor.dataset.attributionHref || anchor.href)?.attribution === 'sub_id'
       ? 'click_id'
       : 'metrika_only',
@@ -114,15 +147,58 @@ export function monetizationPayload(anchor, pathname = window.location.pathname,
   };
 }
 
+export function audiencePayload(anchor, pathname = window.location.pathname) {
+  const body = anchor.ownerDocument?.body;
+  return {
+    from: pathname,
+    page_path: pathname,
+    page_type: anchor.dataset.pageType || body?.dataset.pageType || 'unknown',
+    intent: anchor.dataset.intent || body?.dataset.monetizationIntent || 'unknown',
+    channel: 'telegram',
+    placement: anchor.dataset.placement || 'body',
+    channel_cta_id: anchor.dataset.channelCtaId || '',
+    link_position: Number(anchor.dataset.linkPosition || 0),
+    reader_cohort: body?.dataset.readerCohort || 'unknown',
+    audience_source: body?.dataset.audienceSource || 'unattributed',
+    anchor: cleanText(anchor.textContent),
+    contract: 'audience_v1',
+  };
+}
+
 export function initMonetizationTracking(doc = document, win = window) {
   if (win.__ttMonetizationTracking) {
     prepareAffiliateLinks(doc, win.location.pathname);
+    prepareOwnChannelLinks(doc, win.location.pathname);
     return;
   }
   win.__ttMonetizationTracking = true;
-  prepareAffiliateLinks(doc, win.location.pathname);
 
-  doc.addEventListener('astro:page-load', () => prepareAffiliateLinks(doc, win.location.pathname));
+  const lifecycle = updateReaderLifecycle(win.localStorage, new Date());
+  const audience = updateAudienceAttribution(win.localStorage, win.location.href, new Date());
+  doc.body.dataset.readerCohort = lifecycle.cohort;
+  doc.body.dataset.readerAgeDays = String(lifecycle.readerAgeDays);
+  doc.body.dataset.audienceSource = audience.source;
+  if (typeof win.ym === 'function') {
+    win.ym(95832375, 'params', {
+      reader_lifecycle: { cohort: lifecycle.cohort },
+      audience_source: { bucket: audience.source },
+    });
+  }
+  prepareAffiliateLinks(doc, win.location.pathname);
+  prepareOwnChannelLinks(doc, win.location.pathname);
+
+  doc.addEventListener('astro:page-load', () => {
+    const nextAudience = updateAudienceAttribution(win.localStorage, win.location.href, new Date());
+    doc.body.dataset.audienceSource = nextAudience.source;
+    prepareAffiliateLinks(doc, win.location.pathname);
+    prepareOwnChannelLinks(doc, win.location.pathname);
+    if (typeof win.ym === 'function') {
+      win.ym(95832375, 'params', {
+        reader_lifecycle: { cohort: doc.body.dataset.readerCohort || 'unknown' },
+        audience_source: { bucket: nextAudience.source },
+      });
+    }
+  });
   function recordAffiliateClick(event) {
     const anchor = event.target?.closest?.('a[data-cta-id]');
     if (!anchor) return;
@@ -139,6 +215,18 @@ export function initMonetizationTracking(doc = document, win = window) {
   doc.addEventListener('click', recordAffiliateClick, true);
   doc.addEventListener('auxclick', (event) => {
     if (event.button === 1) recordAffiliateClick(event);
+  }, true);
+
+  function recordOwnChannelClick(event) {
+    const anchor = event.target?.closest?.('a[data-channel-cta-id]');
+    if (!anchor) return;
+    const payload = audiencePayload(anchor, win.location.pathname);
+    doc.dispatchEvent(new CustomEvent('tt:channel-click', { detail: payload }));
+    if (typeof win.ym === 'function') win.ym(95832375, 'reachGoal', 'telegram_click', payload);
+  }
+  doc.addEventListener('click', recordOwnChannelClick, true);
+  doc.addEventListener('auxclick', (event) => {
+    if (event.button === 1) recordOwnChannelClick(event);
   }, true);
 }
 

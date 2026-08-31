@@ -100,6 +100,9 @@ test('клик отправляет в Метрику полный денежн�
   expect(goal?.[3].click_id).toMatch(/^c[a-f0-9]{20}$/);
   expect(goal?.[3].experiment_id).toBe('monetization_aa_click_join_v1');
   expect(goal?.[3].variant).toMatch(/^[ab]$/);
+  expect(goal?.[3].reader_cohort).toBe('new');
+  expect(goal?.[3].audience_source).toBe('unattributed');
+  expect(goal?.[3].click_context).toBe(`${goal?.[3].click_id}__new__unattributed`);
   const clickedHref = await page.locator('a[data-cta-id]').first().getAttribute('href');
   const clickedSubId = new URL(clickedHref!, 'http://127.0.0.1').searchParams.get('sub_id');
   expect(clickedSubId).toContain(`__${goal?.[3].click_id}`);
@@ -146,6 +149,79 @@ test('свой Telegram остаётся отдельной целью и не �
   await expect(telegram).not.toHaveAttribute('rel', /sponsored/);
   await telegram.click();
   const goals = await page.evaluate(() => (window as any).__goals);
-  expect(goals.some((args: unknown[]) => args[2] === 'telegram_click')).toBe(true);
+  const telegramGoal = goals.find((args: unknown[]) => args[2] === 'telegram_click');
+  expect(telegramGoal?.[3]).toMatchObject({
+    page_path: '/', page_type: 'home', channel: 'telegram', reader_cohort: 'new', contract: 'audience_v1',
+  });
+  expect(telegramGoal?.[3].channel_cta_id).toMatch(/^[a-z0-9_]{5,64}$/);
+  expect(telegramGoal?.[3].placement).toBeTruthy();
   expect(goals.some((args: unknown[]) => args[2] === 'outbound_link')).toBe(false);
+});
+
+test('возвращающийся читатель попадает в 28-дневную когорту и в точный click context', async ({ page }) => {
+  await freezeInsideAaWindow(page);
+  await page.addInitScript(() => {
+    localStorage.setItem('tt_reader_lifecycle_v1', JSON.stringify({
+      firstSeen: '2026-07-01', lastSeen: '2026-08-01', visits: 3,
+    }));
+    (window as any).__goals = [];
+    (window as any).ym = (...args: unknown[]) => (window as any).__goals.push(args);
+    window.addEventListener('click', (event) => {
+      if ((event.target as Element)?.closest?.('a[data-cta-id]')) event.preventDefault();
+    }, true);
+  });
+  await page.goto('/packing/turkey/september/');
+  await expect(page.locator('body')).toHaveAttribute('data-reader-cohort', 'returning_28_89');
+  await page.locator('a[data-cta-id]').first().evaluate((anchor) => {
+    anchor.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+  });
+  const goal = await page.evaluate(() => (window as any).__goals.find((args: unknown[]) => args[2] === 'outbound_link'));
+  expect(goal?.[3].reader_cohort).toBe('returning_28_89');
+  expect(goal?.[3].click_context).toBe(`${goal?.[3].click_id}__returning_28_89__unattributed`);
+});
+
+test('вход из Telegram помечает партнёрский клик как assisted без персонального ID', async ({ page }) => {
+  await freezeInsideAaWindow(page);
+  await page.addInitScript(() => {
+    (window as any).__goals = [];
+    (window as any).ym = (...args: unknown[]) => (window as any).__goals.push(args);
+    window.addEventListener('click', (event) => {
+      if ((event.target as Element)?.closest?.('a[data-cta-id]')) event.preventDefault();
+    }, true);
+  });
+  await page.goto('/packing/turkey/september/?utm_source=telegram&utm_medium=channel&utm_campaign=article&utm_content=packing_turkey_september');
+  await expect(page.locator('body')).toHaveAttribute('data-audience-source', 'telegram_current');
+  await page.locator('a[data-cta-id]').first().evaluate((anchor) => {
+    anchor.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+  });
+  const goal = await page.evaluate(() => (window as any).__goals.find((args: unknown[]) => args[2] === 'outbound_link'));
+  expect(goal?.[3].audience_source).toBe('telegram_current');
+  expect(goal?.[3].click_context).toBe(`${goal?.[3].click_id}__new__telegram_current`);
+  expect(JSON.stringify(goal?.[3])).not.toMatch(/email|phone|cookie|user_id|client_id/i);
+});
+
+test('партнёрские CTA основных шаблонов имеют мобильную зону касания не меньше 44 px', async ({ page }) => {
+  await page.setViewportSize({ width: 402, height: 874 });
+  for (const path of [
+    '/blog/galapagos-2026/',
+    '/packing/turkey/september/',
+    '/trips/july/georgia/',
+    '/visa/japan/',
+    '/cards/',
+  ]) {
+    await test.step(path, async () => {
+      await page.goto(path);
+      const targets = await page.locator('a[data-cta-id]').evaluateAll((links) => links.map((link) => {
+        const rect = link.getBoundingClientRect();
+        return { text: link.textContent?.trim(), width: rect.width, height: rect.height };
+      }).filter((target) => target.width > 0 && target.height > 0));
+      expect(targets.length, `${path}: нет CTA`).toBeGreaterThan(0);
+      for (const target of targets) {
+        expect.soft(target.height, `${path} — ${target.text}: высота`).toBeGreaterThanOrEqual(44);
+        expect.soft(target.width, `${path} — ${target.text}: ширина`).toBeGreaterThanOrEqual(44);
+      }
+      expect.soft(await page.evaluate(() => document.documentElement.scrollWidth), `${path}: overflow`)
+        .toBeLessThanOrEqual(402);
+    });
+  }
 });

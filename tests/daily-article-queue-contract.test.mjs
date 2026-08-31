@@ -21,6 +21,11 @@ test('плановая публикация следует измеренной 
   assert.match(prompt, /NEW[\s\S]{0,100}REVISE[\s\S]{0,100}WAVE/i);
   assert.doesNotMatch(prompt, /сначала архив Никиты/i);
   assert.doesNotMatch(prompt, /объ[её]м\s*[—-]\s*от 3[\s ]?000 слов/i);
+  assert.match(
+    prompt,
+    /utm_source=telegram&utm_medium=channel&utm_campaign=article&utm_content=<slug>/i,
+  );
+  assert.match(prompt, /Telegram[^\n]+каноническ[^\n]+URL/i);
 
   for (const required of [
     'Отдых в Черногории после 1 ноября',

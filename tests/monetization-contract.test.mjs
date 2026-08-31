@@ -14,6 +14,8 @@ import {
   isGenericAffiliateUrl,
   normalizeRevenueRow,
   parseClickAttribution,
+  updateAudienceAttribution,
+  updateReaderLifecycle,
 } from '../src/data/monetization.js';
 import { destinationAffiliateUrl } from '../src/data/affiliate.js';
 
@@ -308,4 +310,60 @@ test('валютная комиссия без рублёвого значени
   });
   assert.equal(row.monetaryValueKnown, false);
   assert.equal(row.approvedRevenue, 0);
+});
+
+test('reader cohort хранит только даты и бакет, без идентификатора человека', () => {
+  const values = new Map();
+  const storage = {
+    getItem: (key) => values.get(key) ?? null,
+    setItem: (key, value) => values.set(key, value),
+  };
+
+  const first = updateReaderLifecycle(storage, new Date('2026-07-01T12:00:00Z'));
+  const afterThirtyDays = updateReaderLifecycle(storage, new Date('2026-07-31T12:00:00Z'));
+  const afterNinetyDays = updateReaderLifecycle(storage, new Date('2026-09-30T12:00:00Z'));
+
+  assert.deepEqual(first, { cohort: 'new', readerAgeDays: 0 });
+  assert.deepEqual(afterThirtyDays, { cohort: 'returning_28_89', readerAgeDays: 30 });
+  assert.deepEqual(afterNinetyDays, { cohort: 'returning_90_plus', readerAgeDays: 91 });
+  assert.doesNotMatch(values.get('tt_reader_lifecycle_v1'), /(?:id|email|phone|cookie)/i);
+});
+
+test('reader cohort переживает битое хранилище и не принимает дату из будущего', () => {
+  let value = '{broken';
+  const storage = {
+    getItem: () => value,
+    setItem: (_key, next) => { value = next; },
+  };
+  assert.deepEqual(updateReaderLifecycle(storage, new Date('2026-08-31T12:00:00Z')), {
+    cohort: 'new', readerAgeDays: 0,
+  });
+
+  value = JSON.stringify({ firstSeen: '2027-01-01', lastSeen: '2027-01-01', visits: 2 });
+  assert.deepEqual(updateReaderLifecycle(storage, new Date('2026-08-31T12:00:00Z')), {
+    cohort: 'new', readerAgeDays: 0,
+  });
+});
+
+test('Telegram assist хранит только день прихода и стареет по бакетам 28/90 дней', () => {
+  const values = new Map();
+  const storage = {
+    getItem: (key) => values.get(key) ?? null,
+    setItem: (key, value) => values.set(key, value),
+  };
+
+  assert.deepEqual(updateAudienceAttribution(
+    storage, 'https://traveltribe.ru/blog/a/?utm_source=telegram&utm_medium=channel',
+    new Date('2026-07-01T12:00:00Z'),
+  ), { source: 'telegram_current', telegramAgeDays: 0 });
+  assert.deepEqual(updateAudienceAttribution(storage, 'https://traveltribe.ru/blog/b/', new Date('2026-07-15T12:00:00Z')), {
+    source: 'telegram_assisted_1_27', telegramAgeDays: 14,
+  });
+  assert.deepEqual(updateAudienceAttribution(storage, 'https://traveltribe.ru/blog/c/', new Date('2026-08-15T12:00:00Z')), {
+    source: 'telegram_assisted_28_89', telegramAgeDays: 45,
+  });
+  assert.deepEqual(updateAudienceAttribution(storage, 'https://traveltribe.ru/blog/d/', new Date('2026-10-15T12:00:00Z')), {
+    source: 'unattributed', telegramAgeDays: 106,
+  });
+  assert.doesNotMatch(values.get('tt_audience_attribution_v1'), /(?:user|email|phone|cookie|client)/i);
 });
