@@ -71,6 +71,8 @@ test('Черногория: отпускной интент отделён от 
   assert.match(vacation, /^## (?:Где жить|Какой курорт)/m);
   assert.match(vacation, /^## Сколько стоит/m);
   assert.match(vacation, /^## (?:Когда ехать|Что с сезоном)/m);
+  assert.match(vacation, /ostrovokCity\('montenegro',\s*'budva'/);
+  assert.doesNotMatch(vacation, /ostrovokCountry\('montenegro'/);
 
   const images = vacation.match(/^!\[[^\]]+\]\([^)]+\)/gm) ?? [];
   assert.ok(images.length >= 10, `в отпускном гайде ${images.length} иллюстраций, нужно не меньше 10`);
