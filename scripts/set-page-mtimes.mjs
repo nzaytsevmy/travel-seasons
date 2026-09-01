@@ -72,9 +72,13 @@ const ОБЩАЯ_ОБОЛОЧКА = [
 
 const gitДата = (пути) => {
   try {
-    const d = execFileSync('git', ['log', '-1', '--format=%cI', '--', ...пути],
+    // Тот же Unix timestamp, которым проверяет артефакт page-mtimes.spec.ts.
+    // На PR merge-ref GitHub `%cI` и `%ct` дали разные последние коммиты после
+    // merge основного контента; единый формат не позволяет build и gate
+    // расходиться в определении общей оболочки.
+    const d = execFileSync('git', ['log', '-1', '--format=%ct', '--', ...пути],
       { encoding: 'utf8' }).trim();
-    return d ? new Date(d) : null;
+    return d ? new Date(Number(d) * 1000) : null;
   } catch { return null; }
 };
 
