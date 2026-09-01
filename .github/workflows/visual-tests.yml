@@ -220,6 +220,14 @@ jobs:
         env:
           SKIP_HTML_MIN: '1'   # на отрисовку страницы минификация не влияет
 
+      # Это контракт готового dist, а не браузерный сценарий. Проверяем его
+      # сразу после postbuild, пока preview-сервер и длинный параллельный прогон
+      # не успели изменить состояние артефакта на конкретном раннере.
+      - name: Verify page modification times
+        run: npx playwright test tests/page-mtimes.spec.ts --project=chromium-desktop
+        env:
+          PREVIEW_URL: http://localhost:4322
+
       # Явный порт 4322: `astro preview` по умолчанию поднимается на 4321, а гейт
       # ждёт/тестит на 4322 — из-за этого «Wait for server» висел бесконечно
       # (прогоны отваливались по 6-часовому таймауту). Совпадает с pre-push-хуком.
@@ -257,6 +265,7 @@ jobs:
           npx playwright test --last-failed
         env:
           PREVIEW_URL: http://localhost:4322
+          SKIP_PAGE_MTIME_TESTS: '1'
 
       - name: Upload diff artifacts on failure
         if: failure()

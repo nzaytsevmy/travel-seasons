@@ -2,6 +2,12 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
+  // В CI время файлов проверяется отдельным шагом сразу после build. В длинном
+  // browser-shard к моменту этой проверки dist уже обслуживается preview-сервером
+  // и контракт артефакта смешивается с поведением сервера/раннера.
+  testIgnore: process.env.SKIP_PAGE_MTIME_TESTS === '1'
+    ? ['**/page-mtimes.spec.ts']
+    : [],
   timeout: 60_000,
   fullyParallel: true,
   workers: process.env.CI ? 2 : 4,
