@@ -222,6 +222,15 @@ test('dist собран (html-файлы есть)', () => {
   expect(files.length).toBeGreaterThan(100);
 });
 
+test('Брендовый обзор не приписывает себе форумы и личную поездку', () => {
+  const html = readFileSync(join(DIST, 'blog', 'sletat-ru-2026', 'index.html'), 'utf8');
+  const main = html.match(/<main[\s\S]*?<\/main>/i)?.[0] ?? '';
+
+  expect(main).not.toContain('форумам туристов');
+  expect(main).not.toContain('Лично эту визу/маршрут');
+  expect(main).toContain('анонимные отзывы не использовались как доказательство');
+});
+
 test('FlightRoutes: «от» только перед ценой (нет «от <текст>» и «от от»)', () => {
   // prefix-span «от» + <strong>значение</strong>; значение ОБЯЗАНО начинаться с цифры.
   const re = /fr-price-prefix[^>]*>от<\/span>\s*<strong[^>]*>([^<]+)<\/strong>/g;
