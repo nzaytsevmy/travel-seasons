@@ -82,3 +82,23 @@ test('Черногория: отпускной интент отделён от 
   const images = vacation.match(/^!\[[^\]]+\]\([^)]+\)/gm) ?? [];
   assert.ok(images.length >= 10, `в отпускном гайде ${images.length} иллюстраций, нужно не меньше 10`);
 });
+
+test('Китай: REVISE раскрывает месяцы, регионы и свежие цены на старом URL', async () => {
+  const china = await read('src/content/blog/china-guide-2026.mdx');
+
+  assert.match(china, /^title:\s*["']Когда лучше ехать в Китай:/m);
+  assert.match(china, /^updatedDate:\s*2026-09-01/m);
+  assert.match(china, /^reviewed:\s*2026-09-01/m);
+  assert.match(china, /^demand:\s*["'][^\n]*5 789[^\n]*Wordcraft[^\n]*13 078/m);
+  assert.match(china, /^## Китай по месяцам/m);
+  assert.match(china, /^## Какой регион выбрать/m);
+  assert.match(china, /^## Маршруты на 7, 10 и 14 дней/m);
+  assert.match(china, /1–7 октября 2026/);
+  assert.doesNotMatch(china, /Пекин \+ 11 провинций/);
+
+  const monthRows = china.match(/^\| (?:январь|февраль|март|апрель|май|июнь|июль|август|сентябрь|октябрь|ноябрь|декабрь) \|/gm) ?? [];
+  assert.equal(monthRows.length, 12, 'нужны все 12 месяцев без шаблонной недосказанности');
+
+  const images = china.match(/^!\[[^\]]+\]\([^)]+\)/gm) ?? [];
+  assert.ok(images.length >= 10, `в китайском гайде ${images.length} иллюстраций, нужно не меньше 10`);
+});
