@@ -23,7 +23,7 @@
 //
 // Запуск: node scripts/set-page-mtimes.mjs [каталог сборки]
 
-import { readFileSync, utimesSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, utimesSync, existsSync, readdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 
@@ -72,9 +72,10 @@ const ОБЩАЯ_ОБОЛОЧКА = [
 
 const gitДата = (пути) => {
   try {
-    const d = execFileSync('git', ['log', '-1', '--format=%cI', '--', ...пути],
+    // Машинный Unix timestamp без повторного разбора часового пояса.
+    const d = execFileSync('git', ['log', '-1', '--format=%ct', '--', ...пути],
       { encoding: 'utf8' }).trim();
-    return d ? new Date(d) : null;
+    return d ? new Date(Number(d) * 1000) : null;
   } catch { return null; }
 };
 
@@ -83,6 +84,14 @@ const неРаньшеОболочки = (дата) => {
   if (!дата || Number.isNaN(дата.valueOf())) return датаОболочки;
   if (!датаОболочки || Number.isNaN(датаОболочки.valueOf())) return дата;
   return дата > датаОболочки ? дата : датаОболочки;
+};
+
+// Передаём целые секунды, а не Date. Last-Modified и тестовый контракт имеют
+// секундную точность; явное число убирает платформенное округление utimes для
+// Date на hosted Linux filesystem.
+const поставитьВремя = (файл, дата) => {
+  const секунды = Math.floor(дата.valueOf() / 1000);
+  utimesSync(файл, секунды, секунды);
 };
 
 for (const m of xml.matchAll(/<loc>https:\/\/traveltribe\.ru([^<]*)<\/loc><lastmod>([^<]*)<\/lastmod>/g)) {
@@ -97,7 +106,7 @@ for (const m of xml.matchAll(/<loc>https:\/\/traveltribe\.ru([^<]*)<\/loc><lastm
   if (!existsSync(файл)) { пропущено++; continue; }
 
   // Время доступа не важно, но utimes требует оба — ставим то же самое.
-  utimesSync(файл, время, время);
+  поставитьВремя(файл, время);
   изКарты.add(путь);
   поставлено++;
 }
@@ -189,11 +198,19 @@ for (const файл of все_страницы(КАТАЛОГ)) {
     || датаФайла(исходник(путь)) || датаФайла(шаблонныйИсходник(путь)) || общая;
   const когда = неРаньшеОболочки(датаСтраницы);
   if (!когда || Number.isNaN(когда.valueOf())) continue;
-  utimesSync(файл, когда, когда);
+  поставитьВремя(файл, когда);
   вне++;
 }
 
 const оболочка = датаОболочки && !Number.isNaN(датаОболочки.valueOf())
   ? датаОболочки.toISOString()
   : 'не определена';
+writeFileSync(join(КАТАЛОГ, '.page-mtime-contract.json'), JSON.stringify({
+  version: 1,
+  shellMtimeSeconds: датаОболочки
+    ? Math.floor(датаОболочки.valueOf() / 1000)
+    : 0,
+  sitemapPages: поставлено,
+  sourcePages: вне,
+}) + '\n');
 console.log(`время страниц: из карты ${поставлено}, по исходнику ${вне}, пропущено ${пропущено}, оболочка ${оболочка}`);

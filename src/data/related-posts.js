@@ -32,7 +32,7 @@ export const RELATED_POSTS = {
     { slug: 'goa-guide-2026', title: 'Отдых на Гоа 2026: сезон, цены, Северный или Южный', kind: 'guide' },
   ],
   'china': [
-    { slug: 'china-guide-2026', title: 'Китай 2026 россиянам: безвиз 30 дней, цены, маршрут', kind: 'guide' },
+    { slug: 'china-guide-2026', title: 'Когда лучше ехать в Китай: месяцы и регионы', kind: 'guide' },
     { slug: 'hainan-guide-2026', title: 'Хайнань 2026 — тропический Китай', kind: 'guide' },
     { slug: 'esim-zagranicey-2026', title: 'Связь за границей: обход файрвола Китая', kind: 'guide' },
     { slug: 'pay-abroad-2026', title: 'Как платить за границей: Alipay для Китая', kind: 'guide' },
