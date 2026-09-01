@@ -305,7 +305,12 @@ if (faqs.length >= 2) {
 
       {post.data.sourceType === 'compilation' && (
         <aside class="source-disclaimer" role="note">
-          <strong>Как написан этот пост.</strong> Это обзор по официальным источникам — сайтам консульств, статистике, форумам туристов. Лично эту визу/маршрут я в 2026 не оформлял, но сверил факты на актуальность. Если вы только что прошли — поправьте через <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram-канал</a>, обновлю.
+          <strong>Как написан этот пост.</strong>{' '}
+          {post.data.sourceNote ? (
+            post.data.sourceNote
+          ) : (
+            <>Это обзор по официальным источникам — сайтам консульств, статистике, форумам туристов. Лично эту визу/маршрут я в 2026 не оформлял, но сверил факты на актуальность. Если вы только что прошли — поправьте через <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram-канал</a>, обновлю.</>
+          )}
         </aside>
       )}
 
