@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -44,6 +44,9 @@ test('global shell changes advance every generated page mtime', (t) => {
   const actual = statSync(join(pageDir, 'index.html')).mtimeMs;
   const expected = latestGitDate(GLOBAL_SHELL_INPUTS).getTime();
   assert.equal(actual, expected);
+  const contract = JSON.parse(readFileSync(join(dist, '.page-mtime-contract.json'), 'utf8'));
+  assert.equal(contract.shellMtimeSeconds, Math.floor(expected / 1000));
+  assert.equal(contract.sitemapPages, 1);
 });
 
 test('a page date newer than the global shell is preserved', (t) => {

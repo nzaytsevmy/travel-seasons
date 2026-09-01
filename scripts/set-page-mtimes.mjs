@@ -23,7 +23,7 @@
 //
 // Запуск: node scripts/set-page-mtimes.mjs [каталог сборки]
 
-import { readFileSync, utimesSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, utimesSync, existsSync, readdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 
@@ -72,10 +72,7 @@ const ОБЩАЯ_ОБОЛОЧКА = [
 
 const gitДата = (пути) => {
   try {
-    // Тот же Unix timestamp, которым проверяет артефакт page-mtimes.spec.ts.
-    // На PR merge-ref GitHub `%cI` и `%ct` дали разные последние коммиты после
-    // merge основного контента; единый формат не позволяет build и gate
-    // расходиться в определении общей оболочки.
+    // Машинный Unix timestamp без повторного разбора часового пояса.
     const d = execFileSync('git', ['log', '-1', '--format=%ct', '--', ...пути],
       { encoding: 'utf8' }).trim();
     return d ? new Date(Number(d) * 1000) : null;
@@ -208,4 +205,12 @@ for (const файл of все_страницы(КАТАЛОГ)) {
 const оболочка = датаОболочки && !Number.isNaN(датаОболочки.valueOf())
   ? датаОболочки.toISOString()
   : 'не определена';
+writeFileSync(join(КАТАЛОГ, '.page-mtime-contract.json'), JSON.stringify({
+  version: 1,
+  shellMtimeSeconds: датаОболочки
+    ? Math.floor(датаОболочки.valueOf() / 1000)
+    : 0,
+  sitemapPages: поставлено,
+  sourcePages: вне,
+}) + '\n');
 console.log(`время страниц: из карты ${поставлено}, по исходнику ${вне}, пропущено ${пропущено}, оболочка ${оболочка}`);

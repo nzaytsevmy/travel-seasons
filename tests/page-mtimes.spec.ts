@@ -16,26 +16,11 @@ import { execFileSync } from 'node:child_process';
 
 const КАТАЛОГ = 'dist';
 const КАРТА = `${КАТАЛОГ}/sitemap-0.xml`;
-const ОБЩАЯ_ОБОЛОЧКА = [
-  'astro.config.mjs',
-  'src/layouts',
-  'src/components/SwissHeader.astro',
-  'src/components/CookieConsent.astro',
-  'src/styles/global.css',
-  'src/scripts/monetization-tracking.js',
-  'src/data/monetization.js',
-  'src/data/affiliate.js',
-];
-
-function гитДатаПутей(пути: string[]): number {
-  try {
-    const t = execFileSync('git', ['log', '-1', '--format=%ct', '--', ...пути],
-      { encoding: 'utf-8' }).trim();
-    return t ? +t * 1000 : 0;
-  } catch { return 0; }
-}
-
-const датаОболочки = гитДатаПутей(ОБЩАЯ_ОБОЛОЧКА);
+const КОНТРАКТ = JSON.parse(readFileSync(`${КАТАЛОГ}/.page-mtime-contract.json`, 'utf8')) as {
+  shellMtimeSeconds: number;
+  sitemapPages: number;
+};
+const датаОболочки = КОНТРАКТ.shellMtimeSeconds * 1000;
 
 type Пара = { путь: string; дата: string; файл: string };
 
@@ -53,6 +38,7 @@ function страницы(): Пара[] {
 test('1. время файла совпадает с более свежей из дат страницы и общей оболочки', () => {
   const все = страницы();
   expect(все.length, 'страниц из карты не нашлось — сборки нет?').toBeGreaterThan(1500);
+  expect(КОНТРАКТ.sitemapPages, 'manifest postbuild не совпал с картой').toBe(все.length);
   const разошлись = все.map((с) => {
     const было = Math.floor(statSync(с.файл).mtimeMs / 1000);
     const надо = Math.floor(Math.max(new Date(с.дата).valueOf(), датаОболочки) / 1000);
