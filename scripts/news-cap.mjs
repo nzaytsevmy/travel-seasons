@@ -24,13 +24,29 @@ const untracked = execFileSync('git', ['ls-files', '--others', '--exclude-standa
   { cwd: root, encoding: 'utf8' })
   .split('\n').map((x) => x.trim()).filter((x) => x.endsWith('.md'));
 
+// Повторный запуск в тот же день должен учитывать заметки, которые уже успели
+// попасть в main. Иначе после утренней одиночной публикации робот увидит четыре
+// свободных слота, добавит ещё четыре и нарушит дневной лимит.
+const trackedToday = execFileSync('git', ['ls-files', '--', 'src/content/news'],
+  { cwd: root, encoding: 'utf8' })
+  .split('\n').map((x) => x.trim()).filter((x) => x.endsWith('.md'))
+  .map((rel) => basename(rel))
+  .map((f) => ({ file: f, note: parseNote(readFileSync(join(dir, f), 'utf8'), basename(f, '.md')) }))
+  .filter(({ note }) => {
+    const added = note.data.added ?? note.data.checked;
+    return String(added ?? '').slice(0, 10) === today;
+  });
+
 const todays = untracked
   .map((rel) => basename(rel))
   .map((f) => ({ file: f, note: parseNote(readFileSync(join(dir, f), 'utf8'), basename(f, '.md')) }))
   .sort((a, b) => (b.note.data.score ?? 0) - (a.note.data.score ?? 0));
 
-const keep = todays.slice(0, cfg.maxPerDay);
-const drop = todays.slice(cfg.maxPerDay);
+const target = cfg.targetPerDay ?? cfg.maxPerDay;
+const availableSlots = Math.max(0, cfg.maxPerDay - trackedToday.length);
+const keep = todays.slice(0, availableSlots);
+const drop = todays.slice(availableSlots);
+const published = trackedToday.length + keep.length;
 
 for (const d of drop) {
   unlinkSync(join(dir, d.file));
@@ -41,8 +57,11 @@ for (const d of drop) {
 if (!existsSync(join(root, 'news'))) mkdirSync(join(root, 'news'), { recursive: true });
 appendFileSync(join(root, 'news/log.jsonl'), JSON.stringify({
   date: today,
-  candidates: todays.length,
-  published: keep.length,
+  candidates: trackedToday.length + todays.length,
+  target,
+  already_published: trackedToday.map((item) => ({ file: item.file, score: item.note.data.score })),
+  published,
+  deficit: Math.max(0, target - published),
   dropped_over_cap: drop.map((d) => ({ file: d.file, score: d.note.data.score })),
   kept: keep.map((k) => ({
     file: k.file,
@@ -52,4 +71,7 @@ appendFileSync(join(root, 'news/log.jsonl'), JSON.stringify({
   })),
 }) + '\n');
 
-console.log(`кандидатов сегодня ${todays.length}, оставлено ${keep.length} (лимит ${cfg.maxPerDay})`);
+console.log(`сегодня уже было ${trackedToday.length}, новых кандидатов ${todays.length}, добавлено ${keep.length} (цель ${target}, лимит ${cfg.maxPerDay})`);
+if (published < target) {
+  console.warn(`дефицит выпуска: ${target - published} — продолжить поиск или зафиксировать HOLD с причинами`);
+}
