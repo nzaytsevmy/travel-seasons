@@ -19,6 +19,7 @@ const LINKS = [
     ['/countries/', 'Все направления', '70+ стран с фильтрами'],
     ['/trips/',     'По месяцам',      'что работает в каждом месяце'],
     ['/seasons/',   'Сезоны',          'когда лучше ехать'],
+    ['/routes/',    'Готовые маршруты','план по дням, который можно менять'],
     // Сравнение живёт здесь, а не в сборах: направления сравнивают, пока
     // выбирают. В сборах его не нашёл бы тот, кто ещё не решил, куда едет.
     ['/compare/',   'Сравнить',        'два направления рядом'],
@@ -37,6 +38,7 @@ const LINKS = [
     ['/blog/',    'Гайды и разборы', 'длинные тексты по странам'],
     ['/novosti/', 'Новости',         'что изменилось на этой неделе'],
   ]},
+  { href: '/my/', label: 'Мои поездки' },
 ];
 
 // Пункт подсвечен, если открыт он сам или что-то из его списка.
@@ -147,7 +149,7 @@ const activen = (п) => is(п.href) || (п.под || []).some(([h]) => is(h));
    всё это лишнее, а зазор в 35 пикселей между пунктами протекал туда и разносил
    список втрое (замер 27.08: пункт 54 px, между пунктами ещё 35 px пустоты).
    `.sub` из одного класса проигрывал `.nav ul` из класса и тега. */
-.nav ul .sub{position:absolute;top:100%;left:-.9rem;min-width:17rem;background:var(--paper);
+.nav ul .sub{position:absolute;top:100%;left:-.9rem;min-width:21rem;background:var(--paper);
   border:1px solid var(--line);padding:.25rem 0;margin:0;list-style:none;
   display:flex;flex-direction:column;gap:0;align-items:stretch;justify-content:flex-start;
   text-transform:none;letter-spacing:0;font-size:1rem}
