@@ -57,17 +57,23 @@ test('поисковая выдача не блокирует интересну
 });
 
 test('лимиты новостного пайплайна совпадают в правилах и исполняемом конфиге', async () => {
-  const [prompt, rubric, projectRules, configRaw] = await Promise.all([
+  const [prompt, rubric, projectRules, configRaw, cap] = await Promise.all([
     read('NEWS-SELECTION-PROMPT.md'),
     read('news/RUBRIC.md'),
     read('CLAUDE.md'),
     read('news/config.json'),
+    read('scripts/news-cap.mjs'),
   ]);
   const config = JSON.parse(configRaw);
 
-  assert.equal(config.maxPerDay, 5);
-  assert.match(rubric, /максимум 5 заметок в день/i);
-  assert.doesNotMatch(rubric, /максимум 4 заметки в день/i);
+  assert.equal(config.targetPerDay, 4);
+  assert.equal(config.maxPerDay, 4);
+  assert.match(rubric, /цель ежедневного выпуска — 4 заметки/i);
+  assert.match(rubric, /максимум 4 заметки в день/i);
+  assert.match(prompt, /не останавливаться после первой, второй или третьей/i);
+  assert.doesNotMatch(rubric, /максимум 5 заметок в день/i);
+  assert.match(cap, /trackedToday/);
+  assert.match(cap, /cfg\.maxPerDay - trackedToday\.length/);
   assert.match(prompt, /капсула ответа \*\*40–60 слов\*\*/i);
   assert.match(rubric, /заметка — 150–350 слов[^\n]{0,80}до 600/i);
   assert.match(projectRules, /новостная заметка 150–350/i);
