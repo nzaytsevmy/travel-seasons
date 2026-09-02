@@ -21,6 +21,29 @@ const blog = defineCollection({
     demand: z.string().optional(),   // «8 005/мес, Вордстат 13.07–11.08.2026»
     reviewed: z.coerce.date().optional(),  // дата адверсарной проверки фактов
 
+    // Честный потолок качества. Старым статьям поле не навязываем, но гейт
+    // требует его при следующей смысловой ревизии и проверяет все шесть осей.
+    qualityScore: z.object({
+      topic: z.number().min(0).max(10),
+      facts: z.number().min(0).max(10),
+      visuals: z.number().min(0).max(10),
+      experience: z.number().min(0).max(10),
+      internalLinks: z.number().min(0).max(10),
+      legal: z.number().min(0).max(10),
+      overall: z.number().min(0).max(10),
+      ceiling: z.string().min(20),
+    }).optional(),
+
+    // Точечные сроки для фактов, которые портятся быстрее всей статьи.
+    // reviewAfter попадает в общую очередь ревизий; fallback не даёт роботу
+    // сохранять просроченную цифру только ради заполненного блока.
+    volatileFacts: z.array(z.object({
+      id: z.string(),
+      checkedAt: z.coerce.date(),
+      reviewAfter: z.coerce.date(),
+      fallback: z.string().min(20),
+    })).optional(),
+
     // Журнал проверок (решение Никиты 14.08.2026). Запись появляется ТОЛЬКО
     // после настоящей сверки: утверждение о проверке обязано быть проверкой.
     // Даёт три вещи сразу — видимую читателю свежесть с датой, ссылки на
