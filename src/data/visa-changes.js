@@ -17,19 +17,20 @@
 export const VISA_CHANGES = [
   {
     id: 'thailand-30-days-2026',
-    date: '2026-05-19',
-    checked: '2026-07-28',
+    date: '2026-08-31',
+    checked: '2026-09-02',
     countries: ['thailand'],
-    title: 'Таиланд урежет безвиз с 60 до 30 дней',
+    title: 'Таиланд сокращает безвиз с 60 до 30 дней 15 сентября',
     status: 'принято, ещё не вступило',
     impact: 'high',
-    what: 'Правительство одобрило возврат к прежним 30 дням для России и ещё полусотни стран. ' +
-          'Новые условия заработают через 15 дней после публикации в Royal Gazette, ' +
-          'а публикации на конец июля 2026 не было. Сейчас 60 дней ещё действуют, но на них ' +
-          'нельзя рассчитывать при зимовке или поездке дольше месяца.',
+    what: 'Министерские объявления опубликованы в Royal Gazette 31 августа. ' +
+          'При въезде до 14 сентября включительно действует срок до 60 дней, а с 15 сентября ' +
+          'российские паспорта переходят на 30-дневный безвиз по двустороннему соглашению. ' +
+          'Выданные до перехода сроки сохраняются полностью.',
     sources: [
-      { name: 'Управление по туризму Таиланда', url: 'https://www.tatnews.org/2026/05/thai-cabinet-approves-revision-of-60-day-visa-exemption-scheme-pending-royal-gazette-publication/' },
-      { name: 'АТОР', url: 'https://www.atorus.ru/article/tailand-vozvrashchaet-bezviz-na-30-dney-chto-izmenitsya-dlya-turistov-67986' },
+      { name: 'Управление по туризму Таиланда', url: 'https://www.tatnews.org/2026/09/thailand-introduces-new-30-day-and-15-day-visa-exemption-rules-from-15-september/' },
+      { name: 'Посольство Таиланда в Москве', url: 'https://moscow.thaiembassy.org/en/content/101305-announcement-no-1-2562-visa-exemption-for-holders-of-russian-passports' },
+      { name: 'Консульский департамент МИД Таиланда', url: 'https://consular.mfa.go.th/th/content/20-5-69-0000' },
     ],
   },
   {
