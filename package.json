@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "astro dev",
-    "prebuild": "node scripts/gen-freshness.mjs && node scripts/gen-page-lastmod.mjs && node scripts/gen-llms.mjs",
+    "prebuild": "node scripts/news-lifecycle.mjs && node scripts/gen-freshness.mjs && node scripts/gen-page-lastmod.mjs && node scripts/gen-llms.mjs",
     "postbuild": "node scripts/set-page-mtimes.mjs",
     "build": "astro build",
     "gen:llms": "node scripts/gen-llms.mjs",
@@ -21,6 +21,7 @@
     "gate:monetization:decision": "node scripts/monetization-decision-gate.mjs",
     "check:agent-skills": "node --test tests/agent-skills-contract.test.mjs",
     "check:delivery": "node --test tests/auto-merge-policy.test.mjs tests/agent-skills-contract.test.mjs tests/quality-gate-contract.test.mjs tests/page-mtime-global-shell.test.mjs",
+    "check:news-lifecycle": "node scripts/news-lifecycle.mjs",
     "preview:test": "astro build && astro preview --port 4322",
     "postinstall": "patch-package"
   },

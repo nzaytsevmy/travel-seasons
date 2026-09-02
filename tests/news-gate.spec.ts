@@ -12,6 +12,8 @@ import {
   checkDepthLink,
   checkTldr,
   checkOwnPhoto,
+  checkLifecycle,
+  checkIndependentReview,
   loadPublished,
   loadSnapshot,
 } from '../scripts/news-gate.mjs';
@@ -121,6 +123,56 @@ test('визовая заметка без честного статуса — �
 
   // Для природы статус не обязателен.
   expect(checkYmylForm(baseNote).ok).toBe(true);
+});
+
+test('объявленное, но не вступившее правило требует даты повторной проверки', () => {
+  const pending = { ...baseNote, data: { ...baseNote.data,
+    status: 'принято, не вступило',
+    effectiveDate: '2026-09-15',
+    reviewOn: '2026-09-15',
+  } };
+
+  expect(checkLifecycle(pending, new Date('2026-09-02T12:00:00Z')).ok).toBe(true);
+  expect(checkLifecycle({ ...pending, data: { ...pending.data, reviewOn: undefined } },
+    new Date('2026-09-02T12:00:00Z')).ok).toBe(false);
+  expect(checkLifecycle(pending, new Date('2026-09-15T00:00:00Z')).ok).toBe(false);
+  expect(checkLifecycle({ ...pending, data: { ...pending.data, status: 'действует' } },
+    new Date('2026-09-16T00:00:00Z')).ok).toBe(true);
+});
+
+test('оценка новой заметки подтверждена отдельным review-артефактом', () => {
+  const root = mkdtempSync(join(tmpdir(), 'tt-news-review-'));
+  try {
+    mkdirSync(join(root, 'news', 'reviews'), { recursive: true });
+    const reviewRef = 'news/reviews/2026-08-01-test.json';
+    const reviewed = { ...baseNote, data: { ...baseNote.data,
+      checked: new Date('2026-09-02'),
+      authoredBy: 'primary-writer',
+      reviewRef,
+    } };
+    const artifact = {
+      slug: reviewed.slug,
+      score: reviewed.data.score,
+      reviewer: 'independent-news-reviewer',
+      reviewedAt: '2026-09-02',
+      rationale: 'Меняет планы поездки, опирается на первоисточник и даёт точную дату действия.',
+    };
+    writeFileSync(join(root, reviewRef), JSON.stringify(artifact));
+
+    expect(checkIndependentReview(reviewed, root).ok).toBe(true);
+    expect(checkIndependentReview({ ...reviewed, data: { ...reviewed.data, reviewRef: undefined } }, root).ok).toBe(false);
+
+    writeFileSync(join(root, reviewRef), JSON.stringify({ ...artifact, reviewer: 'primary-writer' }));
+    expect(checkIndependentReview(reviewed, root).ok).toBe(false);
+
+    writeFileSync(join(root, reviewRef), JSON.stringify({ ...artifact, score: 4 }));
+    expect(checkIndependentReview(reviewed, root).ok).toBe(false);
+
+    writeFileSync(join(root, reviewRef), JSON.stringify({ ...artifact, reviewedAt: '2026-09-01' }));
+    expect(checkIndependentReview(reviewed, root).ok).toBe(false);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });
 
 test('дубль по заголовку — отбой', () => {
@@ -238,9 +290,11 @@ test('заметка-тупик без ссылки вглубь сайта — 
 });
 
 test('капсула-ответ обязательна и уложена в 40–60 слов', () => {
-  const ok = { ...baseNote, data: { ...baseNote.data,
-    tldr: 'Сорок слов ровно столько сколько нужно чтобы ответить сразу и не заставлять читателя искать ответ в теле заметки потому что именно эту капсулу извлекает нейроответ и по ней человек решает читать ли дальше а значит она обязана нести суть' } };
-  expect(checkTldr(ok).ok).toBe(true);
+  const tldr = (n) => Array.from({ length: n }, (_, i) => `слово${i + 1}`).join(' ');
+  expect(checkTldr({ ...baseNote, data: { ...baseNote.data, tldr: tldr(40) } }).ok).toBe(true);
+  expect(checkTldr({ ...baseNote, data: { ...baseNote.data, tldr: tldr(60) } }).ok).toBe(true);
+  expect(checkTldr({ ...baseNote, data: { ...baseNote.data, tldr: tldr(39) } }).ok).toBe(false);
+  expect(checkTldr({ ...baseNote, data: { ...baseNote.data, tldr: tldr(61) } }).ok).toBe(false);
 
   expect(checkTldr({ ...baseNote, data: { ...baseNote.data, tldr: undefined } }).ok).toBe(false);
   expect(checkTldr({ ...baseNote, data: { ...baseNote.data, tldr: 'Слишком коротко.' } }).ok).toBe(false);

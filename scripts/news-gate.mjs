@@ -44,8 +44,9 @@ export function parseNote(raw, slug) {
     list = null;
     data[key] = key === 'score' ? Number(val) : unquote(val);
   }
-  if (data.date) data.date = new Date(data.date);
-  if (data.checked) data.checked = new Date(data.checked);
+  for (const key of ['date', 'checked', 'effectiveDate', 'reviewOn']) {
+    if (data[key]) data[key] = new Date(data[key]);
+  }
   return { slug, data, body: body.trim() };
 }
 
@@ -186,9 +187,75 @@ export function checkYmylForm(note) {
   return pass;
 }
 
+const isoDay = (value) => {
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString().slice(0, 10);
+};
+
+/**
+ * 7. Жизненный цикл будущего правила. Статус «принято, не вступило» не может
+ *    жить вечно: к дате вступления источник нужно открыть заново и только
+ *    после этого сменить статус, дату проверки и связанные страницы.
+ */
+export function checkLifecycle(note, now = new Date()) {
+  if (note.data.status !== 'принято, не вступило') return pass;
+  const effective = isoDay(note.data.effectiveDate);
+  const review = isoDay(note.data.reviewOn);
+  if (!effective) return fail('для будущего правила нет корректного effectiveDate');
+  if (!review) return fail('для будущего правила нет корректного reviewOn');
+  if (review > effective) return fail(`reviewOn ${review} позже effectiveDate ${effective}`);
+  const today = isoDay(now);
+  if (today && today >= review) {
+    return fail(`наступила дата повторной проверки ${review}: перепроверь источник и обнови status`);
+  }
+  return pass;
+}
+
+const REVIEW_REQUIRED_FROM = '2026-09-02';
+
+/**
+ * 8. Независимая оценка хранится отдельно от заметки. Само число score ничего
+ *    не доказывает: автор мог поставить его себе. Артефакт фиксирует другого
+ *    проверяющего, дату, обоснование и тот же score; путь ограничен каталогом
+ *    news/reviews, чтобы frontmatter не мог читать произвольные файлы.
+ */
+export function checkIndependentReview(note, root = process.cwd()) {
+  const checked = isoDay(note.data.checked);
+  const required = checked && checked >= REVIEW_REQUIRED_FROM;
+  const ref = note.data.reviewRef?.trim();
+  if (!ref) return required ? fail('нет reviewRef с независимой оценкой') : pass;
+  if (!/^news\/reviews\/[a-z0-9][a-z0-9-]*\.json$/.test(ref)) {
+    return fail(`reviewRef вне news/reviews или имеет небезопасное имя: ${ref}`);
+  }
+  const authoredBy = note.data.authoredBy?.trim();
+  if (!authoredBy) return fail('нет authoredBy: независимость reviewer нечем проверить');
+
+  let review;
+  try {
+    review = JSON.parse(readFileSync(join(root, ref), 'utf8'));
+  } catch (error) {
+    return fail(`review-артефакт не читается: ${error.message}`);
+  }
+  if (review.slug !== note.slug) return fail(`review относится к другому slug: ${review.slug ?? 'нет'}`);
+  if (review.score !== note.data.score) return fail(`score заметки ${note.data.score} не совпадает с review ${review.score}`);
+  if (!review.reviewer || typeof review.reviewer !== 'string') return fail('в review нет reviewer');
+  if (review.reviewer.trim().toLowerCase() === authoredBy.toLowerCase()) {
+    return fail('reviewer совпадает с authoredBy — оценка не независимая');
+  }
+  const reviewedAt = isoDay(review.reviewedAt);
+  if (!reviewedAt) return fail('в review нет корректного reviewedAt');
+  if (checked && reviewedAt < checked) {
+    return fail(`reviewedAt ${reviewedAt} раньше checked ${checked}`);
+  }
+  if (typeof review.rationale !== 'string' || review.rationale.trim().length < 40) {
+    return fail('в review нет содержательного rationale');
+  }
+  return pass;
+}
+
 const normTitle = (s) => s.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').replace(/\s+/g, ' ').trim();
 
-/** 7. Дубль: тот же источник или тот же заголовок среди уже опубликованного. */
+/** 9. Дубль: тот же источник или тот же заголовок среди уже опубликованного. */
 export function checkDedup(note, published) {
   const urls = new Set((note.data.sources ?? []).map((s) => s.url.replace(/\/+$/, '')));
   const title = normTitle(note.data.title ?? '');
@@ -216,7 +283,7 @@ export function checkDedup(note, published) {
 }
 
 /**
- * 9. Заметка не должна быть тупиком. Яндекс даёт поведенческим 30–45% формулы,
+ * 10. Заметка не должна быть тупиком. Яндекс даёт поведенческим 30–45% формулы,
  *    а оттуда приходит 92% трафика сайта: человек, которому из заметки некуда
  *    идти, возвращается в выдачу — это прямой минус, а не нейтральный исход.
  *    Ссылка на первоисточник не считается: она уводит наружу. Ссылка на саму
@@ -240,8 +307,8 @@ export function checkTldr(note) {
   const t = (note.data.tldr ?? '').trim();
   if (!t) return fail('нет капсулы-ответа (поле tldr)');
   const n = t.split(/\s+/).filter(Boolean).length;
-  if (n < 25) return fail(`капсула короткая: ${n} слов, нужно 40–60`);
-  if (n > 75) return fail(`капсула длинная: ${n} слов, нужно 40–60`);
+  if (n < 40) return fail(`капсула короткая: ${n} слов, нужно 40–60`);
+  if (n > 60) return fail(`капсула длинная: ${n} слов, нужно 40–60`);
   return pass;
 }
 
@@ -410,8 +477,10 @@ export async function runGate(note, { allowed, media = [], minScore, published, 
     ['ссылки в тексте', () => checkLinksSubset(note)],
     ['волатильность', () => checkVolatility(note)],
     ['YMYL-форма', () => checkYmylForm(note)],
+    ['жизненный цикл', () => checkLifecycle(note)],
     ['дубль', () => checkDedup(note, published)],
     ['оценка', () => gradeNote(note, minScore)],
+    ['независимая оценка', () => checkIndependentReview(note, root)],
     ['капсула-ответ', () => checkTldr(note)],
     ['ссылка вглубь', () => checkDepthLink(note)],
     ['свой снимок', () => checkOwnPhoto(note)],

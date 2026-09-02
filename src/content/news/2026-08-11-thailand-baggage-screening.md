@@ -8,6 +8,8 @@ photoQuery: "airport checked luggage suitcase"
 topic: transport
 impact: high
 status: принято, не вступило
+effectiveDate: 2026-10-16
+reviewOn: 2026-10-16
 score: 4
 countries:
   - thailand

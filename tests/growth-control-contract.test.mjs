@@ -56,6 +56,24 @@ test('поисковая выдача не блокирует интересну
   assert.match(seoRules, /для новостной ленты[^\n]{0,220}не стоп-кран/i);
 });
 
+test('лимиты новостного пайплайна совпадают в правилах и исполняемом конфиге', async () => {
+  const [prompt, rubric, projectRules, configRaw] = await Promise.all([
+    read('NEWS-SELECTION-PROMPT.md'),
+    read('news/RUBRIC.md'),
+    read('CLAUDE.md'),
+    read('news/config.json'),
+  ]);
+  const config = JSON.parse(configRaw);
+
+  assert.equal(config.maxPerDay, 5);
+  assert.match(rubric, /максимум 5 заметок в день/i);
+  assert.doesNotMatch(rubric, /максимум 4 заметки в день/i);
+  assert.match(prompt, /капсула ответа \*\*40–60 слов\*\*/i);
+  assert.match(rubric, /заметка — 150–350 слов[^\n]{0,80}до 600/i);
+  assert.match(projectRules, /новостная заметка 150–350/i);
+  assert.doesNotMatch(projectRules, /новостная заметка 600–1200/i);
+});
+
 test('очередь гайдов отделена от ежедневных статей', async () => {
   const [guides, daily] = await Promise.all([
     read('GUIDES-ROUTES-QUEUE.md'),

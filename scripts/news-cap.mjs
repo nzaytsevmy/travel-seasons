@@ -44,7 +44,12 @@ appendFileSync(join(root, 'news/log.jsonl'), JSON.stringify({
   candidates: todays.length,
   published: keep.length,
   dropped_over_cap: drop.map((d) => ({ file: d.file, score: d.note.data.score })),
-  kept: keep.map((k) => ({ file: k.file, score: k.note.data.score, topic: k.note.data.topic })),
+  kept: keep.map((k) => ({
+    file: k.file,
+    score: k.note.data.score,
+    topic: k.note.data.topic,
+    reviewRef: k.note.data.reviewRef ?? null,
+  })),
 }) + '\n');
 
 console.log(`кандидатов сегодня ${todays.length}, оставлено ${keep.length} (лимит ${cfg.maxPerDay})`);
