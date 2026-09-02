@@ -39,6 +39,23 @@ test('все редакционные промты читают недельно
   }
 });
 
+test('поисковая выдача не блокирует интересную новость', async () => {
+  const [prompt, rubric, projectRules, seoRules] = await Promise.all([
+    read('NEWS-SELECTION-PROMPT.md'),
+    read('news/RUBRIC.md'),
+    read('CLAUDE.md'),
+    read('SEO-CHECKLIST-2026.md'),
+  ]);
+
+  assert.match(prompt, /выдача — диагностика канала, не редакционный гейт/i);
+  assert.match(prompt, /оценк(?:ой|а) 3\+/i);
+  assert.doesNotMatch(prompt, /нейроответом[^\n]{0,160}тему пропустить/i);
+  assert.doesNotMatch(prompt, /целиком закрыто нейроответом/i);
+  assert.match(rubric, /нейроответ[^\n]{0,180}не (?:меняют|меняет) оценку/i);
+  assert.match(projectRules, /для новостной ленты[^\n]{0,220}не стоп-кран/i);
+  assert.match(seoRules, /для новостной ленты[^\n]{0,220}не стоп-кран/i);
+});
+
 test('очередь гайдов отделена от ежедневных статей', async () => {
   const [guides, daily] = await Promise.all([
     read('GUIDES-ROUTES-QUEUE.md'),
