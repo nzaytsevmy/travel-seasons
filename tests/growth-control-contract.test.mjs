@@ -94,6 +94,24 @@ test('очередь гайдов отделена от ежедневных с�
   assert.doesNotMatch(daily, /NEW_GUIDE|NEW_ROUTE|REVISE_GUIDE/);
 });
 
+test('пустая очередь гайдов запускает восстановление без тихих пропусков', async () => {
+  const [control, prompt, queue] = await Promise.all([
+    read('GROWTH-CONTROL.md'),
+    read('GUIDES-ROUTES-PROMPT.md'),
+    read('GUIDES-ROUTES-QUEUE.md'),
+  ]);
+
+  assert.match(control, /пустая очередь[^\n]+не[^\n]+основани[^\n]+HOLD/i);
+  assert.match(control, /QUEUE_RECOVERY/);
+  assert.match(prompt, /QUEUE_RECOVERY/);
+  assert.match(prompt, /SEMANTIC-CORE\.md[\s\S]{0,100}(?:радар|RADAR)/i);
+  assert.match(prompt, /принят[\s\S]{0,80}отклон[\s\S]{0,80}отлож/i);
+  assert.match(prompt, /ни один кандидат[^\n]+(?:не пропуска|без записи)/i);
+  assert.match(queue, /реестр покрытия кандидатов/i);
+  assert.match(queue, /принят[\s\S]{0,80}отклон[\s\S]{0,80}отлож/i);
+  assert.match(queue, /пустая очередь[^\n]+не[^\n]+HOLD/i);
+});
+
 test('основной денежный гейт включает контракт недельного управления', async () => {
   const pkg = JSON.parse(await read('package.json'));
   assert.match(pkg.scripts['check:monetization'], /growth-control-contract\.test\.mjs/);
