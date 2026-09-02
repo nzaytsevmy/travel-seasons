@@ -1,0 +1,20 @@
+{
+  "billingAccountId": "${billing_account_id}",
+  "name": "traveltribe-account-monthly",
+  "expenseBudgetSpec": {
+    "resetPeriod": "MONTHLY",
+    "amount": "${monthly_budget}",
+    "notificationUserAccountIds": ["${user_account_id}"],
+    "thresholdRules": [
+      { "type": "PERCENT", "amount": "50", "notificationUserAccountIds": ["${user_account_id}"] },
+      { "type": "PERCENT", "amount": "75", "notificationUserAccountIds": ["${user_account_id}"] },
+      { "type": "PERCENT", "amount": "90", "notificationUserAccountIds": ["${user_account_id}"] }
+    ],
+    "filter": {
+      "cloudFoldersFilters": [
+        { "cloudId": "${cloud_id}", "folderIds": ["${folder_id}"] }
+      ]
+    },
+    "endDate": "${end_date}"
+  }
+}

@@ -1,0 +1,277 @@
+---
+const { route } = Astro.props;
+const apiOrigin = import.meta.env.PUBLIC_ACCOUNT_API_ORIGIN || 'https://api.traveltribe.ru';
+const syncEnabled = import.meta.env.PUBLIC_ROUTE_SYNC_ENABLED === 'true';
+---
+<section class="rt-editor" id="route-editor" data-route-editor data-api-origin={apiOrigin} data-sync-enabled={String(syncEnabled)}>
+  <div class="rt-editor-head">
+    <div>
+      <h2>Настрой маршрут под себя</h2>
+      <p>Вход не нужен: поменяй даты и состав, убери лишнее, переставь остановки.</p>
+    </div>
+    <p class="rt-local-note">Правки сначала сохраняются только на этом устройстве.</p>
+  </div>
+
+  <form class="rt-form" data-route-form>
+    <div class="rt-fields">
+      <label><span>Начало</span><input name="dateStart" type="date" /></label>
+      <label><span>Конец</span><input name="dateEnd" type="date" /></label>
+      <label><span>Путешественников</span><input name="people" type="number" min="1" max="10" value="1" inputmode="numeric" /></label>
+    </div>
+
+    <div class="rt-stops-head">
+      <h3>Остановки</h3>
+      <span data-stop-counter>{route.stops.length} из {route.stops.length}</span>
+    </div>
+    <ol class="rt-stops" data-stops>
+      {route.stops.map((stop) => (
+        <li data-stop-id={stop.id} data-day={stop.day}>
+          <span class="rt-stop-day">День {stop.day}</span>
+          <span class="rt-stop-label">{stop.label}</span>
+          <span class="rt-stop-actions">
+            <button type="button" data-move="up" aria-label={`Поднять: ${stop.label}`}>Выше</button>
+            <button type="button" data-move="down" aria-label={`Опустить: ${stop.label}`}>Ниже</button>
+            <button type="button" data-remove aria-label={`Убрать: ${stop.label}`}>Убрать</button>
+          </span>
+        </li>
+      ))}
+    </ol>
+
+    <div class="rt-save-row">
+      <button class="rt-primary" type="submit">Сохранить на этом устройстве</button>
+      <a href="/my/" data-open-plan hidden>Открыть мои поездки</a>
+      <p class="rt-status" data-route-status role="status" aria-live="polite"></p>
+    </div>
+  </form>
+
+  <div class="rt-cloud" data-cloud-box>
+    <h3>Открывать план на других устройствах</h3>
+    <p>Для входа Яндекс передаёт базовый профиль. TravelTribe использует только технический идентификатор: имя и логин не сохраняются, почта и телефон не запрашиваются.</p>
+    <label class="rt-consent">
+      <input type="checkbox" data-account-consent />
+      <span>Согласен на создание технической учётной записи и обработку данных по <a href="/legal/account-consent/">отдельным условиям</a>.</span>
+    </label>
+    <button type="button" class="rt-cloud-action" data-cloud-save disabled>
+      {syncEnabled ? 'Сохранить и открыть на другом устройстве' : 'Облачная синхронизация пока закрыта'}
+    </button>
+    {!syncEnabled && <p class="rt-cloud-note">Локальное сохранение работает; облачный контур включится после проверки инфраструктуры и документов.</p>}
+  </div>
+</section>
+
+<script type="application/json" data-route-payload set:html={JSON.stringify(route)} />
+
+<script>
+  import { listPlans, saveRoutePlan, MAX_PLANS } from '../scripts/trip-plans';
+  import { trackProductEvent } from '../scripts/product-analytics';
+
+  function initEditor(editor: HTMLElement) {
+    if (editor.dataset.ready === '1') return;
+    editor.dataset.ready = '1';
+    const payload = editor.nextElementSibling;
+    if (!(payload instanceof HTMLScriptElement)) return;
+    const route = JSON.parse(payload.textContent || '{}');
+    const form = editor.querySelector<HTMLFormElement>('[data-route-form]');
+    const list = editor.querySelector<HTMLOListElement>('[data-stops]');
+    const status = editor.querySelector<HTMLElement>('[data-route-status]');
+    const counter = editor.querySelector<HTMLElement>('[data-stop-counter]');
+    const open = editor.querySelector<HTMLAnchorElement>('[data-open-plan]');
+    const consent = editor.querySelector<HTMLInputElement>('[data-account-consent]');
+    const cloud = editor.querySelector<HTMLButtonElement>('[data-cloud-save]');
+    if (!form || !list || !status || !counter || !consent || !cloud) return;
+
+    let activePlan = listPlans().find((plan) => plan.kind === 'route' && plan.routeSlug === route.slug) || null;
+    let started = false;
+    const initialIds = route.stops.map((stop: { id: string }) => stop.id);
+    let daySlots = route.stops.map((stop: { day: number }) => stop.day);
+
+    function say(message: string) { status.textContent = message; }
+    function markStarted() {
+      if (started) return;
+      started = true;
+      trackProductEvent('route_start', { route_slug: route.slug, stop_count: list.children.length });
+    }
+    function datePlus(start: string, days: number) {
+      if (!start) return '';
+      const date = new Date(`${start}T12:00:00`);
+      if (Number.isNaN(date.valueOf())) return '';
+      date.setDate(date.getDate() + Math.max(0, days - 1));
+      return date.toISOString().slice(0, 10);
+    }
+    function stopValues() {
+      return [...list.querySelectorAll<HTMLElement>('[data-stop-id]')].map((item, index) => ({
+        id: item.dataset.stopId || `stop-${index + 1}`,
+        label: item.querySelector<HTMLElement>('.rt-stop-label')?.textContent?.trim() || '',
+        day: Number(item.dataset.day) || index + 1,
+      }));
+    }
+    function updateStops() {
+      const items = [...list.querySelectorAll<HTMLElement>('[data-stop-id]')];
+      counter.textContent = `${items.length} из ${initialIds.length}`;
+      items.forEach((item, index) => {
+        // При перестановке меняется место в расписании, а не «день» самой
+        // достопримечательности. Удалённый день остаётся пропуском: мы не
+        // притворяемся, что автоматически пересобрали логистику всей поездки.
+        const day = daySlots[index] ?? index + 1;
+        item.dataset.day = String(day);
+        const dayLabel = item.querySelector<HTMLElement>('.rt-stop-day');
+        if (dayLabel) dayLabel.textContent = `День ${day}`;
+        const up = item.querySelector<HTMLButtonElement>('[data-move="up"]');
+        const down = item.querySelector<HTMLButtonElement>('[data-move="down"]');
+        if (up) up.disabled = index === 0;
+        if (down) down.disabled = index === items.length - 1;
+      });
+    }
+    function setDatesFromPlan() {
+      const start = form.elements.namedItem('dateStart') as HTMLInputElement;
+      const end = form.elements.namedItem('dateEnd') as HTMLInputElement;
+      const people = form.elements.namedItem('people') as HTMLInputElement;
+      if (activePlan) {
+        start.value = activePlan.dateStart || '';
+        end.value = activePlan.dateEnd || '';
+        people.value = String(activePlan.people || 1);
+        const byId = new Map(route.stops.map((stop: any) => [stop.id, stop]));
+        const saved = activePlan.stops.filter((stop) => byId.has(stop.id));
+        if (saved.length) {
+          const savedNodes = saved.map((stop) => {
+            const original = list.querySelector<HTMLElement>(`[data-stop-id="${CSS.escape(stop.id)}"]`);
+            if (original) original.dataset.day = String(stop.day);
+            return original || document.createElement('li');
+          });
+          list.replaceChildren(...savedNodes);
+          daySlots = saved.map((stop) => stop.day);
+        }
+        if (open) open.hidden = false;
+        say('Сохранённая версия загружена с этого устройства.');
+      }
+      start.addEventListener('change', () => {
+        if (!end.value || end.value < start.value) end.value = datePlus(start.value, route.durationDays);
+        end.min = start.value;
+      });
+    }
+
+    list.addEventListener('click', (event) => {
+      const button = (event.target as Element).closest<HTMLButtonElement>('button');
+      const item = button?.closest<HTMLElement>('[data-stop-id]');
+      if (!button || !item) return;
+      markStarted();
+      if (button.dataset.move === 'up' && item.previousElementSibling) list.insertBefore(item, item.previousElementSibling);
+      if (button.dataset.move === 'down' && item.nextElementSibling) list.insertBefore(item.nextElementSibling, item);
+      if (button.hasAttribute('data-remove')) {
+        if (list.children.length === 1) { say('В маршруте должна остаться хотя бы одна остановка.'); return; }
+        const index = [...list.children].indexOf(item);
+        item.remove();
+        if (index >= 0) daySlots.splice(index, 1);
+      }
+      updateStops();
+      trackProductEvent('route_edit', { route_slug: route.slug, stop_count: list.children.length });
+    });
+
+    form.addEventListener('change', () => {
+      markStarted();
+      trackProductEvent('route_edit', {
+        route_slug: route.slug,
+        stop_count: list.children.length,
+        people: (form.elements.namedItem('people') as HTMLInputElement).value,
+      });
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const start = form.elements.namedItem('dateStart') as HTMLInputElement;
+      const end = form.elements.namedItem('dateEnd') as HTMLInputElement;
+      if (start.value && end.value && end.value < start.value) {
+        end.setCustomValidity('Дата окончания не может быть раньше начала.');
+        end.reportValidity();
+        return;
+      }
+      end.setCustomValidity('');
+      trackProductEvent('route_save_intent', { route_slug: route.slug, stop_count: list.children.length });
+      const result = saveRoutePlan({
+        id: activePlan?.id,
+        routeSlug: route.slug,
+        destinationSlug: route.destinationSlug,
+        title: route.title,
+        nom: route.destination,
+        days: route.durationDays,
+        people: (form.elements.namedItem('people') as HTMLInputElement).value,
+        dateStart: start.value || null,
+        dateEnd: end.value || null,
+        stops: stopValues(),
+      });
+      if (!result.ok) {
+        say(`Лимит — ${MAX_PLANS} планов. Удали ненужный в разделе «Мои поездки».`);
+        return;
+      }
+      activePlan = result.plan;
+      if (open) open.hidden = false;
+      say(result.existed ? 'Правки сохранены на этом устройстве.' : 'Маршрут сохранён на этом устройстве.');
+    });
+
+    consent.addEventListener('change', () => {
+      cloud.disabled = !consent.checked || editor.dataset.syncEnabled !== 'true';
+      if (consent.checked) trackProductEvent('consent_accept', { route_slug: route.slug });
+    });
+    cloud.addEventListener('click', () => {
+      if (!consent.checked || editor.dataset.syncEnabled !== 'true') return;
+      if (!activePlan) form.requestSubmit();
+      if (!activePlan) return;
+      try { localStorage.setItem('tt_account_consent_v2', JSON.stringify({ version: 'account_v2', acceptedAt: Date.now() })); } catch {}
+      trackProductEvent('auth_start', { route_slug: route.slug });
+      const returnTo = '/my/?sync=1';
+      location.assign(`${editor.dataset.apiOrigin}/v1/auth/yandex/start?consent=account_v2&return_to=${encodeURIComponent(returnTo)}`);
+    });
+
+    setDatesFromPlan();
+    updateStops();
+    trackProductEvent('route_view', { route_slug: route.slug, stop_count: list.children.length });
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-route-editor]').forEach(initEditor);
+  document.addEventListener('astro:page-load', () => document.querySelectorAll<HTMLElement>('[data-route-editor]').forEach(initEditor));
+</script>
+
+<style>
+.rt-editor{border-top:2px solid var(--text);padding-top:clamp(2rem,5vw,4rem);margin-top:clamp(2.5rem,6vw,5rem)}
+.rt-editor h2{font:800 clamp(1.6rem,3.5vw,2.7rem)/1.02 var(--ff-body);letter-spacing:-.035em;margin:0;scroll-margin-top:80px}
+.rt-editor h3{font:700 1.05rem/1.25 var(--ff-body);margin:0}
+.rt-editor p{max-width:68ch}
+.rt-editor-head{display:grid;grid-template-columns:minmax(0,8fr) minmax(14rem,4fr);gap:var(--gutter,1.5rem);align-items:end}
+.rt-editor-head>div>p{color:var(--text-dim);margin:.7rem 0 0}
+.rt-local-note{font-size:.82rem;color:var(--text-dim);margin:0;border-left:3px solid var(--gold);padding:.3rem 0 .3rem 1rem}
+.rt-form{margin-top:2rem}
+.rt-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border-block:1px solid var(--line)}
+.rt-fields label{display:flex;flex-direction:column;gap:.45rem;background:var(--bg);padding:1rem}
+.rt-fields label+label{border-left:1px solid var(--line)}
+.rt-fields span{font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-dim)}
+.rt-fields input{min-height:44px;border:0;border-bottom:1px solid var(--text);border-radius:0;background:transparent;color:var(--text);font:600 1rem var(--ff-body);padding:.45rem 0}
+.rt-stops-head{display:flex;align-items:center;justify-content:space-between;margin-top:2rem;padding-bottom:.75rem;border-bottom:1px solid var(--text)}
+.rt-stops-head span{font:500 .76rem var(--ff-mono);color:var(--text-dim)}
+.rt-stops{list-style:none;margin:0;padding:0}
+.rt-stops li{display:grid;grid-template-columns:5rem minmax(0,1fr) auto;gap:1rem;align-items:center;min-height:72px;border-bottom:1px solid var(--line);padding:.7rem 0}
+.rt-stop-day{font:.72rem var(--ff-mono);color:var(--text-dim);text-transform:uppercase}
+.rt-stop-label{font-weight:600}
+.rt-stop-actions{display:flex;gap:.25rem}
+.rt-stop-actions button,.rt-cloud-action{min-height:44px;border:0;border-radius:0;background:transparent;color:var(--gold);font:600 .8rem var(--ff-body);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;cursor:pointer;padding:.5rem}
+.rt-stop-actions button:disabled{color:var(--text-faint);text-decoration:none;cursor:default}
+.rt-save-row{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.5rem;margin-top:1.5rem}
+.rt-primary{min-height:48px;border:1px solid var(--gold);border-radius:0;background:var(--gold);color:#fff;font:700 .92rem var(--ff-body);padding:.75rem 1rem;cursor:pointer}
+.rt-save-row a{display:inline-flex;align-items:center;min-height:44px;color:var(--gold);font-weight:650;text-underline-offset:.22em}
+.rt-status{flex-basis:100%;min-height:1.4em;margin:.25rem 0 0;color:var(--text-dim);font-size:.86rem}
+.rt-cloud{margin-top:2.5rem;border-top:1px solid var(--text);padding-top:1.25rem;display:grid;grid-template-columns:minmax(0,4fr) minmax(0,5fr) minmax(14rem,3fr);gap:1rem 2rem;align-items:start}
+.rt-cloud>p{margin:0;color:var(--text-dim);font-size:.9rem}
+.rt-consent{display:grid;grid-template-columns:24px minmax(0,1fr);gap:.7rem;font-size:.82rem;line-height:1.5}
+.rt-consent input{width:24px;height:24px;margin:0;accent-color:var(--gold)}
+.rt-consent a{color:var(--gold)}
+.rt-cloud-action{border:1px solid var(--gold);font-size:.84rem;text-align:left;text-decoration:none;padding:.65rem .8rem}
+.rt-cloud-action:disabled{border-color:var(--line);color:var(--text-faint);cursor:not-allowed}
+.rt-cloud .rt-cloud-note{grid-column:3;font-size:.76rem}
+@media(max-width:760px){
+  .rt-editor-head,.rt-cloud{grid-template-columns:1fr}
+  .rt-fields{grid-template-columns:1fr}
+  .rt-fields label+label{border-left:0;border-top:1px solid var(--line)}
+  .rt-stops li{grid-template-columns:4.5rem minmax(0,1fr)}
+  .rt-stop-actions{grid-column:2;flex-wrap:wrap}
+  .rt-stop-actions button{padding:.5rem .7rem}
+  .rt-cloud .rt-cloud-note{grid-column:1}
+}
+</style>
