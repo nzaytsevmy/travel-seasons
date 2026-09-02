@@ -49,7 +49,7 @@ const blog = defineCollection({
 });
 
 // Лента новостей /novosti/. Заметка — не отдельная страница, а пункт ленты:
-// 2–4 заметки в день с личным URL дали бы ~1000 тонких страниц в год, а это
+// до 5 заметок в день с личным URL дали бы ~1800 тонких страниц в год, а это
 // прямой риск фильтра за малополезные страницы на весь домен.
 //
 // ПРАВИЛА ВЕДЕНИЯ (те же, что у ленты изменений в src/data/visa-changes.js —
@@ -79,7 +79,11 @@ const news = defineCollection({
     impact: z.enum(['high', 'medium']).default('medium'),
     // Оценка по news/RUBRIC.md, её ставит вторая модель. Ниже minScore не публикуем.
     score: z.number().min(0).max(5),
+    authoredBy: z.string().optional(),
+    reviewRef: z.string().optional(),
     status: z.enum(['действует', 'принято, не вступило', 'отменено']).optional(),
+    effectiveDate: z.coerce.date().optional(),
+    reviewOn: z.coerce.date().optional(),
     countries: z.array(z.string()).default([]),
     sources: z.array(z.object({ name: z.string(), url: z.string().url() })).min(1),
     // Капсула-ответ: 40–60 слов прямого ответа ДО контекста. Именно её извлекают
