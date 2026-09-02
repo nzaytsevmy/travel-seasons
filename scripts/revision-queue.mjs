@@ -7,10 +7,12 @@
 // подорожала вдвое, вьетнамская карта прибытия нужна не везде. Ни одна из этих
 // статей не выглядела устаревшей.
 //
-// ⛔ Главное правило: срок следующей сверки НЕ хранится и НЕ проставляется
+// ⛔ Главное правило: общий срок следующей сверки НЕ хранится и НЕ проставляется
 // руками. Ровно эта ошибка уже была с датой «данные проверены»: её бампал
-// человек, гейт пытался угадать, забыли — и подпись врёт. Здесь срок
-// вычисляется: последняя сверка плюс интервал по типу темы. Забыть нечего.
+// человек, гейт пытался угадать, забыли — и подпись врёт. Общий срок
+// вычисляется: последняя сверка плюс интервал по типу темы. Исключение —
+// точечный `reviewAfter` у быстро меняющегося факта: его дата подтверждена
+// источником или редакционным решением и имеет безопасный fallback.
 //
 // Интервалы — не круглые числа ради красоты, а цена ошибки:
 //   90 дней  — визы, документы, сборы, цены: меняются без предупреждения,
@@ -19,7 +21,8 @@
 //   365 дней — маршруты, впечатления, списки мест: портятся медленно.
 //
 // Тип определяется по слагу и меткам, но статья может переопределить его
-// полем `revisit` (число дней) — например, для темы с известной датой перемен.
+// полем `revisit` (число дней). Ближайший `volatileFacts.reviewAfter`, если он
+// раньше общего срока, поднимает статью в очередь точечно.
 
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -57,6 +60,31 @@ export function intervalFor(slug, tags = [], explicit) {
 
 const field = (fm, name) => fm.match(new RegExp(`^${name}:\\s*"?([^"\\n]+)"?`, 'm'))?.[1]?.trim();
 
+/** Ближайший ручной срок у точечного изменчивого факта. */
+export function volatileDeadline(fm) {
+  const rows = [];
+  let current = null;
+  let inside = false;
+  for (const line of fm.split('\n')) {
+    if (/^volatileFacts:\s*$/.test(line)) {
+      inside = true;
+      continue;
+    }
+    if (inside && /^\S/.test(line)) break;
+    if (!inside) continue;
+    const id = line.match(/^\s{2}- id:\s*["']?([^"'\n]+)["']?\s*$/)?.[1]?.trim();
+    if (id) {
+      current = { id, due: null };
+      rows.push(current);
+      continue;
+    }
+    const due = line.match(/^\s{4}reviewAfter:\s*(\d{4}-\d{2}-\d{2})\s*$/)?.[1];
+    if (current && due) current.due = due;
+  }
+  const dated = rows.filter((row) => row.due).sort((a, b) => a.due.localeCompare(b.due));
+  return dated[0] ?? null;
+}
+
 /** Дата последней сверки: журнал → поле проверки фактов → дата публикации. */
 function lastChecked(fm) {
   const dates = [...fm.matchAll(/^\s+- date:\s*(\d{4}-\d{2}-\d{2})/gm)].map((m) => m[1]).sort();
@@ -79,7 +107,9 @@ export function buildQueue(today = new Date().toISOString().slice(0, 10)) {
     const interval = intervalFor(slug, tags, Number(field(fm, 'revisit')));
     const { date, source } = lastChecked(fm);
     if (!date) continue;
-    const due = new Date(Date.parse(date + 'T00:00:00Z') + interval * 864e5).toISOString().slice(0, 10);
+    const periodicDue = new Date(Date.parse(date + 'T00:00:00Z') + interval * 864e5).toISOString().slice(0, 10);
+    const volatile = volatileDeadline(fm);
+    const due = volatile && volatile.due < periodicDue ? volatile.due : periodicDue;
     const overdue = Math.round((Date.parse(today) - Date.parse(due)) / 864e5);
     const t = traffic.posts?.[slug] ?? { visits: 0, live: 0, partner: 0 };
     // Считаем по живым читателям из поиска, а не по всем визитам: прямой поток
@@ -92,6 +122,7 @@ export function buildQueue(today = new Date().toISOString().slice(0, 10)) {
     const lateness = Math.min(Math.max(overdue, 0) / interval, 2);
     const cost = Math.round(live * lateness);
     rows.push({ slug, title: field(fm, 'title') ?? slug, interval, checked: date, source, due, overdue,
+                deadline: volatile && volatile.due === due ? volatile.id : null,
                 visits: t.visits, live, partner: t.partner, cost });
   }
   // Сортировка по цене простоя, а не по одной просрочке: первым чинится то,

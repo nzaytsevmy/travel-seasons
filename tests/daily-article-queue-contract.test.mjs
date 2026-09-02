@@ -102,3 +102,30 @@ test('Китай: REVISE раскрывает месяцы, регионы и с
   const images = china.match(/^!\[[^\]]+\]\([^)]+\)/gm) ?? [];
   assert.ok(images.length >= 10, `в китайском гайде ${images.length} иллюстраций, нужно не меньше 10`);
 });
+
+test('Вьетнам: улучшения после live-аудита закреплены контрактом', async () => {
+  const [article, prompt] = await Promise.all([
+    read('src/content/blog/vietnam-guide-2026.mdx'),
+    read('DAILY-ARTICLE-PROMPT.md'),
+  ]);
+
+  assert.match(article, /^qualityScore:\n(?:  .+\n)+/m,
+    'честный потолок должен быть машиночитаемым, а не только обещанным в отчёте');
+  for (const field of ['topic', 'facts', 'visuals', 'experience', 'internalLinks', 'legal', 'overall', 'ceiling']) {
+    assert.match(article, new RegExp(`^  ${field}:`, 'm'), `в qualityScore нет ${field}`);
+  }
+  assert.match(article, /^volatileFacts:\n(?:  .+\n)+/m,
+    'изменчивым ценам и прогнозу нужны дата проверки, срок и безопасный fallback');
+  assert.match(article, /^    reviewAfter:\s*2026-09-09/m);
+  assert.match(article, /^    reviewAfter:\s*2026-10-01/m);
+  assert.match(article, /^\| Сценарий \| Когда \| Регион и срок \| Транспорт \| Главный минус \|$/m);
+  assert.match(article, /Камрань[\s\S]{0,400}Фукуок[\s\S]{0,400}Дананг/i,
+    'ценовой блок должен сравнивать три региона, а не выдавать один маршрут за рынок');
+
+  assert.match(prompt, /qualityScore/,
+    'промт обязан требовать машиночитаемый scorecard до публикации');
+  assert.match(prompt, /volatileFacts/,
+    'промт обязан требовать срок следующей сверки для изменчивых фактов');
+  assert.match(prompt, /merge[\s\S]{0,240}deploy[\s\S]{0,240}live[\s\S]{0,240}очеред/i,
+    'очередь закрывается только после merge, deploy и live-проверки');
+});

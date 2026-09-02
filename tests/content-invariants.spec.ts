@@ -516,7 +516,7 @@ test('llms-full.txt: нет внутренних идентификаторов 
   const file = fileURLToPath(new URL('../public/llms-full.txt', import.meta.url));
   const text = readFileSync(file, 'utf8');
   const FORBIDDEN: { what: string; re: RegExp }[] = [
-    { what: 'служебные поля frontmatter', re: /^(coverImage|coverPosition|coverPositionCard|sourceType|howto):/m },
+    { what: 'служебные поля frontmatter', re: /^(coverImage|coverPosition|coverPositionCard|sourceType|howto|qualityScore|volatileFacts):/m },
     { what: 'путь к исходникам картинок', re: /\.\/_images\//m },
     { what: 'имя .astro-компонента', re: /\.astro\b/m },
     { what: 'имя .mdx-исходника', re: /\.mdx\b/m },
@@ -901,6 +901,57 @@ test('Паспорт статьи: новая статья не выходит �
     }
     if (!/^reviewed:\s*\d{4}-\d{2}-\d{2}/m.test(fm)) {
       bad.push(`${rel}: нет даты адверсарной проверки фактов (поле reviewed)`);
+    }
+  }
+  expect(bad, bad.join('\n')).toEqual([]);
+});
+
+test('Честный потолок: у тронутой статьи заполнены все оси qualityScore', () => {
+  const required = ['topic', 'facts', 'visuals', 'experience', 'internalLinks', 'legal', 'overall'];
+  const bad: string[] = [];
+  for (const rel of touchedPosts()) {
+    const abs = join(REPO, rel);
+    if (!existsSync(abs)) continue;
+    const fm = readFileSync(abs, 'utf8').split('---')[1] ?? '';
+    const block = fm.match(/^qualityScore:\s*\n((?:\s{2}\S.*\n?)*)/m)?.[1];
+    if (!block) {
+      bad.push(`${rel}: нет qualityScore — оценка не должна появляться только после вопроса владельца`);
+      continue;
+    }
+    for (const key of required) {
+      const raw = block.match(new RegExp(`^  ${key}:\\s*(\\d+(?:\\.\\d+)?)\\s*$`, 'm'))?.[1];
+      const score = Number(raw);
+      if (!raw || !Number.isFinite(score) || score < 0 || score > 10) {
+        bad.push(`${rel}: qualityScore.${key} должен быть числом от 0 до 10`);
+      }
+    }
+    const ceiling = block.match(/^  ceiling:\s*["']?([^"'\n]+)["']?\s*$/m)?.[1]?.trim() ?? '';
+    if (ceiling.length < 20) bad.push(`${rel}: qualityScore.ceiling не объясняет, чего не хватает до 10/10`);
+  }
+  expect(bad, bad.join('\n')).toEqual([]);
+});
+
+test('Изменчивые факты: у цены и прогноза есть срок пересмотра и fallback', () => {
+  const bad: string[] = [];
+  const today = new Date().toISOString().slice(0, 10);
+  for (const rel of touchedPosts()) {
+    const abs = join(REPO, rel);
+    if (!existsSync(abs)) continue;
+    const src = readFileSync(abs, 'utf8');
+    const [, fm = '', body = ''] = src.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/) ?? [];
+    if (!/(?:\d[\d\s ]*\s?₽|прогноз(?:а|е|ом)?\s+20\d{2})/i.test(body)) continue;
+
+    const ids = [...fm.matchAll(/^\s{2}- id:\s*["']?([^"'\n]+)["']?\s*$/gm)].map((m) => m[1]);
+    const checked = [...fm.matchAll(/^\s{4}checkedAt:\s*(\d{4}-\d{2}-\d{2})\s*$/gm)].map((m) => m[1]);
+    const review = [...fm.matchAll(/^\s{4}reviewAfter:\s*(\d{4}-\d{2}-\d{2})\s*$/gm)].map((m) => m[1]);
+    const fallback = [...fm.matchAll(/^\s{4}fallback:\s*["']([^"']{20,})["']\s*$/gm)].map((m) => m[1]);
+    if (!ids.length || ids.length !== checked.length || ids.length !== review.length || ids.length !== fallback.length) {
+      bad.push(`${rel}: volatileFacts должны содержать id, checkedAt, reviewAfter и содержательный fallback`);
+      continue;
+    }
+    for (let i = 0; i < ids.length; i++) {
+      if (review[i] <= checked[i]) bad.push(`${rel}: ${ids[i]} пересматривается не позже даты проверки`);
+      if (review[i] < today) bad.push(`${rel}: ${ids[i]} просрочен ${review[i]} — примените fallback или пересверьте факт`);
     }
   }
   expect(bad, bad.join('\n')).toEqual([]);
