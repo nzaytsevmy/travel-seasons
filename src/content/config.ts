@@ -8,12 +8,14 @@ const blog = defineCollection({
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     coverImage: img(),
+    coverAlt: z.string().min(15).optional(),
     author: z.string().default('Никита Зайцев'),
     tags: z.array(z.string()).default([]),
     tripDate: z.string().optional(),
     tripPlace: z.string().optional(),
     sourceType: z.enum(['personal', 'compilation', 'hybrid']).default('hybrid'),
     sourceNote: z.string().optional(),
+    showSourceDisclaimer: z.boolean().default(true),
     // Паспорт статьи (решение Никиты 13.08.2026): без замера спроса и без
     // адверсарной проверки статья не выходит. Поля необязательные в схеме,
     // потому что 67 старых статей их не имеют, — обязательность проверяет
