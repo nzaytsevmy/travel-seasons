@@ -50,7 +50,7 @@ export const POIS = {
       { name: 'Абу-Симбел',   lat: 22.3372, lng: 31.6258, type: 'culture', note: 'храмы Рамсеса II' },
       { name: 'Хургада',      lat: 27.2579, lng: 33.8116, type: 'beach',   note: 'главный курорт Красного моря' },
       { name: 'Шарм-эль-Шейх', lat: 27.9158, lng: 34.3300, type: 'beach',   note: 'премиум-курорты, Naama Bay' },
-      { name: 'Дахаб',        lat: 28.5000, lng: 34.5167, type: 'beach',   note: 'фриденвящий, Blue Hole для дайверов' },
+      { name: 'Дахаб',        lat: 28.5000, lng: 34.5167, type: 'beach',   note: 'фридайвинг, Blue Hole для дайверов' },
       { name: 'Александрия',  lat: 31.2001, lng: 29.9187, type: 'city',    note: 'средиземноморская, библиотека' }
     ],
     sources: [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/' }]
