@@ -5,6 +5,7 @@ import { join, dirname, sep } from 'node:path';
 import { видимыйТекст } from './visible-text';
 import { fileURLToPath } from 'node:url';
 import { buildQueue } from '../scripts/revision-queue.mjs';
+import { checkArticleReview, readPostMeta, proseHash, REVIEW_REQUIRED_FROM } from '../scripts/article-review-gate.mjs';
 
 // Инвариант-гейт по СБОРКЕ (dist/): ловит КЛАССЫ багов на ЛЮБОМ посте, в т.ч. вне
 // PAGES-списка скриншот-гейта. Без baseline — чистые assert'ы.
@@ -927,6 +928,41 @@ test('Честный потолок: у тронутой статьи запол
     }
     const ceiling = block.match(/^  ceiling:\s*["']?([^"'\n]+)["']?\s*$/m)?.[1]?.trim() ?? '';
     if (ceiling.length < 20) bad.push(`${rel}: qualityScore.ceiling не объясняет, чего не хватает до 10/10`);
+  }
+  expect(bad, bad.join('\n')).toEqual([]);
+});
+
+test('Независимая оценка: тронутая статья, сверенная с 03.09.2026, несёт артефакт другого рецензента', () => {
+  // Обещание «второе мнение» в промте ничем не проверялось: автор мог заполнить qualityScore сам.
+  // Теперь оценки в шапке обязаны совпасть с артефактом рецензента число в число, а рецензент — не автор.
+  const bad: string[] = [];
+  for (const rel of touchedPosts()) {
+    const abs = join(REPO, rel);
+    if (!existsSync(abs)) continue;
+    const slug = rel.split('/').pop()!.replace(/\.mdx?$/, '');
+    const raw = readFileSync(abs, 'utf8');
+    const meta = readPostMeta(raw);
+    // Ключ к гейту не должен писать сам автор: у тронутой статьи сверка обязана быть свежей —
+    // reviewed не раньше 03.09.2026 и не тот же, что был в основе (иначе гейт спит на старой дате).
+    const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : 'origin/main';
+    let baseReviewed: string | null = null;
+    let isNew = false;
+    try {
+      const was = execFileSync('git', ['show', `${base}:${rel}`], { cwd: REPO, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] });
+      baseReviewed = readPostMeta(was).reviewed;
+    } catch {
+      isNew = true;
+    }
+    if (!meta.reviewed || meta.reviewed < REVIEW_REQUIRED_FROM) {
+      bad.push(`${rel}: проза изменилась, а reviewed ${meta.reviewed ?? 'нет'} — сверка после правки не записана`);
+      continue;
+    }
+    if (!isNew && baseReviewed === meta.reviewed) {
+      bad.push(`${rel}: проза изменилась, а reviewed остался ${meta.reviewed} — оценка относится к прежнему тексту`);
+      continue;
+    }
+    const verdict = checkArticleReview({ slug, meta, proseHash: proseHash(raw) }, REPO);
+    if (!verdict.ok) bad.push(`${rel}: ${verdict.reason}`);
   }
   expect(bad, bad.join('\n')).toEqual([]);
 });
