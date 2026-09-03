@@ -64,7 +64,7 @@ trap cleanup EXIT
 
 if [ "$MODE" = "text" ]; then
   if ! npx playwright test \
-      tests/content-invariants.spec.ts tests/rhythm-gate.spec.ts tests/news-gate.spec.ts tests/monetization-browser.spec.ts \
+      tests/content-invariants.spec.ts tests/rhythm-gate.spec.ts tests/news-gate.spec.ts tests/monetization-browser.spec.ts tests/changed-pages-structural.spec.ts \
       --project=chromium-desktop >/tmp/ttb_prepush_pw.log 2>&1; then
     echo "✖ гейты содержания НЕ зелёные → /tmp/ttb_prepush_pw.log"
     echo "  намеренный обход: git push --no-verify"

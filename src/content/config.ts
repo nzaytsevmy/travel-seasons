@@ -22,6 +22,10 @@ const blog = defineCollection({
     // гейт и только на статьях, тронутых в заходе.
     demand: z.string().optional(),   // «8 005/мес, Вордстат 13.07–11.08.2026»
     reviewed: z.coerce.date().optional(),  // дата адверсарной проверки фактов
+    // Независимая оценка (с 03.09.2026): кто писал и где лежит артефакт рецензента
+    // reviews/blog/<slug>.json. Гейт: scripts/article-review-gate.mjs.
+    authoredBy: z.string().optional(),
+    reviewRef: z.string().optional(),
 
     // Честный потолок качества. Старым статьям поле не навязываем, но гейт
     // требует его при следующей смысловой ревизии и проверяет все шесть осей.
