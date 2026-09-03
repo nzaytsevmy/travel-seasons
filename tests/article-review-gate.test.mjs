@@ -85,6 +85,7 @@ test('артефакт привязан к тексту: правка после
   const r = checkArticleReview({ slug: 'probnaya', meta, proseHash: edited }, fixture(withHash));
   assert.equal(r.ok, false); assert.match(r.reason, /proseHash/);
   assert.equal(proseHash(post.replace('текст', '  текст \n')), hash, 'пробелы не должны менять хеш');
+  assert.notEqual(proseHash(post.replace('title: "Пробная"', 'title: "Пробная, переписанная после оценки"')), hash, 'заголовок входит в хеш');
   const noHash = checkArticleReview({ slug: 'probnaya', meta, proseHash: hash }, fixture(good));
   assert.equal(noHash.ok, false); assert.match(noHash.reason, /нет proseHash/);
 });

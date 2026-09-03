@@ -942,23 +942,11 @@ test('Независимая оценка: тронутая статья, све
     const slug = rel.split('/').pop()!.replace(/\.mdx?$/, '');
     const raw = readFileSync(abs, 'utf8');
     const meta = readPostMeta(raw);
-    // Ключ к гейту не должен писать сам автор: у тронутой статьи сверка обязана быть свежей —
-    // reviewed не раньше 03.09.2026 и не тот же, что был в основе (иначе гейт спит на старой дате).
-    const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : 'origin/main';
-    let baseReviewed: string | null = null;
-    let isNew = false;
-    try {
-      const was = execFileSync('git', ['show', `${base}:${rel}`], { cwd: REPO, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] });
-      baseReviewed = readPostMeta(was).reviewed;
-    } catch {
-      isNew = true;
-    }
+    // Ключ к гейту не должен писать сам автор: у тронутой статьи сверка обязана быть не раньше
+    // 03.09.2026, а привязку оценки к тексту даёт proseHash артефакта — правка после оценки его ломает.
+    // Требовать ещё и смену даты нельзя: при точности в день это запрещает вторую правку в тот же день.
     if (!meta.reviewed || meta.reviewed < REVIEW_REQUIRED_FROM) {
       bad.push(`${rel}: проза изменилась, а reviewed ${meta.reviewed ?? 'нет'} — сверка после правки не записана`);
-      continue;
-    }
-    if (!isNew && baseReviewed === meta.reviewed) {
-      bad.push(`${rel}: проза изменилась, а reviewed остался ${meta.reviewed} — оценка относится к прежнему тексту`);
       continue;
     }
     const verdict = checkArticleReview({ slug, meta, proseHash: proseHash(raw) }, REPO);
