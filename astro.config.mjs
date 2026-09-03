@@ -206,9 +206,6 @@ export default defineConfig({
         && !page.includes('/legal/')
         // /my/ — персональный дашборд из localStorage, noindex, не в sitemap
         && !page.includes('/my/')
-        // Detail-маршруты пока noindex: спрос и каннибализация не измерены.
-        // Сам хаб /routes/ индексируется и остаётся в карте.
-        && (!page.includes('/routes/') || page === 'https://traveltribe.ru/routes/')
         // /status/ — служебная панель состояния статей, noindex, не в sitemap
         && !page.includes('/status/')
         // /data/trip/*.json — служебный endpoint для /my/, не HTML-страница

@@ -133,8 +133,9 @@ const ОБРАЗЕЦ = ['turkey', 'vietnam', 'armenia'];
 for (const slug of ОБРАЗЕЦ) {
 test(`8. ${slug}: пины и строки таблицы совпадают с данными`, async ({ page }) => {
   await page.goto(`/blog/${slug}-guide-2026/`, { waitUntil: 'domcontentloaded' });
-  const h = await page.evaluate(() => document.body.scrollHeight);
-  for (let y = 0; y < h; y += 500) { await page.evaluate((v) => scrollTo(0, v), y); await page.waitForTimeout(60); }
+  // Карта инициализируется при появлении в экране. Полная прокрутка страницы
+  // уводила её обратно за viewport, Chromium отменял ещё не загруженные тайлы,
+  // и исправная карта получала ложный красный результат.
   await page.locator('.cm').scrollIntoViewIfNeeded();
   // ⛔ Фиксированная пауза флейкует под параллельной нагрузкой: карта не
   //    успевает отрисоваться, и тест краснеет на исправном коде. Ждём саму
@@ -142,7 +143,9 @@ test(`8. ${slug}: пины и строки таблицы совпадают с 
   await page.waitForFunction(
     (n) => document.querySelectorAll('.leaflet-marker-icon').length >= n,
     POIS[slug].pois.length, { timeout: 45000 });
-  await page.waitForTimeout(400);
+  await page.waitForFunction(
+    () => document.querySelectorAll('.leaflet-tile-loaded').length > 3,
+    undefined, { timeout: 45000 });
 
   const r = await page.evaluate(() => ({
     пины: document.querySelectorAll('.leaflet-marker-icon').length,

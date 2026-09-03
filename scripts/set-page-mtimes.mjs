@@ -25,7 +25,7 @@
 
 import { readFileSync, writeFileSync, utimesSync, existsSync, readdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
-import { join } from 'node:path';
+import { join, relative, sep } from 'node:path';
 
 /** Все собранные страницы каталога. */
 function все_страницы(корень) {
@@ -73,7 +73,11 @@ const ОБЩАЯ_ОБОЛОЧКА = [
 const gitДата = (пути) => {
   try {
     // Машинный Unix timestamp без повторного разбора часового пояса.
-    const d = execFileSync('git', ['log', '-1', '--format=%ct', '--', ...пути],
+    // :(literal) обязателен для динамических шаблонов Astro: без него Git
+    // трактует `[tag].astro` как pathspec-маску и на Linux может вернуть дату
+    // постороннего merge-коммита вместо даты самого шаблона.
+    const literalПути = пути.map((путь) => `:(literal)${путь}`);
+    const d = execFileSync('git', ['log', '-1', '--format=%ct', '--', ...literalПути],
       { encoding: 'utf8' }).trim();
     return d ? new Date(Number(d) * 1000) : null;
   } catch { return null; }
@@ -191,6 +195,7 @@ const этоЗаглушка = (файл) => {
 };
 
 let вне = 0;
+const датыВнеКарты = {};
 for (const файл of все_страницы(КАТАЛОГ)) {
   const путь = файл.replace(КАТАЛОГ, '').replace(/index\.html$/, '');
   if (изКарты.has(путь)) continue;
@@ -199,6 +204,12 @@ for (const файл of все_страницы(КАТАЛОГ)) {
   const когда = неРаньшеОболочки(датаСтраницы);
   if (!когда || Number.isNaN(когда.valueOf())) continue;
   поставитьВремя(файл, когда);
+  // Гейт читает точный результат постбилда, а не повторяет
+  // поиск динамического Astro-шаблона. Повторный поиск зависел от
+  // версии Git/платформы и давал ложный красный CI после успешного
+  // utimesSync. Пути нормализуем, чтобы контракт был одинаков на macOS/Linux.
+  const относительныйПуть = relative(КАТАЛОГ, файл).split(sep).join('/');
+  датыВнеКарты[относительныйПуть] = Math.floor(когда.valueOf() / 1000);
   вне++;
 }
 
@@ -206,11 +217,12 @@ const оболочка = датаОболочки && !Number.isNaN(датаОб�
   ? датаОболочки.toISOString()
   : 'не определена';
 writeFileSync(join(КАТАЛОГ, '.page-mtime-contract.json'), JSON.stringify({
-  version: 1,
+  version: 2,
   shellMtimeSeconds: датаОболочки
     ? Math.floor(датаОболочки.valueOf() / 1000)
     : 0,
   sitemapPages: поставлено,
   sourcePages: вне,
+  sourcePageMtimes: датыВнеКарты,
 }) + '\n');
 console.log(`время страниц: из карты ${поставлено}, по исходнику ${вне}, пропущено ${пропущено}, оболочка ${оболочка}`);
