@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { createServer } from 'node:http';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { checkPageStructure, contentFileToUrl, WIDTHS, MAX_PAGES } from '../scripts/structural-checks.mjs';
 
@@ -25,7 +27,7 @@ function changedContentFiles(): string[] {
     ...gitLines('diff', '--name-only', '--', 'src/content'),
     ...gitLines('diff', '--name-only', '--staged', '--', 'src/content'),
     ...gitLines('diff', '--name-only', `${base}...HEAD`, '--', 'src/content'),
-  ])];
+  ])].filter((rel) => existsSync(join(REPO, rel)));   // удалённой странице адрес не нужен
 }
 
 const urls: string[] = process.env.STRUCTURAL_URLS

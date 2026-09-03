@@ -75,9 +75,9 @@ export async function checkPageStructure(page, url, width) {
       out.overflow = { scrollWidth: wide, clientWidth: w, worst };
     }
     for (const img of document.images) {
-      const src = img.getAttribute('src') || '';
+      const src = img.currentSrc || img.src || '';   // currentSrc покрывает картинки только со srcset
       if (!src || src.startsWith('data:')) continue;
-      if (img.complete && img.naturalWidth === 0) out.brokenImages.push(src.slice(0, 120));
+      if (img.complete && img.naturalWidth === 0) out.brokenImages.push(src.replace(location.origin, '').slice(0, 120));
     }
     const text = document.body.innerText || '';
     for (const token of ['undefined', '[object Object]', 'NaN']) {

@@ -10,8 +10,11 @@ const args = process.argv.slice(2);
 let widths = WIDTHS;
 const urls = [];
 for (let i = 0; i < args.length; i += 1) {
-  if (args[i] === '--widths') widths = args[++i].split(',').map(Number);
-  else urls.push(args[i]);
+  if (args[i] === '--widths') {
+    const raw = args[++i];
+    if (!raw) { console.error('после --widths нужен список ширин, например 402,1280'); process.exit(2); }
+    widths = raw.split(',').map(Number);
+  } else urls.push(args[i]);
 }
 if (!urls.length) {
   console.error('нужен хотя бы один адрес: npm run check:live -- https://traveltribe.ru/blog/<slug>/');
