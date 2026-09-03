@@ -1501,6 +1501,28 @@ test('Факты: сумма обязательного полиса в Груз
   expect(bad.slice(0, 15), bad.slice(0, 15).join('\n')).toEqual([]);
 });
 
+test('Факты: тариф eVisa Египта не расходится на связанных страницах', () => {
+  // ⛔ 03.09.2026 статья уже показывала официальный тариф $30/$65, а визовая
+  //    карточка и страницы сборов продолжали выводить старые $25/$60.
+  //    Проверяем весь египетский пользовательский путь, а не один шаблон.
+  const paths = [
+    'blog/egypt-guide-2026/index.html',
+    'visa/egypt/index.html',
+    'packing/egypt/index.html',
+  ];
+  const bad: string[] = [];
+  for (const path of paths) {
+    const html = readFileSync(join(DIST, path), 'utf8');
+    if (!html.includes('$30')) bad.push(`${path}: нет актуального однократного тарифа $30`);
+    if (/\$25 eVisa|e-?Visa \(\$25|\$60 многократ/i.test(html)) {
+      bad.push(`${path}: остался прежний тариф $25/$60`);
+    }
+  }
+  const visa = readFileSync(join(DIST, 'visa/egypt/index.html'), 'utf8');
+  if (!visa.includes('$65 многократная')) bad.push('visa/egypt: нет актуального многократного тарифа $65');
+  expect(bad, bad.join('\n')).toEqual([]);
+});
+
 test('Деньги: в тексте партнёрской ссылки нет голого имени партнёра', () => {
   // ⛔ Замер 29.08.2026 по всей сборке: 406 ссылок из 10 446 показывали человеку
   //    только имя партнёра — «Aviasales», «Cherehapa», «Airalo». Это нарушает
