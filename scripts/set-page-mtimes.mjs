@@ -73,7 +73,11 @@ const ОБЩАЯ_ОБОЛОЧКА = [
 const gitДата = (пути) => {
   try {
     // Машинный Unix timestamp без повторного разбора часового пояса.
-    const d = execFileSync('git', ['log', '-1', '--format=%ct', '--', ...пути],
+    // :(literal) обязателен для динамических шаблонов Astro: без него Git
+    // трактует `[tag].astro` как pathspec-маску и на Linux может вернуть дату
+    // постороннего merge-коммита вместо даты самого шаблона.
+    const literalПути = пути.map((путь) => `:(literal)${путь}`);
+    const d = execFileSync('git', ['log', '-1', '--format=%ct', '--', ...literalПути],
       { encoding: 'utf8' }).trim();
     return d ? new Date(Number(d) * 1000) : null;
   } catch { return null; }
