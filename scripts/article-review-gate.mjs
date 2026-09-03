@@ -43,8 +43,12 @@ export function readPostMeta(raw) {
 // доказывает, что оценивался ИМЕННО этот текст. Правка после оценки — хеш разошёлся, гейт красный.
 // Получить: node scripts/article-review-gate.mjs hash src/content/blog/<slug>.mdx
 export function proseHash(raw) {
-  const body = raw.split('---').slice(2).join('---');
-  return createHash('sha256').update(body.replace(/\s+/g, ' ').trim()).digest('hex').slice(0, 16);
+  const parts = raw.split('---');
+  const fm = parts[1] ?? '';
+  const body = parts.slice(2).join('---');
+  // Заголовок и описание — тоже текст, который читает рецензент: их правка после оценки ломает хеш.
+  const head = ['title', 'description'].map((k) => fm.match(new RegExp(`^${k}:\\s*(.*)$`, 'm'))?.[1]?.trim() ?? '').join('\n');
+  return createHash('sha256').update((head + '\n' + body).replace(/\s+/g, ' ').trim()).digest('hex').slice(0, 16);
 }
 
 export function checkArticleReview(post, root = process.cwd()) {
@@ -96,6 +100,7 @@ export function checkArticleReview(post, root = process.cwd()) {
 }
 
 // CLI: node scripts/article-review-gate.mjs hash <файл статьи>
-if (process.argv[1]?.endsWith('article-review-gate.mjs') && process.argv[2] === 'hash') {
-  process.stdout.write(proseHash(readFileSync(process.argv[3], 'utf8')) + '\n');
+if (process.argv[1]?.endsWith('article-review-gate.mjs')) {
+  if (process.argv[2] === 'hash' && process.argv[3]) process.stdout.write(proseHash(readFileSync(process.argv[3], 'utf8')) + '\n');
+  else { process.stderr.write('использование: node scripts/article-review-gate.mjs hash <файл статьи>\n'); process.exit(2); }
 }
