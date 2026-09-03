@@ -235,7 +235,7 @@ if (faqs.length >= 2) {
   ogTitle={post.data.title}
   ogDescription={post.data.description}
   ogImage={ogImageUrl}
-  ogImageAlt={post.data.title}
+  ogImageAlt={post.data.coverAlt ?? post.data.title}
   ldJson={ldJson}
   preloadImageSrcset={heroPreload?.srcSet.attribute}
   preloadImageSizes="100vw"
@@ -247,7 +247,7 @@ if (faqs.length >= 2) {
     <div class="post-cover">
       <Picture
         src={post.data.coverImage}
-        alt={post.data.title}
+        alt={post.data.coverAlt ?? post.data.title}
         widths={[640, 960, 1280]}
         sizes="100vw"
         formats={['webp']}
@@ -303,7 +303,7 @@ if (faqs.length >= 2) {
         </p>
       )}
 
-      {post.data.sourceType === 'compilation' && (
+      {post.data.sourceType === 'compilation' && post.data.showSourceDisclaimer && (
         <aside class="source-disclaimer" role="note">
           <strong>Как написан этот пост.</strong>{' '}
           {post.data.sourceNote ? (
