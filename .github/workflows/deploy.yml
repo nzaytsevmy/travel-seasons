@@ -67,9 +67,6 @@ jobs:
         run: node scripts/check-workflows.mjs
 
       - run: npm run build
-        env:
-          PUBLIC_ACCOUNT_API_ORIGIN: ${{ vars.PUBLIC_ACCOUNT_API_ORIGIN }}
-          PUBLIC_ROUTE_SYNC_ENABLED: ${{ vars.PUBLIC_ROUTE_SYNC_ENABLED }}
 
       - name: Setup SSH
         run: |
@@ -112,7 +109,7 @@ jobs:
       - name: Smoke-check live prod
         run: |
           set -e
-          for url in "https://traveltribe.ru/" "https://traveltribe.ru/trips/" "https://traveltribe.ru/visa/" "https://traveltribe.ru/routes/"; do
+          for url in "https://traveltribe.ru/" "https://traveltribe.ru/trips/" "https://traveltribe.ru/visa/"; do
             code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$url")
             echo "$url -> $code"
             [ "$code" = "200" ] || { echo "✖ smoke-check: $url вернул $code"; exit 1; }

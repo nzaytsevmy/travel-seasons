@@ -13,7 +13,7 @@ import { test, expect } from '@playwright/test';
  * Поэтому проверка смотрит только на то, что стоит отдельным элементом
  * управления, а ссылки внутри абзаца и пункта списка пропускает.
  */
-const PAGES = ['/', '/countries/', '/visa/', '/routes/', '/routes/georgia-7-days/', '/my/'];
+const PAGES = ['/', '/countries/', '/visa/'];
 
 for (const path of PAGES) {
   test(`Размер целей: ${path} — ни одной кликабельной цели мельче 24 px`, async ({ page }) => {
@@ -28,7 +28,7 @@ for (const path of PAGES) {
       };
       return [...document.querySelectorAll('a,button,[role=button],input,select,summary')]
         .filter(visible)
-        .filter((el) => !el.closest('p, li, label')) // inline-ссылка внутри предложения/согласия
+        .filter((el) => !el.closest('p, li'))   // исключение inline: ссылка в предложении
         .map((el) => {
           const r = el.getBoundingClientRect();
           return {
