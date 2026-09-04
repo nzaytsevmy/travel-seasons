@@ -149,10 +149,14 @@ const ldJson = {
     <section class="pack-block">
       <h2>Документы</h2>
       <ul class="pack-list">
-        <li><strong>Загранпаспорт</strong> — срок действия 6+ месяцев на момент въезда.</li>
+        {d.docsMode === 'ru' && (<li><strong>Паспорт РФ</strong> — загранпаспорт не нужен, это поездка по России. Подробный ответ — <a href={`/visa/${d.slug}/`}>нужен ли загранпаспорт {d.cases.vP}</a>.</li>)}
+        {d.docsMode === 'id' && (<li><strong>Внутренний паспорт РФ</strong> — взрослому хватит его одного. Ребёнку до 14 лет нужен загранпаспорт: свидетельство о рождении для выезда не принимают с 20 января 2026 года{d.slug === 'abkhazia' ? ', и Абхазия — единственное исключение, там его принимают до конца 2027 года' : ''}. Подробности — <a href={`/visa/${d.slug}/`}>на странице документов {d.cases.prep}</a>.</li>)}
+        {d.docsMode === 'abroad' && (<li><strong>Загранпаспорт</strong> — срок действия 6+ месяцев на момент въезда.</li>)}
         {needsVisa && visa && (<li><strong>Виза/eVisa:</strong> {visa.duration}, {visa.cost}, {visa.timing}. Детали — <a href={`/visa/${d.slug}/`}>на странице визы {d.cases.prep}</a>.</li>)}
         {!needsVisa && (<li><strong>Виза не нужна</strong> — {visa?.duration || 'безвизовый въезд'}, {visa?.timing || 'штамп на границе'}.</li>)}
-        <li><strong>Страховка</strong> {needsVisa ? '— без полиса не примут документы на визу' : '— медпомощь платная, счёт за вечер в больнице бывает больше стоимости поездки'}. Цену считают по датам и стране: <a href={cherehapaCountry(d.slug, `packing_${d.slug.replaceAll('-', '_')}`)} class="aff-cta" target="_blank" rel="sponsored noopener">Подобрать полис {d.cases.vP}</a> — оплата картой РФ, полис приходит в PDF.</li>
+        {d.docsMode === 'ru'
+          ? (<li><strong>Полис ОМС</strong> — по России работает, за границей не действует. Отдельная туристическая страховка нужна не всем: её берут под эвакуацию из труднодоступных мест и под активности вроде треккинга и рафтинга. Цену считают по датам и активностям: <a href={cherehapaCountry(d.slug, `packing_${d.slug.replaceAll('-', '_')}`)} class="aff-cta" target="_blank" rel="sponsored noopener">Подобрать полис {d.cases.vP}</a> — оплата картой РФ, полис приходит в PDF.</li>)
+          : (<li><strong>Страховка</strong> {needsVisa ? '— без полиса не примут документы на визу' : '— медпомощь платная, счёт за вечер в больнице бывает больше стоимости поездки'}. Цену считают по датам и стране: <a href={cherehapaCountry(d.slug, `packing_${d.slug.replaceAll('-', '_')}`)} class="aff-cta" target="_blank" rel="sponsored noopener">Подобрать полис {d.cases.vP}</a> — оплата картой РФ, полис приходит в PDF.</li>)}
         <li><strong>Обратный билет</strong> или бронь выезда — часто проверяют на регистрации. Цены на ближайшие даты: <a href={aviasalesRoute('MOW', d.iata, affiliateSubId)} target="_blank" rel="sponsored noopener">посмотреть рейсы {d.cases.vP}</a>.</li>
         <li><strong>Копии</strong> паспорта и виз в облаке + бумажные отдельно от оригиналов.</li>
       </ul>
