@@ -58,7 +58,20 @@ test('очередь различает новые URL, ревизии и вол
   assert.match(queue, /REVISE[\s\S]{0,240}(?:существующ|каноническ)/i);
   assert.match(queue, /WAVE[\s\S]{0,280}(?:существующ|дубл)/i);
   assert.match(queue, /24 существующ[\s\S]{0,240}Хайнань/i);
-  assert.equal(queue.match(/\[ \]/g)?.length, 24);
+  // ⛔ Считаем ВСЕ пары волны, а не только незакрытые. Раньше здесь стояло
+  // `queue.match(/\[ \]/g)?.length === 24`, и это запрещало отмечать сделанное:
+  // первая же закрытая пара делала 23 и красила гейт. Проверка должна ловить
+  // потерю пары из плана, а не факт работы по нему.
+  // Считаем только строки месяцев: в тексте над списком есть литерал `[x]`
+  // как пример разметки, и он не является парой.
+  const waveChecklist = queue.split('### Чек-лист WAVE')[1]?.split('\n##')[0] ?? '';
+  const monthLines = waveChecklist
+    .split('\n')
+    .filter((l) => /^-\s*(Октябрь|Ноябрь|Декабрь|Январь):/i.test(l.trim()));
+  const open = monthLines.join('\n').match(/\[ \]/g)?.length ?? 0;
+  const done = monthLines.join('\n').match(/\[x\]/gi)?.length ?? 0;
+  assert.equal(monthLines.length, 4, `месяцев волны ${monthLines.length} вместо 4`);
+  assert.equal(open + done, 24, `в чек-листе волны ${open + done} пар вместо 24`);
   assert.doesNotMatch(queue, /\/trips\/\{month\}\/montenegro\/[\s\S]{0,80}(?:создать|добавить)/i);
   assert.match(queue, /2[–-]3 недели/i);
   assert.match(queue, /не публиковать ради выполнения расписания/i);
