@@ -1,9 +1,32 @@
 // Подбор фотографии к заметке ленты /novosti/.
 //
-// Источник — Openverse: агрегатор фото со свободными лицензиями (Flickr, музеи,
-// Викисклад). Ключ не нужен, фильтр «разрешено коммерческое использование»
-// встроен в запрос, а лицензия и автор приходят машиночитаемыми — без этого
-// публиковать чужой кадр нельзя.
+// Источники идут ЦЕПОЧКОЙ, а не по одному: Openverse → Викисклад → Pixabay.
+// Первым остаётся Openverse — агрегатор фото со свободными лицензиями (Flickr,
+// музеи, Викисклад). Ключ не нужен, фильтр «разрешено коммерческое
+// использование» встроен в запрос, а лицензия и автор приходят
+// машиночитаемыми — без этого публиковать чужой кадр нельзя.
+//
+// ⛔ Цепочка появилась 04.09.2026, и причина — не красота, а доступность.
+// В тот день Openverse перестал отвечать: сначала таймауты на каждом запросе,
+// потом обрыв TLS. Подборщик честно вернул «без кадра» по обеим заметкам дня,
+// и гейт ленты их не пропустил — «нет своего снимка». Один источник означает,
+// что выпуск ленты падает вместе с ним.
+//
+// Порядок внутри цепочки продуман, и он НЕ «от красивого к скучному»:
+//   1) Openverse — самый широкий охват свободных лицензий;
+//   2) Викисклад — знает названные места. Заметке нужен ИМЕННО Ринджани, а не
+//      обобщённый вулкан: подстановка похожего места — это тот же класс ошибки,
+//      что карта вместо рифа и автомобиль Jaguar вместо зверя;
+//   3) Pixabay — красивые обобщённые кадры (океан, самолёт, документы) на темы,
+//      где у первых двух только скучная институциональная съёмка.
+//
+// ⛔ Unsplash в цепочку не берём, и это не про вкус. Лицензия у него щедрая, но
+// правила программного доступа требуют показывать кадр С ИХ серверов и прямо
+// запрещают постоянное хранение копии у себя. У нас картинка скачивается,
+// ужимается и живёт в репозитории — ради скорости, вида и независимости от
+// чужого домена на каждом показе страницы. У Pixabay требование ОБРАТНОЕ:
+// постоянный хотлинк запрещён, копию держать у себя нужно, — оно совпадает с
+// тем, как сайт устроен. Проверено по живым документам 04.09.2026.
 //
 // Порядок лицензий не случаен: сначала те, что не требуют ничего (cc0, pdm),
 // потом простая атрибуция (by), и только потом by-sa. ShareAlike тянет за собой
@@ -16,16 +39,26 @@
 
 import { writeFileSync, mkdirSync, existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
+import { homedir } from 'node:os';
 
 const UA = 'traveltribe-news/1.0 (https://traveltribe.ru)';
 const API = 'https://api.openverse.org/v1/images/';
+const COMMONS_API = 'https://commons.wikimedia.org/w/api.php';
+const PIXABAY_API = 'https://pixabay.com/api/';
 
 // Чем выше в списке, тем меньше обязательств. Значения — как их отдаёт Openverse.
-const LICENSE_RANK = { cc0: 0, pdm: 1, by: 2, 'by-sa': 3 };
+const LICENSE_RANK = { cc0: 0, pdm: 1, by: 2, pixabay: 2, 'by-sa': 3 };
 
 const LICENSE_LABEL = {
   cc0: 'CC0', pdm: 'общественное достояние',
   by: 'CC BY', 'by-sa': 'CC BY-SA',
+  pixabay: 'лицензия Pixabay',
+};
+
+const LICENSE_URL = {
+  cc0: 'https://creativecommons.org/publicdomain/zero/1.0/',
+  pdm: 'https://creativecommons.org/publicdomain/mark/1.0/',
+  pixabay: 'https://pixabay.com/service/license-summary/',
 };
 
 /**
@@ -63,6 +96,18 @@ export function extraWords(title, query) {
   return extra + (PEOPLE.test(title) ? 3 : 0);
 }
 
+/**
+ * Ответ источника. `reachable: false` означает «источник не отвечает», и это НЕ
+ * то же самое, что «источник ничего не нашёл».
+ *
+ * ⛔ Разница стоит минут. Формулировок запроса у заметки до девяти, и если
+ * лежащий источник возвращать пустым списком, цепочка честно спросит его девять
+ * раз подряд и на каждой заплатит полный таймаут. 04.09.2026 прогон по трём
+ * заметкам не закончился за десять минут именно так. Один отказ — источник
+ * считается мёртвым до конца заметки, остальные формулировки к нему не идут.
+ */
+const answer = (hits, reachable = true) => ({ hits, reachable });
+
 async function search(q, { wide = true, timeoutMs = 25000 } = {}) {
   // Широкий кадр предпочтителен, но по редким сюжетам его может просто не быть:
   // «numbat marsupial» с фильтром по пропорциям не находит ничего. Поэтому
@@ -74,14 +119,215 @@ async function search(q, { wide = true, timeoutMs = 25000 } = {}) {
   const t = setTimeout(() => ac.abort(), timeoutMs);
   try {
     const res = await fetch(url, { headers: { 'User-Agent': UA }, signal: ac.signal });
-    if (!res.ok) return [];
+    if (!res.ok) return answer([], false);
     const json = await res.json();
-    return json.results ?? [];
+    return answer(json.results ?? []);
   } catch {
-    return [];
+    return answer([], false);
   } finally {
     clearTimeout(t);
   }
+}
+
+/** Голый текст из HTML-поля Викисклада: там автор приходит ссылкой с разметкой. */
+const plain = (s) => String(s ?? '').replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/gi, ' ')
+  .replace(/\s+/g, ' ').trim();
+
+/**
+ * Лицензия Викисклада к нашим ключам. Принимаем ТОЛЬКО то, что разрешает
+ * коммерческое использование: CC0, общественное достояние и CC BY / CC BY-SA.
+ * ⛔ Всё остальное — отказ, а не «наверное можно». NC запрещает коммерческое
+ * использование, ND запрещает переработку (мы кадр ужимаем, это переработка),
+ * а GFDL без парной CC тянет требование прикладывать текст лицензии к странице.
+ * Неизвестную строку тоже отбиваем: угадывать права на чужую фотографию нельзя.
+ */
+export function commonsLicense(shortName) {
+  const s = plain(shortName).toLowerCase();
+  if (!s) return null;
+  if (/\bnc\b|noncommercial|\bnd\b|noderiv|fair use|non-free/.test(s)) return null;
+  if (/^cc0|\bcc0\b|zero/.test(s)) return 'cc0';
+  if (/public domain|^pd[-\s]|\bpd\b/.test(s)) return 'pdm';
+  if (/cc[\s-]?by[\s-]?sa/.test(s)) return 'by-sa';
+  if (/cc[\s-]?by/.test(s)) return 'by';
+  return null;
+}
+
+/**
+ * Викисклад. Нужен там, где у заметки НАЗВАННОЕ место: он знает конкретные
+ * горы, водопады и парки поимённо, а обобщённые стоки — нет.
+ */
+async function searchCommons(q, { timeoutMs = 25000 } = {}) {
+  const u = new URL(COMMONS_API);
+  u.searchParams.set('action', 'query');
+  u.searchParams.set('generator', 'search');
+  u.searchParams.set('gsrsearch', `filetype:bitmap ${q}`);
+  u.searchParams.set('gsrnamespace', '6');
+  u.searchParams.set('gsrlimit', '12');
+  u.searchParams.set('prop', 'imageinfo');
+  u.searchParams.set('iiprop', 'url|size|extmetadata');
+  u.searchParams.set('iiurlwidth', '1920');
+  u.searchParams.set('format', 'json');
+  const ac = new AbortController();
+  const t = setTimeout(() => ac.abort(), timeoutMs);
+  try {
+    const res = await fetch(u, { headers: { 'User-Agent': UA }, signal: ac.signal });
+    if (!res.ok) return answer([], false);
+    const json = await res.json();
+    return answer(Object.values(json.query?.pages ?? {}).flatMap((p) => {
+      const ii = (p.imageinfo ?? [])[0];
+      if (!ii) return [];
+      const meta = ii.extmetadata ?? {};
+      const license = commonsLicense(meta.LicenseShortName?.value);
+      if (!license) return [];
+      return [{
+        url: ii.thumburl || ii.url,
+        title: String(p.title ?? '').replace(/^File:/, '').replace(/\.\w+$/, '').replace(/_/g, ' '),
+        creator: plain(meta.Artist?.value) || 'без указания автора',
+        license,
+        licenseLabel: LICENSE_LABEL[license],
+        licenseUrl: plain(meta.LicenseUrl?.value) || LICENSE_URL[license] || '',
+        source: ii.descriptionurl || ii.url,
+        width: ii.width ?? 0,
+      }];
+    }));
+  } catch {
+    return answer([], false);
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+/**
+ * Ключ Pixabay. Лежит рядом с остальными секретами, в репозиторий не попадает
+ * и в строку команды не выносится. Нет ключа — источник молча пропускается:
+ * цепочка обязана работать и без него.
+ */
+export function pixabayKey(env = process.env) {
+  if (env.PIXABAY_API_KEY) return env.PIXABAY_API_KEY.trim();
+  try {
+    const file = readFileSync(join(homedir(), '.config/tt/secrets.env'), 'utf8');
+    const m = file.match(/^\s*(?:export\s+)?PIXABAY_API_KEY\s*=\s*["']?([^"'\n\r]+)/m);
+    return m ? m[1].trim() : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Pixabay. Последний в цепочке и по делу: он силён на обобщённых сюжетах
+ * (океан, самолёт, документы), где Викисклад отдаёт институциональную скукоту,
+ * и слаб на точных именах мест. Атрибуции лицензия не требует, но подпись автора
+ * мы ставим всё равно — как и всем остальным.
+ */
+/**
+ * Порог детализации ДЛЯ PIXABAY. Там среди «фотографий» попадается рисованное:
+ * замер 04.09.2026 по 24 кадрам из четырёх запросов дал один рисунок —
+ * трёхмерное табло вылетов — и он же оказался единственным с низкой
+ * детализацией: 5,29 против 6,58–7,86 у всех остальных, настоящих.
+ *
+ * ⛔ Порог живёт отдельно от общего (2,5) и НЕ переносится на другие источники.
+ * Причина в каноне блога: у честного ночного кадра детализация падала до 4,97,
+ * то есть ниже этого самого рисунка. Общий порог поднимать нельзя — вылетит
+ * ночная съёмка названного места. У Pixabay же он безопасен: туда цепочка ходит
+ * за обобщённым сюжетом, кандидатов там десятки, и отказ стоит следующего кадра,
+ * а не пустой заметки.
+ *
+ * ⛔ Число выведено на 24 кадрах. Это отправная точка, а не доказанная
+ * константа: если живой прогон начнёт выбрасывать нормальные тёмные кадры,
+ * порог двигать по новому замеру, а не по одному случаю.
+ */
+export const PIXABAY_ENTROPY_FLOOR = 6;
+
+async function searchPixabay(q, { timeoutMs = 25000, key = pixabayKey() } = {}) {
+  if (!key) return answer([]);
+  const u = new URL(PIXABAY_API);
+  u.searchParams.set('key', key);
+  u.searchParams.set('q', q);
+  u.searchParams.set('image_type', 'photo');
+  u.searchParams.set('safesearch', 'true');
+  u.searchParams.set('per_page', '12');
+  const ac = new AbortController();
+  const t = setTimeout(() => ac.abort(), timeoutMs);
+  try {
+    const res = await fetch(u, { headers: { 'User-Agent': UA }, signal: ac.signal });
+    if (!res.ok) return answer([], false);
+    const json = await res.json();
+    return answer((json.hits ?? []).map((h) => ({
+      // Теги — единственное описание кадра у Pixabay; по ним же работает отсев
+      // «это карта, а не фотография» и подсчёт лишних слов.
+      url: h.largeImageURL || h.webformatURL,
+      title: String(h.tags ?? '').replace(/,/g, ' '),
+      creator: h.user || 'без указания автора',
+      license: 'pixabay',
+      licenseLabel: LICENSE_LABEL.pixabay,
+      licenseUrl: LICENSE_URL.pixabay,
+      source: h.pageURL,
+      width: h.imageWidth ?? 0,
+      minEntropy: PIXABAY_ENTROPY_FLOOR,
+    })));
+  } catch {
+    return answer([], false);
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+/** Openverse в общем виде: те же поля, что у остальных источников. */
+async function searchOpenverse(q, { wide = true } = {}) {
+  const res = await search(q, { wide });
+  if (!res.reachable) return res;
+  return answer(res.hits
+    .filter((x) => x.url && x.license in LICENSE_RANK)
+    .map((x) => ({
+      url: x.url,
+      title: x.title ?? '',
+      creator: x.creator ?? 'без указания автора',
+      license: x.license,
+      licenseLabel: LICENSE_LABEL[x.license] ?? x.license.toUpperCase(),
+      licenseUrl: x.license_url ?? LICENSE_URL[x.license] ?? '',
+      source: x.foreign_landing_url ?? x.url,
+      width: x.width ?? 0,
+    })));
+}
+
+/**
+ * Источники по порядку. Openverse ходит дважды — с фильтром широкого кадра и
+ * без него: по редким сюжетам широкого кадра может не быть вовсе.
+ */
+export const SOURCES = [
+  { name: 'Openverse', find: async (q) => {
+    const wide = await searchOpenverse(q, { wide: true });
+    // Источник не отвечает — второй заход бессмысленен, он упрётся в тот же таймаут.
+    if (!wide.reachable || wide.hits.length) return wide;
+    return searchOpenverse(q, { wide: false });
+  } },
+  { name: 'Викисклад', find: (q) => searchCommons(q) },
+  { name: 'Pixabay', find: (q) => searchPixabay(q) },
+];
+
+/**
+ * Запрос называет конкретное место или вид? Признак — заглавная буква:
+ * запросы к стокам пишутся по-английски строчными, и заглавная в них означает
+ * имя собственное. «Mount Rinjani Lombok» называет, «airport departure board» нет.
+ *
+ * ⛔ Нужно это ровно для одного решения — какой источник спрашивать раньше.
+ * Названное место идёт на Викисклад: он знает поимённо конкретные горы и
+ * водопады, а красивый сток отдаёт обобщённый вулкан, и подстановка похожего
+ * места — тот же класс ошибки, что карта вместо рифа. Обобщённая тема
+ * (аэропорт, океан, документы) идёт на Pixabay: у Викисклада на неё лежит
+ * институциональная съёмка, которую читать не хочется.
+ */
+export function namesAPlace(query) {
+  return /(^|\s)[A-ZА-ЯЁ][\wа-яё-]*/u.test(String(query ?? ''));
+}
+
+/** Порядок источников под конкретный запрос. Первым всегда самый широкий охват. */
+export function sourcesFor(query) {
+  const byName = (n) => SOURCES.find((s) => s.name === n);
+  const rest = namesAPlace(query)
+    ? [byName('Викисклад'), byName('Pixabay')]
+    : [byName('Pixabay'), byName('Викисклад')];
+  return [byName('Openverse'), ...rest].filter(Boolean);
 }
 
 /**
@@ -103,12 +349,20 @@ export async function findPhoto(data) {
       .filter(Boolean)
       .flatMap(shorten)
   )];
-  for (const q of queries) {
-    let hits = [];
-    for (const wide of [true, false]) {
-      hits = (await search(q, { wide }))
-        .filter((x) => x.url && x.license in LICENSE_RANK)
-        .filter((x) => (x.width ?? 0) >= 1200);
+  // ⛔ Источник перебирается ВНЕШНИМ циклом, запрос — внутренним. Порядок важен:
+  // сначала надо исчерпать все формулировки на первом источнике и только потом
+  // идти ко второму. Наоборот — значит по короткому обрубку запроса уйти на
+  // Pixabay за обобщённым кадром, когда точный по полному запросу лежал на
+  // Викискладе.
+  // Порядок источников решает ГЛАВНЫЙ запрос заметки, а не её обрубки: у
+  // коротких хвостов имя собственное часто теряется, и по ним цепочка ушла бы
+  // не туда.
+  for (const src of sourcesFor(queries[0])) {
+    for (const q of queries) {
+      const res = await src.find(q);
+      // Источник лёг — уходим к следующему, не перебирая на нём формулировки.
+      if (!res.reachable) break;
+      let hits = res.hits.filter((x) => x.url && (x.width ?? 0) >= 1200);
       // ⛔ Раньше отбор шёл ЧИСТО по лицензии, и это ставило рядом с заметкой
       // случайный кадр: к плате за вход в Торрес-дель-Пайне встал зелёный
       // попугай, снятый в том же парке, — у него была лицензия посвободнее.
@@ -127,22 +381,11 @@ export async function findPhoto(data) {
           || (LICENSE_RANK[a.x.license] - LICENSE_RANK[b.x.license])
           || (a.i - b.i))
         .map((p) => p.x);
-      if (hits.length) break;
-    }
-    if (hits.length) {
-      // Возвращаем несколько кандидатов: часть ссылок в агрегаторе мертва
-      // (источник удалил файл), и на 404 надо брать следующего, а не падать.
-      return hits.slice(0, 5).map((x) => ({
-        url: x.url,
-        title: x.title ?? '',
-        creator: x.creator ?? 'без указания автора',
-        license: x.license,
-        licenseLabel: LICENSE_LABEL[x.license] ?? x.license.toUpperCase(),
-        licenseUrl: x.license_url ?? '',
-        source: x.foreign_landing_url ?? x.url,
-        width: x.width ?? 0,
-        query: q,
-      }));
+      if (hits.length) {
+        // Возвращаем несколько кандидатов: часть ссылок в агрегаторе мертва
+        // (источник удалил файл), и на 404 надо брать следующего, а не падать.
+        return hits.slice(0, 5).map((x) => ({ ...x, query: q, source_name: src.name }));
+      }
     }
   }
   return [];
@@ -253,6 +496,14 @@ export async function downloadPhoto(photo, slug, root = process.cwd()) {
     // не быть вовсе («Alif Dhaal Atoll» — карта, а по имени не догадаешься).
     const bad = statsRejection(await photoStats(sharp, raw));
     if (bad) throw new Error(`кадр узкий: ${bad}`);
+    // Отсев рисованного там, где его много. Порог приходит от источника: у
+    // Pixabay он свой, у остальных его нет вовсе — см. PIXABAY_ENTROPY_FLOOR.
+    if (photo.minEntropy) {
+      const { entropy } = await src.stats();
+      if (entropy < photo.minEntropy) {
+        throw new Error(`кадр узкий: рисунок, а не фотография (детализация ${entropy.toFixed(2)} при пороге ${photo.minEntropy})`);
+      }
+    }
     // Баннерные обрезки с Викисклада приходят полосой 7:1 — в карточке ленты от
     // такой остаётся щель. Держим кадр в разумных пропорциях, от вертикального
     // 3:4 до широкого 21:9.
@@ -325,7 +576,9 @@ if (isMain) {
     const got = await fetchFirstWorking(note.data, slug, root);
     if (!got) {
       failed++;
-      console.log(`  без кадра  ${f} — сток ничего не дал по запросу «${note.data.photoQuery ?? fallbackQuery(note.data)}»`);
+      console.log(`  без кадра  ${f} — ни один из источников (${SOURCES.map((s) => s.name).join(', ')}) `
+        + `не дал кадра по запросу «${note.data.photoQuery ?? fallbackQuery(note.data)}»`
+        + (pixabayKey() ? '' : '; ключа Pixabay нет, этот источник пропущен'));
       continue;
     }
     // Подпись для незрячих — по-русски. `photoQuery` и название файла на стоке
@@ -333,7 +586,9 @@ if (isMain) {
     const alt = note.data.imageAlt || note.data.title;
     writeFileSync(abs, insertPhotoFrontmatter(raw, frontmatterLines(got.photo, got.rel, alt)));
     done++;
-    console.log(`  кадр       ${f} — ${got.photo.licenseLabel}, ${got.photo.creator}, ${Math.round(got.bytes / 1024)} КБ`);
+    // Источник печатаем всегда: по нему видно, работала ли цепочка и почему
+    // кадр оказался обобщённым, а не про названное место.
+    console.log(`  кадр       ${f} — ${got.photo.source_name ?? 'сток'}, ${got.photo.licenseLabel}, ${got.photo.creator}, ${Math.round(got.bytes / 1024)} КБ`);
   }
   console.log(`\nнайдено кадров ${done}, уже были ${skipped}, без кадра ${failed}`);
 }
