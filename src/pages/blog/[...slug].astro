@@ -8,6 +8,8 @@ import TableOfContents from '../../components/post/TableOfContents.astro';
 import authorPhoto from '../../assets/author/nikita.jpg';
 import { DIRECTIONS } from '../../data/directions.js';
 import { directionForTags } from '../../data/article-country.js';
+import { EXPENSIVE_DESTINATIONS } from '../../data/monetization.js';
+import { aviasalesRoute, youtravelCountry } from '../../data/affiliate.js';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -144,6 +146,22 @@ const MULTI_DESTINATION_POSTS = new Set([
   'travelata-2026',
 ]);
 const monetizationDestination = MULTI_DESTINATION_POSTS.has(post.slug) ? '' : primaryDir?.slug;
+
+// Дорогие направления: первой денежной точкой идёт дорога или готовый тур, а не полис.
+// Решение Никиты 04.09.2026 по замеру 06.08–02.09: такие страницы доводят до партнёра
+// 4,7 визита из ста против 1,6 у страниц сборов, а единственная крупная комиссия сайта
+// пришла с билета со страницы Галапагосов. Ставится шаблоном, а не в тексте статей:
+// одна правка вместо тринадцати, все страницы переключаются одним днём (иначе замер
+// размазывается по датам), тексты и даты обновления статей не трогаются, откат — одна строка.
+const expensive = EXPENSIVE_DESTINATIONS[post.slug] ?? null;
+const expensiveMoney = expensive ? {
+  flight: aviasalesRoute('MOW', expensive.iata, `${post.slug}_top`),
+  city: expensive.city,
+  // Тура нет у партнёра — строка идёт без него: общий каталог вместо страны это
+  // холодный клик, который канон монетизации запрещает выдавать за диплинк.
+  tour: expensive.tour ? youtravelCountry(expensive.tour, `${post.slug}_top`) : null,
+  label: expensive.label,
+} : null;
 // Хлебные крошки. Было «Главная / Блог / <весь заголовок>»: страны в цепочке
 // нет, последнее звено переносится на три строки на телефоне. Стало
 // «Главная / Блог / Япония / Виза» — четыре звена, это в границах требований
@@ -312,6 +330,16 @@ if (faqs.length >= 2) {
             <>Это обзор по официальным источникам — сайтам консульств, статистике, форумам туристов. Лично эту визу/маршрут я в 2026 не оформлял, но сверил факты на актуальность. Если вы только что прошли — поправьте через <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram-канал</a>, обновлю.</>
           )}
         </aside>
+      )}
+
+      {expensiveMoney && (
+        <p class="post-first-money">
+          Как туда попасть:{' '}
+          <a href={expensiveMoney.flight} class="aff-cta" rel="sponsored">найти билет Москва — {expensiveMoney.city}</a>
+          {expensiveMoney.tour && (
+            <>{' · '}<a href={expensiveMoney.tour} class="aff-cta" rel="sponsored">посмотреть готовые туры {expensiveMoney.label}</a></>
+          )}
+        </p>
       )}
 
       <TableOfContents headings={headings} />
@@ -723,6 +751,14 @@ h1 {
   font-size: 0.84rem; line-height: 1.5; color: var(--muted);
 }
 .post-checked a { color: var(--gold-dim); border-bottom: 1px solid rgba(29,64,174,0.35); }
+
+/* Дорога и туры на дорогих направлениях — служебная строка того же веса, что «Сверено».
+   Не блок и не кнопка: по айтрекингу форматный блок читатель пропускает, а строка
+   в редакционном голосе — нет. */
+.post-first-money {
+  max-width: 42rem; margin: 0 auto 1.6rem; text-align: center;
+  font-size: 0.9rem; line-height: 1.55; color: var(--muted);
+}
 
 /* Журнал проверок: тонкие линейки, как у ленты изменений виз. */
 /* Без своей верхней линии: над журналом уже стоит разделитель блока подписки,
