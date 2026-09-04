@@ -156,12 +156,13 @@ const weekTotal = flightFrom ? flightFrom + (hotelFrom || 0) * 7 + (foodFrom || 
 const priceIdx = d.price ? PRICES.findIndex(p => p.iata === d.price.iata && p.name === d.price.name) : -1;
 const calcUrl = priceIdx >= 0 ? `/calculator/?r=${priceIdx}` : '/calculator/';
 
-// FAQ generated from data
+// FAQ generated from data.
+// ⛔ Визового вопроса здесь нет намеренно. До 04.09.2026 витрина и /visa/<страна>/
+// клали в разметку один и тот же вопрос с одним и тем же текстом ответа, и Google
+// не мог выбрать владельца: 64 запроса, 697 показов, ноль переходов на 30
+// направлениях. Владелец визового интента — /visa/<страна>/. Витрина называет
+// статус видимым текстом в капсуле и уводит ссылкой, но за ответ не борется.
 const faqs = [
-  {
-    q: `Нужна ли виза ${d.cases.vP} для россиян в ${yr}?`,
-    a: `${vd.summary ?? VISA_SUMMARY[d.visa]} Срок пребывания: ${vd.duration}; стоимость: ${vd.cost}; оформление: ${vd.timing}.`,
-  },
   {
     q: `Сколько стоит поездка ${d.cases.vP} в ${yr}?`,
     a: weekTotal
