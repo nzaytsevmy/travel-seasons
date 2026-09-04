@@ -305,6 +305,29 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
         </div>
       </section>
 
+      {rich?.regions?.length > 0 && (
+        <section class="sec">
+          <div class="shead"><h2>Где {d.cases.loc} в {m.prep} сухо, а где заливает</h2></div>
+          <table class="dt">
+            <thead><tr><th>Регион</th><th>Днём</th><th>Осадки</th><th>Дней с дождём</th></tr></thead>
+            <tbody>
+              {rich.regions.map((r) => (
+                <tr>
+                  <td class="bd" data-l="Регион"><b>{r.name}</b><span class="rgc">{r.city}</span></td>
+                  <td data-l="Днём">{r.temp}</td>
+                  <td data-l="Осадки">{r.rain}</td>
+                  <td data-l="Дней с дождём">{r.days}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {rich.regionsNote && <p class="tnote">{rich.regionsNote}</p>}
+          {liveFlight && (
+            <p class="tnote">Перелёт Москва — {d.cases.nom} ({iata}) с вылетом в {m.prep}: от {liveFlight.toLocaleString('ru-RU')} ₽, цена снята {liveChecked}. Это один маршрут, а не вся страна: до других аэропортов цена своя, и мы её тут не показываем. Долларовая вилка выше по странице — разброс по классу поездки, а не цена именно этого месяца.</p>
+          )}
+        </section>
+      )}
+
       {rich && (
         <section class="sec">
           <div class="shead"><h2>{d.cases.nom} в {m.prep}: погода и что смотреть</h2></div>
@@ -449,6 +472,7 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
 .dt td:first-child,.dt th:first-child{padding-left:0}
 .dt tr:last-child td{border-bottom:none}
 .dt .bd b{font-weight:700}
+.dt .rgc{display:block;font-size:.72rem;color:var(--mid);margin-top:.15rem}
 .tnote{margin-top:.8rem;font-size:.78rem;color:var(--mid);line-height:1.6;max-width:90ch}
 .tnote a{color:var(--gold);text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
 
