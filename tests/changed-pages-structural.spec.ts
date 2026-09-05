@@ -43,8 +43,19 @@ test.beforeEach(({}, testInfo) => {
 const checked = urls.slice(0, MAX_PAGES);
 const overflowed = urls.slice(MAX_PAGES);
 
+// ⛔ Страница статьи или заметки, которой не нашлось адреса, — это не «нечего проверять»,
+// а молчаливо пустая проверка: 04.09.2026 список файлов пришёл через пробел вместо переноса
+// строки, адресов вышло ноль, и гейт позеленел, не посмотрев ни одной страницы.
+const unmapped = process.env.STRUCTURAL_URLS
+  ? []
+  : changedContentFiles().filter((rel) => /^src\/content\/(blog|news)\//.test(rel)
+      && !rel.includes('/_images/')
+      && /\.mdx?$/.test(rel)
+      && !contentFileToUrl(rel));
+
 test.describe('Структура изменённых страниц', () => {
   test('перечень страниц', () => {
+    expect(unmapped, `у этих страниц не вышло адреса, проверка была бы пустой:\n${unmapped.join('\n')}`).toEqual([]);
     test.info().annotations.push({ type: 'pages', description: checked.join(', ') || 'изменённых страниц нет' });
     if (overflowed.length) test.info().annotations.push({ type: 'не проверены (потолок)', description: overflowed.join(', ') });
   });

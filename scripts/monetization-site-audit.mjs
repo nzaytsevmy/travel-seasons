@@ -2,7 +2,7 @@
 
 import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
-import { classifyPage, classifyPartner, isGenericAffiliateUrl } from '../src/data/monetization.js';
+import { classifyPage, classifyPartner, isGenericAffiliateUrl, expensiveDestinationSlug, EXPENSIVE_FIRST_OFFERS } from '../src/data/monetization.js';
 import { destinationAffiliateUrl } from '../src/data/affiliate.js';
 
 const DEEP_LINK_REQUIRED = new Set(['aviasales', 'cherehapa', 'ostrovok', 'airalo', 'youtravel']);
@@ -96,6 +96,15 @@ export function auditMonetization(dist) {
           errors.push(`${path}: ${partner.partner} ведёт в общий каталог при известном направлении ${destination}`);
         }
       }
+    }
+
+    // Дорогое направление: первой денежной ссылкой идёт дорога или тур, а не полис.
+    // Порядок берём в порядке разметки страницы, поэтому липкая панель и шапка тоже считаются.
+    if (expensiveDestinationSlug(path) && pageLinks.length && !EXPENSIVE_FIRST_OFFERS.has(pageLinks[0].offer)) {
+      errors.push(`${path}: дорогое направление, но первой денежной ссылкой идёт ${pageLinks[0].offer} (${pageLinks[0].partner}); первой должна быть дорога или тур`);
+    }
+    if (expensiveDestinationSlug(path) && !pageLinks.some((link) => EXPENSIVE_FIRST_OFFERS.has(link.offer))) {
+      errors.push(`${path}: дорогое направление без ссылки на дорогу или тур`);
     }
 
     if (info.intent === 'none' && pageLinks.length) errors.push(`${path}: intent=none, но партнёрских ссылок ${pageLinks.length}`);
