@@ -1,4 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
+import { previewPort } from './scripts/preview-port.mjs';
+
+// Свой порт у каждой рабочей копии (см. scripts/preview-port.mjs): соседние
+// сессии больше не делят 4322 и не снимают чужую сборку.
+const PORT = previewPort();
 
 export default defineConfig({
   testDir: './tests',
@@ -13,7 +18,7 @@ export default defineConfig({
   workers: process.env.CI ? 2 : 4,
   reporter: [['list'], ['html', { open: 'never', outputFolder: 'tests/.html-report' }]],
   use: {
-    baseURL: process.env.PREVIEW_URL || 'http://localhost:4322',
+    baseURL: process.env.PREVIEW_URL || `http://localhost:${PORT}`,
     screenshot: 'only-on-failure',
     video: 'off',
     // Доп. защита: блокируем сторонние трекеры даже если попали в HTML
@@ -26,8 +31,8 @@ export default defineConfig({
   //    эталонов записались страницами ошибки — их чуть не закрепили как образец.
   //    В CI адрес приходит снаружи, там поднимать нечего.
   webServer: process.env.PREVIEW_URL ? undefined : {
-    command: 'npx astro preview --port 4322',
-    url: 'http://localhost:4322/',
+    command: `npx astro preview --port ${PORT}`,
+    url: `http://localhost:${PORT}/`,
     reuseExistingServer: true,
     timeout: 120_000,
   },
