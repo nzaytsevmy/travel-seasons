@@ -40,6 +40,7 @@ export const RELATED_POSTS = {
   'uae': [
     { slug: 'uae-guide-2026', title: 'Дубай 2026 для россиян: безвиз 90 дней, цены, сезон', kind: 'guide' },
     { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
+    { slug: 'novyy-god-2027-kuda-poehat', title: 'Куда поехать на Новый год 2027: цены и крайние сроки', kind: 'season' },
   ],
   'georgia': [
     { slug: 'georgia-guide-2026', title: 'Грузия 2026: виза 365 дней, страховка, цены, маршрут', kind: 'guide' },
@@ -95,11 +96,13 @@ export const RELATED_POSTS = {
     { slug: 'thailand-guide-2026', title: 'Таиланд 2026: виза, Пхукет, Самуи, цены', kind: 'guide' },
     { slug: 'phuket-samui-2026', title: 'Пхукет или Самуи 2026: где лучше отдыхать', kind: 'guide' },
     { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
+    { slug: 'novyy-god-2027-kuda-poehat', title: 'Куда поехать на Новый год 2027: цены и крайние сроки', kind: 'season' },
   ],
   'egypt': [
     { slug: 'egypt-guide-2026', title: 'Египет 2026: виза, Хургада, Шарм, цены', kind: 'guide' },
     { slug: 'hurghada-sharm-2026', title: 'Хургада или Шарм 2026: где лучше отдыхать', kind: 'guide' },
     { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
+    { slug: 'novyy-god-2027-kuda-poehat', title: 'Куда поехать на Новый год 2027: цены и крайние сроки', kind: 'season' },
   ],
   'kamchatka': [
     { slug: 'kamchatka-guide-2026', title: 'Камчатка 2026: что посмотреть, когда ехать, цены', kind: 'guide' },
