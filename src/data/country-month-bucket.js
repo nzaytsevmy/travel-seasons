@@ -5,7 +5,7 @@
 // 1. Свойство места (PLACE_BOUND): высокогорье, джунгли и сафари, полярная
 //    экспедиция. Температура месяца их не отменяет — кислород, москиты и
 //    снаряжение зависят от места, а не от календаря.
-// 2. Опубликованные помесячные нормы country-monthly-weather.js — волна 1 погоды
+// 2. Станционные помесячные нормы climate-classifier-input.js — волна 1 погоды
 //    (29.08.2026, 20 стран): страница печатает их числа и город замера.
 // 3. Нормы ERA5 для всех направлений — climate-normals.generated.json,
 //    снятые scripts/fetch-climate-normals.mjs (реанализ, среднее 2015–2024,
@@ -17,7 +17,11 @@
 //
 // Пороги классов сверены с полосами температур в summary каждого класса
 // (packing-weather-buckets.js); согласованность держит tests/climate-buckets.test.mjs.
-import { MONTHLY_WEATHER } from './country-monthly-weather.js';
+// Станционная таблица 19 стран живёт в climate-classifier-input.js: показ погоды на
+// страницах с 05.09.2026 идёт из реанализа для всех направлений (country-monthly-weather.js),
+// а классификатору оставлены прежние станционные числа — у реанализа завышено
+// число моросящих дней, и порог по дням съезжал (Шри-Ланка в сухой сезон — «дождь»).
+import { CLASSIFIER_INPUT } from './climate-classifier-input.js';
 import normals from './climate-normals.generated.json' with { type: 'json' };
 
 export const PLACE_BOUND = {
@@ -76,7 +80,7 @@ export function classifyMonth({ tmax, tmin, mm, days }) {
 
 // Опубликованные нормы волны 1 хранятся строками «21-32°C» и «15 мм / 1 дн».
 function fromPublished(slug, monthIdx) {
-  const rec = MONTHLY_WEATHER[slug]?.months?.[monthIdx];
+  const rec = CLASSIFIER_INPUT[slug]?.months?.[monthIdx];
   if (!rec) return null;
   const t = rec.temp.match(/(-?\d+)\s*-\s*(-?\d+)/);
   const r = rec.rain.match(/(\d+)\s*мм\s*\/\s*(\d+)\s*дн/);
