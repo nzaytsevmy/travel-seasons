@@ -20,9 +20,23 @@ LOG="/tmp/ttb_prepush_${PORT}"
 # что каждая попытка пересобирала сайт и гоняла полный визуальный набор — то
 # же самое, что потом делает сервер. На занятой машине это растягивалось до
 # получаса и валилось по чужой причине.
-RANGE_BASE="$(git merge-base HEAD origin/main 2>/dev/null || echo HEAD~1)"
+# Диапазон — то, что уезжает. Git передаёт хуку строки «локальная ссылка, sha,
+# удалённая ссылка, sha»; удалённый sha и есть база. Раньше база считалась от
+# точки расхождения с main, и каждый push ветки с кодом гонял полный визуальный
+# прогон, даже если уезжали только linux-эталоны (05.09.2026: три раза по 20 минут).
+# Первый push ветки (удалённый sha нулевой) и ручной запуск — по-прежнему от main.
+RANGE_BASE=""
+if [ ! -t 0 ]; then
+  while read -r _lref _lsha _rref rsha; do
+    case "$rsha" in ""|0000000000000000000000000000000000000000) ;; *) RANGE_BASE="$rsha" ;; esac
+  done
+fi
+if [ -z "$RANGE_BASE" ] || ! git cat-file -e "$RANGE_BASE" 2>/dev/null; then
+  RANGE_BASE="$(git merge-base HEAD origin/main 2>/dev/null || echo HEAD~1)"
+fi
 CHANGED="$(git diff --name-only "$RANGE_BASE" HEAD 2>/dev/null)"
-CODE_TOUCHED="$(printf '%s\n' "$CHANGED" | grep -vE '^(src/content/|news/|public/llms|measurements/|.*\.md$)' | grep -v '^$' || true)"
+# Linux-эталоны локально не проверяются (здесь darwin) — их сверяет CI.
+CODE_TOUCHED="$(printf '%s\n' "$CHANGED" | grep -vE '^(src/content/|news/|public/llms|measurements/|tests/visual\.spec\.ts-snapshots/[^/]*-linux\.png$|.*\.md$)' | grep -v '^$' || true)"
 
 if [ -z "$CODE_TOUCHED" ] && [ -n "$CHANGED" ]; then
   MODE="text"
