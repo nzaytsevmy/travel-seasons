@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import DestinationTabs from '../components/DestinationTabs.astro';
+import ClimateChart from '../components/ClimateChart.astro';
 import { DIRECTIONS as ALL_DIRECTIONS } from '../data/directions.js';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Footer from '../components/Footer.astro';
@@ -183,6 +184,7 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'antarctica');
 
     <section class="hub-section">
       <h2>Когда ехать — расклад по месяцам</h2>
+      <ClimateChart slug="antarctica" countryNom="Антарктиду" />
       <ul class="hub-list">
         <li><strong>Ноябрь</strong> — открытие сезона, нетронутые льды, пингвины строят гнёзда. Цены на 25–30% ниже декабря.</li>
         <li><strong>Декабрь–январь</strong> — пик. Птенцы вылупляются, солнце 24 часа, самая мягкая погода. Самые высокие цены.</li>
