@@ -1,5 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import DestinationTabs from '../components/DestinationTabs.astro';
+import { DIRECTIONS as ALL_DIRECTIONS } from '../data/directions.js';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Footer from '../components/Footer.astro';
 import EssentialsCard from '../components/EssentialsCard.astro';
@@ -90,6 +92,8 @@ const ldJson = {
     }
   ]
 };
+const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
+
 ---
 <Layout
   title="Япония 2026: гайд, виза, сезоны, бюджет для россиян — TravelTribe"
@@ -119,6 +123,8 @@ const ldJson = {
         <div class="jp-vi"><span><b>06</b> JR Pass</span><div>Не нужен</div></div>
       </div>
     </section>
+
+    {tabsD && <DestinationTabs d={tabsD} active="hub" />}
 
     {/* TLDR + BYLINE */}
     <section class="jp-section">

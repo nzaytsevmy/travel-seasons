@@ -5,6 +5,7 @@ import livePrices from '../../../data/prices-cache.json';
 import Layout from '../../../layouts/Layout.astro';
 import Footer from '../../../components/Footer.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import DestinationTabs from '../../../components/DestinationTabs.astro';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
 import { COUNTRIES as RICH_COUNTRIES } from '../../../data/programmatic-seasons.js';
 import { NICHE_TRIPS } from '../../../data/niche-trips.js';
@@ -219,6 +220,8 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
         </p>
         <TripSaveButton slug={d.slug} nom={d.cases.nom} monthIdx={monthIdx} />
       </header>
+
+      <DestinationTabs d={d} active="when" />
 
       <p class="lead">{text}</p>
 

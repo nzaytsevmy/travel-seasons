@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import DestinationTabs from '../../components/DestinationTabs.astro';
 import { Image } from 'astro:assets';
 import { DIRECTIONS, MONTHS } from '../../data/directions.js';
 import { VISA_DETAILS } from '../../data/visa-details.js';
@@ -141,6 +142,8 @@ const ldJson = {
         <span class="byline-fresh">обновлено {DATA_UPDATED_RU}</span>
       </p>
     </header>
+
+    <DestinationTabs d={d} active="packing" />
 
     <section class="tldr">
       <p>Полный чек-лист {d.cases.vP}: одежда под каждый сезон, документы, аптечка, техника и деньги. Когда лучше ехать — в <a href="/seasons/">таблице сезонов по месяцам</a>.</p>
