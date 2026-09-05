@@ -8,12 +8,9 @@
 //
 // Всё считается при сборке и рисуется обычной вёрсткой: без скриптов, без
 // сдвига макета, числа — текстом в HTML, чтобы их читали и люди, и нейроответы.
-// Данные и источники — src/data/country-monthly-weather.js; там, где страны
-// нет, компонент не рисует ничего и не выдумывает.
+// Данные — src/data/country-monthly-weather.js (один источник для всех стран).
 
-import { MONTHLY_WEATHER } from '../data/country-monthly-weather.js';
-import { DATA_UPDATED_RU } from '../data/meta.js';
-import normals from '../data/climate-normals.generated.json';
+import { MONTHLY_WEATHER, CLIMATE_GENERATED_AT } from '../data/country-monthly-weather.js';
 
 interface Props {
   slug: string;
@@ -21,45 +18,19 @@ interface Props {
 }
 const { slug, countryNom } = Astro.props;
 
-// Два источника. Первый — ручные нормы с климатических станций для 19 стран
-// (те же, что на страницах «страна × месяц»). Второй — реанализ ERA5 через
-// Open-Meteo для всех остальных направлений: суточные данные за десять лет,
-// сведённые по месяцам в scripts/fetch-climate-normals.mjs. Где нет ни того,
-// ни другого, блок не рисуется.
-const curated = (MONTHLY_WEATHER as Record<string, any>)[slug];
-const normal = (normals as any).places?.[slug];
-if (!curated && !normal) return null as any;
-
-const data = curated
-  ? curated
-  : {
-      city: normal.city,
-      months: normal.months.map((m: any) => ({ temp: `${m.tmin}-${m.tmax}°C`, rain: `${m.mm} мм / ${m.days} дн` })),
-      source: null,
-    };
-const sourceLine = curated
-  ? `Многолетние средние по данным ${curated.source}. Проверено ${DATA_UPDATED_RU}.`
-  : `${(normals as any).source}; точка замера — ${normal.city}. Снято ${(normals as any).generatedAt}.`;
+// Источник один — climate-normals.generated.json через country-monthly-weather.js
+// (решение Никиты 05.09.2026). Где направления нет, блок не рисуется.
+const data = (MONTHLY_WEATHER as Record<string, any>)[slug];
+if (!data) return null as any;
+const sourceLine = `${data.source}. Снято ${CLIMATE_GENERATED_AT}.`;
 
 const MONTHS = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
 const MONTHS_PREP = ['январе', 'феврале', 'марте', 'апреле', 'мае', 'июне',
                      'июле', 'августе', 'сентябре', 'октябре', 'ноябре', 'декабре'];
 
-// '24-31°C' и '-7--1°C' — минимум и максимум; '281 мм / 19 дн' — миллиметры и дни.
-const parseTemp = (s: string): [number, number] | null => {
-  const m = String(s).match(/^\s*(-?\d+)\s*-\s*(-?\d+)/);
-  return m ? [Number(m[1]), Number(m[2])] : null;
-};
-const parseRain = (s: string): [number, number] | null => {
-  const m = String(s).match(/(\d+)\s*мм\s*\/\s*(\d+)\s*дн/);
-  return m ? [Number(m[1]), Number(m[2])] : null;
-};
-
-const months = (data.months as { temp: string; rain: string }[]).map((m, i) => ({
-  i, label: MONTHS[i],
-  t: parseTemp(m.temp), r: parseRain(m.rain),
+const months = (data.months as { tmin: number; tmax: number; mm: number; days: number }[]).map((m, i) => ({
+  i, label: MONTHS[i], t: [m.tmin, m.tmax] as [number, number], r: [m.mm, m.days] as [number, number],
 }));
-if (months.some((m) => !m.t || !m.r)) return null as any;
 
 // Шкала температуры — по году этой страны, с запасом в два градуса, чтобы
 // крайние столбики не упирались в подписи.
