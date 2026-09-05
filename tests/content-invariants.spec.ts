@@ -1236,8 +1236,17 @@ test('Журнал проверок: записи заполнены и дата
     const edit = editKind(rel);
     const was = baseVersion(rel, REPO);
     if (was !== null && edit.kind !== 'meta') {
-      const lastDate = (text: string) => [...text.matchAll(/^\s+- date:\s*(\d{4}-\d{2}-\d{2})/gm)].map((m) => m[1]).sort().at(-1) ?? '';
-      if (!(lastDate(fm) > lastDate(was.split('---')[1] ?? ''))) {
+      // Вторая правка в тот же день тоже идёт с записью: при точности в день сравнение одних
+      // дат её не видит (05.09.2026 первая же мелкая правка после первой встала красной),
+      // поэтому считаем ещё и число записей последней даты.
+      const datesOf = (text: string) => [...text.matchAll(/^\s+- date:\s*(\d{4}-\d{2}-\d{2})/gm)].map((m) => m[1]).sort();
+      const now = datesOf(fm);
+      const before = datesOf(was.split('---')[1] ?? '');
+      const lastNow = now.at(-1) ?? '';
+      const lastWas = before.at(-1) ?? '';
+      const sameDayMore = lastNow !== '' && lastNow === lastWas
+        && now.filter((d) => d === lastNow).length > before.filter((d) => d === lastWas).length;
+      if (!(lastNow > lastWas || sameDayMore)) {
         bad.push(`${rel}: проза изменилась (${edit.wordsChanged} слов), а новой записи в журнале проверок нет — что сверяли и по какому источнику`);
       }
     }
