@@ -6,6 +6,7 @@ import { видимыйТекст } from './visible-text';
 import { fileURLToPath } from 'node:url';
 import { buildQueue } from '../scripts/revision-queue.mjs';
 import { checkArticleReview, readPostMeta, proseHash, REVIEW_REQUIRED_FROM } from '../scripts/article-review-gate.mjs';
+import { classifyEdit, baseVersion } from '../scripts/edit-kind.mjs';
 
 // Инвариант-гейт по СБОРКЕ (dist/): ловит КЛАССЫ багов на ЛЮБОМ посте, в т.ч. вне
 // PAGES-списка скриншот-гейта. Без baseline — чистые assert'ы.
@@ -130,6 +131,24 @@ function touchedPosts(): string[] {
     return meaningful(was) !== meaningful(readFileSync(abs, 'utf8'));
   });
 }
+
+/** Мелкая правка или переработка — scripts/edit-kind.mjs (решение Никиты 05.09.2026).
+ *  Тяжёлые гейты — независимая оценка, честный потолок, изменчивые факты, число
+ *  иллюстраций — включаются только на переработке: больше 40 изменённых слов прозы,
+ *  смена заголовка или описания. 05.09.2026 исправление одной даты в двух статьях
+ *  включило все три и стоило часов. Мелкой правке хватает новой записи в журнале
+ *  и чистого языка в добавленных строках; новые кадры проверяются как раньше. */
+type EditKind = ReturnType<typeof classifyEdit>;
+const editKinds = new Map<string, EditKind>();
+function editKind(rel: string): EditKind {
+  if (!editKinds.has(rel)) {
+    const abs = join(REPO, rel);
+    editKinds.set(rel, classifyEdit(baseVersion(rel, REPO), existsSync(abs) ? readFileSync(abs, 'utf8') : ''));
+  }
+  return editKinds.get(rel)!;
+}
+const isRework = (rel: string) => ['rework', 'new'].includes(editKind(rel).kind);
+const reworkedPosts = () => touchedPosts().filter(isRework);
 
 // Инварианты зависят только от сборки, не от вьюпорта — один прогон достаточно.
 test.beforeEach(({}, testInfo) => {
@@ -910,7 +929,7 @@ test('Паспорт статьи: новая статья не выходит �
 test('Честный потолок: у тронутой статьи заполнены все оси qualityScore', () => {
   const required = ['topic', 'facts', 'visuals', 'experience', 'internalLinks', 'legal', 'overall'];
   const bad: string[] = [];
-  for (const rel of touchedPosts()) {
+  for (const rel of reworkedPosts()) {
     const abs = join(REPO, rel);
     if (!existsSync(abs)) continue;
     const fm = readFileSync(abs, 'utf8').split('---')[1] ?? '';
@@ -943,7 +962,7 @@ const CHOICE_TITLE = /^(куда (поехать|съездить|полетет
 const CHOICE_MIN = 15;
 test('Подборка направлений: заголовок-выбор несёт format, а format: choice — не меньше 15 карточек с кадрами', () => {
   const bad: string[] = [];
-  for (const rel of touchedPosts()) {
+  for (const rel of reworkedPosts()) {
     const abs = join(REPO, rel);
     if (!existsSync(abs)) continue;
     const parts = readFileSync(abs, 'utf8').split('---');
@@ -968,7 +987,7 @@ test('Независимая оценка: тронутая статья, све
   // Обещание «второе мнение» в промте ничем не проверялось: автор мог заполнить qualityScore сам.
   // Теперь оценки в шапке обязаны совпасть с артефактом рецензента число в число, а рецензент — не автор.
   const bad: string[] = [];
-  for (const rel of touchedPosts()) {
+  for (const rel of reworkedPosts()) {
     const abs = join(REPO, rel);
     if (!existsSync(abs)) continue;
     const slug = rel.split('/').pop()!.replace(/\.mdx?$/, '');
@@ -990,7 +1009,7 @@ test('Независимая оценка: тронутая статья, све
 test('Изменчивые факты: у цены и прогноза есть срок пересмотра и fallback', () => {
   const bad: string[] = [];
   const today = new Date().toISOString().slice(0, 10);
-  for (const rel of touchedPosts()) {
+  for (const rel of reworkedPosts()) {
     const abs = join(REPO, rel);
     if (!existsSync(abs)) continue;
     const src = readFileSync(abs, 'utf8');
@@ -1081,11 +1100,15 @@ test('Язык: в тронутой статье нет слов-паразит�
     const abs = join(root, rel);
     if (!existsSync(abs)) continue;
     const src = readFileSync(abs, 'utf8');
+    // Мелкая правка: старый текст не чистим, смотрим только добавленные строки —
+    // иначе исправление даты требует вычистить всю статью (медиана 3 паразита).
+    const edit = editKind(rel);
+    const prose = isRework(rel) ? src.split('---').slice(2).join('---') : edit.addedLines.join('\n');
     // ⛔ Цитаты чужих людей из проверки исключаются: их слова — факт, а не наш
     //    текст, и править их ради гейта значит подделывать цитату. Найдено
     //    29.08.2026: «очередь формируется очень быстро» — дословный отзыв
     //    туриста, и гейт требовал его переписать.
-    const body = src.split('---').slice(2).join('---')
+    const body = prose
       .split('\n').filter((s) => !/^\s*>\s*«/.test(s)).join('\n');
     // JS \b не знает кириллицы — границы слова руками, как в гейте дат.
     const hits = (list: string[]) => list.flatMap((w) => {
@@ -1207,6 +1230,17 @@ test('Журнал проверок: записи заполнены и дата
     if (!existsSync(abs)) continue;
     const src = readFileSync(abs, 'utf8');
     const fm = src.split('---')[1] ?? '';
+    // Тронутая статья без новой записи в журнале — правка молчком (решение Никиты
+    // 05.09.2026): мелкой правке запись с датой и источником и есть весь гейт,
+    // переработке — тем более. Сравниваем дату последней записи с основой.
+    const edit = editKind(rel);
+    const was = baseVersion(rel, REPO);
+    if (was !== null && edit.kind !== 'meta') {
+      const lastDate = (text: string) => [...text.matchAll(/^\s+- date:\s*(\d{4}-\d{2}-\d{2})/gm)].map((m) => m[1]).sort().at(-1) ?? '';
+      if (!(lastDate(fm) > lastDate(was.split('---')[1] ?? ''))) {
+        bad.push(`${rel}: проза изменилась (${edit.wordsChanged} слов), а новой записи в журнале проверок нет — что сверяли и по какому источнику`);
+      }
+    }
     if (!/^checks:/m.test(fm)) continue;
 
     const dates = [...fm.matchAll(/^\s+- date:\s*(\d{4}-\d{2}-\d{2})/gm)].map((m) => m[1]);
@@ -1249,17 +1283,21 @@ test('Иллюстрации: тронутая статья с 8+ раздела
     const abs = join(root, rel);
     if (!existsSync(abs)) continue;            // файл удалён в этом же заходе
     const src = readFileSync(abs, 'utf8');
+    // Мелкая правка: число иллюстраций не пересчитываем, подписи смотрим только у новых кадров.
+    const edit = editKind(rel);
+    const small = !isRework(rel);
     const h2 = (src.match(/^## /gm) ?? []).length;
-    if (h2 < 8) continue;                      // короткой заметке галерея не нужна
+    if (h2 < 8 && !small) continue;            // короткой заметке галерея не нужна
 
     // Считаем и markdown-картинки, и вставки компонентами (PhotoGrid, Image).
     const md = [...src.matchAll(/^!\[([^\]]*)\]\(([^)]+)\)/gm)];
     const comp = (src.match(/<(?:Image|Picture|PhotoGrid)\b/g) ?? []).length;
-    if (md.length + comp < 4) {
+    if (!small && md.length + comp < 4) {
       problems.push(`${rel}: ${h2} разделов, но всего ${md.length + comp} иллюстраций (нужно ≥4)`);
     }
     // Подпись для незрячих и для поиска по картинкам: «фото», «img», пустая — не подпись.
     for (const [, alt, path] of md) {
+      if (small && !edit.newImages.includes(path.replace(/^\.\/_images\//, ''))) continue;
       if (alt.trim().length < 15) {
         problems.push(`${rel}: подпись «${alt}» у ${path} слишком короткая, опишите кадр словами`);
       }

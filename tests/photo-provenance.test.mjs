@@ -16,13 +16,16 @@
 //      называя его, нельзя ни по лицензии, ни по совести.
 //   3. Храповик. Тронутая в заходе статья не может использовать кадр со статусом unknown или
 //      own_claimed: правишь статью — сначала подтверди происхождение её картинок.
-//      Старое чинится волнами, новое не добавляется.
+//      Старое чинится волнами, новое не добавляется. Мелкая правка (scripts/edit-kind.mjs,
+//      решение Никиты 05.09.2026) храповик включает только на кадрах, которых в основе не было:
+//      исправление даты не обязано доказывать происхождение восьми старых кадров.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join, dirname, extname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { classifyEdit, baseVersion } from '../scripts/edit-kind.mjs';
 
 const REPO = fileURLToPath(new URL('..', import.meta.url));
 const BLOG = join(REPO, 'src/content/blog');
@@ -156,9 +159,21 @@ test('Храповик: тронутая статья не тащит кадры
   const touched = touchedArticles();
   if (!touched.size) return;                       // нечего проверять
   const used = usage(); const cred = credits(); const prov = provenance();
+  // Мелкая правка: под храповик попадают только кадры, которых в основе статьи не было.
+  const edits = new Map();
+  const editOf = (article) => {
+    if (!edits.has(article)) {
+      edits.set(article, classifyEdit(baseVersion(`src/content/blog/${article}`, REPO), readFileSync(join(BLOG, article), 'utf8')));
+    }
+    return edits.get(article);
+  };
+  const ratchetApplies = (article, rel) => {
+    const e = editOf(article);
+    return e.kind === 'rework' || e.kind === 'new' || e.newImages.includes(rel);
+  };
   const bad = [];
   for (const [rel, arts] of used) {
-    const mine = [...arts].filter((a) => touched.has(a));
+    const mine = [...arts].filter((a) => touched.has(a) && ratchetApplies(a, rel));
     if (!mine.length) continue;
     const noExt = rel.slice(0, rel.length - extname(rel).length);
     if (cred.has(noExt) || cred.has(rel)) continue;
