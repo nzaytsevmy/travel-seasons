@@ -13,6 +13,7 @@ import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import DestinationTabs from '../components/DestinationTabs.astro';
 import { Image, getImage } from 'astro:assets';
 import { DIRECTIONS, MONTHS, VISITED } from '../data/directions.js';
 import { PRICES } from '../data/prices.js';
@@ -337,6 +338,8 @@ if (guide?.itinerary?.length) {
         <div class="sl-vi"><span>Регион</span><div>{d.region}</div></div>
       </div>
     </section>
+
+    <DestinationTabs d={d} active="hub" />
 
     {/* TLDR + BYLINE */}
     <section class="sl-section">
