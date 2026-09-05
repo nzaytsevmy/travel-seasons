@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const АДРЕС = 'http://localhost:4322/trips/';
+const АДРЕС = '/trips/';
 const ШИРИНЫ = [1280, 1024, 768, 640, 402, 375];
 
 test.beforeEach(async ({ page }) => {
