@@ -107,7 +107,6 @@ export const RELATED_POSTS = {
   'kamchatka': [
     { slug: 'kamchatka-guide-2026', title: 'Камчатка 2026: что посмотреть, когда ехать, цены', kind: 'guide' },
     { slug: 'skolko-stoit-nedelya-v-rossii-2026', title: 'Сколько стоит неделя в России и Абхазии 2026: пять направлений', kind: 'guide' },
-    { slug: 'novyy-god-2027-kuda-poehat', title: 'Куда поехать на Новый год 2027: цены и крайние сроки', kind: 'season' },
   ],
   'dagestan': [
     { slug: 'dagestan-guide-2026', title: 'Отдых в Дагестане 2026: маршрут, цены, без машины', kind: 'guide' },
