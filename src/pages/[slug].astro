@@ -17,6 +17,7 @@ import { Image, getImage } from 'astro:assets';
 import { DIRECTIONS, MONTHS, VISITED } from '../data/directions.js';
 import { PRICES } from '../data/prices.js';
 import { getVisaDetails } from '../data/visa-details.js';
+import { getHubSnippet } from '../data/hub-snippets.js';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
 import { newsForCountry, newsUrl, formatDateRu } from '../data/news.js';
 import AviasalesWidget from '../components/post/AviasalesWidget.astro';
@@ -205,9 +206,14 @@ const imageNodes = schemaImages.map((im) => ({
 // запроса «{страна} для россиян» отдаём гайду, хаб уводим на регионы/сезоны,
 // чтобы две страницы не делили один интент. Без гайда хаб остаётся головным.
 const deepGuide = d.relatedPosts?.find((p) => p.kind === 'guide');
-const hubTitle = deepGuide
+// Пер-страновое переопределение сниппета (data/hub-snippets.js): формула одна на
+// все направления, а спрос у стран разный — «когда ехать» у одних, «как добраться»
+// у других. Переопределение бьёт формулу; страны без записи идут по формуле и
+// служат контролем замера. H1, адрес и canonical оно не трогает.
+const hubOverride = getHubSnippet(d.slug);
+const hubTitle = hubOverride?.title ?? (deepGuide
   ? `${d.cases.nom} ${yr}: регионы, когда ехать и куда лететь`
-  : `${d.cases.nom} ${yr} для россиян: когда ехать, цены, маршрут`;
+  : `${d.cases.nom} ${yr} для россиян: когда ехать, цены, маршрут`);
 // ⛔ Хвост включается, только если без него описание короче 100 знаков: у стран с
 // коротким названием и одним-двумя лучшими месяцами выходило 92–99, и это ловил
 // внешний аудит (21.08.2026). Хвост говорит, что на странице, а не добивает длину.
@@ -218,7 +224,7 @@ const hubDescTail = ' Что посмотреть, сколько дней за�
 const hubDescBase = (deepGuide
   ? `${d.cases.nom}: регионы и куда лететь, когда ехать по месяцам${bestMonths.length ? ` — ${bestMonths.slice(0, 3).map((m) => m.nom).join(', ')}` : ''}, бюджет по сезонам. Полный гайд для россиян — отдельно.`
   : `${d.cases.nom} ${yr} для россиян: ${VISA_LABEL[d.visa].toLowerCase()} (${vd.duration}), когда ехать — ${bestMonths.map((m) => m.nom).join(', ')}, бюджет от $${weekTotal || 'N/A'}/нед.`);
-const hubDesc = (hubDescBase.length < 100 ? hubDescBase + hubDescTail : hubDescBase).slice(0, 200);
+const hubDesc = hubOverride?.description ?? (hubDescBase.length < 100 ? hubDescBase + hubDescTail : hubDescBase).slice(0, 200);
 const hubOgTitle = deepGuide
   ? `${d.cases.nom} ${yr} — регионы, сезоны, куда лететь`
   : `${d.cases.nom} ${yr} — когда ехать, цены, маршрут`;
