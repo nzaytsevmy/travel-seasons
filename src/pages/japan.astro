@@ -1,9 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import DestinationTabs from '../components/DestinationTabs.astro';
+import { DIRECTIONS as ALL_DIRECTIONS } from '../data/directions.js';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Footer from '../components/Footer.astro';
 import EssentialsCard from '../components/EssentialsCard.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
+import ClimateChart from '../components/ClimateChart.astro';
 import CountryMap from '../components/CountryMap.astro';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
 import { buildEssentialsFaq } from '../data/essentials-faq.js';
@@ -89,6 +92,8 @@ const ldJson = {
     }
   ]
 };
+const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
+
 ---
 <Layout
   title="Япония 2026: гайд, виза, сезоны, бюджет для россиян — TravelTribe"
@@ -119,6 +124,8 @@ const ldJson = {
       </div>
     </section>
 
+    {tabsD && <DestinationTabs d={tabsD} active="hub" />}
+
     {/* TLDR + BYLINE */}
     <section class="jp-section">
       <div class="jp-shead"><span class="jp-n">02</span><h2>Если коротко</h2></div>
@@ -141,6 +148,7 @@ const ldJson = {
         <li><b>Июль–август</b> — жара до +38°C, влажность 100%. Ехать только за восхождением на Фудзи (1 июля — 10 сентября) или летними фестивалями.</li>
         <li><b>Середина августа (Обон)</b> — второй национальный отпуск, толпы и цены.</li>
       </ul>
+      <ClimateChart slug="japan" countryNom="Японию" />
       <p class="jp-note"><a href="/seasons/">Таблица сезонов</a> — Япония и 38 других направлений с лучшими окнами.</p>
     </section>
 

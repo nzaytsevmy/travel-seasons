@@ -517,7 +517,7 @@ test('llms-full.txt: нет внутренних идентификаторов 
   const file = fileURLToPath(new URL('../public/llms-full.txt', import.meta.url));
   const text = readFileSync(file, 'utf8');
   const FORBIDDEN: { what: string; re: RegExp }[] = [
-    { what: 'служебные поля frontmatter', re: /^(coverImage|coverPosition|coverPositionCard|sourceType|howto|qualityScore|volatileFacts):/m },
+    { what: 'служебные поля frontmatter', re: /^(coverImage|coverPosition|coverPositionCard|sourceType|howto|qualityScore|volatileFacts|format):/m },
     { what: 'путь к исходникам картинок', re: /\.\/_images\//m },
     { what: 'имя .astro-компонента', re: /\.astro\b/m },
     { what: 'имя .mdx-исходника', re: /\.mdx\b/m },
@@ -928,6 +928,38 @@ test('Честный потолок: у тронутой статьи запол
     }
     const ceiling = block.match(/^  ceiling:\s*["']?([^"'\n]+)["']?\s*$/m)?.[1]?.trim() ?? '';
     if (ceiling.length < 20) bad.push(`${rel}: qualityScore.ceiling не объясняет, чего не хватает до 10/10`);
+  }
+  expect(bad, bad.join('\n')).toEqual([]);
+});
+
+// Подборка направлений — меню, а не аналитика (решение Никиты 05.09.2026).
+// 05.09.2026 запрос «куда поехать на новый год» (10 066/мес) получил таблицу
+// множителей цен и шесть сценариев, все дешёвые: человек пришёл выбирать, а
+// выбирать было не из чего. Правило промта само по себе не держит — держит счёт:
+// заголовок-выбор обязан нести поле format, а format: choice — не меньше
+// CHOICE_MIN карточек (### заголовков) и столько же кадров. Старые статьи не
+// трогаем: проверяются только тронутые в заходе.
+const CHOICE_TITLE = /^(куда (поехать|съездить|полететь|ехать)|где (встретить|отдохнуть|отметить)|лучшие направления|направления (на|для))/i;
+const CHOICE_MIN = 15;
+test('Подборка направлений: заголовок-выбор несёт format, а format: choice — не меньше 15 карточек с кадрами', () => {
+  const bad: string[] = [];
+  for (const rel of touchedPosts()) {
+    const abs = join(REPO, rel);
+    if (!existsSync(abs)) continue;
+    const parts = readFileSync(abs, 'utf8').split('---');
+    const fm = parts[1] ?? '';
+    const body = parts.slice(2).join('---');
+    const title = fm.match(/^title:\s*["']?(.+?)["']?\s*$/m)?.[1] ?? '';
+    const format = fm.match(/^format:\s*(\w+)/m)?.[1];
+    if (!format && CHOICE_TITLE.test(title)) {
+      bad.push(`${rel}: заголовок «${title}» — это выбор направления, а поля format нет; поставь format: choice (или answer/guide, если это правда не подборка — рецензент проверит)`);
+      continue;
+    }
+    if (format !== 'choice') continue;
+    const cards = (body.match(/^###\s+\S/gm) || []).length;
+    const images = (body.match(/!\[[^\]]*\]\(|<img\b|<Figure\b/g) || []).length;
+    if (cards < CHOICE_MIN) bad.push(`${rel}: подборка из ${cards} направлений (### заголовков), нужно не меньше ${CHOICE_MIN}`);
+    if (images < CHOICE_MIN) bad.push(`${rel}: ${images} кадров на подборку из ${CHOICE_MIN}+ направлений — у каждого направления свой кадр`);
   }
   expect(bad, bad.join('\n')).toEqual([]);
 });

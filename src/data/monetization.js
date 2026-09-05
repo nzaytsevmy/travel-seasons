@@ -187,6 +187,47 @@ export function classifyPage(pathname = '/') {
   return { type: 'static', intent: 'low', destination: '' };
 }
 
+// ── Дорогие направления: первой деньгой идёт дорога, а не полис ──────────────
+//
+// Решение Никиты 04.09.2026. Основание — замер 06.08–02.09.2026: страницы дорогих
+// направлений доводят до партнёра 4,7 визита из ста против 3,0 у прочих статей и 1,6
+// у страниц сборов, а единственная крупная комиссия сайта (8 084 ₽) пришла с билета
+// за 359 317 ₽ именно с такой страницы. На массовых страницах канон не меняется:
+// там первой остаётся страховка.
+export const EXPENSIVE_DESTINATIONS = {
+  // city — тот, куда реально летят: в Антарктиду рейсов нет, туда идут из Ушуаи.
+  // Коды и города взяты из ссылок, уже стоящих на этих страницах, и не придуманы.
+  // tour — слаг каталога авторских туров; null значит, что у партнёра такой страны
+  // нет и общий каталог вместо неё не подставляется. label называет место статьи,
+  // а не страну перелёта: в Патагонию летят через Буэнос-Айрес.
+  'galapagos-2026':          { iata: 'UIO', city: 'Кито',                     tour: 'ecuador',         label: 'в Эквадор и на Галапагосы' },
+  'antarctica-cruise-2026':  { iata: 'USH', city: 'Ушуая',                    tour: 'antarctica',      label: 'в Антарктиду' },
+  'patagonia-2026':          { iata: 'EZE', city: 'Буэнос-Айрес',             tour: 'chile-patagonia', label: 'в Патагонию' },
+  'kamchatka-guide-2026':    { iata: 'PKC', city: 'Петропавловск-Камчатский', tour: 'kamchatka',       label: 'на Камчатку' },
+  'altai-guide-2026':        { iata: 'RGK', city: 'Горно-Алтайск',            tour: 'altai',           label: 'на Алтай' },
+  'kenya-guide-2026':        { iata: 'NBO', city: 'Найроби',                  tour: 'kenya',           label: 'в Кению' },
+  'nepal-everest-trek-2026': { iata: 'KTM', city: 'Катманду',                 tour: 'nepal',           label: 'в Непал' },
+  'new-zealand-guide-2026':  { iata: 'AKL', city: 'Окленд',                   tour: 'new-zealand',     label: 'в Новую Зеландию' },
+  'chile-guide-2026':        { iata: 'SCL', city: 'Сантьяго',                 tour: 'chile',           label: 'в Чили' },
+  'peru-guide-2026':         { iata: 'LIM', city: 'Лима',                     tour: 'peru',            label: 'в Перу' },
+  'bolivia-guide-2026':      { iata: 'LPB', city: 'Ла-Пас',                   tour: 'bolivia',         label: 'в Боливию' },
+  'uganda-safari-2026':      { iata: 'EBB', city: 'Энтеббе',                  tour: null,              label: 'в Уганду' },
+  'seychelles-2026':         { iata: 'SEZ', city: 'Маэ',                      tour: 'seychelles',      label: 'на Сейшелы' },
+  'aurora-new-zealand-2026': { iata: 'AKL', city: 'Окленд',                   tour: 'new-zealand',     label: 'в Новую Зеландию' },
+};
+
+export const EXPENSIVE_DESTINATION_POSTS = new Set(Object.keys(EXPENSIVE_DESTINATIONS));
+
+// Дорога или тур. Жильё, связь и карта отвечают на другие вопросы и первыми не ставятся.
+export const EXPENSIVE_FIRST_OFFERS = new Set(['flight', 'author_tour', 'package_tour']);
+
+/** Слаг статьи о дорогом направлении или пустая строка. */
+export function expensiveDestinationSlug(pathname = '/') {
+  const parts = String(pathname).split('?')[0].split('#')[0].split('/').filter(Boolean);
+  if (parts[0] !== 'blog' || !parts[1]) return '';
+  return EXPENSIVE_DESTINATION_POSTS.has(parts[1]) ? parts[1] : '';
+}
+
 export function classifyPartner(href) {
   let host;
   try { host = new URL(href).hostname.toLowerCase(); } catch { return null; }

@@ -1,5 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import DestinationTabs from '../components/DestinationTabs.astro';
+import ClimateChart from '../components/ClimateChart.astro';
+import { DIRECTIONS as ALL_DIRECTIONS } from '../data/directions.js';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Footer from '../components/Footer.astro';
 import PricingCards from '../components/post/PricingCards.astro';
@@ -104,6 +107,8 @@ const ldJson = {
     }
   ]
 };
+const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'antarctica');
+
 ---
 <Layout
   title="Антарктида 2026: круиз из Москвы, цены, виза, сезоны — TravelTribe"
@@ -126,11 +131,14 @@ const ldJson = {
     <section class="hub-tldr">
       <strong>Если коротко:</strong> цена круиза «под ключ из Москвы» — <strong>750 000–1 400 000 ₽</strong> на человека за 10–11 дней. Маршрут: <strong>Москва → Буэнос-Айрес → Ушуая → Антарктический полуостров</strong>. <strong>Виза в Аргентину не нужна</strong> (безвиз 90 дней). Сезон — <strong>ноябрь–март</strong>, лучший месяц февраль (киты + не пик цен). Бронировать на сезон 2026/27 уже сейчас, лучшие каюты разлетаются за 6–9 месяцев.
     </section>
+
     <p class="hub-byline">
       <a href="/about/" class="byline-author">Никита Зайцев</a> ·
       <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
       <span class="byline-fresh">был в Антарктиде в январе 2025 · данные актуальны на {DATA_UPDATED_RU}</span>
     </p>
+
+    {tabsD && <DestinationTabs d={tabsD} active="hub" />}
 
     <section class="hub-section">
       <h2>Сколько стоит — три класса в 2026</h2>
@@ -176,6 +184,7 @@ const ldJson = {
 
     <section class="hub-section">
       <h2>Когда ехать — расклад по месяцам</h2>
+      <ClimateChart slug="antarctica" countryNom="Антарктиду" />
       <ul class="hub-list">
         <li><strong>Ноябрь</strong> — открытие сезона, нетронутые льды, пингвины строят гнёзда. Цены на 25–30% ниже декабря.</li>
         <li><strong>Декабрь–январь</strong> — пик. Птенцы вылупляются, солнце 24 часа, самая мягкая погода. Самые высокие цены.</li>
