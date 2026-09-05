@@ -35,6 +35,14 @@ if [ -z "$RANGE_BASE" ] || ! git cat-file -e "$RANGE_BASE" 2>/dev/null; then
   RANGE_BASE="$(git merge-base HEAD origin/main 2>/dev/null || echo HEAD~1)"
 fi
 CHANGED="$(git diff --name-only "$RANGE_BASE" HEAD 2>/dev/null)"
+# Слияние main в ветку приносит чужие файлы: они уже прошли гейты в своих заявках,
+# и здесь считаются кодом только файлы, которые отличаются от origin/main.
+if git rev-parse --verify -q origin/main >/dev/null; then
+  CHANGED="$(printf '%s\n' "$CHANGED" | while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    git diff --quiet origin/main HEAD -- "$f" 2>/dev/null || printf '%s\n' "$f"
+  done)"
+fi
 # Linux-эталоны локально не проверяются (здесь darwin) — их сверяет CI.
 CODE_TOUCHED="$(printf '%s\n' "$CHANGED" | grep -vE '^(src/content/|news/|public/llms|measurements/|tests/visual\.spec\.ts-snapshots/[^/]*-linux\.png$|.*\.md$)' | grep -v '^$' || true)"
 
