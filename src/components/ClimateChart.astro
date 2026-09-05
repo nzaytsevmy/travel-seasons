@@ -13,14 +13,33 @@
 
 import { MONTHLY_WEATHER } from '../data/country-monthly-weather.js';
 import { DATA_UPDATED_RU } from '../data/meta.js';
+import normals from '../data/climate-normals.generated.json';
 
 interface Props {
   slug: string;
   countryNom?: string;
 }
 const { slug, countryNom } = Astro.props;
-const data = (MONTHLY_WEATHER as Record<string, any>)[slug];
-if (!data) return null as any;
+
+// Два источника. Первый — ручные нормы с климатических станций для 19 стран
+// (те же, что на страницах «страна × месяц»). Второй — реанализ ERA5 через
+// Open-Meteo для всех остальных направлений: суточные данные за десять лет,
+// сведённые по месяцам в scripts/fetch-climate-normals.mjs. Где нет ни того,
+// ни другого, блок не рисуется.
+const curated = (MONTHLY_WEATHER as Record<string, any>)[slug];
+const normal = (normals as any).places?.[slug];
+if (!curated && !normal) return null as any;
+
+const data = curated
+  ? curated
+  : {
+      city: normal.city,
+      months: normal.months.map((m: any) => ({ temp: `${m.tmin}-${m.tmax}°C`, rain: `${m.mm} мм / ${m.days} дн` })),
+      source: null,
+    };
+const sourceLine = curated
+  ? `Многолетние средние по данным ${curated.source}. Проверено ${DATA_UPDATED_RU}.`
+  : `${(normals as any).source}; точка замера — ${normal.city}. Снято ${(normals as any).generatedAt}.`;
 
 const MONTHS = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
 const MONTHS_PREP = ['январе', 'феврале', 'марте', 'апреле', 'мае', 'июне',
@@ -133,7 +152,7 @@ const city = data.city as string | undefined;
 
   <figcaption class="cc-cap">
     <p class="cc-sum">{summary}</p>
-    <p class="cc-src">Многолетние средние по данным {data.source}. Проверено {DATA_UPDATED_RU}.</p>
+    <p class="cc-src">{sourceLine}</p>
   </figcaption>
 </figure>
 

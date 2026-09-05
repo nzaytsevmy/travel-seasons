@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+// Путь относительный: хост берётся из baseURL конфига (PREVIEW_URL или :4322),
+// иначе прогон на другом порту падал с ERR_CONNECTION_REFUSED (05.09.2026).
 const АДРЕС = '/trips/';
 const ШИРИНЫ = [1280, 1024, 768, 640, 402, 375];
 
