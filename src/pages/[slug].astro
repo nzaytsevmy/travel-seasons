@@ -13,6 +13,7 @@ import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import DestinationTabs from '../components/DestinationTabs.astro';
 import { Image, getImage } from 'astro:assets';
 import { DIRECTIONS, MONTHS, VISITED } from '../data/directions.js';
 import { PRICES } from '../data/prices.js';
@@ -25,6 +26,7 @@ import StickyCta from '../components/StickyCta.astro';
 import BudgetBlock from '../components/BudgetBlock.astro';
 import EssentialsCard from '../components/EssentialsCard.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
+import ClimateChart from '../components/ClimateChart.astro';
 import CountryMap from '../components/CountryMap.astro';
 import { TP_LINKS, aviasalesRoute, otelloStay, cherehapaCountry, ostrovokCountry, youtravelCountry } from '../data/affiliate.js';
 import livePrices from '../data/prices-cache.json';
@@ -337,6 +339,8 @@ if (guide?.itinerary?.length) {
       </div>
     </section>
 
+    <DestinationTabs d={d} active="hub" />
+
     {/* TLDR + BYLINE */}
     <section class="sl-section">
       <div class="sl-shead"><h2>Если коротко</h2></div>
@@ -549,6 +553,7 @@ if (guide?.itinerary?.length) {
     <section class="sl-section">
       <div class="sl-shead"><h2>Когда ехать {d.cases.vP} в {yr} — по месяцам</h2></div>
       <p class="sl-answer"><b>Коротко:</b> лучшие месяцы — {bestMonths.map(m => m.nom).join(', ') || '—'}{worstMonths.length ? `; хуже всего — ${worstMonths.map(m => m.nom).join(', ')}` : ''}. Ниже — погода, цены и сезон по каждому месяцу.</p>
+      <ClimateChart slug={d.slug} countryNom={d.cases.vP} />
       <ul class="sl-list">
         {monthsRanked.map((m) => (
           <li><b>{m.nom.charAt(0).toUpperCase() + m.nom.slice(1)}</b> — {m.text || '—'}</li>

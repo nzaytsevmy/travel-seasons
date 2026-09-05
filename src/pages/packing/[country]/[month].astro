@@ -6,6 +6,7 @@
 import Layout from '../../../layouts/Layout.astro';
 import Footer from '../../../components/Footer.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import DestinationTabs from '../../../components/DestinationTabs.astro';
 import { Image, getImage } from 'astro:assets';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
 import { VISA_DETAILS } from '../../../data/visa-details.js';
@@ -281,6 +282,8 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         <span class="byline-fresh">обновлено {DATA_UPDATED_RU}</span>
       </p>
     </section>
+
+    <DestinationTabs d={d} active="packing" />
 
     {/* QUICK FACTS — 4 ячейки */}
     <section class="pmu-section">
