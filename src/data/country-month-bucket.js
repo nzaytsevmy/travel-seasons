@@ -129,22 +129,19 @@ const regionBuckets = {
 // список вещей — замер однотипности дал 44% дословных совпадений у таких пар.
 // Пороги ниже — по границам самих бакетов (summary в packing-weather-buckets.js).
 // Ручная таблица остаётся запасным путём для стран без данных.
-import { MONTHLY_WEATHER } from './country-monthly-weather.js';
+import { CLASSIFIER_INPUT } from './climate-classifier-input.js';
 
+// Вход — прежняя станционная таблица 19 стран (climate-classifier-input.js), а не
+// реанализ, которым рисуется погода: у реанализа завышено число моросящих дней,
+// и класс месяца съезжал (05.09.2026). Переделка под все климаты — заявка #490.
 function bucketFromClimate(slug, monthIdx) {
-  const rec = MONTHLY_WEATHER[slug]?.months?.[monthIdx];
+  const rec = CLASSIFIER_INPUT[slug]?.months?.[monthIdx];
   if (!rec) return null;
-  // Числа лежат в записи напрямую (с 05.09.2026 источник один); разбор строк —
-  // запасной путь на случай записи старого вида.
-  let min, max, mm, days;
-  if (Number.isFinite(rec.tmin) && Number.isFinite(rec.tmax) && Number.isFinite(rec.mm) && Number.isFinite(rec.days)) {
-    ({ tmin: min, tmax: max, mm, days } = rec);
-  } else {
-    const t = rec.temp.match(/(-?\d+)\s*-\s*(-?\d+)/);
-    const r = rec.rain.match(/(\d+)\s*мм\s*\/\s*(\d+)\s*дн/);
-    if (!t || !r) return null;
-    min = Number(t[1]); max = Number(t[2]); mm = Number(r[1]); days = Number(r[2]);
-  }
+  const t = rec.temp.match(/(-?\d+)\s*-\s*(-?\d+)/);
+  const r = rec.rain.match(/(\d+)\s*мм\s*\/\s*(\d+)\s*дн/);
+  if (!t || !r) return null;
+  const min = Number(t[1]), max = Number(t[2]);
+  const mm = Number(r[1]), days = Number(r[2]);
 
   // высокогорье и джунгли из климата не выводятся — это свойства места,
   // не месяца; для таких стран ручная таблица главнее (см. вызов ниже).
