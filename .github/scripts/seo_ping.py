@@ -38,6 +38,17 @@ def changed_files() -> list[str]:
     return [line.strip() for line in raw.splitlines() if line.strip()]
 
 
+def explicit_urls() -> list[str]:
+    """Адреса, которые изменившийся файл назвать не может: страницы динамических
+    роутов. Список задаёт тот, кто знает, что именно поменялось, — через
+    PING_URLS (по одному в строке или через запятую)."""
+    raw = os.environ.get("PING_URLS", "").strip()
+    if not raw:
+        return []
+    parts = [x.strip() for line in raw.splitlines() for x in line.split(",")]
+    return [u for u in parts if u.startswith(SITE)]
+
+
 def file_to_url(path: str) -> str | None:
     """Map a repo path to its public URL, or None if it doesn't have one."""
     p = path.replace("\\", "/")
@@ -59,8 +70,14 @@ def file_to_url(path: str) -> str | None:
             return f"{SITE}/"
         if rel.endswith("/index"):
             rel = rel[: -len("/index")]
-        if rel.startswith("blog/[") or rel.startswith("trips/["):
-            return None  # dynamic routes — caller should pass concrete URLs
+        # ⛔ 05.09.2026: отсеивались только blog/[ и trips/[, поэтому правка
+        # src/pages/[slug].astro отправила в IndexNow и на переобход Яндекса
+        # литерал https://traveltribe.ru/[slug]/ — несуществующий адрес, а сами
+        # 11 изменённых страниц не отправились никуда. Любой шаблон с квадратной
+        # скобкой в пути — динамический роут: конкретные адреса подставляет тот,
+        # кто их знает, через PING_URLS.
+        if "[" in rel:
+            return None
         return f"{SITE}/{rel}/"
 
     if p == "public/llms.txt":
@@ -129,12 +146,17 @@ def yandex_recrawl(urls: list[str]) -> None:
 
 def main() -> int:
     files = changed_files()
-    if not files:
+    explicit = explicit_urls()
+    if not files and not explicit:
         print("No changed files passed via CHANGED_FILES; nothing to ping.")
         return 0
 
     urls: list[str] = []
     seen: set[str] = set()
+    for u in explicit:
+        if u not in seen:
+            urls.append(u)
+            seen.add(u)
     for f in files:
         u = file_to_url(f)
         if u and u not in seen:
