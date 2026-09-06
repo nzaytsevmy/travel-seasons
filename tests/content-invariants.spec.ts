@@ -1,6 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, statSync, readFileSync as readFileRaw } from 'node:fs';
+// @ts-ignore — модуль щита партнёрских ссылок без типов
+import { unshieldHtml } from '../scripts/affiliate-shield.mjs';
+// Сборка идёт со щитом (адреса партнёров спрятаны в data-go); проверки смотрят на настоящие адреса.
+const readFileSync = ((path: any, enc?: any) => {
+  const raw = readFileRaw(path, enc);
+  return typeof raw === 'string' ? unshieldHtml(raw) : raw;
+}) as typeof readFileRaw;
 import { join, dirname, sep } from 'node:path';
 import { видимыйТекст } from './visible-text';
 import { fileURLToPath } from 'node:url';

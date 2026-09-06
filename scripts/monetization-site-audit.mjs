@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { unshieldHtml } from './affiliate-shield.mjs';
 import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { classifyPage, classifyPartner, isGenericAffiliateUrl, expensiveDestinationSlug, EXPENSIVE_FIRST_OFFERS } from '../src/data/monetization.js';
@@ -69,7 +70,7 @@ export function auditMonetization(dist) {
   for (const file of walk(dist)) {
     const path = pagePath(dist, file);
     const info = classifyPage(path);
-    const html = readFileSync(file, 'utf8');
+    const html = unshieldHtml(readFileSync(file, 'utf8'));
     const body = html.match(/<body\b[^>]*>/i)?.[0] || '';
     const destination = attr(body, 'data-destination') || info.destination;
     const pageLinks = [];

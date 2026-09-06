@@ -25,10 +25,17 @@ howto:
       text: "Групповые выезды на Сулакский каньон — от ~3 500 ₽, катер по Чиркейскому водохранилищу — от ~4 000 ₽ за лодку. В сезон бронировать за несколько дней."
     - name: "Взять наличные"
       text: "В городах карты работают, в горных сёлах и на рынках — наличные. Банкоматов в горах нет."
+checks:
+  - date: 2026-09-06
+    what: "Денежные точки в карточках форматов поездки: где искать жильё и туры"
+    changed: "Жильё стало первой денежной точкой страницы. Строка в разделе о том, стоит ли ехать, и первая карточка форматов ведут на квартиры и гостевые дома Махачкалы (Суточно, оплата картой РФ). По сверке кассы за 90 дней 20 переходов в туры и 11 в отели не дали ни одной брони. Туры остались третьей карточкой, цены не менялись."
+    sources:
+      - name: "Суточно.ру — жильё в Махачкале"
+        url: "https://mahachkala.sutochno.ru/"
 ---
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 import PricingCards from '../../components/post/PricingCards.astro';
-import { TP_LINKS, aviasalesRoute, cherehapaCountry, youtravelCountry } from '../../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, cherehapaCountry, sutochnoRegion, youtravelCountry } from '../../data/affiliate.js';
 
 export const aviaMCX = aviasalesRoute('MOW', 'MCX', 'dagestan_guide_2026');
 export const insurance = cherehapaCountry('dagestan', 'dagestan_guide_2026');
@@ -48,6 +55,8 @@ export const insurance = cherehapaCountry('dagestan', 'dagestan_guide_2026');
 **Кому понравится:** тем, кто едет за пейзажами (каньоны, горные террасы, аулы на скалах), древностями (Дербенту — около 2000 лет, это один из старейших городов России) и едой — чуду, хинкал и урбеч тут стоят как бизнес-ланч в Москве, а порции горские. Инфраструктура выросла: дороги к главным точкам хорошие, гидов много, жильё на любой бюджет.
 
 **Кому не понравится:** тем, кто ждёт пляжную «всё включено»-цивилизацию или ночную жизнь. Каспий — приятный бонус, но не причина ехать; бары здесь редкость, алкоголь во многих кафе не подают вовсе. И это консервативный мусульманский регион — про дресс-код ниже, он реально важен.
+
+База для поездок — Махачкала или Каспийск: <a href={sutochnoRegion('https://mahachkala.sutochno.ru/', 'dagestan_guide_2026')} rel="sponsored">квартиры и гостевые дома в Махачкале, оплата картой РФ</a>; экскурсии, машина и туры — ниже.
 
 ---
 
@@ -94,6 +103,8 @@ export const insurance = cherehapaCountry('dagestan', 'dagestan_guide_2026');
   tiers={[
     {
       tier: 'Сам + экскурсии',
+      featured: true,
+      badge: 'Дешевле тура',
       price: 'от ~8 000 ₽/день',
       priceNote: 'на двоих: жильё + еда + выезды',
       features: [
@@ -101,22 +112,8 @@ export const insurance = cherehapaCountry('dagestan', 'dagestan_guide_2026');
         'Групповые экскурсии от ~3 500 ₽ с человека',
         'Еда душевная и дешёвая: обед в кафе ~350–500 ₽',
       ],
-      ctaLabel: 'Подобрать жильё',
-      ctaHref: 'https://yandex.tpk.mx/ubagzDqF?erid=2VtzqvB3eMM&sub_id=dagestan_guide_2026&u=https%3A%2F%2Ftravel.yandex.ru%2F',
-    },
-    {
-      tier: 'Готовый тур',
-      price: 'от ~29 000 ₽',
-      priceNote: '3 ночи, без перелёта',
-      featured: true,
-      badge: 'Проще всего',
-      features: [
-        'Маршрут, гид и логистика уже собраны',
-        'Обычно: каньон + Дербент + горные сёла',
-        '5 дней — от ~40–45 тысяч ₽',
-      ],
-      ctaLabel: 'Смотреть туры',
-      ctaHref: `${TP_LINKS.travelata}&sub_id=dagestan_guide_2026`,
+      ctaLabel: 'Снять жильё в Махачкале',
+      ctaHref: sutochnoRegion('https://mahachkala.sutochno.ru/', 'dagestan_guide_2026'),
     },
     {
       tier: 'Своя машина',
@@ -129,6 +126,19 @@ export const insurance = cherehapaCountry('dagestan', 'dagestan_guide_2026');
       ],
       ctaLabel: 'Сравнить прокаты',
       ctaHref: `${TP_LINKS.economybookings}&sub_id=dagestan_guide_2026`,
+    },
+    {
+      tier: 'Готовый тур',
+      price: 'от ~29 000 ₽',
+      priceNote: '3 ночи, без перелёта',
+      badge: 'Проще всего',
+      features: [
+        'Маршрут, гид и логистика уже собраны',
+        'Обычно: каньон + Дербент + горные сёла',
+        '5 дней — от ~40–45 тысяч ₽',
+      ],
+      ctaLabel: 'Смотреть туры',
+      ctaHref: `${TP_LINKS.travelata}&sub_id=dagestan_guide_2026`,
     },
   ]}
 />

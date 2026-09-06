@@ -12,6 +12,7 @@ import rehypeCountryRow from './tools/rehype-country-row.mjs';
 import { DATA_UPDATED } from './src/data/meta.js';
 import ДАТЫ_НАПРАВЛЕНИЙ from './src/data/page-lastmod.generated.json' with { type: 'json' };
 import { DIRECTIONS, MONTHS } from './src/data/directions.js';
+import { ttAffiliateShield } from './scripts/affiliate-shield.mjs';
 import { NICHE_TRIPS } from './src/data/niche-trips.js';
 import { acquire } from './scripts/machine-lock.mjs';
 
@@ -158,6 +159,9 @@ export default defineConfig({
     rehypePlugins: [rehypeTableWrap, rehypeFaqAccordion, rehypeCountryRow],
   },
   integrations: [
+    // Щит партнёрских ссылок: адреса партнёров прячутся от роботов без JavaScript,
+    // каждая tpk.mx-ссылка получает метку страницы (scripts/affiliate-shield.mjs).
+    ttAffiliateShield(),
     // Одна сборка на машину (scripts/machine-lock.mjs): три перезагрузки ноутбука
     // 04–06.09.2026 от параллельных сборок разных рабочих копий. В CI выключено.
     {
