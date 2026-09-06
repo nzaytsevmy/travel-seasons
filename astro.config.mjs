@@ -13,6 +13,7 @@ import { DATA_UPDATED } from './src/data/meta.js';
 import ДАТЫ_НАПРАВЛЕНИЙ from './src/data/page-lastmod.generated.json' with { type: 'json' };
 import { DIRECTIONS, MONTHS } from './src/data/directions.js';
 import { NICHE_TRIPS } from './src/data/niche-trips.js';
+import { acquire } from './scripts/machine-lock.mjs';
 
 // Trips/packing closed (status='X' — направление недоступно в месяц) → noindex,
 // исключаем из sitemap (noindex-URL в sitemap = противоречивый сигнал).
@@ -126,6 +127,8 @@ const SITEMAP_INDEX_DATE = [
   ...Object.values(newsMonthLastmod),
 ].reduce((a, b) => (b && b > a ? b : a), DATA_DATE);
 
+let buildLockRelease = null;
+
 export default defineConfig({
   site: 'https://traveltribe.ru',
   trailingSlash: 'always',
@@ -155,6 +158,15 @@ export default defineConfig({
     rehypePlugins: [rehypeTableWrap, rehypeFaqAccordion, rehypeCountryRow],
   },
   integrations: [
+    // Одна сборка на машину (scripts/machine-lock.mjs): три перезагрузки ноутбука
+    // 04–06.09.2026 от параллельных сборок разных рабочих копий. В CI выключено.
+    {
+      name: 'tt-build-lock',
+      hooks: {
+        'astro:build:start': async () => { buildLockRelease = await acquire('build', { label: 'astro build' }); },
+        'astro:build:done': async () => { buildLockRelease?.(); },
+      },
+    },
     mdx(),
     // Partytown снят 30.07.2026. Он был настроен на forward:['ym',…], то есть
     // подменял window.ym пересылкой в Web Worker — а аналитику в воркер намеренно

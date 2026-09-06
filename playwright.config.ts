@@ -7,6 +7,9 @@ const PORT = previewPort();
 
 export default defineConfig({
   testDir: './tests',
+  // Только *.spec.ts: файлы *.test.mjs — тесты node:test (их гоняет node --test),
+  // Playwright грузил их при обходе и исполнял впустую при каждом прогоне.
+  testMatch: '**/*.spec.ts',
   // В CI время файлов проверяется отдельным шагом сразу после build. В длинном
   // browser-shard к моменту этой проверки dist уже обслуживается preview-сервером
   // и контракт артефакта смешивается с поведением сервера/раннера.
@@ -15,7 +18,11 @@ export default defineConfig({
     : [],
   timeout: 60_000,
   fullyParallel: true,
-  workers: process.env.CI ? 2 : 4,
+  // Локально два воркера, не четыре: четыре браузера плюс соседняя сборка
+  // клали 16 ГБ памяти (перезагрузки 04–06.09.2026). Один прогон на машину —
+  // замок в tests/global-lock.ts; в CI и то и другое не действует.
+  workers: 2,
+  globalSetup: './tests/global-lock.ts',
   reporter: [['list'], ['html', { open: 'never', outputFolder: 'tests/.html-report' }]],
   use: {
     baseURL: process.env.PREVIEW_URL || `http://localhost:${PORT}`,
