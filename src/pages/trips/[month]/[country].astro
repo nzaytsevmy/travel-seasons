@@ -310,7 +310,11 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
 
       {rich?.regions?.length > 0 && (
         <section class="sec">
-          <div class="shead"><h2>Где {d.cases.loc} в {m.prep} сухо, а где заливает</h2></div>
+          {/* Заголовок таблицы описывает то, что в ней реально стоит. Умолчание про
+              «сухо / заливает» верно для муссонных стран, но не везде: в Египте в
+              октябре сухо на всех шести станциях, кроме Александрии, и разводит
+              регионы жара, а не дождь. Запись месяца может назвать свой вопрос. */}
+          <div class="shead"><h2>{rich.regionsTitle || `Где ${d.cases.loc} в ${m.prep} сухо, а где заливает`}</h2></div>
           <table class="dt">
             <thead><tr><th>Регион</th><th>Днём</th><th>Осадки</th><th>Дней с дождём</th></tr></thead>
             <tbody>
