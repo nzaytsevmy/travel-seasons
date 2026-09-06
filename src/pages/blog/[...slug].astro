@@ -47,6 +47,13 @@ const dateRu = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', mont
 // Наверх идёт только суть — первое предложение записи. Полный текст остаётся в
 // журнале: строка над заголовком раздела не должна отодвигать ответ, ради
 // которого пришли из поиска (первая версия заняла шесть строк на телефоне).
+// Короткое имя первоисточника для строки-сводки журнала: часть названия до
+// первого разделителя («Апсныпресс, 30.03.2026: …» → «Апсныпресс»). Полные
+// названия остаются в раскрывающейся истории.
+const shortSource = (name: string) => name.split(/\s+[—–]\s+|:\s|,\s/)[0].trim();
+const latestSources = lastCheck
+  ? lastCheck.sources.filter((s, i, arr) => arr.findIndex((x) => shortSource(x.name) === shortSource(s.name)) === i)
+  : [];
 const checkedShort = lastCheck
   ? (lastCheck.changed.split(/(?<=\.)\s/)[0] ?? lastCheck.changed).replace(/\s+$/, '')
   : null;
@@ -364,23 +371,35 @@ if (faqs.length >= 2) {
         <a class="tg-sub-link" href="https://t.me/traveltriberu" target="_blank" rel="noopener">Читать @traveltriberu</a>
       </aside>
 
-      {checks.length > 0 && (
-        <section class="journal" id="journal" aria-labelledby="journal-title">
-          <h2 class="journal-title" id="journal-title">Что и когда проверяли</h2>
-          <ol class="journal-list">
-            {[...checks].reverse().map((c) => (
-              <li class="journal-item">
-                <time class="journal-date" datetime={c.date.toISOString().slice(0, 10)}>{dateRu(c.date)}</time>
-                <p class="journal-what">{c.what}</p>
-                <p class="journal-changed">{c.changed}</p>
-                <p class="journal-src">
-                  Первоисточники: {c.sources.map((s, i) => (
-                    <>{i > 0 && ', '}<a href={s.url} target="_blank" rel="noopener nofollow">{s.name}</a></>
-                  ))}
-                </p>
-              </li>
+      {checks.length > 0 && lastCheck && (
+        <section class="journal" id="journal" aria-label="Что и когда проверяли">
+          {/* Решение Никиты 06.09.2026: читателю нужна одна строка — дата последней
+              сверки и кликабельные первоисточники; полный лог записей уходит под
+              раскрытие. Для поиска ничего не теряется: дата обновления по-прежнему
+              считается из журнала, а все ссылки и записи остаются в HTML. */}
+          <p class="journal-summary">
+            Проверено <time datetime={lastCheck.date.toISOString().slice(0, 10)}>{dateRu(lastCheck.date)}</time>
+            {' · '}источники: {latestSources.map((src, i) => (
+              <>{i > 0 && ', '}<a href={src.url} target="_blank" rel="noopener nofollow" title={src.name}>{shortSource(src.name)}</a></>
             ))}
-          </ol>
+          </p>
+          <details class="journal-details">
+            <summary class="journal-toggle">Показать историю проверок ({checks.length})</summary>
+            <ol class="journal-list">
+              {[...checks].reverse().map((c) => (
+                <li class="journal-item">
+                  <time class="journal-date" datetime={c.date.toISOString().slice(0, 10)}>{dateRu(c.date)}</time>
+                  <p class="journal-what">{c.what}</p>
+                  <p class="journal-changed">{c.changed}</p>
+                  <p class="journal-src">
+                    Первоисточники: {c.sources.map((src, i) => (
+                      <>{i > 0 && ', '}<a href={src.url} target="_blank" rel="noopener nofollow">{src.name}</a></>
+                    ))}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </details>
         </section>
       )}
 
@@ -765,7 +784,15 @@ h1 {
 /* Без своей верхней линии: над журналом уже стоит разделитель блока подписки,
    две линии подряд читаются как дефект вёрстки. */
 .journal { max-width: 42rem; margin: 2.5rem auto 0; }
-.journal-title { font-size: 1.05rem; letter-spacing: 0.01em; margin: 0 0 1.25rem; }
+.journal-summary { margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted); }
+.journal-summary time { color: var(--text); font-weight: 600; }
+.journal-summary a { color: var(--gold-dim); border-bottom: 1px solid rgba(29,64,174,0.35); }
+.journal-details { margin-top: 0.5rem; }
+.journal-toggle { cursor: pointer; font-size: 0.82rem; color: var(--gold-dim); list-style: none; width: fit-content; min-height: 24px; display: inline-flex; align-items: center; border-bottom: 1px solid rgba(29,64,174,0.35); }
+.journal-toggle::-webkit-details-marker { display: none; }
+.journal-toggle::before { content: '+'; display: inline-block; width: 1.1em; }
+.journal-details[open] .journal-toggle::before { content: '−'; }
+.journal-details[open] .journal-list { margin-top: 0.75rem; border-top: 1px solid var(--line); }
 .journal-list { list-style: none; margin: 0; padding: 0; }
 .journal-item { padding: 0.9rem 0; border-bottom: 1px solid var(--line); }
 .journal-item:last-child { border-bottom: 0; }

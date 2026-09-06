@@ -889,7 +889,10 @@ window.addEventListener('pageshow', (e) => {
 }
 .tc-form-grid {
   display: grid;
-  grid-template-columns: minmax(180px, 2fr) minmax(110px, 1fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(220px, 2.2fr) minmax(90px, 1fr);
+  /* Минимумы: три подписи уровня («Эконом / Комфорт / Люкс») по 13.6px с полями — 240px, иначе
+     средняя режется в «Комф…»; сумма минимумов 840px + промежутки, поэтому ниже 1100px
+     сетка складывается в два столбца (см. медиазапрос) — на 902px одна строка не влезала. */
+  grid-template-columns: minmax(180px, 2fr) minmax(110px, 1fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(240px, 2.2fr) minmax(90px, 1fr);
   gap: 1rem;
   align-items: end;
 }
@@ -1593,7 +1596,7 @@ window.addEventListener('pageshow', (e) => {
 }
 
 /* ── RESPONSIVE ───────────────────────────────────────────────── */
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .tc-form-grid {
     grid-template-columns: 1fr 1fr;
     gap: 0.8rem;
