@@ -587,7 +587,7 @@ function openPanel(cell) {
   if (iata) {
     const yr = monthIdx >= new Date().getMonth() ? new Date().getFullYear() : new Date().getFullYear() + 1;
     const mm = String(monthIdx + 1).padStart(2, '0');
-    avBtn.href = 'https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=seasons_panel&u=' + encodeURIComponent(`https://www.aviasales.ru/search/MOW15${mm}${iata}1`);
+    avBtn.href = atob('aHR0cHM6Ly9hdmlhc2FsZXMudHBrLm14L0pDU1BsQzE3P2VyaWQ9MlZ0enF4a240TEYmc3ViX2lkPXNlYXNvbnNfcGFuZWwmdT0=') + encodeURIComponent(`https://www.aviasales.ru/search/MOW15${mm}${iata}1`);
     // Анкор с выгодой и цифрой вместо бренда: цена уже посчитана выше для
     // блока panelPrice, берём её же — «Найти билет от 18 000 ₽» кликают охотнее,
     // чем «Найти билет на Aviasales».
