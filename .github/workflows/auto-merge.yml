@@ -3,13 +3,26 @@ name: Auto Merge
 # Внутренние PR владельца не ждут ручной кнопки: эта job видит только метаданные
 # заявки и статусы CI, код из PR не исполняет. Слияние произойдёт лишь после всех
 # гейтов, перечисленных в scripts/auto-merge-policy.mjs.
+#
+# 06.09.2026 — два тупика убраны.
+# 1) Ветку больше не «подмешивают» свежим main через updateBranch: коммит от
+#    github-actions[bot] давал прогоны в action_required и не запускал эту job —
+#    заявка стояла зелёной и не сливалась часами (#504, #511). Теперь зелёная заявка
+#    сливается squash'ем поверх текущего main (защиты «ветка обязана быть свежей»
+#    у репозитория нет, итог собирает deploy.yml до выкладки). Настоящий конфликт —
+#    комментарий в заявке, ветку переносит автор.
+# 2) Подметальщик по расписанию раз в 10 минут добирает заявки, у которых проверки
+#    позеленели без события: долгий CI, перезапуск прогона, задержка GitHub.
 on:
   pull_request_target:
     branches: [main]
     types: [opened, reopened, synchronize, ready_for_review]
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
 
 concurrency:
-  group: auto-merge-${{ github.event.pull_request.number }}
+  group: auto-merge-${{ github.event.pull_request.number || 'sweep' }}
   cancel-in-progress: true
 
 permissions:
@@ -22,9 +35,10 @@ jobs:
   merge-after-green:
     name: слить после полного зелёного CI
     if: >-
-      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event_name != 'pull_request_target' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
       github.event.pull_request.user.login == github.repository_owner &&
-      github.event.pull_request.draft == false
+      github.event.pull_request.draft == false)
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -47,113 +61,133 @@ jobs:
 
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const number = context.payload.pull_request.number;
-            const initialSha = context.payload.pull_request.head.sha;
-            const initialBaseSha = context.payload.pull_request.base.sha;
-            const files = await github.paginate(github.rest.pulls.listFiles, {
-              owner,
-              repo,
-              pull_number: number,
-              per_page: 100,
-            });
-            const names = requiredChecks(files.map((file) => file.filename));
+            const CONFLICT_MARK = '<!-- auto-merge: conflict -->';
+            const eventPr = context.payload.pull_request || null;
+            const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-            core.info(
-              `${isContentOnly(files.map((file) => file.filename)) ? 'текстовый' : 'полный'} гейт: ` +
-              `${names.length} обязательных проверок`,
-            );
-
-            const deadline = Date.now() + 42 * 60 * 1000;
-            while (Date.now() < deadline) {
-              const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: number });
-              if (pr.state !== 'open') {
-                core.info(`PR уже ${pr.state}; действие не требуется.`);
-                return;
-              }
-              if (pr.draft) {
-                core.info('PR стал черновиком; auto-merge остановлен.');
-                return;
-              }
-              if (pr.head.sha !== initialSha) {
-                core.info('В PR появился новый коммит; новый запуск проверит его отдельно.');
-                return;
-              }
-
-              const { data } = await github.rest.checks.listForRef({
-                owner,
-                repo,
-                ref: initialSha,
-                filter: 'latest',
-                per_page: 100,
+            // Событие — одна заявка; подметальщик — все открытые заявки владельца.
+            let numbers;
+            if (eventPr) {
+              numbers = [eventPr.number];
+            } else {
+              const open = await github.paginate(github.rest.pulls.list, {
+                owner, repo, state: 'open', base: 'main', per_page: 50,
               });
-              const result = evaluateChecks(names, data.check_runs);
-
-              if (result.failed.length > 0) {
-                core.setFailed(`Красные обязательные проверки: ${result.failed.join(', ')}`);
-                return;
-              }
-              if (result.ready) {
-                // Не сливаем проверенный PR поверх уже изменившегося main: сначала
-                // подмешиваем свежую базу, после чего synchronize запустит все гейты заново.
-                const { data: base } = await github.rest.repos.getBranch({
-                  owner,
-                  repo,
-                  branch: pr.base.ref,
-                });
-                if (base.commit.sha !== initialBaseSha) {
-                  await github.rest.pulls.updateBranch({
-                    owner,
-                    repo,
-                    pull_number: number,
-                    expected_head_sha: initialSha,
-                  });
-                  core.info('main изменился во время CI; ветка обновлена и будет проверена заново.');
-                  return;
-                }
-
-                const merged = await github.rest.pulls.merge({
-                  owner,
-                  repo,
-                  pull_number: number,
-                  merge_method: 'squash',
-                  sha: initialSha,
-                });
-                if (!merged.data.merged) {
-                  core.setFailed(`GitHub не слил PR: ${merged.data.message}`);
-                  return;
-                }
-
-                // Push, созданный встроенным GITHUB_TOKEN, намеренно не запускает
-                // другие workflow. Поэтому production deploy стартуем явно.
-                let dispatched = false;
-                for (let attempt = 1; attempt <= 3; attempt++) {
-                  try {
-                    await github.rest.actions.createWorkflowDispatch({
-                      owner,
-                      repo,
-                      workflow_id: 'deploy.yml',
-                      ref: pr.base.ref,
-                    });
-                    dispatched = true;
-                    break;
-                  } catch (error) {
-                    core.warning(`Deploy dispatch: попытка ${attempt} не удалась: ${error.message}`);
-                    await new Promise((resolve) => setTimeout(resolve, 5_000));
-                  }
-                }
-                if (!dispatched) {
-                  core.setFailed(`PR #${number} слит, но production deploy не запустился.`);
-                  return;
-                }
-
-                core.info(`PR #${number} автоматически слит; production deploy запущен.`);
-                return;
-              }
-
-              core.info(
-                `Ждём: отсутствуют ${result.missing.length}, выполняются ${result.pending.length}`,
-              );
-              await new Promise((resolve) => setTimeout(resolve, 20_000));
+              numbers = open
+                .filter((pr) => !pr.draft && pr.user.login === owner &&
+                  pr.head.repo && pr.head.repo.full_name === `${owner}/${repo}`)
+                .map((pr) => pr.number);
+              core.info(`подметальщик: открытых заявок владельца — ${numbers.length}`);
             }
 
-            core.setFailed('Обязательные проверки не завершились за 42 минуты.');
+            async function dispatchDeploy(ref) {
+              // Push, созданный встроенным GITHUB_TOKEN, намеренно не запускает
+              // другие workflow. Поэтому production deploy стартуем явно.
+              for (let attempt = 1; attempt <= 3; attempt++) {
+                try {
+                  await github.rest.actions.createWorkflowDispatch({
+                    owner, repo, workflow_id: 'deploy.yml', ref,
+                  });
+                  return true;
+                } catch (error) {
+                  core.warning(`Deploy dispatch: попытка ${attempt} не удалась: ${error.message}`);
+                  await sleep(5_000);
+                }
+              }
+              return false;
+            }
+
+            async function markConflict(pr) {
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner, repo, issue_number: pr.number, per_page: 100,
+              });
+              if (!comments.some((c) => c.body && c.body.includes(CONFLICT_MARK))) {
+                await github.rest.issues.createComment({
+                  owner, repo, issue_number: pr.number,
+                  body: `${CONFLICT_MARK}\n⛔ Конфликт с main: проверки зелёные, но слить нельзя. ` +
+                    'Перенеси ветку (`git fetch origin main && git rebase origin/main`, push с ' +
+                    '`--force-with-lease`) — после новых проверок заявка сольётся сама.',
+                });
+              }
+              core.warning(`PR #${pr.number}: конфликт с main, ветку переносит автор.`);
+            }
+
+            async function mergePr(pr) {
+              if (pr.mergeable === false) {
+                await markConflict(pr);
+                return;
+              }
+              let merged;
+              try {
+                merged = await github.rest.pulls.merge({
+                  owner, repo, pull_number: pr.number, merge_method: 'squash', sha: pr.head.sha,
+                });
+              } catch (error) {
+                // 405 — GitHub считает заявку несливаемой (конфликт), 409 — head сдвинулся.
+                if (error.status === 405) { await markConflict(pr); return; }
+                if (error.status === 409) { core.info(`PR #${pr.number}: head изменился, проверим в следующий раз.`); return; }
+                throw error;
+              }
+              if (!merged.data.merged) {
+                core.setFailed(`GitHub не слил PR #${pr.number}: ${merged.data.message}`);
+                return;
+              }
+              if (!(await dispatchDeploy(pr.base.ref))) {
+                core.setFailed(`PR #${pr.number} слит, но production deploy не запустился.`);
+                return;
+              }
+              core.info(`PR #${pr.number} автоматически слит; production deploy запущен.`);
+            }
+
+            async function handle(number, waitMs) {
+              const deadline = Date.now() + waitMs;
+              let names = null;
+              for (;;) {
+                const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: number });
+                if (pr.state !== 'open') { core.info(`PR #${number} уже ${pr.state}; действие не требуется.`); return; }
+                if (pr.draft) { core.info(`PR #${number} стал черновиком; auto-merge остановлен.`); return; }
+                if (eventPr && pr.head.sha !== eventPr.head.sha) {
+                  core.info('В PR появился новый коммит; новый запуск проверит его отдельно.');
+                  return;
+                }
+                if (!names) {
+                  const files = await github.paginate(github.rest.pulls.listFiles, {
+                    owner, repo, pull_number: number, per_page: 100,
+                  });
+                  const paths = files.map((file) => file.filename);
+                  names = requiredChecks(paths);
+                  core.info(`PR #${number}: ${isContentOnly(paths) ? 'текстовый' : 'полный'} гейт, ` +
+                    `${names.length} обязательных проверок`);
+                }
+                const { data } = await github.rest.checks.listForRef({
+                  owner, repo, ref: pr.head.sha, filter: 'latest', per_page: 100,
+                });
+                const result = evaluateChecks(names, data.check_runs);
+                if (result.failed.length > 0) {
+                  const msg = `PR #${number}: красные обязательные проверки: ${result.failed.join(', ')}`;
+                  if (eventPr) core.setFailed(msg); else core.warning(msg);
+                  return;
+                }
+                if (result.ready) {
+                  if (pr.mergeable === null || pr.mergeable === undefined) {
+                    // GitHub ещё считает mergeable — перечитать через паузу.
+                    if (Date.now() >= deadline) { core.info(`PR #${number}: mergeable ещё не посчитан, доберёт подметальщик.`); return; }
+                    await sleep(10_000);
+                    continue;
+                  }
+                  await mergePr(pr);
+                  return;
+                }
+                if (Date.now() >= deadline) {
+                  core.info(`PR #${number}: ждём — отсутствуют ${result.missing.length}, ` +
+                    `выполняются ${result.pending.length}; доберёт подметальщик.`);
+                  return;
+                }
+                core.info(`PR #${number}: отсутствуют ${result.missing.length}, выполняются ${result.pending.length}`);
+                await sleep(20_000);
+              }
+            }
+
+            // Событие ждёт свой CI до 42 минут; подметальщик смотрит один раз с короткой паузой.
+            const waitMs = eventPr ? 42 * 60 * 1000 : 60 * 1000;
+            for (const number of numbers) await handle(number, waitMs);
