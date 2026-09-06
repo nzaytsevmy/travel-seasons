@@ -373,33 +373,17 @@ if (faqs.length >= 2) {
 
       {checks.length > 0 && lastCheck && (
         <section class="journal" id="journal" aria-label="Что и когда проверяли">
-          {/* Решение Никиты 06.09.2026: читателю нужна одна строка — дата последней
-              сверки и кликабельные первоисточники; полный лог записей уходит под
-              раскрытие. Для поиска ничего не теряется: дата обновления по-прежнему
-              считается из журнала, а все ссылки и записи остаются в HTML. */}
+          {/* Решение Никиты 06.09.2026 (уточнено тем же днём): читателю нужна одна
+              строка — дата последней сверки и кликабельные первоисточники, а история
+              записей ему не интересна и на страницу не выводится вовсе. Сами записи
+              живут в шапке статьи: из них считается дата обновления и строка
+              «Сверено …» под автором; ссылки последней сверки остаются в HTML. */}
           <p class="journal-summary">
             Проверено <time datetime={lastCheck.date.toISOString().slice(0, 10)}>{dateRu(lastCheck.date)}</time>
             {' · '}источники: {latestSources.map((src, i) => (
               <>{i > 0 && ', '}<a href={src.url} target="_blank" rel="noopener nofollow" title={src.name}>{shortSource(src.name)}</a></>
             ))}
           </p>
-          <details class="journal-details">
-            <summary class="journal-toggle">Показать историю проверок ({checks.length})</summary>
-            <ol class="journal-list">
-              {[...checks].reverse().map((c) => (
-                <li class="journal-item">
-                  <time class="journal-date" datetime={c.date.toISOString().slice(0, 10)}>{dateRu(c.date)}</time>
-                  <p class="journal-what">{c.what}</p>
-                  <p class="journal-changed">{c.changed}</p>
-                  <p class="journal-src">
-                    Первоисточники: {c.sources.map((src, i) => (
-                      <>{i > 0 && ', '}<a href={src.url} target="_blank" rel="noopener nofollow">{src.name}</a></>
-                    ))}
-                  </p>
-                </li>
-              ))}
-            </ol>
-          </details>
         </section>
       )}
 
@@ -787,20 +771,6 @@ h1 {
 .journal-summary { margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted); }
 .journal-summary time { color: var(--text); font-weight: 600; }
 .journal-summary a { color: var(--gold-dim); border-bottom: 1px solid rgba(29,64,174,0.35); }
-.journal-details { margin-top: 0.5rem; }
-.journal-toggle { cursor: pointer; font-size: 0.82rem; color: var(--gold-dim); list-style: none; width: fit-content; min-height: 24px; display: inline-flex; align-items: center; border-bottom: 1px solid rgba(29,64,174,0.35); }
-.journal-toggle::-webkit-details-marker { display: none; }
-.journal-toggle::before { content: '+'; display: inline-block; width: 1.1em; }
-.journal-details[open] .journal-toggle::before { content: '−'; }
-.journal-details[open] .journal-list { margin-top: 0.75rem; border-top: 1px solid var(--line); }
-.journal-list { list-style: none; margin: 0; padding: 0; }
-.journal-item { padding: 0.9rem 0; border-bottom: 1px solid var(--line); }
-.journal-item:last-child { border-bottom: 0; }
-.journal-date { display: block; font-size: 0.76rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--gold-dim); }
-.journal-what { margin: 0.35rem 0 0; font-size: 0.94rem; color: var(--text); }
-.journal-changed { margin: 0.2rem 0 0; font-size: 0.94rem; color: var(--muted); }
-.journal-src { margin: 0.35rem 0 0; font-size: 0.82rem; color: var(--muted); }
-.journal-src a { color: var(--gold-dim); border-bottom: 1px solid rgba(29,64,174,0.35); }
 
 .trip-marker {
   display: inline-flex; align-items: center; gap: 0.5rem;
