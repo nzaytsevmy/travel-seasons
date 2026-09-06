@@ -7,6 +7,7 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import CompareTable from '../../components/CompareTable.astro';
 import Byline from '../../components/Byline.astro';
 import { COMPARE_PAIRS } from '../../data/compare-pairs.js';
+import { COMPARE_SNIPPET_TEST } from '../../data/compare-snippets.js';
 import { buildCompareEntry, compareEntries } from '../../data/compare-logic.js';
 import { MONTHS } from '../../data/directions.js';
 import { similarDestinations } from '../../data/similar.js';
@@ -30,13 +31,26 @@ if (!a || !b) throw new Error(`compare pair references unknown slug: ${pairDef.a
 
 const diff = compareEntries(a, b);
 const url = `https://traveltribe.ru/compare/${pairDef.a}-vs-${pairDef.b}/`;
-const title = `${a.nom} или ${b.nom}: что выбрать в 2026`;
-const description = `${a.nom} vs ${b.nom} — виза, бюджет в сутки, перелёт и сезон по месяцам бок-о-бок. ${pairDef.angle}.`.slice(0, 200);
 
 const cheaperEntry = diff.cheaper === a.slug ? a : diff.cheaper === b.slug ? b : null;
 const pricierEntry = diff.cheaper === a.slug ? b : diff.cheaper === b.slug ? a : null;
 const easierEntry = diff.easierVisa === a.slug ? a : diff.easierVisa === b.slug ? b : null;
 const betterNowEntry = diff.betterNow === a.slug ? a : diff.betterNow === b.slug ? b : null;
+
+// Замер сниппета (см. data/compare-snippets.js): на одиннадцати парах заголовок
+// отвечает на вопрос «где дешевле» числом, а описание называет сторону. Число
+// собирается здесь же, на сборке, поэтому протухнуть молча не может. Остальные
+// тринадцать пар держат прежнюю формулу и служат контролем.
+const pairKey = `${pairDef.a}-vs-${pairDef.b}`;
+const bothReal = a.budget?.source === 'real' && b.budget?.source === 'real';
+const snippetTest = COMPARE_SNIPPET_TEST.has(pairKey) && bothReal && diff.cheaperPct && cheaperEntry;
+
+const title = snippetTest
+  ? `${a.nom} или ${b.nom}: где дешевле — разница ${diff.cheaperPct}% в сутки`
+  : `${a.nom} или ${b.nom}: что выбрать в 2026`;
+const description = (snippetTest
+  ? `Дешевле — ${cheaperEntry.nom}, примерно на ${diff.cheaperPct}% в сутки при среднем комфорте. Рядом виза, перелёт и сезон по месяцам. Данные на ${DATA_UPDATED_RU}.`
+  : `${a.nom} vs ${b.nom} — виза, бюджет в сутки, перелёт и сезон по месяцам бок-о-бок. ${pairDef.angle}.`).slice(0, 200);
 
 const verdictPoints = [];
 if (cheaperEntry && pricierEntry && diff.cheaperPct) {
