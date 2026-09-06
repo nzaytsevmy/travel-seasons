@@ -969,13 +969,15 @@ window.addEventListener('pageshow', (e) => {
   border-radius: 0;
   padding: 3px;
   gap: 2px;
-  height: 40px;
+  /* Высоты у рамки нет намеренно: её задаёт min-height кнопки ниже (рамка =
+     кнопка + 2×3px отступа + 2×1px границы). ⛔ Фиксированные 40px здесь при
+     минимуме кнопки 44px давали кнопку выше рамки на 8 точек (июль–сентябрь 2026). */
 }
 .tc-seg-btn {
   flex: 1 1 0;
   min-width: 0;
-  /* Канон тач-таргета ≥44px: замер Radar давал 40px на @360. */
-  min-height: 44px;
+  /* 32px → рамка 40px, вровень со степпером и списком. На телефоне 44px — см. @640. */
+  min-height: 32px;
   background: transparent;
   border: none;
   color: var(--text-dim);
@@ -1615,10 +1617,12 @@ window.addEventListener('pageshow', (e) => {
   .tc-form-extra { flex-direction: column; align-items: stretch; }
   .tc-add-country { width: 100%; padding-top: 0.7rem; padding-bottom: 0.7rem; }
   .tc-result-pills { gap: 0.3rem; }
-  /* WCAG 2.2 / Apple HIG — минимум 44px тап-таргеты на тач-экранах */
-  .tc-stepper, .tc-seg { height: 46px; }
+  /* WCAG 2.2 / Apple HIG — минимум 44px тап-таргеты на тач-экранах.
+     Переключатель: кнопка 44px без внутреннего отступа → рамка 46px, как степпер. */
+  .tc-stepper { height: 46px; }
   .tc-stepper-btn { width: 46px; }
-  .tc-seg-btn { min-height: 40px; padding: 0 0.5rem; }
+  .tc-seg { padding: 0; }
+  .tc-seg-btn { min-height: 44px; padding: 0 0.5rem; }
   .tc-input { padding-top: 0.7rem; padding-bottom: 0.7rem; }
   .tc-copy-btn { padding: 0.75rem 1.2rem; }
 }
