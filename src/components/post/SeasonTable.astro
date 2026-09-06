@@ -1,0 +1,123 @@
+---
+// Таблица «когда ехать»: двенадцать строк, температура кружками, дожди полосой,
+// люди и цены точками. Это разметка, а не картинка: цифры видит поиск и читает
+// экранный диктор. Всегда светлая (решение Никиты 06.09.2026: тёмных схем на сайте нет).
+// Образец формы — климатическая таблица Responsible Travel; цвета и шрифты — бренда.
+interface Month {
+  m: string;            // «Янв»
+  air: number;          // воздух днём, °C
+  sea: number;          // море, °C
+  rain: number;         // дождливых дней в месяце
+  crowd: 1 | 2 | 3;     // люди и цены: тихо / средне / пик
+  note?: string;        // короткая подпись под месяцем
+  best?: boolean;       // подсветить как лучший
+}
+interface Props {
+  title: string;        // «Когда ехать в Абхазию»
+  place: string;        // «Сухум · нормы по месяцам»
+  months: Month[];
+  source: string;       // строка под таблицей: откуда цифры и когда сняты (ссылка ведёт на источник)
+  sourceUrl?: string;
+  note?: string;        // отдельное предложение без ссылки: что в таблице — оценка, а не измерение
+  seaWarm?: number;     // порог «тёплое море», по умолчанию 22
+}
+const { title, place, months, source, sourceUrl, note, seaWarm = 22 } = Astro.props;
+const airCls = (v: number) => (v < 15 ? 'c-cold' : v < 25 ? 'c-warm' : 'c-hot');
+const seaCls = (v: number) => (v < 18 ? 'c-cold' : v < seaWarm ? 'c-warm' : 'c-sea');
+const crowdText = { 1: 'тихо', 2: 'средне', 3: 'пик' } as const;
+const maxRain = Math.max(12, ...months.map((x) => x.rain));
+---
+<figure class="st">
+  <table>
+    <caption>
+      <span class="st-title">{title}</span>
+      <span class="st-place">{place}</span>
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">Месяц</th>
+        <th scope="col"><span class="l">Воздух днём</span><span class="s">Воздух</span></th>
+        <th scope="col">Море</th>
+        <th scope="col"><span class="l">Дождливых дней</span><span class="s">Дожди, дн.</span></th>
+        <th scope="col"><span class="l">Люди и цены</span><span class="s">Люди</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {months.map((x) => (
+        <tr class={x.best ? 'best' : undefined}>
+          <th scope="row"><b>{x.m}</b>{x.note && <small>{x.note}</small>}</th>
+          <td><span class={`dot ${airCls(x.air)}`}>{x.air > 0 ? `+${x.air}` : x.air}</span></td>
+          <td><span class={`dot ${seaCls(x.sea)}`}>{x.sea > 0 ? `+${x.sea}` : x.sea}</span></td>
+          <td><span class="bar" style={`--w:${Math.round((x.rain / maxRain) * 100)}%`}><i></i><em>{x.rain}</em></span></td>
+          <td>
+            <span class="crowd" aria-label={crowdText[x.crowd]}>
+              <i class={x.crowd >= 1 ? 'on' : ''}></i><i class={x.crowd >= 2 ? 'on' : ''}></i><i class={x.crowd >= 3 ? 'on' : ''}></i>
+              <u>{crowdText[x.crowd]}</u>
+            </span>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  <figcaption class="st-foot">
+    <span class="lg">
+      <span class="k1">холодно</span><span class="k2">комфортно</span><span class="k3">жарко</span><span class="k4">тёплое море, от +{seaWarm}</span><span class="k5">подсветка — лучшие месяцы</span><span class="k6">люди и цены: ●○○ тихо, ●●○ средне, ●●● пик</span>
+    </span>
+    {sourceUrl ? <a href={sourceUrl} target="_blank" rel="noopener nofollow">{source}</a> : source}{note && <>{' '}{note}</>}
+  </figcaption>
+</figure>
+
+<style>
+  .st {
+    /* Блок всегда светлый, даже при тёмной теме сайта. */
+    --p-bg: #fbfbfa; --p-text: #15171a; --p-dim: #52565c; --p-faint: #5c626b; --p-line: #d9dbde; --p-accent: #1d40ae;
+    color-scheme: light;
+    margin: 1.6rem 0 2rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--p-text);
+    background: var(--p-bg);
+    color: var(--p-text);
+    font-family: var(--ff-body);
+  }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  /* caption остаётся table-caption: flex на нём в Chrome сужает подпись до первой колонки. */
+  caption { text-align: left; caption-side: top; padding: 0 0 10px; }
+  .st-title { display: block; font-family: var(--ff-display); font-size: 1.55rem; line-height: 1.1; }
+  .st-place { display: block; margin-top: 4px; font-size: 0.78rem; color: var(--p-faint); letter-spacing: 0.02em; }
+  thead th { font-size: 0.69rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--p-faint); text-align: left; padding: 8px 6px 8px 0; border-bottom: 1px solid var(--p-line); white-space: nowrap; }
+  thead th:nth-child(2), thead th:nth-child(3) { text-align: center; }
+  thead .s, tbody .s { display: none; }
+  tbody th, tbody td { padding: 7px 6px 7px 0; border-bottom: 1px solid var(--p-line); vertical-align: middle; }
+  tbody th { text-align: left; font-weight: 500; font-size: 0.88rem; width: 34%; }
+  tbody th b { font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.81rem; }
+  tbody th small { display: block; font-size: 0.75rem; color: var(--p-dim); font-weight: 400; line-height: 1.25; margin-top: 2px; }
+  tbody td:nth-child(2), tbody td:nth-child(3) { text-align: center; width: 52px; }
+  .dot { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; font-size: 0.84rem; font-weight: 600; color: var(--p-text); }
+  .c-cold { background: #d6e6ee; } .c-warm { background: #f3d47c; } .c-hot { background: #efa384; } .c-sea { background: #bfe0c8; }
+  .bar { display: flex; align-items: center; gap: 6px; min-width: 96px; }
+  .bar i { display: block; height: 18px; background: #cfe1ea; flex: 0 0 calc(var(--w) * 0.78); }
+  .bar em { font-style: normal; font-size: 0.81rem; line-height: 18px; }
+  .crowd { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .crowd i { width: 8px; height: 8px; border-radius: 50%; border: 1px solid var(--p-dim); display: inline-block; margin-right: -3px; }
+  .crowd i.on { background: var(--p-text); border-color: var(--p-text); }
+  .crowd u { text-decoration: none; font-size: 0.78rem; color: var(--p-dim); margin-left: 6px; }
+  tr.best th, tr.best td { background: rgba(29, 64, 174, 0.06); }
+  tr.best th { box-shadow: inset 3px 0 0 var(--p-accent); padding-left: 8px; }
+  .st-foot { font-size: 0.75rem; color: var(--p-faint); line-height: 1.45; margin-top: 10px; text-align: left; }
+  .st-foot a { color: var(--p-faint); text-decoration: underline; text-underline-offset: 0.15em; }
+  .lg { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+  .lg span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+  .lg .k1::before { background: #d6e6ee; } .lg .k2::before { background: #f3d47c; } .lg .k3::before { background: #efa384; } .lg .k4::before { background: #bfe0c8; }
+  .lg .k5::before { width: 3px; height: 12px; border-radius: 0; background: var(--p-accent); vertical-align: -2px; }
+  .lg .k6::before { display: none; }
+  @media (max-width: 480px) {
+    .st-title { font-size: 1.35rem; }
+    thead .l, tbody .l { display: none; } thead .s, tbody .s { display: inline; }
+    thead th { font-size: 0.63rem; letter-spacing: 0.04em; padding-right: 4px; }
+    tbody th { width: auto; min-width: 104px; } tbody th small { display: none; } tr.best th small { display: block; }
+    tbody th, tbody td { padding-right: 4px; }
+    .dot { width: 34px; height: 34px; font-size: 0.78rem; }
+    .bar { min-width: 78px; } .bar i { height: 16px; flex-basis: calc(var(--w) * 0.66); }
+    .crowd u { display: none; } .crowd { gap: 4px; margin-left: 6px; }
+  }
+</style>

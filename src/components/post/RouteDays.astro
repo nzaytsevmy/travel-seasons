@@ -1,0 +1,42 @@
+---
+// План по дням: номера в кружках на вертикальной линии, место жирным, дела рядом.
+// Разметка вместо картинки, всегда светлая. Пара к SeasonTable.
+interface Day { n: number | string; place: string; what: string; }
+interface Props { title: string; days: Day[]; note?: string; }
+const { title, days, note } = Astro.props;
+---
+<figure class="rd">
+  <p class="rd-title">{title}</p>
+  <ol class="rd-list" role="list">
+    {days.map((d) => (
+      <li>
+        <span class="rd-n">{d.n}</span>
+        <span class="rd-body"><b>{d.place}</b><span class="rd-what">{d.what}</span></span>
+      </li>
+    ))}
+  </ol>
+  {note && <figcaption class="rd-note">{note}</figcaption>}
+</figure>
+
+<style>
+  .rd {
+    --p-bg: #fbfbfa; --p-text: #15171a; --p-dim: #52565c; --p-faint: #5c626b; --p-line: #d9dbde; --p-accent: #1d40ae;
+    color-scheme: light;
+    margin: 1.6rem 0 2rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--p-text);
+    background: var(--p-bg);
+    color: var(--p-text);
+    font-family: var(--ff-body);
+  }
+  .rd-title { font-family: var(--ff-display); font-size: 1.55rem; line-height: 1.1; margin: 0 0 14px; }
+  .rd-list { list-style: none; margin: 0; padding: 0 0 0 4px; position: relative; }
+  .rd-list::before { content: ""; position: absolute; left: 19px; top: 18px; bottom: 18px; width: 1px; background: var(--p-line); }
+  .rd-list li { display: flex; align-items: flex-start; gap: 14px; padding: 7px 0; position: relative; }
+  .rd-n { flex: 0 0 32px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--p-text); background: var(--p-bg); display: inline-flex; align-items: center; justify-content: center; font-size: 0.84rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .rd-body { display: flex; flex-direction: column; gap: 2px; padding-top: 5px; font-size: 0.95rem; line-height: 1.35; }
+  .rd-body b { font-weight: 600; }
+  .rd-what { color: var(--p-dim); font-size: 0.88rem; }
+  .rd-note { font-size: 0.78rem; color: var(--p-faint); line-height: 1.45; margin-top: 10px; padding-left: 50px; }
+  @media (max-width: 480px) { .rd-title { font-size: 1.35rem; } .rd-note { padding-left: 0; } }
+</style>
