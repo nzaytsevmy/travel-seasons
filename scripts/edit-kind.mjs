@@ -62,6 +62,17 @@ export function lineDiff(before, after) {
 }
 
 /** Сколько слов изменено: замена слова считается один раз, чистая вставка или удаление — по числу слов. */
+/** Сколько слов добавлено (замена считается добавлением, чистое удаление — нет).
+ *  07.09.2026: порог переработки считает только добавленные слова — снятие мёртвых
+ *  партнёрских ссылок (44 статьи за один заход) не рождает текста, который надо
+ *  рецензировать; запись в журнале по-прежнему обязательна (wordsChanged). */
+export function addedWords(before, after) {
+  const { removed, added } = lineDiff(before, after);
+  const a = words(removed.join('\n'));
+  const b = words(added.join('\n'));
+  return b.length - lcsLength(a, b);
+}
+
 export function changedWords(before, after) {
   const { removed, added } = lineDiff(before, after);
   const a = words(removed.join('\n'));
@@ -89,12 +100,13 @@ export function classifyEdit(before, after) {
   const descriptionChanged = scalar(was.fm, 'description') !== scalar(now.fm, 'description');
   const { removed, added } = lineDiff(was.body, now.body);
   const wordsChanged = changedWords(was.body, now.body);
+  const wordsAdded = addedWords(was.body, now.body);
   const known = new Set(refs(was.body));
   const newImages = [...new Set(refs(now.body))].filter((r) => !known.has(r));
   let kind = 'small';
-  if (titleChanged || descriptionChanged || wordsChanged > SMALL_EDIT_MAX_WORDS) kind = 'rework';
+  if (titleChanged || descriptionChanged || wordsAdded > SMALL_EDIT_MAX_WORDS) kind = 'rework';
   else if (wordsChanged === 0 && !newImages.length) kind = 'meta';
-  return { kind, wordsChanged, titleChanged, descriptionChanged, newImages, addedLines: added };
+  return { kind, wordsChanged, wordsAdded, titleChanged, descriptionChanged, newImages, addedLines: added };
 }
 
 /** Текст статьи в основе (origin/main или GITHUB_BASE_REF); null — статьи там нет. */

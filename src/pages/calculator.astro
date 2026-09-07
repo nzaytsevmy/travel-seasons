@@ -1,5 +1,12 @@
 ---
 const brandYear = new Date().getFullYear();
+// ⛔ Сниппет-замер 07.09.2026 (measurements/snippets/2026-09-07-calculator.md).
+// До правки: 316 показов по названным запросам за 28 дней и НОЛЬ кликов при средней
+// позиции 5,7 — «калькулятор путешествия» (166 показов) и «путешествия калькулятор»
+// (111). Описание слово в слово повторяло заголовок и не давало причины кликнуть, а
+// все семь конкурентов выше в выдаче — пустые формы «введите свои цифры». Отличие
+// страницы: цены уже подставлены. Число направлений берём из PRICES, чтобы заголовок
+// не устарел при добавлении направления. Вердикт 21.09.2026 и 05.10.2026.
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
 import BudgetBlock from '../components/BudgetBlock.astro';
@@ -123,8 +130,8 @@ const ldJson = {
 };
 ---
 <Layout
-  title={`Калькулятор путешествия ${brandYear}: бюджет поездки по 70+ странам`}
-  description="Калькулятор путешествия 2026: бюджет поездки из Москвы по 70+ странам — перелёт, жильё, еда, виза. Реальные траты из 12 источников, курс ЦБ РФ."
+  title={`Калькулятор путешествия ${brandYear}: ${PRICES.length} направлений, цены уже есть`}
+  description="Выбери страну и месяц — перелёт, отель, еда и виза посчитаны сами. Базовые цены: медиана Aviasales и Островка, реальные траты из 12 источников."
   canonical="https://traveltribe.ru/calculator/"
   ogTitle="Калькулятор бюджета — TravelTribe"
   ogDescription="70+ направлений · сравнение · сезон · реальные траты 2026"
@@ -344,7 +351,6 @@ const SEASON_CLASS = { P:'peak', G:'good', O:'ok', B:'bad' };
 const AVIASALES_TPK = atob('aHR0cHM6Ly9hdmlhc2FsZXMudHBrLm14L0pDU1BsQzE3P2VyaWQ9MlZ0enF4a240TEYmc3ViX2lkPWNhbGN1bGF0b3ImdT0='); // aviasales.tpk.mx: адрес спрятан от роботов, см. scripts/affiliate-shield.mjs
 const CHEREHAPA = atob('aHR0cHM6Ly9jaGVyZWhhcGEudHBrLm14L2ZrTTdzdXplP2VyaWQ9MlZ0enF1WlR3YjUmc3ViX2lkPWNhbGN1bGF0b3ImdT1odHRwcyUzQSUyRiUyRmNoZXJlaGFwYS5ydSUyRnRyYXZlbCUyRg=='); // cherehapa.tpk.mx: адрес спрятан от роботов, см. scripts/affiliate-shield.mjs
 const OSTROVOK = atob('aHR0cHM6Ly9vc3Ryb3Zvay50cGsubXgveHR5VGNVY1k/ZXJpZD0yVnR6cXZFMWN2MyZzdWJfaWQ9Y2FsY3VsYXRvcg=='); // ostrovok.tpk.mx: адрес спрятан от роботов, см. scripts/affiliate-shield.mjs
-const AIRALO = 'https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_calculator&u=https%3A%2F%2Fairalo.com%2Fru';
 
 const CAT_COLORS = { flight: '#1d40ae', hotel: '#15171a', food: '#5c626b', visa: '#a8a294' };
 
@@ -583,9 +589,6 @@ function renderSingle(pi) {
           <a href="${CHEREHAPA}" target="_blank" rel="noopener sponsored" class="tc-cta-side">
             <span></span> Страховка под даты
           </a>
-          <a href="${AIRALO}" target="_blank" rel="noopener sponsored" class="tc-cta-side">
-            <span></span> eSIM до вылета
-          </a>
         </div>
         
       </div>
@@ -671,7 +674,6 @@ function renderTable(piList) {
       <span class="tc-aux-label">Партнёры:</span>
       <a href="${OSTROVOK}" target="_blank" rel="noopener sponsored">Ostrovok</a>
       <a href="${CHEREHAPA}" target="_blank" rel="noopener sponsored">Cherehapa</a>
-      <a href="${AIRALO}" target="_blank" rel="noopener sponsored">Airalo</a>
       
     </div>
   </div>

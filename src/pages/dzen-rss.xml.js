@@ -1,7 +1,7 @@
 import { getCollection } from 'astro:content';
 import { getImage } from 'astro:assets';
 import { pickNewsImage } from '../data/news-images.js';
-import { newsUrl } from '../data/news.js';
+import { newsUrl, feedEntries, publishedAt } from '../data/news.js';
 
 // Дзен-совместимый RSS feed (Native, не Турбо/Новости).
 // Документация: https://dzen.ru/help/ru/website/site-to-channel.html
@@ -96,9 +96,9 @@ export async function GET() {
   // датированный материал с картинкой ему подходит. Ссылка ведёт на страницу
   // заметки: у Дзена это ещё и `guid isPermaLink`, а прежний якорь к ленте
   // менялся под заметкой, когда её месяц уезжал в архив.
-  const news = (await getCollection('news'))
-    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-    .slice(0, 30);
+  // Порядок и дата — по выпуску, как на странице ленты. По дате события 07.09.2026
+  // заметка дня стояла у Дзена девятой, ниже позавчерашних.
+  const news = feedEntries(await getCollection('news'), 30);
 
   const items = [];
 
@@ -116,7 +116,7 @@ export async function GET() {
       <link>${link}</link>
       <pdalink>${link}</pdalink>
       <guid isPermaLink="true">${link}</guid>
-      <pubDate>${n.data.date.toUTCString()}</pubDate>
+      <pubDate>${publishedAt(n).toUTCString()}</pubDate>
       <description>${escapeXml(n.data.tldr ?? n.data.title)}</description>
       <enclosure url="${SITE}${optimized.src}" type="image/jpeg"/>
       <category>native</category>

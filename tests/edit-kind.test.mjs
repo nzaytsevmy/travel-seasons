@@ -71,3 +71,11 @@ test('статьи в основе нет — новая, проверяется
   assert.equal(r.kind, 'new');
   assert.deepEqual(r.newImages, ['antarctica/iceberg-blue.jpg']);
 });
+
+test('чистое удаление абзаца в 60 слов — мелкая правка с обязательным журналом (07.09.2026)', () => {
+  const withPara = base.replace('## Что взять', `## Что взять\n${words(60)}\n`);
+  const r = classifyEdit(withPara, base);
+  assert.equal(r.kind, 'small');
+  assert.equal(r.wordsAdded, 0);
+  assert.equal(r.wordsChanged, 60);
+});
