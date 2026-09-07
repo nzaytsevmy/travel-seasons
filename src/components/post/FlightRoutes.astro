@@ -65,8 +65,10 @@ const isPrice = (p?: string) => !!p && /\d/.test(p.trim().charAt(0));
             {f.priceUrl && (
               <>
                 <span class="fr-sep" aria-hidden="true">·</span>
+                {/* Подпись несёт предмет и направление в первых словах: «посмотреть цены»
+                    одинаково у всех рейсов и не говорит, куда ведёт (NN/g «First 2 Words»). */}
                 <a class="fr-price-link" href={f.priceUrl} target="_blank" rel="nofollow noopener sponsored">
-                  {f.priceUrlLabel || 'посмотреть цены'}
+                  {f.priceUrlLabel || `цены ${r.from} — ${r.to}`}
                 </a>
               </>
             )}
