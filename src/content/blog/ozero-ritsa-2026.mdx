@@ -59,6 +59,14 @@ checks:
         url: "https://vandrovnik.ru/abh/malaya-ritsa"
       - name: "Консульский департамент МИД России: Абхазия — въезд, деньги, связь, безопасность"
         url: "https://www.kdmid.ru/docs/abkhazia/information-about-the-country/"
+  - date: 2026-09-07
+    what: "Трансфер от аэропорта Сочи и экскурсии на Рицу: проверено наличие у партнёров"
+    changed: "В разделе о дороге добавлены две строки. Первая — трансфер из аэропорта Сочи в Абхазию, вторая — готовые выезды на Рицу. Общественного транспорта к озеру нет, поэтому обе строки отвечают на вопрос раздела. Страницы партнёров открыты, маршрут и выезды на месте."
+    sources:
+      - name: "Kiwitaxi: трансфер аэропорт Адлера — Гагра"
+        url: "https://kiwitaxi.ru/russia/adler+airport->gagra"
+      - name: "Sputnik8: экскурсии по Абхазии"
+        url: "https://www.sputnik8.com/ru/countries/abkhazia"
 howto:
   name: "Как добраться до озера Рица в 2026"
   description: "Маршрут к главному горному озеру Абхазии: способ доехать, сбор за нацпарк, что посмотреть по дороге."
@@ -78,7 +86,7 @@ howto:
 ---
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 import PricingCards from '../../components/post/PricingCards.astro';
-import { cherehapaCountry, sutochnoRegion, youtravelCountry } from '../../data/affiliate.js';
+import { cherehapaCountry, sutochnoRegion, youtravelCountry, kiwitaxiRoute, sputnik8City } from '../../data/affiliate.js';
 
 Озеро Рица — та самая бирюзовая открытка, ради которой едут вглубь Абхазии: горное озеро на высоте 950 метров, зажатое между поросшими лесом хребтами. Сама дорога к нему — половина впечатления: серпантин вдоль реки Бзыбь, Голубое озеро у обочины и каньон с отвесными стенами. Вторая половина впечатления — не всегда приятная: платная парковка, кафе на берегу, фотографы в папахах и толпа к полудню.
 
@@ -157,6 +165,8 @@ import { cherehapaCountry, sutochnoRegion, youtravelCountry } from '../../data/a
 ## Как добраться до озера Рица?
 
 **Главное, что нужно знать заранее: общественного транспорта к Рице нет.** Ни автобуса, ни маршрутки до озера не ходит — добраться можно только на экскурсии, такси, джипе или своей машине. Дорога одна: поворот с приморской трассы сразу после моста через реку **Бзыбь**, дальше около 40 км горного серпантина вдоль реки до озера.
+
+<a href={kiwitaxiRoute('abkhazia', 'ozero_ritsa_2026').href} class="aff-cta" rel="sponsored">Трансфер из аэропорта Сочи в Абхазию</a> — машина к рейсу, граница без пересадок. <a href={sputnik8City('abkhazia', 'ozero_ritsa_2026')} class="aff-cta" rel="sponsored">Экскурсии на Рицу из Гагры</a> — расписание и отзывы.
 
 Если не хотите сами водить и разбираться с логистикой, можно поехать по Абхазии с местным гидом в малой группе — Рица почти всегда в программе вместе с другими точками маршрута: <a href={youtravelCountry('abkhazia', 'ozero_ritsa_2026')} class="aff-cta" rel="sponsored">поехать по Абхазии с местным гидом</a> (маршрут и трансферы уже собраны, оплата картой РФ).
 

@@ -34,6 +34,14 @@ checks:
     sources:
       - name: "Суточно.ру — жильё в Гагре"
         url: "https://gagra.sutochno.ru/"
+  - date: 2026-09-07
+    what: "Трансфер из аэропорта Сочи в Гагру и экскурсии из Гагры"
+    changed: "Добавлены две строки. В разделе о дороге — трансфер от аэропорта Адлера до Гагры, в разделе о том, что посмотреть, — выезды на Рицу и в Новый Афон. Время в пути 1,5–2 часа с границей взято из раздела статьи, страницы партнёров открыты."
+    sources:
+      - name: "Kiwitaxi: трансфер аэропорт Адлера — Гагра"
+        url: "https://kiwitaxi.ru/russia/adler+airport->gagra"
+      - name: "Sputnik8: экскурсии из Гагры"
+        url: "https://www.sputnik8.com/ru/gagra"
 howto:
   name: "Как добраться в Гагру в 2026"
   description: "Маршрут к главному курорту Абхазии для россиян: перелёт до Адлера, переход границы и трансфер до Гагры."
@@ -54,7 +62,7 @@ howto:
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 import PricingCards from '../../components/post/PricingCards.astro';
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
-import { aviasalesRoute, aviasalesUrl, cherehapaCountry, cherehapaTravel, ostrovokCity, ostrovokSearch, sutochnoRegion, youtravelCountry } from '../../data/affiliate.js';
+import { aviasalesRoute, aviasalesUrl, cherehapaCountry, cherehapaTravel, ostrovokCity, ostrovokSearch, sutochnoRegion, youtravelCountry, kiwitaxiRoute, sputnik8City } from '../../data/affiliate.js';
 
 Гагра — первый курорт, который видят почти все, кто едет в Абхазию: от границы с Россией до неё всего полчаса, а вдоль моря тянется набережная с пальмами, колоннадой и старыми санаториями. Это самое туристическое и самое противоречивое место страны: одни уезжают с восторгом от природы и закатов, другие — с разочарованием от обшарпанной инфраструктуры. Разбираю по делу: какие в Гагре пляжи, что реально стоит посмотреть, сколько закладывать денег в 2026 году и как добраться без нервов.
 
@@ -103,6 +111,8 @@ import { aviasalesRoute, aviasalesUrl, cherehapaCountry, cherehapaTravel, ostrov
 
 ## Что посмотреть в Гагре
 
+<a href={sputnik8City('gagra', 'gagra_2026')} class="aff-cta" rel="sponsored">Экскурсии из Гагры: Рица и Новый Афон</a>.
+
 ![Колоннада и фонтан в парке Гагры](./_images/gagra-own/gagra-colonnade.jpg)
 
 Почти все достопримечательности Гагры сосредоточены в Старой Гагре, вдоль главной улицы и Приморского парка — их можно обойти пешком за полдня. Вот что действительно стоит времени.
@@ -145,6 +155,8 @@ import { aviasalesRoute, aviasalesUrl, cherehapaCountry, cherehapaTravel, ostrov
 ## Как добраться до Гагры
 
 Прямого аэропорта в Гагре нет — едут через Сочи/Адлер (AER) с переходом границы. Это самый частый и обычно самый дешёвый путь. От аэропорта Адлера до границы (река Псоу) около 10 км, от границы до Гагры — ещё ~25 км.
+
+<a href={kiwitaxiRoute('gagra', 'gagra_2026').href} class="aff-cta" rel="sponsored">Трансфер из аэропорта Сочи в Гагру</a> — 1,5–2 часа с границей.
 
 <FlightRoutes routes={[
  {

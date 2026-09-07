@@ -77,6 +77,14 @@ checks:
     sources:
       - name: "Суточно.ру — жильё в Абхазии"
         url: "https://abkhazia.sutochno.ru/"
+  - date: 2026-09-07
+    what: "Трансфер от аэропорта Сочи и экскурсии по Абхазии: проверено наличие у партнёров"
+    changed: "Добавлены две строки под задачи разделов. В разделе о дороге — трансфер из аэропорта Сочи с проходом границы, в разделе о том, что посмотреть, — готовые выезды на день. Страницы партнёров открыты, маршрут и выезды на месте."
+    sources:
+      - name: "Kiwitaxi: трансфер аэропорт Адлера — Гагра"
+        url: "https://kiwitaxi.ru/russia/adler+airport->gagra"
+      - name: "Sputnik8: экскурсии по Абхазии"
+        url: "https://www.sputnik8.com/ru/countries/abkhazia"
 tags: ["Абхазия", "Безвиз", "Море", "2026"]
 sourceType: "hybrid"
 howto:
@@ -103,7 +111,7 @@ howto:
 import PricingCards from '../../components/post/PricingCards.astro';
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
-import { TP_LINKS, ostrovokCountry, sutochnoRegion, youtravelSub } from '../../data/affiliate.js';
+import { TP_LINKS, ostrovokCountry, sutochnoRegion, youtravelSub, kiwitaxiRoute, sputnik8City } from '../../data/affiliate.js';
 import SeasonTable from '../../components/post/SeasonTable.astro';
 import RouteDays from '../../components/post/RouteDays.astro';
 import { abkhaziaSeason, abkhaziaWeek } from '../../data/schemes/abkhazia.js';
@@ -168,6 +176,8 @@ import { abkhaziaSeason, abkhaziaWeek } from '../../data/schemes/abkhazia.js';
 ## Как добраться до Абхазии?
 
 **Два пути: прямой перелёт в Сухум или дешевле через Сочи с переходом границы.** Прямого аэропорта в Гагре нет, ближайшие — Сухум (SUI) и Сочи/Адлер (AER).
+
+<a href={kiwitaxiRoute('abkhazia', 'abkhazia_2026').href} class="aff-cta" rel="sponsored">Трансфер из аэропорта Сочи в Абхазию</a> — машина к рейсу, граница без пересадок.
 
 <FlightRoutes routes={[
  {
@@ -286,6 +296,8 @@ import { abkhaziaSeason, abkhaziaWeek } from '../../data/schemes/abkhazia.js';
 ---
 
 ## Что посмотреть в Абхазии?
+
+<a href={sputnik8City('abkhazia', 'abkhazia_2026')} class="aff-cta" rel="sponsored">Экскурсии по Абхазии</a> — Рица и Новый Афон выездом на день.
 
 **Минимум на 3–4 экскурсии: озеро Рица, Новый Афон, Гагра и водопады.** Главные точки:
 

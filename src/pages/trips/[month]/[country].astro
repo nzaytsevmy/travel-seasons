@@ -9,12 +9,13 @@ import DestinationTabs from '../../../components/DestinationTabs.astro';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
 import { COUNTRIES as RICH_COUNTRIES } from '../../../data/programmatic-seasons.js';
 import { NICHE_TRIPS } from '../../../data/niche-trips.js';
-import { aviasalesRoute, ostrovokCountry, cherehapaCountry, youtravelCountry, sputnik8City } from '../../../data/affiliate.js';
+import { aviasalesRoute, ostrovokCountry, cherehapaCountry, youtravelCountry, sputnik8City, otelloStay } from '../../../data/affiliate.js';
 import { DATA_UPDATED, DATA_UPDATED_RU, yearForMonth } from '../../../data/meta.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
 import { getWeatherBucket } from '../../../data/country-month-bucket.js';
 import { getBucket } from '../../../data/packing-weather-buckets.js';
 import TripSaveButton from '../../../components/TripSaveButton.astro';
+import StickyCta from '../../../components/StickyCta.astro';
 
 export async function getStaticPaths() {
   const paths = [];
@@ -86,6 +87,17 @@ const liveChecked = livePrices.updatedAt
 const flightTiers = d.price?.flight || [0,0,0];
 const hotelTiers = d.price?.hotel || [0,0,0];
 const foodTiers = d.price?.food || [0,0,0];
+// Липкая панель на телефоне: у этого шаблона 924 страницы с высоким интентом, и до
+// 07.09.2026 денежной точки внизу экрана здесь не было вовсе. Оффер — главный по типу
+// направления: у российских жильё, у остальных перелёт своего месяца.
+const RU_STAY_TRIPS = new Set(['abkhazia', 'kamchatka', 'karelia', 'dagestan', 'altai']);
+const меткаСтраницы = `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`;
+const панельОффер = RU_STAY_TRIPS.has(d.slug)
+  ? { href: otelloStay(меткаСтраницы), label: `Жильё ${d.cases.loc}` }
+  : (iata
+      ? { href: aviasalesRoute('MOW', iata, меткаСтраницы, monthIdx), label: `Билеты ${d.cases.vP} в ${m.prep}` }
+      : { href: ostrovokCountry(d.slug, меткаСтраницы), label: `Жильё ${d.cases.loc}` });
+
 const flightFrom = flightTiers[0];
 const hotelFrom = hotelTiers[0];
 const foodFrom = foodTiers[0];
@@ -411,6 +423,8 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
       </section>
     </div>
   </main>
+
+  <StickyCta href={панельОффер.href} label={панельОффер.label} />
 
   <Footer />
 </Layout>
