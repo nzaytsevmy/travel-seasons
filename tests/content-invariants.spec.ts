@@ -1343,7 +1343,20 @@ const freshFromFrontmatter = (fm: string): string => {
   const upd = one(/^updatedDate:\s*(.+)$/m);
   // Записи журнала сверок идут с отступом внутри checks: — поле верхнего уровня
   // (pubDate/updatedDate/tripDate) под этот вид не подходит.
-  const checks = [...fm.matchAll(/^\s+-?\s*date:\s*(.+)$/gm)].map((m) => m[1].replace(/['"]/g, '').trim());
+  //
+  // ⛔ Запись с признаком minor пропускается — так же, как её пропускает сам
+  //    сайт (src/data/freshness.js). 07.09.2026 этот гейт был зелёным ровно
+  //    тогда, когда лента показывала беду: техническая правка ссылок подняла
+  //    64 статьи одной датой, и сезонная «3 сентября» встала первой. Гейт
+  //    считал ту же неверную дату, что и лента, и потому подтверждал порядок.
+  const marks = [...fm.matchAll(/^\s+-\s*date:\s*(.+)$/gm)];
+  const checks: string[] = [];
+  for (let i = 0; i < marks.length; i++) {
+    const from = marks[i].index! + marks[i][0].length;
+    const to = i + 1 < marks.length ? marks[i + 1].index! : fm.length;
+    if (/^\s+minor:\s*true\s*$/m.test(fm.slice(from, to))) continue;
+    checks.push(marks[i][1].replace(/['"]/g, '').trim());
+  }
   return [pub, upd, ...checks].filter(Boolean).sort().at(-1)!;
 };
 

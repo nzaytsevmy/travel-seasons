@@ -66,6 +66,10 @@ const blog = defineCollection({
       date: z.coerce.date(),
       what: z.string(),                    // что сверяли
       changed: z.string(),                 // что изменилось; «без изменений» — нормальный ответ
+      // Техническая правка: ссылка, опечатка, разметка. Запись остаётся видимой
+      // читателю, но дату обновления и порядок в ленте не двигает — материал от
+      // неё свежее не стал (разбор: tests/freshness-minor.test.mjs).
+      minor: z.boolean().optional(),
       sources: z.array(z.object({          // первоисточники, по которым сверяли
         name: z.string(),
         url: z.string().url(),
