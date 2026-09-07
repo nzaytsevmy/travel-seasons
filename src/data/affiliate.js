@@ -61,6 +61,17 @@ export const TP_LINKS = {
   sputnik8:    'https://sputnik8.tpk.mx/nIkABzG2?erid=2Vtzqugsszo',
   // Tiqets: билеты в музеи/достопримечательности (загран + крупные РФ-города).
   tiqets:      'https://tiqets.tpk.mx/QYpcZlVN?erid=2VtzqvKwa3R',
+  // Kiwitaxi: трансфер из аэропорта и между городами, 9–11% с брони. Отвечает на вопрос
+  // раздела «как добраться», которого на сайте не закрывал никто: билет ведёт до аэропорта,
+  // а дальше человек ищет машину сам. Чек трансфера Адлер — Гагра от 2 500 ₽, то есть
+  // порядок вознаграждения выше, чем у авиабилета той же цены (1,1%).
+  // Проверено 07.09.2026 через редирект партнёрки: страницы маршрутов отвечают, erid и
+  // метка доезжают. ⛔ Сам сайт партнёра с ноутбука закрыт защитой от роботов (429/пустой
+  // ответ) — «страница мертва» с этой машины ложный вывод, смотреть через выдачу.
+  kiwitaxi:    'https://kiwitaxi.tpk.mx/TauxEDaY?erid=2VtzqxKaGYP',
+  // Мир Турбаз: базы отдыха, глэмпинги и дома в РФ, 5% с брони. Для Карелии и Камчатки это
+  // основной формат жилья — отельные агрегаторы такие объекты не показывают вовсе.
+  mirturbaz:   'https://mirturbaz.tpk.mx/8IdFjpFs?erid=2Vtzqv57hDy',
 };
 
 // Aviasales deep-link под конкретный маршрут (origin/destination IATA) —
@@ -142,6 +153,59 @@ export const cherehapaCountry = (countrySlug, subId) => {
 // слаг у партнёра не проверен) + постраничный sub_id.
 export const cherehapaTravel = (subId) =>
   tpkDeep('cherehapa', 'https://cherehapa.ru/travel/', subId);
+
+// ─── Трансфер, экскурсии и базы отдыха: адреса проверены 07.09.2026 ────────────────
+// Правило одно на три словаря: сюда попадает только тот адрес, который найден в выдаче
+// живой страницей с ценами и числом предложений. Пустая страница у партнёра — потерянный
+// клик, поэтому «наверное, такой слаг есть» здесь недопустимо.
+
+// Kiwitaxi: маршруты, у которых есть своя страница. Ключ — направление на нашем сайте.
+// Подпись хранится рядом с адресом и называет КОНКРЕТНЫЙ маршрут: «трансфер из аэропорта
+// Дагестан» — не по-русски и не говорит, откуда едешь, а первые два слова ссылки должны
+// нести предмет и направление.
+const KIWITAXI_ROUTE = {
+  // Дагестан: аэропорт Уйташ (MCX) — сюда прилетают, отсюда едут в Махачкалу и Дербент.
+  dagestan: { url: 'https://kiwitaxi.ru/russia/uytash+airport', label: 'Трансфер из аэропорта Махачкалы' },
+  // Абхазия и её места: ближайший аэропорт — Сочи (Адлер), дальше граница по дороге.
+  abkhazia: { url: 'https://kiwitaxi.ru/russia/adler+airport->gagra', label: 'Трансфер из аэропорта Сочи в Абхазию' },
+  gagra: { url: 'https://kiwitaxi.ru/russia/adler+airport->gagra', label: 'Трансфер из аэропорта Сочи в Гагру' },
+  // Карелия: Рускеала и Сортавала — от Петрозаводска.
+  karelia: { url: 'https://kiwitaxi.ru/russia/petrozavodsk->sortavala', label: 'Трансфер Петрозаводск — Сортавала' },
+};
+
+// Возвращает пару «адрес и подпись» либо null, если маршрут не проверен.
+export const kiwitaxiRoute = (destinationSlug, subId) => {
+  const route = KIWITAXI_ROUTE[destinationSlug];
+  return route ? { href: tpkDeep('kiwitaxi', route.url, subId), label: route.label } : null;
+};
+
+// Sputnik8: города, где у партнёра реально есть экскурсии (число предложений и цены
+// видны на самой странице партнёра). Закрывает вопрос «что посмотреть на месте» —
+// раздел, который на сайте не имел денежной точки вовсе.
+const SPUTNIK8_CITY = {
+  abkhazia: 'https://www.sputnik8.com/ru/countries/abkhazia',
+  gagra: 'https://www.sputnik8.com/ru/gagra',
+  sukhum: 'https://www.sputnik8.com/ru/sukhumi',
+  dagestan: 'https://www.sputnik8.com/ru/makhachkala/category/dagestan',
+  karelia: 'https://www.sputnik8.com/ru/sortavala/sights/ruskeala',
+};
+
+export const sputnik8City = (destinationSlug, subId) => {
+  const target = SPUTNIK8_CITY[destinationSlug];
+  return target ? tpkDeep('sputnik8', target, subId) : null;
+};
+
+// Мир Турбаз: регионы, где база отдыха — основной формат жилья. Алтая здесь нет
+// намеренно: адрес его раздела не подтверждён, а гадать про слаг нельзя.
+const MIRTURBAZ_REGION = {
+  karelia: 'https://mirturbaz.ru/russia/kareliya',
+  kamchatka: 'https://mirturbaz.ru/russia/kamchatskiy',
+};
+
+export const mirturbazRegion = (destinationSlug, subId) => {
+  const target = MIRTURBAZ_REGION[destinationSlug];
+  return target ? tpkDeep('mirturbaz', target, subId) : null;
+};
 
 // Яндекс Путешествия с постраничным sub_id (тот же формат, что в altai-пилларе) —
 // хабам нужна атрибуция клика; раньше висел голый TP_LINKS.yandexTravel без sub_id.

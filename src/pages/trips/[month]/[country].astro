@@ -9,7 +9,7 @@ import DestinationTabs from '../../../components/DestinationTabs.astro';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
 import { COUNTRIES as RICH_COUNTRIES } from '../../../data/programmatic-seasons.js';
 import { NICHE_TRIPS } from '../../../data/niche-trips.js';
-import { aviasalesRoute, ostrovokCountry, cherehapaCountry, youtravelCountry } from '../../../data/affiliate.js';
+import { aviasalesRoute, ostrovokCountry, cherehapaCountry, youtravelCountry, sputnik8City } from '../../../data/affiliate.js';
 import { DATA_UPDATED, DATA_UPDATED_RU, yearForMonth } from '../../../data/meta.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
 import { getWeatherBucket } from '../../../data/country-month-bucket.js';
@@ -358,6 +358,9 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
           <div class="shead"><h2>Что делать {d.cases.loc} в {m.prep}</h2></div>
           <p class="txt">{monthCap} {yr} — один из лучших месяцев для поездки {d.cases.vP}. Погода и цены сходятся в окне комфорта. Закладывайте 7–14 дней, бронировать минимум за 2 месяца до вылета — на пиковые даты места разлетаются быстро.</p>
           <p class="txt">Сравнить с другими месяцами можно в <a href="/seasons/">таблице сезонов</a>, посчитать точный бюджет — в <a href="/calculator/">калькуляторе поездки</a>.</p>
+          {sputnik8City(d.slug, `trips_${m.slug}_${d.slug}`) && (
+            <p class="txt findcta"><a href={sputnik8City(d.slug, `trips_${m.slug}_${d.slug}`)} class="find" rel="sponsored noopener" target="_blank">Экскурсии {d.cases.loc} с местными гидами</a> — расписание на {m.prep} и отзывы видно до оплаты.</p>
+          )}
         </section>
       )}
 

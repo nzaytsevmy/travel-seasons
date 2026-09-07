@@ -28,7 +28,7 @@ import EssentialsCard from '../components/EssentialsCard.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
 import ClimateChart from '../components/ClimateChart.astro';
 import CountryMap from '../components/CountryMap.astro';
-import { TP_LINKS, aviasalesRoute, otelloStay, cherehapaCountry, ostrovokCountry, youtravelCountry } from '../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, otelloStay, cherehapaCountry, ostrovokCountry, youtravelCountry, kiwitaxiRoute, sputnik8City, mirturbazRegion } from '../data/affiliate.js';
 import livePrices from '../data/prices-cache.json';
 
 // РФ-инвентарь жилья: на этих хабах вместо Островка — Яндекс Путешествия (сильнее по РФ).
@@ -132,6 +132,9 @@ const vd = getVisaDetails(d.slug, d.visa);
 const visited = VISITED.has(d.slug);
 // Постраничная атрибуция кликов в кабинете TP (только латиница/цифры/_).
 const subId = 'hub_' + d.slug.replaceAll('-', '_');
+// Трансфер считаем один раз: помощник возвращает адрес и подпись с конкретным маршрутом
+// либо null там, где маршрут у партнёра не проверен.
+const трансфер = kiwitaxiRoute(d.slug, subId);
 
 // Best months for this destination
 const rank = { P: 4, G: 3, O: 2, B: 1, X: 0 };
@@ -407,6 +410,12 @@ if (guide?.itinerary?.length) {
             <ul class="sl-list">
               {guide.highlights.map((h) => <li><b>{h.t}</b> — {h.d}</li>)}
             </ul>
+            {sputnik8City(d.slug, subId) && (
+              <p class="sl-cta">
+                <a href={sputnik8City(d.slug, subId)} class="sl-aff" rel="sponsored noopener" target="_blank">Экскурсии {d.cases.loc} с местными гидами</a>
+                <span class="sl-trust">расписание и отзывы видно до оплаты</span>
+              </p>
+            )}
           </section>
         )}
         {photosAfter('highlights').map((p) => (
@@ -424,6 +433,12 @@ if (guide?.itinerary?.length) {
                 <a href={aviasalesRoute('MOW', d.price.iata, subId)} class="aff-btn" rel="sponsored noopener" target="_blank">Сравнить билеты Москва — {d.cases.nom} от ${flightFrom}</a>
 
                 <span class="sl-trust">все авиакомпании в одной выдаче · оплата картами РФ</span>
+              </p>
+            )}
+            {трансфер && (
+              <p class="sl-cta">
+                <a href={трансфер.href} class="sl-aff" rel="sponsored noopener" target="_blank">{трансфер.label} — цена фиксируется при заказе</a>
+                <span class="sl-trust">водитель встречает с табличкой · 90 минут ожидания при задержке рейса</span>
               </p>
             )}
           </section>
@@ -460,6 +475,12 @@ if (guide?.itinerary?.length) {
 
               <span class="sl-trust">оплата российскими картами · цены в ₽</span>
             </p>
+            {mirturbazRegion(d.slug, subId) && (
+              <p class="sl-cta">
+                <a href={mirturbazRegion(d.slug, subId)} class="sl-aff" rel="sponsored noopener" target="_blank">Базы отдыха и дома у воды {d.cases.loc}</a>
+                <span class="sl-trust">формат, которого нет у отельных агрегаторов</span>
+              </p>
+            )}
           </section>
         )}
         {guide.itinerary?.length > 0 && (
@@ -560,13 +581,38 @@ if (guide?.itinerary?.length) {
       <p class="sl-answer">Чек-лист по месяцам: одежда под погоду, документы, аптечка, техника, переходник. <a href={`/packing/${d.slug}/`} class="sl-link"><b>Открыть чек-лист {d.cases.gen || d.cases.prep || d.cases.nom}</b></a></p>
     </section>
 
-    {/* РФ-хабы без гид-секций: компакт-блок жильё/экскурсии/авто */}
+    {/* РФ-хабы без гид-секций: компакт-блоки по задачам читателя — доехать, где жить,
+        что посмотреть. Раньше здесь стояло только жильё, хотя дорога от аэропорта и
+        экскурсии — такие же вопросы этих страниц, и ответа на них не было вовсе. */}
+    {RU_STAY.has(d.slug) && !guide?.getThere && трансфер && (
+      <section class="sl-section">
+        <div class="sl-shead"><h2>Как добраться</h2></div>
+        <p class="sl-cta sl-cta--stack">
+          <a href={трансфер.href} class="sl-aff" rel="sponsored noopener" target="_blank">{трансфер.label} — цена фиксируется при заказе</a>
+          <span class="sl-trust">водитель встречает с табличкой · 90 минут ожидания при задержке рейса</span>
+        </p>
+      </section>
+    )}
+
     {RU_STAY.has(d.slug) && !guide?.stay?.length && (
       <section class="sl-section">
         <div class="sl-shead"><h2>Жильё</h2></div>
         <p class="sl-cta sl-cta--stack">
           <a href={otelloStay(`hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc}</a>
+          {mirturbazRegion(d.slug, subId) && (
+            <a href={mirturbazRegion(d.slug, subId)} class="sl-aff" rel="sponsored noopener" target="_blank">Базы отдыха и дома у воды {d.cases.loc}</a>
+          )}
           <span class="sl-trust">оплата российскими картами · цены и отзывы видно до оплаты</span>
+        </p>
+      </section>
+    )}
+
+    {RU_STAY.has(d.slug) && !guide?.highlights?.length && sputnik8City(d.slug, subId) && (
+      <section class="sl-section">
+        <div class="sl-shead"><h2>Что посмотреть</h2></div>
+        <p class="sl-cta sl-cta--stack">
+          <a href={sputnik8City(d.slug, subId)} class="sl-aff" rel="sponsored noopener" target="_blank">Экскурсии {d.cases.loc} с местными гидами</a>
+          <span class="sl-trust">расписание, отзывы и цена видны до оплаты</span>
         </p>
       </section>
     )}

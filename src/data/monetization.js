@@ -115,6 +115,8 @@ const PARTNERS = [
   { host: 'tripster.tpk.mx', partner: 'tripster', offer: 'excursion', attribution: 'sub_id' },
   { host: 'sputnik8.tpk.mx', partner: 'sputnik8', offer: 'excursion', attribution: 'sub_id' },
   { host: 'tiqets.tpk.mx', partner: 'tiqets', offer: 'attraction', attribution: 'sub_id' },
+  { host: 'kiwitaxi.tpk.mx', partner: 'kiwitaxi', offer: 'transfer', attribution: 'sub_id' },
+  { host: 'mirturbaz.tpk.mx', partner: 'mirturbaz', offer: 'stay', attribution: 'sub_id' },
 ];
 
 const HIGH_INTENT_BLOG = /(?:strahov|insurance|(?:^|-)visa(?:-|$)|pay-|aviasales|ostrovok|travelata|sutochno|tutu-|yandex-puteshestviya|biblio-globus|skolko-stoit|esim)/;
