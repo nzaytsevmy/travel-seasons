@@ -44,6 +44,12 @@ checks:
         url: "https://visa2egypt.gov.eg/eVisa/FAQ?lang=en"
       - name: "Egyptian Environmental Affairs Agency: природные территории"
         url: "https://www.eeaa.gov.eg/Topics/85/36/65/Details"
+  - date: 2026-09-07
+    what: "Партнёрские ссылки на программы без броней"
+    changed: "Сняты партнёрские ссылки, не давшие броней. Убраны: пакетные туры Travelata. За полгода по всему сайту эти программы не дали ни одной брони при 200+ живых кликах (сверка кассы 06.09.2026, решение Никиты 07.09.2026); текст и цены не менялись."
+    sources:
+      - name: "Travelata — пакетные туры"
+        url: "https://travelata.ru/"
 tags: ["Египет", "Хургада", "Шарм-эль-Шейх", "Сезоны", "Погода", "2026"]
 sourceType: "compilation"
 howto:
@@ -67,7 +73,6 @@ import { aviasalesRoute, cherehapaCountry, tpkDeep } from '../../data/affiliate.
 
 export const flightsHurghada = aviasalesRoute('MOW', 'HRG', 'egypt_guide_2026_flights_hrg', 9);
 export const insurance = cherehapaCountry('egypt', 'egypt_guide_2026_insurance');
-export const tours = tpkDeep('travelata', 'https://travelata.ru/egypt', 'egypt_guide_2026_tours');
 
 В Египте нет одного «лучшего месяца». В январе можно купаться, но ветер способен испортить пляжный день; в августе море почти не охлаждает, зато поездка в Луксор превращается в испытание жарой. Правильный выбор начинается не со средней температуры по стране, а с трёх вопросов: **пляж или экскурсии, Хургада или Шарм, какой именно берег у отеля**.
 
@@ -139,8 +144,6 @@ export const tours = tpkDeep('travelata', 'https://travelata.ru/egypt', 'egypt_g
 | тихий отель вдали от города | Сома-Бей или Марса-Алам | расстояние до аэропорта, аптеки и прогулочной зоны |
 
 Полное сравнение пляжей, районов и логистики вынесено в отдельный материал [Хургада или Шарм](/blog/hurghada-sharm-2026/). Дублировать его здесь нет смысла: для сезонного решения важно понять, что зимой Шарм не равен одной бухте, а семейный пляж нельзя выбирать по числу звёзд.
-
-<p><a href={tours} class="aff-cta" rel="sponsored">Сравнить туры в Египет на свои даты</a> — сначала задайте месяц и город вылета, затем сверяйте бухту, пляж, рейс, багаж и отмену.</p>
 
 ## Шесть сценариев поездки
 

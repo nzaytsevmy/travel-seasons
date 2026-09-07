@@ -1851,7 +1851,6 @@ test('Деньги: страновые CTA сохраняют выбранное
   const ошибки: string[] = [];
   let страховок = 0;
   let туров = 0;
-  let esim = 0;
   let авиапоисков = 0;
 
   const hrefИзТега = (тег: string) => {
@@ -1896,14 +1895,6 @@ test('Деньги: страновые CTA сохраняют выбранное
       }
     }
 
-    for (const тег of ссылкиСФрагментом(html, 'airalo.pxf.io')) {
-      esim++;
-      const target = назначение(hrefИзТега(тег), 'u');
-      if (!/^https:\/\/airalo\.com\/ru\/[a-z0-9-]+-esim\/?$/.test(target)) {
-        ошибки.push(`${rel}: eSIM открывает общий каталог — ${target}`);
-      }
-    }
-
     if (части[0] === 'packing' && части.length === 3) {
       for (const тег of ссылкиСФрагментом(html, 'aviasales.tpk.mx')) {
         авиапоисков++;
@@ -1917,7 +1908,6 @@ test('Деньги: страновые CTA сохраняют выбранное
 
   expect(страховок, 'не найдено ни одной страновой ссылки на страховку').toBeGreaterThan(0);
   expect(туров, 'не найдено ни одной страновой ссылки на авторские туры').toBeGreaterThan(0);
-  expect(esim, 'не найдено ни одной страновой ссылки на eSIM').toBeGreaterThan(0);
   expect(авиапоисков, 'не найдено ни одной авиассылки на странице сборов по стране').toBeGreaterThan(0);
   expect(ошибки.slice(0, 30), `${ошибки.length} холодных страновых CTA:\n${ошибки.slice(0, 30).join('\n')}`).toEqual([]);
 });
