@@ -40,9 +40,7 @@ const POST_SOURCE = Object.fromEntries(_posts.map(p => [p.slug, p.data.sourceTyp
 
 const RU_STAY = new Set(['abkhazia', 'kamchatka', 'karelia', 'dagestan', 'altai']);
 // Направления, где самостоятельные ездят за рулём — аренда авто как отдельный блок.
-const CAR_RENTAL = new Set(['georgia', 'armenia', 'abkhazia', 'karelia', 'dagestan', 'altai', 'new-zealand', 'uae', 'bali']);
 // Пакетный интент (чартер+отель): рядом с авторскими турами — сравнение пакетных.
-const PACKAGE_TOUR = new Set(['turkey', 'egypt', 'uae', 'thailand', 'vietnam', 'hainan', 'cuba', 'dominican-republic', 'maldives']);
 import { similarDestinations } from '../data/similar.js';
 import { COMPARE_PAIRS } from '../data/compare-pairs.js';
 import TripSaveButton from '../components/TripSaveButton.astro';
@@ -447,17 +445,6 @@ if (guide?.itinerary?.length) {
             {guide.compare.note && <p class="sl-cc-mark"> — {guide.compare.note}</p>}
           </section>
         )}
-        {CAR_RENTAL.has(d.slug) && (
-          <section class="sl-section">
-            <div class="sl-shead"><h2>Аренда авто</h2></div>
-            <p class="sl-answer">Свои колёса {d.cases.loc} — это свобода маршрута: смотровые, пляжи и деревни, куда автобус не ходит.</p>
-            <p class="sl-cta">
-              <a href={`${TP_LINKS.economybookings}&sub_id=hub_${d.slug}`} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить цены прокатов {d.cases.loc}</a>
-
-              <span class="sl-trust">один поиск по нескольким прокатным компаниям</span>
-            </p>
-          </section>
-        )}
         {guide.stay?.length > 0 && (
           <section class="sl-section">
             <div class="sl-shead"><h2>Где остановиться</h2></div>
@@ -579,9 +566,6 @@ if (guide?.itinerary?.length) {
         <div class="sl-shead"><h2>Жильё</h2></div>
         <p class="sl-cta sl-cta--stack">
           <a href={otelloStay(`hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc}</a>
-          {CAR_RENTAL.has(d.slug) && (
-            <a href={`${TP_LINKS.economybookings}&sub_id=hub_${d.slug}`} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить цены прокатов авто</a>
-          )}
           <span class="sl-trust">оплата российскими картами · цены и отзывы видно до оплаты</span>
         </p>
       </section>
@@ -625,11 +609,8 @@ if (guide?.itinerary?.length) {
     {/* Авторские туры (YouTravel) */}
     <section class="sl-section">
       <div class="sl-shead"><h2>Поехать с экспертом</h2></div>
-      <p class={`sl-cta ${PACKAGE_TOUR.has(d.slug) ? 'sl-cta--stack' : ''}`}>
+      <p class="sl-cta">
         <a href={youtravelCountry(d.slug, `hub_${d.slug}`)} class="sl-aff" rel="sponsored noopener" target="_blank">Авторские туры {d.cases.vP}</a>
-        {PACKAGE_TOUR.has(d.slug) && (
-          <a href={`${TP_LINKS.travelata}&sub_id=hub_${d.slug}`} class="sl-aff" rel="sponsored noopener" target="_blank">Сравнить пакетные туры {d.cases.vP}</a>
-        )}
         <span class="sl-trust">маршрут, логистика и малая группа уже собраны</span>
       </p>
     </section>

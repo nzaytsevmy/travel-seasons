@@ -12,6 +12,12 @@ checks:
         url: "https://www.immigration.govt.nz/assets/inz/documents/forms-and-guides/Fees-Guide-INZ-1028.pdf"
       - name: "Иммиграционная служба Новой Зеландии: Visitor Visa, стоимость, сроки и документы"
         url: "https://www.immigration.govt.nz/new-zealand-visas/visas/visa/visitor-visa"
+  - date: 2026-09-07
+    what: "Партнёрские ссылки на программы без броней"
+    changed: "Сняты партнёрские ссылки, не давшие броней. Убраны: аренда машин EconomyBookings. За полгода по всему сайту эти программы не дали ни одной брони при 200+ живых кликах (сверка кассы 06.09.2026, решение Никиты 07.09.2026); текст и цены не менялись."
+    sources:
+      - name: "EconomyBookings — аренда машин"
+        url: "https://www.economybookings.com/ru"
 coverImage: "../../assets/blog/aurora-nz.jpg"
 author: "Никита Зайцев"
 tags: ["Новая Зеландия", "Северное сияние", "Фото", "Бюджет"]
@@ -214,7 +220,7 @@ iPhone 14 Pro и новее, Pixel 7 Pro+, Samsung S23 Ultra+ снимают а�
 | 6 | Те Анау → Квинстаун (2 ч) | Квинстаун | Резерв на случай облачности |
 | 7 | Квинстаун → перелёт обратно | — | Вылет в Окленд / домой |
 
-Аренда машины — **40–70 USD/день** в Jucy, Apex или Hertz, <a href="https://economybookings.tpk.mx/xlSFNA6p?erid=2VtzqxYvA5V&sub_id=aurora_new_zealand_2026" class="aff-cta" rel="sponsored">сравнить прокат авто в Новой Зеландии</a>: агрегатор сводит локальных и международных прокатчиков с ценой под даты, бронь без предоплаты — без машины охоту за авророй по тёмным точкам не построить. Пробег по маршруту примерно 1500 км. Бензин в НЗ дорогой, заложите ещё ~150 USD на топливо.
+Аренда машины — **40–70 USD/день** в Jucy, Apex или Hertz. Пробег по маршруту примерно 1500 км. Бензин в НЗ дорогой, заложите ещё ~150 USD на топливо.
 
 **Где бронировать жильё.** Booking из РФ не проходит, но новозеландские отели и YHA-хостелы есть в Ostrovok — принимает Visa/MC/МИР, программа Guru со скидками до 40%. <a href="https://ostrovok.tpk.mx/xtyTcUcY?erid=2VtzqvE1cv3&sub_id=aurora_new_zealand_2026" class="aff-cta" rel="sponsored">Забронировать жильё в Новой Зеландии</a>
 

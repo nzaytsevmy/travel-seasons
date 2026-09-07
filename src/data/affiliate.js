@@ -21,8 +21,7 @@ const cleanSubId = (value) => value
 export const aviasalesUrl = (query, subId) =>
   AVIASALES_TPK + (subId ? `&sub_id=${cleanSubId(subId)}` : '') + '&u=' + encodeURIComponent('https://www.aviasales.ru/' + (query || ''));
 
-// Партнёрские ссылки — единая точка. Все tpk.mx с erid (38-ФЗ); drimsim — direct RU
-// (tpk.mx не пробрасывает lang=ru), erid у партнёра нет.
+// Партнёрские ссылки — единая точка. Все tpk.mx с erid (38-ФЗ).
 export const TP_LINKS = {
   aviasales:  aviasalesUrl(),
   ostrovok:   'https://ostrovok.tpk.mx/xtyTcUcY?erid=2VtzqvE1cv3',
@@ -31,23 +30,11 @@ export const TP_LINKS = {
   // клики по снятому шортлинку — риск, который не виден до потери денег.
   // Проверено curl 03.08.2026: оба ведут на cherehapa.ru с erid, marker разный.
   cherehapa:  'https://cherehapa.tpk.mx/fkM7suze?erid=2VtzquZTwb5',
-  // eSIM-провайдеры (оба ведут на RU-сайты).
-  // Airalo: direct партнёрский URL + erid (38-ФЗ маркировка рекламы РФ)
-  airalo:     'https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_&u=https%3A%2F%2Fairalo.com%2Fru',
-  // Drimsim: eSIM, принимает карты РФ/СБП. tpk.mx-шортлинк даёт постраничный sub_id
-  // на шортлинке (атрибуция); редиректит на w1.drimsim.com, TP-маркер = erid по ОРД.
-  drimsim:    'https://drimsim.tpk.mx/ELmQp51R',
   // PlatipoMiru: виртуальные карты USD/EUR для россиян (Visa/MC иностранного эмитента).
   // CPA-партнёрка. ⛔ Метки erid НЕТ и не будет: партнёр её не выдаёт (решение Никиты
   // 24.08.2026 — тему закрыть и в отчётах больше не поднимать). Ссылка идёт с
   // rel="sponsored"; за формулировки маркировки отвечает Никита сам.
   platipomiru: 'https://platipomiru.com/?utm_source=traveltribe&utm_medium=cpa',
-  // Travelata: пакетные туры + отели. Вертикаль «готовый тур vs самостоятельно».
-  // Cookie 180 дней (лучший), комиссия 3.8–8%. erid от партнёра (38-ФЗ).
-  travelata:  'https://travelata.tpk.mx/Do2A3cgV?erid=2VtzqufPtiT',
-  // EconomyBookings: аренда авто (car rental aggregator), erid встроен (38-ФЗ).
-  // Интент «road-trip / самостоятельно за рулём» — добавлять в self-drive направления.
-  economybookings: 'https://economybookings.tpk.mx/xlSFNA6p?erid=2VtzqxYvA5V',
   // YouTravel.me: АВТОРСКИЕ туры с экспертами (малые группы) — вертикаль «не планировать
   // самому, поехать с гидом». On-brand для DIY-аудитории. CPA g2afse (pid=1163).
   // ⛔ Метки erid НЕТ и не будет: партнёр её не выдаёт (решение Никиты 24.08.2026 —
@@ -57,14 +44,12 @@ export const TP_LINKS = {
   // ─── РФ-направления (внутренний туризм) — все tpk.mx с erid (38-ФЗ) ───
   // Суточно: посуточная аренда жилья в РФ (частный сектор, апартаменты).
   sutochno:    'https://sutochno.tpk.mx/9wjPjf99?erid=2VtzqusFnyD',
-  // Туту: ж/д + авиа + туры по РФ (поезда — Карелия, Байкал; внутр. перелёты).
-  tutu:        'https://tutu.tpk.mx/f99ezU4z?erid=2Vtzqunoq8B',
   // Яндекс Путешествия: отели РФ (альтернатива Островку, сильный РФ-инвентарь).
   yandexTravel:'https://yandex.tpk.mx/ubagzDqF?erid=2VtzqvB3eMM',
   // Отелло (2ГИС на инвентаре Островка, ТОЛЬКО РФ): 13% с брони — лучшая ставка на
   // РФ-отели (Островок 6%, Яндекс 9%). Первым на РФ-хабах (RU_STAY). erid встроен.
   otello:      'https://otello.tpk.mx/sVtfBPMj?erid=2VtzqvGybUj',
-  // Level.Travel: пакетные туры (как Travelata, второй источник предложений).
+  // Level.Travel: пакетные туры (второй источник предложений).
   level:       'https://level.tpk.mx/CraFALLJ?erid=2VtzquiMsH9',
   // Трипстер: экскурсии с местными жителями, авторские прогулки. Вертикаль
   // «что делать на месте» — её на сайте не было вовсе, хотя это ровно тот
@@ -179,61 +164,13 @@ export const otelloStay = (subId) =>
 // поэтому Суточно уместнее отельных агрегаторов.
 export const sutochnoRegion = (regionUrl, subId) => tpkDeep('sutochno', regionUrl, subId);
 
-// Туту: поиск поездов (проверено curl 30.07.2026: tutu.ru/poezda/ → 200, erid и метка
-// TP доезжают). URL под конкретный маршрут у Туту не открывается — /poezda/moskva/adler/
-// и rasp.php отдают 404, поэтому ведём на общий поиск и подпись даём соответствующую.
-export const tutuTrains = (subId) => tpkDeep('tutu', 'https://www.tutu.ru/poezda/', subId);
 
 // Островок без города (общий поиск) + постраничная метка. Отдельно от ostrovokCity:
 // там, где страна поездки заранее неизвестна (чек-листы, сборы), город подставить нечего.
 export const ostrovokSearch = (subId) =>
   TP_LINKS.ostrovok + (subId ? `&sub_id=${cleanSubId(subId)}` : '');
 
-// Airalo: постраничная метка живёт ВНУТРИ sharedID после подчёркивания
-// (`sharedID=546042_<метка>`), а не отдельным параметром — формат партнёрской сети.
-// Голый TP_LINKS.airalo несёт `546042_` с пустым хвостом: клик засчитывается, но
-// страницу-источник не опознать. Аудит 03.08.2026: так стояли ВСЕ 31 ссылка на сайте.
-// Проверено curl: `sharedID=546042_georgia_guide_2026` → 200, редирект на airalo.com/ru.
-export const airaloSub = (subId) =>
-  TP_LINKS.airalo.replace('sharedID=546042_&', `sharedID=546042_${cleanSubId(subId)}&`);
 
-// Airalo: реальные страновые страницы из sitemap-v2-countries.xml, сверено
-// 30.08.2026. Для неподдерживаемых направлений возвращаем null: холодная ссылка
-// на общий каталог хуже отсутствия оффера. Комбинированным маршрутам — региональный
-// пакет Латинской Америки, а субрегионам — пакет родительской страны.
-const AIRALO_COUNTRY = {
-  'australia-east': 'australia',
-  'australia-north': 'australia',
-  bali: 'indonesia',
-  'sumatra-kalimantan': 'indonesia',
-  'raja-ampat': 'indonesia',
-  uae: 'united-arab-emirates',
-  'japan-hokkaido': 'japan',
-  'india-goa': 'india',
-  'italy-north': 'italy',
-  'italy-south': 'italy',
-  'canada-rockies': 'canada',
-  'canada-east': 'canada',
-  usa: 'united-states',
-  'guatemala-belize': 'latin-america',
-  'costa-rica-panama': 'latin-america',
-  'chile-patagonia': 'chile',
-  'chile-fjords': 'chile',
-  hainan: 'china',
-};
-const AIRALO_UNSUPPORTED = new Set([
-  'iran', 'cuba', 'abkhazia', 'antarctica',
-  'kamchatka', 'karelia', 'dagestan', 'altai',
-]);
-
-export const airaloCountry = (countrySlug, subId) => {
-  if (AIRALO_UNSUPPORTED.has(countrySlug)) return null;
-  const targetSlug = AIRALO_COUNTRY[countrySlug] ?? countrySlug;
-  return airaloSub(subId).replace(
-    encodeURIComponent('https://airalo.com/ru'),
-    encodeURIComponent(`https://airalo.com/ru/${targetSlug}-esim`),
-  );
-};
 
 // YouTravel: постраничная метка. Сеть Affise принимает sub1..sub5 на своей
 // стороне и в адрес назначения их НЕ пробрасывает — проверено 20.08.2026 с
@@ -343,9 +280,6 @@ export const youtravelCountry = (countrySlug, subId) => {
   return youtravelSub(subId) + '&redirect=' + encodeURIComponent(`https://youtravel.me/tours/${destination}`);
 };
 
-// Drimsim: шортлинк без query, поэтому метка вешается через `?`, а не `&`.
-export const drimsimSub = (subId) =>
-  TP_LINKS.drimsim + (subId ? `?sub_id=${cleanSubId(subId)}` : '');
 
 // ── Отели: страна вместо пустой формы ────────────────────────────────────────
 //
@@ -391,7 +325,6 @@ export function destinationAffiliateUrl(partner, destination, subId) {
   if (!destination) return null;
   if (partner === 'cherehapa') return cherehapaCountry(destination, subId);
   if (partner === 'ostrovok') return ostrovokCountry(destination, subId);
-  if (partner === 'airalo') return airaloCountry(destination, subId);
   if (partner === 'youtravel') return youtravelCountry(destination, subId);
   return null;
 }

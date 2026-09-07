@@ -30,12 +30,23 @@ howto:
       text: "На паспортном контроле — штамп, безвизовое пребывание до 180 дней в году. Если планируешь больше 30 дней — нужна регистрация в местных органах."
     - name: "Спланировать маршрут"
       text: "База Ереван 2-3 дня, дальше радиальные выезды: языческий храм Гарни и пещерный монастырь Гегард, озеро Севан с монастырём Севанаванк, зелёный Дилижан. На юг — Хор Вирап с видом на Арарат, Нораванк и Татев с длиннейшей канаткой."
+checks:
+  - date: 2026-09-07
+    what: "Партнёрские ссылки на программы без броней"
+    changed: "Сняты партнёрские ссылки, не давшие броней. Убраны: пакетные туры Travelata, eSIM Airalo, eSIM Drimsim, аренда машин EconomyBookings. За полгода по всему сайту эти программы не дали ни одной брони при 200+ живых кликах (сверка кассы 06.09.2026, решение Никиты 07.09.2026); текст и цены не менялись."
+    sources:
+      - name: "Travelata — пакетные туры"
+        url: "https://travelata.ru/"
+      - name: "Airalo — eSIM"
+        url: "https://www.airalo.com/ru"
+      - name: "EconomyBookings — аренда машин"
+        url: "https://www.economybookings.com/ru"
 ---
 import PricingCards from '../../components/post/PricingCards.astro';
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 import CountryMap from '../../components/CountryMap.astro';
-import { TP_LINKS, airaloSub, aviasalesRoute, cherehapaCountry, cherehapaTravel, drimsimSub, ostrovokCity } from '../../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, cherehapaCountry, cherehapaTravel, ostrovokCity } from '../../data/affiliate.js';
 import pricesCache from '../../data/prices-cache.json';
 
 {/* Цена в кнопке — из ежедневной выгрузки. Раньше стояло «от 9 000 ₽» руками,
@@ -283,7 +294,7 @@ export const insurance = cherehapaTravel('armenia_guide_2026');
   ]}
 />
 
-Дороги в Армении для самостоятельной поездки за рулём приятные, а виды — половина удовольствия, поэтому аренда машины здесь оправдана. <a href={`${TP_LINKS.economybookings}&sub_id=armenia_guide_2026`} class="aff-cta" rel="sponsored">Сравнить цены на аренду авто</a> — на пик сезона машин мало, бронировать стоит заранее.
+Дороги в Армении для самостоятельной поездки за рулём приятные, а виды — половина удовольствия, поэтому аренда машины здесь оправдана.
 
 ---
 
@@ -296,7 +307,7 @@ export const insurance = cherehapaTravel('armenia_guide_2026');
 - **Арени** — винная деревня рядом с Нораванком: здесь нашли древнейшую в мире винодельню, а сейчас дегустируют местное вино.
 - **Джермук** — горный курорт с водопадом и минеральными источниками, для спа и лечения.
 
-На юг удобнее всего либо на арендованной машине, либо **готовым многодневным туром** — логистика и ночёвки собраны за вас. Пакет с перелётом и программой из Москвы иногда выходит выгоднее раздельной брони — <a href={`${TP_LINKS.travelata}&sub_id=armenia_guide_2026`} class="aff-cta" rel="sponsored">Подобрать тур в Армению</a>: в высокий сезон готовый тур часто удобнее и дешевле, оплата картой МИР.
+На юг удобнее всего либо на арендованной машине, либо **готовым многодневным туром** — логистика и ночёвки собраны за вас.
 
 ---
 
@@ -306,7 +317,7 @@ export const insurance = cherehapaTravel('armenia_guide_2026');
 
 Варианты:
 
-1. **eSIM** — подключить ещё до вылета, работает сразу по прилёту. <a href={drimsimSub('armenia_guide_2026')} class="aff-cta" rel="sponsored">Купить eSIM Drimsim для Армении</a> — принимает карты РФ и СБП, или <a href={airaloSub('armenia_guide_2026')} class="aff-cta" rel="sponsored">Купить eSIM Airalo</a> — пакет на Армению от ~$5.
+1. **eSIM** — подключить ещё до вылета, работает сразу по прилёту.
 2. **Местная SIM** — операторы Team (бывший Beeline), Ucom, Viva-MTS. Продаются в аэропорту и салонах по паспорту, туристический пакет с интернетом стоит недорого. Самый дешёвый вариант для долгой поездки.
 3. **Wi-Fi** — бесплатный почти везде: кафе, отели, гестхаусы.
 

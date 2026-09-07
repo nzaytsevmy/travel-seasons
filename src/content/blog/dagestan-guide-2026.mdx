@@ -32,6 +32,14 @@ checks:
     sources:
       - name: "Суточно.ру — жильё в Махачкале"
         url: "https://mahachkala.sutochno.ru/"
+  - date: 2026-09-07
+    what: "Партнёрские ссылки на программы без броней"
+    changed: "Сняты партнёрские ссылки, не давшие броней. Убраны: пакетные туры Travelata, аренда машин EconomyBookings. За полгода по всему сайту эти программы не дали ни одной брони при 200+ живых кликах (сверка кассы 06.09.2026, решение Никиты 07.09.2026); текст и цены не менялись."
+    sources:
+      - name: "Travelata — пакетные туры"
+        url: "https://travelata.ru/"
+      - name: "EconomyBookings — аренда машин"
+        url: "https://www.economybookings.com/ru"
 ---
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 import PricingCards from '../../components/post/PricingCards.astro';
@@ -88,7 +96,7 @@ export const insurance = cherehapaCountry('dagestan', 'dagestan_guide_2026');
 
 Проще всего поехать по Дагестану с местным гидом в малой группе — горные сёла, каньон и логистика уже собраны в маршрут: <a href={youtravelCountry('dagestan', 'dagestan_guide_2026')} class="aff-cta" rel="sponsored">авторский тур по Дагестану с местным гидом</a> — оплата картой РФ.
 
-**Со своей машиной** свободы больше: рассветы на смотровых без группы, остановки где угодно. Минусы — серпантины без ограждений, местная манера вождения и перегоны по 3–4 часа. <a href={`${TP_LINKS.economybookings}&sub_id=dagestan_guide_2026`} class="aff-cta" rel="sponsored">Сравнить цены проката</a> — если решитесь.
+**Со своей машиной** свободы больше: рассветы на смотровых без группы, остановки где угодно. Минусы — серпантины без ограждений, местная манера вождения и перегоны по 3–4 часа.
 
 ---
 
@@ -124,8 +132,6 @@ export const insurance = cherehapaCountry('dagestan', 'dagestan_guide_2026');
         'Серпантины и перегоны 3–4 часа — опыт вождения обязателен',
         'Парковки у популярных троп в сезон забиты',
       ],
-      ctaLabel: 'Сравнить прокаты',
-      ctaHref: `${TP_LINKS.economybookings}&sub_id=dagestan_guide_2026`,
     },
     {
       tier: 'Готовый тур',
@@ -137,8 +143,6 @@ export const insurance = cherehapaCountry('dagestan', 'dagestan_guide_2026');
         'Обычно: каньон + Дербент + горные сёла',
         '5 дней — от ~40–45 тысяч ₽',
       ],
-      ctaLabel: 'Смотреть туры',
-      ctaHref: `${TP_LINKS.travelata}&sub_id=dagestan_guide_2026`,
     },
   ]}
 />

@@ -110,16 +110,13 @@ test('неизвестный домен не объявляется партнё
 });
 
 test('общий оффер старой статьи превращается в проверенный страновой диплинк', () => {
-  for (const partner of ['cherehapa', 'ostrovok', 'airalo', 'youtravel']) {
+  for (const partner of ['cherehapa', 'ostrovok', 'youtravel']) {
     const href = destinationAffiliateUrl(partner, 'georgia', 'blog_georgia_body_1');
     assert.ok(href, `${partner}: ожидается страновой URL`);
     assert.equal(isGenericAffiliateUrl(href, partner), false, `${partner}: ссылка не должна вести в общий каталог`);
   }
 });
 
-test('для неподдерживаемой Airalo страны не выдумывается несуществующий лендинг', () => {
-  assert.equal(destinationAffiliateUrl('airalo', 'antarctica', 'x'), null);
-});
 
 test('cta_id стабилен, безопасен для sub_id и не длиннее 64 символов', () => {
   const one = buildCtaId('/packing/very-long-country-name/september/', 'cherehapa', 'answer capsule', 12);
