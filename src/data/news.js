@@ -97,3 +97,21 @@ export function newsForCountry(entries, slug, limit = 3) {
     .sort(byDateDesc)
     .slice(0, limit);
 }
+
+/**
+ * Когда заметка выпущена. Это и есть pubDate для RSS: читалки, Дзен и Telegram
+ * сортируют ленту по нему. Дата события живёт отдельно, в `data.date`, и уходит
+ * в текст заметки и в выбор месяца архива.
+ *
+ * ⛔ 07.09.2026 обе ленты клали сюда дату события, и свежее уезжало вниз: у
+ * заметки дня про событие 3 сентября дата была 3 сентября, и в ленте Дзена она
+ * стояла девятой, ниже позавчерашних. На самой странице /novosti/ ровно это
+ * чинили 03.08.2026 — до лент правка тогда не дошла.
+ */
+export const publishedAt = (e) => new Date(addedAt(e));
+
+/** Заметки для RSS: тот же порядок, что на странице, и срез уже после сортировки. */
+export function feedEntries(entries, limit) {
+  const sorted = [...entries].sort(byDateDesc);
+  return typeof limit === 'number' ? sorted.slice(0, limit) : sorted;
+}

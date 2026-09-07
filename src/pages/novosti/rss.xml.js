@@ -8,14 +8,12 @@
 // старый. Теперь адрес у заметки один и навсегда.
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
-import { formatDateRu, TOPIC_LABEL, addedAt, newsUrl } from '../../data/news.js';
+import { formatDateRu, TOPIC_LABEL, feedEntries, publishedAt, newsUrl } from '../../data/news.js';
 
 export async function GET(context) {
   const all = await getCollection('news');
   // Тот же порядок, что на странице: подписчик видит новое сверху.
-  const sorted = [...all]
-    .sort((a, b) => addedAt(b) - addedAt(a) || b.data.date.valueOf() - a.data.date.valueOf())
-    .slice(0, 60);
+  const sorted = feedEntries(all, 60);
 
   return rss({
     title: 'TravelTribe — новости путешествий',
@@ -27,8 +25,10 @@ export async function GET(context) {
       const head = e.data.status ? `${e.data.status} · ` : '';
       return {
         title: e.data.title,
-        // Дата события, а не публикации: читателю важно, когда это произошло.
-        pubDate: e.data.date,
+        // Дата ВЫПУСКА, а не события: читалки сортируют ленту именно по ней, и
+        // с датой события свежая заметка уезжала вниз. Когда событие произошло —
+        // сказано первой строкой описания, там оно читателю и нужно.
+        pubDate: publishedAt(e),
         description: `${TOPIC_LABEL[e.data.topic]} · ${head}${formatDateRu(e.data.date)}. ${e.body.trim().split('\n')[0]}`,
         link: new URL(newsUrl(e), context.site).href,
       };
