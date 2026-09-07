@@ -1645,7 +1645,9 @@ test('Деньги: в тексте партнёрской ссылки нет �
   //    чтобы они не вернулись при следующей правке.
   const ИМЕНА = new Set(['aviasales', 'cherehapa', 'airalo', 'travelata', 'ostrovok',
     'отелло', 'otello', 'drimsim', 'youtravel', 'sputnik8', 'tutu', 'туту', 'level',
-    'tripster', 'tiqets', 'суточно', 'sutochno']);
+    'tripster', 'tiqets', 'суточно', 'sutochno',
+    // Партнёры, заведённые 07.09.2026: имя в тексте ссылки запрещено с первого дня.
+    'kiwitaxi', 'кивитакси', 'mirturbaz', 'мир турбаз', 'спутник8', 'sputnik 8']);
   const bad: string[] = [];
   for (const ф of files) {
     const h = readFileSync(ф, 'utf8');
