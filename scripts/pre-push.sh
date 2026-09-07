@@ -44,7 +44,12 @@ if git rev-parse --verify -q origin/main >/dev/null; then
   done)"
 fi
 # Linux-эталоны локально не проверяются (здесь darwin) — их сверяет CI.
-CODE_TOUCHED="$(printf '%s\n' "$CHANGED" | grep -vE '^(src/content/|news/|public/llms|measurements/|tests/visual\.spec\.ts-snapshots/[^/]*-linux\.png$|.*\.md$)' | grep -v '^$' || true)"
+# reviews/ — артефакты независимой оценки статей (reviews/blog/<slug>.json):
+# числа и текст рецензии, которые страницу не рисуют. Файл читает только
+# scripts/article-review-gate.mjs, в шапке статьи лежит одна строка reviewRef.
+# Артефакт обязателен у каждой новой статьи, поэтому без этой строки любая
+# чисто текстовая публикация уходила в MODE=full: 947 тестов, 20 минут.
+CODE_TOUCHED="$(printf '%s\n' "$CHANGED" | grep -vE '^(src/content/|news/|reviews/|public/llms|measurements/|tests/visual\.spec\.ts-snapshots/[^/]*-linux\.png$|.*\.md$)' | grep -v '^$' || true)"
 
 if [ -z "$CODE_TOUCHED" ] && [ -n "$CHANGED" ]; then
   MODE="text"
