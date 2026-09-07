@@ -18,7 +18,12 @@
  * проверить, и её начнут подкручивать без правок.
  */
 export function freshDate(data) {
-  const dates = [data.pubDate, data.updatedDate, ...(data.checks ?? []).map((c) => c.date)];
+  // Записи с признаком minor пропускаются: правка была технической и материал от
+  // неё свежее не стал. 07.09.2026 без этого на витрину блога всплыла сезонная
+  // статья «3 сентября» — её подняла запись о снятой партнёрской ссылке, где
+  // прямо сказано «текст и цены не менялись».
+  const checks = (data.checks ?? []).filter((c) => !c.minor).map((c) => c.date);
+  const dates = [data.pubDate, data.updatedDate, ...checks];
   return new Date(Math.max(...dates.filter(Boolean).map((d) => d.valueOf())));
 }
 
