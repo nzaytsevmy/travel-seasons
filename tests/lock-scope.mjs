@@ -33,6 +33,7 @@ export const LIGHT_SPECS = new Set([
   'news-gate.spec.ts',
   'sitemap-dates.spec.ts',
   'page-mtimes.spec.ts',
+  'monetization-browser.spec.ts',
 ]);
 
 const SPEC_RE = /([^/\\]+\.spec\.ts)$/;
