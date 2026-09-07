@@ -139,6 +139,9 @@ export default defineConfig({
     '/japan_momiji': '/blog/japan-guide-2026/',
     '/japan-momiji': '/blog/japan-guide-2026/',
     '/mexico_old': '/blog/',
+    // Пара сравнения переехала на транслит abkhazia (было abhaziya) —
+    // старый адрес остался в выдаче Google и отдавал 404.
+    '/compare/dagestan-vs-abhaziya': '/compare/dagestan-vs-abkhazia/',
     // /altai: legacy-редирект старого тур-лендинга снят 2026-07 — направление
     // добавлено на сайт, бэклинки leadgid 2024 теперь ведут на тематический хаб.
   },
