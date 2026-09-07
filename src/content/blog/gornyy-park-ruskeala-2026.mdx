@@ -21,6 +21,16 @@ checks:
     sources:
       - name: "Горный парк Рускеала — билеты и цены"
         url: "https://ruskeala.ru/tickets.html"
+  - date: 2026-09-07
+    what: "Трансфер Петрозаводск — Сортавала, экскурсии в парк и базы отдыха Карелии"
+    changed: "В раздел о дороге добавлены три строки. Это трансфер от Петрозаводска, экскурсии в Рускеалу из Сортавалы и базы отдыха Карелии. Рейсовый транспорт до Сортавалы редкий, а штольни доступны только с проводником. Страницы партнёров открыты и проверены."
+    sources:
+      - name: "Kiwitaxi: трансфер Петрозаводск — Сортавала"
+        url: "https://kiwitaxi.ru/russia/petrozavodsk->sortavala"
+      - name: "Sputnik8: экскурсии в горный парк Рускеала"
+        url: "https://www.sputnik8.com/ru/sortavala/sights/ruskeala"
+      - name: "Мир Турбаз: базы отдыха Карелии"
+        url: "https://mirturbaz.ru/russia/kareliya"
 tags: ["Карелия", "Рускеала", "Сортавала", "Природа", "2026"]
 sourceType: "hybrid"
 howto:
@@ -42,7 +52,7 @@ howto:
 ---
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 import PricingCards from '../../components/post/PricingCards.astro';
-import { sutochnoRegion, cherehapaCountry, TP_LINKS } from '../../data/affiliate.js';
+import { sutochnoRegion, cherehapaCountry, TP_LINKS, kiwitaxiRoute, sputnik8City, mirturbazRegion } from '../../data/affiliate.js';
 
 Горный парк Рускеала — главная «открытка» Карелии: затопленный мраморный каньон с бирюзовой водой, отвесными скалами и подземными штольнями, куда добираются на ретропоезде с настоящим паровозом. Место красивое, но популярное до толп — и тем ценнее знать, когда ехать и что почём. Собрал по делу: цена билета в 2026 году, как добраться из Петербурга и Сортавалы и что успеть внутри.
 
@@ -99,6 +109,8 @@ import { sutochnoRegion, cherehapaCountry, TP_LINKS } from '../../data/affiliate
 - **На машине из Петербурга** — около 290–310 км, 4–5 часов по Приозерской трассе (А-121) через Приозерск и Сортавалу. У входа бесплатная парковка.
 - **Автобусом:** прямого из Петербурга нет; едут до Сортавалы (~4–5,5 ч, 790–960 ₽), затем местный автобус Сортавала → Рускеала (один рейс, вечером, ~169 ₽) или такси.
 - **Из Москвы** — турпоездом «В Карелию» (состыкован с экспрессом) либо «Сапсаном» до Петербурга + «Ласточкой».
+
+<a href={kiwitaxiRoute('karelia', 'gornyy_park_ruskeala_2026').href} class="aff-cta" rel="sponsored">Трансфер Петрозаводск — Сортавала</a> — 250 км, рейсовый транспорт редкий. <a href={sputnik8City('karelia', 'gornyy_park_ruskeala_2026')} class="aff-cta" rel="sponsored">Экскурсии в Рускеалу из Сортавалы</a> — со штольнями. <a href={mirturbazRegion('karelia', 'gornyy_park_ruskeala_2026')} class="aff-cta" rel="sponsored">Базы отдыха в Карелии</a>.
 
 <a href={sutochnoRegion('https://sortavala.sutochno.ru/', 'gornyy_park_ruskeala_2026')} class="aff-cta" rel="sponsored">Найти ночлег в Сортавале</a> — от вокзала до парка час на ретропоезде, ночью машин нет.
 
