@@ -22,10 +22,18 @@ howto:
       text: "Групповой полёт ~€100–300 с человека. Места в высокий сезон разбирают, но погоду не угадать: при сильном ветре рейс переносят или отменяют. Закладывайте два утра под шар — на случай отмены."
     - name: "Спланировать 2 полных дня"
       text: "День на шар, музей Гёреме и ближние долины; день на подземный город (Деринкую или Каймаклы) и треккинг по Красному или Зелёному маршруту."
+checks:
+  - date: 2026-09-08
+    what: "Кнопка в карточке деревень Каппадокии"
+    changed: "У Гёреме в карточке появилась кнопка поиска отелей. Текст карточки не менялся."
+    minor: true
+    sources:
+      - name: "Партнёрские программы сайта: подбор жилья, туров и трансферов"
+        url: "https://traveltribe.ru/about/"
 ---
 import PricingCards from '../../components/post/PricingCards.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
-import { cherehapaCountry, youtravelCountry } from '../../data/affiliate.js';
+import { cherehapaCountry, youtravelCountry, ostrovokCity } from '../../data/affiliate.js';
 
 В Каппадокию едут за одним кадром — сотни воздушных шаров над лунными долинами на рассвете. Кадр реально того стоит, но у него есть подвох: полёт зависит от погоды, и его могут отменить прямо утром. Поэтому поездку надо спланировать так, чтобы она удалась даже без шара — благо смотреть тут есть что и на земле.
 
@@ -100,6 +108,7 @@ import { cherehapaCountry, youtravelCountry } from '../../data/affiliate.js';
 
 <PricingCards tiers={[
  { tier: 'Гёреме', featured: true, badge: 'Выбор большинства',
+ ctaLabel: 'Отели в Гёреме', ctaHref: ostrovokCity('turkey', 'goreme', 'cappadocia_2026_cards'),
    price: 'от ~$50/ночь',
    priceNote: 'пещерный отель',
    features: [

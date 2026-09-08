@@ -94,9 +94,19 @@ test('Aviasales определяется как перелёт', () => {
 });
 
 test('Airalo определяется как eSIM со своим форматом метки', () => {
-  assert.deepEqual(classifyPartner('https://airalo.pxf.io/c/1?sharedID=546042_a'), {
-    partner: 'airalo', offer: 'esim', attribution: 'sharedID',
+  // Партнёры волны 07.09.2026: клик по ним обязан классифицироваться, иначе он падает
+  // в «other» и в отчёте не видно, сколько принесли трансфер и экскурсии.
+  assert.deepEqual(classifyPartner('https://kiwitaxi.tpk.mx/abc?sub_id=546042_a'), {
+    partner: 'kiwitaxi', offer: 'transfer', attribution: 'sub_id',
   });
+  assert.deepEqual(classifyPartner('https://sputnik8.tpk.mx/abc?sub_id=546042_a'), {
+    partner: 'sputnik8', offer: 'excursion', attribution: 'sub_id',
+  });
+  assert.deepEqual(classifyPartner('https://mirturbaz.tpk.mx/abc?sub_id=546042_a'), {
+    partner: 'mirturbaz', offer: 'stay', attribution: 'sub_id',
+  });
+  // Снятые программы больше не классифицируются: ссылок на них на сайте нет с 07.09.2026.
+  assert.equal(classifyPartner('https://airalo.pxf.io/c/1?sharedID=546042_a'), null);
 });
 
 test('YouTravel определяется как авторский тур', () => {
@@ -170,10 +180,11 @@ test('legacy sub_id остаётся читаемым, но не выдаётс�
 });
 
 test('Airalo сохраняет marker и получает CTA-level sharedID', () => {
-  const before = 'https://airalo.pxf.io/c/1209822/1310283/15608?sharedID=546042_page&u=https%3A%2F%2Fairalo.com%2Fru%2Fjapan-esim';
-  const after = new URL(addCtaAttribution(before, 'packing_japan_esim_1'));
-  assert.equal(after.searchParams.get('sharedID'), '546042_packing_japan_esim_1');
-  assert.equal(after.searchParams.get('u'), 'https://airalo.com/ru/japan-esim');
+  // Метка страницы дописывается в sub_id и не ломает адрес назначения внутри &u=.
+  const before = 'https://kiwitaxi.tpk.mx/TauxEDaY?sub_id=546042_page&u=https%3A%2F%2Fkiwitaxi.ru%2Frussia%2Fuytash%2Bairport';
+  const after = new URL(addCtaAttribution(before, 'dagestan_guide_2026'));
+  assert.equal(after.searchParams.get('sub_id'), 'dagestan_guide_2026');
+  assert.equal(after.searchParams.get('u'), 'https://kiwitaxi.ru/russia/uytash+airport');
 });
 
 test('YouTravel получает sub1, не меняя redirect', () => {
