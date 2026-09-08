@@ -7,6 +7,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { unshieldHtml } from './affiliate-shield.mjs';
+import { isGenericAffiliateUrl } from '../src/data/monetization.js';
 
 const DIST = 'dist';
 const PARTNER_HOSTS = /(aviasales|ostrovok|cherehapa|sutochno|otello|yandex|level|sputnik8|tiqets|tripster|kiwitaxi|mirturbaz)\.tpk\.mx|travelme\.g2afse\.com|platipomiru\.com/;
@@ -21,10 +22,14 @@ function walk(dir, out = []) {
   return out;
 }
 
-const rows = [['page', 'partner', 'offer', 'placement', 'form', 'deep', 'cta_id', 'anchor']];
+const rows = [['page', 'partner', 'offer', 'placement', 'form', 'deep', 'runtime_fix', 'cta_id', 'anchor']];
 for (const file of walk(DIST)) {
   const page = '/' + file.replace(/^dist\/?/, '').replace(/index\.html$/, '');
   const html = unshieldHtml(readFileSync(file, 'utf8'));
+  // Направление страницы: если оно известно, скрипт в момент клика сам заменит общую
+  // ссылку на страновую (страховка, отели, авторские туры). Значит «общая» в статике
+  // не равна «общая для читателя» — без этой колонки опись снова соврёт.
+  const pageDestination = (html.match(/data-destination="([^"]*)"/) || ['', ''])[1];
   for (const m of html.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)) {
     const [full, href, inner] = m;
     if (!PARTNER_HOSTS.test(href)) continue;
@@ -43,13 +48,20 @@ for (const file of walk(DIST)) {
       : /pricing-cards/.test(before) ? 'comparison'
       : /class="[^"]*(capsule|answer|tldr)/.test(before) ? 'answer'
       : 'body';
-    const deep = /[?&]u=/.test(href) || /\/(search|travel|hotel|country|city)\//.test(href) ? 'deep' : 'generic';
+    // ⛔ Глубину считает ШТАТНАЯ проверка проекта, а не своя догадка по адресу.
+    // 08.09.2026 самодельное правило дважды соврало: сначала записало в «общие» все
+    // ссылки на авторские туры (адрес назначения у них в redirect, а не в u), потом
+    // четыре тысячи страховок (страна у партнёра лежит в параметре countries[0]).
+    // Из-за этого был доложен несуществующий провал на две тысячи ссылок.
+    const deep = isGenericAffiliateUrl(href, partner) ? 'generic' : 'deep';
     const cta = (full.match(/data-cta-id="([^"]*)"/) || ['', ''])[1];
     // Метка страницы у каждого партнёра называется по-своему: sub_id у сети,
     // sub1 у YouTravel, utm_content у PlatipoMiru, sharedID у прежних программ.
     // Искать только sub_id — значит записать чужой формат в «без метки» и соврать себе.
     const subId = (href.match(/[?&](?:sub_id|sub1|sharedID|utm_content)=([^&"]*)/) || ['', ''])[1];
-    rows.push([page, partner, '', placement, form, deep, cta || subId, anchor]);
+    const runtimeFixed = deep === 'generic' && pageDestination
+      && ['cherehapa', 'ostrovok', 'youtravel', 'travelme'].includes(partner) ? 'да' : '';
+    rows.push([page, partner, '', placement, form, deep, runtimeFixed, cta || subId, anchor]);
   }
 }
 console.log(rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n'));
