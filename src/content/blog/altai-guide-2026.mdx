@@ -35,10 +35,16 @@ checks:
         url: "https://travelata.ru/"
       - name: "EconomyBookings — аренда машин"
         url: "https://www.economybookings.com/ru"
+  - date: 2026-09-08
+    what: "Экскурсии из Горно-Алтайска"
+    changed: "В разделе о дороге добавлены выезды из Горно-Алтайска. Чуйский тракт и водопады без своей машины иначе не посмотреть."
+    sources:
+      - name: "Sputnik8: групповые экскурсии в Горно-Алтайске"
+        url: "https://www.sputnik8.com/ru/gorno-altaysk/category/group"
 ---
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 import PricingCards from '../../components/post/PricingCards.astro';
-import { TP_LINKS, aviasalesRoute, cherehapaTravel } from '../../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, cherehapaTravel, sputnik8City } from '../../data/affiliate.js';
 
 export const aviaRGK = aviasalesRoute('MOW', 'RGK', 'altai_guide_2026');
 export const insurance = cherehapaTravel('altai_guide_2026');
@@ -70,6 +76,8 @@ export const insurance = cherehapaTravel('altai_guide_2026');
 ---
 
 ## Как добраться на Алтай из Москвы?
+
+<a href={sputnik8City('altai', 'altai_guide_2026')} class="aff-cta" rel="sponsored">Экскурсии из Горно-Алтайска</a> — Чуйский тракт и водопады без своей машины.
 
 - **Самолёт в Горно-Алтайск (RGK)** — прямые рейсы ~4,5 часа, аэропорт в самом начале туристической зоны. Минус: направление популярное, на пики (майские, июль-август) цены взлетают — [АТОР](https://www.atorus.ru/article/skolko-stoit-poezdka-na-altay-v-2026-godu-i-mozhno-li-nayti-nedorogie-tury-67424) приводил от ~45 тысяч ₽ туда-обратно на майские 2026. Брать за 2–3 месяца. <a href={aviaRGK} class="aff-cta" rel="sponsored">Следить за ценой в Горно-Алтайск</a> — сравнение всех авиакомпаний.
 - **Самолёт в Барнаул или Новосибирск** — часто заметно дешевле, но дальше 4–7 часов трансфера до гор.
