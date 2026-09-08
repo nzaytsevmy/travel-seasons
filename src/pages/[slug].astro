@@ -25,6 +25,7 @@ import AviasalesWidget from '../components/post/AviasalesWidget.astro';
 import StickyCta from '../components/StickyCta.astro';
 import BudgetBlock from '../components/BudgetBlock.astro';
 import EssentialsCard from '../components/EssentialsCard.astro';
+import YearClimateChart from '../components/YearClimateChart.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
 import ClimateChart from '../components/ClimateChart.astro';
 import CountryMap from '../components/CountryMap.astro';
@@ -538,6 +539,7 @@ if (guide?.itinerary?.length) {
     {/* MONTH CALENDAR — Swiss heat-grid 12 ячеек, цвет = ранг (без эмодзи по брендбуку) */}
     <section class="sl-section">
       <div class="sl-shead"><h2>{d.cases.nom} по месяцам — стоит ли ехать</h2></div>
+      <YearClimateChart slug={d.slug} />
       <div class="sl-heat">
         {monthsRanked.map((m) => {
           const cls = m.status === 'P' ? 'peak' : m.status === 'G' ? 'good' : m.status === 'O' ? 'off' : m.status === 'B' ? 'bad' : 'closed';
