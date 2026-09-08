@@ -12,7 +12,7 @@ import authorPhoto from '../assets/author/nikita.jpg';
 import heroCover from '../assets/destinations/georgia.jpg';
 
 import { ACTIVITY_TAGS } from '../data/country-activity-tags.js';
-import { freshEntries, formatDateRu } from '../data/news.js';
+import { feedEntries, formatDateRu } from '../data/news.js';
 import { byFreshness } from '../data/freshness.js';
 const covers = import.meta.glob('../assets/destinations/*.jpg', { eager: true, import: 'default' });
 
@@ -97,7 +97,7 @@ const якорь = (кения && 'PG'.includes(кения.r[month - 1])) ? ке
 // Три свежие заметки строками. Без картинок и без карточек: главная не должна
 // потяжелеть, а задача блока — увести читателя вглубь сайта. Глубина просмотра и
 // невозврат в поиск — главный вес Яндекса, откуда приходит почти весь трафик.
-const freshNews = freshEntries(await getCollection('news')).slice(0, 3);
+const freshNews = feedEntries(await getCollection('news'), 3);
 const readingTime = (body) => Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
 
 const brandYear = new Date().getFullYear();
