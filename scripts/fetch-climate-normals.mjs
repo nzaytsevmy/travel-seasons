@@ -11,6 +11,7 @@
 // Запуск: node scripts/fetch-climate-normals.mjs   (сеть, ключ не нужен, ~2 мин)
 import { writeFileSync } from 'node:fs';
 import { DIRECTIONS } from '../src/data/directions.js';
+import { этотЖеГород } from './geocode-match.mjs';
 
 // Город замера — главный туристический город направления (тот же, что печатается
 // на странице у стран с волной 1 погоды). Координаты не пишем руками: их отдаёт
@@ -45,7 +46,12 @@ const PLACES = {
   'south-korea':        { city: 'Сеул', q: 'Seoul', cc: 'KR' },
   'thailand':           { city: 'Бангкок', q: 'Bangkok', cc: 'TH' },
   'vietnam':            { city: 'Хошимин', q: 'Ho Chi Minh City', cc: 'VN' },
-  'india-goa':          { city: 'Панаджи (Гоа)', q: 'Panaji', cc: 'IN' },
+  // ⛔ Точка задана явно, а не по имени (08.09.2026). Геокодер на запрос Panaji
+  // не знает настоящую столицу Гоа и отдаёт единственное индийское совпадение —
+  // деревню Panāji Muwara в Гуджарате, 840 км севернее. Проверка «страна та же»
+  // это пропускала, и весь год Гоа считался по климату Ахмадабада.
+  // Координаты — станция ВМО «Goa» (она же точка норм IMD в таблице регионов).
+  'india-goa':          { city: 'Панаджи (Гоа)', lat: 15.48, lon: 73.82, cc: 'IN' },
   'sri-lanka':          { city: 'Коломбо', q: 'Colombo', cc: 'LK' },
   'maldives':           { city: 'Мале', q: 'Male', cc: 'MV' },
   'georgia':            { city: 'Тбилиси', q: 'Tbilisi', cc: 'GE' },
@@ -124,8 +130,18 @@ async function geocode(p) {
   if (p.lat != null) return { lat: p.lat, lon: p.lon, found: p.city, cc: p.cc };
   const u = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(p.q)}&count=10&language=en`;
   const j = await getJSON(u);
-  const hit = (j.results || []).find((r) => r.country_code === p.cc);
-  if (!hit) throw new Error(`геокодер не нашёл ${p.q} в стране ${p.cc}`);
+  // ⛔ Совпадения страны мало: у геокодера на «Panaji» единственным индийским
+  // ответом была деревня Panāji Muwara в Гуджарате, и она молча стала Гоа.
+  // Теперь имя обязано совпасть; не совпало — падаем и просим задать точку явно,
+  // потому что тихая подстановка соседнего города дороже упавшего скрипта.
+  const вСтране = (j.results || []).filter((r) => r.country_code === p.cc);
+  if (!вСтране.length) throw new Error(`геокодер не нашёл ${p.q} в стране ${p.cc}`);
+  const hit = вСтране.find((r) => этотЖеГород(p.q, r.name));
+  if (!hit) {
+    const что = вСтране.map((r) => `${r.name} (${r.admin1 || '—'})`).join(', ');
+    throw new Error(`геокодер на «${p.q}» вернул в стране ${p.cc} другой город: ${что}. `
+      + `Задай точку явно: lat/lon в PLACES['…'].`);
+  }
   return { lat: hit.latitude, lon: hit.longitude, found: hit.name, cc: hit.country_code };
 }
 
