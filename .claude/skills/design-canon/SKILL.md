@@ -1,6 +1,13 @@
 ---
 name: design-canon
 description: "Дизайн-канон traveltribe.ru: 12 обязательных стандартов (брендбук Golos и hairlines, web design 12-8-4, SEO, UX, «не похоже на AI», комплаенс, достоверность, перф-бюджет, WCAG 2.2 AA, definition of done), что использовать и анти-паттерны вёрстки, quality gate программного шаблона, сетка и адаптив 2026, UX-каноны вовлечённости. Загружать ДО правки вёрстки, стилей, компонентов, лейаутов, новых шаблонов страниц и при ревью визуала."
+paths:
+  - "src/**/*.astro"
+  - "src/**/*.css"
+  - "src/styles/**"
+  - "src/components/**"
+  - "src/layouts/**"
+  - "src/pages/**"
 ---
 
 # Design canon (кодифицирован 2026-05-20 после провалов с pillowy-FAQ и emoji-tips)
