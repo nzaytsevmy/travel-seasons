@@ -1,35 +1,47 @@
 ---
 // /novosti/YYYY-MM/ — архив месяца: список заметок со ссылками на их страницы.
-// Строится только для месяцев, которые уже ушли из ленты (src/data/news.js).
+// Строится под каждый месяц, в котором есть заметки (src/data/news.js).
 //
 // ⛔ Раньше архив печатал каждую заметку месяца целиком. С 10.08.2026 полный
 // текст живёт на своей странице заметки, а архив остаётся тем, чем и был по
 // смыслу, — оглавлением месяца. Иначе один и тот же текст лежал по трём адресам.
+//
+// ⛔ С 08.09.2026 страница есть у КАЖДОГО месяца с заметками, включая текущий.
+// Раньше архив полагался месяцу только после 30 дней, а до тех пор весь месяц
+// висел хвостом на ленте: 08.09.2026 там лежали 87 заметок и 230 КБ. Теперь
+// лента показывает постоянное число свежих, а месяц принимает заметку в день
+// выпуска — так между лентой и архивом не остаётся щели, в которой заметка не
+// видна нигде.
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Footer from '../../components/Footer.astro';
 import NewsCompact from '../../components/NewsCompact.astro';
 import { getCollection } from 'astro:content';
-import { archiveKeys, entriesOfMonth, monthTitleRu, formatDateRu, newsUrl } from '../../data/news.js';
+import { monthKeys, monthKey, entriesOfMonth, monthTitleRu, formatDateRu, newsUrl } from '../../data/news.js';
 import { plural } from '../../data/plural.js';
 
 export async function getStaticPaths() {
   const all = await getCollection('news');
-  return archiveKeys(all).map((month) => ({ params: { month } }));
+  return monthKeys(all).map((month) => ({ params: { month } }));
 }
 
 const { month } = Astro.params;
 const all = await getCollection('news');
 const items = entriesOfMonth(all, month);
 
-const others = archiveKeys(all).filter((k) => k !== month);
+const others = monthKeys(all).filter((k) => k !== month);
+// Текущий месяц ещё пополняется — называть его архивом читателю неправильно.
+// Сверяемся с календарём, а не с «самым свежим ключом»: в месяц без единой
+// заметки самым свежим оказался бы прошлый, и он бы притворялся идущим.
+const текущий = month === monthKey(new Date());
 const monthRu = monthTitleRu(month);
 const url = `https://traveltribe.ru/novosti/${month}/`;
 const title = `Новости путешествий: ${monthRu.toLowerCase()}`;
 const description = `Что менялось во въездных правилах, доступе к местам и перелётах в ${monthRu.toLowerCase()}. Каждая заметка со ссылкой на первоисточник.`;
 
-// Самая поздняя проверка внутри месяца. Именно она, а не дата сборки: архив
-// замороженный, и помечать его «обновлён сегодня» — враньё поисковику.
+// Самая поздняя проверка внутри месяца. Именно она, а не дата сборки: прошлый
+// месяц уже не меняется, и помечать его «обновлён сегодня» — враньё поисковику.
+// У текущего месяца эта дата двигается сама, когда выходит новая заметка.
 const lastChecked = items.reduce((a, e) => (e.data.checked > a ? e.data.checked : a), items[0].data.checked);
 
 const ldJson = {
@@ -73,8 +85,8 @@ const ldJson = {
     <header class="nv-head">
       <h1 class="nv-h1">Новости за {monthRu.toLowerCase()}</h1>
       <p class="nv-lead">
-        Архив: {items.length} {plural(items.length, 'заметка', 'заметки', 'заметок')} за месяц.
-        Свежее — в <a href="/novosti/">ленте новостей</a>.
+        {текущий ? 'Месяц ещё идёт' : 'Архив'}: {items.length} {plural(items.length, 'заметка', 'заметки', 'заметок')}.
+        Свежее целиком — в <a href="/novosti/">ленте новостей</a>.
       </p>
       <p class="nv-byline">
         Ведёт <a href="/about/">Никита Зайцев</a> · последняя проверка: {formatDateRu(lastChecked)} ·

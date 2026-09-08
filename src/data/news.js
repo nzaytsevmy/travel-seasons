@@ -33,18 +33,17 @@ export function monthTitleRu(key) {
   return `${MONTHS_NOM[m - 1]} ${y}`;
 }
 
-// Месяц уезжает в архив, когда его ПОСЛЕДНИЙ день старше 30 дней. Условие
-// намеренно завязано на конец месяца, а не на дату заметки: иначе на стыке
-// возникает день, когда заметка уже выпала из ленты, а архива её месяца ещё
-// нет — и она не видна нигде.
-export function archivedMonths(entries, now = new Date()) {
-  const cutoff = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) - 30 * 864e5;
-  const keys = new Set(entries.map((e) => monthKey(e.data.date)));
-  return new Set([...keys].filter((k) => {
-    const [y, m] = k.split('-').map(Number);
-    const lastDay = Date.UTC(y, m, 0);          // день 0 следующего месяца = последний день этого
-    return lastDay < cutoff;
-  }));
+// Месяцы, у которых есть заметки, — свежий первым. Страница архива строится под
+// КАЖДЫЙ из них, включая текущий.
+//
+// ⛔ Раньше архив полагался только месяцам старше 30 дней, а лента показывала
+// все остальные. Из-за этого её длина зависела не от замысла, а от дня месяца
+// и темпа публикации: замер 08.09.2026 — 87 заметок и 230 КБ на одной странице,
+// и к концу месяца было бы больше. Прежнее условие защищало от дня, когда
+// заметка не видна нигде; архив у каждого месяца снимает этот риск полностью —
+// заметка попадает в свой месяц в день выпуска.
+export function monthKeys(entries) {
+  return [...new Set(entries.map((e) => monthKey(e.data.date)))].sort().reverse();
 }
 
 /** Когда заметка попала в ленту. У старых заметок это `checked`. */
@@ -63,25 +62,21 @@ const byDateDesc = (a, b) =>
   addedAt(b) - addedAt(a) ||
   b.data.date.valueOf() - a.data.date.valueOf();
 
-/** Что показывает /novosti/: всё, чей месяц ещё не уехал в архив. */
-export function freshEntries(entries, now = new Date()) {
-  const archived = archivedMonths(entries, now);
-  return entries.filter((e) => !archived.has(monthKey(e.data.date))).sort(byDateDesc);
-}
-
-/** Месяцы, под которые нужно построить страницы архива. */
-export function archiveKeys(entries, now = new Date()) {
-  return [...archivedMonths(entries, now)].sort().reverse();
-}
-
 export function entriesOfMonth(entries, key) {
   return entries.filter((e) => monthKey(e.data.date) === key).sort(byDateDesc);
 }
 
-// Сколько заметок лента показывает целиком. Дальше — компактный список: при
-// 2–4 заметках в день лента иначе растёт до сотен килобайт, и читатель на
-// телефоне листает её минутами. Замер 10.08.2026: 20 заметок = 179 КБ.
+// Сколько свежих заметок лента показывает карточкой — с кадром и капсулой-
+// ответом. Дальше идёт компактный список строкой: при 2–4 заметках в день лента
+// иначе растёт до сотен килобайт, и читатель на телефоне листает её минутами.
 export const FULL_ON_FEED = 8;
+
+// Сколько заметок вообще попадает на ленту: восемь карточкой плюс шестнадцать
+// строкой — примерно неделя выпуска при нынешнем темпе. Число ПОСТОЯННОЕ, и в
+// этом весь смысл: до 08.09.2026 хвост ленты тянул весь текущий месяц и рос
+// каждый день (87 заметок, 230 КБ, 37 экранов телефона). Остальное живёт в
+// архиве своего месяца.
+export const FEED_SIZE = 24;
 
 /** Адрес заметки. У каждой он свой и не зависит от того, где заметка показана. */
 export const newsUrl = (slugOrEntry) =>

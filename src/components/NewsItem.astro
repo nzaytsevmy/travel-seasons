@@ -1,6 +1,6 @@
 ---
-// Одна заметка ленты /novosti/. Общая для ленты и для архива месяца, чтобы
-// разметка и микроразметка не разъехались между двумя шаблонами.
+// Карточка свежей заметки на ленте /novosti/. Архив месяца показывает заметки
+// строкой (NewsCompact), полный текст — только на странице самой заметки.
 //
 // Устройство карточки продиктовано замерами 2026, а не вкусом:
 //  · капсула-ответ первой строкой — её извлекает нейроответ, а человек по ней
@@ -10,6 +10,14 @@
 //  · имя автора — упоминания бренда коррелируют с цитированием втрое сильнее
 //    обратных ссылок, а брендовых запросов у сайта пока ноль.
 // Фото только свои, из уже отснятого: чужие права не трогаем.
+//
+// ⛔ Полного текста заметки здесь БОЛЬШЕ НЕТ (08.09.2026). Заметка короткая,
+// 150–350 слов, поэтому «карточка с текстом» была не выжимкой, а копией: один и
+// тот же материал лежал и на ленте, и на своей странице. Замер за 28 дней до
+// 06.09.2026: страницы заметок — 497 показов, средняя позиция 7,6; лента — 19
+// показов и позиция 20,7. То есть копия не приносила ничего и отнимала у
+// оригинала. Карточка даёт капсулу-ответ, кадр и источник, а текст живёт на
+// одном адресе.
 //
 // ⛔ Микроразметки NewsArticle здесь БОЛЬШЕ НЕТ. С 10.08.2026 у заметки есть своя
 // страница, и статья объявляется там — один раз, со своим адресом. Пока разметка
@@ -23,7 +31,7 @@ import { pickNewsImage, newsImageNote } from '../data/news-images.js';
 import { bySlug } from '../data/directions.js';
 import { newsUrl } from '../data/news.js';
 
-const { entry, Content, index = 0 } = Astro.props;
+const { entry, index = 0 } = Astro.props;
 const d = entry.data;
 // Когда заметка появилась в ленте: явное поле, а у старых — дата сверки.
 const added = new Date(addedAt({ data: d }));
@@ -75,8 +83,6 @@ const coverLink = d.imageSource ?? null;
       )}
     </figure>
   )}
-
-  <div class="nv-body"><Content /></div>
 
   {/* Разделители склеиваем без переносов строк: JSX сохраняет пробелы между
       выражениями, и «источник , источник» получает пробел перед запятой. */}
@@ -133,18 +139,13 @@ const coverLink = d.imageSource ?? null;
      Одна пропорция на все кадры. Со стока приходят и 1600×1067, и 1600×1200 —
      вертикальный ритм скакал на каждой заметке. Заодно сдвиг макета нулевой по
      построению, и пропорция совпадает с той, что просит Discover. */
-  .nv-fig { margin: 0 0 .9rem; }
+  .nv-fig { margin: 0 0 1rem; }
   /* ⛔ height: auto обязателен. Без него высоту диктует атрибут height самого
      тега, а `aspect-ratio` молча не применяется: в замере 01.08.2026 кадр был
      748×1067 при объявленных 16/9. */
   .nv-fig :global(img) { width: 100%; height: auto; aspect-ratio: 16 / 9;
                          object-fit: cover; display: block; }
   .nv-fig figcaption { font-size: .74rem; color: var(--text-faint); margin-top: .35rem; }
-  .nv-body { max-width: 62ch; line-height: 1.6; }
-  .nv-body :global(p) { margin: 0 0 .7rem; }
-  .nv-body :global(a) { color: var(--text); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
-  .nv-body :global(a:hover) { color: var(--gold); }
-
   .nv-refs { display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; font-size: .85rem;
              color: var(--text-dim); margin: 0; }
   .nv-refs a { color: var(--text); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }

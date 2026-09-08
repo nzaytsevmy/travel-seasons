@@ -332,7 +332,7 @@ test('издание годится для природы, но не для ви
 // порядок решало имя файла: «amboseli» < «dfad» по алфавиту. Читатель видит
 // новое не сверху, хотя пришёл именно за новым.
 test('лента: при одинаковой дате события сверху та заметка, что проверена позже', async () => {
-  const { freshEntries } = await import('../src/data/news.js');
+  const { feedEntries } = await import('../src/data/news.js');
   const mk = (slug: string, date: string, checked: string) => ({
     slug,
     data: { date: new Date(date), checked: new Date(checked) },
@@ -343,7 +343,7 @@ test('лента: при одинаковой дате события сверх
     mk('dfad-marine-areas', '2026-07-31', '2026-08-03'),
     mk('iguazu-boardwalk', '2026-07-30', '2026-07-31'),
   ];
-  const order = freshEntries(entries as never, new Date('2026-08-03')).map((e: any) => e.slug);
+  const order = feedEntries(entries as never).map((e: any) => e.slug);
   expect(order[0]).toBe('dfad-marine-areas');
   expect(order[1]).toBe('amboseli-elephants');
   expect(order[2]).toBe('iguazu-boardwalk');
