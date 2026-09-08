@@ -42,6 +42,13 @@ checks:
         url: "https://kiwitaxi.ru/russia/adler+airport->gagra"
       - name: "Sputnik8: экскурсии из Гагры"
         url: "https://www.sputnik8.com/ru/gagra"
+  - date: 2026-09-08
+    what: "Кнопки в карточке типов жилья Гагры"
+    changed: "В карточке жилья появились две кнопки. У гостевого дома — посуточная аренда, у отеля — поиск отелей Гагры. Цены и описания в карточке прежние."
+    minor: true
+    sources:
+      - name: "Партнёрские программы сайта: подбор жилья, туров и трансферов"
+        url: "https://traveltribe.ru/about/"
 howto:
   name: "Как добраться в Гагру в 2026"
   description: "Маршрут к главному курорту Абхазии для россиян: перелёт до Адлера, переход границы и трансфер до Гагры."
@@ -198,6 +205,7 @@ import { aviasalesRoute, aviasalesUrl, cherehapaCountry, cherehapaTravel, ostrov
 
 <PricingCards tiers={[
  { tier: 'Гостевой дом', featured: true, badge: 'Золотая середина',
+ ctaLabel: 'Гостевые дома в Гагре', ctaHref: sutochnoRegion('https://gagra.sutochno.ru/', 'gagra_2026_cards'),
  price: 'от ~1500 ₽/ночь',
  priceNote: 'самый ходовой вариант',
  features: [
@@ -215,6 +223,7 @@ import { aviasalesRoute, aviasalesUrl, cherehapaCountry, cherehapaTravel, ostrov
  'Выбор больше в Новой Гагре',
  ] },
  { tier: 'Отель',
+ ctaLabel: 'Отели в Гагре', ctaHref: ostrovokCity('abkhazia', 'gagra', 'gagra_2026_cards'),
  price: 'от 3000 ₽/ночь',
  priceNote: 'сервис и пляж при отеле',
  features: [

@@ -27,10 +27,18 @@ howto:
       text: "На Кижи метеоры ходят примерно с середины мая по конец сентября, на Валаам — с середины июня по сентябрь. Зимой — спецтранспорт. Бронировать заранее."
     - name: "Взять репеллент и тёплые вещи"
       text: "Комары и мошка особенно активны в конце июня — июле; на воде и островах прохладно даже летом — нужна ветрозащита."
+checks:
+  - date: 2026-09-08
+    what: "Кнопки в карточке баз для поездок по Карелии"
+    changed: "В карточке появились две кнопки. У Петрозаводска — жильё в городе, у домика на озере — базы отдыха Карелии. Текст и цены карточки не менялись."
+    minor: true
+    sources:
+      - name: "Партнёрские программы сайта: подбор жилья, туров и трансферов"
+        url: "https://traveltribe.ru/about/"
 ---
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 import PricingCards from '../../components/post/PricingCards.astro';
-import { TP_LINKS, sutochnoRegion } from '../../data/affiliate.js';
+import { TP_LINKS, sutochnoRegion, mirturbazRegion } from '../../data/affiliate.js';
 
 Карелию я знаю не только по справочникам: бывал здесь ещё в детстве, и северная природа из тех поездок не отпускает до сих пор. Это край тысяч озёр, гранитных скал, водопадов и деревянных церквей в трёх часах от Петербурга, без визы, загранпаспорта и долгого перелёта. Разбираю по делу: что посмотреть, как добраться (проще всего поездом), когда ехать и сколько стоит поездка в 2026 году.
 
@@ -135,6 +143,7 @@ import { TP_LINKS, sutochnoRegion } from '../../data/affiliate.js';
 
 <PricingCards tiers={[
  { tier: 'Петрозаводск', featured: true, badge: 'Удобная база',
+ ctaLabel: 'Жильё в Петрозаводске', ctaHref: sutochnoRegion('https://petrozavodsk.sutochno.ru/', 'kareliya_guide_2026_cards'),
  price: 'от ~2 500 ₽/ночь',
  priceNote: 'для Кижи и севера',
  features: [
@@ -153,6 +162,7 @@ import { TP_LINKS, sutochnoRegion } from '../../data/affiliate.js';
  'Атмосфера карельского севера',
  ] },
  { tier: 'Домик на озере',
+ ctaLabel: 'Базы отдыха и дома у воды', ctaHref: mirturbazRegion('karelia', 'kareliya_guide_2026_cards'),
  price: 'от ~2 500 ₽/ночь',
  priceNote: 'наедине с природой',
  features: [

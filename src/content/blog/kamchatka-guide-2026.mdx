@@ -18,6 +18,13 @@ checks:
     sources:
       - name: "Travelata — пакетные туры"
         url: "https://travelata.ru/"
+  - date: 2026-09-08
+    what: "Кнопка в карточке классов поездки на Камчатку"
+    changed: "У яруса «Золотая середина» появилась кнопка авторских туров. Этот ярус и описывает готовую программу с вертолётом, цены не менялись."
+    minor: true
+    sources:
+      - name: "Партнёрские программы сайта: подбор жилья, туров и трансферов"
+        url: "https://traveltribe.ru/about/"
 ---
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import PricingCards from '../../components/post/PricingCards.astro';
@@ -129,6 +136,7 @@ import { youtravelCountry } from '../../data/affiliate.js';
  },
  {
  tier: 'Золотая середина',
+    ctaLabel: 'Авторские туры на Камчатку', ctaHref: youtravelCountry('kamchatka', 'kamchatka_guide_2026_cards'),
  emoji: '',
  price: '180 000–280 000 ₽',
  priceNote: '8–10 дней, 1 чел.',
