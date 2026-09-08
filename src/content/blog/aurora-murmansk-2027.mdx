@@ -38,6 +38,12 @@ checks:
     sources:
       - name: "Travelata — пакетные туры"
         url: "https://travelata.ru/"
+  - date: 2026-09-08
+    what: "Экскурсии из Мурманска на охоту за сиянием"
+    changed: "В разделе о дороге добавлены выезды из Мурманска. Сияние ловят за городом, без машины туда не добраться."
+    sources:
+      - name: "Sputnik8: экскурсии в Мурманске"
+        url: "https://www.sputnik8.com/ru/murmansk"
 tags: ["Мурманск", "Россия", "Зима", "Северное сияние", "2027"]
 sourceType: "compilation"
 howto:
@@ -64,7 +70,7 @@ howto:
 import PricingCards from '../../components/post/PricingCards.astro';
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
-import { TP_LINKS, aviasalesRoute, tpkDeep, otelloStay, youtravelSub } from '../../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, tpkDeep, otelloStay, youtravelSub, sputnik8City } from '../../data/affiliate.js';
 
 export const tours = youtravelSub('aurora_murmansk_2027');
 export const excursions = tpkDeep('sputnik8', 'https://www.sputnik8.com/ru/murmansk/category/northern-lights', 'aurora_murmansk');
@@ -193,6 +199,8 @@ export const stay = otelloStay('aurora_murmansk');
 Самостоятельный вариант выходит дешевле, но требует машины и готовности ехать ночью по зимней дороге. Экономия против группового выезда получается ощутимой на длинной поездке и почти нулевой на двух-трёх ночах.
 
 ## Как добраться из Москвы и когда билеты дешевле?
+
+<a href={sputnik8City('murmansk', 'aurora_murmansk_2027')} class="aff-cta" rel="sponsored">Экскурсии из Мурманска</a> — выезд за город на охоту за сиянием.
 
 **Прямой рейс Москва — Мурманск идёт около двух с половиной часов, разницы во времени нет.** Минимумы сезона в поиске билетов дают «Победа» и Smartavia. Аэропорт за городом, до центра идёт автобус и такси, дорога занимает около получаса.
 

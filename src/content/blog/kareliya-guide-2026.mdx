@@ -35,10 +35,18 @@ checks:
     sources:
       - name: "Партнёрские программы сайта: подбор жилья, туров и трансферов"
         url: "https://traveltribe.ru/about/"
+  - date: 2026-09-08
+    what: "Экскурсии из Петрозаводска и трансфер до Сортавалы"
+    changed: "В разделе о том, что посмотреть, добавлены выезды из Петрозаводска. В разделе о дороге — трансфер до Сортавалы: рейсовый транспорт там редкий. Страницы партнёров найдены поиском, у обеих в выдаче свои цены."
+    sources:
+      - name: "Sputnik8: групповые экскурсии в Петрозаводске"
+        url: "https://www.sputnik8.com/ru/petrozavodsk/category/group"
+      - name: "Kiwitaxi: трансфер Петрозаводск — Сортавала"
+        url: "https://kiwitaxi.ru/russia/petrozavodsk->sortavala"
 ---
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 import PricingCards from '../../components/post/PricingCards.astro';
-import { TP_LINKS, sutochnoRegion, mirturbazRegion } from '../../data/affiliate.js';
+import { TP_LINKS, sutochnoRegion, mirturbazRegion, kiwitaxiRoute, sputnik8City } from '../../data/affiliate.js';
 
 Карелию я знаю не только по справочникам: бывал здесь ещё в детстве, и северная природа из тех поездок не отпускает до сих пор. Это край тысяч озёр, гранитных скал, водопадов и деревянных церквей в трёх часах от Петербурга, без визы, загранпаспорта и долгого перелёта. Разбираю по делу: что посмотреть, как добраться (проще всего поездом), когда ехать и сколько стоит поездка в 2026 году.
 
@@ -60,6 +68,8 @@ import { TP_LINKS, sutochnoRegion, mirturbazRegion } from '../../data/affiliate.
 
 ## Что посмотреть в Карелии?
 
+<a href={sputnik8City('petrozavodsk', 'kareliya_guide_2026')} class="aff-cta" rel="sponsored">Экскурсии из Петрозаводска</a> — Кижи, Кивач и Марциальные воды.
+
 ![Деревянные церкви Кижей на острове, вокруг вода Онежского озера](./_images/karelia-own/kizhi.jpg)
 
 **Минимум — Рускеала, Кижи, Валаам и водопад Кивач; на каждый из топ-объектов у нас есть отдельный подробный разбор.** Чтобы не превращать этот гайд в простыню, дам короткий обзор со ссылками на детальные статьи с ценами и расписаниями.
@@ -79,6 +89,8 @@ import { TP_LINKS, sutochnoRegion, mirturbazRegion } from '../../data/affiliate.
 ---
 
 ## Как добраться до Карелии?
+
+<a href={kiwitaxiRoute('karelia', 'kareliya_guide_2026').href} class="aff-cta" rel="sponsored">Трансфер Петрозаводск — Сортавала</a> — 250 км, рейсы редкие.
 
 **Карелия — поездное направление, и это самый удобный способ.** Своего крупного аэропорта у Карелии нет: аэропорт Петрозаводска (Бесовец) принимает лишь несколько направлений (Казань, Сочи, Калининград, Самара, Минск — рейсы и расписание лучше сверять перед поездкой). Поэтому большинство едет по железной дороге.
 

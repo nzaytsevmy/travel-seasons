@@ -36,6 +36,12 @@ checks:
     sources:
       - name: "Travelata — пакетные туры"
         url: "https://travelata.ru/"
+  - date: 2026-09-08
+    what: "Экскурсии на Байкал из Иркутска"
+    changed: "В разделе о дороге и жилье добавлены выезды из Иркутска. Лёд и Ольхон зимой смотрят с гидом, самостоятельная поездка по льду опасна."
+    sources:
+      - name: "Sputnik8: групповые экскурсии на Байкал из Иркутска"
+        url: "https://www.sputnik8.com/ru/irkutsk/category/group"
 tags: ["Байкал", "Россия", "Зима", "Ольхон", "2027"]
 sourceType: "compilation"
 howto:
@@ -62,7 +68,7 @@ howto:
 import PricingCards from '../../components/post/PricingCards.astro';
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
-import { TP_LINKS, aviasalesRoute, yandexTravelSub, tpkDeep, youtravelSub } from '../../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, yandexTravelSub, tpkDeep, youtravelSub, sputnik8City } from '../../data/affiliate.js';
 
 export const tours = youtravelSub('baikal_zimoy_2027');
 export const excursions = tpkDeep('sputnik8', 'https://www.sputnik8.com/ru/baikal', 'baikal_winter');
@@ -212,6 +218,8 @@ export const stay = yandexTravelSub('baikal_winter');
 </div>
 
 ## Как добраться и где жить
+
+<a href={sputnik8City('baikal', 'baikal_zimoy_2027')} class="aff-cta" rel="sponsored">Экскурсии на Байкал из Иркутска</a> — лёд и Ольхон с гидом.
 
 **Иркутск** — основные ворота. Аэропорт в черте города, до Листвянки час, до Хужира на Ольхоне 5–6 часов на маршрутке. Разница с Москвой +5 часов, и её стоит закладывать: прилетев утренним рейсом, вы теряете первый день на акклиматизацию, а выезд на лёд начинается рано.
 

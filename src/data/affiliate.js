@@ -182,12 +182,20 @@ export const kiwitaxiRoute = (destinationSlug, subId) => {
 // Sputnik8: города, где у партнёра реально есть экскурсии (число предложений и цены
 // видны на самой странице партнёра). Закрывает вопрос «что посмотреть на месте» —
 // раздел, который на сайте не имел денежной точки вовсе.
+// Города добавлены 08.09.2026 по страницам партнёра, найденным поиском: у каждой в выдаче
+// стоит своя цена или число экскурсий («Иркутск от 3 800 ₽», «Горно-Алтайск 73 экскурсии
+// от 700 ₽»), то есть страница живая и с инвентарём. ⛔ Прямой запрос с нашей машины сайт
+// партнёра отдаёт 401/403 — проверить кодом нельзя, и выдумывать слаги по образцу тем более.
 const SPUTNIK8_CITY = {
   abkhazia: 'https://www.sputnik8.com/ru/countries/abkhazia',
   gagra: 'https://www.sputnik8.com/ru/gagra',
   sukhum: 'https://www.sputnik8.com/ru/sukhumi',
   dagestan: 'https://www.sputnik8.com/ru/makhachkala/category/dagestan',
   karelia: 'https://www.sputnik8.com/ru/sortavala/sights/ruskeala',
+  petrozavodsk: 'https://www.sputnik8.com/ru/petrozavodsk/category/group',
+  murmansk: 'https://www.sputnik8.com/ru/murmansk',
+  baikal: 'https://www.sputnik8.com/ru/irkutsk/category/group',
+  altai: 'https://www.sputnik8.com/ru/gorno-altaysk/category/group',
 };
 
 export const sputnik8City = (destinationSlug, subId) => {
