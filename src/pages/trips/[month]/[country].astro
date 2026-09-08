@@ -14,6 +14,7 @@ import { DATA_UPDATED, DATA_UPDATED_RU, yearForMonth } from '../../../data/meta.
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
 import { getWeatherBucket } from '../../../data/country-month-bucket.js';
 import { getBucket } from '../../../data/packing-weather-buckets.js';
+import { hasTripSnippet, tripSnippetDescription } from '../../../data/trip-snippets.js';
 import TripSaveButton from '../../../components/TripSaveButton.astro';
 import StickyCta from '../../../components/StickyCta.astro';
 
@@ -201,10 +202,24 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
 const monthWeather = getMonthlyWeather(d.slug, monthIdx);
 const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
 
+// Дожим показов 08.09.2026: у 12 страниц будущих месяцев заголовок обещал погоду,
+// но не называл её, и Google подставлял в описание кусок таблицы со страницы.
+// Обещание заменяется фактом из тех же климатических норм; остальные страницы
+// типа идут по формуле и служат контролем. Разбор — data/trip-snippets.js.
+const snip = hasTripSnippet(m.slug, d.slug) && monthWeather;
+const pageTitle = snip
+  ? `${d.cases.nom} в ${m.prep} ${yr}: погода днём ${monthWeather.tmax} °C, цены, виза`
+  : (reframe
+      ? `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}: цены и толпы`
+      : `${d.cases.nom} в ${m.prep} ${yr}: погода, цены, виза`);
+const pageDescription = snip
+  ? tripSnippetDescription(monthWeather, lbl.verdict)
+  : `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr} — погода, цены, виза для россиян, бюджет на неделю. ${lbl.verdict}.`;
+
 ---
 <Layout
-  title={reframe ? `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}: цены и толпы` : `${d.cases.nom} в ${m.prep} ${yr}: погода, цены, виза`}
-  description={`Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr} — погода, цены, виза для россиян, бюджет на неделю. ${lbl.verdict}.`}
+  title={pageTitle}
+  description={pageDescription}
   canonical={url}
   noindex={status === 'X' || NICHE_TRIPS.has(d.slug)}
   ogTitle={reframe ? `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}` : `${d.cases.nom} в ${m.prep} ${yr}`}
