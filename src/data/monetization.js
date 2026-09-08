@@ -101,14 +101,9 @@ const PARTNERS = [
   { host: 'aviasales.tpk.mx', partner: 'aviasales', offer: 'flight', attribution: 'sub_id' },
   { host: 'ostrovok.tpk.mx', partner: 'ostrovok', offer: 'stay', attribution: 'sub_id' },
   { host: 'cherehapa.tpk.mx', partner: 'cherehapa', offer: 'insurance', attribution: 'sub_id' },
-  { host: 'airalo.pxf.io', partner: 'airalo', offer: 'esim', attribution: 'sharedID' },
-  { host: 'drimsim.tpk.mx', partner: 'drimsim', offer: 'esim', attribution: 'sub_id' },
   { host: 'platipomiru.com', partner: 'platipomiru', offer: 'card', attribution: 'utm_content' },
-  { host: 'travelata.tpk.mx', partner: 'travelata', offer: 'package_tour', attribution: 'sub_id' },
-  { host: 'economybookings.tpk.mx', partner: 'economybookings', offer: 'car', attribution: 'sub_id' },
   { host: 'travelme.g2afse.com', partner: 'youtravel', offer: 'author_tour', attribution: 'sub1' },
   { host: 'sutochno.tpk.mx', partner: 'sutochno', offer: 'stay', attribution: 'sub_id' },
-  { host: 'tutu.tpk.mx', partner: 'tutu', offer: 'transport', attribution: 'sub_id' },
   { host: 'yandex.tpk.mx', partner: 'yandex_travel', offer: 'stay', attribution: 'sub_id' },
   { host: 'otello.tpk.mx', partner: 'otello', offer: 'stay', attribution: 'sub_id' },
   { host: 'level.tpk.mx', partner: 'level', offer: 'package_tour', attribution: 'sub_id' },
@@ -249,7 +244,6 @@ export function isGenericAffiliateUrl(href, partnerName) {
   if (partnerName === 'aviasales') return !targetUrl || !targetUrl.pathname.includes('/search/');
   if (partnerName === 'cherehapa') return !targetUrl || !(targetUrl.searchParams.get('countries[0]') || targetUrl.searchParams.get('countryGroups[0]'));
   if (partnerName === 'ostrovok') return !targetUrl || path === '' || path === '/hotel';
-  if (partnerName === 'airalo') return !targetUrl || !/\/ru\/[a-z0-9-]+-esim$/i.test(path);
   if (partnerName === 'youtravel') return !targetUrl || !/\/tours\/(?:country|region)\//.test(path);
   return false;
 }

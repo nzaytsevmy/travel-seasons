@@ -67,6 +67,13 @@ checks:
         url: "https://kiwitaxi.ru/russia/adler+airport->gagra"
       - name: "Sputnik8: экскурсии по Абхазии"
         url: "https://www.sputnik8.com/ru/countries/abkhazia"
+  - date: 2026-09-08
+    what: "Кнопки в карточке способов добраться до Рицы"
+    changed: "В карточке способов доехать появились две кнопки. У экскурсии — выезды из Гагры, у такси — трансфер от аэропорта Сочи. Цифры и текст карточки не менялись."
+    minor: true
+    sources:
+      - name: "Партнёрские программы сайта: подбор жилья, туров и трансферов"
+        url: "https://traveltribe.ru/about/"
 howto:
   name: "Как добраться до озера Рица в 2026"
   description: "Маршрут к главному горному озеру Абхазии: способ доехать, сбор за нацпарк, что посмотреть по дороге."
@@ -201,6 +208,7 @@ import { cherehapaCountry, sutochnoRegion, youtravelCountry, kiwitaxiRoute, sput
 
 <PricingCards tiers={[
  { tier: 'Экскурсия', featured: true, badge: 'Проще всего',
+ ctaLabel: 'Экскурсии на Рицу из Гагры', ctaHref: sputnik8City('abkhazia', 'ozero_ritsa_2026_cards'),
  price: 'от ~900 ₽/чел',
  priceNote: 'без своей машины',
  features: [
@@ -210,6 +218,7 @@ import { cherehapaCountry, sutochnoRegion, youtravelCountry, kiwitaxiRoute, sput
  'Минус: график группы, дегустации по дороге и толпа на точках',
  ] },
  { tier: 'Такси',
+ ctaLabel: 'Трансфер от аэропорта Сочи', ctaHref: kiwitaxiRoute('abkhazia', 'ozero_ritsa_2026_cards').href,
  price: '~6000–6500 ₽',
  priceNote: 'за машину туда-обратно',
  features: [

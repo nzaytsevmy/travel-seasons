@@ -228,6 +228,59 @@ export function initMonetizationTracking(doc = document, win = window) {
   doc.addEventListener('auxclick', (event) => {
     if (event.button === 1) recordOwnChannelClick(event);
   }, true);
+
+  // Показ денежной ссылки. Без него у «доли кликов по месту» нет знаменателя: строка в
+  // середине длинной статьи и липкая панель на телефоне видны разному числу читателей,
+  // и сравнивать их клики в лоб нельзя. Считается один раз на ссылку за визит, порог
+  // видимости 50%, отправляется только для ссылок с меткой места.
+  observeAffiliateImpressions(doc, win);
+}
+
+export function observeAffiliateImpressions(doc = document, win = window) {
+  if (typeof win.IntersectionObserver !== 'function') return null;
+  const seen = new WeakSet();
+  const observer = new win.IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      const anchor = entry.target;
+      observer.unobserve(anchor);
+      if (seen.has(anchor)) continue;
+      seen.add(anchor);
+      const payload = {
+        page_path: win.location.pathname,
+        page_type: anchor.dataset.pageType || doc.body?.dataset.pageType || 'unknown',
+        placement: anchor.dataset.placement || 'body',
+        form: formOf(anchor),
+        partner: anchor.dataset.partner || 'unknown',
+        offer: anchor.dataset.offer || 'other',
+        cta_id: anchor.dataset.ctaId || '',
+        link_position: Number(anchor.dataset.linkPosition || 0),
+        contract: 'revenue_v2',
+      };
+      doc.dispatchEvent(new CustomEvent('tt:affiliate-impression', { detail: payload }));
+      if (typeof win.ym === 'function') win.ym(95832375, 'reachGoal', 'outbound_impression', payload);
+    }
+  }, { threshold: 0.5 });
+  const attach = () => {
+    for (const anchor of doc.querySelectorAll('a[data-cta-id]:not([data-impression-watched])')) {
+      anchor.dataset.impressionWatched = '1';
+      observer.observe(anchor);
+    }
+  };
+  attach();
+  doc.addEventListener('astro:page-load', attach);
+  return observer;
+}
+
+// Форма ссылки нужна отдельно от места: липкая панель и кнопка карточки цен обе
+// выделяются из окружения, и по замеру их стоит сравнивать со строкой в абзаце.
+export function formOf(anchor) {
+  if (anchor.closest?.('.sticky-cta')) return 'sticky';
+  if (anchor.classList?.contains('aff-btn')) return 'button';
+  if (anchor.closest?.('.pricing-cards')) return 'card';
+  if (anchor.closest?.('.post-end-money')) return 'end_line';
+  if (anchor.closest?.('.post-first-money')) return 'top_line';
+  return 'line';
 }
 
 export function isOwnChannel(anchor) {

@@ -85,6 +85,13 @@ checks:
         url: "https://kiwitaxi.ru/russia/adler+airport->gagra"
       - name: "Sputnik8: экскурсии по Абхазии"
         url: "https://www.sputnik8.com/ru/countries/abkhazia"
+  - date: 2026-09-08
+    what: "Кнопка в карточке курортов Абхазии"
+    changed: "У Гагры в карточке курортов появилась кнопка поиска жилья. Описания и цены прежние."
+    minor: true
+    sources:
+      - name: "Партнёрские программы сайта: подбор жилья, туров и трансферов"
+        url: "https://traveltribe.ru/about/"
 tags: ["Абхазия", "Безвиз", "Море", "2026"]
 sourceType: "hybrid"
 howto:
@@ -247,6 +254,7 @@ import { abkhaziaSeason, abkhaziaWeek } from '../../data/schemes/abkhazia.js';
 
 <PricingCards tiers={[
  { tier: 'Гагра', featured: true, badge: 'Топ выбора',
+ ctaLabel: 'Жильё в Гагре', ctaHref: sutochnoRegion('https://gagra.sutochno.ru/', 'abkhazia_2026_cards'),
  price: 'от 1700 ₽/ночь',
  priceNote: 'самый туристический курорт',
  features: [
