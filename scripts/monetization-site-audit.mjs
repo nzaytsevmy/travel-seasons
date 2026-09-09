@@ -85,6 +85,20 @@ export function auditMonetization(dist) {
       pageLinks.push(record);
       links.push(record);
 
+      // ⛔ Метка страницы, севшая в адрес партнёра вместо города: аргумент встал не
+      //    в тот слот вызова. 09.09.2026 на /oman/ кнопка «Смотреть отели в Маскате»
+      //    вела на ostrovok.ru/hotel/oman/hub_oman_stay/ — живой 404. Аудит молчал:
+      //    он проверяет, что адрес НЕ общий, но не что такая страница существует.
+      //    У партнёров нет городов с такими именами, поэтому проверка офлайн и точная.
+      const target = queryParam(href, 'u');
+      if (target) {
+        let targetPath = '';
+        try { targetPath = new URL(target).pathname; } catch { targetPath = ''; }
+        if (/(?:^|\/)(?:hub|blog|trips|packing|visa|seasons)_[a-z0-9_]+(?:\/|$)/i.test(targetPath)) {
+          errors.push(`${path}: у ${partner.partner} метка страницы попала в адрес вместо города — ${targetPath}`);
+        }
+      }
+
       if (!relValue.includes('sponsored')) errors.push(`${path}: ${partner.partner} без rel=sponsored`);
       if (!hasAttribution(href, partner.partner)) errors.push(`${path}: ${partner.partner} без постраничной метки`);
       if (destination && DEEP_LINK_REQUIRED.has(partner.partner) && record.generic) {
@@ -97,6 +111,19 @@ export function auditMonetization(dist) {
           errors.push(`${path}: ${partner.partner} ведёт в общий каталог при известном направлении ${destination}`);
         }
       }
+    }
+
+    // ⛔ Мёртвая денежная кнопка: <a rel="sponsored"> вообще без адреса. Регулярка
+    //    выше её не видит — она требует href, — поэтому кнопка выпадает из счёта
+    //    ссылок, и аудит честно рапортует «0 ошибок», пока главная кнопка страницы
+    //    не кликается. 09.09.2026: на /oman/ обе кнопки билетов были такими
+    //    (`href={x.href}` при строковом x — Astro молча выбрасывает атрибут со
+    //    значением undefined), а аудит, инварианты и визуальный прогон промолчали.
+    for (const match of html.matchAll(/<a\b(?![^>]*\bhref=)[^>]*>([^<]{0,60})/gi)) {
+      const rel = attr(match[0], 'rel').split(/\s+/).filter(Boolean);
+      if (!rel.includes('sponsored')) continue;
+      const label = match[1].replace(/\s+/g, ' ').trim().slice(0, 40) || 'без текста';
+      errors.push(`${path}: денежная кнопка «${label}» без адреса — ссылка не кликается`);
     }
 
     // Дорогое направление: первой денежной ссылкой идёт дорога или тур, а не полис.
