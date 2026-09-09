@@ -1,11 +1,19 @@
 import { test, expect } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, statSync, readFileSync as readFileRaw } from 'node:fs';
+// @ts-ignore — модуль щита партнёрских ссылок без типов
+import { unshieldHtml } from '../scripts/affiliate-shield.mjs';
+// Сборка идёт со щитом (адреса партнёров спрятаны в data-go); проверки смотрят на настоящие адреса.
+const readFileSync = ((path: any, enc?: any) => {
+  const raw = readFileRaw(path, enc);
+  return typeof raw === 'string' ? unshieldHtml(raw) : raw;
+}) as typeof readFileRaw;
 import { join, dirname, sep } from 'node:path';
 import { видимыйТекст } from './visible-text';
 import { fileURLToPath } from 'node:url';
 import { buildQueue } from '../scripts/revision-queue.mjs';
 import { checkArticleReview, readPostMeta, proseHash, REVIEW_REQUIRED_FROM } from '../scripts/article-review-gate.mjs';
+import { classifyEdit, baseVersion } from '../scripts/edit-kind.mjs';
 
 // Инвариант-гейт по СБОРКЕ (dist/): ловит КЛАССЫ багов на ЛЮБОМ посте, в т.ч. вне
 // PAGES-списка скриншот-гейта. Без baseline — чистые assert'ы.
@@ -130,6 +138,24 @@ function touchedPosts(): string[] {
     return meaningful(was) !== meaningful(readFileSync(abs, 'utf8'));
   });
 }
+
+/** Мелкая правка или переработка — scripts/edit-kind.mjs (решение Никиты 05.09.2026).
+ *  Тяжёлые гейты — независимая оценка, честный потолок, изменчивые факты, число
+ *  иллюстраций — включаются только на переработке: больше 40 изменённых слов прозы,
+ *  смена заголовка или описания. 05.09.2026 исправление одной даты в двух статьях
+ *  включило все три и стоило часов. Мелкой правке хватает новой записи в журнале
+ *  и чистого языка в добавленных строках; новые кадры проверяются как раньше. */
+type EditKind = ReturnType<typeof classifyEdit>;
+const editKinds = new Map<string, EditKind>();
+function editKind(rel: string): EditKind {
+  if (!editKinds.has(rel)) {
+    const abs = join(REPO, rel);
+    editKinds.set(rel, classifyEdit(baseVersion(rel, REPO), existsSync(abs) ? readFileSync(abs, 'utf8') : ''));
+  }
+  return editKinds.get(rel)!;
+}
+const isRework = (rel: string) => ['rework', 'new'].includes(editKind(rel).kind);
+const reworkedPosts = () => touchedPosts().filter(isRework);
 
 // Инварианты зависят только от сборки, не от вьюпорта — один прогон достаточно.
 test.beforeEach(({}, testInfo) => {
@@ -517,7 +543,7 @@ test('llms-full.txt: нет внутренних идентификаторов 
   const file = fileURLToPath(new URL('../public/llms-full.txt', import.meta.url));
   const text = readFileSync(file, 'utf8');
   const FORBIDDEN: { what: string; re: RegExp }[] = [
-    { what: 'служебные поля frontmatter', re: /^(coverImage|coverPosition|coverPositionCard|sourceType|howto|qualityScore|volatileFacts):/m },
+    { what: 'служебные поля frontmatter', re: /^(coverImage|coverPosition|coverPositionCard|sourceType|howto|qualityScore|volatileFacts|format):/m },
     { what: 'путь к исходникам картинок', re: /\.\/_images\//m },
     { what: 'имя .astro-компонента', re: /\.astro\b/m },
     { what: 'имя .mdx-исходника', re: /\.mdx\b/m },
@@ -855,6 +881,86 @@ test('Новости: у каждой заметки есть своя стра�
   expect(linked.length, 'лента не ссылается ни на одну заметку').toBeGreaterThan(0);
 });
 
+// ⛔ С 08.09.2026 лента показывает ПОСТОЯННОЕ число свежих заметок, а не весь
+// текущий месяц (было 87 заметок и 230 КБ на одной странице). Значит, ссылку на
+// заметку теперь чаще всего даёт не лента, а страница её месяца — и если такая
+// страница не построится, заметка станет сиротой молча. Этот сторож считает
+// ссылки по ОБОИМ путям сразу.
+test('Новости: на каждую заметку ведёт ссылка с ленты или со страницы её месяца', () => {
+  const слаги = readdirSync(join(DIST, '..', 'src/content/news'))
+    .filter((f) => f.endsWith('.md'))
+    .map((f) => f.replace(/\.md$/, ''));
+  expect(слаги.length).toBeGreaterThan(0);
+
+  const листинги = [join(DIST, 'novosti/index.html'),
+                    ...readdirSync(join(DIST, 'novosti'), { withFileTypes: true })
+                      .filter((e) => e.isDirectory() && /^\d{4}-\d{2}$/.test(e.name))
+                      .map((e) => join(DIST, 'novosti', e.name, 'index.html'))]
+    .filter((f) => existsSync(f))
+    .map((f) => readFileSync(f, 'utf8'))
+    .join('\n');
+
+  const сироты = слаги.filter((s) => !new RegExp(`href="?/novosti/${s}/`).test(листинги));
+  expect(сироты, `заметки, на которые не ведёт ни лента, ни архив месяца:\n${сироты.join('\n')}`).toEqual([]);
+});
+
+// ⛔ Текст заметки целиком живёт на ОДНОМ адресе — на её собственной странице.
+//
+// До 08.09.2026 лента печатала восемь свежих заметок полностью. Заметка короткая
+// (150–350 слов), значит на ленте лежала не выжимка, а весь текст: один и тот же
+// материал по двум адресам. Ранжируется при этом страница заметки (средняя
+// позиция 7,6 при 497 показах за 28 дней), а лента — нет (позиция 20,7 при 19
+// показах), то есть копия не приносила ничего и работала против оригинала.
+// Лента показывает капсулу-ответ и ведёт на текст.
+test('Новости: полный текст заметки есть только на её странице, не на ленте', () => {
+  const лента = readFileSync(join(DIST, 'novosti/index.html'), 'utf8');
+  const слаги = [...лента.matchAll(/href="?(\/novosti\/(\d{4}-\d{2}-\d{2}-[a-z0-9-]+)\/)"?/g)]
+    .map((m) => m[2]);
+  expect(слаги.length, 'на ленте нет ссылок на заметки — тест перестал что-либо проверять')
+    .toBeGreaterThan(0);
+
+  // ⛔ Своего «вырезать теги» здесь нет намеренно: наивное выражение и мерит не
+  // то (содержимое скрипта утекает в текст, а текст за атрибутом с «>» теряется),
+  // и краснит сканер безопасности. Общий разбор живёт в одном месте.
+  const текст = (html: string) => видимыйТекст(html).replace(/\s+/g, ' ');
+  const наЛенте = текст(лента);
+  const дубли: string[] = [];
+  for (const s of слаги.slice(0, 12)) {
+    const файл = join(DIST, 'novosti', s, 'index.html');
+    if (!existsSync(файл)) continue;
+    // Берём предложения из тела заметки — те, что длиннее капсулы и попадаются
+    // только в самом тексте. Капсулу проверять нельзя: она на ленте и должна быть.
+    const своя = текст(readFileSync(файл, 'utf8'));
+    const свои = своя
+      .split(/(?<=[.!?])\s/)
+      .map((x) => x.trim())
+      .filter((x) => x.length > 90 && x.length < 240 && /[а-яё]/i.test(x));
+    // Последние предложения текста — заведомо не капсула (она идёт первой).
+    const хвост = свои.slice(-3);
+    // ⛔ Само-проверка: те же фразы обязаны находиться на СВОЕЙ странице. Без неё
+    // сторож зеленеет молча, стоит разбору текста разъехаться с разметкой —
+    // фраз просто не найдётся нигде, и «дублей нет» будет означать «не искал».
+    expect(хвост.filter((ф) => своя.includes(ф)).length,
+      `разбор текста сломался: фразы заметки ${s} не находятся даже на её странице`)
+      .toBe(хвост.length);
+    const найдено = хвост.filter((фраза) => наЛенте.includes(фраза));
+    if (найдено.length >= 2) дубли.push(`${s}: ${найдено[0].slice(0, 70)}…`);
+  }
+  expect(дубли, `текст заметки напечатан и на ленте, и на своей странице:\n${дубли.join('\n')}`)
+    .toEqual([]);
+});
+
+// Лента не должна снова разрастись: длина задана числом, а не календарём.
+test('Новости: лента показывает не больше заданного числа заметок', async () => {
+  const { FEED_SIZE } = await import('../src/data/news.js');
+  const html = readFileSync(join(DIST, 'novosti/index.html'), 'utf8');
+  const ссылки = new Set((html.match(/href="?\/novosti\/\d{4}-\d{2}-\d{2}-[a-z0-9-]+\/"?/g) ?? [])
+    .map((m) => m.replace(/^href="?/, '').replace(/"?$/, '')));
+  expect(ссылки.size,
+    `на ленте ${ссылки.size} заметок при пределе ${FEED_SIZE}: хвост снова тянет весь месяц`,
+  ).toBeLessThanOrEqual(FEED_SIZE);
+});
+
 test('Новости: текст заметки объявлен статьёй только на своей странице', () => {
   const listings = [join(DIST, 'novosti/index.html'),
                     ...readdirSync(join(DIST, 'novosti'), { withFileTypes: true })
@@ -910,7 +1016,7 @@ test('Паспорт статьи: новая статья не выходит �
 test('Честный потолок: у тронутой статьи заполнены все оси qualityScore', () => {
   const required = ['topic', 'facts', 'visuals', 'experience', 'internalLinks', 'legal', 'overall'];
   const bad: string[] = [];
-  for (const rel of touchedPosts()) {
+  for (const rel of reworkedPosts()) {
     const abs = join(REPO, rel);
     if (!existsSync(abs)) continue;
     const fm = readFileSync(abs, 'utf8').split('---')[1] ?? '';
@@ -932,11 +1038,43 @@ test('Честный потолок: у тронутой статьи запол
   expect(bad, bad.join('\n')).toEqual([]);
 });
 
+// Подборка направлений — меню, а не аналитика (решение Никиты 05.09.2026).
+// 05.09.2026 запрос «куда поехать на новый год» (10 066/мес) получил таблицу
+// множителей цен и шесть сценариев, все дешёвые: человек пришёл выбирать, а
+// выбирать было не из чего. Правило промта само по себе не держит — держит счёт:
+// заголовок-выбор обязан нести поле format, а format: choice — не меньше
+// CHOICE_MIN карточек (### заголовков) и столько же кадров. Старые статьи не
+// трогаем: проверяются только тронутые в заходе.
+const CHOICE_TITLE = /^(куда (поехать|съездить|полететь|ехать)|где (встретить|отдохнуть|отметить)|лучшие направления|направления (на|для))/i;
+const CHOICE_MIN = 15;
+test('Подборка направлений: заголовок-выбор несёт format, а format: choice — не меньше 15 карточек с кадрами', () => {
+  const bad: string[] = [];
+  for (const rel of reworkedPosts()) {
+    const abs = join(REPO, rel);
+    if (!existsSync(abs)) continue;
+    const parts = readFileSync(abs, 'utf8').split('---');
+    const fm = parts[1] ?? '';
+    const body = parts.slice(2).join('---');
+    const title = fm.match(/^title:\s*["']?(.+?)["']?\s*$/m)?.[1] ?? '';
+    const format = fm.match(/^format:\s*(\w+)/m)?.[1];
+    if (!format && CHOICE_TITLE.test(title)) {
+      bad.push(`${rel}: заголовок «${title}» — это выбор направления, а поля format нет; поставь format: choice (или answer/guide, если это правда не подборка — рецензент проверит)`);
+      continue;
+    }
+    if (format !== 'choice') continue;
+    const cards = (body.match(/^###\s+\S/gm) || []).length;
+    const images = (body.match(/!\[[^\]]*\]\(|<img\b|<Figure\b/g) || []).length;
+    if (cards < CHOICE_MIN) bad.push(`${rel}: подборка из ${cards} направлений (### заголовков), нужно не меньше ${CHOICE_MIN}`);
+    if (images < CHOICE_MIN) bad.push(`${rel}: ${images} кадров на подборку из ${CHOICE_MIN}+ направлений — у каждого направления свой кадр`);
+  }
+  expect(bad, bad.join('\n')).toEqual([]);
+});
+
 test('Независимая оценка: тронутая статья, сверенная с 03.09.2026, несёт артефакт другого рецензента', () => {
   // Обещание «второе мнение» в промте ничем не проверялось: автор мог заполнить qualityScore сам.
   // Теперь оценки в шапке обязаны совпасть с артефактом рецензента число в число, а рецензент — не автор.
   const bad: string[] = [];
-  for (const rel of touchedPosts()) {
+  for (const rel of reworkedPosts()) {
     const abs = join(REPO, rel);
     if (!existsSync(abs)) continue;
     const slug = rel.split('/').pop()!.replace(/\.mdx?$/, '');
@@ -958,7 +1096,7 @@ test('Независимая оценка: тронутая статья, све
 test('Изменчивые факты: у цены и прогноза есть срок пересмотра и fallback', () => {
   const bad: string[] = [];
   const today = new Date().toISOString().slice(0, 10);
-  for (const rel of touchedPosts()) {
+  for (const rel of reworkedPosts()) {
     const abs = join(REPO, rel);
     if (!existsSync(abs)) continue;
     const src = readFileSync(abs, 'utf8');
@@ -1049,11 +1187,15 @@ test('Язык: в тронутой статье нет слов-паразит�
     const abs = join(root, rel);
     if (!existsSync(abs)) continue;
     const src = readFileSync(abs, 'utf8');
+    // Мелкая правка: старый текст не чистим, смотрим только добавленные строки —
+    // иначе исправление даты требует вычистить всю статью (медиана 3 паразита).
+    const edit = editKind(rel);
+    const prose = isRework(rel) ? src.split('---').slice(2).join('---') : edit.addedLines.join('\n');
     // ⛔ Цитаты чужих людей из проверки исключаются: их слова — факт, а не наш
     //    текст, и править их ради гейта значит подделывать цитату. Найдено
     //    29.08.2026: «очередь формируется очень быстро» — дословный отзыв
     //    туриста, и гейт требовал его переписать.
-    const body = src.split('---').slice(2).join('---')
+    const body = prose
       .split('\n').filter((s) => !/^\s*>\s*«/.test(s)).join('\n');
     // JS \b не знает кириллицы — границы слова руками, как в гейте дат.
     const hits = (list: string[]) => list.flatMap((w) => {
@@ -1175,6 +1317,26 @@ test('Журнал проверок: записи заполнены и дата
     if (!existsSync(abs)) continue;
     const src = readFileSync(abs, 'utf8');
     const fm = src.split('---')[1] ?? '';
+    // Тронутая статья без новой записи в журнале — правка молчком (решение Никиты
+    // 05.09.2026): мелкой правке запись с датой и источником и есть весь гейт,
+    // переработке — тем более. Сравниваем дату последней записи с основой.
+    const edit = editKind(rel);
+    const was = baseVersion(rel, REPO);
+    if (was !== null && edit.kind !== 'meta') {
+      // Вторая правка в тот же день тоже идёт с записью: при точности в день сравнение одних
+      // дат её не видит (05.09.2026 первая же мелкая правка после первой встала красной),
+      // поэтому считаем ещё и число записей последней даты.
+      const datesOf = (text: string) => [...text.matchAll(/^\s+- date:\s*(\d{4}-\d{2}-\d{2})/gm)].map((m) => m[1]).sort();
+      const now = datesOf(fm);
+      const before = datesOf(was.split('---')[1] ?? '');
+      const lastNow = now.at(-1) ?? '';
+      const lastWas = before.at(-1) ?? '';
+      const sameDayMore = lastNow !== '' && lastNow === lastWas
+        && now.filter((d) => d === lastNow).length > before.filter((d) => d === lastWas).length;
+      if (!(lastNow > lastWas || sameDayMore)) {
+        bad.push(`${rel}: проза изменилась (${edit.wordsChanged} слов), а новой записи в журнале проверок нет — что сверяли и по какому источнику`);
+      }
+    }
     if (!/^checks:/m.test(fm)) continue;
 
     const dates = [...fm.matchAll(/^\s+- date:\s*(\d{4}-\d{2}-\d{2})/gm)].map((m) => m[1]);
@@ -1217,17 +1379,22 @@ test('Иллюстрации: тронутая статья с 8+ раздела
     const abs = join(root, rel);
     if (!existsSync(abs)) continue;            // файл удалён в этом же заходе
     const src = readFileSync(abs, 'utf8');
+    // Мелкая правка: число иллюстраций не пересчитываем, подписи смотрим только у новых кадров.
+    const edit = editKind(rel);
+    const small = !isRework(rel);
     const h2 = (src.match(/^## /gm) ?? []).length;
-    if (h2 < 8) continue;                      // короткой заметке галерея не нужна
+    if (h2 < 8 && !small) continue;            // короткой заметке галерея не нужна
 
-    // Считаем и markdown-картинки, и вставки компонентами (PhotoGrid, Image).
+    // Считаем и markdown-картинки, и вставки компонентами (PhotoGrid, Image), а с 06.09.2026 —
+    // и светлые схемы разметкой (SeasonTable, RouteDays): они заменили тёмные SVG один к одному.
     const md = [...src.matchAll(/^!\[([^\]]*)\]\(([^)]+)\)/gm)];
-    const comp = (src.match(/<(?:Image|Picture|PhotoGrid)\b/g) ?? []).length;
-    if (md.length + comp < 4) {
+    const comp = (src.match(/<(?:Image|Picture|PhotoGrid|SeasonTable|RouteDays)\b/g) ?? []).length;
+    if (!small && md.length + comp < 4) {
       problems.push(`${rel}: ${h2} разделов, но всего ${md.length + comp} иллюстраций (нужно ≥4)`);
     }
     // Подпись для незрячих и для поиска по картинкам: «фото», «img», пустая — не подпись.
     for (const [, alt, path] of md) {
+      if (small && !edit.newImages.includes(path.replace(/^\.\/_images\//, ''))) continue;
       if (alt.trim().length < 15) {
         problems.push(`${rel}: подпись «${alt}» у ${path} слишком короткая, опишите кадр словами`);
       }
@@ -1256,7 +1423,20 @@ const freshFromFrontmatter = (fm: string): string => {
   const upd = one(/^updatedDate:\s*(.+)$/m);
   // Записи журнала сверок идут с отступом внутри checks: — поле верхнего уровня
   // (pubDate/updatedDate/tripDate) под этот вид не подходит.
-  const checks = [...fm.matchAll(/^\s+-?\s*date:\s*(.+)$/gm)].map((m) => m[1].replace(/['"]/g, '').trim());
+  //
+  // ⛔ Запись с признаком minor пропускается — так же, как её пропускает сам
+  //    сайт (src/data/freshness.js). 07.09.2026 этот гейт был зелёным ровно
+  //    тогда, когда лента показывала беду: техническая правка ссылок подняла
+  //    64 статьи одной датой, и сезонная «3 сентября» встала первой. Гейт
+  //    считал ту же неверную дату, что и лента, и потому подтверждал порядок.
+  const marks = [...fm.matchAll(/^\s+-\s*date:\s*(.+)$/gm)];
+  const checks: string[] = [];
+  for (let i = 0; i < marks.length; i++) {
+    const from = marks[i].index! + marks[i][0].length;
+    const to = i + 1 < marks.length ? marks[i + 1].index! : fm.length;
+    if (/^\s+minor:\s*true\s*$/m.test(fm.slice(from, to))) continue;
+    checks.push(marks[i][1].replace(/['"]/g, '').trim());
+  }
   return [pub, upd, ...checks].filter(Boolean).sort().at(-1)!;
 };
 
@@ -1558,7 +1738,9 @@ test('Деньги: в тексте партнёрской ссылки нет �
   //    чтобы они не вернулись при следующей правке.
   const ИМЕНА = new Set(['aviasales', 'cherehapa', 'airalo', 'travelata', 'ostrovok',
     'отелло', 'otello', 'drimsim', 'youtravel', 'sputnik8', 'tutu', 'туту', 'level',
-    'tripster', 'tiqets', 'суточно', 'sutochno']);
+    'tripster', 'tiqets', 'суточно', 'sutochno',
+    // Партнёры, заведённые 07.09.2026: имя в тексте ссылки запрещено с первого дня.
+    'kiwitaxi', 'кивитакси', 'mirturbaz', 'мир турбаз', 'спутник8', 'sputnik 8']);
   const bad: string[] = [];
   for (const ф of files) {
     const h = readFileSync(ф, 'utf8');
@@ -1764,7 +1946,6 @@ test('Деньги: страновые CTA сохраняют выбранное
   const ошибки: string[] = [];
   let страховок = 0;
   let туров = 0;
-  let esim = 0;
   let авиапоисков = 0;
 
   const hrefИзТега = (тег: string) => {
@@ -1809,14 +1990,6 @@ test('Деньги: страновые CTA сохраняют выбранное
       }
     }
 
-    for (const тег of ссылкиСФрагментом(html, 'airalo.pxf.io')) {
-      esim++;
-      const target = назначение(hrefИзТега(тег), 'u');
-      if (!/^https:\/\/airalo\.com\/ru\/[a-z0-9-]+-esim\/?$/.test(target)) {
-        ошибки.push(`${rel}: eSIM открывает общий каталог — ${target}`);
-      }
-    }
-
     if (части[0] === 'packing' && части.length === 3) {
       for (const тег of ссылкиСФрагментом(html, 'aviasales.tpk.mx')) {
         авиапоисков++;
@@ -1830,7 +2003,6 @@ test('Деньги: страновые CTA сохраняют выбранное
 
   expect(страховок, 'не найдено ни одной страновой ссылки на страховку').toBeGreaterThan(0);
   expect(туров, 'не найдено ни одной страновой ссылки на авторские туры').toBeGreaterThan(0);
-  expect(esim, 'не найдено ни одной страновой ссылки на eSIM').toBeGreaterThan(0);
   expect(авиапоисков, 'не найдено ни одной авиассылки на странице сборов по стране').toBeGreaterThan(0);
   expect(ошибки.slice(0, 30), `${ошибки.length} холодных страновых CTA:\n${ошибки.slice(0, 30).join('\n')}`).toEqual([]);
 });
@@ -1847,4 +2019,37 @@ test('Деньги: в партнёрских URL нет повреждённо�
     }
   }
   expect(ошибки, ошибки.join('\n')).toEqual([]);
+});
+
+test('Заголовок: слова не слипаются через границу тега', () => {
+  // ⛔ 04.09.2026 на всех страницах месяца заголовок печатался «Вьетнамв октябре»:
+  //   в шаблоне между выражением и <span> стоял обычный пробел, и сборщик его съел.
+  //   Соседняя ветка того же заголовка была написана через {' '} — то есть на грабли
+  //   уже наступали и починили половину. Проверяем следствие, а не разметку: в тексте
+  //   заголовка не должно быть стыка «буква/цифра вплотную к границе тега».
+  const примеры: string[] = [];
+  let проверено = 0;
+
+  for (const файл of files) {
+    const html = readFileSync(файл, 'utf8');
+    for (const [, внутри] of html.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/gi)) {
+      if (!/<[a-z]/i.test(внутри)) continue; // заголовок без вложенных тегов стыков не имеет
+      проверено++;
+      // Слипание: непробельный символ вплотную к открывающему или закрывающему тегу,
+      // и с другой стороны тега тоже сразу непробельный.
+      // <br> и <wbr> — сами перенос строки, слов они не склеивают.
+      const безПереносов = внутри.replace(/<\/?(?:br|wbr)\b[^>]*>/gi, ' ');
+      const стыки = [
+        ...безПереносов.matchAll(/([\p{L}\p{N}])<(?!\/)[a-z][^>]*>(?=[\p{L}\p{N}])/gu),
+        ...безПереносов.matchAll(/([\p{L}\p{N}])<\/[a-z][^>]*>(?=[\p{L}\p{N}])/gu),
+      ];
+      if (стыки.length) {
+        const текст = безПереносов.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+        примеры.push(`${файл.slice(DIST.length)} → «${текст.slice(0, 60)}»`);
+      }
+    }
+  }
+
+  expect(проверено, 'заголовков с вложенными тегами не нашлось — проверка ничего не мерит').toBeGreaterThan(50);
+  expect(примеры.slice(0, 10).join('\n'), `слипшиеся заголовки: ${примеры.length}`).toBe('');
 });

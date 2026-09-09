@@ -1,0 +1,378 @@
+---
+// Оман — собственная страница направления по макету 08.09.2026.
+//
+// Зачем отдельная страница, а не общий шаблон: у Омана два климата, и главный
+// вопрос читателя — «когда И куда», а не «когда». Общий шаблон рисует одну
+// полосу месяцев на страну, и она тут врёт: в июле в Маскате +37, а в Салале
+// +28 под муссоном. Кастомные хабы разрешены каноном (так же сделаны Япония и
+// Антарктида), слуг исключён из общего шаблона.
+//
+// ⛔ Все числа берутся из тех же данных, что и остальные 75 стран: виза из
+//    visa-details, перелёт из живой выгрузки цен, жильё и еда из справочника
+//    бюджетов, климат из country-climate-chart. Ни одного вписанного руками
+//    числа — иначе страница застынет в день публикации и через полгода соврёт.
+import { Image } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Footer from '../components/Footer.astro';
+import MonthlyEvents from '../components/MonthlyEvents.astro';
+import YearClimateChart from '../components/YearClimateChart.astro';
+import { DIRECTIONS, MONTHS, VISITED } from '../data/directions.js';
+import { PRICES } from '../data/prices.js';
+import { getVisaDetails } from '../data/visa-details.js';
+import { climateChart } from '../data/country-climate-chart.js';
+import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
+import { aviasalesRoute, cherehapaCountry, ostrovokCity } from '../data/affiliate.js';
+import livePrices from '../data/prices-cache.json';
+
+import hero from '../content/blog/_images/oman-v2/hero.jpg';
+import dhofarGreen from '../content/blog/_images/oman-v2/dhofar-green.jpg';
+import dhofarDry from '../content/blog/_images/oman-v2/dhofar-dry.jpg';
+import canyon from '../content/blog/_images/oman-v2/canyon.jpg';
+import nizwa from '../content/blog/_images/oman-v2/nizwa.jpg';
+import wahiba from '../content/blog/_images/oman-v2/wahiba.jpg';
+import mosque from '../content/blog/_images/oman-v2/mosque.jpg';
+import author from '../assets/author/nikita.jpg';
+
+const url = 'https://traveltribe.ru/oman/';
+const yr = new Date(DATA_UPDATED).getUTCFullYear();
+const d = DIRECTIONS.find((x) => x.slug === 'oman');
+const vd = getVisaDetails('oman', d.visa);
+const cc = climateChart('oman');
+const visited = VISITED.has('oman');
+const subId = 'hub_oman';
+
+// Месяцы и их вердикт — из тех же данных, что у всех стран.
+const rank = { P: 4, G: 3, O: 2, B: 1, X: 0 };
+const monthsRanked = MONTHS.map((m, i) => ({ ...m, status: d.r[i], text: d.t[i], rank: rank[d.r[i]] || 0 }));
+const bestMonths = monthsRanked.filter((m) => m.rank >= 3).slice(0, 3);
+const worstMonths = monthsRanked.filter((m) => m.rank <= 1).slice(0, 2);
+
+// ⛔ Перелёт — из ЖИВОЙ выгрузки, не из прикидки справочника: на 16 странах из 51
+// прикидка обещала вдвое меньше реального (замер 29.08.2026). Курс тот же, что
+// у справочника бюджетов.
+const КУРС = 90;
+const живыеМесяцы = Object.values(livePrices.prices?.[d.price?.iata] ?? {}).filter(Boolean);
+const живойМинимум = живыеМесяцы.length ? Math.round(Math.min(...живыеМесяцы) / КУРС) : null;
+const flightFrom = живойМинимум ?? d.price?.flight?.[0];
+const hotelFrom = d.price?.hotel?.[0];
+const foodFrom = d.price?.food?.[0];
+const weekTotal = flightFrom ? flightFrom + (hotelFrom || 0) * 7 + (foodFrom || 0) * 7 : null;
+const priceIdx = PRICES.findIndex((p) => p.iata === d.price?.iata);
+
+// Разница температур между севером и югом — из проверенных климатических рядов.
+const разрыв = cc
+  ? cc.cities[0].tMax
+      .map((v, i) => ({ i, d: Math.round(v - cc.cities[1].tMax[i]) }))
+      .reduce((a, b) => (Math.abs(b.d) > Math.abs(a.d) ? b : a))
+  : null;
+const МЕС_П = ['январе', 'феврале', 'марте', 'апреле', 'мае', 'июне', 'июле', 'августе', 'сентябре', 'октябре', 'ноябре', 'декабре'];
+
+const билеты = aviasalesRoute('MOW', d.price?.iata, `${subId}_flight`);
+// Маскат у Островка проверен живьём 09.09.2026: 200, «Отели в Маскате», 408 вариантов.
+// ⛔ Три аргумента: страна, город, метка. Промах слотом даёт партнёру 404.
+const жильё = ostrovokCity('oman', 'muscat', `${subId}_stay`);
+const полис = cherehapaCountry('oman', `${subId}_ins`);
+
+const faqs = [
+  {
+    q: `Когда лучше ехать в Оман в ${yr}?`,
+    a: `${bestMonths.map((m) => m.nom).join(', ')} — на севере страны днём комфортно и сухо. ` +
+       `${worstMonths.length ? `Хуже всего ${worstMonths.map((m) => m.nom).join(' и ')}: на севере за +35 °C. ` : ''}` +
+       `Юг живёт по другому календарю: с середины июня до середины сентября Салалу накрывает муссон, ` +
+       `днём там ${Math.round(cc.cities[1].tMax[6])} °C против ${Math.round(cc.cities[0].tMax[6])} °C в Маскате.`,
+  },
+  { q: 'Нужна ли виза в Оман россиянам?', a: vd.summary },
+  {
+    q: `Сколько стоит поездка в Оман в ${yr}?`,
+    a: `Перелёт из Москвы от $${flightFrom}, жильё от $${hotelFrom} за ночь, еда от $${foodFrom} в день. ` +
+       `Неделя на одного выходит от $${weekTotal}. Цены пересчитываются автоматически, дата сверки — ${DATA_UPDATED_RU}.`,
+  },
+  {
+    q: 'Что такое хариф в Салале?',
+    a: `Юго-западный муссон с моря. С середины июня до середины сентября юг Омана накрывают облака, туман и морось: ` +
+       `в Салале ${cc.cities[1].rainDays[7]} дождливых дней в августе и днём ${Math.round(cc.cities[1].tMax[7])} °C, ` +
+       `тогда как на севере ${Math.round(cc.cities[0].tMax[7])} °C. Единственное место Залива, куда летом едут за прохладой и зеленью.`,
+  },
+];
+
+const ldJson = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'CollectionPage',
+      '@id': `${url}#collection`,
+      url,
+      name: `Оман ${yr}: когда ехать, виза, бюджет для россиян`,
+      description: `Оман для россиян в ${yr}: ${vd.duration} без визы, перелёт от $${flightFrom}, лучшие месяцы — ${bestMonths.map((m) => m.nom).join(', ')}. Север и юг живут по разным календарям.`,
+      inLanguage: 'ru-RU',
+      isPartOf: { '@id': 'https://traveltribe.ru/#website' },
+      dateModified: DATA_UPDATED,
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${url}#breadcrumbs`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://traveltribe.ru/' },
+        { '@type': 'ListItem', position: 2, name: 'Страны', item: 'https://traveltribe.ru/countries/' },
+        { '@type': 'ListItem', position: 3, name: 'Оман', item: url },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title={`Оман ${yr}: когда ехать, виза, бюджет для россиян`}
+  description={`Оман для россиян в ${yr}: ${vd.duration} без визы, перелёт от $${flightFrom}, лучшие месяцы — ${bestMonths.map((m) => m.nom).join(', ')}. Север и юг живут по разным календарям.`}
+  canonical={url}
+  ogType="article"
+  ldJson={ldJson}
+  monetizationDestination="oman"
+>
+  <article class="om">
+    <Breadcrumbs crumbs={[{ label: 'Страны', href: '/countries/' }, { label: 'Оман' }]} />
+
+    <figure class="om-hero">
+      <Image src={hero} alt="Фьорды Мусандама: скальные стены уходят в спокойную воду залива" widths={[800, 1280, 1920]} sizes="100vw" format="webp" quality={82} loading="eager" fetchpriority="high" />
+      <figcaption>Фьорды Мусандама у Хасаба: скалы уходят в воду почти вертикально.</figcaption>
+    </figure>
+
+    <header class="om-top">
+      <div>
+        <h1>Оман <span class="om-yr">{yr}</span></h1>
+        <p class="om-lead">Страна, где север и юг живут по разным календарям — и летом на юге прохладнее, чем на севере.</p>
+        <div class="om-byline">
+          <Image src={author} alt="Никита Зайцев" width={52} height={64} format="webp" quality={80} />
+          <div>
+            <p><a href="/about/">Никита Зайцев</a>, автор traveltribe.ru</p>
+            <p class="om-dim">{visited ? 'Был в Омане сам. ' : ''}Данные актуальны на {DATA_UPDATED_RU}.</p>
+          </div>
+        </div>
+      </div>
+      <div class="om-answer">
+        <p><b>{vd.summary}</b></p>
+        <p>Лучшие месяцы на севере — {bestMonths.map((m) => m.nom).join(', ')}. Перелёт из Москвы от ${flightFrom}, неделя на одного от ${weekTotal}.</p>
+        <a class="om-btn" href={билеты} rel="sponsored nofollow noopener" target="_blank">Билеты Москва — Маскат от ${flightFrom}</a>
+        <p class="om-btn-note">Ведёт на Aviasales, поиск на ваши даты. Цена — минимум живой выдачи по месяцам, пересчитывается сама. Ссылка партнёрская, цена для вас та же.</p>
+      </div>
+    </header>
+
+    <section class="om-sec">
+      <h2>Одно и то же место, июль и январь</h2>
+      <div class="om-pair">
+        <figure>
+          <Image src={dhofarGreen} alt="Зелёные холмы Дофара в сезон харифа" widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" format="webp" quality={82} loading="lazy" />
+          <figcaption>Склоны Дофара в сезон муссона: трава по колено и туман.</figcaption>
+        </figure>
+        <figure>
+          <Image src={dhofarDry} alt="Сухие скалы Дофара над морем вне сезона муссона" widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" format="webp" quality={82} loading="lazy" />
+          <figcaption>Тот же Дофар вне муссона: голый камень над морем.</figcaption>
+        </figure>
+      </div>
+      <p class="om-body">
+        Это главный сюжет Омана. В {МЕС_П[разрыв.i]} в Маскате {Math.round(cc.cities[0].tMax[разрыв.i])} °C, а в Салале
+        {' '}{Math.round(cc.cities[1].tMax[разрыв.i])} °C — разница в {Math.abs(разрыв.d)} градусов. Юг в это время накрывает
+        муссон: облака, туман и морось. Зимой всё наоборот: север сухой и тёплый, а Дофар возвращается к камню.
+        Между этими двумя картинками тысяча километров, поэтому вопрос «когда ехать» без вопроса «куда» ответа не имеет.
+      </p>
+    </section>
+
+    <section class="om-sec">
+      <h2>Когда ехать в Оман — по месяцам</h2>
+      <YearClimateChart slug="oman" />
+
+      <div class="om-heat">
+        {monthsRanked.map((m) => {
+          const cls = m.status === 'P' ? 'peak' : m.status === 'G' ? 'good' : m.status === 'O' ? 'off' : m.status === 'B' ? 'bad' : 'closed';
+          return (
+            <a href={`/trips/${m.slug}/oman/`} class={`om-mh om-mh--${cls}`} title={m.text || m.nom}>
+              <span>{m.nom.charAt(0).toUpperCase() + m.nom.slice(1, 3)}</span>
+            </a>
+          );
+        })}
+      </div>
+      <ul class="om-months">
+        {monthsRanked.map((m) => (<li><b>{m.nom.charAt(0).toUpperCase() + m.nom.slice(1)}</b> — {m.text || '—'}</li>))}
+      </ul>
+    </section>
+
+    <MonthlyEvents slug="oman" countryNom="Оман" countryNameVp="в Омане" />
+
+    <figure class="om-wide">
+      <Image src={wahiba} alt="Гребни дюн песков Вахибы" widths={[800, 1200, 1800]} sizes="100vw" format="webp" quality={82} loading="lazy" />
+      <figcaption>Пески Вахибы — вторая причина ехать зимой: летом здесь за сорок.</figcaption>
+    </figure>
+
+    <section class="om-sec">
+      <h2>Сколько стоит поездка</h2>
+      <div class="om-money">
+        <div>
+          <p class="om-big">от ${flightFrom} <span class="om-small om-dim">перелёт из Москвы, туда-обратно</span></p>
+          <p class="om-body">Прямых рейсов из Москвы нет — варианты со стыковкой. Цена берётся из живой выдачи по месяцам, а не из прикидки: сверка {DATA_UPDATED_RU}.</p>
+          <div class="om-cta-row">
+            <a class="om-btn" href={билеты} rel="sponsored nofollow noopener" target="_blank">Найти билеты</a>
+            <p class="om-btn-note">Aviasales: календарь цен по месяцам, поиск на ваши даты.</p>
+          </div>
+        </div>
+        <div class="om-prices">
+          <div class="om-prow"><span>Перелёт, туда-обратно</span><span>от ${flightFrom}</span></div>
+          <div class="om-prow"><span>Жильё за ночь</span><span>от ${hotelFrom}</span></div>
+          <div class="om-prow"><span>Еда в день</span><span>от ${foodFrom}</span></div>
+          <div class="om-prow"><span>Неделя на одного</span><span>от ${weekTotal}</span></div>
+        </div>
+      </div>
+      <div class="om-money">
+        <div>
+          <h3>Жильё и страховка</h3>
+          <p class="om-body">В Салале в сезон муссона гостей из Залива много, номера разбирают заранее. Полис при въезде не требуют, но медицина в Омане платная.</p>
+          <div class="om-cta-row">
+            <a class="om-btn om-btn-ghost" href={жильё} rel="sponsored nofollow noopener" target="_blank">Смотреть отели в Маскате</a>
+            <a class="om-btn om-btn-ghost" href={полис} rel="sponsored nofollow noopener" target="_blank">Собрать полис</a>
+          </div>
+        </div>
+        <div class="om-prices">
+          <div class="om-prow"><span>Свой расчёт поездки</span><span><a href={priceIdx >= 0 ? `/calculator/?c=${priceIdx}` : '/calculator/'}>калькулятор</a></span></div>
+          <div class="om-prow"><span>Что взять с собой</span><span><a href="/packing/oman/">сборы в Оман</a></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="om-sec">
+      <h2>Виза и въезд</h2>
+      <div class="om-visa">
+        <div class="om-prow"><span>Виза</span><span>{vd.cost}, {vd.duration}</span></div>
+        <div class="om-prow"><span>Как оформляется</span><span>{vd.timing}</span></div>
+      </div>
+      <p class="om-body">{vd.summary}</p>
+      <p class="om-body om-linkline"><a href="/visa/oman/">Документы, сроки и что проверить перед вылетом</a></p>
+
+      <div class="om-practice">
+        <figure>
+          <Image src={mosque} alt="Купол и минарет Большой мечети султана Кабуса в Маскате" widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" format="webp" quality={82} loading="lazy" />
+          <figcaption>Большая мечеть султана Кабуса в Маскате.</figcaption>
+        </figure>
+        <div>
+          <figure class="om-inline">
+            <Image src={canyon} alt="Слоистые стены каньона Джебель-Шамс" widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" format="webp" quality={82} loading="lazy" />
+            <figcaption>Каньон Джебель-Шамс — самая высокая точка страны.</figcaption>
+          </figure>
+          <figure class="om-inline">
+            <Image src={nizwa} alt="Круглая башня форта Низвы" widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" format="webp" quality={82} loading="lazy" />
+            <figcaption>Форт Низвы, старая столица имамата.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="om-sec">
+      <h2>Частые вопросы</h2>
+      <dl class="om-faq">
+        {faqs.map((f) => (<><dt>{f.q}</dt><dd>{f.a}</dd></>))}
+      </dl>
+    </section>
+
+    <p class="om-credits">Фотографии: Makalu, sharonang (Pixabay); Aayan muhammed, Syed99975, Andries Oudshoorn (CC BY / CC BY-SA).</p>
+
+    <div class="om-foot">
+      <Image src={author} alt="Никита Зайцев" width={60} height={74} format="webp" quality={80} />
+      <div>
+        <p><a href="/about/">Никита Зайцев</a>, автор traveltribe.ru · <a href="https://t.me/traveltriberu" rel="noopener" target="_blank">@traveltriberu</a></p>
+        <p class="om-dim">{visited ? 'Был в Омане сам. ' : ''}Данные актуальны на {DATA_UPDATED_RU}.</p>
+      </div>
+    </div>
+  </article>
+
+  <Footer />
+</Layout>
+
+<style>
+  .om { max-width: 1280px; margin: 0 auto; padding: 0 24px 64px; }
+  .om h2 { font-family: var(--ff-display); font-weight: 400; font-size: clamp(1.75rem, 3.4vw, 2.5rem); line-height: 1.1; margin: 0 0 20px; scroll-margin-top: 80px; }
+  .om h3 { font-family: var(--ff-display); font-weight: 400; font-size: 1.5rem; margin: 0 0 12px; }
+  .om-sec { padding: 56px 0; border-top: 1px solid var(--line); }
+  .om-body { font-size: 1.0625rem; line-height: 1.65; margin: 0 0 16px; max-width: 68ch; }
+  .om-dim { color: var(--text-faint); }
+  .om-small { font-size: 0.9375rem; font-weight: 400; }
+
+  .om-hero { margin: 0 -24px 20px; }
+  .om-hero :global(img) { width: 100%; height: clamp(240px, 32vw, 400px); object-fit: cover; display: block; }
+  .om figure { margin: 0; }
+  .om figcaption { font-size: 0.875rem; color: var(--text-faint); line-height: 1.5; margin-top: 8px; }
+  .om-hero figcaption, .om-wide figcaption { padding: 0 24px; }
+
+  .om-top, .om-pair, .om-money, .om-practice {
+    display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 28px;
+  }
+  .om-top { align-items: start; padding: 24px 0 56px; }
+  .om-top > *:first-child { grid-column: span 8; }
+  .om-top > *:last-child { grid-column: span 4; }
+  .om-pair > *, .om-money > *, .om-practice > * { grid-column: span 6; }
+  .om-pair :global(img) { width: 100%; height: 100%; max-height: 420px; object-fit: cover; display: block; }
+
+  .om h1 { font-family: var(--ff-display); font-weight: 400; font-size: clamp(2.5rem, 5.6vw, 4.5rem); line-height: 1; margin: 0 0 16px; }
+  .om-yr { color: var(--gold); }
+  .om-lead { font-family: var(--ff-display); font-style: italic; font-size: clamp(1.25rem, 2.2vw, 1.75rem); line-height: 1.3; margin: 0 0 24px; max-width: 30ch; }
+  .om-byline { display: flex; gap: 14px; align-items: flex-start; border-top: 1px solid var(--line); padding-top: 16px; }
+  .om-byline :global(img) { width: 52px; height: 64px; object-fit: cover; object-position: 50% 20%; flex: none; }
+  .om-byline p, .om-foot p { margin: 0 0 4px; font-size: 0.9375rem; line-height: 1.5; }
+  .om-byline a, .om-foot a { display: inline-flex; align-items: center; min-height: 44px; }
+  .om-answer { padding-top: 12px; }
+  .om-answer p { font-size: 1.0625rem; line-height: 1.6; margin: 0 0 16px; }
+
+  .om-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 22px; background: var(--gold); color: var(--bg); font-weight: 600; font-size: 1.0625rem; text-decoration: none; width: 100%; box-sizing: border-box; }
+  .om-btn:hover { background: var(--gold-dim); color: var(--bg); }
+  .om-btn-ghost { background: transparent; color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); width: auto; }
+  .om-btn-ghost:hover { background: var(--gold); color: var(--bg); }
+  .om-btn-note { font-size: 0.875rem; line-height: 1.5; color: var(--text-faint); margin: 8px 0 0; }
+  .om-cta-row { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; margin-top: 20px; }
+  .om-cta-row .om-btn { width: auto; }
+  .om-cta-row .om-btn-note { margin: 0; flex: 1 1 240px; }
+
+  .om-heat { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; margin: 8px 0 20px; }
+  .om-mh { display: flex; align-items: center; justify-content: center; min-height: 44px; font-family: var(--ff-mono); font-size: 0.8125rem; text-decoration: none; color: var(--text); background: var(--bg2); box-shadow: inset 0 0 0 1px var(--line); }
+  .om-mh--peak, .om-mh--good { background: var(--text); color: var(--bg); box-shadow: none; }
+  .om-mh--off { background: rgba(21, 23, 26, 0.34); color: var(--bg); box-shadow: none; }
+  .om-months { margin: 0; padding-left: 1.1em; max-width: 68ch; }
+  .om-months li { font-size: 1rem; line-height: 1.6; margin-bottom: 6px; }
+
+  .om-wide { margin: 0 -24px; }
+  .om-wide :global(img) { width: 100%; height: clamp(240px, 30vw, 480px); object-fit: cover; display: block; }
+
+  .om-big { font-family: var(--ff-display); font-size: clamp(2rem, 4vw, 3rem); line-height: 1.05; margin: 0 0 16px; }
+  .om-big .om-small { display: block; font-size: 0.9375rem; margin-top: 4px; }
+  .om-prow { display: flex; justify-content: space-between; gap: 24px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 0.9375rem; }
+  .om-prow span:first-child { color: var(--text-faint); }
+  .om-prow span:last-child { font-family: var(--ff-mono); text-align: right; }
+  .om-visa { max-width: 760px; margin-bottom: 24px; }
+  /* Цели нажатия: ссылка-строка и отдельная ссылка-абзац дотягивают до 44 px.
+     Ссылки внутри предложения под правило не попадают — они часть текста. */
+  .om-prow a, .om-linkline a { display: inline-flex; align-items: center; min-height: 44px; }
+
+  .om-practice :global(img) { width: 100%; height: 300px; object-fit: cover; display: block; }
+  .om-inline { margin-bottom: 20px; }
+
+  .om-faq { margin: 0; max-width: 760px; }
+  .om-faq dt { font-weight: 600; font-size: 1.0625rem; margin: 20px 0 6px; }
+  .om-faq dd { margin: 0; font-size: 1rem; line-height: 1.6; color: var(--text-dim); }
+
+  .om-credits { font-size: 0.8125rem; color: var(--text-faint); margin: 40px 0 0; }
+  .om-foot { display: flex; gap: 16px; align-items: flex-start; padding: 32px 0 0; border-top: 1px solid var(--line); }
+  .om-foot :global(img) { width: 60px; height: 74px; object-fit: cover; object-position: 50% 20%; flex: none; }
+
+  @media (max-width: 900px) {
+    .om-top, .om-pair, .om-money, .om-practice { grid-template-columns: 1fr; gap: 28px; }
+    .om-top > *:first-child, .om-top > *:last-child,
+    .om-pair > *, .om-money > *, .om-practice > * { grid-column: 1 / -1; }
+    .om-heat { grid-template-columns: repeat(6, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .om { padding: 0 16px 48px; }
+    .om-sec { padding: 40px 0; }
+    .om-hero, .om-wide { margin-left: -16px; margin-right: -16px; }
+    .om-hero figcaption, .om-wide figcaption { padding: 0 16px; }
+    .om-pair :global(img) { height: 260px; max-height: none; }
+    .om-practice :global(img) { height: 240px; }
+    .om-btn-ghost { width: 100%; }
+  }
+</style>

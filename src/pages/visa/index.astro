@@ -349,14 +349,6 @@ const ldJson = {
         <a class="va-cta va-cta--primary" href="https://t.me/traveltriberu?utm_source=traveltribe&utm_medium=visa-hero" target="_blank" rel="noopener">
           <span class="va-cta-label">Telegram-канал</span>
         </a>
-        <a class="va-cta va-cta--secondary" href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=visa_index&u=https%3A%2F%2Fwww.aviasales.ru%2F" target="_blank" rel="nofollow noopener sponsored">
-          <span class="va-cta-label">Найти билеты</span>
-          <span class="va-cta-meta">Aviasales</span>
-        </a>
-        <a class="va-cta va-cta--secondary" href="https://cherehapa.tpk.mx/fkM7suze?erid=2VtzquZTwb5&sub_id=visa_index&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F" target="_blank" rel="nofollow noopener sponsored">
-          <span class="va-cta-label">Оформить страховку</span>
-          <span class="va-cta-meta">для визы и въезда</span>
-        </a>
         <button type="button" class="va-cta va-cta--share" id="visaShareBtn" aria-label="Поделиться реестром">
           <span class="va-cta-label">Поделиться</span>
         </button>
@@ -373,6 +365,15 @@ const ldJson = {
         <span class="va-divider-line"></span>
       </div>
     </header>
+
+    {/* Денежные строки вынесены ИЗ шапки: внутри <header> трекинг размечал их как
+        навигацию, а не как денежную точку страницы. Предмет — в первых словах
+        (NN/g «First 2 Words»), имя партнёра из подписи убрано. */}
+    <p class="va-money-row">
+      <a class="aff-cta" href="https://cherehapa.tpk.mx/fkM7suze?erid=2VtzquZTwb5&sub_id=visa_index&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F" target="_blank" rel="nofollow noopener sponsored">Страховка для визы и въезда — от 70 ₽ в день</a>
+      <span class="va-money-sep" aria-hidden="true">·</span>
+      <a class="aff-cta" href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=visa_index&u=https%3A%2F%2Fwww.aviasales.ru%2F" target="_blank" rel="nofollow noopener sponsored">Билеты по 77 направлениям реестра</a>
+    </p>
 
 
     {/* ─── CLASSIFIED SECTIONS — три картотеки ─── */}
@@ -1313,6 +1314,15 @@ const ldJson = {
   .va-tool-title { font-family: var(--ff-mono); font-size: 0.72rem; letter-spacing: 0.1em;
     text-transform: uppercase; color: var(--text-dim, #5c626b); margin-bottom: 0.7rem; }
   .va-next { font-size: 0.84rem; color: var(--text-dim, #5c626b); margin: 0 0 1.4rem; }
+
+  /* Денежная строка под шапкой реестра: тот же тон, что у служебных подписей;
+     цель клика по вертикали не меньше 44 px (канон сайта строже WCAG AA). */
+  .va-money-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.7rem;
+    font-size: 0.9rem; margin: 0 0 1.6rem; }
+  .va-money-row .aff-cta { display: inline-flex; align-items: center; min-height: 44px; }
+  .va-money-sep { color: var(--text-dim, #5c626b); }
+  @media (max-width: 520px) { .va-money-sep { display: none; }
+    .va-money-row { flex-direction: column; align-items: flex-start; gap: 0.1rem; } }
 
   .va-lead { color: var(--text-dim, #5c626b); max-width: 56ch; margin: 0.6rem 0 1.2rem; }
   .va-q { font-size: clamp(1.7rem, 3.2vw, 2.4rem); line-height: 1.05; font-weight: 700;

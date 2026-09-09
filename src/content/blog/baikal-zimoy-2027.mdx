@@ -11,7 +11,7 @@ reviewed: 2026-08-17
 checks:
   - date: 2026-08-21
     what: "Практика зимних поездок на Ольхон по 50 отзывам о скале Шаманка на Яндекс.Картах, половина из них зимние — январь, февраль, март"
-    changed: "Добавлен раздел о практике: в феврале людей меньше, в марте наоборот много, лёд у мыса ровный и подходит для коньков, на месте сильный ветер"
+    changed: "Добавлен раздел о практике по отзывам. В феврале людей меньше, в марте наоборот много, лёд у мыса ровный и подходит для коньков, на месте сильный ветер"
     sources:
       - name: "Отзывы посетителей скалы Шаманка на Яндекс.Картах"
         url: "https://yandex.ru/maps/org/skala_shamanka/232959075154/reviews/"
@@ -29,6 +29,19 @@ checks:
         url: "https://ircity.ru/text/transport/2026/03/23/76325900/"
       - name: "Иркутское УГМС: ледовая обстановка на озере Байкал"
         url: "https://www.irmeteo.ru/index.php?id=103"
+  - date: 2026-09-07
+    what: "Партнёрские ссылки на программы без броней"
+    changed: "Сняты партнёрские ссылки, не давшие броней. Убраны: пакетные туры Travelata. За полгода по всему сайту эти программы не дали ни одной брони при 200+ живых кликах (сверка кассы 06.09.2026, решение Никиты 07.09.2026); текст и цены не менялись."
+    minor: true
+    sources:
+      - name: "Travelata — пакетные туры"
+        url: "https://travelata.ru/"
+  - date: 2026-09-08
+    what: "Экскурсии на Байкал из Иркутска"
+    changed: "В разделе о дороге и жилье добавлены выезды из Иркутска. Лёд и Ольхон зимой смотрят с гидом, самостоятельная поездка по льду опасна."
+    sources:
+      - name: "Sputnik8: групповые экскурсии на Байкал из Иркутска"
+        url: "https://www.sputnik8.com/ru/irkutsk/category/group"
 tags: ["Байкал", "Россия", "Зима", "Ольхон", "2027"]
 sourceType: "compilation"
 howto:
@@ -55,7 +68,7 @@ howto:
 import PricingCards from '../../components/post/PricingCards.astro';
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
-import { TP_LINKS, aviasalesRoute, yandexTravelSub, tpkDeep, youtravelSub } from '../../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, yandexTravelSub, tpkDeep, youtravelSub, sputnik8City } from '../../data/affiliate.js';
 
 export const tours = youtravelSub('baikal_zimoy_2027');
 export const excursions = tpkDeep('sputnik8', 'https://www.sputnik8.com/ru/baikal', 'baikal_winter');
@@ -74,7 +87,7 @@ export const stay = yandexTravelSub('baikal_winter');
 
 <div class="editorial-cta">
 
-Большинство едет сюда организованно, и на то есть причина: по льду без местного водителя не проехать, а маршрут меняется каждый день по ледовой обстановке. <a href={tours} class="aff-cta" rel="sponsored">Поехать на зимний Байкал с местным экспертом</a> — авторский тур малой группой: выезды на лёд, транспорт и жильё уже собраны в маршрут, оплата картой РФ.
+Большинство едет сюда организованно, и на то есть причина: по льду без местного водителя не проехать, а маршрут меняется каждый день по ледовой обстановке.
 
 </div>
 
@@ -205,6 +218,8 @@ export const stay = yandexTravelSub('baikal_winter');
 </div>
 
 ## Как добраться и где жить
+
+<a href={sputnik8City('baikal', 'baikal_zimoy_2027')} class="aff-cta" rel="sponsored">Экскурсии на Байкал из Иркутска</a> — лёд и Ольхон с гидом.
 
 **Иркутск** — основные ворота. Аэропорт в черте города, до Листвянки час, до Хужира на Ольхоне 5–6 часов на маршрутке. Разница с Москвой +5 часов, и её стоит закладывать: прилетев утренним рейсом, вы теряете первый день на акклиматизацию, а выезд на лёд начинается рано.
 

@@ -28,6 +28,7 @@ export const TRIP_TYPES = [
   { id: 'sea',    label: 'Море' },
   { id: 'city',   label: 'Город' },
   { id: 'winter', label: 'Зима' },
+  { id: 'mountain', label: 'Горы' },
 ];
 
 export const DURATIONS = [
@@ -72,6 +73,7 @@ export const PRESETS = {
   sea:    { trip: 'sea',    title: 'Чек-лист на море' },
   city:   { trip: 'city',   title: 'Чек-лист в город' },
   winter: { trip: 'winter', title: 'Чек-лист зимой' },
+  mountain: { trip: 'mountain', title: 'Чек-лист в горы' },
   any:    { trip: null,     title: 'Чек-лист в поездку' },
 };
 
@@ -126,6 +128,14 @@ export const ITEMS = [
   F('hat-scarf-gloves', 'Шапка, шарф, перчатки', 'clothes', { trip: ['winter'] }),
   F('warm-socks', 'Тёплые носки', 'clothes', { trip: ['winter'] }),
   F('waterproof-boots', 'Непромокаемая обувь', 'clothes', { trip: ['winter'] }),
+  // Горы (добавлено 05.09.2026)
+  F('trek-boots', 'Разношенные треккинговые ботинки', 'clothes', { trip: ['mountain'], note: 'новые в горах стирают ноги за день' }),
+  F('membrane-jacket', 'Мембранная куртка от дождя и ветра', 'clothes', { trip: ['mountain'] }),
+  F('fleece', 'Флис или тёплая кофта', 'clothes', { trip: ['mountain'], note: 'на высоте вечером холодно даже летом' }),
+  F('trek-pants', 'Быстросохнущие штаны', 'clothes', { trip: ['mountain'] }),
+  F('mtn-hat-gloves', 'Тонкая шапка и перчатки', 'clothes', { trip: ['mountain'], note: 'на перевалах ветер и летом' }),
+  F('trek-socks', 'Треккинговые носки ×3', 'clothes', { trip: ['mountain'] }),
+  F('sun-cap', 'Кепка или панама', 'clothes', { trip: ['mountain'] }),
   // Женщина
   F('dresses', 'Платья и юбки', 'clothes', { who: ['woman'] }),
   // Дети

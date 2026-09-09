@@ -18,12 +18,16 @@ const TOP_SLUGS = ['japan', 'thailand', 'georgia', 'turkey', 'uae', 'bali', 'sri
 // Bucket → короткий tag для пилюли на карточке
 const BUCKET_TAG = {
   'tropical-rainy':   'Тропики, дождь',
+  'warm-rainy':       'Тепло, дожди',
   'tropical-dry':     'Тропики, сухо',
   'tropical-jungle':  'Джунгли, сафари',
   'desert-hot':       'Пустыня, жара',
-  'desert-cool':      'Пустыня, прохладно',
+  'desert-cool':      'Сухо, холодные ночи',
   'temperate-warm':   'Умеренный, тепло',
+  'temperate-cool':   'Умеренный, прохладно',
   'temperate-cold':   'Умеренный, холод',
+  'winter-frost':     'Зима, мороз',
+  'summer-hot':       'Жаркое лето',
   'cold-extreme':     'Полярный холод',
   'mountain-altitude':'Высокогорье',
 };
@@ -42,7 +46,7 @@ function getPrimaryBucket(d) {
   if (idx < 0 && d.r) idx = d.r.findIndex(s => s === 'G');
   if (idx < 0) idx = 6;
   const key = getWeatherBucket(d.slug, idx);
-  return { key, bucket: WEATHER_BUCKETS[key] || WEATHER_BUCKETS['temperate-warm'], monthIdx: idx };
+  return { key, bucket: WEATHER_BUCKETS[key], monthIdx: idx };   // неизвестный ключ уронил бы getWeatherBucket раньше
 }
 
 // Превью: по одному пункту из 4 категорий + сокращение объяснения

@@ -4,7 +4,7 @@ import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { countries, regionLabels, lastGlobalUpdate, issuingBanks } from '../data/cards-countries.js';
 import { NOUN } from '../data/plural.js';
-import { ostrovokSearch, drimsimSub, TP_LINKS } from '../data/affiliate.js';
+import { ostrovokSearch, TP_LINKS } from '../data/affiliate.js';
 
 const url = 'https://traveltribe.ru/cards/';
 const title = 'Где работает карта МИР, UnionPay и зарубежные карты — май 2026';
@@ -227,6 +227,9 @@ const ldJson = {
               <li><strong>{b.name}.</strong> {b.note}</li>
             ))}
           </ul>
+          {/* Зона прямо ставит вопрос «где взять иностранную карту»: без поездки в Тбилиси
+              или Алматы остаётся виртуальная — денежная точка отвечает на вопрос блока. */}
+          <p class="bank-block-aff">Без поездки в банк: <a href={TP_LINKS.platipomiru} rel="sponsored noopener" target="_blank">виртуальная карта USD/EUR для оплаты Booking и Airbnb</a>.</p>
         </div>
       </div>
     </section>
@@ -235,13 +238,13 @@ const ldJson = {
       <h2>Базовые правила 2026 для россиян</h2>
       <ol>
         <li><strong>Никогда не везите только одну карту.</strong> Минимум — две разные системы (UnionPay РСХБ + foreign Visa/MC) или карта + наличные.</li>
-        <li><strong>Booking, Airbnb, Agoda</strong> не оплачиваются с российских карт ни одной системы. Для броней нужна foreign карта, <a href={TP_LINKS.platipomiru} rel="sponsored noopener" target="_blank">виртуальная карта USD/EUR</a> — или отель через <a href={ostrovokSearch('cards')} rel="sponsored noopener" target="_blank">Островок</a>, который принимает МИР.</li>
+        <li><strong>Booking, Airbnb, Agoda</strong> не оплачиваются с российских карт ни одной системы. Для броней нужна foreign карта, <a href={TP_LINKS.platipomiru} rel="sponsored noopener" target="_blank">виртуальная карта USD/EUR</a> — или <a href={ostrovokSearch('cards')} rel="sponsored noopener" target="_blank">отель с оплатой картой МИР</a>.</li>
         <li><strong>Налом везите $/€</strong> — банкноты от 50&nbsp;и&nbsp;100, чистые, без потертостей. Старые серии и поврежденные купюры в Азии и Африке не примут.</li>
         <li><strong>Лимит вывоза наличных</strong> — до $10&nbsp;000 (или эквивалент) без декларации. Свыше — обязательно декларация на таможне.</li>
         <li><strong>UnionPay РСХБ</strong> бесплатный, выпускается за&nbsp;1&nbsp;день. На сегодня — лучшая «вторая» карта для&nbsp;Юго-Восточной Азии.</li>
         <li><strong>Foreign карта</strong> — Bank of Georgia / TBC (Тбилиси, личный визит), Freedom Finance / Kaspi (Алматы, нужен&nbsp;ИИН, лимит 1&nbsp;год для нерезидентов), Ameriabank (Армения). Без ВНЖ европейские и эмиратские банки россиянам не открывают.</li>
         <li><strong>Газпромбанк UnionPay не работает за границей</strong> — после санкций США 21.11.2024 заблокирован в Турции, Таиланде, Вьетнаме, Казахстане, Узбекистане, Германии, Венгрии, ОАЭ и других странах. Если у вас он есть — рассчитывать на него в поездке нельзя.</li>
-        <li><strong>Интернет — отдельно от карты.</strong> Банковские приложения, такси и переводчик за границей требуют связи с первой минуты: <a href={drimsimSub('cards')} rel="sponsored noopener" target="_blank">eSIM Drimsim</a> оплачивается картой РФ ещё до вылета. Как платить в конкретных ситуациях — в разборе <a href="/blog/pay-abroad-2026/">оплаты за границей для россиян</a>.</li>
+        <li><strong>Интернет — отдельно от карты.</strong> Банковские приложения, такси и переводчик за границей требуют связи с первой минуты — eSIM ставится ещё до вылета, разбор в статье о <a href="/blog/esim-zagranicey-2026/">связи за границей</a>. Как платить в конкретных ситуациях — в разборе <a href="/blog/pay-abroad-2026/">оплаты за границей для россиян</a>.</li>
       </ol>
     </section>
 
@@ -678,6 +681,14 @@ document.addEventListener('astro:page-load', _initCards);
     color: var(--text-dim);
   }
   .bank-block strong { color: var(--text); font-weight: 600; }
+  .bank-block-aff {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--text-dim);
+    margin: 0.9rem 0 0;
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--line);
+  }
 
   /* ── Rules ── */
   .cards-rules { margin-bottom: 4rem; }

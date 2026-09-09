@@ -6,13 +6,13 @@ import Layout from '../layouts/Layout.astro';
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import { DIRECTIONS } from '../data/directions.js';
-import { airaloSub, TP_LINKS, aviasalesUrl, ostrovokSearch, cherehapaTravel, youtravelSub } from '../data/affiliate.js';
+import { TP_LINKS, aviasalesUrl, ostrovokSearch, cherehapaTravel, youtravelSub } from '../data/affiliate.js';
 import { DATA_UPDATED_RU } from '../data/meta.js';
 import authorPhoto from '../assets/author/nikita.jpg';
 import heroCover from '../assets/destinations/georgia.jpg';
 
 import { ACTIVITY_TAGS } from '../data/country-activity-tags.js';
-import { freshEntries, formatDateRu } from '../data/news.js';
+import { feedEntries, formatDateRu } from '../data/news.js';
 import { byFreshness } from '../data/freshness.js';
 const covers = import.meta.glob('../assets/destinations/*.jpg', { eager: true, import: 'default' });
 
@@ -97,7 +97,7 @@ const якорь = (кения && 'PG'.includes(кения.r[month - 1])) ? ке
 // Три свежие заметки строками. Без картинок и без карточек: главная не должна
 // потяжелеть, а задача блока — увести читателя вглубь сайта. Глубина просмотра и
 // невозврат в поиск — главный вес Яндекса, откуда приходит почти весь трафик.
-const freshNews = freshEntries(await getCollection('news')).slice(0, 3);
+const freshNews = feedEntries(await getCollection('news'), 3);
 const readingTime = (body) => Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
 
 const brandYear = new Date().getFullYear();
@@ -199,7 +199,7 @@ const ldJson = {
       <ul class="blist">
         <li><b>Страховка.</b> В Грузию и Шенген без полиса не пустят, в остальные страны лечение платное. Неделя стоит от 233 ₽ — <a href={cherehapaTravel('home')} rel="sponsored noopener" target="_blank">подобрать полис по датам</a>.</li>
         <li><b>Билеты.</b> Цена месяца видна сразу, без перебора дат — <a href={aviasalesUrl('', 'home')} rel="sponsored noopener" target="_blank">посмотреть рейсы из Москвы</a>.</li>
-        <li><b>Карты и связь.</b> Российские карты за границей не работают: что выпустить заранее — <a href="/cards/">разбор карт</a>, интернет с прилёта — <a href={airaloSub('home')} rel="sponsored noopener" target="_blank">выбрать пакет eSIM</a>.</li>
+        <li><b>Карты и связь.</b> Российские карты за границей не работают: что выпустить заранее — <a href="/cards/">разбор карт</a>.</li>
         <li><b>Готовый маршрут.</b> Когда собирать самому некогда, берут место в небольшой группе — <a href={youtravelSub('home')} rel="sponsored noopener" target="_blank">авторские туры по миру</a>.</li>
       </ul>
     </div></section>

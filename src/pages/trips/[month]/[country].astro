@@ -5,15 +5,18 @@ import livePrices from '../../../data/prices-cache.json';
 import Layout from '../../../layouts/Layout.astro';
 import Footer from '../../../components/Footer.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import DestinationTabs from '../../../components/DestinationTabs.astro';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
 import { COUNTRIES as RICH_COUNTRIES } from '../../../data/programmatic-seasons.js';
 import { NICHE_TRIPS } from '../../../data/niche-trips.js';
-import { aviasalesRoute, ostrovokCountry, cherehapaCountry, youtravelCountry } from '../../../data/affiliate.js';
+import { aviasalesRoute, ostrovokCountry, cherehapaCountry, youtravelCountry, sputnik8City, otelloStay } from '../../../data/affiliate.js';
 import { DATA_UPDATED, DATA_UPDATED_RU, yearForMonth } from '../../../data/meta.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
 import { getWeatherBucket } from '../../../data/country-month-bucket.js';
 import { getBucket } from '../../../data/packing-weather-buckets.js';
+import { hasTripSnippet, tripSnippetDescription } from '../../../data/trip-snippets.js';
 import TripSaveButton from '../../../components/TripSaveButton.astro';
+import StickyCta from '../../../components/StickyCta.astro';
 
 export async function getStaticPaths() {
   const paths = [];
@@ -85,6 +88,17 @@ const liveChecked = livePrices.updatedAt
 const flightTiers = d.price?.flight || [0,0,0];
 const hotelTiers = d.price?.hotel || [0,0,0];
 const foodTiers = d.price?.food || [0,0,0];
+// Липкая панель на телефоне: у этого шаблона 924 страницы с высоким интентом, и до
+// 07.09.2026 денежной точки внизу экрана здесь не было вовсе. Оффер — главный по типу
+// направления: у российских жильё, у остальных перелёт своего месяца.
+const RU_STAY_TRIPS = new Set(['abkhazia', 'kamchatka', 'karelia', 'dagestan', 'altai']);
+const меткаСтраницы = `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`;
+const панельОффер = RU_STAY_TRIPS.has(d.slug)
+  ? { href: otelloStay(меткаСтраницы), label: `Жильё ${d.cases.loc}` }
+  : (iata
+      ? { href: aviasalesRoute('MOW', iata, меткаСтраницы, monthIdx), label: `Билеты ${d.cases.vP} в ${m.prep}` }
+      : { href: ostrovokCountry(d.slug, меткаСтраницы), label: `Жильё ${d.cases.loc}` });
+
 const flightFrom = flightTiers[0];
 const hotelFrom = hotelTiers[0];
 const foodFrom = foodTiers[0];
@@ -188,10 +202,24 @@ const monthCap = m.nom.charAt(0).toUpperCase() + m.nom.slice(1);
 const monthWeather = getMonthlyWeather(d.slug, monthIdx);
 const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
 
+// Дожим показов 08.09.2026: у 12 страниц будущих месяцев заголовок обещал погоду,
+// но не называл её, и Google подставлял в описание кусок таблицы со страницы.
+// Обещание заменяется фактом из тех же климатических норм; остальные страницы
+// типа идут по формуле и служат контролем. Разбор — data/trip-snippets.js.
+const snip = hasTripSnippet(m.slug, d.slug) && monthWeather;
+const pageTitle = snip
+  ? `${d.cases.nom} в ${m.prep} ${yr}: погода днём ${monthWeather.tmax} °C, цены, виза`
+  : (reframe
+      ? `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}: цены и толпы`
+      : `${d.cases.nom} в ${m.prep} ${yr}: погода, цены, виза`);
+const pageDescription = snip
+  ? tripSnippetDescription(monthWeather, lbl.verdict)
+  : `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr} — погода, цены, виза для россиян, бюджет на неделю. ${lbl.verdict}.`;
+
 ---
 <Layout
-  title={reframe ? `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}: цены и толпы` : `${d.cases.nom} в ${m.prep} ${yr}: погода, цены, виза`}
-  description={`Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr} — погода, цены, виза для россиян, бюджет на неделю. ${lbl.verdict}.`}
+  title={pageTitle}
+  description={pageDescription}
   canonical={url}
   noindex={status === 'X' || NICHE_TRIPS.has(d.slug)}
   ogTitle={reframe ? `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}` : `${d.cases.nom} в ${m.prep} ${yr}`}
@@ -210,7 +238,7 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
       <header class="hero grid">
         <div class="idx"><span class={`st st-${lbl.cls}`}>{lbl.tag}</span><b>{monthCap} {yr}</b></div>
         <div class="meta">Сезоны и визы<br><b>актуальны на {DATA_UPDATED_RU}</b></div>
-        <h1 class="h1">{reframe ? <>Стоит ли ехать {d.cases.vP}{' '}<span class="rd">в {m.prep}</span>{' '}{yr}</> : <>{d.cases.nom} <span class="rd">в {m.prep}</span> {yr}</>}</h1>
+        <h1 class="h1">{reframe ? <>Стоит ли ехать {d.cases.vP}{' '}<span class="rd">в {m.prep}</span>{' '}{yr}</> : <>{d.cases.nom}{' '}<span class="rd">в {m.prep}</span>{' '}{yr}</>}</h1>
         <p class="sub">{lbl.verdict}. {d.region} — {d.sub}.</p>
         <p class="byl">
           <a href="/about/" class="byl-a">Никита Зайцев</a> ·
@@ -219,6 +247,8 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
         </p>
         <TripSaveButton slug={d.slug} nom={d.cases.nom} monthIdx={monthIdx} />
       </header>
+
+      <DestinationTabs d={d} active="when" />
 
       <p class="lead">{text}</p>
 
@@ -305,6 +335,33 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
         </div>
       </section>
 
+      {rich?.regions?.length > 0 && (
+        <section class="sec">
+          {/* Заголовок таблицы описывает то, что в ней реально стоит. Умолчание про
+              «сухо / заливает» верно для муссонных стран, но не везде: в Египте в
+              октябре сухо на всех шести станциях, кроме Александрии, и разводит
+              регионы жара, а не дождь. Запись месяца может назвать свой вопрос. */}
+          <div class="shead"><h2>{rich.regionsTitle || `Где ${d.cases.loc} в ${m.prep} сухо, а где заливает`}</h2></div>
+          <table class="dt">
+            <thead><tr><th>Регион</th><th>Днём</th><th>Осадки</th><th>Дней с дождём</th></tr></thead>
+            <tbody>
+              {rich.regions.map((r) => (
+                <tr>
+                  <td class="bd" data-l="Регион"><b>{r.name}</b><span class="rgc">{r.city}</span></td>
+                  <td data-l="Днём">{r.temp}</td>
+                  <td data-l="Осадки">{r.rain}</td>
+                  <td data-l="Дней с дождём">{r.days}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {rich.regionsNote && <p class="tnote">{rich.regionsNote}</p>}
+          {liveFlight && (
+            <p class="tnote">Перелёт Москва — {d.cases.nom} ({iata}) с вылетом в {m.prep}: от {liveFlight.toLocaleString('ru-RU')} ₽, цена снята {liveChecked}. Это один маршрут, а не вся страна: до других аэропортов цена своя, и мы её тут не показываем. Долларовая вилка выше по странице — разброс по классу поездки, а не цена именно этого месяца.</p>
+          )}
+        </section>
+      )}
+
       {rich && (
         <section class="sec">
           <div class="shead"><h2>{d.cases.nom} в {m.prep}: погода и что смотреть</h2></div>
@@ -328,6 +385,9 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
           <div class="shead"><h2>Что делать {d.cases.loc} в {m.prep}</h2></div>
           <p class="txt">{monthCap} {yr} — один из лучших месяцев для поездки {d.cases.vP}. Погода и цены сходятся в окне комфорта. Закладывайте 7–14 дней, бронировать минимум за 2 месяца до вылета — на пиковые даты места разлетаются быстро.</p>
           <p class="txt">Сравнить с другими месяцами можно в <a href="/seasons/">таблице сезонов</a>, посчитать точный бюджет — в <a href="/calculator/">калькуляторе поездки</a>.</p>
+          {sputnik8City(d.slug, `trips_${m.slug}_${d.slug}`) && (
+            <p class="txt findcta"><a href={sputnik8City(d.slug, `trips_${m.slug}_${d.slug}`)} class="find" rel="sponsored noopener" target="_blank">Экскурсии {d.cases.loc} с местными гидами</a> — расписание на {m.prep} и отзывы видно до оплаты.</p>
+          )}
         </section>
       )}
 
@@ -378,6 +438,8 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
       </section>
     </div>
   </main>
+
+  <StickyCta href={панельОффер.href} label={панельОффер.label} />
 
   <Footer />
 </Layout>
@@ -449,6 +511,7 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
 .dt td:first-child,.dt th:first-child{padding-left:0}
 .dt tr:last-child td{border-bottom:none}
 .dt .bd b{font-weight:700}
+.dt .rgc{display:block;font-size:.72rem;color:var(--mid);margin-top:.15rem}
 .tnote{margin-top:.8rem;font-size:.78rem;color:var(--mid);line-height:1.6;max-width:90ch}
 .tnote a{color:var(--gold);text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
 

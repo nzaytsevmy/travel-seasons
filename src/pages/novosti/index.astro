@@ -1,33 +1,40 @@
 ---
 // /novosti/ — лента новостей о путешествиях, природе и правилах въезда.
 //
-// Витрина, а не свалка: целиком показываются только свежие заметки, остальные —
-// строкой со ссылкой на свою страницу. Прошедшие месяцы уезжают в
-// /novosti/YYYY-MM/ (граница намеренно по концу месяца, чтобы не возникло дня,
-// когда заметка не видна нигде).
+// Витрина, а не свалка: у свежих заметок карточка с кадром и капсулой-ответом,
+// у остальных — строка со ссылкой. Текст заметки целиком живёт на её странице.
+// Длина ленты постоянная (FEED_SIZE), всё остальное — в /novosti/YYYY-MM/;
+// страница месяца есть у каждого месяца с заметками, включая текущий, поэтому
+// дня, когда заметка не видна нигде, не бывает.
 //
 // ⛔ Раньше здесь печатались ВСЕ заметки целиком, и у заметки не было своей
 // страницы вовсе. Замер 10.08.2026: страница весила 179 КБ, а раздел за 30 дней
 // набрал в Google ноль показов — ранжироваться было нечему, на двадцать заметок
 // приходилось три адреса.
+//
+// ⛔ Второй заход, 08.09.2026. Своя страница у заметки сработала: 497 показов и
+// 9 кликов за 28 дней при средней позиции 7,6 против 10,7 по сайту. А вот сама
+// лента снова разрослась — 87 заметок и 230 КБ: хвост тянул весь текущий месяц,
+// и длина зависела от дня месяца, а не от замысла. Теперь на ленте постоянные
+// FEED_SIZE заметок, всё остальное — в архиве своего месяца, и архив есть у
+// каждого месяца, включая текущий. Ранжируется всё равно не лента (19 показов,
+// позиция 20,7), а страницы заметок; лента — вход для читателя и путь обхода.
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Footer from '../../components/Footer.astro';
 import NewsItem from '../../components/NewsItem.astro';
 import NewsCompact from '../../components/NewsCompact.astro';
 import { getCollection } from 'astro:content';
-import { freshEntries, archiveKeys, monthTitleRu, formatDateRu, newsUrl, FULL_ON_FEED } from '../../data/news.js';
+import { feedEntries, monthKeys, entriesOfMonth, monthTitleRu, formatDateRu, newsUrl,
+         FULL_ON_FEED, FEED_SIZE } from '../../data/news.js';
+import { plural } from '../../data/plural.js';
 
 const all = await getCollection('news');
-const fresh = freshEntries(all);
-const archives = archiveKeys(all);
+const fresh = feedEntries(all, FEED_SIZE);
+const months = monthKeys(all).map((k) => ({ key: k, count: entriesOfMonth(all, k).length }));
 
 const full = fresh.slice(0, FULL_ON_FEED);
 const rest = fresh.slice(FULL_ON_FEED);
-
-const rendered = await Promise.all(
-  full.map(async (entry) => ({ entry, Content: (await entry.render()).Content }))
-);
 
 const url = 'https://traveltribe.ru/novosti/';
 const title = 'Новости путешествий 2026: визы, природа, транспорт';
@@ -60,6 +67,9 @@ const ldJson = {
       ],
     },
     {
+      // ⛔ Перечисляем ТОЛЬКО то, что на странице. Пока лента печатала весь
+      // месяц, сюда уходили все 87 заметок — 21 КБ разметки, описывающей
+      // список, которого читатель не видел.
       "@type": "ItemList",
       "itemListElement": fresh.map((e, i) => ({
         "@type": "ListItem",
@@ -90,9 +100,9 @@ const ldJson = {
       </p>
     </header>
 
-    {rendered.length > 0 ? (
+    {full.length > 0 ? (
       <ol class="nv-list">
-        {rendered.map(({ entry, Content }, i) => <NewsItem entry={entry} Content={Content} index={i} />)}
+        {full.map((entry, i) => <NewsItem entry={entry} index={i} />)}
       </ol>
     ) : (
       <p class="nv-empty">
@@ -110,12 +120,19 @@ const ldJson = {
       </section>
     )}
 
-    {archives.length > 0 && (
+    {months.length > 0 && (
       <section class="nv-section">
-        <h2>Архив</h2>
+        <h2>Все заметки по месяцам</h2>
+        <p class="nv-what">
+          На этой странице — последние {fresh.length}. Остальное разложено по месяцам:
+          заметка попадает в свой месяц в день выпуска и остаётся там навсегда.
+        </p>
         <ul class="nv-links">
-          {archives.map((k) => (
-            <li><a href={`/novosti/${k}/`}>{monthTitleRu(k)}</a></li>
+          {months.map(({ key, count }) => (
+            <li>
+              <a href={`/novosti/${key}/`}>{monthTitleRu(key)}</a>
+              <span class="nv-count">{count} {plural(count, 'заметка', 'заметки', 'заметок')}</span>
+            </li>
           ))}
         </ul>
       </section>
@@ -173,4 +190,7 @@ const ldJson = {
   .nv-links { list-style: none; margin: 0; padding: 0; }
   .nv-links li { padding: .6rem 0; border-bottom: 1px solid var(--line); font-size: .98rem; }
   .nv-links a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
+  /* Счётчик заметок в месяце. Отдельным тоном, чтобы строка читалась как
+     «месяц — сколько», а не как продолжение ссылки. */
+  .nv-count { color: var(--text-faint); font-size: .85rem; margin-left: .55rem; }
 </style>

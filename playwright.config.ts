@@ -1,7 +1,15 @@
 import { defineConfig, devices } from '@playwright/test';
+import { previewPort } from './scripts/preview-port.mjs';
+
+// Свой порт у каждой рабочей копии (см. scripts/preview-port.mjs): соседние
+// сессии больше не делят 4322 и не снимают чужую сборку.
+const PORT = previewPort();
 
 export default defineConfig({
   testDir: './tests',
+  // Только *.spec.ts: файлы *.test.mjs — тесты node:test (их гоняет node --test),
+  // Playwright грузил их при обходе и исполнял впустую при каждом прогоне.
+  testMatch: '**/*.spec.ts',
   // В CI время файлов проверяется отдельным шагом сразу после build. В длинном
   // browser-shard к моменту этой проверки dist уже обслуживается preview-сервером
   // и контракт артефакта смешивается с поведением сервера/раннера.
@@ -10,10 +18,14 @@ export default defineConfig({
     : [],
   timeout: 60_000,
   fullyParallel: true,
-  workers: process.env.CI ? 2 : 4,
+  // Локально два воркера, не четыре: четыре браузера плюс соседняя сборка
+  // клали 16 ГБ памяти (перезагрузки 04–06.09.2026). Один прогон на машину —
+  // замок в tests/global-lock.ts; в CI и то и другое не действует.
+  workers: 2,
+  globalSetup: './tests/global-lock.ts',
   reporter: [['list'], ['html', { open: 'never', outputFolder: 'tests/.html-report' }]],
   use: {
-    baseURL: process.env.PREVIEW_URL || 'http://localhost:4322',
+    baseURL: process.env.PREVIEW_URL || `http://localhost:${PORT}`,
     screenshot: 'only-on-failure',
     video: 'off',
     // Доп. защита: блокируем сторонние трекеры даже если попали в HTML
@@ -26,8 +38,8 @@ export default defineConfig({
   //    эталонов записались страницами ошибки — их чуть не закрепили как образец.
   //    В CI адрес приходит снаружи, там поднимать нечего.
   webServer: process.env.PREVIEW_URL ? undefined : {
-    command: 'npx astro preview --port 4322',
-    url: 'http://localhost:4322/',
+    command: `npx astro preview --port ${PORT}`,
+    url: `http://localhost:${PORT}/`,
     reuseExistingServer: true,
     timeout: 120_000,
   },

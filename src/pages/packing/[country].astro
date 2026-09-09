@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import DestinationTabs from '../../components/DestinationTabs.astro';
 import { Image } from 'astro:assets';
 import { DIRECTIONS, MONTHS } from '../../data/directions.js';
 import { VISA_DETAILS } from '../../data/visa-details.js';
@@ -12,7 +13,7 @@ import { ACTIVITY_TAGS, ACTIVITY_LABEL, ACTIVITY_GEAR } from '../../data/country
 import { PLUG_TYPES, plugAdvice } from '../../data/country-plug-types.js';
 import { getWeatherBucket } from '../../data/country-month-bucket.js';
 import { DATA_UPDATED_RU } from '../../data/meta.js';
-import { airaloCountry, aviasalesRoute, cherehapaCountry, youtravelCountry } from '../../data/affiliate.js';
+import { aviasalesRoute, cherehapaCountry, youtravelCountry } from '../../data/affiliate.js';
 import StickyCta from '../../components/StickyCta.astro';
 
 export async function getStaticPaths() {
@@ -66,7 +67,6 @@ const plug = PLUG_TYPES[d.slug];
 const tags = ACTIVITY_TAGS[d.slug] || [];
 const hasActivity = tags.some((t) => ACTIVITY_GEAR[t]);
 const affiliateSubId = `packing_${d.slug.replaceAll('-', '_')}`;
-const esimHref = airaloCountry(d.slug, affiliateSubId);
 
 const blogSlug = Object.values(regionMeta).find((rm) => rm.slug === d.slug)?.blogSlug;
 const rich = regionsRich[d.slug];
@@ -142,6 +142,8 @@ const ldJson = {
       </p>
     </header>
 
+    <DestinationTabs d={d} active="packing" />
+
     <section class="tldr">
       <p>Полный чек-лист {d.cases.vP}: одежда под каждый сезон, документы, аптечка, техника и деньги. Когда лучше ехать — в <a href="/seasons/">таблице сезонов по месяцам</a>.</p>
     </section>
@@ -149,10 +151,14 @@ const ldJson = {
     <section class="pack-block">
       <h2>Документы</h2>
       <ul class="pack-list">
-        <li><strong>Загранпаспорт</strong> — срок действия 6+ месяцев на момент въезда.</li>
+        {d.docsMode === 'ru' && (<li><strong>Паспорт РФ</strong> — загранпаспорт не нужен, это поездка по России. Подробный ответ — <a href={`/visa/${d.slug}/`}>нужен ли загранпаспорт {d.cases.vP}</a>.</li>)}
+        {d.docsMode === 'id' && (<li><strong>Внутренний паспорт РФ</strong> — взрослому хватит его одного. Ребёнку до 14 лет нужен загранпаспорт: свидетельство о рождении для выезда не принимают с 20 января 2026 года{d.slug === 'abkhazia' ? ', и Абхазия — единственное исключение, там его принимают до конца 2027 года' : ''}. Подробности — <a href={`/visa/${d.slug}/`}>на странице документов {d.cases.prep}</a>.</li>)}
+        {d.docsMode === 'abroad' && (<li><strong>Загранпаспорт</strong> — срок действия 6+ месяцев на момент въезда.</li>)}
         {needsVisa && visa && (<li><strong>Виза/eVisa:</strong> {visa.duration}, {visa.cost}, {visa.timing}. Детали — <a href={`/visa/${d.slug}/`}>на странице визы {d.cases.prep}</a>.</li>)}
         {!needsVisa && (<li><strong>Виза не нужна</strong> — {visa?.duration || 'безвизовый въезд'}, {visa?.timing || 'штамп на границе'}.</li>)}
-        <li><strong>Страховка</strong> {needsVisa ? '— без полиса не примут документы на визу' : '— медпомощь платная, счёт за вечер в больнице бывает больше стоимости поездки'}. Цену считают по датам и стране: <a href={cherehapaCountry(d.slug, `packing_${d.slug.replaceAll('-', '_')}`)} class="aff-cta" target="_blank" rel="sponsored noopener">Подобрать полис {d.cases.vP}</a> — оплата картой РФ, полис приходит в PDF.</li>
+        {d.docsMode === 'ru'
+          ? (<li><strong>Полис ОМС</strong> — по России работает, за границей не действует. Отдельная туристическая страховка нужна не всем: её берут под эвакуацию из труднодоступных мест и под активности вроде треккинга и рафтинга. Цену считают по датам и активностям: <a href={cherehapaCountry(d.slug, `packing_${d.slug.replaceAll('-', '_')}`)} class="aff-cta" target="_blank" rel="sponsored noopener">Подобрать полис {d.cases.vP}</a> — оплата картой РФ, полис приходит в PDF.</li>)
+          : (<li><strong>Страховка</strong> {needsVisa ? '— без полиса не примут документы на визу' : '— медпомощь платная, счёт за вечер в больнице бывает больше стоимости поездки'}. Цену считают по датам и стране: <a href={cherehapaCountry(d.slug, `packing_${d.slug.replaceAll('-', '_')}`)} class="aff-cta" target="_blank" rel="sponsored noopener">Подобрать полис {d.cases.vP}</a> — оплата картой РФ, полис приходит в PDF.</li>)}
         <li><strong>Обратный билет</strong> или бронь выезда — часто проверяют на регистрации. Цены на ближайшие даты: <a href={aviasalesRoute('MOW', d.iata, affiliateSubId)} target="_blank" rel="sponsored noopener">посмотреть рейсы {d.cases.vP}</a>.</li>
         <li><strong>Копии</strong> паспорта и виз в облаке + бумажные отдельно от оригиналов.</li>
       </ul>
@@ -182,7 +188,6 @@ const ldJson = {
       <ul class="pack-list">
         {plug && (<li><strong>Переходник Type {plug.types}</strong> · {plug.voltage} · {plug.hz}. {plugAdvice(plug)}</li>)}
         <li><strong>Повербанк</strong> 10 000 мА·ч (в ручную кладь, не в багаж) + кабели.</li>
-        {esimHref && <li><strong>eSIM вместо роуминга</strong> — настройка за пять минут, от $5 за неделю. Обзор: <a href="/blog/esim-zagranicey-2026/">eSIM за границей 2026</a>. Тарифы по стране: <a href={esimHref} target="_blank" rel="sponsored noopener">выбрать пакет интернета</a>.</li>}
       </ul>
     </section>
 

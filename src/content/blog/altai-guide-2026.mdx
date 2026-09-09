@@ -25,10 +25,26 @@ howto:
       text: "Чемал/Манжерок — обжитая зона; дальше по тракту — базы и гостевые дома, летом бронировать заранее."
     - name: "Взять тёплые вещи в любой месяц"
       text: "Ночи холодные даже в июле (+5…+10 в горах). Слои, ветровка, треккинговая обувь — базовый набор."
+checks:
+  - date: 2026-09-07
+    what: "Партнёрские ссылки на программы без броней"
+    changed: "Сняты партнёрские ссылки, не давшие броней. Убраны: пакетные туры Travelata, аренда машин EconomyBookings. За полгода по всему сайту эти программы не дали ни одной брони при 200+ живых кликах (сверка кассы 06.09.2026, решение Никиты 07.09.2026); текст и цены не менялись."
+    minor: true
+    sources:
+      - name: "Travelata — пакетные туры"
+        url: "https://travelata.ru/"
+      - name: "EconomyBookings — аренда машин"
+        url: "https://www.economybookings.com/ru"
+  - date: 2026-09-08
+    what: "Экскурсии из Горно-Алтайска"
+    changed: "В разделе о дороге добавлены выезды из Горно-Алтайска. Чуйский тракт и водопады без своей машины иначе не посмотреть."
+    sources:
+      - name: "Sputnik8: групповые экскурсии в Горно-Алтайске"
+        url: "https://www.sputnik8.com/ru/gorno-altaysk/category/group"
 ---
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 import PricingCards from '../../components/post/PricingCards.astro';
-import { TP_LINKS, aviasalesRoute, cherehapaTravel } from '../../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, cherehapaTravel, sputnik8City } from '../../data/affiliate.js';
 
 export const aviaRGK = aviasalesRoute('MOW', 'RGK', 'altai_guide_2026');
 export const insurance = cherehapaTravel('altai_guide_2026');
@@ -61,6 +77,8 @@ export const insurance = cherehapaTravel('altai_guide_2026');
 
 ## Как добраться на Алтай из Москвы?
 
+<a href={sputnik8City('altai', 'altai_guide_2026')} class="aff-cta" rel="sponsored">Экскурсии из Горно-Алтайска</a> — Чуйский тракт и водопады без своей машины.
+
 - **Самолёт в Горно-Алтайск (RGK)** — прямые рейсы ~4,5 часа, аэропорт в самом начале туристической зоны. Минус: направление популярное, на пики (майские, июль-август) цены взлетают — [АТОР](https://www.atorus.ru/article/skolko-stoit-poezdka-na-altay-v-2026-godu-i-mozhno-li-nayti-nedorogie-tury-67424) приводил от ~45 тысяч ₽ туда-обратно на майские 2026. Брать за 2–3 месяца. <a href={aviaRGK} class="aff-cta" rel="sponsored">Следить за ценой в Горно-Алтайск</a> — сравнение всех авиакомпаний.
 - **Самолёт в Барнаул или Новосибирск** — часто заметно дешевле, но дальше 4–7 часов трансфера до гор.
 - **Поезд** — только до Барнаула/Бийска, дальше автобус. Вариант для неспешных.
@@ -74,7 +92,7 @@ export const insurance = cherehapaTravel('altai_guide_2026');
 Но главное алтайское впечатление, **Чуйский тракт за Чике-Таманом**, без своих колёс превращается в один длинный экскурсионный день «всё из окна». Честная рекомендация:
 
 - **Без прав / первая разведка** — база в Чемале или Артыбаше + групповые экскурсии. Нормальный формат на 4–5 дней.
-- **Хочется настоящего Алтая** — аренда авто в Горно-Алтайске и маршрут по тракту с ночёвками. <a href={`${TP_LINKS.economybookings}&sub_id=altai_guide_2026`} class="aff-cta" rel="sponsored">Сравнить цены проката</a> — на пики машин мало, бронировать сильно заранее.
+- **Хочется настоящего Алтая** — аренда авто в Горно-Алтайске и маршрут по тракту с ночёвками.
 - **Не хочется рулить самому** — готовый автотур: возят, показывают, ночёвки собраны. Дороже, но без нервов на грунтовках.
 
 ---
@@ -111,8 +129,6 @@ export const insurance = cherehapaTravel('altai_guide_2026');
         'Недельный автотур на двоих — порядка ~100 тыс. ₽',
         'Лучший вариант увидеть дальний тракт без своего руля',
       ],
-      ctaLabel: 'Смотреть туры',
-      ctaHref: `${TP_LINKS.travelata}&sub_id=altai_guide_2026`,
     },
     {
       tier: 'Своя машина',
@@ -123,8 +139,6 @@ export const insurance = cherehapaTravel('altai_guide_2026');
         'Асфальт по тракту отличный, к озёрам — грунтовки',
         'На пики сезона прокатных машин не хватает',
       ],
-      ctaLabel: 'Сравнить прокаты',
-      ctaHref: `${TP_LINKS.economybookings}&sub_id=altai_guide_2026`,
     },
   ]}
 />

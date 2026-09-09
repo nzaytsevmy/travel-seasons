@@ -29,11 +29,21 @@ howto:
       text: "На паспортном контроле — штамп, безвизовое пребывание до 90 дней в течение календарного года. Если едете больше 15 дней — нужна регистрация в Госмиграционной службе (онлайн)."
     - name: "Спланировать маршрут: Баку плюс окрестности"
       text: "База Баку 3 дня (Старый город, Пламенные башни, Центр Гейдара Алиева), день на Гобустан и Абшерон (петроглифы, грязевые вулканы, храм огня), 2 дня на Габалу и горы."
+checks:
+  - date: 2026-09-07
+    what: "Партнёрские ссылки на программы без броней"
+    changed: "Сняты партнёрские ссылки, не давшие броней. Убраны: пакетные туры Travelata, eSIM Airalo, eSIM Drimsim. За полгода по всему сайту эти программы не дали ни одной брони при 200+ живых кликах (сверка кассы 06.09.2026, решение Никиты 07.09.2026); текст и цены не менялись."
+    minor: true
+    sources:
+      - name: "Travelata — пакетные туры"
+        url: "https://travelata.ru/"
+      - name: "Airalo — eSIM"
+        url: "https://www.airalo.com/ru"
 ---
 import PricingCards from '../../components/post/PricingCards.astro';
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
-import { TP_LINKS, airaloSub, aviasalesRoute, cherehapaCountry, cherehapaTravel, drimsimSub, ostrovokCity } from '../../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, cherehapaCountry, cherehapaTravel, ostrovokCity } from '../../data/affiliate.js';
 
 export const aviaBaku = aviasalesRoute('MOW', 'GYD', 'azerbaijan_guide_2026');
 export const hotelsBaku = ostrovokCity('azerbaijan', 'baku', 'azerbaijan_guide_2026');
@@ -289,7 +299,7 @@ export const insurance = cherehapaTravel('azerbaijan_guide_2026');
   ]}
 />
 
-Если время ограничено и хочется увидеть максимум без логистических хлопот, разумно взять **готовый тур по стране** — Баку, Гобустан, Габала и горные районы одним маршрутом. Пакет с перелётом и отелем из Москвы иногда выходит дешевле раздельной брони — <a href={`${TP_LINKS.travelata}&sub_id=azerbaijan_guide_2026`} class="aff-cta" rel="sponsored">Подобрать тур в Азербайджан</a>: в высокий сезон готовый пакет часто удобнее и дешевле, оплата картой МИР.
+Если время ограничено и хочется увидеть максимум без логистических хлопот, разумно взять **готовый тур по стране** — Баку, Гобустан, Габала и горные районы одним маршрутом.
 
 ---
 
@@ -299,7 +309,7 @@ export const insurance = cherehapaTravel('azerbaijan_guide_2026');
 
 Варианты:
 
-1. **eSIM** — подключить ещё до вылета, работает сразу по прилёту, удобно если не хочется искать салон. <a href={drimsimSub('azerbaijan_guide_2026')} class="aff-cta" rel="sponsored">Купить eSIM Drimsim для Азербайджана</a> — принимает карты РФ и СБП, или <a href={airaloSub('azerbaijan_guide_2026')} class="aff-cta" rel="sponsored">Купить eSIM Airalo</a> — пакет на Азербайджан от ~$5–9.
+1. **eSIM** — подключить ещё до вылета, работает сразу по прилёту, удобно если не хочется искать салон.
 2. **Местная SIM** — операторы Azercell, Bakcell, Nar. Продаются в аэропорту и салонах по паспорту, туристический пакет с интернетом стоит недорого. Самый дешёвый вариант для долгой поездки.
 3. **Wi-Fi** — бесплатный в отелях, кафе и торговых центрах.
 

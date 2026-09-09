@@ -8,6 +8,9 @@ import TableOfContents from '../../components/post/TableOfContents.astro';
 import authorPhoto from '../../assets/author/nikita.jpg';
 import { DIRECTIONS } from '../../data/directions.js';
 import { directionForTags } from '../../data/article-country.js';
+import { EXPENSIVE_DESTINATIONS } from '../../data/monetization.js';
+import { TP_LINKS, aviasalesRoute, youtravelCountry, cherehapaCountry, cherehapaTravel, ostrovokCountry, otelloStay } from '../../data/affiliate.js';
+import StickyCta from '../../components/StickyCta.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -45,6 +48,13 @@ const dateRu = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', mont
 // Наверх идёт только суть — первое предложение записи. Полный текст остаётся в
 // журнале: строка над заголовком раздела не должна отодвигать ответ, ради
 // которого пришли из поиска (первая версия заняла шесть строк на телефоне).
+// Короткое имя первоисточника для строки-сводки журнала: часть названия до
+// первого разделителя («Апсныпресс, 30.03.2026: …» → «Апсныпресс»). Полные
+// названия остаются в раскрывающейся истории.
+const shortSource = (name: string) => name.split(/\s+[—–]\s+|:\s|,\s/)[0].trim();
+const latestSources = lastCheck
+  ? lastCheck.sources.filter((s, i, arr) => arr.findIndex((x) => shortSource(x.name) === shortSource(s.name)) === i)
+  : [];
 const checkedShort = lastCheck
   ? (lastCheck.changed.split(/(?<=\.)\s/)[0] ?? lastCheck.changed).replace(/\s+$/, '')
   : null;
@@ -135,7 +145,13 @@ const primaryDir = DIRECTIONS.find(d => d.relatedPosts?.[0]?.slug === post.slug)
 // партнёрскую форму одну страну из навигационного кластера было бы скрытой
 // подменой обещания CTA, поэтому денежный контекст оставляем без destination.
 const MULTI_DESTINATION_POSTS = new Set([
+  // ⛔ 08.09.2026: у статьи про Кубу направление определяется по метке и даёт
+  // «Жильё на Кубе», хотя сама статья объясняет, что прямых рейсов нет с
+  // 12 февраля 2026 года. Кнопка спорила с текстом на живой странице. Материал
+  // и по сути сравнивает три страны — Кубу, Доминикану и Мексику.
+  'kuba-tury-2027',
   'luchshie-goroda-dlya-molodyh-2026',
+  'novyy-god-2027-kuda-poehat',
   'patagonia-2026',
   'safari-afrika-2026',
   'schengen-insurance-2026',
@@ -144,6 +160,62 @@ const MULTI_DESTINATION_POSTS = new Set([
   'travelata-2026',
 ]);
 const monetizationDestination = MULTI_DESTINATION_POSTS.has(post.slug) ? '' : primaryDir?.slug;
+
+// Дорогие направления: первой денежной точкой идёт дорога или готовый тур, а не полис.
+// Решение Никиты 04.09.2026 по замеру 06.08–02.09: такие страницы доводят до партнёра
+// 4,7 визита из ста против 1,6 у страниц сборов, а единственная крупная комиссия сайта
+// пришла с билета со страницы Галапагосов. Ставится шаблоном, а не в тексте статей:
+// одна правка вместо тринадцати, все страницы переключаются одним днём (иначе замер
+// размазывается по датам), тексты и даты обновления статей не трогаются, откат — одна строка.
+// Главный оффер статьи по её типу — один на страницу. Считается здесь, чтобы липкая
+// панель на телефоне и строка для дочитавших предлагали ОДНО и то же, а не спорили
+// друг с другом. Тексты статей при этом не трогаются: правка шаблона.
+//   дорогое направление → дорога (правило 04.09, уже стоит строкой над текстом);
+//   документ (страховка, виза, оплата, связь) → полис;
+//   статья-место с известным направлением → жильё;
+//   остальное (обзоры без одной страны) → панели нет, выдумывать оффер нечему.
+const RU_STAY_POSTS = new Set(['abkhazia', 'kamchatka', 'karelia', 'dagestan', 'altai']);
+const ДЕНЬГИ_ЗА_ГРАНИЦЕЙ = /(pay-|oplata|karty|cards)/i;
+const ДОКУМЕНТ = /(strahov|insurance|viza|visa|esim|zagranpasport|chto-vzyat|sbory|ees)/i;
+function главныйОффер() {
+  const метка = `${post.slug}_main`;
+  const дорогое = EXPENSIVE_DESTINATIONS[post.slug] ?? null;
+  if (дорогое) {
+    return { href: aviasalesRoute('MOW', дорогое.iata, метка),
+             панель: `Билеты Москва — ${дорогое.city}`,
+             финал: `Посмотреть билеты Москва — ${дорогое.city} на свои даты` };
+  }
+  if (ДЕНЬГИ_ЗА_ГРАНИЦЕЙ.test(post.slug)) {
+    // Статья про оплату отвечает на вопрос «чем платить», и полис на него не отвечает.
+    return { href: TP_LINKS.platipomiru,
+             панель: 'Виртуальная карта USD/EUR',
+             финал: 'Выпустить виртуальную карту USD/EUR для оплаты за границей' };
+  }
+  if (ДОКУМЕНТ.test(post.slug)) {
+    const href = monetizationDestination ? cherehapaCountry(monetizationDestination, метка) : cherehapaTravel(метка);
+    return { href, панель: 'Страховка под даты поездки',
+             финал: 'Собрать полис под свои даты — от 413 ₽' };
+  }
+  if (monetizationDestination) {
+    const дом = RU_STAY_POSTS.has(monetizationDestination);
+    const href = дом ? otelloStay(метка) : ostrovokCountry(monetizationDestination, метка);
+    const где = primaryDir?.cases?.loc || primaryDir?.cases?.prep || '';
+    return { href, панель: `Жильё ${где}`.trim(),
+             финал: `Подобрать жильё ${где} с оплатой картой РФ`.trim() };
+  }
+  return null;
+}
+const оффер = главныйОффер();
+
+const expensive = EXPENSIVE_DESTINATIONS[post.slug] ?? null;
+const expensiveMoney = expensive ? {
+  flight: aviasalesRoute('MOW', expensive.iata, `${post.slug}_top`),
+  city: expensive.city,
+  // Тура нет у партнёра — строка идёт без него: общий каталог вместо страны это
+  // холодный клик, который канон монетизации запрещает выдавать за диплинк.
+  tour: expensive.tour ? youtravelCountry(expensive.tour, `${post.slug}_top`) : null,
+  label: expensive.label,
+} : null;
 // Хлебные крошки. Было «Главная / Блог / <весь заголовок>»: страны в цепочке
 // нет, последнее звено переносится на три строки на телефоне. Стало
 // «Главная / Блог / Япония / Виза» — четыре звена, это в границах требований
@@ -314,6 +386,16 @@ if (faqs.length >= 2) {
         </aside>
       )}
 
+      {expensiveMoney && (
+        <p class="post-first-money">
+          Как туда попасть:{' '}
+          <a href={expensiveMoney.flight} class="aff-cta" rel="sponsored">найти билет Москва — {expensiveMoney.city}</a>
+          {expensiveMoney.tour && (
+            <>{' · '}<a href={expensiveMoney.tour} class="aff-cta" rel="sponsored">посмотреть готовые туры {expensiveMoney.label}</a></>
+          )}
+        </p>
+      )}
+
       <TableOfContents headings={headings} />
 
       <div class="prose">
@@ -328,6 +410,15 @@ if (faqs.length >= 2) {
           в подписи автора, в справке об авторе, в подвале, в дисклеймере. То
           есть дело не в числе ссылок, а в том, что ни одна из них ничего не
           обещает: это голый ник. Здесь — одна ссылка с понятной причиной. */}
+      {оффер && (
+        <p class="post-end-money">
+          {/* Строка для дочитавших: конец статьи — сильное место (JCMC, 4,5 млн визитов:
+              конец выигрывает у середины), а до правки 07.09.2026 денег здесь не было
+              ни на одной странице блога. Оффер тот же, что в липкой панели. */}
+          <a href={оффер.href} class="aff-cta" rel="sponsored noopener" target="_blank">{оффер.финал}</a>
+        </p>
+      )}
+
       <aside class="tg-sub">
         <p class="tg-sub-text">
           Пишу про поездки и правила въезда в Telegram — там короче и чаще, чем на сайте.
@@ -335,23 +426,19 @@ if (faqs.length >= 2) {
         <a class="tg-sub-link" href="https://t.me/traveltriberu" target="_blank" rel="noopener">Читать @traveltriberu</a>
       </aside>
 
-      {checks.length > 0 && (
-        <section class="journal" id="journal" aria-labelledby="journal-title">
-          <h2 class="journal-title" id="journal-title">Что и когда проверяли</h2>
-          <ol class="journal-list">
-            {[...checks].reverse().map((c) => (
-              <li class="journal-item">
-                <time class="journal-date" datetime={c.date.toISOString().slice(0, 10)}>{dateRu(c.date)}</time>
-                <p class="journal-what">{c.what}</p>
-                <p class="journal-changed">{c.changed}</p>
-                <p class="journal-src">
-                  Первоисточники: {c.sources.map((s, i) => (
-                    <>{i > 0 && ', '}<a href={s.url} target="_blank" rel="noopener nofollow">{s.name}</a></>
-                  ))}
-                </p>
-              </li>
+      {checks.length > 0 && lastCheck && (
+        <section class="journal" id="journal" aria-label="Что и когда проверяли">
+          {/* Решение Никиты 06.09.2026 (уточнено тем же днём): читателю нужна одна
+              строка — дата последней сверки и кликабельные первоисточники, а история
+              записей ему не интересна и на страницу не выводится вовсе. Сами записи
+              живут в шапке статьи: из них считается дата обновления и строка
+              «Сверено …» под автором; ссылки последней сверки остаются в HTML. */}
+          <p class="journal-summary">
+            Проверено <time datetime={lastCheck.date.toISOString().slice(0, 10)}>{dateRu(lastCheck.date)}</time>
+            {' · '}источники: {latestSources.map((src, i) => (
+              <>{i > 0 && ', '}<a href={src.url} target="_blank" rel="noopener nofollow" title={src.name}>{shortSource(src.name)}</a></>
             ))}
-          </ol>
+          </p>
         </section>
       )}
 
@@ -398,6 +485,8 @@ if (faqs.length >= 2) {
       </div>
     </article>
   </main>
+  {оффер && <StickyCta href={оффер.href} label={оффер.панель} />}
+
   <Footer />
 </Layout>
 
@@ -724,19 +813,29 @@ h1 {
 }
 .post-checked a { color: var(--gold-dim); border-bottom: 1px solid rgba(29,64,174,0.35); }
 
+/* Дорога и туры на дорогих направлениях — служебная строка того же веса, что «Сверено».
+   Не блок и не кнопка: по айтрекингу форматный блок читатель пропускает, а строка
+   в редакционном голосе — нет. */
+.post-first-money {
+  max-width: 42rem; margin: 0 auto 1.6rem; text-align: center;
+  font-size: 0.9rem; line-height: 1.55; color: var(--muted);
+}
+
+/* Строка для дочитавших: тот же спокойный тон, что у строки над текстом; цель клика
+   по вертикали не меньше 44 px, отдельной подложки и рамки нет — это не баннер. */
+.post-end-money {
+  max-width: 42rem; margin: 2.2rem auto 0;
+  font-size: 0.9rem; line-height: 1.55; color: var(--muted);
+}
+.post-end-money .aff-cta { display: inline-flex; align-items: center; min-height: 44px; }
+
 /* Журнал проверок: тонкие линейки, как у ленты изменений виз. */
 /* Без своей верхней линии: над журналом уже стоит разделитель блока подписки,
    две линии подряд читаются как дефект вёрстки. */
 .journal { max-width: 42rem; margin: 2.5rem auto 0; }
-.journal-title { font-size: 1.05rem; letter-spacing: 0.01em; margin: 0 0 1.25rem; }
-.journal-list { list-style: none; margin: 0; padding: 0; }
-.journal-item { padding: 0.9rem 0; border-bottom: 1px solid var(--line); }
-.journal-item:last-child { border-bottom: 0; }
-.journal-date { display: block; font-size: 0.76rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--gold-dim); }
-.journal-what { margin: 0.35rem 0 0; font-size: 0.94rem; color: var(--text); }
-.journal-changed { margin: 0.2rem 0 0; font-size: 0.94rem; color: var(--muted); }
-.journal-src { margin: 0.35rem 0 0; font-size: 0.82rem; color: var(--muted); }
-.journal-src a { color: var(--gold-dim); border-bottom: 1px solid rgba(29,64,174,0.35); }
+.journal-summary { margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted); }
+.journal-summary time { color: var(--text); font-weight: 600; }
+.journal-summary a { color: var(--gold-dim); border-bottom: 1px solid rgba(29,64,174,0.35); }
 
 .trip-marker {
   display: inline-flex; align-items: center; gap: 0.5rem;

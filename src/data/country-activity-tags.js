@@ -103,6 +103,26 @@ export const ACTIVITY_TAGS = {
   // Полярные
   'antarctica':           ['photo','mountain'],
   'iceland':              ['mountain','photo'],
+
+  // Добавлено 05.09.2026: без тегов страница сборов не знала, куда едут, и
+  // предлагала выбирать «море или горы» даже для Алтая.
+  'new-zealand':          ['mountain','photo','beach'],
+  'madagascar':           ['jungle','beach','safari'],
+  'mauritius':            ['beach','dive'],
+  'seychelles':           ['beach','dive'],
+  'hong-kong':            ['city','food','culture'],
+  'malaysia':             ['city','beach','jungle','food'],
+  'singapore':            ['city','food','culture'],
+  'nepal':                ['mountain','altitude','culture'],
+  'serbia':               ['city','culture','food'],
+  'finland':              ['city','photo','ski'],
+  'cyprus':               ['beach','culture'],
+  'usa':                  ['city','culture','mountain'],
+  'chile-fjords':         ['mountain','photo'],
+  'kamchatka':            ['mountain','photo','safari'],
+  'karelia':              ['photo','culture'],
+  'dagestan':             ['mountain','culture'],
+  'altai':                ['mountain','photo'],
 };
 
 // Лейблы для display

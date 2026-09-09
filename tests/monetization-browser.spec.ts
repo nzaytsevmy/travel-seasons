@@ -52,7 +52,9 @@ test('каждая партнёрская ссылка получает CTA-leve
 });
 
 test('общие офферы старой статьи уточняются до страны до первого клика', async ({ page }) => {
-  await page.goto('/blog/georgia-guide-2026/');
+  // 07.09.2026: гайд по Грузии остался без общих офферов (eSIM снят, остальные ссылки страновые) —
+  // берём Кению, где общие ссылки страховки и жилья уточняются до страны.
+  await page.goto('/blog/kenya-guide-2026/');
   const links = await page.locator('a[data-deep-link="destination"]').evaluateAll((items) => items.map((item) => ({
     partner: (item as HTMLAnchorElement).dataset.partner,
     href: (item as HTMLAnchorElement).href,
@@ -61,7 +63,7 @@ test('общие офферы старой статьи уточняются д�
   for (const link of links) {
     const url = new URL(link.href);
     const target = url.searchParams.get('u') || url.searchParams.get('redirect') || '';
-    expect(target).toMatch(/georgia|грузия/i);
+    expect(target).toMatch(/kenya|кени/i);
   }
 });
 

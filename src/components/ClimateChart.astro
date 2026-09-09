@@ -1,0 +1,196 @@
+---
+// ClimateChart — погода направления по 12 месяцам двумя графиками:
+// температура (столбик от ночного минимума до дневного максимума, окрашен по
+// градусам) и осадки (миллиметры и дождливые дни). Решение Никиты 05.09.2026
+// по образцу страницы направления U.S. News Travel: у нас те же данные лежали
+// только на страницах «страна × месяц», а на хабе, где человек выбирает время
+// поездки, их не было.
+//
+// Всё считается при сборке и рисуется обычной вёрсткой: без скриптов, без
+// сдвига макета, числа — текстом в HTML, чтобы их читали и люди, и нейроответы.
+// Данные — src/data/country-monthly-weather.js (один источник для всех стран).
+
+import { MONTHLY_WEATHER, CLIMATE_GENERATED_AT } from '../data/country-monthly-weather.js';
+
+interface Props {
+  slug: string;
+  countryNom?: string;
+}
+const { slug, countryNom } = Astro.props;
+
+// Источник один — climate-normals.generated.json через country-monthly-weather.js
+// (решение Никиты 05.09.2026). Где направления нет, блок не рисуется.
+const data = (MONTHLY_WEATHER as Record<string, any>)[slug];
+if (!data) return null as any;
+const sourceLine = `${data.source}. Снято ${CLIMATE_GENERATED_AT}.`;
+
+const MONTHS = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+const MONTHS_PREP = ['январе', 'феврале', 'марте', 'апреле', 'мае', 'июне',
+                     'июле', 'августе', 'сентябре', 'октябре', 'ноябре', 'декабре'];
+
+const months = (data.months as { tmin: number; tmax: number; mm: number; days: number }[]).map((m, i) => ({
+  i, label: MONTHS[i], t: [m.tmin, m.tmax] as [number, number], r: [m.mm, m.days] as [number, number],
+}));
+
+// Шкала температуры — по году этой страны, с запасом в два градуса, чтобы
+// крайние столбики не упирались в подписи.
+const lo = Math.min(...months.map((m) => m.t![0])) - 2;
+const hi = Math.max(...months.map((m) => m.t![1])) + 2;
+const PLOT_H = 148;   // высота поля графика, px
+const PAD = 19;       // место под подпись над и под столбиком
+const usable = PLOT_H - PAD * 2;
+const yOf = (t: number) => PAD + (1 - (t - lo) / (hi - lo)) * usable;
+
+// Цвет по градусам: холод синий, тепло жёлтое, жара красная. Это смысл, а не
+// украшение — тот же язык, что у любого прогноза погоды.
+const STOPS: [number, string][] = [
+  [-10, '#2f5fc4'], [0, '#5a8fdc'], [10, '#bcd7ee'], [18, '#f5ebb0'],
+  [26, '#eaa73c'], [32, '#d94f2c'], [40, '#b8261f'],
+];
+const hex2rgb = (h: string) => [1, 3, 5].map((k) => parseInt(h.slice(k, k + 2), 16));
+const colorAt = (t: number) => {
+  if (t <= STOPS[0][0]) return STOPS[0][1];
+  if (t >= STOPS[STOPS.length - 1][0]) return STOPS[STOPS.length - 1][1];
+  for (let k = 1; k < STOPS.length; k++) {
+    if (t <= STOPS[k][0]) {
+      const [t0, c0] = STOPS[k - 1], [t1, c1] = STOPS[k];
+      const f = (t - t0) / (t1 - t0);
+      const a = hex2rgb(c0), b = hex2rgb(c1);
+      const c = a.map((v, j) => Math.round(v + (b[j] - v) * f));
+      return `rgb(${c[0]} ${c[1]} ${c[2]})`;
+    }
+  }
+  return STOPS[STOPS.length - 1][1];
+};
+const minus = (n: number) => (n < 0 ? `−${Math.abs(n)}` : String(n));
+
+const temps = months.map((m) => {
+  const [mn, mx] = m.t!;
+  const top = yOf(mx);
+  const h = Math.max(4, yOf(mn) - top);
+  return { ...m, mn, mx, top: top.toFixed(1), h: h.toFixed(1), labTop: (top - 15).toFixed(1), c1: colorAt(mx), c2: colorAt(mn) };
+});
+
+const RAIN_H = 92;
+const rainMax = Math.max(1, ...months.map((m) => m.r![0]));
+const rains = months.map((m) => {
+  const [mm, days] = m.r!;
+  return { ...m, mm, days, h: Math.max(2, Math.round((mm / rainMax) * (RAIN_H - 20))) };
+});
+
+// Одна строка-вывод: её читают те, кто не смотрит на столбики, и её же берёт
+// нейроответ. Считается из тех же чисел, что и график.
+const warmest = temps.reduce((a, b) => (b.mx > a.mx ? b : a));
+const coldest = temps.reduce((a, b) => (b.mn < a.mn ? b : a));
+const wettest = rains.reduce((a, b) => (b.mm > a.mm ? b : a));
+const driest = rains.reduce((a, b) => (b.mm < a.mm ? b : a));
+const fmtT = (m: typeof temps[number]) => `${minus(m.mn)}…${minus(m.mx)}°C`;
+const inMonth = (i: number) => 'в ' + MONTHS_PREP[i];
+const summary = `Теплее всего ${inMonth(warmest.i)} (${fmtT(warmest)}), холоднее — ${inMonth(coldest.i)} (${fmtT(coldest)}). Больше всего осадков ${inMonth(wettest.i)}: ${wettest.mm} мм и ${wettest.days} дождливых дней, меньше всего — ${inMonth(driest.i)}: ${driest.mm} мм.`;
+const city = data.city as string | undefined;
+---
+
+<figure class="cc" aria-label={`Погода ${countryNom ? 'в ' + countryNom : ''} по месяцам${city ? ' — ' + city : ''}`}>
+  <div class="cc-head">
+    <span class="cc-k">Температура, °C{city ? ` · ${city}` : ''}</span>
+    <span class="cc-legend">ночью — днём</span>
+  </div>
+  <ol class="cc-plot cc-plot--t" style={`--plot-h:${PLOT_H}px;--foot:.9rem`}>
+    {temps.map((m) => (
+      <li class="cc-col">
+        <b class="cc-lab cc-lab--max" style={`top:${m.labTop}px`}>{minus(m.mx)}</b>
+        <i class="cc-bar" style={`top:${m.top}px;height:${m.h}px;background:linear-gradient(180deg, ${m.c1}, ${m.c2})`} aria-hidden="true"></i>
+        <b class="cc-lab cc-lab--min" style={`top:calc(${m.top}px + ${m.h}px + 3px)`}>{minus(m.mn)}</b>
+        <span class="cc-m">{m.label}</span>
+      </li>
+    ))}
+  </ol>
+
+  <div class="cc-head cc-head--rain">
+    <span class="cc-k">Осадки, мм</span>
+    <span class="cc-legend">и дождливых дней в месяц</span>
+  </div>
+  <ol class="cc-plot cc-plot--r" style={`--plot-h:${RAIN_H}px;--foot:1.7rem`}>
+    {rains.map((m) => (
+      <li class="cc-col">
+        <b class="cc-lab cc-lab--mm" style={`bottom:calc(var(--foot) + ${m.h + 3}px)`}>{m.mm}</b>
+        <i class="cc-bar cc-bar--rain" style={`height:${m.h}px`} aria-hidden="true"></i>
+        <small class="cc-d">{m.days} дн</small>
+        <span class="cc-m">{m.label}</span>
+      </li>
+    ))}
+  </ol>
+
+  <figcaption class="cc-cap">
+    <p class="cc-sum">{summary}</p>
+    <p class="cc-src">{sourceLine}</p>
+  </figcaption>
+</figure>
+
+<style>
+.cc {
+  margin: 0 0 1.6rem;
+  font-family: var(--ff-display);
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--text);
+}
+.cc-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+  border-top: 1px solid var(--line-strong, #15171a);
+  padding-top: .5rem;
+  margin-bottom: .2rem;
+}
+.cc-head--rain { margin-top: 1.1rem; }
+.cc-k {
+  font-size: .64rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-dim);
+}
+.cc-legend { font-size: .72rem; color: var(--text-dim); white-space: nowrap; }
+
+.cc-plot {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 4px;
+}
+.cc-col {
+  position: relative;
+  height: calc(var(--plot-h) + var(--foot));   /* поле графика + строки подписей внизу */
+  min-width: 0;
+}
+.cc-bar {
+  position: absolute; left: 12%; right: 12%;
+  display: block;
+}
+.cc-bar--rain {
+  bottom: var(--foot);
+  background: color-mix(in srgb, #4a9eff 72%, var(--bg, #fbfbfa));
+}
+.cc-lab {
+  position: absolute; left: 0; right: 0;
+  text-align: center; font-weight: 700; font-size: .76rem; line-height: 1;
+  color: var(--text);
+}
+.cc-lab--min { color: var(--text-dim); }
+.cc-lab--mm { font-size: .7rem; }
+.cc-d {
+  position: absolute; left: 0; right: 0; bottom: .85rem;
+  text-align: center; font-size: .56rem; line-height: 1; color: var(--text-dim);
+}
+.cc-m {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  text-align: center; font-size: .6rem; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--text-dim); line-height: 1;
+}
+
+.cc-cap { margin: .4rem 0 0; }
+.cc-sum { margin: 0 0 .3rem; font-size: .92rem; line-height: 1.5; max-width: 76ch; color: var(--text); }
+.cc-src { margin: 0; font-size: .74rem; color: var(--text-dim); }
+
+@media (max-width: 480px) {
+  .cc-plot { gap: 2px; }
+  .cc-lab { font-size: .66rem; }
+  .cc-lab--mm { font-size: .6rem; }
+  .cc-m { font-size: .5rem; letter-spacing: .03em; }
+  .cc-d { font-size: .5rem; }
+  .cc-legend { font-size: .64rem; }
+}
+</style>

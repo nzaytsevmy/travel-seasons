@@ -155,7 +155,7 @@ export async function getStaticPaths() {
       description: 'Цены круиза 750 000 – 4 500 000 ₽, виза в Аргентину не нужна, сезон ноябрь – март. Личный опыт.',
       tag: 'Антарктида',
       isPersonal: true,
-      tripPlace: 'Антарктида, январь 2025',
+      tripPlace: 'Антарктида, декабрь 2024',
     },
   });
   paths.push({

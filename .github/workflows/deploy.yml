@@ -192,9 +192,16 @@ jobs:
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
+      # ⛔ Адрес страницы динамического роута из имени файла не выводится:
+      # правка src/pages/[slug].astro меняет десятки страниц сразу. Раньше
+      # скрипт склеивал из имени литерал /[slug]/ и слал на переобход его,
+      # а настоящие адреса не слал вовсе (поймано 05.09.2026). Теперь такие
+      # файлы он пропускает, а конкретные адреса берутся из переменной
+      # репозитория PING_URLS — её задаёт тот, кто знает, что поменял.
       - name: Ping IndexNow + Yandex recrawl
         env:
           CHANGED_FILES: ${{ steps.changed.outputs.files }}
+          PING_URLS: ${{ vars.PING_URLS }}
           YANDEX_OAUTH_TOKEN: ${{ secrets.YANDEX_OAUTH_TOKEN }}
           YANDEX_USER_ID: ${{ secrets.YANDEX_USER_ID }}
         run: python3 .github/scripts/seo_ping.py

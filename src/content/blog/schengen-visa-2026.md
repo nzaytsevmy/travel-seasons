@@ -12,6 +12,13 @@ checks:
         url: "https://home-affairs.ec.europa.eu/news/schengen-short-stay-visa-applications-rise-2025-remain-below-pre-pandemic-levels-2026-05-28_en"
       - name: "Визовый кодекс ЕС, действующая редакция"
         url: "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:02009R0810-20240628"
+  - date: 2026-09-07
+    what: "Партнёрские ссылки на программы без броней"
+    changed: "Сняты партнёрские ссылки, не давшие броней. Убраны: eSIM Airalo, eSIM Drimsim. За полгода по всему сайту эти программы не дали ни одной брони при 200+ живых кликах (сверка кассы 06.09.2026, решение Никиты 07.09.2026); текст и цены не менялись."
+    minor: true
+    sources:
+      - name: "Airalo — eSIM"
+        url: "https://www.airalo.com/ru"
 pubDate: 2026-04-30
 updatedDate: 2026-07-28
 coverImage: "../../assets/blog/schengen-visa.jpg"
@@ -207,7 +214,7 @@ sourceType: "compilation"
 5. **Финляндия и страны Балтии** — туристические визы россиянам практически не выдают.
 6. **Польша, Латвия, Литва, Эстония** — по сообщениям пограничных служб (2024–2025) на въезде из РФ практикуются дополнительные проверки в дополнение к EES.
 
-Виза в паспорте — половина дела: с 2026 на границе ещё биометрия EES с очередями до пары часов, и интернет там сильно выручает (онлайн-табло, брони, переводчик). eSIM ставится до вылета: <a href="https://drimsim.tpk.mx/ELmQp51R?sub_id=schengen_visa_2026" class="aff-cta" rel="sponsored">Drimsim с оплатой картой РФ</a> или <a href="https://airalo.pxf.io/c/1209822/1310283/15608?erid=2VtzqxRWDfm&sharedID=546042_schengen_visa_2026&u=https%3A%2F%2Fairalo.com%2Fru" class="aff-cta" rel="sponsored">eSIM Airalo под страну поездки</a>.
+Виза в паспорте — половина дела: с 2026 на границе ещё биометрия EES с очередями до пары часов, и интернет там сильно выручает (онлайн-табло, брони, переводчик).
 
 ---
 

@@ -6,6 +6,7 @@
 import Layout from '../../../layouts/Layout.astro';
 import Footer from '../../../components/Footer.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import DestinationTabs from '../../../components/DestinationTabs.astro';
 import { Image, getImage } from 'astro:assets';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
 import { VISA_DETAILS } from '../../../data/visa-details.js';
@@ -14,7 +15,7 @@ import { getWeatherBucket } from '../../../data/country-month-bucket.js';
 import { ACTIVITY_TAGS, ACTIVITY_LABEL, ACTIVITY_GEAR } from '../../../data/country-activity-tags.js';
 import { PLUG_TYPES, plugAdvice } from '../../../data/country-plug-types.js';
 import { DATA_UPDATED_RU } from '../../../data/meta.js';
-import { airaloCountry, aviasalesRoute, cherehapaCountry, youtravelCountry } from '../../../data/affiliate.js';
+import { aviasalesRoute, cherehapaCountry, youtravelCountry } from '../../../data/affiliate.js';
 import StickyCta from '../../../components/StickyCta.astro';
 import { getHolidaysByMonth } from '../../../data/country-holidays.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
@@ -83,11 +84,22 @@ const needsVisa = d.visa !== 'free';
 const plug = PLUG_TYPES[d.slug];
 const tags = ACTIVITY_TAGS[d.slug] || [];
 const affiliateSubId = `packing_${d.slug.replaceAll('-', '_')}`;
-const esimHref = airaloCountry(d.slug, affiliateSubId);
 
-// Пресет интерактивного чек-листа: холодный бакет → зима, пляжная страна → море, иначе универсал.
-const PACK_COLD = ['temperate-cold', 'cold-extreme'];
-const checklistPreset = PACK_COLD.includes(bucketKey) ? 'winter' : (tags.includes('beach') ? 'sea' : 'any');
+// Пресет чек-листа (решение Никиты 05.09.2026): направление само говорит, куда
+// едут, — выбор «море / город / зима» показываем только там, где тип поездки
+// правда неоднозначен. Холодный месяц → зима; пляжное место в тёплый месяц →
+// море; горное без пляжа и города → горы; городское → город; смешанное → выбор.
+const PACK_COLD = ['temperate-cold', 'winter-frost', 'cold-extreme'];
+const PACK_WARM = ['tropical-rainy', 'warm-rainy', 'tropical-dry', 'tropical-jungle', 'desert-hot', 'desert-cool', 'temperate-warm', 'summer-hot'];
+const hasBeach = tags.includes('beach');
+const hasMountain = ['mountain', 'altitude', 'ski'].some((t) => tags.includes(t));
+const hasCity = tags.includes('city');
+const checklistPreset =
+  PACK_COLD.includes(bucketKey) ? 'winter'
+  : (hasBeach && !hasMountain && PACK_WARM.includes(bucketKey)) ? 'sea'
+  : (hasMountain && !hasBeach && !hasCity) ? 'mountain'
+  : (hasCity && !hasBeach && !hasMountain) ? 'city'
+  : 'any';
 
 // Лучшие альтернативные месяцы (P+G), исключая текущий
 const altMonths = (d.r || [])
@@ -126,7 +138,7 @@ const FAQS = [
     q: `Какая погода ${d.cases.vP} в ${m.prep} 2026?`,
     a: monthWeather
       ? `${monthCap} ${d.cases.loc} — температура ${monthWeather.temp}, осадки ${monthWeather.rain}. ${monthText || ''}`.trim()
-      : `${monthText || `${monthCap} ${d.cases.loc} — ${bucket.label.toLowerCase()}.`} По бакету: ${bucket.summary}.`,
+      : `${monthText || `${monthCap} ${d.cases.loc} — ${bucket.label.toLowerCase()}.`} Обычно в это время: ${bucket.summary}.`,
   },
   {
     q: `Стоит ли ехать ${d.cases.vP} в ${m.prep}?`,
@@ -269,6 +281,8 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         <span class="byline-fresh">обновлено {DATA_UPDATED_RU}</span>
       </p>
     </section>
+
+    <DestinationTabs d={d} active="packing" />
 
     {/* QUICK FACTS — 4 ячейки */}
     <section class="pmu-section">
@@ -435,10 +449,6 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         <li><b>Повербанк</b> 10 000 мА·ч в ручную кладь.</li>
         <li><b>eSIM вместо роуминга</b> — настройка за 5 минут, от $5/неделя.</li>
       </ul>
-      {esimHref && <p class="pmu-cta">
-        <a class="pmu-aff" href={esimHref} rel="sponsored noopener" target="_blank">Купить eSIM {d.cases.vP}</a>
-        <span class="pmu-trust">от $5/нед · оплата картами РФ</span>
-      </p>}
     </section>
 
     {/* АКТИВНОСТИ */}
