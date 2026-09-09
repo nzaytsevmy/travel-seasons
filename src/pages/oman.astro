@@ -406,6 +406,11 @@ const ldJson = {
   /* Цели нажатия: ссылка-строка и отдельная ссылка-абзац дотягивают до 44 px.
      Ссылки внутри предложения под правило не попадают — они часть текста. */
   .om-prow a, .om-linkline a { display: inline-flex; align-items: center; min-height: 44px; }
+  /* Текстовые ссылки — цветом сайта и с подчёркиванием: глобальный стиль сбрасывает
+     оформление ссылок, и без этого они неотличимы от текста («не понятно, что это
+     ссылки» — Никита, 09.09.2026). Кнопки и клетки месяцев — отдельно. */
+  .om-prow a, .om-linkline a, .om-byline a, .om-foot a { color: var(--gold); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .om-prow a:hover, .om-linkline a:hover, .om-byline a:hover, .om-foot a:hover { color: var(--gold-dim); }
 
   .om-practice :global(img) { width: 100%; height: 300px; object-fit: cover; display: block; }
   /* Левый кадр тянется на высоту двух правых. Без процентных высот внутри сетки:
