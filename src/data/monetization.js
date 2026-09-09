@@ -212,6 +212,7 @@ export const EXPENSIVE_DESTINATIONS = {
   'seychelles-2026':         { iata: 'SEZ', city: 'Маэ',                      tour: 'seychelles',      label: 'на Сейшелы' },
   'aurora-new-zealand-2026': { iata: 'AKL', city: 'Окленд',                   tour: 'new-zealand',     label: 'в Новую Зеландию' },
   'oman-guide-2026':         { iata: 'MCT', city: 'Маскат',                   tour: 'oman',            label: 'в Оман' },
+  'tur-v-yaponiyu-2027':     { iata: 'TYO', city: 'Токио',                    tour: 'japan',           label: 'в Японию' },
 };
 
 export const EXPENSIVE_DESTINATION_POSTS = new Set(Object.keys(EXPENSIVE_DESTINATIONS));
