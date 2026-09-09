@@ -1,0 +1,171 @@
+---
+// График года: дневная температура одной-двух точек страны и дни с осадками.
+// Зачем: у страницы страны есть полоса «стоит ли ехать» по месяцам, но за ней
+// не видно чисел — а весь вопрос «когда ехать» в них. Две кривые показывают то,
+// чего не показывает ни одна строка текста: где север и юг живут по-разному.
+//
+// ⛔ Две шкалы в одной рамке не рисуем (температура и осадки) — читатель их
+//    путает, это разбирают и FT в своём словаре графиков, и Datawrapper.
+//    Отсюда две панели с ОБЩЕЙ осью месяцев.
+// ⛔ Одна геометрия на все экраны не работает: широкая картинка ужимается, и
+//    подписи падают до восьми точек. Геометрий три — телефон, планшет, монитор;
+//    показывается одна, остальные скрыты стилями и помечены aria-hidden, чтобы
+//    читалка не произносила график трижды. Средняя ограничена по ширине, иначе
+//    в полосе 769–1030 точек её опять начнёт ужимать.
+import { climateChart } from '../data/country-climate-chart.js';
+
+interface Props { slug: string }
+const { slug } = Astro.props;
+const data = climateChart(slug);
+
+const MONTH3 = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+
+function geo(C: any, d: any) {
+  const xOf = (i: number) => C.x0 + (i * (C.x1 - C.x0)) / 11;
+  const yOf = (v: number) => C.yBot - ((v - C.tMin) / (C.tMax - C.tMin)) * (C.yBot - C.yTop);
+  const lines = d.cities.map((c: any) => ({
+    ...c,
+    pts: c.tMax.map((v: number, i: number) => ({ i, x: xOf(i), v, y: yOf(v) })),
+  }));
+  const poly = (c: any) => c.pts.map((p: any) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const two = lines.length > 1;
+  const gapArea = two ? poly(lines[0]) + ' ' + lines[1].pts.slice().reverse().map((p: any) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ') : '';
+  const gap = two
+    ? lines[0].pts
+        .map((p: any, i: number) => ({ i, x: p.x, ya: p.y, yb: lines[1].pts[i].y, d: Math.round(p.v - lines[1].pts[i].v) }))
+        .reduce((a: any, b: any) => (Math.abs(b.d) > Math.abs(a.d) ? b : a))
+    : null;
+  const rc = d.cities[d.rainOf ?? 0];
+  const rainMax = Math.max(...rc.rainDays);
+  const rain = rc.rainDays.map((days: number, i: number) => {
+    const h = (days / rainMax) * (C.rainBase - C.rainTop);
+    return { i, x: xOf(i), days, h, y: C.rainBase - h };
+  });
+  const iMax = (arr: number[]) => arr.indexOf(Math.max(...arr));
+  const iMin = (arr: number[]) => arr.indexOf(Math.min(...arr));
+  lines.forEach((c: any, ci: number) => {
+    const i = ci === 0 ? iMax(c.tMax) : iMin(c.tMax);
+    c.label = { x: xOf(i), y: ci === 0 ? c.pts[i].y - 16 : c.pts[i].y + 26 };
+  });
+  return {
+    C, xOf, yOf, lines, poly, gapArea, gap, rain, rc,
+    rainPeak: rain.reduce((a: any, b: any) => (b.days > a.days ? b : a)),
+    bandX1: xOf(d.band.from), bandX2: xOf(d.band.to),
+  };
+}
+
+const WIDE = data && geo({ w: 1180, h: 340, x0: 68, x1: 1150, tMin: 22, tMax: 42, yTop: 34, yBot: 186,
+  monthY: 212, rainTop: 250, rainBase: 322, grid: [25, 30, 35, 40] }, data);
+const MID = data && geo({ w: 760, h: 356, x0: 62, x1: 730, tMin: 22, tMax: 42, yTop: 36, yBot: 196,
+  monthY: 224, rainTop: 264, rainBase: 338, grid: [25, 30, 35, 40] }, data);
+const NARROW = data && geo({ w: 396, h: 452, x0: 58, x1: 380, tMin: 22, tMax: 42, yTop: 40, yBot: 246,
+  monthY: 278, rainTop: 328, rainBase: 424, grid: [25, 30, 35, 40] }, data);
+
+const alt = data
+  ? `Две панели с общей осью месяцев: сверху дневная температура (${data.cities.map((c: any) => c.name).join(' и ')}), ` +
+    (WIDE.gap ? `наибольшая разница в ${MONTH3[WIDE.gap.i].toLowerCase()} — ${Math.abs(WIDE.gap.d)} °C; ` : '') +
+    `снизу число дней с осадками в городе ${data.cities[data.rainOf ?? 0].name}, пик — ${WIDE.rainPeak.days}.`
+  : '';
+---
+
+{data && (
+  <figure class="ycc">
+    <p class="ycc-title">{data.title}</p>
+    <p class="ycc-sub">{data.subtitle}</p>
+
+    {[{ g: WIDE, cls: 'ycc-wide', hide: false }, { g: MID, cls: 'ycc-mid', hide: true }, { g: NARROW, cls: 'ycc-narrow', hide: true }].map(({ g, cls, hide }) => (
+      <svg class={cls} viewBox={`0 0 ${g.C.w} ${g.C.h}`} role={hide ? undefined : 'img'}
+        aria-hidden={hide ? 'true' : undefined} aria-label={hide ? undefined : alt}>
+        <rect x={g.bandX1} y={g.C.yTop - 12} width={g.bandX2 - g.bandX1} height={g.C.rainBase - g.C.yTop + 12} class="ycc-band" />
+        <text x={(g.bandX1 + g.bandX2) / 2} y={g.C.yTop - 18} class="ycc-bandtx">{data.band.label}</text>
+
+        {g.C.grid.map((v: number) => (
+          <g>
+            <line x1={g.C.x0} y1={g.yOf(v)} x2={g.C.x1} y2={g.yOf(v)} class="ycc-grid" />
+            <text x={g.C.x0 - 14} y={g.yOf(v) + 4} class="ycc-axis">{v}</text>
+          </g>
+        ))}
+
+        {g.gapArea && <polygon points={g.gapArea} class="ycc-gap" />}
+        {g.gapArea && g.lines[0].pts.map((p: any, i: number) => (
+          <line x1={p.x} y1={p.y} x2={p.x} y2={g.lines[1].pts[i].y} class="ycc-link" />
+        ))}
+
+        {g.lines.map((c: any, ci: number) => (<polyline points={g.poly(c)} class={`ycc-line ${ci ? 'ycc-l2' : 'ycc-l1'}`} />))}
+        {g.lines.map((c: any, ci: number) => c.pts.map((p: any) => (
+          <circle cx={p.x} cy={p.y} r="5" class={ci ? 'ycc-dot2' : 'ycc-dot1'} />
+        )))}
+
+        {g.gap && (
+          <g class="ycc-callout">
+            <line x1={g.gap.x + 16} y1={g.gap.ya} x2={g.gap.x + 16} y2={g.gap.yb} />
+            <line x1={g.gap.x + 11} y1={g.gap.ya} x2={g.gap.x + 21} y2={g.gap.ya} />
+            <line x1={g.gap.x + 11} y1={g.gap.yb} x2={g.gap.x + 21} y2={g.gap.yb} />
+            <text x={g.gap.x + 26} y={(g.gap.ya + g.gap.yb) / 2 + 5}>{Math.abs(g.gap.d)} °C разницы</text>
+          </g>
+        )}
+
+        {g.lines.map((c: any, ci: number) => (
+          <text x={c.label.x} y={c.label.y} class="ycc-name">
+            {c.name}{c.role ? `, ${c.role}` : ''}
+          </text>
+        ))}
+
+        {MONTH3.map((m, i) => (<text x={g.xOf(i)} y={g.C.monthY} class="ycc-month">{m}</text>))}
+
+        <line x1={g.C.x0} y1={g.C.rainBase} x2={g.C.x1} y2={g.C.rainBase} class="ycc-grid" />
+        {g.rain.map((r: any) => (
+          <rect x={r.x - (g.C.w > 600 ? 16 : 11)} y={r.y} width={g.C.w > 600 ? 32 : 22} height={r.h} class="ycc-rain" />
+        ))}
+        <text x={g.rainPeak.x} y={g.rainPeak.y - 8} class="ycc-rainval">{g.rainPeak.days}</text>
+        <text x={g.C.x0 - 14} y={g.C.rainBase + 4} class="ycc-axis">0</text>
+        <text x={g.C.x0 - (g.C.w > 600 ? 56 : 60)} y={g.C.rainTop - 10} class="ycc-name ycc-start">дней с осадками, {g.rc.name}</text>
+      </svg>
+    ))}
+
+    <figcaption>
+      {data.caption}
+      <span class="ycc-src">Средние многолетние по месяцам, <a href={data.source.url} rel="nofollow noopener" target="_blank">{data.source.name}</a>, сверено {data.source.checked.split('-').reverse().join('.')}.</span>
+    </figcaption>
+  </figure>
+)}
+
+<style>
+  .ycc { margin: 0 0 1.5rem; }
+  .ycc svg { width: 100%; height: auto; display: block; }
+  .ycc .ycc-mid, .ycc .ycc-narrow { display: none; }
+  .ycc-title { font-family: var(--ff-display); font-weight: 400; font-size: 1.375rem; line-height: 1.2; margin: 0 0 2px; }
+  .ycc-sub { font-size: 0.875rem; color: var(--text-faint); margin: 0 0 16px; }
+  .ycc figcaption { font-size: 0.875rem; line-height: 1.55; color: var(--text-faint); margin-top: 12px; max-width: 68ch; }
+  .ycc-src { display: block; margin-top: 8px; }
+  .ycc-src a { color: var(--gold); }
+
+  .ycc-band { fill: rgba(21, 23, 26, 0.05); }
+  .ycc-bandtx { font-family: var(--ff-mono); font-size: 12px; fill: var(--text-faint); text-anchor: middle; letter-spacing: 0.08em; }
+  .ycc-grid { stroke: var(--line); stroke-width: 1; }
+  .ycc-axis { font-family: var(--ff-mono); font-size: 12px; fill: var(--text-faint); text-anchor: end; }
+  .ycc-month { font-family: var(--ff-mono); font-size: 13px; fill: var(--text-faint); text-anchor: middle; }
+  .ycc-name { font-family: var(--ff-body); font-size: 13px; fill: var(--text-faint); text-anchor: middle; }
+  .ycc-start { text-anchor: start; }
+  .ycc-gap { fill: rgba(21, 23, 26, 0.07); }
+  .ycc-link { stroke: var(--line); stroke-width: 1; }
+  .ycc-line { fill: none; stroke-width: 1.5; stroke: var(--text); }
+  .ycc-l2 { stroke-dasharray: 5 4; }
+  .ycc-dot1 { fill: var(--text); }
+  .ycc-dot2 { fill: var(--bg); stroke: var(--text); stroke-width: 1.5; }
+  .ycc-callout line { stroke: var(--text); stroke-width: 1; }
+  .ycc-callout text { font-family: var(--ff-body); font-size: 13px; fill: var(--text); }
+  .ycc-rain { fill: rgba(21, 23, 26, 0.28); }
+  .ycc-rainval { font-family: var(--ff-mono); font-size: 12px; fill: var(--text); text-anchor: middle; }
+
+  /* Полоса планшета: широкая геометрия здесь ужимается до восьми точек в подписи,
+     узкая наоборот раздувается. Средняя ограничена 760 px, чтобы масштаб был около единицы. */
+  @media (max-width: 1030px) {
+    .ycc .ycc-wide { display: none; }
+    .ycc .ycc-mid { display: block; max-width: 760px; }
+  }
+  @media (max-width: 660px) {
+    .ycc .ycc-mid { display: none; }
+    .ycc .ycc-narrow { display: block; max-width: 396px; }
+  }
+</style>
