@@ -1,63 +1,37 @@
-// Техническая правка не поднимает статью в ленте.
+// Запись журнала проверок не двигает дату свежести — никакая.
 //
-// 07.09.2026 Никита открыл сайт и увидел первым материалом сезонную статью
-// «3 сентября: куда поехать» — четырьмя днями позже даты, ради которой она
-// написана. Причина не в сортировке: заход снял из статей партнёрские программы
-// без броней, гейт потребовал запись в журнале сверок, а дата свежести считается
-// из последней такой записи. Запись честно говорила «текст и цены не менялись»,
-// но лента этого не знала и подняла протухшую статью на витрину.
-//
-// Отсюда признак `minor: true` у записи журнала: правка была, она записана и
-// видна читателю, но материал от неё не стал свежее. Дату обновления страницы и
-// порядок в ленте двигают только содержательные записи.
+// 07.09.2026 техническая запись о снятых партнёрских ссылках подняла 64 статьи
+// одной датой; заплаткой стал признак minor: true у записи. Он требовал помнить о
+// нём руками, и 08.09 следующие заходы снова подняли даты. 09.09.2026 решение
+// Никиты: даты старых статей не двигаются от правок вообще — дату свежести даёт
+// только updatedDate, которую ставит переработка (scripts/edit-kind.mjs), а гейт
+// в tests/content-invariants.spec.ts следит, чтобы её не подкручивали иначе.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { freshDate, byFreshness } from '../src/data/freshness.js';
 
 const d = (s) => new Date(s);
+const entry = (date, extra = {}) => ({ date: d(date), what: 'сверка фактов', changed: 'что-то уточнено', ...extra });
 
-test('техническая запись не поднимает дату свежести', () => {
-  const post = {
-    pubDate: d('2026-09-03'),
-    checks: [
-      { date: d('2026-09-03'), what: 'первая сверка', changed: 'статья создана' },
-      { date: d('2026-09-07'), what: 'партнёрские ссылки', changed: 'текст и цены не менялись', minor: true },
-    ],
-  };
-  assert.equal(freshDate(post).toISOString().slice(0, 10), '2026-09-03');
+test('запись журнала без признака minor дату не двигает', () => {
+  const post = { pubDate: d('2026-06-06'), checks: [entry('2026-09-08')] };
+  assert.equal(freshDate(post).toISOString().slice(0, 10), '2026-06-06');
 });
 
-test('содержательная запись дату поднимает', () => {
-  const post = {
-    pubDate: d('2026-09-03'),
-    checks: [
-      { date: d('2026-09-03'), what: 'первая сверка', changed: 'статья создана' },
-      { date: d('2026-09-07'), what: 'цены', changed: 'пересняты цены на перелёт' },
-    ],
-  };
-  assert.equal(freshDate(post).toISOString().slice(0, 10), '2026-09-07');
+test('запись журнала с признаком minor дату не двигает', () => {
+  const post = { pubDate: d('2026-06-06'), checks: [entry('2026-09-07', { minor: true })] };
+  assert.equal(freshDate(post).toISOString().slice(0, 10), '2026-06-06');
 });
 
-test('сезонная статья не обгоняет свежую из-за технической правки', () => {
-  const seasonal = {
-    data: {
-      pubDate: d('2026-09-03'),
-      checks: [{ date: d('2026-09-07'), what: 'партнёрские ссылки', changed: 'ссылка снята', minor: true }],
-    },
-  };
-  const fresh = {
-    data: {
-      pubDate: d('2026-09-06'),
-      checks: [{ date: d('2026-09-06'), what: 'сверка', changed: 'статья создана' }],
-    },
-  };
-  assert.ok(byFreshness(seasonal, fresh) > 0, 'свежая статья обязана стоять выше сезонной');
+test('дату двигает только updatedDate', () => {
+  const post = { pubDate: d('2026-06-06'), updatedDate: d('2026-08-04'), checks: [entry('2026-09-08')] };
+  assert.equal(freshDate(post).toISOString().slice(0, 10), '2026-08-04');
 });
 
-test('статья только с техническими записями не теряет дату публикации', () => {
-  const post = {
-    pubDate: d('2026-08-01'),
-    checks: [{ date: d('2026-09-07'), what: 'ссылки', changed: 'снята программа', minor: true }],
-  };
-  assert.equal(freshDate(post).toISOString().slice(0, 10), '2026-08-01');
+test('лента сортирует по updatedDate, а не по журналу', () => {
+  const reworked = { data: { pubDate: d('2026-05-01'), updatedDate: d('2026-09-02') } };
+  const touched = { data: { pubDate: d('2026-08-14'), checks: [entry('2026-09-08')] } };
+  const fresh = { data: { pubDate: d('2026-09-03') } };
+  const order = [touched, reworked, fresh].sort(byFreshness).map((p) => p.data.pubDate.toISOString().slice(0, 10));
+  assert.deepEqual(order, ['2026-09-03', '2026-05-01', '2026-08-14']);
 });

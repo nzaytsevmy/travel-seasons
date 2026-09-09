@@ -30,14 +30,14 @@ for (let i = 0; i < MONTHS.length; i++) {
   }
 }
 
-// Реальный lastmod вместо даты сборки: посты — по самой поздней из своих дат
-// (публикация, updatedDate, последняя запись журнала сверок), программные
-// страницы (visa/hub/seasons/trips/countries) — по DATA_UPDATED. Иначе sitemap
-// инфлирует свежесть всех URL.
+// Реальный lastmod вместо даты сборки: посты — по поздней из двух своих дат
+// (публикация, updatedDate), программные страницы (visa/hub/seasons/trips/
+// countries) — по DATA_UPDATED. Иначе sitemap инфлирует свежесть всех URL.
 //
-// ⛔ Журнал сверок обязателен к учёту: без него карта отдавала дату первой
-// публикации у 62 статей из 82, и переработанная страница выглядела для поиска
-// месячной давности (26.08.2026, виза в Черногорию). Правило то же, что в
+// ⛔ Журнал сверок (checks) сюда НЕ входит. До 09.09.2026 входил — и карта
+// объявляла поиску «обновлено» при каждой технической записи: 07.09 у 64 статей
+// разом, при этом заплатка minor: true в ленте карту не касалась, а гейт карты
+// ловил только занижение даты и завышения не видел. Правило то же, что в
 // src/data/freshness.js, — но здесь фронтматтер ещё не разобран коллекцией,
 // поэтому читаем текстом.
 const BLOG_DIR = new URL('./src/content/blog/', import.meta.url);
@@ -49,9 +49,6 @@ for (const f of readdirSync(BLOG_DIR)) {
   const dates = [
     clean(fm.match(/^pubDate:\s*(.+)$/m)?.[1]),
     clean(fm.match(/^updatedDate:\s*(.+)$/m)?.[1]),
-    // записи журнала идут с отступом внутри checks: — поля верхнего уровня
-    // (pubDate/updatedDate/tripDate) под этот вид не подходят
-    ...[...fm.matchAll(/^\s+-?\s*date:\s*(.+)$/gm)].map((m) => clean(m[1])),
   ].filter(Boolean).map((d) => new Date(d)).filter((d) => !isNaN(d));
   if (dates.length) {
     blogLastmod[`https://traveltribe.ru/blog/${f.replace(/\.mdx?$/, '')}/`] =

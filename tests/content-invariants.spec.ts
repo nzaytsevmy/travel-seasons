@@ -1337,6 +1337,24 @@ test('Журнал проверок: записи заполнены и дата
         bad.push(`${rel}: проза изменилась (${edit.wordsChanged} слов), а новой записи в журнале проверок нет — что сверяли и по какому источнику`);
       }
     }
+    // Дата обновления (updatedDate) двигается только переработкой — решение Никиты
+    // 09.09.2026 («даты старых статей обновляются постоянно — этого делать нельзя»).
+    // Журнал её не двигает (src/data/freshness.js), поэтому сторожим само поле с двух
+    // сторон: переработка обязана поставить его датой своей записи, всё остальное —
+    // не трогать. Иначе дата снова станет полем, которое подкручивают без правок.
+    if (was !== null && edit.kind !== 'new') {
+      const updOf = (text: string) => text.match(/^updatedDate:\s*(\d{4}-\d{2}-\d{2})/m)?.[1] ?? '';
+      const updNow = updOf(fm);
+      const updWas = updOf(was.split('---')[1] ?? '');
+      const newest = [...fm.matchAll(/^\s+- date:\s*(\d{4}-\d{2}-\d{2})/gm)].map((m) => m[1]).sort().at(-1) ?? '';
+      if (edit.kind === 'rework' && updNow !== newest) {
+        bad.push(`${rel}: переработка (${edit.wordsChanged} слов), а updatedDate ${updNow || 'нет'} не равна дате новой записи журнала ${newest || 'нет'} — переработка обязана поднять дату обновления`);
+      }
+      if (edit.kind !== 'rework' && updNow !== updWas) {
+        const что = edit.kind === 'meta' ? 'правка без изменения прозы' : `мелкая правка (${edit.wordsChanged} слов)`;
+        bad.push(`${rel}: ${что} сдвинула updatedDate ${updWas || 'нет'} → ${updNow || 'нет'} — дату обновления двигает только переработка`);
+      }
+    }
     if (!/^checks:/m.test(fm)) continue;
 
     const dates = [...fm.matchAll(/^\s+- date:\s*(\d{4}-\d{2}-\d{2})/gm)].map((m) => m[1]);
@@ -1416,31 +1434,22 @@ test('Иллюстрации: тронутая статья с 8+ раздела
  * журналу сверок, а карта сайта и ленты знали только pubDate/updatedDate.
  * Проверяем сплошь и по СБОРКЕ: это инвариант генерации, а не правило о прозе,
  * красить легаси тут нечем.
+ *
+ * ⛔ 09.09.2026: журнал сверок из даты свежести исключён совсем — свежесть это
+ *    публикация или updatedDate, которую ставит только переработка
+ *    (src/data/freshness.js). До этого запись журнала при любой правке прозы
+ *    поднимала дату, а гейт ниже ловил только ЗАНИЖЕНИЕ даты в карте и не видел,
+ *    как карта объявляет поиску «обновлено» у 64 статей без изменённого слова.
+ *    Теперь сверка двусторонняя: карта равна свежести, ни старее, ни новее.
  */
 const freshFromFrontmatter = (fm: string): string => {
-  const one = (re: RegExp) => fm.match(re)?.[1]?.replace(/['"]/g, '').trim() ?? '';
+  const one = (re: RegExp) => fm.match(re)?.[1]?.replace(/['"]/g, '').trim().slice(0, 10) ?? '';
   const pub = one(/^pubDate:\s*(.+)$/m);
   const upd = one(/^updatedDate:\s*(.+)$/m);
-  // Записи журнала сверок идут с отступом внутри checks: — поле верхнего уровня
-  // (pubDate/updatedDate/tripDate) под этот вид не подходит.
-  //
-  // ⛔ Запись с признаком minor пропускается — так же, как её пропускает сам
-  //    сайт (src/data/freshness.js). 07.09.2026 этот гейт был зелёным ровно
-  //    тогда, когда лента показывала беду: техническая правка ссылок подняла
-  //    64 статьи одной датой, и сезонная «3 сентября» встала первой. Гейт
-  //    считал ту же неверную дату, что и лента, и потому подтверждал порядок.
-  const marks = [...fm.matchAll(/^\s+-\s*date:\s*(.+)$/gm)];
-  const checks: string[] = [];
-  for (let i = 0; i < marks.length; i++) {
-    const from = marks[i].index! + marks[i][0].length;
-    const to = i + 1 < marks.length ? marks[i + 1].index! : fm.length;
-    if (/^\s+minor:\s*true\s*$/m.test(fm.slice(from, to))) continue;
-    checks.push(marks[i][1].replace(/['"]/g, '').trim());
-  }
-  return [pub, upd, ...checks].filter(Boolean).sort().at(-1)!;
+  return [pub, upd].filter(Boolean).sort().at(-1)!;
 };
 
-test('Карта сайта: у статьи стоит дата последней сверки, а не первой публикации', () => {
+test('Карта сайта: у статьи стоит дата обновления — ни старее, ни новее свежести', () => {
   const xml = readFileSync(join(DIST, 'sitemap-0.xml'), 'utf8');
   const lastmod: Record<string, string> = {};
   for (const m of xml.matchAll(/<loc>https:\/\/traveltribe\.ru\/blog\/([a-z0-9-]+)\/<\/loc><lastmod>([^<]+)<\/lastmod>/g)) {
@@ -1453,11 +1462,11 @@ test('Карта сайта: у статьи стоит дата последн�
     const fm = readFileSync(abs, 'utf8').split(/^---\s*$/m)[1] ?? '';
     const fresh = freshFromFrontmatter(fm);
     if (!fresh || !lastmod[slug]) continue;
-    if (lastmod[slug] < fresh) {
-      stale.push(`${slug}: в карте ${lastmod[slug]}, а сверяли ${fresh}`);
+    if (lastmod[slug] !== fresh) {
+      stale.push(`${slug}: в карте ${lastmod[slug]}, а свежесть ${fresh} — карта ${lastmod[slug] < fresh ? 'занижает' : 'завышает'} дату`);
     }
   }
-  expect(stale, `карта сайта занижает свежесть:\n${stale.join('\n')}`).toEqual([]);
+  expect(stale, `карта сайта расходится со свежестью статей:\n${stale.join('\n')}`).toEqual([]);
 });
 
 test('Лента блога: статьи идут по последней сверке, свежая переработка не тонет', () => {

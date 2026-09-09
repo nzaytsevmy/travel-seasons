@@ -1,5 +1,6 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
+import { freshDate } from '../../data/freshness.js';
 import { Image, Picture, getImage } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
@@ -37,13 +38,13 @@ const heroPreload = typeof post.data.coverImage === 'string' ? null : await getI
 const ogImageUrl = `https://traveltribe.ru/og/${post.slug}.png`;
 const wordCount = post.body.trim().split(/\s+/).length;
 
-// Журнал проверок. Дата обновления считается ИЗ НЕГО, а не хранится отдельно:
-// поле, которое нечем сверить, соблазняет подкрутить дату без правок, а это
-// прямо запрещено и нам, и поиском. Есть журнал — дата равна последней сверке;
-// нет журнала — прежнее поведение, чтобы 67 старых статей не поехали.
+// Журнал проверок — история сверок, читателю показана ниже как «проверено».
+// Дату обновления он НЕ задаёт: её даёт freshDate (публикация или updatedDate,
+// которую ставит только переработка — см. src/data/freshness.js). Подкрутить
+// updatedDate без правок не даст гейт: мелкая правка со сдвинутой датой красная.
 const checks = [...(post.data.checks ?? [])].sort((a, b) => a.date.valueOf() - b.date.valueOf());
 const lastCheck = checks.at(-1) ?? null;
-const shownUpdated = lastCheck?.date ?? post.data.updatedDate ?? null;
+const shownUpdated = freshDate(post.data);
 const dateRu = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).replace(' г.', '');
 // Наверх идёт только суть — первое предложение записи. Полный текст остаётся в
 // журнале: строка над заголовком раздела не должна отодвигать ответ, ради
