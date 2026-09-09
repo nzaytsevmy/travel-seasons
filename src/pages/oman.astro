@@ -22,7 +22,7 @@ import { PRICES } from '../data/prices.js';
 import { getVisaDetails } from '../data/visa-details.js';
 import { climateChart } from '../data/country-climate-chart.js';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
-import { TP_LINKS, aviasalesRoute, cherehapaCountry, ostrovokCity } from '../data/affiliate.js';
+import { aviasalesRoute, cherehapaCountry, ostrovokCity } from '../data/affiliate.js';
 import livePrices from '../data/prices-cache.json';
 
 import hero from '../content/blog/_images/oman-v2/hero.jpg';
@@ -69,8 +69,10 @@ const разрыв = cc
 const МЕС_П = ['январе', 'феврале', 'марте', 'апреле', 'мае', 'июне', 'июле', 'августе', 'сентябре', 'октябре', 'ноябре', 'декабре'];
 
 const билеты = aviasalesRoute('MOW', d.price?.iata, `${subId}_flight`);
-const жильё = ostrovokCity('oman', `${subId}_stay`) || TP_LINKS.ostrovok;
-const полис = cherehapaCountry('oman', `${subId}_ins`) || TP_LINKS.cherehapa;
+// Маскат у Островка проверен живьём 09.09.2026: 200, «Отели в Маскате», 408 вариантов.
+// ⛔ Три аргумента: страна, город, метка. Промах слотом даёт партнёру 404.
+const жильё = ostrovokCity('oman', 'muscat', `${subId}_stay`);
+const полис = cherehapaCountry('oman', `${subId}_ins`);
 
 const faqs = [
   {
@@ -151,7 +153,7 @@ const ldJson = {
       <div class="om-answer">
         <p><b>{vd.summary}</b></p>
         <p>Лучшие месяцы на севере — {bestMonths.map((m) => m.nom).join(', ')}. Перелёт из Москвы от ${flightFrom}, неделя на одного от ${weekTotal}.</p>
-        <a class="om-btn" href={билеты.href} rel="sponsored nofollow noopener" target="_blank">Билеты Москва — Маскат от ${flightFrom}</a>
+        <a class="om-btn" href={билеты} rel="sponsored nofollow noopener" target="_blank">Билеты Москва — Маскат от ${flightFrom}</a>
         <p class="om-btn-note">Ведёт на Aviasales, поиск на ваши даты. Цена — минимум живой выдачи по месяцам, пересчитывается сама. Ссылка партнёрская, цена для вас та же.</p>
       </div>
     </header>
@@ -209,7 +211,7 @@ const ldJson = {
           <p class="om-big">от ${flightFrom} <span class="om-small om-dim">перелёт из Москвы, туда-обратно</span></p>
           <p class="om-body">Прямых рейсов из Москвы нет — варианты со стыковкой. Цена берётся из живой выдачи по месяцам, а не из прикидки: сверка {DATA_UPDATED_RU}.</p>
           <div class="om-cta-row">
-            <a class="om-btn" href={билеты.href} rel="sponsored nofollow noopener" target="_blank">Найти билеты</a>
+            <a class="om-btn" href={билеты} rel="sponsored nofollow noopener" target="_blank">Найти билеты</a>
             <p class="om-btn-note">Aviasales: календарь цен по месяцам, поиск на ваши даты.</p>
           </div>
         </div>
