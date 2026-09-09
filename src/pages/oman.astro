@@ -21,6 +21,7 @@ import { DIRECTIONS, MONTHS, VISITED } from '../data/directions.js';
 import { PRICES } from '../data/prices.js';
 import { getVisaDetails } from '../data/visa-details.js';
 import { climateChart } from '../data/country-climate-chart.js';
+import { PLUG_TYPES } from '../data/country-plug-types.js';
 import { DATA_UPDATED } from '../data/meta.js';
 import { aviasalesRoute, cherehapaCountry, ostrovokCity, youtravelCountry } from '../data/affiliate.js';
 import livePrices from '../data/prices-cache.json';
@@ -43,6 +44,7 @@ const yr = new Date(DATA_UPDATED).getUTCFullYear();
 const d = DIRECTIONS.find((x) => x.slug === 'oman');
 const vd = getVisaDetails('oman', d.visa);
 const cc = climateChart('oman');
+const plug = PLUG_TYPES.oman;
 const visited = VISITED.has('oman');
 const subId = 'hub_oman';
 
@@ -98,6 +100,12 @@ const faqs = [
        `Неделя на одного выходит от $${weekTotal}.`,
   },
   {
+    q: 'Когда в Омане сезон для купания?',
+    a: `Круглый год у Маската: с ноября по апрель вода ${Math.round(Math.min(...cc.cities[0].sea.slice(10).concat(cc.cities[0].sea.slice(0, 4))))}–${Math.round(Math.max(...cc.cities[0].sea.slice(10).concat(cc.cities[0].sea.slice(0, 4))))} °C при +25…+34 °C днём, ` +
+       `с мая по октябрь ${Math.round(Math.min(...cc.cities[0].sea.slice(4, 10)))}–${Math.round(Math.max(...cc.cities[0].sea.slice(4, 10)))} °C, но на берегу за +35 °C. ` +
+       `В Салале в июле–августе вода ${Math.round(Math.min(...cc.cities[1].sea.slice(6, 8)))} °C и море неспокойное — туда летом едут не купаться, а за прохладой.`,
+  },
+  {
     q: 'Что такое хариф в Салале?',
     a: `Юго-западный муссон с моря. С середины июня до середины сентября юг Омана накрывают облака, туман и морось: ` +
        `в Салале ${cc.cities[1].rainDays[7]} дождливых дней в августе и днём ${Math.round(cc.cities[1].tMax[7])} °C, ` +
@@ -112,11 +120,13 @@ const ldJson = {
       '@type': 'CollectionPage',
       '@id': `${url}#collection`,
       url,
-      name: `Оман ${yr}: когда ехать, виза, бюджет для россиян`,
+      name: `Оман ${yr}: погода по месяцам, когда ехать, виза, цены`,
       description: `Оман для россиян в ${yr}: ${vd.duration} без визы, перелёт от $${flightFrom}, лучшие месяцы — ${bestMonths.map((m) => m.nom).join(', ')}. Север и юг живут по разным календарям.`,
       inLanguage: 'ru-RU',
       isPartOf: { '@id': 'https://traveltribe.ru/#website' },
       primaryImageOfPage: { '@id': `${url}#hero` },
+      speakable: { '@type': 'SpeakableSpecification', cssSelector: ['h1', '.om-lead', '.om-facts'] },
+      mainEntity: { '@id': `${url}#faq` },
       dateModified: DATA_UPDATED,
     },
     // Вопросы-ответы и главный кадр отдаёт и общий шаблон стран — своя страница
@@ -141,13 +151,12 @@ const ldJson = {
 ---
 
 <Layout
-  title={`Оман ${yr}: когда ехать, виза, бюджет для россиян`}
+  title={`Оман ${yr}: погода по месяцам, когда ехать, виза, цены`}
   description={`Оман для россиян в ${yr}: ${vd.duration} без визы, перелёт от $${flightFrom}, лучшие месяцы — ${bestMonths.map((m) => m.nom).join(', ')}. Север и юг живут по разным календарям.`}
   canonical={url}
   ogType="article"
   ogImage={`https://traveltribe.ru${hero.src}`}
   ogImageAlt="Фьорды Мусандама у Хасаба, Оман"
-  preloadImage={heroPreload.src}
   preloadImageSrcset={heroPreload.srcSet?.attribute}
   preloadImageSizes="100vw"
   ldJson={ldJson}
@@ -168,7 +177,7 @@ const ldJson = {
       </div>
       <div class="om-answer">
         <dl class="om-facts">
-          <div><dt>Виза</dt><dd>{vd.cost}, {vd.duration}</dd></div>
+          <div><dt>Виза россиянам</dt><dd>не нужна, {vd.duration}</dd></div>
           <div><dt>Лучшие месяцы</dt><dd>{bestMonths.map((m) => m.nom).join(', ')}</dd></div>
           <div><dt>Летом</dt><dd>только Салала: {Math.round(cc.cities[1].tMax[7])} °C под муссоном</dd></div>
           <div><dt>Перелёт из Москвы</dt><dd>от ${flightFrom}</dd></div>
@@ -204,19 +213,21 @@ const ldJson = {
     </section>
 
     <section class="om-sec">
-      <h2>Когда ехать в Оман — по месяцам</h2>
+      <h2>Погода в Омане по месяцам: когда ехать и когда купаться</h2>
       <YearClimateChart slug="oman" />
 
       <div class="om-heat">
-        {monthsRanked.map((m) => {
+        {monthsRanked.map((m, i) => {
           const cls = m.status === 'P' ? 'peak' : m.status === 'G' ? 'good' : m.status === 'O' ? 'off' : m.status === 'B' ? 'bad' : 'closed';
           return (
-            <a href={`/trips/${m.slug}/oman/`} class={`om-mh om-mh--${cls}`} title={m.text || m.nom}>
+            <a href={`/trips/${m.slug}/oman/`} class={`om-mh om-mh--${cls}`} title={`${m.text || m.nom}. Вода у Маската ${Math.round(cc.cities[0].sea[i])} °C`}>
               <span>{m.nom.charAt(0).toUpperCase() + m.nom.slice(1, 3)}</span>
+              <small>{Math.round(cc.cities[0].sea[i])}°</small>
             </a>
           );
         })}
       </div>
+      <p class="om-body om-sea">Вторая строка в клетках — вода у Маската. Купаться можно круглый год: с ноября по апрель вода {Math.round(Math.min(...cc.cities[0].sea.slice(10).concat(cc.cities[0].sea.slice(0, 4))))}–{Math.round(Math.max(...cc.cities[0].sea.slice(10).concat(cc.cities[0].sea.slice(0, 4))))} °C, с мая по октябрь {Math.round(Math.min(...cc.cities[0].sea.slice(4, 10)))}–{Math.round(Math.max(...cc.cities[0].sea.slice(4, 10)))} °C. В Салале в хариф вода остывает до {Math.round(Math.min(...cc.cities[1].sea.slice(6, 8)))} °C, и море неспокойное.</p>
       <ul class="om-months">
         {monthsRanked.map((m) => (<li><b>{m.nom.charAt(0).toUpperCase() + m.nom.slice(1)}</b> — {m.text || '—'}</li>))}
       </ul>
@@ -230,7 +241,7 @@ const ldJson = {
     </figure>
 
     <section class="om-sec">
-      <h2>Сколько стоит поездка</h2>
+      <h2>Сколько стоит поездка в Оман</h2>
       <div class="om-money">
         <div>
           <p class="om-big">от ${flightFrom} <span class="om-small om-dim">перелёт из Москвы, туда-обратно</span></p>
@@ -264,13 +275,22 @@ const ldJson = {
     </section>
 
     <section class="om-sec">
-      <h2>Виза и въезд</h2>
+      <h2>Нужна ли виза в Оман россиянам</h2>
       <div class="om-visa">
         <div class="om-prow"><span>Виза</span><span>{vd.cost}, {vd.duration}</span></div>
         <div class="om-prow"><span>Как оформляется</span><span>{vd.timing}</span></div>
       </div>
       <p class="om-body">{vd.summary}</p>
       <p class="om-body om-linkline"><a href="/visa/oman/">Документы, сроки и что проверить перед вылетом</a></p>
+
+      <h3>Правила и деньги</h3>
+      <div class="om-visa om-rules">
+        <div class="om-prow"><span>Карты</span><span>российские не работают; UnionPay РСХБ и АТБ — только в терминалах банка NBO. Наличные доллары меняют везде</span></div>
+        <div class="om-prow"><span>Одежда</span><span>плечи и колени закрыты в городе и торговых центрах; в мечеть — длинное, женщинам платок</span></div>
+        <div class="om-prow"><span>Алкоголь</span><span>только в отелях, ресторанах и клубах с лицензией; на улице пить и быть пьяным нельзя</span></div>
+        <div class="om-prow"><span>Рамадан 2027</span><span>8 февраля — 8 марта 2027: днём не есть, не пить и не курить на людях, в машине тоже</span></div>
+        <div class="om-prow"><span>Розетка</span><span>тип {plug.types}, {plug.voltage}</span></div>
+      </div>
 
       <div class="om-practice">
         <figure class="om-tall">
@@ -291,7 +311,7 @@ const ldJson = {
     </section>
 
     <section class="om-sec">
-      <h2>Частые вопросы</h2>
+      <h2>FAQ: что чаще спрашивают про Оман</h2>
       <dl class="om-faq">
         {faqs.map((f) => (<><dt>{f.q}</dt><dd>{f.a}</dd></>))}
       </dl>
@@ -359,7 +379,9 @@ const ldJson = {
   .om-cta-row .om-btn { width: auto; }
 
   .om-heat { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; margin: 8px 0 20px; }
-  .om-mh { display: flex; align-items: center; justify-content: center; min-height: 44px; font-family: var(--ff-mono); font-size: 0.8125rem; text-decoration: none; color: var(--text); background: var(--bg2); box-shadow: inset 0 0 0 1px var(--line); }
+  .om-mh { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 52px; font-family: var(--ff-mono); font-size: 0.8125rem; line-height: 1.2; text-decoration: none; color: var(--text); background: var(--bg2); box-shadow: inset 0 0 0 1px var(--line); }
+  .om-mh small { font-size: 0.6875rem; opacity: 0.8; }
+  .om-sea { margin: 0 0 20px; }
   .om-mh--peak, .om-mh--good { background: var(--text); color: var(--bg); box-shadow: none; }
   .om-mh--off { background: rgba(21, 23, 26, 0.34); color: var(--text); box-shadow: none; }
   .om-months { margin: 0; padding-left: 1.1em; max-width: 68ch; }
@@ -375,6 +397,11 @@ const ldJson = {
   .om-money + .om-money { margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--line); }
   .om-prow span:first-child { color: var(--text-faint); }
   .om-prow span:last-child { font-family: var(--ff-mono); text-align: right; display: flex; justify-content: flex-end; align-items: center; }
+  /* Правила и деньги: значения длинные — обычным шрифтом, слева, с переносом. */
+  .om-rules { margin-top: 32px; }
+  .om-rules .om-prow { align-items: flex-start; }
+  .om-rules .om-prow span:last-child { flex: 1 1 auto; font-family: var(--ff-body); text-align: left; justify-content: flex-start; line-height: 1.45; padding: 10px 0; max-width: 62ch; }
+  .om-rules .om-prow span:first-child { flex: 0 0 132px; padding: 10px 0; }
   .om-visa { max-width: 760px; margin-bottom: 24px; }
   /* Цели нажатия: ссылка-строка и отдельная ссылка-абзац дотягивают до 44 px.
      Ссылки внутри предложения под правило не попадают — они часть текста. */
