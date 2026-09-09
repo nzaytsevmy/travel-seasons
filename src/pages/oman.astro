@@ -409,7 +409,13 @@ const ldJson = {
   /* Текстовые ссылки — цветом сайта и с подчёркиванием: глобальный стиль сбрасывает
      оформление ссылок, и без этого они неотличимы от текста («не понятно, что это
      ссылки» — Никита, 09.09.2026). Кнопки и клетки месяцев — отдельно. */
-  .om-prow a, .om-linkline a, .om-byline a, .om-foot a { color: var(--gold); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .om-linkline a, .om-byline a, .om-foot a { color: var(--gold); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  /* Ссылки в строках таблиц — вариант «A» (выбор Никиты 09.09.2026): цвет сайта, обычный
+     шрифт, стрелка вплотную, без подчёркивания. В списках подчёркивание можно снимать,
+     если оформление само показывает действие (NN/g, Guidelines for Visualizing Links). */
+  .om-prow a { color: var(--gold); text-decoration: none; font-family: var(--ff-body); font-weight: 500; }
+  .om-prow a::after { content: " →"; display: inline-block; margin-left: 2px; transition: transform 0.15s; }
+  .om-prow a:hover::after { transform: translateX(3px); }
   .om-prow a:hover, .om-linkline a:hover, .om-byline a:hover, .om-foot a:hover { color: var(--gold-dim); }
 
   .om-practice :global(img) { width: 100%; height: 300px; object-fit: cover; display: block; }
