@@ -21,7 +21,7 @@ import { DIRECTIONS, MONTHS, VISITED } from '../data/directions.js';
 import { PRICES } from '../data/prices.js';
 import { getVisaDetails } from '../data/visa-details.js';
 import { climateChart } from '../data/country-climate-chart.js';
-import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
+import { DATA_UPDATED } from '../data/meta.js';
 import { aviasalesRoute, cherehapaCountry, ostrovokCity } from '../data/affiliate.js';
 import livePrices from '../data/prices-cache.json';
 
@@ -86,7 +86,7 @@ const faqs = [
   {
     q: `Сколько стоит поездка в Оман в ${yr}?`,
     a: `Перелёт из Москвы от $${flightFrom}, жильё от $${hotelFrom} за ночь, еда от $${foodFrom} в день. ` +
-       `Неделя на одного выходит от $${weekTotal}. Цены пересчитываются автоматически, дата сверки — ${DATA_UPDATED_RU}.`,
+       `Неделя на одного выходит от $${weekTotal}.`,
   },
   {
     q: 'Что такое хариф в Салале?',
@@ -139,22 +139,23 @@ const ldJson = {
     </figure>
 
     <header class="om-top">
-      <div>
+      <div class="om-title">
         <h1>Оман <span class="om-yr">{yr}</span></h1>
         <p class="om-lead">Страна, где север и юг живут по разным календарям — и летом на юге прохладнее, чем на севере.</p>
-        <div class="om-byline">
-          <Image src={author} alt="Никита Зайцев" width={52} height={64} format="webp" quality={80} />
-          <div>
-            <p><a href="/about/">Никита Зайцев</a>, автор traveltribe.ru</p>
-            <p class="om-dim">{visited ? 'Был в Омане сам. ' : ''}Данные актуальны на {DATA_UPDATED_RU}.</p>
-          </div>
-        </div>
       </div>
       <div class="om-answer">
-        <p><b>{vd.summary}</b></p>
-        <p>Лучшие месяцы на севере — {bestMonths.map((m) => m.nom).join(', ')}. Перелёт из Москвы от ${flightFrom}, неделя на одного от ${weekTotal}.</p>
+        <dl class="om-facts">
+          <div><dt>Виза</dt><dd>{vd.cost}, {vd.duration}</dd></div>
+          <div><dt>Лучшие месяцы</dt><dd>{bestMonths.map((m) => m.nom).join(', ')}</dd></div>
+          <div><dt>Летом</dt><dd>только Салала: {Math.round(cc.cities[1].tMax[7])} °C под муссоном</dd></div>
+          <div><dt>Перелёт из Москвы</dt><dd>от ${flightFrom}</dd></div>
+          <div><dt>Неделя на одного</dt><dd>от ${weekTotal}</dd></div>
+        </dl>
         <a class="om-btn" href={билеты} rel="sponsored nofollow noopener" target="_blank">Билеты Москва — Маскат от ${flightFrom}</a>
-        <p class="om-btn-note">Ведёт на Aviasales, поиск на ваши даты. Цена — минимум живой выдачи по месяцам, пересчитывается сама. Ссылка партнёрская, цена для вас та же.</p>
+      </div>
+      <div class="om-byline">
+        <Image src={author} alt="Никита Зайцев" width={52} height={64} format="webp" quality={80} />
+        <p><a href="/about/">Никита Зайцев</a>, автор traveltribe.ru{visited ? '. Был в Омане сам' : ''}.</p>
       </div>
     </header>
 
@@ -209,10 +210,9 @@ const ldJson = {
       <div class="om-money">
         <div>
           <p class="om-big">от ${flightFrom} <span class="om-small om-dim">перелёт из Москвы, туда-обратно</span></p>
-          <p class="om-body">Прямых рейсов из Москвы нет — варианты со стыковкой. Цена берётся из живой выдачи по месяцам, а не из прикидки: сверка {DATA_UPDATED_RU}.</p>
+          <p class="om-body">Прямой рейс есть: Oman Air из Шереметьево, в пути 6 часов 20 минут.</p>
           <div class="om-cta-row">
             <a class="om-btn" href={билеты} rel="sponsored nofollow noopener" target="_blank">Найти билеты</a>
-            <p class="om-btn-note">Aviasales: календарь цен по месяцам, поиск на ваши даты.</p>
           </div>
         </div>
         <div class="om-prices">
@@ -278,7 +278,7 @@ const ldJson = {
       <Image src={author} alt="Никита Зайцев" width={60} height={74} format="webp" quality={80} />
       <div>
         <p><a href="/about/">Никита Зайцев</a>, автор traveltribe.ru · <a href="https://t.me/traveltriberu" rel="noopener" target="_blank">@traveltriberu</a></p>
-        <p class="om-dim">{visited ? 'Был в Омане сам. ' : ''}Данные актуальны на {DATA_UPDATED_RU}.</p>
+        <p class="om-dim">{visited ? 'Был в Омане сам.' : ''}</p>
       </div>
     </div>
   </article>
@@ -304,30 +304,34 @@ const ldJson = {
   .om-top, .om-pair, .om-money, .om-practice {
     display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 28px;
   }
-  .om-top { align-items: start; padding: 24px 0 56px; }
-  .om-top > *:first-child { grid-column: span 8; }
-  .om-top > *:last-child { grid-column: span 4; }
+  .om-top { align-items: start; padding: 24px 0 56px; row-gap: 32px; }
+  .om-title { grid-column: span 8; }
+  .om-answer { grid-column: span 4; }
+  .om-byline { grid-column: 1 / -1; }
   .om-pair > *, .om-money > *, .om-practice > * { grid-column: span 6; }
-  .om-pair :global(img) { width: 100%; height: 100%; max-height: 420px; object-fit: cover; display: block; }
+  .om-pair :global(img) { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; display: block; }
+  .om-pair + .om-body { margin-top: 24px; }
 
   .om h1 { font-family: var(--ff-display); font-weight: 400; font-size: clamp(2.5rem, 5.6vw, 4.5rem); line-height: 1; margin: 0 0 16px; }
   .om-yr { color: var(--gold); }
   .om-lead { font-family: var(--ff-display); font-style: italic; font-size: clamp(1.25rem, 2.2vw, 1.75rem); line-height: 1.3; margin: 0 0 24px; max-width: 30ch; }
-  .om-byline { display: flex; gap: 14px; align-items: flex-start; border-top: 1px solid var(--line); padding-top: 16px; }
+  .om-byline { display: flex; gap: 14px; align-items: center; border-top: 1px solid var(--line); padding-top: 16px; }
   .om-byline :global(img) { width: 52px; height: 64px; object-fit: cover; object-position: 50% 20%; flex: none; }
   .om-byline p, .om-foot p { margin: 0 0 4px; font-size: 0.9375rem; line-height: 1.5; }
   .om-byline a, .om-foot a { display: inline-flex; align-items: center; min-height: 44px; }
   .om-answer { padding-top: 12px; }
-  .om-answer p { font-size: 1.0625rem; line-height: 1.6; margin: 0 0 16px; }
+  .om-facts { margin: 0 0 20px; }
+  .om-facts > div { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 0.9375rem; line-height: 1.4; }
+  .om-facts > div:first-child { border-top: 1px solid var(--line); }
+  .om-facts dt { color: var(--text-faint); flex: none; }
+  .om-facts dd { margin: 0; text-align: right; font-family: var(--ff-mono); }
 
   .om-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 22px; background: var(--gold); color: var(--bg); font-weight: 600; font-size: 1.0625rem; text-decoration: none; width: 100%; box-sizing: border-box; }
   .om-btn:hover { background: var(--gold-dim); color: var(--bg); }
   .om-btn-ghost { background: transparent; color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); width: auto; }
   .om-btn-ghost:hover { background: var(--gold); color: var(--bg); }
-  .om-btn-note { font-size: 0.875rem; line-height: 1.5; color: var(--text-faint); margin: 8px 0 0; }
   .om-cta-row { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; margin-top: 20px; }
   .om-cta-row .om-btn { width: auto; }
-  .om-cta-row .om-btn-note { margin: 0; flex: 1 1 240px; }
 
   .om-heat { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; margin: 8px 0 20px; }
   .om-mh { display: flex; align-items: center; justify-content: center; min-height: 44px; font-family: var(--ff-mono); font-size: 0.8125rem; text-decoration: none; color: var(--text); background: var(--bg2); box-shadow: inset 0 0 0 1px var(--line); }
@@ -341,16 +345,23 @@ const ldJson = {
 
   .om-big { font-family: var(--ff-display); font-size: clamp(2rem, 4vw, 3rem); line-height: 1.05; margin: 0 0 16px; }
   .om-big .om-small { display: block; font-size: 0.9375rem; margin-top: 4px; }
-  .om-prow { display: flex; justify-content: space-between; gap: 24px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 0.9375rem; }
+  .om-prow { display: flex; justify-content: space-between; align-items: center; gap: 24px; min-height: 52px; padding: 0; box-sizing: border-box; border-bottom: 1px solid var(--line); font-size: 0.9375rem; }
+  .om-prices .om-prow:first-child, .om-visa .om-prow:first-child { border-top: 1px solid var(--line); }
+  .om-money + .om-money { margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--line); }
   .om-prow span:first-child { color: var(--text-faint); }
-  .om-prow span:last-child { font-family: var(--ff-mono); text-align: right; }
+  .om-prow span:last-child { font-family: var(--ff-mono); text-align: right; display: flex; justify-content: flex-end; align-items: center; }
   .om-visa { max-width: 760px; margin-bottom: 24px; }
   /* Цели нажатия: ссылка-строка и отдельная ссылка-абзац дотягивают до 44 px.
      Ссылки внутри предложения под правило не попадают — они часть текста. */
   .om-prow a, .om-linkline a { display: inline-flex; align-items: center; min-height: 44px; }
 
   .om-practice :global(img) { width: 100%; height: 300px; object-fit: cover; display: block; }
-  .om-inline { margin-bottom: 20px; }
+  /* Левый кадр растягивается на высоту двух правых: сетка «кадр 1fr / подпись auto»,
+     иначе img с height:100% выталкивает подпись за край фигуры. */
+  .om-practice > figure:first-child { display: grid; grid-template-rows: minmax(0, 1fr) auto; }
+  .om-practice > figure:first-child :global(img) { height: 100%; min-height: 300px; object-position: 45% 50%; }
+  .om-practice > div { display: grid; row-gap: 20px; align-content: start; }
+  .om-inline { margin: 0; }
 
   .om-faq { margin: 0; max-width: 760px; }
   .om-faq dt { font-weight: 600; font-size: 1.0625rem; margin: 20px 0 6px; }
@@ -360,9 +371,13 @@ const ldJson = {
   .om-foot { display: flex; gap: 16px; align-items: flex-start; padding: 32px 0 0; border-top: 1px solid var(--line); }
   .om-foot :global(img) { width: 60px; height: 74px; object-fit: cover; object-position: 50% 20%; flex: none; }
 
+  @media (max-width: 1100px) {
+    .om-title { grid-column: span 7; }
+    .om-answer { grid-column: span 5; }
+  }
   @media (max-width: 900px) {
     .om-top, .om-pair, .om-money, .om-practice { grid-template-columns: 1fr; gap: 28px; }
-    .om-top > *:first-child, .om-top > *:last-child,
+    .om-title, .om-answer, .om-byline,
     .om-pair > *, .om-money > *, .om-practice > * { grid-column: 1 / -1; }
     .om-heat { grid-template-columns: repeat(6, 1fr); }
   }
@@ -371,8 +386,7 @@ const ldJson = {
     .om-sec { padding: 40px 0; }
     .om-hero, .om-wide { margin-left: -16px; margin-right: -16px; }
     .om-hero figcaption, .om-wide figcaption { padding: 0 16px; }
-    .om-pair :global(img) { height: 260px; max-height: none; }
     .om-practice :global(img) { height: 240px; }
-    .om-btn-ghost { width: 100%; }
+    .om-btn-ghost, .om-cta-row .om-btn { width: 100%; }
   }
 </style>
