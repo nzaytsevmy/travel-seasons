@@ -11,7 +11,7 @@
 //    visa-details, перелёт из живой выгрузки цен, жильё и еда из справочника
 //    бюджетов, климат из country-climate-chart. Ни одного вписанного руками
 //    числа — иначе страница застынет в день публикации и через полгода соврёт.
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Footer from '../components/Footer.astro';
@@ -22,7 +22,7 @@ import { PRICES } from '../data/prices.js';
 import { getVisaDetails } from '../data/visa-details.js';
 import { climateChart } from '../data/country-climate-chart.js';
 import { DATA_UPDATED } from '../data/meta.js';
-import { aviasalesRoute, cherehapaCountry, ostrovokCity } from '../data/affiliate.js';
+import { aviasalesRoute, cherehapaCountry, ostrovokCity, youtravelCountry } from '../data/affiliate.js';
 import livePrices from '../data/prices-cache.json';
 
 import hero from '../content/blog/_images/oman-v2/hero.jpg';
@@ -35,6 +35,10 @@ import mosque from '../content/blog/_images/oman-v2/mosque.jpg';
 import author from '../assets/author/nikita.jpg';
 
 const url = 'https://traveltribe.ru/oman/';
+// Главный кадр — LCP страницы. Lighthouse 09.09.2026 (телефон, живой сайт): LCP 3,0 с при
+// весе кадра 28 КБ — 1,2 с уходило на «браузер ещё не знает о кадре». Предзагрузка в
+// шапке с тем же набором ширин, что у <Image>, иначе скачается не тот вариант.
+const heroPreload = await getImage({ src: hero, widths: [800, 1280, 1920], formats: ['webp'], quality: 82 });
 const yr = new Date(DATA_UPDATED).getUTCFullYear();
 const d = DIRECTIONS.find((x) => x.slug === 'oman');
 const vd = getVisaDetails('oman', d.visa);
@@ -73,6 +77,11 @@ const билеты = aviasalesRoute('MOW', d.price?.iata, `${subId}_flight`);
 // ⛔ Три аргумента: страна, город, метка. Промах слотом даёт партнёру 404.
 const жильё = ostrovokCity('oman', 'muscat', `${subId}_stay`);
 const полис = cherehapaCountry('oman', `${subId}_ins`);
+// ⛔ Больше кнопок не ставить — решение Никиты 09.09.2026 («сейчас достаточно кнопок»):
+//    липкой панели на этой странице нет, хотя общий шаблон её даёт. Авторские туры
+//    он попросил добавить тем же днём — строкой в таблице, не кнопкой.
+// Каталог страны у партнёра сверен 30.08.2026 (см. YOUTRAVEL_DESTINATION).
+const тур = youtravelCountry('oman', `${subId}_tour`);
 
 const faqs = [
   {
@@ -107,7 +116,16 @@ const ldJson = {
       description: `Оман для россиян в ${yr}: ${vd.duration} без визы, перелёт от $${flightFrom}, лучшие месяцы — ${bestMonths.map((m) => m.nom).join(', ')}. Север и юг живут по разным календарям.`,
       inLanguage: 'ru-RU',
       isPartOf: { '@id': 'https://traveltribe.ru/#website' },
+      primaryImageOfPage: { '@id': `${url}#hero` },
       dateModified: DATA_UPDATED,
+    },
+    // Вопросы-ответы и главный кадр отдаёт и общий шаблон стран — своя страница
+    // держится на его уровне (правило из .claude/rules/templates-schema.md).
+    { '@type': 'ImageObject', '@id': `${url}#hero`, url: `https://traveltribe.ru${hero.src}`, width: hero.width, height: hero.height },
+    {
+      '@type': 'FAQPage',
+      '@id': `${url}#faq`,
+      mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
     },
     {
       '@type': 'BreadcrumbList',
@@ -127,6 +145,11 @@ const ldJson = {
   description={`Оман для россиян в ${yr}: ${vd.duration} без визы, перелёт от $${flightFrom}, лучшие месяцы — ${bestMonths.map((m) => m.nom).join(', ')}. Север и юг живут по разным календарям.`}
   canonical={url}
   ogType="article"
+  ogImage={`https://traveltribe.ru${hero.src}`}
+  ogImageAlt="Фьорды Мусандама у Хасаба, Оман"
+  preloadImage={heroPreload.src}
+  preloadImageSrcset={heroPreload.srcSet?.attribute}
+  preloadImageSizes="100vw"
   ldJson={ldJson}
   monetizationDestination="oman"
 >
@@ -177,6 +200,7 @@ const ldJson = {
         муссон: облака, туман и морось. Зимой всё наоборот: север сухой и тёплый, а Дофар возвращается к камню.
         Между Маскатом и Салалой тысяча километров, поэтому вопрос «когда ехать» без вопроса «куда» ответа не имеет.
       </p>
+      <p class="om-body om-linkline"><a href="/blog/oman-guide-2026/">Подробный разбор Омана: регионы, маршруты, цены</a></p>
     </section>
 
     <section class="om-sec">
@@ -234,6 +258,7 @@ const ldJson = {
         <div class="om-prices">
           <div class="om-prow"><span>Свой расчёт поездки</span><span><a href={priceIdx >= 0 ? `/calculator/?c=${priceIdx}` : '/calculator/'}>калькулятор</a></span></div>
           <div class="om-prow"><span>Что взять с собой</span><span><a href="/packing/oman/">сборы в Оман</a></span></div>
+          <div class="om-prow"><span>Поехать с гидом</span><span><a href={тур} rel="sponsored nofollow noopener" target="_blank">авторские туры в Оман</a></span></div>
         </div>
       </div>
     </section>
@@ -336,7 +361,7 @@ const ldJson = {
   .om-heat { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; margin: 8px 0 20px; }
   .om-mh { display: flex; align-items: center; justify-content: center; min-height: 44px; font-family: var(--ff-mono); font-size: 0.8125rem; text-decoration: none; color: var(--text); background: var(--bg2); box-shadow: inset 0 0 0 1px var(--line); }
   .om-mh--peak, .om-mh--good { background: var(--text); color: var(--bg); box-shadow: none; }
-  .om-mh--off { background: rgba(21, 23, 26, 0.34); color: var(--bg); box-shadow: none; }
+  .om-mh--off { background: rgba(21, 23, 26, 0.34); color: var(--text); box-shadow: none; }
   .om-months { margin: 0; padding-left: 1.1em; max-width: 68ch; }
   .om-months li { font-size: 1rem; line-height: 1.6; margin-bottom: 6px; }
 
