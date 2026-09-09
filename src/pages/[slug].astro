@@ -6,7 +6,7 @@
 // эталоном. Этот файл генерирует аналогичные страницы для всех остальных
 // направлений автоматически из DIRECTIONS data.
 //
-// URL conflicts: /japan/ и /antarctica/ — explicit static pages в Astro
+// URL conflicts: /japan/, /antarctica/ и /oman/ — explicit static pages в Astro
 // перебивают dynamic [slug]. Они исключены из getStaticPaths.
 
 import { getCollection } from 'astro:content';
@@ -66,7 +66,7 @@ const inlinePhotos = import.meta.glob('../assets/destinations/inline/*.jpg', {
 export async function getStaticPaths() {
   // Reserved slugs — те что уже есть как кастомные pages.
   const reserved = new Set([
-    'japan', 'antarctica',
+    'japan', 'antarctica', 'oman',
     'blog', 'about', 'calculator', 'seasons', 'cards', 'trips', 'visa',
     '404', 'rss.xml', 'sitemap-images.xml', 'dzen-rss.xml',
   ]);
