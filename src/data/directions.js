@@ -375,6 +375,7 @@ export const VISITED = new Set([
   'bali', 'new-zealand', 'australia-east', 'usa', 'ecuador', 'vietnam', 'hong-kong',
   'india-goa', 'cambodia', 'malaysia', 'south-korea', 'peru', 'bolivia', 'chile',
   'argentina', 'brazil', 'mexico', 'turkey', 'south-africa', 'iceland', 'norway',
+  'oman', // сказано Никитой 06.09.2026: был сам
   'china', 'nepal', 'kyrgyzstan', 'chile-patagonia', 'japan',
 ]);
 
