@@ -20,7 +20,7 @@ export const regionMeta = {
   'Кейптаун + Крюгер':                   { slug: 'south-africa',        iata: 'CPT', blogSlug: null },
   'Дубай, Абу-Даби':                     { slug: 'uae',                 iata: 'DXB', blogSlug: null },
   'Эль-Ула, Джидда, Красное море':       { slug: 'saudi-arabia',        iata: 'JED', blogSlug: null },
-  'Маскат, Салала, вади':                { slug: 'oman',                iata: 'MCT', blogSlug: null },
+  'Маскат, Салала, вади':                { slug: 'oman',                iata: 'MCT', blogSlug: 'oman-guide-2026' },
   'Доха':                                { slug: 'qatar',               iata: 'DOH', blogSlug: null },
   'Анталья, Стамбул, Каппадокия':        { slug: 'turkey',              iata: 'IST', blogSlug: null },
   'Хургада, Шарм-эль-Шейх, Каир':        { slug: 'egypt',               iata: 'HRG', blogSlug: null },
