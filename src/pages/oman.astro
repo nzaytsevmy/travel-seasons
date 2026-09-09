@@ -26,8 +26,8 @@ import { aviasalesRoute, cherehapaCountry, ostrovokCity } from '../data/affiliat
 import livePrices from '../data/prices-cache.json';
 
 import hero from '../content/blog/_images/oman-v2/hero.jpg';
-import dhofarGreen from '../content/blog/_images/oman-v2/dhofar-green.jpg';
-import dhofarDry from '../content/blog/_images/oman-v2/dhofar-dry.jpg';
+import darbatKhareef from '../content/blog/_images/oman-v2/darbat-khareef.jpg';
+import darbatDry from '../content/blog/_images/oman-v2/darbat-dry.jpg';
 import canyon from '../content/blog/_images/oman-v2/canyon.jpg';
 import nizwa from '../content/blog/_images/oman-v2/nizwa.jpg';
 import wahiba from '../content/blog/_images/oman-v2/wahiba.jpg';
@@ -160,22 +160,22 @@ const ldJson = {
     </header>
 
     <section class="om-sec">
-      <h2>Одно и то же место, июль и январь</h2>
+      <h2>Одно и то же место: август и ноябрь</h2>
       <div class="om-pair">
         <figure>
-          <Image src={dhofarGreen} alt="Зелёные холмы Дофара в сезон харифа" widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" format="webp" quality={82} loading="lazy" />
-          <figcaption>Склоны Дофара в сезон муссона: трава по колено и туман.</figcaption>
+          <Image src={darbatKhareef} alt="Вади-Дарбат в сезон харифа: зелёная долина, озеро и облака на гребне" widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" format="webp" quality={82} loading="lazy" />
+          <figcaption>Вади-Дарбат в августе, разгар харифа: склоны зелёные, облака лежат на гребне.</figcaption>
         </figure>
         <figure>
-          <Image src={dhofarDry} alt="Сухие скалы Дофара над морем вне сезона муссона" widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" format="webp" quality={82} loading="lazy" />
-          <figcaption>Тот же Дофар вне муссона: голый камень над морем.</figcaption>
+          <Image src={darbatDry} alt="Вади-Дарбат в ноябре: выгоревшая трава и голые деревья у той же воды" widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" format="webp" quality={82} loading="lazy" />
+          <figcaption>Тот же Вади-Дарбат в ноябре: трава выгорела, деревья голые, вода осталась.</figcaption>
         </figure>
       </div>
       <p class="om-body">
         Это главный сюжет Омана. В {МЕС_П[разрыв.i]} в Маскате {Math.round(cc.cities[0].tMax[разрыв.i])} °C, а в Салале
         {' '}{Math.round(cc.cities[1].tMax[разрыв.i])} °C — разница в {Math.abs(разрыв.d)} градусов. Юг в это время накрывает
         муссон: облака, туман и морось. Зимой всё наоборот: север сухой и тёплый, а Дофар возвращается к камню.
-        Между этими двумя картинками тысяча километров, поэтому вопрос «когда ехать» без вопроса «куда» ответа не имеет.
+        Между Маскатом и Салалой тысяча километров, поэтому вопрос «когда ехать» без вопроса «куда» ответа не имеет.
       </p>
     </section>
 
@@ -248,8 +248,8 @@ const ldJson = {
       <p class="om-body om-linkline"><a href="/visa/oman/">Документы, сроки и что проверить перед вылетом</a></p>
 
       <div class="om-practice">
-        <figure>
-          <Image src={mosque} alt="Купол и минарет Большой мечети султана Кабуса в Маскате" widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" format="webp" quality={82} loading="lazy" />
+        <figure class="om-tall">
+          <div class="om-fill"><Image src={mosque} alt="Купол и минарет Большой мечети султана Кабуса в Маскате" widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" format="webp" quality={82} loading="lazy" /></div>
           <figcaption>Большая мечеть султана Кабуса в Маскате.</figcaption>
         </figure>
         <div>
@@ -272,7 +272,7 @@ const ldJson = {
       </dl>
     </section>
 
-    <p class="om-credits">Фотографии: Makalu, sharonang (Pixabay); Aayan muhammed, Syed99975, Andries Oudshoorn (CC BY / CC BY-SA).</p>
+    <p class="om-credits">Фотографии: Makalu, sharonang (Pixabay); Muiad123, Francesco Bini, Andries Oudshoorn (CC BY-SA).</p>
 
     <div class="om-foot">
       <Image src={author} alt="Никита Зайцев" width={60} height={74} format="webp" quality={80} />
@@ -356,10 +356,13 @@ const ldJson = {
   .om-prow a, .om-linkline a { display: inline-flex; align-items: center; min-height: 44px; }
 
   .om-practice :global(img) { width: 100%; height: 300px; object-fit: cover; display: block; }
-  /* Левый кадр растягивается на высоту двух правых: сетка «кадр 1fr / подпись auto»,
-     иначе img с height:100% выталкивает подпись за край фигуры. */
-  .om-practice > figure:first-child { display: grid; grid-template-rows: minmax(0, 1fr) auto; }
-  .om-practice > figure:first-child :global(img) { height: 100%; min-height: 300px; object-position: 45% 50%; }
+  /* Левый кадр тянется на высоту двух правых. Без процентных высот внутри сетки:
+     Safari считает их от всей фигуры, и подпись ложится поверх кадра (живой сайт,
+     09.09.2026; в Chrome было чисто). Фигура — flex-колонка в растянутой ячейке,
+     кадр заполняет остаток абсолютным позиционированием: так во всех браузерах. */
+  .om-tall { display: flex; flex-direction: column; }
+  .om-fill { position: relative; flex: 1 1 auto; min-height: 300px; }
+  .om-practice .om-fill :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 45% 50%; }
   .om-practice > div { display: grid; row-gap: 20px; align-content: start; }
   .om-inline { margin: 0; }
 
@@ -387,6 +390,7 @@ const ldJson = {
     .om-hero, .om-wide { margin-left: -16px; margin-right: -16px; }
     .om-hero figcaption, .om-wide figcaption { padding: 0 16px; }
     .om-practice :global(img) { height: 240px; }
+    .om-fill { flex: none; min-height: 0; aspect-ratio: 3 / 2; }
     .om-btn-ghost, .om-cta-row .om-btn { width: 100%; }
   }
 </style>
