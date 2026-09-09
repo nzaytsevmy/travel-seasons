@@ -7,9 +7,11 @@
 // ⛔ Две шкалы в одной рамке не рисуем (температура и осадки) — читатель их
 //    путает, это разбирают и FT в своём словаре графиков, и Datawrapper.
 //    Отсюда две панели с ОБЩЕЙ осью месяцев.
-// ⛔ Одна геометрия на оба экрана не работает: широкая картинка на телефоне
-//    ужимается втрое и подписи становятся по семь точек. Поэтому геометрий две,
-//    вторая скрыта стилями и помечена aria-hidden, чтобы не звучать дважды.
+// ⛔ Одна геометрия на все экраны не работает: широкая картинка ужимается, и
+//    подписи падают до восьми точек. Геометрий три — телефон, планшет, монитор;
+//    показывается одна, остальные скрыты стилями и помечены aria-hidden, чтобы
+//    читалка не произносила график трижды. Средняя ограничена по ширине, иначе
+//    в полосе 769–1030 точек её опять начнёт ужимать.
 import { climateChart } from '../data/country-climate-chart.js';
 
 interface Props { slug: string }
@@ -54,7 +56,9 @@ function geo(C: any, d: any) {
 
 const WIDE = data && geo({ w: 1180, h: 340, x0: 68, x1: 1150, tMin: 22, tMax: 42, yTop: 34, yBot: 186,
   monthY: 212, rainTop: 250, rainBase: 322, grid: [25, 30, 35, 40] }, data);
-const NARROW = data && geo({ w: 430, h: 452, x0: 62, x1: 412, tMin: 22, tMax: 42, yTop: 40, yBot: 246,
+const MID = data && geo({ w: 760, h: 356, x0: 62, x1: 730, tMin: 22, tMax: 42, yTop: 36, yBot: 196,
+  monthY: 224, rainTop: 264, rainBase: 338, grid: [25, 30, 35, 40] }, data);
+const NARROW = data && geo({ w: 396, h: 452, x0: 58, x1: 380, tMin: 22, tMax: 42, yTop: 40, yBot: 246,
   monthY: 278, rainTop: 328, rainBase: 424, grid: [25, 30, 35, 40] }, data);
 
 const alt = data
@@ -69,7 +73,7 @@ const alt = data
     <p class="ycc-title">{data.title}</p>
     <p class="ycc-sub">{data.subtitle}</p>
 
-    {[{ g: WIDE, cls: 'ycc-wide', hide: false }, { g: NARROW, cls: 'ycc-narrow', hide: true }].map(({ g, cls, hide }) => (
+    {[{ g: WIDE, cls: 'ycc-wide', hide: false }, { g: MID, cls: 'ycc-mid', hide: true }, { g: NARROW, cls: 'ycc-narrow', hide: true }].map(({ g, cls, hide }) => (
       <svg class={cls} viewBox={`0 0 ${g.C.w} ${g.C.h}`} role={hide ? undefined : 'img'}
         aria-hidden={hide ? 'true' : undefined} aria-label={hide ? undefined : alt}>
         <rect x={g.bandX1} y={g.C.yTop - 12} width={g.bandX2 - g.bandX1} height={g.C.rainBase - g.C.yTop + 12} class="ycc-band" />
@@ -129,7 +133,7 @@ const alt = data
 <style>
   .ycc { margin: 0 0 1.5rem; }
   .ycc svg { width: 100%; height: auto; display: block; }
-  .ycc .ycc-narrow { display: none; }
+  .ycc .ycc-mid, .ycc .ycc-narrow { display: none; }
   .ycc-title { font-family: var(--ff-display); font-weight: 400; font-size: 1.375rem; line-height: 1.2; margin: 0 0 2px; }
   .ycc-sub { font-size: 0.875rem; color: var(--text-faint); margin: 0 0 16px; }
   .ycc figcaption { font-size: 0.875rem; line-height: 1.55; color: var(--text-faint); margin-top: 12px; max-width: 68ch; }
@@ -154,8 +158,14 @@ const alt = data
   .ycc-rain { fill: rgba(21, 23, 26, 0.28); }
   .ycc-rainval { font-family: var(--ff-mono); font-size: 12px; fill: var(--text); text-anchor: middle; }
 
-  @media (max-width: 768px) {
+  /* Полоса планшета: широкая геометрия здесь ужимается до восьми точек в подписи,
+     узкая наоборот раздувается. Средняя ограничена 760 px, чтобы масштаб был около единицы. */
+  @media (max-width: 1030px) {
     .ycc .ycc-wide { display: none; }
-    .ycc .ycc-narrow { display: block; }
+    .ycc .ycc-mid { display: block; max-width: 760px; }
+  }
+  @media (max-width: 660px) {
+    .ycc .ycc-mid { display: none; }
+    .ycc .ycc-narrow { display: block; max-width: 396px; }
   }
 </style>
