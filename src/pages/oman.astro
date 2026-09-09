@@ -180,7 +180,7 @@ const ldJson = {
       </div>
       <div class="om-answer">
         <dl class="om-facts">
-          <div><dt>Виза россиянам</dt><dd>{typo(`не нужна, ${vd.duration}`)}</dd></div>
+          <div><dt>Виза россиянам</dt><dd>{typo(`не нужна, до ${vd.duration.split(' (')[0]}`)}</dd></div>
           <div><dt>Лучшие месяцы</dt><dd>{bestMonths.map((m) => m.nom).join(', ')}</dd></div>
           <div><dt>Летом</dt><dd>{typo(`только Салала: ${Math.round(cc.cities[1].tMax[7])} °C под муссоном`)}</dd></div>
           <div><dt>Перелёт из Москвы</dt><dd>от ${flightFrom}</dd></div>
@@ -368,6 +368,7 @@ const ldJson = {
   .om-facts > div:first-child { border-top: 1px solid var(--line); }
   .om-facts dt { color: var(--text-faint); flex: none; }
   .om-facts dd { margin: 0; text-align: right; font-family: var(--ff-mono); }
+  @media (min-width: 901px) { .om-facts dd { white-space: nowrap; } }
 
   .om-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 22px; background: var(--gold); color: var(--bg); font-weight: 600; font-size: 1.0625rem; text-decoration: none; width: 100%; box-sizing: border-box; }
   .om-btn:hover { background: var(--gold-dim); color: var(--bg); }
