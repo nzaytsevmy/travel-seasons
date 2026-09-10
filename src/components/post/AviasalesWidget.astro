@@ -14,6 +14,7 @@ interface Props {
   title?: string;             // Заголовок над кнопкой
   subid?: string;             // Sub ID для трекинга по странице
   buttonText?: string;        // Текст кнопки
+  plain?: boolean;            // без строк «куда ведёт кнопка» (страницы стран, правило Никиты 09.09.2026)
 }
 const {
   destination = '',
@@ -21,6 +22,7 @@ const {
   title = 'Найти билеты',
   subid = '',
   buttonText = 'Посмотреть цены на билеты',
+  plain = false,
 } = Astro.props;
 
 // Ссылка через tpk.mx-обёртку: трекинг кликов (свежий sub-id на клик) + erid + .ru.
@@ -42,12 +44,12 @@ const href = destination
 <aside class="tp-cta" aria-label="Поиск билетов через Aviasales">
   <div class="tp-cta-text">
     <h3 class="tp-cta-title">{title}</h3>
-    <p class="tp-cta-sub">Сравнить цены на Aviasales — все авиакомпании в одной выдаче, оплата российскими картами тоже работает.</p>
+    {!plain && <p class="tp-cta-sub">Сравнить цены на Aviasales — все авиакомпании в одной выдаче, оплата российскими картами тоже работает.</p>}
   </div>
   <a class="tp-cta-btn aff-btn" href={href} target="_blank" rel="noopener sponsored">
     <span>{buttonText}</span>
   </a>
-  <p class="tp-cta-disc">Aviasales. Партнёрская ссылка, цена для тебя не меняется.</p>
+  {!plain && <p class="tp-cta-disc">Aviasales. Партнёрская ссылка, цена для тебя не меняется.</p>}
 </aside>
 
 <style>

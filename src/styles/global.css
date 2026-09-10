@@ -137,7 +137,17 @@ input, select, textarea {
 /* Фоновая grid-сетка убрана 2026-05-23: при Swiss-палитре (--line сплошной #d9dbde)
    она стала видимой и захламляла страницы. Чистый paper-фон, как на главной. */
 
-h1, h2, h3 { text-wrap: balance; }
+h1, h2, h3 { text-wrap: balance; overflow-wrap: break-word; }
+/* Переносы строк (правило Никиты 10.09.2026: «чтобы такого никогда нигде не было»).
+   Короткие строки — заголовки, подписи, термины — делятся на ровные по длине строки;
+   абзацы и пункты не оставляют одно слово на последней строке. Где браузер свойство
+   не знает, текст ведёт себя как раньше. Неразрывность внутри фраз держит типограф
+   (src/utils/typo.js, после сборки — на всём тексте страниц через tools/typo-dist.mjs). */
+h4, dt, caption, figcaption { text-wrap: balance; }
+/* ⛔ text-wrap: pretty глобально НЕ ставить: 10.09.2026 WebKit (движок Safari) падал в разборе
+   абзаца внутри сетки — InlineContentConstrainer::prettifyRange из RenderGrid::layoutGrid, четыре
+   отчёта о падении за час, в тестах это выглядело как таймаут страницы. То же нашла сессия
+   Сортовника. Неразрывность держит типограф, висячее слово в абзаце — меньшее зло, чем падение. */
 a { text-decoration: none; color: inherit; }
 :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
 

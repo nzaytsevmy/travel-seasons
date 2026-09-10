@@ -184,3 +184,46 @@ test('Храповик: тронутая статья не тащит кадры
   }
   assert.deepEqual(bad, [], bad.join('\n'));
 });
+
+// Кадры страниц стран (src/data/country-photos.js) статьи не используют, и проверки выше
+// их не видят. Правило то же, что для статей: чужой кадр — только с записью о лицензии
+// и именем автора (из неё же собирается подпись «Фотографии: …» на странице), свой —
+// со статусом own в описи.
+test('Происхождение: у каждого кадра страницы страны есть лицензия с автором или статус own', async () => {
+  const { COUNTRY_PHOTOS } = await import(new URL('../src/data/country-photos.js', import.meta.url));
+  const cred = credits(); const prov = provenance();
+  const bad = [];
+  for (const [slug, set] of Object.entries(COUNTRY_PHOTOS)) {
+    if (set.practice?.length !== 3) bad.push(`${slug}: в разделе въезда ${set.practice?.length ?? 0} кадра, макет держит ровно три`);
+    for (const p of [set.wide, ...(set.practice || [])]) {
+      if (!p?.file) { bad.push(`${slug}: пустой слот`); continue; }
+      if (!existsSync(join(IMAGES, p.file))) { bad.push(`${slug}: файла ${p.file} нет`); continue; }
+      if (!p.alt?.trim() || !p.caption?.trim()) bad.push(`${slug}: у ${p.file} нет alt или подписи`);
+      const rec = cred.get(p.file.slice(0, p.file.length - extname(p.file).length)) || cred.get(p.file);
+      if (rec) {
+        if (!rec.creator || !rec.license) bad.push(`${slug}: у ${p.file} в записи о лицензии нет автора или лицензии`);
+      } else if (prov.get(p.file)?.status !== 'own') {
+        bad.push(`${slug}: ${p.file} — ни записи о лицензии, ни статуса own`);
+      }
+    }
+  }
+  assert.deepEqual(bad, [], bad.join('\n'));
+});
+
+// 10.09.2026 скрипт сжатия упал посреди записи и оставил кадр Ирана пустым (0 байт).
+// Проверка выше видела только, что файл есть, — сборка упала уже на нём. Кадр обязан
+// быть настоящей картинкой: сигнатура JPEG, WebP или PNG и не меньше 10 КБ.
+test('Кадры страницы страны: каждый файл — настоящая картинка, а не пустышка', async () => {
+  const { COUNTRY_PHOTOS } = await import(new URL('../src/data/country-photos.js', import.meta.url));
+  const bad = [];
+  for (const [slug, set] of Object.entries(COUNTRY_PHOTOS)) {
+    for (const p of [set.wide, ...(set.practice || [])]) {
+      const f = join(IMAGES, p.file);
+      if (!existsSync(f)) continue;               // отсутствие файла ловит проверка выше
+      const b = readFileSync(f);
+      const ok = (b[0] === 0xff && b[1] === 0xd8) || b.toString('ascii', 8, 12) === 'WEBP' || b.toString('ascii', 1, 4) === 'PNG';
+      if (b.length < 10_000 || !ok) bad.push(`${slug}: ${p.file} — ${b.length} байт, это не картинка`);
+    }
+  }
+  assert.deepEqual(bad, [], bad.join('\n'));
+});

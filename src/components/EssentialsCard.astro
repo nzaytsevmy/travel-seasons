@@ -20,11 +20,6 @@ const cust = getCustoms(slug);
 const hasAny = plug || ess || cust;
 if (!hasAny) return null as any;
 
-const allSources = [
-  ...(ess?.sources || []),
-  ...(cust?.sources || []),
-].filter((s, i, arr) => arr.findIndex(x => x.url === s.url) === i);
-const updated = ess?.updated || cust?.updated || null;
 
 // Короткие практики — 4 ячейки value-list
 const quick: { k: string; main: string; meta?: string; note?: string }[] = [];
@@ -111,22 +106,6 @@ if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ'
     </div>
   )}
 
-  {(allSources.length > 0 || updated) && (
-    <div class="ec-foot">
-      {allSources.length > 0 && (
-        <span class="ec-fsrc">
-          <span class="ec-fhead">Источники:</span>
-          {allSources.map((s, i) => (
-            <>
-              {i > 0 && <span class="ec-sep">·</span>}
-              <a href={s.url} target="_blank" rel="noopener">{s.name}</a>
-            </>
-          ))}
-        </span>
-      )}
-      {updated && <span class="ec-upd">Проверено: {updated}</span>}
-    </div>
-  )}
 </section>
 
 <style>
@@ -277,41 +256,6 @@ if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ'
 }
 
 /* footer band */
-.ec-foot {
-  display: flex; align-items: baseline;
-  flex-wrap: wrap;
-  gap: .4rem 1rem;
-  padding: 1rem 0;
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
-  font-size: .78rem;
-  color: var(--text-dim);
-  margin-top: 1.8rem;
-}
-.ec-fsrc { line-height: 1.55; }
-.ec-fhead {
-  font-size: .66rem;
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin-right: .4rem;
-}
-.ec-foot a {
-  color: var(--gold);
-  text-decoration: underline 1px color-mix(in srgb, var(--gold) 55%, transparent);
-  text-underline-offset: 0.22em;
-  text-decoration-skip-ink: auto;
-}
-.ec-sep { color: var(--text-faint); margin: 0 .3rem; }
-.ec-upd {
-  margin-left: auto;
-  font-size: .68rem;
-  font-weight: 700;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-}
 
 /* MOBILE */
 @media (max-width: 760px) {
@@ -337,7 +281,5 @@ if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ'
   .ec-vl--cols-2 .ec-vi:first-child { border-top: none; }
 
   .ec-dash td { padding: .55rem 0; }
-  .ec-foot { flex-direction: column; align-items: flex-start; }
-  .ec-upd { margin-left: 0; }
 }
 </style>

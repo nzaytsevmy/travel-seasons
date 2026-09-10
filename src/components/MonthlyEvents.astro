@@ -4,6 +4,7 @@
 // Эталон: ~/Downloads/tt-home-1-editorial.html (shead + dash-таблица).
 
 import { getHolidays } from '../data/country-holidays.js';
+import { typo } from '../utils/typo.js';
 
 interface Props {
   slug: string;
@@ -54,9 +55,9 @@ const closedCount = events.filter(e => e.tag === 'closed').length;
         <tr class={`me-r me-r--${ev.tag}`}>
           <td class="me-mc" data-l="Месяц">{j === 0 ? MONTH_RU[m - 1] : ''}</td>
           <td class="me-ec" data-l="Событие">
-            <b class="me-ename">{ev.name}</b>
-            {ev.dates && <span class="me-edates"> · {ev.dates}</span>}
-            {ev.note && <div class="me-enote">{ev.note}</div>}
+            <b class="me-ename">{typo(ev.name)}</b>
+            {ev.dates && <span class="me-edates"><span class="me-dot"> · </span>{typo(ev.dates)}</span>}
+            {ev.note && <div class="me-enote">{typo(ev.note)}</div>}
           </td>
           <td class="me-tc" data-l="Тип">{TAG_LABEL[ev.tag] || ev.tag}</td>
         </tr>
@@ -141,7 +142,7 @@ const closedCount = events.filter(e => e.tag === 'closed').length;
   color: var(--gold);
   width: 7rem;
 }
-.me-ec { padding-right: 1rem !important; }
+.me-ec { padding-right: 1rem !important; text-wrap: pretty; }
 .me-ename { font-weight: 700; color: var(--text); }
 .me-edates { color: var(--text-dim); font-size: .88rem; }
 .me-enote {
@@ -193,5 +194,7 @@ const closedCount = events.filter(e => e.tag === 'closed').length;
     color: var(--text-dim);
   }
   .me-r:hover td { background: none; }
+  .me-edates { display: block; margin-top: .1rem; }
+  .me-dot { display: none; }
 }
 </style>

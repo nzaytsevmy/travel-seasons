@@ -12,14 +12,14 @@ const read = (page: Page) =>
 
 test.describe('Несколько сохранённых поездок', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/peru/');
+    await page.goto('/trips/july/peru/');
     await page.evaluate(() => { localStorage.removeItem('tt_trip'); localStorage.removeItem('tt_trips'); });
     await page.reload();
   });
 
   test('вторая страна не затирает первую', async ({ page }) => {
     await page.locator('.tsb').first().click();
-    await page.goto('/turkey/');
+    await page.goto('/trips/july/turkey/');
     await page.locator('.tsb').first().click();
 
     const trips = await read(page);
@@ -29,7 +29,7 @@ test.describe('Несколько сохранённых поездок', () => 
 
   test('повторный клик убирает только свою страну', async ({ page }) => {
     await page.locator('.tsb').first().click();
-    await page.goto('/turkey/');
+    await page.goto('/trips/july/turkey/');
     await page.locator('.tsb').first().click();
     await page.locator('.tsb').first().click(); // снять Турцию
 
@@ -55,7 +55,7 @@ test.describe('Несколько сохранённых поездок', () => 
 
   test('на дашборде видны обе поездки', async ({ page }) => {
     await page.locator('.tsb').first().click();
-    await page.goto('/turkey/');
+    await page.goto('/trips/july/turkey/');
     await page.locator('.tsb').first().click();
 
     await page.goto('/my/');

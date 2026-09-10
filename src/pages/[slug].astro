@@ -29,6 +29,7 @@ import YearClimateChart from '../components/YearClimateChart.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
 import ClimateChart from '../components/ClimateChart.astro';
 import CountryMap from '../components/CountryMap.astro';
+import { countryPhotos } from '../data/country-photos.js';
 import { TP_LINKS, aviasalesRoute, otelloStay, cherehapaCountry, ostrovokCountry, youtravelCountry, kiwitaxiRoute, sputnik8City, mirturbazRegion } from '../data/affiliate.js';
 import livePrices from '../data/prices-cache.json';
 
@@ -44,7 +45,6 @@ const RU_STAY = new Set(['abkhazia', 'kamchatka', 'karelia', 'dagestan', 'altai'
 // Пакетный интент (чартер+отель): рядом с авторскими турами — сравнение пакетных.
 import { similarDestinations } from '../data/similar.js';
 import { COMPARE_PAIRS } from '../data/compare-pairs.js';
-import TripSaveButton from '../components/TripSaveButton.astro';
 import { getGuide } from '../data/country-guides.js';
 import { buildEssentialsFaq } from '../data/essentials-faq.js';
 import { hasEssentials } from '../data/country-essentials.js';
@@ -259,6 +259,31 @@ const lead = typo(guide?.intro ? firstSentence(guide.intro)
 const inline = (guide?.photos || [])
   .map((p) => ({ ...p, img: inlinePhotos[`../assets/destinations/inline/${p.file}.jpg`] }))
   .filter((p) => p.img);
+// Кадры страны по слотам макета Омана: широкий после событий по месяцам и три в разделе
+// въезда. Подпись «Фотографии: …» собирается из тех же записей о лицензии, по которым
+// кадр прошёл проверку происхождения; свой кадр подписи не требует.
+const hubImageFiles = import.meta.glob('../content/blog/_images/**/*.{jpg,jpeg,webp}', { import: 'default' });
+const hubCredits = import.meta.glob('../content/blog/_images/**/_credits.json', { eager: true, import: 'default' });
+const фотоСтраны = countryPhotos(d.slug);
+const сКадром = async (p) => {
+  const load = hubImageFiles[`../content/blog/_images/${p.file}`];
+  if (!load) throw new Error(`Кадр страницы ${d.slug} не найден: ${p.file}`);
+  return { ...p, img: await load() };
+};
+const широкий = фотоСтраны ? await сКадром(фотоСтраны.wide) : null;
+const практика = фотоСтраны ? await Promise.all(фотоСтраны.practice.map(сКадром)) : [];
+const семьяЛицензии = (l) => (/pixabay/i.test(l) ? 'Pixabay' : /^CC BY-SA/i.test(l) ? 'CC BY-SA' : /^CC BY/i.test(l) ? 'CC BY' : /^CC0/i.test(l) ? 'CC0' : l);
+const авторы = new Map();
+for (const p of [широкий, ...практика].filter(Boolean)) {
+  const cut = p.file.lastIndexOf('/');
+  const записи = hubCredits[`../content/blog/_images/${p.file.slice(0, cut)}/_credits.json`] || {};
+  const имя = p.file.slice(cut + 1);
+  const rec = записи[имя.replace(/\.\w+$/, '')] || записи[имя];
+  if (!rec?.creator) continue;
+  const lic = семьяЛицензии(rec.license || '');
+  авторы.set(lic, [...new Set([...(авторы.get(lic) || []), rec.creator])]);
+}
+const фотоКредиты = авторы.size ? `Фотографии: ${[...авторы].map(([lic, who]) => `${who.join(', ')} (${lic})`).join('; ')}.` : '';
 // Партнёрские ссылки — с ТЕМИ ЖЕ метками, что были: замер 20.09 сравнивает периоды,
 // и смена меток посередине разорвала бы ряд.
 const билеты = d.price?.iata ? aviasalesRoute('MOW', d.price.iata, subId) : null;
@@ -287,6 +312,7 @@ const морскаяФраза = seaRow ? (() => {
   const s = seaRow.sea; const lo = Math.min(...s), hi = Math.max(...s);
   return typo(`Вторая строка в клетках — вода у ${seaRow.name === 'Салала' ? 'Салалы' : 'берега'}: от ${Math.round(lo)} °C в ${МЕС_П[s.indexOf(lo)]} до ${Math.round(hi)} °C в ${МЕС_П[s.indexOf(hi)]}.`);
 })() : '';
+const разделов = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'раздел' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'раздела' : 'разделов');
 const tocItems = [
   (guide?.intro || guide?.highlights?.length) && { id: 'zachem', t: `Зачем ехать ${d.cases.vP}` },
   { id: 'pogoda', t: погодаH2 },
@@ -394,7 +420,6 @@ if (guide?.itinerary?.length) {
       <div class="om-byline">
         <Image src={author} alt="Никита Зайцев" width={52} height={64} format="webp" quality={80} />
         <p><a href="/about/">Никита Зайцев</a>, автор traveltribe.ru{visited ? '. Был здесь сам' : ''}.</p>
-        <TripSaveButton slug={d.slug} nom={d.cases.nom} />
       </div>
     </header>
 
@@ -402,12 +427,20 @@ if (guide?.itinerary?.length) {
 
     {/* Оглавление: сразу под шапкой, в теле страницы, пункты слово в слово как
         заголовки разделов (NN/g, Tables of Contents). Разделы открыты целиком —
-        Google даёт ссылки-переходы к разделам только на видимый при загрузке текст. */}
+        Google даёт ссылки-переходы к разделам только на видимый при загрузке текст.
+        Компактно (замечание Никиты 10.09.2026: «крайне много занимает места»): на
+        широком экране пункты идут строкой через точку — NN/g советует горизонтальную
+        раскладку для коротких заголовков; на телефоне список свёрнут в одну строку над
+        содержимым — так делают PatternFly и Red Hat. Не липкий: NN/g видел, что липкое
+        свёрнутое оглавление на телефоне люди не замечают. */}
     <nav class="om-toc" aria-label="На этой странице">
-      <p class="om-toc-h">На этой странице</p>
-      <ol>
-        {tocItems.map((it) => (<li><a href={`#${it.id}`}>{it.t}</a></li>))}
-      </ol>
+      <details id="om-toc" open>
+        <summary class="om-toc-h">На этой странице <span class="om-toc-n">{tocItems.length} {разделов(tocItems.length)}</span></summary>
+        <ol>
+          {tocItems.map((it) => (<li><a href={`#${it.id}`}>{it.t}</a></li>))}
+        </ol>
+      </details>
+      <script is:inline>(function () { var t = document.getElementById('om-toc'); if (t && window.matchMedia('(max-width: 900px)').matches) t.open = false; })();</script>
     </nav>
 
     {deepGuide && (
@@ -481,13 +514,23 @@ if (guide?.itinerary?.length) {
       <MonthlyEvents slug={d.slug} countryNom={d.cases.nom} countryNameVp={essVp} />
     </div>
 
+    {/* width — размер запасного src для тех, кто не читает srcset: без него Astro отдаёт
+        оригинал в 1920 px, и детальный кадр весит больше мегабайта (проверка SEO сайта
+        не пускает файлы тяжелее 800 КБ). */}
+    {широкий && (
+      <figure class="om-wide">
+        <Image src={широкий.img} alt={широкий.alt} width={Math.min(1800, широкий.img.width)} widths={[800, 1200, 1800]} sizes="100vw" formats={['webp']} quality={78} loading="lazy" />
+        <figcaption>{typo(широкий.caption)}</figcaption>
+      </figure>
+    )}
+
     {guide?.itinerary?.length > 0 && (
       <section class="om-sec" id="marshrut">
         <h2>Маршрут на 7–10 дней</h2>
         <ol class="om-steps">
           {guide.itinerary.map((s) => (<li><b>{s.t}.</b>{typo(` ${s.d}`)}</li>))}
         </ol>
-        {photosAfter('itinerary').map((p) => (
+        {inline.length < 2 && photosAfter('itinerary').map((p) => (
           <figure class="om-figure">
             <Image src={p.img} alt={p.alt} widths={[640, 1024, 1520]} sizes="(max-width: 800px) 100vw, 760px" formats={['webp']} quality={72} loading="lazy" />
             <figcaption>{typo(p.caption)}</figcaption>
@@ -507,7 +550,7 @@ if (guide?.itinerary?.length) {
         {guide?.getThere && !guide.compare && !guide.noFlightCta && билеты && flightFrom && (
           <div class="om-cta-row">
             <a href={билеты} class="om-btn" rel="sponsored noopener" target="_blank">Сравнить билеты Москва — {d.cases.nom} от ${flightFrom}</a>
-            <span class="om-dim">все авиакомпании в одной выдаче · оплата картами РФ</span>
+            <span class="om-dim">оплата картами РФ</span>
           </div>
         )}
         {трансфер && (
@@ -527,7 +570,6 @@ if (guide?.itinerary?.length) {
                 </div>
               ))}
             </div>
-            {guide.compare.note && <p class="om-small om-dim">{typo(guide.compare.note)}</p>}
           </>
         )}
       </section>
@@ -599,7 +641,7 @@ if (guide?.itinerary?.length) {
       <div class="om-embed">
         <BudgetBlock slug={d.slug} />
       </div>
-      <AviasalesWidget origin="MOW" destination={d.price.iata} title={`Найти билеты — ${d.cases.vP}`} subid={subId} />
+      <AviasalesWidget origin="MOW" destination={d.price.iata} title={`Найти билеты — ${d.cases.vP}`} subid={subId} plain />
     </section>
 
     <section class="om-sec" id="gid">
@@ -623,9 +665,25 @@ if (guide?.itinerary?.length) {
             {plug && <div class="om-prow"><span>Розетка</span><span>{typo(`тип ${plug.types}, ${plug.voltage}`)}</span></div>}
           </div>
           {guide?.practical?.length > 0 && (
-            <p class="om-body om-linkline"><a href={полис} rel="sponsored noopener" target="_blank">Подобрать полис {d.cases.vP}</a> <span class="om-dim">{guide.insuranceNote || 'сравнение цен · оплата картами РФ'}</span></p>
+            <p class="om-body om-linkline"><a href={полис} rel="sponsored noopener" target="_blank">Подобрать полис {d.cases.vP}</a> <span class="om-dim">{guide.insuranceNote || 'оплата картами РФ'}</span></p>
           )}
         </>
+      )}
+      {практика.length === 3 && (
+        <div class="om-practice">
+          <figure class="om-tall">
+            <div class="om-fill"><Image src={практика[0].img} alt={практика[0].alt} width={Math.min(900, практика[0].img.width)} widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" formats={['webp']} quality={78} loading="lazy" /></div>
+            <figcaption>{typo(практика[0].caption)}</figcaption>
+          </figure>
+          <div>
+            {практика.slice(1).map((p) => (
+              <figure class="om-inline">
+                <Image src={p.img} alt={p.alt} width={Math.min(900, p.img.width)} widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" formats={['webp']} quality={78} loading="lazy" />
+                <figcaption>{typo(p.caption)}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
       )}
     </section>
 
@@ -666,7 +724,7 @@ if (guide?.itinerary?.length) {
         <h2>Свежее о {d.cases.prep}</h2>
         <ul class="om-related">
           {countryNews.map((n) => (
-            <li><a href={newsUrl(n)}>{n.data.title}</a><span>{formatDateRu(n.data.date)} · со ссылкой на первоисточник</span></li>
+            <li><a href={newsUrl(n)}>{n.data.title}</a><span>{formatDateRu(n.data.date)}</span></li>
           ))}
           <li><a href="/novosti/">Все новости путешествий</a></li>
         </ul>
@@ -693,6 +751,8 @@ if (guide?.itinerary?.length) {
         <li><a href="/countries/">Все страны на сайте</a></li>
       </ul>
     </section>
+
+    {фотоКредиты && <p class="om-credits">{typo(фотоКредиты)}</p>}
 
     <div class="om-foot">
       <Image src={author} alt="Никита Зайцев" width={60} height={74} format="webp" quality={80} />
@@ -730,16 +790,30 @@ if (guide?.itinerary?.length) {
   .om figure { margin: 0; }
   .om figcaption { font-size: 0.875rem; color: var(--text-faint); line-height: 1.5; margin-top: 8px; }
 
-  .om-top, .om-pair, .om-money {
+  .om-top, .om-pair, .om-money, .om-practice {
     display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 28px;
   }
   .om-top { align-items: start; padding: 24px 0 40px; row-gap: 32px; }
   .om-title { grid-column: span 8; }
   .om-answer { grid-column: span 4; }
   .om-byline { grid-column: 1 / -1; }
-  .om-pair > *, .om-money > * { grid-column: span 6; }
+  .om-pair > *, .om-money > *, .om-practice > * { grid-column: span 6; }
   .om-pair { margin: 24px 0; }
   .om-pair :global(img) { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; display: block; }
+  .om-wide { margin: 0 -24px; }
+  .om-wide :global(img) { width: 100%; height: clamp(240px, 30vw, 480px); object-fit: cover; display: block; }
+  .om-wide figcaption { padding: 0 24px; }
+  .om-practice { margin-top: 32px; }
+  .om-practice :global(img) { width: 100%; height: 300px; object-fit: cover; display: block; }
+  /* Левый кадр тянется на высоту двух правых, как на Омане. Без процентных высот внутри
+     сетки: Safari считает их от всей фигуры, и подпись ложится поверх кадра. Фигура —
+     flex-колонка, кадр заполняет остаток абсолютным позиционированием. */
+  .om-tall { display: flex; flex-direction: column; }
+  .om-fill { position: relative; flex: 1 1 auto; min-height: 300px; }
+  .om-practice .om-fill :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .om-practice > div { display: grid; row-gap: 20px; align-content: start; }
+  .om-inline { margin: 0; }
+  .om-credits { font-size: 0.8125rem; color: var(--text-faint); margin: 40px 0 0; }
 
   .om h1 { font-family: var(--ff-display); font-weight: 400; font-size: clamp(2.5rem, 5.6vw, 4.5rem); line-height: 1; margin: 0 0 16px; text-wrap: balance; }
   .om-yr { color: var(--gold); }
@@ -766,12 +840,27 @@ if (guide?.itinerary?.length) {
 
   /* Оглавление — в теле страницы, не липкое: так его не путают с меню сайта
      (NN/g). Пункты — ссылки с явным видом ссылки. */
-  .om-toc { padding: 28px 0 32px; border-top: 1px solid var(--line); }
-  .om-toc-h { font-family: var(--ff-display); font-size: 1.25rem; margin: 0 0 12px; }
-  .om-toc ol { margin: 0; padding: 0; list-style: none; columns: 3 240px; column-gap: 32px; }
-  .om-toc li { break-inside: avoid; border-bottom: 1px solid var(--line); }
-  .om-toc a { display: flex; align-items: center; min-height: 44px; color: var(--gold); text-decoration: none; font-size: 0.9375rem; line-height: 1.35; }
+  .om-toc { padding: 20px 0 24px; border-top: 1px solid var(--line); }
+  .om-toc-h { font-family: var(--ff-display); font-size: 1.25rem; margin: 0 0 10px; list-style: none; }
+  .om-toc-h::-webkit-details-marker { display: none; }
+  .om-toc-n { font-family: var(--ff-body); font-size: 0.875rem; color: var(--text-faint); margin-left: 8px; }
+  .om-toc ol { margin: 0; padding: 0; list-style: none; line-height: 1.7; }
+  .om-toc li { display: inline; }
+  .om-toc li + li::before { content: "·"; color: var(--text-faint); margin: 0 10px; }
+  .om-toc a { color: var(--gold); text-decoration: none; font-size: 0.9375rem; }
   .om-toc a:hover { color: var(--gold-dim); text-decoration: underline; text-underline-offset: 3px; }
+  @media (min-width: 901px) { .om-toc-h { pointer-events: none; } .om-toc-n { display: none; } }
+  @media (max-width: 900px) {
+    .om-toc { padding: 0; }
+    .om-toc-h { display: flex; align-items: center; justify-content: space-between; min-height: 52px; margin: 0; cursor: pointer; font-size: 1.125rem; }
+    .om-toc-n { margin-left: auto; margin-right: 14px; }
+    .om-toc-h::after { content: ""; flex: none; width: 9px; height: 9px; border-right: 2px solid var(--text-faint); border-bottom: 2px solid var(--text-faint); transform: translateY(-3px) rotate(45deg); }
+    .om-toc details[open] .om-toc-h::after { transform: translateY(2px) rotate(-135deg); }
+    .om-toc ol { line-height: 1.35; padding-bottom: 8px; }
+    .om-toc li { display: block; border-top: 1px solid var(--line); }
+    .om-toc li + li::before { content: none; }
+    .om-toc a { display: flex; align-items: center; min-height: 44px; }
+  }
   .om-guide { margin: 0 0 8px; }
 
   .om-heat { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; margin: 8px 0 12px; }
@@ -802,10 +891,10 @@ if (guide?.itinerary?.length) {
   .om-note { font-size: 0.9375rem; font-style: italic; color: var(--text-dim); margin: 20px 0 0; line-height: 1.6; max-width: 68ch; }
 
   .om-comp { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 24px; margin: 8px 0 12px; }
-  .om-cc { padding: 16px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; }
+  .om-cc { padding: 14px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; }
   .om-cc-name { font-weight: 600; font-size: 1.0625rem; margin: 0; }
   .om-cc-sub { font-size: 0.875rem; color: var(--text-faint); margin: 2px 0 0; }
-  .om-cc-for { flex: 1; font-size: 0.9375rem; line-height: 1.55; color: var(--text-dim); margin: 8px 0 12px; }
+  .om-cc-for { flex: 1; font-size: 0.9375rem; line-height: 1.55; color: var(--text-dim); margin: 6px 0 4px; }
 
   .om-big { font-family: var(--ff-display); font-size: clamp(2rem, 4vw, 3rem); line-height: 1.05; margin: 0 0 16px; }
   .om-big .om-small { display: block; font-size: 0.9375rem; margin-top: 4px; }
@@ -813,7 +902,7 @@ if (guide?.itinerary?.length) {
   .om-prices .om-prow:first-child, .om-visa .om-prow:first-child { border-top: 1px solid var(--line); }
   .om-money + .om-money { margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--line); }
   .om-prow span:first-child { color: var(--text-faint); }
-  .om-prow span:last-child { font-family: var(--ff-mono); text-align: right; display: flex; justify-content: flex-end; align-items: center; }
+  .om-prow span:last-child { font-family: var(--ff-mono); text-align: right; display: flex; justify-content: flex-end; align-items: center; text-wrap: balance; }
   .om-rules { margin-top: 12px; }
   .om-rules .om-prow { align-items: flex-start; }
   .om-rules .om-prow span:last-child { flex: 1 1 auto; font-family: var(--ff-body); text-align: left; justify-content: flex-start; line-height: 1.5; padding: 12px 0; max-width: 62ch; }
@@ -849,14 +938,17 @@ if (guide?.itinerary?.length) {
     .om-answer { grid-column: span 5; }
   }
   @media (max-width: 900px) {
-    .om-top, .om-pair, .om-money { grid-template-columns: 1fr; gap: 28px; }
-    .om-title, .om-answer, .om-byline, .om-pair > *, .om-money > * { grid-column: 1 / -1; }
+    .om-top, .om-pair, .om-money, .om-practice { grid-template-columns: 1fr; gap: 28px; }
+    .om-title, .om-answer, .om-byline, .om-pair > *, .om-money > *, .om-practice > * { grid-column: 1 / -1; }
     .om-heat { grid-template-columns: repeat(6, 1fr); }
   }
   @media (max-width: 768px) {
     .om { padding: 0 16px 48px; }
     .om-sec { padding: 40px 0; }
-    .om-hero { margin-left: -16px; margin-right: -16px; }
+    .om-hero, .om-wide { margin-left: -16px; margin-right: -16px; }
+    .om-wide figcaption { padding: 0 16px; }
+    .om-practice :global(img) { height: 240px; }
+    .om-fill { flex: none; min-height: 0; aspect-ratio: 3 / 2; }
     .om-btn-ghost, .om-cta-row .om-btn { width: 100%; }
     .om-rules .om-prow { flex-direction: column; gap: 0; }
     .om-rules .om-prow span:first-child { flex: none; padding: 12px 0 0; }

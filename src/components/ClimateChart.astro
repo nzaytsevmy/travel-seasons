@@ -10,7 +10,7 @@
 // сдвига макета, числа — текстом в HTML, чтобы их читали и люди, и нейроответы.
 // Данные — src/data/country-monthly-weather.js (один источник для всех стран).
 
-import { MONTHLY_WEATHER, CLIMATE_GENERATED_AT } from '../data/country-monthly-weather.js';
+import { MONTHLY_WEATHER } from '../data/country-monthly-weather.js';
 
 interface Props {
   slug: string;
@@ -22,7 +22,6 @@ const { slug, countryNom } = Astro.props;
 // (решение Никиты 05.09.2026). Где направления нет, блок не рисуется.
 const data = (MONTHLY_WEATHER as Record<string, any>)[slug];
 if (!data) return null as any;
-const sourceLine = `${data.source}. Снято ${CLIMATE_GENERATED_AT}.`;
 
 const MONTHS = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
 const MONTHS_PREP = ['январе', 'феврале', 'марте', 'апреле', 'мае', 'июне',
@@ -123,7 +122,6 @@ const city = data.city as string | undefined;
 
   <figcaption class="cc-cap">
     <p class="cc-sum">{summary}</p>
-    <p class="cc-src">{sourceLine}</p>
   </figcaption>
 </figure>
 
@@ -183,7 +181,6 @@ const city = data.city as string | undefined;
 
 .cc-cap { margin: .4rem 0 0; }
 .cc-sum { margin: 0 0 .3rem; font-size: .92rem; line-height: 1.5; max-width: 76ch; color: var(--text); }
-.cc-src { margin: 0; font-size: .74rem; color: var(--text-dim); }
 
 @media (max-width: 480px) {
   .cc-plot { gap: 2px; }

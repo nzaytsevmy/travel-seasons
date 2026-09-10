@@ -36,7 +36,7 @@ const TYPE_LABEL: Record<string, string> = {
   <p class="cm-s">
     {data.visited
       ? 'Точки отобраны по личному маршруту. Кликни на пин на карте или название в таблице.'
-      : 'Главные места из открытых источников. Кликни на пин на карте или название в таблице.'}
+      : 'Главные места. Кликни на пин на карте или название в таблице.'}
   </p>
 
   <div class="cm-frame">
@@ -81,21 +81,6 @@ const TYPE_LABEL: Record<string, string> = {
     </tbody>
   </table>
 
-  {data.sources?.length > 0 && (
-    <div class="cm-foot">
-      <span class="cm-fhead">Источники:</span>
-      {data.sources.map((s, i) => (
-        <>
-          {i > 0 && <span class="cm-sep">·</span>}
-          {s.url ? (
-            <a href={s.url} target={s.url.startsWith('http') ? '_blank' : '_self'} rel="noopener">{s.name}</a>
-          ) : (
-            <span>{s.name}</span>
-          )}
-        </>
-      ))}
-    </div>
-  )}
 </section>
 
 <script is:inline define:vars={{ mapId, pois: data.pois, center: data.center }}>
@@ -298,28 +283,6 @@ const TYPE_LABEL: Record<string, string> = {
 }
 .cm-links-wrap a + a { margin-left: .4rem; }
 
-.cm-foot {
-  display: flex; align-items: baseline; flex-wrap: wrap;
-  gap: .4rem .8rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--line-strong);
-  font-size: .78rem;
-  color: var(--text-dim);
-}
-.cm-fhead {
-  font-size: .66rem;
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin-right: .4rem;
-}
-.cm-foot a {
-  color: var(--gold);
-  text-decoration: 1px underline var(--gold);
-  text-underline-offset:.22em;
-}
-.cm-sep { color: var(--text-faint); margin: 0 .3rem; }
 
 /* Leaflet pin — Swiss: gold disc + ink border + white number, без shadow/радиуса */
 :global(.leaflet-container) {
