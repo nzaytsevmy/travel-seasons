@@ -19,6 +19,13 @@ checks:
     sources:
       - name: "EconomyBookings — аренда машин"
         url: "https://www.economybookings.com/ru"
+  - date: 2026-09-10
+    what: "Служебные строки о сверке в тексте"
+    changed: "Сняты служебные строки о сверке. Читателю они не нужны (правило Никиты 08–09.09.2026); факты и цены не менялись."
+    minor: true
+    sources:
+      - name: "Сама статья: правка без новых фактов"
+        url: "https://traveltribe.ru/blog/aurora-new-zealand-2026/"
 coverImage: "../../assets/blog/aurora-nz.jpg"
 author: "Никита Зайцев"
 tags: ["Новая Зеландия", "Северное сияние", "Фото", "Бюджет"]
@@ -307,5 +314,3 @@ iPhone 14 Pro и новее, Pixel 7 Pro+, Samsung S23 Ultra+ снимают а�
 * [Подпишись на @traveltriberu](https://t.me/traveltriberu) — публикую разборы стран без воды
 
 ---
-
-*Актуально на: 17 мая 2026. Стоимость визы и биометрии указаны по официальному сайту Immigration New Zealand. Цены на перелёты — Aviasales и официальные сайты Emirates / Qatar Airways. Курсы валют ЦБ РФ. Информация о Kp-индексе и солнечной активности — NOAA SWPC и SpaceWeatherLive.*

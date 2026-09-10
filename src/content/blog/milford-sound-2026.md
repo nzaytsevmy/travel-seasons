@@ -19,6 +19,13 @@ checks:
     sources:
       - name: "EconomyBookings — аренда машин"
         url: "https://www.economybookings.com/ru"
+  - date: 2026-09-10
+    what: "Служебные строки о сверке в тексте"
+    changed: "Сняты служебные строки о сверке. Читателю они не нужны (правило Никиты 08–09.09.2026); факты и цены не менялись."
+    minor: true
+    sources:
+      - name: "Сама статья: правка без новых фактов"
+        url: "https://traveltribe.ru/blog/milford-sound-2026/"
 coverImage: "../../assets/blog/milford-sound.jpg"
 author: "Никита Зайцев"
 tags: ["Новая Зеландия", "Фьордленд", "Маршруты", "Бюджет"]
@@ -254,7 +261,5 @@ howto:
 * [Подпишись на @traveltriberu](https://t.me/traveltriberu) — разборы стран без воды
 
 ---
-
-*Актуально на: 17 мая 2026. Стоимость визы и International Visitor Levy — по официальному сайту Immigration New Zealand. Цены на каяк-туры и круизы — операторы Roscos Milford Kayaks, Go Orange, Southern Discoveries, RealNZ на момент поездки. Цены на перелёты — Aviasales и официальные сайты авиакомпаний. Курсы валют ЦБ РФ.*
 
 *Фото: Wikimedia Commons / [CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/).*
