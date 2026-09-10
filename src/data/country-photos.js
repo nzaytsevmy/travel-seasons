@@ -93,6 +93,134 @@ export const COUNTRY_PHOTOS = {
       { file: 'hub-bali/batur.jpg', alt: 'Вулкан Батур и озеро у его подножия', caption: 'Вулкан Батур и озеро Батур.' },
     ],
   },
+  greece: {
+    wide: { file: 'hub-greece/balos.jpg', alt: 'Лагуна Балос на Крите сверху: бирюзовые отмели и остров Грамвуса', caption: 'Лагуна Балос на Крите: мелководье и отмели.' },
+    practice: [
+      { file: 'hub-greece/meteora.jpg', alt: 'Скальные столбы Метеор и монастырь на вершине одного из них', caption: 'Метеоры: монастыри на вершинах скал.' },
+      { file: 'hub-greece/acropolis.jpg', alt: 'Акрополь с Парфеноном на скале над Афинами, вид с холма Филопаппу', caption: 'Акрополь с холма Филопаппу.' },
+      { file: 'hub-greece/navagio.jpg', alt: 'Пляж Навагио на Закинфе под белыми скалами, бирюзовая вода', caption: 'Пляж Навагио на Закинфе.' },
+    ],
+  },
+  spain: {
+    wide: { file: 'hub-spain/plaza-espana-sevilla.jpg', alt: 'Площадь Испании в Севилье: полукруг дворца, башни и канал', caption: 'Площадь Испании в Севилье.' },
+    practice: [
+      { file: 'hub-spain/sagrada-familia.jpg', alt: 'Своды Саграда Фамилии изнутри: колонны ветвятся как деревья', caption: 'Своды Саграда Фамилии в Барселоне.' },
+      { file: 'hub-spain/park-guell.jpg', alt: 'Мозаичный дракон на лестнице парка Гуэль', caption: 'Мозаичный дракон в парке Гуэль, Барселона.' },
+      { file: 'hub-spain/cala-mesquida.jpg', alt: 'Пляж Кала-Мескида на Мальорке: песок, бирюзовая вода и холмы', caption: 'Пляж Кала-Мескида на Мальорке.' },
+    ],
+  },
+  croatia: {
+    wide: { file: 'hub-croatia/plitvice.jpg', alt: 'Водопады Плитвицких озёр: потоки падают в бирюзовую воду', caption: 'Плитвицкие озёра: водопады и бирюзовая вода.' },
+    practice: [
+      { file: 'hub-croatia/split-vestibule.jpg', alt: 'Колокольня собора Святого Дуйма в круглом проёме вестибюля дворца Диоклетиана в Сплите', caption: 'Колокольня Сплита в проёме дворца Диоклетиана.' },
+      { file: 'hub-croatia/zlatni-rat.jpg', alt: 'Пляж Златни-Рат на Браче сверху: галечная коса уходит в море', caption: 'Коса Златни-Рат на острове Брач.' },
+      { file: 'hub-croatia/hvar.jpg', alt: 'Каменные дома Хвара над гаванью с яхтами', caption: 'Город Хвар над гаванью.' },
+    ],
+  },
+  'italy-south': {
+    wide: { file: 'hub-italy-south/florence.jpg', alt: 'Флоренция вечером с площади Микеланджело: собор с куполом над крышами', caption: 'Флоренция с площади Микеланджело: купол собора над крышами.' },
+    practice: [
+      { file: 'hub-italy-south/colosseum.jpg', alt: 'Колизей в Риме на закате', caption: 'Колизей в Риме.' },
+      { file: 'hub-italy-south/matera.jpg', alt: 'Сасси в Матере: каменный город на склоне ущелья', caption: 'Сасси в Матере.' },
+      { file: 'hub-italy-south/pompeii.jpg', alt: 'Форум Помпей, на горизонте Везувий', caption: 'Форум Помпей и Везувий.' },
+    ],
+  },
+  cyprus: {
+    wide: { file: 'hub-cyprus/makronissos.jpg', alt: 'Пляж Макронисос у Айя-Напы: светлый песок и прозрачная вода', caption: 'Пляж Макронисос у Айя-Напы.' },
+    practice: [
+      { file: 'hub-cyprus/pedoulas.jpg', alt: 'Деревня Педулас на склоне гор Троодос', caption: 'Деревня Педулас в горах Троодос.' },
+      { file: 'hub-cyprus/kourion.jpg', alt: 'Античный театр Куриона над морем', caption: 'Театр Куриона над морем.' },
+      { file: 'hub-cyprus/cape-greco.jpg', alt: 'Скалы мыса Греко и морская пещера', caption: 'Мыс Греко: скалы и морские пещеры.' },
+    ],
+  },
+  'south-korea': {
+    wide: { file: 'hub-south-korea/seongsan.jpg', alt: 'Сонсан на острове Чеджу сверху, вулканический конус у моря', caption: 'Сонсан на Чеджу: вулканический конус над морем.' },
+    practice: [
+      { file: 'hub-south-korea/gyeongbokgung.jpg', alt: 'Павильон дворца Кёнбоккун в Сеуле', caption: 'Дворец Кёнбоккун в Сеуле.' },
+      { file: 'hub-south-korea/gamcheon.jpg', alt: 'Разноцветные дома деревни культуры Камчхон в Пусане', caption: 'Деревня культуры Камчхон в Пусане.' },
+      { file: 'hub-south-korea/haeundae.jpg', alt: 'Пляж Хэундэ в Пусане и небоскрёбы у берега', caption: 'Пляж Хэундэ в Пусане.' },
+    ],
+  },
+  singapore: {
+    wide: { file: 'hub-singapore/gardens-by-the-bay.jpg', alt: 'Сады у залива в Сингапуре: рукотворные деревья-опоры и фонтан', caption: 'Сады у залива: деревья-опоры над прудом с фонтаном.' },
+    practice: [
+      { file: 'hub-singapore/jewel-changi.jpg', alt: 'Водопад под стеклянным куполом комплекса Jewel в аэропорту Чанги', caption: 'Водопад Jewel в аэропорту Чанги.' },
+      { file: 'hub-singapore/chinatown.jpg', alt: 'Украшения к китайскому Новому году перед храмом в Чайна-тауне Сингапура', caption: 'Украшения к китайскому Новому году в Чайна-тауне.' },
+      { file: 'hub-singapore/sentosa.jpg', alt: 'Пляж Палаван на острове Сентоза', caption: 'Пляж Палаван на Сентозе.' },
+    ],
+  },
+  cambodia: {
+    wide: { file: 'hub-cambodia/koh-rong.jpg', alt: 'Пляж на острове Кох-Ронг: белый песок и бирюзовая вода', caption: 'Пляж на острове Кох-Ронг.' },
+    practice: [
+      { file: 'cambodia/ta-prohm-roots.jpg', alt: 'Корни огромного дерева стекают по каменной башне Та Прома', caption: 'Корни дерева на башне Та Прома.' },
+      { file: 'hub-cambodia/bayon.jpg', alt: 'Каменные лица на башнях храма Байон', caption: 'Каменные лица храма Байон.' },
+      { file: 'hub-cambodia/phnom-penh-palace.jpg', alt: 'Павильон Королевского дворца в Пномпене', caption: 'Королевский дворец в Пномпене.' },
+    ],
+  },
+  maldives: {
+    wide: { file: 'hub-maldives/madhiriguraidhoo.jpg', alt: 'Катер на бирюзовой воде у острова Мадхиригурайдху, пальмы на берегу', caption: 'Катер у острова Мадхиригурайдху, атолл Лхавияни.' },
+    practice: [
+      { file: 'hub-maldives/jetty.jpg', alt: 'Деревянный причал уходит в прозрачную лагуну', caption: 'Причал над лагуной.' },
+      { file: 'hub-maldives/male.jpg', alt: 'Мале с воздуха: плотная застройка столицы на маленьком острове', caption: 'Мале, столица, с воздуха.' },
+      { file: 'hub-maldives/snorkeling.jpg', alt: 'Снорклинг над рифом в Индийском океане', caption: 'Снорклинг над рифом.' },
+    ],
+  },
+  'india-goa': {
+    wide: { file: 'hub-india-goa/bom-jesus.jpg', alt: 'Базилика Бом-Жезус в Старом Гоа за большим деревом и газоном', caption: 'Базилика Бом-Жезус в Старом Гоа.' },
+    practice: [
+      { file: 'hub-india-goa/fontainhas.jpg', alt: 'Переулок в квартале Фонтаиньяс в Панаджи: цветные дома и мощёная дорожка', caption: 'Переулок в квартале Фонтаиньяс, Панаджи.' },
+      { file: 'goa-own/anjuna.jpg', alt: 'Пляжные кафе под пальмами на пляже Анджуны', caption: 'Кафе на пляже Анджуны.' },
+      { file: 'goa-own/dudhsagar.jpg', alt: 'Водопад Дудхсагар стекает по скалам в лесистом ущелье', caption: 'Водопад Дудхсагар.' },
+    ],
+  },
+  morocco: {
+    wide: { file: 'hub-morocco/merzouga.jpg', alt: 'Оранжевые дюны Эрг-Шебби у Мерзуги', caption: 'Дюны Эрг-Шебби у Мерзуги.' },
+    practice: [
+      { file: 'hub-morocco/ait-benhaddou.jpg', alt: 'Глинобитный ксар Айт-Бен-Хадду сверху', caption: 'Ксар Айт-Бен-Хадду.' },
+      { file: 'hub-morocco/fes-tannery.jpg', alt: 'Красильни Шуара в Фесе: чаны с краской среди домов', caption: 'Красильни Шуара в Фесе.' },
+      { file: 'hub-morocco/essaouira.jpg', alt: 'Синие рыбацкие лодки в гавани Эс-Сувейры', caption: 'Рыбацкие лодки в гавани Эс-Сувейры.' },
+    ],
+  },
+  china: {
+    wide: { file: 'china-own/fenghuang.jpg', alt: 'Ночной Фэнхуан: дома и мосты вдоль реки', caption: 'Фэнхуан ночью: старый город вдоль реки.' },
+    practice: [
+      { file: 'china-own/pillars.jpg', alt: 'Каменные столбы Чжанцзяцзе в тумане', caption: 'Столбы Чжанцзяцзе в тумане.' },
+      { file: 'china-guide-2026/guilin.jpg', alt: 'Карстовые горы Гуйлиня в утреннем тумане под розовым небом', caption: 'Карстовые горы Гуйлиня на рассвете.' },
+      { file: 'china-guide-2026/chengdu.jpg', alt: 'Детёныш панды на дереве в Чэнду', caption: 'Панда в Чэнду.' },
+    ],
+  },
+  philippines: {
+    wide: { file: 'philippines-guide-2026/bohol.jpg', alt: 'Шоколадные холмы на Бохоле: ровные зелёные конусы до горизонта', caption: 'Шоколадные холмы на Бохоле.' },
+    practice: [
+      { file: 'philippines-guide-2026/coron.jpg', alt: 'Бирюзовая лагуна на Короне, деревянный причал и скалы', caption: 'Лагуна на Короне.' },
+      { file: 'philippines-guide-2026/kawasan.jpg', alt: 'Водопад Кавасан на Себу: каскады и бирюзовая вода', caption: 'Водопад Кавасан на Себу.' },
+      { file: 'philippines-guide-2026/tarsier.jpg', alt: 'Долгопят с огромными глазами на ветке', caption: 'Долгопят на Бохоле.' },
+    ],
+  },
+  uzbekistan: {
+    wide: { file: 'hub-uzbekistan/khiva-walls.jpg', alt: 'Глинобитные стены Ичан-Калы в Хиве', caption: 'Стены Ичан-Калы в Хиве.' },
+    practice: [
+      { file: 'hub-uzbekistan/bukhara.jpg', alt: 'Бирюзовый купол медресе и минарет Калян в Бухаре', caption: 'Бухара: минарет Калян и бирюзовый купол.' },
+      { file: 'hub-uzbekistan/shah-i-zinda.jpg', alt: 'Мавзолеи некрополя Шахи-Зинда в Самарканде', caption: 'Некрополь Шахи-Зинда в Самарканде.' },
+      { file: 'hub-uzbekistan/tashkent-metro.jpg', alt: 'Станция ташкентского метро «Мустакиллик майдони» с люстрами', caption: 'Станция метро в Ташкенте.' },
+    ],
+  },
+  'italy-north': {
+    wide: { file: 'hub-italy-north/tre-cime.jpg', alt: 'Три пика Лаваредо в Доломитах над облаками', caption: 'Три пика Лаваредо в Доломитах.' },
+    practice: [
+      { file: 'hub-italy-north/milan-duomo.jpg', alt: 'Миланский собор и площадь перед ним', caption: 'Миланский собор.' },
+      { file: 'hub-italy-north/manarola.jpg', alt: 'Разноцветные дома Манаролы на скале над морем', caption: 'Манарола в Чинкве-Терре.' },
+      { file: 'hub-italy-north/venice.jpg', alt: 'Большой канал в Венеции с моста Риальто: гондолы и дворцы', caption: 'Большой канал с моста Риальто.' },
+    ],
+  },
+  malaysia: {
+    wide: { file: 'hub-malaysia/cameron-highlands.jpg', alt: 'Чайные плантации Камерон-Хайлендс на склонах холмов', caption: 'Чайные плантации Камерон-Хайлендс.' },
+    practice: [
+      { file: 'hub-malaysia/batu-caves.jpg', alt: 'Золотая статуя Муругана и лестница к пещерам Бату', caption: 'Пещеры Бату у Куала-Лумпура.' },
+      { file: 'hub-malaysia/perhentian.jpg', alt: 'Белый пляж под пальмами на острове Перхентиан-Бесар', caption: 'Пляж на Перхентиан-Бесаре.' },
+      { file: 'hub-malaysia/melaka.jpg', alt: 'Река в Малакке и дома по её берегам', caption: 'Река в старой Малакке.' },
+    ],
+  },
 };
 
 export const countryPhotos = (slug) => COUNTRY_PHOTOS[slug] || null;
