@@ -507,9 +507,12 @@ if (guide?.itinerary?.length) {
       <MonthlyEvents slug={d.slug} countryNom={d.cases.nom} countryNameVp={essVp} />
     </div>
 
+    {/* width — размер запасного src для тех, кто не читает srcset: без него Astro отдаёт
+        оригинал в 1920 px, и детальный кадр весит больше мегабайта (проверка SEO сайта
+        не пускает файлы тяжелее 800 КБ). */}
     {широкий && (
       <figure class="om-wide">
-        <Image src={широкий.img} alt={широкий.alt} widths={[800, 1200, 1800]} sizes="100vw" formats={['webp']} quality={78} loading="lazy" />
+        <Image src={широкий.img} alt={широкий.alt} width={Math.min(1800, широкий.img.width)} widths={[800, 1200, 1800]} sizes="100vw" formats={['webp']} quality={78} loading="lazy" />
         <figcaption>{typo(широкий.caption)}</figcaption>
       </figure>
     )}
@@ -663,13 +666,13 @@ if (guide?.itinerary?.length) {
       {практика.length === 3 && (
         <div class="om-practice">
           <figure class="om-tall">
-            <div class="om-fill"><Image src={практика[0].img} alt={практика[0].alt} widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" formats={['webp']} quality={78} loading="lazy" /></div>
+            <div class="om-fill"><Image src={практика[0].img} alt={практика[0].alt} width={Math.min(900, практика[0].img.width)} widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" formats={['webp']} quality={78} loading="lazy" /></div>
             <figcaption>{typo(практика[0].caption)}</figcaption>
           </figure>
           <div>
             {практика.slice(1).map((p) => (
               <figure class="om-inline">
-                <Image src={p.img} alt={p.alt} widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" formats={['webp']} quality={78} loading="lazy" />
+                <Image src={p.img} alt={p.alt} width={Math.min(900, p.img.width)} widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" formats={['webp']} quality={78} loading="lazy" />
                 <figcaption>{typo(p.caption)}</figcaption>
               </figure>
             ))}
