@@ -349,6 +349,262 @@ export const COUNTRY_PHOTOS = {
       { file: 'hub-kazakhstan/kolsai.jpg', alt: 'Кольсайское озеро в лесистом ущелье', caption: 'Кольсайское озеро.' },
     ],
   },
+  nepal: {
+    wide: { file: 'nepal-everest-trek-2026/stupa-ama-dablam.jpg', alt: 'Ступа с молитвенными флажками, за ней снежная пирамида Ама-Даблам в облаках', caption: 'Ступа и Ама-Даблам на треке к Эвересту.' },
+    practice: [
+      { file: 'nepal-everest-trek-2026/kathmandu-swayambhunath.jpg', alt: 'Золотая ступа Сваямбунатх с нарисованными глазами и молитвенными флажками', caption: 'Ступа Сваямбунатх в Катманду.' },
+      { file: 'nepal-everest-trek-2026/mule-caravan.jpg', alt: 'Караван нагруженных мулов на каменистой тропе среди хвойного леса', caption: 'Караван мулов на тропе к Эвересту.' },
+      { file: 'nepal-everest-trek-2026/cover-everest-lhotse.jpg', alt: 'Тёмная пирамида Эвереста за длинной снежной стеной Лхоцзе', caption: 'Эверест за стеной Лхоцзе.' },
+    ],
+  },
+  bolivia: {
+    wide: { file: 'bolivia/arbol-de-piedra.jpg', alt: 'Каменное дерево, выточенное ветром в пустыне Сильоли', caption: 'Каменное дерево в пустыне Сильоли.' },
+    practice: [
+      { file: 'bolivia/uyuni-incahuasi-cactus.jpg', alt: 'Высокие кактусы на острове Инкауаси посреди солончака Уюни', caption: 'Кактусы острова Инкауаси на солончаке Уюни.' },
+      { file: 'bolivia/sol-de-manana-geysers.jpg', alt: 'Пар над гейзерным полем Соль-де-Маньяна', caption: 'Гейзеры Соль-де-Маньяна на высоте 4900 м.' },
+      { file: 'bolivia/laguna-colorada-flamingos.jpg', alt: 'Красная вода Лагуны Колорада и фламинго', caption: 'Лагуна Колорада на высоте 4280 м.' },
+    ],
+  },
+  'new-zealand': {
+    wide: { file: 'new-zealand/cover.jpg', alt: 'Вершина Аораки в свете низкого солнца над бирюзовым озером Пукаки', caption: 'Аораки над озером Пукаки.' },
+    practice: [
+      { file: 'new-zealand/waterfall.jpg', alt: 'Водопад падает со скалы в густом лесу', caption: 'Водопад в густом лесу.' },
+      { file: 'new-zealand/roys-peak.jpg', alt: 'Озеро Ванака с островами, вид с гребня Ройс-Пика', caption: 'Озеро Ванака с гребня Ройс-Пика.' },
+      { file: 'new-zealand/sheep.jpg', alt: 'Овцы на склоне поля, за ними снежный хребет Южных Альп', caption: 'Овцы под Южными Альпами.' },
+    ],
+  },
+  chile: {
+    wide: { file: 'chile/atacama-valle-de-la-luna.jpg', alt: 'Красные скалы Долины Луны в пустыне Атакама', caption: 'Долина Луны в Атакаме.' },
+    practice: [
+      { file: 'chile-own/geysers.jpg', alt: 'Пар гейзерного поля в Атакаме на рассвете', caption: 'Гейзеры Атакамы на рассвете.' },
+      { file: 'chile/vineyard.jpg', alt: 'Ряды лоз и пальмовая аллея на винодельне в долине Касабланка', caption: 'Винодельня в долине Касабланка.' },
+      { file: 'hub-chile/valparaiso.jpg', alt: 'Цветные дома на улице Вальпараисо', caption: 'Цветные дома Вальпараисо.' },
+    ],
+  },
+  serbia: {
+    wide: { file: 'hub-serbia/djerdap.jpg', alt: 'Ущелье Джердап: Дунай между лесистыми горами', caption: 'Ущелье Джердап на Дунае.' },
+    practice: [
+      { file: 'hub-serbia/studenica.jpg', alt: 'Церковь монастыря Студеница из белого камня', caption: 'Монастырь Студеница.' },
+      { file: 'hub-serbia/petrovaradin.jpg', alt: 'Петроварадинская крепость над Дунаем в Нови-Саде', caption: 'Петроварадинская крепость в Нови-Саде.' },
+      { file: 'hub-serbia/kalemegdan.jpg', alt: 'Ворота Белградской крепости и статуя Победителя', caption: 'Белградская крепость Калемегдан.' },
+    ],
+  },
+  finland: {
+    wide: { file: 'hub-finland/porvoo.jpg', alt: 'Красные деревянные амбары на берегу реки в Старом Порвоо', caption: 'Старый Порвоо на берегу реки.' },
+    practice: [
+      { file: 'hub-finland/helsinki-cathedral.jpg', alt: 'Белый Кафедральный собор Хельсинки с зелёными куполами', caption: 'Кафедральный собор Хельсинки.' },
+      { file: 'hub-finland/santa-village.jpg', alt: 'Деревня Санта-Клауса в Рованиеми зимним вечером', caption: 'Деревня Санта-Клауса в Рованиеми.' },
+      { file: 'hub-finland/nuuksio.jpg', alt: 'Лесное озеро в национальном парке Нууксио', caption: 'Национальный парк Нууксио.' },
+    ],
+  },
+  switzerland: {
+    wide: { file: 'hub-switzerland/lavaux.jpg', alt: 'Виноградные террасы Лаво над Женевским озером', caption: 'Террасы Лаво над Женевским озером.' },
+    practice: [
+      { file: 'hub-switzerland/lauterbrunnen.jpg', alt: 'Долина Лаутербруннен: водопад Штауббах со скалы над деревней', caption: 'Долина Лаутербруннен.' },
+      { file: 'hub-switzerland/chapel-bridge.jpg', alt: 'Капелльбрюкке и башня над водой в Люцерне', caption: 'Мост Капелльбрюкке в Люцерне.' },
+      { file: 'hub-switzerland/oeschinensee.jpg', alt: 'Бирюзовое озеро Эшинен среди гор', caption: 'Озеро Эшинен.' },
+    ],
+  },
+  iceland: {
+    wide: { file: 'hub-iceland/kirkjufell.jpg', alt: 'Гора Кирькьюфетль и водопад перед ней', caption: 'Гора Кирькьюфетль.' },
+    practice: [
+      { file: 'hub-iceland/seljalandsfoss.jpg', alt: 'Водопад Сельяландсфосс падает с зелёного обрыва', caption: 'Водопад Сельяландсфосс.' },
+      { file: 'hub-iceland/reykjavik.jpg', alt: 'Цветные крыши Рейкьявика с высоты церкви Хадльгримскиркья', caption: 'Рейкьявик с высоты.' },
+      { file: 'hub-iceland/thingvellir.jpg', alt: 'Разлом Флосагья в национальном парке Тингвеллир', caption: 'Тингвеллир.' },
+    ],
+  },
+  norway: {
+    wide: { file: 'hub-norway/geirangerfjord.jpg', alt: 'Гейрангер-фьорд с обзорной площадки Флидальсьювет', caption: 'Гейрангер-фьорд.' },
+    practice: [
+      { file: 'hub-norway/preikestolen.jpg', alt: 'Скала Прекестулен над Люсе-фьордом', caption: 'Скала Прекестулен.' },
+      { file: 'hub-norway/bryggen.jpg', alt: 'Цветные деревянные дома набережной Брюгген в Бергене', caption: 'Брюгген в Бергене.' },
+      { file: 'hub-norway/tromso.jpg', alt: 'Тромсё и заснеженные горы над гаванью', caption: 'Тромсё.' },
+    ],
+  },
+  usa: {
+    wide: { file: 'hub-usa/brooklyn-bridge.jpg', alt: 'Бруклинский мост и небоскрёбы Нижнего Манхэттена', caption: 'Бруклинский мост и Манхэттен.' },
+    practice: [
+      { file: 'hub-usa/yosemite.jpg', alt: 'Долина Йосемити с точки Туннель: скалы Эль-Капитан и Хаф-Доум', caption: 'Долина Йосемити.' },
+      { file: 'hub-usa/golden-gate.jpg', alt: 'Мост Золотые Ворота и корабль в заливе', caption: 'Мост Золотые Ворота.' },
+      { file: 'hub-usa/las-vegas.jpg', alt: 'Лас-Вегас-Стрип ночью', caption: 'Лас-Вегас-Стрип ночью.' },
+    ],
+  },
+  'canada-rockies': {
+    wide: { file: 'hub-canada-rockies/peyto-lake.jpg', alt: 'Бирюзовое озеро Пейто среди гор и леса', caption: 'Озеро Пейто.' },
+    practice: [
+      { file: 'hub-canada-rockies/lake-louise.jpg', alt: 'Озеро Луиза под заснеженными горами', caption: 'Озеро Луиза.' },
+      { file: 'hub-canada-rockies/banff-avenue.jpg', alt: 'Главная улица Банфа на фоне горы', caption: 'Улица Банфа.' },
+      { file: 'hub-canada-rockies/emerald-lake.jpg', alt: 'Изумрудное озеро в парке Йохо', caption: 'Изумрудное озеро в Йохо.' },
+    ],
+  },
+  'canada-east': {
+    wide: { file: 'hub-canada-east/toronto-skyline.jpg', alt: 'Небоскрёбы Торонто и башня Си-Эн на закате', caption: 'Торонто на закате.' },
+    practice: [
+      { file: 'hub-canada-east/horseshoe-falls.jpg', alt: 'Водопад Подкова на Ниагаре', caption: 'Ниагарский водопад Подкова.' },
+      { file: 'hub-canada-east/old-port-montreal.jpg', alt: 'Старый порт Монреаля и мост Жака Картье', caption: 'Старый порт Монреаля.' },
+      { file: 'hub-canada-east/peggys-cove.jpg', alt: 'Рыбацкий домик на камнях в Пеггис-Коув', caption: 'Пеггис-Коув в Новой Шотландии.' },
+    ],
+  },
+  'japan-hokkaido': {
+    wide: { file: 'hub-japan-hokkaido/shiretoko.jpg', alt: 'Озеро Сиретоко-Гоко с отражением гор', caption: 'Пять озёр Сиретоко.' },
+    practice: [
+      { file: 'hub-japan-hokkaido/otaru-canal.jpg', alt: 'Канал Отару со старыми складами и фонарями вдоль набережной', caption: 'Канал в Отару.' },
+      { file: 'hub-japan-hokkaido/biei-blue-pond.jpg', alt: 'Голубой пруд в Биэй с сухими стволами в воде', caption: 'Голубой пруд в Биэй.' },
+      { file: 'hub-japan-hokkaido/furano-lavender.jpg', alt: 'Лавандовые поля Фурано на склоне', caption: 'Лавандовые поля Фурано.' },
+    ],
+  },
+  mexico: {
+    wide: { file: 'hub-mexico/tulum.jpg', alt: 'Руины Тулума над белым пляжем и бирюзовым морем', caption: 'Руины Тулума над морем.' },
+    practice: [
+      { file: 'hub-mexico/cenote-ik-kil.jpg', alt: 'Сенот Ик-Киль: круглый колодец с лианами и купающимися', caption: 'Сенот Ик-Киль на Юкатане.' },
+      { file: 'hub-mexico/zocalo.jpg', alt: 'Площадь Сокало в Мехико сверху', caption: 'Площадь Сокало в Мехико.' },
+      { file: 'hub-mexico/guanajuato.jpg', alt: 'Купола и цветные дома Гуанахуато', caption: 'Гуанахуато.' },
+    ],
+  },
+  cuba: {
+    wide: { file: 'hub-cuba/vinales.jpg', alt: 'Долина Виньялес: табачные поля и известняковые холмы-моготы', caption: 'Долина Виньялес.' },
+    practice: [
+      { file: 'kuba-tury-2027/havana.jpg', alt: 'Узкая улица Старой Гаваны с цветными домами', caption: 'Улица Старой Гаваны.' },
+      { file: 'kuba-tury-2027/malecon.jpg', alt: 'Голубой старый автомобиль на набережной Малекон в Гаване', caption: 'Набережная Малекон в Гаване.' },
+      { file: 'hub-cuba/varadero.jpg', alt: 'Белый пляж Варадеро и бирюзовое море', caption: 'Пляж Варадеро.' },
+    ],
+  },
+  'dominican-republic': {
+    wide: { file: 'hub-dominican-republic/los-haitises.jpg', alt: 'Скалистый остров с птицами в национальном парке Лос-Айтисес', caption: 'Национальный парк Лос-Айтисес.' },
+    practice: [
+      { file: 'hub-dominican-republic/saona-palm.jpg', alt: 'Пальма наклонилась над бирюзовой водой на острове Саона', caption: 'Остров Саона.' },
+      { file: 'dominican-republic-2027/north-coast.jpg', alt: 'Кайты над заливом у Кабарете на северном побережье', caption: 'Кайтсёрфинг у Кабарете.' },
+      { file: 'hub-dominican-republic/zona-colonial.jpg', alt: 'Улица Лас-Дамас в колониальном квартале Санто-Доминго', caption: 'Колониальный квартал Санто-Доминго.' },
+    ],
+  },
+  'guatemala-belize': {
+    wide: { file: 'hub-guatemala-belize/great-blue-hole.jpg', alt: 'Большая голубая дыра у побережья Белиза с высоты', caption: 'Большая голубая дыра в Белизе.' },
+    practice: [
+      { file: 'hub-guatemala-belize/santa-catalina.jpg', alt: 'Арка Санта-Каталина в Антигуа-Гватемала на фоне вулкана', caption: 'Арка Санта-Каталина в Антигуа.' },
+      { file: 'hub-guatemala-belize/atitlan.jpg', alt: 'Озеро Атитлан и вулканы на горизонте', caption: 'Озеро Атитлан.' },
+      { file: 'hub-guatemala-belize/caye-caulker.jpg', alt: 'Берег острова Кей-Колкер с пальмами и пирсом', caption: 'Остров Кей-Колкер в Белизе.' },
+    ],
+  },
+  'costa-rica-panama': {
+    wide: { file: 'hub-costa-rica-panama/manuel-antonio.jpg', alt: 'Пляж в национальном парке Мануэль-Антонио, лес у воды', caption: 'Пляж Мануэль-Антонио.' },
+    practice: [
+      { file: 'hub-costa-rica-panama/monteverde.jpg', alt: 'Облачный лес Монтеверде в тумане', caption: 'Облачный лес Монтеверде.' },
+      { file: 'hub-costa-rica-panama/miraflores.jpg', alt: 'Контейнеровоз в шлюзе Мирафлорес на Панамском канале', caption: 'Шлюз Мирафлорес на Панамском канале.' },
+      { file: 'hub-costa-rica-panama/san-blas.jpg', alt: 'Белый пляж с пальмами на островах Сан-Блас', caption: 'Острова Сан-Блас.' },
+    ],
+  },
+  'chile-patagonia': {
+    wide: { file: 'hub-chile-patagonia/grey-glacier.jpg', alt: 'Ледник Грей спускается в озеро среди гор', caption: 'Ледник Грей.' },
+    practice: [
+      { file: 'patagonia-own/salto-grande.jpg', alt: 'Водопад Сальто-Гранде: поток бирюзовой воды между скал', caption: 'Водопад Сальто-Гранде в Торрес-дель-Пайне.' },
+      { file: 'hub-chile-patagonia/guanaco.jpg', alt: 'Два гуанако на склоне в Торрес-дель-Пайне', caption: 'Гуанако в Торрес-дель-Пайне.' },
+      { file: 'hub-chile-patagonia/nordenskjold.jpg', alt: 'Бирюзовое озеро Норденшёльд под горами', caption: 'Озеро Норденшёльд.' },
+    ],
+  },
+  peru: {
+    wide: { file: 'hub-peru/vinicunca.jpg', alt: 'Полосатые склоны Радужной горы Виникунка', caption: 'Радужная гора Виникунка.' },
+    practice: [
+      { file: 'peru-own/alpacas.jpg', alt: 'Альпаки на фоне гор Священной долины', caption: 'Альпаки в Священной долине.' },
+      { file: 'hub-peru/uros.jpg', alt: 'Плавучие тростниковые острова урос на озере Титикака', caption: 'Острова урос на Титикаке.' },
+      { file: 'hub-peru/pisac.jpg', alt: 'Земледельческие террасы инков в Писаке', caption: 'Террасы инков в Писаке.' },
+    ],
+  },
+  argentina: {
+    wide: { file: 'hub-argentina/fitz-roy.jpg', alt: 'Гора Фицрой в лучах рассвета над Эль-Чальтеном', caption: 'Фицрой на рассвете.' },
+    practice: [
+      { file: 'patagonia-own/perito-moreno.jpg', alt: 'Стена льда ледника Перито-Морено: голубые зубцы уходят в воду', caption: 'Ледник Перито-Морено.' },
+      { file: 'hub-argentina/la-boca.jpg', alt: 'Цветные дома улицы Каминито в Ла-Боке', caption: 'Каминито в Ла-Боке, Буэнос-Айрес.' },
+      { file: 'hub-argentina/humahuaca.jpg', alt: 'Разноцветные склоны ущелья Умауака', caption: 'Ущелье Умауака.' },
+    ],
+  },
+  ecuador: {
+    wide: { file: 'galapagos-own/tortoise.jpg', alt: 'Две гигантские галапагосские черепахи пасутся на зелёном лугу', caption: 'Гигантские черепахи на Галапагосах.' },
+    practice: [
+      { file: 'galapagos-own/booby.jpg', alt: 'Голубоногая олуша крупным планом: ярко-синие лапы', caption: 'Голубоногая олуша на Галапагосах.' },
+      { file: 'hub-ecuador/banos.jpg', alt: 'Городок Баньос в зелёной горной долине', caption: 'Баньос в горной долине.' },
+      { file: 'hub-ecuador/quito.jpg', alt: 'Кито с высоты: город в долине между гор', caption: 'Кито с высоты.' },
+    ],
+  },
+  brazil: {
+    wide: { file: 'hub-brazil/lencois.jpg', alt: 'Дюны и лагуны Ленсойс-Мараньенсис на закате', caption: 'Ленсойс-Мараньенсис на закате.' },
+    practice: [
+      { file: 'hub-brazil/cristo-redentor.jpg', alt: 'Статуя Христа-Искупителя над облаками в Рио-де-Жанейро', caption: 'Христос-Искупитель над облаками.' },
+      { file: 'hub-brazil/pelourinho.jpg', alt: 'Цветные дома площади Пелоуриньо в Салвадоре', caption: 'Пелоуриньо в Салвадоре.' },
+      { file: 'hub-brazil/iguacu.jpg', alt: 'Водопады Игуасу с бразильской стороны и радуга', caption: 'Водопады Игуасу с бразильской стороны.' },
+    ],
+  },
+  'australia-east': {
+    wide: { file: 'hub-australia-east/whitehaven.jpg', alt: 'Пляж Уайтхейвен и бирюзовые отмели Хилл-Инлет', caption: 'Пляж Уайтхейвен.' },
+    practice: [
+      { file: 'hub-australia-east/twelve-apostles.jpg', alt: 'Скалы Двенадцать Апостолов у побережья Виктории', caption: 'Двенадцать Апостолов.' },
+      { file: 'hub-australia-east/great-barrier-reef.jpg', alt: 'Большой Барьерный риф с воздуха', caption: 'Большой Барьерный риф.' },
+      { file: 'hub-australia-east/byron-bay.jpg', alt: 'Мыс Байрон с маяком и пляжами сверху', caption: 'Мыс Байрон.' },
+    ],
+  },
+  'australia-north': {
+    wide: { file: 'hub-australia-north/katherine-gorge.jpg', alt: 'Ущелье Кэтрин: красные скалы над рекой', caption: 'Ущелье Кэтрин.' },
+    practice: [
+      { file: 'hub-australia-north/florence-falls.jpg', alt: 'Водопад Флоренс в национальном парке Личфилд', caption: 'Водопад Флоренс в Личфилде.' },
+      { file: 'hub-australia-north/kata-tjuta.jpg', alt: 'Красные купола скал Ката-Тьюта', caption: 'Ката-Тьюта.' },
+      { file: 'hub-australia-north/kings-canyon.jpg', alt: 'Кингс-Каньон: песчаниковые стены', caption: 'Кингс-Каньон.' },
+    ],
+  },
+  'sumatra-kalimantan': {
+    wide: { file: 'hub-sumatra-kalimantan/lake-toba.jpg', alt: 'Озеро Тоба среди зелёных гор Суматры', caption: 'Озеро Тоба.' },
+    practice: [
+      { file: 'hub-sumatra-kalimantan/sinabung.jpg', alt: 'Вулкан Синабунг за пальмами', caption: 'Вулкан Синабунг.' },
+      { file: 'hub-sumatra-kalimantan/bukit-lawang.jpg', alt: 'Река и деревня Букит-Лаванг у джунглей', caption: 'Букит-Лаванг.' },
+      { file: 'hub-sumatra-kalimantan/derawan.jpg', alt: 'Острова Дераван с воздуха', caption: 'Острова Дераван.' },
+    ],
+  },
+  'raja-ampat': {
+    wide: { file: 'hub-raja-ampat/wayag-sunrise.jpg', alt: 'Острова Раджа-Ампат на рассвете с высоты', caption: 'Раджа-Ампат на рассвете.' },
+    practice: [
+      { file: 'hub-raja-ampat/mushroom-island.jpg', alt: 'Скала-гриб с зеленью посреди моря', caption: 'Скала-гриб в Раджа-Ампат.' },
+      { file: 'hub-raja-ampat/misool-reef.jpg', alt: 'Горгонарии и дайвер у рифа Мисоол', caption: 'Риф у Мисоола.' },
+      { file: 'hub-raja-ampat/sawinggrai.jpg', alt: 'Лодки на берегу деревни Савинграй', caption: 'Деревня Савинграй.' },
+    ],
+  },
+  kamchatka: {
+    wide: { file: 'hub-kamchatka/valley-of-geysers.jpg', alt: 'Долина гейзеров: пар над рекой в зелёном каньоне', caption: 'Долина гейзеров.' },
+    practice: [
+      { file: 'hub-kamchatka/klyuchevskaya.jpg', alt: 'Ключевская сопка на рассвете', caption: 'Ключевская сопка.' },
+      { file: 'hub-kamchatka/kurile-bear.jpg', alt: 'Медведь в воде Курильского озера', caption: 'Медведь на Курильском озере.' },
+      { file: 'hub-kamchatka/mutnovsky.jpg', alt: 'Фумаролы вулкана Мутновский', caption: 'Вулкан Мутновский.' },
+    ],
+  },
+  karelia: {
+    wide: { file: 'ruskeala/skerries.jpg', alt: 'Ладожские шхеры на закате: трава, скалы и вода', caption: 'Ладожские шхеры.' },
+    practice: [
+      { file: 'valaam-own/monastery.jpg', alt: 'Собор Валаамского монастыря с высоты', caption: 'Валаамский монастырь.' },
+      { file: 'karelia/kizhi-cover.jpg', alt: 'Деревянные церкви Кижского погоста', caption: 'Кижский погост.' },
+      { file: 'ruskeala/park.jpg', alt: 'Мраморный каньон Рускеалы осенью', caption: 'Мраморный каньон Рускеала.' },
+    ],
+  },
+  dagestan: {
+    wide: { file: 'hub-dagestan/gamsutl.jpg', alt: 'Покинутый аул Гамсутль на вершине горы', caption: 'Аул Гамсутль.' },
+    practice: [
+      { file: 'hub-dagestan/chokh.jpg', alt: 'Каменные дома села Чох на склоне', caption: 'Село Чох.' },
+      { file: 'dagestan/derbent.jpg', alt: 'Дербент с высоты: город и Каспийское море', caption: 'Дербент с высоты.' },
+      { file: 'hub-dagestan/sarykum.jpg', alt: 'Бархан Сарыкум и стадо у его подножия', caption: 'Бархан Сарыкум.' },
+    ],
+  },
+  altai: {
+    wide: { file: 'altai-own/teletskoye.jpg', alt: 'Телецкое озеро с высоты: зелёные берега и дельта реки', caption: 'Телецкое озеро с высоты.' },
+    practice: [
+      { file: 'hub-altai/aktru.jpg', alt: 'Ледники Актру над хвойным лесом', caption: 'Ледники Актру.' },
+      { file: 'altai-own/katun.jpg', alt: 'Река Катунь среди гор', caption: 'Река Катунь.' },
+      { file: 'hub-altai/katun-chuya.jpg', alt: 'Слияние Катуни и Чуи зимой: бирюзовая вода среди снега', caption: 'Слияние Катуни и Чуи зимой.' },
+    ],
+  },
+  'chile-fjords': {
+    wide: { file: 'hub-chile-fjords/san-rafael.jpg', alt: 'Ледник Сан-Рафаэль и айсберг в лагуне', caption: 'Ледник Сан-Рафаэль.' },
+    practice: [
+      { file: 'hub-chile-fjords/queulat.jpg', alt: 'Висячий ледник Кеулат и водопад со скалы', caption: 'Висячий ледник Кеулат.' },
+      { file: 'hub-chile-fjords/carretera-austral.jpg', alt: 'Грунтовая дорога Карретера-Аустраль уходит к горам', caption: 'Дорога Карретера-Аустраль.' },
+      { file: 'hub-chile-fjords/chiloe-palafitos.jpg', alt: 'Дома на сваях на острове Чилоэ и бакланы на лодках', caption: 'Дома на сваях на Чилоэ.' },
+    ],
+  },
 };
 
 export const countryPhotos = (slug) => COUNTRY_PHOTOS[slug] || null;
