@@ -251,7 +251,9 @@ test('dist собран (html-файлы есть)', () => {
 
 test('Брендовый обзор не приписывает себе форумы и личную поездку', () => {
   const html = readFileSync(join(DIST, 'blog', 'sletat-ru-2026', 'index.html'), 'utf8');
-  const main = html.match(/<main[\s\S]*?<\/main>/i)?.[0] ?? '';
+  // Типограф ставит неразрывный пробел после «не» и невидимый знак в диапазонах (10.09.2026) —
+  // фразу сверяем по словам, а не по виду пробела.
+  const main = (html.match(/<main[\s\S]*?<\/main>/i)?.[0] ?? '').replace(/\u00A0/g, ' ').replace(/\u2060/g, '');
 
   expect(main).not.toContain('форумам туристов');
   expect(main).not.toContain('Лично эту визу/маршрут');
@@ -2132,6 +2134,17 @@ for (const width of [360, 402]) {
           const r = document.createRange(); r.setStart(node, i); r.setEnd(node, i + 1);
           const rs = r.getClientRects(); return rs.length ? rs[0].top : null;
         };
+        // Помещалась ли скобка в строку своей колонки: ширина скобки против ширины блока.
+        const fits = (node: Text, from: number, to: number) => {
+          const r = document.createRange(); r.setStart(node, from); r.setEnd(node, to);
+          const w = [...r.getClientRects()].reduce((s, x) => s + x.width, 0);
+          let el: HTMLElement | null = node.parentElement;
+          while (el && getComputedStyle(el).display.startsWith('inline')) el = el.parentElement;
+          if (!el) return true;
+          const cs = getComputedStyle(el);
+          const box = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+          return w <= box * 0.9;
+        };
         const SHORT = /(^|[\s(«])(в|во|с|со|к|ко|у|о|об|от|до|за|на|по|из|и|а|но|не|ни) (?=\S)/gi;
         const PAREN = /\(([^()\n]{1,24})\)/g;
         const out: string[] = [];
@@ -2139,7 +2152,7 @@ for (const width of [360, 402]) {
           const t = n.nodeValue || '';
           for (const m of t.matchAll(PAREN)) {
             const a = top(n, m.index!), b = top(n, m.index! + m[0].length - 1);
-            if (a !== null && b !== null && Math.abs(a - b) > 4) out.push(`скобка разорвана: «${m[0]}»`);
+            if (a !== null && b !== null && Math.abs(a - b) > 4 && fits(n, m.index!, m.index! + m[0].length)) out.push(`скобка разорвана: «${m[0]}»`);
           }
           for (const m of t.matchAll(SHORT)) {
             const sp = m.index! + m[0].length - 1;
