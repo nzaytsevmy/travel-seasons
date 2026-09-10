@@ -9,6 +9,7 @@ import { monthKey, FEED_SIZE } from './src/data/news.js';
 import rehypeTableWrap from './tools/rehype-table-wrap.mjs';
 import rehypeFaqAccordion from './tools/rehype-faq-accordion.mjs';
 import rehypeCountryRow from './tools/rehype-country-row.mjs';
+import rehypeTypo from './tools/rehype-typo.mjs';
 import { DATA_UPDATED } from './src/data/meta.js';
 import ДАТЫ_НАПРАВЛЕНИЙ from './src/data/page-lastmod.generated.json' with { type: 'json' };
 import { DIRECTIONS, MONTHS } from './src/data/directions.js';
@@ -163,7 +164,7 @@ export default defineConfig({
   },
   markdown: {
     remarkPlugins: [remarkNumerals],
-    rehypePlugins: [rehypeTableWrap, rehypeFaqAccordion, rehypeCountryRow],
+    rehypePlugins: [rehypeTableWrap, rehypeFaqAccordion, rehypeCountryRow, rehypeTypo],
   },
   integrations: [
     // Щит партнёрских ссылок: адреса партнёров прячутся от роботов без JavaScript,

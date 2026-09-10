@@ -45,6 +45,7 @@
 | spain.jpg | Испания — Альгамбра, сады Хенералифе | [Pexels 30359821](https://www.pexels.com/photo/30359821/) | — | Pexels License |
 | thailand.jpg | Таиланд — Райли, Краби | [Pexels 4024726](https://www.pexels.com/photo/4024726/) | — | Pexels License |
 | turkey.jpg | Турция — Каппадокия, воздушные шары | [Pexels 5700576](https://www.pexels.com/photo/5700576/) | — | Pexels License |
+| inline/turkey-istanbul.jpg | Турция — Стамбул с высоты, Золотой Рог (кадр в «Зачем ехать») | Я.Диск Никиты, «Турция — 2021.08»; копия `src/content/blog/_images/turkey-own/istanbul.jpg` (статус own) | Никита Зайцев | личное фото |
 | uae.jpg | ОАЭ — мечеть шейха Зайда, Абу-Даби | [Pexels 33687823](https://www.pexels.com/photo/33687823/) | — | Pexels License |
 | usa.jpg | США — Гранд-Каньон | [Pexels 29548242](https://www.pexels.com/photo/29548242/) | — | Pexels License |
 | vietnam.jpg | Вьетнам — бухта Халонг | [Pexels 28356818](https://www.pexels.com/photo/28356818/) | — | Pexels License |

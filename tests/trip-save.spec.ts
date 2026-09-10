@@ -4,10 +4,12 @@ import { test, expect } from '@playwright/test';
 // в собранном сайте ноль видимых ссылок на него, а единственная скрытая
 // раскрывалась только на той же странице, где нажали «Хочу сюда». Сохранил Перу,
 // ушёл читать про Турцию — вернуться к своей поездке уже нельзя.
+// С 10.09.2026 кнопки нет на страницах стран (решение Никиты: «убери это»), она живёт
+// на страницах «страна в месяце» — поэтому проверка ходит по ним.
 
 test.describe('«Хочу сюда» и вход в дашборд', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/peru/');
+    await page.goto('/trips/july/peru/');
     await page.evaluate(() => localStorage.removeItem('tt_trip'));
     await page.reload();
   });
@@ -21,7 +23,7 @@ test.describe('«Хочу сюда» и вход в дашборд', () => {
     await expect(page.locator('.tsb-open').first()).toBeVisible();
 
     // Уходим на другое направление — вход в свою поездку обязан остаться.
-    await page.goto('/turkey/');
+    await page.goto('/trips/july/turkey/');
     const open = page.locator('.tsb-open').first();
     await expect(open).toBeVisible();
     await expect(open).toHaveAttribute('href', '/my/');

@@ -2105,3 +2105,52 @@ test('Заголовок: слова не слипаются через гран
   expect(проверено, 'заголовков с вложенными тегами не нашлось — проверка ничего не мерит').toBeGreaterThan(50);
   expect(примеры.slice(0, 10).join('\n'), `слипшиеся заголовки: ${примеры.length}`).toBe('');
 });
+
+// Переносы строк (правило Никиты 10.09.2026: «чтобы такого никогда нигде ни в одном
+// проекте не было»). Меряет то, что видит человек на телефоне: короткая скобка разорвана
+// на две строки или короткий предлог остался в конце строки. Смотрит раскладку, а не
+// текст: строку с неразрывными пробелами браузер уже не рвёт, а обычный пробел рвёт не
+// всегда — ругаться надо только там, где разрыв действительно случился.
+const BREAK_PAGES = ['/turkey/', '/oman/', '/georgia/', '/thailand/', '/blog/turkey-guide-2026/'];
+for (const width of [360, 402]) {
+  test(`Переносы: нет разорванных скобок и висящих предлогов @${width}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    const bad: string[] = [];
+    for (const url of BREAK_PAGES) {
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
+      await page.evaluate(() => (document as any).fonts?.ready);
+      const found: string[] = await page.evaluate(() => {
+        const SKIP = new Set(['SCRIPT', 'STYLE', 'CODE', 'PRE', 'NOSCRIPT', 'TEXTAREA']);
+        const root = document.querySelector('main') || document.body;
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+          acceptNode(n) {
+            for (let e = n.parentElement; e; e = e.parentElement) if (SKIP.has(e.tagName)) return NodeFilter.FILTER_REJECT;
+            return n.nodeValue && n.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+          },
+        });
+        const top = (node: Text, i: number) => {
+          const r = document.createRange(); r.setStart(node, i); r.setEnd(node, i + 1);
+          const rs = r.getClientRects(); return rs.length ? rs[0].top : null;
+        };
+        const SHORT = /(^|[\s(«])(в|во|с|со|к|ко|у|о|об|от|до|за|на|по|из|и|а|но|не|ни) (?=\S)/gi;
+        const PAREN = /\(([^()\n]{1,24})\)/g;
+        const out: string[] = [];
+        for (let n = walker.nextNode() as Text | null; n; n = walker.nextNode() as Text | null) {
+          const t = n.nodeValue || '';
+          for (const m of t.matchAll(PAREN)) {
+            const a = top(n, m.index!), b = top(n, m.index! + m[0].length - 1);
+            if (a !== null && b !== null && Math.abs(a - b) > 4) out.push(`скобка разорвана: «${m[0]}»`);
+          }
+          for (const m of t.matchAll(SHORT)) {
+            const sp = m.index! + m[0].length - 1;
+            const a = top(n, sp - 1), b = top(n, sp + 1);
+            if (a !== null && b !== null && b - a > 4) out.push(`«${m[2]}» в конце строки: «${t.slice(Math.max(0, m.index! - 24), m.index! + 24).trim()}»`);
+          }
+        }
+        return [...new Set(out)].slice(0, 30);
+      });
+      bad.push(...found.map((f) => `${url} @${width}: ${f}`));
+    }
+    expect(bad, `некрасивые переносы:\n${bad.join('\n')}`).toEqual([]);
+  });
+}
