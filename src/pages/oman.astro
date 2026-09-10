@@ -96,7 +96,6 @@ const faqs = [
        `Юг живёт по другому календарю: с середины июня до середины сентября Салалу накрывает муссон, ` +
        `днём там ${Math.round(cc.cities[1].tMax[6])} °C против ${Math.round(cc.cities[0].tMax[6])} °C в Маскате.`,
   },
-  { q: 'Нужна ли виза в Оман россиянам?', a: vd.summary },
   {
     q: `Сколько стоит поездка в Оман в ${yr}?`,
     a: `Перелёт из Москвы от $${flightFrom}, жильё от $${hotelFrom} за ночь, еда от $${foodFrom} в день. ` +
@@ -242,14 +241,14 @@ const ldJson = {
       <h2>Сколько стоит поездка в Оман</h2>
       <div class="om-money">
         <div>
-          <p class="om-big">от ${flightFrom} <span class="om-small om-dim">перелёт из Москвы, туда-обратно</span></p>
+          <p class="om-big">от ${flightFrom} <span class="om-small om-dim">перелёт из Москвы, в одну сторону</span></p>
           <p class="om-body">{typo('Прямой рейс есть: Oman Air из Шереметьево, в пути 6 часов 20 минут.')}</p>
           <div class="om-cta-row">
             <a class="om-btn" href={билеты} rel="sponsored nofollow noopener" target="_blank">Найти билеты</a>
           </div>
         </div>
         <div class="om-prices">
-          <div class="om-prow"><span>Перелёт, туда-обратно</span><span>от ${flightFrom}</span></div>
+          <div class="om-prow"><span>Перелёт, в одну сторону</span><span>от ${flightFrom}</span></div>
           <div class="om-prow"><span>Жильё за ночь</span><span>от ${hotelFrom}</span></div>
           <div class="om-prow"><span>Еда в день</span><span>от ${foodFrom}</span></div>
           <div class="om-prow"><span>Неделя на одного</span><span>от ${weekTotal}</span></div>
@@ -273,7 +272,7 @@ const ldJson = {
     </section>
 
     <section class="om-sec">
-      <h2>Нужна ли виза в Оман россиянам</h2>
+      <h2>Въезд, деньги и связь</h2>
       <div class="om-visa">
         <div class="om-prow"><span>Виза</span><span>{typo(`${vd.cost}, ${vd.duration}`)}</span></div>
         <div class="om-prow"><span>Как оформляется</span><span>{vd.timing}</span></div>
