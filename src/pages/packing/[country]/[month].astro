@@ -14,7 +14,6 @@ import { getBucket } from '../../../data/packing-weather-buckets.js';
 import { getWeatherBucket } from '../../../data/country-month-bucket.js';
 import { ACTIVITY_TAGS, ACTIVITY_LABEL, ACTIVITY_GEAR } from '../../../data/country-activity-tags.js';
 import { PLUG_TYPES, plugAdvice } from '../../../data/country-plug-types.js';
-import { DATA_UPDATED_RU } from '../../../data/meta.js';
 import { aviasalesRoute, cherehapaCountry, youtravelCountry } from '../../../data/affiliate.js';
 import StickyCta from '../../../components/StickyCta.astro';
 import { getHolidaysByMonth } from '../../../data/country-holidays.js';
@@ -269,7 +268,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 
     {/* MANIFEST */}
     <section class="pmu-manifest">
-      <div class="pmu-meta">{d.region}<br /><b>Обновлено {DATA_UPDATED_RU}</b></div>
+      <div class="pmu-meta">{d.region}</div>
       <h1 class="pmu-h1">Что взять {d.cases.vP} <span class="rd">в {m.prep}</span></h1>
       <p class="pmu-tldr">
         <b class={`pmu-mark pmu-mark--${rank.tone}`}>{rank.label}</b> {rank.tldr}.
@@ -277,8 +276,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       </p>
       <p class="pmu-byline">
         <a href="/about/" class="byline-author">Никита Зайцев</a> ·
-        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
-        <span class="byline-fresh">обновлено {DATA_UPDATED_RU}</span>
+        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>
       </p>
     </section>
 
@@ -325,7 +323,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
             <div class="pmu-w-cell"><span class="pmu-w-k">Осадки</span><div class="pmu-w-v">{monthWeather.rain}</div></div>
             <div class="pmu-w-cell"><span class="pmu-w-k">Тип климата</span><div class="pmu-w-v">{bucket.label}</div></div>
           </div>
-          <p class="pmu-weather-note">{bucket.summary}. Замер по {monthWeather.city}. Источник: {monthWeather.source}.</p>
+          <p class="pmu-weather-note">{bucket.summary}. Замер по {monthWeather.city}.</p>
         </>
       ) : (
         <p class="pmu-answer">{bucket.summary}. Конкретные температуры — см. <a href="/seasons/" class="pmu-link">таблицу сезонов 70+ стран</a>.</p>
@@ -400,7 +398,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       <ul class="pmu-list">
         {bucket.health.map((item) => <li>{item}</li>)}
       </ul>
-      <p class="pmu-note">Общий список — детали у врача за 3+ недели до вылета. Источники: <a href="https://www.rospotrebnadzor.ru/" target="_blank" rel="noopener">Роспотребнадзор</a>, <a href="https://www.who.int/" target="_blank" rel="noopener">ВОЗ</a>.</p>
+      <p class="pmu-note">Общий список — детали у врача за 3+ недели до вылета.</p>
     </section>
 
     {/* СНАРЯЖЕНИЕ */}
@@ -521,8 +519,6 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       </ul>
       <p class="pmu-tour">Собирать маршрут самому не всегда хочется — тогда берут место в небольшой группе: <a href={youtravelCountry(d.slug, `${affiliateSubId}_${m.slug}`)} rel="sponsored noopener" target="_blank">авторские туры {d.cases.vP}</a>.</p>
     </section>
-
-    <p class="pmu-updated">Актуально на: {DATA_UPDATED_RU}</p>
   </main>
 
   {/* Липкая панель со страховкой остаётся: за 8 дней до правки она дала 7 переходов
@@ -653,7 +649,6 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
   text-align: right; align-self: start;
   font-size: .8rem; color: var(--text-dim); line-height: 1.5;
 }
-.pmu-meta b { color: var(--text); font-weight: 600; }
 .pmu-h1 {
   grid-column: 1 / 13; grid-row: 2;
   font-weight: 800;
@@ -952,13 +947,4 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 }
 .pmu-related a span { display: block; color: var(--text-faint); font-size: .8rem; margin-top: .2rem; }
 
-.pmu-updated {
-  margin-top: clamp(2rem, 4vw, 3rem);
-  padding-top: .8rem;
-  border-top: 1px solid var(--line-strong);
-  font-size: .72rem;
-  text-transform: uppercase;
-  letter-spacing: .04em;
-  color: var(--text-faint);
-}
 </style>

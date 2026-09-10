@@ -6,7 +6,6 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { MONTHS, bySlug } from '../../data/directions.js';
 import { HOLIDAYS, getEventsByMonth, getTopEventsOfYear } from '../../data/country-holidays.js';
 import Byline from '../../components/Byline.astro';
-import { DATA_UPDATED_RU } from '../../data/meta.js';
 
 // Русское склонение: 1 событие / 2 события / 5 событий (см. bezviz.astro).
 const plural = (n, one, few, many) => {
@@ -56,7 +55,7 @@ const ldJson = {
   <main id="main" class="evh">
     <section class="evh-hero">
       <h1 class="evh-h1">Что празднуют и когда закрыто</h1>
-      <p class="evh-lede">Государственные праздники, фестивали и сезонные явления по месяцам — чтобы не прилететь в закрытую страну и не пропустить то, ради чего стоит планировать даты. Обновлено {DATA_UPDATED_RU}.</p>
+      <p class="evh-lede">Государственные праздники, фестивали и сезонные явления по месяцам — чтобы не прилететь в закрытую страну и не пропустить то, ради чего стоит планировать даты.</p>
       <Byline />
     </section>
 
@@ -94,8 +93,6 @@ const ldJson = {
         <li><a href="/compare/"><b>Сравнить направления</b></a><span>две страны бок о бок</span></li>
       </ul>
     </section>
-
-    <p class="evh-updated">Актуально на: {DATA_UPDATED_RU}</p>
   </main>
 
   <Footer />
@@ -134,5 +131,4 @@ const ldJson = {
 .evh-top a b, .evh-related a b { color: var(--gold); text-decoration: underline; text-underline-offset:.22em; }
 .evh-top span, .evh-related span { font-size: .82rem; color: var(--text-faint); margin-top: .15rem; }
 
-.evh-updated { margin-top: 2rem; font-size: .72rem; color: var(--text-faint); }
 </style>

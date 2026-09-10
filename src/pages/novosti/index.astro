@@ -25,7 +25,7 @@ import Footer from '../../components/Footer.astro';
 import NewsItem from '../../components/NewsItem.astro';
 import NewsCompact from '../../components/NewsCompact.astro';
 import { getCollection } from 'astro:content';
-import { feedEntries, monthKeys, entriesOfMonth, monthTitleRu, formatDateRu, newsUrl,
+import { feedEntries, monthKeys, entriesOfMonth, monthTitleRu, newsUrl,
          FULL_ON_FEED, FEED_SIZE } from '../../data/news.js';
 import { plural } from '../../data/plural.js';
 
@@ -90,12 +90,10 @@ const ldJson = {
       <p class="nv-lead">
         Короткие заметки о том, что меняется прямо сейчас: въездные правила, доступ
         к местам и перелёты, а ещё находки о дикой природе, ради которых, собственно,
-        и едут. Каждый факт беру у того, кто его объявил, и ссылку оставляю рядом,
-        чтобы можно было проверить самому.
+        и едут.
       </p>
       <p class="nv-byline">
-        Ведёт <a href="/about/">Никита Зайцев</a>
-        {lastChecked && <Fragment> · последняя проверка: {formatDateRu(lastChecked)}</Fragment>} ·
+        Ведёт <a href="/about/">Никита Зайцев</a> ·
         <a href="/novosti/rss.xml">RSS</a>
       </p>
     </header>

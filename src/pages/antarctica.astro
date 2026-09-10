@@ -6,7 +6,7 @@ import { DIRECTIONS as ALL_DIRECTIONS } from '../data/directions.js';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Footer from '../components/Footer.astro';
 import PricingCards from '../components/post/PricingCards.astro';
-import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
+import { DATA_UPDATED } from '../data/meta.js';
 import { cherehapaCountry, aviasalesRoute, youtravelCountry } from '../data/affiliate.js';
 
 const url = 'https://traveltribe.ru/antarctica/';
@@ -135,7 +135,7 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'antarctica');
     <p class="hub-byline">
       <a href="/about/" class="byline-author">Никита Зайцев</a> ·
       <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
-      <span class="byline-fresh">был в Антарктиде в декабре 2024 · данные актуальны на {DATA_UPDATED_RU}</span>
+      <span class="byline-fresh">был в Антарктиде в декабре 2024</span>
     </p>
 
     {tabsD && <DestinationTabs d={tabsD} active="hub" />}

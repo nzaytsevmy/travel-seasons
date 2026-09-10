@@ -120,15 +120,6 @@ const ldJson = {
       )}
 
       <div class="nvp-body"><Content /></div>
-
-      <p class="nvp-refs">
-        <span class="nvp-refs-group">Источник: {d.sources.map((src, i) => (
-          <Fragment>{i > 0 ? ', ' : ''}<a href={src.url} rel="nofollow noopener" target="_blank">{src.name}</a></Fragment>
-        ))}</span>
-        <span class="nvp-refs-group nvp-checked">
-          <a href="/about/">Никита Зайцев</a>, сверено {formatDateRu(d.checked)}
-        </span>
-      </p>
     </article>
 
     {dirs.length > 0 && (
@@ -191,19 +182,9 @@ const ldJson = {
   .nvp-body :global(a) { color: var(--text); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
   .nvp-body :global(a:hover) { color: var(--gold); }
 
-  .nvp-refs { display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; font-size: .85rem;
-              color: var(--text-dim); margin: 1.2rem 0 0; }
-  .nvp-refs a { color: var(--text); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
-  .nvp-refs a:hover { color: var(--gold); }
-  .nvp-checked { color: var(--text-faint); }
-
   .nvp-section { border-top: 1px solid var(--line-strong, var(--line)); padding-top: 1.6rem; margin-top: 2.4rem; }
   .nvp-section h2 { font-size: 1.35rem; margin: 0 0 .7rem; scroll-margin-top: 80px; }
   .nvp-links { list-style: none; margin: 0; padding: 0; }
   .nvp-links li { padding: .6rem 0; border-bottom: 1px solid var(--line); font-size: .98rem; }
   .nvp-links a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
-
-  @media (max-width: 700px) {
-    .nvp-refs { flex-direction: column; gap: .25rem; }
-  }
 </style>

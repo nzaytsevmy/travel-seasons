@@ -169,7 +169,6 @@ const ISO_CODE = {
 
 const VISA_TYPE_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза обязательна' };
 const VERIFIED_AT = '2026-08-29'; // дата последней массовой сверки реестра
-const VERIFIED_AT_PRETTY = '29 августа 2026';
 
 // Helper-функции для filter-buckets — выполняются в frontmatter (regex здесь работает)
 function costBucket(cost) {
@@ -354,10 +353,6 @@ const ldJson = {
         </button>
       </div>
 
-      <p class="va-verified-banner" aria-label="Дата последней проверки реестра">
-        <span class="va-verified-dot" aria-hidden="true"></span>
-        Реестр проверен <strong>{VERIFIED_AT_PRETTY}</strong>. Перед поездкой сверьте через МИД РФ.
-      </p>
 
       <div class="va-divider" aria-hidden="true">
         <span class="va-divider-line"></span>
@@ -555,14 +550,6 @@ const ldJson = {
           <div class="va-change-text"><strong>Таиланд назначил дату.</strong> При въезде до 14 сентября включительно россиянам дают до 60 дней, с 15 сентября — до 30 по двустороннему соглашению. Штампы, выданные до перехода, сохраняют полный срок.</div>
         </li>
         <li class="va-change-item">
-          <time class="va-change-date">29 августа 2026</time>
-          <div class="va-change-text"><strong>Сверка реестра.</strong> Шесть направлений поправлены. Мальдивы: 90 дней вместо 30 — по соглашению о взаимном безвизе с 2019 года. Доминикана: 60 дней вместо 30. Маврикий: 60 дней подряд, суммарно 90 за полгода. Кипр: нужна национальная виза за 80 евро — упрощённая про-виза требует прямого рейса из России, а их нет. Таджикистан переведён в безвизовые: виза не нужна вовсе, регистрация после 10 рабочих дней. Мадагаскар: третий тариф даёт 90 дней, а не 60.</div>
-        </li>
-        <li class="va-change-item">
-          <time class="va-change-date">14 мая 2026</time>
-          <div class="va-change-text"><strong>Реестр обновлён.</strong> Все 70+ направлений сверены через МИД РФ, посольства, VFS Global, BLS, GVCW, JVAC и официальные иммиграционные сайты стран.</div>
-        </li>
-        <li class="va-change-item">
           <time class="va-change-date">7 мая 2026</time>
           <div class="va-change-text"><strong>Шри-Ланка</strong> расширила бесплатную ETA для россиян: теперь в списке 40 стран. Оформляется онлайн за 24–72 часа.</div>
         </li>
@@ -694,31 +681,6 @@ const ldJson = {
       </ul>
     </section>
 
-    {/* ─── SOURCES / DISCLAIMER ─── */}
-    <section class="va-sources" data-reveal>
-      <header class="va-sources-head">
-        <span class="va-sources-tag">ИСТОЧНИКИ · ВЕРИФИКАЦИЯ</span>
-        <h2 class="va-sources-title">Откуда данные</h2>
-      </header>
-      <div class="va-sources-body">
-        <p>
-          Реестр сверен <strong>29 августа 2026</strong>. Полная сверка всех направлений по 2–3 источникам (МИД страны, посольство в РФ, иммиграционный портал, визовый центр) была 14 мая 2026. 29 августа проверено, что изменилось с тех пор: сводная таблица режимов въезда Аналитической службы АТОР, официальные сайты стран по каждому спорному пункту, отраслевые сообщения о решениях правительств. Поправлены семь направлений — что именно, видно в списке изменений выше.
-        </p>
-        <ul class="va-sources-list">
-          <li><strong>МИД РФ:</strong> <a href="https://www.mid.ru" target="_blank" rel="noopener">mid.ru</a> + субдомены посольств (china.mid.ru, japan.mid.ru, israel.mid.ru, vietnam.mid.ru, uzbekistan.mid.ru)</li>
-          <li><strong>МИД РФ — поездки:</strong> <a href="https://www.kdmid.ru" target="_blank" rel="noopener">kdmid.ru</a> — реестр визовых правил всех стран мира</li>
-          <li><strong>Шенген:</strong> <a href="https://www.vfsglobal.com" target="_blank" rel="noopener">VFS Global</a>, <a href="https://www.blsspainrussia.ru" target="_blank" rel="noopener">BLS Spain</a>, GVCW, Almaviva (Италия)</li>
-          <li><strong>США:</strong> <a href="https://travel.state.gov" target="_blank" rel="noopener">travel.state.gov</a> — сроки ожидания interview</li>
-          <li><strong>EES / ETIAS:</strong> <a href="https://home-affairs.ec.europa.eu" target="_blank" rel="noopener">home-affairs.ec.europa.eu</a> — Еврокомиссия</li>
-          <li><strong>Япония:</strong> <a href="https://www.ru.emb-japan.go.jp" target="_blank" rel="noopener">ru.emb-japan.go.jp</a> + JVAC</li>
-          <li><strong>eVisa порталы:</strong> evisa.gov.kh (Камбоджа), eta.gov.lk (Шри-Ланка), etakenya.go.ke (Кения), indianvisaonline.gov.in (Индия), evisa.imigrasi.go.id (Индонезия)</li>
-        </ul>
-        <p class="va-sources-disclaimer">
-          <strong>Важно:</strong> визовые правила меняются ежемесячно. Реестр обновляется раз в 4–6 недель, а что именно поменялось — видно в <a href="/izmeneniya/">ленте изменений</a>. Перед поездкой <strong>обязательно</strong> сверьте актуальную информацию через сайт МИД РФ или посольства страны назначения. TravelTribe не несёт ответственности за устаревшие данные между обновлениями.
-        </p>
-      </div>
-    </section>
-
     {/* ─── FOOTER NOTE ─── */}
     <footer class="va-foot">
       <div class="va-divider" aria-hidden="true">
@@ -727,7 +689,7 @@ const ldJson = {
         <span class="va-divider-line"></span>
       </div>
       <p class="va-foot-text">
-        Реестр актуален на <strong>29 августа 2026</strong>. Обновляется при изменении правил въезда раз в 4–6 недель.
+        Правила въезда меняются — перед поездкой сверьте их на сайте посольства или через <a href="https://www.kdmid.ru" target="_blank" rel="noopener">МИД РФ</a>.
       </p>
       <p class="va-foot-sig">Составитель — <a href="/about/">Никита Зайцев</a>, TravelTribe</p>
     </footer>
@@ -1097,39 +1059,6 @@ const ldJson = {
   /* Dark theme только при ручном toggle через .dark-theme — НЕ через
      prefers-color-scheme: dark. Auto-mode конфликтовал с manual toggle
      и игнорировал выбор юзера. Site-wide theme handling в Layout.astro. */
-
-  /* Verified-at banner — data freshness indicator */
-  .va-verified-banner {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 1.3rem 0 0;
-    padding: 0.45rem 0.75rem;
-    background: var(--paper-dark);
-    border-left: 3px solid var(--stamp-red);
-    font-family: var(--ff-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.04em;
-    color: var(--ink-soft);
-    text-transform: uppercase;
-  }
-  .va-verified-banner strong { color: var(--ink); font-weight: 600; text-transform: none; }
-  .va-verified-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--stamp-red);
-    box-shadow: 0 0 6px var(--stamp-red);
-    animation: vaPulse 2.4s ease-in-out infinite;
-    flex: 0 0 auto;
-  }
-  @keyframes vaPulse {
-    0%, 100% { opacity: 0.8; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.85); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .va-verified-dot { animation: none; }
-  }
 
   /* Filter count + noscript fallback */
   /* Живой счётчик на кнопке: сколько останется, если нажать именно её при
@@ -1559,82 +1488,6 @@ const ldJson = {
     margin: 0 0.2rem;
   }
 
-  /* Sources / verification block */
-  .va-sources {
-    margin: 3rem auto 2rem;
-    max-width: 820px;
-    padding: 1.5rem 0 1rem;
-    border-top: 1px solid var(--ink);
-    border-bottom: 1px dashed var(--line-doc);
-  }
-  .va-sources-head { margin-bottom: 1.3rem; }
-  .va-sources-tag {
-    display: inline-block;
-    font-family: var(--ff-mono);
-    font-size: 0.66rem;
-    letter-spacing: 0.18em;
-    color: var(--customs-blue);
-    padding: 0.25rem 0.7rem;
-    border: 1px solid var(--customs-blue);
-    background: var(--customs-blue-soft);
-  }
-  .va-sources-title {
-    font-family: var(--ff-head, var(--ff-display));
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
-    font-style: italic;
-    font-weight: 500;
-    margin: 0.5rem 0 0;
-    color: var(--ink);
-    line-height: 1.1;
-  }
-  .va-sources-body {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: 1rem;
-    line-height: 1.65;
-    color: var(--ink-soft);
-  }
-  .va-sources-body p { margin: 0 0 1rem; }
-  .va-sources-list {
-    list-style: none;
-    margin: 1rem 0;
-    padding: 0;
-  }
-  .va-sources-list li {
-    padding: 0.55rem 0 0.55rem 0.9rem;
-    border-bottom: 1px dashed var(--line-doc-faint);
-    position: relative;
-    font-size: 0.95rem;
-  }
-  .va-sources-list li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0.95em;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--customs-blue);
-    opacity: 0.6;
-  }
-  .va-sources-list li:last-child { border-bottom: none; }
-  .va-sources-list strong { color: var(--ink); font-weight: 600; }
-  .va-sources-list a {
-    color: var(--stamp-red);
-    border-bottom: 1px dashed currentColor;
-    font-family: var(--ff-mono);
-    font-size: 0.88em;
-  }
-  .va-sources-disclaimer {
-    margin-top: 1.4rem !important;
-    padding: 0.9rem 1.1rem;
-    background: var(--stamp-red-soft);
-    border-left: 3px solid var(--stamp-red);
-    font-size: 0.92rem !important;
-    font-style: italic;
-  }
-  .va-sources-disclaimer strong { color: var(--stamp-red); font-style: normal; font-weight: 600; }
-  /* Ссылка в дисклеймере иначе наследует серый и не читается как ссылка. */
-  .va-sources-disclaimer a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
 
   /* Related pillars */
   .va-related {

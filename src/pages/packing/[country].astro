@@ -12,7 +12,6 @@ import { getBucket } from '../../data/packing-weather-buckets.js';
 import { ACTIVITY_TAGS, ACTIVITY_LABEL, ACTIVITY_GEAR } from '../../data/country-activity-tags.js';
 import { PLUG_TYPES, plugAdvice } from '../../data/country-plug-types.js';
 import { getWeatherBucket } from '../../data/country-month-bucket.js';
-import { DATA_UPDATED_RU } from '../../data/meta.js';
 import { aviasalesRoute, cherehapaCountry, youtravelCountry } from '../../data/affiliate.js';
 import StickyCta from '../../components/StickyCta.astro';
 
@@ -80,7 +79,7 @@ const title = titleBase.length <= 55 ? `Что взять в ${d.cases.acc} 2026
 // ⛔ Описание не повторяет заголовок: справка Яндекса прямо требует, чтобы
 // оно дополняло его, а не начиналось теми же словами. Замер 29.08.2026:
 // так делали 263 страницы сайта, 60 из них — этот шаблон.
-const description = `Одежда под каждый сезон, документы, аптечка, техника и деньги — по личному опыту поездок ${d.cases.vP}. Проверено ${DATA_UPDATED_RU}.`;
+const description = `Одежда под каждый сезон, документы, аптечка, техника и деньги — по личному опыту поездок ${d.cases.vP}.`;
 
 const FAQS = [
   { q: `Нужны ли прививки ${d.cases.vP} в 2026?`,
@@ -137,8 +136,7 @@ const ldJson = {
       <h1>Что взять <em>{d.cases.vP}</em></h1>
       <p class="pack-byline">
         <a href="/about/" class="byline-author">Никита Зайцев</a> ·
-        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
-        <span class="byline-fresh">обновлено {DATA_UPDATED_RU}</span>
+        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>
       </p>
     </header>
 
@@ -180,7 +178,7 @@ const ldJson = {
           </>)}
         </div>
       ))}
-      <p class="pack-disclaimer">⚠ Аптечка — общий список. Перед поездкой — у врача. Источники: <a href="https://www.rospotrebnadzor.ru/" target="_blank" rel="noopener">Роспотребнадзор</a>, <a href="https://www.who.int/" target="_blank" rel="noopener">ВОЗ</a>.</p>
+      <p class="pack-disclaimer">⚠ Аптечка — общий список. Перед поездкой — у врача.</p>
     </section>
 
     <section class="pack-block">
