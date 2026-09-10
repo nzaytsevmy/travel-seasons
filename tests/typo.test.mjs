@@ -37,3 +37,21 @@ test('длинная скобка не приклеивается к слову 
   // внутри работают только обычные правила — предлог держится за следующее слово
   assert.equal(typo('сезон (в горах Каппадокии бывает снег до апреля)'), `сезон (в${N}горах Каппадокии бывает снег до${N}апреля)`);
 });
+
+test('повторный прогон ничего не меняет', () => {
+  for (const s of ['бесплатно, 60 дней (макс 90/180)', 'плавающая дата (~май-июнь)', 'около 27-30 мая', 'с ноября по апрель и в мае', 'Маскат — север']) {
+    assert.equal(typo(typo(s)), typo(s), s);
+  }
+});
+
+import { typoHtml } from '../tools/typo-dist.mjs';
+test('типограф сайта трогает только текст между тегами', () => {
+  const html = '<title>Виза в Турцию</title><p data-x="в дом">Виза в <a href="/visa/">Турцию</a> (макс 90/180)</p><script>var a = "в дом";</script><pre>x - y (a b)</pre>';
+  const out = typoHtml(html);
+  assert.ok(out.includes('<title>Виза в Турцию</title>'), 'title не трогаем');
+  assert.ok(out.includes('data-x="в дом"'), 'атрибуты не трогаем');
+  assert.ok(out.includes('var a = "в дом";') && out.includes('<pre>x - y (a b)</pre>'), 'скрипт и код не трогаем');
+  assert.ok(out.includes(`Виза в${N}<a href="/visa/">`), 'предлог перед ссылкой держится за неё');
+  assert.ok(out.includes(`${N}(макс${N}90/${WJ}180)`), 'скобка склеена');
+  assert.equal(typoHtml(out), out, 'повторный прогон ничего не меняет');
+});

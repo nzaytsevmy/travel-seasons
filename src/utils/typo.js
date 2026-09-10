@@ -35,6 +35,6 @@ export function typo(text) {
   t = t.replace(RE_DASH, `${NBSP}— `);
   t = t.replace(RE_RANGE, `$1–${WJ}$2`);
   t = t.replace(RE_SLASH, `$1/${WJ}$2`);
-  t = t.replace(RE_PAREN, (m, inner) => `${NBSP}(${inner.replace(/ /g, NBSP).replace(/-(?=\S)/g, `-${WJ}`)})`);
+  t = t.replace(RE_PAREN, (m, inner) => `${NBSP}(${inner.replace(/ /g, NBSP).replace(/-(?![\s\u2060])/g, `-${WJ}`)})`);
   return t;
 }

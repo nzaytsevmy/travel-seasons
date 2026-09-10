@@ -2111,7 +2111,7 @@ test('Заголовок: слова не слипаются через гран
 // на две строки или короткий предлог остался в конце строки. Смотрит раскладку, а не
 // текст: строку с неразрывными пробелами браузер уже не рвёт, а обычный пробел рвёт не
 // всегда — ругаться надо только там, где разрыв действительно случился.
-const BREAK_PAGES = ['/turkey/', '/oman/', '/georgia/', '/thailand/', '/blog/turkey-guide-2026/'];
+const BREAK_PAGES = ['/turkey/', '/oman/', '/georgia/', '/thailand/', '/blog/turkey-guide-2026/', '/visa/turkey/', '/trips/july/turkey/', '/packing/turkey/'];
 for (const width of [360, 402]) {
   test(`Переносы: нет разорванных скобок и висящих предлогов @${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
