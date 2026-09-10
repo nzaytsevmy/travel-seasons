@@ -29,6 +29,7 @@ import YearClimateChart from '../components/YearClimateChart.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
 import ClimateChart from '../components/ClimateChart.astro';
 import CountryMap from '../components/CountryMap.astro';
+import { countryPhotos } from '../data/country-photos.js';
 import { TP_LINKS, aviasalesRoute, otelloStay, cherehapaCountry, ostrovokCountry, youtravelCountry, kiwitaxiRoute, sputnik8City, mirturbazRegion } from '../data/affiliate.js';
 import livePrices from '../data/prices-cache.json';
 
@@ -259,6 +260,31 @@ const lead = typo(guide?.intro ? firstSentence(guide.intro)
 const inline = (guide?.photos || [])
   .map((p) => ({ ...p, img: inlinePhotos[`../assets/destinations/inline/${p.file}.jpg`] }))
   .filter((p) => p.img);
+// Кадры страны по слотам макета Омана: широкий после событий по месяцам и три в разделе
+// въезда. Подпись «Фотографии: …» собирается из тех же записей о лицензии, по которым
+// кадр прошёл проверку происхождения; свой кадр подписи не требует.
+const hubImageFiles = import.meta.glob('../content/blog/_images/**/*.{jpg,jpeg,webp}', { import: 'default' });
+const hubCredits = import.meta.glob('../content/blog/_images/**/_credits.json', { eager: true, import: 'default' });
+const фотоСтраны = countryPhotos(d.slug);
+const сКадром = async (p) => {
+  const load = hubImageFiles[`../content/blog/_images/${p.file}`];
+  if (!load) throw new Error(`Кадр страницы ${d.slug} не найден: ${p.file}`);
+  return { ...p, img: await load() };
+};
+const широкий = фотоСтраны ? await сКадром(фотоСтраны.wide) : null;
+const практика = фотоСтраны ? await Promise.all(фотоСтраны.practice.map(сКадром)) : [];
+const семьяЛицензии = (l) => (/pixabay/i.test(l) ? 'Pixabay' : /^CC BY-SA/i.test(l) ? 'CC BY-SA' : /^CC BY/i.test(l) ? 'CC BY' : /^CC0/i.test(l) ? 'CC0' : l);
+const авторы = new Map();
+for (const p of [широкий, ...практика].filter(Boolean)) {
+  const cut = p.file.lastIndexOf('/');
+  const записи = hubCredits[`../content/blog/_images/${p.file.slice(0, cut)}/_credits.json`] || {};
+  const имя = p.file.slice(cut + 1);
+  const rec = записи[имя.replace(/\.\w+$/, '')] || записи[имя];
+  if (!rec?.creator) continue;
+  const lic = семьяЛицензии(rec.license || '');
+  авторы.set(lic, [...new Set([...(авторы.get(lic) || []), rec.creator])]);
+}
+const фотоКредиты = авторы.size ? `Фотографии: ${[...авторы].map(([lic, who]) => `${who.join(', ')} (${lic})`).join('; ')}.` : '';
 // Партнёрские ссылки — с ТЕМИ ЖЕ метками, что были: замер 20.09 сравнивает периоды,
 // и смена меток посередине разорвала бы ряд.
 const билеты = d.price?.iata ? aviasalesRoute('MOW', d.price.iata, subId) : null;
@@ -481,6 +507,13 @@ if (guide?.itinerary?.length) {
       <MonthlyEvents slug={d.slug} countryNom={d.cases.nom} countryNameVp={essVp} />
     </div>
 
+    {широкий && (
+      <figure class="om-wide">
+        <Image src={широкий.img} alt={широкий.alt} widths={[800, 1200, 1800]} sizes="100vw" formats={['webp']} quality={78} loading="lazy" />
+        <figcaption>{typo(широкий.caption)}</figcaption>
+      </figure>
+    )}
+
     {guide?.itinerary?.length > 0 && (
       <section class="om-sec" id="marshrut">
         <h2>Маршрут на 7–10 дней</h2>
@@ -627,6 +660,22 @@ if (guide?.itinerary?.length) {
           )}
         </>
       )}
+      {практика.length === 3 && (
+        <div class="om-practice">
+          <figure class="om-tall">
+            <div class="om-fill"><Image src={практика[0].img} alt={практика[0].alt} widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" formats={['webp']} quality={78} loading="lazy" /></div>
+            <figcaption>{typo(практика[0].caption)}</figcaption>
+          </figure>
+          <div>
+            {практика.slice(1).map((p) => (
+              <figure class="om-inline">
+                <Image src={p.img} alt={p.alt} widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" formats={['webp']} quality={78} loading="lazy" />
+                <figcaption>{typo(p.caption)}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
 
     <div id="na-meste" class="om-embed">
@@ -694,6 +743,8 @@ if (guide?.itinerary?.length) {
       </ul>
     </section>
 
+    {фотоКредиты && <p class="om-credits">{typo(фотоКредиты)}</p>}
+
     <div class="om-foot">
       <Image src={author} alt="Никита Зайцев" width={60} height={74} format="webp" quality={80} />
       <div>
@@ -730,16 +781,30 @@ if (guide?.itinerary?.length) {
   .om figure { margin: 0; }
   .om figcaption { font-size: 0.875rem; color: var(--text-faint); line-height: 1.5; margin-top: 8px; }
 
-  .om-top, .om-pair, .om-money {
+  .om-top, .om-pair, .om-money, .om-practice {
     display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 28px;
   }
   .om-top { align-items: start; padding: 24px 0 40px; row-gap: 32px; }
   .om-title { grid-column: span 8; }
   .om-answer { grid-column: span 4; }
   .om-byline { grid-column: 1 / -1; }
-  .om-pair > *, .om-money > * { grid-column: span 6; }
+  .om-pair > *, .om-money > *, .om-practice > * { grid-column: span 6; }
   .om-pair { margin: 24px 0; }
   .om-pair :global(img) { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; display: block; }
+  .om-wide { margin: 0 -24px; }
+  .om-wide :global(img) { width: 100%; height: clamp(240px, 30vw, 480px); object-fit: cover; display: block; }
+  .om-wide figcaption { padding: 0 24px; }
+  .om-practice { margin-top: 32px; }
+  .om-practice :global(img) { width: 100%; height: 300px; object-fit: cover; display: block; }
+  /* Левый кадр тянется на высоту двух правых, как на Омане. Без процентных высот внутри
+     сетки: Safari считает их от всей фигуры, и подпись ложится поверх кадра. Фигура —
+     flex-колонка, кадр заполняет остаток абсолютным позиционированием. */
+  .om-tall { display: flex; flex-direction: column; }
+  .om-fill { position: relative; flex: 1 1 auto; min-height: 300px; }
+  .om-practice .om-fill :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .om-practice > div { display: grid; row-gap: 20px; align-content: start; }
+  .om-inline { margin: 0; }
+  .om-credits { font-size: 0.8125rem; color: var(--text-faint); margin: 40px 0 0; }
 
   .om h1 { font-family: var(--ff-display); font-weight: 400; font-size: clamp(2.5rem, 5.6vw, 4.5rem); line-height: 1; margin: 0 0 16px; text-wrap: balance; }
   .om-yr { color: var(--gold); }
@@ -849,14 +914,17 @@ if (guide?.itinerary?.length) {
     .om-answer { grid-column: span 5; }
   }
   @media (max-width: 900px) {
-    .om-top, .om-pair, .om-money { grid-template-columns: 1fr; gap: 28px; }
-    .om-title, .om-answer, .om-byline, .om-pair > *, .om-money > * { grid-column: 1 / -1; }
+    .om-top, .om-pair, .om-money, .om-practice { grid-template-columns: 1fr; gap: 28px; }
+    .om-title, .om-answer, .om-byline, .om-pair > *, .om-money > *, .om-practice > * { grid-column: 1 / -1; }
     .om-heat { grid-template-columns: repeat(6, 1fr); }
   }
   @media (max-width: 768px) {
     .om { padding: 0 16px 48px; }
     .om-sec { padding: 40px 0; }
-    .om-hero { margin-left: -16px; margin-right: -16px; }
+    .om-hero, .om-wide { margin-left: -16px; margin-right: -16px; }
+    .om-wide figcaption { padding: 0 16px; }
+    .om-practice :global(img) { height: 240px; }
+    .om-fill { flex: none; min-height: 0; aspect-ratio: 3 / 2; }
     .om-btn-ghost, .om-cta-row .om-btn { width: 100%; }
     .om-rules .om-prow { flex-direction: column; gap: 0; }
     .om-rules .om-prow span:first-child { flex: none; padding: 12px 0 0; }
