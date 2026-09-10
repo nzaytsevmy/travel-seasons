@@ -14,7 +14,7 @@ export const POIS = {
     center: { lat: 35.0, lng: 110.0, zoom: 4 },
     pois: [
       { name: 'Пекин',         lat: 39.9042, lng: 116.4074, type: 'city',    note: 'Запретный город, Великая стена в Бадалинге' },
-      { name: 'Шанхай',        lat: 31.2304, lng: 121.4737, type: 'city',    note: 'Бунд, Pudong, magenkrupp' },
+      { name: 'Шанхай',        lat: 31.2304, lng: 121.4737, type: 'city',    note: 'Бунд и небоскрёбы Пудуна' },
       { name: 'Сиань',         lat: 34.3416, lng: 108.9398, type: 'culture', note: 'Терракотовая армия, древняя столица' },
       { name: 'Гуйлинь / Яншо', lat: 24.7716, lng: 110.4978, type: 'nature',  note: 'карстовые горы реки Ли' },
       { name: 'Чэнду',         lat: 30.5728, lng: 104.0668, type: 'food',    note: 'панды + сычуаньская кухня' },

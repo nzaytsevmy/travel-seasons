@@ -250,7 +250,7 @@ const ldJson = {
 
 .evt-byline-row { grid-column: 1 / 13; grid-row: 4; margin-top: .5rem; }
 
-.evt-section { border-top: 2px solid #15171a; padding: clamp(1.4rem, 3vw, 2.2rem) 0; scroll-margin-top: 80px; }
+.evt-section { border-top: 1px solid var(--line); padding: clamp(1.4rem, 3vw, 2.2rem) 0; scroll-margin-top: 80px; }
 .evt-shead h2 { font-size: clamp(1.2rem, 2.4vw, 1.6rem); font-weight: 800; letter-spacing: -.015em; margin: 0 0 .5rem; }
 .evt-note { font-size: .88rem; color: var(--text-dim); margin: 0 0 1rem; }
 .evt-verdict { font-size: 1rem; line-height: 1.6; }
@@ -261,14 +261,12 @@ const ldJson = {
 
 .evt-list { list-style: none; margin: 0; padding: 0; }
 .evt-list li {
-  border-top: 1px solid var(--line);
   padding: .8rem 0;
   display: grid;
   grid-template-columns: auto auto 1fr;
   gap: .3rem .7rem;
   align-items: baseline;
 }
-.evt-list li:first-child { border-top: none; }
 .evt-tag {
   display: inline-block;
   padding: .15rem .5rem;
@@ -292,7 +290,7 @@ const ldJson = {
   .evt-link { white-space: normal; }
 }
 
-.evt-faq-i { border-top: 1px solid var(--line); padding: .9rem 0; }
+.evt-faq-i { padding: .9rem 0; }
 .evt-faq-i summary { font-weight: 700; cursor: pointer; min-height: 44px; display: flex; align-items: center; }
 .evt-faq-i p { margin: .6rem 0 0; color: var(--text-dim); line-height: 1.6; }
 
@@ -302,7 +300,7 @@ const ldJson = {
 .evt-monthnav-side--right { margin-left: auto; }
 
 .evt-related { list-style: none; margin: 0; padding: 0; }
-.evt-related li { border-top: 1px solid var(--line); padding: .8rem 0; display: flex; flex-direction: column; }
+.evt-related li { padding: .8rem 0; display: flex; flex-direction: column; }
 .evt-related a { color: var(--text); text-decoration: none; }
 .evt-related a b { color: var(--gold); text-decoration: underline; text-underline-offset:.22em; }
 .evt-related span { font-size: .82rem; color: var(--text-faint); margin-top: .15rem; }

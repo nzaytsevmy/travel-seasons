@@ -134,7 +134,7 @@ const description = (descBase.length < 110 ? descBase + descTail : descBase).sli
 
 const FAQS = [
   {
-    q: `Какая погода ${d.cases.vP} в ${m.prep} 2026?`,
+    q: `Какая погода ${d.cases.loc} в ${m.prep} 2026?`,
     a: monthWeather
       ? `${monthCap} ${d.cases.loc} — температура ${monthWeather.temp}, осадки ${monthWeather.rain}. ${monthText || ''}`.trim()
       : `${monthText || `${monthCap} ${d.cases.loc} — ${bucket.label.toLowerCase()}.`} Обычно в это время: ${bucket.summary}.`,
@@ -151,25 +151,21 @@ const FAQS = [
     q: `Какие события и праздники ${d.cases.loc} в ${m.prep}?`,
     a: monthEvents.length
       ? monthEvents.map(e => `${e.name}${e.dates ? ' (' + e.dates + ')' : ''}${e.note ? ' — ' + e.note : ''}`).join('. ')
-      : `В ${m.prep} ${d.cases.loc} нет крупных гос. праздников или фестивалей, важных для туристов. Смотри помесячный календарь ${d.cases.gen || d.cases.nom}.`,
+      : `В ${m.prep} ${d.cases.loc} нет крупных гос. праздников или фестивалей, важных для туристов.`,
   },
   {
     q: `Сколько стоит перелёт ${d.cases.vP} в ${m.prep}?`,
     a: flightMonth
-      ? `Ориентир для ${m.prep}: от $${flightMonth} в одну сторону из Москвы (база $${flightLow} × сезонный множитель ${monthMult}). В ${m.prep} ${d.cases.loc} ${(status==='P'?'пик сезона, цены на максимуме':status==='G'?'хороший сезон, цены средние':status==='B'?'низкий сезон, минимум за год':status==='O'?'нормальный сезон':'инфраструктура частично закрыта')}. Конкретно под даты — в калькуляторе.`
+      ? `Перелёт Москва — ${d.cases.nom} с вылетом в ${m.prep}: от $${flightMonth} в одну сторону. В ${m.prep} ${d.cases.loc} ${(status==='P'?'пик сезона, цены на максимуме':status==='G'?'хороший сезон, цены средние':status==='B'?'низкий сезон, минимум за год':status==='O'?'нормальный сезон':'инфраструктура частично закрыта')}.`
       : flightLow
         ? `Минимум — от $${flightLow} в одну сторону из Москвы. ${rank.price}`
-        : `Цены варьируются по сезону. ${rank.price} Поиск — Aviasales.`,
+        : `Цены меняются по сезону. ${rank.price}`,
   },
   {
     q: `Нужна ли страховка ${d.cases.vP}?`,
     a: needsVisa
       ? `Да, обязательна для визы ${d.cases.prep} (минимум €30 000). Без полиса визу не дадут.`
       : `Не обязательна, но настоятельно рекомендую: медпомощь иностранцам ${d.cases.loc} платная, полис на 14 дней ≈ 1 500 ₽.`,
-  },
-  {
-    q: `Что НЕ ввезёшь ${d.cases.vP}?`,
-    a: `Базовые запреты: наркотики, оружие, дроны без разрешения, продукты животноводства, валюта свыше $10 000. Подробнее — на странице страны ${d.cases.gen || d.cases.nom} в разделе «Бытовая практика».`,
   },
 ];
 
@@ -282,14 +278,14 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 
     <DestinationTabs d={d} active="packing" />
 
-    {/* QUICK FACTS — 4 ячейки */}
-    <section class="pmu-section">
+    {/* QUICK FACTS. Без номеров «01–04» (декоративные индексы сняты с сайта 06.07.2026) и без «Сезона» —
+        он уже стоит плашкой в шапке. Цена та же, что в блоке перелёта ниже, иначе на странице два разных числа. */}
+    <section class="pmu-section pmu-section--first">
       <div class="pmu-shead"><h2>Главное о {m.prep} {d.cases.loc}</h2></div>
       <div class="pmu-vlist">
-        <div class="pmu-vi"><span><b>01</b> Сезон</span><div>{rank.label}</div></div>
-        <div class="pmu-vi"><span><b>02</b> Погода</span><div>{bucket.label}</div></div>
-        {flightLow && <div class="pmu-vi"><span><b>03</b> Перелёт от</span><div>${flightLow}</div></div>}
-        <div class="pmu-vi"><span><b>04</b> Виза</span><div>{needsVisa ? (visa?.cost || 'Нужна') : 'Не нужна'}</div></div>
+        <div class="pmu-vi"><span>Погода</span><div>{bucket.label}</div></div>
+        {flightLow && <div class="pmu-vi"><span>Перелёт от</span><div>${flightMonth || flightLow}</div></div>}
+        <div class="pmu-vi"><span>Виза</span><div>{needsVisa ? (visa?.cost || 'Нужна') : 'Не нужна'}</div></div>
       </div>
     </section>
 
@@ -321,9 +317,8 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
           <div class="pmu-weather-grid">
             <div class="pmu-w-cell"><span class="pmu-w-k">Температура</span><div class="pmu-w-v">{monthWeather.temp}</div></div>
             <div class="pmu-w-cell"><span class="pmu-w-k">Осадки</span><div class="pmu-w-v">{monthWeather.rain}</div></div>
-            <div class="pmu-w-cell"><span class="pmu-w-k">Тип климата</span><div class="pmu-w-v">{bucket.label}</div></div>
           </div>
-          <p class="pmu-weather-note">{bucket.summary}. Замер по {monthWeather.city}.</p>
+          <p class="pmu-weather-note">{bucket.summary}. Замер по городу {monthWeather.city}.</p>
         </>
       ) : (
         <p class="pmu-answer">{bucket.summary}. Конкретные температуры — см. <a href="/seasons/" class="pmu-link">таблицу сезонов 70+ стран</a>.</p>
@@ -336,12 +331,11 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         <div class="pmu-shead"><h2>Перелёт Москва — {d.cases.nom} в {m.prep}</h2></div>
         <div class="pmu-price">
           <div class="pmu-price-main">от <b>${flightMonth}</b> в одну сторону</div>
-          <div class="pmu-price-meta">База ${flightLow} × сезонный множитель {monthMult} ({rank.label.toLowerCase()})</div>
         </div>
         <p class="pmu-cta">
           <a class="pmu-aff" href={aviasalesRoute('MOW', d.price.iata, `packing_${d.slug.replaceAll('-', '_')}`, monthIdx)} rel="sponsored noopener" target="_blank">Найти билет Москва — {d.cases.nom}</a>
           
-          <span class="pmu-trust">актуальные цены под твои даты · оплата картами РФ</span>
+          <span class="pmu-trust">оплата картами РФ</span>
         </p>
       </section>
     )}
@@ -427,15 +421,15 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       </ul>
       {flightLow && d.price?.iata && (
         <p class="pmu-cta">
-          <a class="pmu-aff" href={aviasalesRoute('MOW', d.price.iata, `packing_${d.slug.replaceAll('-', '_')}_docs`, monthIdx)} rel="sponsored noopener" target="_blank">Посмотреть цены на эти даты — от ${flightLow}</a>
+          <a class="pmu-aff" href={aviasalesRoute('MOW', d.price.iata, `packing_${d.slug.replaceAll('-', '_')}_docs`, monthIdx)} rel="sponsored noopener" target="_blank">Посмотреть цены на эти даты — от ${flightMonth || flightLow}</a>
           
-          <span class="pmu-trust">все авиакомпании в одной выдаче · оплата картами РФ</span>
+          <span class="pmu-trust">оплата картами РФ</span>
         </p>
       )}
       <p class="pmu-cta">
         <a class="pmu-aff" href={cherehapaCountry(d.slug, affiliateSubId)} rel="sponsored noopener" target="_blank">Оформить страховку {d.cases.vP}</a>
         
-        <span class="pmu-trust">сравнение цен · оплата картами РФ</span>
+        <span class="pmu-trust">оплата картами РФ</span>
       </p>
     </section>
 
@@ -468,7 +462,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 
     {/* НАВИГАЦИЯ МЕСЯЦЕВ — соседние + альт */}
     <section class="pmu-section">
-      <div class="pmu-shead"><h2>Другие месяцы {d.cases.gen || d.cases.nom}</h2></div>
+      <div class="pmu-shead"><h2>Другие месяцы {d.cases.loc}</h2></div>
       <div class="pmu-monthnav">
         <a class="pmu-monthnav-side" href={`/packing/${d.slug}/${MONTHS[prevIdx].slug}/`}>
           <span class="pmu-monthnav-dir">← {MONTHS[prevIdx].nom}</span>
@@ -481,7 +475,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       </div>
       {altMonths.length > 0 && (
         <p class="pmu-alt">
-          <b>Лучшие месяцы {d.cases.gen || d.cases.nom}:</b>
+          <b>Лучшие месяцы {d.cases.loc}:</b>
           {altMonths.map((a, i) => (
             <>
               {i > 0 && ' · '}
@@ -510,7 +504,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       <div class="pmu-shead"><h2>Что почитать дальше</h2></div>
       <ul class="pmu-related">
         {blogSlug && <li><a href={`/blog/${blogSlug}/`}><b>{d.cases.nom} 2026 — авторский разбор</b></a><span>маршруты, цены и что я понял на месте</span></li>}
-        <li><a href={`/packing/${d.slug}/`}><b>Полный чек-лист {d.cases.gen || d.cases.nom}</b></a><span>все 12 месяцев на одной странице</span></li>
+        <li><a href={`/packing/${d.slug}/`}><b>Полный чек-лист {d.cases.vP}</b></a><span>все 12 месяцев на одной странице</span></li>
         <li><a href={`/${d.slug}/`}><b>{d.cases.nom} 2026 — виза, бюджет, маршруты</b></a><span>главная карточка страны</span></li>
         <li><a href={`/trips/${m.slug}/${d.slug}/`}><b>{d.cases.nom} в {m.prep} 2026</b></a><span>отдельный гайд по поездке</span></li>
         {!d.domestic && <li><a href={`/visa/${d.slug}/`}><b>Виза {d.cases.vP} для россиян 2026</b></a><span>документы, сроки, стоимость</span></li>}
@@ -532,7 +526,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 
 <style>
 .pmu {
-  --line-strong: #15171a;
+  --line-strong: var(--line);
   --line-hair: var(--line);
   max-width: 980px;
   margin: 0 auto;
@@ -560,16 +554,12 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 /* WEATHER detail grid */
 .pmu-weather-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
 }
 .pmu-w-cell {
-  padding: .85rem 1.2rem .95rem;
-  border-right: 1px solid var(--line-hair);
+  padding: 0;
 }
-.pmu-w-cell:first-child { padding-left: 0; }
-.pmu-w-cell:last-child { border-right: none; }
 .pmu-w-k {
   display: block;
   font-size: .66rem; font-weight: 700;
@@ -587,16 +577,9 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
   color: var(--text-dim);
   line-height: 1.55;
 }
-@media (max-width: 760px) {
-  .pmu-weather-grid { grid-template-columns: 1fr; }
-  .pmu-w-cell { border-right: none; padding-left: 0; border-top: 1px solid var(--line-hair); }
-  .pmu-w-cell:first-child { border-top: none; }
-}
 
 /* PERSONAL — авторский опыт с явной пометкой «был лично» */
 .pmu-personal {
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
   padding: 1rem 0 1.1rem;
 }
 .pmu-personal p {
@@ -605,7 +588,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
   line-height: 1.65;
   color: var(--text);
 }
-.pmu-personal p + p { margin-top: .8rem; padding-top: .8rem; border-top: 1px solid var(--line-hair); }
+.pmu-personal p + p { margin-top: .8rem; }
 .pmu-personal-mark {
   display: inline-block;
   color: var(--gold);
@@ -618,8 +601,6 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 
 /* PRICE block */
 .pmu-price {
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
   padding: 1rem 0;
 }
 .pmu-price-main {
@@ -630,11 +611,6 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
   font-weight: 800;
   font-size: 1.5rem;
   color: var(--gold);
-}
-.pmu-price-meta {
-  margin-top: .25rem;
-  font-size: .82rem;
-  color: var(--text-dim);
 }
 
 /* MANIFEST */
@@ -705,10 +681,12 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 /* SECTIONS */
 .pmu-section { margin-top: clamp(2rem, 4vw, 3.4rem); }
 .pmu-shead {
-  border-top: 2px solid var(--line-strong);
+  border-top: 1px solid var(--line-strong);
   padding-top: .8rem;
   margin-bottom: 1.4rem;
 }
+/* Первый раздел стоит сразу под вкладками: у вкладок своя черта, вторая рядом — лишняя. */
+.pmu-section--first .pmu-shead { border-top: 0; padding-top: 0; }
 .pmu-shead h2 {
   font-weight: 800;
   font-size: clamp(1.4rem, 2.6vw, 2rem);
@@ -724,16 +702,12 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 /* VLIST (quick facts) */
 .pmu-vlist {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px 24px;
 }
 .pmu-vi {
-  padding: .85rem 1.2rem .95rem;
-  border-right: 1px solid var(--line-hair);
+  padding: 0;
 }
-.pmu-vi:first-child { padding-left: 0; }
-.pmu-vi:last-child { border-right: none; }
 .pmu-vi span {
   display: block;
   font-size: .66rem; font-weight: 700;
@@ -741,8 +715,8 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
   color: var(--text-dim);
   margin-bottom: .35rem;
 }
-.pmu-vi span b { color: var(--gold); margin-right: .35rem; font-weight: 700; }
 .pmu-vi > div {
+  text-wrap: balance;
   font-weight: 800;
   font-size: .98rem;
   color: var(--text);
@@ -751,24 +725,17 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 }
 @media (max-width: 760px) {
   .pmu-vlist { grid-template-columns: repeat(2, 1fr); }
-  .pmu-vi:nth-child(2n) { border-right: none; }
-  .pmu-vi:nth-child(odd) { padding-left: 0; }
-  .pmu-vi:nth-child(n+3) { border-top: 1px solid var(--line-hair); }
 }
 
 /* EVENTS — events list with tags */
 .pmu-events {
   list-style: none; margin: 0; padding: 0;
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
 }
 .pmu-ev {
   padding: .85rem 0 .9rem;
-  border-top: 1px solid var(--line-hair);
   font-size: .95rem; line-height: 1.55;
   color: var(--text);
 }
-.pmu-ev:first-child { border-top: none; }
 .pmu-ev-name { font-weight: 700; }
 .pmu-ev-dates { color: var(--text-dim); font-size: .88rem; }
 .pmu-ev-note { font-size: .85rem; color: var(--text-dim); margin-top: .2rem; line-height: 1.55; }
@@ -789,16 +756,12 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
   list-style: none;
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
 }
 .pmu-list li {
-  padding: .75rem 0 .8rem;
-  border-top: 1px solid var(--line-hair);
+  padding: .45rem 0;
   font-size: .95rem; line-height: 1.6;
   color: var(--text);
 }
-.pmu-list li:first-child { border-top: none; }
 .pmu-list li b { font-weight: 800; color: var(--text); }
 .pmu-list a { color: var(--gold); text-decoration: 1px underline var(--gold); text-underline-offset:.22em; font-weight: 600; }
 
@@ -847,12 +810,9 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 .pmu-monthnav {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
 }
 .pmu-monthnav-side {
   padding: 1rem 1.2rem;
-  border-right: 1px solid var(--line-hair);
   text-decoration: none;
   color: var(--text);
   display: flex; flex-direction: column; gap: .25rem;
@@ -860,7 +820,6 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 }
 .pmu-monthnav-side:first-child { padding-left: 0; }
 .pmu-monthnav-side--right {
-  border-right: none;
   text-align: right;
   padding-right: 0;
 }
@@ -884,12 +843,6 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 .pmu-alt b { color: var(--text); font-weight: 700; margin-right: .4rem; }
 
 /* FAQ */
-.pmu-faq {
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
-}
-.pmu-faq-i { border-top: 1px solid var(--line-hair); }
-.pmu-faq-i:first-child { border-top: none; }
 .pmu-faq-i summary {
   font-weight: 700;
   font-size: .98rem;
@@ -926,14 +879,10 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 /* RELATED */
 .pmu-related {
   list-style: none; margin: 0; padding: 0;
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
 }
 .pmu-related li {
-  padding: .75rem 0;
-  border-top: 1px solid var(--line-hair);
+  padding: .4rem 0;
 }
-.pmu-related li:first-child { border-top: none; }
 .pmu-related a {
   text-decoration: none;
   color: var(--text);
