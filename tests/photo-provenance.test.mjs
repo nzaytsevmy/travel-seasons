@@ -227,3 +227,44 @@ test('Кадры страницы страны: каждый файл — нас
   }
   assert.deepEqual(bad, [], bad.join('\n'));
 });
+
+// С 10.09.2026 у каждого места на карте страны есть кадр (пометка Никиты: «в каждой карточке
+// должны быть сочные картинки»). Правило то же, что для кадров страниц стран: чужой кадр — только
+// с записью о лицензии и именем автора, файл — настоящая картинка, у кадра есть подпись для
+// незрячих. Место без кадра тоже ошибка: карточка без картинки выпадает из ряда.
+test('Кадры мест: у каждого места файл, подпись и лицензия с автором', async () => {
+  const { POIS } = await import(new URL('../src/data/country-pois.js', import.meta.url));
+  const cred = credits(); const bad = [];
+  for (const [slug, d] of Object.entries(POIS)) {
+    for (const p of d.pois) {
+      if (!p.photo) { bad.push(`${slug}/${p.name}: нет кадра`); continue; }
+      const f = join(IMAGES, p.photo);
+      if (!existsSync(f)) { bad.push(`${slug}/${p.name}: файла ${p.photo} нет`); continue; }
+      const b = readFileSync(f);
+      if (b.length < 10_000 || !(b[0] === 0xff && b[1] === 0xd8)) bad.push(`${slug}/${p.name}: ${p.photo} — ${b.length} байт, это не картинка`);
+      if (!p.alt?.trim()) bad.push(`${slug}/${p.name}: у кадра нет подписи`);
+      const rec = cred.get(p.photo.slice(0, p.photo.length - extname(p.photo).length));
+      if (!rec?.creator || !rec?.license) bad.push(`${slug}/${p.name}: ${p.photo} — нет записи о лицензии с автором`);
+    }
+  }
+  assert.deepEqual(bad, [], bad.join('\n'));
+});
+
+// Главные виды на страницах стран без списка мест (src/data/country-sights.js): то же правило —
+// файл настоящий, у кадра подпись, запись о лицензии с автором.
+test('Кадры главных видов: у каждого файл, подпись и лицензия с автором', async () => {
+  const { COUNTRY_SIGHTS } = await import(new URL('../src/data/country-sights.js', import.meta.url));
+  const cred = credits(); const bad = [];
+  for (const [slug, list] of Object.entries(COUNTRY_SIGHTS)) {
+    for (const p of list) {
+      const f = join(IMAGES, p.file);
+      if (!existsSync(f)) { bad.push(`${slug}: файла ${p.file} нет`); continue; }
+      const b = readFileSync(f);
+      if (b.length < 10_000 || !(b[0] === 0xff && b[1] === 0xd8)) bad.push(`${slug}: ${p.file} — ${b.length} байт, это не картинка`);
+      if (!p.alt?.trim() || !p.caption?.trim()) bad.push(`${slug}: у ${p.file} нет подписи`);
+      const rec = cred.get(p.file.slice(0, p.file.length - extname(p.file).length));
+      if (!rec?.creator || !rec?.license) bad.push(`${slug}: ${p.file} — нет записи о лицензии с автором`);
+    }
+  }
+  assert.deepEqual(bad, [], bad.join('\n'));
+});
