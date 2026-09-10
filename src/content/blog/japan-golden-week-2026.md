@@ -25,6 +25,19 @@ checks:
         url: "https://travelata.ru/"
       - name: "Airalo — eSIM"
         url: "https://www.airalo.com/ru"
+  - date: 2026-09-10
+    what: "Строки о сверке и источниках в тексте; ссылки на первоисточники перенесены в журнал"
+    changed: "Сняты служебные строки о сверке и источниках. Читателю они не нужны (правило Никиты 08–09.09.2026); ссылки на первоисточники перенесены сюда из текста, факты и цены не менялись."
+    minor: true
+    sources:
+      - name: "официальный список праздников Японии, Cabinet Office"
+        url: "https://www.cao.go.jp/chosei/shukujitsu/gaiyou.html"
+      - name: "japan-guide.com — Golden Week details"
+        url: "https://www.japan-guide.com/e/e2270.html"
+      - name: "JNTO Lodging Statistics"
+        url: "https://www.jnto.go.jp/statistics/data/visitor-trends/"
+      - name: "JNTO"
+        url: "https://www.jnto.go.jp/"
 ---
 В 2026 году Золотая неделя складывается в **8 дней подряд** — с 29 апреля по 6 мая. Это редкий «идеальный» расклад: четыре национальных праздника лягут так, что вся страна уйдёт в отпуск без перерыва. Туристов это должно интересовать ровно по одной причине — это самые дорогие и самые забитые дни в Японии за весь год.
 
@@ -54,8 +67,6 @@ checks:
 | **4 мая** | понедельник | Greenery Day (みどりの日) |
 | **5 мая** | вторник | Children's Day (こどもの日) |
 | **6 мая** | среда | substitute holiday — переносится с воскресенья 3 мая |
-
-Источник: [официальный список праздников Японии, Cabinet Office](https://www.cao.go.jp/chosei/shukujitsu/gaiyou.html).
 
 То есть формальные праздничные дни — **29 апреля, 3–6 мая**, но из-за того что 30 апреля и 1 мая попадают между ними, бизнес массово закрывается на все 8 дней. Это так называемый **«Super Golden Week»** (в японской прессе — スーパーゴールデンウィーク, «суперзолотая неделя») — раскладка которая случается в среднем раз в 5–7 лет. В 2027-м её не будет: 29 апреля будет четверг, и подряд получится только 3 праздника.
 
@@ -119,8 +130,6 @@ checks:
 - Универмаги и торговые центры (Don Quijote, Bic Camera, Yodobashi, Mitsukoshi) — работают, и активнее обычного из-за внутреннего туризма
 - 7-Eleven, Lawson, FamilyMart, Tsutaya — 24/7 как всегда
 - Парки развлечений (Disneyland, Universal Studios) — работают, но это пик посещаемости года, очереди по 4–6 часов на топ-аттракционы
-
-Источник: [japan-guide.com — Golden Week details](https://www.japan-guide.com/e/e2270.html).
 
 ---
 
@@ -237,5 +246,3 @@ checks:
 * [@traveltriberu](https://t.me/traveltriberu) — разборы стран и поездок в Telegram
 
 ---
-
-*Актуально на: 9 мая 2026. Даты праздников проверены по [официальному списку Cabinet Office](https://www.cao.go.jp/chosei/shukujitsu/gaiyou.html). Цены на отели и перелёты — выборки с агрегаторов (Ostrovok, Aviasales, Skyscanner) и [JNTO Lodging Statistics](https://www.jnto.go.jp/statistics/data/visitor-trends/). Рекомендации по фестивалям — [japan-guide.com](https://www.japan-guide.com/e/e2270.html) и [JNTO](https://www.jnto.go.jp/).*

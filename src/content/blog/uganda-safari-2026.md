@@ -18,6 +18,15 @@ checks:
     sources:
       - name: "Airalo — eSIM"
         url: "https://www.airalo.com/ru"
+  - date: 2026-09-10
+    what: "Строки о сверке и источниках в тексте; ссылки на первоисточники перенесены в журнал"
+    changed: "Сняты служебные строки о сверке и источниках. Читателю они не нужны (правило Никиты 08–09.09.2026); ссылки на первоисточники перенесены сюда из текста, факты и цены не менялись."
+    minor: true
+    sources:
+      - name: "Uganda Wildlife Authority"
+        url: "https://ugandawildlife.org"
+      - name: "Uganda Immigration"
+        url: "https://visas.immigration.go.ug"
 ---
 Я просыпаюсь от того, что снаружи кто-то громко жуёт ветку. Раздвигаю шторы — за москитной сеткой, в полутора метрах от веранды, стоит слон. Не из брошюры. Живой, серый, размером с фургон. Спокойно объедает дерево, пока я в трусах пытаюсь сообразить, надо ли орать охрану. Через минуту приходит парень с фонариком и шёпотом объясняет: «Он каждый вечер так. Не выходите до рассвета». **Это была вторая ночь в Уганде. Первой ночью к нам приходила горилла. Третьей — никто, и было даже немного обидно.**
 
@@ -303,6 +312,6 @@ checks:
 
 ---
 
-*Актуально на: 2 мая 2026. Цены на пермиты — [Uganda Wildlife Authority](https://ugandawildlife.org), визовая информация — [Uganda Immigration](https://visas.immigration.go.ug), рекомендации по прививкам — [CDC Travel Health](https://wwwnc.cdc.gov/travel/destinations/traveler/none/uganda).*
+*Пермиты — на сайте [Uganda Wildlife Authority](https://ugandawildlife.org), виза — на портале [Uganda Immigration](https://visas.immigration.go.ug), прививки — по рекомендациям [CDC Travel Health](https://wwwnc.cdc.gov/travel/destinations/traveler/none/uganda).*
 
 *Фотографии горилл в Бвинди — мои, сняты в декабре 2025 года.*

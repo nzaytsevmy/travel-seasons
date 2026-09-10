@@ -129,8 +129,14 @@ test('Вьетнам: улучшения после live-аудита закре
   }
   assert.match(article, /^volatileFacts:\n(?:  .+\n)+/m,
     'изменчивым ценам и прогнозу нужны дата проверки, срок и безопасный fallback');
-  assert.match(article, /^    reviewAfter:\s*2026-09-09/m);
-  assert.match(article, /^    reviewAfter:\s*2026-10-01/m);
+  // Правило, а не дата: срок сверки обязан истекать, и тогда факт сверяют заново или
+  // снимают по его же запасному пути — так 10.09.2026 сняты суммы перелётов.
+  const факты = article.match(/^volatileFacts:\n((?:  .+\n)+)/m)[1].split(/^  - /m).filter(Boolean);
+  for (const факт of факты) {
+    for (const поле of ['checkedAt', 'reviewAfter', 'fallback']) {
+      assert.match(факт, new RegExp(`^    ${поле}:`, 'm'), `у изменчивого факта нет ${поле}: ${факт.split('\n')[0]}`);
+    }
+  }
   assert.match(article, /^\| Сценарий \| Когда \| Регион и срок \| Транспорт \| Главный минус \|$/m);
   assert.match(article, /Камрань[\s\S]{0,400}Фукуок[\s\S]{0,400}Дананг/i,
     'ценовой блок должен сравнивать три региона, а не выдавать один маршрут за рынок');
