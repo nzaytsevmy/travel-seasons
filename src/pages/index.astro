@@ -7,7 +7,6 @@ import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import { DIRECTIONS } from '../data/directions.js';
 import { TP_LINKS, aviasalesUrl, ostrovokSearch, cherehapaTravel, youtravelSub } from '../data/affiliate.js';
-import { DATA_UPDATED_RU } from '../data/meta.js';
 import authorPhoto from '../assets/author/nikita.jpg';
 import heroCover from '../assets/destinations/georgia.jpg';
 
@@ -126,7 +125,7 @@ const ldJson = {
         <Image src={authorPhoto} alt="Никита Зайцев" class="me-ph" width={88} height={88}
                formats={['webp']} quality={78} loading="eager" />
         <p class="sub"><a href="/about/"><b>Никита</b></a> · 60 стран лично · цены, что платил
-        сам <span class="upd">· {DATA_UPDATED_RU}</span></p>
+        сам</p>
       </div>
       <ul class="vlist">
         <li class="vi"><a href="/visa/"><span class="vi-l">Визы РФ</span></a></li>
@@ -323,7 +322,6 @@ const ldJson = {
 .sub a{color:inherit;text-decoration:underline 1px rgba(255,255,255,.45);text-underline-offset:.2em}
 .sub a:hover,.sub a:focus-visible{text-decoration-color:#fff}
 /* Дата держит свежесть для поиска, но не тянет на себя взгляд. */
-.upd{color:rgba(255,255,255,.66);white-space:nowrap}
 .vlist{grid-column:1/13;grid-row:3;margin-top:clamp(1.3rem,2.4vw,2rem);display:grid;
   grid-template-columns:repeat(6,1fr);border-top:1px solid rgba(255,255,255,.4);
   border-bottom:1px solid rgba(255,255,255,.4);list-style:none}

@@ -1,13 +1,12 @@
 ---
-// Видимый byline для содержательных страниц (E-E-A-T): автор → /about/, Telegram,
-// дата актуальности. Классы .byline-author/.byline-fresh — канон репо.
-import { DATA_UPDATED_RU } from '../data/meta.js';
+// Видимый byline для содержательных страниц (E-E-A-T): автор → /about/, Telegram и
+// необязательная заметка. Даты «обновлено …» нет: читателю не важно, когда сверяли
+// данные (правило Никиты 08–09.09.2026). Классы .byline-author/.byline-fresh — канон репо.
 const { note } = Astro.props;
 ---
 <p class="byline">
   <a href="/about/" class="byline-author">Никита Зайцев</a> ·
-  <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
-  <span class="byline-fresh">обновлено {DATA_UPDATED_RU}{note ? ` · ${note}` : ''}</span>
+  <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>{note && <> · <span class="byline-fresh">{note}</span></>}
 </p>
 
 <style>

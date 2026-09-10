@@ -14,8 +14,8 @@ test.beforeEach(async ({ page }) => {
 // (no-overflow / no-broken-images / no-css-escapes), они от правок текста не падают.
 // Канарейки на блоговую вёрстку (пиксельные, правишь — пересними эталон):
 //   blog-kamchatka — единственный пост со всеми блоговыми компонентами сразу
-//                    (AffiliateNote + PricingCards + FlightRoutes + TOC);
-//   blog-novoafon  — прозовые markdown-таблицы (18 строк) + AffiliateNote.
+//                    (PricingCards + FlightRoutes + TOC);
+//   blog-novoafon  — прозовые markdown-таблицы (18 строк).
 const PAGES: { slug: string; name: string; dynamic?: boolean; content?: boolean }[] = [
   // dynamic: главная, /trips/ и /bezviz/ рендерят ТЕКУЩИЙ месяц через
   // new Date().getMonth() («куда поехать в августе»). Первого числа любого

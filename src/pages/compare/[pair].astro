@@ -11,7 +11,7 @@ import { COMPARE_SNIPPET_TEST } from '../../data/compare-snippets.js';
 import { buildCompareEntry, compareEntries } from '../../data/compare-logic.js';
 import { MONTHS } from '../../data/directions.js';
 import { similarDestinations } from '../../data/similar.js';
-import { DATA_UPDATED_RU, DATA_UPDATED } from '../../data/meta.js';
+import { DATA_UPDATED } from '../../data/meta.js';
 import { cherehapaTravel, aviasalesRoute, youtravelSub } from '../../data/affiliate.js';
 
 export async function getStaticPaths() {
@@ -49,7 +49,7 @@ const title = snippetTest
   ? `${a.nom} или ${b.nom}: где дешевле — разница ${diff.cheaperPct}% в сутки`
   : `${a.nom} или ${b.nom}: что выбрать в 2026`;
 const description = (snippetTest
-  ? `Дешевле — ${cheaperEntry.nom}, примерно на ${diff.cheaperPct}% в сутки при среднем комфорте. Рядом виза, перелёт и сезон по месяцам. Данные на ${DATA_UPDATED_RU}.`
+  ? `Дешевле — ${cheaperEntry.nom}, примерно на ${diff.cheaperPct}% в сутки при среднем комфорте. Рядом виза, перелёт и сезон по месяцам.`
   : `${a.nom} vs ${b.nom} — виза, бюджет в сутки, перелёт и сезон по месяцам бок-о-бок. ${pairDef.angle}.`).slice(0, 200);
 
 const verdictPoints = [];
@@ -125,7 +125,7 @@ const ldJson = {
 
   <main id="main" class="cmpg">
     <section class="cmpg-manifest">
-      <div class="cmpg-meta">Сравнение направлений<br /><b>Обновлено {DATA_UPDATED_RU}</b></div>
+      <div class="cmpg-meta">Сравнение направлений</div>
       <h1 class="cmpg-h1">{a.nom} <span class="rd">или</span> {b.nom}</h1>
       <p class="cmpg-tldr">{verdictPoints[0]}</p>
       <div class="cmpg-byline-row"><Byline note={`${a.nom} и ${b.nom}`} /></div>
@@ -141,7 +141,7 @@ const ldJson = {
       <ul class="cmpg-verdict">
         {verdictPoints.map((v) => <li>{v}</li>)}
       </ul>
-      <p class="cmpg-disclaimer">Сравнение по данным сайта: виза — {DATA_UPDATED_RU}, бюджет — собран по нескольким источникам за 2026 год (или наша оценка, если источников нет), сезон — по многолетним наблюдениям. Точные цифры под свои даты — в <a href="/calculator/" class="cmpg-link">калькуляторе</a>.</p>
+      <p class="cmpg-disclaimer">Точные цифры под свои даты — в <a href="/calculator/" class="cmpg-link">калькуляторе</a>.</p>
     </section>
 
     <section class="cmpg-section">
@@ -180,8 +180,6 @@ const ldJson = {
         ))}
       </ul>
     </section>
-
-    <p class="cmpg-updated">Актуально на: {DATA_UPDATED_RU}</p>
   </main>
 
   <Footer />
@@ -207,7 +205,6 @@ const ldJson = {
   text-align: right; align-self: start;
   font-size: .8rem; color: var(--text-dim); line-height: 1.5;
 }
-.cmpg-meta b { color: var(--text); font-weight: 600; }
 .cmpg-h1 {
   grid-column: 1 / 13; grid-row: 2;
   font-weight: 800;
@@ -271,5 +268,4 @@ const ldJson = {
 .cmpg-related a b { color: var(--gold); text-decoration: underline; text-underline-offset:.22em; }
 .cmpg-related span { font-size: .82rem; color: var(--text-faint); margin-top: .15rem; }
 
-.cmpg-updated { margin-top: 2rem; font-size: .72rem; color: var(--text-faint); }
 </style>

@@ -8,11 +8,8 @@ import { ostrovokSearch, TP_LINKS } from '../data/affiliate.js';
 
 const url = 'https://traveltribe.ru/cards/';
 const title = 'Где работает карта МИР, UnionPay и зарубежные карты — май 2026';
-const description = 'Актуальная карта 40 стран: где принимают МИР, UnionPay российских банков и Visa/MC иностранных банков. Май 2026, источники прилагаются.';
+const description = 'Актуальная карта 40 стран: где принимают МИР, UnionPay российских банков и Visa/MC иностранных банков. Май 2026.';
 
-const formattedDate = new Date(lastGlobalUpdate).toLocaleDateString('ru-RU', {
-  day: 'numeric', month: 'long', year: 'numeric'
-});
 
 const statusLabel = {
   yes: 'Работает',
@@ -38,7 +35,7 @@ const faqs = [
   },
   {
     q: 'Как подготовиться к поездке с деньгами в 2026?',
-    a: 'Проверьте статус всех трёх систем для своей страны в таблице, не полагайтесь на одну карту, заранее подготовьте резерв наличными в долларах или евро. Статусы пересматриваются — дата последнего обновления указана вверху страницы.',
+    a: 'Проверьте статус всех трёх систем для своей страны в таблице, не полагайтесь на одну карту, заранее подготовьте резерв наличными в долларах или евро.',
   },
 ];
 
@@ -98,8 +95,7 @@ const ldJson = {
       </p>
       <p class="cards-byline">
         <a href="/about/" class="byline-author">Никита Зайцев</a> ·
-        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
-        <span class="byline-fresh">статусы карт актуальны на {formattedDate}</span>
+        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>
       </p>
 
       <div class="cards-legend">
@@ -193,7 +189,6 @@ const ldJson = {
               <div class="ccard__detail">
                 <h3>Visa / Mastercard (иностранные банки)</h3><p>{c.foreign.note}</p>
               </div>
-              <p class="ccard__updated">Обновлено: {new Date(c.updated).toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric' })}</p>
             </div>
           </details>
         </article>
@@ -262,7 +257,7 @@ const ldJson = {
 
     <footer class="cards-footer">
       <p>
-        Данные актуальны на&nbsp;<strong>{formattedDate}</strong>. Ситуация меняется быстро —
+        Ситуация меняется быстро —
         перед поездкой проверяйте актуальность через ваш банк.
       </p>
       <p>
@@ -628,12 +623,6 @@ document.addEventListener('astro:page-load', _initCards);
     font-size: 0.85rem;
     line-height: 1.55;
     color: var(--text-dim);
-  }
-  .ccard__updated {
-    margin: 1rem 0 0;
-    font-size: 0.7rem;
-    color: var(--text-faint);
-    letter-spacing: 0.05em;
   }
 
   /* ── Banks block ── */

@@ -1,4 +1,7 @@
 ---
+// Строк «куда ведёт кнопка» и «партнёрская ссылка, цена та же» у виджета нет нигде:
+// читателю это не важно (правило Никиты 08–09.09.2026). До 10.09 так было только на
+// страницах стран (свойство plain), теперь — везде.
 // Aviasales / Travelpayouts CTA-блок.
 // Раньше был iframe-embed через tp.media — async скрипт ненадёжен (document.write deprecated).
 // Теперь — большая CTA-кнопка с deeplink: marker + destination_iata + sub_id для трекинга.
@@ -14,7 +17,6 @@ interface Props {
   title?: string;             // Заголовок над кнопкой
   subid?: string;             // Sub ID для трекинга по странице
   buttonText?: string;        // Текст кнопки
-  plain?: boolean;            // без строк «куда ведёт кнопка» (страницы стран, правило Никиты 09.09.2026)
 }
 const {
   destination = '',
@@ -22,7 +24,6 @@ const {
   title = 'Найти билеты',
   subid = '',
   buttonText = 'Посмотреть цены на билеты',
-  plain = false,
 } = Astro.props;
 
 // Ссылка через tpk.mx-обёртку: трекинг кликов (свежий sub-id на клик) + erid + .ru.
@@ -44,12 +45,10 @@ const href = destination
 <aside class="tp-cta" aria-label="Поиск билетов через Aviasales">
   <div class="tp-cta-text">
     <h3 class="tp-cta-title">{title}</h3>
-    {!plain && <p class="tp-cta-sub">Сравнить цены на Aviasales — все авиакомпании в одной выдаче, оплата российскими картами тоже работает.</p>}
   </div>
   <a class="tp-cta-btn aff-btn" href={href} target="_blank" rel="noopener sponsored">
     <span>{buttonText}</span>
   </a>
-  {!plain && <p class="tp-cta-disc">Aviasales. Партнёрская ссылка, цена для тебя не меняется.</p>}
 </aside>
 
 <style>
@@ -57,8 +56,7 @@ const href = destination
     display: grid;
     grid-template-columns: 1fr auto;
     grid-template-areas:
-      "text  btn"
-      "disc  disc";
+      "text  btn";
     gap: 0.6rem 1.2rem;
     align-items: center;
     margin: 2.2rem 0;
@@ -76,12 +74,6 @@ const href = destination
     margin: 0 0 0.25rem;
     letter-spacing: -0.01em;
   }
-  .tp-cta-sub {
-    margin: 0;
-    font-size: 0.82rem;
-    color: var(--text-dim);
-    line-height: 1.5;
-  }
   /* База — глобальный .aff-btn; здесь только слот в сетке и виджет-специфика */
   .tp-cta-btn {
     grid-area: btn;
@@ -89,17 +81,10 @@ const href = destination
     font-size: 0.9rem;
     white-space: nowrap;
   }
-  .tp-cta-disc {
-    grid-area: disc;
-    margin: 0;
-    font-size: 0.7rem;
-    color: var(--text-faint);
-    letter-spacing: 0.02em;
-  }
   @media (max-width: 600px) {
     .tp-cta {
       grid-template-columns: 1fr;
-      grid-template-areas: "text" "btn" "disc";
+      grid-template-areas: "text" "btn";
       padding: 1rem 1.1rem;
     }
     .tp-cta-btn { width: 100%; }

@@ -10,7 +10,6 @@ import Layout from '../../layouts/Layout.astro';
 import Footer from '../../components/Footer.astro';
 import { DIRECTIONS, MONTHS } from '../../data/directions.js';
 import { PRICES } from '../../data/prices.js';
-import { DATA_UPDATED_RU } from '../../data/meta.js';
 
 // slug → индекс в PRICES (для глубокой ссылки в калькулятор, тот же паттерн,
 // что использует [slug].astro: PRICES.findIndex по iata+name).
@@ -110,7 +109,6 @@ const title = 'Моя поездка — TravelTribe';
     </div>
 
     <p class="myp-disclaimer">Хранится только в этом браузере — без аккаунта и без сервера. Очистишь данные сайта — план пропадёт.</p>
-    <p class="myp-updated">Актуально на: {DATA_UPDATED_RU}</p>
   </main>
 
   <Footer />
@@ -382,7 +380,6 @@ const title = 'Моя поездка — TravelTribe';
 #mypRemove:hover { color: var(--bad-text); border-color: var(--bad-text); }
 
 .myp-disclaimer { margin-top: 2rem; font-size: .78rem; color: var(--text-faint); line-height: 1.5; }
-.myp-updated { margin-top: .5rem; font-size: .72rem; color: var(--text-faint); }
 </style>
 
 <style is:global>

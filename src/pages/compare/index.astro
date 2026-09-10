@@ -10,7 +10,7 @@ import { COMPARE_PAIRS } from '../../data/compare-pairs.js';
 import { buildCompareEntry } from '../../data/compare-logic.js';
 import { aviasalesRoute, cherehapaTravel } from '../../data/affiliate.js';
 import Byline from '../../components/Byline.astro';
-import { DATA_UPDATED_RU, DATA_UPDATED } from '../../data/meta.js';
+import { DATA_UPDATED } from '../../data/meta.js';
 
 const monthIdx = new Date().getMonth();
 const MONTH_NOM = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'][monthIdx];
@@ -91,7 +91,7 @@ const ldJson = {
   <main id="main" class="cp">
     <section class="cp-hero">
       <h1 class="cp-h1">Куда лучше — сравни сам</h1>
-      <p class="cp-lede">Выбери два направления — сразу увидишь визу, бюджет в сутки, перелёт и сезон бок о бок. Обновлено {DATA_UPDATED_RU}.</p>
+      <p class="cp-lede">Выбери два направления — сразу увидишь визу, бюджет в сутки, перелёт и сезон бок о бок.</p>
       <Byline />
 
       <div class="cp-picker">
@@ -136,8 +136,6 @@ const ldJson = {
         })}
       </ul>
     </section>
-
-    <p class="cp-updated">Актуально на: {DATA_UPDATED_RU}</p>
   </main>
 
   <Footer />
@@ -197,7 +195,7 @@ const ldJson = {
     if (a.flightCta) ctas.push(`<a class="cp-aff" href="${a.flightCta}" rel="sponsored noopener" target="_blank">Билет в ${a.nom}${a.flightFrom ? ' от $' + a.flightFrom : ''}</a>`);
     if (b.flightCta) ctas.push(`<a class="cp-aff" href="${b.flightCta}" rel="sponsored noopener" target="_blank">Билет в ${b.nom}${b.flightFrom ? ' от $' + b.flightFrom : ''}</a>`);
     ctas.push(`<a class="cp-aff" href="${insuranceCta}" rel="sponsored noopener" target="_blank">Оформить страховку под поездку</a>`);
-    html += `<div class="cp-cta-row">${ctas.join('')}</div><p class="cp-cta-trust">оплата картами РФ · цена не меняется, блог получает комиссию</p>`;
+    html += `<div class="cp-cta-row">${ctas.join('')}</div><p class="cp-cta-trust">оплата картами РФ</p>`;
 
     resultEl.innerHTML = html;
   }
@@ -267,7 +265,6 @@ const ldJson = {
   .cp-pairs li:nth-child(2n) a { padding-left: 0; }
 }
 
-.cp-updated { margin-top: 2rem; font-size: .72rem; color: var(--text-faint); }
 
 /* Live-рендер результата (JS innerHTML — Astro scoped-стили сюда не долетают,
    поэтому глобальный блок, ограниченный контейнером .cp-result). */

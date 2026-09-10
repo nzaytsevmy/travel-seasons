@@ -85,20 +85,16 @@ const coverLink = d.imageSource ?? null;
   )}
 
   {/* Разделители склеиваем без переносов строк: JSX сохраняет пробелы между
-      выражениями, и «источник , источник» получает пробел перед запятой. */}
-  <p class="nv-refs">
-    {linkedCountries.length > 0 && (
+      выражениями, и «страна , страна» получает пробел перед запятой.
+      Строк «Источник: …» и «сверено …» нет: читателю не важно, откуда взят факт
+      (правило Никиты 08–09.09.2026); первоисточник и дата живут в данных заметки. */}
+  {linkedCountries.length > 0 && (
+    <p class="nv-refs">
       <span class="nv-refs-group">Разбор: {linkedCountries.map((s, i) => (
         <Fragment>{i > 0 ? ', ' : ''}<a href={`/visa/${s}/`}>{countryName(s)}</a></Fragment>
       ))}</span>
-    )}
-    <span class="nv-refs-group">Источник: {d.sources.map((src, i) => (
-      <Fragment>{i > 0 ? ', ' : ''}<a href={src.url} rel="nofollow noopener" target="_blank">{src.name}</a></Fragment>
-    ))}</span>
-    <span class="nv-refs-group nv-checked">
-      <a href="/about/">Никита Зайцев</a>, сверено {formatDateRu(d.checked)}
-    </span>
-  </p>
+    </p>
+  )}
 
 </li>
 
@@ -150,7 +146,6 @@ const coverLink = d.imageSource ?? null;
              color: var(--text-dim); margin: 0; }
   .nv-refs a { color: var(--text); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
   .nv-refs a:hover { color: var(--gold); }
-  .nv-checked { color: var(--text-faint); }
 
   @media (max-width: 700px) {
     .nv-refs { flex-direction: column; gap: .25rem; }

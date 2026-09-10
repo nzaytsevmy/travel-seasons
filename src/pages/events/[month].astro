@@ -10,7 +10,7 @@ import { getEventsByMonth } from '../../data/country-holidays.js';
 import { EVENTS_MONTHLY_INTRO } from '../../data/events-monthly-intro.js';
 import { aviasalesRoute, cherehapaTravel, youtravelSub } from '../../data/affiliate.js';
 import Byline from '../../components/Byline.astro';
-import { DATA_UPDATED_RU, DATA_UPDATED } from '../../data/meta.js';
+import { DATA_UPDATED } from '../../data/meta.js';
 
 export async function getStaticPaths() {
   return MONTHS.map((m, i) => ({ params: { month: m.slug }, props: { m, monthIdx: i } }));
@@ -119,7 +119,7 @@ const ldJson = {
 
   <main id="main" class="evt">
     <section class="evt-manifest">
-      <div class="evt-meta">Календарь<br /><b>Обновлено {DATA_UPDATED_RU}</b></div>
+      <div class="evt-meta">Календарь</div>
       <h1 class="evt-h1">Праздники и фестивали <span class="rd">в {m.prep}</span></h1>
       {editorial && <p class="evt-tldr">{editorial.intro}</p>}
       <div class="evt-byline-row"><Byline /></div>
@@ -191,7 +191,7 @@ const ldJson = {
         <a class="evt-aff" href={insuranceCta} rel="sponsored noopener" target="_blank">Оформить страховку под поездку</a>
         <a class="evt-aff" href={youtravelSub(`events_${m.slug}`)} rel="sponsored noopener" target="_blank">Авторские туры на праздники</a>
       </p>
-      <span class="evt-cta-trust">оплата картами РФ · цена не меняется, блог получает комиссию</span>
+      <span class="evt-cta-trust">оплата картами РФ</span>
     </section>
 
     <section class="evt-section">
@@ -223,8 +223,6 @@ const ldJson = {
         <li><a href="/compare/"><b>Сравнить направления</b></a><span>две страны бок о бок</span></li>
       </ul>
     </section>
-
-    <p class="evt-updated">Актуально на: {DATA_UPDATED_RU}</p>
   </main>
 
   <Footer />
@@ -246,7 +244,6 @@ const ldJson = {
   padding: clamp(1rem, 2vw, 1.8rem) 0 clamp(1.2rem, 2.5vw, 2rem);
 }
 .evt-meta { grid-column: 8 / 13; grid-row: 1; text-align: right; align-self: start; font-size: .8rem; color: var(--text-dim); line-height: 1.5; }
-.evt-meta b { color: var(--text); font-weight: 600; }
 .evt-h1 { grid-column: 1 / 13; grid-row: 2; font-weight: 800; font-size: clamp(2rem, 5.5vw, 4.4rem); line-height: 1.0; letter-spacing: -.03em; margin: clamp(1rem, 2vw, 1.6rem) 0 0; text-wrap: balance; }
 .evt-h1 .rd { color: var(--gold); }
 .evt-tldr { grid-column: 1 / 11; grid-row: 3; font-size: clamp(1rem, 1.3vw, 1.15rem); color: var(--text); line-height: 1.6; margin-top: 1.3rem; }
@@ -310,5 +307,4 @@ const ldJson = {
 .evt-related a b { color: var(--gold); text-decoration: underline; text-underline-offset:.22em; }
 .evt-related span { font-size: .82rem; color: var(--text-faint); margin-top: .15rem; }
 
-.evt-updated { margin-top: 2rem; font-size: .72rem; color: var(--text-faint); }
 </style>

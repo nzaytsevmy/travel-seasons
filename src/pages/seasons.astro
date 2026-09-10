@@ -8,7 +8,6 @@ import { NOUN } from '../data/plural.js';
 import { regionMeta } from '../data/regions-meta.js';
 import { regionsRich } from '../data/regions-rich.js';
 import pricesData from '../data/prices-cache.json';
-import { DATA_UPDATED_RU } from '../data/meta.js';
 
 const VISA_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза' };
 const VISA_CLASS = { free: 'tag-free', evisa: 'tag-evisa', required: 'tag-visa' };
@@ -152,10 +151,6 @@ const ldJson = {
     }
   ]
 };
-
-const pricesUpdatedAt = pricesData.updatedAt
-  ? new Date(pricesData.updatedAt).toLocaleDateString('ru-RU')
-  : null;
 ---
 <Layout
   title={`Сезоны для путешествий ${brandYear} — куда и когда из России`}
@@ -170,11 +165,10 @@ const pricesUpdatedAt = pricesData.updatedAt
   <main id="main">
   <header>
     <h1>Сезоны для <em>путешествий</em></h1>
-    <p class="subtitle">{destinationRows.length} {NOUN.direction(destinationRows.length)} · виза, бюджет и цены билетов · обновлено {pricesUpdatedAt ?? '—'}</p>
+    <p class="subtitle">{destinationRows.length} {NOUN.direction(destinationRows.length)} · виза, бюджет и цены билетов</p>
     <p class="seasons-byline">
       <a href="/about/" class="byline-author">Никита Зайцев</a> ·
-      <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
-      <span class="byline-fresh">сезоны и визы актуальны на {DATA_UPDATED_RU}</span>
+      <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>
     </p>
   </header>
 
@@ -303,7 +297,7 @@ const pricesUpdatedAt = pricesData.updatedAt
   </div>
 
   <p class="climate-disclaimer">
-    Данные по погоде — обобщение наблюдений 2020–2025. Классические сезоны дождей и муссонов <strong>сдвинулись на 2–3 недели</strong> относительно «учебников» 2010-х. Цены — реальные минимумы на билеты в одну сторону из Москвы по данным Aviasales, обновляются ежедневно.
+    Классические сезоны дождей и муссонов <strong>сдвинулись на 2–3 недели</strong> относительно «учебников» 2010-х. Цены — самые дешёвые билеты в одну сторону из Москвы.
   </p>
 
   <footer class="table-footer">
@@ -389,7 +383,6 @@ const pricesUpdatedAt = pricesData.updatedAt
     </div>
     <footer class="panel-footer">
       <a id="panelAviasales" class="panel-cta panel-cta-primary" href="#" target="_blank" rel="noopener sponsored">Найти билет на эти даты</a>
-      <span class="ad-mark panel-ad-mark">партнёрская ссылка, цена не меняется</span>
       <div class="panel-cta-row">
         <a id="panelBlog" class="panel-cta panel-cta-secondary" href="#" hidden>Гид по стране</a>
         <button id="panelShare" class="panel-cta panel-cta-secondary" type="button">Поделиться</button>
@@ -576,7 +569,7 @@ function openPanel(cell) {
   if (price) {
     const priceN = parseInt(price, 10);
     const fmt = priceN.toLocaleString('ru-RU');
-    priceText.innerHTML = `от <strong>${fmt}&nbsp;₽</strong> в одну сторону · обновлено ежедневно`;
+    priceText.innerHTML = `от <strong>${fmt}&nbsp;₽</strong> в одну сторону`;
     priceBlock.removeAttribute('hidden');
   } else {
     priceBlock.setAttribute('hidden', '');
@@ -1036,7 +1029,6 @@ h1 em { color: var(--gold); font-style: normal; }
   padding: 1rem 1.25rem 1.25rem; border-top: 1px solid var(--line);
 }
 .panel-cta-row { display: flex; gap: 0.5rem; }
-.panel-ad-mark { display: block; text-align: center; margin-top: 0.15rem; font-size: 0.62rem; color: var(--text-faint); letter-spacing: 0.02em; }
 .panel-cta {
   display: flex; align-items: center; justify-content: center;
   text-align: center; padding: 0.75rem 1rem; border-radius: 3px;

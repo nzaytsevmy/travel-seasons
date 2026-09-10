@@ -9,7 +9,7 @@ import { DIRECTIONS } from '../../data/directions.js';
 import { getVisaDetails, VISA_DETAILS } from '../../data/visa-details.js';
 import { aviasalesRoute, cherehapaCountry, youtravelCountry } from '../../data/affiliate.js';
 import StickyCta from '../../components/StickyCta.astro';
-import { DATA_UPDATED, DATA_UPDATED_RU } from '../../data/meta.js';
+import { DATA_UPDATED } from '../../data/meta.js';
 
 // см. комментарий в src/pages/[slug].astro: подпись по реальному sourceType
 const _posts = await getCollection('blog');
@@ -231,8 +231,7 @@ const ldJson = {
       <p class="visa-sub">{summary}</p>
       <p class="visa-byline">
         <a href="/about/" class="byline-author">Никита Зайцев</a> ·
-        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
-        <span class="byline-fresh">данные актуальны на {DATA_UPDATED_RU}</span>
+        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>
       </p>
     </header>
 
@@ -385,7 +384,7 @@ const ldJson = {
         <li><a href="/blog/">Блог</a> — личные отчёты по странам</li>
         <li><a href="https://www.kdmid.ru/" target="_blank" rel="noopener nofollow">Консульский департамент МИД РФ</a> — официальные визовые требования и предупреждения, проверяйте перед поездкой</li>
       </ul>
-      <p class="visa-disclaimer">Визовые правила меняются. Данные сверены на {DATA_UPDATED_RU}; перед поездкой обязательно проверьте актуальные требования на сайте посольства или консульства {d.cases.nom}.</p>
+      <p class="visa-disclaimer">Визовые правила меняются — перед поездкой обязательно проверьте актуальные требования на сайте посольства или консульства {d.cases.nom}.</p>
     </section>
   </main>
 

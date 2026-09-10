@@ -17,7 +17,7 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Footer from '../../components/Footer.astro';
 import NewsCompact from '../../components/NewsCompact.astro';
 import { getCollection } from 'astro:content';
-import { monthKeys, monthKey, entriesOfMonth, monthTitleRu, formatDateRu, newsUrl } from '../../data/news.js';
+import { monthKeys, monthKey, entriesOfMonth, monthTitleRu, newsUrl } from '../../data/news.js';
 import { plural } from '../../data/plural.js';
 
 export async function getStaticPaths() {
@@ -37,7 +37,7 @@ const текущий = month === monthKey(new Date());
 const monthRu = monthTitleRu(month);
 const url = `https://traveltribe.ru/novosti/${month}/`;
 const title = `Новости путешествий: ${monthRu.toLowerCase()}`;
-const description = `Что менялось во въездных правилах, доступе к местам и перелётах в ${monthRu.toLowerCase()}. Каждая заметка со ссылкой на первоисточник.`;
+const description = `Новости путешествий за ${monthRu.toLowerCase()}: что менялось во въездных правилах, доступе к местам и перелётах — коротко и с датами.`;
 
 // Самая поздняя проверка внутри месяца. Именно она, а не дата сборки: прошлый
 // месяц уже не меняется, и помечать его «обновлён сегодня» — враньё поисковику.
@@ -89,7 +89,7 @@ const ldJson = {
         Свежее целиком — в <a href="/novosti/">ленте новостей</a>.
       </p>
       <p class="nv-byline">
-        Ведёт <a href="/about/">Никита Зайцев</a> · последняя проверка: {formatDateRu(lastChecked)} ·
+        Ведёт <a href="/about/">Никита Зайцев</a> ·
         <a href="/novosti/rss.xml">RSS</a>
       </p>
     </header>

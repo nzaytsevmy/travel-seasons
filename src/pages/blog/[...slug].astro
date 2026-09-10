@@ -38,27 +38,12 @@ const heroPreload = typeof post.data.coverImage === 'string' ? null : await getI
 const ogImageUrl = `https://traveltribe.ru/og/${post.slug}.png`;
 const wordCount = post.body.trim().split(/\s+/).length;
 
-// Журнал проверок — история сверок, читателю показана ниже как «проверено».
-// Дату обновления он НЕ задаёт: её даёт freshDate (публикация или updatedDate,
-// которую ставит только переработка — см. src/data/freshness.js). Подкрутить
-// updatedDate без правок не даст гейт: мелкая правка со сдвинутой датой красная.
-const checks = [...(post.data.checks ?? [])].sort((a, b) => a.date.valueOf() - b.date.valueOf());
-const lastCheck = checks.at(-1) ?? null;
+// Журнал проверок (post.data.checks) на страницу не выводится: читателю не важно,
+// что и когда сверяли (правило Никиты 08–09.09.2026). Записи живут в шапке статьи
+// для сопровождения и гейтов. Дату обновления даёт freshDate (публикация или
+// updatedDate, которую ставит только переработка — см. src/data/freshness.js).
 const shownUpdated = freshDate(post.data);
 const dateRu = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).replace(' г.', '');
-// Наверх идёт только суть — первое предложение записи. Полный текст остаётся в
-// журнале: строка над заголовком раздела не должна отодвигать ответ, ради
-// которого пришли из поиска (первая версия заняла шесть строк на телефоне).
-// Короткое имя первоисточника для строки-сводки журнала: часть названия до
-// первого разделителя («Апсныпресс, 30.03.2026: …» → «Апсныпресс»). Полные
-// названия остаются в раскрывающейся истории.
-const shortSource = (name: string) => name.split(/\s+[—–]\s+|:\s|,\s/)[0].trim();
-const latestSources = lastCheck
-  ? lastCheck.sources.filter((s, i, arr) => arr.findIndex((x) => shortSource(x.name) === shortSource(s.name)) === i)
-  : [];
-const checkedShort = lastCheck
-  ? (lastCheck.changed.split(/(?<=\.)\s/)[0] ?? lastCheck.changed).replace(/\s+$/, '')
-  : null;
 
 function stripMd(s: string): string {
   return s
@@ -358,17 +343,6 @@ if (faqs.length >= 2) {
         · <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>
       </p>
 
-      {/* Строка последней сверки — вверху, а не только в журнале внизу: в ответы
-          нейросетей попадает в основном верхняя треть страницы, и датированный
-          факт должен быть там. Одна строка, ответ ради которого пришли, не
-          отодвигает. */}
-      {lastCheck && (
-        <p class="post-checked">
-          Сверено {dateRu(lastCheck.date)}: {checkedShort}
-          {' '}<a href="#journal">как проверяли</a>
-        </p>
-      )}
-
       {post.data.tripDate && post.data.tripPlace && (
         <p class="trip-marker">
           <span class="trip-icon" aria-hidden="true">✓</span>
@@ -426,22 +400,6 @@ if (faqs.length >= 2) {
         </p>
         <a class="tg-sub-link" href="https://t.me/traveltriberu" target="_blank" rel="noopener">Читать @traveltriberu</a>
       </aside>
-
-      {checks.length > 0 && lastCheck && (
-        <section class="journal" id="journal" aria-label="Что и когда проверяли">
-          {/* Решение Никиты 06.09.2026 (уточнено тем же днём): читателю нужна одна
-              строка — дата последней сверки и кликабельные первоисточники, а история
-              записей ему не интересна и на страницу не выводится вовсе. Сами записи
-              живут в шапке статьи: из них считается дата обновления и строка
-              «Сверено …» под автором; ссылки последней сверки остаются в HTML. */}
-          <p class="journal-summary">
-            Проверено <time datetime={lastCheck.date.toISOString().slice(0, 10)}>{dateRu(lastCheck.date)}</time>
-            {' · '}источники: {latestSources.map((src, i) => (
-              <>{i > 0 && ', '}<a href={src.url} target="_blank" rel="noopener nofollow" title={src.name}>{shortSource(src.name)}</a></>
-            ))}
-          </p>
-        </section>
-      )}
 
       <nav class="post-next" aria-label="Куда дальше">
         {primaryDir ? (
@@ -806,15 +764,7 @@ h1 {
 .post-author .author-link:hover span { color: var(--gold); }
 .author-mini { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; object-position: center 30%; border: 1px solid rgba(29,64,174,0.4); }
 
-/* Строка последней сверки: тише байлайна, но читаемая. Без плашки и рамки —
-   она стоит над заголовком раздела и не должна спорить с ним за внимание. */
-.post-checked {
-  max-width: 42rem; margin: 0 auto 1.6rem; text-align: center;
-  font-size: 0.84rem; line-height: 1.5; color: var(--muted);
-}
-.post-checked a { color: var(--gold-dim); border-bottom: 1px solid rgba(29,64,174,0.35); }
-
-/* Дорога и туры на дорогих направлениях — служебная строка того же веса, что «Сверено».
+/* Дорога и туры на дорогих направлениях — служебная строка, тише основного текста.
    Не блок и не кнопка: по айтрекингу форматный блок читатель пропускает, а строка
    в редакционном голосе — нет. */
 .post-first-money {
@@ -829,14 +779,6 @@ h1 {
   font-size: 0.9rem; line-height: 1.55; color: var(--muted);
 }
 .post-end-money .aff-cta { display: inline-flex; align-items: center; min-height: 44px; }
-
-/* Журнал проверок: тонкие линейки, как у ленты изменений виз. */
-/* Без своей верхней линии: над журналом уже стоит разделитель блока подписки,
-   две линии подряд читаются как дефект вёрстки. */
-.journal { max-width: 42rem; margin: 2.5rem auto 0; }
-.journal-summary { margin: 0; font-size: 0.9rem; line-height: 1.6; color: var(--muted); }
-.journal-summary time { color: var(--text); font-weight: 600; }
-.journal-summary a { color: var(--gold-dim); border-bottom: 1px solid rgba(29,64,174,0.35); }
 
 .trip-marker {
   display: inline-flex; align-items: center; gap: 0.5rem;
