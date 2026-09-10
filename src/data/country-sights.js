@@ -48,7 +48,7 @@ export const COUNTRY_SIGHTS = {
   'canada-rockies': [
     { file: 'sights/canada-rockies/11-lednik-atabaska.jpg', alt: 'Ледник Атабаска и заснеженные пики', caption: 'Ледник Атабаска' },
     { file: 'sights/canada-rockies/12-vodopad-takakau.jpg', alt: 'Водопад Такакау', caption: 'Водопад Такакау' },
-    { file: 'sights/canada-rockies/03-ostrov-dukhov-na-ozere-malayn.jpg', alt: 'Остров Духов на озере Малайн', caption: 'Остров Духов на озере Малайн' },
+    { file: 'sights/canada-rockies/03-vapiti-v-dzhaspere.jpg', alt: 'Самка вапити с оленёнком на лесной поляне', caption: 'Вапити в Скалистых горах' },
   ],
   'chile-fjords': [
     { file: 'sights/chile-fjords/11-gora-serro-kastilo.jpg', alt: 'Зубчатая вершина Серро-Кастильо и ледник', caption: 'Гора Серро-Кастильо' },
@@ -66,7 +66,7 @@ export const COUNTRY_SIGHTS = {
   ],
   'croatia': [
     { file: 'sights/croatia/11-rovin.jpg', alt: 'Старый город Ровиня и колокольня на закате', caption: 'Ровинь' },
-    { file: 'sights/croatia/12-vodopady-krka.jpg', alt: 'Водопады Крки и бирюзовая заводь', caption: 'Водопады Крка' },
+    { file: 'sights/croatia/12-motovun.jpg', alt: 'Городок Мотовун на вершине холма в Истрии', caption: 'Мотовун в Истрии' },
     { file: 'sights/croatia/13-amfiteatr-v-pule.jpg', alt: 'Римский амфитеатр в Пуле вечером', caption: 'Амфитеатр в Пуле' },
   ],
   'cyprus': [
@@ -110,7 +110,7 @@ export const COUNTRY_SIGHTS = {
   'iceland': [
     { file: 'sights/iceland/01-vodopad-gyudlfoss.jpg', alt: 'Водопад Гюдльфосс и радуга', caption: 'Водопад Гюдльфосс' },
     { file: 'sights/iceland/11-chernyy-plyazh-reynisfyara.jpg', alt: 'Скала на чёрном пляже Рейнисфьяра', caption: 'Чёрный пляж Рейнисфьяра' },
-    { file: 'sights/iceland/02-laguna-yokulsaurloun.jpg', alt: 'Айсберги в лагуне Йокульсаурлоун', caption: 'Лагуна Йокульсаурлоун' },
+    { file: 'sights/iceland/02-geyzer-strokkur.jpg', alt: 'Гейзер Строккур выбрасывает столб воды', caption: 'Гейзер Строккур' },
   ],
   'india-goa': [
     { file: 'sights/india-goa/11-khram-shri-mangesh.jpg', alt: 'Храм Шри Мангеш в вечерней подсветке', caption: 'Храм Шри Мангеш' },
@@ -170,7 +170,7 @@ export const COUNTRY_SIGHTS = {
   ],
   'nepal': [
     { file: 'sights/nepal/02-ozero-feva-v-pokkhare.jpg', alt: 'Озеро Фева и хребет Аннапурна', caption: 'Озеро Фева в Покхаре' },
-    { file: 'sights/nepal/03-stupa-bodnatkh.jpg', alt: 'Ступа Боднатх с молитвенными флажками', caption: 'Ступа Боднатх' },
+    { file: 'sights/nepal/03-nosorogi-v-chitvane.jpg', alt: 'Индийские носороги, самка с детёнышем, в высокой траве Читвана', caption: 'Носороги в парке Читван' },
     { file: 'sights/nepal/04-dvortsovaya-ploshchad-bkhaktapura.jpg', alt: 'Дворцовая площадь Бхактапура', caption: 'Дворцовая площадь Бхактапура' },
   ],
   'new-zealand': [
@@ -181,7 +181,7 @@ export const COUNTRY_SIGHTS = {
   ],
   'norway': [
     { file: 'sights/norway/11-atlanticheskaya-doroga.jpg', alt: 'Атлантическая дорога по островам на закате', caption: 'Атлантическая дорога' },
-    { file: 'sights/norway/12-skala-trolltunga.jpg', alt: 'Скала Тролльтунга над фьордом на закате', caption: 'Скала Тролльтунга' },
+    { file: 'sights/norway/12-reyne-na-lofotenakh.jpg', alt: 'Рыбацкая деревня Рейне под острыми пиками Лофотенских островов', caption: 'Рейне на Лофотенах' },
     { file: 'sights/norway/13-flomskaya-zheleznaya-doroga.jpg', alt: 'Поезд Фломской дороги в зелёной долине', caption: 'Фломская железная дорога' },
   ],
   'philippines': [
@@ -196,6 +196,9 @@ export const COUNTRY_SIGHTS = {
   ],
   'raja-ampat': [
     { file: 'sights/raja-ampat/11-manta-u-rifa-radzha-ampat.jpg', alt: 'Манта над рифом Раджа-Ампат', caption: 'Манта у рифа Раджа-Ампат' },
+    { file: 'sights/raja-ampat/12-krasnaya-rayskaya-ptitsa.jpg', alt: 'Красная райская птица на ветке в лесу острова Вайгео', caption: 'Красная райская птица на Вайгео' },
+    { file: 'sights/raja-ampat/13-plyazh-ostrova-kri.jpg', alt: 'Белый песок и прозрачная вода у острова Кри', caption: 'Пляж острова Кри' },
+    { file: 'sights/raja-ampat/14-laguna-serdtse-misool.jpg', alt: 'Лагуна в форме сердца среди скал Мисоола', caption: 'Лагуна-сердце на Мисооле' },
   ],
   'saudi-arabia': [
     { file: 'sights/saudi-arabia/11-bashnya-kingdom-tsentr-v-er-riyade.jpg', alt: 'Небоскрёбы Эр-Рияда и Кингдом-центр вечером', caption: 'Башня Кингдом-центр в Эр-Рияде' },
