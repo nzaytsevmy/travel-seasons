@@ -209,3 +209,21 @@ test('Происхождение: у каждого кадра страницы 
   }
   assert.deepEqual(bad, [], bad.join('\n'));
 });
+
+// 10.09.2026 скрипт сжатия упал посреди записи и оставил кадр Ирана пустым (0 байт).
+// Проверка выше видела только, что файл есть, — сборка упала уже на нём. Кадр обязан
+// быть настоящей картинкой: сигнатура JPEG, WebP или PNG и не меньше 10 КБ.
+test('Кадры страницы страны: каждый файл — настоящая картинка, а не пустышка', async () => {
+  const { COUNTRY_PHOTOS } = await import(new URL('../src/data/country-photos.js', import.meta.url));
+  const bad = [];
+  for (const [slug, set] of Object.entries(COUNTRY_PHOTOS)) {
+    for (const p of [set.wide, ...(set.practice || [])]) {
+      const f = join(IMAGES, p.file);
+      if (!existsSync(f)) continue;               // отсутствие файла ловит проверка выше
+      const b = readFileSync(f);
+      const ok = (b[0] === 0xff && b[1] === 0xd8) || b.toString('ascii', 8, 12) === 'WEBP' || b.toString('ascii', 1, 4) === 'PNG';
+      if (b.length < 10_000 || !ok) bad.push(`${slug}: ${p.file} — ${b.length} байт, это не картинка`);
+    }
+  }
+  assert.deepEqual(bad, [], bad.join('\n'));
+});
