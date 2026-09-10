@@ -109,177 +109,38 @@ if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ'
 </section>
 
 <style>
+/* Без чёрных рамок и черт между ячейками — как разделы Омана (пометка Никиты 10.09.2026:
+   «Слишком много линий, нужно убрать их везде»). Разделитель у блока один — линия сверху. */
 .ec {
-  /* page-level override: в global.css --line == hair; для Swiss-канона
-     нужна СИЛЬНАЯ линия — заводим локально из эталонного значения */
-  --line-strong: #15171a;
-  --line-hair: var(--line);
-  margin: clamp(2.4rem, 5vw, 4rem) 0 0;
-  font-family: var(--ff-display);
+  padding: 56px 0;
   font-variant-numeric: tabular-nums lining-nums;
 }
-
-.ec-h {
-  border-top: 2px solid var(--line-strong);
-  padding-top: .8rem;
-  display: flex; align-items: baseline; gap: .8rem;
-  margin-bottom: .35rem;
-}
-.ec-t {
-  font-weight: 800;
-  font-size: clamp(1.4rem, 2.6vw, 2rem);
-  letter-spacing: -.02em;
-  line-height: 1.1;
-  margin: 0;
-  color: var(--text);
-}
-.ec-s {
-  font-size: .92rem;
-  color: var(--text-dim);
-  margin: 0 0 1.6rem;
-  max-width: 64ch;
-}
-
-/* value-list — четыре ячейки в одной полосе, hairline между, border-top/bottom strong */
-.ec-vl {
-  display: grid;
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
-  margin: 0 0 1.8rem;
-}
-.ec-vl--cols-4 { grid-template-columns: repeat(4, 1fr); }
-.ec-vl--cols-3 { grid-template-columns: repeat(3, 1fr); }
-.ec-vl--cols-2 { grid-template-columns: repeat(2, 1fr); }
+.ec-h { margin: 0 0 8px; }
+.ec-t { margin: 0; }
+.ec-s { font-size: .9375rem; line-height: 1.55; color: var(--text-dim); margin: 0 0 24px; max-width: 64ch; }
+.ec-vl { display: grid; gap: 20px 32px; margin: 0 0 32px; }
+.ec-vl--cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.ec-vl--cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ec-vl--cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .ec-vl--cols-1 { grid-template-columns: 1fr; }
-
-.ec-vi {
-  padding: 1rem 1.2rem 1.1rem;
-  border-right: 1px solid var(--line-hair);
-}
-.ec-vi:first-child { padding-left: 0; }
-.ec-vl--cols-4 .ec-vi:nth-child(4n),
-.ec-vl--cols-3 .ec-vi:nth-child(3n),
-.ec-vl--cols-2 .ec-vi:nth-child(2n) { border-right: none; }
-.ec-vl > .ec-vi:last-child { border-right: none; }
-
-.ec-vk {
-  display: block;
-  font-size: .66rem; font-weight: 700;
-  letter-spacing: .06em; text-transform: uppercase;
-  color: var(--text-dim);
-  margin-bottom: .45rem;
-}
-.ec-vm {
-  font-weight: 800;
-  font-size: 1.05rem;
-  line-height: 1.18;
-  letter-spacing: -.005em;
-  color: var(--text);
-}
-.ec-vd {
-  font-size: .82rem;
-  color: var(--text-dim);
-  margin-top: .25rem;
-  line-height: 1.5;
-}
-.ec-vn {
-  font-size: .76rem;
-  color: var(--text-faint);
-  margin-top: .35rem;
-  line-height: 1.5;
-}
-
-.ec-section { margin: 0 0 1.8rem; }
-.ec-th {
-  font-weight: 700;
-  font-size: 1rem;
-  letter-spacing: -.005em;
-  margin: 0 0 .6rem;
-  color: var(--text);
-  display: flex; align-items: baseline; gap: .6rem;
-}
-
-/* dash — Swiss data table */
-.ec-dash {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: .94rem;
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
-}
-.ec-dash td {
-  padding: .7rem 0;
-  border-top: 1px solid var(--line-hair);
-  vertical-align: baseline;
-  color: var(--text);
-}
-.ec-dash tr:first-child td { border-top: none; }
-.ec-dash td.r {
-  text-align: right;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums lining-nums;
-}
-.ec-dlink {
-  margin-left: .6rem;
-  font-size: .76rem;
-  font-weight: 700;
-  color: var(--gold);
-  text-decoration: underline 1px color-mix(in srgb, var(--gold) 55%, transparent);
-  text-underline-offset: 0.22em;
-  text-decoration-skip-ink: auto;
-}
-
-/* customs list */
-.ec-cus {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
-}
-.ec-cus li {
-  padding: .7rem 0 .75rem;
-  border-top: 1px solid var(--line-hair);
-  font-size: .92rem;
-  color: var(--text);
-  line-height: 1.5;
-  display: flex; gap: .65rem;
-}
-.ec-cus li:first-child { border-top: none; }
-.ec-x {
-  color: var(--gold);
-  font-weight: 800;
-  font-size: 1rem;
-  flex: none;
-  width: 1rem;
-  line-height: 1.4;
-}
-
-/* footer band */
-
-/* MOBILE */
+.ec-vk { display: block; font-size: .75rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 6px; }
+.ec-vm { font-weight: 700; font-size: 1.0625rem; line-height: 1.3; color: var(--text); }
+.ec-vd { font-size: .875rem; color: var(--text-dim); margin-top: 3px; line-height: 1.5; }
+.ec-vn { font-size: .8125rem; color: var(--text-faint); margin-top: 4px; line-height: 1.5; }
+.ec-section { margin: 0 0 28px; }
+.ec-th { font-size: 1.0625rem; font-weight: 700; margin: 0 0 10px; color: var(--text); }
+.ec-dash { border-collapse: collapse; font-size: .9375rem; }
+.ec-dash td { padding: 5px 24px 5px 0; vertical-align: baseline; color: var(--text); }
+.ec-dash td.r { font-weight: 700; padding-right: 0; }
+.ec-dlink { margin-left: 10px; font-size: .8125rem; font-weight: 600; color: var(--gold); text-decoration: underline 1px; text-underline-offset: .22em; }
+.ec-cus { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ec-cus li { font-size: .9375rem; line-height: 1.5; color: var(--text); display: flex; gap: 10px; }
+.ec-x { color: var(--gold); font-weight: 700; flex: none; width: 1rem; }
 @media (max-width: 760px) {
-  .ec-vl--cols-4 { grid-template-columns: repeat(2, 1fr); }
-  .ec-vl--cols-4 .ec-vi:nth-child(2n) { border-right: none; }
-  .ec-vl--cols-4 .ec-vi:nth-child(odd) { padding-left: 0; }
-  .ec-vl--cols-4 .ec-vi:nth-child(n+3) { border-top: 1px solid var(--line-hair); }
-
-  .ec-vl--cols-3 { grid-template-columns: 1fr; }
-  .ec-vl--cols-3 .ec-vi { border-right: none; padding-left: 0; border-top: 1px solid var(--line-hair); }
-  .ec-vl--cols-3 .ec-vi:first-child { border-top: none; }
+  .ec { padding: 40px 0; }
+  .ec-vl--cols-4, .ec-vl--cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 480px) {
-  .ec-vl--cols-4,
-  .ec-vl--cols-2 { grid-template-columns: 1fr; }
-  .ec-vl--cols-4 .ec-vi,
-  .ec-vl--cols-2 .ec-vi {
-    border-right: none;
-    padding-left: 0;
-    border-top: 1px solid var(--line-hair);
-  }
-  .ec-vl--cols-4 .ec-vi:first-child,
-  .ec-vl--cols-2 .ec-vi:first-child { border-top: none; }
-
-  .ec-dash td { padding: .55rem 0; }
+  .ec-vl--cols-4, .ec-vl--cols-3, .ec-vl--cols-2 { grid-template-columns: 1fr; }
 }
 </style>

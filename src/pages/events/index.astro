@@ -111,11 +111,10 @@ const ldJson = {
 .evh-h1 { font-weight: 800; font-size: clamp(2rem, 5.5vw, 4rem); line-height: 1.02; letter-spacing: -.03em; margin: 1rem 0 0; text-wrap: balance; }
 .evh-lede { font-size: clamp(1rem, 1.3vw, 1.15rem); color: var(--text); line-height: 1.55; margin-top: 1rem; max-width: 680px; }
 
-.evh-section { border-top: 2px solid #15171a; padding: clamp(1.4rem, 3vw, 2.2rem) 0; scroll-margin-top: 80px; }
+.evh-section { border-top: 1px solid var(--line); padding: clamp(1.4rem, 3vw, 2.2rem) 0; scroll-margin-top: 80px; }
 .evh-shead h2 { font-size: clamp(1.2rem, 2.4vw, 1.6rem); font-weight: 800; letter-spacing: -.015em; margin: 0 0 1rem; }
 
 .evh-months { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); }
-.evh-months li { border-top: 1px solid var(--line); }
 .evh-months a {
   display: flex; justify-content: space-between; align-items: baseline;
   padding: .8rem 1rem .8rem 0;
@@ -126,7 +125,7 @@ const ldJson = {
 @media (max-width: 640px) { .evh-months { grid-template-columns: repeat(2, 1fr); } }
 
 .evh-top, .evh-related { list-style: none; margin: 0; padding: 0; }
-.evh-top li, .evh-related li { border-top: 1px solid var(--line); padding: .8rem 0; display: flex; flex-direction: column; }
+.evh-top li, .evh-related li { padding: .8rem 0; display: flex; flex-direction: column; }
 .evh-top a, .evh-related a { color: var(--text); text-decoration: none; }
 .evh-top a b, .evh-related a b { color: var(--gold); text-decoration: underline; text-underline-offset:.22em; }
 .evh-top span, .evh-related span { font-size: .82rem; color: var(--text-faint); margin-top: .15rem; }

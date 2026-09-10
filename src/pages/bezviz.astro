@@ -224,12 +224,12 @@ const ldJson = {
   .bv-note a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
 
   .bv-nopass { list-style: none; margin: 0 0 1rem; padding: 0; }
-  .bv-nopass li { display: flex; flex-wrap: wrap; gap: .35rem .8rem; align-items: baseline; padding: .7rem .1rem; border-bottom: 1px solid var(--line); font-size: .98rem; }
+  .bv-nopass li { display: flex; flex-wrap: wrap; gap: .35rem .8rem; align-items: baseline; padding: .7rem .1rem; font-size: .98rem; }
   .bv-nopass a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset:.22em; }
   .bv-nopass span { color: var(--text-dim); font-size: .88rem; }
 
   .bv-table-wrap { overflow-x: auto; }
-  .bv-table { width: 100%; border-collapse: collapse; border-top: 2px solid var(--line-strong, var(--line)); font-size: .92rem; }
+  .bv-table { width: 100%; border-collapse: collapse; border-top: 1px solid var(--line); font-size: .92rem; }
   .bv-table th { text-align: left; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); font-weight: 700; padding: .55rem .6rem .55rem 0; border-bottom: 1px solid var(--line); }
   .bv-table td { padding: .55rem .6rem .55rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
   .bv-table a { color: var(--text); text-decoration: underline 1px var(--gold); text-underline-offset:.22em; }
@@ -242,7 +242,7 @@ const ldJson = {
   @media (max-width: 700px) {
     .bv-table thead { display: none; }
     .bv-table, .bv-table tbody, .bv-table tr, .bv-table td { display: block; width: 100%; }
-    .bv-table tr { border-bottom: 1px solid var(--line-strong, var(--line)); padding: .55rem 0; }
+    .bv-table tr { padding: .55rem 0; }
     .bv-table td { border: none; padding: .18rem 0; }
     .bv-table td::before { content: attr(data-label) ' · '; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-faint); }
     .bv-table td:first-child::before { content: ''; }
@@ -255,13 +255,12 @@ const ldJson = {
   .bv-trust { font-size: .78rem; color: var(--text-dim); }
 
   .bv-faq { border-top: 1px solid var(--line-strong, var(--line)); }
-  .bv-faq-i { border-bottom: 1px solid var(--line); }
   .bv-faq-i summary { cursor: pointer; padding: .85rem .1rem; font-weight: 600; list-style: none; }
   .bv-faq-i summary::-webkit-details-marker { display: none; }
   .bv-faq-i p { margin: 0 0 1rem; color: var(--text-dim); line-height: 1.6; max-width: 68ch; }
 
 
   .bv-related { list-style: none; margin: 0; padding: 0; }
-  .bv-related li { padding: .55rem 0; border-bottom: 1px solid var(--line); font-size: .95rem; color: var(--text-dim); }
+  .bv-related li { padding: .55rem 0; font-size: .95rem; color: var(--text-dim); }
   .bv-related a { color: var(--text); text-decoration: underline 1px var(--gold); text-underline-offset:.22em; }
 </style>

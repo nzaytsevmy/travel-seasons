@@ -1,10 +1,11 @@
 ---
-// MonthlyEvents — Swiss/Brandbook.
-// Hairline-list месяц → событие. Текст-маркеры (uppercase, без bg-пилюль), один акцент gold.
+// MonthlyEvents — события по месяцам: месяц один раз, под ним события, без линеек между строками
+// и без подписи у каждого поля (пометка Никиты 10.09.2026: «Слишком много линий… не делать такие повторения»).
 // Эталон: ~/Downloads/tt-home-1-editorial.html (shead + dash-таблица).
 
 import { getHolidays } from '../data/country-holidays.js';
 import { typo } from '../utils/typo.js';
+import { plural } from '../data/plural.js';
 
 interface Props {
   slug: string;
@@ -39,162 +40,55 @@ const closedCount = events.filter(e => e.tag === 'closed').length;
   </header>
   <p class="me-s">
     Когда страна гуляет, когда стоит и когда смотреть на сезонное явление.
-    {closedCount > 0 && <> <b>{closedCount}</b> дат, когда многое закрыто и цены растут.</>}
+    {closedCount > 0 && <> <b>{closedCount}</b> {plural(closedCount, 'дата', 'даты', 'дат')}, когда многое закрыто и цены растут.</>}
   </p>
 
-  <table class="me-dash">
-    <thead>
-      <tr>
-        <th class="me-mh">Месяц</th>
-        <th class="me-eh">Событие</th>
-        <th class="me-th">Тип</th>
-      </tr>
-    </thead>
-    <tbody>
-      {months.flatMap((m) => byMonth[m].map((ev, j) => (
-        <tr class={`me-r me-r--${ev.tag}`}>
-          <td class="me-mc" data-l="Месяц">{j === 0 ? MONTH_RU[m - 1] : ''}</td>
-          <td class="me-ec" data-l="Событие">
-            <b class="me-ename">{typo(ev.name)}</b>
-            {ev.dates && <span class="me-edates"><span class="me-dot"> · </span>{typo(ev.dates)}</span>}
-            {ev.note && <div class="me-enote">{typo(ev.note)}</div>}
-          </td>
-          <td class="me-tc" data-l="Тип">{TAG_LABEL[ev.tag] || ev.tag}</td>
-        </tr>
-      )))}
-    </tbody>
-  </table>
+  <div class="me-list">
+    {months.map((m) => (
+      <div class="me-month">
+        <p class="me-mname">{MONTH_RU[m - 1]}</p>
+        <div class="me-evs">
+          {byMonth[m].map((ev) => (
+            <div class={`me-ev me-ev--${ev.tag}`}>
+              <p class="me-ehead">
+                <b class="me-ename">{typo(ev.name)}</b>
+                {ev.dates && <span class="me-edates"> · {typo(ev.dates)}</span>}
+              </p>
+              {ev.note && <p class="me-enote">{typo(ev.note)}</p>}
+              <p class="me-tag">{TAG_LABEL[ev.tag] || ev.tag}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
   <p class="me-more"><a href="/events/">Праздники и фестивали по всем странам</a></p>
 </section>
 
 <style>
 .me {
-  --line-strong: #15171a;
-  --line-hair: var(--line);
-  margin: clamp(2.4rem, 5vw, 4rem) 0 0;
-  font-family: var(--ff-display);
+  padding: 56px 0;
   font-variant-numeric: tabular-nums lining-nums;
 }
-.me-h {
-  border-top: 2px solid var(--line-strong);
-  padding-top: .8rem;
-  display: flex; align-items: baseline; gap: .8rem;
-  margin-bottom: .35rem;
-}
-.me-t {
-  font-weight: 800;
-  font-size: clamp(1.4rem, 2.6vw, 2rem);
-  letter-spacing: -.02em;
-  line-height: 1.1;
-  margin: 0;
-  color: var(--text);
-}
-.me-s {
-  font-size: .92rem;
-  color: var(--text-dim);
-  margin: 0 0 1.4rem;
-  max-width: 64ch;
-}
-.me-s b { color: var(--gold); font-weight: 800; }
-
-.me-dash {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: .94rem;
-}
-.me-dash thead th {
-  font-size: .64rem;
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  text-align: left;
-  padding: .5rem .8rem .55rem 0;
-  border-bottom: 1px solid var(--line-strong);
-  border-top: 1px solid var(--line-strong);
-}
-.me-dash thead th.me-th { text-align: right; padding-right: 0; }
-
-.me-r td {
-  padding: .85rem .8rem .9rem 0;
-  vertical-align: baseline;
-  color: var(--text);
-  line-height: 1.5;
-}
-/* ⛔ Линии ячеек — правило ГОРИЗОНТАЛЬНОЙ таблицы, и живут они только здесь.
-   На телефоне ячейки становятся блоками во всю ширину, и та же линия рисуется
-   под каждой: 27.08.2026 под последней строкой их было четыре вместо одной —
-   под месяцем, под событием, под меткой и под самой строкой. Сбросить их в
-   мобильном блоке не выходит: `.me-r:last-child td` весит больше, чем
-   `.me-r td`, и переживает сброс. Та же ловушка, что была с выпадающим меню:
-   правило одного режима протекает в другой по весу селектора. */
-@media (min-width: 760.02px) {
-  .me-r td { border-bottom: 1px solid var(--line-hair); }
-  .me-r:last-child td { border-bottom: 1px solid var(--line-strong); }
-}
-.me-r:hover td { background: rgba(29, 64, 174, 0.07); }
-
-.me-mc {
-  font-weight: 700;
-  font-size: .82rem;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  color: var(--gold);
-  width: 7rem;
-}
-.me-ec { padding-right: 1rem !important; text-wrap: pretty; }
+.me-h { margin: 0 0 8px; }
+.me-t { margin: 0; }
+.me-s { font-size: .9375rem; line-height: 1.55; color: var(--text-dim); margin: 0 0 24px; max-width: 64ch; }
+.me-s b { color: var(--gold); font-weight: 700; }
+.me-list { display: flex; flex-direction: column; gap: 22px; }
+.me-month { display: grid; grid-template-columns: 8rem minmax(0, 1fr); gap: 6px 24px; }
+.me-mname { margin: 0; padding-top: 2px; font-size: .8125rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--gold); }
+.me-evs { display: flex; flex-direction: column; gap: 14px; }
+.me-ev p { margin: 0; }
+.me-ehead { line-height: 1.45; }
 .me-ename { font-weight: 700; color: var(--text); }
-.me-edates { color: var(--text-dim); font-size: .88rem; }
-.me-enote {
-  font-size: .82rem;
-  color: var(--text-dim);
-  margin-top: .25rem;
-  line-height: 1.5;
-}
-.me-tc {
-  text-align: right;
-  font-size: .68rem;
-  font-weight: 700;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  width: 6rem;
-}
-
-/* Текст-маркеры (без bg-пилюль), один акцент — gold для critical */
-.me-r--closed .me-tc { color: var(--gold); }
-.me-r--closed .me-ename { color: var(--text); }
-.me-r--fest .me-tc { color: var(--text); }
-.me-r--culture .me-tc { color: var(--text-dim); }
-
-.me-more { margin: .9rem 0 0; font-size: .84rem; }
-.me-more a { color: var(--gold); font-weight: 600; text-decoration: underline; text-underline-offset:.22em; }
-
-/* MOBILE: таблица → строки-блоки (Swiss-канон) */
+.me-edates { font-size: .9375rem; color: var(--text-dim); }
+.me-ev .me-enote { margin-top: 2px; font-size: .9375rem; line-height: 1.55; color: var(--text-dim); max-width: 64ch; }
+.me-ev .me-tag { margin-top: 4px; font-size: .75rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--text-faint); }
+.me-ev--closed .me-tag { color: var(--gold); }
+.me-more { margin: 24px 0 0; font-size: .9375rem; }
+.me-more a { color: var(--gold); font-weight: 600; text-decoration: underline; text-underline-offset: .22em; }
 @media (max-width: 760px) {
-  .me-dash thead { position: absolute; left: -9999px; }
-  .me-dash, .me-dash tbody, .me-dash tr, .me-dash td { display: block; width: 100%; }
-  .me-r {
-    border-bottom: 1px solid var(--line-strong);
-    padding: .8rem 0;
-  }
-  .me-r:first-child { border-top: 1px solid var(--line-strong); }
-  .me-r td {
-    padding: .15rem 0;
-    text-align: left;
-  }
-  .me-mc {
-    width: auto;
-    margin-bottom: .15rem;
-  }
-  .me-tc {
-    text-align: left;
-    width: auto;
-    margin-top: .25rem;
-    color: var(--text-dim);
-  }
-  .me-r:hover td { background: none; }
-  .me-edates { display: block; margin-top: .1rem; }
-  .me-dot { display: none; }
+  .me { padding: 40px 0; }
+  .me-month { grid-template-columns: 1fr; }
 }
 </style>

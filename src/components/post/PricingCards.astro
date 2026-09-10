@@ -67,7 +67,6 @@ const colClass = `pricing-cards--cols-${tiers.length}${hasCta ? ' pricing-cards-
   display: grid;
   grid-template-columns: 1fr;
   margin: 2rem 0 2.5rem;
-  border-top: 2px solid var(--line);
   row-gap: 0;
   column-gap: 0;
 }
@@ -75,7 +74,6 @@ const colClass = `pricing-cards--cols-${tiers.length}${hasCta ? ' pricing-cards-
 .pc-card {
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid var(--line);
   padding: 1.2rem 0;
 }
 
@@ -107,7 +105,6 @@ const colClass = `pricing-cards--cols-${tiers.length}${hasCta ? ' pricing-cards-
   gap: 0.25rem;
   padding-top: 0.85rem;
   padding-bottom: 0.9rem;
-  border-bottom: 1px solid var(--line);
   /* Container для cqi-масштаба цены. На .pc-price-wrap (а не .pc-card),
      чтобы не сломать subgrid-выравнивание рядов карточки. */
   container-type: inline-size;
@@ -189,8 +186,6 @@ const colClass = `pricing-cards--cols-${tiers.length}${hasCta ? ' pricing-cards-
     grid-template-rows: subgrid;
     grid-row: span 3;
     padding: 1.25rem 1.3rem 1.35rem;
-    border-left: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
     border-top: none;
     margin-top: 0;
   }
@@ -218,7 +213,6 @@ const colClass = `pricing-cards--cols-${tiers.length}${hasCta ? ' pricing-cards-
   .pricing-cards--cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .pricing-cards--cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 
-  .pc-card { border-left: 1px solid var(--line); }
   .pricing-cards--cols-2 .pc-card:nth-child(2n + 1),
   .pricing-cards--cols-3 .pc-card:nth-child(3n + 1),
   .pricing-cards--cols-4 .pc-card:nth-child(4n + 1),

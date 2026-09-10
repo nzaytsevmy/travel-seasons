@@ -123,7 +123,7 @@ test('7. у каждой карты подписан источник', () => {
   expect(без, `карты без источника: ${без.join(', ')}`).toEqual([]);
 });
 
-// ── 8 ─ карта рисуется: пины совпадают с данными, таблица — с пинами ───────
+// ── 8 ─ карта рисуется: пины совпадают с данными, список мест — с пинами ────
 // ⛔ Отрисовку смотрим на образце из трёх стран с разным числом точек, а не на
 //    всех шестнадцати: данные каждой страны уже проверены выше без браузера,
 //    а здесь дорог каждый запуск. Полный проход по всем — командой
@@ -131,7 +131,7 @@ test('7. у каждой карты подписан источник', () => {
 //    после правки данных карты.
 const ОБРАЗЕЦ = ['turkey', 'vietnam', 'armenia'];
 for (const slug of ОБРАЗЕЦ) {
-test(`8. ${slug}: пины и строки таблицы совпадают с данными`, async ({ page }) => {
+test(`8. ${slug}: пины и пункты списка мест совпадают с данными`, async ({ page }) => {
   await page.goto(`/blog/${slug}-guide-2026/`, { waitUntil: 'domcontentloaded' });
   // Карта инициализируется при появлении в экране. Полная прокрутка страницы
   // уводила её обратно за viewport, Chromium отменял ещё не загруженные тайлы,
@@ -149,14 +149,14 @@ test(`8. ${slug}: пины и строки таблицы совпадают с 
 
   const r = await page.evaluate(() => ({
     пины: document.querySelectorAll('.leaflet-marker-icon').length,
-    строки: document.querySelectorAll('.cm-dash tbody tr').length,
+    строки: document.querySelectorAll('.cm-list .cm-item').length,
     плитки: document.querySelectorAll('.leaflet-tile-loaded').length,
     высота: Math.round((document.querySelector('.cm-map') as HTMLElement).getBoundingClientRect().height),
-    номера: [...document.querySelectorAll('.cm-dash tbody .cm-no')].map((e) => e.textContent!.trim()),
+    номера: [...document.querySelectorAll('.cm-list .cm-no')].map((e) => e.textContent!.trim()),
   }));
   const ожидалось = POIS[slug].pois.length;
   expect(r.пины, 'пинов столько же, сколько точек в данных').toBe(ожидалось);
-  expect(r.строки, 'строк таблицы столько же').toBe(ожидалось);
+  expect(r.строки, 'мест в списке столько же').toBe(ожидалось);
   expect(r.плитки, 'подложка карты загрузилась').toBeGreaterThan(3);
   expect(r.высота, 'карта не схлопнута').toBeGreaterThan(200);
   expect(r.номера, 'нумерация подряд с 01').toEqual(
@@ -164,20 +164,24 @@ test(`8. ${slug}: пины и строки таблицы совпадают с 
 });
 }
 
-// ── 9 ─ без скриптов читатель всё равно получает координаты ────────────────
-test('9. без JavaScript таблица с координатами остаётся на месте', async ({ browser }) => {
+// ── 9 ─ без скриптов читатель всё равно доходит до точного места ───────────
+// С 10.09.2026 координаты не печатаются текстом у каждого места (пометка Никиты:
+// «слишком много линий… не делать такие повторения» — у каждой строки стояли
+// «Тип / Координаты / Карты»). Точка по-прежнему доходит до читателя без скриптов:
+// обе ссылки на карты несут координаты места. Их и проверяем — у каждого места.
+test('9. без JavaScript список мест и ссылки с координатами остаются на месте', async ({ browser }) => {
   const ctx = await browser.newContext({ javaScriptEnabled: false });
   const page = await ctx.newPage();
   await page.goto('/blog/turkey-guide-2026/', { waitUntil: 'domcontentloaded' });
   const r = await page.evaluate(() => ({
-    строки: document.querySelectorAll('.cm-dash tbody tr').length,
-    первая: document.querySelector('.cm-dash tbody .cm-coord')?.textContent?.trim() || '',
-    ссылки: document.querySelectorAll('.cm-links a').length,
+    места: [...document.querySelectorAll('.cm-list .cm-item .cm-name')].map((e) => e.textContent!.trim()),
+    ссылки: [...document.querySelectorAll('.cm-list .cm-foot a')].map((a) => (a as HTMLAnchorElement).href),
   }));
   await ctx.close();
-  expect(r.строки, 'таблица есть и без скриптов').toBe(POIS['turkey'].pois.length);
-  expect(r.первая, 'координаты видны').toMatch(/^\d+\.\d+, \d+\.\d+$/);
-  expect(r.ссылки, 'ссылки на карты по две на точку').toBe(POIS['turkey'].pois.length * 2);
+  expect(r.места, 'список мест есть и без скриптов').toEqual(POIS['turkey'].pois.map((p: any) => p.name));
+  expect(r.ссылки.length, 'ссылки на карты по две на точку').toBe(POIS['turkey'].pois.length * 2);
+  const безТочки = r.ссылки.filter((u) => !/-?\d+\.\d+,-?\d+\.\d+/.test(decodeURIComponent(u)));
+  expect(безТочки, 'каждая ссылка ведёт в точку с координатами').toEqual([]);
 });
 
 // ── 10 ─ карта не двигает вёрстку и не ломает ширину на телефоне ───────────
@@ -215,7 +219,11 @@ test('10. на телефоне карта не сдвигает вёрстку 
   expect(r.вылезло, 'ничто не вылезает за экран').toEqual([]);
 });
 
-test('в таблице событий на строку приходится одна линия — на всех ширинах', async ({ page }) => {
+test('в списке событий нет черт между пунктами — на всех ширинах', async ({ page }) => {
+  // ⛔ С 10.09.2026 события — список по месяцам без линеек (пометка Никиты: «слишком
+  //    много линий, нужно убрать их везде»). Правило стало строже прежнего «одна линия
+  //    на строку»: черт внутри списка нет вовсе. История прежней беды — ниже.
+  //
   // ⛔ Линии ячеек — правило горизонтальной таблицы. На телефоне ячейки
   //    становятся блоками во всю ширину, и та же линия рисуется под каждой:
   //    27.08.2026 на бою под последней строкой их было четыре вместо одной —
@@ -235,18 +243,18 @@ test('в таблице событий на строку приходится о
     await page.setViewportSize({ width: ширина, height: 900 });
     await page.goto('/kenya/');
     const м = await page.evaluate(() => {
-      const t = document.querySelector('.me-dash')!;
-      const строки = [...t.querySelectorAll('tbody tr')];
-      const низы = new Set<number>();
-      for (const tr of строки) {
-        for (const el of [tr, ...tr.children]) {
-          if (getComputedStyle(el).borderBottomWidth !== '0px') {
-            низы.add(Math.round(el.getBoundingClientRect().bottom));
-          }
-        }
+      const t = document.querySelector('.me-list')!;
+      const месяцев = t.querySelectorAll('.me-month').length;
+      const линии = new Set<number>();
+      for (const el of [t, ...t.querySelectorAll('*')]) {
+        const cs = getComputedStyle(el);
+        const b = el.getBoundingClientRect();
+        if (cs.borderTopStyle !== 'none' && cs.borderTopWidth !== '0px') линии.add(Math.round(b.top));
+        if (cs.borderBottomStyle !== 'none' && cs.borderBottomWidth !== '0px') линии.add(Math.round(b.bottom));
       }
-      return { строк: строки.length, линий: низы.size };
+      return { месяцев, линий: линии.size };
     });
-    expect(м.линий, `на ${ширина}px линий ${м.линий} при ${м.строк} строках`).toBe(м.строк);
+    expect(м.месяцев, `на ${ширина}px список событий не пуст`).toBeGreaterThan(0);
+    expect(м.линий, `на ${ширина}px в списке событий ${м.линий} черт`).toBe(0);
   }
 });

@@ -82,9 +82,6 @@ const iata = d.iata || d.price?.iata;   // канон. IATA из regionMeta (ч�
 // 3,1% переходов у страницы с ценой и датой против 0,25% у страницы без.
 // Отель и еду выгрузка не покрывает — они остаются из ручных данных.
 const liveFlight = iata ? livePrices.prices?.[iata]?.[`${yr}-${String(monthIdx + 1).padStart(2, '0')}`] ?? null : null;
-const liveChecked = livePrices.updatedAt
-  ? new Date(livePrices.updatedAt).toLocaleDateString('ru-RU')
-  : null;
 const flightTiers = d.price?.flight || [0,0,0];
 const hotelTiers = d.price?.hotel || [0,0,0];
 const foodTiers = d.price?.food || [0,0,0];
@@ -138,7 +135,7 @@ const bestMonthsAll = MONTH_META.filter(mm => mm.status === 'P' || mm.status ===
 const bestMonthsStr = bestMonthsAll.length ? bestMonthsAll.join(', ') : 'нет ярко выраженного пика — едут круглый год';
 const verdictForMonth = lbl.verdict + (status === 'P' || status === 'G' ? '.' : '. ' + (bestMonthsAll.length ? 'Лучше выбрать: ' + bestMonthsAll.slice(0,3).join(', ') + '.' : ''));
 const budgetSummary = liveFlight
-  ? `Перелёт Москва — ${d.cases.nom} в ${m.prep}: от ${liveFlight.toLocaleString('ru-RU')} ₽, цена проверена ${liveChecked}.`
+  ? `Перелёт Москва — ${d.cases.nom} в ${m.prep}: от ${liveFlight.toLocaleString('ru-RU')} ₽ в одну сторону.`
     + (hasPrices ? ` Отель эконом от $${hotelFrom}/ночь, еда от $${foodFrom}/день.` : '')
   : (hasPrices && weekTotal
       ? `Перелёт из Москвы от $${flightFrom}, отель эконом от $${hotelFrom}/ночь, еда от $${foodFrom}/день. Бюджет на неделю эконом — от $${weekTotal} на человека.`
@@ -288,10 +285,10 @@ const pageDescription = snip
             <tbody>
               {budgetGrid.map((b) => (
                 <tr>
-                  <td class="bd" data-l="Длительность"><b>{b.days} дней</b></td>
-                  <td data-l="Эконом">от ${b.low}</td>
-                  <td data-l="Средний">${b.mid}</td>
-                  <td data-l="Комфорт">${b.high}</td>
+                  <td class="bd"><b>{b.days} дней</b></td>
+                  <td>от ${b.low}</td>
+                  <td>${b.mid}</td>
+                  <td>${b.high}</td>
                 </tr>
               ))}
             </tbody>
@@ -345,17 +342,17 @@ const pageDescription = snip
             <tbody>
               {rich.regions.map((r) => (
                 <tr>
-                  <td class="bd" data-l="Регион"><b>{r.name}</b><span class="rgc">{r.city}</span></td>
-                  <td data-l="Днём">{r.temp}</td>
-                  <td data-l="Осадки">{r.rain}</td>
-                  <td data-l="Дней с дождём">{r.days}</td>
+                  <td class="bd"><b>{r.name}</b><span class="rgc">{r.city}</span></td>
+                  <td>{r.temp}</td>
+                  <td>{r.rain}</td>
+                  <td>{r.days}</td>
                 </tr>
               ))}
             </tbody>
           </table>
           {rich.regionsNote && <p class="tnote">{rich.regionsNote}</p>}
           {liveFlight && (
-            <p class="tnote">Перелёт Москва — {d.cases.nom} ({iata}) с вылетом в {m.prep}: от {liveFlight.toLocaleString('ru-RU')} ₽, цена снята {liveChecked}. Это один маршрут, а не вся страна: до других аэропортов цена своя, и мы её тут не показываем. Долларовая вилка выше по странице — разброс по классу поездки, а не цена именно этого месяца.</p>
+            <p class="tnote">Перелёт Москва — {d.cases.nom} ({iata}) с вылетом в {m.prep}: от {liveFlight.toLocaleString('ru-RU')} ₽ в одну сторону, до других аэропортов цена своя.</p>
           )}
         </section>
       )}
@@ -470,7 +467,7 @@ const pageDescription = snip
 .lead{font-size:clamp(1.05rem,1.4vw,1.25rem);line-height:1.6;color:var(--ink);max-width:68ch;margin-top:clamp(1.4rem,2.5vw,2rem);padding-left:1rem;border-left:3px solid var(--gold)}
 
 .sec{padding:clamp(2rem,4vw,3rem) 0 0}
-.shead{display:flex;align-items:center;justify-content:space-between;gap:1rem;border-top:2px solid var(--line);padding-top:.8rem;margin-bottom:1.1rem}
+.shead{display:flex;align-items:center;justify-content:space-between;gap:1rem;border-top:1px solid var(--line);padding-top:.8rem;margin-bottom:1.1rem}
 .shead h2{font-weight:700;font-size:clamp(1.3rem,2.4vw,1.8rem);letter-spacing:-.02em;display:flex;align-items:baseline;gap:.6rem}
 .shead a{font-size:.84rem;font-weight:600;color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto;display:inline-flex;align-items:center;min-height:44px}
 .txt{color:var(--mid);line-height:1.75;font-size:1rem;max-width:74ch;margin-bottom:.7rem}
@@ -478,9 +475,8 @@ const pageDescription = snip
 .txt a:hover{color:var(--gold)}
 
 /* Факты — value-list */
-.facts{list-style:none;border-top:1px solid var(--line)}
-.facts li{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;padding:.75rem 0;border-bottom:1px solid var(--hair)}
-.facts li:last-child{border-bottom:none}
+.facts{list-style:none}
+.facts li{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;padding:.75rem 0}
 .fk{font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid);flex:none}
 .fv{font-size:1rem;font-weight:600;color:var(--ink);text-align:right}
 .fv a{color:var(--gold);text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
@@ -499,9 +495,8 @@ const pageDescription = snip
 /* Бюджет-таблица */
 .dt{width:100%;border-collapse:collapse;font-size:.95rem;color:var(--ink)}
 .dt thead th{font-size:.64rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid);text-align:left;padding:.5rem .8rem .55rem 0;border-bottom:1px solid var(--line)}
-.dt td{padding:.8rem .8rem;border-bottom:1px solid var(--hair)}
+.dt td{padding:.6rem .8rem}
 .dt td:first-child,.dt th:first-child{padding-left:0}
-.dt tr:last-child td{border-bottom:none}
 .dt .bd b{font-weight:700}
 .dt .rgc{display:block;font-size:.72rem;color:var(--mid);margin-top:.15rem}
 .tnote{margin-top:.8rem;font-size:.78rem;color:var(--mid);line-height:1.6;max-width:90ch}
@@ -526,8 +521,6 @@ const pageDescription = snip
 .mg-now .mg-n{color:var(--gold)}
 
 /* FAQ */
-.faq{border-top:1px solid var(--line)}
-.fi{border-bottom:1px solid var(--hair)}
 .fi summary{font-weight:600;font-size:1rem;color:var(--ink);padding:1rem 2rem 1rem 0;cursor:pointer;list-style:none;position:relative;line-height:1.4}
 .fi summary::-webkit-details-marker{display:none}
 .fi summary::after{content:'+';position:absolute;right:.2rem;top:.9rem;color:var(--gold);font-size:1.3rem;line-height:1}
@@ -535,9 +528,8 @@ const pageDescription = snip
 .fi p{padding:0 0 1.1rem;color:var(--mid);line-height:1.7;font-size:.95rem;max-width:74ch}
 
 /* Value-list */
-.vl{list-style:none;border-top:1px solid var(--line)}
-.vl.wide li{display:flex;flex-wrap:wrap;align-items:baseline;gap:.2rem .7rem;padding:.75rem 0;border-bottom:1px solid var(--hair)}
-.vl.wide li:last-child{border-bottom:none}
+.vl{list-style:none}
+.vl.wide li{display:flex;flex-wrap:wrap;align-items:baseline;gap:.2rem .7rem;padding:.75rem 0}
 .vl.wide a{font-weight:600;font-size:1.02rem;color:var(--ink);text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
 .vl.wide a:hover{color:var(--gold)}
 .vl.wide span{color:var(--mid);font-size:.86rem}
@@ -548,13 +540,9 @@ const pageDescription = snip
   .mgrid{grid-template-columns:repeat(3,1fr)}
   .mg:nth-child(3n) {border-right:none}
   /* Бюджет-таблица → блоки */
-  .dt thead{position:absolute;left:-9999px}
-  .dt,.dt tbody,.dt tr,.dt td{display:block;width:100%}
-  .dt tr{border-bottom:1px solid var(--line);padding:.7rem 0}
-  .dt tr:last-child{border-bottom:none}
-  .dt td{border:none;padding:.12rem 0}
-  .dt td::before{content:attr(data-l) ': ';font-size:.64rem;text-transform:uppercase;letter-spacing:.04em;color:var(--mid)}
-  .dt .bd::before{content:none}
+  .dt{font-size:.875rem}
+  .dt th,.dt td{padding:.45rem .5rem}
+  .dt td:first-child,.dt th:first-child{padding-left:0}
   .facts li{flex-direction:column;gap:.1rem;align-items:flex-start}
   .fv{text-align:left}
   .cta-row{flex-direction:row}

@@ -9,7 +9,6 @@ import MonthlyEvents from '../components/MonthlyEvents.astro';
 import ClimateChart from '../components/ClimateChart.astro';
 import CountryMap from '../components/CountryMap.astro';
 import { DATA_UPDATED } from '../data/meta.js';
-import { buildEssentialsFaq } from '../data/essentials-faq.js';
 import { TP_LINKS, aviasalesRoute, cherehapaCountry, ostrovokCity, youtravelCountry } from '../data/affiliate.js';
 
 const url = 'https://traveltribe.ru/japan/';
@@ -43,9 +42,7 @@ const faqs = [
     q: 'Что нельзя ввозить в Японию из России?',
     a: 'Главное — Корвалол, Валокордин (содержат фенобарбитал — это в Японии наркотик, депортация и запрет на въезд). Псевдоэфедрин (Sudafed, Actifed). Аддерол и амфетамин-содержащие. Из еды — мясо, сало, колбасу, мёд, цитрусовые. Свежие фрукты и овощи. Ограничения на алкоголь (3 бутылки) и сигареты (200 шт). Заполняйте таможенную декларацию честно — штрафы крупные.'
   },
-  ...buildEssentialsFaq('japan', 'в Японии').filter(
-    (item) => !/что\s+нельзя\s+ввозить/i.test(item.q)
-  )
+  // Розетки, чаевые, номера, вода и такси не повторяются здесь: они стоят ниже в блоке «Что нужно знать на месте».
 ];
 
 const ldJson = {
@@ -216,7 +213,7 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
       <p class="jp-cta">
         <a class="jp-aff" href={aviasalesRoute('MOW','HND','hub_japan')} rel="sponsored noopener" target="_blank">Найти билет Москва — Токио от $500</a>
         <a class="jp-aff" href={youtravelCountry('japan', 'hub_japan')} rel="sponsored noopener" target="_blank">Авторские туры по Японии</a>
-        <span class="jp-trust">все авиакомпании в одной выдаче · оплата картами РФ · в туре маршрут и логистика собраны за вас</span>
+        <span class="jp-trust">оплата картами РФ</span>
       </p>
     </section>
 
@@ -291,7 +288,7 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
 <style>
 .jp {
   /* Swiss page-level tokens (override under-component) */
-  --line-strong: #15171a;
+  --line-strong: var(--line);
   --line-hair: var(--line); /* в global.css --line == hair-уровень */
   max-width: 1280px;
   margin: 0 auto;
@@ -339,15 +336,11 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
   margin-top: 1.8rem;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
 }
 .jp-vi {
   padding: .85rem 1.2rem .95rem;
-  border-right: 1px solid var(--line-hair);
 }
 .jp-vi:first-child { padding-left: 0; }
-.jp-vi:last-child { border-right: none; }
 .jp-vi span {
   display: block;
   font-size: .66rem; font-weight: 700;
@@ -374,15 +367,13 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
   .jp-meta { text-align: left; margin-top: .6rem; }
   .jp-h1 { margin-top: 1.1rem; }
   .jp-vlist { grid-template-columns: repeat(2, 1fr); }
-  .jp-vi:nth-child(2n) { border-right: none; }
   .jp-vi:nth-child(odd) { padding-left: 0; }
-  .jp-vi:nth-child(n+3) { border-top: 1px solid var(--line-hair); }
 }
 
 /* ===== СЕКЦИИ ===== */
 .jp-section { margin-top: clamp(2.4rem, 5vw, 4rem); }
 .jp-shead {
-  border-top: 2px solid var(--line-strong);
+  border-top: 1px solid var(--line-strong);
   padding-top: .8rem;
   display: flex; align-items: baseline; gap: .8rem;
   margin-bottom: 1.4rem;
@@ -426,17 +417,13 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
   list-style: none;
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
 }
 .jp-list li {
   padding: .8rem 0 .85rem;
-  border-top: 1px solid var(--line-hair);
   font-size: .96rem;
   line-height: 1.55;
   color: var(--text);
 }
-.jp-list li:first-child { border-top: none; }
 .jp-list li b { color: var(--text); font-weight: 800; }
 .jp-list li a {
   color: var(--gold);
@@ -458,15 +445,12 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
 .jp-tiers {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
 }
 .jp-tier {
   padding: 1.1rem 1.2rem 1.2rem;
-  border-right: 1px solid var(--line-hair);
 }
 .jp-tier:first-child { padding-left: 0; }
-.jp-tier:last-child { border-right: none; padding-right: 0; }
+.jp-tier:last-child { padding-right: 0; }
 .jp-tier-top { display: flex; align-items: baseline; gap: .5rem; }
 .jp-tier-idx {
   font-size: .68rem; font-weight: 700; color: var(--gold);
@@ -534,12 +518,10 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
 @media (max-width: 760px) {
   .jp-tiers { grid-template-columns: 1fr; }
   .jp-tier {
-    border-right: none;
-    border-top: 2px solid var(--line-strong);
     padding-left: 0; padding-right: 0;
     padding-top: 1.3rem;
   }
-  .jp-tier:first-child { border-top: none; padding-top: 0; }
+  .jp-tier:first-child { padding-top: 0; }
 }
 
 /* POSTS grid — 2 кол hairline */
@@ -547,20 +529,14 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0;
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
 }
 .jp-post {
   padding: 1.1rem 1.2rem 1.2rem;
-  border-right: 1px solid var(--line-hair);
-  border-bottom: 1px solid var(--line-hair);
   text-decoration: none;
   color: var(--text);
   display: flex; flex-direction: column;
   transition: background .15s;
 }
-.jp-post:nth-child(2n) { border-right: none; }
-.jp-post:nth-last-child(-n+2) { border-bottom: none; }
 .jp-post:nth-child(odd) { padding-left: 0; }
 .jp-post:hover { background: rgba(29, 64, 174, 0.05); }
 .jp-pn {
@@ -591,22 +567,11 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
 @media (max-width: 760px) {
   .jp-posts { grid-template-columns: 1fr; }
   .jp-post {
-    border-right: none;
-    border-bottom: 1px solid var(--line-hair);
     padding-left: 0; padding-right: 0;
   }
-  .jp-post:last-child { border-bottom: none; }
 }
 
 /* FAQ — без bg/радиуса/крестика */
-.jp-faq {
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
-}
-.jp-faq-i {
-  border-top: 1px solid var(--line-hair);
-}
-.jp-faq-i:first-child { border-top: none; }
 .jp-faq-i summary {
   font-weight: 700;
   font-size: .98rem;
@@ -648,17 +613,13 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
   list-style: none;
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
 }
 .jp-related li {
   padding: .75rem 0;
-  border-top: 1px solid var(--line-hair);
   font-size: .92rem;
   line-height: 1.55;
   color: var(--text-dim);
 }
-.jp-related li:first-child { border-top: none; }
 .jp-related a {
   color: var(--gold);
   text-decoration: 1px underline var(--gold);

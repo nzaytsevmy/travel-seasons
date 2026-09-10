@@ -3,31 +3,30 @@ import Layout from '../../layouts/Layout.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { DIRECTIONS } from '../../data/directions.js';
-import { DATA_UPDATED_RU } from '../../data/meta.js';
 import { getWeatherBucket } from '../../data/country-month-bucket.js';
 import { WEATHER_BUCKETS } from '../../data/packing-weather-buckets.js';
 import { PLUG_TYPES } from '../../data/country-plug-types.js';
 
 const url = 'https://traveltribe.ru/packing/';
 const title = 'Что взять в поездку 2026 — чек-листы по 70+ странам';
-const description = 'Готовые чек-листы упаковки: одежда под климат, документы, аптечка, техника — по 70+ направлениям. Превью пунктов прямо на странице. Обновлено ' + DATA_UPDATED_RU + '.';
+const description = 'Готовые чек-листы упаковки: одежда под климат, документы, аптечка, техника — по 70+ направлениям. Превью пунктов прямо на странице.';
 
 // Топ-10 направлений 2026 (по трафику @traveltriberu + общему спросу россиян)
 const TOP_SLUGS = ['japan', 'thailand', 'georgia', 'turkey', 'uae', 'bali', 'sri-lanka', 'uzbekistan', 'vietnam', 'maldives'];
 
 // Bucket → короткий tag для пилюли на карточке
 const BUCKET_TAG = {
-  'tropical-rainy':   'Тропики, дождь',
+  'tropical-rainy':   'Жарко, ливни',
   'warm-rainy':       'Тепло, дожди',
-  'tropical-dry':     'Тропики, сухо',
+  'tropical-dry':     'Жарко, без дождей',
   'tropical-jungle':  'Джунгли, сафари',
-  'desert-hot':       'Пустыня, жара',
+  'desert-hot':       'Сильная жара',
   'desert-cool':      'Сухо, холодные ночи',
-  'temperate-warm':   'Умеренный, тепло',
-  'temperate-cool':   'Умеренный, прохладно',
-  'temperate-cold':   'Умеренный, холод',
+  'temperate-warm':   'Тепло',
+  'temperate-cool':   'Прохладно',
+  'temperate-cold':   'Холодно',
   'winter-frost':     'Зима, мороз',
-  'summer-hot':       'Жаркое лето',
+  'summer-hot':       'Жарко, сухо',
   'cold-extreme':     'Полярный холод',
   'mountain-altitude':'Высокогорье',
 };
@@ -429,7 +428,6 @@ const ldJson = {
   justify-content: space-between;
   align-items: baseline;
   gap: 1rem;
-  border-bottom: 1px solid var(--line);
   padding-bottom: 0.7rem;
 }
 .pl-top-name {
@@ -488,7 +486,6 @@ const ldJson = {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  border-top: 1px dashed var(--line);
 }
 
 /* ─── SEARCH ─── чистый input с иконкой, без shadow */
@@ -535,23 +532,18 @@ const ldJson = {
   padding: 0;
   display: grid;
   grid-template-columns: 1fr;
-  border-top: 1px solid var(--line);
 }
 .pl-all-item {
   margin: 0;
-  border-bottom: 1px solid var(--line);
   display: flex;
 }
 /* HTML hidden attribute должен побеждать display: flex для search-filter */
 .pl-all-item[hidden] { display: none !important; }
 @media (min-width: 720px) {
   .pl-all-list { grid-template-columns: 1fr 1fr; }
-  .pl-all-item:nth-child(odd)  { border-right: 1px solid var(--line); }
 }
 @media (min-width: 980px) {
   .pl-all-list { grid-template-columns: repeat(3, 1fr); }
-  .pl-all-item:nth-child(odd)  { border-right: none; }
-  .pl-all-item:not(:nth-child(3n)) { border-right: 1px solid var(--line); }
 }
 
 .pl-all-link {

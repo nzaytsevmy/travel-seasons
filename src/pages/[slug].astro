@@ -46,7 +46,6 @@ const RU_STAY = new Set(['abkhazia', 'kamchatka', 'karelia', 'dagestan', 'altai'
 import { similarDestinations } from '../data/similar.js';
 import { COMPARE_PAIRS } from '../data/compare-pairs.js';
 import { getGuide } from '../data/country-guides.js';
-import { buildEssentialsFaq } from '../data/essentials-faq.js';
 import { hasEssentials } from '../data/country-essentials.js';
 import { hasCustoms } from '../data/country-customs.js';
 import { hasHolidays } from '../data/country-holidays.js';
@@ -185,15 +184,17 @@ const faqs = [
       : `${d.cases.nom} имеет переменчивые сезоны — смотри помесячный календарь ниже.`,
   },
 ];
-// Доп. вопросы из расширенного гайда — и в видимый FAQ, и в schema (AEO)
-if (guide?.faq?.length) faqs.push(...guide.faq);
+// Доп. вопросы из расширенного гайда — и в видимый FAQ, и в schema (AEO). Без повторов (пометка
+// Никиты 10.09.2026: «не делать такие повторения»): вопрос о том же, что уже спрошено выше
+// (цена поездки, когда ехать), не идёт второй раз с другими числами, а визовый вопрос отдан
+// /visa/<страна>/ (см. комментарий над faqs).
+const faqKey = (q) => q.toLowerCase().replace(/[^а-яёa-z]+/g, ' ').trim().split(' ').slice(0, 3).join(' ');
+const faqSeen = new Set(faqs.map((f) => faqKey(f.q)));
+if (guide?.faq?.length) faqs.push(...guide.faq.filter((f) => !faqSeen.has(faqKey(f.q)) && !/виз/i.test(f.q)));
 
-// FAQ из бытовой практики (розетки/чаевые/экстренные/вода/такси/таможня) —
-// renders только если EssentialsCard/CustomsCard для slug заполнены.
+// Розетки, чаевые, экстренные номера, вода, такси и таможня в FAQ не дублируются: всё это стоит
+// на той же странице в блоке «Что нужно знать на месте» — раньше страница говорила одно и то же дважды.
 const essVp = d.cases?.vP || `в ${d.cases?.loc || d.cases?.nom || ''}`;
-if (hasEssentials(d.slug) || hasCustoms(d.slug)) {
-  faqs.push(...buildEssentialsFaq(d.slug, essVp));
-}
 
 // Изображения для schema (обложка + inline-фото) — ImageObject с финальными URL.
 const SITE = 'https://traveltribe.ru';
@@ -694,7 +695,7 @@ if (guide?.itinerary?.length) {
     <section class="om-sec" id="sbory">
       <h2>Что взять {d.cases.vP}</h2>
       <p class="om-body">{typo('Чек-лист по месяцам: одежда под погоду, документы, аптечка, техника, переходник.')}</p>
-      <p class="om-body om-linkline"><a href={`/packing/${d.slug}/`}>Открыть чек-лист {d.cases.gen || d.cases.prep || d.cases.nom}</a></p>
+      <p class="om-body om-linkline"><a href={`/packing/${d.slug}/`}>Что взять {d.cases.vP}: чек-лист по месяцам</a></p>
     </section>
 
     <section class="om-sec" id="faq">
@@ -857,7 +858,7 @@ if (guide?.itinerary?.length) {
     .om-toc-h::after { content: ""; flex: none; width: 9px; height: 9px; border-right: 2px solid var(--text-faint); border-bottom: 2px solid var(--text-faint); transform: translateY(-3px) rotate(45deg); }
     .om-toc details[open] .om-toc-h::after { transform: translateY(2px) rotate(-135deg); }
     .om-toc ol { line-height: 1.35; padding-bottom: 8px; }
-    .om-toc li { display: block; border-top: 1px solid var(--line); }
+    .om-toc li { display: block; }
     .om-toc li + li::before { content: none; }
     .om-toc a { display: flex; align-items: center; min-height: 44px; }
   }
@@ -881,8 +882,7 @@ if (guide?.itinerary?.length) {
   .om-months li { font-size: 1rem; line-height: 1.6; margin-bottom: 6px; }
 
   .om-list { margin: 0 0 20px; padding: 0; list-style: none; max-width: 76ch; }
-  .om-list li { padding: 12px 0; border-top: 1px solid var(--line); font-size: 1rem; line-height: 1.6; }
-  .om-list li:last-child { border-bottom: 1px solid var(--line); }
+  .om-list li { padding: 12px 0; font-size: 1rem; line-height: 1.6; }
   .om-steps { margin: 0 0 20px; padding-left: 1.4em; max-width: 76ch; }
   .om-steps li { padding: 8px 0 8px 4px; font-size: 1rem; line-height: 1.6; }
   .om-steps li::marker { font-family: var(--ff-mono); color: var(--text-faint); }
@@ -890,8 +890,8 @@ if (guide?.itinerary?.length) {
   .om-figure :global(img) { width: 100%; height: auto; display: block; }
   .om-note { font-size: 0.9375rem; font-style: italic; color: var(--text-dim); margin: 20px 0 0; line-height: 1.6; max-width: 68ch; }
 
-  .om-comp { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 24px; margin: 8px 0 12px; }
-  .om-cc { padding: 14px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; }
+  .om-comp { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px 24px; margin: 8px 0 12px; }
+  .om-cc { padding: 14px 0; display: flex; flex-direction: column; }
   .om-cc-name { font-weight: 600; font-size: 1.0625rem; margin: 0; }
   .om-cc-sub { font-size: 0.875rem; color: var(--text-faint); margin: 2px 0 0; }
   .om-cc-for { flex: 1; font-size: 0.9375rem; line-height: 1.55; color: var(--text-dim); margin: 6px 0 4px; }
@@ -920,8 +920,7 @@ if (guide?.itinerary?.length) {
   .om-linkline .om-dim { font-size: 0.875rem; }
 
   .om-related { margin: 0; padding: 0; list-style: none; max-width: 76ch; }
-  .om-related li { padding: 10px 0; border-top: 1px solid var(--line); font-size: 1rem; line-height: 1.5; }
-  .om-related li:last-child { border-bottom: 1px solid var(--line); }
+  .om-related li { padding: 10px 0; font-size: 1rem; line-height: 1.5; }
   .om-related a { display: inline-flex; align-items: center; min-height: 32px; }
   .om-related span { display: block; font-size: 0.875rem; color: var(--text-faint); }
 
