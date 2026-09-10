@@ -3,6 +3,9 @@
 // ⛔ Список, а не таблица: на телефоне таблица становилась карточками с подписью у каждого
 //    поля («Тип», «Координаты», «Карты») и чертой под каждой строкой — пометка Никиты
 //    10.09.2026: «Слишком много линий, нужно убрать их везде и не делать такие повторения».
+// У каждого места — кадр (пометка Никиты 10.09.2026: «в каждой карточке должны быть сочные
+//    картинки»). Файл — в _images/poi/<страна>/, лицензия — в _credits.json той же папки; подпись
+//    «Фотографии мест: …» собирается из неё, как на странице страны.
 // Lazy-load из CDN через IntersectionObserver (карта инициализируется только когда видна).
 // Pins — gold круг с номером 01..N, белый контур (без box-shadow по брендбуку).
 //
@@ -10,6 +13,8 @@
 
 import { getPois } from '../data/country-pois.js';
 import { NOUN } from '../data/plural.js';
+import { Image } from 'astro:assets';
+import { typo } from '../utils/typo.js';
 
 interface Props {
   slug: string;
@@ -18,6 +23,26 @@ interface Props {
 const { slug, countryNom } = Astro.props;
 const data = getPois(slug);
 if (!data?.pois?.length) return null as any;
+
+const poiFiles = import.meta.glob('../content/blog/_images/poi/**/*.jpg', { import: 'default' });
+const poiCredits = import.meta.glob('../content/blog/_images/poi/**/_credits.json', { eager: true, import: 'default' });
+const places = await Promise.all(data.pois.map(async (p) => {
+  const load = p.photo ? poiFiles[`../content/blog/_images/${p.photo}`] : null;
+  if (p.photo && !load) throw new Error(`Кадр места не найден: ${p.photo}`);
+  return { ...p, img: load ? await load() : null };
+}));
+const семья = (l) => (/^CC BY-SA/i.test(l) ? 'CC BY-SA' : /^CC BY/i.test(l) ? 'CC BY' : /^CC0/i.test(l) ? 'CC0' : l);
+const авторы = new Map();
+for (const p of places) {
+  if (!p.photo) continue;
+  const cut = p.photo.lastIndexOf('/');
+  const rec = (poiCredits[`../content/blog/_images/${p.photo.slice(0, cut)}/_credits.json`] || {})[p.photo.slice(cut + 1).replace(/\.\w+$/, '')];
+  if (!rec?.creator) continue;
+  const lic = семья(rec.license || '');
+  if (!авторы.has(lic)) авторы.set(lic, []);
+  if (!авторы.get(lic).includes(rec.creator)) авторы.get(lic).push(rec.creator);
+}
+const фотоМест = авторы.size ? `Фотографии мест: ${[...авторы].map(([lic, who]) => `${who.join(', ')} (${lic})`).join('; ')}.` : '';
 
 // Уникальный ID контейнера карты — на случай если несколько CountryMap на одной странице
 const mapId = `cmap-${slug}-${Math.random().toString(36).slice(2, 7)}`;
@@ -45,11 +70,12 @@ const TYPE_LABEL: Record<string, string> = {
   </div>
 
   <ol class="cm-list">
-    {data.pois.map((p, i) => {
+    {places.map((p, i) => {
       const gmaps = `https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}`;
       const ymaps = `https://yandex.ru/maps/?ll=${p.lng},${p.lat}&z=12&pt=${p.lng},${p.lat}`;
       return (
         <li class="cm-item">
+          {p.img && <span class="cm-ph"><Image src={p.img} alt={p.alt || p.name} widths={[400, 800]} sizes="(max-width: 760px) 100vw, 380px" formats={['webp']} quality={76} loading="lazy" /></span>}
           <span class="cm-no" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
           <div class="cm-body">
             <b class="cm-name">{p.name}</b>
@@ -64,6 +90,7 @@ const TYPE_LABEL: Record<string, string> = {
       );
     })}
   </ol>
+  {фотоМест && <p class="cm-credits">{typo(фотоМест)}</p>}
 </section>
 
 <script is:inline define:vars={{ mapId, pois: data.pois, center: data.center }}>
@@ -153,7 +180,10 @@ const TYPE_LABEL: Record<string, string> = {
   list-style: none; margin: 28px 0 0; padding: 0;
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 40px;
 }
-.cm-item { display: flex; gap: 14px; align-items: baseline; }
+.cm-item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px 14px; align-items: baseline; }
+.cm-ph { grid-column: 1 / -1; display: block; aspect-ratio: 3 / 2; overflow: hidden; background: var(--bg2); }
+.cm-ph :global(img) { display: block; width: 100%; height: 100%; object-fit: cover; }
+.cm-credits { margin: 24px 0 0; font-size: .8125rem; line-height: 1.5; color: var(--text-faint); text-wrap: balance; }
 .cm-no { flex: none; min-width: 1.5rem; font-family: var(--ff-mono); font-size: .8125rem; color: var(--gold); }
 .cm-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .cm-name { font-weight: 700; font-size: 1.0625rem; line-height: 1.35; color: var(--text); }

@@ -6,6 +6,19 @@ import { DIRECTIONS as ALL_DIRECTIONS } from '../data/directions.js';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Footer from '../components/Footer.astro';
 import PricingCards from '../components/post/PricingCards.astro';
+import { Image } from 'astro:assets';
+// Свои кадры из поездки в декабре 2024 — те же, что в статье про круиз (в описи происхождения — own).
+import фотоАйсберг from '../content/blog/_images/antarctica/iceberg-blue.jpg';
+import фотоПингвин from '../content/blog/_images/antarctica-gentoo.jpg';
+import фотоЛёд from '../content/blog/_images/antarctica-blue-ice.jpg';
+import фотоПингвинБотинки from '../content/blog/_images/antarctica-penguin-close.jpg';
+import фотоСлоны from '../content/blog/_images/antarctica-elephant.jpg';
+const кадры = [
+  [фотоПингвин, 'Папуанский пингвин с птенцом на колонии в бухте Неко'],
+  [фотоЛёд, 'Голубая трещина в айсберге светится изнутри'],
+  [фотоПингвинБотинки, 'Папуанский пингвин подходит к ботинкам туриста'],
+  [фотоСлоны, 'Морские слоны на лежбище у станции Беллинсгаузен'],
+];
 import { DATA_UPDATED } from '../data/meta.js';
 import { cherehapaCountry, aviasalesRoute, youtravelCountry } from '../data/affiliate.js';
 
@@ -128,6 +141,10 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'antarctica');
       <p class="hub-sub">Круиз из Москвы, цены, виза, сезоны — для российского путешественника. Был в декабре 2024, маршрут под ключ.</p>
     </header>
 
+    <figure class="hub-hero">
+      <Image src={фотоАйсберг} alt="Голубой айсберг в антарктических водах" widths={[640, 1024, 1520]} sizes="(max-width: 800px) 100vw, 900px" formats={['webp']} quality={74} loading="eager" fetchpriority="high" />
+    </figure>
+
     <section class="hub-tldr">
       <strong>Если коротко:</strong> цена круиза «под ключ из Москвы» — <strong>750 000–1 400 000 ₽</strong> на человека за 10–11 дней. Маршрут: <strong>Москва → Буэнос-Айрес → Ушуая → Антарктический полуостров</strong>. <strong>Виза в Аргентину не нужна</strong> (безвиз 90 дней). Сезон — <strong>ноябрь–март</strong>, лучший месяц февраль (киты + не пик цен). Бронировать на сезон 2026/27 уже сейчас, лучшие каюты разлетаются за 6–9 месяцев.
     </section>
@@ -193,6 +210,18 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'antarctica');
         <li><strong>Апрель–октябрь</strong> — Антарктида закрыта. Льды, ветер, минус 40, никаких туристов.</li>
       </ul>
       <p class="hub-note"><a href="/seasons/">Таблица сезонов</a> — Антарктида и 38 других направлений с лучшими окнами.</p>
+    </section>
+
+    <section class="hub-section">
+      <h2>Как это выглядит</h2>
+      <div class="hub-gallery">
+        {кадры.map(([src, t]) => (
+          <figure>
+            <Image src={src} alt={t} widths={[400, 600, 900]} sizes="(max-width: 760px) 100vw, 450px" formats={['webp']} quality={76} loading="lazy" />
+            <figcaption>{t}</figcaption>
+          </figure>
+        ))}
+      </div>
     </section>
 
     <section class="hub-section">
@@ -344,4 +373,11 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'antarctica');
 
 .hub-related { padding-left: 1.4rem; }
 .hub-related li { color: var(--text-dim); line-height: 1.75; margin-bottom: 0.5rem; font-size: 0.95rem; }
+  .hub-hero { margin: 0 0 1.5rem; }
+  .hub-hero :global(img) { display: block; width: 100%; height: auto; }
+  .hub-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .hub-gallery figure { margin: 0; }
+  .hub-gallery :global(img) { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+  .hub-gallery figcaption { margin-top: 6px; font-size: 0.875rem; line-height: 1.5; color: var(--text-dim); text-wrap: balance; }
+  @media (max-width: 760px) { .hub-gallery { grid-template-columns: 1fr; } }
 </style>

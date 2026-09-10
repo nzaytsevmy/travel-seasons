@@ -30,6 +30,7 @@ import MonthlyEvents from '../components/MonthlyEvents.astro';
 import ClimateChart from '../components/ClimateChart.astro';
 import CountryMap from '../components/CountryMap.astro';
 import { countryPhotos } from '../data/country-photos.js';
+import { COUNTRY_SIGHTS } from '../data/country-sights.js';
 import { TP_LINKS, aviasalesRoute, otelloStay, cherehapaCountry, ostrovokCountry, youtravelCountry, kiwitaxiRoute, sputnik8City, mirturbazRegion } from '../data/affiliate.js';
 import livePrices from '../data/prices-cache.json';
 
@@ -273,9 +274,10 @@ const сКадром = async (p) => {
 };
 const широкий = фотоСтраны ? await сКадром(фотоСтраны.wide) : null;
 const практика = фотоСтраны ? await Promise.all(фотоСтраны.practice.map(сКадром)) : [];
+const виды = COUNTRY_SIGHTS[d.slug] ? await Promise.all(COUNTRY_SIGHTS[d.slug].map(сКадром)) : [];
 const семьяЛицензии = (l) => (/pixabay/i.test(l) ? 'Pixabay' : /^CC BY-SA/i.test(l) ? 'CC BY-SA' : /^CC BY/i.test(l) ? 'CC BY' : /^CC0/i.test(l) ? 'CC0' : l);
 const авторы = new Map();
-for (const p of [широкий, ...практика].filter(Boolean)) {
+for (const p of [широкий, ...практика, ...виды].filter(Boolean)) {
   const cut = p.file.lastIndexOf('/');
   const записи = hubCredits[`../content/blog/_images/${p.file.slice(0, cut)}/_credits.json`] || {};
   const имя = p.file.slice(cut + 1);
@@ -316,6 +318,7 @@ const морскаяФраза = seaRow ? (() => {
 const разделов = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'раздел' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'раздела' : 'разделов');
 const tocItems = [
   (guide?.intro || guide?.highlights?.length) && { id: 'zachem', t: `Зачем ехать ${d.cases.vP}` },
+  виды.length > 0 && { id: 'vidy', t: `Что посмотреть ${d.cases.loc}` },
   { id: 'pogoda', t: погодаH2 },
   hasHolidays(d.slug) && { id: 'sobytiya', t: 'События по месяцам' },
   guide?.itinerary?.length && { id: 'marshrut', t: 'Маршрут на 7–10 дней' },
@@ -482,6 +485,23 @@ if (guide?.itinerary?.length) {
       </section>
     )}
 
+    {виды.length > 0 && (
+      <section class="om-sec" id="vidy">
+        <h2>Что посмотреть {d.cases.loc}</h2>
+        <div class="om-sights">
+          {виды.map((p) => (
+            <figure>
+              <Image src={p.img} alt={p.alt} widths={[400, 592, 900]} sizes="(max-width: 760px) 100vw, 592px" formats={['webp']} quality={78} loading="lazy" />
+              <figcaption>{typo(p.caption)}</figcaption>
+            </figure>
+          ))}
+        </div>
+        {RU_STAY.has(d.slug) && !guide?.highlights?.length && экскурсии && (
+          <p class="om-body om-linkline"><a href={экскурсии} rel="sponsored noopener" target="_blank">Экскурсии {d.cases.loc} с местными гидами</a> <span class="om-dim">расписание, отзывы и цена видны до оплаты</span></p>
+        )}
+      </section>
+    )}
+
     <section class="om-sec" id="pogoda">
       <h2>{погодаH2}</h2>
       <p class="om-body">{typo(`Лучшие месяцы — ${bestMonths.map((m) => m.nom).join(', ') || '—'}${worstMonths.length ? `; хуже всего — ${worstMonths.map((m) => m.nom).join(', ')}` : ''}.`)}</p>
@@ -591,7 +611,7 @@ if (guide?.itinerary?.length) {
       </section>
     )}
 
-    {RU_STAY.has(d.slug) && !guide?.highlights?.length && экскурсии && (
+    {!виды.length && RU_STAY.has(d.slug) && !guide?.highlights?.length && экскурсии && (
       <section class="om-sec" id="posmotret">
         <h2>Что посмотреть</h2>
         <p class="om-body om-linkline"><a href={экскурсии} rel="sponsored noopener" target="_blank">Экскурсии {d.cases.loc} с местными гидами</a> <span class="om-dim">расписание, отзывы и цена видны до оплаты</span></p>
@@ -953,4 +973,9 @@ if (guide?.itinerary?.length) {
     .om-rules .om-prow span:first-child { flex: none; padding: 12px 0 0; }
     .om-rules .om-prow span:last-child { padding: 4px 0 12px; }
   }
+  .om-sights { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin: 8px 0 0; }
+  .om-sights figure { margin: 0; }
+  .om-sights :global(img) { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+  .om-sights figcaption { margin-top: 8px; font-size: 0.875rem; line-height: 1.5; color: var(--text-dim); text-wrap: balance; }
+  @media (max-width: 760px) { .om-sights { grid-template-columns: 1fr; gap: 20px; } }
 </style>
