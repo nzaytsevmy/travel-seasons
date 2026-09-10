@@ -66,7 +66,8 @@ test('4. у каждого вложенного пункта есть поясн
 test('5. все обещанные пункты на месте', async ({ page }) => {
   await page.goto('/');
   const тексты = await page.locator('.sw-head .sub .s-n').evaluateAll((e) =>
-    e.map((x) => x.textContent!.trim()));
+    // неразрывный пробел и невидимый знак ставит типограф сайта (10.09.2026) — сверяем слова
+    e.map((x) => x.textContent!.replace(/\u00A0/g, ' ').replace(/\u2060/g, '').trim()));
   expect(тексты.sort(), 'состав вложенных пунктов').toEqual([...ВНУТРИ].sort());
 });
 
