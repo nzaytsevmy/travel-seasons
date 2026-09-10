@@ -43,12 +43,38 @@ function geo(C: any, d: any) {
   });
   const iMax = (arr: number[]) => arr.indexOf(Math.max(...arr));
   const iMin = (arr: number[]) => arr.indexOf(Math.min(...arr));
+  // Подпись города ставится у его собственного максимума (первая кривая) или
+  // минимума (вторая). ⛔ Центрировать её нельзя: когда крайний месяц — январь
+  // или декабрь, текст уезжает за рамку и читается «амуи» вместо «Самуи»
+  // (Таиланд, Турция, Грузия — 10.09.2026). У края подпись прижимается к нему.
+  // ⛔ И нельзя всегда вести вторую подпись вниз: у низкой кривой она садится на
+  // строку месяцев. Столкнулась — уходит вверх.
   lines.forEach((c: any, ci: number) => {
-    const i = ci === 0 ? iMax(c.tMax) : iMin(c.tMax);
-    c.label = { x: xOf(i), y: ci === 0 ? c.pts[i].y - 16 : c.pts[i].y + 26 };
+    // Месяц подписи — самый тёплый (первая кривая) или самый холодный (вторая),
+    // но не ближе двух месяцев к выноске разницы: там они наезжают друг на друга
+    // (Марокко, Иордания, Финляндия — проверка рамок подписей 10.09.2026).
+    const order = c.tMax.map((v: number, k: number) => ({ v, k }))
+      .sort((a: any, b: any) => (ci === 0 ? b.v - a.v : a.v - b.v));
+    const i = (order.find((o: any) => !gap || Math.abs(o.k - gap.i) > 1) ?? order[0]).k;
+    const x = xOf(i);
+    const anchor = x < C.x0 + 90 ? 'start' : x > C.x1 - 90 ? 'end' : 'middle';
+    const below = ci !== 0;
+    let y = below ? c.pts[i].y + 26 : c.pts[i].y - 16;
+    if (below && y > C.monthY - 18) y = c.pts[i].y - 16;
+    if (!below && y < C.yTop + 6) y = c.pts[i].y + 26;
+    c.label = { x: anchor === 'start' ? C.x0 : anchor === 'end' ? C.x1 : x, y, anchor };
   });
+  // Выноска «N °C разницы» и подпись оси дождей встают с той стороны, где есть
+  // место: у правого края текст уезжал за рамку (Китай, Куба), а у пика дождей
+  // в январе число садилось на подпись оси (10.09.2026, проверка рамок подписей).
+  if (gap) {
+    gap.right = gap.x < (C.x0 + C.x1) / 2;
+    gap.tx = gap.right ? gap.x + 26 : gap.x - 26;
+  }
+  const rainPeakEl = rain.reduce((a: any, b: any) => (b.days > a.days ? b : a));
+  const rainCapRight = rainPeakEl.i <= 2;
   return {
-    C, xOf, yOf, lines, poly, gapArea, gap, rain, rc,
+    C, xOf, yOf, lines, poly, gapArea, gap, rain, rc, rainCapRight,
     rainPeak: rain.reduce((a: any, b: any) => (b.days > a.days ? b : a)),
     // Заливка сезона есть не у всех: она пишется руками там, где у страны свой
     // сюжет (у Омана — хариф). Без неё график должен рисоваться, а не падать.
@@ -114,12 +140,12 @@ const alt = data
             <line x1={g.gap.x + 16} y1={g.gap.ya} x2={g.gap.x + 16} y2={g.gap.yb} />
             <line x1={g.gap.x + 11} y1={g.gap.ya} x2={g.gap.x + 21} y2={g.gap.ya} />
             <line x1={g.gap.x + 11} y1={g.gap.yb} x2={g.gap.x + 21} y2={g.gap.yb} />
-            <text x={g.gap.x + 26} y={(g.gap.ya + g.gap.yb) / 2 + 5}>{Math.abs(g.gap.d)} °C разницы</text>
+            <text x={g.gap.tx} y={(g.gap.ya + g.gap.yb) / 2 + 5} class={g.gap.right ? '' : 'ycc-end'}>{Math.abs(g.gap.d)} °C разницы</text>
           </g>
         )}
 
         {g.lines.map((c: any, ci: number) => (
-          <text x={c.label.x} y={c.label.y} class="ycc-name">
+          <text x={c.label.x} y={c.label.y} class={`ycc-name ${c.label.anchor === 'start' ? 'ycc-start' : c.label.anchor === 'end' ? 'ycc-end' : ''}`}>
             {c.name}{c.role ? `, ${c.role}` : ''}
           </text>
         ))}
@@ -132,7 +158,8 @@ const alt = data
         ))}
         <text x={g.rainPeak.x} y={g.rainPeak.y - 8} class="ycc-rainval">{g.rainPeak.days}</text>
         <text x={g.C.x0 - 14} y={g.C.rainBase + 4} class="ycc-axis">0</text>
-        <text x={g.C.x0 - (g.C.w > 600 ? 56 : 60)} y={g.C.rainTop - 10} class="ycc-name ycc-start">дней с осадками, {g.rc.name}</text>
+        <text x={g.rainCapRight ? g.C.x1 : g.C.x0 - (g.C.w > 600 ? 56 : 60)} y={g.C.rainTop - 10}
+          class={`ycc-name ${g.rainCapRight ? 'ycc-end' : 'ycc-start'}`}>дней с осадками, {g.rc.name}</text>
       </svg>
     ))}
 
@@ -157,6 +184,7 @@ const alt = data
   .ycc-month { font-family: var(--ff-mono); font-size: 13px; fill: var(--text-faint); text-anchor: middle; }
   .ycc-name { font-family: var(--ff-body); font-size: 13px; fill: var(--text-faint); text-anchor: middle; }
   .ycc-start { text-anchor: start; }
+  .ycc-end { text-anchor: end; }
   .ycc-gap { fill: rgba(21, 23, 26, 0.07); }
   .ycc-link { stroke: var(--line); stroke-width: 1; }
   .ycc-line { fill: none; stroke-width: 1.5; stroke: var(--text); }

@@ -1782,6 +1782,49 @@ test('Деньги: жд-билеты не предлагаются, пока п
   expect(bad.slice(0, 20), bad.slice(0, 20).join('\n')).toEqual([]);
 });
 
+test('График года: подписи не вылезают за рамку и не наезжают друг на друга', async ({ page }) => {
+  // ⛔ Этот брак не ловит ни один прежний гейт: картинка рисуется, ошибок нет,
+  //    а подпись читается «амуи» вместо «Самуи». 10.09.2026 при раскатке графика
+  //    на 66 стран так было на 29 страницах из 66: подпись города уезжала за левый
+  //    край, если самый холодный месяц — январь; выноска «N °C разницы» уходила за
+  //    правый край в декабре; число пика дождей садилось на подпись оси.
+  //    Меряем РАМКИ текста в браузере (getBBox), а не наличие элементов.
+  const root = join(DIST, '..');
+  const slugs = readdirSync(DIST, { withFileTypes: true })
+    .filter((d) => d.isDirectory() && existsSync(join(DIST, d.name, 'index.html')))
+    .filter((d) => readFileRaw(join(DIST, d.name, 'index.html'), 'utf8').includes('svg class="ycc-wide"'))
+    .map((d) => d.name);
+  expect(slugs.length, 'страниц с графиком года не нашлось — сломан отбор').toBeGreaterThan(30);
+
+  const bad: string[] = [];
+  for (const slug of slugs) {
+    await page.goto(`/${slug}/`, { waitUntil: 'load' });
+    await page.waitForTimeout(50);
+    const found = await page.evaluate(() => {
+      const svg = document.querySelector('svg.ycc-wide') as SVGSVGElement | null;
+      if (!svg) return ['графика нет'];
+      const vb = svg.viewBox.baseVal;
+      const items = [...svg.querySelectorAll('text.ycc-name, g.ycc-callout text, text.ycc-rainval')]
+        // ⛔ Не `{...b}`: у рамки текста x/y/width/height лежат в прототипе, и
+        //    разворот даёт пустой объект — сравнения молча становятся ложью, а
+        //    гейт зелёным. Поля перечисляем руками (проверено оракулом 10.09.2026).
+        .map((t) => { const b = (t as SVGGraphicsElement).getBBox();
+          return { s: (t.textContent || '').trim().slice(0, 24), x: b.x, y: b.y, width: b.width, height: b.height }; });
+      const out: string[] = [];
+      for (const i of items) {
+        if (i.x < -1 || i.x + i.width > vb.width + 1 || i.y < -1 || i.y + i.height > vb.height + 1) out.push(`за рамкой: ${i.s}`);
+      }
+      for (let a = 0; a < items.length; a++) for (let b2 = a + 1; b2 < items.length; b2++) {
+        const A = items[a], B = items[b2];
+        if (A.x < B.x + B.width && B.x < A.x + A.width && A.y < B.y + B.height && B.y < A.y + A.height) out.push(`наложение: ${A.s} × ${B.s}`);
+      }
+      return out;
+    });
+    for (const f of found) bad.push(`/${slug}/ — ${f}`);
+  }
+  expect(bad.slice(0, 12), `${bad.length} подписей графика читать нельзя:\n${bad.slice(0, 12).join('\n')}`).toEqual([]);
+});
+
 test('Вид: раздел не рисует своей подложки поверх фона сайта', async ({ page }) => {
   // ⛔ У страницы виз остался «бумажный» слой от старого реестра: на всю
   //    площадь блока лежала плитка шума (::before, mix-blend-mode: multiply)
