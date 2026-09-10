@@ -221,6 +221,134 @@ export const COUNTRY_PHOTOS = {
       { file: 'hub-malaysia/melaka.jpg', alt: 'Река в Малакке и дома по её берегам', caption: 'Река в старой Малакке.' },
     ],
   },
+  'south-africa': {
+    wide: { file: 'south-africa/boulders-rocks.jpg', alt: 'Круглые гранитные валуны и мелкая бухта у Болдерса, вдали склон под облаком', caption: 'Валуны и бухта у Болдерса под Кейптауном.' },
+    practice: [
+      { file: 'south-africa/chapmans-peak.jpg', alt: 'Дорога, вырубленная в скальном склоне высоко над океаном на Капском полуострове', caption: 'Дорога Чепменс-Пик над океаном.' },
+      { file: 'south-africa/muizenberg-huts.jpg', alt: 'Пляж Мёйзенберга: цветные деревянные кабинки у песка', caption: 'Цветные пляжные кабинки в Мёйзенберге.' },
+      { file: 'south-africa/dassie.jpg', alt: 'Даман сидит на нагретом камне у смотровой площадки', caption: 'Даман на камне у смотровой площадки.' },
+    ],
+  },
+  tanzania: {
+    wide: { file: 'zanzibar-2026/paje.jpg', alt: 'Пляж Пае на Занзибаре в отлив: белый песок и мелкая вода', caption: 'Пляж Пае на Занзибаре в отлив.' },
+    practice: [
+      { file: 'zanzibar-2026/doors.jpg', alt: 'Резной деревянный дверной проём в каменном доме Стоун-Тауна', caption: 'Резная дверь в Стоун-Тауне на Занзибаре.' },
+      { file: 'zanzibar-2026/savanna.jpg', alt: 'Зебра крупным планом в сухой саванне', caption: 'Зебра в Серенгети.' },
+      { file: 'zanzibar-2026/kilimanjaro.jpg', alt: 'Заснеженная вершина Килиманджаро над облаками', caption: 'Килиманджаро над облаками.' },
+    ],
+  },
+  mauritius: {
+    wide: { file: 'hub-mauritius/grand-bassin.jpg', alt: 'Священное озеро Гран-Бассен среди леса и храмы на берегу', caption: 'Озеро Гран-Бассен.' },
+    practice: [
+      { file: 'mauritius-2026/waterfall.jpg', alt: 'Водопад Шамарель падает с обрыва в зелёное ущелье', caption: 'Водопад Шамарель.' },
+      { file: 'mauritius-2026/chamarel.jpg', alt: 'Разноцветные песчаные холмы Шамареля', caption: 'Семицветная земля Шамареля.' },
+      { file: 'mauritius-2026/beach.jpg', alt: 'Деревянная лодка на мелкой воде у берега лагуны', caption: 'Лодка у берега лагуны.' },
+    ],
+  },
+  seychelles: {
+    wide: { file: 'hub-seychelles/anse-lazio.jpg', alt: 'Пляж Анс-Лацио на Праслене: бирюзовая вода и гранитные валуны', caption: 'Пляж Анс-Лацио на Праслене.' },
+    practice: [
+      { file: 'seychelles-2026/cocodemer.jpg', alt: 'Орех коко-де-мер на деревянном столе среди цветков франжипани', caption: 'Орех коко-де-мер — символ Сейшел.' },
+      { file: 'seychelles-2026/tortoise.jpg', alt: 'Гигантская черепаха Альдабра на траве', caption: 'Гигантская черепаха Альдабра.' },
+      { file: 'seychelles-2026/waves.jpg', alt: 'Рыбаки в моторной лодке на волнах у Сейшел', caption: 'Рыбаки в лодке у берега.' },
+    ],
+  },
+  kenya: {
+    wide: { file: 'hub-kenya/amboseli-elephants.jpg', alt: 'Семья слонов в сухой траве национального парка Амбосели', caption: 'Слоны в Амбосели.' },
+    practice: [
+      { file: 'hub-kenya/giraffe.jpg', alt: 'Жираф среди деревьев в национальном парке Найроби', caption: 'Жираф в национальном парке Найроби.' },
+      { file: 'kenya-own/mara.jpg', alt: 'Антилопа топи стоит на термитнике в саванне Масаи-Мара', caption: 'Антилопа топи в Масаи-Маре.' },
+      { file: 'hub-kenya/nakuru-flamingos.jpg', alt: 'Розовые фламинго на озере Накуру', caption: 'Фламинго на озере Накуру.' },
+    ],
+  },
+  israel: {
+    wide: { file: 'hub-israel/jaffa.jpg', alt: 'Старый Яффо и порт с высоты, море у мола', caption: 'Старый Яффо и порт с высоты.' },
+    practice: [
+      { file: 'hub-israel/masada.jpg', alt: 'Масада: дворец Ирода на уступах северного склона скалы над пустыней', caption: 'Масада: дворец Ирода на северном склоне скалы.' },
+      { file: 'hub-israel/tel-aviv-promenade.jpg', alt: 'Набережная Тель-Авива: пальмы, люди и море', caption: 'Набережная Тель-Авива.' },
+      { file: 'hub-israel/dead-sea.jpg', alt: 'Рассвет над Мёртвым морем у Эйн-Бокека', caption: 'Рассвет над Мёртвым морем в Эйн-Бокеке.' },
+    ],
+  },
+  jordan: {
+    wide: { file: 'hub-jordan/wadi-rum.jpg', alt: 'Верблюд среди красных скал пустыни Вади-Рам', caption: 'Вади-Рам: верблюд среди красных скал.' },
+    practice: [
+      { file: 'hub-jordan/ad-deir.jpg', alt: 'Фасад Монастыря Эд-Дейр, высеченный в скале Петры', caption: 'Монастырь Эд-Дейр в Петре.' },
+      { file: 'hub-jordan/jerash.jpg', alt: 'Римская арка Адриана в Джераше', caption: 'Арка Адриана в Джераше.' },
+      { file: 'hub-jordan/dead-sea-salt.jpg', alt: 'Белая соль на берегу Мёртвого моря и зелёная вода', caption: 'Соль на берегу Мёртвого моря.' },
+    ],
+  },
+  qatar: {
+    wide: { file: 'hub-qatar/souq-waqif.jpg', alt: 'Сук Вакиф в Дохе: улица под разноцветными зонтиками', caption: 'Сук Вакиф: улица под разноцветными зонтиками.' },
+    practice: [
+      { file: 'hub-qatar/islamic-art-museum.jpg', alt: 'Небоскрёбы Дохи ночью в арках Музея исламского искусства', caption: 'Доха в арках Музея исламского искусства.' },
+      { file: 'hub-qatar/katara.jpg', alt: 'Культурная деревня Катара сверху: сады, кафе и море', caption: 'Культурная деревня Катара.' },
+      { file: 'hub-qatar/khor-al-adaid.jpg', alt: 'Пустыня у внутреннего моря Хор-эль-Адейд', caption: 'Хор-эль-Адейд: пустыня у внутреннего моря.' },
+    ],
+  },
+  'saudi-arabia': {
+    wide: { file: 'hub-saudi-arabia/hegra.jpg', alt: 'Гробницы набатеев в скалах Хегры среди песка', caption: 'Хегра: гробницы набатеев в скалах.' },
+    practice: [
+      { file: 'hub-saudi-arabia/qasr-al-farid.jpg', alt: 'Каср-эль-Фарид — гробница, высеченная в отдельной скале', caption: 'Каср-эль-Фарид в Хегре.' },
+      { file: 'hub-saudi-arabia/diriyah.jpg', alt: 'Глинобитные стены Ат-Турайфа в Эд-Дирии', caption: 'Ат-Турайф в Эд-Дирии.' },
+      { file: 'hub-saudi-arabia/edge-of-the-world.jpg', alt: 'Люди на скале Края мира под Эр-Риядом на закате', caption: 'Край мира под Эр-Риядом.' },
+    ],
+  },
+  iran: {
+    wide: { file: 'hub-iran/si-o-se-pol.jpg', alt: 'Мост Си-о-Се-Поль в Исфахане ночью: подсвеченные арки отражаются в реке', caption: 'Мост Си-о-Се-Поль в Исфахане ночью.' },
+    practice: [
+      { file: 'hub-iran/nasir-al-mulk.jpg', alt: 'Расписные своды мечети Насир-ол-Молк в Ширазе', caption: 'Своды мечети Насир-ол-Молк в Ширазе.' },
+      { file: 'hub-iran/yazd.jpg', alt: 'Глиняные ветровые башни-бадгиры в Йезде', caption: 'Бадгиры — ветровые башни Йезда.' },
+      { file: 'hub-iran/persepolis.jpg', alt: 'Порталы дворца Тачара в Персеполе', caption: 'Дворец Тачара в Персеполе.' },
+    ],
+  },
+  madagascar: {
+    wide: { file: 'hub-madagascar/tsingy.jpg', alt: 'Каменный лес Цинги-де-Бемараха: острые известняковые пики над зеленью', caption: 'Каменный лес Цинги-де-Бемараха.' },
+    practice: [
+      { file: 'hub-madagascar/lemur.jpg', alt: 'Кошачий лемур на дереве', caption: 'Кошачий лемур.' },
+      { file: 'hub-madagascar/nosy-be.jpg', alt: 'Пляж с наклонённой пальмой на острове Нуси-Бе', caption: 'Пляж на Нуси-Бе.' },
+      { file: 'hub-madagascar/isalo.jpg', alt: 'Столовая гора в национальном парке Исалу', caption: 'Национальный парк Исалу.' },
+    ],
+  },
+  kyrgyzstan: {
+    wide: { file: 'hub-kyrgyzstan/song-kol.jpg', alt: 'Юрты в ряд у озера Сон-Куль на закате', caption: 'Юрты у озера Сон-Куль.' },
+    practice: [
+      { file: 'hub-kyrgyzstan/burana.jpg', alt: 'Башня Бурана среди полей и каменных изваяний, за ней горы', caption: 'Башня Бурана.' },
+      { file: 'hub-kyrgyzstan/ala-archa.jpg', alt: 'Заснеженные пики над ельником в парке Ала-Арча', caption: 'Ущелье Ала-Арча у Бишкека.' },
+      { file: 'hub-kyrgyzstan/issyk-kul.jpg', alt: 'Люди купаются на берегу Иссык-Куля', caption: 'Берег Иссык-Куля.' },
+    ],
+  },
+  tajikistan: {
+    wide: { file: 'hub-tajikistan/iskanderkul.jpg', alt: 'Бирюзовое озеро среди Фанских гор', caption: 'Озеро в Фанских горах.' },
+    practice: [
+      { file: 'hub-tajikistan/pamir-highway.jpg', alt: 'Грузовик на Памирском тракте под нависающей скалой у реки Пяндж', caption: 'Памирский тракт у Пянджа.' },
+      { file: 'hub-tajikistan/fann-mountains.jpg', alt: 'Долина в Фанских горах, вдали озеро', caption: 'Фанские горы.' },
+      { file: 'hub-tajikistan/seven-lakes.jpg', alt: 'Котловина Маргузорских озёр среди гор', caption: 'Маргузорские озёра.' },
+    ],
+  },
+  hainan: {
+    wide: { file: 'hub-hainan/tianya-haijiao.jpg', alt: 'Пляж Тяньяхайцзяо у Санья: песок, волны и камни вдали', caption: 'Пляж Тяньяхайцзяо у Санья.' },
+    practice: [
+      { file: 'hub-hainan/guanyin.jpg', alt: 'Статуя богини Гуаньинь в море у храма Наньшань', caption: 'Статуя Гуаньинь у храма Наньшань.' },
+      { file: 'hub-hainan/haitang-gate.jpg', alt: 'Красные ворота в китайском стиле среди пальм в бухте Хайтан', caption: 'Ворота в бухте Хайтан.' },
+      { file: 'hub-hainan/yalong-bay.jpg', alt: 'Залив Ялунвань: прозрачная вода и острова', caption: 'Залив Ялунвань.' },
+    ],
+  },
+  'hong-kong': {
+    wide: { file: 'hub-hong-kong/star-ferry.jpg', alt: 'Паром Star Ferry на фоне небоскрёбов острова Гонконг днём', caption: 'Паром Star Ferry и небоскрёбы Гонконга.' },
+    practice: [
+      { file: 'hub-hong-kong/tian-tan-buddha.jpg', alt: 'Большой Будда Тянь-Тан на вершине холма на острове Лантау', caption: 'Большой Будда на Лантау.' },
+      { file: 'hub-hong-kong/temple-street.jpg', alt: 'Столики уличного ресторана на ночном рынке Темпл-стрит', caption: 'Ночной рынок Темпл-стрит.' },
+      { file: 'hub-hong-kong/lantau-hills.jpg', alt: 'Зелёные холмы острова Лантау и море', caption: 'Холмы Лантау.' },
+    ],
+  },
+  kazakhstan: {
+    wide: { file: 'hub-kazakhstan/big-almaty-lake.jpg', alt: 'Большое Алматинское озеро среди заснеженных гор', caption: 'Большое Алматинское озеро.' },
+    practice: [
+      { file: 'hub-kazakhstan/zenkov.jpg', alt: 'Вознесенский собор в Алматы: жёлтые стены и цветные купола', caption: 'Вознесенский собор в Алматы.' },
+      { file: 'hub-kazakhstan/shymbulak.jpg', alt: 'Горнолыжные склоны и подъёмник Шымбулака', caption: 'Шымбулак над Алматы.' },
+      { file: 'hub-kazakhstan/kolsai.jpg', alt: 'Кольсайское озеро в лесистом ущелье', caption: 'Кольсайское озеро.' },
+    ],
+  },
 };
 
 export const countryPhotos = (slug) => COUNTRY_PHOTOS[slug] || null;
