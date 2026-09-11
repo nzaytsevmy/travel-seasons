@@ -1,4 +1,5 @@
 ---
+import { splitCompounds } from '../../utils/nobr.js';
 import { getCollection, getEntry } from 'astro:content';
 import { freshDate } from '../../data/freshness.js';
 import { Image, Picture, getImage } from 'astro:assets';
@@ -334,7 +335,7 @@ if (faqs.length >= 2) {
         )}
       </div>
 
-      <h1>{post.data.title}</h1>
+      <h1>{splitCompounds(post.data.title).map((p) => (p.nobr ? <span class="nobr">{p.t}</span> : p.t))}</h1>
       <p class="post-author">
         <a href="/about/" class="author-link">
           <Image src={authorPhoto} alt="Никита Зайцев" width={28} height={28} format="webp" quality={75} class="author-mini" />
@@ -755,7 +756,8 @@ h1 {
   text-wrap: balance;
   word-break: normal;
   overflow-wrap: break-word;
-  hyphens: auto;
+  /* Без автоматических переносов: «как до-браться» в заголовке Рицы на телефоне (11.09.2026). */
+  hyphens: manual;
   max-width: 100%;
 }
 .post-author { font-size: 0.85rem; color: var(--text-faint); margin-bottom: 1.5rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 0.4rem; flex-wrap: wrap; }
