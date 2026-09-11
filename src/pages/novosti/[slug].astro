@@ -17,7 +17,7 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Footer from '../../components/Footer.astro';
 import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu, addedAt, newsUrl, feedEntries } from '../../data/news.js';
+import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu, addedAt, newsUrl, feedEntries, clipTitle, clipDescription } from '../../data/news.js';
 import { pickNewsImage, newsImageNote } from '../../data/news-images.js';
 import { bySlug } from '../../data/directions.js';
 
@@ -55,8 +55,8 @@ const coverLink = d.imageSource ?? null;
 const wide = cover ? await getImage({ src: cover, width: 1600, format: 'webp' }) : null;
 const wideUrl = wide ? new URL(wide.src, 'https://traveltribe.ru').href : null;
 
-const title = d.title.length <= 60 ? d.title : d.title.slice(0, 57).replace(/[\s—,:-]+$/, '') + '…';
-const description = (d.tldr ?? d.title).slice(0, 200);
+const title = clipTitle(d.title);
+const description = clipDescription(d.tldr ?? d.title);
 
 const ldJson = {
   "@context": "https://schema.org",

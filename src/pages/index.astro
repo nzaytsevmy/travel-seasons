@@ -11,7 +11,7 @@ import authorPhoto from '../assets/author/nikita.jpg';
 import heroCover from '../assets/destinations/georgia.jpg';
 
 import { ACTIVITY_TAGS } from '../data/country-activity-tags.js';
-import { feedEntries, formatDateRu } from '../data/news.js';
+import { feedEntries, formatDateRu, newsUrl } from '../data/news.js';
 import { byFreshness } from '../data/freshness.js';
 const covers = import.meta.glob('../assets/destinations/*.jpg', { eager: true, import: 'default' });
 
@@ -237,7 +237,7 @@ const ldJson = {
             {freshNews.map((e) => (
               <li>
                 <time datetime={e.data.date.toISOString().slice(0, 10)}>{formatDateRu(e.data.date)}</time>
-                <a href={`/novosti/#${e.slug}`}>{e.data.title}</a>
+                <a href={newsUrl(e)}>{e.data.title}</a>
               </li>
             ))}
           </ul>
