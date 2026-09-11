@@ -1,5 +1,7 @@
 ---
 import { splitCompounds } from '../../utils/nobr.js';
+// Обзоры турфирм, у которых своя оговорка «покупка не совершалась» — её видно под строкой автора.
+const ОГОВОРКА_ОБЗОРА = new Set(['sletat-ru-2026', 'alean-2026']);
 import { getCollection, getEntry } from 'astro:content';
 import { freshDate } from '../../data/freshness.js';
 import { Image, Picture, getImage } from 'astro:assets';
@@ -351,15 +353,12 @@ if (faqs.length >= 2) {
         </p>
       )}
 
-      {post.data.sourceType === 'compilation' && post.data.showSourceDisclaimer && (
-        <aside class="source-disclaimer" role="note">
-          <strong>Как написан этот пост.</strong>{' '}
-          {post.data.sourceNote ? (
-            post.data.sourceNote
-          ) : (
-            <>Это обзор по официальным источникам — сайтам консульств, статистике, форумам туристов. Лично эту визу/маршрут я в 2026 не оформлял, но сверил факты на актуальность. Если вы только что прошли — поправьте через <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram-канал</a>, обновлю.</>
-          )}
-        </aside>
+      {/* Плашки «Как написан этот пост» здесь нет и не будет: это текст «откуда взято и когда сверено»,
+          который Никита запретил (08–10.09.2026). До 11.09.2026 она сама включалась у каждой статьи-обзора —
+          61 статья; поля sourceType/sourceNote остаются в данных для сопровождения. Исключение — оговорка
+          обзора турфирмы «покупка не совершалась»: это защита от претензий, правило её оставляет. */}
+      {ОГОВОРКА_ОБЗОРА.has(post.slug ?? post.id) && post.data.sourceNote && (
+        <p class="review-disclaimer">{post.data.sourceNote}</p>
       )}
 
       {expensiveMoney && (
@@ -791,13 +790,6 @@ h1 {
 }
 .trip-marker .trip-icon { font-weight: 800; color: var(--gold); }
 
-.source-disclaimer {
-  font-size: 0.85rem; line-height: 1.65; color: var(--text-dim);
-  background: var(--bg2); border-left: 3px solid var(--gold-dim);
-  padding: 1rem 1.2rem; margin: 0 0 2.5rem; border-radius: 2px;
-}
-.source-disclaimer strong { color: var(--text); }
-.source-disclaimer a { color: var(--gold); }
 
 .prose { color: var(--text); line-height: 1.85; font-size: 1rem; }
 .prose :global(h2) {
@@ -854,6 +846,7 @@ h1 {
 .post-next-read a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(29,64,174,0.5); text-underline-offset:.22em; font-size: 0.92rem; }
 @media (max-width: 600px) { .post-next-grid { grid-template-columns: 1fr; } }
 
+.review-disclaimer { font-size: 0.8125rem; color: var(--text-faint); line-height: 1.55; max-width: 60ch; margin: 0 auto 1.5rem; text-align: center; text-wrap: balance; }
 .post-footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
 .back-link { font-size: 0.82rem; color: var(--text-dim); letter-spacing: 0.04em; }
 .back-link:hover { color: var(--gold); }
