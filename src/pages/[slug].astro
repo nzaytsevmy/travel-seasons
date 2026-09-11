@@ -50,7 +50,7 @@ import { getGuide } from '../data/country-guides.js';
 import { hasEssentials } from '../data/country-essentials.js';
 import { hasCustoms } from '../data/country-customs.js';
 import { hasHolidays } from '../data/country-holidays.js';
-import { hasPois } from '../data/country-pois.js';
+import { hasPois, getPois } from '../data/country-pois.js';
 import { typo } from '../utils/typo.js';
 import { climateChart } from '../data/country-climate-chart.js';
 import { PLUG_TYPES, plugVerdict } from '../data/country-plug-types.js';
@@ -102,9 +102,23 @@ const compareUrl = comparePairDef ? `/compare/${comparePairDef.a}-vs-${comparePa
 const coverPath = `../assets/destinations/${d.slug}.jpg`;
 const coverImage = destPhotos[coverPath];
 
-// Hero LCP: ширины + responsive-preload (imagesrcset совпадает с <Image>, иначе
-// браузер скачает не тот вариант). 768w добавлен под мобайл (раньше тянул 1024w).
-const HERO_WIDTHS = [512, 768, 1024, 1600];
+// Hero LCP: ширины + responsive-preload (imagesrcset и imagesizes совпадают с <Image>, иначе браузер скачает
+// не тот вариант). Замер 11.09.2026: обложка показывается шириной 380 точек на телефоне 412, 736 на 768, 976 на 1024
+// и 1232 на 1280 и шире; с sizes="100vw" телефон с плотным экраном брал файл в 1600 точек (у Казахстана 364 КБ).
+// Честный размер и промежуточные ширины дают ему файл около 1080 точек.
+// Телефону с плотностью экрана выше 2 кадр отдаём как для плотности 2: разницы глаз не видит, а файл заметно легче
+// (X/Twitter, 2019: кадры грузятся на треть быстрее и берут на треть меньше трафика). Замер 11.09.2026, iPhone
+// 402 точки при плотности 3: без этого страница Турции тянула 2 271 КБ картинок. Условие плотности внутри sizes
+// проверено в Chromium и WebKit: при 2,625 и 3 оба берут файл 828 вместо 1080 и 1280, при 1,75 и 2 выбор прежний.
+const телефон = (cond, w) => `${cond} and (min-resolution: 2.9dppx) calc((${w}) * 0.67), ${cond} and (min-resolution: 2.3dppx) calc((${w}) * 0.76), ${cond} calc(${w})`;
+const HERO_WIDTHS = [640, 828, 1080, 1280, 1600];
+const HERO_SIZES = `${телефон('(max-width: 768px)', '100vw - 32px')}, (max-width: 1280px) calc(100vw - 48px), 1232px`;
+// Фото в половину колонки (пары, практика, виды): 380 на телефоне, 736 на 768 (одна колонка до 900), 476 на 1024, 604 шире.
+// Ширины файлов — под телефон при плотности 1,75 и 2 и под компьютер при плотности 1 и 2.
+const HALF_WIDTHS = [400, 680, 780, 1000, 1200];
+const HALF_SIZES = `${телефон('(max-width: 900px)', '100vw - 32px')}, (max-width: 1280px) calc((100vw - 72px) / 2), 604px`;
+const SIGHT_SIZES = `${телефон('(max-width: 767px)', '100vw - 32px')}, (max-width: 1280px) calc((100vw - 72px) / 2), 604px`;
+const FIG_SIZES = `${телефон('(max-width: 800px)', '100vw - 32px')}, 760px`;
 const heroPreload = coverImage
   ? await getImage({ src: coverImage, widths: HERO_WIDTHS, formats: ['webp'], quality: 72 })
   : null;
@@ -144,9 +158,30 @@ const трансфер = kiwitaxiRoute(d.slug, subId);
 // Best months for this destination
 const rank = { P: 4, G: 3, O: 2, B: 1, X: 0 };
 const monthsRanked = MONTHS
-  .map((m, i) => ({ ...m, status: d.r[i], text: d.t[i], rank: rank[d.r[i]] || 0 }));
-const bestMonths = monthsRanked.filter(m => m.rank >= 3).slice(0, 3);
-const worstMonths = monthsRanked.filter(m => m.rank <= 1).slice(0, 2);
+  .map((m, i) => ({ ...m, i, status: d.r[i], text: d.t[i], rank: rank[d.r[i]] || 0 }));
+// Лучшие месяцы — месяцы «пика», а где пика нет, «хорошие»; худшие — «закрыто», а где его нет, «не сезон». Называем
+// их сезонами подряд: «июнь–август», «декабрь–март, июнь–июль и октябрь». До 11.09.2026 брались первые три хороших
+// месяца по календарю, и у 56 направлений из 77 фраза называла только первый сезон: у Исландии и Норвегии —
+// «январь, февраль, март» при пике в июне–августе, у Алтая — «январь, февраль, май» при пике с июня по сентябрь.
+const сезоныИз = (ms) => {
+  const g = [];
+  for (const m of ms) { const last = g.at(-1); if (last && m.i === last.at(-1).i + 1) last.push(m); else g.push([m]); }
+  // Сезон через Новый год — один, а не два: декабрь приклеивается к январю.
+  if (g.length > 1 && g[0][0].i === 0 && g.at(-1).at(-1).i === 11) g.unshift([...g.pop(), ...g.shift()]);
+  return g;
+};
+const сезонСловами = (s) => (s.length > 1 ? `${s[0].nom}–\u2060${s.at(-1).nom}` : s[0].nom);
+const сезоныСловами = (g) => (g.length > 1 ? `${g.slice(0, -1).map(сезонСловами).join(', ')} и ${сезонСловами(g.at(-1))}` : g.map(сезонСловами).join(''));
+const пик = monthsRanked.filter((m) => m.status === 'P');
+const bestMonths = пик.length ? пик : monthsRanked.filter((m) => m.status === 'G');
+const лучшиеСезоны = сезоныИз(bestMonths);
+const лучшиеСловами = bestMonths.length === 12 ? 'круглый год' : сезоныСловами(лучшиеСезоны);
+// В карточке фактов и в карточке для соцсетей места мало: два самых длинных сезона в порядке календаря.
+const лучшиеКоротко = bestMonths.length === 12 ? 'круглый год'
+  : сезоныСловами(лучшиеСезоны.filter((s) => [...лучшиеСезоны].sort((a, b) => b.length - a.length).slice(0, 2).includes(s)));
+const закрыто = monthsRanked.filter((m) => m.status === 'X');
+const worstMonths = закрыто.length ? закрыто : monthsRanked.filter((m) => m.status === 'B');
+const худшиеСловами = worstMonths.length ? сезоныСловами(сезоныИз(worstMonths)) : '';
 
 // ⛔ Цена перелёта берётся из ЖИВОЙ выгрузки, а не из прикидки в таблице цен.
 // Замер 29.08.2026: 16 карточек стран из 51 обещали вдвое меньше реального —
@@ -181,7 +216,7 @@ const faqs = [
   {
     q: `Когда лучше ехать ${d.cases.vP}?`,
     a: bestMonths.length
-      ? `Лучшие месяцы: ${bestMonths.map(m => m.nom).join(', ')}. ${bestMonths[0]?.text || ''}`
+      ? `Лучшие месяцы: ${лучшиеСловами}. ${лучшиеСезоны[0][0].text || ''}`
       : `${d.cases.nom} имеет переменчивые сезоны — смотри помесячный календарь ниже.`,
   },
 ];
@@ -232,8 +267,8 @@ const hubTitle = hubOverride?.title ?? (deepGuide
 // теряет место. Суть держим в первых 150 знаках: тогда обрезка Google ничего не ломает.
 const hubDescTail = ' Что посмотреть, сколько дней закладывать и когда дешевле.';
 const hubDescBase = (deepGuide
-  ? `${d.cases.nom}: регионы и куда лететь, когда ехать по месяцам${bestMonths.length ? ` — ${bestMonths.slice(0, 3).map((m) => m.nom).join(', ')}` : ''}, бюджет по сезонам. Полный гайд для россиян — отдельно.`
-  : `${d.cases.nom} ${yr} для россиян: ${VISA_LABEL[d.visa].toLowerCase()} (${vd.duration}), когда ехать — ${bestMonths.map((m) => m.nom).join(', ')}, бюджет от $${weekTotal || 'N/A'}/нед.`);
+  ? `${d.cases.nom}: регионы и куда лететь, когда ехать по месяцам${bestMonths.length ? ` — ${лучшиеКоротко}` : ''}, бюджет по сезонам. Полный гайд для россиян — отдельно.`
+  : `${d.cases.nom} ${yr} для россиян: ${VISA_LABEL[d.visa].toLowerCase()} (${vd.duration}), когда ехать — ${лучшиеКоротко}, бюджет от $${weekTotal || 'N/A'}/нед.`);
 const hubDesc = hubOverride?.description ?? (hubDescBase.length < 100 ? hubDescBase + hubDescTail : hubDescBase).slice(0, 200);
 const hubOgTitle = deepGuide
   ? `${d.cases.nom} ${yr} — регионы, сезоны, куда лететь`
@@ -257,7 +292,7 @@ const firstSentence = (s) => { const m = s.match(/^.+?[.!?](?=\s|$)/); return (m
 // Лид — первая фраза вступления гайда; у стран без гайда — живая строка о лучшем
 // месяце из тех же данных, что и полоса месяцев («Январь: +23 °C днём…»). Голое
 // перечисление городов («Доха.») читалось как заглушка.
-const лучший = bestMonths[0];
+const лучший = лучшиеСезоны[0]?.[0];
 const lead = typo(guide?.intro ? firstSentence(guide.intro)
   : лучший?.text ? `${cap(лучший.nom)}: ${лучший.text.replace(/\.$/, '')}.`
   : `${d.sub}.`);
@@ -346,7 +381,7 @@ const ldJson = {
       "description": hubDesc,
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
-      "about": { "@type": "Country", "name": d.cases.nom },
+      "about": { "@id": `${url}#destination` },
       ...(imageNodes.length ? { "image": imageNodes, "primaryImageOfPage": imageNodes[0] } : {}),
       "datePublished": "2026-04-30",
       "dateModified": DATA_UPDATED,
@@ -374,6 +409,23 @@ const ldJson = {
     }
   ]
 };
+// Направление как туристическое место: достопримечательности с карты (или подписи видов). Тип «страна» снят:
+// у Карелии, Алтая, Дагестана и Камчатки он неверен, а для Абхазии — лишнее утверждение. Особой выдачи за эту
+// разметку нет — она помогает поисковику понять, о каком месте страница и что в нём смотреть.
+const точки = hasPois(d.slug) ? getPois(d.slug) : null;
+const местаРазметки = [...new Map((точки?.pois?.length
+  ? точки.pois.map((p) => [p.name, { "@type": "TouristAttraction", "name": p.name, ...(p.note ? { "description": p.note } : {}), "geo": { "@type": "GeoCoordinates", "latitude": p.lat, "longitude": p.lng } }])
+  : (COUNTRY_SIGHTS[d.slug] || []).map((s) => { const n = String(s.caption || s.alt || '').split(':')[0].trim(); return [n, { "@type": "TouristAttraction", "name": n }]; })
+).filter(([n]) => n)).values()].slice(0, 12);
+ldJson["@graph"].push({
+  "@type": "TouristDestination",
+  "@id": `${url}#destination`,
+  "name": d.cases.nom,
+  "url": url,
+  "description": hubDesc,
+  ...(точки?.center ? { "geo": { "@type": "GeoCoordinates", "latitude": точки.center.lat, "longitude": точки.center.lng } } : {}),
+  ...(местаРазметки.length ? { "includesAttraction": местаРазметки } : {}),
+});
 // Маршрут как ItemList (AEO: структурированные шаги гайда)
 if (guide?.itinerary?.length) {
   ldJson["@graph"].push({
@@ -391,11 +443,11 @@ if (guide?.itinerary?.length) {
   description={hubDesc}
   canonical={url}
   ogTitle={hubOgTitle}
-  ogDescription={`${VISA_LABEL[d.visa]} · бюджет ${BUDGET_LABEL[d.budget].split('—')[0].trim()} · лучшие месяцы: ${bestMonths.slice(0,2).map(m => m.nom).join(', ')}`}
+  ogDescription={`${VISA_LABEL[d.visa]} · бюджет ${BUDGET_LABEL[d.budget].split('—')[0].trim()} · лучшие месяцы: ${лучшиеКоротко}`}
   ogType="article"
   ldJson={ldJson}
   preloadImageSrcset={heroPreload?.srcSet?.attribute}
-  preloadImageSizes="100vw"
+  preloadImageSizes={HERO_SIZES}
   monetizationDestination={d.slug}
 >
   <main id="main" class="om">
@@ -403,7 +455,7 @@ if (guide?.itinerary?.length) {
 
     {coverImage && (
       <figure class="om-hero">
-        <Image src={coverImage} alt={d.cases.nom} widths={HERO_WIDTHS} sizes="100vw" formats={['webp']} quality={72} loading="eager" fetchpriority="high" />
+        <Image src={coverImage} alt={d.cases.nom} widths={HERO_WIDTHS} sizes={HERO_SIZES} formats={['webp']} quality={72} loading="eager" fetchpriority="high" />
       </figure>
     )}
 
@@ -415,7 +467,7 @@ if (guide?.itinerary?.length) {
       <div class="om-answer">
         <dl class="om-facts">
           <div><dt>{domestic ? 'Документы' : 'Виза россиянам'}</dt><dd>{визаКоротко}</dd></div>
-          <div><dt>Лучшие месяцы</dt><dd>{bestMonths.length ? bestMonths.map((m) => m.nom).join(', ') : 'круглый год'}</dd></div>
+          <div><dt>Лучшие месяцы</dt><dd>{bestMonths.length ? лучшиеКоротко : 'круглый год'}</dd></div>
           <div><dt>Бюджет в день</dt><dd>{бюджетКоротко}</dd></div>
           {flightFrom && <div><dt>Перелёт из Москвы</dt><dd>от ${flightFrom}</dd></div>}
           {weekTotal && <div><dt>Неделя на одного</dt><dd>от ${weekTotal}</dd></div>}
@@ -462,14 +514,14 @@ if (guide?.itinerary?.length) {
           <div class="om-pair">
             {inline.slice(0, 2).map((p) => (
               <figure>
-                <Image src={p.img} alt={p.alt} widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" formats={['webp']} quality={78} loading="lazy" />
+                <Image src={p.img} alt={p.alt} widths={HALF_WIDTHS} sizes={HALF_SIZES} formats={['webp']} quality={78} loading="lazy" />
                 <figcaption>{typo(p.caption)}</figcaption>
               </figure>
             ))}
           </div>
         ) : photosAfter('highlights').map((p) => (
           <figure class="om-figure">
-            <Image src={p.img} alt={p.alt} widths={[640, 1024, 1520]} sizes="(max-width: 800px) 100vw, 760px" formats={['webp']} quality={72} loading="lazy" />
+            <Image src={p.img} alt={p.alt} widths={[640, 828, 1080, 1520]} sizes={FIG_SIZES} formats={['webp']} quality={72} loading="lazy" />
             <figcaption>{typo(p.caption)}</figcaption>
           </figure>
         ))}
@@ -494,7 +546,7 @@ if (guide?.itinerary?.length) {
         <div class="om-sights">
           {виды.map((p) => (
             <figure>
-              <Image src={p.img} alt={p.alt} widths={[400, 592, 900]} sizes="(max-width: 760px) 100vw, 592px" formats={['webp']} quality={78} loading="lazy" />
+              <Image src={p.img} alt={p.alt} widths={HALF_WIDTHS} sizes={SIGHT_SIZES} formats={['webp']} quality={78} loading="lazy" />
               <figcaption>{typo(p.caption)}</figcaption>
             </figure>
           ))}
@@ -507,7 +559,7 @@ if (guide?.itinerary?.length) {
 
     <section class="om-sec" id="pogoda">
       <h2>{погодаH2}</h2>
-      <p class="om-body">{typo(`Лучшие месяцы — ${bestMonths.map((m) => m.nom).join(', ') || '—'}${worstMonths.length ? `; хуже всего — ${worstMonths.map((m) => m.nom).join(', ')}` : ''}.`)}</p>
+      <p class="om-body">{typo(`Лучшие месяцы — ${лучшиеСловами || '—'}${худшиеСловами ? `; хуже всего — ${худшиеСловами}` : ''}.`)}</p>
       <YearClimateChart slug={d.slug} />
       <div class="om-heat">
         {monthsRanked.map((m, i) => {
@@ -543,7 +595,7 @@ if (guide?.itinerary?.length) {
         не пускает файлы тяжелее 800 КБ). */}
     {широкий && (
       <figure class="om-wide">
-        <Image src={широкий.img} alt={широкий.alt} width={Math.min(1800, широкий.img.width)} widths={[800, 1200, 1800]} sizes="100vw" formats={['webp']} quality={78} loading="lazy" />
+        <Image src={широкий.img} alt={широкий.alt} width={Math.min(1800, широкий.img.width)} widths={[640, 828, 1080, 1280, 1800]} sizes={HERO_SIZES} formats={['webp']} quality={78} loading="lazy" />
         <figcaption>{typo(широкий.caption)}</figcaption>
       </figure>
     )}
@@ -556,7 +608,7 @@ if (guide?.itinerary?.length) {
         </ol>
         {inline.length < 2 && photosAfter('itinerary').map((p) => (
           <figure class="om-figure">
-            <Image src={p.img} alt={p.alt} widths={[640, 1024, 1520]} sizes="(max-width: 800px) 100vw, 760px" formats={['webp']} quality={72} loading="lazy" />
+            <Image src={p.img} alt={p.alt} widths={[640, 828, 1080, 1520]} sizes={FIG_SIZES} formats={['webp']} quality={72} loading="lazy" />
             <figcaption>{typo(p.caption)}</figcaption>
           </figure>
         ))}
@@ -696,13 +748,13 @@ if (guide?.itinerary?.length) {
       {практика.length === 3 && (
         <div class="om-practice">
           <figure class="om-tall">
-            <div class="om-fill"><Image src={практика[0].img} alt={практика[0].alt} width={Math.min(900, практика[0].img.width)} widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" formats={['webp']} quality={78} loading="lazy" /></div>
+            <div class="om-fill"><Image src={практика[0].img} alt={практика[0].alt} width={Math.min(900, практика[0].img.width)} widths={HALF_WIDTHS} sizes={HALF_SIZES} formats={['webp']} quality={78} loading="lazy" /></div>
             <figcaption>{typo(практика[0].caption)}</figcaption>
           </figure>
           <div>
             {практика.slice(1).map((p) => (
               <figure class="om-inline">
-                <Image src={p.img} alt={p.alt} width={Math.min(900, p.img.width)} widths={[400, 592, 900]} sizes="(max-width: 900px) 100vw, 592px" formats={['webp']} quality={78} loading="lazy" />
+                <Image src={p.img} alt={p.alt} width={Math.min(900, p.img.width)} widths={HALF_WIDTHS} sizes={HALF_SIZES} formats={['webp']} quality={78} loading="lazy" />
                 <figcaption>{typo(p.caption)}</figcaption>
               </figure>
             ))}
@@ -745,37 +797,44 @@ if (guide?.itinerary?.length) {
       </section>
     )}
 
-    {countryNews.length > 0 && (
-      <section class="om-sec" data-volatile="news">
-        <h2>Свежее о {d.cases.prep}</h2>
-        <ul class="om-related">
-          {countryNews.map((n) => (
-            <li><a href={newsUrl(n)}>{n.data.title}</a><span>{formatDateRu(n.data.date)}</span></li>
-          ))}
-          <li><a href="/novosti/">Все новости путешествий</a></li>
-        </ul>
-      </section>
-    )}
-
-    {similar.length > 0 && (
-      <section class="om-sec">
-        <h2>Похожие направления</h2>
-        <ul class="om-related">
-          {similar.map((r) => (<li><a href={`/${r.slug}/`}>{r.nom}</a><span>{r.why}{r.goodNow ? ' · хорошо сейчас' : ''}</span></li>))}
-        </ul>
-      </section>
-    )}
-
-    <section class="om-sec">
-      <h2>Что почитать дальше</h2>
-      <ul class="om-related">
-        <li><a href="/seasons/">Сравнение всех 70+ направлений по сезонам</a></li>
-        <li><a href={calcUrl}>Калькулятор бюджета поездки</a></li>
-        <li><a href={`/trips/${MONTHS[new Date().getMonth()].slug}/${d.slug}/`}>{d.cases.nom} в {MONTHS[new Date().getMonth()].prep} {yr}</a></li>
-        <li><a href={`/visa/${d.slug}/`}>Виза {d.cases.vP} — детально</a></li>
-        <li><a href={compareUrl}>{compareOther ? `${d.cases.nom} или ${compareOther.cases.nom}` : `Сравнить ${d.cases.nom} с другим направлением`}</a></li>
-        <li><a href="/countries/">Все страны на сайте</a></li>
-      </ul>
+    {/* Три блока ссылок подряд (свежее, похожие, что почитать) — один раздел с тремя подписями: одна черта вместо
+        трёх и короче путь глазами (NN/g: связанные ссылки — одной группой с ясными подписями). На широком экране
+        группы стоят колонками. Лента новостей сохраняет пометку data-volatile: снимки-эталоны её прячут, она
+        меняется каждый день. */}
+    <section class="om-sec om-next">
+      <h2>Ещё по теме</h2>
+      <div class="om-next-grid">
+        {countryNews.length > 0 && (
+          <div data-volatile="news">
+            <h3>Свежее о {d.cases.prep}</h3>
+            <ul class="om-related">
+              {countryNews.map((n) => (
+                <li><a href={newsUrl(n)}>{n.data.title}</a><span>{formatDateRu(n.data.date)}</span></li>
+              ))}
+              <li><a href="/novosti/">Все новости путешествий</a></li>
+            </ul>
+          </div>
+        )}
+        {similar.length > 0 && (
+          <div>
+            <h3>Похожие направления</h3>
+            <ul class="om-related">
+              {similar.map((r) => (<li><a href={`/${r.slug}/`}>{r.nom}</a><span>{r.why}{r.goodNow ? ' · хорошо сейчас' : ''}</span></li>))}
+            </ul>
+          </div>
+        )}
+        <div>
+          <h3>Пригодится при планировании</h3>
+          <ul class="om-related">
+            <li><a href="/seasons/">Сравнение всех 70+ направлений по сезонам</a></li>
+            <li><a href={calcUrl}>Калькулятор бюджета поездки</a></li>
+            <li><a href={`/trips/${MONTHS[new Date().getMonth()].slug}/${d.slug}/`}>{d.cases.nom} в {MONTHS[new Date().getMonth()].prep} {yr}</a></li>
+            <li><a href={`/visa/${d.slug}/`}>Виза {d.cases.vP} — детально</a></li>
+            <li><a href={compareUrl}>{compareOther ? `${d.cases.nom} или ${compareOther.cases.nom}` : `Сравнить ${d.cases.nom} с другим направлением`}</a></li>
+            <li><a href="/countries/">Все страны на сайте</a></li>
+          </ul>
+        </div>
+      </div>
     </section>
 
     {фотоКредиты && <p class="om-credits">{typo(фотоКредиты)}</p>}
@@ -805,6 +864,11 @@ if (guide?.itinerary?.length) {
   .om { max-width: 1280px; margin: 0 auto; padding: 0 24px 64px; }
   .om h2 { font-family: var(--ff-display); font-weight: 400; font-size: clamp(1.75rem, 3.4vw, 2.5rem); line-height: 1.1; margin: 0 0 20px; scroll-margin-top: 80px; text-wrap: balance; }
   .om h3 { font-family: var(--ff-display); font-weight: 400; font-size: 1.5rem; margin: 32px 0 12px; }
+  /* «Ещё по теме»: подписи групп той же антиквой, что все заголовки сайта, только мельче раздела. На широком экране
+     группы встают колонками: двенадцать ссылок в одну колонку занимали полтора экрана при пустой правой половине. */
+  .om-next-grid { display: grid; gap: 28px 40px; }
+  @media (min-width: 1024px) { .om-next-grid { grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); } }
+  .om-next h3 { font-size: 1.25rem; margin: 0 0 4px; }
   .om-sec { padding: 56px 0; border-top: 1px solid var(--line); scroll-margin-top: 72px; }
   .om-embed { scroll-margin-top: 72px; }
   /* «Что нужно знать на месте» — такой же раздел, как соседние: черта сверху, поля даёт сам блок. */

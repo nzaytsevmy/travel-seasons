@@ -81,7 +81,8 @@ const TYPE_LABEL: Record<string, string> = {
       const ymaps = `https://yandex.ru/maps/?ll=${p.lng},${p.lat}&z=12&pt=${p.lng},${p.lat}`;
       return (
         <li class="cm-item">
-          {p.img && <span class="cm-ph"><Image src={p.img} alt={p.alt || p.name} widths={[400, 800]} sizes="(max-width: 760px) 100vw, 380px" formats={['webp']} quality={76} loading="lazy" /></span>}
+          {/* Телефону с плотностью экрана выше 2 кадр — как для плотности 2: разницы не видно, а файл легче (подробно — на странице страны). */}
+          {p.img && <span class="cm-ph"><Image src={p.img} alt={p.alt || p.name} widths={[400, 680, 800, 1000, 1200]} sizes="(max-width: 767px) and (min-resolution: 2.9dppx) calc((100vw - 32px) * 0.67), (max-width: 767px) and (min-resolution: 2.3dppx) calc((100vw - 32px) * 0.76), (max-width: 767px) calc(100vw - 32px), (max-width: 1280px) calc((100vw - 72px) / 2), 596px" formats={['webp']} quality={76} loading="lazy" /></span>}
           <span class="cm-no" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
           <div class="cm-body">
             <b class="cm-name">{p.name}</b>
