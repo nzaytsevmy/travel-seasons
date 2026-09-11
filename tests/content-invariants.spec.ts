@@ -2348,3 +2348,77 @@ test('Карточка фактов: «Лучшие месяцы» не выле
   }
   expect(bad, `значение вылезает за карточку фактов:\n${bad.join('\n')}`).toEqual([]);
 });
+
+// Столбец с диапазоном температур называет оба конца. 11.09.2026 на /trips/november/vietnam/ над
+// ячейкой «19–26 °C» стояло «Днём»: читатель понимал, что днём бывает 19, а это ночной минимум
+// месяца. Меряет готовую страницу одного месяца: там диапазон «a–b °C» в строке может значить только
+// ночь и день, и столбец не может быть подписан одним концом. Страницы с таблицей по сезонам сюда не
+// входят: в гиде по ОАЭ «Воздух днём» над «+24…+26 °C» — дневная жара от декабря к февралю, подпись верна.
+test('Таблицы: столбец с диапазоном температур не подписан одним концом', () => {
+  const MONTH_PAGE = /\/(trips|seasons|packing)\/[^/]+\/[^/]+\/index\.html$/;
+  const RANGE = /^[+−-]?\d+(,\d+)?\s*[–…-]\s*[+−-]?\d+(,\d+)?\s*°C$/;
+  const INVISIBLE = new RegExp('[' + String.fromCharCode(0xa0, 0x2060, 0x202f) + ']', 'g');   // неразрывные знаки типографа
+  const text = (s: string) => видимыйТекст(s).replace(INVISIBLE, ' ').replace(/\s+/g, ' ').trim();
+  const cellsOf = (row: string) => [...row.matchAll(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/g)].map((m) => text(m[1]));
+  let checked = 0;
+  const bad: string[] = [];
+  for (const f of files.filter((x) => MONTH_PAGE.test(x.split(sep).join('/')))) {
+    const html = readFileSync(f, 'utf8');
+    if (!html.includes('°C')) continue;
+    for (const [table] of html.matchAll(/<table\b[\s\S]*?<\/table>/g)) {
+      const head = table.match(/<thead\b[\s\S]*?<\/thead>/)?.[0];
+      const body = table.match(/<tbody\b[\s\S]*?<\/tbody>/)?.[0];
+      if (!head || !body) continue;
+      const heads = cellsOf(head);
+      const rows = [...body.matchAll(/<tr\b[\s\S]*?<\/tr>/g)].map((m) => cellsOf(m[0]));
+      heads.forEach((h, i) => {
+        const cells = rows.map((r) => r[i]).filter(Boolean);
+        if (!cells.length || !cells.every((c) => RANGE.test(c))) return;
+        checked++;
+        if (/ноч/i.test(h) !== /д[её]нь|дн[её]м/i.test(h)) bad.push(`${f.slice(DIST.length)}: «${h}» над «${cells[0]}»`);
+      });
+    }
+  }
+  expect(checked, 'столбцов с диапазоном температур не нашлось — проверка ничего не мерит').toBeGreaterThan(0);
+  expect(bad, `столбец с диапазоном подписан одним концом:\n${bad.join('\n')}`).toEqual([]);
+});
+
+// Таблица регионов на телефоне: подпись температуры и диапазон в ячейке — в одну строку, таблица не шире
+// своей колонки (на 360 точках это 325 px). 11.09.2026 подпись «Ночь — день» ложилась в две строки на всех
+// семи страницах, «25…31 °C» у Гоа рвалось посреди, а таблица ноябрьского Египта вылезала на 2 px. Каждый
+// новый месяц добавляет строки с длинными названиями станций, поэтому меряется каждая таблица сборки.
+test('Таблица регионов: на 360 и 402 держится в колонке, температура в одну строку', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'ширину задаём сами — одного браузера достаточно');
+  const urls = files
+    .filter((f) => /\/trips\/[^/]+\/[^/]+\/index\.html$/.test(f.split(sep).join('/')) && readFileSync(f, 'utf8').includes('>Регион</th>'))
+    .map((f) => f.slice(DIST.length).split(sep).join('/').replace(/index\.html$/, ''));
+  expect(urls.length, 'таблиц регионов в сборке не нашлось — проверка ничего не мерит').toBeGreaterThan(0);
+  const bad: string[] = [];
+  for (const width of [360, 402]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const url of urls) {
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
+      await page.evaluate(() => (document as any).fonts?.ready);
+      const found: string[] = await page.evaluate(() => {
+        const table = [...document.querySelectorAll('table')].find((t) => t.querySelector('th')?.textContent?.trim() === 'Регион');
+        if (!table) return ['таблица регионов не найдена'];
+        const lines = (el: Element) => {
+          const r = document.createRange(); r.selectNodeContents(el);
+          return new Set([...r.getClientRects()].filter((x) => x.width > 0).map((x) => Math.round(x.top))).size;
+        };
+        const out: string[] = [];
+        const w = table.getBoundingClientRect().width, col = table.parentElement!.clientWidth;
+        if (w > col + 0.5) out.push(`таблица шире колонки: ${Math.round(w)} px из ${col}`);
+        const heads = [...table.querySelectorAll('thead th')];
+        const i = heads.findIndex((th) => /ноч|дн[её]м/i.test(th.textContent || ''));
+        if (i < 0) return [...out, 'столбец температуры не найден'];
+        for (const c of [heads[i], ...[...table.querySelectorAll('tbody tr')].map((tr) => tr.children[i])]) {
+          if (lines(c) > 1) out.push(`«${(c.textContent || '').trim()}» на двух строках`);
+        }
+        return out;
+      });
+      bad.push(...found.map((f) => `${url} @${width}: ${f}`));
+    }
+  }
+  expect(bad, `таблица регионов не держится на телефоне:\n${bad.join('\n')}`).toEqual([]);
+});
