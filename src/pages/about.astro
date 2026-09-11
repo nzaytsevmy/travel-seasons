@@ -203,12 +203,8 @@ code {
 .post-types li { color: var(--text-dim); line-height: 1.7; padding-left: 1.2rem; position: relative; font-size: 0.95rem; }
 .post-types li::before { content: '—'; position: absolute; left: 0; color: var(--gold); }
 .post-types strong { color: var(--text); font-weight: 600; }
-.trip-marker-inline {
-  display: inline-block;
-  font-size: 0.78rem; color: var(--gold);
-  background: rgba(29,64,174,0.1); border: 1px solid rgba(29,64,174,0.25);
-  padding: 0.1rem 0.5rem; border-radius: 999px;
-}
+/* Образец отметки из статей — тем же видом, что в статье: жирный текст без плашки и рамки. */
+.trip-marker-inline { font-weight: 600; color: var(--text); white-space: nowrap; }
 </style>
 
 <script is:inline>
