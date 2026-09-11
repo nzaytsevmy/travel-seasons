@@ -2,6 +2,7 @@ import { getCollection } from 'astro:content';
 import { getImage } from 'astro:assets';
 import { pickNewsImage } from '../data/news-images.js';
 import { newsUrl, feedEntries, publishedAt } from '../data/news.js';
+import { byPubDate } from '../data/freshness.js';
 
 // Дзен-совместимый RSS feed (Native, не Турбо/Новости).
 // Документация: https://dzen.ru/help/ru/website/site-to-channel.html
@@ -89,8 +90,7 @@ function mdToHtml(md) {
 }
 
 export async function GET() {
-  const posts = (await getCollection('blog'))
-    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  const posts = (await getCollection('blog')).sort(byPubDate);
 
   // Заметки ленты идут сюда наравне со статьями: у Дзена свой отбор, и короткий
   // датированный материал с картинкой ему подходит. Ссылка ведёт на страницу

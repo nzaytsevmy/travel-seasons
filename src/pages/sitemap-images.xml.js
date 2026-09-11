@@ -1,4 +1,5 @@
 import { getCollection } from 'astro:content';
+import { slugOrder } from '../data/freshness.js';
 
 function escapeXml(s) {
   return String(s).replace(/[<>&"']/g, c => ({
@@ -41,7 +42,8 @@ function extractInlineImages(body) {
 }
 
 export async function GET() {
-  const posts = await getCollection('blog');
+  // По адресу: сама коллекция приходит в порядке чтения файлов, а он от сборки к сборке разный.
+  const posts = (await getCollection('blog')).sort(slugOrder);
 
   const urls = posts.map(post => {
     const url = `https://traveltribe.ru/blog/${post.slug}/`;

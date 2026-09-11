@@ -17,14 +17,14 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Footer from '../../components/Footer.astro';
 import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu, addedAt, newsUrl } from '../../data/news.js';
+import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu, addedAt, newsUrl, feedEntries } from '../../data/news.js';
 import { pickNewsImage, newsImageNote } from '../../data/news-images.js';
 import { bySlug } from '../../data/directions.js';
 
 export async function getStaticPaths() {
   const all = await getCollection('news');
   // Порядок тот же, что в ленте: он же задаёт «предыдущую / следующую».
-  const sorted = [...all].sort((a, b) => addedAt(b) - addedAt(a) || b.data.date.valueOf() - a.data.date.valueOf());
+  const sorted = feedEntries(all);
   return sorted.map((entry, i) => ({
     params: { slug: entry.slug },
     props: { entry, around: [sorted[i - 1], sorted[i + 1]].filter(Boolean) },
