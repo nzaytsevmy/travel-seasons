@@ -24,5 +24,19 @@ export function freshDate(data) {
   return new Date(Math.max(...dates));
 }
 
+/**
+ * Второй ключ лент: при равной дате порядок задаёт адрес (slug).
+ *
+ * ⛔ Без него равные даты оставались в том порядке, в каком сборка прочитала файлы, а он
+ * от сборки к сборке разный. 11.09.2026 две сборки одного коммита разошлись в ленте блога,
+ * страницах тегов, RSS, ленте Дзена и карте картинок: пять статей с датой 3 сентября
+ * вставали то так, то эдак. Сравнение посимвольное, без правил языка, чтобы порядок не
+ * зависел и от настроек машины. Сторож — tests/stable-order.test.mjs.
+ */
+export const slugOrder = (a, b) => (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0);
+
 /** Сортировка «свежее сверху» для лент. */
-export const byFreshness = (a, b) => freshDate(b.data).valueOf() - freshDate(a.data).valueOf();
+export const byFreshness = (a, b) => freshDate(b.data).valueOf() - freshDate(a.data).valueOf() || slugOrder(a, b);
+
+/** По дате первой публикации, свежее сверху: так идут RSS и лента Дзена. */
+export const byPubDate = (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf() || slugOrder(a, b);

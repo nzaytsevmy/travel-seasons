@@ -24,6 +24,15 @@ const { slug, countryNom } = Astro.props;
 const data = getPois(slug);
 if (!data?.pois?.length) return null as any;
 
+// id контейнера карты: хвост — номер карты на этой странице. Он одинаков в каждой сборке
+// и разный у двух карт на одной странице. Номер берётся до первого await, тогда он идёт
+// по порядку карт, а не по тому, чьи кадры загрузились раньше.
+// ⛔ Раньше хвост был из Math.random, и 11.09.2026 две сборки одного коммита разошлись на
+// всех 42 страницах с картой (tests/stable-order.test.mjs).
+const page = Astro.locals as { countryMaps?: number };
+page.countryMaps = (page.countryMaps ?? 0) + 1;
+const mapId = `cmap-${slug}-${page.countryMaps}`;
+
 const poiFiles = import.meta.glob('../content/blog/_images/poi/**/*.jpg', { import: 'default' });
 const poiCredits = import.meta.glob('../content/blog/_images/poi/**/_credits.json', { eager: true, import: 'default' });
 const places = await Promise.all(data.pois.map(async (p) => {
@@ -43,9 +52,6 @@ for (const p of places) {
   if (!авторы.get(lic).includes(rec.creator)) авторы.get(lic).push(rec.creator);
 }
 const фотоМест = авторы.size ? `Фотографии мест: ${[...авторы].map(([lic, who]) => `${who.join(', ')} (${lic})`).join('; ')}.` : '';
-
-// Уникальный ID контейнера карты — на случай если несколько CountryMap на одной странице
-const mapId = `cmap-${slug}-${Math.random().toString(36).slice(2, 7)}`;
 
 const TYPE_LABEL: Record<string, string> = {
   city: 'город',

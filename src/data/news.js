@@ -2,6 +2,8 @@
 // логика деления «свежее / архив» использовалась и лентой, и архивами, и RSS,
 // и тестами — иначе разъедется и появятся заметки, не видимые нигде.
 
+import { slugOrder } from './freshness.js';
+
 export const TOPIC_LABEL = {
   visa: 'Визы и въезд',
   nature: 'Природа',
@@ -58,9 +60,14 @@ export const addedAt = (e) => (e.data.added ?? e.data.checked).valueOf();
 //
 // Дата события при этом никуда не делась: она остаётся в тексте и решает, в
 // какой месяц архива заметка попадёт.
+//
+// При равенстве обеих дат порядок задаёт адрес заметки: иначе заметки одного дня стояли
+// в порядке чтения файлов, и две сборки одного коммита расходились в архивах месяцев,
+// RSS и ссылках на соседние заметки (11.09.2026).
 const byDateDesc = (a, b) =>
   addedAt(b) - addedAt(a) ||
-  b.data.date.valueOf() - a.data.date.valueOf();
+  b.data.date.valueOf() - a.data.date.valueOf() ||
+  slugOrder(a, b);
 
 export function entriesOfMonth(entries, key) {
   return entries.filter((e) => monthKey(e.data.date) === key).sort(byDateDesc);
