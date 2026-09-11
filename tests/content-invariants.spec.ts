@@ -2315,3 +2315,36 @@ test('Переносы: слово в заголовке не рвётся на 
   }
   expect(bad, `слово в заголовке разорвано на две строки:\n${bad.join('\n')}`).toEqual([]);
 });
+
+// ⛔ Карточка фактов наверху страницы страны на компьютере значения не переносит (так решили после «90/» на
+//    Омане), поэтому длинное значение вылезает за край и обрезается. 11.09.2026 так вышло с «Лучшими месяцами»:
+//    «декабрь–февраль и август–сентябрь» у Карелии ушло за край окна на 1024 и 1280, у Гонконга и США встало
+//    вплотную. Меряем три самых длинных значения по всем странам: правый край значения не дальше края карточки.
+test('Карточка фактов: «Лучшие месяцы» не вылезают за карточку на компьютере', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'ширину задаём сами — одного браузера достаточно');
+  const JOIN = new RegExp(String.fromCharCode(0x2060), 'g');
+  const hubs = readdirSync(DIST).filter((s) => existsSync(join(DIST, s, 'index.html')))
+    .map((s) => ({ s, h: readFileSync(join(DIST, s, 'index.html'), 'utf8') as string }))
+    .filter((x) => x.h.includes('id="pogoda"'))
+    .map((x) => ({ s: x.s, v: ((x.h.match(/<dt[^>]*>Лучшие\s+месяцы<\/dt>\s*<dd[^>]*>([^<]*)<\/dd>/) || [])[1] || '').replace(JOIN, '') }))
+    .filter((x) => x.v);
+  expect(hubs.length, 'страниц стран с карточкой фактов не нашлось — проверка была бы пустой').toBeGreaterThan(60);
+  const longest = [...hubs].sort((a, b) => b.v.length - a.v.length).slice(0, 3);
+  const bad: string[] = [];
+  for (const width of [1024, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const { s, v } of longest) {
+      await page.goto(`/${s}/`, { waitUntil: 'domcontentloaded' });
+      await page.evaluate(() => (document as any).fonts?.ready);
+      const r = await page.evaluate(() => {
+        const dt = [...document.querySelectorAll('.om-facts dt')].find((e) => /Лучшие\s+месяцы/.test(e.textContent || ''));
+        const dd = dt?.nextElementSibling as HTMLElement | null | undefined;
+        const card = document.querySelector('.om-facts') as HTMLElement | null;
+        return dd && card ? { dd: dd.getBoundingClientRect().right, card: card.getBoundingClientRect().right, win: innerWidth } : null;
+      });
+      if (!r) { bad.push(`/${s}/ @${width}: карточки фактов нет`); continue; }
+      if (r.dd > r.card + 1 || r.dd > r.win) bad.push(`/${s}/ @${width}: «${v}» кончается на ${Math.round(r.dd)} при крае карточки ${Math.round(r.card)}`);
+    }
+  }
+  expect(bad, `значение вылезает за карточку фактов:\n${bad.join('\n')}`).toEqual([]);
+});

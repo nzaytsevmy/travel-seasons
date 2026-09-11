@@ -1,9 +1,10 @@
-// Подтягивает минимальные цены билетов из Москвы (MOW) для всех 39 направлений
+// Подтягивает минимальные цены билетов из Москвы (MOW) для всех направлений таблиц сезонов и цен
 // на 12 месяцев вперёд через Travelpayouts Data API (cheap endpoint).
 // Запуск: node --env-file=.env scripts/fetch-prices.mjs
 // Результат: src/data/prices-cache.json — { "<iata>": { "YYYY-MM": <price> | null }, ... }
 
 import { regionMeta } from '../src/data/regions-meta.js';
+import { PRICES } from '../src/data/prices.js';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -21,8 +22,10 @@ if (!TOKEN) {
 const ORIGIN = 'MOW';
 const CURRENCY = 'rub';
 
-// Уникальные IATA из meta (без дублей по направлениям)
-const iatas = [...new Set(Object.values(regionMeta).map(m => m.iata))];
+// Уникальные IATA из таблицы сезонов и из таблицы цен. Страница страны берёт цену перелёта по коду из таблицы цен,
+// и до 11.09.2026 четырнадцать её кодов в выгрузку не попадали (Карелия, Дагестан, Алтай, Камчатка, Абхазия, Пхукет,
+// Сеул и другие): там вместо живой цены стояла прикидка — у Карелии «от $50» при прямых рейсах от 11 239 ₽.
+const iatas = [...new Set([...Object.values(regionMeta).map(m => m.iata), ...PRICES.map(p => p.iata)])];
 
 // 12 месяцев вперёд от текущего, формат YYYY-MM
 function next12Months() {

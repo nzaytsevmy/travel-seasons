@@ -35,6 +35,8 @@ function seasonLabel(r) {
   const g = []; let s = idx[0], p = idx[0];
   for (let k = 1; k < idx.length; k++) { if (idx[k] === p + 1) p = idx[k]; else { g.push([s, p]); s = idx[k]; p = idx[k]; } }
   g.push([s, p]);
+  // Сезон через Новый год — один: «ноя–фев», а не «янв–фев, ноя–дек»; так же его называет страница страны.
+  if (g.length > 1 && g[0][0] === 1 && g[g.length - 1][1] === 12) g.unshift([g.pop()[0], g.shift()[1]]);
   return g.map(([a, b]) => (a === b ? MON_ABBR[a] : `${MON_ABBR[a]}–${MON_ABBR[b]}`)).join(', ');
 }
 // Все 70+ направлений на РЕАЛЬНЫХ данных: цена ВСЕЙ поездки с перелётом (prices.js, комфорт),

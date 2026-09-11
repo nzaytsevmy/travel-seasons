@@ -114,7 +114,7 @@ const city = data.city as string | undefined;
       <li class="cc-col">
         <b class="cc-lab cc-lab--mm" style={`bottom:calc(var(--foot) + ${m.h + 3}px)`}>{m.mm}</b>
         <i class="cc-bar cc-bar--rain" style={`height:${m.h}px`} aria-hidden="true"></i>
-        <small class="cc-d">{m.days} дн</small>
+        <small class="cc-d">{m.days}<span class="cc-dn"> дн</span></small>
         <span class="cc-m">{m.label}</span>
       </li>
     ))}
@@ -139,7 +139,7 @@ const city = data.city as string | undefined;
 }
 .cc-head--rain { margin-top: 1.1rem; }
 .cc-k {
-  font-size: .64rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  font-size: .6875rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
   color: var(--text-dim);
 }
 .cc-legend { font-size: .72rem; color: var(--text-dim); white-space: nowrap; }
@@ -183,10 +183,13 @@ const city = data.city as string | undefined;
 
 @media (max-width: 480px) {
   .cc-plot { gap: 2px; }
-  .cc-lab { font-size: .66rem; }
-  .cc-lab--mm { font-size: .6rem; }
-  .cc-m { font-size: .5rem; letter-spacing: .03em; }
-  .cc-d { font-size: .5rem; }
-  .cc-legend { font-size: .64rem; }
+  .cc-lab { font-size: .72rem; }
+  .cc-lab--mm { font-size: .6875rem; }
+  /* Подписи месяцев и дней не мельче 11 px (было 8): строчными и без разрядки — иначе «ИЮН» не влезает в колонку
+     25 точек на экране 360; у дождливых дней только число, «дней» уже сказано в подписи над графиком. */
+  .cc-m { font-size: .6875rem; letter-spacing: 0; text-transform: none; }
+  .cc-d { font-size: .6875rem; }
+  .cc-dn { display: none; }
+  .cc-legend { font-size: .72rem; }
 }
 </style>
