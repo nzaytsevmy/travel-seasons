@@ -176,9 +176,14 @@ const пик = monthsRanked.filter((m) => m.status === 'P');
 const bestMonths = пик.length ? пик : monthsRanked.filter((m) => m.status === 'G');
 const лучшиеСезоны = сезоныИз(bestMonths);
 const лучшиеСловами = bestMonths.length === 12 ? 'круглый год' : сезоныСловами(лучшиеСезоны);
-// В карточке фактов и в карточке для соцсетей места мало: два самых длинных сезона в порядке календаря.
-const лучшиеКоротко = bestMonths.length === 12 ? 'круглый год'
-  : сезоныСловами(лучшиеСезоны.filter((s) => [...лучшиеСезоны].sort((a, b) => b.length - a.length).slice(0, 2).includes(s)));
+// В описании для поиска и в карточке для соцсетей места мало: два самых длинных сезона в порядке календаря.
+const двеДлинных = лучшиеСезоны.filter((s) => [...лучшиеСезоны].sort((a, b) => b.length - a.length).slice(0, 2).includes(s));
+const лучшиеКоротко = bestMonths.length === 12 ? 'круглый год' : сезоныСловами(двеДлинных);
+// Карточка фактов наверху на компьютере значения не переносит, и полное «декабрь–февраль и август–сентябрь»
+// вылезало за её край (11.09.2026). Там сезоны сокращениями, как в каталоге стран: «дек–фев, авг–сен».
+const МЕС_КОР = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+const лучшиеВКарточке = bestMonths.length === 12 ? 'круглый год'
+  : двеДлинных.map((s) => (s.length > 1 ? `${МЕС_КОР[s[0].i]}–\u2060${МЕС_КОР[s.at(-1).i]}` : МЕС_КОР[s[0].i])).join(', ');
 const закрыто = monthsRanked.filter((m) => m.status === 'X');
 const worstMonths = закрыто.length ? закрыто : monthsRanked.filter((m) => m.status === 'B');
 const худшиеСловами = worstMonths.length ? сезоныСловами(сезоныИз(worstMonths)) : '';
@@ -467,7 +472,7 @@ if (guide?.itinerary?.length) {
       <div class="om-answer">
         <dl class="om-facts">
           <div><dt>{domestic ? 'Документы' : 'Виза россиянам'}</dt><dd>{визаКоротко}</dd></div>
-          <div><dt>Лучшие месяцы</dt><dd>{bestMonths.length ? лучшиеКоротко : 'круглый год'}</dd></div>
+          <div><dt>Лучшие месяцы</dt><dd>{bestMonths.length ? лучшиеВКарточке : 'круглый год'}</dd></div>
           <div><dt>Бюджет в день</dt><dd>{бюджетКоротко}</dd></div>
           {flightFrom && <div><dt>Перелёт из Москвы</dt><dd>от ${flightFrom}</dd></div>}
           {weekTotal && <div><dt>Неделя на одного</dt><dd>от ${weekTotal}</dd></div>}
