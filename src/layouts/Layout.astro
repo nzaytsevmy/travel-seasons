@@ -268,18 +268,31 @@ const finalLd = {
       window.ttLoadAnalytics = function (withWebvisor) {
         if (loaded || !window.__analyticsEnabled || looksAutomated) return;
         loaded = true;
-        // Ahrefs Web Analytics (cookieless)
-        var s = document.createElement('script');
-        s.src = 'https://analytics.ahrefs.com/analytics.js';
-        s.async = true; s.dataset.key = 'Vlc0xmPDRP3Rn1BkiDfn2A';
-        document.head.appendChild(s);
-        // Яндекс.Метрика 95832375 (webvisor — только при согласии)
-        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-        (window, document,'script','https://mc.yandex.ru/metrika/tag.js', 'ym');
+        // Яндекс.Метрика 95832375 (webvisor — только при согласии): очередь и init — сразу. Вызовы ym()
+        // со страницы копятся в очереди и уходят, когда счётчик загрузится; начало визита счётчик берёт
+        // из ym.l — момент открытия страницы, а не загрузки скрипта.
+        (function(m,i){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();})(window,'ym');
         ym(95832375, 'init', {webvisor: !!withWebvisor, clickmap:true, accurateTrackBounce:true, trackLinks:true});
+        // ⛔ Сами скрипты счётчиков (≈ 97 КБ) — после главной картинки: по событию load, первому касанию
+        //    или через 3 с, что раньше. Замер с телефона 11.09.2026: грузясь вместе со шрифтами и обложкой,
+        //    они отнимали у обложки полосу на медленном мобильном интернете (скорость 71–84 из 100).
+        var injected = false;
+        function inject() {
+          if (injected) return;
+          injected = true;
+          // Ahrefs Web Analytics (cookieless)
+          var s = document.createElement('script');
+          s.src = 'https://analytics.ahrefs.com/analytics.js';
+          s.async = true; s.dataset.key = 'Vlc0xmPDRP3Rn1BkiDfn2A';
+          document.head.appendChild(s);
+          var k = document.createElement('script');
+          k.async = true; k.src = 'https://mc.yandex.ru/metrika/tag.js';
+          document.head.appendChild(k);
+        }
+        function soon() { if ('requestIdleCallback' in window) requestIdleCallback(inject, { timeout: 1500 }); else setTimeout(inject, 1); }
+        if (document.readyState === 'complete') soon(); else window.addEventListener('load', soon, { once: true });
+        ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(function (e) { window.addEventListener(e, inject, { once: true, passive: true }); });
+        setTimeout(inject, 3000);
       };
       // Базовую аналитику грузим сразу; Вебвизор — если согласие уже дано.
       if (window.__analyticsEnabled) window.ttLoadAnalytics(consent() === 'granted');
