@@ -339,13 +339,16 @@ const pageDescription = snip
               октябре сухо на всех шести станциях, кроме Александрии, и разводит
               регионы жара, а не дождь. Запись месяца может назвать свой вопрос. */}
           <div class="shead"><h2>{rich.regionsTitle || `Где ${d.cases.loc} в ${m.prep} сухо, а где заливает`}</h2></div>
-          <table class="dt">
-            <thead><tr><th>Регион</th><th>Днём</th><th>Осадки</th><th>Дней с дождём</th></tr></thead>
+          <table class="dt rg">
+            {/* В ячейке температуры два числа: средний ночной минимум и дневной максимум
+                месяца. Подпись «Днём» читалась так, будто днём бывает и нижнее. Подпись и
+                ячейка не переносятся: на телефоне «25…31 °C» рвалось посреди диапазона. */}
+            <thead><tr><th>Регион</th><th class="nw">Ночь–день</th><th>Осадки</th><th>Дней с дождём</th></tr></thead>
             <tbody>
               {rich.regions.map((r) => (
                 <tr>
                   <td class="bd"><b>{r.name}</b><span class="rgc">{r.city}</span></td>
-                  <td>{r.temp}</td>
+                  <td class="nw">{r.temp}</td>
                   <td>{r.rain}</td>
                   <td>{r.days}</td>
                 </tr>
@@ -501,6 +504,13 @@ const pageDescription = snip
 .dt td:first-child,.dt th:first-child{padding-left:0}
 .dt .bd b{font-weight:700}
 .dt .rgc{display:block;font-size:.72rem;color:var(--mid);margin-top:.15rem}
+.dt .nw{white-space:nowrap}
+/* Таблица регионов на 360: с неразрывной температурой четыре столбца не влезали в колонку
+   на 2–13 px (Египет в ноябре, Гоа), поэтому на узком экране отступы между столбцами меньше.
+   Заголовки — через thead: иначе правило .dt thead th выше сильнее и оставляет им 0,8rem справа.
+   Ширину столбцов задают подписи «НОЧЬ–ДЕНЬ» и «С ДОЖДЁМ», поэтому у них и разрядка меньше: без неё
+   таблица Гоа в облачном прогоне (Linux) вылезала на 1 px */
+@media(max-width:400px){.dt.rg thead th,.dt.rg td{padding-left:.3rem;padding-right:.3rem}.dt.rg thead th:first-child,.dt.rg td:first-child{padding-left:0}.dt.rg thead th{letter-spacing:.02em}}
 .tnote{margin-top:.8rem;font-size:.78rem;color:var(--mid);line-height:1.6;max-width:90ch}
 .tnote a{color:var(--gold);text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
 
