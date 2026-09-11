@@ -67,23 +67,29 @@ test('лимиты новостного пайплайна совпадают в
   ]);
   const config = JSON.parse(configRaw);
 
-  assert.equal(config.targetPerDay, 4);
-  assert.equal(config.maxPerDay, 4);
+  assert.equal(config.targetPerDay, 5);
+  assert.equal(config.maxPerDay, 5);
 
-  // ⛔ Норму дня задаёт недельный контролёр, документы её только цитируют.
+  // ⛔ Норма дня живёт в одном поле, документы её только цитируют.
   // До 07.09.2026 здесь стояло дословное «цель ежедневного выпуска — 4 заметки»,
   // и это число жило в трёх файлах сразу: в рубрикаторе, в промте отбора и в
   // CLAUDE.md. В тот день контролёр срезал норму до двух, дневной заход прочитал
   // старое число на старте и собрал сайт с четырьмя заметками — одну пришлось
-  // снимать, а все проверки гонять заново. Контракт теперь держит ИСТОЧНИК
-  // истины, а не значение: число разрешено менять контролёру, но только в одном
-  // месте и в пределах капа.
+  // снимать, а все проверки гонять заново. Контракт держит ИСТОЧНИК истины.
+  // С 11.09.2026 число — решение Никиты: пять насовсем, контролёр его не меняет.
+  // Поэтому норма обязана совпадать с целью в исполняемом конфиге: срезать её
+  // в одном файле, не тронув другой, больше нельзя.
   const quota = control.match(/`news_quota`:\s*\*\*(\d+)\*\*/);
   assert.ok(quota, 'в GROWTH-CONTROL.md нет поля news_quota с числом');
   const quotaValue = Number(quota[1]);
   assert.ok(
     quotaValue >= 1 && quotaValue <= config.maxPerDay,
     `news_quota ${quotaValue} вне диапазона 1..${config.maxPerDay}`,
+  );
+  assert.equal(
+    quotaValue,
+    config.targetPerDay,
+    'норму ленты задал Никита 11.09.2026: news_quota обязана совпадать с targetPerDay',
   );
   for (const [name, text] of [['news/RUBRIC.md', rubric], ['NEWS-SELECTION-PROMPT.md', prompt]]) {
     assert.match(text, /news_quota/, `${name} обязан называть источник нормы`);
@@ -93,9 +99,9 @@ test('лимиты новостного пайплайна совпадают в
       `${name} снова прибивает норму числом вместо ссылки на решение контролёра`,
     );
   }
-  assert.match(rubric, /максимум 4 заметки в день/i);
+  assert.match(rubric, /максимум 5 заметок в день/i);
   assert.match(prompt, /не останавливаться после первой принятой темы/i);
-  assert.doesNotMatch(rubric, /максимум 5 заметок в день/i);
+  assert.doesNotMatch(rubric, /максимум 4 заметки в день/i);
   assert.match(cap, /trackedToday/);
   assert.match(cap, /cfg\.maxPerDay - trackedToday\.length/);
   assert.match(prompt, /капсула ответа \*\*40–60 слов\*\*/i);
