@@ -2171,3 +2171,42 @@ for (const width of [360, 402]) {
     expect(bad, `некрасивые переносы:\n${bad.join('\n')}`).toEqual([]);
   });
 }
+
+// Слово в заголовке не рвётся на две строки. 11.09.2026 на телефоне заголовок самой денежной статьи читался
+// «как до-браться»: браузер сам ставил перенос (hyphens: auto в шаблоне статьи), а составные слова рвались
+// по своему дефису — «Шри-|Ланку», «Милфорд-|Саунд». Проверка выше этого не видит: она ищет висящие предлоги
+// и разорванные скобки. Меряет раскладку во всех статьях и на страницах выше: слово из пяти и больше знаков,
+// части которого легли на разные строки. Ширину задаёт сама, поэтому хватает одного браузера.
+test('Переносы: слово в заголовке не рвётся на две строки @360 и @402', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'ширину задаём сами — одного браузера достаточно');
+  test.setTimeout(15 * 60_000);
+  const { readdirSync, existsSync } = await import('node:fs');
+  const posts = readdirSync('dist/blog', { withFileTypes: true })
+    .filter((d) => d.isDirectory() && !['tag', 'page'].includes(d.name) && existsSync(`dist/blog/${d.name}/index.html`))
+    .map((d) => `/blog/${d.name}/`);
+  expect(posts.length, 'статей в сборке не нашлось — проверка была бы пустой').toBeGreaterThan(50);
+  const bad: string[] = [];
+  for (const width of [360, 402]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const url of [...BREAK_PAGES, ...posts]) {
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
+      await page.evaluate(() => (document as any).fonts?.ready);
+      const found: string[] = await page.evaluate(() => {
+        const out: string[] = [];
+        for (const el of document.querySelectorAll('main h1, main h2, main h3')) {
+          const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+          for (let n = walker.nextNode() as Text | null; n; n = walker.nextNode() as Text | null) {
+            for (const m of (n.nodeValue || '').matchAll(/[\p{L}\p{N}][\p{L}\p{N}\-\u2011]{4,}/gu)) {
+              const r = document.createRange(); r.setStart(n, m.index!); r.setEnd(n, m.index! + m[0].length);
+              const tops = new Set([...r.getClientRects()].filter((x) => x.width > 0).map((x) => Math.round(x.top)));
+              if (tops.size > 1) out.push(`${el.tagName.toLowerCase()}: «${m[0]}»`);
+            }
+          }
+        }
+        return [...new Set(out)];
+      });
+      bad.push(...found.map((f) => `${url} @${width}: ${f}`));
+    }
+  }
+  expect(bad, `слово в заголовке разорвано на две строки:\n${bad.join('\n')}`).toEqual([]);
+});
