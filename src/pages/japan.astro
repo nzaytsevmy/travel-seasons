@@ -8,10 +8,43 @@ import EssentialsCard from '../components/EssentialsCard.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
 import ClimateChart from '../components/ClimateChart.astro';
 import CountryMap from '../components/CountryMap.astro';
+import { Image, getImage } from 'astro:assets';
+import { countryPhotos } from '../data/country-photos.js';
+import { typo } from '../utils/typo.js';
 import { DATA_UPDATED } from '../data/meta.js';
 import { TP_LINKS, aviasalesRoute, cherehapaCountry, ostrovokCity, youtravelCountry } from '../data/affiliate.js';
 
 const url = 'https://traveltribe.ru/japan/';
+
+// Кадры по слотам макета Омана, как на страницах стран: обложка, широкий кадр после событий по месяцам
+// и три в разделе визы. Подпись «Фотографии: …» собирается из тех же записей о лицензии, по которым кадр
+// прошёл проверку происхождения; свой кадр подписи не требует.
+const hubImageFiles = import.meta.glob('../content/blog/_images/**/*.{jpg,jpeg,webp}', { import: 'default' });
+const hubCredits = import.meta.glob('../content/blog/_images/**/_credits.json', { eager: true, import: 'default' });
+const фотоЯпонии = countryPhotos('japan');
+const сКадром = async (p) => {
+  const load = hubImageFiles[`../content/blog/_images/${p.file}`];
+  if (!load) throw new Error(`Кадр страницы japan не найден: ${p.file}`);
+  return { ...p, img: await load() };
+};
+const герой = await сКадром(фотоЯпонии.hero);
+const широкий = await сКадром(фотоЯпонии.wide);
+const практика = await Promise.all(фотоЯпонии.practice.map(сКадром));
+// Ширины обложки и предзагрузки совпадают, иначе браузер скачает не тот вариант.
+const HERO_WIDTHS = [512, 768, 1024, 1600];
+const heroPreload = await getImage({ src: герой.img, widths: HERO_WIDTHS, formats: ['webp'], quality: 72 });
+const семьяЛицензии = (l) => (/pixabay/i.test(l) ? 'Pixabay' : /^CC BY-SA/i.test(l) ? 'CC BY-SA' : /^CC BY/i.test(l) ? 'CC BY' : /^CC0/i.test(l) ? 'CC0' : l);
+const авторы = new Map();
+for (const p of [герой, широкий, ...практика]) {
+  const cut = p.file.lastIndexOf('/');
+  const записи = hubCredits[`../content/blog/_images/${p.file.slice(0, cut)}/_credits.json`] || {};
+  const имя = p.file.slice(cut + 1);
+  const rec = записи[имя.replace(/\.\w+$/, '')] || записи[имя];
+  if (!rec?.creator) continue;
+  const lic = семьяЛицензии(rec.license || '');
+  авторы.set(lic, [...new Set([...(авторы.get(lic) || []), rec.creator])]);
+}
+const фотоКредиты = авторы.size ? `Фотографии: ${[...авторы].map(([lic, who]) => `${who.join(', ')} (${lic})`).join('; ')}.` : '';
 
 const faqs = [
   {
@@ -101,10 +134,16 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
   ogType="website"
   ogImage="https://traveltribe.ru/og/hub-japan.png"
   ldJson={ldJson}
+  preloadImageSrcset={heroPreload?.srcSet?.attribute}
+  preloadImageSizes="100vw"
 >
   <Breadcrumbs crumbs={[{ label: 'Япония' }]} />
 
   <main id="main" class="jp">
+    <figure class="jp-hero">
+      <Image src={герой.img} alt={герой.alt} widths={HERO_WIDTHS} sizes="100vw" formats={['webp']} quality={72} loading="eager" fetchpriority="high" />
+    </figure>
+
     {/* MANIFEST */}
     <section class="jp-manifest">
       <div class="jp-meta">Был в ноябре 2023</div>
@@ -151,6 +190,12 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
 
     <MonthlyEvents slug="japan" countryNom="Япония" countryNameVp="в Японии" />
 
+    {/* width — размер запасного src: без него Astro отдаёт оригинал в 1920 px, как на страницах стран. */}
+    <figure class="jp-wide">
+      <Image src={широкий.img} alt={широкий.alt} width={Math.min(1800, широкий.img.width)} widths={[800, 1200, 1800]} sizes="100vw" formats={['webp']} quality={78} loading="lazy" />
+      <figcaption>{typo(широкий.caption)}</figcaption>
+    </figure>
+
     {/* ВИЗА */}
     <section class="jp-section">
       <div class="jp-shead"><h2>Виза для россиян в 2026</h2></div>
@@ -169,6 +214,20 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
         
         <span class="jp-trust">от 110 ₽/день · подходит под требования JVAC · оплата картами РФ</span>
       </p>
+      <div class="jp-practice">
+        <figure class="jp-tall">
+          <div class="jp-fill"><Image src={практика[0].img} alt={практика[0].alt} width={Math.min(900, практика[0].img.width)} widths={[400, 592, 900]} sizes="(max-width: 760px) 100vw, 592px" formats={['webp']} quality={78} loading="lazy" /></div>
+          <figcaption>{typo(практика[0].caption)}</figcaption>
+        </figure>
+        <div>
+          {практика.slice(1).map((p) => (
+            <figure>
+              <Image src={p.img} alt={p.alt} width={Math.min(900, p.img.width)} widths={[400, 592, 900]} sizes="(max-width: 760px) 100vw, 592px" formats={['webp']} quality={78} loading="lazy" />
+              <figcaption>{typo(p.caption)}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
     </section>
 
     {/* БЮДЖЕТ — три уровня Swiss */}
@@ -276,6 +335,8 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
         <li><a href="/blog/">Все статьи блога</a> — личные отчёты по странам</li>
       </ul>
     </section>
+
+    {фотоКредиты && <p class="jp-credits">{typo(фотоКредиты)}</p>}
   </main>
 
   <Footer />
@@ -636,5 +697,25 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
   font-size: .76rem;
   color: var(--text-dim);
   letter-spacing: .01em;
+}
+
+/* ===== КАДРЫ — слоты макета Омана: обложка, широкий кадр после событий, три кадра в разделе визы.
+   Кадры стоят по краю текста, как на Омане и страницах стран. ===== */
+.jp figure { margin: 0; }
+.jp figcaption { font-size: .875rem; color: var(--text-faint); line-height: 1.5; margin-top: 8px; text-wrap: balance; }
+.jp-hero :global(img) { width: 100%; height: clamp(240px, 32vw, 400px); object-fit: cover; display: block; }
+.jp-wide :global(img) { width: 100%; height: clamp(240px, 30vw, 480px); object-fit: cover; display: block; }
+.jp-wide figcaption { padding-inline: clamp(1.1rem, 3vw, 2.6rem); }
+.jp-practice { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 24px; margin-top: 32px; }
+.jp-practice :global(img) { width: 100%; height: 300px; object-fit: cover; display: block; }
+/* Левый кадр тянется на высоту двух правых, как на Омане: фигура — flex-колонка, кадр заполняет остаток. */
+.jp-tall { display: flex; flex-direction: column; }
+.jp-fill { position: relative; flex: 1 1 auto; min-height: 300px; }
+.jp-practice .jp-fill :global(img) { position: absolute; inset: 0; height: 100%; }
+.jp-practice > div { display: grid; row-gap: 20px; align-content: start; }
+.jp-credits { font-size: .8125rem; color: var(--text-faint); margin: 40px 0 0; }
+@media (max-width: 760px) {
+  .jp-practice { grid-template-columns: 1fr; }
+  .jp-practice :global(img) { height: 240px; }
 }
 </style>
