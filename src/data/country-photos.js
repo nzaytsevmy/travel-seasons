@@ -12,6 +12,8 @@
 //    повторять: у Турции Олюдениз уже стоит своим кадром в «Зачем ехать».
 // ⛔ Каждый кадр отобран глазами по контактному листу, автоматом отсеяны только
 //    лицензия, ориентация и размер.
+// ⛔ months — кадр с видимым сезоном (снег, осенняя листва, цветение, купальный сезон, летние горные озёра
+//    и дороги): на страницах «что взять в месяце» он стоит только в эти месяцы. Страница страны показывает его всегда.
 export const COUNTRY_PHOTOS = {
   // Япония свёрстана вручную (japan.astro) и берёт отсюда ещё и обложку: общая обложка (Фудзи с пагодой)
   // повторила бы карточку места «Фудзи». Первый из трёх кадров — свой, из статьи про Японию.
@@ -28,12 +30,12 @@ export const COUNTRY_PHOTOS = {
     wide: { file: 'hub-turkey/lycian-way-kas.jpg', alt: 'Скалистый берег у Каша на Ликийской тропе, море и острова на горизонте', caption: 'Ликийская тропа у Каша: скалистый берег и острова.' },
     practice: [
       { file: 'hub-turkey/sumela.jpg', alt: 'Монастырь Сумела на отвесной скале над лесом', caption: 'Монастырь Сумела.' },
-      { file: 'hub-turkey/nemrut.jpg', alt: 'Каменная голова статуи в снегу на горе Немрут', caption: 'Гора Немрут.' },
-      { file: 'turkey-own/beach.jpg', alt: 'Пляж сверху: ровные ряды зонтиков и бирюзовая вода', caption: 'Пляж сверху: ряды зонтиков у бирюзовой воды.' },
+      { file: 'hub-turkey/nemrut.jpg', alt: 'Каменная голова статуи в снегу на горе Немрут', caption: 'Гора Немрут.', months: [12, 1, 2, 3] },
+      { file: 'turkey-own/beach.jpg', alt: 'Пляж сверху: ровные ряды зонтиков и бирюзовая вода', caption: 'Пляж сверху: ряды зонтиков у бирюзовой воды.', months: [5, 6, 7, 8, 9, 10] },
     ],
   },
   georgia: {
-    wide: { file: 'hub-georgia/tusheti-road.jpg', alt: 'Серпантин через горную долину в Тушети', caption: 'Дорога в Тушети.' },
+    wide: { file: 'hub-georgia/tusheti-road.jpg', alt: 'Серпантин через горную долину в Тушети', caption: 'Дорога в Тушети.', months: [6, 7, 8, 9] },
     practice: [
       { file: 'georgia-longread/tbilisi_old.jpg', alt: 'Улица старого Тбилиси: указатели, кованые решётки на окнах и цветы', caption: 'Улица в старом Тбилиси.' },
       { file: 'hub-georgia/ananuri.jpg', alt: 'Крепость Ананури с церквями у водохранилища', caption: 'Крепость Ананури.' },
@@ -105,11 +107,11 @@ export const COUNTRY_PHOTOS = {
     ],
   },
   greece: {
-    wide: { file: 'hub-greece/balos.jpg', alt: 'Лагуна Балос на Крите сверху: бирюзовые отмели и остров Грамвуса', caption: 'Лагуна Балос на Крите: мелководье и отмели.' },
+    wide: { file: 'hub-greece/balos.jpg', alt: 'Лагуна Балос на Крите сверху: бирюзовые отмели и остров Грамвуса', caption: 'Лагуна Балос на Крите: мелководье и отмели.', months: [5, 6, 7, 8, 9, 10] },
     practice: [
       { file: 'hub-greece/meteora.jpg', alt: 'Скальные столбы Метеор и монастырь на вершине одного из них', caption: 'Метеоры: монастыри на вершинах скал.' },
       { file: 'hub-greece/acropolis.jpg', alt: 'Акрополь с Парфеноном на скале над Афинами, вид с холма Филопаппу', caption: 'Акрополь с холма Филопаппу.' },
-      { file: 'hub-greece/navagio.jpg', alt: 'Пляж Навагио на Закинфе под белыми скалами, бирюзовая вода', caption: 'Пляж Навагио на Закинфе.' },
+      { file: 'hub-greece/navagio.jpg', alt: 'Пляж Навагио на Закинфе под белыми скалами, бирюзовая вода', caption: 'Пляж Навагио на Закинфе.', months: [5, 6, 7, 8, 9, 10] },
     ],
   },
   spain: {
@@ -117,14 +119,14 @@ export const COUNTRY_PHOTOS = {
     practice: [
       { file: 'hub-spain/ronda-bridge.jpg', alt: 'Новый мост в Ронде над ущельем Тахо', caption: 'Новый мост в Ронде.' },
       { file: 'hub-spain/park-guell.jpg', alt: 'Мозаичный дракон на лестнице парка Гуэль', caption: 'Мозаичный дракон в парке Гуэль, Барселона.' },
-      { file: 'hub-spain/cala-mesquida.jpg', alt: 'Пляж Кала-Мескида на Мальорке: песок, бирюзовая вода и холмы', caption: 'Пляж Кала-Мескида на Мальорке.' },
+      { file: 'hub-spain/cala-mesquida.jpg', alt: 'Пляж Кала-Мескида на Мальорке: песок, бирюзовая вода и холмы', caption: 'Пляж Кала-Мескида на Мальорке.', months: [5, 6, 7, 8, 9, 10] },
     ],
   },
   croatia: {
-    wide: { file: 'hub-croatia/plitvice.jpg', alt: 'Водопады Плитвицких озёр: потоки падают в бирюзовую воду', caption: 'Плитвицкие озёра: водопады и бирюзовая вода.' },
+    wide: { file: 'hub-croatia/plitvice.jpg', alt: 'Водопады Плитвицких озёр: потоки падают в бирюзовую воду', caption: 'Плитвицкие озёра: водопады и бирюзовая вода.', months: [4, 5, 6, 7, 8, 9, 10] },
     practice: [
       { file: 'hub-croatia/split-vestibule.jpg', alt: 'Колокольня собора Святого Дуйма в круглом проёме вестибюля дворца Диоклетиана в Сплите', caption: 'Колокольня Сплита в проёме дворца Диоклетиана.' },
-      { file: 'hub-croatia/zlatni-rat.jpg', alt: 'Пляж Златни-Рат на Браче сверху: галечная коса уходит в море', caption: 'Коса Златни-Рат на острове Брач.' },
+      { file: 'hub-croatia/zlatni-rat.jpg', alt: 'Пляж Златни-Рат на Браче сверху: галечная коса уходит в море', caption: 'Коса Златни-Рат на острове Брач.', months: [5, 6, 7, 8, 9, 10] },
       { file: 'hub-croatia/hvar.jpg', alt: 'Каменные дома Хвара над гаванью с яхтами', caption: 'Город Хвар над гаванью.' },
     ],
   },
@@ -133,7 +135,7 @@ export const COUNTRY_PHOTOS = {
     practice: [
       { file: 'hub-italy-south/alberobello.jpg', alt: 'Улица с домами-трулли в Альберобелло', caption: 'Трулли в Альберобелло.' },
       { file: 'hub-italy-south/matera.jpg', alt: 'Сасси в Матере: каменный город на склоне ущелья', caption: 'Сасси в Матере.' },
-      { file: 'hub-italy-south/tropea.jpg', alt: 'Церковь Санта-Мария-дель-Изола на скале над морем в Тропее', caption: 'Тропея.' },
+      { file: 'hub-italy-south/tropea.jpg', alt: 'Церковь Санта-Мария-дель-Изола на скале над морем в Тропее', caption: 'Тропея.', months: [5, 6, 7, 8, 9, 10] },
     ],
   },
   cyprus: {
@@ -220,7 +222,7 @@ export const COUNTRY_PHOTOS = {
     wide: { file: 'hub-italy-north/matterhorn.jpg', alt: 'Маттерхорн над долиной Червинии', caption: 'Маттерхорн со стороны Италии.' },
     practice: [
       { file: 'hub-italy-north/bologna-towers.jpg', alt: 'Две башни Болоньи над площадью', caption: 'Башни Азинелли и Гаризенда в Болонье.' },
-      { file: 'hub-italy-north/lago-di-braies.jpg', alt: 'Бирюзовое озеро Брайес среди лесистых гор', caption: 'Озеро Брайес.' },
+      { file: 'hub-italy-north/lago-di-braies.jpg', alt: 'Бирюзовое озеро Брайес среди лесистых гор', caption: 'Озеро Брайес.', months: [6, 7, 8, 9] },
       { file: 'hub-italy-north/bergamo.jpg', alt: 'Верхний город Бергамо и равнина до горизонта', caption: 'Бергамо, Верхний город.' },
     ],
   },
@@ -324,7 +326,7 @@ export const COUNTRY_PHOTOS = {
     wide: { file: 'hub-kyrgyzstan/song-kol.jpg', alt: 'Юрты в ряд у озера Сон-Куль на закате', caption: 'Юрты у озера Сон-Куль.' },
     practice: [
       { file: 'hub-kyrgyzstan/burana.jpg', alt: 'Башня Бурана среди полей и каменных изваяний, за ней горы', caption: 'Башня Бурана.' },
-      { file: 'hub-kyrgyzstan/ala-archa.jpg', alt: 'Заснеженные пики над ельником в парке Ала-Арча', caption: 'Ущелье Ала-Арча у Бишкека.' },
+      { file: 'hub-kyrgyzstan/ala-archa.jpg', alt: 'Заснеженные пики над ельником в парке Ала-Арча', caption: 'Ущелье Ала-Арча у Бишкека.', months: [11, 12, 1, 2, 3] },
       { file: 'hub-kyrgyzstan/issyk-kul.jpg', alt: 'Люди купаются на берегу Иссык-Куля', caption: 'Берег Иссык-Куля.' },
     ],
   },
@@ -356,7 +358,7 @@ export const COUNTRY_PHOTOS = {
     wide: { file: 'hub-kazakhstan/big-almaty-lake.jpg', alt: 'Большое Алматинское озеро среди заснеженных гор', caption: 'Большое Алматинское озеро.' },
     practice: [
       { file: 'hub-kazakhstan/zenkov.jpg', alt: 'Вознесенский собор в Алматы: жёлтые стены и цветные купола', caption: 'Вознесенский собор в Алматы.' },
-      { file: 'hub-kazakhstan/shymbulak.jpg', alt: 'Горнолыжные склоны и подъёмник Шымбулака', caption: 'Шымбулак над Алматы.' },
+      { file: 'hub-kazakhstan/shymbulak.jpg', alt: 'Горнолыжные склоны и подъёмник Шымбулака', caption: 'Шымбулак над Алматы.', months: [12, 1, 2, 3] },
       { file: 'hub-kazakhstan/kolsai.jpg', alt: 'Кольсайское озеро в лесистом ущелье', caption: 'Кольсайское озеро.' },
     ],
   },
@@ -404,7 +406,7 @@ export const COUNTRY_PHOTOS = {
     wide: { file: 'hub-finland/porvoo.jpg', alt: 'Красные деревянные амбары на берегу реки в Старом Порвоо', caption: 'Старый Порвоо на берегу реки.' },
     practice: [
       { file: 'hub-finland/helsinki-cathedral.jpg', alt: 'Белый Кафедральный собор Хельсинки с зелёными куполами', caption: 'Кафедральный собор Хельсинки.' },
-      { file: 'hub-finland/santa-village.jpg', alt: 'Деревня Санта-Клауса в Рованиеми зимним вечером', caption: 'Деревня Санта-Клауса в Рованиеми.' },
+      { file: 'hub-finland/santa-village.jpg', alt: 'Деревня Санта-Клауса в Рованиеми зимним вечером', caption: 'Деревня Санта-Клауса в Рованиеми.', months: [11, 12, 1, 2, 3] },
       { file: 'hub-finland/nuuksio.jpg', alt: 'Лесное озеро в национальном парке Нууксио', caption: 'Национальный парк Нууксио.' },
     ],
   },
@@ -413,7 +415,7 @@ export const COUNTRY_PHOTOS = {
     practice: [
       { file: 'hub-switzerland/lauterbrunnen.jpg', alt: 'Долина Лаутербруннен: водопад Штауббах со скалы над деревней', caption: 'Долина Лаутербруннен.' },
       { file: 'hub-switzerland/chapel-bridge.jpg', alt: 'Капелльбрюкке и башня над водой в Люцерне', caption: 'Мост Капелльбрюкке в Люцерне.' },
-      { file: 'hub-switzerland/oeschinensee.jpg', alt: 'Бирюзовое озеро Эшинен среди гор', caption: 'Озеро Эшинен.' },
+      { file: 'hub-switzerland/oeschinensee.jpg', alt: 'Бирюзовое озеро Эшинен среди гор', caption: 'Озеро Эшинен.', months: [6, 7, 8, 9, 10] },
     ],
   },
   iceland: {
@@ -429,7 +431,7 @@ export const COUNTRY_PHOTOS = {
     practice: [
       { file: 'hub-norway/preikestolen.jpg', alt: 'Скала Прекестулен над Люсе-фьордом', caption: 'Скала Прекестулен.' },
       { file: 'hub-norway/bryggen.jpg', alt: 'Цветные деревянные дома набережной Брюгген в Бергене', caption: 'Брюгген в Бергене.' },
-      { file: 'hub-norway/tromso.jpg', alt: 'Тромсё и заснеженные горы над гаванью', caption: 'Тромсё.' },
+      { file: 'hub-norway/tromso.jpg', alt: 'Тромсё и заснеженные горы над гаванью', caption: 'Тромсё.', months: [11, 12, 1, 2, 3] },
     ],
   },
   usa: {
@@ -461,7 +463,7 @@ export const COUNTRY_PHOTOS = {
     practice: [
       { file: 'hub-japan-hokkaido/otaru-canal.jpg', alt: 'Канал Отару со старыми складами и фонарями вдоль набережной', caption: 'Канал в Отару.' },
       { file: 'hub-japan-hokkaido/biei-blue-pond.jpg', alt: 'Голубой пруд в Биэй с сухими стволами в воде', caption: 'Голубой пруд в Биэй.' },
-      { file: 'hub-japan-hokkaido/furano-lavender.jpg', alt: 'Лавандовые поля Фурано на склоне', caption: 'Лавандовые поля Фурано.' },
+      { file: 'hub-japan-hokkaido/furano-lavender.jpg', alt: 'Лавандовые поля Фурано на склоне', caption: 'Лавандовые поля Фурано.', months: [7] },
     ],
   },
   mexico: {
@@ -589,7 +591,7 @@ export const COUNTRY_PHOTOS = {
     practice: [
       { file: 'valaam-own/monastery.jpg', alt: 'Собор Валаамского монастыря с высоты', caption: 'Валаамский монастырь.' },
       { file: 'karelia/kizhi-cover.jpg', alt: 'Деревянные церкви Кижского погоста', caption: 'Кижский погост.' },
-      { file: 'ruskeala/park.jpg', alt: 'Мраморный каньон Рускеалы осенью', caption: 'Мраморный каньон Рускеала.' },
+      { file: 'ruskeala/park.jpg', alt: 'Мраморный каньон Рускеалы осенью', caption: 'Мраморный каньон Рускеала.', months: [9, 10] },
     ],
   },
   dagestan: {
@@ -605,7 +607,7 @@ export const COUNTRY_PHOTOS = {
     practice: [
       { file: 'hub-altai/aktru.jpg', alt: 'Ледники Актру над хвойным лесом', caption: 'Ледники Актру.' },
       { file: 'altai-own/katun.jpg', alt: 'Река Катунь среди гор', caption: 'Река Катунь.' },
-      { file: 'hub-altai/katun-chuya.jpg', alt: 'Слияние Катуни и Чуи зимой: бирюзовая вода среди снега', caption: 'Слияние Катуни и Чуи зимой.' },
+      { file: 'hub-altai/katun-chuya.jpg', alt: 'Слияние Катуни и Чуи зимой: бирюзовая вода среди снега', caption: 'Слияние Катуни и Чуи зимой.', months: [11, 12, 1, 2, 3] },
     ],
   },
   'chile-fjords': {

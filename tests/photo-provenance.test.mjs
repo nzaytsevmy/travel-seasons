@@ -199,6 +199,7 @@ test('Происхождение: у каждого кадра страницы 
       if (!p?.file) { bad.push(`${slug}: пустой слот`); continue; }
       if (!existsSync(join(IMAGES, p.file))) { bad.push(`${slug}: файла ${p.file} нет`); continue; }
       if (!p.alt?.trim() || (p !== set.hero && !p.caption?.trim())) bad.push(`${slug}: у ${p.file} нет alt или подписи`);
+      if (p.months && !(Array.isArray(p.months) && p.months.length && p.months.every((m) => Number.isInteger(m) && m >= 1 && m <= 12))) bad.push(`${slug}: у ${p.file} месяцы не числа 1–12`);
       const rec = cred.get(p.file.slice(0, p.file.length - extname(p.file).length)) || cred.get(p.file);
       if (rec) {
         if (!rec.creator || !rec.license) bad.push(`${slug}: у ${p.file} в записи о лицензии нет автора или лицензии`);

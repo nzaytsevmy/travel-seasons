@@ -233,7 +233,6 @@ const ldJson = {
   max-width: 980px;
   margin: 0 auto;
   padding: 0 clamp(1.1rem, 3vw, 2.6rem) clamp(2rem, 4vw, 4rem);
-  font-family: var(--ff-display);
   font-variant-numeric: tabular-nums lining-nums;
   color: var(--text);
 }
@@ -244,14 +243,14 @@ const ldJson = {
   padding: clamp(1rem, 2vw, 1.8rem) 0 clamp(1.2rem, 2.5vw, 2rem);
 }
 .evt-meta { grid-column: 8 / 13; grid-row: 1; text-align: right; align-self: start; font-size: .8rem; color: var(--text-dim); line-height: 1.5; }
-.evt-h1 { grid-column: 1 / 13; grid-row: 2; font-weight: 800; font-size: clamp(2rem, 5.5vw, 4.4rem); line-height: 1.0; letter-spacing: -.03em; margin: clamp(1rem, 2vw, 1.6rem) 0 0; text-wrap: balance; }
+.evt-h1 { font-family: var(--ff-display); grid-column: 1 / 13; grid-row: 2; font-weight: 800; font-size: clamp(2rem, 5.5vw, 4.4rem); line-height: 1.0; letter-spacing: -.03em; margin: clamp(1rem, 2vw, 1.6rem) 0 0; text-wrap: balance; }
 .evt-h1 .rd { color: var(--gold); }
 .evt-tldr { grid-column: 1 / 11; grid-row: 3; font-size: clamp(1rem, 1.3vw, 1.15rem); color: var(--text); line-height: 1.6; margin-top: 1.3rem; }
 
 .evt-byline-row { grid-column: 1 / 13; grid-row: 4; margin-top: .5rem; }
 
 .evt-section { border-top: 1px solid var(--line); padding: clamp(1.4rem, 3vw, 2.2rem) 0; scroll-margin-top: 80px; }
-.evt-shead h2 { font-size: clamp(1.2rem, 2.4vw, 1.6rem); font-weight: 800; letter-spacing: -.015em; margin: 0 0 .5rem; }
+.evt-shead h2 { font-family: var(--ff-display); font-size: clamp(1.2rem, 2.4vw, 1.6rem); font-weight: 800; letter-spacing: -.015em; margin: 0 0 .5rem; }
 .evt-note { font-size: .88rem; color: var(--text-dim); margin: 0 0 1rem; }
 .evt-verdict { font-size: 1rem; line-height: 1.6; }
 .evt-cta-row { display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; margin: 0; }
