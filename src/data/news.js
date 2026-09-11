@@ -89,6 +89,39 @@ export const FEED_SIZE = 24;
 export const newsUrl = (slugOrEntry) =>
   `/novosti/${typeof slugOrEntry === 'string' ? slugOrEntry : slugOrEntry.slug}/`;
 
+// Заголовок и описание страницы заметки режутся только по целым словам. До
+// 11.09.2026 резали по знаку, и в выдаче стояло «…из Непала в Тибет: 19 мосто…» —
+// так был обрезан заголовок у 90 заметок из 119. Сначала ищем границу фразы
+// (двоеточие, тире, для описания — точку), иначе режем по слову и не оставляем
+// в конце висящее число, предлог или союз.
+// ⛔ Запятая — граница, только если за ней начинается новая часть фразы: все 90
+// обрезок прочитаны глазами, и запятая перед причастием давала обрывок
+// («Кость, брошенную в Арктике в 1948 году»).
+const DANGLING = /(\s+(\d[\d\s]*|[а-яё]{1,2}|для|при|про|без|над|под|через|после|перед|между|около|что|как|или|чем|где|когда|если))+$/i;
+function clipWords(s, max) {
+  const cut = s.slice(0, max);
+  const whole = s[max] === ' ' ? cut : cut.replace(/\s+\S*$/, '');
+  return whole.replace(DANGLING, '').replace(/[\s—–,:;-]+$/, '') + '…';
+}
+
+const CLAUSE_COMMA = /, (?=(?:а|но|и|если|когда|потому|хотя|пока|чтобы) )/g;
+export function clipTitle(s, max = 60) {
+  if (s.length <= max) return s;
+  const head = s.slice(0, max + 1);
+  const commas = [...head.matchAll(CLAUSE_COMMA)].map((m) => m.index);
+  const sep = Math.max(head.lastIndexOf(': '), head.lastIndexOf(' — '), ...commas);
+  return sep >= max / 2 ? s.slice(0, sep) : clipWords(s, max - 1);
+}
+
+// Описание: не короче 100 знаков — короче проверка поисковой части считает
+// потерянным местом в выдаче Яндекса. 11.09.2026 обрезка по первому короткому
+// предложению дала 18 таких описаний, поэтому короткое предложение одно не годится.
+export function clipDescription(s, max = 155, min = 100) {
+  if (s.length <= max) return s;
+  const end = s.slice(0, max + 1).lastIndexOf('. ');
+  return end + 1 >= min ? s.slice(0, end + 1) : clipWords(s, max - 1);
+}
+
 /**
  * Свежие заметки про страну — для блока на странице направления.
  * Связь идёт по полю `countries` заметки: там слаг направления сайта.
