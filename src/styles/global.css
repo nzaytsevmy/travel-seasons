@@ -270,7 +270,7 @@ footer {
   .section-label   { font-size: 0.78rem !important; }
   .pill            { font-size: 0.78rem !important; }
   /* Blog post — теги статьи */
-  .ptag            { font-size: 0.78rem !important; padding: 0.2rem 0.5rem !important; }
+  .ptag            { font-size: 0.78rem !important; }
   /* Calculator — breakdown labels */
   .breakdown-item span:first-child { font-size: 0.78rem !important; }
 }
@@ -812,7 +812,6 @@ td > .aff-cta {
   margin: 1.4rem 0 2rem;
   padding: 0.7rem 0;
   border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
   font-size: 0.92rem;
   line-height: 1.5;
 }
@@ -834,6 +833,9 @@ td > .aff-cta {
   :where(.prose) .country-row a {
     display: block; width: 100%;
     min-height: 44px; line-height: 44px;
+    /* Подчёркнут текст, а не вся ширина: три линии во всю строку подряд читались как разлиновка. */
+    border-bottom: none;
+    text-decoration: underline; text-decoration-color: var(--gold-dim); text-underline-offset: 0.22em;
   }
 }
 

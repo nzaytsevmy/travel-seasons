@@ -147,12 +147,15 @@ const ldJson = {
 .post-card:hover .post-thumb img { transform: scale(1.04); }
 
 .post-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.45rem; flex: 1; }
-.post-tags { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+/* Теги карточки — подпись, а не кнопки, как на общем списке статей: брендбук §4 запрещает рамки и скругления,
+   плотность держим разделителем, а не коробочками. */
+.post-tags { display: block; }   /* не flex: разделитель должен переноситься вместе с тегом */
 .ptag {
-  font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--gold); border: 1px solid rgba(29,64,174,0.3);
-  padding: 0.12rem 0.4rem; border-radius: 2px;
+  font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--gold-dim);
 }
+/* точка приклеена к предыдущему тегу — иначе на узком экране уезжает в начало строки */
+.ptag:not(:last-child)::after { content: ' · '; color: var(--line); }
 .post-title { font-family: var(--ff-display); font-size: 1.15rem; font-weight: 400; line-height: 1.25; }
 .post-desc { color: var(--text-dim); font-size: 0.8rem; line-height: 1.6; flex: 1; }
 .post-meta {
