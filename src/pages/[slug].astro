@@ -55,6 +55,8 @@ import { typo } from '../utils/typo.js';
 import { climateChart } from '../data/country-climate-chart.js';
 import { PLUG_TYPES, plugVerdict } from '../data/country-plug-types.js';
 import author from '../assets/author/nikita.jpg';
+// «О» или «об»: «об» перед словом с гласной а, и, о, у, э в начале («об Алтае», «об июне»), иначе «о».
+const об = (w) => (/^[аиоуэ]/i.test(String(w || '')) ? 'об' : 'о');
 
 // Pre-import all destination photos (Vite needs static imports). glob lazy:
 const destPhotos = import.meta.glob('../assets/destinations/*.jpg', {
@@ -789,7 +791,7 @@ if (guide?.itinerary?.length) {
 
     {d.relatedPosts.length > 0 && (
       <section class="om-sec" id="gaidy">
-        <h2>Подробные гайды о {d.cases.prep}</h2>
+        <h2>Подробные гайды {об(d.cases.prep)} {d.cases.prep}</h2>
         <ul class="om-related">
           {d.relatedPosts.map((p) => (
             <li>
@@ -811,7 +813,7 @@ if (guide?.itinerary?.length) {
       <div class="om-next-grid">
         {countryNews.length > 0 && (
           <div data-volatile="news">
-            <h3>Свежее о {d.cases.prep}</h3>
+            <h3>Свежее {об(d.cases.prep)} {d.cases.prep}</h3>
             <ul class="om-related">
               {countryNews.map((n) => (
                 <li><a href={newsUrl(n)}>{n.data.title}</a><span>{formatDateRu(n.data.date)}</span></li>
