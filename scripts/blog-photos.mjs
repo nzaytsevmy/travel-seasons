@@ -34,7 +34,7 @@
 import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join } from 'node:path';
-import { findPhoto } from './news-photo.mjs';
+import { findPhoto, isPhotoFile } from './news-photo.mjs';
 
 const UA = 'traveltribe-blog/1.0 (https://traveltribe.ru)';
 
@@ -108,6 +108,8 @@ async function grab(sharp, spec, dir, seen) {
       if (!res.ok) throw new Error(String(res.status));
       const raw = Buffer.from(await res.arrayBuffer());
       if (raw.length < 20_000) throw new Error('файл мал для фотографии');
+      // Чужой формат к декодеру не пускаем — почему, см. isPhotoFile.
+      if (!isPhotoFile(raw)) throw new Error('не JPEG, PNG или WebP');
       const src = sharp(raw).rotate();
       const { width = 0, height = 0 } = await src.metadata();
       if (width < 1200) throw new Error(`узкий кадр ${width}px`);
