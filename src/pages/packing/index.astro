@@ -5,7 +5,7 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { DIRECTIONS } from '../../data/directions.js';
 import { getWeatherBucket } from '../../data/country-month-bucket.js';
 import { WEATHER_BUCKETS } from '../../data/packing-weather-buckets.js';
-import { PLUG_TYPES } from '../../data/country-plug-types.js';
+import { PLUG_TYPES, plugFit } from '../../data/country-plug-types.js';
 
 const url = 'https://traveltribe.ru/packing/';
 const title = 'Что взять в поездку 2026 — чек-листы по 70+ странам';
@@ -65,7 +65,11 @@ function getPreview(bucket, slug) {
   const plug = PLUG_TYPES[slug];
   if (plug?.types) {
     const voltageHint = plug.voltage && plug.voltage !== '230 V' ? `, ${plug.voltage}` : '';
-    out.push({ cat: 'Техника', text: `Адаптер тип ${plug.types}${voltageHint} + power bank` });
+    // Для стран с вилками как в России адаптер не нужен — превью не должно звать его покупать.
+    // «+ power bank» — одним куском (неразрывные пробелы кодом знака): иначе на телефоне «bank» уезжал один на строку.
+    const NB = String.fromCharCode(0xa0);
+    const lead = plugFit(plug.types) === 'все' ? `Розетки как в России${voltageHint}` : `Адаптер тип ${plug.types}${voltageHint}`;
+    out.push({ cat: 'Техника', text: `${lead} +${NB}power${NB}bank` });
   } else if (bucket.tech?.[0]) {
     out.push({ cat: 'Техника', text: trimItem(bucket.tech[0]) });
   }

@@ -3,7 +3,7 @@
 // Эталон: ~/Downloads/tt-home-1-editorial.html (vlist + shead + dash + gear-grid).
 // Без border-radius, без bg-карточек, только hairlines + индексы 01/02 gold + uppercase labels.
 
-import { PLUG_TYPES } from '../data/country-plug-types.js';
+import { PLUG_TYPES, plugVerdict } from '../data/country-plug-types.js';
 import { getEssentials } from '../data/country-essentials.js';
 import { getCustoms } from '../data/country-customs.js';
 
@@ -17,13 +17,15 @@ const plug = PLUG_TYPES[slug];
 const ess = getEssentials(slug);
 const cust = getCustoms(slug);
 
-const hasAny = plug || ess || cust;
+// Блок ради одной розетки не ставим: она уже стоит строкой «Розетка» в «Правилах и деньгах» страницы страны
+// (пометка Никиты 11.09.2026: «слишком большое расстояние для такого малоинформативного блока»).
+const hasAny = ess || cust;
 if (!hasAny) return null as any;
 
 
 // Короткие практики — 4 ячейки value-list
 const quick: { k: string; main: string; meta?: string; note?: string }[] = [];
-if (plug) quick.push({ k: 'Розетки', main: `Тип ${plug.types}`, meta: `${plug.voltage} · ${plug.hz}`, note: 'Переходник нужен, если техника не USB-зарядка.' });
+if (plug) quick.push({ k: 'Розетки', main: `Тип ${plug.types}`, meta: `${plug.voltage} · ${plug.hz}`, note: plugVerdict(plug.types).long });
 if (ess?.water) quick.push({ k: 'Вода из-под крана', main: ess.water.tap_drinkable ? 'Можно пить' : 'Только бутилированная', meta: ess.water.note });
 if (ess?.tipping) {
   const tipMain = (/нет/i.test(ess.tipping.restaurants) && /нет/i.test(ess.tipping.taxi)) ? 'Не приняты' : 'По ситуации';
@@ -43,13 +45,24 @@ if (ess?.emergency?.ambulance_fire) dash.push({ k: 'Скорая · пожарн
 if (ess?.emergency?.ambulance) dash.push({ k: 'Скорая', v: ess.emergency.ambulance });
 if (ess?.emergency?.fire) dash.push({ k: 'Пожарные', v: ess.emergency.fire });
 if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ', v: ess.emergency.embassy_ru_phone, link: ess.emergency.embassy_ru_url ? { href: ess.emergency.embassy_ru_url, label: 'сайт' } : undefined });
+
+// Подзаголовок называет только то, что в блоке есть: раньше он обещал шесть тем и там, где была одна розетка.
+const topics = [
+  plug && 'розетки',
+  ess?.tipping && 'чаевые',
+  dash.length > 0 && 'экстренные номера',
+  ess?.water && 'вода',
+  ess?.taxi_apps?.length && 'такси',
+  (cust?.forbidden?.length || cust?.limits) && 'таможня',
+].filter(Boolean) as string[];
+const subtitle = topics.length ? `${topics.join(', ').replace(/^./, (c) => c.toUpperCase())} — фактами.` : '';
 ---
 
 <section class="ec" aria-label={`Бытовая практика — ${countryName || slug}`}>
   <header class="ec-h">
     <h2 class="ec-t">Что нужно знать на месте{countryName ? ` — ${countryName}` : ''}</h2>
   </header>
-  <p class="ec-s">Розетки, чаевые, экстренные номера, вода, такси, таможня — фактами.</p>
+  {subtitle && <p class="ec-s">{subtitle}</p>}
 
   {quick.length > 0 && (
     <div class={`ec-vl ec-vl--cols-${Math.min(4, quick.length)}`}>
@@ -98,7 +111,7 @@ if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ'
     <div class="ec-section">
       <h3 class="ec-th">Лимиты ввоза</h3>
       <div class="ec-vl ec-vl--cols-4">
-        {cust.limits.cash && <div class="ec-vi"><span class="ec-vk">Наличные</span><div class="ec-vm">{cust.limits.cash.replace(/^до /, '')}</div><div class="ec-vd">без декларации</div></div>}
+        {cust.limits.cash && <div class="ec-vi"><span class="ec-vk">Наличные</span><div class="ec-vm">{cust.limits.cash.replace(/^до /, '')}</div>{!/без декларации/i.test(cust.limits.cash) && <div class="ec-vd">без декларации</div>}</div>}
         {cust.limits.alcohol && <div class="ec-vi"><span class="ec-vk">Алкоголь</span><div class="ec-vm">{cust.limits.alcohol}</div></div>}
         {cust.limits.cigarettes && <div class="ec-vi"><span class="ec-vk">Сигареты</span><div class="ec-vm">{cust.limits.cigarettes}</div></div>}
         {cust.limits.perfume && <div class="ec-vi"><span class="ec-vk">Парфюм</span><div class="ec-vm">{cust.limits.perfume}</div></div>}
@@ -128,6 +141,9 @@ if (ess?.emergency?.embassy_ru_phone) dash.push({ k: 'Посольство РФ'
 .ec-vd { font-size: .875rem; color: var(--text-dim); margin-top: 3px; line-height: 1.5; }
 .ec-vn { font-size: .8125rem; color: var(--text-faint); margin-top: 4px; line-height: 1.5; }
 .ec-section { margin: 0 0 28px; }
+/* Нижнее поле блока — как у разделов страницы: отступ последнего куска (и его последней части — у лимитов
+   ввоза это сетка карточек) к полю не прибавляется. */
+.ec > :last-child, .ec > :last-child > :last-child { margin-bottom: 0; }
 .ec-th { font-size: 1.0625rem; font-weight: 700; margin: 0 0 10px; color: var(--text); }
 .ec-dash { border-collapse: collapse; font-size: .9375rem; }
 .ec-dash td { padding: 5px 24px 5px 0; vertical-align: baseline; color: var(--text); }

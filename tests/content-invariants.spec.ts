@@ -391,6 +391,71 @@ test('Навигация: строка «ещё по направлению» �
   expect(bad, bad.join('\n')).toEqual([]);
 });
 
+test('Страница страны: розетка названа один раз, блок «на месте» не держится на одной розетке и не обещает лишнего', () => {
+  // Пометка Никиты 11.09.2026 к Казахстану: «слишком большое расстояние для такого малоинформативного блока».
+  // У 47 стран из 77 блок «Что нужно знать на месте» был одной карточкой розетки — той же, что строкой выше
+  // в «Правилах и деньгах», — а подзаголовок обещал чаевые, номера, воду, такси и таможню, которых в блоке нет.
+  const WS = new RegExp('[' + String.fromCharCode(0xa0, 0x202f) + ']', 'g');
+  const norm = (x: string) => x.replace(WS, ' ').replace(/\s+/g, ' ');
+  const text = (h: string) => norm(h.replace(/<[^>]+>/g, ' ')).trim();
+  const EVIDENCE: Record<string, RegExp> = {
+    'розетки': /class="ec-vk">Розетки</, 'чаевые': /class="ec-vk">Чаевые</, 'вода': /class="ec-vk">Вода/,
+    'такси': /class="ec-vk">Такси/, 'экстренные номера': /class="ec-th">Экстренные номера</,
+    'таможня': /class="ec-th">(Таможня|Лимиты ввоза)/,
+  };
+  const bad: string[] = [];
+  let pages = 0;
+  for (const f of files) {
+    const rel = f.slice(DIST.length + 1);
+    if (!/^[^/]+\/index\.html$/.test(rel)) continue;
+    const html = readFileSync(f, 'utf8').replace(/ data-astro-cid-\w+/g, '');
+    const ecAt = html.indexOf('<section class="ec"');
+    if (!html.includes('om-rules') && ecAt < 0) continue;
+    pages++;
+    const page = '/' + rel.replace(/index\.html$/, '');
+    const sockets = (html.match(/<span>Розетка<\/span>/g) || []).length + (html.match(/class="ec-vk">Розетки</g) || []).length;
+    if (sockets > 1) bad.push(`${page} — розетка названа ${sockets} раза`);
+    if (ecAt < 0) continue;
+    const ec = html.slice(ecAt, html.indexOf('</section>', ecAt));
+    const labels = [...ec.matchAll(/class="ec-vk">([^<]+)</g)].map((m) => norm(m[1]).trim());
+    if (!labels.some((l) => l !== 'Розетки') && !ec.includes('class="ec-section"')) bad.push(`${page} — блок «на месте» из одной розетки`);
+    const sub = text((ec.match(/<p class="ec-s">([\s\S]*?)<\/p>/) || [])[1] || '').toLowerCase();
+    for (const [topic, re] of Object.entries(EVIDENCE)) {
+      if (sub.includes(topic) && !re.test(ec)) bad.push(`${page} — подзаголовок обещает «${topic}», а в блоке этого нет`);
+    }
+    for (const m of ec.matchAll(/class="ec-vm">([^<]+)<\/div>\s*<div class="ec-vd">([^<]+)</g)) {
+      if (norm(m[1]).toLowerCase().includes(norm(m[2]).trim().toLowerCase())) bad.push(`${page} — в карточке подпись повторяет значение: «${norm(m[2]).trim()}»`);
+    }
+  }
+  expect(pages, 'страниц стран в сборке не нашлось').toBeGreaterThan(50);
+  expect(bad, `${bad.length} замечаний:\n${bad.slice(0, 40).join('\n')}`).toEqual([]);
+});
+
+test('Розетка: страница страны и страница сборов одинаково отвечают, нужен ли переходник', () => {
+  // 11.09.2026: ответ про переходник на странице страны («пригодится») разошёлся бы с чек-листом сборов («НЕ нужен»)
+  // у стран, где российские вилки подходят только к части розеток. Ответ один — из одной проверки в данных.
+  const WS = new RegExp('[' + String.fromCharCode(0xa0, 0x202f) + ']', 'g');
+  const norm = (x: string) => x.replace(WS, ' ');
+  const kind = (t: string) => (/не нужен/i.test(t) ? 'не нужен' : /пригодится/i.test(t) ? 'пригодится' : /нужен переходник|не подход/i.test(t) ? 'нужен' : '?');
+  const bad: string[] = [];
+  let pairs = 0;
+  for (const f of files) {
+    const m = f.slice(DIST.length + 1).match(/^([^/]+)\/index\.html$/);
+    if (!m) continue;
+    const pack = join(DIST, 'packing', m[1], 'index.html');
+    if (!existsSync(pack)) continue;
+    const hub = norm(readFileSync(f, 'utf8').replace(/ data-astro-cid-\w+/g, ''));
+    const hubText = (hub.match(/<span>Розетка<\/span><span>([^<]+)<\/span>/) || hub.match(/class="ec-vk">Розетки<\/span>[\s\S]*?class="ec-vn">([^<]+)</) || [])[1];
+    const packText = (norm(readFileSync(pack, 'utf8')).match(/Переходник Type[\s\S]{0,300}?<\/li>/) || [])[0];
+    if (!hubText || !packText) continue;
+    pairs++;
+    const a = kind(hubText), b = kind(packText.replace(/<[^>]+>/g, ' '));
+    if (a !== b) bad.push(`/${m[1]}/ — страница страны: «${hubText.trim()}» (${a}), сборы: ${b}`);
+  }
+  expect(pairs, 'пар «страна — сборы» с розеткой не нашлось').toBeGreaterThan(50);
+  expect(bad, `${bad.length} расхождений:\n${bad.join('\n')}`).toEqual([]);
+});
+
 test('Деньги: рублёвая конвертация не расходится с валютой на порядок', () => {
   // Курсы ЦБ на 13.08.2026 — база сравнения. Полоса широкая (±40%): курс со
   // временем уходит, задача гейта — ловить опечатку и потерянный ноль, а не
