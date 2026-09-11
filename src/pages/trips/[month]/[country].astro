@@ -7,6 +7,7 @@ import Footer from '../../../components/Footer.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import DestinationTabs from '../../../components/DestinationTabs.astro';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
+import { месяцыНаправления } from '../../../utils/best-months.js';
 import { COUNTRIES as RICH_COUNTRIES } from '../../../data/programmatic-seasons.js';
 import { NICHE_TRIPS } from '../../../data/niche-trips.js';
 import { aviasalesRoute, ostrovokCountry, cherehapaCountry, youtravelCountry, sputnik8City, otelloStay } from '../../../data/affiliate.js';
@@ -69,11 +70,10 @@ const BUDGET_LABEL = {
 };
 
 // Лучшие месяцы для направления (P > G)
-const rank = { P: 4, G: 3, O: 2, B: 1, X: 0 };
-const bestMonths = MONTHS
-  .map((x, i) => ({ ...x, status: d.r[i], rank: rank[d.r[i]] || 0 }))
-  .filter((x) => x.rank >= 3 && x.slug !== m.slug)
-  .slice(0, 4);
+// Сезонами, как на странице страны, без текущего месяца: до 12.09.2026 здесь стояли первые четыре хороших
+// месяца по календарю, и Норвегия в январе советовала февраль и март вместо июня–августа.
+const { лучшиеПоСезонам, лучшиеСловами } = месяцыНаправления(d);
+const bestMonths = лучшиеПоСезонам.filter((x) => x.slug !== m.slug).slice(0, 4);
 
 const iata = d.iata || d.price?.iata;   // канон. IATA из regionMeta (через directions.js)
 
@@ -133,9 +133,8 @@ const visaLine = ({
   evisa: 'Электронная виза (eVisa) — оформляется онлайн',
   required: 'Виза обязательна — оформление в консульстве',
 }[d.visa]) || 'Виза — уточнить';
-const bestMonthsAll = MONTH_META.filter(mm => mm.status === 'P' || mm.status === 'G').map(mm => mm.nom);
-const bestMonthsStr = bestMonthsAll.length ? bestMonthsAll.join(', ') : 'нет ярко выраженного пика — едут круглый год';
-const verdictForMonth = lbl.verdict + (status === 'P' || status === 'G' ? '.' : '. ' + (bestMonthsAll.length ? 'Лучше выбрать: ' + bestMonthsAll.slice(0,3).join(', ') + '.' : ''));
+const bestMonthsStr = лучшиеСловами || 'нет ярко выраженного пика — едут круглый год';
+const verdictForMonth = lbl.verdict + (status === 'P' || status === 'G' ? '.' : '. ' + (bestMonths.length ? 'Лучше выбрать: ' + bestMonths.slice(0, 3).map((x) => x.nom).join(', ') + '.' : ''));
 const budgetSummary = liveFlight
   ? `Перелёт Москва — ${d.cases.nom} в ${m.prep}: от ${liveFlight.toLocaleString('ru-RU')} ₽ в одну сторону.`
     + (hasPrices ? ` Отель эконом от $${hotelFrom}/ночь, еда от $${foodFrom}/день.` : '')

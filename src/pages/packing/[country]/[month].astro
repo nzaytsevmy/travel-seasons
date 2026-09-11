@@ -9,6 +9,7 @@ import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import DestinationTabs from '../../../components/DestinationTabs.astro';
 import { Image, getImage } from 'astro:assets';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
+import { месяцыНаправления } from '../../../utils/best-months.js';
 import { VISA_DETAILS } from '../../../data/visa-details.js';
 import { getBucket } from '../../../data/packing-weather-buckets.js';
 import { getWeatherBucket } from '../../../data/country-month-bucket.js';
@@ -141,10 +142,10 @@ const checklistPreset =
   : 'any';
 
 // Лучшие альтернативные месяцы (P+G), исключая текущий
-const altMonths = (d.r || [])
-  .map((s, i) => ({ s, i }))
-  .filter(({ s, i }) => (s === 'P' || s === 'G') && i !== monthIdx)
-  .map(({ i }) => ({ slug: MONTHS[i].slug, nom: MONTHS[i].nom }))
+// Сезонами, как на странице страны: до 12.09.2026 здесь стояли первые три хороших месяца по календарю.
+const altMonths = месяцыНаправления(d).лучшиеПоСезонам
+  .filter((x) => x.i !== monthIdx)
+  .map((x) => ({ slug: x.slug, nom: x.nom }))
   .slice(0, 3);
 
 // Соседние месяцы для логичной навигации

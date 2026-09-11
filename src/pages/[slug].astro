@@ -16,6 +16,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import DestinationTabs from '../components/DestinationTabs.astro';
 import { Image, getImage } from 'astro:assets';
 import { DIRECTIONS, MONTHS, VISITED } from '../data/directions.js';
+import { месяцыНаправления } from '../utils/best-months.js';
 import { PRICES } from '../data/prices.js';
 import { getVisaDetails } from '../data/visa-details.js';
 import { getHubSnippet } from '../data/hub-snippets.js';
@@ -157,38 +158,9 @@ const subId = 'hub_' + d.slug.replaceAll('-', '_');
 // либо null там, где маршрут у партнёра не проверен.
 const трансфер = kiwitaxiRoute(d.slug, subId);
 
-// Best months for this destination
-const rank = { P: 4, G: 3, O: 2, B: 1, X: 0 };
-const monthsRanked = MONTHS
-  .map((m, i) => ({ ...m, i, status: d.r[i], text: d.t[i], rank: rank[d.r[i]] || 0 }));
-// Лучшие месяцы — месяцы «пика», а где пика нет, «хорошие»; худшие — «закрыто», а где его нет, «не сезон». Называем
-// их сезонами подряд: «июнь–август», «декабрь–март, июнь–июль и октябрь». До 11.09.2026 брались первые три хороших
-// месяца по календарю, и у 56 направлений из 77 фраза называла только первый сезон: у Исландии и Норвегии —
-// «январь, февраль, март» при пике в июне–августе, у Алтая — «январь, февраль, май» при пике с июня по сентябрь.
-const сезоныИз = (ms) => {
-  const g = [];
-  for (const m of ms) { const last = g.at(-1); if (last && m.i === last.at(-1).i + 1) last.push(m); else g.push([m]); }
-  // Сезон через Новый год — один, а не два: декабрь приклеивается к январю.
-  if (g.length > 1 && g[0][0].i === 0 && g.at(-1).at(-1).i === 11) g.unshift([...g.pop(), ...g.shift()]);
-  return g;
-};
-const сезонСловами = (s) => (s.length > 1 ? `${s[0].nom}–\u2060${s.at(-1).nom}` : s[0].nom);
-const сезоныСловами = (g) => (g.length > 1 ? `${g.slice(0, -1).map(сезонСловами).join(', ')} и ${сезонСловами(g.at(-1))}` : g.map(сезонСловами).join(''));
-const пик = monthsRanked.filter((m) => m.status === 'P');
-const bestMonths = пик.length ? пик : monthsRanked.filter((m) => m.status === 'G');
-const лучшиеСезоны = сезоныИз(bestMonths);
-const лучшиеСловами = bestMonths.length === 12 ? 'круглый год' : сезоныСловами(лучшиеСезоны);
-// В описании для поиска и в карточке для соцсетей места мало: два самых длинных сезона в порядке календаря.
-const двеДлинных = лучшиеСезоны.filter((s) => [...лучшиеСезоны].sort((a, b) => b.length - a.length).slice(0, 2).includes(s));
-const лучшиеКоротко = bestMonths.length === 12 ? 'круглый год' : сезоныСловами(двеДлинных);
-// Карточка фактов наверху на компьютере значения не переносит, и полное «декабрь–февраль и август–сентябрь»
-// вылезало за её край (11.09.2026). Там сезоны сокращениями, как в каталоге стран: «дек–фев, авг–сен».
-const МЕС_КОР = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
-const лучшиеВКарточке = bestMonths.length === 12 ? 'круглый год'
-  : двеДлинных.map((s) => (s.length > 1 ? `${МЕС_КОР[s[0].i]}–\u2060${МЕС_КОР[s.at(-1).i]}` : МЕС_КОР[s[0].i])).join(', ');
-const закрыто = monthsRanked.filter((m) => m.status === 'X');
-const worstMonths = закрыто.length ? закрыто : monthsRanked.filter((m) => m.status === 'B');
-const худшиеСловами = worstMonths.length ? сезоныСловами(сезоныИз(worstMonths)) : '';
+// Лучшие и худшие месяцы — общая логика со страницами виз, поездок по месяцам и сборов: сезонами подряд,
+// в карточке фактов — сокращениями, в описании для поиска — два самых длинных сезона.
+const { monthsRanked, bestMonths, лучшиеСезоны, лучшиеСловами, лучшиеКоротко, лучшиеВКарточке, худшиеСловами } = месяцыНаправления(d);
 
 // ⛔ Цена перелёта берётся из ЖИВОЙ выгрузки, а не из прикидки в таблице цен.
 // Замер 29.08.2026: 16 карточек стран из 51 обещали вдвое меньше реального —
