@@ -17,6 +17,8 @@ import { getBucket } from '../../../data/packing-weather-buckets.js';
 import { hasTripSnippet, tripSnippetDescription } from '../../../data/trip-snippets.js';
 import TripSaveButton from '../../../components/TripSaveButton.astro';
 import StickyCta from '../../../components/StickyCta.astro';
+// «О» или «об»: «об» перед словом с гласной а, и, о, у, э в начале («об Алтае», «об июне»), иначе «о».
+const об = (w) => (/^[аиоуэ]/i.test(String(w || '')) ? 'об' : 'о');
 
 export async function getStaticPaths() {
   const paths = [];
@@ -415,7 +417,7 @@ const pageDescription = snip
 
       {d.relatedPosts.length > 0 && (
         <section class="sec">
-          <div class="shead"><h2>Подробные гайды о {d.cases.prep}</h2></div>
+          <div class="shead"><h2>Подробные гайды {об(d.cases.prep)} {d.cases.prep}</h2></div>
           <ul class="vl wide">
             {d.relatedPosts.map((p) => (
               <li><a href={`/blog/${p.slug}/`}>{p.title}</a><span>{p.kind === 'visa' ? 'про визу' : p.kind === 'season' ? 'про конкретный сезон' : p.kind === 'insurance' ? 'про страховку' : 'личный опыт'}</span></li>

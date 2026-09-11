@@ -376,6 +376,7 @@ export const VISITED = new Set([
   'india-goa', 'cambodia', 'malaysia', 'south-korea', 'peru', 'bolivia', 'chile',
   'argentina', 'brazil', 'mexico', 'turkey', 'south-africa', 'iceland', 'norway',
   'oman', // сказано Никитой 06.09.2026: был сам
+  'kamchatka', 'abkhazia', 'karelia', // по статьям Никиты: Камчатка — своя поездка и кадры, Абхазия — Рица 26.12.2017, Карелия — «бывал здесь ещё в детстве»
   'china', 'nepal', 'kyrgyzstan', 'chile-patagonia', 'japan',
 ]);
 

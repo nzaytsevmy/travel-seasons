@@ -10,6 +10,8 @@ import { getVisaDetails, VISA_DETAILS } from '../../data/visa-details.js';
 import { aviasalesRoute, cherehapaCountry, youtravelCountry } from '../../data/affiliate.js';
 import StickyCta from '../../components/StickyCta.astro';
 import { DATA_UPDATED } from '../../data/meta.js';
+// «О» или «об»: «об» перед словом с гласной а, и, о, у, э в начале («об Алтае», «об июне»), иначе «о».
+const об = (w) => (/^[аиоуэ]/i.test(String(w || '')) ? 'об' : 'о');
 
 // см. комментарий в src/pages/[slug].astro: подпись по реальному sourceType
 const _posts = await getCollection('blog');
@@ -331,7 +333,7 @@ const ldJson = {
 
     {d.relatedPosts.length > 0 && (
       <section class="visa-block">
-        <h2>Подробные гайды о {d.cases.prep}</h2>
+        <h2>Подробные гайды {об(d.cases.prep)} {d.cases.prep}</h2>
         <ul class="visa-related">
           {d.relatedPosts.map((p) => (
             <li><a href={`/blog/${p.slug}/`}><strong>{p.title}</strong></a> — {p.kind === 'visa' ? 'детали по визе' : p.kind === 'season' ? 'про конкретный сезон' : p.kind === 'insurance' ? 'про страховку и полис'

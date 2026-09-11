@@ -26,6 +26,8 @@ import { COUNTRY_SIGHTS } from '../../../data/country-sights.js';
 import { POIS } from '../../../data/country-pois.js';
 import { typo } from '../../../utils/typo.js';
 import PackingChecklist from '../../../components/PackingChecklist.astro';
+// «О» или «об»: «об» перед словом с гласной а, и, о, у, э в начале («об Алтае», «об июне»), иначе «о».
+const об = (w) => (/^[аиоуэ]/i.test(String(w || '')) ? 'об' : 'о');
 
 // Cover photos для страны — те же что используются на /<slug>/
 const destPhotos = import.meta.glob('../../../assets/destinations/*.jpg', {
@@ -319,7 +321,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
     {/* QUICK FACTS. Без номеров «01–04» (декоративные индексы сняты с сайта 06.07.2026) и без «Сезона» —
         он уже стоит плашкой в шапке. Цена та же, что в блоке перелёта ниже, иначе на странице два разных числа. */}
     <section class="pmu-section pmu-section--first">
-      <div class="pmu-shead"><h2>Главное о {m.prep} {d.cases.loc}</h2></div>
+      <div class="pmu-shead"><h2>Главное {об(m.prep)} {m.prep} {d.cases.loc}</h2></div>
       <div class="pmu-vlist">
         <div class="pmu-vi"><span>Погода</span><div>{bucket.label}</div></div>
         {flightLow && <div class="pmu-vi"><span>Перелёт от</span><div>${flightMonth || flightLow}</div></div>}
