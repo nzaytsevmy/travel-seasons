@@ -827,14 +827,899 @@ export const ESSENTIALS = {
       { name: 'JNTO — Japan National Tourism Organization', url: 'https://www.jnto.go.jp/' }
     ],
     updated: '2026-05-26'
-  }
+  },
+  'australia-east': {
+    tipping: {
+      restaurants: 'не обязательны; в дорогих ресторанах за хороший сервис принято оставить официанту 10% счёта',
+      taxi: 'не обязательны, по желанию',
+      hotel: 'сервисный сбор в счёт не добавляют, чаевые по желанию',
+      note: 'в Австралии чаевые всегда на усмотрение гостя',
+    },
+    emergency: {
+      police: '000',
+      ambulance_fire: '000',
+      embassy_ru_phone: '+61-2-6295-9033',
+      embassy_ru_url: 'https://australia.mid.ru/',
+      embassy_note: 'Посольство в Канберре: 78 Canberra Avenue, Griffith. Экстренная связь с посольством: +61 413 004 816, консульский отдел: +61 2 6295 9474. С мобильного вместо 000 можно набрать 112 — звонок попадёт в ту же службу. Полиция не по срочному делу — 131 444.',
+    },
+    water: {
+      tap_drinkable: true,
+      note: 'Можно по всей стране. Где вода непитьевая (обычно в глубинке), над краном висит табличка. В городах есть питьевые фонтанчики, в кафе и отелях бутылку наполнят по просьбе.',
+    },
+    taxi_apps: [
+      { name: 'Uber', note: 'Сидней, Брисбен, Голд-Кост, Кэрнс и Дарвин' },
+      { name: 'DiDi', note: 'Сидней, Брисбен, Голд-Кост, Кэрнс; в Дарвине не работает' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Австралии — контакты', url: 'https://australia.mid.ru/ru/embassy/contacts/' },
+      { name: 'Правительство Австралии — Triple Zero (000)', url: 'https://www.infrastructure.gov.au/media-communications/phone/triple-zero' },
+      { name: 'Tourism Australia — полезные советы', url: 'https://www.australia.com/en-us/facts-and-planning/about-australia/useful-tips.html' },
+      { name: 'DiDi — города Австралии', url: 'https://web.didiglobal.com/au/help-center/where-is-didi-available/' },
+    ],
+    updated: '2026-09-12',
+  },
+  'new-zealand': {
+    tipping: {
+      restaurants: 'не обязательны даже в ресторанах и барах; за хороший сервис — по желанию',
+      taxi: 'не обязательны',
+      hotel: 'сервисный сбор в счёт не включают, чаевые по желанию',
+      note: 'оставлять ли чаевые, решает гость',
+    },
+    emergency: {
+      police: '111',
+      ambulance_fire: '111',
+      embassy_ru_phone: '+64-4-476-6113',
+      embassy_ru_url: 'https://newzealand.mid.ru/',
+      embassy_note: 'Посольство в Веллингтоне: 57 Messines Road, Karori. Консульский отдел: +64 4 476 6742, +64 4 476 9548 (9:00–12:30). В чрезвычайной ситуации дежурный отвечает по +64 4 476 6113 и +64 21 550 767. Полиция не по срочному делу — 105.',
+    },
+    water: { tap_drinkable: true, note: 'Можно в любой части страны. Бутылку наполняют в питьевых фонтанчиках и в номере, в кафе воду наливают бесплатно.' },
+    taxi_apps: [
+      { name: 'Uber', note: 'Окленд, Веллингтон, Крайстчерч, Квинстаун' },
+      { name: 'YourRide', note: 'бывший Zoomy: лицензированные такси по всей стране, цену показывает до поездки' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Новой Зеландии', url: 'https://newzealand.mid.ru/ru/' },
+      { name: 'Полиция Новой Зеландии — номера 111 и 105', url: 'https://www.police.govt.nz/contact-us' },
+      { name: 'Tourism New Zealand — деньги и чаевые', url: 'https://www.newzealand.com/us/feature/new-zealand-currency/' },
+      { name: 'Tourism New Zealand — вода из-под крана', url: 'https://www.newzealand.com/ca/keep-new-zealand-clean/' },
+    ],
+    updated: '2026-09-12',
+  },
+  'iceland': {
+    tipping: {
+      restaurants: 'нет — чаевых не ждут; за исключительный сервис можно оставить наличные в любой валюте',
+      taxi: 'нет',
+      hotel: 'не ждут',
+      note: 'гиду на экскурсии тоже можно оставить наличные, если он особенно постарался',
+    },
+    emergency: {
+      police: '112',
+      ambulance_fire: '112',
+      embassy_ru_phone: '+354-551-5156',
+      embassy_ru_url: 'https://iceland.mid.ru/',
+      embassy_note: 'Посольство в Рейкьявике: Garðastræti 33. Консульский отдел: +354 561 0851; экстренная связь: +354 696 5524. Если до 112 не дозвониться, запасной номер службы — +354 599 0112.',
+    },
+    water: { tap_drinkable: true, note: 'Можно по всей стране: почти вся вода подземная, её не хлорируют, качество проверяют постоянно.' },
+    taxi_apps: [
+      { name: 'Hopp', note: 'Рейкьявик с пригородами, аэропорт Кефлавик и Акюрейри; цена видна до заказа, оплата в приложении' },
+      { name: 'Hreyfill', note: 'таксомоторная компания с 1943 года со своим приложением; Рейкьявик и Акюрейри' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Исландии — контакты', url: 'https://iceland.mid.ru/ru/embassy/contacts/' },
+      { name: 'Neyðarlínan — единый номер 112', url: 'https://www.112.is/en' },
+      { name: 'Visit Reykjavík — деньги и чаевые', url: 'https://visitreykjavik.is/currency-credit-cards-and-banks' },
+      { name: 'Visit South Iceland — вода', url: 'https://www.south.is/en/travel-info/practical-information/icelandic-water' },
+    ],
+    updated: '2026-09-12',
+  },
+  'norway': {
+    tipping: {
+      restaurants: 'по желанию: в ресторанах и барах местные оставляют 5–15% счёта, если понравились еда и сервис',
+      taxi: 'обычно не оставляют',
+      hotel: 'обычно не оставляют',
+      note: 'кроме баров и ресторанов, чаевые в Норвегии не приняты; не оставить — не обида',
+    },
+    emergency: {
+      police: '112',
+      ambulance: '113',
+      fire: '110',
+      embassy_ru_phone: '+47-22-55-32-78',
+      embassy_ru_url: 'https://norway.mid.ru/',
+      embassy_note: 'Посольство в Осло: Drammensveien 74. Экстренная связь: +47 46 85 88 25; консульский отдел: +47 22 55 17 63. Генконсульства: в Киркенесе (+47 78 99 37 37) и в Баренцбурге на Шпицбергене (+47 90 67 23 80).',
+    },
+    water: { tap_drinkable: true, note: 'Воду из-под крана пьют: она чистая и бесплатная, удобно возить с собой бутылку и наполнять её.' },
+    taxi_apps: [
+      { name: 'Uber', note: 'в Осло; через приложение приезжают лицензированные таксисты' },
+      { name: 'Bolt', note: 'в Осло, в том числе поездки в аэропорт и из аэропорта' },
+      { name: 'Taxifix', note: 'приложение Oslo Taxi, крупнейшей таксомоторной компании страны; заказ по всей Норвегии' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Норвегии — контакты', url: 'https://norway.mid.ru/ru/embassy/contacts/' },
+      {
+        name: 'Nkom (регулятор связи Норвегии) — экстренные номера',
+        url: 'https://nkom.no/telefoni-og-telefonnummer/informasjon-om-telefoni-for-sluttbruker/n%C3%B8dnummer-og-n%C3%B8danrop',
+      },
+      { name: 'Visit Norway — деньги, цены и чаевые', url: 'https://www.visitnorway.com/plan-your-trip/travel-tips-a-z/currency-and-prices/' },
+      { name: 'Visit Norway — как сэкономить (вода из-под крана)', url: 'https://www.visitnorway.com/plan-your-trip/travel-tips-a-z/budget-travel/' },
+    ],
+    updated: '2026-09-12',
+  },
+  'qatar': {
+    tipping: { restaurants: 'сервисный сбор обычно включён в счёт; сверху 10–15% по желанию', taxi: 'по желанию', hotel: 'по желанию', note: 'чаевые не обязательны, оставляют их наличными' },
+    emergency: { police: '999', ambulance_fire: '999', embassy_ru_phone: '+974-4483-6231; экстренный +974-5588-7659', embassy_ru_url: 'https://qatar.mid.ru/' },
+    water: { tap_drinkable: true, note: 'опреснённая вода из водопровода соответствует нормам ВОЗ, но многие пьют бутилированную — её продают везде' },
+    taxi_apps: [
+      { name: 'Karwa Taxi', note: 'такси компании Mowasalat; в приложении же заказывают бесплатный подвоз до ближайшей станции метро' },
+      { name: 'Uber', note: 'работает круглосуточно, через него можно вызвать и такси Karwa' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Катаре', url: 'https://qatar.mid.ru/ru/' },
+      { name: 'КД МИД России — Катар', url: 'https://www.kdmid.ru/docs/qatar/information-about-the-country/' },
+      { name: 'Visit Qatar — Travel tips', url: 'https://visitqatar.com/intl-en/plan-your-trip/travel-tips' },
+      { name: 'Минздрав Катара — страховка для гостей', url: 'https://www.moph.gov.qa/english/departments/ministeroffice/hfid/Pages/FAQs.aspx' },
+    ],
+    updated: '2026-09-12',
+  },
+  'saudi-arabia': {
+    tipping: { restaurants: 'по желанию, если сервисный сбор не включён', taxi: 'по желанию', hotel: 'по желанию', note: 'чаевые не обязательны' },
+    emergency: {
+      police: '999',
+      ambulance: '997',
+      fire: '998',
+      embassy_ru_phone: '+966-11-481-1432; экстренный +966-54-910-2266; генконсульство в Джидде +966-12-665-9255',
+      embassy_ru_url: 'https://riyadh.mid.ru/',
+    },
+    water: { tap_drinkable: false, note: 'подтверждения, что водопроводную воду можно пить, нет — берите бутилированную' },
+    taxi_apps: [
+      { name: 'Uber', note: 'работает в Эр-Рияде и Джидде' },
+      { name: 'Careem', note: 'работает в крупных городах страны' },
+      { name: 'Bolt', note: 'есть в Эр-Рияде и Джидде' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Саудовской Аравии', url: 'https://riyadh.mid.ru/ru/kontakty/' },
+      { name: 'Генконсульство РФ в Джидде', url: 'https://jeddah.mid.ru/ru/' },
+      { name: 'КД МИД России — Саудовская Аравия', url: 'https://www.kdmid.ru/docs/saudi-arabia/information-about-the-country/' },
+      { name: 'Visit Saudi — Getting around', url: 'https://www.visitsaudi.com/en/getting-around' },
+    ],
+    updated: '2026-09-12',
+  },
+  'cambodia': {
+    tipping: { restaurants: 'не обязательны, но приветствуются', taxi: 'цена договорная, о ней условливаются до поездки; в Grab цена известна заранее' },
+    emergency: { police: '117', ambulance: '119', fire: '118', embassy_ru_phone: '+855-23-210-931; экстренный +855-886-430-810', embassy_ru_url: 'https://embrusscambodia.mid.ru/' },
+    taxi_apps: [
+      { name: 'Grab', note: 'тук-туки и реморки по цене, известной заранее; машина с водителем в Пномпене и Сиемреапе' },
+    ],
+    sources: [
+      { name: 'Консульский департамент МИД России — Камбоджа', url: 'https://www.kdmid.ru/docs/cambodia/information-about-the-country/' },
+      { name: 'Консульский департамент МИД России — посольство в Камбодже', url: 'https://www.kdmid.ru/docs/cambodia/russian-consular-offices/' },
+      { name: 'Grab Cambodia — поездки', url: 'https://www.grab.com/kh/en/transport/' },
+    ],
+    updated: '2026-09-12',
+  },
+  'india-goa': {
+    tipping: {
+      restaurants: 'сервисный сбор только по желанию гостя, вписывать его в счёт без спроса запрещено',
+      taxi: 'цену оговаривают до посадки — иностранцам часто называют завышенную',
+      note: 'если сервисный сбор вписали без спроса, его можно попросить убрать из счёта',
+    },
+    emergency: {
+      police: '112 или 100',
+      ambulance: '108',
+      fire: '101',
+      embassy_ru_phone: '+91-22-2367-7566 (генконсульство в Мумбаи, Гоа в его округе); экстренный +91-91675-75661',
+      embassy_ru_url: 'https://mumbai.mid.ru/',
+    },
+    water: { tap_drinkable: false, note: 'пьют бутилированную воду в закрытой заводской упаковке; воду непонятного происхождения не пьют' },
+    taxi_apps: [
+      { name: 'GoaMiles', note: 'приложение туристической корпорации штата, им пользуется 15% жителей; Uber и Ola в Гоа не пускают' },
+    ],
+    sources: [
+      { name: 'Портал правительства Гоа — экстренные номера', url: 'https://www.goa.gov.in/' },
+      { name: 'Консульский департамент МИД России — загранучреждения в Индии', url: 'https://www.kdmid.ru/docs/india/russian-consular-offices/' },
+      { name: 'Консульский департамент МИД России — Индия', url: 'https://www.kdmid.ru/docs/india/information-about-the-country/' },
+      { name: 'GoaMiles — такси туристической корпорации Гоа', url: 'https://www.goamiles.com/' },
+    ],
+    updated: '2026-09-12',
+  },
+  'nepal': {
+    emergency: { police: '100', ambulance: '102', fire: '101', tourist_police: '1144', embassy_ru_phone: '+977-1-451-10-63; экстренный +977-980-104-71-87', embassy_ru_url: 'https://nepal.mid.ru/' },
+    water: { tap_drinkable: false, note: 'пьют воду из заводских бутылок и ею же чистят зубы; некипячёную воду, свежевыжатые соки и салаты в общепите лучше не брать' },
+    taxi_apps: [
+      { name: 'Pathao', note: 'мототакси и машины в одном приложении' },
+    ],
+    sources: [
+      { name: 'Консульский департамент МИД России — посольство в Непале', url: 'https://www.kdmid.ru/docs/nepal/russian-consular-offices/' },
+      { name: 'Туристический совет Непала — туристическая полиция', url: 'https://ntb.gov.np/en/plan-your-trip/before-you-come/tourist-police' },
+      { name: 'Полиция Непала — экстренные номера', url: 'https://www.nepalpolice.gov.np/stations/emergency-contacts/' },
+      { name: 'Консульский департамент МИД России — Непал', url: 'https://www.kdmid.ru/docs/nepal/information-about-the-country/' },
+    ],
+    updated: '2026-09-12',
+  },
+  'philippines': {
+    tipping: { restaurants: 'сервисный сбор из счёта по закону целиком делят между персоналом', taxi: 'в Grab цена известна до поездки' },
+    emergency: { police: '911', ambulance_fire: '911', embassy_ru_phone: '+63-917-860-94-90 (круглосуточно); консульский отдел +63-2-750-15-711', embassy_ru_url: 'https://philippines.mid.ru/' },
+    taxi_apps: [
+      { name: 'Grab', note: 'такси и частные машины, цена известна заранее' },
+      { name: 'Angkas', note: 'мототакси: Манила с пригородами, Себу, Кагаян-де-Оро' },
+      { name: 'JoyRide', note: 'мототакси, машины и трансферы в аэропорт' },
+    ],
+    sources: [
+      { name: 'Посольство России на Филиппинах — контакты', url: 'https://philippines.mid.ru/ru/embassy/contacts/' },
+      { name: 'Указ № 56 (2018) о единой линии 911', url: 'https://lawphil.net/executive/execord/eo2018/eo_56_2018.html' },
+      { name: 'Закон RA 11360 о сервисном сборе', url: 'https://lawphil.net/statutes/repacts/ra2019/ra_11360_2019.html' },
+      { name: 'Grab Philippines — поездки', url: 'https://www.grab.com/ph/transport/' },
+    ],
+    updated: '2026-09-12',
+  },
+  'abkhazia': {
+    emergency: {
+      police: '02, с мобильного 002',
+      ambulance: '03, с мобильного 003',
+      fire: '01, с мобильного 001',
+      embassy_ru_phone: '+7-840-226-04-91; дежурный +7-940-711-45-55',
+      embassy_ru_url: 'https://abkhazia.mid.ru/',
+    },
+    water: {
+      tap_drinkable: false,
+      note: 'или кипячёная из-под крана: магистральные трубы меняют, а за трубы к домам санитарная служба не ручается; бутилированную воду делают на месте, её проверяют',
+    },
+    sources: [
+      { name: 'Консульский департамент МИД России — Абхазия', url: 'https://www.kdmid.ru/docs/abkhazia/information-about-the-country/' },
+      { name: 'Посольство России в Абхазии — памятка туристам', url: 'https://abkhazia.mid.ru/ru/pamyatka_turistam/' },
+      { name: 'Главный санврач Абхазии о водопроводной воде («Вестник Кавказа»)', url: 'https://vestikavkaza.ru/news/mozno-li-pit-vodu-iz-pod-krana-v-abhazii.html' },
+    ],
+    updated: '2026-09-12',
+  },
+  'dominican-republic': {
+    tipping: {
+      restaurants: '10% за обслуживание добавляют к счёту по закону, плюс 18% налога; сверху — по желанию',
+      taxi: 'не обязательны; цену согласуйте до посадки',
+      hotel: 'по желанию',
+      note: 'итог в ресторане выше цены в меню примерно на 28%',
+    },
+    emergency: { police: '911 — единая служба экстренной помощи; туристическая полиция POLITUR — 809-222-2026', embassy_ru_phone: '+1 809 872-9559', embassy_ru_url: 'https://dominicana.mid.ru/ru/' },
+    water: {
+      tap_drinkable: false,
+      note: 'водоканал Санто-Доминго называет воду из крана питьевой, минздрав — только безопасной для бытовых нужд, а риск загрязнения в трубах признают сами власти; пьют бутилированную',
+    },
+    taxi_apps: [
+      { name: 'Uber', note: 'Санто-Доминго и Пунта-Кана, в том числе поездки из аэропорта' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Доминикане', url: 'https://dominicana.mid.ru/ru/' },
+      { name: 'Туристическая полиция POLITUR', url: 'https://politur.gob.do/' },
+      { name: 'Налоговая служба DGII — ставка ITBIS', url: 'https://dgii.gov.do/cicloContribuyente/obligacionesTributarias/principalesImpuestos/Paginas/itbis.aspx' },
+      { name: 'Трудовой кодекс Доминиканы, статья 228', url: 'https://poderjudicial.gob.do/wp-content/uploads/2021/06/Codigo_Trabajo.pdf' },
+    ],
+    updated: '2026-09-12',
+  },
+  'ecuador': {
+    tipping: {
+      restaurants: 'в ресторанах первой и второй категории 10% за обслуживание входит в счёт; сверху оставляют мелочь от сдачи или $1–2',
+      taxi: 'не обязательны; поездка по городу обычно стоит $2–6, цену согласуйте до посадки или попросите включить счётчик',
+      hotel: 'по желанию, мелкими купюрами',
+      note: 'платят долларами США; купюры от $50 в небольших магазинах и кафе могут не принять, держите мелкие',
+    },
+    emergency: {
+      police: '911 или 101',
+      ambulance: '911 или 131',
+      fire: '911 или 102',
+      embassy_ru_phone: '+593 2 252-6361; консульский отдел +593 2 250-50-89',
+      embassy_ru_url: 'https://ecuador.mid.ru/ru/',
+    },
+    water: {
+      tap_drinkable: false,
+      note: 'из-под крана не пить: вода, немытые фрукты и еда с уличных лотков — частая причина тяжёлого кишечного расстройства; для питья и чистки зубов берут бутилированную',
+    },
+    taxi_apps: [
+      { name: 'Uber', note: 'Кито, Гуаякиль, Манта, Салинас и ещё несколько городов' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Эквадоре', url: 'https://ecuador.mid.ru/ru/' },
+      { name: 'Консульский департамент МИД России — памятка по Эквадору', url: 'https://www.kdmid.ru/docs/ecuador/information-about-the-country/' },
+      { name: 'Uber — Кито', url: 'https://www.uber.com/global/en/cities/quito/' },
+    ],
+    updated: '2026-09-12',
+  },
+  'argentina': {
+    tipping: {
+      restaurants: 'по желанию, сумму решает гость; удобнее оставлять наличными',
+      taxi: 'не обязательны',
+      hotel: 'по желанию',
+      note: 'обязательного процента нет — размер чаевых решает гость',
+    },
+    emergency: {
+      police: '911',
+      ambulance: '911; в Буэнос-Айресе и области работает и 107',
+      fire: '100',
+      embassy_ru_phone: '+54 9 11 4813-1552; консульский отдел +54 9 11 4812-1794, в выходные для экстренных случаев +54 9 11 3296-6536',
+      embassy_ru_url: 'https://argentina.mid.ru/ru/',
+    },
+    water: { tap_drinkable: true, note: 'в Буэнос-Айресе вода из-под крана питьевая — её подаёт городской водоканал AySA; за пределами столицы уточняйте у хозяев жилья' },
+    taxi_apps: [
+      { name: 'Uber', note: 'работает в Буэнос-Айресе круглосуточно' },
+      { name: 'Cabify', note: 'показывает цену до заказа поездки' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Аргентине', url: 'https://argentina.mid.ru/ru/' },
+      { name: 'Портал правительства Аргентины — экстренные номера', url: 'https://www.argentina.gob.ar/tema/emergencias' },
+      { name: 'AySA — питьевая вода', url: 'https://www.aysa.com.ar/portal/Que-Hacemos/Agua-potable' },
+    ],
+    updated: '2026-09-12',
+  },
+  'brazil': {
+    tipping: {
+      restaurants: 'в счёт часто добавляют 10% за обслуживание — это чаевые, платить их не обязательно',
+      taxi: 'не обязательны',
+      hotel: 'по желанию',
+      note: 'по закону надбавка taxa de serviço идёт персоналу, но гость вправе от неё отказаться',
+    },
+    emergency: {
+      police: '190',
+      ambulance: '192',
+      fire: '193',
+      embassy_ru_phone: 'горячая линия посольства +55 61 3223-3094; консульский отдел +55 61 3223-5094; генконсульство в Рио-де-Жанейро +55 21 2274-0097',
+      embassy_ru_url: 'https://brazil.mid.ru/ru/',
+    },
+    water: { tap_drinkable: false, note: 'водопроводную воду пить не советуют — для питья берут бутилированную' },
+    taxi_apps: [
+      { name: 'Uber', note: 'работает в Рио-де-Жанейро круглосуточно, возит и из аэропорта' },
+      { name: '99', note: 'бразильский сервис: частные машины и такси' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Бразилии', url: 'https://brazil.mid.ru/ru/' },
+      { name: 'Консульский департамент МИД России — памятка по Бразилии', url: 'https://www.kdmid.ru/docs/brazil/information-about-the-country/' },
+      { name: 'Прокуратура штата Сеара — защита прав потребителей, надбавка 10%', url: 'https://mpce.mp.br/decon/duvidas/bares-e-restaurantes/cobranca-de-10/' },
+    ],
+    updated: '2026-09-12',
+  },
+  'canada-east': {
+    tipping: {
+      restaurants: '15–20% от суммы до налога',
+      taxi: '10–15%',
+      hotel: 'CAD 2–5 за ночь горничной',
+      note: 'цены в меню и на ценниках без налога: в Онтарио прибавят 13%, в Квебеке 5% и 9,975%, в Альберте 5%',
+    },
+    emergency: {
+      police: '911',
+      ambulance_fire: '911',
+      embassy_ru_phone: '+1-613-235-43-41',
+      embassy_ru_url: 'https://canada.mid.ru/',
+      embassy_note: 'Посольство в Оттаве, консульский отдел: +1-613-236-72-20; генконсульства в Торонто (+1-416-962-99-11) и Монреале (+1-514-843-59-01)',
+    },
+    water: { tap_drinkable: true, note: 'в Торонто, Калгари и других городах пьют из-под крана; воду из рек и озёр в горах кипятят, фильтруют или обеззараживают' },
+    taxi_apps: [
+      { name: 'Uber', note: 'Торонто, Монреаль, Оттава, Квебек, Калгари, Ванкувер и другие города' },
+      { name: 'Lyft', note: 'Монреаль, Оттава, Квебек, Калгари, Ванкувер' },
+    ],
+    sources: [
+      { name: 'Консульский портал МИД РФ — Канада', url: 'https://www.kdmid.ru/docs/canada/russian-consular-offices/' },
+      { name: 'IRCC — требования к въезду', url: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada/entry-requirements-country.html' },
+      { name: 'Город Торонто — водопроводная вода', url: 'https://www.toronto.ca/services-payments/water-environment/tap-water-in-toronto/' },
+      { name: 'CRA — ставки GST/HST', url: 'https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/gst-hst-businesses/charge-collect-which-rate.html' },
+    ],
+    updated: '2026-09-12',
+  },
+  'usa': {
+    tipping: {
+      restaurants: '15–20% от суммы до налога — обязательная норма',
+      taxi: '15–20%, в Uber и Lyft — в приложении',
+      hotel: '$2–5 за ночь горничной, $1–2 за сумку носильщику',
+      note: 'чаевые — часть заработка официанта; в счёт для больших компаний их иногда включают — проверяйте строку service charge',
+    },
+    emergency: {
+      police: '911',
+      ambulance_fire: '911',
+      embassy_ru_phone: '+1-202-298-57-00',
+      embassy_ru_url: 'https://washington.mid.ru/',
+      embassy_note: 'Консульский отдел в Вашингтоне: +1-202-939-89-07; генконсульства в Нью-Йорке (+1-212-534-3782) и Хьюстоне (+1-713-337-33-00)',
+    },
+    water: {
+      tap_drinkable: true,
+      note: 'водопроводную воду проверяют по федеральному закону о питьевой воде, в городах её пьют из-под крана; нью-йоркскую городские власти называют одной из лучших в мире',
+    },
+    taxi_apps: [
+      { name: 'Uber', note: 'основное приложение, работает по всей стране' },
+      { name: 'Lyft', note: 'в крупных городах; для обоих нужна карта не российского банка' },
+    ],
+    sources: [
+      { name: 'Консульский портал МИД РФ — США', url: 'https://www.kdmid.ru/docs/usa/russian-consular-offices/' },
+      { name: 'Консульский портал МИД РФ — сведения о США', url: 'https://www.kdmid.ru/docs/usa/information-about-the-country/' },
+      { name: 'EPA — закон о питьевой воде', url: 'https://www.epa.gov/sdwa/overview-safe-drinking-water-act' },
+      { name: 'NYC DEP — питьевая вода Нью-Йорка', url: 'https://www.nyc.gov/site/dep/water/drinking-water.page' },
+    ],
+    updated: '2026-09-12',
+  },
+  'singapore': {
+    tipping: {
+      restaurants: 'не приняты; в ресторанах к счёту могут прибавить сервисный сбор',
+      taxi: 'не приняты, оплата по счётчику или в приложении',
+      hotel: 'не обязательны',
+      note: 'чаевые не ждут; налог GST 9% включают в чек',
+    },
+    emergency: {
+      police: '999',
+      ambulance_fire: '995',
+      embassy_ru_phone: '+65-6235-1832',
+      embassy_ru_url: 'https://singapore.mid.ru/ru/',
+      embassy_note: 'консульский отдел: +65-6320-3263; адрес — 51 Nassim Road',
+    },
+    water: { tap_drinkable: true, note: 'пьют прямо из-под крана: вода соответствует нормам ВОЗ, фильтр не нужен' },
+    taxi_apps: [
+      { name: 'Grab', note: 'такси и машины с водителем по всему острову' },
+      { name: 'Gojek', note: 'машины с водителем, удобно сравнивать цену с Grab' },
+      { name: 'CDG Zig', note: 'приложение таксопарка ComfortDelGro' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Сингапуре', url: 'https://singapore.mid.ru/ru/' },
+      { name: 'Полиция Сингапура', url: 'https://www.police.gov.sg/' },
+      { name: 'Гражданская оборона Сингапура (SCDF)', url: 'https://www.scdf.gov.sg/' },
+      { name: 'PUB — качество водопроводной воды', url: 'https://www.pub.gov.sg/Public/WaterLoop/Water-Quality' },
+    ],
+    updated: '2026-09-12',
+  },
+  'hong-kong': {
+    tipping: {
+      restaurants: 'в большинстве ресторанов в счёт включают 10% сервисного сбора, в кафе и закусочных его может не быть',
+      taxi: 'не обязательны; с 1 апреля 2026 таксист обязан принимать минимум два способа электронной оплаты',
+      hotel: 'носильщику по желанию',
+      note: 'сверх сервисного сбора оставлять не обязательно',
+    },
+    emergency: {
+      police: '999',
+      ambulance_fire: '999',
+      embassy_ru_phone: '+852-2877-7188',
+      embassy_ru_url: 'https://hongkong.mid.ru/ru/',
+      embassy_note: 'Генеральное консульство: Sun Hung Kai Centre, 30 Harbour Road, Ваньчай',
+    },
+    water: { tap_drinkable: true, note: 'водопровод отвечает стандартам ВОЗ, но в старых домах качество портят трубы и баки — там надёжнее кипятить или брать бутилированную' },
+    taxi_apps: [
+      { name: 'Uber', note: 'работает в Гонконге, есть поездки из аэропорта' },
+    ],
+    sources: [
+      { name: 'Генеральное консульство РФ в Гонконге', url: 'https://hongkong.mid.ru/ru/' },
+      { name: 'Консульский департамент МИД России — Китай и Гонконг', url: 'https://www.kdmid.ru/docs/china/information-about-the-country/' },
+      { name: 'Водное управление Гонконга (WSD)', url: 'https://www.wsd.gov.hk/en/core-businesses/water-quality/index.html' },
+      { name: 'Транспортный департамент Гонконга — такси', url: 'https://www.td.gov.hk/en/transport_in_hong_kong/public_transport/taxi/index.html' },
+    ],
+    updated: '2026-09-12',
+  },
+  'seychelles': {
+    tipping: {
+      restaurants: 'не обязательны; прежде чем оставлять, проверьте, нет ли в счёте строки service charge',
+      taxi: 'по желанию; поездка стоит $5–100 в зависимости от расстояния и времени суток',
+      hotel: 'по желанию, носильщику и горничной',
+      note: 'чаевые оставляют за хороший сервис, обязательной нормы нет',
+    },
+    emergency: { police: '999 или 112', ambulance: '151', fire: '999', embassy_ru_phone: '+248-252-95-49 (экстренный), +248-426-65-90', embassy_ru_url: 'https://seychelles.mid.ru/ru/' },
+    water: {
+      tap_drinkable: true,
+      note: 'водопровод PUC подаёт очищенную питьевую воду, на Маэ, Праслине и Ла-Диге её дополняют опреснители; после сильных ливней, когда речная вода слишком мутная для очистки, надёжнее бутилированная',
+    },
+    taxi_apps: [],
+    sources: [
+      { name: 'Консульский департамент МИД России: Сейшелы', url: 'https://www.kdmid.ru/docs/seychelles/russian-consular-offices/' },
+      { name: 'Министерство туризма Сейшел: экстренные номера', url: 'https://tourism.gov.sc/wp-content/uploads/2022/08/SEYCHELLES-EMERGENGY-ESSENTIAL-NUMBERS-NEW.pdf' },
+      { name: 'PUC: водоснабжение Сейшел', url: 'https://www.puc.sc/water/' },
+      { name: 'Консульский департамент МИД России: информация о Сейшелах', url: 'https://www.kdmid.ru/docs/seychelles/information-about-the-country/' },
+    ],
+    updated: '2026-09-12',
+  },
+  'tanzania': {
+    tipping: {
+      restaurants: 'по желанию',
+      taxi: 'по желанию; от аэропорта Дар-эс-Салама до центра такси стоит 20–30 тыс. шиллингов',
+      hotel: 'около 500 шиллингов носильщику или прислуге',
+      note: 'на Килиманджаро гиду в среднем $10 в день, повару и носильщику — по $5',
+    },
+    emergency: {
+      police: '112',
+      ambulance: '115',
+      fire: '114',
+      embassy_ru_phone: '+255-767-919-756 (экстренный), консульский отдел +255-22-266-60-46',
+      embassy_ru_url: 'https://tanzania.mid.ru/ru/contacts/',
+    },
+    water: { tap_drinkable: false, note: 'водопроводную воду не пьют, бутилированную продают везде' },
+    taxi_apps: [
+      { name: 'Bolt', note: 'работает в Дар-эс-Саламе и на Занзибаре' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Танзании', url: 'https://tanzania.mid.ru/ru/contacts/' },
+      { name: 'Полиция Танзании: экстренные номера', url: 'https://www.polisi.go.tz/' },
+      { name: 'Консульский департамент МИД России: информация о Танзании', url: 'https://www.kdmid.ru/docs/tanzania/information-about-the-country/' },
+    ],
+    updated: '2026-09-12',
+  },
+  'mauritius': {
+    tipping: { restaurants: 'по желанию', taxi: 'счётчиков нет, цену оговаривают до поездки', hotel: 'по желанию', note: 'чаевые не обязательны' },
+    emergency: { police: '999 или 112', ambulance: '114', fire: '115', embassy_ru_phone: '+230 5729 40 36 (экстренный), +230 696-1545', embassy_ru_url: 'https://mauritius.mid.ru/' },
+    taxi_apps: [],
+    sources: [
+      { name: 'Правительственный портал Маврикия: горячие линии', url: 'https://govmu.org/EN/Pages/default.aspx' },
+      { name: 'Полиция Маврикия', url: 'https://police.govmu.org/police/' },
+      { name: 'Консульский департамент МИД России: Маврикий', url: 'https://www.kdmid.ru/docs/mauritius/russian-consular-offices/' },
+      { name: 'Консульский департамент МИД России: информация о Маврикии', url: 'https://www.kdmid.ru/docs/mauritius/information-about-the-country/' },
+    ],
+    updated: '2026-09-12',
+  },
+  'madagascar': {
+    tipping: { restaurants: 'по желанию', taxi: 'по желанию; по городу безопаснее такси, чем общественный транспорт', hotel: 'по желанию', note: 'чаевые не обязательны' },
+    emergency: {
+      police: '117',
+      ambulance: '020-22-357-53',
+      fire: '118',
+      embassy_ru_phone: '+261-38-25-980-40 (экстренный), консульский отдел +261 20 85 539 10',
+      embassy_ru_url: 'https://madagascar.mid.ru/ru/contacts/',
+    },
+    water: { tap_drinkable: false, note: 'некипячёную воду и лёд исключают полностью, пьют бутилированную или кипячёную' },
+    taxi_apps: [],
+    sources: [
+      { name: 'Посольство РФ на Мадагаскаре', url: 'https://madagascar.mid.ru/ru/contacts/' },
+      { name: 'Консульский департамент МИД России: Мадагаскар', url: 'https://www.kdmid.ru/docs/madagascar/russian-consular-offices/' },
+      { name: 'Консульский департамент МИД России: информация о Мадагаскаре', url: 'https://www.kdmid.ru/docs/madagascar/information-about-the-country/' },
+    ],
+    updated: '2026-09-12',
+  },
+  'south-africa': {
+    tipping: {
+      restaurants: '10–15%, если сервисный сбор не включён в счёт',
+      taxi: 'в приложениях по желанию; у водителей почти не бывает сдачи',
+      hotel: 'носильщику и горничной по желанию',
+      note: 'обязательных ставок нет, но официанты рассчитывают на чаевые',
+    },
+    emergency: { police: '10111', ambulance: '10177', embassy_ru_phone: '+27-60-796-27-17 (дежурный, Претория); Кейптаун: +27-82-374-05-18', embassy_ru_url: 'https://russianembassyza.mid.ru/ru/' },
+    water: { tap_drinkable: true, note: 'в Кейптауне водопроводная вода проходит проверку по стандарту SANS 241 и пригодна для питья; в глубинке и после перебоев надёжнее бутилированная' },
+    taxi_apps: [
+      { name: 'Uber', note: 'работает в Кейптауне круглосуточно' },
+      { name: 'Bolt', note: 'работает в Кейптауне' },
+    ],
+    sources: [
+      { name: 'Консульский департамент МИД России: ЮАР', url: 'https://www.kdmid.ru/docs/south-africa/russian-consular-offices/' },
+      { name: 'Полиция ЮАР', url: 'https://www.saps.gov.za/' },
+      { name: 'Консульский департамент МИД России: информация о ЮАР', url: 'https://www.kdmid.ru/docs/south-africa/information-about-the-country/' },
+      {
+        name: 'Кейптаун: качество водопроводной воды',
+        url: 'https://www.capetown.gov.za/Family%20and%20home/residential-utility-services/residential-water-and-sanitation-services/water-quality',
+      },
+    ],
+    updated: '2026-09-12',
+  },
+  'israel': {
+    emergency: { police: '100', ambulance: '101', fire: '102', embassy_ru_phone: '+972-54-962-23-41', embassy_ru_url: 'https://israel.mid.ru/' },
+    water: { tap_drinkable: true, note: 'водопроводная вода питьевая по всей стране, минздрав советует пить именно её; горячую из-под крана для питья не берут' },
+    taxi_apps: [
+      { name: 'Gett', note: 'по всей стране, в том числе официальное такси аэропорта Бен-Гурион' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Израиле', url: 'https://israel.mid.ru/ru/' },
+      { name: 'КонсДеп МИД РФ — Израиль', url: 'https://www.kdmid.ru/docs/israel/information-about-the-country/' },
+      { name: 'Минздрав Израиля — вопросы о питьевой воде', url: 'https://www.gov.il/en/pages/drinking_water_faq' },
+    ],
+    updated: '2026-09-12',
+  },
+  'jordan': {
+    emergency: { police: '911', ambulance_fire: '911', embassy_ru_phone: '+962-77-552-81-25', embassy_ru_url: 'https://jordan.mid.ru/' },
+    water: {
+      tap_drinkable: false,
+      note: 'водопроводная вода не везде соответствует международным стандартам; в пятизвёздочных и большинстве четырёхзвёздочных отелей своя очистка, но пить и готовить советуют на недорогой бутилированной',
+    },
+    taxi_apps: [
+      { name: 'Careem', note: 'приложение региона, работает в Иордании' },
+      { name: 'Uber', note: 'Амман, круглосуточно' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Иордании — контакты', url: 'https://jordan.mid.ru/ru/embassy/contacts/' },
+      { name: 'Посольство РФ в Иордании — правила въезда и пребывания', url: 'https://jordan.mid.ru/ru/consular-services/vizovye_voprosy/pravila_vezda_i_prebyvaniya_v_iordanii/' },
+      { name: 'КонсДеп МИД РФ — Иордания', url: 'https://www.kdmid.ru/docs/jordan/information-about-the-country/' },
+    ],
+    updated: '2026-09-12',
+  },
+  'iran': {
+    emergency: { police: '110', ambulance: '115', fire: '125', embassy_ru_phone: '+98-21-6670-1161', embassy_ru_url: 'https://iran.mid.ru/' },
+    taxi_apps: [
+      { name: 'Snapp', note: 'онлайн-такси в городах; в аэропорту Имама Хомейни есть стойка официального такси' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Иране', url: 'https://iran.mid.ru/ru/' },
+      { name: 'КонсДеп МИД РФ — Иран', url: 'https://www.kdmid.ru/docs/iran/information-about-the-country/' },
+      { name: 'МИД России — Иран', url: 'https://mid.ru/ru/maps/ir/1766378/' },
+    ],
+    updated: '2026-09-12',
+  },
+  'kazakhstan': {
+    tipping: {
+      restaurants: 'по желанию; если в счёте есть строка за обслуживание, сверху не оставляют',
+      taxi: 'не нужны: в приложении цена известна заранее',
+      hotel: 'по желанию',
+      note: 'чаевые не обязательны',
+    },
+    emergency: { police: '102', ambulance: '103', fire: '101', embassy_ru_phone: '+7-708-880-05-31', embassy_ru_url: 'https://kazakhstan.mid.ru/' },
+    water: { tap_drinkable: false, note: 'из-под крана лучше не пить: берите бутилированную или кипятите; воду из горных рек и ручьёв — только после кипячения или фильтра' },
+    taxi_apps: [
+      { name: 'Yandex Go', note: 'работает в Казахстане' },
+      { name: 'Максим', note: 'ещё один сервис заказа такси, работает в Казахстане' },
+    ],
+    sources: [
+      {
+        name: 'Посольство РФ в Казахстане — памятка для едущих в Казахстан',
+        url: 'https://kazakhstan.mid.ru/ru/consular-services/consulate/vnimaniyu_grazhdan_sobirayushchikhsya_posetit_kazakhstan/',
+      },
+      { name: 'Консульский департамент МИД РФ — Казахстан', url: 'https://www.kdmid.ru/docs/kazakhstan/information-about-the-country/' },
+      { name: 'CDC Travelers\' Health — Kazakhstan', url: 'https://wwwnc.cdc.gov/travel/destinations/traveler/none/kazakhstan' },
+    ],
+    updated: '2026-09-12',
+  },
+  'uzbekistan': {
+    tipping: {
+      restaurants: 'по желанию; если в счёте есть строка за обслуживание, сверху не оставляют',
+      taxi: 'не нужны: в приложении цена известна заранее',
+      hotel: 'по желанию',
+      note: 'чаевые не обязательны',
+    },
+    emergency: { police: '102', ambulance: '103', fire: '101', embassy_ru_phone: '+998-71-120-35-04', embassy_ru_url: 'https://uzbekistan.mid.ru/' },
+    water: { tap_drinkable: false, note: 'из-под крана не пьют: берите бутилированную; кишечные инфекции у туристов частые, поэтому еду с уличных лотков и на базарах лучше не брать' },
+    taxi_apps: [
+      { name: 'Yandex Go', note: 'работает в Узбекистане' },
+      { name: 'Максим', note: 'есть в Ташкенте' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Узбекистане — временное пребывание', url: 'https://uzbekistan.mid.ru/ru/consular-services/dlya_grazhdan_rossii/vremennoe_prebyvanie_v_uzbekistane/' },
+      { name: 'Консульский департамент МИД РФ — Узбекистан', url: 'https://www.kdmid.ru/docs/uzbekistan/information-about-the-country/' },
+      { name: 'CDC Travelers\' Health — Uzbekistan', url: 'https://wwwnc.cdc.gov/travel/destinations/traveler/none/uzbekistan' },
+    ],
+    updated: '2026-09-12',
+  },
+  'tajikistan': {
+    tipping: {
+      restaurants: 'по желанию; если в счёте есть строка за обслуживание, сверху не оставляют',
+      taxi: 'не нужны: цену называют до поездки',
+      hotel: 'по желанию',
+      note: 'чаевые не обязательны',
+    },
+    emergency: { embassy_ru_phone: '+992-555-551-715', embassy_ru_url: 'https://dushanbe.mid.ru/' },
+    water: {
+      tap_drinkable: false,
+      note: 'пьют только воду из заводских бутылок: посольство советует не пить некипячёную воду, не брать лёд, свежевыжатые соки и немытые фрукты и даже зубы чистить бутилированной водой',
+    },
+    taxi_apps: [
+      { name: 'Максим', note: 'работает в Таджикистане' },
+    ],
+    sources: [
+      { name: 'Консульский департамент МИД РФ — Таджикистан', url: 'https://www.kdmid.ru/docs/tajikistan/information-about-the-country/' },
+      { name: 'Консульский департамент МИД РФ — посольство и генконсульство в Таджикистане', url: 'https://www.kdmid.ru/docs/tajikistan/russian-consular-offices/' },
+      { name: 'CDC Travelers\' Health — Tajikistan', url: 'https://wwwnc.cdc.gov/travel/destinations/traveler/none/tajikistan' },
+    ],
+    updated: '2026-09-12',
+  },
+  'kyrgyzstan': {
+    tipping: {
+      restaurants: 'по желанию; если в счёте есть строка за обслуживание, сверху не оставляют',
+      taxi: 'не нужны: в приложении цена известна заранее',
+      hotel: 'по желанию',
+      note: 'чаевые не обязательны; приезжим могут назвать цену выше обычной — на базарах можно торговаться',
+    },
+    emergency: { police: '102', ambulance: '103', fire: '112', embassy_ru_phone: '+996-770-448-577', embassy_ru_url: 'https://kyrgyz.mid.ru/' },
+    water: { tap_drinkable: false, note: 'из-под крана не пьют: берите бутилированную; перед поездкой советуют прививку от гепатита А, есть лучше в кафе и столовых, а не с уличных лотков' },
+    taxi_apps: [
+      { name: 'Yandex Go', note: 'работает в Кыргызстане: такси, еда и доставка в одном приложении' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Киргизии — российским туристам', url: 'https://kyrgyz.mid.ru/ru/countries/kirgiziya/for-russia-tourists/' },
+      { name: 'Консульский департамент МИД РФ — Киргизия', url: 'https://www.kdmid.ru/docs/kyrgyzstan/information-about-the-country/' },
+      { name: 'МЧС Киргизии', url: 'https://www.mchs.gov.kg/' },
+      { name: 'CDC Travelers\' Health — Kyrgyzstan', url: 'https://wwwnc.cdc.gov/travel/destinations/traveler/none/kyrgyzstan' },
+    ],
+    updated: '2026-09-12',
+  },
+  'croatia': {
+    tipping: { restaurants: 'по желанию, за хороший сервис', taxi: 'по желанию', hotel: 'по желанию', note: 'чаевые — на усмотрение гостя' },
+    emergency: {
+      general: '112',
+      police: '192',
+      ambulance: '194',
+      fire: '193',
+      sea_rescue: '195',
+      embassy_ru_phone: '+385-1-370-42-99, экстренный +385-99-83-90-861',
+      embassy_ru_url: 'https://croatia.mid.ru/',
+      embassy_note: 'консульский отдел: +385-1-3756-509; экстренный номер — только если жизни и здоровью угрожает опасность; 195 — спасение на море',
+    },
+    water: { tap_drinkable: true, note: 'воду из городского водопровода контролирует Хорватский институт здравоохранения, её можно пить; частные колодцы в сёлах в госмониторинг не входят' },
+    taxi_apps: [
+      { name: 'Bolt', note: 'Загреб, Сплит, Дубровник, Задар, Пула, Риека' },
+      { name: 'Uber', note: 'работает в Хорватии' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Хорватии', url: 'https://croatia.mid.ru/ru/' },
+      { name: 'Ravnateljstvo civilne zaštite — pozivi za žurnu pomoć', url: 'https://civilna-zastita.gov.hr/izdvojeno/pozivi-za-zurnu-pomoc/265' },
+      {
+        name: 'HZJZ — voda za piće iz javnih vodoopskrbnih sustava',
+        url: 'https://www.hzjz.hr/priopcenja-mediji/priopcenje-za-javnost-voda-za-pice-iz-javnih-vodoopskrbnih-sustava-zdravstveno-je-ispravna/',
+      },
+      { name: 'GOV.UK — Croatia safety and security', url: 'https://www.gov.uk/foreign-travel-advice/croatia/safety-and-security' },
+    ],
+    updated: '2026-09-12',
+  },
+  'cyprus': {
+    tipping: { restaurants: 'по усмотрению гостя', taxi: 'водители ценят небольшие чаевые', hotel: 'портье — по желанию', note: 'чаевые на Кипре не обязательны, это жест благодарности' },
+    emergency: {
+      police: '112 или 199',
+      ambulance_fire: '112',
+      embassy_ru_phone: '+357-22-776832 (консульский отдел), экстренный +357-99-477258',
+      embassy_ru_url: 'https://cyprus.mid.ru/',
+      embassy_note: 'экстренный номер посольства — только при угрозе жизни и здоровью, это не справочная',
+    },
+    taxi_apps: [
+      { name: 'Bolt', note: 'Ларнака, Лимасол, Никосия, Пафос, Айя-Напа' },
+    ],
+    sources: [
+      { name: 'Посольство РФ на Кипре — консульский отдел', url: 'https://cyprus.mid.ru/ru/consular-services/' },
+      { name: 'Cyprus Police — Nicosia', url: 'https://police.gov.cy/police/police.nsf/All/1C5A5E53BE5D0786C225852F0023EAE4?OpenDocument' },
+      { name: 'Visit Cyprus — Health & Safety', url: 'https://www.visitcyprus.com/useful-info/health-safety/' },
+      { name: 'Visit Cyprus — Transportation', url: 'https://www.visitcyprus.com/useful-info/transportation/' },
+    ],
+    updated: '2026-09-12',
+  },
+  'greece': {
+    tipping: {
+      restaurants: 'по желанию, за хороший сервис',
+      taxi: 'по желанию',
+      hotel: 'по желанию',
+      note: 'чаевые — жест благодарности; а вот чек с перечнем блюд ресторан обязан выдать по закону',
+    },
+    emergency: {
+      general: '112',
+      police: '100',
+      ambulance: '166',
+      fire: '199',
+      tourist: '1571',
+      coast_guard: '108',
+      embassy_ru_phone: '+30-210-672-52-35, экстренный +30-695-8000-123',
+      embassy_ru_url: 'https://greece.mid.ru/',
+      embassy_note: '112 — единый европейский номер; 1571 — туристическая полиция на греческом, английском, французском и немецком; генконсульство РФ в Салониках: +30-231-025-72-01',
+    },
+    water: {
+      tap_drinkable: true,
+      note: 'в Афинах и Аттике вода из-под крана отличного качества — её поставляет водоканал EYDAP из водохранилищ в чистых районах; на островах спросите хозяев жилья, какую воду пьют местные',
+    },
+    taxi_apps: [
+      { name: 'Uber', note: 'вызывает лицензированные такси' },
+      { name: 'Free Now', note: 'тоже работает с лицензированными такси' },
+      { name: 'Bolt', note: 'Афины, Крит, Миконос' },
+    ],
+    sources: [
+      { name: 'Посольство РФ в Греции — контакты', url: 'https://greece.mid.ru/ru/embassy/contacts/' },
+      { name: 'Посольство РФ в Греции — полезные телефоны', url: 'https://greece.mid.ru/ru/turistam/poleznye_telefony_gretsii/' },
+      { name: 'Hellenic Police — Direct lines', url: 'https://www.astynomia.gr/citizens-guide/direct-lines/?lang=en' },
+      { name: 'EYDAP — Water', url: 'https://www.eydap.gr/en/TheCompany/Water/' },
+    ],
+    updated: '2026-09-12',
+  },
+  'costa-rica-panama': {
+    tipping: {
+      restaurants: '10% за обслуживание по закону вписывают в счёт отдельной строкой «Servicio 10%», сверху — по желанию',
+      taxi: 'не обязательны: счётчик показывает максимум, водитель может взять меньше',
+      hotel: 'по желанию; 13% налога и 10% сервиса обычно входят в итоговую цену',
+      note: 'в Панаме в крупных ресторанах и отелях 10–15% обычно включены в счёт',
+    },
+    emergency: {
+      police: '911 (в Панаме — 104)',
+      ambulance_fire: '911 (в Панаме: скорая 911, пожарные 103)',
+      embassy_ru_phone: 'Коста-Рика: +506 8828-9722 (круглосуточно); Панама: +507 382-2582 (консульский отдел)',
+      embassy_ru_url: 'https://costarica.mid.ru/',
+    },
+    water: {
+      tap_drinkable: true,
+      note: 'в Коста-Рике из-под крана пьют почти везде, бутилированная нужна в некоторых сельских районах и в парке вулкана Поас; в Панаме водопроводная вода питьевая в Панама-Сити и крупных городах, за их пределами — только бутилированная',
+    },
+    taxi_apps: [
+      { name: 'Uber', note: 'Сан-Хосе, Ла-Фортуна, Либерия, Лимон, Пунтаренас; в Панаме — Панама-Сити и Давид' },
+      { name: 'DiDi', note: 'Сан-Хосе, Сан-Карлос, Либерия' },
+      { name: 'inDrive', note: 'цену поездки согласуют с водителем, работает и в Панаме' },
+    ],
+    sources: [
+      { name: 'Посольство России в Коста-Рике', url: 'https://costarica.mid.ru/' },
+      { name: 'МИД России — памятка по Коста-Рике', url: 'https://www.kdmid.ru/docs/costa-rica/information-about-the-country/' },
+      { name: 'Sistema de Emergencias 9-1-1 Costa Rica', url: 'https://www.911.go.cr/' },
+      { name: 'Instituto Costarricense de Turismo — FAQ', url: 'https://www.visitcostarica.com/faqs' },
+    ],
+    updated: '2026-09-12',
+  },
+  'guatemala-belize': {
+    tipping: {
+      restaurants: 'в счёт часто вписывают «propina sugerida» 10%, но закон её не требует: можно отказаться или оставить меньше',
+      taxi: 'не обязательны',
+      hotel: 'по желанию',
+      note: 'чаевые в Гватемале добровольные, обязательного процента нет',
+    },
+    emergency: {
+      police: '110 или 120 (в Белизе — 911)',
+      ambulance: '128',
+      fire: '122 или 123',
+      tourist: '1500 — INGUAT, институт туризма',
+      embassy_ru_phone: 'Гватемала: +502 2367-2765 (горячая линия); Белиз: посольство в Мексике, +52 55 7913-9817',
+      embassy_ru_url: 'https://mid.ru/ru/maps/gt/',
+    },
+    water: { tap_drinkable: false, note: 'из-под крана не пьют ни в Гватемале, ни в Белизе: только кипячёная или бутилированная вода, лёд в напитках тоже лучше не брать' },
+    taxi_apps: [
+      { name: 'Uber', note: 'в Гватемала-Сити круглосуточно, в том числе из аэропорта Ла-Аврора' },
+    ],
+    sources: [
+      { name: 'МИД России — памятка по Гватемале', url: 'https://www.kdmid.ru/docs/guatemala/information-about-the-country/' },
+      { name: 'МИД России — Гватемала, горячая линия посольства', url: 'https://mid.ru/ru/maps/gt/' },
+      { name: 'Посольство России в Мексике (представляет Россию в Белизе)', url: 'https://mexico.mid.ru/ru/' },
+      { name: 'Smartraveller — Guatemala', url: 'https://www.smartraveller.gov.au/destinations/americas/guatemala' },
+    ],
+    updated: '2026-09-12',
+  },
+  'finland': {
+    tipping: {
+      restaurants: 'нет, не ожидаются: обслуживание входит в цену',
+      taxi: 'нет',
+      hotel: 'не приняты',
+      note: 'в Финляндии чаевые не ждут ни в кафе, ни в такси; оставить можно, но это жест, а не правило',
+    },
+    emergency: {
+      police: '112',
+      ambulance_fire: '112',
+      embassy_ru_phone: '+358-9-278-40-23 (консульский отдел); +358-50-476-83-28 (дежурный дипломат)',
+      embassy_ru_url: 'https://helsinki.mid.ru/',
+      embassy_note: 'в Финляндии один номер 112 для полиции, скорой и пожарных, звонок бесплатный с любого телефона',
+    },
+    water: { tap_drinkable: true, note: 'из-под крана пьют по всей стране, вода чистая и холодная; исключение — дачи, где кран идёт прямо из озера' },
+    taxi_apps: [
+      { name: 'Bolt', note: 'работает в Хельсинки' },
+      { name: 'Taksi Helsinki', note: 'приложение городской службы такси, есть фиксированная цена до аэропорта' },
+    ],
+    sources: [
+      { name: 'Консульский департамент МИД России — учреждения в Финляндии', url: 'https://www.kdmid.ru/docs/finland/russian-consular-offices/' },
+      { name: 'Служба экстренных вызовов 112 Финляндии', url: 'https://112.fi/en' },
+      { name: 'Visit Finland — чаевые, деньги, вода', url: 'https://www.visitfinland.com/en/practical-tips/currency-tipping-and-paying-in-finland/' },
+      { name: 'Пограничная служба Финляндии — ограничения для граждан России', url: 'https://raja.fi/en/entry-restrictions' },
+    ],
+    updated: '2026-09-12',
+  },
+  'switzerland': {
+    tipping: {
+      restaurants: 'не обязательны: обслуживание в цене; принято округлить или оставить около 10%',
+      taxi: 'по желанию, округляют до франка',
+      hotel: 'не обязательны',
+      note: 'чаевые включены в цену, округление — жест, а не долг',
+    },
+    emergency: {
+      police: '117 или общий 112',
+      ambulance: '144; в горах — авиаспасатели Rega, 1414',
+      fire: '118',
+      embassy_ru_phone: '+41-31-352-05-67 (консульский отдел); +41-79-367-11-11 (дежурный)',
+      embassy_ru_url: 'https://switzerland.mid.ru/',
+      embassy_note: 'по 112 соединяют с полицией, звонить можно с иностранной SIM; генконсульство в Женеве: дежурный +41-76-331-79-55',
+    },
+    water: { tap_drinkable: true, note: 'из любого крана без риска для здоровья; бутылку наполняют и в городских фонтанах — в одном Цюрихе их 1 200' },
+    taxi_apps: [
+      { name: 'Uber', note: 'Цюрих, круглосуточно' },
+      { name: 'Bolt', note: 'Цюрих' },
+    ],
+    sources: [
+      { name: 'Консульский департамент МИД России — учреждения в Швейцарии', url: 'https://www.kdmid.ru/docs/switzerland/russian-consular-offices/' },
+      { name: 'Портал властей Швейцарии ch.ch — экстренные номера', url: 'https://www.ch.ch/en/safety-and-justice/emergencies-and-danger/' },
+      { name: 'Switzerland Tourism — питьевая вода', url: 'https://www.myswitzerland.com/en/planning/about-switzerland/general-facts/general-information/drinking-water/' },
+      { name: 'Switzerland Tourism — чаевые', url: 'https://www.myswitzerland.com/en/planning/about-switzerland/general-facts/money-and-shopping/tipping/' },
+    ],
+    updated: '2026-09-12',
+  },
 };
 
 // Helper — есть ли essentials для slug
-export function hasEssentials(slug) {
-  return Boolean(ESSENTIALS[slug]);
-}
+// Страницы одной страны (север и юг, регион и вся страна): номера, вода, чаевые и посольство общие,
+// такси — своё там, где в городах другое. Своя запись страницы, если есть, главнее.
+export const ESSENTIALS_ALIAS = { 'chile-fjords': 'chile', 'chile-patagonia': 'chile', 'japan-hokkaido': 'japan', 'australia-north': 'australia-east', 'canada-rockies': 'canada-east', 'raja-ampat': 'bali', 'sumatra-kalimantan': 'bali' };
+const ESSENTIALS_OVERRIDE = {"raja-ampat":{"taxi_apps":[]},"chile-patagonia":{"taxi_apps":[]},"chile-fjords":{"taxi_apps":[]},"sumatra-kalimantan":{"taxi_apps":[{"name":"Grab","note":"Медан и Баликпапан; машину заказывают прямо в аэропортах Куаланаму, Силангит у Тобы и Минангкабау в Паданге"},{"name":"Gojek","note":"Медан, Пематангсиантар, Паданг, Букиттинги, Баликпапан, Самаринда, Палангкарая"},{"name":"Maxim","note":"Медан и Баликпапан, а также Пангкалан-Бун — город у Танджунг-Путинга"}]},"australia-north":{"taxi_apps":[{"name":"Uber","note":"Сидней, Брисбен, Голд-Кост, Кэрнс и Дарвин"}]}};
 
 export function getEssentials(slug) {
-  return ESSENTIALS[slug] || null;
+  if (ESSENTIALS[slug]) return ESSENTIALS[slug];
+  const base = ESSENTIALS[ESSENTIALS_ALIAS[slug]];
+  return base ? { ...base, ...(ESSENTIALS_OVERRIDE[slug] || {}) } : null;
+}
+
+export function hasEssentials(slug) {
+  return Boolean(getEssentials(slug));
 }

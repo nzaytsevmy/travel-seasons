@@ -90,8 +90,8 @@ export const PLUG_TYPES = {
   'mexico':               { types: 'A/B',   voltage: '127 V', hz: '60 Hz' },
   'cuba':                 { types: 'A/B/C/L', voltage: '110/220 V', hz: '60 Hz' },
   'dominican-republic':   { types: 'A/B',   voltage: '110 V', hz: '60 Hz' },
-  'guatemala-belize':     { types: 'A/B/G', voltage: '120 V', hz: '60 Hz' },
-  'costa-rica-panama':    { types: 'A/B',   voltage: '120 V', hz: '60 Hz' },
+  'guatemala-belize':     { types: 'A/B/G', voltage: '110 V', hz: '60 Hz' },
+  'costa-rica-panama':    { types: 'A/B',   voltage: '110 V', hz: '60 Hz' },
 
   // Южная Америка
   'peru':                 { types: 'A/B/C', voltage: '220 V', hz: '60 Hz' },
