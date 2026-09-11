@@ -53,7 +53,7 @@ import { hasHolidays } from '../data/country-holidays.js';
 import { hasPois } from '../data/country-pois.js';
 import { typo } from '../utils/typo.js';
 import { climateChart } from '../data/country-climate-chart.js';
-import { PLUG_TYPES } from '../data/country-plug-types.js';
+import { PLUG_TYPES, plugVerdict } from '../data/country-plug-types.js';
 import author from '../assets/author/nikita.jpg';
 
 // Pre-import all destination photos (Vite needs static imports). glob lazy:
@@ -246,6 +246,9 @@ const cc = climateChart(d.slug);
 // Вода — у первого города графика, если источник её даёт.
 const seaRow = cc?.cities?.[0]?.sea ? cc.cities[0] : null;
 const plug = PLUG_TYPES[d.slug];
+// Бытовые факты на месте (вода, чаевые, такси, номера, таможня) есть не у всех стран. Где их нет, блока
+// «Что нужно знать на месте» нет, и розетка стоит строкой в «Правилах и деньгах»; где есть — только в блоке.
+const фактыНаМесте = hasEssentials(d.slug) || hasCustoms(d.slug);
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 // Внутренние направления: для них «виза россиянам» — нелепость, раздел зовётся «Документы».
 const DOMESTIC = new Set(['kamchatka', 'karelia', 'dagestan', 'altai']);
@@ -327,7 +330,7 @@ const tocItems = [
   (guide?.stay?.length || RU_STAY.has(d.slug)) && { id: 'zhile', t: 'Где остановиться' },
   { id: 'dengi', t: `Сколько стоит поездка ${d.cases.vP}` },
   { id: 'viza', t: визаH2 },
-  (plug || hasEssentials(d.slug) || hasCustoms(d.slug)) && { id: 'na-meste', t: 'Что нужно знать на месте' },
+  фактыНаМесте && { id: 'na-meste', t: 'Что нужно знать на месте' },
   { id: 'sbory', t: `Что взять ${d.cases.vP}` },
   { id: 'faq', t: `FAQ: что чаще спрашивают про ${d.cases.acc}` },
 ].filter(Boolean);
@@ -678,12 +681,12 @@ if (guide?.itinerary?.length) {
       </div>
       <p class="om-body">{typo(vd.summary ?? VISA_SUMMARY[d.visa])}</p>
       <p class="om-body om-linkline"><a href={`/visa/${d.slug}/`}>{domestic ? `Документы для поездки ${d.cases.vP}` : `Виза ${d.cases.vP}: документы, сроки и что проверить перед вылетом`}</a></p>
-      {(guide?.practical?.length > 0 || plug) && (
+      {(guide?.practical?.length > 0 || (plug && !фактыНаМесте)) && (
         <>
           <h3>Правила и деньги</h3>
           <div class="om-visa om-rules">
             {(guide?.practical || []).map((s) => (<div class="om-prow"><span>{s.t}</span><span>{typo(s.d)}</span></div>))}
-            {plug && <div class="om-prow"><span>Розетка</span><span>{typo(`тип ${plug.types}, ${plug.voltage}`)}</span></div>}
+            {plug && !фактыНаМесте && <div class="om-prow"><span>Розетка</span><span>{typo(`тип ${plug.types}, ${plug.voltage} — ${plugVerdict(plug.types).short}`)}</span></div>}
           </div>
           {guide?.practical?.length > 0 && (
             <p class="om-body om-linkline"><a href={полис} rel="sponsored noopener" target="_blank">Подобрать полис {d.cases.vP}</a> <span class="om-dim">{guide.insuranceNote || 'оплата картами РФ'}</span></p>
@@ -708,9 +711,11 @@ if (guide?.itinerary?.length) {
       )}
     </section>
 
-    <div id="na-meste" class="om-embed">
-      <EssentialsCard slug={d.slug} countryName={d.cases.nom} />
-    </div>
+    {фактыНаМесте && (
+      <div id="na-meste" class="om-embed om-embed--sec">
+        <EssentialsCard slug={d.slug} countryName={d.cases.nom} />
+      </div>
+    )}
 
     <section class="om-sec" id="sbory">
       <h2>Что взять {d.cases.vP}</h2>
@@ -802,6 +807,8 @@ if (guide?.itinerary?.length) {
   .om h3 { font-family: var(--ff-display); font-weight: 400; font-size: 1.5rem; margin: 32px 0 12px; }
   .om-sec { padding: 56px 0; border-top: 1px solid var(--line); scroll-margin-top: 72px; }
   .om-embed { scroll-margin-top: 72px; }
+  /* «Что нужно знать на месте» — такой же раздел, как соседние: черта сверху, поля даёт сам блок. */
+  .om-embed--sec { border-top: 1px solid var(--line); }
   .om-body { font-size: 1.0625rem; line-height: 1.65; margin: 0 0 16px; max-width: 68ch; }
   .om-dim { color: var(--text-faint); }
   .om-small { font-size: 0.9375rem; font-weight: 400; }
