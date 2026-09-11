@@ -6,8 +6,12 @@
 // своего снимка». Тесты ниже — про то, чтобы такая поломка не вернулась тихо.
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { mkdtempSync, existsSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import sharp from 'sharp';
 import { commonsLicense, pixabayKey, SOURCES, findPhoto, namesAPlace, sourcesFor,
-  PIXABAY_ENTROPY_FLOOR } from '../scripts/news-photo.mjs';
+  PIXABAY_ENTROPY_FLOOR, downloadPhoto, isPhotoFile } from '../scripts/news-photo.mjs';
 
 test('лицензия Викисклада разбирается в наши ключи', () => {
   assert.equal(commonsLicense('CC0'), 'cc0');
@@ -132,4 +136,57 @@ test('ключ читается из окружения и не выдумыва
   // и это допустимо. Недопустимо другое: вернуть строку, которой нет нигде.
   const fromFile = pixabayKey({});
   assert.ok(fromFile === null || (typeof fromFile === 'string' && fromFile.length > 0));
+});
+
+/** Скачивание с подменённым ответом стока во временный корень репозитория. */
+async function downloadFrom(body) {
+  const root = mkdtempSync(join(tmpdir(), 'news-photo-'));
+  const savedFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response(body);
+  try {
+    const got = await downloadPhoto({ url: 'https://example.org/a.jpg' }, 'probe', root)
+      .catch((e) => ({ error: e }));
+    return { got, saved: existsSync(join(root, 'src/content/news/_images/probe.jpg')) };
+  } finally {
+    globalThis.fetch = savedFetch;
+    rmSync(root, { recursive: true, force: true });
+  }
+}
+
+test('файл не в JPEG, PNG или WebP в репозиторий не ложится', async () => {
+  // ⛔ Сторож 11.09.2026. При любой ошибке разбора кадр ложился «как скачали»
+  // под именем .jpg, и чужие байты уезжали в сборку, где их разбирает тот же
+  // sharp уже на сервере выкладки. Так была достижима дыра в разборе AVIF
+  // (libheif внутри sharp до 0.35.4): заголовок AVIF и мусор после него.
+  const avif = Buffer.concat([Buffer.from('000000206674797061766966', 'hex'), Buffer.alloc(30_000, 7)]);
+  const { got, saved } = await downloadFrom(avif);
+  assert.ok(got.error, 'чужой формат обязан уйти в отказ, чтобы взяли следующего кандидата');
+  assert.equal(saved, false, 'чужие байты не в JPEG легли в репозиторий');
+});
+
+test('настоящая фотография ложится в репозиторий, как раньше', async () => {
+  // Обратная сторона сторожа: отказ не должен задевать обычный кадр. Кадр —
+  // градиент с зерном: чистый шум после уменьшения до 96 точек сливается в
+  // серое пятно, и проверка пикселей справедливо принимает его за заливку.
+  const W = 1600, H = 1000, px = Buffer.alloc(W * H * 3);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = (y * W + x) * 3, grain = ((x * 7 + y * 13) % 41) - 20;
+    const put = (v) => Math.max(0, Math.min(255, Math.round(v + grain)));
+    px[i] = put(255 * x / W); px[i + 1] = put(255 * y / H); px[i + 2] = put(255 * (1 - x / W));
+  }
+  const jpeg = await sharp(px, { raw: { width: W, height: H, channels: 3 } }).jpeg().toBuffer();
+  const { got, saved } = await downloadFrom(jpeg);
+  assert.equal(got.error, undefined, `годный кадр отбракован: ${got.error?.message}`);
+  assert.equal(saved, true);
+});
+
+test('к декодеру пускаются только JPEG, PNG и WebP', () => {
+  const head = (hex) => Buffer.concat([Buffer.from(hex, 'hex'), Buffer.alloc(16)]);
+  assert.equal(isPhotoFile(head('ffd8ffe0')), true, 'JPEG');
+  assert.equal(isPhotoFile(head('89504e470d0a1a0a')), true, 'PNG');
+  assert.equal(isPhotoFile(head('52494646000000005745425056503820')), true, 'WebP');
+  assert.equal(isPhotoFile(head('000000206674797061766966')), false, 'AVIF');
+  assert.equal(isPhotoFile(head('0000001866747970686569630000')), false, 'HEIC');
+  assert.equal(isPhotoFile(head('474946383961')), false, 'GIF');
+  assert.equal(isPhotoFile(Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"/>')), false, 'SVG');
 });

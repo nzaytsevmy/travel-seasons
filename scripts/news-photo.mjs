@@ -469,6 +469,22 @@ export function statsRejection({ flatShare, nearWhite }) {
 }
 
 /**
+ * Подпись файла: JPEG, PNG или WebP.
+ *
+ * ⛔ Остальное к декодеру не пускаем (11.09.2026). За каждым форматом в sharp стоит
+ * свой разборщик, и дыра в одном из них — разборе AVIF (libheif внутри sharp до
+ * 0.35.4) — давала чужому файлу со стока путь к исполнению кода: на машине, где
+ * кадр подбирают, а через запасной путь «кладём как скачали» — и на сервере
+ * выкладки, где сборка разбирает кадр снова. Сток отдаёт JPEG; иное — отказ,
+ * возьмут следующего кандидата.
+ */
+export function isPhotoFile(buf) {
+  return (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff)
+    || buf.toString('latin1', 0, 8) === '\x89PNG\r\n\x1a\n'
+    || (buf.toString('latin1', 0, 4) === 'RIFF' && buf.toString('latin1', 8, 12) === 'WEBP');
+}
+
+/**
  * Скачивает кадр в src/content/news/_images/<slug>.jpg.
  *
  * Оригинал со стока весит около полумегабайта. Заметок 2–4 в день, и через год
@@ -482,6 +498,7 @@ export async function downloadPhoto(photo, slug, root = process.cwd()) {
   if (!res.ok) throw new Error(`фото не скачалось: ${res.status}`);
   const raw = Buffer.from(await res.arrayBuffer());
   if (raw.length < 20_000) throw new Error('файл подозрительно мал, это не фотография');
+  if (!isPhotoFile(raw)) throw new Error('не JPEG, PNG или WebP — к декодеру не пускаем');
 
   let buf = raw;
   try {
