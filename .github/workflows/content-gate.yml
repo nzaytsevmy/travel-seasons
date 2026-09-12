@@ -125,13 +125,12 @@ jobs:
           } >> "$GITHUB_OUTPUT"
       - name: Инварианты контента, ритм, новости и денежное поведение
         run: |
-          npx playwright test \
-            tests/content-invariants.spec.ts \
-            tests/rhythm-gate.spec.ts \
-            tests/news-gate.spec.ts \
-            tests/monetization-browser.spec.ts \
-            tests/changed-pages-structural.spec.ts \
-            --project=chromium-desktop
+          # ⛔ Не список файлов, а фильтр. 12.09.2026: из 22 прогонов в списке было 5, а 16
+          #    не запускались в облаке вовсе — в том числе давние (шапка, главный экран,
+          #    размеры целей, сохранение поездки). Список молча терял проверки, и два
+          #    сторожа того же дня оказались мёртвыми. Фильтр берёт всё, кроме пиксельных
+          #    снимков: замер на машине — 307 проверок за 2,8 минуты.
+          SKIP_PAGE_MTIME_TESTS=1 npx playwright test --grep-invert "— visual" --project=chromium-desktop
         env:
           PREVIEW_URL: http://localhost:4322
           CHANGED_FILES: ${{ steps.changed.outputs.files }}
