@@ -8,7 +8,7 @@ import Footer from '../../../components/Footer.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import DestinationTabs from '../../../components/DestinationTabs.astro';
 import { Image, getImage } from 'astro:assets';
-import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
+import { DIRECTIONS, MONTHS, VISITED } from '../../../data/directions.js';
 import { месяцыНаправления } from '../../../utils/best-months.js';
 import { VISA_DETAILS } from '../../../data/visa-details.js';
 import { getBucket } from '../../../data/packing-weather-buckets.js';
@@ -104,6 +104,10 @@ const blogSlug = [`${d.slug}-guide-2026`, `${d.slug}-2026`].find((c) => blogSlug
 const personalMonthNote = rich?.notes?.[monthIdx] || null;  // конкретный комментарий под месяц
 const guide = getGuide(d.slug);
 const authorOverall = guide?.authorNote || null;             // общий «был сам» по стране
+// ⛔ Пометку «был лично» ставим ТОЛЬКО по списку VISITED: 12.09.2026 на живых страницах стояло
+//    «★ Маврикий — личный опыт», а строкой ниже — «Лично на Маврикии я не был». Звёздочка
+//    вешалась на любую авторскую строку. На хабе страны такая защита есть, здесь не было.
+const visitedCountry = VISITED.has(d.slug);
 const visitedThisMonth = Boolean(personalMonthNote);
 const HERO_WIDTHS = [512, 768, 1024, 1600];
 const heroPreload = coverImage
@@ -392,17 +396,17 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
     {/* ЛИЧНЫЙ ОПЫТ — только если notes[monthIdx] или authorNote реально есть в repo */}
     {(personalMonthNote || authorOverall) && (
       <section class="pmu-section">
-        <div class="pmu-shead"><h2>Личный опыт автора</h2></div>
+        <div class="pmu-shead"><h2>{visitedCountry ? 'Личный опыт автора' : 'Что учесть на месте'}</h2></div>
         <div class="pmu-personal">
           {personalMonthNote && (
             <p class="pmu-personal-month">
-              <b class="pmu-personal-mark">★ {monthCap} {d.cases.loc}, был лично</b><br />
+              {visitedCountry && <><b class="pmu-personal-mark">★ {monthCap} {d.cases.loc}, был лично</b><br /></>}
               {personalMonthNote}
             </p>
           )}
           {!personalMonthNote && authorOverall && (
             <p class="pmu-personal-overall">
-              <b class="pmu-personal-mark">★ {d.cases.nom} — личный опыт</b><br />
+              {visitedCountry && <><b class="pmu-personal-mark">★ {d.cases.nom} — личный опыт</b><br /></>}
               {authorOverall}
             </p>
           )}
