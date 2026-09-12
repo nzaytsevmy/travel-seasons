@@ -111,7 +111,7 @@ const subtitle = topics.length ? `${topics.join(', ').replace(/^./, (c) => c.toU
     <div class="ec-section">
       <h3 class="ec-th">Лимиты ввоза</h3>
       <div class="ec-vl ec-vl--cols-4">
-        {cust.limits.cash && <div class="ec-vi"><span class="ec-vk">Наличные</span><div class="ec-vm">{cust.limits.cash.replace(/^до /, '')}</div>{!/без декларации/i.test(cust.limits.cash) && <div class="ec-vd">без декларации</div>}</div>}
+        {cust.limits.cash && <div class="ec-vi"><span class="ec-vk">Наличные</span><div class="ec-vm">{cust.limits.cash.replace(/^до /, '')}</div>{!/деклар/i.test(cust.limits.cash) && <div class="ec-vd">без декларации</div>}</div>}
         {cust.limits.alcohol && <div class="ec-vi"><span class="ec-vk">Алкоголь</span><div class="ec-vm">{cust.limits.alcohol}</div></div>}
         {cust.limits.cigarettes && <div class="ec-vi"><span class="ec-vk">Сигареты</span><div class="ec-vm">{cust.limits.cigarettes}</div></div>}
         {cust.limits.perfume && <div class="ec-vi"><span class="ec-vk">Парфюм</span><div class="ec-vm">{cust.limits.perfume}</div></div>}

@@ -6,6 +6,7 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import DestinationTabs from '../../components/DestinationTabs.astro';
 import { Picture } from 'astro:assets';
 import { DIRECTIONS } from '../../data/directions.js';
+import { месяцыНаправления } from '../../utils/best-months.js';
 import { getVisaDetails, VISA_DETAILS } from '../../data/visa-details.js';
 import { aviasalesRoute, cherehapaCountry, youtravelCountry } from '../../data/affiliate.js';
 import StickyCta from '../../components/StickyCta.astro';
@@ -59,14 +60,9 @@ const flightFrom = d.price?.flight?.[0];
 const hotelFrom = d.price?.hotel?.[0];
 const affiliateSubId = `visa_${d.slug.replaceAll('-', '_')}`;
 
-// Лучшие месяцы — из помесячного рейтинга направления
-const RANK = { P: 4, G: 3, O: 2, B: 1, X: 0 };
-const MONTH_NOM = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-  'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-const bestMonths = MONTH_NOM
-  .map((nom, i) => ({ nom, rank: RANK[d.r[i]] || 0, text: d.t[i] }))
-  .filter(m => m.rank >= 3)
-  .slice(0, 3);
+// Лучшие месяцы — сезонами подряд, как на странице страны. До 12.09.2026 здесь стояли первые три хороших
+// месяца по календарю: у Норвегии — «январь, февраль, март» при пике в июне–августе.
+const { bestMonths, лучшиеСезоны, лучшиеСловами } = месяцыНаправления(d);
 
 // Документы / сбор / срок / пребывание по типу визы
 const VISA_DOCS = {
@@ -141,7 +137,7 @@ const faqs = [
   {
     q: `Когда лучше ехать ${d.cases.vP}?`,
     a: bestMonths.length
-      ? `Лучшие месяцы: ${bestMonths.map(m => m.nom).join(', ')}. ${bestMonths[0]?.text || ''}`.trim()
+      ? `Лучшие месяцы: ${лучшиеСловами}. ${лучшиеСезоны[0][0].text || ''}`.trim()
       : `Сезоны ${d.cases.loc} переменчивы — смотрите помесячный календарь ниже и таблицу сезонов.`,
   },
 ];
@@ -152,7 +148,7 @@ if (d.relatedPosts.length > 0) {
   });
 }
 
-const monthsTail = bestMonths.length ? ` Лучшие месяцы — ${bestMonths.map(m => m.nom).join(', ')}.` : '';
+const monthsTail = bestMonths.length ? ` Лучшие месяцы — ${лучшиеСловами}.` : '';
 // Если есть страновой summary (уже включает цену/срок) — не дублируем costAnswer/stayAnswer.
 const tldr = vd.summary ? `${summary}${monthsTail}` : `${summary} ${costAnswer} ${stayAnswer}${monthsTail}`;
 
