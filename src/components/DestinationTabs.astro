@@ -9,6 +9,7 @@
 // вкладка — по тому, где стоим. Ссылки обычные, краулятся, без скриптов.
 
 import { DIRECTIONS, MONTHS } from '../data/directions.js';
+import { месяцыНаправления } from '../utils/best-months.js';
 import { COMPARE_PAIRS } from '../data/compare-pairs.js';
 
 type Key = 'hub' | 'when' | 'visa' | 'packing' | 'compare';
@@ -18,11 +19,15 @@ interface Props {
 }
 const { d, active } = Astro.props;
 
-// Лучший месяц — тот же расчёт, что в шапке хаба: первый месяц с оценкой
-// «пик» или «хорошо» по календарю, иначе просто самый высокий.
-const rank: Record<string, number> = { P: 4, G: 3, O: 2, B: 1, X: 0 };
-const ranked = MONTHS.map((m, i) => ({ ...m, rank: rank[d.r?.[i]] ?? 0 }));
-const best = ranked.find((m) => m.rank >= 3) ?? ranked.reduce((a, b) => (b.rank > a.rank ? b : a));
+// ⛔ Лучший месяц берём из общего расчёта (src/utils/best-months.js), а не считаем здесь
+//    заново. Свой расчёт брал ПЕРВЫЙ месяц с оценкой «хорошо» — и подпись вкладки спорила
+//    со сводкой на той же странице: у Норвегии сводка «июнь–август», а вкладка вела в
+//    январь (январь «хорошо» из-за сияния, пик — лето). Замер 12.09.2026: расхождение у
+//    58 направлений из 77 — Кения «январь» при июле–августе, ОАЭ «январь» при марте и
+//    ноябре. Сторож tests/section-tabs.spec.ts сверяет подпись со сводкой на собранных
+//    страницах, чтобы это не вернулось молча.
+const { bestMonths } = месяцыНаправления(d);
+const best = bestMonths?.[0] ?? MONTHS[0];
 
 const pair = COMPARE_PAIRS.find((p) => p.a === d.slug || p.b === d.slug);
 const otherSlug = pair ? (pair.a === d.slug ? pair.b : pair.a) : null;
