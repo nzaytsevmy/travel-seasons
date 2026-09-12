@@ -1,0 +1,51 @@
+// Сторож: страница не заявляет личный опыт автора там, где его нет.
+//
+// ⛔ 12.09.2026 нашлось два места без сверки со списком «был лично» (VISITED в справочнике
+//    направлений): на страницах сборов стояло «★ Маврикий — личный опыт», а строкой ниже
+//    «Лично на Маврикии я не был»; на визовых страницах вопрос «Есть личный опыт поездки
+//    в Кении?» получал ответ «Да, …». Волна гидов размножила бы первое на 28 стран.
+//
+// Ловим ИМЕННО пометки о поездке автора в эту страну. Законное не ловим: подпись «был лично
+// на 7 континентах» (правда про автора в целом) и подпись к статье «личный опыт автора»
+// строчными буквами (тип статьи, а не заявка про страну) — отсюда чувствительность к регистру.
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { VISITED, DIRECTIONS } from '../src/data/directions.js';
+
+const DIST = join(process.cwd(), 'dist');
+const ЗАЯВКИ = [
+  [/★[^<]{0,60}(был лично|личный опыт)/i, 'пометка «★ … личный опыт»'],
+  [/Был здесь сам/, 'подпись «Был здесь сам»'],
+  [/Был\s+[^.]{0,32}\sсам[.\s]/, 'подпись «Был в … сам»'],
+  [/Личный опыт автора/, 'заголовок «Личный опыт автора»'],
+  [/Есть личный опыт поездки[^?]*\?\s*Да/, 'вопрос «Есть личный опыт …» с ответом «Да»'],
+];
+
+test('пометка личного опыта — только у стран из списка «был лично»', () => {
+  assert.ok(existsSync(DIST), 'сборки нет — сначала собрать сайт');
+  const плохие = [];
+  for (const d of DIRECTIONS) {
+    if (VISITED.has(d.slug)) continue;
+    for (const f of [
+      join(DIST, d.slug, 'index.html'),
+      join(DIST, 'packing', d.slug, 'june', 'index.html'),
+      join(DIST, 'packing', d.slug, 'index.html'),
+      join(DIST, 'trips', 'june', d.slug, 'index.html'),
+      join(DIST, 'visa', d.slug, 'index.html'),
+    ]) {
+      if (!existsSync(f)) continue;
+      const t = readFileSync(f, 'utf8')
+        .replace(/<script[\s\S]*?<\/script>/g, ' ')
+        .replace(/<style[\s\S]*?<\/style>/g, ' ')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/[ ⁠\s]+/g, ' ');
+      for (const [шаблон, имя] of ЗАЯВКИ) {
+        const m = t.match(шаблон);
+        if (m) плохие.push(`${f.slice(DIST.length)} — ${имя}: «${m[0].slice(0, 90).trim()}»`);
+      }
+    }
+  }
+  assert.deepEqual(плохие, [], `страницы заявляют личный опыт без подтверждения (${плохие.length}):\n${плохие.slice(0, 12).join('\n')}`);
+});

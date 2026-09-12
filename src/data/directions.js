@@ -380,6 +380,7 @@ export const VISITED = new Set([
   'thailand', // статья о Таиланде: свои кадры Бангкока, май 2025
   'kamchatka', 'abkhazia', 'karelia', // по статьям Никиты: Камчатка — своя поездка и кадры, Абхазия — Рица 26.12.2017, Карелия — «бывал здесь ещё в детстве»
   'china', 'nepal', 'kyrgyzstan', 'chile-patagonia', 'japan',
+  'mauritius', // сказано Никитой 12.09.2026: был сам
 ]);
 
 export const MONTHS = [
