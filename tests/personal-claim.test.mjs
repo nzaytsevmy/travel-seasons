@@ -45,7 +45,14 @@ function видимыйТекст(html) {
     const кон = html.indexOf('>', нач + 1);
     if (кон < 0) break;
     const тело = html.slice(нач + 1, кон).trim().toLowerCase();
-    const имя = (тело.startsWith('/') ? тело.slice(1) : тело).split(' ')[0].split('/')[0];
+    // ⛔ Имя тега читаем посимвольно. Разбивка по пробелу пропускала <script с переносом
+    //    строки или табуляцией перед атрибутом — блок не опознавался, и код скрипта уходил
+    //    в «видимый текст». Воспроизведено: «<script\n  src=…>» протекало, «<script src=…>» нет.
+    let имя = '';
+    for (let k = тело.startsWith('/') ? 1 : 0; k < тело.length; k++) {
+      const c = тело[k];
+      if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) имя += c; else break;
+    }
     if (имя === 'script' || имя === 'style') {
       const закр = html.toLowerCase().indexOf('</' + имя, кон);
       if (закр < 0) break;
