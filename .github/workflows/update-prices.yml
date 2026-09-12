@@ -11,6 +11,8 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
+    # 1 044 запроса с паузой 250 мс — минут пять; без предела задача наследует шесть часов.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,5 +30,30 @@ jobs:
           git config user.email "action@github.com"
           git config user.name "GitHub Actions"
           git add src/data/prices-cache.json
-          git diff --staged --quiet || git commit -m "chore: update flight prices"
-          git push
+          if git diff --staged --quiet; then
+            echo "Цены не изменились — коммит не нужен"
+            exit 0
+          fi
+          git commit -m "chore: update flight prices"
+          # ⛔ В главную ветку пишут ещё два бота: одна попытка отправки падала на гонке,
+          #    и цены молча не обновлялись (аудит 12.09.2026).
+          for i in 1 2 3; do
+            if git pull --rebase origin "${GITHUB_REF_NAME}" && git push; then
+              exit 0
+            fi
+            echo "push: попытка $i не удалась, повтор через 5 с"
+            sleep 5
+          done
+          echo "push не прошёл после 3 попыток" >&2
+          exit 1
+
+      - name: Alert on job failure
+        if: failure()
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TG_CHAT_ID}" \
+            --data-urlencode "text=🚨 Цены билетов: обновление упало (run ${{ github.run_id }}). Сайт показывает прошлые цены — проверь Actions." \
+            >/dev/null || true
