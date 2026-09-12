@@ -1814,7 +1814,10 @@ test('Факты: сумма обязательного полиса в Груз
     if (ф.includes('/blog/georgia-insurance-2026/')) continue;
     const h = readFileSync(ф, 'utf8');
     if (!/Грузи/.test(h)) continue;
-    if (/от 30 000 \$|30 000 \$ \(амбул|амбулаторная помощь от 5 000 \$/.test(h)) {
+    // \s вместо пробела: с 12.09.2026 типограф вяжет разряд тысяч неразрывным пробелом,
+    // и выражение с обычным пробелом перестало бы находить что-либо вообще — проверка молча
+    // превратилась бы в зелёную заглушку (то же было с «$50» и «≈ 200 000 ₽» выше).
+    if (/от\s30\s000\s\$|30\s000\s\$\s*\(амбул|амбулаторная помощь от\s5\s000\s\$/.test(h)) {
       bad.push(`${ф.replace(DIST, '')}: сумма полиса в долларах вместо лари`);
     }
   }
@@ -2222,7 +2225,9 @@ test('Заголовок: слова не слипаются через гран
 // на две строки или короткий предлог остался в конце строки. Смотрит раскладку, а не
 // текст: строку с неразрывными пробелами браузер уже не рвёт, а обычный пробел рвёт не
 // всегда — ругаться надо только там, где разрыв действительно случился.
-const BREAK_PAGES = ['/turkey/', '/oman/', '/georgia/', '/thailand/', '/blog/turkey-guide-2026/', '/visa/turkey/', '/trips/july/turkey/', '/packing/turkey/'];
+const BREAK_PAGES = ['/turkey/', '/oman/', '/georgia/', '/thailand/', '/blog/turkey-guide-2026/', '/visa/turkey/', '/trips/july/turkey/', '/packing/turkey/',
+  // Страницы с ценами: разряд тысяч ломался именно там (12.09.2026 — «на 5 174 ₽» на Хайнане, 32 числа на Антарктиде).
+  '/antarctica/', '/trips/november/hainan/'];
 for (const width of [360, 402]) {
   test(`Переносы: нет разорванных скобок и висящих предлогов @${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
@@ -2256,12 +2261,22 @@ for (const width of [360, 402]) {
         };
         const SHORT = /(^|[\s(«])(в|во|с|со|к|ко|у|о|об|от|до|за|на|по|из|и|а|но|не|ни) (?=\S)/gi;
         const PAREN = /\(([^()\n]{1,24})\)/g;
+        // Разряд тысяч: «5 174», «10 000». Телефон («+593 2 252-6361», «8 800 555 26 08») —
+        // не число, его разрыв здесь не считаем; те же две приметы, что у типографа.
+        const NUM = /(^|[^\d.,+])(\d{1,3}(?: \d{3})+)(?!\d)/g;
         const out: string[] = [];
         for (let n = walker.nextNode() as Text | null; n; n = walker.nextNode() as Text | null) {
           const t = n.nodeValue || '';
           for (const m of t.matchAll(PAREN)) {
             const a = top(n, m.index!), b = top(n, m.index! + m[0].length - 1);
             if (a !== null && b !== null && Math.abs(a - b) > 4 && fits(n, m.index!, m.index! + m[0].length)) out.push(`скобка разорвана: «${m[0]}»`);
+          }
+          for (const m of t.matchAll(NUM)) {
+            const from = m.index! + m[1].length, to = from + m[2].length;
+            const phone = /^ \d|^[-\u2013]\d{4}/.test(t.slice(to, to + 5)) || /\+\d{1,4} $/.test(t.slice(Math.max(0, from - 6), from));
+            if (phone) continue;
+            const a = top(n, from), b = top(n, to - 1);
+            if (a !== null && b !== null && Math.abs(a - b) > 4) out.push(`число разорвано: «${m[2]}»`);
           }
           for (const m of t.matchAll(SHORT)) {
             const sp = m.index! + m[0].length - 1;
@@ -2276,6 +2291,38 @@ for (const width of [360, 402]) {
     expect(bad, `некрасивые переносы:\n${bad.join('\n')}`).toEqual([]);
   });
 }
+
+// ⛔ Проверка выше смотрит десять страниц, а разряд тысяч рвался по всей сборке: 12.09.2026
+// на /trips/november/hainan/ «дороже на 5 174 ₽» переносилось «на 5» / «174 ₽», и гейт
+// «Переносы» был при этом ЗЕЛЁНЫМ — он мерил скобки и висящие предлоги, а разорванное число
+// не мерил — сам он на той же сборке насчитал 3079 таких чисел на 1308 страницах. Обычный пробел внутри числа — это место,
+// где браузер вправе перенести, поэтому меряем всю сборку по тексту, а не только раскладку
+// десяти адресов. Телефон числом не считаем: «+593 2 252-6361», «8 800 555 26 08» — это набор
+// групп, а не величина; те же две приметы, что и у типографа в src/utils/typo.js.
+test('Переносы: внутри числа нет обычного пробела ни на одной странице сборки', () => {
+  const NB = String.fromCharCode(0xA0);
+  const NUM = /(^|[^\d.,+])(\d{1,3}(?: \d{3})+)(?!\d)/g;
+  const pages = allHtml(DIST);
+  expect(pages.length, 'страниц в сборке не нашлось — проверка была бы пустой').toBeGreaterThan(500);
+  const bad: string[] = [];
+  for (const f of pages) {
+    // Заголовок вкладки и надписи внутри рисунка в строку страницы не встают и перенестись
+    // не могут — их типограф не трогает намеренно, и мерить их здесь тоже нечего.
+    // Замена тега двумя пробелами: «10</td><td>000» не должно читаться как одно число.
+    const html = (readFileSync(f, 'utf8') as string)
+      .replace(/<title[^>]*>[\s\S]*?<\/title\s*>/gi, ' ')
+      .replace(/<svg[\s\S]*?<\/svg\s*>/gi, ' ')
+      .replace(/&nbsp;|&#160;/gi, NB);
+    const text = видимыйТекст(html, '  ');
+    for (const m of text.matchAll(NUM)) {
+      const from = m.index! + m[1].length, to = from + m[2].length;
+      if (/^ \d|^[-\u2013]\d{4}/.test(text.slice(to, to + 5)) || /\+\d{1,4} $/.test(text.slice(Math.max(0, from - 6), from))) continue;
+      bad.push(`${f.slice(DIST.length)}: «${m[2]}» — …${text.slice(Math.max(0, from - 30), to + 10).replace(/\s+/g, ' ').trim()}…`);
+    }
+  }
+  const pagesBad = new Set(bad.map((b) => b.split(':')[0])).size;
+  expect(bad.slice(0, 15), `разряд тысяч рвётся: ${bad.length} чисел на ${pagesBad} страницах\n${bad.slice(0, 15).join('\n')}`).toEqual([]);
+});
 
 // Слово в заголовке не рвётся на две строки. 11.09.2026 на телефоне заголовок самой денежной статьи читался
 // «как до-браться»: браузер сам ставил перенос (hyphens: auto в шаблоне статьи), а составные слова рвались
