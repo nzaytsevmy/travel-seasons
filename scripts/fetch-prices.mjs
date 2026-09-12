@@ -5,7 +5,8 @@
 
 import { regionMeta } from '../src/data/regions-meta.js';
 import { PRICES } from '../src/data/prices.js';
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'node:fs';
+import { countFilled, refuseReason } from './prices-floor.mjs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -56,6 +57,7 @@ async function fetchCheap(destination, month) {
   }
 }
 
+const prevFilled = existsSync(OUT) ? countFilled(JSON.parse(readFileSync(OUT, 'utf8')).prices) : 0;
 const cache = {};
 let done = 0;
 const total = iatas.length * months.length;
@@ -73,8 +75,14 @@ for (const iata of iatas) {
   }
 }
 
+const filled = countFilled(cache);
+const refuse = refuseReason(prevFilled, filled);
+if (refuse) {
+  // Файл не трогаем: сайт покажет прошлые живые цены, а задача покраснеет и пришлёт сигнал.
+  console.error(`✖ Файл цен не перезаписан: ${refuse}. Это отказ поставщика, а не рынок.`);
+  process.exit(1);
+}
+
 mkdirSync(dirname(OUT), { recursive: true });
 writeFileSync(OUT, JSON.stringify({ updatedAt: new Date().toISOString(), origin: ORIGIN, currency: CURRENCY, prices: cache }, null, 2));
-
-const filled = Object.values(cache).flatMap(m => Object.values(m)).filter(v => v !== null).length;
 console.log(`✓ Готово: ${filled}/${total} цен записано в ${OUT}`);
