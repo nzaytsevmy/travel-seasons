@@ -8,10 +8,10 @@
 // Ловим ИМЕННО пометки о поездке автора в эту страну. Законное не ловим: подпись «был лично
 // на 7 континентах» (правда про автора в целом) и подпись к статье «личный опыт автора»
 // строчными буквами (тип статьи, а не заявка про страну) — отсюда чувствительность к регистру.
-import { test } from 'node:test';
-import assert from 'node:assert/strict';
+import { test, expect } from '@playwright/test';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { видимыйТекст } from './visible-text';
 import { VISITED, DIRECTIONS } from '../src/data/directions.js';
 
 const DIST = join(process.cwd(), 'dist');
@@ -23,44 +23,9 @@ const ЗАЯВКИ = [
   [/Есть личный опыт поездки[^?]*\?\s*Да/, 'вопрос «Есть личный опыт …» с ответом «Да»'],
 ];
 
-/** Видимый текст страницы: разметка, скрипты, стили и комментарии выброшены.
- *
- * ⛔ Без выражений по тегам. Сканер кода дважды указал на такое выражение и был прав: это
- *    ненадёжный фильтр разметки — мимо идут заглавные теги, атрибуты, пробел в закрывающем
- *    теге, разметка внутри комментария. Протечёт служебное — сторож начнёт ловить ложные
- *    пометки в коде скриптов, то есть перестанет проверять. Простой проход таких дыр не имеет.
- */
-function видимыйТекст(html) {
-  const части = [];
-  let i = 0;
-  while (i < html.length) {
-    const нач = html.indexOf('<', i);
-    if (нач < 0) { части.push(html.slice(i)); break; }
-    части.push(html.slice(i, нач));
-    if (html.startsWith('<!--', нач)) {
-      const конец = html.indexOf('-->', нач + 4);
-      i = конец < 0 ? html.length : конец + 3;
-      continue;
-    }
-    const кон = html.indexOf('>', нач + 1);
-    if (кон < 0) break;
-    const тело = html.slice(нач + 1, кон).trim().toLowerCase();
-    const имя = (тело.startsWith('/') ? тело.slice(1) : тело).split(' ')[0].split('/')[0];
-    if (имя === 'script' || имя === 'style') {
-      const закр = html.toLowerCase().indexOf('</' + имя, кон);
-      if (закр < 0) break;
-      const конецЗакр = html.indexOf('>', закр);
-      i = конецЗакр < 0 ? html.length : конецЗакр + 1;
-      continue;
-    }
-    i = кон + 1;
-  }
-  // Неразрывный пробел и соединитель типографа считаем обычным пробелом.
-  return части.join(' ').split(/[\s\u00A0\u2060]+/).join(' ');
-}
 
 test('пометка личного опыта — только у стран из списка «был лично»', () => {
-  assert.ok(existsSync(DIST), 'сборки нет — сначала собрать сайт');
+  expect(existsSync(DIST), 'сборки нет — сначала собрать сайт').toBe(true);
   const плохие = [];
   for (const d of DIRECTIONS) {
     if (VISITED.has(d.slug)) continue;
@@ -79,5 +44,5 @@ test('пометка личного опыта — только у стран и
       }
     }
   }
-  assert.deepEqual(плохие, [], `страницы заявляют личный опыт без подтверждения (${плохие.length}):\n${плохие.slice(0, 12).join('\n')}`);
+  expect(плохие, `страницы заявляют личный опыт без подтверждения (${плохие.length}):\n${плохие.slice(0, 12).join('\n')}`).toEqual([]);
 });

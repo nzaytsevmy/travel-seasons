@@ -94,8 +94,9 @@ cleanup(){ pkill -f "astro preview --port $PORT" 2>/dev/null; }
 trap cleanup EXIT
 
 if [ "$MODE" = "text" ]; then
-  if ! npx playwright test \
-      tests/content-invariants.spec.ts tests/rhythm-gate.spec.ts tests/news-gate.spec.ts tests/monetization-browser.spec.ts tests/changed-pages-structural.spec.ts \
+  # ⛔ Не список файлов, а фильтр: список молча терял проверки — 12.09.2026 два новых
+  #    сторожа не запускались ни здесь, ни в облаке. Берём всё, кроме пиксельных снимков.
+  if ! SKIP_PAGE_MTIME_TESTS=1 npx playwright test --grep-invert "— visual" \
       --project=chromium-desktop >${LOG}_pw.log 2>&1; then
     echo "✖ гейты содержания НЕ зелёные → ${LOG}_pw.log"
     echo "  намеренный обход: git push --no-verify"
