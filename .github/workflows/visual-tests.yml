@@ -264,13 +264,22 @@ jobs:
       # она идёт секунды, и это дешевле, чем городить деление без пересечений.
       - name: Run visual regression tests
         run: |
-          if npx playwright test --shard=${{ matrix.shard }}/4; then
+          set -o pipefail
+          if npx playwright test --shard=${{ matrix.shard }}/4 2>&1 | tee first-run.log; then
             exit 0
           fi
-          # Один автоматический ретрай только реально упавших сценариев: известный
-          # fullPage-флейк не задерживает публикацию, повторное падение блокирует её.
+          # Один автоматический повтор только реально упавших сценариев: нестабильный
+          # тест не задерживает публикацию, повторное падение блокирует её.
+          # ⛔ Но прошедший со второго раза тест называется по имени — предупреждением на
+          #    заявке и в сводке прогона. До 12.09.2026 повтор молча объявлял зелёным любой
+          #    такой тест (аудит проверок, находка 19).
+          grep -E '^[[:space:]]+✘' first-run.log | sed -E 's/^[[:space:]]+✘[[:space:]]+[0-9]+[[:space:]]+//; s/ \([0-9.]+(ms|s|m)\)$//' | sort -u > flaky.txt || true
           echo "::warning::Первый прогон не зелёный; повторяем только упавшие тесты"
           npx playwright test --last-failed
+          while IFS= read -r t; do
+            echo "::warning title=Прошёл только со второго раза::$t"
+          done < flaky.txt
+          { echo "### Прошли только со второго раза (часть ${{ matrix.shard }}/4)"; sed 's/^/- /' flaky.txt; } >> "$GITHUB_STEP_SUMMARY"
         env:
           PREVIEW_URL: http://localhost:4322
           SKIP_PAGE_MTIME_TESTS: '1'
