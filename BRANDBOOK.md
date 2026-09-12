@@ -154,11 +154,11 @@ Typographic). Сайт выглядит как дневник человека, 
   `rel="sponsored noopener"` + новая вкладка + erid в URL где партнёр даёт (38-ФЗ). БЕЗ видимой
   надписи «реклама» (решение Никиты 2026-06); мягкий disclosure — «партнёрская ссылка, цена не меняется».
 
-## 10. Готовые токены (вставлять как есть)
+## 10. Готовые токены (сверено с палитрой §1 12.09.2026)
 
 ```css
 :root{
-  --paper:#f4f2eb; --ink:#1b1914; --mid:#6b685e; --line:#23211a; --hair:#cdc9bd; --gold:#8e6618;
+  --paper:#fbfbfa; --ink:#15171a; --mid:#5c626b; --line:#15171a; --hair:#d9dbde; --gold:#1d40ae;
   --ff:'Golos Text Variable','Golos Text',Helvetica,Arial,sans-serif;
   --container:1280px; --gutter:clamp(.8rem,2vw,1.6rem); --edge:clamp(1.1rem,3vw,2.6rem);
 }
@@ -169,10 +169,11 @@ body{font-family:var(--ff);font-variant-numeric:tabular-nums lining-nums;backgro
 ---
 
 ## ❌ Чёрный список (никогда, без явного разрешения)
-Скруглённые карточки · тени · градиенты/gradient-mesh · эмодзи-декор · второй шрифт/сериф ·
-Inter/Roboto/Space Grotesk · второй яркий цвет · центрированные «timid» лейауты · кнопки-пилюли везде ·
-карусели · фиолетовый-на-белом и прочий AI-slop · охра светлее `#8e6618` (ломает AA).
+Скруглённые карточки · тени · градиенты/gradient-mesh · эмодзи-декор ·
+Inter/Roboto/Space Grotesk · шрифт вне четырёх голосов §2 · второй яркий цвет · центрированные «timid» лейауты · кнопки-пилюли везде ·
+карусели · фиолетовый-на-белом и прочий AI-slop · акцент светлее `#1d40ae` (ломает AA).
 
 ## Эталон
-Главная — `~/Downloads/tt-home-1-editorial.html` (Swiss, вариант 1). Все новые страницы свести к нему.
-Текущий сайт пока на легаси-системе (Newsreader+Onest+editorial) — переход на брендбук = отдельная задача миграции.
+Живая главная traveltribe.ru — язык «Дорожный дневник» (с 28.08.2026). Файл `~/Downloads/tt-home-1-editorial.html` —
+отменённый Swiss, не использовать. Newsreader и Onest убраны с сайта 23.05.2026; подключены Golos Text, Old Standard TT,
+PT Mono и Neucha.
