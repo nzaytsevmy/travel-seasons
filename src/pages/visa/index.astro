@@ -2204,7 +2204,11 @@ const ldJson = {
     .va-section-stamp { width: 76px; height: 76px; }
     .vss-roman { font-size: 1.2rem; }
     .vss-code { font-size: 0.66rem; }
-    .va-grid { grid-template-columns: repeat(2, 1fr); }
+    /* ⛔ minmax(0, 1fr), а не 1fr: у 1fr нижняя граница — самое длинное слово карточки, и ширина
+       колонок гуляла вслед за шрифтом, который дозагружается не сразу. 13.09.2026 это давало
+       ±1,7 px фото в пяти рядах раздела виз — снимок страницы на телефоне скакал на 8 px и ронял
+       ветки, которые реестр не трогали. Колонки делятся поровну независимо от текста. */
+    .va-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .va-card-photo { aspect-ratio: 1 / 1; }
     .va-card-num { font-size: 0.55rem; }
     .va-card-name { font-size: 0.98rem; }
