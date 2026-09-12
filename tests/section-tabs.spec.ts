@@ -46,3 +46,32 @@ test('строка разделов не оставляет один разде�
   }
   expect(плохие, `раскладка строки разделов:\n${плохие.join('\n')}`).toEqual([]);
 });
+
+// ⛔ Подпись вкладки «Когда ехать» обязана совпадать с общим расчётом лучших месяцев.
+//    12.09.2026 компонент считал месяцы заново и брал ПЕРВЫЙ месяц с оценкой «хорошо»:
+//    у Норвегии сводка говорила «июнь–август», а вкладка вела в январь. Расхождение было
+//    у 58 направлений из 77. Сторож читает СОБРАННЫЕ страницы, поэтому ловит именно то, что
+//    увидит читатель, а не повторяет логику компонента.
+test('подпись вкладки «Когда ехать» совпадает с общим расчётом месяцев', async () => {
+  const { readFileSync, existsSync } = await import('node:fs');
+  const { join } = await import('node:path');
+  const { DIRECTIONS } = await import('../src/data/directions.js');
+  const { месяцыНаправления } = await import('../src/utils/best-months.js');
+  const DIST = process.env.DIST_DIR || join(process.cwd(), 'dist');
+  const плохие: string[] = [];
+  let проверено = 0;
+  for (const d of DIRECTIONS as any[]) {
+    const f = join(DIST, d.slug, 'index.html');
+    if (!existsSync(f)) continue;
+    const html = readFileSync(f, 'utf8');
+    const m = html.match(/title="Лучший месяц — ([^"]+)"/);
+    if (!m) continue;
+    проверено++;
+    const подпись = m[1].replace(/[\u00A0\u2060]/g, ' ').trim();
+    const { bestMonths } = месяцыНаправления(d) as any;
+    const ожидается = bestMonths?.[0]?.nom;
+    if (ожидается && подпись !== ожидается) плохие.push(`${d.slug}: вкладка «${подпись}», расчёт «${ожидается}»`);
+  }
+  expect(проверено, 'ни одной собранной страницы направления не нашлось — сначала собрать сайт').toBeGreaterThan(10);
+  expect(плохие, `подпись вкладки спорит с расчётом (${плохие.length} из ${проверено}):\n${плохие.slice(0, 10).join('\n')}`).toEqual([]);
+});
