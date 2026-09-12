@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { Image } from 'astro:assets';
-import { DIRECTIONS } from '../../data/directions.js';
+import { DIRECTIONS, VISITED } from '../../data/directions.js';
 import { NOUN } from '../../data/plural.js';
 import { getVisaDetails } from '../../data/visa-details.js';
 
@@ -80,14 +80,11 @@ const VISA_META = {
   },
 };
 
-// EEAT — страны где Никита был лично (CLAUDE.md: Африка, Океания, Япония, США, Бали + близкое зарубежье)
-const VISITED = new Set([
-  'kenya', 'south-africa', 'tanzania',
-  'australia-east', 'australia-north', 'new-zealand', 'bali',
-  'japan', 'japan-hokkaido',
-  'usa',
-  'georgia', 'armenia', 'turkey', 'uae',
-]);
+// ⛔ Список «был лично» — только канонический (src/data/directions.js). 12.09.2026 у реестра
+//    был свой из 14 стран, и он спорил с хабами в ОБЕ стороны: семи странам опыт приписывался
+//    (Кения, Танзания, север Австралии, Хоккайдо, Грузия, Армения, ОАЭ), а у Марокко, где
+//    «Был здесь сам» стоит на хабе, галочки не было. Нашёл внешний рецензент. Один список на
+//    сайт: заявка о личном опыте автора не может зависеть от того, какую страницу открыли.
 
 // FAQ — 12 главных вопросов о визах
 const FAQ_ITEMS = [
