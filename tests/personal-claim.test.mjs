@@ -37,8 +37,10 @@ test('пометка личного опыта — только у стран и
     ]) {
       if (!existsSync(f)) continue;
       const t = readFileSync(f, 'utf8')
-        .replace(/<script[\s\S]*?<\/script>/g, ' ')
-        .replace(/<style[\s\S]*?<\/style>/g, ' ')
+        // ⛔ Флаг i обязателен: без него выражение пропускает <SCRIPT> заглавными, и текст
+        //    скрипта попадает в проверку как видимый текст страницы (нашёл сканер кода).
+        .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+        .replace(/<style[\s\S]*?<\/style>/gi, ' ')
         .replace(/<[^>]+>/g, ' ')
         .replace(/[ ⁠\s]+/g, ' ');
       for (const [шаблон, имя] of ЗАЯВКИ) {
