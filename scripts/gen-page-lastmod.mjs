@@ -18,7 +18,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ВХОДЫ, группыФайла } from './page-groups.mjs';
+import { ВХОДЫ, группыФайла, группыПоля } from './page-groups.mjs';
 
 const root = process.cwd();
 const DATA = join(root, 'src/data');
@@ -69,6 +69,20 @@ function тронутыеСтроки(коммит, файлы) {
 }
 
 const КЛЮЧ = /^\s{0,4}'?([a-z][a-z0-9-]*)'?\s*:/;
+const ПОЛЕ_БЛОКА = /^ {4}([a-zA-Z][a-zA-Z0-9_]*):/;
+const НАЧАЛО_СТРАНЫ = /^ {2}'[a-z0-9-]+':/;
+
+/** Какое поле записи правилось в этой строке. Null — правка не внутри поля. */
+function полеСтроки(строки, номер) {
+  for (let i = Math.min(номер, строки.length) - 1; i >= 0; i--) {
+    const s = строки[i];
+    if (s === undefined) continue;
+    if (НАЧАЛО_СТРАНЫ.test(s)) return null;
+    const m = s.match(ПОЛЕ_БЛОКА);
+    if (m) return m[1];
+  }
+  return null;
+}
 const ПОЯСНЕНИЕ = /^\s*(\/\/|\/\*|\*)|^\s*$/;
 
 /** Чей блок содержит эту строку.
@@ -164,7 +178,11 @@ for (const строка of история) {
       if (!кто) continue;
       // Первое попадание — самое свежее: история идёт от новых к старым.
       if (!дата_направления[кто]) дата_направления[кто] = дата;
-      for (const г of группы_файла.get(файл) || []) по_группам[г][кто] ??= дата;
+      // Поле решает, кому двигать дату: сборы читают из гида только авторскую строку,
+      // вопросов-ответов там нет. Поле не опознано — откат на группы по файлу.
+      const поле = полеСтроки(содержимое, н);
+      const поГруппам = поле ? группыПоля(поле, root) : [];
+      for (const г of (поГруппам.length ? поГруппам : группы_файла.get(файл) || [])) по_группам[г][кто] ??= дата;
     }
   }
 }
