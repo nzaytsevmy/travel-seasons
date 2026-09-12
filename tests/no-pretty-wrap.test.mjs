@@ -21,9 +21,10 @@ function files(dir) {
 test('в стилях сайта нет text-wrap: pretty', () => {
   const bad = [];
   for (const f of files(ROOT)) {
-    const text = readFileSync(f, 'utf8')
-      .replace(/\/\*[\s\S]*?\*\//g, '')
-      .replace(/<!--[\s\S]*?-->/g, '');
+    // Вычитаем только комментарии стилей. Вырезание HTML-комментариев регуляркой анализатор
+    // кода GitHub считает неполной очисткой разметки (12.09.2026 — предупреждение высокой
+    // важности на этой строке), а pretty в HTML-комментарии шаблона не встречается.
+    const text = readFileSync(f, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
     if (/text-wrap\s*:\s*pretty/i.test(text)) bad.push(f.slice(ROOT.length + 1));
   }
   assert.deepEqual(bad, []);
