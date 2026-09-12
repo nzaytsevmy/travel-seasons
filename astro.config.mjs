@@ -106,17 +106,31 @@ const DATA_DATE = new Date(DATA_UPDATED + 'T00:00:00Z');
 //    вышедших после 19-го, не добрался вовсе — на прямой запрос отвечал
 //    «адрес неизвестен». Теперь у страниц про страну — дата данных ЭТОЙ страны
 //    (scripts/gen-page-lastmod.mjs), у остальных прежняя общая.
-const датаНаправления = (slug) => {
-  const d = ДАТЫ_НАПРАВЛЕНИЙ.направления?.[slug];
+const датаНаправления = (slug, группа) => {
+  // Дата по типу страниц: правка гидов двигает хаб и сборы, страницы поездок не трогает —
+  // их шаблон этих данных не читает (scripts/page-groups.mjs).
+  const по_группам = ДАТЫ_НАПРАВЛЕНИЙ.по_группам?.[группа];
+  const d = по_группам
+    ? (по_группам[slug] || ДАТЫ_НАПРАВЛЕНИЙ.общая_по_группам?.[группа])
+    : ДАТЫ_НАПРАВЛЕНИЙ.направления?.[slug];
   return d ? new Date(d + 'T00:00:00Z') : DATA_DATE;
 };
 
 /** Направление, о котором страница: /packing/<страна>/…, /trips/<месяц>/<страна>/, /visa/<страна>/, /<страна>/ */
+const КЛЮЧИ_НАПРАВЛЕНИЙ = new Set(DIRECTIONS.map((d) => d.slug));
+const ТИПЫ_АДРЕСОВ = [
+  [/^\/packing\/([a-z0-9-]+)\//, 'packing'],
+  [/^\/visa\/([a-z0-9-]+)\/$/, 'visa'],
+  [/^\/trips\/[a-z]+\/([a-z0-9-]+)\/$/, 'trips'],
+  [/^\/([a-z0-9-]+)\/$/, 'hub'],
+];
 const направлениеИз = (путь) => {
   const p = путь.replace(/^https:\/\/traveltribe\.ru/, '');
-  const m = p.match(/^\/packing\/([a-z0-9-]+)\//) || p.match(/^\/visa\/([a-z0-9-]+)\/$/)
-         || p.match(/^\/trips\/[a-z]+\/([a-z0-9-]+)\/$/) || p.match(/^\/([a-z0-9-]+)\/$/);
-  return m && ДАТЫ_НАПРАВЛЕНИЙ.направления?.[m[1]] ? m[1] : null;
+  for (const [шаблон, группа] of ТИПЫ_АДРЕСОВ) {
+    const m = p.match(шаблон);
+    if (m && КЛЮЧИ_НАПРАВЛЕНИЙ.has(m[1])) return { slug: m[1], группа };
+  }
+  return null;
 };
 
 /** Сравнение двух направлений — по самой свежей из двух дат. */
@@ -258,7 +272,7 @@ export default defineConfig({
         const url = item.url;
         const свой = направлениеИз(url);
         item = { ...item, lastmod: blogLastmod[url] || newsItemLastmod[url] || датаСравнения(url)
-          || (свой ? датаНаправления(свой) : DATA_DATE) };
+          || (свой ? датаНаправления(свой.slug, свой.группа) : DATA_DATE) };
         // Лента новостей обновляется ежедневно; месяц — пока он идёт, потом уже никогда.
         if (url === 'https://traveltribe.ru/novosti/') {
           return { ...item, lastmod: newsFeedLastmod || item.lastmod, priority: 0.8, changefreq: 'daily' };
