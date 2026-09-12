@@ -107,7 +107,11 @@ if [ "$MODE" = "text" ]; then
 fi
 
 if ! npx playwright test >${LOG}_pw.log 2>&1; then
-  echo "⚠ первый прогон не зелёный — ретрай упавших (отсев известного флейка blog-japan fullPage)…"
+  # ⛔ Имена упавших снимаем ДО повтора. Тест, прошедший со второго раза, — нестабильная
+  #    проверка, а не «ничего»: до 12.09.2026 повтор молча объявлял зелёным любой такой тест,
+  #    и настоящий регресс «через раз» проезжал без следа (аудит проверок, находка 19).
+  FLAKY="$(grep -E '^[[:space:]]+✘' ${LOG}_pw.log | sed -E 's/^[[:space:]]+✘[[:space:]]+[0-9]+[[:space:]]+//; s/ \([0-9.]+(ms|s|m)\)$//' | sort -u)"
+  echo "⚠ первый прогон не зелёный — повтор упавших…"
   if ! npx playwright test --last-failed >>${LOG}_pw.log 2>&1; then
     echo "✖ Playwright визуал-регресс НЕ зелёный (упало ДВАЖДЫ = реальный регресс) — push заблокирован."
     echo "  лог: ${LOG}_pw.log | отчёт: npm run check:visual:report"
@@ -118,7 +122,11 @@ if ! npx playwright test >${LOG}_pw.log 2>&1; then
     echo "  намеренный обход: git push --no-verify"
     exit 1
   fi
-  echo "  (упавшее прошло на ретрае — флейк, не регресс; пропускаю)"
+  echo "  ⚠ прошли только со второго раза — нестабильные проверки, не зелёные:"
+  printf '%s\n' "$FLAKY" | sed 's/^/    · /'
+  mkdir -p "$HOME/.cache" && printf '%s\n' "$FLAKY" \
+    | sed "s|^|$(date +%Y-%m-%d) $(git rev-parse --short HEAD 2>/dev/null) |" >> "$HOME/.cache/traveltribe-flaky.log"
+  echo "    (записано в ~/.cache/traveltribe-flaky.log — повторяющееся имя = чинить или в карантин)"
 fi
 
 echo "✔ визуал-гейт зелёный — push разрешён."
