@@ -95,6 +95,7 @@ export const RELATED_POSTS = {
   'thailand': [
     { slug: 'thailand-guide-2026', title: 'Таиланд 2026: виза, Пхукет, Самуи, цены', kind: 'guide' },
     { slug: 'phuket-samui-2026', title: 'Пхукет или Самуи 2026: где лучше отдыхать', kind: 'guide' },
+    { slug: 'krabi-phuket-2027', title: 'Краби или Пхукет: куда ехать зимой 2027', kind: 'guide' },
     { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
     { slug: 'novyy-god-2027-kuda-poehat', title: 'Куда поехать на Новый год 2027: цены и крайние сроки', kind: 'season' },
   ],
