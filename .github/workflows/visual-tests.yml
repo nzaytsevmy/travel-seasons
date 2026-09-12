@@ -127,7 +127,7 @@ jobs:
           done
           echo "✖ preview не поднялся"; exit 1
       - name: Snap linux baselines (прогон 1 — генерация)
-        run: npx playwright test -g "— visual" --update-snapshots
+        run: npx playwright test -g "— visual" --update-snapshots=all
         env:
           PREVIEW_URL: http://localhost:4322
       - name: Проверка стабильности (прогон 2 — сравнение с только что снятыми)
