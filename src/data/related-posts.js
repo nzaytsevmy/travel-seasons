@@ -5,6 +5,9 @@
 // Тот же приём, что для affiliate.js (трекинг-плумбинг, не датированная фактура).
 
 export const RELATED_POSTS = {
+  'hong-kong': [
+    { slug: 'chto-posmotret-v-gonkonge', title: 'Что посмотреть в Гонконге за 3 дня: бухта, Пик и Лантау', kind: 'guide' },
+  ],
   'abkhazia': [
     { slug: 'abkhazia-2026', title: 'Абхазия 2026: стоит ли ехать, цены, как добраться', kind: 'guide' },
     { slug: 'zagranpasport-v-abhaziyu-2026', title: 'Нужен ли загранпаспорт в Абхазию — документы на границе', kind: 'visa' },
