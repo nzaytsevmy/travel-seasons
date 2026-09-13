@@ -5,14 +5,28 @@ const PAGES = ['/', '/countries/', '/visa/'];
 async function checkPageTargets(page, path) {
   await page.goto(path);
   await page.waitForLoadState('load');
+  const expectedURL = page.url();
   expect(await page.evaluate(targetViolations), 'закрытое меню').toEqual([]);
   const burger = page.locator('#burger');
   if (await burger.isVisible()) await burger.click();
-  for (const summary of await page.locator('#navmenu summary').all()) {
-    await summary.click();
+  const hoverMenu = await page.evaluate(() =>
+    matchMedia('(min-width:921px) and (hover:hover) and (pointer:fine)').matches);
+  const summaries = await page.locator('#navmenu summary').all();
+  expect(summaries.length, 'есть раскрываемые пункты меню').toBeGreaterThan(0);
+  for (const summary of summaries) {
+    // На широком экране заголовок по клику ведёт в раздел; список открывает наведение.
+    if (hoverMenu) await summary.hover();
+    else await summary.click();
+    await expect(summary.locator('..')).toHaveAttribute('open', '');
+    await expect(page).toHaveURL(expectedURL);
     expect(await page.evaluate(targetViolations), 'открытое меню').toEqual([]);
-    await summary.click();
+    if (hoverMenu) {
+      await page.mouse.move(0, 0);
+      await page.keyboard.press('Escape');
+    } else await summary.click();
+    await expect(summary.locator('..')).not.toHaveAttribute('open', '');
   }
+  await expect(page).toHaveURL(expectedURL);
 }
 for (const path of PAGES) {
   test(`Размер целей: ${path} — размеры и расстояния WCAG 2.5.8`, async ({ page }) => {
