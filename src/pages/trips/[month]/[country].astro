@@ -1,5 +1,6 @@
 ---
 import livePrices from '../../../data/prices-cache.json';
+import { freshPrices } from '../../../data/price-freshness.js';
 // Страница «направление × месяц» — Swiss / International Typographic по BRANDBOOK.md.
 // Типографический hero (без градиента/эмодзи), hairline-таблицы, сезон передан весом/золотом.
 import Layout from '../../../layouts/Layout.astro';
@@ -83,7 +84,7 @@ const iata = d.iata || d.price?.iata;   // канон. IATA из regionMeta (ч�
 // «уникальный датированный факт», за который цитируют: замер 28.07.2026 показал
 // 3,1% переходов у страницы с ценой и датой против 0,25% у страницы без.
 // Отель и еду выгрузка не покрывает — они остаются из ручных данных.
-const liveFlight = iata ? livePrices.prices?.[iata]?.[`${yr}-${String(monthIdx + 1).padStart(2, '0')}`] ?? null : null;
+const liveFlight = iata ? freshPrices(livePrices, iata)[`${yr}-${String(monthIdx + 1).padStart(2, '0')}`] ?? null : null;
 const flightTiers = d.price?.flight || [0,0,0];
 const hotelTiers = d.price?.hotel || [0,0,0];
 const foodTiers = d.price?.food || [0,0,0];

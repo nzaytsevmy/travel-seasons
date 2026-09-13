@@ -125,6 +125,7 @@ for (const page of PAGES) {
       document.querySelectorAll('img').forEach((img: HTMLImageElement) => {
         img.loading = 'eager';
         img.fetchPriority = 'high';
+        img.decoding = 'sync';
       });
     });
     await pwPage.evaluate(async () => {
@@ -137,7 +138,9 @@ for (const page of PAGES) {
     });
     await pwPage.evaluate(async () => {
       const imgs = Array.from(document.querySelectorAll('img')) as HTMLImageElement[];
-      await Promise.all(imgs.map(img => img.decode().catch(() => {})));
+      await Promise.all(imgs.filter(img => img.getBoundingClientRect().width > 0).map(img => img.decode()));
+      await new Promise(requestAnimationFrame);
+      await new Promise(requestAnimationFrame);
     });
     // Главную клипуем до вьюпорта (не fullPage): её лента «Свежие истории» ниже сгиба
     // и в кадр не попадает, поэтому верхний регион стабилен. Контентные страницы — fullPage.

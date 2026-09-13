@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "prebuild": "node scripts/link-image-cache.mjs && node scripts/news-lifecycle.mjs && node scripts/gen-freshness.mjs && node scripts/gen-page-lastmod.mjs && node scripts/gen-llms.mjs",
-    "postbuild": "node scripts/set-page-mtimes.mjs",
+    "postbuild": "node scripts/set-page-mtimes.mjs && npm run check:mtimes",
     "build": "astro build",
     "gen:llms": "node scripts/gen-llms.mjs",
     "preview": "astro preview",
@@ -21,6 +21,7 @@
     "export:monetization": "node scripts/monetization-data-export.mjs",
     "gate:monetization:decision": "node scripts/monetization-decision-gate.mjs",
     "check:agent-skills": "node --test tests/agent-skills-contract.test.mjs",
+    "check:mtimes": "node --experimental-strip-types --test scripts/check-page-mtimes.ts",
     "check:delivery": "node --test 'tests/**/*.test.mjs'",
     "check:news-lifecycle": "node scripts/news-lifecycle.mjs",
     "check:news": "node scripts/news-gate.mjs && node scripts/news-lifecycle.mjs",

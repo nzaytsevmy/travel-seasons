@@ -128,10 +128,19 @@ export function buildReport({
   maturityDaysByPartner = {},
   readerCohortCounts = {},
   audienceSourceCounts = {},
+  ingestion = null,
 }) {
   const traffic = flattenTraffic(trafficSnapshot);
   const joined = joinRevenueRowsToClicks(revenueRows, clickRows);
   const normalized = joined.rows;
+  const ingestionComplete = ingestion?.status === 'complete' &&
+    Number.isInteger(ingestion.rowCount) && ingestion.rowCount === revenueRows.length &&
+    [ingestion.from, ingestion.through, ingestion.completedAt].every(value => Number.isFinite(Date.parse(value))) &&
+    Date.parse(ingestion.from) <= Date.parse(ingestion.through) &&
+    Date.parse(ingestion.completedAt) >= Date.parse(ingestion.through);
+  const hasRegistry = revenueRows.length > 0 || ingestionComplete;
+  const knownRows = normalized.filter(row => row.orderId && row.monetaryValueKnown);
+  const registryNet = knownRows.reduce((sum,row) => sum + row.approvedRevenue - row.reversedRevenue, 0);
   const maturityConfigured = normalized.length > 0 && normalized.every((row) => {
     const days = Number(maturityDaysByPartner[row.partner] ?? maturityDaysByPartner.default);
     return Number.isFinite(days) && days >= 0;
@@ -147,6 +156,15 @@ export function buildReport({
   const organicSessions = traffic.reduce((sum, row) => sum + row.organic, 0);
   const clicks = traffic.reduce((sum, row) => sum + row.clicks, 0);
   const metrics = computeRevenueMetrics({ organicSessions, approvedRevenue, reversedRevenue, approvedOrders });
+  const matchedMature = decisionRows.filter(row => row.metrikaClick);
+  const attributedNet = matchedMature.reduce((sum,row) => sum + row.approvedRevenue - row.reversedRevenue, 0);
+  const comparableWindows = trafficSnapshot.dateFrom === ingestion?.from &&
+    Number.isFinite(Date.parse(trafficSnapshot.dateTo)) &&
+    Date.parse(trafficSnapshot.dateTo) <= Date.parse(ingestion?.through) &&
+    normalized.every(row => Date.parse(row.clickDate) >= Date.parse(`${trafficSnapshot.dateFrom}T00:00:00Z`) &&
+      Date.parse(row.clickDate) < Date.parse(`${trafficSnapshot.dateTo}T00:00:00Z`) + 86400000);
+  const canComputeRpm = ingestionComplete && comparableWindows && normalized.length > 0 && maturityConfigured && validClickDates &&
+    joined.stats.coverage === 1 && knownRows.length === normalized.length && mature.length === normalized.length;
   const readerValueTable = renderValueTable({
     counts: readerCohortCounts,
     clickRows,
@@ -174,11 +192,16 @@ export function buildReport({
     status = `Неполный денежный контракт: без order_id — ${missingOrderIds}, без рублёвой суммы — ${unknownMoney}; финансовое решение запрещено.`;
   } else if (normalized.length && (joined.stats.coverage !== 1 || joined.stats.ambiguous || joined.stats.mismatched)) {
     status = `Точного action→click join нет у всех действий: сопоставлено ${joined.stats.matched} из ${joined.stats.total}; финансовое решение запрещено.`;
+  } else if (normalized.length && !comparableWindows) {
+    status = 'Периоды трафика и реестра не согласованы: финансовое решение запрещено.';
   } else if (approvedOrders > 0) {
     status = 'Есть зрелые одобрения; решения принимаются по чистому доходу после проверки экспериментальных guardrails.';
   } else if (revenueRows.length) {
     status = 'Выгрузка подключена, но зрелых одобрений пока нет.';
+  } else if (ingestionComplete) {
+    status = 'Выгрузка успешно завершена, строк: 0. Это нулевой реестр за указанный период; рост дохода не доказан.';
   }
+  if (!ingestionComplete) status += ' Полнота не подтверждена: нет согласованной квитанции завершения выгрузки; финансовое решение запрещено.';
 
   return `# Монетизация TravelTribe — денежный baseline\n\n`
     + `Срез Метрики: **${dated}**. Главная метрика — одобренная комиссия после отмен на 1 000 органических визитов.\n\n`
@@ -190,8 +213,11 @@ export function buildReport({
     + `- Покрытие CTA-level атрибуцией: **${percent(attributed, normalized.length)}**\n`
     + `- Точный action→click join: **${percent(joined.stats.matched, joined.stats.total)} (${joined.stats.matched} из ${joined.stats.total})**\n`
     + `- Одобренных действий: **${metrics.approvedOrders}**\n`
-    + `- Чистая одобренная комиссия: **${money(metrics.netApprovedRevenue)}**\n`
-    + `- Доход на 1 000 органических визитов: **${metrics.revenuePerThousand == null ? 'недостаточно данных' : money(metrics.revenuePerThousand)}**\n`
+    + `- По загруженному реестру — одобренная комиссия после отмен: **${hasRegistry && knownRows.length === normalized.length ? money(registryNet) : 'нет данных'}**\n`
+    + `- Чистая одобренная комиссия: **${hasRegistry && maturityConfigured ? money(metrics.netApprovedRevenue) : 'нет данных'}** (только зрелые строки, ещё без требования точного join)\n`
+    + `- Из неё точно связана с кликами: **${hasRegistry && maturityConfigured ? money(attributedNet) : 'нет данных'}**\n`
+    + `- Полнота выгрузки: **${ingestionComplete ? `успешно завершена, строк: ${ingestion.rowCount}; период ${ingestion.from} — ${ingestion.through}; завершение ${ingestion.completedAt}` : 'полнота не подтверждена'}**\n`
+    + `- Доход на 1 000 органических визитов: **${!canComputeRpm || metrics.revenuePerThousand == null ? 'нет данных' : money(metrics.revenuePerThousand)}**\n`
     + `- Статус: **${status}**\n\n`
     + `## По типам страниц\n\n${renderTable(sumBy(traffic, 'type'))}\n\n`
     + `## По намерению\n\n${renderTable(sumBy(traffic, 'intent'))}\n\n`
@@ -218,6 +244,7 @@ if (process.argv[1] && resolve(process.argv[1]) === new URL(import.meta.url).pat
     maturityDaysByPartner,
     readerCohortCounts: privateExport.readerCohortCounts ?? {},
     audienceSourceCounts: privateExport.audienceSourceCounts ?? {},
+    ingestion: privateExport.ingestion ?? null,
   });
   if (args.output) {
     writeFileSync(resolve(args.output), report);

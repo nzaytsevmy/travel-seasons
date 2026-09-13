@@ -32,7 +32,6 @@ export const LIGHT_SPECS = new Set([
   'rhythm-gate.spec.ts',
   'news-gate.spec.ts',
   'sitemap-dates.spec.ts',
-  'page-mtimes.spec.ts',
   'monetization-browser.spec.ts',
 ]);
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, renameSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { MONETIZATION_EXPERIMENT } from '../src/data/monetization.js';
 
@@ -38,10 +38,11 @@ async function jsonRequest(url, { token, body, header = 'Authorization' }) {
   const headers = { Accept: 'application/json' };
   headers[header] = header === 'Authorization' ? `OAuth ${token}` : token;
   if (body) headers['Content-Type'] = 'application/json';
-  const response = await fetch(url, { method: body ? 'POST' : 'GET', headers, body: body ? JSON.stringify(body) : undefined });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(`${response.status} ${url}: ${JSON.stringify(data).slice(0, 500)}`);
-  return data;
+  const response = await fetch(url, { method: body ? 'POST' : 'GET', headers, body: body ? JSON.stringify(body) : undefined,
+    signal: AbortSignal.timeout(30000) });
+  if (!response.ok) throw new Error(`${response.status} ${new URL(url).hostname}: экспорт не завершён`);
+  try {return await response.json();}
+  catch {throw new Error(`${new URL(url).hostname}: некорректный JSON; экспорт не завершён`);}
 }
 
 function metrikaUrl(params) {
@@ -145,10 +146,16 @@ async function fetchMetrikaRows(params, token) {
   for (;;) {
     const data = await jsonRequest(metrikaUrl({ ...params, offset: String(offset), limit: '10000', accuracy: 'full' }), { token });
     if (data.sampled) throw new Error('Метрика вернула семплированные данные: решение запрещено.');
-    rows.push(...(data.data ?? []));
-    const total = Number(data.total_rows ?? rows.length);
-    if (rows.length >= total || !(data.data ?? []).length) break;
-    offset += (data.data ?? []).length;
+    if (!Array.isArray(data.data) || !Number.isInteger(data.total_rows) || data.total_rows < 0) {
+      throw new Error('Метрика: неизвестная структура ответа');
+    }
+    rows.push(...data.data);
+    if (rows.length > data.total_rows || !data.data.length && rows.length < data.total_rows) {
+      throw new Error('Метрика: неполная или несогласованная пагинация');
+    }
+    if (rows.length === data.total_rows) break;
+    if (offset > 1000000) throw new Error('Метрика: превышен предел выгрузки');
+    offset += data.data.length;
   }
   return rows;
 }
@@ -237,10 +244,17 @@ export async function fetchTravelpayoutsActions({ token, dateFrom, dateTo }) {
         limit: 10000,
       },
     });
-    rows.push(...(data.results ?? []));
-    const total = Number(data.total_rows ?? rows.length);
-    if (rows.length >= total || !(data.results ?? []).length) break;
-    offset += (data.results ?? []).length;
+    if (!Array.isArray(data.results)) throw new Error('Travelpayouts: неизвестная структура ответа');
+    rows.push(...data.results);
+    if (data.total_rows != null) {
+      const total = Number(data.total_rows);
+      if (!Number.isInteger(total) || total < rows.length || !data.results.length && rows.length < total) {
+        throw new Error('Travelpayouts: неполная или несогласованная пагинация');
+      }
+      if (rows.length === total) break;
+    } else if (data.results.length < 10000) break;
+    if (offset > 1000000) throw new Error('Travelpayouts: превышен предел выгрузки');
+    offset += data.results.length;
   }
   return normalizeTravelpayoutsActions(rows);
 }
@@ -272,7 +286,11 @@ if (process.argv[1] && resolve(process.argv[1]) === new URL(import.meta.url).pat
   ]);
   const output = resolve(args.output);
   mkdirSync(dirname(output), { recursive: true });
-  writeFileSync(output, `${JSON.stringify({
+  const completedAt = new Date().toISOString();
+  const temporary = `${output}.${process.pid}.tmp`;
+  writeFileSync(temporary, `${JSON.stringify({
+    ingestion: {status:'complete', from:args.dateFrom, through:args.actionsThrough || args.dateTo,
+      completedAt, rowCount:actions.length},
     generatedAt: new Date().toISOString(),
     dateFrom: args.dateFrom,
     dateTo: args.dateTo,
@@ -285,6 +303,7 @@ if (process.argv[1] && resolve(process.argv[1]) === new URL(import.meta.url).pat
     audienceSourceCounts,
     clickEvents,
     actions,
-  }, null, 2)}\n`);
+  }, null, 2)}\n`, {mode:0o600});
+  renameSync(temporary, output);
   console.log(`приватный денежный экспорт: ${output}; assignments=${Object.values(assignmentCounts).reduce((a, b) => a + b, 0)}, clicks=${clickEvents.length}, actions=${actions.length}`);
 }

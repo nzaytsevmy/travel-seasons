@@ -105,6 +105,28 @@ test('экспорт cohort считает только органические
   assert.equal(query.get('accuracy'), 'full');
 });
 
+test('сломанный JSON и неполная пагинация не превращаются в пустую выгрузку', async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    for (const body of ['{', JSON.stringify({sampled:false,data:[],total_rows:5}), '{}']) {
+      globalThis.fetch = async () => new Response(body,{status:200});
+      await assert.rejects(fetchAssignmentCounts({token:'fixture',dateFrom:'2026-08-01',dateTo:'2026-08-30',experimentId:'exp'}));
+    }
+  } finally {globalThis.fetch = originalFetch;}
+});
+
+test('ошибка JSON не раскрывает ответ денежного API', async () => {
+  const originalFetch=globalThis.fetch;
+  try {
+    globalThis.fetch=async()=>new Response('TOPSECRET',{status:200});
+    await assert.rejects(fetchAssignmentCounts({token:'fixture',dateFrom:'2026-08-01',dateTo:'2026-08-30',experimentId:'exp'}), error=>{
+      assert.doesNotMatch(error.message,/TOPSECRET/);
+      assert.match(error.message,/JSON/);
+      return true;
+    });
+  } finally {globalThis.fetch=originalFetch;}
+});
+
 test('сырой action Travelpayouts сохраняет оба ID, статус и правильную сумму', () => {
   const [row] = normalizeTravelpayoutsActions([{
     action_id: 'TP-1', internal_action_id: 'BOOK-1', external_click_id: 'EXT-1',

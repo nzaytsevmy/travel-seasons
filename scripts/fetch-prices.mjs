@@ -5,8 +5,7 @@
 
 import { regionMeta } from '../src/data/regions-meta.js';
 import { PRICES } from '../src/data/prices.js';
-import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'node:fs';
-import { countFilled, refuseReason } from './prices-floor.mjs';
+import { fetchCheap, refreshPrices } from './price-refresh.mjs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -41,48 +40,12 @@ function next12Months() {
 
 const months = next12Months();
 
-async function fetchCheap(destination, month) {
-  const url = `https://api.travelpayouts.com/v1/prices/cheap?origin=${ORIGIN}&destination=${destination}&depart_date=${month}&currency=${CURRENCY}&token=${TOKEN}`;
-  try {
-    const res = await fetch(url, { headers: { 'X-Access-Token': TOKEN } });
-    if (!res.ok) return null;
-    const json = await res.json();
-    if (!json.success || !json.data || !json.data[destination]) return null;
-    const offers = Object.values(json.data[destination]);
-    if (!offers.length) return null;
-    const minPrice = Math.min(...offers.map(o => o.price).filter(p => typeof p === 'number'));
-    return Number.isFinite(minPrice) ? minPrice : null;
-  } catch (e) {
-    return null;
-  }
+try {
+  const result = await refreshPrices({out: OUT, iatas, months,
+    request: (iata, month) => fetchCheap(iata, month, {token: TOKEN})});
+  console.log(`Цены обновлены: ${JSON.stringify(result.refreshCounts)}`);
+  if (result.refreshCounts.temporary_error) console.warn('::warning::Часть запросов не удалась; даты сохранённых цен не обновлены.');
+} catch (error) {
+  console.error(error.message);
+  process.exitCode = 1;
 }
-
-const prevFilled = existsSync(OUT) ? countFilled(JSON.parse(readFileSync(OUT, 'utf8')).prices) : 0;
-const cache = {};
-let done = 0;
-const total = iatas.length * months.length;
-
-console.log(`Подтягиваю ${total} цен (${iatas.length} направлений × ${months.length} мес)...`);
-
-for (const iata of iatas) {
-  cache[iata] = {};
-  for (const month of months) {
-    const price = await fetchCheap(iata, month);
-    cache[iata][month] = price;
-    done++;
-    if (done % 20 === 0) console.log(`  ${done}/${total} (${iata} ${month}: ${price ?? 'нет'} ₽)`);
-    await new Promise(r => setTimeout(r, 250));  // 4 req/sec, безопасно для лимита
-  }
-}
-
-const filled = countFilled(cache);
-const refuse = refuseReason(prevFilled, filled);
-if (refuse) {
-  // Файл не трогаем: сайт покажет прошлые живые цены, а задача покраснеет и пришлёт сигнал.
-  console.error(`✖ Файл цен не перезаписан: ${refuse}. Это отказ поставщика, а не рынок.`);
-  process.exit(1);
-}
-
-mkdirSync(dirname(OUT), { recursive: true });
-writeFileSync(OUT, JSON.stringify({ updatedAt: new Date().toISOString(), origin: ORIGIN, currency: CURRENCY, prices: cache }, null, 2));
-console.log(`✓ Готово: ${filled}/${total} цен записано в ${OUT}`);

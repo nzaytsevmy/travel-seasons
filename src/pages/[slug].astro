@@ -34,6 +34,7 @@ import { countryPhotos } from '../data/country-photos.js';
 import { COUNTRY_SIGHTS } from '../data/country-sights.js';
 import { TP_LINKS, aviasalesRoute, otelloStay, cherehapaCountry, ostrovokCountry, youtravelCountry, kiwitaxiRoute, sputnik8City, mirturbazRegion } from '../data/affiliate.js';
 import livePrices from '../data/prices-cache.json';
+import { freshPrices } from '../data/price-freshness.js';
 
 // РФ-инвентарь жилья: на этих хабах вместо Островка — Яндекс Путешествия (сильнее по РФ).
 // Подпись к связанному гайду должна отражать РЕАЛЬНЫЙ sourceType статьи:
@@ -169,7 +170,7 @@ const { monthsRanked, bestMonths, лучшиеСезоны, лучшиеСлов
 // большую и уходил. На этой же цифре стоял и весь недельный бюджет.
 // Курс — тот же, по которому собран справочник бюджетов (90 ₽ за доллар).
 const КУРС = 90;
-const живыеМесяцы = d.price?.iata ? Object.values(livePrices.prices[d.price.iata] ?? {}).filter(Boolean) : [];
+const живыеМесяцы = d.price?.iata ? Object.values(freshPrices(livePrices, d.price.iata)).filter(Boolean) : [];
 const живойМинимум = живыеМесяцы.length ? Math.round(Math.min(...живыеМесяцы) / КУРС) : null;
 const flightFrom = живойМинимум ?? d.price?.flight?.[0];
 const hotelFrom = d.price?.hotel?.[0];
