@@ -10,6 +10,12 @@ cd "$REPO" || exit 1
 PORT="$(node scripts/preview-port.mjs)" || exit 1
 LOG="/tmp/ttb_prepush_${PORT}"
 
+# Проверяем именно коммит, который отправляется, независимо от рабочего дерева.
+if ! python3 scripts/secret-scan.py --tree HEAD; then
+  echo "✖ секрет найден или сканирование не завершено — push заблокирован"
+  exit 1
+fi
+
 # Что уезжает: только текст или ещё и вёрстка с кодом. Решение то же, что уже
 # принято на сервере (там визуальный прогон имеет фильтр paths-ignore на
 # src/content): текст не двигает пиксели, под эталоном 14 канареек и текста
@@ -107,26 +113,9 @@ if [ "$MODE" = "text" ]; then
 fi
 
 if ! npx playwright test >${LOG}_pw.log 2>&1; then
-  # ⛔ Имена упавших снимаем ДО повтора. Тест, прошедший со второго раза, — нестабильная
-  #    проверка, а не «ничего»: до 12.09.2026 повтор молча объявлял зелёным любой такой тест,
-  #    и настоящий регресс «через раз» проезжал без следа (аудит проверок, находка 19).
-  FLAKY="$(grep -E '^[[:space:]]+✘' ${LOG}_pw.log | sed -E 's/^[[:space:]]+✘[[:space:]]+[0-9]+[[:space:]]+//; s/ \([0-9.]+(ms|s|m)\)$//' | sort -u)"
-  echo "⚠ первый прогон не зелёный — повтор упавших…"
-  if ! npx playwright test --last-failed >>${LOG}_pw.log 2>&1; then
-    echo "✖ Playwright визуал-регресс НЕ зелёный (упало ДВАЖДЫ = реальный регресс) — push заблокирован."
-    echo "  лог: ${LOG}_pw.log | отчёт: npm run check:visual:report"
-    echo "  если правки легитимны (новый пост → home/blog-index):"
-    echo "   1) глазами подтверди что ТОЛЬКО аддитивно"
-    echo "   2) npx playwright test --update-snapshots -g \"home — visual|blog-index — visual\""
-    echo "   3) повтори push"
-    echo "  намеренный обход: git push --no-verify"
-    exit 1
-  fi
-  echo "  ⚠ прошли только со второго раза — нестабильные проверки, не зелёные:"
-  printf '%s\n' "$FLAKY" | sed 's/^/    · /'
-  mkdir -p "$HOME/.cache" && printf '%s\n' "$FLAKY" \
-    | sed "s|^|$(date +%Y-%m-%d) $(git rev-parse --short HEAD 2>/dev/null) |" >> "$HOME/.cache/traveltribe-flaky.log"
-  echo "    (записано в ~/.cache/traveltribe-flaky.log — повторяющееся имя = чинить или в карантин)"
+  echo "✖ Playwright: ошибка или flaky — push заблокирован."
+  echo "  лог: ${LOG}_pw.log | отчёт: npm run check:visual:report"
+  exit 1
 fi
 
 echo "✔ визуал-гейт зелёный — push разрешён."

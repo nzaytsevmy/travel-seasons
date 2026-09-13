@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { test } from 'node:test';
+import { expect } from '@playwright/test';
 import { readFileSync, statSync, existsSync, readdirSync } from 'node:fs';
 
 // Готовые HTML должны сохранять дату реального изменения, а не время сборки.

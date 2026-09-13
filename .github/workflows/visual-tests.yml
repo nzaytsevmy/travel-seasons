@@ -33,6 +33,14 @@ on:
         description: 'Снять linux-эталоны и проверить их стабильность (одноразово)'
         type: boolean
         default: false
+      baseline_grep:
+        description: 'Точное имя или regex проверяемого эталона'
+        type: string
+        default: '— visual'
+      baseline_project:
+        description: 'Один проект Playwright; пусто — все проекты'
+        type: string
+        default: ''
 
 # Отмена устаревших прогонов: два пуша в одну заявку давали ДВА полных набора,
 # и первый доезжал до конца впустую. Замер 03.08.2026 на заявке #171: набор в
@@ -47,11 +55,17 @@ permissions:
   contents: read
 
 jobs:
+  prepare:
+    uses: ./.github/workflows/site-artifact.yml
+    with:
+      skip_html_min: ${{ inputs.gen_linux && '0' || '1' }}
+
   # Одноразовая ручная джоба: снять linux-эталоны на самом раннере (darwin-снимки
   # с мака сюда не годятся — другие шрифты/сглаживание) и заодно проверить, что
   # скриншоты на ubuntu СТАБИЛЬНЫ между прогонами (иначе linux-эталоны дадут флейки,
   # что хуже нынешнего состояния). Запуск вручную: gh workflow run visual-tests.yml -f gen_linux=true
   gen-linux-baselines:
+    needs: prepare
     # inputs с type: boolean в контексте — БУЛЕВО, а не строка: сравнение с 'true'
     # всегда ложно, из-за этого джоба молча скипалась при первом запуске 17.07.2026.
     if: github.event_name == 'workflow_dispatch' && inputs.gen_linux
@@ -114,7 +128,16 @@ jobs:
       - name: Системные библиотеки для WebKit
         timeout-minutes: 10
         run: npx playwright install-deps webkit
-      - run: npm run build
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .build-artifact/
+      - name: Verify and unpack exact build
+        run: node scripts/build-artifact.mjs unpack
+        env:
+          ARTIFACT_DIGEST: ${{ needs.prepare.outputs.digest }}
+      - run: npm run check:mtimes
+
       - name: Start preview server
         run: npx astro preview --port 4322 &
         env:
@@ -127,13 +150,23 @@ jobs:
           done
           echo "✖ preview не поднялся"; exit 1
       - name: Snap linux baselines (прогон 1 — генерация)
-        run: npx playwright test -g "— visual" --update-snapshots
+        run: |
+          args=(-g "$BASELINE_GREP")
+          if [ -n "$BASELINE_PROJECT" ]; then args+=(--project "$BASELINE_PROJECT"); fi
+          npx playwright test "${args[@]}" --update-snapshots
         env:
           PREVIEW_URL: http://localhost:4322
+          BASELINE_GREP: ${{ inputs.baseline_grep }}
+          BASELINE_PROJECT: ${{ inputs.baseline_project }}
       - name: Проверка стабильности (прогон 2 — сравнение с только что снятыми)
-        run: npx playwright test -g "— visual"
+        run: |
+          args=(-g "$BASELINE_GREP")
+          if [ -n "$BASELINE_PROJECT" ]; then args+=(--project "$BASELINE_PROJECT"); fi
+          npx playwright test "${args[@]}"
         env:
           PREVIEW_URL: http://localhost:4322
+          BASELINE_GREP: ${{ inputs.baseline_grep }}
+          BASELINE_PROJECT: ${{ inputs.baseline_project }}
       - name: Upload linux baselines
         if: always()
         uses: actions/upload-artifact@v4
@@ -143,6 +176,7 @@ jobs:
           retention-days: 3
 
   visual:
+    needs: prepare
     runs-on: ubuntu-latest
     # Без лимита job наследовал дефолтные 6 ч — зависший прогон крутился часами.
     timeout-minutes: 40
@@ -215,30 +249,16 @@ jobs:
         timeout-minutes: 10
         run: npx playwright install-deps webkit
 
-      # См. пояснение в build.yml: обработка картинок занимала 115 секунд в
-      # КАЖДОЙ сборке, а результат для одного файла всегда одинаковый.
-      - name: Кэш обработанных картинок
-        uses: actions/cache@v4
+      - uses: actions/download-artifact@v4
         with:
-          path: node_modules/.astro
-          key: astro-assets-${{ runner.os }}-${{ hashFiles('src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.png') }}
-          restore-keys: astro-assets-${{ runner.os }}-
-
-      - run: npm run build
+          name: site-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .build-artifact/
+      - name: Verify and unpack exact build
+        run: node scripts/build-artifact.mjs unpack
         env:
-          SKIP_HTML_MIN: '1'   # на отрисовку страницы минификация не влияет
+          ARTIFACT_DIGEST: ${{ needs.prepare.outputs.digest }}
+      - run: npm run check:mtimes
 
-      # Это контракт готового dist, а не браузерный сценарий. Проверяем его
-      # сразу после postbuild, пока preview-сервер и длинный параллельный прогон
-      # не успели изменить состояние артефакта на конкретном раннере.
-      - name: Verify page modification times
-        run: npx playwright test tests/page-mtimes.spec.ts --project=chromium-desktop
-        env:
-          PREVIEW_URL: http://localhost:4322
-
-      # Явный порт 4322: `astro preview` по умолчанию поднимается на 4321, а гейт
-      # ждёт/тестит на 4322 — из-за этого «Wait for server» висел бесконечно
-      # (прогоны отваливались по 6-часовому таймауту). Совпадает с pre-push-хуком.
       - name: Start preview server
         run: npx astro preview --port 4322 &
         env:
@@ -263,23 +283,7 @@ jobs:
       # Отдельный прогон content-gate дублирует ОТСЮДА только контентную часть —
       # она идёт секунды, и это дешевле, чем городить деление без пересечений.
       - name: Run visual regression tests
-        run: |
-          set -o pipefail
-          if npx playwright test --shard=${{ matrix.shard }}/4 2>&1 | tee first-run.log; then
-            exit 0
-          fi
-          # Один автоматический повтор только реально упавших сценариев: нестабильный
-          # тест не задерживает публикацию, повторное падение блокирует её.
-          # ⛔ Но прошедший со второго раза тест называется по имени — предупреждением на
-          #    заявке и в сводке прогона. До 12.09.2026 повтор молча объявлял зелёным любой
-          #    такой тест (аудит проверок, находка 19).
-          grep -E '^[[:space:]]+✘' first-run.log | sed -E 's/^[[:space:]]+✘[[:space:]]+[0-9]+[[:space:]]+//; s/ \([0-9.]+(ms|s|m)\)$//' | sort -u > flaky.txt || true
-          echo "::warning::Первый прогон не зелёный; повторяем только упавшие тесты"
-          npx playwright test --last-failed
-          while IFS= read -r t; do
-            echo "::warning title=Прошёл только со второго раза::$t"
-          done < flaky.txt
-          { echo "### Прошли только со второго раза (часть ${{ matrix.shard }}/4)"; sed 's/^/- /' flaky.txt; } >> "$GITHUB_STEP_SUMMARY"
+        run: npx playwright test --shard=${{ matrix.shard }}/4
         env:
           PREVIEW_URL: http://localhost:4322
           SKIP_PAGE_MTIME_TESTS: '1'
@@ -288,7 +292,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.shard }}
           path: |
             tests/.html-report/
             test-results/

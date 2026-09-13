@@ -8,6 +8,7 @@ import { NOUN } from '../data/plural.js';
 import { regionMeta } from '../data/regions-meta.js';
 import { regionsRich } from '../data/regions-rich.js';
 import pricesData from '../data/prices-cache.json';
+import { freshPrices } from '../data/price-freshness.js';
 
 const VISA_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза' };
 const VISA_CLASS = { free: 'tag-free', evisa: 'tag-evisa', required: 'tag-visa' };
@@ -69,7 +70,7 @@ const enrichedRows = data.map(row => {
   const meta = regionMeta[row.sub] || { slug: '', iata: null, blogSlug: null };
   const rich = regionsRich[meta.slug] || { events: Array(12).fill(null), notes: Array(12).fill(null), negatives: Array(12).fill(null) };
   const { bestIdx, worstIdx } = findBestWorst(row.r);
-  const prices = meta.iata && pricesData.prices && pricesData.prices[meta.iata] ? pricesData.prices[meta.iata] : {};
+  const prices = freshPrices(pricesData, meta.iata);
   return { ...row, meta, rich, bestIdx, worstIdx, prices };
 });
 

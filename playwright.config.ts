@@ -10,13 +10,10 @@ export default defineConfig({
   // Только *.spec.ts: файлы *.test.mjs — тесты node:test (их гоняет node --test),
   // Playwright грузил их при обходе и исполнял впустую при каждом прогоне.
   testMatch: '**/*.spec.ts',
-  // В CI время файлов проверяется отдельным шагом сразу после build. В длинном
-  // browser-shard к моменту этой проверки dist уже обслуживается preview-сервером
-  // и контракт артефакта смешивается с поведением сервера/раннера.
-  testIgnore: process.env.SKIP_PAGE_MTIME_TESTS === '1'
-    ? ['**/page-mtimes.spec.ts']
-    : [],
   timeout: 60_000,
+  // Повтор сохраняет trace и статус flaky; нестабильность не разрешает выпуск.
+  retries: 1,
+  failOnFlakyTests: true,
   fullyParallel: true,
   // Локально два воркера, не четыре: четыре браузера плюс соседняя сборка
   // клали 16 ГБ памяти (перезагрузки 04–06.09.2026). Один прогон на машину —
@@ -28,6 +25,7 @@ export default defineConfig({
     baseURL: process.env.PREVIEW_URL || `http://localhost:${PORT}`,
     screenshot: 'only-on-failure',
     video: 'off',
+    trace: 'retain-on-failure',
     // Доп. защита: блокируем сторонние трекеры даже если попали в HTML
     extraHTTPHeaders: { 'X-Playwright': '1' },
   },

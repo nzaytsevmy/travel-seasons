@@ -43,7 +43,13 @@ permissions:
   pull-requests: write
 
 jobs:
+  prepare:
+    uses: ./.github/workflows/site-artifact.yml
+    with:
+      skip_html_min: ${{ github.event_name == 'pull_request' && '1' || '0' }}
+
   lighthouse:
+    needs: prepare
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -76,28 +82,16 @@ jobs:
           cache: 'npm'
       - run: npm ci
 
-      # См. пояснение в build.yml. Здесь минификация HTML НЕ отключается: этот
-      # шаг меряет вес страницы, и мерить надо то, что реально уедет на прод.
-      - name: Кэш обработанных картинок
-        uses: actions/cache@v4
+      - uses: actions/download-artifact@v4
         with:
-          path: node_modules/.astro
-          key: astro-assets-${{ runner.os }}-${{ hashFiles('src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.png') }}
-          restore-keys: astro-assets-${{ runner.os }}-
-
-      # ⛔ Минификация HTML — половина времени сборки, и это ПОЛ по времени всего
-      # прогона. Замер 03.08.2026 на этом репозитории:
-      #   без минификации HTML — 53 с, с ней — 104 с;
-      #   выигрыш в весе — 19 МБ из 791, то есть 2,5%, и почти всё это HTML,
-      #   который сервер всё равно отдаёт сжатым: на странице он весит 45–63 КБ
-      #   против 281–2214 КБ картинок. На оценку это доли процента.
-      # Сжатие CSS, скриптов и SVG остаётся включённым — вот они на скорость
-      # влияют по-настоящему, и рубильник их не трогает.
-      # На заявке меряем без минификации HTML, по понедельникам и вручную —
-      # ровно то, что уезжает на сайт.
-      - run: npm run build
+          name: site-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .build-artifact/
+      - name: Verify and unpack exact build
+        run: node scripts/build-artifact.mjs unpack
         env:
-          SKIP_HTML_MIN: ${{ github.event_name == 'pull_request' && '1' || '0' }}
+          ARTIFACT_DIGEST: ${{ needs.prepare.outputs.digest }}
+      - run: npm run check:mtimes
+
       - name: Run Lighthouse (${{ matrix.preset }}, часть ${{ matrix.shard }})
         env:
           PRESET: ${{ matrix.preset }}

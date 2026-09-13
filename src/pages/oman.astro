@@ -26,6 +26,7 @@ import { PLUG_TYPES, plugVerdict } from '../data/country-plug-types.js';
 import { DATA_UPDATED } from '../data/meta.js';
 import { aviasalesRoute, cherehapaCountry, ostrovokCity, youtravelCountry } from '../data/affiliate.js';
 import livePrices from '../data/prices-cache.json';
+import { freshPrices } from '../data/price-freshness.js';
 
 import hero from '../content/blog/_images/oman-v2/hero.jpg';
 import darbatKhareef from '../content/blog/_images/oman-v2/darbat-khareef.jpg';
@@ -59,7 +60,7 @@ const worstMonths = monthsRanked.filter((m) => m.rank <= 1).slice(0, 2);
 // прикидка обещала вдвое меньше реального (замер 29.08.2026). Курс тот же, что
 // у справочника бюджетов.
 const КУРС = 90;
-const живыеМесяцы = Object.values(livePrices.prices?.[d.price?.iata] ?? {}).filter(Boolean);
+const живыеМесяцы = Object.values(freshPrices(livePrices, d.price?.iata)).filter(Boolean);
 const живойМинимум = живыеМесяцы.length ? Math.round(Math.min(...живыеМесяцы) / КУРС) : null;
 const flightFrom = живойМинимум ?? d.price?.flight?.[0];
 const hotelFrom = d.price?.hotel?.[0];

@@ -1,0 +1,49 @@
+name: Build site artifact
+
+on:
+  workflow_call:
+    inputs:
+      skip_html_min:
+        type: string
+        default: '1'
+    outputs:
+      digest:
+        value: ${{ jobs.artifact.outputs.digest }}
+
+permissions:
+  contents: read
+
+jobs:
+  artifact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      digest: ${{ steps.pack.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: blob:none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - uses: actions/cache@v4
+        with:
+          path: node_modules/.astro
+          key: astro-assets-${{ runner.os }}-${{ hashFiles('src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.png') }}
+          restore-keys: astro-assets-${{ runner.os }}-
+      - run: npm run build
+        env:
+          SKIP_HTML_MIN: ${{ inputs.skip_html_min }}
+      - name: Pack exact build
+        id: pack
+        run: node scripts/build-artifact.mjs pack
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .build-artifact/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 2

@@ -19,7 +19,14 @@ permissions:
   contents: read
 
 jobs:
+  prepare:
+    uses: ./.github/workflows/site-artifact.yml
+    with:
+      skip_html_min: '0'
+
   deploy:
+    needs: prepare
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50,23 +57,17 @@ jobs:
         if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Cache Astro asset transforms
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules/.astro
-            .astro
-          key: astro-cache-${{ runner.os }}-${{ hashFiles('src/**', 'public/**', 'astro.config.mjs', 'package-lock.json') }}
-          restore-keys: |
-            astro-cache-${{ runner.os }}-
-
-      # После merge отдельную Build-job больше не запускаем: deploy всё равно
-      # собирает тот же SHA. Этот дешёвый сторож сохраняет единственную проверку,
-      # которая была только там, а лишняя сборка больше не занимает раннер.
       - name: Расписания CI без повторов ключей
         run: node scripts/check-workflows.mjs
-
-      - run: npm run build
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .build-artifact/
+      - name: Verify and unpack exact build
+        run: node scripts/build-artifact.mjs unpack
+        env:
+          ARTIFACT_DIGEST: ${{ needs.prepare.outputs.digest }}
+      - run: npm run check:mtimes
 
       # ⛔ Аудиты на том дереве, которое уезжает на сервер. До 12.09.2026 выкладка
       #    проверяла только «сайт отвечает 200»: итог слияния поверх main и ежедневную
@@ -78,6 +79,12 @@ jobs:
 
       - name: Денежный аудит сборки
         run: node scripts/monetization-site-audit.mjs dist
+
+      - name: Confirm current release head
+        run: |
+          set -euo pipefail
+          latest=$(git ls-remote --exit-code origin refs/heads/main | cut -f1)
+          test "$latest" = "$GITHUB_SHA" || { echo "main изменился после сборки; старую версию не выкладываем"; exit 1; }
 
       - name: Setup SSH
         run: |
@@ -126,6 +133,19 @@ jobs:
             [ "$code" = "200" ] || { echo "✖ smoke-check: $url вернул $code"; exit 1; }
           done
           echo "✔ прод отвечает 200 на ключевых маршрутах"
+
+      - name: Verify published build identity
+        run: |
+          set -euo pipefail
+          curl -fsS --retry 2 --max-time 20 "https://traveltribe.ru/build-version.json?run=${GITHUB_RUN_ID}" | node -e '
+            let body=""; process.stdin.on("data",chunk=>body+=chunk);
+            process.stdin.on("end",()=>{
+              const value=JSON.parse(body);
+              for(const [key,want] of Object.entries({commit:process.env.GITHUB_SHA,run:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT})) {
+                if(value[key]!==want) throw new Error("На сайте другая сборка: "+key);
+              }
+              console.log("На сайте проверенная сборка текущего запуска");
+            });'
 
       - name: Проверить, что картинки на проде не битые
         run: |

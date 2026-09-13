@@ -1,45 +1,43 @@
 import { test, expect } from '@playwright/test';
+import { targetViolations } from '../scripts/target-size.mjs';
 
-/**
- * Размер кликабельных целей — критерий WCAG 2.2 §2.5.8 (Target Size Minimum).
- *
- * Замер 18.08.2026 на главной нашёл девять целей мельче 24×24 px: строка
- * «Ещё 33 в сезоне — показать все» высотой 18 px, ссылка на канал в подвале —
- * 14 px, четыре ссылки строки тем — по 16 px. Пальцем в такие попадают со
- * второго раза, а сам критерий обязателен с 2023 года.
- *
- * ⛔ Ссылки ВНУТРИ предложения прозой критерий выводит из-под правила
- * (исключение inline): раздувать их нельзя, поедут межстрочные интервалы.
- * Поэтому проверка смотрит только на то, что стоит отдельным элементом
- * управления, а ссылки внутри абзаца и пункта списка пропускает.
- */
 const PAGES = ['/', '/countries/', '/visa/'];
-
+async function checkPageTargets(page, path) {
+  await page.goto(path);
+  await page.waitForLoadState('load');
+  expect(await page.evaluate(targetViolations), 'закрытое меню').toEqual([]);
+  const burger = page.locator('#burger');
+  if (await burger.isVisible()) await burger.click();
+  for (const summary of await page.locator('#navmenu summary').all()) {
+    await summary.click();
+    expect(await page.evaluate(targetViolations), 'открытое меню').toEqual([]);
+    await summary.click();
+  }
+}
 for (const path of PAGES) {
-  test(`Размер целей: ${path} — ни одной кликабельной цели мельче 24 px`, async ({ page }) => {
-    await page.goto(path);
-    await page.waitForLoadState('load');
-
-    const small = await page.evaluate(() => {
-      const visible = (el: Element) => {
-        const s = getComputedStyle(el as HTMLElement);
-        const b = el.getBoundingClientRect();
-        return s.display !== 'none' && s.visibility !== 'hidden' && b.width > 0 && b.height > 0;
-      };
-      return [...document.querySelectorAll('a,button,[role=button],input,select,summary')]
-        .filter(visible)
-        .filter((el) => !el.closest('p, li'))   // исключение inline: ссылка в предложении
-        .map((el) => {
-          const r = el.getBoundingClientRect();
-          return {
-            t: (el.textContent || el.getAttribute('aria-label') || el.tagName).trim().slice(0, 40),
-            w: Math.round(r.width),
-            h: Math.round(r.height),
-          };
-        })
-        .filter((x) => x.h < 24 || x.w < 24);
-    });
-
-    expect(small, `цели мельче 24 px:\n${small.map((x) => `  ${x.t} — ${x.w}×${x.h}`).join('\n')}`).toEqual([]);
+  test(`Размер целей: ${path} — размеры и расстояния WCAG 2.5.8`, async ({ page }) => {
+    await checkPageTargets(page,path);
   });
 }
+
+test('меню на контрольных ширинах 402 и 1280 px', async ({ page }, info) => {
+  test.skip(info.project.name !== 'chromium-desktop', 'остальные движки проверяют собственные размеры');
+  for (const width of [402,1280]) {
+    await page.setViewportSize({width,height:900});
+    for (const path of PAGES) await checkPageTargets(page,path);
+  }
+});
+
+test('сторож размеров видит тесные ссылки списка, допускает расстояние и текстовую ссылку', async ({ page }) => {
+  await page.setContent(`<style>
+    body{margin:0} ul{list-style:none;margin:0;padding:0} li{display:inline-block}
+    a{font:10px Arial;display:inline-block;width:12px;height:12px;padding:0}
+  </style><ul><li><a href="#a">A</a></li><li><a href="#b">B</a></li></ul>`);
+  expect((await page.evaluate(targetViolations)).length).toBe(2);
+  await page.addStyleTag({content:'li{margin-right:24px}'});
+  expect(await page.evaluate(targetViolations)).toEqual([]);
+  await page.setContent('<p>Текст <a href="#a">ссылки</a> и <a href="#b">другой ссылки</a> внутри предложения.</p>');
+  expect(await page.evaluate(targetViolations)).toEqual([]);
+  await page.setContent('<details><summary style="width:40px;height:40px">Меню</summary><a href="#a" style="width:1px;height:1px">A</a></details>');
+  expect(await page.evaluate(targetViolations)).toEqual([]);
+});

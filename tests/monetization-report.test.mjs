@@ -74,7 +74,38 @@ test('без окна зрелости отчёт не разрешает ден
 test('без партнёрской выгрузки отчёт не объявляет финансовый успех', () => {
   const report = buildReport({ trafficSnapshot: traffic });
   assert.match(report, /финансовый результат считать доказанным нельзя/);
-  assert.match(report, /Доход на 1 000 органических визитов: \*\*0,00 ₽\*\*/);
+  assert.match(report, /Доход на 1 000 органических визитов: \*\*нет данных\*\*/);
+  assert.doesNotMatch(report, /комиссия[^\n]*\*\*0,00 ₽/);
+});
+
+test('нулевой реестр требует подтверждения завершения, периода и числа строк', () => {
+  const ingestion = {status:'complete', from:'2026-08-01', through:'2026-08-30', completedAt:'2026-08-30T12:00:00Z', rowCount:0};
+  const report = buildReport({trafficSnapshot:traffic, ingestion});
+  assert.match(report, /успешно завершена, строк: 0/);
+  assert.match(report, /По загруженному реестру — одобренная комиссия после отмен: \*\*0,00 ₽/);
+  assert.match(buildReport({trafficSnapshot:traffic, ingestion:{...ingestion,rowCount:2}}), /полнота не подтверждена/);
+});
+
+test('оплаченная комиссия не исчезает без click join и окна зрелости', () => {
+  const report = buildReport({trafficSnapshot:traffic,revenueRows:[{partner:'tp',status:'paid',commission_rub:'269.64',order_id:'paid-1'}]});
+  assert.match(report, /По загруженному реестру — одобренная комиссия после отмен: \*\*269,64 ₽/);
+  assert.match(report, /Доход на 1 000 органических визитов: \*\*нет данных/);
+  assert.match(report, /финансовое решение запрещено/);
+});
+
+test('доход на визит считается только при совпадении периода трафика и реестра', () => {
+  const input = {
+    trafficSnapshot:{...traffic,dateFrom:'2026-08-01',dateTo:'2026-08-31'},
+    ingestion:{status:'complete',from:'2026-08-01',through:'2026-08-31',completedAt:'2026-09-01T00:00:00Z',rowCount:1},
+    asOfDate:'2026-10-30',maturityDaysByPartner:{aviasales:30},
+    revenueRows:[{partner:'aviasales',state:'paid',commission_rub:'100',action_id:'period-1',
+      sub_id:'tt2__blog_galapagos_aviasales_body_1__monetization_aa_click_join_v1__a__c00112233445566778899'}],
+    clickRows:[{click_id:'c00112233445566778899',event_time:'2026-08-29T12:34:56+03:00',event_count:1}],
+  };
+  assert.doesNotMatch(buildReport(input), /Доход на 1 000 органических визитов: \*\*нет данных/);
+  const mismatched=buildReport({...input,trafficSnapshot:{...input.trafficSnapshot,dateFrom:'2026-09-01'}});
+  assert.match(mismatched, /Периоды трафика и реестра не согласованы: финансовое решение запрещено/);
+  assert.match(mismatched, /Доход на 1 000 органических визитов: \*\*нет данных/);
 });
 
 test('сырая Travelpayouts-операция получает дату клика только после точного join с Метрикой', () => {
