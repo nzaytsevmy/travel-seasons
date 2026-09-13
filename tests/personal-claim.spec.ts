@@ -24,19 +24,29 @@ const ЗАЯВКИ = [
 ];
 
 
-test('пометка личного опыта — только у стран из списка «был лично»', () => {
+// ⛔ До 12.09.2026 месяц был зашит — из двенадцати месяцев сборов и поездок смотрели только
+//    июнь, хотя знак «★» стоит на всех двенадцати (аудит проверок, находка 13).
+const МЕСЯЦЫ = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august',
+  'september', 'october', 'november', 'december'];
+
+test('пометка личного опыта — только у стран из списка «был лично»', ({}, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'читает файлы сборки — одного прогона достаточно');
   expect(existsSync(DIST), 'сборки нет — сначала собрать сайт').toBe(true);
   const плохие = [];
+  let прочитано = 0;
   for (const d of DIRECTIONS) {
     if (VISITED.has(d.slug)) continue;
     for (const f of [
       join(DIST, d.slug, 'index.html'),
-      join(DIST, 'packing', d.slug, 'june', 'index.html'),
       join(DIST, 'packing', d.slug, 'index.html'),
-      join(DIST, 'trips', 'june', d.slug, 'index.html'),
       join(DIST, 'visa', d.slug, 'index.html'),
+      ...МЕСЯЦЫ.flatMap((m) => [
+        join(DIST, 'packing', d.slug, m, 'index.html'),
+        join(DIST, 'trips', m, d.slug, 'index.html'),
+      ]),
     ]) {
       if (!existsSync(f)) continue;
+      прочитано += 1;
       const t = видимыйТекст(readFileSync(f, 'utf8'));
       for (const [шаблон, имя] of ЗАЯВКИ) {
         const m = t.match(шаблон);
@@ -44,5 +54,7 @@ test('пометка личного опыта — только у стран и
       }
     }
   }
+  // Пустой обход зелёным не считается: страниц у стран без поездки — больше тысячи.
+  expect(прочитано, 'страниц для проверки не нашлось — сломан обход').toBeGreaterThan(300);
   expect(плохие, `страницы заявляют личный опыт без подтверждения (${плохие.length}):\n${плохие.slice(0, 12).join('\n')}`).toEqual([]);
 });

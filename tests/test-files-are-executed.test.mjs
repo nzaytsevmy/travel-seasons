@@ -41,10 +41,21 @@ test('проверки находятся по имени, а не ручным 
 
 test('каждый файл в папке проверок кем-то запускается', () => {
   const ничейные = [];
+  // Проверки на Python и оболочке по маске не находятся — их вызывают по имени. До 12.09.2026
+  // сторож смотрел только файлы JavaScript, и такая проверка могла лечь рядом и не запускаться.
+  const вызовы = [
+    readFileSync('package.json', 'utf8'),
+    readFileSync('scripts/pre-push.sh', 'utf8'),
+    ...readdirSync('.github/workflows').map((f) => readFileSync(join('.github/workflows', f), 'utf8')),
+  ].join('\n');
   for (const путь of файлы('tests')) {
     const имя = путь.split('/').pop();
     if (ПОМОЩНИКИ.has(имя)) continue;
     if (имя.endsWith('.spec.ts') || имя.endsWith('.test.mjs')) continue;
+    if (/\.(py|sh)$/.test(имя)) {
+      if (!вызовы.includes(имя)) ничейные.push(путь + ': проверку на Python или оболочке не вызывает ни команда пакета, ни локальный гейт, ни облако');
+      continue;
+    }
     if (/\.(mjs|ts|js)$/.test(имя)) {
       ничейные.push(путь + ': имя не подходит ни под поиск проверок (*.test.mjs), ни под браузерный прогон (*.spec.ts) — его никто не запустит');
     }
