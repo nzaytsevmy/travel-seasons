@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { видимыйТекст } from './visible-text';
 
 // Проверяем готовый HTML: исправление только в данных, Schema или невидимом
 // элементе не должно сделать тест зелёным, оставив прежний совет читателю.
@@ -10,8 +11,7 @@ function page(path) {
   const html = readFileSync(join(root, path, 'index.html'), 'utf8');
   const main = html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[1];
   assert.ok(main, `main: ${path}`);
-  const text = main.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '')
-    .replace(/<[^>]*>/g, ' ').replace(/&(?:nbsp|#160);/g, ' ')
+  const text = видимыйТекст(main)
     .replace(/[\u2060\u200b]/g, '').replace(/\s+/g, ' ').trim();
   return { html, text };
 }
