@@ -27,6 +27,7 @@ import { COUNTRY_SIGHTS } from '../../../data/country-sights.js';
 import { POIS } from '../../../data/country-pois.js';
 import { typo } from '../../../utils/typo.js';
 import PackingChecklist from '../../../components/PackingChecklist.astro';
+import { getPackingPageAdvice } from '../../../data/packing-page-advice.js';
 // «О» или «об»: «об» перед словом с гласной а, и, о, у, э в начале («об Алтае», «об июне»), иначе «о».
 const об = (w) => (/^[аиоуэ]/i.test(String(w || '')) ? 'об' : 'о');
 
@@ -53,9 +54,11 @@ const { d, m, monthIdx } = Astro.props;
 const url = `https://traveltribe.ru/packing/${d.slug}/${m.slug}/`;
 
 const status = d.r[monthIdx];                             // P/G/O/B/X
-const monthText = d.t[monthIdx];                          // авторский текст для месяца
+const pageAdvice = getPackingPageAdvice(d.slug, m.slug);
+const monthText = pageAdvice?.monthText || d.t[monthIdx];                          // авторский текст для месяца
 const bucketKey = getWeatherBucket(d.slug, monthIdx);
-const bucket = getBucket(bucketKey);
+const baseBucket = getBucket(bucketKey);
+const bucket = pageAdvice ? { ...baseBucket, ...pageAdvice } : baseBucket;
 const monthEvents = getHolidaysByMonth(d.slug)[monthIdx + 1] || [];  // 1-12 индексация
 const monthWeather = getMonthlyWeather(d.slug, monthIdx); // реальные min/max + rain для топ-15
 
@@ -200,7 +203,9 @@ const FAQS = [
   },
   {
     q: `Сколько стоит перелёт ${d.cases.vP} в ${m.prep}?`,
-    a: flightMonth
+    a: pageAdvice
+      ? 'Стоимость зависит от дат, пересадок и багажа. Сравните билеты на свой маршрут; цена на другой день может отличаться.'
+      : flightMonth
       ? `Перелёт Москва — ${d.cases.nom} с вылетом в ${m.prep}: от $${flightMonth} в одну сторону. В ${m.prep} ${d.cases.loc} ${(status==='P'?'пик сезона, цены на максимуме':status==='G'?'хороший сезон, цены средние':status==='B'?'низкий сезон, минимум за год':status==='O'?'нормальный сезон':'инфраструктура частично закрыта')}.`
       : flightLow
         ? `Минимум — от $${flightLow} в одну сторону из Москвы. ${rank.price}`
@@ -208,9 +213,9 @@ const FAQS = [
   },
   {
     q: `Нужна ли страховка ${d.cases.vP}?`,
-    a: needsVisa
+    a: pageAdvice?.insurance || (needsVisa
       ? `Да, обязательна для визы ${d.cases.prep} (минимум €30 000). Без полиса визу не дадут.`
-      : `Не обязательна, но настоятельно рекомендую: медпомощь иностранцам ${d.cases.loc} платная, полис на 14 дней ≈ 1 500 ₽.`,
+      : `Не обязательна, но настоятельно рекомендую: медпомощь иностранцам ${d.cases.loc} платная, полис на 14 дней ≈ 1 500 ₽.`),
   },
 ];
 
@@ -329,7 +334,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       <div class="pmu-shead"><h2>Главное {об(m.prep)} {m.prep} {d.cases.loc}</h2></div>
       <div class="pmu-vlist">
         <div class="pmu-vi"><span>Погода</span><div>{bucket.label}</div></div>
-        {flightLow && <div class="pmu-vi"><span>Перелёт от</span><div>${flightMonth || flightLow}</div></div>}
+        {flightLow && <div class="pmu-vi"><span>{pageAdvice ? 'Перелёт' : 'Перелёт от'}</span><div>{pageAdvice ? 'Цена под даты' : `$${flightMonth || flightLow}`}</div></div>}
         <div class="pmu-vi"><span>Виза</span><div>{needsVisa ? (visa?.cost || 'Нужна') : 'Не нужна'}</div></div>
       </div>
     </section>
@@ -347,6 +352,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         schema={false}
         storageKey={`pmu-${d.slug}-${m.slug}`}
         docsMode={d.docsMode}
+        itemNotes={pageAdvice ? { ...(pageAdvice.passportNote ? { 'passport-int': pageAdvice.passportNote } : {}), insurance: 'под страну, даты и занятия; визовые требования проверьте отдельно' } : {}}
         insuranceCta={{
           href: cherehapaCountry(d.slug, `${affiliateSubId}_list`),
           label: d.docsMode === 'ru' ? 'Подобрать полис для поездки по России' : `Подобрать полис ${d.cases.vP}`,
@@ -360,10 +366,10 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       {monthWeather ? (
         <>
           <div class="pmu-weather-grid">
-            <div class="pmu-w-cell"><span class="pmu-w-k">Температура</span><div class="pmu-w-v">{monthWeather.temp}</div></div>
+            <div class="pmu-w-cell"><span class="pmu-w-k">{pageAdvice ? monthWeather.city : 'Температура'}</span><div class="pmu-w-v">{monthWeather.temp}</div></div>
             <div class="pmu-w-cell"><span class="pmu-w-k">Осадки</span><div class="pmu-w-v">{monthWeather.rain}</div></div>
           </div>
-          <p class="pmu-weather-note">{bucket.summary}. Замер по городу {monthWeather.city}.</p>
+          <p class="pmu-weather-note">{bucket.summary}.{!pageAdvice && <> Замер по городу {monthWeather.city}.</>}</p>
         </>
       ) : (
         <p class="pmu-answer">{bucket.summary}. Конкретные температуры — см. <a href="/seasons/" class="pmu-link">таблицу сезонов 70+ стран</a>.</p>
@@ -382,9 +388,9 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
     {flightMonth && d.price?.iata && (
       <section class="pmu-section">
         <div class="pmu-shead"><h2>Перелёт Москва — {d.cases.nom} в {m.prep}</h2></div>
-        <div class="pmu-price">
+        {!pageAdvice && <div class="pmu-price">
           <div class="pmu-price-main">от <b>${flightMonth}</b> в одну сторону</div>
-        </div>
+        </div>}
         <p class="pmu-cta">
           <a class="pmu-aff" href={aviasalesRoute('MOW', d.price.iata, `packing_${d.slug.replaceAll('-', '_')}`, monthIdx)} rel="sponsored noopener" target="_blank">Найти билет Москва — {d.cases.nom}</a>
           
@@ -464,9 +470,9 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       <ul class="pmu-list">
         {d.docsMode === 'ru' && (<li><b>Паспорт РФ</b> — загранпаспорт не нужен, это поездка по России.</li>)}
         {d.docsMode === 'id' && (<li><b>Внутренний паспорт РФ</b> — взрослому хватит его одного. Ребёнку до 14 лет нужен загранпаспорт: свидетельство о рождении для выезда не принимают с 20 января 2026 года{d.slug === 'abkhazia' ? ', и Абхазия — единственное исключение, там его принимают до конца 2027 года' : ''}.</li>)}
-        {d.docsMode === 'abroad' && (<li><b>Загранпаспорт</b> — срок действия 6+ месяцев на момент въезда.</li>)}
+        {d.docsMode === 'abroad' && (<li><b>Загранпаспорт</b> — {pageAdvice?.passportNote || 'срок действия 6+ месяцев на момент въезда'}.</li>)}
         {needsVisa && visa && (<li><b>Виза:</b> {visa.duration}, {visa.cost}, {visa.timing}. <a href={`/visa/${d.slug}/`} class="pmu-link">детали визы</a></li>)}
-        {!needsVisa && (<li><b>Виза не нужна</b> — {visa?.duration || 'безвизовый въезд'}.</li>)}
+        {!needsVisa && (pageAdvice?.entry ? <li><b>Въезд и регистрация.</b> {pageAdvice.entry}</li> : <li><b>Виза не нужна</b> — {visa?.duration || 'безвизовый въезд'}.</li>)}
         {d.docsMode === 'ru'
           ? (<li><b>Карты:</b> российские карты работают как дома, наличные нужны в глухих местах и на рынках.</li>)
           : (<li><b>Карты:</b> Visa/MC российских банков не работают. UnionPay / МИР / иностранные — <a href="/cards/" class="pmu-link">карта платёжных систем</a>.</li>)}
@@ -474,7 +480,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       </ul>
       {flightLow && d.price?.iata && (
         <p class="pmu-cta">
-          <a class="pmu-aff" href={aviasalesRoute('MOW', d.price.iata, `packing_${d.slug.replaceAll('-', '_')}_docs`, monthIdx)} rel="sponsored noopener" target="_blank">Посмотреть цены на эти даты — от ${flightMonth || flightLow}</a>
+          <a class="pmu-aff" href={aviasalesRoute('MOW', d.price.iata, `packing_${d.slug.replaceAll('-', '_')}_docs`, monthIdx)} rel="sponsored noopener" target="_blank">{pageAdvice ? 'Посмотреть цены на перелёт' : `Посмотреть цены на эти даты — от $${flightMonth || flightLow}`}</a>
           
           <span class="pmu-trust">оплата картами РФ</span>
         </p>
@@ -581,7 +587,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         <li><a href="/seasons/"><b>Таблица сезонов 70+ направлений</b></a><span>где ещё хорошо в {m.prep}</span></li>
         <li><a href="/packing/"><b>Все чек-листы по странам</b></a><span>70+ направлений</span></li>
       </ul>
-      <p class="pmu-tour">Собирать маршрут самому не всегда хочется — тогда берут место в небольшой группе: <a href={youtravelCountry(d.slug, `${affiliateSubId}_${m.slug}`)} rel="sponsored noopener" target="_blank">авторские туры {d.cases.vP}</a>.</p>
+      <p class="pmu-tour">Собирать маршрут самому не всегда хочется — тогда берут место в небольшой группе: <a href={youtravelCountry(d.slug, `${affiliateSubId}_${m.slug}`)} rel="sponsored noopener" target="_blank">{pageAdvice?.tourLabel || `авторские туры ${d.cases.vP}`}</a>.</p>
     </section>
 
     {фотоКредиты && <p class="pmu-credits">{typo(фотоКредиты)}</p>}
