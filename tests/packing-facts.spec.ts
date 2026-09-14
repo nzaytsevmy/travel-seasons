@@ -74,6 +74,15 @@ test('Страховая статья: нет прежних универсал�
   assert.match(text, /17 июля 2026/);
 });
 
+test('Все партнёрские кнопки страховой статьи обходятся без неподтверждённой цены', async ({ page }) => {
+  await page.goto('/blog/strahovka-dlya-puteshestviy-2026/');
+  const links = page.locator('a[rel~="sponsored"]');
+  expect(await links.count()).toBeGreaterThan(0);
+  const labels = await links.allTextContents();
+  expect(labels.filter(label => /413/.test(label))).toEqual([]);
+  await expect(page.getByRole('link', { name: 'Собрать полис под свои даты', exact: true })).toBeVisible();
+});
+
 test('Уточнённый пункт паспорта сохраняет отметку после перезагрузки', async ({ page }) => {
   await page.goto('/packing/turkey/october/');
   const passport = page.locator('.pck-cb[data-item="passport-int"]');

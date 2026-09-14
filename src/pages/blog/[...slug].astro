@@ -183,7 +183,9 @@ function главныйОффер() {
   if (ДОКУМЕНТ.test(post.slug)) {
     const href = monetizationDestination ? cherehapaCountry(monetizationDestination, метка) : cherehapaTravel(метка);
     return { href, панель: 'Страховка под даты поездки',
-             финал: 'Собрать полис под свои даты — от 413 ₽' };
+             финал: post.slug === 'strahovka-dlya-puteshestviy-2026'
+               ? 'Собрать полис под свои даты'
+               : 'Собрать полис под свои даты — от 413 ₽' };
   }
   if (monetizationDestination) {
     const дом = RU_STAY_POSTS.has(monetizationDestination);
