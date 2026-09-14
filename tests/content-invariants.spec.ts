@@ -2329,7 +2329,7 @@ test('Переносы: внутри числа нет обычного проб
 // по своему дефису — «Шри-|Ланку», «Милфорд-|Саунд». Проверка выше этого не видит: она ищет висящие предлоги
 // и разорванные скобки. Меряет раскладку во всех статьях и на страницах выше: слово из пяти и больше знаков,
 // части которого легли на разные строки. Ширину задаёт сама, поэтому хватает одного браузера.
-test('Переносы: слово в заголовке не рвётся на две строки @360 и @402', async ({ page }, testInfo) => {
+test('Переносы: слово в заголовке не рвётся на две строки @360 и @402', async ({ context }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-desktop', 'ширину задаём сами — одного браузера достаточно');
   test.setTimeout(15 * 60_000);
   const { readdirSync, existsSync } = await import('node:fs');
@@ -2338,26 +2338,34 @@ test('Переносы: слово в заголовке не рвётся на 
     .map((d) => `/blog/${d.name}/`);
   expect(posts.length, 'статей в сборке не нашлось — проверка была бы пустой').toBeGreaterThan(50);
   const bad: string[] = [];
+  // Закрываем вкладку после каждого адреса: сотни переходов в одной вкладке
+  // приводили к падению Chromium до проверки заголовков. Охват и условия те же;
+  // контекст общий, поэтому HTTP-кеш шрифтов сохраняется.
   for (const width of [360, 402]) {
-    await page.setViewportSize({ width, height: 900 });
     for (const url of [...BREAK_PAGES, ...posts]) {
-      await page.goto(url, { waitUntil: 'domcontentloaded' });
-      await page.evaluate(() => (document as any).fonts?.ready);
-      const found: string[] = await page.evaluate(() => {
-        const out: string[] = [];
-        for (const el of document.querySelectorAll('main h1, main h2, main h3')) {
-          const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
-          for (let n = walker.nextNode() as Text | null; n; n = walker.nextNode() as Text | null) {
-            for (const m of (n.nodeValue || '').matchAll(/[\p{L}\p{N}][\p{L}\p{N}\-\u2011]{4,}/gu)) {
-              const r = document.createRange(); r.setStart(n, m.index!); r.setEnd(n, m.index! + m[0].length);
-              const tops = new Set([...r.getClientRects()].filter((x) => x.width > 0).map((x) => Math.round(x.top)));
-              if (tops.size > 1) out.push(`${el.tagName.toLowerCase()}: «${m[0]}»`);
+      const page = await context.newPage();
+      try {
+        await page.setViewportSize({ width, height: 900 });
+        await page.goto(url, { waitUntil: 'domcontentloaded' });
+        await page.evaluate(() => (document as any).fonts?.ready);
+        const found: string[] = await page.evaluate(() => {
+          const out: string[] = [];
+          for (const el of document.querySelectorAll('main h1, main h2, main h3')) {
+            const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+            for (let n = walker.nextNode() as Text | null; n; n = walker.nextNode() as Text | null) {
+              for (const m of (n.nodeValue || '').matchAll(/[\p{L}\p{N}][\p{L}\p{N}\-\u2011]{4,}/gu)) {
+                const r = document.createRange(); r.setStart(n, m.index!); r.setEnd(n, m.index! + m[0].length);
+                const tops = new Set([...r.getClientRects()].filter((x) => x.width > 0).map((x) => Math.round(x.top)));
+                if (tops.size > 1) out.push(`${el.tagName.toLowerCase()}: «${m[0]}»`);
+              }
             }
           }
-        }
-        return [...new Set(out)];
-      });
-      bad.push(...found.map((f) => `${url} @${width}: ${f}`));
+          return [...new Set(out)];
+        });
+        bad.push(...found.map((f) => `${url} @${width}: ${f}`));
+      } finally {
+        await page.close();
+      }
     }
   }
   expect(bad, `слово в заголовке разорвано на две строки:\n${bad.join('\n')}`).toEqual([]);

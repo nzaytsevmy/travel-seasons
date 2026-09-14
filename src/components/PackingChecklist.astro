@@ -14,6 +14,8 @@ interface Item {
 interface Props {
   preset?: 'sea' | 'city' | 'winter' | 'mountain' | 'any';
   extraItems?: Item[];
+  /** Уточнение отдельных пунктов для проверенного направления. ID и сохранённые отметки не меняются. */
+  itemNotes?: Record<string, string>;
   heading?: string;
   schema?: boolean;
   storageKey?: string;
@@ -25,7 +27,7 @@ interface Props {
 
 const {
   preset = 'any', extraItems = [], heading, schema = true, storageKey,
-  docsMode, insuranceCta = null,
+  docsMode, insuranceCta = null, itemNotes = {},
 } = Astro.props as Props;
 const presetCfg = PRESETS[preset] || PRESETS.any;
 const lockedTrip = presetCfg.trip;            // null для 'any'
@@ -35,7 +37,7 @@ const uid = storageKey || `pck-${preset}`;
 // Без режима (общий чек-лист вне страницы направления) список остаётся полным.
 const allItems: Item[] = [...ITEMS, ...extraItems].filter(
   (it) => !it.docs?.length || !docsMode || it.docs.includes(docsMode),
-);
+).map((it) => itemNotes[it.id] ? { ...it, note: itemNotes[it.id] } : it);
 
 // Дефолты для SSR (совпадают с тем, что JS посчитает на загрузке — отсюда CLS 0).
 const DEF = { trip: lockedTrip || 'sea', duration: 'week', who: 'adult', kid: 'preschool', transport: 'plane' };
