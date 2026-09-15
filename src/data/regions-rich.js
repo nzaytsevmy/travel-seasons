@@ -100,10 +100,14 @@ export const regionsRich = {
     notes:  ['Январь на Самуи — мой топ: сухо, тепло, дешевле Пхукета', null, null, 'Сонгкран — ехал бы ради опыта, но не для пляжа: всё мокрое 3 дня', null, 'Самуи в июне — тихий сезон, отели ×0.7, пляж ваш', null, null, null, null, null, null],
     negatives: [null, null, null, null, null, null, null, null, null, null, null, 'но новогодние цены на Пхукете дикие, бронируй с лета']
   },
+  // ⛔ 15.09.2026 снята личная пометка на октябрь «на Фукуоке только начинается сезон»: по нормам
+  //   станции 48917 (Токийский климатический центр ВМО) в октябре 326 мм, сухо с декабря по март.
+  //   Метеофакт — не личный опыт, поэтому он в negatives. Сторож — tests/phu-quoc-season-claims.test.mjs.
+  //   Неразрывные пробелы кодом: панель сезонов берёт текст из атрибута, типограф сборки его не трогает.
   'vietnam': {
     events: ['Têt — вьетнамский Новый год (по лунному)', null, null, null, null, null, null, null, null, null, null, null],
-    notes:  [null, 'Февраль идеален для Хошимина: +28°C, сухо, мало дождей', null, null, null, null, null, null, null, 'Октябрь — на Фукуоке только начинается сезон, цены пока низкие', null, null],
-    negatives: ['но Têt — половина страны закрыта, локальные рестораны не работают', null, null, null, null, null, null, null, null, null, null, null]
+    notes:  [null, 'Февраль идеален для Хошимина: +28°C, сухо, мало дождей', null, null, null, null, null, null, null, null, null, null],
+    negatives: ['но Têt — половина страны закрыта, локальные рестораны не работают', null, null, null, null, null, null, null, null, 'на\u00A0Фукуоке октябрь тоже дождливый: около 326\u00A0мм, сухо там с\u00A0декабря по\u00A0март', null, null]
   },
   'goa': {
     events: [null, null, null, null, null, null, null, null, null, null, null, 'Sunburn Festival, Reggae Sundays'],
