@@ -19,7 +19,7 @@ const ВНУТРИ = ['Все направления', 'По месяцам', '�
 //    это только тратит время. Но беды с размерами приходили из WebKit на
 //    телефоне: там марка съезжала, а кнопка меню уходила за край. Проверки,
 //    где важен сам движок, гоняем ещё и на телефонном WebKit.
-const ЗАВИСИТ_ОТ_ДВИЖКА = /^(9|11|16|19|20)\./;
+const ЗАВИСИТ_ОТ_ДВИЖКА = /^(9|11|16|19|20|21|22)\./;
 
 test.beforeEach(({}, testInfo) => {
   const проект = testInfo.project.name;
@@ -352,5 +352,72 @@ test('20. подсветка группы приходит от мыши и не
     await подпись.hover();
     expect(await цвет(), 'на мыши подсветка наведением пропала — починили удалением')
       .toBe('rgb(29, 64, 174)');
+  }
+});
+
+test('21. меню остаётся у верхнего края при прокрутке вниз и обратно', async ({ page }) => {
+  for (const width of [402, 768, 1280]) {
+    await page.setViewportSize({ width, height: 850 });
+    for (const path of ['/', '/countries/', '/turkey/', '/blog/abkhazia-2026/']) {
+      await page.goto(path);
+      const head = page.locator('.sw-head');
+      for (const y of [900, 1600, 400]) {
+        await page.evaluate(y => window.scrollTo({ top: y, behavior: 'instant' }), y);
+        await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(100);
+        await expect.poll(() => head.evaluate(e => Math.round(e.getBoundingClientRect().top)),
+          { message: `${path} @${width}: меню уехало за экран при прокрутке до ${y}` }).toBe(0);
+        await expect(head).toHaveCSS('background-color', 'rgb(251, 251, 250)');
+        await expect(head.locator('.wm')).toHaveCSS('color', 'rgb(21, 23, 26)');
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      }
+    }
+  }
+});
+
+test('22. цвет меню на главной согласован с прокруткой и раскрытием бургера', async ({ page }) => {
+  for (const width of [360, 402, 768, 1280]) {
+    await page.setViewportSize({ width, height: 850 });
+    await page.goto('/');
+    const head = page.locator('.sw-head');
+    const logo = head.locator('.wm');
+    const burger = head.locator('#burger');
+    await expect(head).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(logo).toHaveCSS('color', 'rgb(255, 255, 255)');
+
+    const height = await head.evaluate(e => e.getBoundingClientRect().height);
+    const firstPaint = await page.evaluate(async () => {
+      window.scrollTo({ top: 40, behavior: 'instant' });
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const h = document.querySelector('.sw-head')!;
+      return [getComputedStyle(h).backgroundColor, getComputedStyle(h.querySelector('.wm')!).color];
+    });
+    expect(firstPaint, 'первый кадр после прокрутки читается без бледной фазы перехода')
+      .toEqual(['rgb(251, 251, 250)', 'rgb(21, 23, 26)']);
+    await expect(head).toHaveCSS('background-color', 'rgb(251, 251, 250)');
+    await expect(logo).toHaveCSS('color', 'rgb(21, 23, 26)');
+    expect(await head.evaluate(e => e.getBoundingClientRect().height), 'цвет не меняет высоту меню').toBe(height);
+
+    if (width <= 920) {
+      await expect(burger.locator('span').first()).toHaveCSS('background-color', 'rgb(21, 23, 26)');
+      await burger.click();
+      await expect(head.locator('.grp summary').first()).toHaveCSS('color', 'rgb(21, 23, 26)');
+      await head.locator('.grp summary').first().click();
+      await expect(head.locator('.grp[open] .s-d').first()).toHaveCSS('color', 'rgb(92, 98, 107)');
+      await page.keyboard.press('Escape');
+      await expect(burger).toHaveAttribute('aria-expanded', 'false');
+      await expect(head).toHaveCSS('background-color', 'rgb(251, 251, 250)');
+
+      // Открытое меню остаётся читаемым даже после возврата к фотографии.
+      await burger.click();
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+      await expect(head).toHaveCSS('background-color', 'rgb(251, 251, 250)');
+      await page.keyboard.press('Escape');
+    } else {
+      await expect(head.locator('nav > ul > li > a')).toHaveCSS('color', 'rgb(21, 23, 26)');
+      await expect(head.locator('.grp summary').first()).toHaveCSS('color', 'rgb(21, 23, 26)');
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    }
+    await expect(head).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(logo).toHaveCSS('color', 'rgb(255, 255, 255)');
   }
 });

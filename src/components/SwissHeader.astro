@@ -76,30 +76,30 @@ const activen = (п) => is(п.href) || (п.под || []).some(([h]) => is(h));
 </header>
 
 <style>
-/* ⛔ На главной шапка лежит ПОВЕРХ кадра во весь экран — как у живых блогов,
-   где первый экран это фотография, а не полоса меню над ней. Своего фона у неё
-   там нет, цвета берутся светлые, а страница узнаёт её высоту через --head-h,
-   чтобы поднять кадр под неё без сдвига разметки. */
-.sw-head.over{position:absolute;top:0;left:0;right:0;z-index:20;background:transparent;
-  border-bottom:none;color:#fff}
+/* На главной шапка закреплена поверх кадра. В начале страницы она прозрачная,
+   после прокрутки получает свой лист и тёмные буквы. Постоянная рамка сохраняет
+   высоту при смене цвета; положение fixed не сдвигает фотографию. */
+.sw-head.over{position:fixed;top:0;left:0;right:0;z-index:50;background:transparent;
+  border-bottom:1px solid transparent;color:#fff;transition:none}
+/* Фон и буквы переключаются сразу: общий переход цвета создавал бледные
+   промежуточные оттенки. Переход фона при наведении и анимация бургера остаются. */
+.sw-head.over .wm,.sw-head.over .nav ul a,.sw-head.over .grp summary{transition-property:background-color,border-color}
 .sw-head.over .band{border-bottom-color:rgba(255,255,255,.32)}
 .sw-head.over .wm,.sw-head.over .nav ul a,.sw-head.over .grp summary{color:#fff}
-/* ⛔ Белые пункты уместны, пока шапка лежит ПОВЕРХ фотографии. Раскрытый
-   бургер рисует меню на светлой панели — и белым оно почти невидимо: Никита
-   прислал скриншот с телефона, пункты читались как блёклые тени. В открытом
-   состоянии меню живёт на своём листе и красится как обычная шапка. */
-.sw-head.over.open{background:var(--paper);border-bottom:1px solid var(--hair)}
-.sw-head.over.open .band{border-bottom-color:var(--hair)}
-.sw-head.over.open .wm,.sw-head.over.open .nav ul a,.sw-head.over.open .grp summary{color:var(--ink)}
-.sw-head.over.open .burger span{background:var(--ink)}
-.sw-head.over.open .nav ul a.on,.sw-head.over.open .grp.on summary{color:var(--gold)}
+/* Открытый бургер и прокрутка используют одну палитру: белые пункты нельзя
+   оставлять на светлом фоне, в том числе после закрытия меню на середине страницы. */
+.sw-head.over:is(.open,.scrolled){background:var(--paper);border-bottom-color:var(--hair)}
+.sw-head.over:is(.open,.scrolled) .band{border-bottom-color:var(--hair)}
+.sw-head.over:is(.open,.scrolled) .wm,.sw-head.over:is(.open,.scrolled) .nav ul a,.sw-head.over:is(.open,.scrolled) .grp summary{color:var(--ink)}
+.sw-head.over:is(.open,.scrolled) .burger span{background:var(--ink)}
+.sw-head.over:is(.open,.scrolled) .nav ul a.on,.sw-head.over:is(.open,.scrolled) .grp.on summary{color:var(--gold)}
 .sw-head.over .nav ul a.on,.sw-head.over .grp.on summary{color:#fff;
   text-decoration-color:rgba(255,255,255,.75)}
 .sw-head.over .burger span{background:#fff}
 /* Выпадающий список остаётся на своём листе — поверх фотографии он нечитаем. */
 .sw-head.over .nav .sub a,.sw-head.over .nav .sub .s-n{color:var(--ink)}
 .sw-head.over .nav .sub .s-d{color:var(--mid)}
-.sw-head{--paper:#fbfbfa;--ink:#15171a;--gold:#1d40ae;--hair:#d9dbde;--line:#15171a;
+.sw-head{--paper:#fbfbfa;--ink:#15171a;--mid:#5c626b;--gold:#1d40ae;--hair:#d9dbde;--line:#15171a;
   --ff:'Golos Text Variable','Golos Text',Helvetica,Arial,sans-serif;--edge:clamp(1.1rem,3vw,2.6rem);
   position:sticky;top:0;z-index:50;background:var(--paper);border-bottom:1px solid var(--line);
   font-family:var(--ff);color:var(--ink);font-variant-numeric:tabular-nums lining-nums}
@@ -278,6 +278,12 @@ const activen = (п) => is(п.href) || (п.под || []).some(([h]) => is(h));
       .setProperty('--head-h', Math.round(шапка0.getBoundingClientRect().height) + 'px');
     мерить();
     window.addEventListener('resize', мерить);
+
+    // Сразу учитываем восстановленную позицию и возврат через историю браузера.
+    const красить = () => шапка0.classList.toggle('scrolled', window.scrollY > 8);
+    красить();
+    window.addEventListener('scroll', красить, { passive: true });
+    window.addEventListener('pageshow', красить);
   }
 
   const burger = document.getElementById('burger');
