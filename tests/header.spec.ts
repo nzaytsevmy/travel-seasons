@@ -394,6 +394,8 @@ test('22. цвет меню на главной согласован с прок
       await expect(burger.locator('span').first()).toHaveCSS('background-color', 'rgb(21, 23, 26)');
       await burger.click();
       await expect(head.locator('.grp summary').first()).toHaveCSS('color', 'rgb(21, 23, 26)');
+      await head.locator('.grp summary').first().click();
+      await expect(head.locator('.grp[open] .s-d').first()).toHaveCSS('color', 'rgb(92, 98, 107)');
       await page.keyboard.press('Escape');
       await expect(burger).toHaveAttribute('aria-expanded', 'false');
       await expect(head).toHaveCSS('background-color', 'rgb(251, 251, 250)');
