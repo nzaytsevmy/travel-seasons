@@ -1,6 +1,10 @@
 import { calculateTripBudget, SEASON_MULT, tripInteger } from '../utils/trip-budget.js';
 
-const initialized = new WeakSet();
+// Inline-код может выполниться повторно после перехода Astro. На новой форме
+// нужны обработчики, на уже инициализированной (включая bfcache) — только один набор.
+const controllerKey = Symbol.for('traveltribe.calculator');
+const controller = window[controllerKey] || (window[controllerKey] = { initialized: new WeakSet() });
+const initialized = controller.initialized;
 function initCalculator() {
   const host = document.getElementById('calculatorData');
   const form = document.getElementById('tcForm');
@@ -149,16 +153,16 @@ function renderSingle(pi) {
   let nudge = '';
   if (best && selectedMonth > 0 && best.monthNum !== selectedMonth) {
     const saving = Math.round((1 - best.mult / r.seasonMult) * 100);
-    if (saving > 5) nudge = `<div class="tc-nudge"><span class="tc-nudge-icon">↘</span> В <strong>${best.monthName}</strong> на <strong>${saving}%</strong> дешевле — лучший месяц года</div>`;
+    if (saving > 5) nudge = `<div class="tc-nudge"><span class="tc-nudge-icon">↘</span> В <strong>${escapeHtml(best.monthName)}</strong> на <strong>${saving}%</strong> дешевле — лучший месяц года</div>`;
   } else if (best && selectedMonth === 0) {
-    nudge = `<div class="tc-nudge tc-nudge--soft"><span class="tc-nudge-icon"></span> Самый дешёвый месяц — <strong>${best.monthName}</strong></div>`;
+    nudge = `<div class="tc-nudge tc-nudge--soft"><span class="tc-nudge-icon"></span> Самый дешёвый месяц — <strong>${escapeHtml(best.monthName)}</strong></div>`;
   }
 
   // Visa info
   const visaInfo = r.visa
     ? (r.visa.cost === 'бесплатно'
-        ? `<a href="/visa/${r.visa.slug}/" class="tc-visa-pill tc-visa-pill--free">Безвиз · детали</a>`
-        : `<a href="/visa/${r.visa.slug}/" class="tc-visa-pill">Виза ${escapeHtml(r.visa.cost)} · детали</a>`)
+        ? `<a href="/visa/${encodeURIComponent(r.visa.slug)}/" class="tc-visa-pill tc-visa-pill--free">Безвиз · детали</a>`
+        : `<a href="/visa/${encodeURIComponent(r.visa.slug)}/" class="tc-visa-pill">Виза ${escapeHtml(r.visa.cost)} · детали</a>`)
     : '';
 
   // Season pill
@@ -257,7 +261,7 @@ function renderTable(piList) {
     // Виза: используем slug из priceIdxToSlug (а не r.visa.slug), чтобы ссылка
     // была доступна даже когда детальной visa-data нет
     const slug = priceIdxToSlug[pi];
-    const visaUrl = slug ? `/visa/${slug}/` : null;
+    const visaUrl = slug ? `/visa/${encodeURIComponent(slug)}/` : null;
     let visaText, visaLink;
     if (r.visa) {
       visaText = r.visa.cost === 'бесплатно' ? 'безвиз' : escapeHtml(r.visa.cost);
@@ -443,6 +447,10 @@ renderCalc();
 
 }
 
-initCalculator();
-document.addEventListener('astro:page-load', initCalculator);
-window.addEventListener('pageshow', initCalculator);
+controller.init = initCalculator;
+if (!controller.listening) {
+  document.addEventListener('astro:page-load', () => controller.init());
+  window.addEventListener('pageshow', () => controller.init());
+  controller.listening = true;
+}
+controller.init();

@@ -16,8 +16,19 @@ import { VISA_DETAILS } from '../data/visa-details.js';
 import realBudgets from '../data/real-budgets-2026.json';
 import { DATA_UPDATED } from '../data/meta.js';
 import { getBudgetRates } from '../utils/budget-rates.js';
+import { build } from 'esbuild';
+import { resolve } from 'node:path';
+import calculatorSource from '../scripts/calculator.js?raw';
 const rates = await getBudgetRates();
 import { TP_LINKS, youtravelSub, cherehapaTravel } from '../data/affiliate.js';
+
+// Результат заполняется до первого кадра, как у прежнего inline-калькулятора.
+// Сборка в IIFE сохраняет общую формулу без ожидания загрузки отдельного модуля.
+const calculatorBundle = await build({
+  stdin: { contents: calculatorSource, resolveDir: resolve('src/scripts'), sourcefile: 'calculator.js' },
+  bundle: true, write: false, format: 'iife', platform: 'browser', target: 'es2020',
+  minify: true, legalComments: 'none',
+});
 
 const groups: Record<string, Array<{i:number,name:string,iata:string}>> = {};
 PRICES.forEach((p, i) => {
@@ -335,9 +346,7 @@ const ldJson = {
 </Layout>
 
 <script id="calculatorData" type="application/json" set:html={JSON.stringify({ PRICES, MONTH_NAMES, MONTH_FULL, priceIdxToSeasons, priceIdxToVisa, priceIdxToSlug, priceIdxToBudgetSlug, rates }).replace(/</g, '\\u003c')} />
-<script>
-  import '../scripts/calculator.js';
-</script>
+<script is:inline data-astro-rerun set:html={calculatorBundle.outputFiles[0].text} />
 
 <style is:global>
 /* ═══════════════════════════════════════════════════════════════════

@@ -5,6 +5,37 @@ import { PRICES } from '../src/data/prices.js';
 const amount = (s: string) => Number(s.replace(/[^0-9]/g, ''));
 const priceIndex = (slug: string) => PRICES.findIndex(p => p.name === DIRECTIONS.find(d => d.slug === slug)?.price?.name);
 
+test('текст данных калькулятора не превращается в HTML при выводе результата', async ({ page }) => {
+  const payload = '"><img src="/__budget_xss_probe" onerror="window.__budgetXss=1">';
+  await page.route('**/calculator/**', async route => {
+    if (route.request().resourceType() !== 'document') return route.continue();
+    const response = await route.fetch();
+    const body = (await response.text()).replace(
+      /(<script\b[^>]*\bid="calculatorData"[^>]*>)([\s\S]*?)(<\/script>)/,
+      (_, open, json, close) => {
+        const data = JSON.parse(json);
+        data.MONTH_FULL = data.MONTH_FULL.map(() => payload);
+        data.PRICES[priceIndex('dagestan')].name = payload;
+        for (const visa of Object.values(data.priceIdxToVisa) as Array<{ slug: string }>) visa.slug = payload;
+        for (const key of Object.keys(data.priceIdxToSlug)) data.priceIdxToSlug[key] = payload;
+        return open + JSON.stringify(data).replace(/</g, '\\u003c') + close;
+      },
+    );
+    await route.fulfill({ response, body });
+  });
+  await page.goto(`/calculator/?r=${priceIndex('dagestan')}&d=7&l=0&c=rub&t=1`);
+  await expect(page.locator('.tc-nudge')).toContainText(payload);
+  await expect(page.locator('#calcResult img')).toHaveCount(0);
+  await expect(page.locator('.tc-visa-pill')).toHaveAttribute('href', '/visa/' + encodeURIComponent(payload) + '/');
+  await page.locator('#addCountrySelect').selectOption(String(priceIndex('georgia')));
+  await expect(page.locator('.tc-cmp-card')).toHaveCount(2);
+  await expect(page.locator('#calcResult img')).toHaveCount(0);
+  for (const link of await page.locator('.tc-cmp-visa a').all()) {
+    await expect(link).toHaveAttribute('href', '/visa/' + encodeURIComponent(payload) + '/');
+  }
+  expect(await page.evaluate(() => (window as any).__budgetXss)).toBeUndefined();
+});
+
 test.beforeEach(async ({ page }) => {
   // Старый калькулятор менял курс после первого рендера. Детерминированный ответ
   // воспроизводит исходный баг без зависимости проверки от чужого сервера.
@@ -74,12 +105,16 @@ test('все цены каталога ведут на своё направле
   await page.locator('#daysUp').click();
   await expect(page.locator('#calcDaysDisplay')).toHaveText('8');
   await expect.poll(async () => amount(await page.locator('.tc-hero-amount').innerText())).toBeGreaterThan(originalPrice);
+  // В WebKit Astro предзагружает видимые ссылки через fetch без catch. Дождёмся
+  // этих запросов перед принудительной перезагрузкой, чтобы не оборвать их тестом.
+  await page.waitForLoadState('networkidle');
   await page.reload();
   await expect(page.locator('#calcDaysDisplay')).toHaveText('8');
   await page.locator('#currGroup [data-cur="usd"]').click();
   await expect(page.locator('.tc-hero-amount')).toContainText('$');
   await page.locator('#currGroup [data-cur="rub"]').click();
   await expect(page.locator('.tc-hero-amount')).toContainText('₽');
+  await page.waitForLoadState('networkidle');
   await page.locator('.tc-visa-pill').click();
   await expect(page).toHaveURL(/\/visa\/dagestan\//);
   await page.goBack();
