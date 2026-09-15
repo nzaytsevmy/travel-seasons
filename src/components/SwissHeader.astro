@@ -82,8 +82,8 @@ const activen = (п) => is(п.href) || (п.под || []).some(([h]) => is(h));
 .sw-head.over{position:fixed;top:0;left:0;right:0;z-index:50;background:transparent;
   border-bottom:1px solid transparent;color:#fff;transition:none}
 /* Фон и буквы переключаются сразу: общий переход цвета создавал бледные
-   промежуточные оттенки. Анимация подчёркивания и бургера сохраняется. */
-.sw-head.over .wm,.sw-head.over .nav ul a,.sw-head.over .grp summary{transition-property:text-decoration-color}
+   промежуточные оттенки. Переход фона при наведении и анимация бургера остаются. */
+.sw-head.over .wm,.sw-head.over .nav ul a,.sw-head.over .grp summary{transition-property:background-color,border-color}
 .sw-head.over .band{border-bottom-color:rgba(255,255,255,.32)}
 .sw-head.over .wm,.sw-head.over .nav ul a,.sw-head.over .grp summary{color:#fff}
 /* Открытый бургер и прокрутка используют одну палитру: белые пункты нельзя
