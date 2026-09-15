@@ -6,6 +6,10 @@ import Layout from '../layouts/Layout.astro';
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import { DIRECTIONS } from '../data/directions.js';
+import { PRICES } from '../data/prices.js';
+import { VISA_DETAILS } from '../data/visa-details.js';
+import { calculateTripBudget, calculatorHref } from '../utils/trip-budget.js';
+import { getBudgetRates } from '../utils/budget-rates.js';
 import { TP_LINKS, aviasalesUrl, ostrovokSearch, cherehapaTravel, youtravelSub } from '../data/affiliate.js';
 import authorPhoto from '../assets/author/nikita.jpg';
 import heroCover from '../assets/destinations/georgia.jpg';
@@ -21,12 +25,7 @@ const VIBE_RU = { beach: 'Пляж', mountains: 'Горы', city: 'Город', 
 const VIBE_MAP = { beach:'beach', mountain:'mountains', altitude:'mountains', ski:'mountains', city:'city', culture:'city', food:'city', jungle:'nature', safari:'nature', dive:'nature', desert:'nature', photo:'nature' };
 const MON_ABBR = ['', 'янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
 const fmt = (n) => n.toLocaleString('ru-RU');
-const USD_RUB = 90, NIGHTS = 7; // курс ≈ЦБ; неделя на месте (как в /calculator/)
-const roundK = (n) => Math.round(n / 1000) * 1000; // округление до тысячи — единое для таблицы и карточки
-// Вся поездка в комфорте на одного: перелёт из Москвы + (отель+еда)×ночи. Источник — prices.js (USD).
-const flightRub = (p) => roundK(p.flight[1] * USD_RUB);
-const stayRub = (p) => roundK((p.hotel[1] + p.food[1]) * NIGHTS * USD_RUB);
-const tripCost = (p) => flightRub(p) + stayRub(p);
+const rates = await getBudgetRates();
 const tier = (t) => (t < 100000 ? 'low' : t <= 200000 ? 'mid' : 'high'); // вся поездка с перелётом, ₽
 function seasonLabel(r) {
   let idx = r.map((c, i) => (c === 'P' ? i + 1 : 0)).filter(Boolean);
@@ -39,16 +38,20 @@ function seasonLabel(r) {
   if (g.length > 1 && g[0][0] === 1 && g[g.length - 1][1] === 12) g.unshift([g.pop()[0], g.shift()[1]]);
   return g.map(([a, b]) => (a === b ? MON_ABBR[a] : `${MON_ABBR[a]}–${MON_ABBR[b]}`)).join(', ');
 }
-// Все 70+ направлений на РЕАЛЬНЫХ данных: цена ВСЕЙ поездки с перелётом (prices.js, комфорт),
-// виза (DIRECTIONS), месяцы (DIRECTIONS.r: P = пик), вайб (ACTIVITY_TAGS). Без выдумок.
+// Эконом-неделя на одного: тот же состав расходов и курс, что в калькуляторе.
 const rows = DIRECTIONS.map((d) => {
-  const budget = d.price?.flight ? tripCost(d.price) : null; // вся поездка с перелётом, ₽
+  const options = { rates, visa: VISA_DETAILS[d.slug], seasons: d.r };
+  const budget = d.price?.flight ? calculateTripBudget(d.price, options).grand : null;
+  const priceIdx = PRICES.findIndex(p => p.name === d.price?.name);
   const cover = covers[`../assets/destinations/${d.slug}.jpg`];
   if (!budget || !d.r || !cover) return null;
   const vibe = [...new Set((ACTIVITY_TAGS[d.slug] || []).map((t) => VIBE_MAP[t]).filter(Boolean))];
   const vibeRu = vibe.length ? vibe.map((v) => VIBE_RU[v]).join(' · ') : (d.sub || '');
   // r — коды сезона по 12 месяцам: P пик / G хороший / O так себе / B плохо / X закрыто
-  return { slug: d.slug, nom: d.cases.nom, visa: d.visa, budget, r: d.r, vibe, vibeRu, cover, season: seasonLabel(d.r) };
+  // Подбор дальнего безвиза сохраняет прежний уровень отбора; показанная
+  // стоимость, как и в остальных блоках, относится к эконом-неделе.
+  const selectionBudget = calculateTripBudget(d.price, { ...options, level: 1 }).grand;
+  return { slug: d.slug, nom: d.cases.nom, visa: d.visa, budget, selectionBudget, calcUrl: calculatorHref(priceIdx), r: d.r, vibe, vibeRu, cover, season: seasonLabel(d.r) };
 }).filter(Boolean); // порядок = релевантность (DIRECTIONS); сортировка по цене — переключателем на клиенте
 
 const MONTHS_PREP = ['', 'январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
@@ -59,14 +62,6 @@ const nowRows = rows.filter((r) => inSeason(r.r, month));
 const nowNames = nowRows.slice(0, 6).map((r) => r.nom);
 const plural = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'направление' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'направления' : 'направлений'));
 const nowWord = plural(nowRows.length);
-
-// Бали — реальный пример для превью «Калькулятор бюджета» (комфорт, с перелётом)
-const baliP = DIRECTIONS.find((d) => d.slug === 'bali')?.price;
-const baliFlight = baliP ? flightRub(baliP) : 0;
-const baliStay = baliP ? stayRub(baliP) : 0;
-const baliTrip = baliFlight + baliStay;
-const SEASON_IDX = { P: 0, G: 1, O: 2, B: 3 }; // пик / хорошо / норм / не сезон
-const baliPat = (DIRECTIONS.find((d) => d.slug === 'bali')?.r || []).map((c) => SEASON_IDX[c] ?? 3);
 
 // Свежие посты
 const allPosts = (await getCollection('blog')).sort(byFreshness);
@@ -88,7 +83,7 @@ const концСезона = (r) => {
   return MON_SHORT[m + 1];
 };
 // Штампы: безвиз, куда далеко — ближний безвиз человек и так знает.
-const безвиз = rows.filter((r) => r.visa === 'free' && r.budget > 150000).slice(0, 4);
+const безвиз = rows.filter((r) => r.visa === 'free' && r.selectionBudget > 150000).slice(0, 4);
 // Талон: самые дешёвые недели.
 const дёшево = [...rows].sort((a, b) => a.budget - b.budget).slice(0, 6);
 // Кадр-якорь: Кения, пока идёт сафари-сезон; вне сезона — второй из тройки.
@@ -176,15 +171,15 @@ const ldJson = {
       <div class="spread spread-last">
         <div class="qside">
           <h2 class="qq">Сколько стоит <em>неделя?</em></h2>
-          <p class="qlead"><b>От {fmt(дёшево[0].budget)} ₽.</b> Вся поездка: перелёт из Москвы, жильё, еда, транспорт.</p>
+          <p class="qlead"><b>От {fmt(дёшево[0].budget)} ₽.</b> Перелёт из Москвы, жильё и еда на неделю.</p>
           <a class="qmore" href="/calculator/">Посчитать свою</a>
         </div>
         <div class="pass mono">
           <div class="phead"><span>TRAVELTRIBE · ЭКОНОМ-НЕДЕЛЯ</span><span>МСК — МИР</span></div>
           {дёшево.map((r) => (
-            <a class="prow" href={`/${r.slug}/`}><b>{r.nom}</b><span class="pv">{VISA_LABEL[r.visa]}</span><span class="pd"></span><span>{fmt(r.budget)} ₽</span></a>
+            <div class="prow"><a class="pguide" href={`/${r.slug}/`}><b>{r.nom}</b></a><span class="pv">{VISA_LABEL[r.visa]}</span><span class="pd"></span><a class="pprice" href={r.calcUrl} aria-label={`${fmt(r.budget)} ₽ — рассчитать поездку: ${r.nom}`}>{fmt(r.budget)} ₽</a></div>
           ))}
-          <div class="pfoot">ЦЕНА = ПЕРЕЛЁТ + ЖИЛЬЁ + ЕДА + ТРАНСПОРТ · НА ОДНОГО · КУРС ЦБ</div>
+          <div class="pfoot">ПЕРЕЛЁТ + ЖИЛЬЁ + ЕДА · 7 ДНЕЙ · НА ОДНОГО</div>
         </div>
       </div>
     </div></section>
@@ -574,7 +569,9 @@ select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:non
 .prow b{font-weight:600;font-family:var(--ff);white-space:nowrap}
 .prow .pv{font-size:.7rem;color:var(--mid);white-space:nowrap}
 .prow .pd{flex:1;border-bottom:1.5px dotted var(--hair);transform:translateY(-4px)}
-.prow:hover b,.prow:focus-visible b{color:var(--gold)}
+.prow .pguide,.prow .pprice{padding:.5rem 0;margin:-.5rem 0}
+.prow .pprice{white-space:nowrap}
+.prow .pguide:hover b,.prow .pguide:focus-visible b,.prow .pprice:hover,.prow .pprice:focus-visible{color:var(--gold)}
 .pfoot{padding:.65rem 1.1rem .9rem;font-size:.68rem;color:var(--mid);
   border-top:1.5px dashed var(--hair);margin-top:.35rem}
 .anchor2{position:relative;overflow:hidden}
