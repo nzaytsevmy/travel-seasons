@@ -385,7 +385,14 @@ test('22. цвет меню на главной согласован с прок
     await expect(logo).toHaveCSS('color', 'rgb(255, 255, 255)');
 
     const height = await head.evaluate(e => e.getBoundingClientRect().height);
-    await page.evaluate(() => window.scrollTo({ top: 40, behavior: 'instant' }));
+    const firstPaint = await page.evaluate(async () => {
+      window.scrollTo({ top: 40, behavior: 'instant' });
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const h = document.querySelector('.sw-head')!;
+      return [getComputedStyle(h).backgroundColor, getComputedStyle(h.querySelector('.wm')!).color];
+    });
+    expect(firstPaint, 'первый кадр после прокрутки читается без бледной фазы перехода')
+      .toEqual(['rgb(251, 251, 250)', 'rgb(21, 23, 26)']);
     await expect(head).toHaveCSS('background-color', 'rgb(251, 251, 250)');
     await expect(logo).toHaveCSS('color', 'rgb(21, 23, 26)');
     expect(await head.evaluate(e => e.getBoundingClientRect().height), 'цвет не меняет высоту меню').toBe(height);
