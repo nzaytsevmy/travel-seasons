@@ -5,6 +5,10 @@ import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { Image } from 'astro:assets';
 import { DIRECTIONS } from '../data/directions.js';
+import { PRICES } from '../data/prices.js';
+import { VISA_DETAILS } from '../data/visa-details.js';
+import { calculateTripBudget, calculatorHref } from '../utils/trip-budget.js';
+import { getBudgetRates } from '../utils/budget-rates.js';
 import { ACTIVITY_TAGS } from '../data/country-activity-tags.js';
 
 const destPhotos = import.meta.glob('../assets/destinations/*.jpg', { eager: true, import: 'default' });
@@ -16,9 +20,7 @@ for (const d of DIRECTIONS) (grouped[d.group] ||= []).push(d);
 const groupOrder = GROUP_ORDER.filter(g => grouped[g]).concat(Object.keys(grouped).filter(g => !GROUP_ORDER.includes(g)));
 
 // ── Та же логика, что в финдере на главной: цена ВСЕЙ поездки с перелётом, сезон, вайб ──
-const USD_RUB = 90, NIGHTS = 7;
-const roundK = (n) => Math.round(n / 1000) * 1000;
-const tripCost = (p) => roundK(p.flight[1] * USD_RUB) + roundK((p.hotel[1] + p.food[1]) * NIGHTS * USD_RUB);
+const rates = await getBudgetRates();
 const tierOf = (t) => (t < 100000 ? 'low' : t <= 200000 ? 'mid' : 'high');
 const fmt = (n) => n.toLocaleString('ru-RU');
 const VISA_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза' };
@@ -40,12 +42,13 @@ function seasonLabel(r) {
 }
 
 const cards = groupOrder.flatMap(g => grouped[g]).map((d) => {
-  const budgetRub = d.price?.flight ? tripCost(d.price) : null;
+  const budgetRub = d.price?.flight ? calculateTripBudget(d.price, { rates, visa: VISA_DETAILS[d.slug], seasons: d.r }).grand : null;
+  const priceIdx = PRICES.findIndex(p => p.name === d.price?.name);
   const btier = budgetRub ? tierOf(budgetRub) : (d.budget || null);
   const vibe = [...new Set((ACTIVITY_TAGS[d.slug] || []).map(t => VIBE_MAP[t]).filter(Boolean))];
   return {
     slug: d.slug, nom: d.cases.nom, visa: d.visa, r: d.r || null,
-    budgetRub, btier, vibe, season: seasonLabel(d.r),
+    budgetRub, calcUrl: calculatorHref(priceIdx), btier, vibe, season: seasonLabel(d.r),
     photo: destPhotos[`../assets/destinations/${d.slug}.jpg`], visual: d.visual,
   };
 });
@@ -99,7 +102,7 @@ const ldJson = {
       <p class="cat-byline">Собрал <a href="/about/">Никита Зайцев</a> · был на 7 континентах, 60+ стран</p>
       <a class="editorial-cta cat-planner" href="/calculator/">
         <strong>Уже выбрали страну? Посчитайте всю поездку</strong>
-        <span>Перелёт, жильё, страховка и виза — реальный бюджет по 70+ направлениям за минуту.</span>
+        <span>Перелёт, жильё, питание и виза — бюджет по 70+ направлениям за минуту.</span>
       </a>
     </header>
 
@@ -145,10 +148,10 @@ const ldJson = {
     {/* ─── Сетка направлений ─── */}
     <div class="cgrid" id="cgrid">
       {cards.map((c, i) => (
-        <a href={`/${c.slug}/`} class="cd"
+        <article class="cd"
            data-name={c.nom.toLowerCase()} data-visa={c.visa} data-b={c.btier || ''}
            data-vibe={c.vibe.join(',')} data-r={c.r ? c.r.join('') : ''} data-budget={c.budgetRub || 0}>
-          <span class="cd-ph">
+          <a class="cd-ph" href={`/${c.slug}/`} aria-label={`Путеводитель: ${c.nom}`}>
             {/* Карточка показывается от 170px на телефоне до 224px на планшете,
                 а файл ехал один и тот же в 600px — вдвое-втрое больше нужного по
                 площади на каждой из 74 карточек. Набор размеров и качество те же,
@@ -160,16 +163,16 @@ const ldJson = {
               <span class="cd-emoji" aria-hidden="true">{c.nom}</span>
             )}
             <span class="cd-sq" hidden></span>
-          </span>
+          </a>
           <span class="cd-body">
-            <span class="cd-name">{c.nom}</span>
+            <a class="cd-name" href={`/${c.slug}/`}>{c.nom}</a>
             <span class="cd-meta">
               <span class={`cd-visa cd-visa--${c.visa}`}>{VISA_LABEL[c.visa]}</span>
               {c.season && <span class="cd-season">{c.season}</span>}
             </span>
-            <span class="cd-price">{c.budgetRub ? `≈ ${fmt(c.budgetRub)}\u00A0₽` : (c.btier ? BUDGET_LABEL[c.btier] : '')}</span>
+            <a class="cd-price" href={c.calcUrl} aria-label={`${c.budgetRub ? `≈ ${fmt(c.budgetRub)} ₽` : BUDGET_LABEL[c.btier] || ''} — рассчитать поездку: ${c.nom}`}>{c.budgetRub ? `≈ ${fmt(c.budgetRub)}\u00A0₽` : (c.btier ? BUDGET_LABEL[c.btier] : '')}</a>
           </span>
-        </a>
+        </article>
       ))}
     </div>
 
