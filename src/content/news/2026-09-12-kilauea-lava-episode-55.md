@@ -2,7 +2,7 @@
 title: "Килауэа: где наблюдать лаву в ожидании 55-го эпизода"
 date: 2026-09-11
 checked: 2026-09-14
-reviewOn: 2026-09-15
+reviewOn: 2026-09-17
 added: 2026-09-12
 topic: nature
 impact: medium
