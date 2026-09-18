@@ -4,7 +4,7 @@ date: 2026-09-17
 added: 2026-09-18
 checked: 2026-09-18
 topic: nature
-impact: low
+impact: medium
 score: 4
 authoredBy: "codex-gpt-6"
 reviewRef: "news/reviews/2026-09-18-bolivia-tilcayo-cat.json"
