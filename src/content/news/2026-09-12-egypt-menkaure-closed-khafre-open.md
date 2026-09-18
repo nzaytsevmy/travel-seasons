@@ -1,8 +1,8 @@
 ---
 title: "Гиза: Хефрена решили открыть, Микерина — закрыть"
 date: 2026-09-11
-checked: 2026-09-16
-reviewOn: 2026-09-18
+checked: 2026-09-18
+reviewOn: 2026-09-21
 added: 2026-09-12
 topic: transport
 impact: high
