@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "slug": "2026-09-18-bolivia-tilcayo-cat",
+  "score": 4,
+  "reviewer": "Codex (news_lifecycle_review)",
+  "reviewedAt": "2026-09-18",
+  "sha256": "3ee819316272ecfae543f9eca32ddfdc1c7835dacda05b7763fae17c00cd34ea",
+  "rationale": "Независимо прочитал полный материал National Geographic от 17.09 и финальную заметку. Источник подтверждает описание Leopardus tilcayo, первую встречу исследовательницы в 2016 году, боливийский Юнгас на восточном склоне Анд, местное название и сравнение полных геномов 38 животных рода Leopardus. Неизвестная численность сохранена; классификация не выдана за рост числа кошек или первую встречу человека с животным. Снято непроверенное утверждение об отсутствии маршрута именно в научной работе. Вывод о том, что новость не обещает встречу на экскурсии, обоснован и отделён от результата генетики. Оценка 4 за содержательное и необычное открытие в нишевом направлении. Фото подтверждено как дорога Юнгас в Боливии, с честной архивной подписью; другую кошку за новый вид не выдают.",
+  "risks": [
+    "Ссылка на научную работу Current Biology вернула HTTP 403; её полный текст независимо не прочитан. Факты сверены по полному National Geographic, что RUBRIC допускает для природы.",
+    "Численность и туристические шансы встречи неизвестны. На фото — пейзаж региона с велосипедистами, не тилькайо и не подтверждённое место наблюдения вида."
+  ],
+  "blockingIssues": [],
+  "evidence": [
+    {
+      "url": "https://www.nationalgeographic.com/animals/article/meet-the-first-new-cat-species-discovered-in-100-years",
+      "publishedOn": "2026-09-17",
+      "capture": ".run/2026-09-18/sources/cat-natgeo.txt",
+      "finding": "Полный текст прочитан: название, дата научной публикации, 2016, 38 полных геномов, география и неизвестная численность.",
+      "checkedOn": "2026-09-18",
+      "method": "Full supplied primary/article text plus independent web or direct HTTP reading; exact limits stated in rationale"
+    },
+    {
+      "url": "https://www.cell.com/current-biology/fulltext/S0960-9822(26)01110-3",
+      "capture": ".run/2026-09-18/review-evidence/tilcayo-paper.html",
+      "finding": "Недоступно: HTTP 403, защитная страница. Не используется как доказательство прочитанной первички.",
+      "checkedOn": "2026-09-18",
+      "method": "Access attempt, not a read source"
+    }
+  ],
+  "lifecycle": {
+    "reviewOn": null,
+    "reason": "Разовое научное сообщение без объявленной даты следующего события; календарный reviewOn не придумывается."
+  },
+  "checks": {
+    "capsuleWords": 45,
+    "bodyWords": 188,
+    "wordCountMethod": "Unicode letter/number tokens with internal hyphens; Markdown link URLs excluded",
+    "clippedTitle": "Боливия: пятнистую кошку тилькайо признали новым видом",
+    "titleUnchangedByClip": true,
+    "tldrGate": {
+      "ok": true
+    },
+    "internalLinkEvidence": ".run/2026-09-18/review-evidence/fetch-results.json",
+    "photoViewed": true,
+    "photoSha256": "0a678741f070f5a0e0d49b30fc743db3a33767889e1846e8fa3266044b1811c3",
+    "photoMetadataEvidence": ".run/2026-09-18/review-evidence/commons-69751314.json",
+    "photoFinding": "Commons 69751314: Yungas Road в Боливии, Vaido Otsar, 25.10.2017, CC BY-SA 4.0. На просмотренном кадре велосипедисты у заросшей скалы.",
+    "visiblePhotoCaptionField": "imageTitle",
+    "imageTitle": "Дорога Юнгас в Боливии, октябрь 2017 года. Архивный пейзаж региона, не место наблюдения тилькайо.",
+    "imageAlt": "Велосипедисты на дороге Юнгас у покрытой зеленью скалы",
+    "scope": "Final full news content, numbers, meaning, photos and links; no build, browser or publication assertion."
+  }
+}

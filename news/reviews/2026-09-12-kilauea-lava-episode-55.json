@@ -2,11 +2,58 @@
   "schemaVersion": 1,
   "slug": "2026-09-12-kilauea-lava-episode-55",
   "score": 4,
-  "reviewer": "gpt-5.6-sol",
-  "reviewedAt": "2026-09-14",
-  "rationale": "Суточная сводка USGS 13 сентября и сообщение HVO в 18:55 HST подтверждают подготовительные переливы и брызги 10–20 м, но не начало 55-го эпизода. Устаревший прогноз 11–12 сентября отозван как ненадёжный; текст не выдаёт подготовительную активность за крупное фонтанирование. NPS подтверждает закрытую зону, открытые смотровые и названные парковки с подъездом по Crater Rim Drive West. Раздел США доступен с HTTP 200, хотя тематически широк. Капсула 47 слов, тело 181 слово, clipTitle целый. Разделение наблюдаемой лавы, прогноза и доступа — полезная добавка; reviewOn 15 сентября нужен из-за быстрого развития события. Для отдельной поездки это значимо, направление нишевое: 4.",
+  "reviewer": "Codex (news_lifecycle_review)",
+  "reviewedAt": "2026-09-18",
+  "sha256": "6c4e21fed93fe60d37dbfb282f70588cfaca9d2fe97aee0d14d1e11843f5b618",
+  "rationale": "Независимо прочитал финальный UPDATE и свежие полные ответы USGS/NPS 18.09.2026. Суточная сводка USGS от 17.09 в 10:01 HST подтверждает шесть новых жерл, затихание к 20:30 HST 16.09 и отсутствие активной лавы на поверхности на момент утренней сводки. Свечение старых жерл сохранялось; срок 55-го эпизода нельзя надёжно моделировать. Текст не превращает это в начало эпизода, окончание извержения или прогноз к приезду читателя. NPS подтверждает закрытую зону, наблюдение с открытых точек края кальдеры и парковки по Crater Rim Drive West. Польза — раздельная проверка активности, видимости и доступа; 4 по RUBRIC для нишевой поездки. Даты исходной новости и добавления сохранены; reviewOn 19.09 обоснован суточным изменением обстановки.",
   "risks": [
-    "Вулканическая обстановка может измениться раньше 15 сентября; обложка показывает прежнее извержение и не должна читаться как снимок 13 сентября."
+    "Сводка описывает состояние утром 17.09 по гавайскому времени; дальнейшая активность может измениться до следующей проверки.",
+    "Архивная обложка неизменна и просмотрена мной, но не является снимком новых жерл или состояния 17–18.09.2026. В этом узком UPDATE её лицензионная метаинформация не перечитывалась заново.",
+    "Общий раздел США тематически широк; конкретные условия наблюдения даны в заметке и первоисточнике NPS."
   ],
-  "blockingIssues": []
+  "blockingIssues": [],
+  "evidence": [
+    {
+      "url": "https://www.usgs.gov/volcanoes/kilauea/volcano-updates",
+      "publishedOn": "2026-09-17T20:01:00Z",
+      "checkedOn": "2026-09-18",
+      "method": "Fresh complete HTTP response, independently read main report",
+      "capture": ".run/2026-09-18/lifecycle-review/kilauea-daily.txt",
+      "finding": "Шесть новых жерл затихли к 20:30 HST 16.09; на момент сводки активной лавы нет; прогноз фонтанирования ненадёжен."
+    },
+    {
+      "url": "https://www.usgs.gov/observatories/hvo/observatory-messages",
+      "publishedOn": "2026-09-17",
+      "checkedOn": "2026-09-18",
+      "method": "Fresh complete HTTP response",
+      "capture": ".run/2026-09-18/lifecycle-review/kilauea-messages.txt",
+      "finding": "Сообщение 17.09 в 10:09:07 HST согласуется с суточной сводкой и не объявляет эпизод 55."
+    },
+    {
+      "url": "https://www.nps.gov/havo/planyourvisit/eruption-viewing.htm",
+      "publishedOn": "2026-09-08",
+      "checkedOn": "2026-09-18",
+      "method": "Fresh complete HTTP response",
+      "capture": ".run/2026-09-18/lifecycle-review/kilauea-nps.txt",
+      "finding": "Закрытая зона, открытые смотровые края кальдеры, прерывистая видимость, три названные парковки и западный подъезд подтверждены."
+    }
+  ],
+  "lifecycle": {
+    "reviewOn": "2026-09-19",
+    "reason": "Следующая суточная сводка USGS или более раннее отдельное сообщение HVO об изменении активности."
+  },
+  "checks": {
+    "capsuleWords": 46,
+    "bodyWords": 199,
+    "wordCountMethod": "Unicode letter/number tokens with internal hyphens; Markdown link URLs excluded",
+    "clippedTitle": "Килауэа: где наблюдать лаву в ожидании 55-го эпизода",
+    "titleUnchangedByClip": true,
+    "tldrGate": {
+      "ok": true
+    },
+    "internalLinkEvidence": ".run/2026-09-18/review-evidence/internal-usa-corrected.json",
+    "photoViewed": true,
+    "photoMetadataEvidence": "Unchanged metadata from earlier review; not freshly revalidated in this factual UPDATE",
+    "scope": "Full final news prose and current factual UPDATE; no build, publication, or rendered-page assertion."
+  }
 }

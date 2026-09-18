@@ -1,8 +1,8 @@
 ---
 title: "Бромо: пожар закрыл все четыре входа к вулкану"
 date: 2026-09-12
-checked: 2026-09-15
-reviewOn: 2026-09-17
+checked: 2026-09-18
+reviewOn: 2026-09-19
 added: 2026-09-14
 topic: transport
 impact: high

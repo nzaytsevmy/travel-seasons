@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "slug": "2026-09-18-santa-rosa-overnight-closure",
+  "score": 4,
+  "reviewer": "Codex (news_lifecycle_review)",
+  "reviewedAt": "2026-09-18",
+  "sha256": "d2c5fa824d6b9fb92049b22535872767c39c3cd3d1c2a9f5b49477e12ae125cb",
+  "rationale": "Финальная заметка и свежий прямой HTTP-ответ NPS прочитаны независимо. Подтверждены запрет всех ночёвок по меньшей мере по 12.10 включительно, отдельный срок юго-восточной зоны до конца сезона, пожар 15.05–04.06, дневной доступ с 01.07, закрытые Torrey Pines/Water Canyon/часть Cherry Canyon и открытые длинные маршруты. 3–4 часа — типичное время пассажиров Island Packers на острове, а не время переправы. Собственная польза — соотнести открытый маршрут с обратным катером; окончание минимального срока не обещает открытия. Дата 17.09 обозначает обновление страницы NPS, а не доказанную дату введения запрета. Оценка 4 для нишевой островной поездки. Ошибочное фото городского суда заменено: итоговый кадр и Commons подтверждают именно Santa Rosa Island в Калифорнии, CC0.",
+  "risks": [
+    "Web-экстракт вернул более старую редакцию NPS от 02.09 с иным абзацем о воде; для текущей аттестации использован полный прямой HTTP 200 с датой 17.09, сохранённый отдельно.",
+    "Не установлено, что ограничение по 12.10 впервые объявлено либо продлено именно 17.09; текст не создаёт такую свежесть.",
+    "Архивная тропа мая 2025 года не подтверждает сегодняшний доступ по конкретному изображённому участку."
+  ],
+  "blockingIssues": [],
+  "evidence": [
+    {
+      "url": "https://home.nps.gov/chis/planyourvisit/santa-rosa-island-fire-recovery.htm",
+      "publishedOn": "2026-09-17",
+      "capture": ".run/2026-09-18/review-evidence/santa-rosa-fresh.txt",
+      "finding": "Полная свежая редакция NPS: сроки ночёвок, дневной доступ, тропы и окно 3–4 часа.",
+      "checkedOn": "2026-09-18",
+      "method": "Full supplied primary/article text plus independent web or direct HTTP reading; exact limits stated in rationale"
+    }
+  ],
+  "lifecycle": {
+    "reviewOn": "2026-10-12",
+    "reason": "12.10 — проверить, продлён ли запрет после минимальной даты; не предполагать открытие 13.10."
+  },
+  "checks": {
+    "capsuleWords": 47,
+    "bodyWords": 187,
+    "wordCountMethod": "Unicode letter/number tokens with internal hyphens; Markdown link URLs excluded",
+    "clippedTitle": "Санта-Роса: ночёвки закрыты как минимум до 12 октября",
+    "titleUnchangedByClip": true,
+    "tldrGate": {
+      "ok": true
+    },
+    "internalLinkEvidence": ".run/2026-09-18/review-evidence/internal-usa-corrected.json",
+    "photoViewed": true,
+    "photoSha256": "c952f745908be6deaec466d04d78ee53665d3f0b0b4358879f40ab417776a380",
+    "photoMetadataEvidence": ".run/2026-09-18/review-evidence/commons-167312630.json",
+    "photoFinding": "Commons 167312630: Santa Rosa Island, California, Mx. Granger, 26.05.2025, CC0. Просмотрен итоговый кадр тропы между склонами; городской суд отклонён.",
+    "visiblePhotoCaptionField": "imageTitle",
+    "imageTitle": "Тропа между склонами острова Санта-Роса, май 2025 года. Архивная иллюстрация.",
+    "imageAlt": "Тропа между покрытыми кустарником склонами острова Санта-Роса",
+    "scope": "Final full news content, numbers, meaning, photos and links; no build, browser or publication assertion."
+  }
+}

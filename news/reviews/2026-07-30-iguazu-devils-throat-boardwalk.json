@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "slug": "2026-07-30-iguazu-devils-throat-boardwalk",
+  "score": 4,
+  "reviewer": "Codex (news_lifecycle_review)",
+  "reviewedAt": "2026-09-18",
+  "sha256": "bd2635fd959af713d705e3e771ae76593f23713b5a6e2951966fb78c27a5e760",
+  "rationale": "Независимо прочитал обе полные первички APN (30.07 и 17.09) и финальный UPDATE. Июльское намерение демонтировать настилы с 03.08 теперь подтверждено сентябрьским сообщением о выполненном демонтаже. Аргентинский парк продолжает приём, перечислены открытые Верхний/Нижний круги, Verde и Macuco. После замечания центр Yvyrá Retá и Territorio Yaguareté больше не названы тропами. Бразильская смотровая отделена от аргентинского режима и атрибутирована тому же сообщению; точной даты восстановления нет. Снято необоснованное обещание достаточности оставшихся маршрутов. Оценка 4: конкретно меняет план посещения нишевого направления. Исходные date/added сохранены, reviewOn 21.09 обоснован неизвестным сроком. Фото и лицензия проверены: архивный вид водопада 2025 года не изображает демонтаж.",
+  "risks": [
+    "Режим бразильской смотровой приведён как сообщение APN Аргентины; отдельный текущий первоисточник бразильского оператора в этом UPDATE не открывался. Текст отправляет проверять берега раздельно.",
+    "Список доступных участков относится к сообщению 17.09; при высокой воде может измениться.",
+    "Внутренняя ссылка на визовую страницу проверена как HTTP 200 и по назначению; это не новая ревизия всех визовых фактов."
+  ],
+  "blockingIssues": [],
+  "evidence": [
+    {
+      "url": "https://www.argentina.gob.ar/noticias/parque-nacional-iguazu-abierto-todo-el-ano",
+      "publishedOn": "2026-09-17",
+      "capture": ".run/2026-09-18/sources/iguazu.txt",
+      "finding": "Выполненный демонтаж в августе, открытый парк и конкретные тропы/объекты; отдельное сообщение о Бразилии.",
+      "checkedOn": "2026-09-18",
+      "method": "Full supplied primary/article text plus independent web or direct HTTP reading; exact limits stated in rationale"
+    },
+    {
+      "url": "https://www.argentina.gob.ar/noticias/iguazu-finalizo-julio-con-un-balance-positivo-para-la-actividad-turistica",
+      "publishedOn": "2026-07-30",
+      "capture": ".run/2026-09-18/review-evidence/iguazu-web.json",
+      "finding": "Первоначальный план начала демонтажа 03.08 и зависимость восстановления от гидрологических условий.",
+      "checkedOn": "2026-09-18",
+      "method": "Full supplied primary/article text plus independent web or direct HTTP reading; exact limits stated in rationale"
+    }
+  ],
+  "lifecycle": {
+    "reviewOn": "2026-09-21",
+    "reason": "21.09 — следующая проверка временного ограничения без объявленного окончания, либо раньше по новому уведомлению парка."
+  },
+  "checks": {
+    "capsuleWords": 46,
+    "bodyWords": 179,
+    "wordCountMethod": "Unicode letter/number tokens with internal hyphens; Markdown link URLs excluded",
+    "clippedTitle": "Игуасу открыт, но мостики к Глотке Дьявола сняты",
+    "titleUnchangedByClip": true,
+    "tldrGate": {
+      "ok": true
+    },
+    "internalLinkEvidence": ".run/2026-09-18/review-evidence/internal-iguazu.json",
+    "photoViewed": true,
+    "photoSha256": "22a337ae404f29a65d0ff5e17659078e52de3738cc91b46671863d0e46951693",
+    "photoMetadataEvidence": ".run/2026-09-18/review-evidence/commons-195776898.json",
+    "photoFinding": "Commons 195776898: Devil's Throat, Iguazu Falls, Argentina, 2025, P. Hughes, CC BY 4.0. Просмотренный кадр — водопад, не демонтаж.",
+    "visiblePhotoCaptionField": "imageTitle",
+    "imageTitle": "Глотка Дьявола на Игуасу. Архивный вид водопадов, не демонтаж мостиков.",
+    "imageAlt": "Потоки воды и брызги у Глотки Дьявола на Игуасу",
+    "scope": "Final full news content, numbers, meaning, photos and links; no build, browser or publication assertion."
+  }
+}
