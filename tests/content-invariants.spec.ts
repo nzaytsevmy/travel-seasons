@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { buildQueue } from '../scripts/revision-queue.mjs';
 import { checkArticleReview, readPostMeta, proseHash, REVIEW_REQUIRED_FROM } from '../scripts/article-review-gate.mjs';
 import { classifyEdit, baseVersion } from '../scripts/edit-kind.mjs';
+import { journalMetadataProblems } from '../scripts/check-journal-metadata.mjs';
 
 // Инвариант-гейт по СБОРКЕ (dist/): ловит КЛАССЫ багов на ЛЮБОМ посте, в т.ч. вне
 // PAGES-списка скриншот-гейта. Без baseline — чистые assert'ы.
@@ -1462,30 +1463,7 @@ test('Журнал проверок: записи заполнены и дата
         bad.push(`${rel}: ${что} сдвинула updatedDate ${updWas || 'нет'} → ${updNow || 'нет'} — дату обновления двигает только переработка`);
       }
     }
-    if (!/^checks:/m.test(fm)) continue;
-
-    const dates = [...fm.matchAll(/^\s+- date:\s*(\d{4}-\d{2}-\d{2})/gm)].map((m) => m[1]);
-    const whats = [...fm.matchAll(/^\s+what:\s*"([^"]*)"/gm)].map((m) => m[1]);
-    const changed = [...fm.matchAll(/^\s+changed:\s*"([^"]*)"/gm)].map((m) => m[1]);
-    if (dates.length !== whats.length || dates.length !== changed.length) {
-      bad.push(`${rel}: в журнале ${dates.length} дат, ${whats.length} описаний и ${changed.length} итогов — записи неполные`);
-      continue;
-    }
-    for (let i = 0; i < dates.length; i++) {
-      if (dates[i] > today) bad.push(`${rel}: запись журнала датирована будущим (${dates[i]})`);
-      if (whats[i].length < 15) bad.push(`${rel}: в записи ${dates[i]} не сказано, что сверяли`);
-      if (changed[i].length < 10) bad.push(`${rel}: в записи ${dates[i]} не сказано, что изменилось («без изменений» — тоже ответ)`);
-      // Первое предложение уходит наверх страницы отдельной строкой: длинное
-      // отодвигает ответ, ради которого пришли из поиска (первая версия заняла
-      // на телефоне шесть строк).
-      const head = changed[i].split(/(?<=\.)\s/)[0] ?? changed[i];
-      if (head.length > 90) bad.push(`${rel}: первая фраза записи ${dates[i]} длиной ${head.length} — она идёт наверх страницы, нужно до 90`);
-    }
-    const upd = fm.match(/^updatedDate:\s*(\d{4}-\d{2}-\d{2})/m)?.[1];
-    const last = dates.slice().sort().at(-1);
-    if (upd && last && upd > last) {
-      bad.push(`${rel}: дата обновления ${upd} новее последней сверки ${last} — свежесть без проверки`);
-    }
+    bad.push(...journalMetadataProblems(src, { rel, today }));
   }
   expect(bad, bad.join('\n')).toEqual([]);
 });

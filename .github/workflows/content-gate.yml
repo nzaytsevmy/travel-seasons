@@ -1,6 +1,8 @@
 name: Content Gate
 
-# Инварианты контента и сторож ритма — на КАЖДОЙ заявке, без исключений.
+# Обязательный статус — на каждой заявке. Только обычная правка одной очереди
+# DAILY-ARTICLE-QUEUE.md проверяется Node-контрактами без сборки и браузеров.
+# Любой контент, код или смешанная правка сохраняет полный прогон.
 #
 # Зачем отдельный прогон. Эти тесты жили внутри «Visual Regression», а у той
 # стоит `paths-ignore: src/content/**` — фильтр правильный для пиксельного
@@ -66,6 +68,18 @@ jobs:
 
       - run: npm ci
 
+      - name: Объём выпуска и ранняя проверка метаданных
+        id: scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || 'origin/main' }}
+        run: |
+          node scripts/release-scope.mjs --base "$BASE_SHA" --head HEAD --github-output "$GITHUB_OUTPUT"
+          node scripts/check-journal-metadata.mjs --base "$BASE_SHA" --head HEAD
+
+      - name: Контракты служебной отметки
+        if: steps.scope.outputs.mode == 'accounting'
+        run: npm run check:delivery
+
       # Один браузер: гоняем только контентную часть и только в chromium.
       # Ставить оба — минусы четыре минуты на установку ради тестов, которые
       # всё равно идут в одном окружении.
@@ -73,12 +87,14 @@ jobs:
       # пакетами и рискует повиснуть на недоступном зеркале Ubuntu — 19.08.2026
       # так пропали два прогона по 40 минут.
       - name: Кеш браузеров Playwright
+        if: steps.scope.outputs.mode != 'accounting'
         id: pw-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-chromium-${{ hashFiles('package-lock.json') }}
       - name: Install Playwright browser
+        if: steps.scope.outputs.mode != 'accounting'
         run: |
           if [ "${{ steps.pw-cache.outputs.cache-hit }}" = "true" ]; then
             npx playwright install chromium
@@ -89,6 +105,7 @@ jobs:
       # Тот же кэш, что у сборки: обработка картинок занимает под две минуты,
       # а результат для одного файла всегда одинаковый.
       - name: Кэш обработанных картинок
+        if: steps.scope.outputs.mode != 'accounting'
         uses: actions/cache@v4
         with:
           path: node_modules/.astro
@@ -96,16 +113,19 @@ jobs:
           restore-keys: astro-assets-${{ runner.os }}-
 
       - run: npm run build
+        if: steps.scope.outputs.mode != 'accounting'
         env:
           SKIP_HTML_MIN: '1'   # инварианты читают текст, минификация им не мешает
 
       # Порт 4322 — тот же, что у визуального гейта и предпушевого хука.
       - name: Start preview server
+        if: steps.scope.outputs.mode != 'accounting'
         run: npx astro preview --port 4322 &
         env:
           NODE_ENV: production
 
       - name: Wait for server
+        if: steps.scope.outputs.mode != 'accounting'
         run: |
           for i in $(seq 1 60); do
             curl -sf http://localhost:4322/ > /dev/null && exit 0
@@ -123,6 +143,7 @@ jobs:
       # Список изменённых файлов заявки — для структурного теста изменённых страниц.
       # checkout здесь неглубокий, поэтому основу тянем отдельно и сравниваем деревья.
       - name: Изменённые файлы заявки
+        if: steps.scope.outputs.mode != 'accounting'
         id: changed
         run: |
           git fetch --no-tags --depth=1 origin "${{ github.base_ref || 'main' }}"
@@ -132,6 +153,7 @@ jobs:
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
       - name: Инварианты контента, ритм, новости и денежное поведение
+        if: steps.scope.outputs.mode != 'accounting'
         run: |
           # ⛔ Не список файлов, а фильтр. 12.09.2026: из 22 прогонов в списке было 5, а 16
           #    не запускались в облаке вовсе — в том числе давние (шапка, главный экран,
