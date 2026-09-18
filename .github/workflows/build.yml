@@ -32,6 +32,14 @@ jobs:
           cache: 'npm'
       - run: npm ci
 
+      - name: Объём выпуска и ранняя проверка метаданных
+        id: scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || 'origin/main' }}
+        run: |
+          node scripts/release-scope.mjs --base "$BASE_SHA" --head HEAD --github-output "$GITHUB_OUTPUT"
+          node scripts/check-journal-metadata.mjs --base "$BASE_SHA" --head HEAD
+
       # Сломанное расписание CI не падает красным — оно просто не запускается, и
       # проверки нет в списке. Секунда здесь дешевле, чем выкладка без проверки.
       - name: Расписания CI без повторов ключей
@@ -45,6 +53,7 @@ jobs:
       # поэтому пересборка занимает минуту, а не семь. Ключ по самим картинкам:
       # добавили кадр — переиспользуем всё остальное, а не начинаем заново.
       - name: Кэш обработанных картинок
+        if: steps.scope.outputs.mode != 'accounting'
         uses: actions/cache@v4
         with:
           path: node_modules/.astro
@@ -52,13 +61,16 @@ jobs:
           restore-keys: astro-assets-${{ runner.os }}-
 
       - run: npm run build
+        if: steps.scope.outputs.mode != 'accounting'
         env:
           SKIP_HTML_MIN: '1'   # минификация нужна проду, а не проверке
 
       - name: Full-site SEO audit
+        if: steps.scope.outputs.mode != 'accounting'
         run: npm run check:seo
 
       - name: Денежный контракт и full-site аудит
+        if: steps.scope.outputs.mode != 'accounting'
         run: npm run check:monetization
 
   # Гейт свежести: правка контента/данных обязана бампать DATA_UPDATED (meta.js),

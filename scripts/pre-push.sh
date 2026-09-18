@@ -70,6 +70,21 @@ if ! npm run check:delivery >${LOG}_delivery.log 2>&1; then
   exit 1
 fi
 
+# Исключение только для обычной правки очереди. Сравниваем ВСЮ ветку с main:
+# последний push может содержать одну отметку после более ранней правки кода.
+SCOPE_BASE="$(git merge-base HEAD origin/main 2>/dev/null)" || {
+  echo "✖ не найдена база origin/main — обнови ссылки git и повтори push"; exit 1;
+}
+RELEASE_SCOPE="$(node scripts/release-scope.mjs --base "$SCOPE_BASE" --head HEAD --mode-only)" || exit 1
+if ! node scripts/check-journal-metadata.mjs --base "$SCOPE_BASE" --head HEAD >${LOG}_preflight.log 2>&1; then
+  cat "${LOG}_preflight.log"
+  echo "✖ метаданные журнала проверок — push заблокирован до сборки"; exit 1
+fi
+if [ "$RELEASE_SCOPE" = "accounting" ]; then
+  echo "✔ изменена только DAILY-ARTICLE-QUEUE.md: секреты, delivery-контракты и диапазон ветки проверены — push разрешён."
+  exit 0
+fi
+
 # Минификация HTML занимает три четверти сборки (79с против 21с, замерено
 # 01.08.2026), а на отрисовку страницы и на скриншоты не влияет вовсе.
 # На прод сайт уезжает минифицированным как раньше — там переменной нет.
@@ -103,7 +118,7 @@ if [ "$MODE" = "text" ]; then
   # ⛔ Не список файлов, а фильтр: список молча терял проверки — 12.09.2026 два новых
   #    сторожа не запускались ни здесь, ни в облаке. Берём всё, кроме пиксельных снимков.
   if ! SKIP_PAGE_MTIME_TESTS=1 npx playwright test --grep-invert "— visual" \
-      --project=chromium-desktop >${LOG}_pw.log 2>&1; then
+      --project=chromium-desktop --workers=1 >${LOG}_pw.log 2>&1; then
     echo "✖ гейты содержания НЕ зелёные → ${LOG}_pw.log"
     echo "  намеренный обход: git push --no-verify"
     exit 1
@@ -112,7 +127,7 @@ if [ "$MODE" = "text" ]; then
   exit 0
 fi
 
-if ! npx playwright test >${LOG}_pw.log 2>&1; then
+if ! npx playwright test --workers=1 >${LOG}_pw.log 2>&1; then
   echo "✖ Playwright: ошибка или flaky — push заблокирован."
   echo "  лог: ${LOG}_pw.log | отчёт: npm run check:visual:report"
   exit 1
