@@ -12,9 +12,19 @@ export function classifyRelease(changes) {
     ? 'accounting' : 'full';
 }
 
+// Hooks export repository-specific variables. A cwd must select its own repo.
+// https://git-scm.com/docs/githooks#_description
+export function gitEnvironment() {
+  const env = { ...process.env };
+  const names = execFileSync('git', ['rev-parse', '--local-env-vars'], { encoding: 'utf8' }).trim().split('\n');
+  for (const name of names) delete env[name];
+  return env;
+}
+
 export function gitChanges(base, head = 'HEAD', cwd = process.cwd()) {
+  const env = gitEnvironment();
   const git = args => execFileSync('git', args, {
-    cwd, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'],
+    cwd, env, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'],
   });
   const commit = ref => git(['rev-parse', '--verify', '--end-of-options', `${ref}^{commit}`]).trim();
   const baseSha = commit(base), headSha = commit(head);

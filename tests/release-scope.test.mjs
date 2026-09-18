@@ -4,7 +4,7 @@ import { mkdtempSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { classifyRelease, gitChanges } from '../scripts/release-scope.mjs';
+import { classifyRelease, gitChanges, gitEnvironment } from '../scripts/release-scope.mjs';
 
 const queue = { path: 'DAILY-ARTICLE-QUEUE.md', status: 'M', oldMode: '100644', newMode: '100644' };
 test('only a regular-file edit of the editorial queue uses accounting checks', () => {
@@ -26,7 +26,8 @@ test('empty, renamed, deleted, added and symlink changes never use the shortcut'
 });
 test('real Git diff includes the whole branch and fails on an unknown base', () => {
   const dir = mkdtempSync(join(tmpdir(), 'tt-release-scope-'));
-  const git = (...args) => execFileSync('git', args, { cwd: dir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  const env = gitEnvironment();
+  const git = (...args) => execFileSync('git', args, { cwd: dir, env, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
   try {
     git('init', '-q'); git('config', 'user.name', 'Test'); git('config', 'user.email', 'test@example.invalid');
     writeFileSync(join(dir, queue.path), '# Queue\n');
