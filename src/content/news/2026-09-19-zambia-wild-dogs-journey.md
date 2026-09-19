@@ -10,7 +10,7 @@ authoredBy: "codex-gpt-6"
 reviewRef: "news/reviews/2026-09-19-zambia-wild-dogs-journey.json"
 photoQuery: "African wild dog Lycaon pictus"
 tldr: "Три самца гиеновидной собаки прошли по Замбии 4 126 километров после ухода из родной стаи. Маршрут восстановили по данным ошейников. Длинный путь завершился новым местом обитания, но другим группам повезло меньше: браконьерские петли оказались одной из главных опасностей за пределами хорошо охраняемых территорий."
-countries:
+countries: []
 sources:
   - name: Phys.org, разбор исследования в Ecology от 15.09.2026; проверено 19.09.2026
     url: https://phys.org/news/2026-09-wild-dogs-longest-journey-terrestrial.html
