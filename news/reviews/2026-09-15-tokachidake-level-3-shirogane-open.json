@@ -2,54 +2,43 @@
   "schemaVersion": 1,
   "slug": "2026-09-15-tokachidake-level-3-shirogane-open",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review)",
-  "reviewedAt": "2026-09-18",
-  "sha256": "dcb0da5ba34aacdfd6efe5711f36e25322c41fb9a57a6cc39c08aa2e5b194f72",
-  "rationale": "Независимая lifecycle-аттестация по свежему чтению 18.09.2026. JMA сохраняет уровень 3 и зону около 3 км; Биэй заново подтверждает обычную работу Сироганэ. Бюллетень JMA №23 от 14 сентября назначает следующий на 18 сентября около 16:00 JST — 07:00 UTC, 10:00 МСК. Оценка 4 остаётся моей: ограничение подъёма при отдельном открытом онсэне меняет план нишевой поездки. Обратная замена только checked/reviewOn восстановила SHA исходника первого круга: тело, заголовок, источники и изображения не менялись. Это текущая проверка перечисленных событий и условий, а не новая полная ревизия исторической справки, фотографий или рендера.",
+  "reviewer": "Codex GPT-6 (news_review_20260919)",
+  "reviewedAt": "2026-09-19",
+  "sha256": "dfb562718dcf0e9a09715348fa517666716025ec60bbd191c95f19a47a0344ba",
+  "rationale": "Свежие копии страниц Хоккайдского бюро Минприроды и администрации Биэя сохраняют уровень 3, запрет подъёма и опасную зону около 3 км. Биэй прямо сообщает, что Сироганэ и жилые районы вне зоны ограничения, а Сироганэ-онсэн работает обычно. Хронология толчков, газовыделения и слабых извержений соответствует официальной странице. Исправлены только две устаревшие даты проверки источников с 15 на 19 сентября. Оценка 4: закрытие восхождения при открытом онсэне меняет нишевый горный маршрут, но не закрывает район целиком.",
   "risks": [
-    "На момент проверки будущий бюллетень JMA 18.09 около 16:00 JST ещё не вышел. Не объявлен прочитанным; reviewOn оставлен 18.09.",
-    "Не объявлять сводку 18 сентября прочитанной. Открытый Сироганэ не доказывает работу других онсэнов и горных дорог.",
-    "Фотографии и внутренние ссылки в этом наборе из семи lifecycle-дельт заново не проверялись; унаследованные поля не являются доказательством их свежей проверки."
+    "Уровень и зона могут измениться вне планового срока reviewOn; перед восхождением нужна свежая сводка JMA.",
+    "Открытый Сироганэ-онсэн не доказывает доступность всех дорог, троп и других объектов района.",
+    "Фото архивное, весеннее и не показывает обстановку сентября 2026 года."
   ],
   "blockingIssues": [],
   "evidence": [
     {
-      "url": "https://www.data.jma.go.jp/vois/data/report/activity_info/108.html",
-      "sourceDate": "Последняя отображённая сводка 2026-09-14 16:00 JST",
-      "checkedOn": "2026-09-18",
-      "method": "Full saved source text independently read; exact fetch status recorded in sources-index.json",
-      "capture": ".run/2026-09-18/lifecycle-review/japan-jma.txt"
+      "url": "https://hokkaido.env.go.jp/emergency/emergency_00004.html",
+      "publishedOn": "2026-09-14",
+      "checkedOn": "2026-09-19",
+      "capture": ".run/2026-09-19/sources/tokachi-review.txt",
+      "finding": "Уровень 3, запрет подъёма, зона около 3 км и риски камней и пепла подтверждены."
     },
     {
       "url": "https://town.biei.hokkaido.jp/emergency/tokachidake.html",
-      "sourceDate": "Объявление 2026-09-12; получение 2026-09-18",
-      "checkedOn": "2026-09-18",
-      "method": "Full saved source text independently read; exact fetch status recorded in sources-index.json",
-      "capture": ".run/2026-09-18/lifecycle-review/japan-biei.txt"
-    },
-    {
-      "url": "https://www.data.jma.go.jp/vois/data/report/volinfo/VK20260914160000_108.html",
-      "sourceDate": "2026-09-14 16:00 JST",
-      "checkedOn": "2026-09-18",
-      "method": "Web main-body extract; fetch limits recorded in web-extracts.json and sources-index.json",
-      "capture": ".run/2026-09-18/lifecycle-review/web-extracts.json",
-      "note": "Полный текст в web-extracts.json."
+      "checkedOn": "2026-09-19",
+      "capture": ".run/2026-09-19/sources/biei-review.txt",
+      "finding": "Сироганэ и жилые районы вне зоны; Сироганэ-онсэн работает обычно; хронология активности подтверждена."
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-09-18",
-    "reason": "Назначенная JMA сводка сегодня около 16:00 JST / 10:00 МСК. После её чтения выбрать следующий срок по новому тексту; при внеплановом предупреждении — раньше.",
-    "decision": "KEEP_PENDING_SCHEDULED_BULLETIN"
+    "reviewOn": "2026-09-22",
+    "reason": "Проверить уровень JMA и отдельное сообщение Биэя об онсэне; при изменении режима обновить заголовок и капсулу."
   },
   "checks": {
-    "metadataOnlyConfirmed": true,
-    "priorSourceSha256": "23d22f337a8f60c4d10a195c19dd96e66d58780652493493488a0f2fccd959be",
-    "titleUnchangedByClip": true,
-    "clippedTitle": "Токатидакэ: подъём на вулкан закрыт, Сироганэ-онсэн работает",
-    "tldrGate": {
-      "ok": true
-    },
-    "scope": "Current facts and exact metadata-only delta; no build, browser, publication, new photo or link audit"
-  },
-  "evidenceReport": ".run/2026-09-18/lifecycle-review/review.json"
+    "capsuleWords": 52,
+    "bodyWords": 180,
+    "titleChars": 60,
+    "internalLink": "/japan-hokkaido/",
+    "photoViewed": true,
+    "photoSha256": "de663685fe185724170be322a3ec32171d77975e888197e6586a60479afacf0a",
+    "photoFinding": "Заснеженный массив Токатидакэ; Bigunitbigdaddy, общественное достояние, метаданные Commons подтверждены через API 19.09.",
+    "scope": "Финальный текст, текущий режим, история, язык, ссылка, изображение и лицензия; без сборки, публикации и live-проверки."
+  }
 }

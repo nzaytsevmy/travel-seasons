@@ -2,46 +2,38 @@
   "schemaVersion": 1,
   "slug": "2026-09-14-bromo-all-entrances-closed",
   "score": 5,
-  "reviewer": "Codex (news_lifecycle_review)",
-  "reviewedAt": "2026-09-18",
-  "sha256": "6926f7a02cad13fa285502879073cef97d696f03ca1b66494d53dd50f2692dca",
-  "rationale": "Независимая lifecycle-аттестация по свежему чтению 18.09.2026. Первичный релиз Минлесхоза SP.522/HKLN/09/2026 от 13 сентября подтверждает все входы закрыты с 12 сентября до дальнейшего объявления; Рану-Регуло разрешён по действующим условиям. CNN от 14 сентября заново подтверждает прежние числа возврата/переноса. Оценка 5 остаётся моей: объявленное закрытие всех входов и сроки возврата/переноса непосредственно меняют поездку на известном индонезийском маршруте. Обратная замена только checked/reviewOn восстановила SHA исходника первого круга: тело, заголовок, источники и изображения не менялись. Это текущая проверка перечисленных событий и условий, а не новая полная ревизия исторической справки, фотографий или рендера.",
+  "reviewer": "Codex GPT-6 (news_review_20260919)",
+  "reviewedAt": "2026-09-19",
+  "sha256": "7f35d4c11cbdfb48a39905c67fe7349281654759d0904b1c1ef222de176817bb",
+  "rationale": "ANTARA 18 сентября в 22:42 WIB цитирует TNBTS и письмо PG.25: туристический район Бромо открывается 19 сентября. Там же подтверждены действительность билетов на 19–30 сентября в исходные даты, отсутствие необходимости получать новые билеты и запрет их переноса или возврата; обращения за 12–18 сентября относятся к закрытому периоду. Текст точно отделяет входной билет от джип-тура и не распространяет открытие Бромо на Иджен или Семеру. Оценка 5: отмена полного закрытия известного вулканического района прямо меняет поездку. Архивное фото просмотрено и соответствует Бромо.",
   "risks": [
-    "Свежепрочитан последний найденный приказ, а не физический доступ 18 сентября. Старый сайт TNBTS показывает новости 2025 года; правильный booking.bromotenggersemeru.org вернул 502. Оригинал refund-поста из CNN не открылся: числа остаются проверенными по вторичному источнику.",
-    "Фотографии и внутренние ссылки в этом наборе из семи lifecycle-дельт заново не проверялись; унаследованные поля не являются доказательством их свежей проверки."
+    "Открытие района не гарантирует доступность каждого локального маршрута: указания сотрудников на месте имеют приоритет.",
+    "Порядок TNBTS для входных билетов не определяет возврат или перенос отдельно купленного джип-тура.",
+    "Фото архивное и не показывает состояние после пожара."
   ],
   "blockingIssues": [],
   "evidence": [
     {
-      "url": "https://www.kehutanan.go.id/news/kementerian-kehutanan-siaga-penuh-atasi-kebakaran-di-kawasan-bromo",
-      "sourceDate": "2026-09-13",
-      "checkedOn": "2026-09-18",
-      "method": "Full saved source text independently read; exact fetch status recorded in sources-index.json",
-      "capture": ".run/2026-09-18/lifecycle-review/bromo-ministry.txt"
-    },
-    {
-      "url": "https://www.cnnindonesia.com/gaya-hidup/20260914101434-269-1403565/wisatawan-bisa-refund-reschedule-usai-wisata-bromo-ditutup-total",
-      "sourceDate": "2026-09-14",
-      "checkedOn": "2026-09-18",
-      "method": "Full saved source text independently read; exact fetch status recorded in sources-index.json",
-      "capture": ".run/2026-09-18/lifecycle-review/bromo-cnn-refund.txt",
-      "note": "Вторичный источник; Instagram-оригинал throttled."
+      "url": "https://en.antaranews.com/news/431932/mount-bromo-to-reopen-to-tourists-after-fireextinguished",
+      "publishedOn": "2026-09-18T22:42:00+07:00",
+      "checkedOn": "2026-09-19",
+      "capture": ".run/2026-09-19/sources/bromo-open.txt",
+      "finding": "Открытие 19.09, письмо PG.25, билеты 19–30.09 действуют без замены и не подлежат переносу или возврату."
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-09-19",
-    "reason": "Открытие/продление или уточнение компенсаций после исходного периода 12–18 сентября. Дополнительно проверить порядок до дедлайна подачи 30 сентября.",
-    "decision": "KEEP_LAST_ORDER_WITH_LIMITS"
+    "reviewOn": "2026-09-30",
+    "reason": "После окончания указанного билетного периода проверить постоянный режим доступа и убрать временные условия."
   },
   "checks": {
-    "metadataOnlyConfirmed": true,
-    "priorSourceSha256": "9278e1cb3fd22e25ab17e249c5e3e9714df39c373318a03dd4bb4443e20e3b26",
-    "titleUnchangedByClip": true,
-    "clippedTitle": "Бромо: пожар закрыл все четыре входа к вулкану",
-    "tldrGate": {
-      "ok": true
-    },
-    "scope": "Current facts and exact metadata-only delta; no build, browser, publication, new photo or link audit"
-  },
-  "evidenceReport": ".run/2026-09-18/lifecycle-review/review.json"
+    "capsuleWords": 47,
+    "bodyWords": 186,
+    "titleChars": 45,
+    "internalLink": "/blog/bali-guide-2026/",
+    "internalLinkTarget": "src/content/blog/bali-guide-2026.mdx",
+    "photoViewed": true,
+    "photoSha256": "de3fba228d7671330dc830cabd656433153168935bfcae2a099b60dc967ffa93",
+    "photoFinding": "Бромо и соседние вулканы; Hugo van den Bos, CC BY 2.0, метаданные Commons подтверждены через API 19.09.",
+    "scope": "Финальный текст, даты, числа, русский язык, ссылка, изображение и лицензия; без сборки, публикации и live-проверки."
+  }
 }
