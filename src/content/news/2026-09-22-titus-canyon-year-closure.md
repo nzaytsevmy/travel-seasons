@@ -3,7 +3,7 @@ title: "Дорогу через Тайтус-Каньон закроют на г
 date: 2026-09-22
 added: 2026-09-22
 checked: 2026-09-22
-topic: access
+topic: transport
 impact: high
 status: "принято, не вступило"
 effectiveDate: 2026-10-01

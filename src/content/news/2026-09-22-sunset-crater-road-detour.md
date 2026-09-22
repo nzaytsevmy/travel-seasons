@@ -3,7 +3,7 @@ title: "К Сансет-Крейтеру в Аризоне месяц придё
 date: 2026-09-22
 added: 2026-09-22
 checked: 2026-09-22
-topic: access
+topic: transport
 impact: medium
 reviewOn: 2026-10-22
 score: 4

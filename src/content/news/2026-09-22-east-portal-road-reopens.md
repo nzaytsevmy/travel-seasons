@@ -3,7 +3,7 @@ title: "Крутой спуск East Portal у Чёрного каньона в�
 date: 2026-09-22
 added: 2026-09-22
 checked: 2026-09-22
-topic: access
+topic: transport
 impact: medium
 score: 4
 authoredBy: "codex-gpt-6"
