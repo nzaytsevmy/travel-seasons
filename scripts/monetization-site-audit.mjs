@@ -7,7 +7,7 @@ import { classifyPage, classifyPartner, isGenericAffiliateUrl, expensiveDestinat
 import { destinationAffiliateUrl } from '../src/data/affiliate.js';
 import { auditArticlePlacement, placementProblems } from './article-affiliate-placement.mjs';
 
-const coverage = JSON.parse(readFileSync(new URL('../research/article-affiliate-coverage.json', import.meta.url), 'utf8')).articles;
+const coverage = JSON.parse(readFileSync(new URL('../reviews/article-affiliate-coverage.json', import.meta.url), 'utf8')).articles;
 
 const DEEP_LINK_REQUIRED = new Set(['aviasales', 'cherehapa', 'ostrovok', 'airalo', 'youtravel']);
 
