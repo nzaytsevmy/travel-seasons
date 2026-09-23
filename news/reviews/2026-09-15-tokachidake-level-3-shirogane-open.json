@@ -2,45 +2,63 @@
   "schemaVersion": 1,
   "slug": "2026-09-15-tokachidake-level-3-shirogane-open",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
-  "reviewedAt": "2026-09-23",
-  "sha256": "a5ccc7f60068f86d2113ce3d06b6962850adbd54d62c5d337ec7c55b08d602fb",
-  "rationale": "KEEP. Бюллетень JMA №25 от 21 сентября сохраняет уровень 3, запрет восхождения и опасную зону порядка трёх километров. Муниципалитет Биэй по-прежнему сообщает, что Shirogane Onsen находится вне запретной зоны и объекты работают в обычном режиме. Конечной даты ограничения нет; текст корректно разделяет вулкан и район онсэна. Оценка 4 сохранена.",
+  "reviewer": "Codex (news_lifecycle_review)",
+  "reviewedAt": "2026-09-24",
+  "reviewTimezone": "Asia/Shanghai",
+  "reviewedAtInstantUTC": "2026-09-23T19:29:37.740Z",
+  "sha256": "5dfc135f8d423ddb41fdea67156fa3e15c29167b9f335f3cd5a4eba7e9108d8e",
+  "sourceSha256": "5dfc135f8d423ddb41fdea67156fa3e15c29167b9f335f3cd5a4eba7e9108d8e",
+  "status": "pass",
+  "rationale": "KEEP принят: JMA21Sep16:00JST сохраняет уровень3/около3км; свежая страницаБиэй подтверждает Сироганэ вне зоны. Старый источник Минприроды не получил фиктивную новую дату. Дата открытия восхождения не придумана. Практично разделяет запрет восхождения и доступ к онсэну; направление и сценарий нишевые.",
   "risks": [
-    "Уровень 3 и границы опасной зоны могут измениться после нового бюллетеня JMA.",
-    "Работа Shirogane Onsen не разрешает восхождение на Токатидакэ.",
-    "Конечная дата ограничения не объявлена."
+    "Срок снятия ограничения не объявлен. Работа каждого конкретного отеля не проверялась; не превращать общее сообщение администрации в гарантию услуги."
   ],
   "blockingIssues": [],
+  "scope": "Окончательное независимое lifecycle-ревью текущего текста после авторских исправлений; первички прочитаны24SepShanghai. Без полного повторного исследования старой несвязанной фактуры, без новых фотографий, сборки, браузеров и публикации.",
   "evidence": [
     {
+      "id": "jma",
       "url": "https://www.data.jma.go.jp/vois/data/report/activity_info/108.html",
-      "publishedOn": "2026-09-21",
-      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
-      "finding": "Информация №25 сохраняет уровень 3, запрет восхождения и опасную зону около 3 км.",
-      "checkedOn": "2026-09-23"
+      "published": "2026-09-21T16:00:00+09:00",
+      "checked": "2026-09-24",
+      "access": "web full text + direct HTTP200",
+      "evidence": "lifecycle-sources/jma.html",
+      "excerpt": "噴火警戒レベル３、入山規制",
+      "finding": "Текущая страница прямо показывает уровень 3 и ограничение подъёма; последнее объяснение №25 от 21 сентября. Опасность крупных камней около 3 км, пепел может уходить дальше по ветру."
     },
     {
+      "id": "biei",
       "url": "https://town.biei.hokkaido.jp/emergency/tokachidake.html",
-      "publishedOn": "2026-09-12",
-      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
-      "finding": "Муниципалитет подтверждает, что Shirogane Onsen вне запрещённой зоны и работает в обычном режиме.",
-      "checkedOn": "2026-09-23"
+      "published": "2026-09-12 (раздел предупреждения)",
+      "checked": "2026-09-24",
+      "access": "web full text + direct HTTP200",
+      "evidence": "lifecycle-sources/biei.html",
+      "excerpt": "白金温泉地区は、平常営業",
+      "finding": "Администрация продолжает прямо указывать, что район Сироганэ и жилые районы не входят в ограничение, онсэн работает обычно. Здесь же подтверждены 12 сентября 09:30, землетрясение около 08:20, март/апрель и летние извержения."
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-09-24",
-    "reason": "Уровень 3 и границы опасной зоны могут измениться после нового бюллетеня JMA.",
-    "decision": "KEEP_LEVEL_3_AND_ONSEN_OPEN"
+    "decision": "KEEP",
+    "checked": "2026-09-24",
+    "reviewOn": "2026-09-25",
+    "reason": "Следующий ежедневный выпуск: свежая JMA, изменение зоны или муниципального сообщения. Никакую дату будущего бюллетеня либо открытия не предсказывать.",
+    "effectiveDate": null
   },
   "checks": {
-    "capsuleWords": 53,
-    "bodyWords": 180,
+    "datePreserved": true,
+    "addedPreserved": true,
+    "bodyWords": 178,
+    "capsuleWords": 52,
     "titleChars": 60,
-    "internalLink": "/japan-hokkaido/",
-    "photoViewed": true,
+    "mediaMetadataUnchanged": true,
     "photoSha256": "de663685fe185724170be322a3ec32171d77975e888197e6586a60479afacf0a",
-    "photoFinding": "Заснеженный массив Токатидакэ; Bigunitbigdaddy, общественное достояние, метаданные Commons подтверждены через API 19.09.",
-    "scope": "Ограниченный lifecycle-review 23.09: перечитан изменчивый статус, проза и прежняя фотоаттестация не исследовались заново; обновлены checked, reviewOn и SHA; без сборки и публикации."
+    "photoViewedToday": false,
+    "mediaScope": "Фото/подпись совпадают сHEAD. Это сохранение прежней аттестации, не новое сегодняшнее визуальное/лицензионное ревью."
+  },
+  "priorReview": {
+    "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
+    "reviewedAt": "2026-09-23",
+    "sha256": "a5ccc7f60068f86d2113ce3d06b6962850adbd54d62c5d337ec7c55b08d602fb",
+    "scope": "Only prior provenance; not impersonating previous reviewer."
   }
 }

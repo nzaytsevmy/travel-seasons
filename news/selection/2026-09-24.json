@@ -1,0 +1,724 @@
+{
+  "reviewDate": "2026-09-24",
+  "reviewer": "OpenAI Codex (GPT-6)",
+  "scope": "Independent candidate selection only; no article prose, config, review artifacts, build, git, or publication changes",
+  "window": {
+    "from": "2026-09-17",
+    "through": "2026-09-24",
+    "radar": [
+      "/tmp/news-radar.txt",
+      ".run/2026-09-24/news-radar.log"
+    ]
+  },
+  "rulesApplied": {
+    "target": 5,
+    "minimumScore": 3,
+    "differentCountries": true,
+    "maximumPerEditorialCategory": 2,
+    "duplicateSurfaces": [
+      "src/content/news",
+      "news/log.jsonl",
+      "news/reviews"
+    ]
+  },
+  "selected": [
+    "uk-cheshire-wasp-spider",
+    "south-africa-white-rhino-relocations",
+    "indonesia-dieng-gi-tourism",
+    "nepal-flydubai-pokhara",
+    "us-visa-online-presence"
+  ],
+  "categoryCounts": {
+    "nature": 2,
+    "access": 1,
+    "transport": 1,
+    "visa": 1
+  },
+  "candidates": [
+    {
+      "id": "us-california-sea-turtle-nests",
+      "status": "alternate",
+      "score": 4,
+      "country": "United States",
+      "editorialCategory": "nature",
+      "title": "First documented natural sea-turtle nesting on the U.S. West Coast",
+      "publicationDate": "2026-09-23",
+      "eventDates": [
+        "2026-09-16",
+        "2026-09-19"
+      ],
+      "sourcesRead": [
+        {
+          "url": "https://news.mongabay.com/short-article/2026/09/agency-says-sea-turtle-eggs-laid-on-california-beaches-are-a-first-for-the-us-west-coast/",
+          "role": "Mongabay reproduction of Associated Press reporting; quotes NOAA Fisheries West Coast",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/california-turtles.txt"
+        },
+        {
+          "url": "https://www.facebook.com/NOAAFisheriesWestCoast",
+          "role": "Official NOAA Fisheries West Coast page linked by the report; exact post is not exposed in the article link",
+          "localEvidence": ".run/2026-09-24/sources/california-turtles.html"
+        }
+      ],
+      "verifiedFacts": [
+        "An olive ridley nested near Seal Beach on 16 September and another olive ridley, possibly the same turtle, nested near Huntington Beach Pier on 19 September.",
+        "NOAA Fisheries West Coast called this the first recorded natural nesting by any sea-turtle species on the U.S. West Coast.",
+        "Both sites were fenced; NOAA gave a typical incubation period of 45–60 days."
+      ],
+      "limitations": [
+        "Do not say the same turtle made both nests.",
+        "Do not say eggs have hatched or will survive; tides, storms, and beach activity remain risks.",
+        "The article links the official NOAA page, not a stable URL for the exact NOAA post."
+      ],
+      "duplicateCheck": "No match for olive ridley, Seal Beach, Huntington Beach, or this West Coast first in the three repository surfaces.",
+      "decisionReason": "Passes at 4/5, but the United States slot is needed for a visa rule so the final set can satisfy the two-per-rubric cap.",
+      "schemaTopic": "nature"
+    },
+    {
+      "id": "uk-cheshire-wasp-spider",
+      "status": "accepted",
+      "score": 3,
+      "country": "United Kingdom",
+      "editorialCategory": "nature",
+      "title": "First confirmed wasp-spider record in Cheshire",
+      "publicationDate": "2026-09-22",
+      "eventDate": "Not stated more precisely than the current Chester Zoo bioblitz report",
+      "sourcesRead": [
+        {
+          "url": "https://www.theguardian.com/environment/2026/sep/22/wasp-spider-climate-refugee-north-of-england",
+          "role": "Quality media; direct Chester Zoo interviews and British Arachnological Society confirmation",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/wasp-spider.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "A fully grown female Argiope bruennichi was found in a rewilded field on Chester Zoo's estate during a biodiversity survey.",
+        "A British Arachnological Society expert confirmed it as the first recorded sighting of the species in Cheshire.",
+        "The species was first recorded in Britain in the 1920s and is normally associated with sunny open grassland."
+      ],
+      "limitations": [
+        "Climate-driven northward movement is an expert interpretation, not proof that this individual moved because of climate change.",
+        "Effects on northern local ecosystems are unknown.",
+        "Avoid alarmist wording: the spider can bite if harassed, but the quoted expert compares the harm to a nettle sting."
+      ],
+      "duplicateCheck": "No Argiope or wasp-spider item found in the three repository surfaces.",
+      "decisionReason": "A genuinely new county record with expert confirmation and strong visual/travel-nature interest.",
+      "schemaTopic": "nature"
+    },
+    {
+      "id": "indonesia-dieng-gi-tourism",
+      "status": "accepted",
+      "score": 3,
+      "country": "Indonesia",
+      "editorialCategory": "access",
+      "title": "Dieng chosen for Indonesia's first GI Tourism pilot",
+      "publicationDate": "2026-09-23",
+      "eventDates": [
+        "2026-09-23 route test",
+        "October 2026 planned soft opening"
+      ],
+      "sourcesRead": [
+        {
+          "url": "https://www.antaranews.com/berita/5754940/kemenkum-jadi-pelopor-pengembangan-gi-tourism-dieng",
+          "role": "National news agency; direct quotes from Indonesia's Directorate General of Intellectual Property and Banjarnegara vice regent",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/dieng-gi.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "Indonesia's Ministry of Law intellectual-property directorate named Dieng the pilot for GI Tourism and said a soft opening is planned for October 2026.",
+        "Officials tested the route on 23 September with Banjarnegara and Wonosobo authorities.",
+        "The report identifies Carica Dieng, Purwaceng Dieng, and Dieng highland Arabica coffee as registered geographical-indication products."
+      ],
+      "limitations": [
+        "No exact October opening date or finished visitor itinerary is given.",
+        "Do not describe the route as already open or promise improved access, welfare, or conservation outcomes.",
+        "This is an official-led launch announcement, so keep the item practical and avoid promotional claims."
+      ],
+      "duplicateCheck": "No Dieng or GI Tourism item found in the three repository surfaces.",
+      "decisionReason": "A dated route test and near-term destination product can change October plans; the official claim is narrow enough to report without marketing language.",
+      "schemaTopic": "transport"
+    },
+    {
+      "id": "south-africa-white-rhino-relocations",
+      "status": "accepted",
+      "score": 3,
+      "country": "South Africa",
+      "editorialCategory": "nature",
+      "title": "New reported status of African Parks' 2,000-rhino relocation programme",
+      "publicationDate": "2026-09-23 according to the radar feed",
+      "reportingCutoff": "End of April 2026 for the programme totals",
+      "sourcesRead": [
+        {
+          "url": "https://www.nationalgeographic.com/animals/article/south-africa-white-rhino-rescue",
+          "role": "Original National Geographic field feature and programme status report",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/south-africa-rhinos.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "African Parks bought the private herd of about 2,000 southern white rhinos in 2023 and set a ten-year relocation plan.",
+        "By the end of April 2026, the programme had moved 745 rhinos to the DRC, Rwanda, Uganda, and 17 South African reserves.",
+        "The report says 12 moved rhinos had been poached, 50 calves had been born, all 20 new populations were stable and growing, and none of the 56 Garamba rhinos had been lost.",
+        "The programme says it has identified protected destinations for an eventual 3,000 animals, with seven years remaining."
+      ],
+      "limitations": [
+        "The fresh element is the 23 September original status report, not a 23 September translocation event.",
+        "Attribute totals and outcomes to National Geographic/African Parks; do not turn a programme snapshot into an independently audited success claim.",
+        "Poaching, security, funding, and capacity risks remain material."
+      ],
+      "duplicateCheck": "No item on this herd or the 745-rhino status total found in the three repository surfaces.",
+      "decisionReason": "A substantial new reported checkpoint with concrete outcomes, risks, and a multi-year horizon; useful if framed explicitly as a status report.",
+      "schemaTopic": "nature"
+    },
+    {
+      "id": "new-zealand-predator-free-dunedin",
+      "status": "alternate",
+      "score": 3,
+      "country": "New Zealand",
+      "editorialCategory": "nature",
+      "title": "Predator Free Dunedin expands pest control around Orokonui",
+      "publicationDate": "2026-09-23",
+      "eventDate": "Expansion announced as imminent; the underlying three-year funding was received in July 2026",
+      "sourcesRead": [
+        {
+          "url": "https://www.rnz.co.nz/news/environment/1541308/new-frontier-as-predator-free-dunedin-sets-sights-on-more-pests",
+          "role": "Public-service media with direct interviews from Predator Free Dunedin, Orokonui, and Halo Project staff",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/dunedin-pests.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "Predator Free Dunedin received NZ$3.9 million over three years from the Department of Conservation in July.",
+        "The expansion targets mustelids, rats, rabbits, and feral cats between Port Chalmers, Orokonui, Aramoana, and Blueskin Bay.",
+        "Methods include rabbit shooting, toxins, live capture, AI-assisted traps, an upgraded network of about 100 automatic traps, and training a scat-detection dog named Pepper.",
+        "Kakaruia are being seen outside the fence, but the sanctuary has not yet observed successful nesting there."
+      ],
+      "limitations": [
+        "The work is starting/planned; do not say the target pests have been eliminated.",
+        "Do not say kakaruia or kākā are already breeding successfully outside Orokonui.",
+        "No visitor access change is established."
+      ],
+      "duplicateCheck": "No Predator Free Dunedin or Orokonui expansion item found in the three repository surfaces.",
+      "decisionReason": "Passes at 3/5, but a third nature item would violate the two-per-rubric cap.",
+      "schemaTopic": "nature"
+    },
+    {
+      "id": "us-lassen-fire-amoeba",
+      "status": "alternate",
+      "score": 3,
+      "country": "United States",
+      "editorialCategory": "science-discovery",
+      "title": "Heat-tolerant amoeba from Lassen Volcanic National Park",
+      "publicationDate": "2026-09-22",
+      "sourcesRead": [
+        {
+          "url": "https://www.newscientist.com/article/2590054-fire-amoeba-breaks-heat-tolerance-record-for-complex-life/",
+          "role": "Science media",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/fire-amoeba.txt"
+        },
+        {
+          "url": "https://doi.org/10.1016/j.cell.2026.08.043",
+          "role": "Primary Cell paper DOI; landing page resolved but full metadata was not extractable in this pass",
+          "localEvidence": ".run/2026-09-24/sources/fire-amoeba-cell.html"
+        }
+      ],
+      "verifiedFacts": [
+        "Incendiamoeba cascadensis was collected in Lassen Volcanic National Park.",
+        "In laboratory tests at 17 temperatures it grew from 40–63°C, with an optimum of 55–57°C; it lost movement above 64°C and cysts were inactivated above 70°C."
+      ],
+      "limitations": [
+        "Laboratory tolerance does not describe a visitor hazard.",
+        "Not selected because the stronger California turtle item already occupies the United States slot."
+      ],
+      "decisionReason": "Passes score 3 on science interest, but loses on geographic balance."
+    },
+    {
+      "id": "ecuador-galapagos-atlas",
+      "status": "deferred",
+      "score": 3,
+      "country": "Ecuador",
+      "editorialCategory": "science-resource",
+      "title": "Second edition of the Galapagos Atlas",
+      "publicationDate": "2026-09-23 for Mongabay",
+      "sourcesRead": [
+        {
+          "url": "https://news.mongabay.com/short-article/2026/09/new-galapagos-atlas-charts-the-islands-biodiversity-and-the-mysteries-that-remain/",
+          "role": "Science/conservation media",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/galapagos-atlas.txt"
+        },
+        {
+          "url": "https://www.darwinfoundation.org/en/documents/920/v2-Atlas20262508-digital.pdf",
+          "role": "Primary 159-page Charles Darwin Foundation atlas, second edition 2026",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/galapagos-atlas-pdf.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "The atlas covers 68 species or species groups and credits 87 authors and artists.",
+        "It reports about 1,500 introduced species in Galapagos, just over 60 classified as invasive."
+      ],
+      "limitations": [
+        "The PDF creation metadata is 25 August 2026 and neither source establishes a launch inside the seven-day window."
+      ],
+      "decisionReason": "Strong evergreen resource but current-event freshness is unproven."
+    },
+    {
+      "id": "canada-banff-visitor-centre-concept",
+      "status": "rejected",
+      "score": 2,
+      "country": "Canada",
+      "editorialCategory": "destination-access",
+      "title": "Banff visitor-centre redesign concept",
+      "publicationDate": "2026-09-22",
+      "sourcesRead": [
+        {
+          "url": "https://www.theglobeandmail.com/business/industry-news/property-report/article-visitor-experience-gets-makeover-at-banff-national-park/",
+          "role": "Quality media with Parks Canada and architect interviews",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/banff-makeover.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "A joint Paul Raff Studio/Kengo Kuma concept won the design competition.",
+        "Parks Canada received C$8 million in 2022 for conceptual design."
+      ],
+      "limitations": [
+        "Parks Canada still has to refine the concept and consider funding, approvals, and further design; no construction or opening date is established."
+      ],
+      "decisionReason": "A design-stage property feature that does not yet change a trip."
+    },
+    {
+      "id": "thailand-krabi-prototype",
+      "status": "rejected",
+      "score": 1,
+      "country": "Thailand",
+      "editorialCategory": "destination-marketing",
+      "title": "Krabi Prototype promotional page",
+      "publicationDate": "2026-09-22",
+      "sourcesRead": [
+        {
+          "url": "https://www.tatnews.org/2026/09/krabi-prototype/",
+          "role": "Official tourism-board page",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/krabi-prototype.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "The fetched page is dated 22 September 2026."
+      ],
+      "limitations": [
+        "The extracted page body surfaced unrelated VIJIT Thailand promotional copy and did not establish a concrete new access rule, opening, or durable visitor change."
+      ],
+      "decisionReason": "Marketing without a separately verifiable event that changes travel plans."
+    },
+    {
+      "id": "malaysia-upper-baram-logging",
+      "status": "rejected",
+      "score": 2,
+      "country": "Malaysia",
+      "editorialCategory": "conservation-conflict",
+      "title": "Logging continues in the proposed Baram Peace Park area",
+      "publicationDate": "2026-09-23",
+      "sourcesRead": [
+        {
+          "url": "https://news.mongabay.com/2026/09/logging-still-threatens-bornean-forest-once-envisioned-as-an-indigenous-led-peace-park/",
+          "role": "Conservation media based on NGO report, community observation, satellite imagery, and responses",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/borneo-logging.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "A 170,000-hectare timber concession granted in 2024 overlaps conservation and cultural sites within the earlier 283,500-hectare park proposal.",
+        "The report says logging continues, but much of its evidence is from 2024–2025."
+      ],
+      "limitations": [
+        "The underlying report launch was 27 August, outside the weekly window; no direct visitor access change is established."
+      ],
+      "decisionReason": "Important reporting, but the event is not fresh enough for this daily batch and travel utility is indirect."
+    },
+    {
+      "id": "peru-yaku-pacha-restoration",
+      "status": "rejected",
+      "score": 2,
+      "country": "Peru",
+      "editorialCategory": "conservation-operation",
+      "title": "High-Andes wetland and Polylepis restoration",
+      "publicationDate": "2026-09-23",
+      "sourcesRead": [
+        {
+          "url": "https://news.mongabay.com/2026/09/in-perus-high-andes-restoring-ancient-ecosystems-could-help-protect-water-security/",
+          "role": "Conservation feature with project interviews",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/peru-restoration.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "The project began in 2025; 30,000 Polylepis seedlings were planted that year and a 16-hectare wetland is being restored.",
+        "The project itself says reforestation results can take about ten years."
+      ],
+      "limitations": [
+        "No fresh measured restoration result is reported; monitoring is still being developed."
+      ],
+      "decisionReason": "A worthwhile long-form project, but not a new weekly result or change."
+    },
+    {
+      "id": "nepal-conservation-generation",
+      "status": "rejected",
+      "score": 2,
+      "country": "Nepal",
+      "editorialCategory": "conservation-analysis",
+      "title": "Twenty-year assessment of Nepal's conservation leadership",
+      "publicationDate": "2026-09-23",
+      "sourcesRead": [
+        {
+          "url": "https://news.mongabay.com/2026/09/two-decades-on-nepals-conservationists-search-for-new-dream-generation/",
+          "role": "Conservation analysis",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/nepal-conservation.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "The article reports tiger numbers rising from 121 in 2010 to 429 in 2026 and forest cover above 46%.",
+        "Its frame is the twentieth anniversary of the 2006 helicopter crash that killed conservation leaders."
+      ],
+      "limitations": [
+        "The article is an anniversary analysis, not one clearly dated new event or travel change."
+      ],
+      "decisionReason": "Strong context but too broad for a concise fresh-news item."
+    },
+    {
+      "id": "africa-nile-source-expedition",
+      "status": "rejected",
+      "score": 2,
+      "country": "Multiple African countries",
+      "editorialCategory": "expedition",
+      "title": "Expedition proposes a revised Nile source",
+      "publicationDate": "2026-09-23 according to the radar feed",
+      "sourcesRead": [
+        {
+          "url": "https://www.nationalgeographic.com/environment/article/wilderness-project-africa-peatlands-nile-river-source-steve-boyes",
+          "role": "Original expedition feature",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/nile-source.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "The feature describes an expedition and a proposed revised source/length interpretation for the Nile."
+      ],
+      "limitations": [
+        "The claimed measurement is expedition reporting rather than a settled independent scientific result; no single-country fit."
+      ],
+      "decisionReason": "Interesting feature, but too provisional and geographically diffuse for this batch."
+    },
+    {
+      "id": "southern-africa-bearded-vulture",
+      "status": "rejected",
+      "score": 2,
+      "country": "South Africa and Lesotho",
+      "editorialCategory": "conservation-operation",
+      "title": "Bred 4 the Wild bearded-vulture programme",
+      "publicationDate": "2026-09-23 according to the radar feed",
+      "sourcesRead": [
+        {
+          "url": "https://www.nationalgeographic.com/animals/article/saving-african-bearded-vulture-shannon-hoffman",
+          "role": "Original conservation profile",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/bearded-vulture.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "The programme began in 2015 and expects to have collected 32 birds by the end of 2026 for future breeding and release."
+      ],
+      "limitations": [
+        "No release or successful new breeding milestone is reported; the key total remains a forecast."
+      ],
+      "decisionReason": "Compelling profile, but not a completed fresh event."
+    },
+    {
+      "id": "uganda-gorilla-one-health",
+      "status": "rejected",
+      "score": 2,
+      "country": "Uganda",
+      "editorialCategory": "conservation-analysis",
+      "title": "Long-running One Health work around mountain gorillas",
+      "publicationDate": "2026-09-23 according to the radar feed",
+      "sourcesRead": [
+        {
+          "url": "https://www.nationalgeographic.com/animals/article/uganda-gorillas-human-diseases-gladys-kalema-zikusoka",
+          "role": "Original profile",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/uganda-gorillas.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "The feature describes a long-running public-health and gorilla-conservation model."
+      ],
+      "limitations": [
+        "No discrete weekly milestone or visitor-rule change was identified in the opened feature."
+      ],
+      "decisionReason": "Evergreen conservation profile rather than daily news."
+    },
+    {
+      "id": "arctic-lost-lakes-map",
+      "status": "rejected",
+      "score": 3,
+      "country": "Arctic, multiple countries",
+      "editorialCategory": "science-resource",
+      "title": "Lost Lakes interactive Arctic map",
+      "publicationDate": "2026-09-23",
+      "sourcesRead": [
+        {
+          "url": "https://news.mongabay.com/short-article/2026/09/4-million-lakes-in-lost-lakes-map-offer-clues-to-arctic-permafrost/",
+          "role": "Science media",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/lost-lakes.txt"
+        },
+        {
+          "url": "https://lostlakes.arcticdata.io/",
+          "role": "Primary interactive tool",
+          "http": 200
+        }
+      ],
+      "verifiedFacts": [
+        "The free map covers changes in about four million Arctic lakes since 2016 and is intended for near-real-time monitoring."
+      ],
+      "limitations": [
+        "The exact public launch date was not established and the subject cannot honestly fill a distinct country slot."
+      ],
+      "decisionReason": "Passes interest threshold but does not meet this batch's five-country requirement."
+    },
+    {
+      "id": "global-bat-phylogeny",
+      "status": "rejected",
+      "score": 3,
+      "country": "Global research",
+      "editorialCategory": "science-discovery",
+      "title": "Genome and fossil study revises bat origins",
+      "publicationDate": "2026-09-23",
+      "sourcesRead": [
+        {
+          "url": "https://www.livescience.com/animals/land-mammals/earths-first-bats-didnt-come-from-where-we-thought-landmark-genetic-study-reveals",
+          "role": "Science media with author interviews",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/first-bats.txt"
+        },
+        {
+          "url": "https://doi.org/10.1038/s41586-026-11007-3",
+          "role": "Primary Nature paper",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/bats-nature.html"
+        }
+      ],
+      "verifiedFacts": [
+        "The study combines 103 bat genomes and 44 fossils.",
+        "It places bat origins in Europe around 65 million years ago and early flight/echolocation around 50 million years ago."
+      ],
+      "limitations": [
+        "This is global evolutionary history with limited immediate travel utility and no honest single-country assignment."
+      ],
+      "decisionReason": "Scientifically fresh, but weaker for a five-country travel-news batch than the selected stories."
+    },
+    {
+      "id": "uk-barbie-pig-documentary",
+      "status": "rejected",
+      "score": 1,
+      "country": "United Kingdom release / Pacific subject",
+      "editorialCategory": "entertainment",
+      "title": "Barbie Pig documentary release",
+      "publicationDate": "2026-09-22",
+      "sourcesRead": [
+        {
+          "url": "https://www.theguardian.com/environment/2026/sep/22/meet-barbie-pig-new-documentary-reveals-the-wonders-of-life-on-the-pacific-seabed",
+          "role": "Film/environment feature",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/barbie-pig.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "The story promotes a documentary scheduled for UK cinemas on 2 October."
+      ],
+      "limitations": [
+        "The fresh event is a film release, not a wildlife discovery or destination change."
+      ],
+      "decisionReason": "Entertainment promotion falls outside the news rubric."
+    },
+    {
+      "id": "uk-drought-wildlife",
+      "status": "alternate",
+      "score": 3,
+      "country": "United Kingdom",
+      "editorialCategory": "environmental-conditions",
+      "title": "Government warns current drought effects will last years",
+      "publicationDate": "2026-09-21",
+      "sourcesRead": [
+        {
+          "url": "https://www.theguardian.com/environment/2026/sep/21/wildlife-drought-uk-environmental-incidents",
+          "role": "Quality media quoting National Drought Group, Environment Agency, and Natural England",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/uk-drought-wildlife.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "England reservoir storage was reported 19.7% below seasonal average.",
+        "349 environmental incidents had been recorded, versus 321 in 2025; the Environment Agency said 120% of average rain over seven months would be needed for nationwide drought recovery by spring."
+      ],
+      "limitations": [
+        "Conditions are volatile and the article does not establish a specific visitor closure.",
+        "Not selected because the Cheshire spider is a cleaner UK first."
+      ],
+      "decisionReason": "Meets score 3 as consequential conditions reporting, but loses on specificity and country balance."
+    },
+    {
+      "id": "us-california-salmon-eggs",
+      "status": "rejected",
+      "score": 2,
+      "country": "United States",
+      "editorialCategory": "environmental-conditions",
+      "title": "Warm Sacramento River threatens Chinook eggs",
+      "publicationDate": "2026-09-22",
+      "sourcesRead": [
+        {
+          "url": "https://www.latimes.com/environment/story/2026-09-22/california-salmon-trump-shasta-dam",
+          "role": "Regional quality media with agency and advocate reporting",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/california-salmon.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "State biologists estimated on 4 September that about 20% of monitored eggs might not survive; the river later warmed further."
+      ],
+      "limitations": [
+        "The estimate is dated, prospective, and embedded in a contested water-policy story; no final loss or visitor change is established."
+      ],
+      "decisionReason": "Too uncertain and less useful than the selected California nesting first."
+    },
+    {
+      "id": "us-california-oak-volunteer",
+      "status": "rejected",
+      "score": 2,
+      "country": "United States",
+      "editorialCategory": "human-interest",
+      "title": "Volunteer oak propagation in Southern California",
+      "publicationDate": "2026-09-19",
+      "sourcesRead": [
+        {
+          "url": "https://www.latimes.com/environment/story/2026-09-19/one-man-has-planted-10000-native-oak-trees-across-southern-california",
+          "role": "Regional profile",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/california-oaks.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "The subject has distributed roughly 10,000 oak seedlings and has funded the work for about ten years."
+      ],
+      "limitations": [
+        "No discrete event inside the current weekly window beyond publication of the profile."
+      ],
+      "decisionReason": "Good human-interest feature, weak daily-news freshness."
+    },
+    {
+      "id": "global-super-el-nino-mortality",
+      "status": "rejected",
+      "score": 2,
+      "country": "Global",
+      "editorialCategory": "climate-forecast",
+      "title": "Projected heat mortality from a strong El Niño",
+      "publicationDate": "2026-09-23",
+      "sourcesRead": [
+        {
+          "url": "https://www.aljazeera.com/features/2026/9/23/scientists-warn-super-el-nino-could-cause-450000-deaths-should-we-worry",
+          "role": "Explainer on a Climate Impact Lab forecast",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/el-nino.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "The report projects up to 451,000 excess heat-related deaths from June 2026 through February 2027 and says its methodology is to be peer-reviewed later."
+      ],
+      "limitations": [
+        "It is a global model forecast, methodology is not yet peer-reviewed, and TravelTribe already published 2026-09-04-el-nino-very-strong-2027.md."
+      ],
+      "decisionReason": "Direct topical duplicate plus unresolved model uncertainty."
+    },
+    {
+      "id": "nepal-flydubai-pokhara",
+      "status": "accepted",
+      "score": 4,
+      "country": "Nepal",
+      "editorialCategory": "transport",
+      "schemaTopic": "transport",
+      "title": "Regular Dubai–Pokhara flydubai service began on 23 September",
+      "publicationDate": "2026-09-23 for confirmation of the inaugural flight",
+      "eventDate": "2026-09-23",
+      "sourcesRead": [
+        {
+          "url": "https://trade.ntb.gov.np/?p=17895",
+          "role": "Primary Nepal Tourism Board announcement of the route and 23 September start; published in June 2026"
+        },
+        {
+          "url": "https://news.flydubai.com/flydubai-announces-new-daily-service-to-pokhara-expanding-connectivity-to-nepal",
+          "role": "Primary airline announcement of the planned daily service, Terminal 3, and Emirates codeshare",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/nepal-flydubai-official.txt"
+        },
+        {
+          "url": "https://kathmandupost.com/money/2026/09/23/flydubai-begins-regular-international-flights-from-pokhara",
+          "role": "Fresh independent confirmation that the first scheduled flight actually landed on 23 September",
+          "http": 200,
+          "localEvidence": ".run/2026-09-24/sources/nepal-flydubai-start.txt"
+        }
+      ],
+      "verifiedFacts": [
+        "The first scheduled commercial flydubai service from Dubai landed at Pokhara International Airport at 18:18 on 23 September 2026.",
+        "Kathmandu Post reported a Boeing 737 MAX 8 with 113 arriving passengers and 153 booked for the 19:15 return departure.",
+        "The launch announcement described a daily Terminal 3 service under an Emirates codeshare."
+      ],
+      "limitations": [
+        "The route announcement was made in June; the fresh event is the completed inaugural flight on 23 September.",
+        "The airline announced a planned daily service, but current operational frequency and availability on a particular date must be checked before purchase.",
+        "Avoid repeating promotional claims about cheaper fares or hundreds of connections unless independently checked."
+      ],
+      "duplicateCheck": "No Dubai–Pokhara, Pokhara flight, or flydubai item found in src/content/news, news/log.jsonl, or news/reviews.",
+      "decisionReason": "A completed new international route changes access to Nepal immediately and is confirmed by both primary announcements and the actual inaugural arrival."
+    },
+    {
+      "id": "us-visa-online-presence",
+      "status": "accepted",
+      "score": 4,
+      "country": "United States",
+      "editorialCategory": "visa",
+      "schemaTopic": "visa",
+      "title": "U.S. expands online-presence review to I, TN, and TD visa applicants",
+      "publicationDate": "2026-09-18",
+      "effectiveDate": "2026-10-01",
+      "sourcesRead": [
+        {
+          "url": "https://travel.state.gov/content/travel/en/News/visas-news/announcement-of-expanded-screening-and-vetting-for-visa-applicants.html",
+          "role": "Primary U.S. Department of State visa announcement; read directly through the live web source",
+          "http": 200
+        }
+      ],
+      "verifiedFacts": [
+        "From 1 October 2026, U.S. online-presence review expands to I visas for foreign media representatives and TN/TD visas for USMCA professionals and their dependants.",
+        "Applicants in those three categories are instructed to set every social-media profile to public or open.",
+        "The official page separately lists categories already subject to the review; the new change is limited to I, TN, and TD."
+      ],
+      "limitations": [
+        "For Russian readers the practical audience is chiefly applicants for I media visas; TN/TD are tied to USMCA professionals and dependants.",
+        "Do not generalise the 1 October expansion to tourist B visas or all U.S. visa applicants.",
+        "The article needs future-rule lifecycle fields with effectiveDate 2026-10-01 and an explicit reviewOn date."
+      ],
+      "duplicateCheck": "No online-presence, public-social-profile, or I/TN/TD visa item found in src/content/news, news/log.jsonl, or news/reviews.",
+      "decisionReason": "An official, effective-dated application requirement that changes preparation for a niche but real group of travellers; 4/5 under the rubric."
+    }
+  ],
+  "schemaTopicCounts": {
+    "nature": 2,
+    "transport": 2,
+    "visa": 1
+  },
+  "selectionCorrection": "Corrected after discovering that conservation is part of the nature rubric; internal subcategories cannot bypass the maximum of two items per rubric."
+}

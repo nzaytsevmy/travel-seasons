@@ -1,29 +1,31 @@
 ---
 title: "Токатидакэ: подъём на вулкан закрыт, Сироганэ-онсэн работает"
-date: 2026-09-12
-checked: 2026-09-23
-reviewOn: 2026-09-24
-added: 2026-09-15
+date: "2026-09-12"
+checked: "2026-09-24"
+reviewOn: "2026-09-25"
+added: "2026-09-15"
 topic: transport
 impact: medium
 score: 4
-authoredBy: "claude-opus-5"
-reviewRef: "news/reviews/2026-09-15-tokachidake-level-3-shirogane-open.json"
-photoQuery: "Mount Tokachi Hokkaido volcano crater"
+authoredBy: codex-gpt-6
+reviewRef: news/reviews/2026-09-15-tokachidake-level-3-shirogane-open.json
+photoQuery: Mount Tokachi Hokkaido volcano crater
 tldr: "12 сентября 2026 года обсерватория в Саппоро подняла уровень опасности вулкана Токатидакэ на Хоккайдо со второго до третьего: подъём на гору закрыт, срок не назван. В радиусе около 3 км от кратера возможен выброс крупных камней. Горячие источники Сироганэ и жилые районы Биэя в запретную зону не входят, Сироганэ-онсэн работает как обычно."
 countries:
   - japan-hokkaido
 sources:
   - name: Хоккайдское бюро Минприроды Японии, 14.09.2026 — повышение уровня опасности Токатидакэ с 2 до 3; проверено 19.09.2026
     url: https://hokkaido.env.go.jp/emergency/emergency_00004.html
-  - name: Администрация посёлка Биэй — зона ограничения, статус Сироганэ-онсэн, хронология активности; проверено 19.09.2026
+  - name: Администрация посёлка Биэй — зона ограничения, статус Сироганэ-онсэн, хронология активности; проверено 24.09.2026
     url: https://town.biei.hokkaido.jp/emergency/tokachidake.html
-image: "./_images/2026-09-15-tokachidake-level-3-shirogane-open.jpg"
-imageAlt: "Заснеженный массив Токатидакэ на Хоккайдо весной; архивный кадр, не сентябрь 2026 года"
-imageCredit: "Bigunitbigdaddy"
-imageLicense: "общественное достояние"
-imageLicenseUrl: "https://creativecommons.org/publicdomain/mark/1.0/"
-imageSource: "https://commons.wikimedia.org/wiki/File:Mount_Tokachi_02.JPG"
+  - name: JMA — действующий бюллетень Токатидакэ, 21.09.2026, 16:00 JST; проверено 24.09.2026
+    url: https://www.data.jma.go.jp/vois/data/report/activity_info/108.html
+image: ./_images/2026-09-15-tokachidake-level-3-shirogane-open.jpg
+imageAlt: Заснеженный массив Токатидакэ на Хоккайдо весной; архивный кадр, не сентябрь 2026 года
+imageCredit: Bigunitbigdaddy
+imageLicense: общественное достояние
+imageLicenseUrl: https://creativecommons.org/publicdomain/mark/1.0/
+imageSource: https://commons.wikimedia.org/wiki/File:Mount_Tokachi_02.JPG
 ---
 
 12 сентября в 9:30 обсерватория Японского метеоагентства в Саппоро перевела Токатидакэ с уровня 2 на уровень 3. Для путешественника разница принципиальная: на втором уровне ограничивают только окрестности кратера, на третьем закрывают подъём на гору. В радиусе примерно 3 км от кратера 62-2 возможен выброс крупных камней по баллистической траектории, а по ветру может сыпать пепел и мелкие камни. Срок ограничения не объявлен.

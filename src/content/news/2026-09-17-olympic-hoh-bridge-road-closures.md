@@ -1,30 +1,32 @@
 ---
 title: "Олимпик: мост через Хох закроют, лес останется доступен"
-date: 2026-09-15
-added: 2026-09-17
-checked: 2026-09-17
-reviewOn: 2026-09-24
+date: "2026-09-15"
+added: "2026-09-17"
+checked: "2026-09-24"
+reviewOn: "2026-09-25"
 topic: transport
 impact: high
 score: 4
-authoredBy: "codex-gpt-6"
-reviewRef: "news/reviews/2026-09-17-olympic-hoh-bridge-road-closures.json"
-photoQuery: "Hoh Rain Forest Olympic National Park"
-tldr: "На западе полуострова Олимпик мост через Хох на трассе 101 перекрывают на ремонт. Первое непрерывное закрытие — с 24 по 29 сентября 2026 года. Дождевой лес Хох останется доступен со стороны Форкса, но проехать от него на юг к Калалоку привычной дорогой будет нельзя: объезд идёт вокруг восточной части полуострова."
+authoredBy: codex-gpt-6
+reviewRef: news/reviews/2026-09-17-olympic-hoh-bridge-road-closures.json
+photoQuery: Hoh Rain Forest Olympic National Park
+tldr: "На западе полуострова Олимпик мост через Хох на трассе 101 планируют закрыть на ремонт. Первое непрерывное закрытие — с 24 по 29 сентября 2026 года. Дождевой лес Хох останется доступен со стороны Форкса, но проехать от него на юг к Калалоку привычной дорогой будет нельзя: объезд идёт вокруг восточной части полуострова."
 countries:
   - usa
 sources:
-  - name: National Park Service, обновлено 15.09.2026 — график закрытия моста и подъезды к районам парка; проверено 17.09.2026
+  - name: National Park Service, обновлено 15.09.2026 — график закрытия моста и подъезды к районам парка; проверено 24.09.2026
     url: https://www.nps.gov/olym/planyourvisit/hwy-101-closure-at-hoh-river-bridge.htm
-image: "./_images/2026-09-17-olympic-hoh-bridge-road-closures.jpg"
-imageAlt: "Покрытые мхом деревья в дождевом лесу Хох; иллюстрация места, не снимок ремонтируемого моста"
-imageCredit: "jhvanwa"
-imageLicense: "CC0"
-imageLicenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/deed.en/"
-imageSource: "https://commons.wikimedia.org/w/index.php?curid=147061211"
+  - name: WSDOT — проект ремонта Hoh River Bridge и график закрытий; проверено 24.09.2026
+    url: https://wsdot.wa.gov/construction-planning/search-projects/us-101-hoh-river-bridge-emergency-repair
+image: ./_images/2026-09-17-olympic-hoh-bridge-road-closures.jpg
+imageAlt: Покрытые мхом деревья в дождевом лесу Хох; иллюстрация места, не снимок ремонтируемого моста
+imageCredit: jhvanwa
+imageLicense: CC0
+imageLicenseUrl: https://creativecommons.org/publicdomain/zero/1.0/deed.en/
+imageSource: https://commons.wikimedia.org/w/index.php?curid=147061211
 ---
 
-National Park Service опубликовала график ремонта моста через реку Хох к югу от Форкса. До 22 сентября действуют ночные перекрытия с 22:30 до 05:30. Затем движение остановят непрерывно: 24 сентября в 05:00 — 29 сентября в 17:00. Все часы местные. Закрытия предусмотрены и в октябре.
+National Park Service опубликовала график ремонта моста через реку Хох к югу от Форкса. Первое непрерывное закрытие запланировано: 24 сентября в 05:00 — 29 сентября в 17:00. Все часы местные. Закрытия предусмотрены и в октябре.
 
 Мост находится на сквозной трассе 101. Дорога к дождевому лесу Хох со стороны Форкса остаётся доступной на протяжении ремонта. Поэтому отменять посещение леса только из-за слова «Хох» в сообщении о перекрытии не требуется. Ограничение разрывает западный проезд между северной и южной частями полуострова.
 
