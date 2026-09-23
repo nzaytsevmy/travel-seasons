@@ -1,8 +1,8 @@
 ---
 title: "Игуасу открыт, но мостики к Глотке Дьявола сняты"
 date: 2026-07-30
-checked: 2026-09-18
-reviewOn: 2026-09-21
+checked: 2026-09-23
+reviewOn: 2026-09-25
 authoredBy: "codex-gpt-6"
 reviewRef: "news/reviews/2026-07-30-iguazu-devils-throat-boardwalk.json"
 added: 2026-08-01

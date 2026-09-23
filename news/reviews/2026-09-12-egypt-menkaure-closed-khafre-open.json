@@ -2,36 +2,35 @@
   "schemaVersion": 1,
   "slug": "2026-09-12-egypt-menkaure-closed-khafre-open",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review)",
-  "reviewedAt": "2026-09-18",
-  "sha256": "5378cb312cde8b51327c480f31f5a2d3e592e950a4e3f27dc750540c0c7b36ee",
-  "rationale": "Независимая lifecycle-аттестация по свежему чтению 18.09.2026. Официальный релиз MoTA от 10 сентября заново прочитан: совет одобрил открытие Хефрена и закрытие Микерина для обслуживания. Даты фактической смены доступа и окончания работ нет. Осторожная формулировка заметки соответствует первичке. Оценка 4 остаётся моей: решение затрагивает посещение известного комплекса, но день фактической реализации не установлен; не повышаю до немедленного изменения доступа. Обратная замена только checked/reviewOn восстановила SHA исходника первого круга: тело, заголовок, источники и изображения не менялись. Это текущая проверка перечисленных событий и условий, а не новая полная ревизия исторической справки, фотографий или рендера.",
+  "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
+  "reviewedAt": "2026-09-23",
+  "sha256": "e2b353935fe40bb61a5e09d2c1523e7271996d0ed50b207417d9e63a289899f2",
+  "rationale": "UNKNOWN по фактическому началу ротации. Решение совета SCA от 10 сентября одобряет открытие пирамиды Хефрена и закрытие пирамиды Микерина для ротационного обслуживания, но не называет дату исполнения. Формулировка «решили открыть/закрыть» остаётся точной; менять её на совершившийся статус нельзя. Отсутствие нового сообщения не доказывает ни начало, ни отсутствие ротации. Оценка 4 сохранена.",
   "risks": [
-    "Фактическая смена доступа 18 сентября не подтверждена. HTML списка новостей MoTA содержит оболочку без карточек; поиск не доказывает отсутствия новых решений.",
-    "Фотографии и внутренние ссылки в этом наборе из семи lifecycle-дельт заново не проверялись; унаследованные поля не являются доказательством их свежей проверки."
+    "Дата фактического начала ротации не установлена.",
+    "Нельзя заменять решение формулировками «открыли/закрыли» без нового официального подтверждения."
   ],
   "blockingIssues": [],
   "evidence": [
     {
       "url": "https://www.mota.gov.eg/ar/الأخبار-2-1-1/وزير-السياحة-والآثار-يترأس-اجتماع-مجلس-إدارة-المجلس-الأعلى-للآثار-20/",
-      "sourceDate": "2026-09-10",
-      "checkedOn": "2026-09-18",
-      "method": "Full saved source text independently read; exact fetch status recorded in sources-index.json",
-      "capture": ".run/2026-09-18/lifecycle-review/egypt-mota.txt"
+      "publishedOn": "2026-09-10",
+      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
+      "finding": "Официальный абзац подтверждает одобрение ротации, но не сообщает дату её фактического начала.",
+      "checkedOn": "2026-09-23"
     },
     {
       "url": "https://www.egyptindependent.com/egypt-announces-closure-of-the-pyramid-of-menkaure/",
-      "sourceDate": "2026-09-11",
-      "checkedOn": "2026-09-18",
-      "method": "Full saved source text independently read; exact fetch status recorded in sources-index.json",
-      "capture": ".run/2026-09-18/lifecycle-review/egypt-independent.txt",
-      "note": "Вторичный источник также перечитан."
+      "publishedOn": "2026-09-11",
+      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
+      "finding": "Разрешённое медиа подтверждает объявленное решение; совершившийся доступ из него не следует.",
+      "checkedOn": "2026-09-23"
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-09-21",
-    "reason": "Отдельное официальное сообщение о дате/фактическом начале ротации или окончании работ. 21 сентября — редакционный контроль неизвестной даты, не обещанный срок открытия.",
-    "decision": "KEEP_ANNOUNCEMENT_ONLY"
+    "reviewOn": "2026-09-25",
+    "reason": "Дата фактического начала ротации не установлена.",
+    "decision": "UNKNOWN_ROTATION_START"
   },
   "checks": {
     "metadataOnlyConfirmed": true,
@@ -41,7 +40,10 @@
     "tldrGate": {
       "ok": true
     },
-    "scope": "Current facts and exact metadata-only delta; no build, browser, publication, new photo or link audit"
+    "scope": "Ограниченный lifecycle-review 23.09: перечитан изменчивый статус, проза и прежняя фотоаттестация не исследовались заново; обновлены checked, reviewOn и SHA; без сборки и публикации.",
+    "capsuleWords": 47,
+    "bodyWords": 178,
+    "titleChars": 48
   },
   "evidenceReport": ".run/2026-09-18/lifecycle-review/review.json"
 }

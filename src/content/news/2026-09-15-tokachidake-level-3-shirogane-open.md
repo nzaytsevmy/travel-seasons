@@ -1,8 +1,8 @@
 ---
 title: "Токатидакэ: подъём на вулкан закрыт, Сироганэ-онсэн работает"
 date: 2026-09-12
-checked: 2026-09-19
-reviewOn: 2026-09-22
+checked: 2026-09-23
+reviewOn: 2026-09-24
 added: 2026-09-15
 topic: transport
 impact: medium

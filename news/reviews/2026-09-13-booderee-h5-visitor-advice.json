@@ -2,35 +2,27 @@
   "schemaVersion": 1,
   "slug": "2026-09-13-booderee-h5-visitor-advice",
   "score": 3,
-  "reviewer": "Codex (news_lifecycle_review)",
-  "reviewedAt": "2026-09-18",
-  "sha256": "e4ef2762192221d928ccbbe1b92b8660da31a67859cb77d9276f220222bc514b",
-  "rationale": "Независимая lifecycle-аттестация по свежему чтению 18.09.2026. Текущий официальный список новостей заново получен 18 сентября. Последняя карточка H5 от 11 сентября прямо сохраняет открытый парк. Подтверждены большая хохлатая крачка, дистанция, запись места/даты/времени и сообщение о нескольких животных на 1800 675 888. Оценка 3 остаётся моей: конкретное предупреждение о дикой природе с действием для посетителя, без закрытия парка или нового изменения поездки. Обратная замена только checked/reviewOn восстановила SHA исходника первого круга: тело, заголовок, источники и изображения не менялись. Это текущая проверка перечисленных событий и условий, а не новая полная ревизия исторической справки, фотографий или рендера.",
+  "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
+  "reviewedAt": "2026-09-23",
+  "sha256": "6a3c5bd9bf41e4448e2d25ee37f0a9257be2d8680e1f85579c8cdb1685fd1282",
+  "rationale": "KEEP. Parks Australia по-прежнему сообщает, что Будери остаётся открытым после выявления H5 у большой хохлатой крачки, и сохраняет рекомендации не трогать животных и сообщать о нескольких больных или погибших птицах. Текст соответствует опубликованной рекомендации. Это не аттестация каждой тропы и не заявление об окончании H5; нового объявления именно 23 сентября нет. Оценка 3 сохранена.",
   "risks": [
-    "Не проверены новые число случаев и подтип. Полный основной текст релиза открыт web и сохранён; его crawler-копия трёхдневная. Прямой свежий HTML списка новостей получен полностью.",
-    "Фотографии и внутренние ссылки в этом наборе из семи lifecycle-дельт заново не проверялись; унаследованные поля не являются доказательством их свежей проверки."
+    "Открытый парк не означает доступность каждого участка без отдельной текущей проверки.",
+    "Повторное чтение уведомления не доказывает прекращение H5 или отсутствие новых случаев."
   ],
   "blockingIssues": [],
   "evidence": [
     {
-      "url": "https://booderee.gov.au/news/",
-      "sourceDate": "Карточка 2026-09-11; получение 2026-09-18",
-      "checkedOn": "2026-09-18",
-      "method": "Full saved source text independently read; exact fetch status recorded in sources-index.json",
-      "capture": ".run/2026-09-18/lifecycle-review/booderee-news.txt"
-    },
-    {
       "url": "https://parksaustralia.gov.au/news/h5-bird-flu-detected-booderee-national-park/",
-      "sourceDate": "2026-09-11",
-      "checkedOn": "2026-09-18",
-      "method": "Web main-body extract; fetch limits recorded in web-extracts.json and sources-index.json",
-      "capture": ".run/2026-09-18/lifecycle-review/web-extracts.json",
-      "note": "Основной текст целиком в web-extracts.json. Прямой HTML оборвался и помечен failed-body."
+      "publishedOn": "2026-09-11",
+      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
+      "finding": "Подтверждены открытый парк, H5 у крачки, правила не трогать животных и телефон сообщения о нескольких больных или погибших животных.",
+      "checkedOn": "2026-09-23"
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-09-21",
-    "reason": "Уведомление Parks Australia/Будери о закрытии, новом режиме посещения или очаге. 21 сентября — контроль активного предупреждения после выходных.",
+    "reviewOn": "2026-09-25",
+    "reason": "Открытый парк не означает доступность каждого участка без отдельной текущей проверки.",
     "decision": "KEEP_PUBLISHED_ADVICE"
   },
   "checks": {
@@ -41,7 +33,10 @@
     "tldrGate": {
       "ok": true
     },
-    "scope": "Current facts and exact metadata-only delta; no build, browser, publication, new photo or link audit"
+    "scope": "Ограниченный lifecycle-review 23.09: перечитан изменчивый статус, проза и прежняя фотоаттестация не исследовались заново; обновлены checked, reviewOn и SHA; без сборки и публикации.",
+    "capsuleWords": 46,
+    "bodyWords": 172,
+    "titleChars": 51
   },
   "evidenceReport": ".run/2026-09-18/lifecycle-review/review.json"
 }

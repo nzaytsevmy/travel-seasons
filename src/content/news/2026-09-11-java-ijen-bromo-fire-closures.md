@@ -1,7 +1,7 @@
 ---
 title: "Бромо снова открыт; доступ к Иджену проверяют отдельно"
 date: 2026-09-10
-checked: "2026-09-19"
+checked: 2026-09-23
 added: 2026-09-11
 topic: transport
 impact: high
@@ -29,7 +29,7 @@ imageCredit: "Sam kawah ijen"
 imageLicense: "CC BY-SA"
 imageLicenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
 imageSource: "https://commons.wikimedia.org/w/index.php?curid=123743150"
-reviewOn: "2026-09-21"
+reviewOn: 2026-09-25
 ---
 
 Бромо снова принимает туристов с 19 сентября. Дирекция объявила об открытии после оценки обстановки на территории, пострадавшей от пожара. Прежнее полное закрытие, начавшееся 12 сентября, закончилось. Условия для билетов и посещения собраны в [обновлённой заметке о Бромо](/novosti/2026-09-14-bromo-all-entrances-closed/).
