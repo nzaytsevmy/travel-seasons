@@ -127,35 +127,9 @@ if [ "$MODE" = "text" ]; then
   exit 0
 fi
 
-# Все файлы и проекты из полной коллекции, последовательно, по одному worker.
-# 24.09.2026 даже 16 частей оставляли общий WebKit browser между разными
-# функциональными файлами; к trip-multi его GPU footprint достигал 2.8 ГиБ.
-# Новый процесс на каждый файл освобождает накопление между файлами.
-# Пиксельные тесты на Mac дополнительно изолируют каждый свой браузер.
-COLLECTION="${LOG}_pw_collection.json"
-MATCHES="${LOG}_pw_files.txt"
-if ! npx playwright test --list --reporter=json --workers=1 >"${COLLECTION}" 2>"${LOG}_pw_collection.err" \
-  || ! node scripts/playwright-file-batches.mjs "${COLLECTION}" >"${MATCHES}" \
-  || [ ! -s "${MATCHES}" ]; then
-  echo "✖ не удалось получить полную коллекцию Playwright — push заблокирован"
-  exit 1
-fi
-BATCH=0
-if ! while IFS= read -r TEST_MATCH || [ -n "$TEST_MATCH" ]; do
-  BATCH=$((BATCH + 1))
-  BATCH_LOG="${LOG}_pw_file_${BATCH}.log"
-  echo "  ▶ Playwright: файл ${BATCH}, все проекты, один worker"
-  if ! npx playwright test "$TEST_MATCH" --workers=1 >"${BATCH_LOG}" 2>&1; then
-    echo "✖ Playwright: ошибка или flaky — push заблокирован."
-    echo "  лог: ${BATCH_LOG} | отчёт: npm run check:visual:report"
-    exit 1
-  fi
-done <"${MATCHES}"; then
-  echo "✖ не удалось прочитать список файлов Playwright — push заблокирован"
-  exit 1
-fi
-if [ "$BATCH" -eq 0 ]; then
-  echo "✖ ни один файл Playwright не проверен — push заблокирован"
+if ! npx playwright test --workers=1 >${LOG}_pw.log 2>&1; then
+  echo "✖ Playwright: ошибка или flaky — push заблокирован."
+  echo "  лог: ${LOG}_pw.log | отчёт: npm run check:visual:report"
   exit 1
 fi
 

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './browser-fixture';
 
 /**
  * Прицельная проверка шапки.
@@ -71,11 +71,11 @@ test('5. все обещанные пункты на месте', async ({ page 
   expect(тексты.sort(), 'состав вложенных пунктов').toEqual([...ВНУТРИ].sort());
 });
 
-test('6. на сенсорном экране списки раскрываются нажатием', async ({ browser }) => {
+test('6. на сенсорном экране списки раскрываются нажатием', async ({ context }) => {
   // ⛔ Проверять это обычной страницей нельзя: там работает наведение, и
   //    Playwright наводит курсор перед нажатием — список успевает открыться
   //    сам. Берём устройство без наведения, как настоящий телефон.
-  const ctx = await browser.newContext({ hasTouch: true, isMobile: true,
+  const ctx = await context.browser()!.newContext({ hasTouch: true, isMobile: true,
     viewport: { width: 402, height: 850 } });
   const page = await ctx.newPage();
   await page.goto('/');

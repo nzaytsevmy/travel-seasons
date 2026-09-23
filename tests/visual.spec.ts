@@ -1,26 +1,4 @@
-import { test as base, expect } from '@playwright/test';
-
-// На Mac длинный общий WebKit-процесс накопил 2,2–2,6 ГиБ GPU-памяти:
-// Browser Guard остановил пять тестов 18.09.2026. Каждый визуальный тест
-// получает отдельный процесс; настройки контекста и все проверки прежние.
-// https://playwright.dev/docs/test-fixtures#overriding-fixtures
-const test = process.platform === 'darwin' ? base.extend<{}, { visualBrowserIsolation: boolean }>({
-  // Отдельный worker не держит браузер, оставшийся от других файлов тестов.
-  visualBrowserIsolation: [async ({}, use) => { await use(true); }, { scope: 'worker', auto: true }],
-  context: async ({ playwright, browserName }, use, testInfo) => {
-    const settings = testInfo.project.use;
-    const browser = await playwright[browserName].launch({
-      ...settings.launchOptions, headless: settings.headless, channel: settings.channel,
-    });
-    let context;
-    try {
-      context = await browser.newContext({ ...settings, ...settings.contextOptions });
-      await use(context);
-    } finally {
-      try { await context?.close(); } finally { await browser.close(); }
-    }
-  },
-}) : base;
+import { test, expect } from './browser-fixture';
 
 // Блокируем сторонние трекеры на КАЖДОМ тесте — чтобы Playwright не накручивал
 // Я.Метрику и Ahrefs (визиты с localhost попадали в реальную статистику).

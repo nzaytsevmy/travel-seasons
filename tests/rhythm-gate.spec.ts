@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './browser-fixture';
 import { readdirSync } from 'node:fs';
 import { checkFile, boldLeads, MAX_RITUAL_LEADS, MAX_MULTIDASH_PCT } from '../scripts/rhythm-gate.mjs';
 

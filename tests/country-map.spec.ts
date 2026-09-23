@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './browser-fixture';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -172,8 +172,8 @@ test(`8. ${slug}: пины и пункты списка мест совпада�
 // «слишком много линий… не делать такие повторения» — у каждой строки стояли
 // «Тип / Координаты / Карты»). Точка по-прежнему доходит до читателя без скриптов:
 // обе ссылки на карты несут координаты места. Их и проверяем — у каждого места.
-test('9. без JavaScript список мест и ссылки с координатами остаются на месте', async ({ browser }) => {
-  const ctx = await browser.newContext({ javaScriptEnabled: false });
+test('9. без JavaScript список мест и ссылки с координатами остаются на месте', async ({ context }) => {
+  const ctx = await context.browser()!.newContext({ javaScriptEnabled: false });
   const page = await ctx.newPage();
   await page.goto('/blog/turkey-guide-2026/', { waitUntil: 'domcontentloaded' });
   const r = await page.evaluate(() => ({

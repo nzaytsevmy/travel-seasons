@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './browser-fixture';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, statSync, readFileSync as readFileRaw } from 'node:fs';
 // @ts-ignore — модуль щита партнёрских ссылок без типов

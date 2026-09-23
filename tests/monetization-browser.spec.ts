@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './browser-fixture';
 
 async function freezeInsideAaWindow(page: import('@playwright/test').Page) {
   await page.addInitScript(() => {

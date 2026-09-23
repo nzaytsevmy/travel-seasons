@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from './browser-fixture';
 
 // До 30.07.2026 сохранённая поездка была одна: ключ tt_trip хранил объект, а не
 // список. Человек отмечал Перу, потом Турцию — и Перу молча исчезало. Это потеря

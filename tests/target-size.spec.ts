@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './browser-fixture';
 import { targetViolations } from '../scripts/target-size.mjs';
 
 const PAGES = ['/', '/countries/', '/visa/'];
