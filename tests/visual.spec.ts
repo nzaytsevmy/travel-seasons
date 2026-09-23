@@ -220,15 +220,21 @@ for (const page of PAGES) {
         img.fetchPriority = 'high';
       });
     });
-    // Прокрутим страницу постепенно — Intersection Observer triggers
-    await pwPage.evaluate(async () => {
-      for (let y = 0; y <= document.body.scrollHeight; y += 400) {
-        window.scrollTo(0, y);
-        await new Promise(r => setTimeout(r, 100));
-      }
-      window.scrollTo(0, 0);
-      await new Promise(r => setTimeout(r, 1500));
-    });
+    // У каталога все обложки — native img с src/srcset: eager выше и decode ниже
+    // проверяют каждую, включая последнюю вне экрана. Искусственная прокрутка
+    // всей ленты раздувает WebKit GPU >2 ГиБ даже на чистом main (24.09.2026).
+    // На остальных страницах scroll нужен для IntersectionObserver карты.
+    // Пиксельные снимки и overflow-проверки этим исключением не затронуты.
+    if (page.name !== 'blog-index') {
+      await pwPage.evaluate(async () => {
+        for (let y = 0; y <= document.body.scrollHeight; y += 400) {
+          window.scrollTo(0, y);
+          await new Promise(r => setTimeout(r, 100));
+        }
+        window.scrollTo(0, 0);
+        await new Promise(r => setTimeout(r, 1500));
+      });
+    }
     // Дополнительный wait — decode всех картинок которые получили src
     await pwPage.evaluate(async () => {
       const imgs = Array.from(document.querySelectorAll('img')) as HTMLImageElement[];
