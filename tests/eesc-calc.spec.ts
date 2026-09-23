@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from './browser-fixture';
 
 // Функциональный тест калькулятора 90/180. Ловит регресс: пересчёт должен идти
 // и по событию `change` (iOS Safari у date-пикера шлёт change, не всегда input),

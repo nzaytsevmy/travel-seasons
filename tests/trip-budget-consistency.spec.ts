@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './browser-fixture';
 import { DIRECTIONS } from '../src/data/directions.js';
 import { PRICES } from '../src/data/prices.js';
 

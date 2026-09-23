@@ -31,6 +31,12 @@ howto:
     - name: "Спланировать маршрут"
       text: "База Ереван 2-3 дня, дальше радиальные выезды: языческий храм Гарни и пещерный монастырь Гегард, озеро Севан с монастырём Севанаванк, зелёный Дилижан. На юг — Хор Вирап с видом на Арарат, Нораванк и Татев с длиннейшей канаткой."
 checks:
+  - date: 2026-09-23
+    what: "Контекстные партнёрские переходы и охват разделов с выбором"
+    changed: "Добавлены переходы к предложениям рядом с решениями внутри статьи."
+    sources:
+      - name: "Travelpayouts — контекст и точное назначение ссылок"
+        url: "https://academy.travelpayouts.com/courses/travelpayouts-101/how-to-post-affiliate-links-on-your-website-to-start-earning/"
   - date: 2026-09-07
     what: "Партнёрские ссылки на программы без броней"
     changed: "Сняты партнёрские ссылки, не давшие броней. Убраны: пакетные туры Travelata, eSIM Airalo, eSIM Drimsim, аренда машин EconomyBookings. За полгода по всему сайту эти программы не дали ни одной брони при 200+ живых кликах (сверка кассы 06.09.2026, решение Никиты 07.09.2026); текст и цены не менялись."
@@ -61,7 +67,7 @@ import PricingCards from '../../components/post/PricingCards.astro';
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 import CountryMap from '../../components/CountryMap.astro';
-import { TP_LINKS, aviasalesRoute, cherehapaCountry, cherehapaTravel, ostrovokCity } from '../../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, cherehapaCountry, cherehapaTravel, ostrovokCity, youtravelCountry } from '../../data/affiliate.js';
 import pricesCache from '../../data/prices-cache.json';
 
 {/* Цена в кнопке — из ежедневной выгрузки. Раньше стояло «от 9 000 ₽» руками,
@@ -316,6 +322,8 @@ export const insurance = cherehapaTravel('armenia_guide_2026');
 ## Татев и юг Армении — ехать ли дальше?
 
 **Если есть лишний день-два, юг Армении стоит того: там монастырь Татев и самая длинная в мире реверсивная канатка.** Это уже полноценное путешествие, а не выезд из города.
+
+<a href={youtravelCountry('armenia', 'armenia_south_tour')} rel="sponsored noopener">Сравнить туры по Армении</a> — проверьте, есть ли в программе Татев, ночёвки на юге и нужный вам транспорт.
 
 - **Татев** — средневековый монастырь на краю ущелья, к которому ведёт канатная дорога **«Крылья Татева»** длиной 5,7 км (занесена в Книгу рекордов). Дорога от Еревана дальняя (около 250 км), поэтому Татев обычно берут с ночёвкой или длинным туром.
 - **Нораванк** — монастырь из красного камня в узком каньоне, по пути на юг; один из самых живописных в стране.

@@ -1,26 +1,4 @@
-import { test as base, expect } from '@playwright/test';
-
-// На Mac длинный общий WebKit-процесс накопил 2,2–2,6 ГиБ GPU-памяти:
-// Browser Guard остановил пять тестов 18.09.2026. Каждый визуальный тест
-// получает отдельный процесс; настройки контекста и все проверки прежние.
-// https://playwright.dev/docs/test-fixtures#overriding-fixtures
-const test = process.platform === 'darwin' ? base.extend<{}, { visualBrowserIsolation: boolean }>({
-  // Отдельный worker не держит браузер, оставшийся от других файлов тестов.
-  visualBrowserIsolation: [async ({}, use) => { await use(true); }, { scope: 'worker', auto: true }],
-  context: async ({ playwright, browserName }, use, testInfo) => {
-    const settings = testInfo.project.use;
-    const browser = await playwright[browserName].launch({
-      ...settings.launchOptions, headless: settings.headless, channel: settings.channel,
-    });
-    let context;
-    try {
-      context = await browser.newContext({ ...settings, ...settings.contextOptions });
-      await use(context);
-    } finally {
-      try { await context?.close(); } finally { await browser.close(); }
-    }
-  },
-}) : base;
+import { test, expect } from './browser-fixture';
 
 // Блокируем сторонние трекеры на КАЖДОМ тесте — чтобы Playwright не накручивал
 // Я.Метрику и Ahrefs (визиты с localhost попадали в реальную статистику).
@@ -220,15 +198,21 @@ for (const page of PAGES) {
         img.fetchPriority = 'high';
       });
     });
-    // Прокрутим страницу постепенно — Intersection Observer triggers
-    await pwPage.evaluate(async () => {
-      for (let y = 0; y <= document.body.scrollHeight; y += 400) {
-        window.scrollTo(0, y);
-        await new Promise(r => setTimeout(r, 100));
-      }
-      window.scrollTo(0, 0);
-      await new Promise(r => setTimeout(r, 1500));
-    });
+    // У каталога все обложки — native img с src/srcset: eager выше и decode ниже
+    // проверяют каждую, включая последнюю вне экрана. Искусственная прокрутка
+    // всей ленты раздувает WebKit GPU >2 ГиБ даже на чистом main (24.09.2026).
+    // На остальных страницах scroll нужен для IntersectionObserver карты.
+    // Пиксельные снимки и overflow-проверки этим исключением не затронуты.
+    if (page.name !== 'blog-index') {
+      await pwPage.evaluate(async () => {
+        for (let y = 0; y <= document.body.scrollHeight; y += 400) {
+          window.scrollTo(0, y);
+          await new Promise(r => setTimeout(r, 100));
+        }
+        window.scrollTo(0, 0);
+        await new Promise(r => setTimeout(r, 1500));
+      });
+    }
     // Дополнительный wait — decode всех картинок которые получили src
     await pwPage.evaluate(async () => {
       const imgs = Array.from(document.querySelectorAll('img')) as HTMLImageElement[];

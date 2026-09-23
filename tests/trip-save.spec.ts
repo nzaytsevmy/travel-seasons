@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './browser-fixture';
 
 // Дашборд «Моя поездка» (/my/) собран полностью, но до 30.07.2026 был недостижим:
 // в собранном сайте ноль видимых ссылок на него, а единственная скрытая

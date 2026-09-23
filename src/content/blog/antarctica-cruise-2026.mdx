@@ -37,6 +37,12 @@ volatileFacts:
     reviewAfter: 2026-11-01
     fallback: "Пересчитать по курсу ЦБ на дату ревизии или оставить цену Quark в долларах без рублёвого эквивалента."
 checks:
+  - date: 2026-09-23
+    what: "Контекстные партнёрские переходы и охват разделов с выбором"
+    changed: "Добавлены переходы к предложениям рядом с решениями внутри статьи."
+    sources:
+      - name: "Travelpayouts — контекст и точное назначение ссылок"
+        url: "https://academy.travelpayouts.com/courses/travelpayouts-101/how-to-post-affiliate-links-on-your-website-to-start-earning/"
   - date: 2026-09-05
     what: "Личный опыт автора в проливе Дрейка: судно и цифра «30 человек из 150»"
     changed: "Автор шёл на паруснике «Эльдорадо», а не на круизном судне. Чужая цифра «на ресторан приходят 30 человек из 150» убрана: по слову автора, она не его."
@@ -77,6 +83,7 @@ checks:
       - name: "Сама статья: правка без новых фактов"
         url: "https://traveltribe.ru/blog/antarctica-cruise-2026/"
 ---
+import { ostrovokCountry } from '../../data/affiliate.js';
 import PricingCards from '../../components/post/PricingCards.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 
@@ -195,7 +202,7 @@ import AffiliateNote from '../../components/post/AffiliateNote.astro';
 
 Ушуая — самый южный город мира, население 80 тысяч. Корабли загружаются обычно с 14:00 до 17:00. **Прилетайте за 1–2 ночи до посадки** — это страховка от любых задержек, плюс сам город симпатичный, есть Бигль-канал, Музей конца света и пингвинья колония рядом (отдельный half-day тур, $80).
 
-Из отелей нормальные: Arakur Resort & Spa (топ, $300/ночь), Las Hayas (стандарт, $180), Hostería Los Alerces (бюджет, $90). Бронировать через [Ostrovok](https://ostrovok.ru/) — Booking в России недоступен.
+Из отелей нормальные: Arakur Resort & Spa (топ, $300/ночь), Las Hayas (стандарт, $180), Hostería Los Alerces (бюджет, $90). <a href={ostrovokCountry('argentina', 'antarctica_argentina_stay')} rel="sponsored noopener">Сравнить жильё в Аргентине</a> — Booking в России недоступен.
 
 ![Корабль в Бигль-канале на закате, Ушуая](./_images/antarctica-ushuaia.jpg)
 

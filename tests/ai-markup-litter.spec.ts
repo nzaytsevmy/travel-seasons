@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './browser-fixture';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { видимыйТекст } from './visible-text';

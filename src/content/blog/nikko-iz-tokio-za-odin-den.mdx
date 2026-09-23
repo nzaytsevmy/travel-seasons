@@ -30,6 +30,12 @@ volatileFacts:
     reviewAfter: 2026-10-21
     fallback: "Перепроверить цены и покрытие обоих Nikko Pass, время работы Тосёгу и закрытие Акэтидайра. Убрать устаревшие цены до сверки с оператором."
 checks:
+  - date: 2026-09-23
+    what: "Контекстные партнёрские переходы и охват разделов с выбором"
+    changed: "Добавлены переходы к предложениям рядом с решениями внутри статьи."
+    sources:
+      - name: "Travelpayouts — контекст и точное назначение ссылок"
+        url: "https://academy.travelpayouts.com/courses/travelpayouts-101/how-to-post-affiliate-links-on-your-website-to-start-earning/"
   - date: 2026-09-22
     what: "Соседний маршрут на день из Токио"
     changed: "Добавлена контекстная ссылка на Камакуру. Остальной текст сохранён."
@@ -66,11 +72,13 @@ checks:
         url: "https://forum.awd.ru/viewtopic.php?f=1154&t=439641"
 ---
 
-import { ostrovokCity } from '../../data/affiliate.js';
+import { ostrovokCity, tpkDeep } from '../../data/affiliate.js';
+
+export const nikkoTour = tpkDeep('tripster', 'https://experience.tripster.ru/experience/94611/', 'nikko_day_trip');
 
 export const nikkoStay = ostrovokCity('japan', 'nikko', 'nikko_overnight');
 
-**За один день из Токио разумно посмотреть храмовый район Никко: Тосёгу, мост Синкё и один соседний комплекс.** Дорога поездом занимает около двух часов в одну сторону. Озеро Тюдзэндзи и водопад Кэгон требуют отдельного автобусного участка; в осенние пробки лучше выделить им второй день и ночёвку.
+**За один день из Токио разумно посмотреть храмовый район Никко: Тосёгу, мост Синкё и один соседний комплекс.** Дорога поездом занимает около двух часов в одну сторону. Озеро Тюдзэндзи и водопад Кэгон требуют отдельного автобусного участка; в осенние пробки лучше выделить им второй день и <a href={nikkoStay} rel="sponsored">ночёвку в Никко</a>.
 
 Главная развилка возникает ещё до покупки билета: едете смотреть резные ворота и святилища среди леса или поднимаетесь к горному озеру. На карте эти места принадлежат одному Никко. В расписании одного дня между ними лежат пересадка, серпантин, очереди и необходимость успеть на обратный поезд.
 
@@ -87,6 +95,8 @@ export const nikkoStay = ostrovokCity('japan', 'nikko', 'nikko_overnight');
 ![Здание станции Tobu-Nikko, отправная точка автобусного маршрута к храмам](./_images/nikko-iz-tokio-za-odin-den/tobu.jpg)
 
 *Архивное фото: Saigen Jiro / [Wikimedia Commons](https://commons.wikimedia.org/w/index.php?curid=117298420), [CC0](https://creativecommons.org/publicdomain/zero/1.0/deed.en/).*
+
+Если не хотите собирать дорогу и прогулку отдельно, посмотрите <a href={nikkoTour} rel="sponsored">однодневную экскурсию в Никко из Токио</a>. Сверьте состав поездки и время возвращения со своим планом.
 
 ## Какой Nikko Pass нужен на один день
 

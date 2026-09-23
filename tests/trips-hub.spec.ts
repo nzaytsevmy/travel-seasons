@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './browser-fixture';
 
 // Путь относительный: хост берётся из baseURL конфига (PREVIEW_URL или :4322),
 // иначе прогон на другом порту падал с ERR_CONNECTION_REFUSED (05.09.2026).

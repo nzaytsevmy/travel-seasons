@@ -13,7 +13,8 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
-const ПОМОЩНИКИ = new Set(['global-lock.ts', 'lock-scope.mjs', 'visible-text.ts', 'test-helpers.mjs']);
+// browser-fixture.ts импортируется браузерными spec; её контракт проверяет browser-fixture.spec.ts.
+const ПОМОЩНИКИ = new Set(['global-lock.ts', 'lock-scope.mjs', 'visible-text.ts', 'test-helpers.mjs', 'browser-fixture.ts']);
 
 function файлы(корень) {
   const out = [];

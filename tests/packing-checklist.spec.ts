@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from './browser-fixture';
 
 // Функциональный тест чек-листа сборов. Ловит потерю работы человека: галочки
 // сохраняются в localStorage, а ФИЛЬТРЫ — нигде. Вернувшись на страницу, человек

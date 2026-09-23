@@ -8,7 +8,7 @@
 // Ловим ИМЕННО пометки о поездке автора в эту страну. Законное не ловим: подпись «был лично
 // на 7 континентах» (правда про автора в целом) и подпись к статье «личный опыт автора»
 // строчными буквами (тип статьи, а не заявка про страну) — отсюда чувствительность к регистру.
-import { test, expect } from '@playwright/test';
+import { test, expect } from './browser-fixture';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { видимыйТекст } from './visible-text';

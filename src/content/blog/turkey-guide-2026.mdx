@@ -10,6 +10,12 @@ author: "Никита Зайцев"
 tags: ["Турция", "All Inclusive", "Безвиз", "Стамбул", "2026"]
 sourceType: "compilation"
 checks:
+  - date: 2026-09-23
+    what: "Контекстные партнёрские переходы и охват разделов с выбором"
+    changed: "Добавлены переходы к предложениям рядом с решениями внутри статьи."
+    sources:
+      - name: "Travelpayouts — контекст и точное назначение ссылок"
+        url: "https://academy.travelpayouts.com/courses/travelpayouts-101/how-to-post-affiliate-links-on-your-website-to-start-earning/"
   - date: 2026-09-07
     what: "Партнёрские ссылки на программы без броней"
     changed: "Сняты партнёрские ссылки, не давшие броней. Убраны: пакетные туры Travelata. За полгода по всему сайту эти программы не дали ни одной брони при 200+ живых кликах (сверка кассы 06.09.2026, решение Никиты 07.09.2026); текст и цены не менялись."
@@ -32,7 +38,7 @@ checks:
       - name: "AFAD"
         url: "https://www.afad.gov.tr/"
 ---
-import { aviasalesRoute, cherehapaCountry } from '../../data/affiliate.js';
+import { aviasalesRoute, cherehapaCountry, ostrovokCountry, TP_LINKS } from '../../data/affiliate.js';
 
 import PricingCards from '../../components/post/PricingCards.astro';
 import AviasalesWidget from '../../components/post/AviasalesWidget.astro';
@@ -157,6 +163,8 @@ import CountryMap from '../../components/CountryMap.astro';
 ## All Inclusive vs самостоятельно
 
 ![Пляж с зонтиками сверху: ровные ряды лежаков и бирюзовая полоса воды](./_images/turkey-own/beach.jpg)
+
+Для самостоятельной поездки можно <a href={ostrovokCountry('turkey', 'turkey_independent_stay')} rel="sponsored noopener">сравнить отели в Турции</a>, для готового пакета — <a href={`${TP_LINKS.level}&sub_id=turkey_package_compare`} rel="sponsored noopener">сравнить пакетные туры у Level.Travel</a>. Выбирайте одинаковые даты и питание.
 
 | Что | All Inclusive | Самостоятельно |
 |---|---|---|

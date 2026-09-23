@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "slug": "vietnam-guide-2026",
-  "reviewer": "Codex (news_lifecycle_review)",
-  "reviewedAt": "2026-09-18",
-  "reviewScope": "delta_only",
-  "status": "pass",
+  "reviewer": "Codex (affiliate_review)",
+  "reviewedAt": "2026-09-23",
+  "reviewScope": "Независимое чтение дельты и контекста; прежние баллы сохранены без повышения. Исторические факты и старый визуальный рендер не объявлены заново подтверждёнными.",
+  "status": "approved_delta_pending_release_checks",
   "qualityScore": {
     "topic": 9.5,
     "facts": 9.5,
@@ -15,27 +15,22 @@
     "overall": 9.3,
     "ceiling": "До 10 — нет личного опыта автора на юге и не пересверен прогноз Эль-Ниньо после 01.10.2026"
   },
-  "proseHash": "37cd1e6971fa9ba0",
-  "sourceSha256": "e3ac54a4d6e755d2ef74258d4be24cc3a34a81ce8d46da1378103b31fe87c06c",
-  "rationale": "Я независимо проверил только ссылочную дельту от 18.09.2026: одну добавленную контекстную фразу и minor-запись checks. Точное воспроизведение полного файла из HEAD этими двумя вставками подтверждает, что прежние факты, числа, выводы, фотографии, даты статьи и оценки не менялись. Ссылка соответствует новой статье о выборе Дананга/Нячанга по районам и бюджету. Сохраняю баллы и потолок прежнего независимого рецензента как историческую оценку неизменённого материала: ссылочная правка не даёт основания их повысить или снизить. Эти баллы не являются моей новой полной фактологической оценкой; старые факты и сроки их актуальности в этом проходе заново не проверены.",
+  "proseHash": "872d85565d6c78a9",
+  "sourceSha256": "b216d35925da3d3fe42a70db4d5b93c4002c10e3ef7e280538b5909a4d58a084",
+  "rationale": "Существующий Нячанг дополнен отдельными городскими подборами Фукуока и Дананга. Переходы стоят в собственных разделах и требуют проверить пляж, район и отмену. Климатические оговорки и резерв на дождь сохранены; новое размещение не выдаётся за новое климатическое исследование. Прежние подробные доказательства и баллы сохранены.",
   "risks": [
     "Прежние факты и прогнозы не проходили свежей проверки 18.09.2026; ограничения предыдущей оценки сохранены во вложенном inheritedReview.",
-    "Цель новой ссылки пока локальный черновик. HTTP 200 новой страницы после публикации и согласованность выпуска проверяет автор."
+    "Цель новой ссылки пока локальный черновик. HTTP 200 новой страницы после публикации и согласованность выпуска проверяет автор.",
+    "Полная свежая проверка всех прежних цен, расписаний, договоров, виз и страховых опций не заявляется. Указанные исторические даты и ограничения действуют.",
+    "Публикация требует штатных build, DOM, browser, CI, deploy и live-проверок. Этот JSON не подменяет их и действителен только для proseHash."
   ],
-  "deltaChecks": [
-    {
-      "date": "2026-09-18",
-      "reviewer": "Codex (news_lifecycle_review)",
-      "baseCommit": "6f0ec41e98b61ebe3044594654a4532d4aa653d2",
-      "fromProseHash": "c3502e0f5d04ee4d",
-      "toProseHash": "37cd1e6971fa9ba0",
-      "baseSourceSha256": "78f437f7230e7f04c6c6e4f89d787ad3dbba937841e9dfca9b3e8c6252e142f5",
-      "currentSourceSha256": "e3ac54a4d6e755d2ef74258d4be24cc3a34a81ce8d46da1378103b31fe87c06c",
-      "proof": "Exact equality: git HEAD article + one minor checks record + one context-link insertion = current UTF-8 source.",
-      "link": "/blog/danang-ili-nyachang/",
-      "assessment": "Link intent and wording match the new article; the target exists locally. No factual expansion of the old article."
-    }
-  ],
+  "deltaChecks": {
+    "context": "Действие связано с соседним выбором; названия назначения, ограничения состава и сравниваемые стороны проверены.",
+    "sources": "Прямые ссылки на исторические котировки и документы сохранены; они не превращены в партнёрские.",
+    "tracking": "Используются централизованные helpers и известные партнёры. Реальные редиректы, атрибуция и отсутствие событий QA проверяются исполнителем выпуска.",
+    "visuals": "Новых картинок нет; независимый новый рендер в этом круге не выполнен.",
+    "measurement": "Число ссылок и ранняя позиция не доказывают доход или причинный эффект."
+  },
   "inheritedReview": {
     "schemaVersion": 1,
     "slug": "vietnam-guide-2026",
@@ -90,5 +85,50 @@
       }
     ],
     "proseHash": "c3502e0f5d04ee4d"
+  },
+  "baselineCommit": "57af21bd26149d05b1b9ea977483015dd9a22cb2",
+  "baselineProseHash": "37cd1e6971fa9ba0",
+  "editKind": {
+    "kind": "small",
+    "wordsAdded": 37,
+    "titleChanged": false,
+    "descriptionChanged": false,
+    "newImages": []
+  },
+  "sourceChecks": [],
+  "inheritedAssessment": {
+    "status": "historical_evidence_not_rechecked_in_this_delta",
+    "reviewer": "Codex (news_lifecycle_review)",
+    "reviewedAt": "2026-09-18",
+    "proseHash": "37cd1e6971fa9ba0",
+    "qualityScore": {
+      "topic": 9.5,
+      "facts": 9.5,
+      "visuals": 9.5,
+      "experience": 7,
+      "internalLinks": 9.5,
+      "legal": 9.5,
+      "overall": 9.3,
+      "ceiling": "До 10 — нет личного опыта автора на юге и не пересверен прогноз Эль-Ниньо после 01.10.2026"
+    },
+    "qualityScoreUnchanged": true,
+    "originalRationale": "Я независимо проверил только ссылочную дельту от 18.09.2026: одну добавленную контекстную фразу и minor-запись checks. Точное воспроизведение полного файла из HEAD этими двумя вставками подтверждает, что прежние факты, числа, выводы, фотографии, даты статьи и оценки не менялись. Ссылка соответствует новой статье о выборе Дананга/Нячанга по районам и бюджету. Сохраняю баллы и потолок прежнего независимого рецензента как историческую оценку неизменённого материала: ссылочная правка не даёт основания их повысить или снизить. Эти баллы не являются моей новой полной фактологической оценкой; старые факты и сроки их актуальности в этом проходе заново не проверены.",
+    "originalDeltaChecks": [
+      {
+        "date": "2026-09-18",
+        "reviewer": "Codex (news_lifecycle_review)",
+        "baseCommit": "6f0ec41e98b61ebe3044594654a4532d4aa653d2",
+        "fromProseHash": "c3502e0f5d04ee4d",
+        "toProseHash": "37cd1e6971fa9ba0",
+        "baseSourceSha256": "78f437f7230e7f04c6c6e4f89d787ad3dbba937841e9dfca9b3e8c6252e142f5",
+        "currentSourceSha256": "e3ac54a4d6e755d2ef74258d4be24cc3a34a81ce8d46da1378103b31fe87c06c",
+        "proof": "Exact equality: git HEAD article + one minor checks record + one context-link insertion = current UTF-8 source.",
+        "link": "/blog/danang-ili-nyachang/",
+        "assessment": "Link intent and wording match the new article; the target exists locally. No factual expansion of the old article."
+      }
+    ],
+    "originalScope": "delta_only",
+    "priorDelta": null,
+    "note": "Дополнительные поля старого JSON сохранены, но относятся к прежнему рецензенту и дате. При отсутствии старого JSON источником унаследованной оценки служит историческая шапка, что явно указано."
   }
 }
