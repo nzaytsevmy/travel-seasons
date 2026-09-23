@@ -127,22 +127,37 @@ if [ "$MODE" = "text" ]; then
   exit 0
 fi
 
-# Все тесты и четыре проекта сохраняются. Шестнадцать частей идут
-# ПОСЛЕДОВАТЕЛЬНО: каждый процесс заново запускает браузеры и освобождает
-# накопленную память. 23.09.2026 один длинный WebKit-процесс дошёл до 2.8–3.1 ГиБ
-# GPU footprint и был остановлен Browser Guard; workers=1 не ограничивает
-# накопление внутри процесса. При четырёх частях Playwright оставлял каждый
-# проект целиком (409 тестов) в одном процессе; 16 частей делят и сами проекты.
-# Фильтров тестов, новых пропусков и порогов нет.
-for SHARD in {1..16}; do
-  SHARD_LOG="${LOG}_pw_${SHARD}.log"
-  echo "  ▶ Playwright: часть ${SHARD}/16, один worker"
-  if ! npx playwright test --workers=1 --shard="${SHARD}/16" >"${SHARD_LOG}" 2>&1; then
+# Все файлы и проекты из полной коллекции, последовательно, по одному worker.
+# 24.09.2026 даже 16 частей оставляли общий WebKit browser между разными
+# функциональными файлами; к trip-multi его GPU footprint достигал 2.8 ГиБ.
+# Новый процесс на каждый файл освобождает накопление между файлами.
+# Пиксельные тесты на Mac дополнительно изолируют каждый свой браузер.
+COLLECTION="${LOG}_pw_collection.json"
+MATCHES="${LOG}_pw_files.txt"
+if ! npx playwright test --list --reporter=json --workers=1 >"${COLLECTION}" 2>"${LOG}_pw_collection.err" \
+  || ! node scripts/playwright-file-batches.mjs "${COLLECTION}" >"${MATCHES}" \
+  || [ ! -s "${MATCHES}" ]; then
+  echo "✖ не удалось получить полную коллекцию Playwright — push заблокирован"
+  exit 1
+fi
+BATCH=0
+if ! while IFS= read -r TEST_MATCH || [ -n "$TEST_MATCH" ]; do
+  BATCH=$((BATCH + 1))
+  BATCH_LOG="${LOG}_pw_file_${BATCH}.log"
+  echo "  ▶ Playwright: файл ${BATCH}, все проекты, один worker"
+  if ! npx playwright test "$TEST_MATCH" --workers=1 >"${BATCH_LOG}" 2>&1; then
     echo "✖ Playwright: ошибка или flaky — push заблокирован."
-    echo "  лог: ${SHARD_LOG} | отчёт: npm run check:visual:report"
+    echo "  лог: ${BATCH_LOG} | отчёт: npm run check:visual:report"
     exit 1
   fi
-done
+done <"${MATCHES}"; then
+  echo "✖ не удалось прочитать список файлов Playwright — push заблокирован"
+  exit 1
+fi
+if [ "$BATCH" -eq 0 ]; then
+  echo "✖ ни один файл Playwright не проверен — push заблокирован"
+  exit 1
+fi
 
 echo "✔ визуал-гейт зелёный — push разрешён."
 exit 0
