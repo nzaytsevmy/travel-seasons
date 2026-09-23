@@ -2,37 +2,29 @@
   "schemaVersion": 1,
   "slug": "2026-07-30-iguazu-devils-throat-boardwalk",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review)",
-  "reviewedAt": "2026-09-18",
-  "sha256": "bd2635fd959af713d705e3e771ae76593f23713b5a6e2951966fb78c27a5e760",
-  "rationale": "Независимо прочитал обе полные первички APN (30.07 и 17.09) и финальный UPDATE. Июльское намерение демонтировать настилы с 03.08 теперь подтверждено сентябрьским сообщением о выполненном демонтаже. Аргентинский парк продолжает приём, перечислены открытые Верхний/Нижний круги, Verde и Macuco. После замечания центр Yvyrá Retá и Territorio Yaguareté больше не названы тропами. Бразильская смотровая отделена от аргентинского режима и атрибутирована тому же сообщению; точной даты восстановления нет. Снято необоснованное обещание достаточности оставшихся маршрутов. Оценка 4: конкретно меняет план посещения нишевого направления. Исходные date/added сохранены, reviewOn 21.09 обоснован неизвестным сроком. Фото и лицензия проверены: архивный вид водопада 2025 года не изображает демонтаж.",
+  "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
+  "reviewedAt": "2026-09-23",
+  "sha256": "51bf4b32dec1b673ba16ec40ff631828570cd729befe8f7ee3cd75cd22ee00f7",
+  "rationale": "KEEP. APN в сообщении 17 сентября по-прежнему указывает, что мостки к Garganta del Diablo сняты ещё в августе, а парк принимает посетителей на маршрутах Superior, Inferior, Verde и Macuco. Текст сохраняет датированную атрибуцию и не объявляет восстановление мостков. Повторное чтение 23 сентября подтверждает пригодность формулировки, но не гарантирует фактическую доступность каждого маршрута в любую минуту. Оценка 4 сохранена.",
   "risks": [
-    "Режим бразильской смотровой приведён как сообщение APN Аргентины; отдельный текущий первоисточник бразильского оператора в этом UPDATE не открывался. Текст отправляет проверять берега раздельно.",
-    "Список доступных участков относится к сообщению 17.09; при высокой воде может измениться.",
-    "Внутренняя ссылка на визовую страницу проверена как HTTP 200 и по назначению; это не новая ревизия всех визовых фактов."
+    "Мостки к Глотке Дьявола не восстановлены; дата нового открытия не объявлена.",
+    "Сообщение APN от 17 сентября не является оперативной сводкой на каждый час 23 сентября.",
+    "Аргентинский источник не подтверждает текущий режим бразильской стороны."
   ],
   "blockingIssues": [],
   "evidence": [
     {
       "url": "https://www.argentina.gob.ar/noticias/parque-nacional-iguazu-abierto-todo-el-ano",
       "publishedOn": "2026-09-17",
-      "capture": ".run/2026-09-18/sources/iguazu.txt",
-      "finding": "Выполненный демонтаж в августе, открытый парк и конкретные тропы/объекты; отдельное сообщение о Бразилии.",
-      "checkedOn": "2026-09-18",
-      "method": "Full supplied primary/article text plus independent web or direct HTTP reading; exact limits stated in rationale"
-    },
-    {
-      "url": "https://www.argentina.gob.ar/noticias/iguazu-finalizo-julio-con-un-balance-positivo-para-la-actividad-turistica",
-      "publishedOn": "2026-07-30",
-      "capture": ".run/2026-09-18/review-evidence/iguazu-web.json",
-      "finding": "Первоначальный план начала демонтажа 03.08 и зависимость восстановления от гидрологических условий.",
-      "checkedOn": "2026-09-18",
-      "method": "Full supplied primary/article text plus independent web or direct HTTP reading; exact limits stated in rationale"
+      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
+      "finding": "Подтверждены снятые в августе мостки и перечисленные доступные маршруты; нового срока восстановления Garganta del Diablo нет.",
+      "checkedOn": "2026-09-23"
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-09-21",
-    "reason": "21.09 — следующая проверка временного ограничения без объявленного окончания, либо раньше по новому уведомлению парка."
+    "reviewOn": "2026-09-25",
+    "reason": "Мостки к Глотке Дьявола не восстановлены; дата нового открытия не объявлена.",
+    "decision": "KEEP_DATED_APN_STATUS"
   },
   "checks": {
     "capsuleWords": 46,
@@ -51,6 +43,7 @@
     "visiblePhotoCaptionField": "imageTitle",
     "imageTitle": "Глотка Дьявола на Игуасу. Архивный вид водопадов, не демонтаж мостиков.",
     "imageAlt": "Потоки воды и брызги у Глотки Дьявола на Игуасу",
-    "scope": "Final full news content, numbers, meaning, photos and links; no build, browser or publication assertion."
+    "scope": "Ограниченный lifecycle-review 23.09: перечитан изменчивый статус, проза и прежняя фотоаттестация не исследовались заново; обновлены checked, reviewOn и SHA; без сборки и публикации.",
+    "titleChars": 48
   }
 }

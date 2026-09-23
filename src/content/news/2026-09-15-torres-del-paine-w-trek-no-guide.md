@@ -1,8 +1,8 @@
 ---
 title: "Торрес-дель-Пайне: с 16 сентября на тропу W можно без гида"
 date: 2026-09-14
-checked: 2026-09-18
-reviewOn: 2026-09-21
+checked: 2026-09-23
+reviewOn: 2026-09-25
 added: 2026-09-15
 topic: transport
 impact: medium
