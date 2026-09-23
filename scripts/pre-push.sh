@@ -127,11 +127,22 @@ if [ "$MODE" = "text" ]; then
   exit 0
 fi
 
-if ! npx playwright test --workers=1 >${LOG}_pw.log 2>&1; then
-  echo "✖ Playwright: ошибка или flaky — push заблокирован."
-  echo "  лог: ${LOG}_pw.log | отчёт: npm run check:visual:report"
-  exit 1
-fi
+# Все тесты и четыре проекта сохраняются. Шестнадцать частей идут
+# ПОСЛЕДОВАТЕЛЬНО: каждый процесс заново запускает браузеры и освобождает
+# накопленную память. 23.09.2026 один длинный WebKit-процесс дошёл до 2.8–3.1 ГиБ
+# GPU footprint и был остановлен Browser Guard; workers=1 не ограничивает
+# накопление внутри процесса. При четырёх частях Playwright оставлял каждый
+# проект целиком (409 тестов) в одном процессе; 16 частей делят и сами проекты.
+# Фильтров тестов, новых пропусков и порогов нет.
+for SHARD in {1..16}; do
+  SHARD_LOG="${LOG}_pw_${SHARD}.log"
+  echo "  ▶ Playwright: часть ${SHARD}/16, один worker"
+  if ! npx playwright test --workers=1 --shard="${SHARD}/16" >"${SHARD_LOG}" 2>&1; then
+    echo "✖ Playwright: ошибка или flaky — push заблокирован."
+    echo "  лог: ${SHARD_LOG} | отчёт: npm run check:visual:report"
+    exit 1
+  fi
+done
 
 echo "✔ визуал-гейт зелёный — push разрешён."
 exit 0

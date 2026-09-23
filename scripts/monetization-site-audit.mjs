@@ -5,6 +5,9 @@ import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { classifyPage, classifyPartner, isGenericAffiliateUrl, expensiveDestinationSlug, EXPENSIVE_FIRST_OFFERS } from '../src/data/monetization.js';
 import { destinationAffiliateUrl } from '../src/data/affiliate.js';
+import { auditArticlePlacement, placementProblems } from './article-affiliate-placement.mjs';
+
+const coverage = JSON.parse(readFileSync(new URL('../research/article-affiliate-coverage.json', import.meta.url), 'utf8')).articles;
 
 const DEEP_LINK_REQUIRED = new Set(['aviasales', 'cherehapa', 'ostrovok', 'airalo', 'youtravel']);
 
@@ -61,7 +64,7 @@ function hasAttribution(href, partner) {
   return !!queryParam(href, 'sub_id');
 }
 
-export function auditMonetization(dist) {
+export function auditMonetization(dist, articleCoverage = coverage) {
   const pages = [];
   const links = [];
   const errors = [];
@@ -137,7 +140,19 @@ export function auditMonetization(dist) {
 
     if (info.intent === 'none' && pageLinks.length) errors.push(`${path}: intent=none, но партнёрских ссылок ${pageLinks.length}`);
     if (info.intent === 'high' && !pageLinks.length) warnings.push(`${path}: высокий intent без партнёрского следующего шага`);
-    pages.push({ path, ...info, destination, affiliateLinks: pageLinks.length });
+    let placement;
+    if (info.type === 'blog_article' && info.intent !== 'none') {
+      placement = auditArticlePlacement(html);
+      const slug = path.split('/')[2];
+      const rule = articleCoverage[slug];
+      if (!Object.hasOwn(articleCoverage, slug) || !rule || !Array.isArray(rule.requiredSections) || !rule.requiredSections.every(heading => typeof heading === 'string' && heading.trim())) {
+        errors.push(`${path}: нет редакционной карты requiredSections в реестре покрытия`);
+      } else if (!rule.requiredSections.length && !(typeof rule.coverageReason === 'string' && rule.coverageReason.trim().length >= 20)) {
+        errors.push(`${path}: пустая карта разделов без объяснения coverageReason`);
+      }
+      errors.push(...placementProblems(placement, rule).map(problem => `${path}: ${problem}`));
+    }
+    pages.push({ path, ...info, destination, affiliateLinks: pageLinks.length, ...(placement ? { placement } : {}) });
   }
   return { pages, links, errors: [...new Set(errors)], warnings: [...new Set(warnings)] };
 }
@@ -153,6 +168,7 @@ export function renderAudit(result) {
     + `## Покрытие типов\n\n${[...counts].sort((a, b) => b[1] - a[1]).map(([name, value]) => `- ${name}: ${value}`).join('\n')}\n\n`
     + `## Партнёры\n\n${[...linkCounts].sort((a, b) => b[1] - a[1]).map(([name, value]) => `- ${name}: ${value}`).join('\n')}\n\n`
     + `## Блокирующие нарушения\n\n${result.errors.length ? result.errors.map((item) => `- ${item}`).join('\n') : 'Не найдены.'}\n\n`
+    + `## Контекстные ссылки в статьях\n\n| URL | В теле | Первый переход, % текста |\n|---|---:|---:|\n${result.pages.filter(p => p.placement).map(p => `| ${p.path} | ${p.placement.bodyLinks} | ${p.placement.firstLinkPercent ?? 'нет'} |`).join('\n')}\n\n`
     + `## Очередь высокого intent\n\n${result.warnings.length ? result.warnings.map((item) => `- ${item}`).join('\n') : 'Пусто.'}\n`;
 }
 

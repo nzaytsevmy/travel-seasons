@@ -25,6 +25,12 @@ howto:
     - name: "Оформить страховку и связь"
       text: "Полис нужен: тропики, серпантины, дайвинг и сёрфинг. eSIM ставится до вылета, чтобы интернет работал сразу после посадки."
 checks:
+  - date: 2026-09-23
+    what: "Контекстные партнёрские переходы и охват разделов с выбором"
+    changed: "Добавлены переходы к предложениям рядом с решениями внутри статьи."
+    sources:
+      - name: "Travelpayouts — контекст и точное назначение ссылок"
+        url: "https://academy.travelpayouts.com/courses/travelpayouts-101/how-to-post-affiliate-links-on-your-website-to-start-earning/"
   - date: 2026-09-07
     what: "Партнёрские ссылки на программы без броней"
     changed: "Сняты партнёрские ссылки, не давшие броней. Убраны: пакетные туры Travelata, eSIM Drimsim. За полгода по всему сайту эти программы не дали ни одной брони при 200+ живых кликах (сверка кассы 06.09.2026, решение Никиты 07.09.2026); текст и цены не менялись."
@@ -43,7 +49,7 @@ checks:
 import PricingCards from '../../components/post/PricingCards.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 import CountryMap from '../../components/CountryMap.astro';
-import { cherehapaCountry } from '../../data/affiliate.js';
+import { cherehapaCountry, tpkDeep } from '../../data/affiliate.js';
 
 Шри-Ланка — редкий случай, когда небольшой остров даёт сразу всё: океан с сёрфом и китами, горы в чайных плантациях, руины древних столиц, слонов и леопардов в национальных парках. Плюс для россиян тут два жирных бонуса: **виза бесплатная** и есть **прямой рейс из Москвы**.
 
@@ -72,6 +78,8 @@ import { cherehapaCountry } from '../../data/affiliate.js';
 ## Сколько лететь до Шри-Ланки и сколько стоит билет?
 
 **Прямой рейс Аэрофлота Москва — Коломбо идёт около 8 часов 30 минут — это самый быстрый способ попасть на остров.** Прилетают в главный аэропорт страны — Бандаранаике (код CMB), он в 35 км севернее Коломбо.
+
+<a href={tpkDeep('level', 'https://level.travel/explore/Moscow-Russia/Sri_Lanka', 'sri_lanka_package')} rel="sponsored noopener">Сравнить пакетные туры на Шри-Ланку</a> — на свои даты, с проверкой рейса, багажа и питания.
 
 Варианты добраться:
 
