@@ -19,6 +19,10 @@ jobs:
   live:
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -38,11 +42,13 @@ jobs:
         env:
           QA_PATHS: ${{ inputs.paths }}
           QA_EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+          QA_SHARD: ${{ matrix.shard }}
+          QA_SHARDS: '4'
       - name: Сохранить полный результат
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: release-browser-qa
+          name: release-browser-qa-${{ matrix.shard }}
           path: artifacts/release-browser-qa/
           if-no-files-found: error
           retention-days: 7

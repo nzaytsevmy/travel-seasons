@@ -5,10 +5,14 @@ import fs from 'node:fs';
 import { chromium } from 'playwright';
 import { checkPageStructure, WIDTHS } from './structural-checks.mjs';
 
-const paths = JSON.parse(process.env.QA_PATHS || '[]');
-assert.ok(Array.isArray(paths) && paths.length > 0 && paths.length <= 100);
-assert.equal(new Set(paths).size, paths.length, 'Duplicate paths');
-for (const path of paths) assert.match(path, /^\/(?:[a-z0-9-]+\/)*$/);
+const allPaths = JSON.parse(process.env.QA_PATHS || '[]');
+assert.ok(Array.isArray(allPaths) && allPaths.length > 0 && allPaths.length <= 100);
+assert.equal(new Set(allPaths).size, allPaths.length, 'Duplicate paths');
+for (const path of allPaths) assert.match(path, /^\/(?:[a-z0-9-]+\/)*$/);
+const shard = Number(process.env.QA_SHARD || 1);
+const shards = Number(process.env.QA_SHARDS || 1);
+assert.ok(Number.isInteger(shard) && Number.isInteger(shards) && shard >= 1 && shard <= shards && shards <= 4);
+const paths = allPaths.filter((_, index) => index % shards === shard - 1);
 const preview = process.env.QA_PREVIEW === '1';
 const capture = process.env.QA_CAPTURE === '1';
 const origin = preview ? 'http://localhost:4322' : 'https://traveltribe.ru';
@@ -17,7 +21,8 @@ if (!preview) assert.match(expectedCommit || '', /^[a-f0-9]{40}$/);
 const directory = 'artifacts/release-browser-qa';
 fs.mkdirSync(directory, { recursive: true });
 const proof = { startedAt: new Date().toISOString(), source: process.env.GITHUB_SHA,
-  preview, origin, paths, widths: WIDTHS, expected: paths.length * WIDTHS.length,
+  preview, origin, paths, shard, shards, totalPaths: allPaths.length,
+  widths: WIDTHS, expected: paths.length * WIDTHS.length,
   rows: [], passed: false };
 const save = () => fs.writeFileSync(`${directory}/proof.json`, JSON.stringify(proof, null, 2));
 async function identity() {
