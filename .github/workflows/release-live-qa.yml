@@ -1,0 +1,48 @@
+name: Release live browser QA
+
+on:
+  workflow_dispatch:
+    inputs:
+      paths:
+        description: 'JSON-массив опубликованных путей, максимум 100'
+        required: true
+        type: string
+      expected_commit:
+        description: 'Точный commit из build-version.json после выкладки'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-chromium-${{ hashFiles('package-lock.json') }}
+      - name: Install Chromium
+        timeout-minutes: 10
+        run: npx playwright install --with-deps chromium
+      - name: Проверить страницы опубликованной версии
+        run: node scripts/release-browser-qa.mjs
+        env:
+          QA_PATHS: ${{ inputs.paths }}
+          QA_EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+      - name: Сохранить полный результат
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-browser-qa
+          path: artifacts/release-browser-qa/
+          if-no-files-found: error
+          retention-days: 7
