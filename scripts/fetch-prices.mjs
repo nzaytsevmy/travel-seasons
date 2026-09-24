@@ -5,7 +5,7 @@
 
 import { regionMeta } from '../src/data/regions-meta.js';
 import { PRICES } from '../src/data/prices.js';
-import { fetchCheap, refreshPrices } from './price-refresh.mjs';
+import { fetchAirportCityCodes, fetchCheap, refreshPrices } from './price-refresh.mjs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -41,8 +41,9 @@ function next12Months() {
 const months = next12Months();
 
 try {
+  const airportCityCodes = await fetchAirportCityCodes({token: TOKEN});
   const result = await refreshPrices({out: OUT, iatas, months,
-    request: (iata, month) => fetchCheap(iata, month, {token: TOKEN})});
+    request: (iata, month) => fetchCheap(iata, month, {token: TOKEN, airportCityCodes})});
   console.log(`Цены обновлены: ${JSON.stringify(result.refreshCounts)}`);
   if (result.refreshCounts.temporary_error) console.warn('::warning::Часть запросов не удалась; даты сохранённых цен не обновлены.');
 } catch (error) {
