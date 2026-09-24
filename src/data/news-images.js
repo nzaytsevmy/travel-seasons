@@ -94,5 +94,5 @@ function hash(s) {
 
 /** Подпись под картинкой: честно говорим, что кадр из архива, а не с места события. */
 export function newsImageNote(data) {
-  return data.image ? null : 'Фото из архива блога, иллюстрация к теме';
+  return data.image ? null : 'Иллюстрация к теме';
 }

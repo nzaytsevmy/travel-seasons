@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "slug": "chto-posmotret-v-gonkonge",
   "reviewer": "Codex (affiliate_review)",
-  "reviewedAt": "2026-09-23",
+  "reviewedAt": "2026-09-24",
   "qualityScore": {
     "topic": 8.4,
     "facts": 8.1,
@@ -13,7 +13,7 @@
     "overall": 8.2,
     "ceiling": "Потолок до 8,5: статья сильная как маршрутный ответ и опирается на собственные фотографии, но тема конкурентная и обычная, собственная GSC-история не подтверждает sightseeing-интент, Peak webstore не удалось независимо разобрать без живого браузера, а часть быстрых фактов требует ближайшей пересверки."
   },
-  "rationale": "Существующий городской каталог перенесён также к раннему выбору базы для трёх дней. Анкор соответствует Гонконгу, совет сверить метро связан с маршрутом. Билеты Peak Tram и Ngong Ping, пограничные условия и цены не изменены. Прежняя оценка сохранена без повышения.",
+  "rationale": "24.09.2026: независимо проверена только малая правка отображения фотоатрибуции. Строки об авторах, лицензиях и оригиналах перенесены в реестр фотографий; осмысленные подписи, сами изображения, цены, остальная проза и даты публикации сохранены. Тексты и адреса перенесённых кредитов сверены с базовой версией; для Патагонии отдельно проверено удаление устаревшего описания прежних кадров без переноса этой ошибки. Прежние баллы, потолок и ограничения сохранены без повышения. Полной новой проверки фактов, исходных лицензий, личного опыта или адаптивного рендера этот delta-review не заявляет; исходное обоснование и дата предыдущей оценки сохранены в photoCaptionDeltaReview.previousAssessment.",
   "risks": [
     "Peak Tram Special Combo Return 182 HKD и Sky Terrace 80 HKD я не смог независимо вытащить из HTML/SPA без CUA. Если родитель уже проверил живой webstore визуально, это приемлемо; при следующей пересверке лучше сохранить скрин или машинный след.",
     "Тарифы Peak, NP360, Star Ferry, Airport Express и курс HKD быстро портятся. volatileFacts выставлены правильно, но перед поздним merge или переносом даты публикации их надо переснять.",
@@ -25,18 +25,15 @@
     "Полная свежая проверка всех прежних цен, расписаний, договоров, виз и страховых опций не заявляется. Указанные исторические даты и ограничения действуют.",
     "Публикация требует штатных build, DOM, browser, CI, deploy и live-проверок. Этот JSON не подменяет их и действителен только для proseHash."
   ],
-  "proseHash": "fcea295b5b87dd0c",
+  "proseHash": "528d7ec84a335aef",
   "status": "approved_delta_pending_release_checks",
-  "reviewScope": "Независимое чтение дельты и контекста; прежние баллы сохранены без повышения. Исторические факты и старый визуальный рендер не объявлены заново подтверждёнными.",
-  "sourceSha256": "21c829d008fd9dd661286c28df311d27a39dc6ce49d9da2ae9a6bb8f431d41e6",
+  "reviewScope": "Независимое ревью только переноса фотоатрибуции и сохранности исходного текста; прежние оценки и доказательства исторические.",
+  "sourceSha256": "da16a3a51d9a958eabcf1fcfa24bd1c591ef91de2d97857fb43700e27b87b03c",
   "baselineCommit": "57af21bd26149d05b1b9ea977483015dd9a22cb2",
   "baselineProseHash": "791f45a078473504",
   "editKind": {
     "kind": "small",
-    "wordsAdded": 38,
-    "titleChanged": false,
-    "descriptionChanged": false,
-    "newImages": []
+    "wordsAdded": 10
   },
   "sourceChecks": [],
   "deltaChecks": {
@@ -87,5 +84,62 @@
       ],
       "qualityScoreUnchanged": true
     }
+  },
+  "photoCaptionDeltaReview": {
+    "schemaVersion": 1,
+    "reviewer": "Codex (affiliate_review)",
+    "reviewedAt": "2026-09-24",
+    "verdict": "PASS_SCOPED_DELTA",
+    "baselineCommit": "219d258dde2f1cda4605c59a8451c00ce8c4ae67",
+    "baselineProseHash": "fcea295b5b87dd0c",
+    "proseHash": "528d7ec84a335aef",
+    "sourceSha256": "da16a3a51d9a958eabcf1fcfa24bd1c591ef91de2d97857fb43700e27b87b03c",
+    "edits": 10,
+    "editKind": "small",
+    "wordsAdded": 10,
+    "attributionFile": "src/data/photo-credit-notes.json",
+    "attributionKey": "chto-posmotret-v-gonkonge",
+    "attributionFileSha256": "5da3db7d9f1a1be3de4a1c62c41f758ca5e91f73c3f02bc655aa8e146ce94c11",
+    "checks": [
+      "Все изменения тела соответствуют независимо прочитанному реестру before/after.",
+      "Разметка изображений и импорты сохранены; нет новых цен, утверждений или дат публикации.",
+      "129 переносов кредитов и все 176 адресов сверены без потерь; три явно описанных исключения проверены отдельно.",
+      "Смысловые подписи, цены и оговорки об ограничениях личного опыта сохранены.",
+      "Классификатор small; в шапке добавлен только журнал малой правки, прежние записи сохранены."
+    ],
+    "limitations": [
+      "qualityScore и ceiling, если они существуют, унаследованы без новой полной оценки.",
+      "Прежние sourceChecks, risks, factChecks, assets и иные доказательства сохраняют исходные даты и объём проверки.",
+      "Новых исходных лицензий, поездок, котировок, медицинских и правовых фактов этот обзор не подтверждает.",
+      "Браузер, полный build, публикация и live-проверка этим рецензентом не запускались."
+    ],
+    "previousAssessment": {
+      "reviewer": "Codex (affiliate_review)",
+      "reviewedAt": "2026-09-23",
+      "reviewScope": "Независимое чтение дельты и контекста; прежние баллы сохранены без повышения. Исторические факты и старый визуальный рендер не объявлены заново подтверждёнными.",
+      "proseHash": "fcea295b5b87dd0c",
+      "sourceSha256": "21c829d008fd9dd661286c28df311d27a39dc6ce49d9da2ae9a6bb8f431d41e6",
+      "rationale": "Существующий городской каталог перенесён также к раннему выбору базы для трёх дней. Анкор соответствует Гонконгу, совет сверить метро связан с маршрутом. Билеты Peak Tram и Ngong Ping, пограничные условия и цены не изменены. Прежняя оценка сохранена без повышения.",
+      "editKind": {
+        "kind": "small",
+        "wordsAdded": 38,
+        "titleChanged": false,
+        "descriptionChanged": false,
+        "newImages": []
+      }
+    },
+    "retainedHistoricalFields": [
+      "schemaVersion",
+      "slug",
+      "qualityScore",
+      "risks",
+      "status",
+      "baselineCommit",
+      "baselineProseHash",
+      "sourceChecks",
+      "deltaChecks",
+      "inheritedAssessment",
+      "followupReviews"
+    ]
   }
 }

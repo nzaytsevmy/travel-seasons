@@ -70,7 +70,6 @@ const coverImage = destPhotos[coverPath];
 // (мороз, «холодно») — только кадр, помеченный этим месяцем, то есть зимний: зелёные летние виды северных стран
 // рассказывали бы про январь неправду. Кадр с пометкой months в тёплые месяцы стоит только в свои.
 const hubImageFiles = import.meta.glob('../../../content/blog/_images/**/*.{jpg,jpeg,webp}', { import: 'default' });
-const hubCredits = import.meta.glob('../../../content/blog/_images/**/_credits.json', { eager: true, import: 'default' });
 const холодно = ['winter-frost', 'temperate-cold', 'cold-extreme'].includes(bucketKey);
 const годен = (p) => (p.months ? p.months.includes(monthIdx + 1) : !холодно);
 const фотоСтраны = countryPhotos(d.slug);
@@ -87,18 +86,6 @@ const сКадром = async (p) => {
 const широкий = пул[0] ? await сКадром(пул[0]) : null;
 const троеФайлов = [...пул.slice(1), ...запас].filter((p, i, a) => a.findIndex((x) => x.file === p.file) === i).slice(0, 3);
 const тройка = троеФайлов.length === 3 ? await Promise.all(троеФайлов.map(сКадром)) : [];
-const семьяЛицензии = (l) => (/pixabay/i.test(l) ? 'Pixabay' : /^CC BY-SA/i.test(l) ? 'CC BY-SA' : /^CC BY/i.test(l) ? 'CC BY' : /^CC0/i.test(l) ? 'CC0' : l);
-const авторы = new Map();
-for (const p of [широкий, ...тройка].filter(Boolean)) {
-  const cut = p.file.lastIndexOf('/');
-  const записи = hubCredits[`../../../content/blog/_images/${p.file.slice(0, cut)}/_credits.json`] || {};
-  const имя = p.file.slice(cut + 1);
-  const rec = записи[имя.replace(/\.\w+$/, '')] || записи[имя];
-  if (!rec?.creator) continue;
-  const lic = семьяЛицензии(rec.license || '');
-  авторы.set(lic, [...new Set([...(авторы.get(lic) || []), rec.creator])]);
-}
-const фотоКредиты = авторы.size ? `Фотографии: ${[...авторы].map(([lic, who]) => `${who.join(', ')} (${lic})`).join('; ')}.` : '';
 
 // Реальный авторский опыт (E-E-A-T) — берём ТОЛЬКО что уже есть в repo, не выдумываем
 const rich = regionsRich[d.slug];
@@ -590,7 +577,6 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       <p class="pmu-tour">Собирать маршрут самому не всегда хочется — тогда берут место в небольшой группе: <a href={youtravelCountry(d.slug, `${affiliateSubId}_${m.slug}`)} rel="sponsored noopener" target="_blank">{pageAdvice?.tourLabel || `авторские туры ${d.cases.vP}`}</a>.</p>
     </section>
 
-    {фотоКредиты && <p class="pmu-credits">{typo(фотоКредиты)}</p>}
   </main>
 
   {/* Липкая панель со страховкой остаётся: за 8 дней до правки она дала 7 переходов
@@ -988,7 +974,6 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 .pmu-fill { position: relative; flex: 1 1 auto; min-height: 260px; }
 .pmu-practice .pmu-fill :global(img) { position: absolute; inset: 0; height: 100%; }
 .pmu-practice > div { display: grid; row-gap: 20px; align-content: start; }
-.pmu-credits { font-size: .8125rem; color: var(--text-faint); margin: 40px 0 0; }
 @media (max-width: 760px) {
   .pmu-practice { grid-template-columns: 1fr; }
   .pmu-practice :global(img) { height: 220px; }

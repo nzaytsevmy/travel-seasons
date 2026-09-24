@@ -17,10 +17,9 @@ import { TP_LINKS, aviasalesRoute, cherehapaCountry, ostrovokCity, youtravelCoun
 const url = 'https://traveltribe.ru/japan/';
 
 // Кадры по слотам макета Омана, как на страницах стран: обложка, широкий кадр после событий по месяцам
-// и три в разделе визы. Подпись «Фотографии: …» собирается из тех же записей о лицензии, по которым кадр
-// прошёл проверку происхождения; свой кадр подписи не требует.
+// и три в разделе визы. Атрибуция на /legal/photos/ собирается из тех же записей о лицензии,
+// по которым кадр прошёл проверку происхождения.
 const hubImageFiles = import.meta.glob('../content/blog/_images/**/*.{jpg,jpeg,webp}', { import: 'default' });
-const hubCredits = import.meta.glob('../content/blog/_images/**/_credits.json', { eager: true, import: 'default' });
 const фотоЯпонии = countryPhotos('japan');
 const сКадром = async (p) => {
   const load = hubImageFiles[`../content/blog/_images/${p.file}`];
@@ -33,18 +32,6 @@ const практика = await Promise.all(фотоЯпонии.practice.map(с�
 // Ширины обложки и предзагрузки совпадают, иначе браузер скачает не тот вариант.
 const HERO_WIDTHS = [512, 768, 1024, 1600];
 const heroPreload = await getImage({ src: герой.img, widths: HERO_WIDTHS, formats: ['webp'], quality: 72 });
-const семьяЛицензии = (l) => (/pixabay/i.test(l) ? 'Pixabay' : /^CC BY-SA/i.test(l) ? 'CC BY-SA' : /^CC BY/i.test(l) ? 'CC BY' : /^CC0/i.test(l) ? 'CC0' : l);
-const авторы = new Map();
-for (const p of [герой, широкий, ...практика]) {
-  const cut = p.file.lastIndexOf('/');
-  const записи = hubCredits[`../content/blog/_images/${p.file.slice(0, cut)}/_credits.json`] || {};
-  const имя = p.file.slice(cut + 1);
-  const rec = записи[имя.replace(/\.\w+$/, '')] || записи[имя];
-  if (!rec?.creator) continue;
-  const lic = семьяЛицензии(rec.license || '');
-  авторы.set(lic, [...new Set([...(авторы.get(lic) || []), rec.creator])]);
-}
-const фотоКредиты = авторы.size ? `Фотографии: ${[...авторы].map(([lic, who]) => `${who.join(', ')} (${lic})`).join('; ')}.` : '';
 
 const faqs = [
   {
@@ -351,7 +338,6 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
       </ul>
     </section>
 
-    {фотоКредиты && <p class="jp-credits">{typo(фотоКредиты)}</p>}
   </main>
 
   <Footer />
@@ -730,7 +716,6 @@ const tabsD = ALL_DIRECTIONS.find((x) => x.slug === 'japan');
 .jp-fill { position: relative; flex: 1 1 auto; min-height: 300px; }
 .jp-practice .jp-fill :global(img) { position: absolute; inset: 0; height: 100%; }
 .jp-practice > div { display: grid; row-gap: 20px; align-content: start; }
-.jp-credits { font-size: .8125rem; color: var(--text-faint); margin: 40px 0 0; }
 @media (max-width: 760px) {
   .jp-practice { grid-template-columns: 1fr; }
   .jp-practice :global(img) { height: 240px; }

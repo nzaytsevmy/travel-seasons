@@ -2,20 +2,17 @@
   "schemaVersion": 1,
   "slug": "turkey-guide-2026",
   "reviewer": "Codex (affiliate_review)",
-  "reviewedAt": "2026-09-23",
+  "reviewedAt": "2026-09-24",
   "status": "approved_delta_pending_release_checks",
-  "reviewScope": "Малая ссылочная правка: независимая оценка дельты без выдуманного полного qualityScore старой статьи.",
-  "proseHash": "20afb0b2dc102588",
-  "sourceSha256": "17c094da444989184e6229e7a03104f2e97766bdd1cb6df1f56d0e8433b95c75",
+  "reviewScope": "Независимое ревью только переноса фотоатрибуции и сохранности исходного текста; прежние оценки и доказательства исторические.",
+  "proseHash": "daa21b3d3e627384",
+  "sourceSha256": "36cfa5648786ec98ac686916140c870fef55e821a6f45844fa42fd350835b7dc",
   "baselineCommit": "57af21bd26149d05b1b9ea977483015dd9a22cb2",
   "baselineProseHash": "78f70187f48f31a0",
-  "rationale": "В парном сравнении готового пакета и самостоятельной поездки появились соответствующие действия: гостиницы Турции и пакетный поиск Level. Общее назначение Level явно названо сервисом, Турция не зашита в непроверенный deep link. Текст требует одинаковые даты и питание, не гарантирует старую цену.",
+  "rationale": "24.09.2026: независимо проверена только малая правка отображения фотоатрибуции. Строки об авторах, лицензиях и оригиналах перенесены в реестр фотографий; осмысленные подписи, сами изображения, цены, остальная проза и даты публикации сохранены. Тексты и адреса перенесённых кредитов сверены с базовой версией; для Патагонии отдельно проверено удаление устаревшего описания прежних кадров без переноса этой ошибки. Прежние баллы, потолок и ограничения сохранены без повышения. Полной новой проверки фактов, исходных лицензий, личного опыта или адаптивного рендера этот delta-review не заявляет; исходное обоснование и дата предыдущей оценки сохранены в photoCaptionDeltaReview.previousAssessment.",
   "editKind": {
     "kind": "small",
-    "wordsAdded": 32,
-    "titleChanged": false,
-    "descriptionChanged": false,
-    "newImages": []
+    "wordsAdded": 0
   },
   "sourceChecks": [],
   "deltaChecks": {
@@ -38,5 +35,60 @@
     "qualityScoreUnchanged": false,
     "priorDelta": null,
     "note": "Дополнительные поля старого JSON сохранены, но относятся к прежнему рецензенту и дате. При отсутствии старого JSON источником унаследованной оценки служит историческая шапка, что явно указано."
+  },
+  "photoCaptionDeltaReview": {
+    "schemaVersion": 1,
+    "reviewer": "Codex (affiliate_review)",
+    "reviewedAt": "2026-09-24",
+    "verdict": "PASS_SCOPED_DELTA",
+    "baselineCommit": "219d258dde2f1cda4605c59a8451c00ce8c4ae67",
+    "baselineProseHash": "20afb0b2dc102588",
+    "proseHash": "daa21b3d3e627384",
+    "sourceSha256": "36cfa5648786ec98ac686916140c870fef55e821a6f45844fa42fd350835b7dc",
+    "edits": 1,
+    "editKind": "small",
+    "wordsAdded": 0,
+    "attributionFile": "src/data/photo-credit-notes.json",
+    "attributionKey": "turkey-guide-2026",
+    "attributionFileSha256": "5da3db7d9f1a1be3de4a1c62c41f758ca5e91f73c3f02bc655aa8e146ce94c11",
+    "checks": [
+      "Все изменения тела соответствуют независимо прочитанному реестру before/after.",
+      "Разметка изображений и импорты сохранены; нет новых цен, утверждений или дат публикации.",
+      "129 переносов кредитов и все 176 адресов сверены без потерь; три явно описанных исключения проверены отдельно.",
+      "Смысловые подписи, цены и оговорки об ограничениях личного опыта сохранены.",
+      "Классификатор small; в шапке добавлен только журнал малой правки, прежние записи сохранены."
+    ],
+    "limitations": [
+      "qualityScore и ceiling, если они существуют, унаследованы без новой полной оценки.",
+      "Прежние sourceChecks, risks, factChecks, assets и иные доказательства сохраняют исходные даты и объём проверки.",
+      "Новых исходных лицензий, поездок, котировок, медицинских и правовых фактов этот обзор не подтверждает.",
+      "Браузер, полный build, публикация и live-проверка этим рецензентом не запускались."
+    ],
+    "previousAssessment": {
+      "reviewer": "Codex (affiliate_review)",
+      "reviewedAt": "2026-09-23",
+      "reviewScope": "Малая ссылочная правка: независимая оценка дельты без выдуманного полного qualityScore старой статьи.",
+      "proseHash": "20afb0b2dc102588",
+      "sourceSha256": "17c094da444989184e6229e7a03104f2e97766bdd1cb6df1f56d0e8433b95c75",
+      "rationale": "В парном сравнении готового пакета и самостоятельной поездки появились соответствующие действия: гостиницы Турции и пакетный поиск Level. Общее назначение Level явно названо сервисом, Турция не зашита в непроверенный deep link. Текст требует одинаковые даты и питание, не гарантирует старую цену.",
+      "editKind": {
+        "kind": "small",
+        "wordsAdded": 32,
+        "titleChanged": false,
+        "descriptionChanged": false,
+        "newImages": []
+      }
+    },
+    "retainedHistoricalFields": [
+      "schemaVersion",
+      "slug",
+      "status",
+      "baselineCommit",
+      "baselineProseHash",
+      "sourceChecks",
+      "deltaChecks",
+      "risks",
+      "inheritedAssessment"
+    ]
   }
 }

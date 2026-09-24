@@ -30,6 +30,7 @@ import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu, addedAt } from '../data/news.j
 import { pickNewsImage, newsImageNote } from '../data/news-images.js';
 import { bySlug } from '../data/directions.js';
 import { newsUrl } from '../data/news.js';
+import { newsPhotoCaption } from '../data/photo-credits.js';
 
 const { entry, index = 0 } = Astro.props;
 const d = entry.data;
@@ -42,15 +43,11 @@ const countryName = (slug) => bySlug(slug)?.cases?.nom ?? slug;
 // существующие — иначе получаем битый адрес (поймано на Намибии и Австралии).
 const linkedCountries = (d.countries ?? []).filter((s) => bySlug(s));
 const cover = pickNewsImage(d, entry.slug, index);
-// Подпись под кадром. Для стока честно называем, ЧТО на фото и чей он: иначе
+// Подпись под кадром. Для стока честно называем, ЧТО на фото: иначе
 // иллюстрация к теме читается как снимок с места события. Названия у кадра со
 // стока может не быть вовсе — тогда говорим прямо, что это иллюстрация, а не
-// оставляем читателя с одним именем автора.
-const coverNote = d.imageCredit
-  ? [d.imageTitle || 'Иллюстрация к теме', `фото: ${d.imageCredit}`, d.imageLicense]
-      .filter(Boolean).join(' · ')
-  : newsImageNote(d);
-const coverLink = d.imageSource ?? null;
+// оставляем читателя без контекста. Авторство и лицензия — на /legal/photos/.
+const coverNote = newsPhotoCaption(d, newsImageNote(d));
 ---
 <li class="nv-item" id={entry.slug}>
   <div class="nv-meta">
@@ -78,7 +75,7 @@ const coverLink = d.imageSource ?? null;
              sizes="(max-width: 700px) 100vw, 700px" loading="lazy" formats={['webp']} />
       {coverNote && (
         <figcaption>
-          {coverLink ? <a href={coverLink} rel="nofollow noopener" target="_blank">{coverNote}</a> : coverNote}
+          {coverNote}
         </figcaption>
       )}
     </figure>

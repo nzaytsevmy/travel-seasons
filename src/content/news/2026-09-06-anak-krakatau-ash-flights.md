@@ -25,9 +25,9 @@ sources:
     url: https://en.antaranews.com/news/430109/no-sea-level-anomalies-during-anak-krakatau-eruption-bmkg
 image: "./_images/2026-09-06-anak-krakatau-ash-flights.jpg"
 imageAlt: "Снимок Sentinel-2 от 2 июля 2026 года: шлейф пепла тянется от острова Анак-Кракатау на север над Зондским проливом"
-imageCredit: "European Union, Copernicus Sentinel-2 imagery"
-imageLicense: "Attribution"
-imageLicenseUrl: ""
+imageCredit: "European Union, Copernicus Sentinel-2 imagery. Contains modified Copernicus Sentinel data 2026"
+imageLicense: "Copernicus Sentinel data licence"
+imageLicenseUrl: "https://cds.climate.copernicus.eu/licences/ec-sentinel"
 imageSource: "https://commons.wikimedia.org/wiki/File:Ash_plume_rises_from_Anak_Krakatau_Volcano,_Indonesia_(Copernicus_2026-07-02).webp"
 ---
 
