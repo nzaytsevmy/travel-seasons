@@ -1,0 +1,59 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Footer from '../../components/Footer.astro';
+import notes from '../../data/photo-credit-notes.json';
+import { publicPhotoCredits } from '../../data/photo-credits.js';
+
+const sources = import.meta.glob('../../content/blog/_images/**/_credits.json', { eager: true, import: 'default' });
+const credits = publicPhotoCredits(Object.values(sources).flatMap((records) => Object.values(records)), await getCollection('news'));
+const articles = Object.entries(notes).sort(([,a], [,b]) => a.title.localeCompare(b.title, 'ru'));
+const canonical = 'https://traveltribe.ru/legal/photos/';
+const ldJson = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'WebPage', url: canonical, name: 'Авторы фотографий — TravelTribe', inLanguage: 'ru-RU', isPartOf: { '@id': 'https://traveltribe.ru/#website' } },
+    { '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://traveltribe.ru/' },
+      { '@type': 'ListItem', position: 2, name: 'Авторы фотографий', item: canonical },
+    ] },
+  ],
+};
+---
+<Layout title="Авторы фотографий — TravelTribe" description="Авторы снимков, оригиналы и лицензии фотографий, используемых на TravelTribe." canonical={canonical} ldJson={ldJson} noindex={true}>
+  <main id="main" class="legal-doc photo-credits">
+    <h1>Авторы фотографий</h1>
+    <p>Здесь собраны сведения о снимках на TravelTribe. Условия использования каждого кадра указаны по ссылке на его лицензию. Для показа на сайте фотографии сжаты и могут быть кадрированы.</p>
+    <h2>Фотографии в статьях</h2>
+    {articles.map(([slug, article]) => (
+      <details id={slug}>
+        <summary>{article.title}</summary>
+        <div class="photo-credits-notes">
+          <p><a href={`/blog/${slug}/`}>Открыть статью «{article.title}»</a></p>
+          {article.notes.map((note) => <Fragment set:html={note} />)}
+        </div>
+      </details>
+    ))}
+    <h2>Снимки по открытым лицензиям</h2>
+    <p>Имена авторов и названия работ сохранены в исходном написании.</p>
+    <ul class="photo-credits-list">
+      {credits.map((credit) => (
+        <li>
+          <a href={credit.source} rel="noopener" target="_blank">{credit.title}</a>
+          <span> — {credit.creator}. </span>
+          <a href={credit.licenseUrl} rel="license noopener" target="_blank">{credit.license}</a>.
+          {credit.changes.map((change) => <span> {change}</span>)}
+        </li>
+      ))}
+    </ul>
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  details { border-top: 1px solid var(--line); }
+  summary { cursor: pointer; min-height: 44px; padding: 12px 0; line-height: 1.55; }
+  summary:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  .photo-credits-notes { padding: 0 0 16px; }
+  .photo-credits-notes :global(p), .photo-credits-list li { overflow-wrap: anywhere; }
+</style>

@@ -13,6 +13,7 @@
 // Тонкой страница при этом не остаётся: капсула-ответ, свой кадр, текст,
 // первоисточник, дата сверки и переход к разбору направления.
 import Layout from '../../layouts/Layout.astro';
+import { newsPhotoCaption } from '../../data/photo-credits.js';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Footer from '../../components/Footer.astro';
 import { Image, getImage } from 'astro:assets';
@@ -46,10 +47,7 @@ const dirs = (d.countries ?? []).map((s) => bySlug(s)).filter(Boolean);
 const guides = dirs.flatMap((dir) => (dir.relatedPosts ?? []).slice(0, 2).map((p) => ({ ...p, dir })));
 
 const cover = pickNewsImage(d, entry.slug, 0);
-const coverNote = d.imageCredit
-  ? [d.imageTitle || 'Иллюстрация к теме', `фото: ${d.imageCredit}`, d.imageLicense].filter(Boolean).join(' · ')
-  : newsImageNote(d);
-const coverLink = d.imageSource ?? null;
+const coverNote = newsPhotoCaption(d, newsImageNote(d));
 
 // Крупный дериват — для карточки в соцсетях и для поиска, в страницу не идёт.
 const wide = cover ? await getImage({ src: cover, width: 1600, format: 'webp' }) : null;
@@ -113,7 +111,7 @@ const ldJson = {
                  formats={['webp']} />
           {coverNote && (
             <figcaption>
-              {coverLink ? <a href={coverLink} rel="nofollow noopener" target="_blank">{coverNote}</a> : coverNote}
+              {coverNote}
             </figcaption>
           )}
         </figure>

@@ -11,6 +11,13 @@ tripDate: "декабрь 2025"
 tripPlace: "Уганда — Бвинди, Королевы Елизаветы НП, Ишаша"
 coverPosition: "center 38%"
 checks:
+  - date: 2026-09-24
+    what: "Отображение сведений об авторах фотографий"
+    changed: "Атрибуция вынесена на общую страницу фотографий. Описания мест, исходные кадры и записи об их происхождении сохранены. Факты статьи и даты публикации не менялись."
+    minor: true
+    sources:
+      - name: "Creative Commons: способы атрибуции"
+        url: "https://creativecommons.org/faq/#how-do-i-properly-attribute-material-offered-under-a-creative-commons-license"
   - date: 2026-09-07
     what: "Партнёрские ссылки на программы без броней"
     changed: "Сняты партнёрские ссылки, не давшие броней. Убраны: eSIM Airalo. За полгода по всему сайту эти программы не дали ни одной брони при 200+ живых кликах (сверка кассы 06.09.2026, решение Никиты 07.09.2026); текст и цены не менялись."
@@ -318,5 +325,3 @@ checks:
 ---
 
 *Пермиты — на сайте [Uganda Wildlife Authority](https://ugandawildlife.org), виза — на портале [Uganda Immigration](https://visas.immigration.go.ug), прививки — по рекомендациям [CDC Travel Health](https://wwwnc.cdc.gov/travel/destinations/traveler/none/uganda).*
-
-*Фотографии горилл в Бвинди — мои, сняты в декабре 2025 года.*

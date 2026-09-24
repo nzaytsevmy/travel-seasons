@@ -35,6 +35,13 @@ volatileFacts:
     reviewAfter: 2026-10-24
     fallback: "Проверить часы посещений и ограничения реставрации Кофуку-дзи; снять устаревшие часы и описание доступности."
 checks:
+  - date: 2026-09-24
+    what: "Отображение сведений об авторах фотографий"
+    changed: "Атрибуция вынесена на общую страницу фотографий. Описания мест, исходные кадры и записи об их происхождении сохранены. Факты статьи и даты публикации не менялись."
+    minor: true
+    sources:
+      - name: "Creative Commons: способы атрибуции"
+        url: "https://creativecommons.org/faq/#how-do-i-properly-attribute-material-offered-under-a-creative-commons-license"
   - date: 2026-09-23
     what: "Две станции, тарифы перевозчика, часы и билеты храмов"
     changed: "Разделены базовые тарифы и доплаты. Тодай-дзи и специальное посещение Касуга-тайся посчитаны отдельно. В расчёт не включены еда, городской транспорт и жильё."
@@ -94,7 +101,7 @@ export const naraStay = ostrovokCity('japan', 'nara', 'nara_overnight');
 
 Ночёвка нужна ради другого темпа: утро в парке, вечер у Нигацу-до, меньше оглядки на обратный поезд. Если это ваш план, <a href={naraStay} target="_blank" rel="sponsored noopener noreferrer">посмотрите жильё в Наре на Островке</a>. Для обычной поездки из Киото или Осаки переносить багаж и менять отель необязательно.
 
-*На обложке — архивный кадр Тодай-дзи. Фото: Jakub Hałun, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); [оригинал](https://commons.wikimedia.org/w/index.php?curid=11451315).*
+*На обложке — архивный кадр Тодай-дзи.*
 
 ## Как добраться в Нару из Киото и Осаки?
 
@@ -116,7 +123,7 @@ export const naraStay = ostrovokCity('japan', 'nara', 'nara_overnight');
 
 ![Улица Нары с деревьями, пешеходами и низкими зданиями](./_images/nara-za-odin-den/street.jpg)
 
-*Фото: Raf24~commonswiki, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); [оригинал](https://commons.wikimedia.org/w/index.php?curid=79192361).*
+
 
 ## В каком порядке смотреть Нару за один день?
 
@@ -139,7 +146,7 @@ export const naraStay = ostrovokCity('japan', 'nara', 'nara_overnight');
 
 ![Восточный золотой зал Кофуку-дзи в Наре](./_images/nara-za-odin-den/kofukuji.jpg)
 
-*Фото: Cun Cun, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); [оригинал](https://commons.wikimedia.org/w/index.php?curid=79848493).*
+
 
 ## Что увидеть в Тодай-дзи и сколько стоит вход?
 
@@ -153,7 +160,7 @@ export const naraStay = ostrovokCity('japan', 'nara', 'nara_overnight');
 
 ![Статуи и деревянные колонны внутри зала Большого Будды в Тодай-дзи](./_images/nara-za-odin-den/todaiji.jpg)
 
-*Фото: sailko, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/); [оригинал](https://commons.wikimedia.org/w/index.php?curid=19813041).*
+
 
 ## Зачем подниматься к Нигацу-до?
 
@@ -165,7 +172,7 @@ export const naraStay = ostrovokCity('japan', 'nara', 'nara_overnight');
 
 ![Деревянная галерея Нигацу-до с видом на Нару](./_images/nara-za-odin-den/nigatsudo.jpg)
 
-*Фото: Guilhem Vellut, [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/); [оригинал](https://commons.wikimedia.org/w/index.php?curid=150051096).*
+
 
 ## Как посетить Касуга-тайся и не опоздать?
 
@@ -177,11 +184,11 @@ export const naraStay = ostrovokCity('japan', 'nara', 'nara_overnight');
 
 ![Подвесные фонари у красной галереи Касуга-тайся](./_images/nara-za-odin-den/lanterns.jpg)
 
-*Фото: Bernard Gagnon, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/); [оригинал](https://commons.wikimedia.org/w/index.php?curid=4141984).*
+
 
 ![Каменные фонари вдоль зелёного прохода в парке Нары](./_images/nara-za-odin-den/park.jpg)
 
-*Фото: Bgabel, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/); [оригинал](https://commons.wikimedia.org/w/index.php?curid=22684703).*
+
 
 ## Можно ли кормить оленей и гулять с ребёнком?
 
@@ -193,7 +200,7 @@ export const naraStay = ostrovokCity('japan', 'nara', 'nara_overnight');
 
 ![Олени у деревянного ограждения в Наре](./_images/nara-za-odin-den/deer.jpg)
 
-*Фото: Balon Greyjoy, [CC0](https://creativecommons.org/publicdomain/zero/1.0/deed.en/); [оригинал](https://commons.wikimedia.org/w/index.php?curid=114034520).*
+
 
 ## Что посмотреть после храмов: Укимидо и Нарамати?
 
@@ -203,7 +210,7 @@ export const naraStay = ostrovokCity('japan', 'nara', 'nara_overnight');
 
 ![Деревянный павильон Укимидо над водой](./_images/nara-za-odin-den/ukimido.jpg)
 
-*Фото: Ian G Shingler, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); [оригинал](https://commons.wikimedia.org/w/index.php?curid=163263429).*
+
 
 В Нарамати выбирайте несколько улиц вместо списка обязательных магазинов. Многие небольшие заведения имеют собственные выходные и заканчивают работу раньше вечернего поезда. Если нужен конкретный музей, ресторан или мастерская, проверьте именно его часы. «Погулять в квартале» и «успеть во все интерьеры» — разные планы.
 
@@ -211,7 +218,7 @@ export const naraStay = ostrovokCity('japan', 'nara', 'nara_overnight');
 
 ![Вход в музей Нарамати с вывесками и красными подвесными украшениями](./_images/nara-za-odin-den/naramachi.jpg)
 
-*Фото: 663highland, [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/); [оригинал](https://commons.wikimedia.org/w/index.php?curid=6006055).*
+
 
 ## Сколько заложить на поезд и храмовые билеты?
 

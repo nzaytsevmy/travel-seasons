@@ -284,10 +284,8 @@ const inline = (guide?.photos || [])
   .map((p) => ({ ...p, img: inlinePhotos[`../assets/destinations/inline/${p.file}.jpg`] }))
   .filter((p) => p.img);
 // Кадры страны по слотам макета Омана: широкий после событий по месяцам и три в разделе
-// въезда. Подпись «Фотографии: …» собирается из тех же записей о лицензии, по которым
-// кадр прошёл проверку происхождения; свой кадр подписи не требует.
+// въезда. Авторство и лицензии публикуются на /legal/photos/.
 const hubImageFiles = import.meta.glob('../content/blog/_images/**/*.{jpg,jpeg,webp}', { import: 'default' });
-const hubCredits = import.meta.glob('../content/blog/_images/**/_credits.json', { eager: true, import: 'default' });
 const фотоСтраны = countryPhotos(d.slug);
 const сКадром = async (p) => {
   const load = hubImageFiles[`../content/blog/_images/${p.file}`];
@@ -297,18 +295,6 @@ const сКадром = async (p) => {
 const широкий = фотоСтраны ? await сКадром(фотоСтраны.wide) : null;
 const практика = фотоСтраны ? await Promise.all(фотоСтраны.practice.map(сКадром)) : [];
 const виды = COUNTRY_SIGHTS[d.slug] ? await Promise.all(COUNTRY_SIGHTS[d.slug].map(сКадром)) : [];
-const семьяЛицензии = (l) => (/pixabay/i.test(l) ? 'Pixabay' : /^CC BY-SA/i.test(l) ? 'CC BY-SA' : /^CC BY/i.test(l) ? 'CC BY' : /^CC0/i.test(l) ? 'CC0' : l);
-const авторы = new Map();
-for (const p of [широкий, ...практика, ...виды].filter(Boolean)) {
-  const cut = p.file.lastIndexOf('/');
-  const записи = hubCredits[`../content/blog/_images/${p.file.slice(0, cut)}/_credits.json`] || {};
-  const имя = p.file.slice(cut + 1);
-  const rec = записи[имя.replace(/\.\w+$/, '')] || записи[имя];
-  if (!rec?.creator) continue;
-  const lic = семьяЛицензии(rec.license || '');
-  авторы.set(lic, [...new Set([...(авторы.get(lic) || []), rec.creator])]);
-}
-const фотоКредиты = авторы.size ? `Фотографии: ${[...авторы].map(([lic, who]) => `${who.join(', ')} (${lic})`).join('; ')}.` : '';
 // Партнёрские ссылки — с ТЕМИ ЖЕ метками, что были: замер 20.09 сравнивает периоды,
 // и смена меток посередине разорвала бы ряд.
 const билеты = d.price?.iata ? aviasalesRoute('MOW', d.price.iata, subId) : null;
@@ -829,7 +815,6 @@ if (guide?.itinerary?.length) {
       </div>
     </section>
 
-    {фотоКредиты && <p class="om-credits">{typo(фотоКредиты)}</p>}
 
     <div class="om-foot">
       <Image src={author} alt="Никита Зайцев" width={60} height={74} format="webp" quality={80} />
@@ -897,7 +882,6 @@ if (guide?.itinerary?.length) {
   .om-practice .om-fill :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .om-practice > div { display: grid; row-gap: 20px; align-content: start; }
   .om-inline { margin: 0; }
-  .om-credits { font-size: 0.8125rem; color: var(--text-faint); margin: 40px 0 0; }
 
   .om h1 { font-family: var(--ff-display); font-weight: 400; font-size: clamp(2.5rem, 5.6vw, 4.5rem); line-height: 1; margin: 0 0 16px; text-wrap: balance; }
   .om-yr { color: var(--gold); }

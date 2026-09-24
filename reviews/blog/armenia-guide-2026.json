@@ -2,20 +2,17 @@
   "schemaVersion": 1,
   "slug": "armenia-guide-2026",
   "reviewer": "Codex (affiliate_review)",
-  "reviewedAt": "2026-09-23",
+  "reviewedAt": "2026-09-24",
   "status": "approved_delta_pending_release_checks",
-  "reviewScope": "Малая ссылочная правка: независимая оценка дельты без выдуманного полного qualityScore старой статьи.",
-  "proseHash": "33269335b7b9e31a",
-  "sourceSha256": "07a3b8884cbc53b65781e54476dc28b3efb0a01f7ff4fe8e1fd45ae173eb169a",
+  "reviewScope": "Независимое ревью только переноса фотоатрибуции и сохранности исходного текста; прежние оценки и доказательства исторические.",
+  "proseHash": "3bf3de18095f5cb1",
+  "sourceSha256": "84cc59afdfcc29659376e06949976e749afaba975c4c24551ff928ef5626acda",
   "baselineCommit": "57af21bd26149d05b1b9ea977483015dd9a22cb2",
   "baselineProseHash": "81e5faffe593048f",
-  "rationale": "Каталог туров по Армении находится у решения ехать в Татев и на юг с ночёвкой. Подпись просит проверить Татев, ночёвки и транспорт в конкретной программе; не выдаёт страновой каталог за определённую экскурсию. Старые источники и личные впечатления не переписаны.",
+  "rationale": "24.09.2026: независимо проверена только малая правка отображения фотоатрибуции. Строки об авторах, лицензиях и оригиналах перенесены в реестр фотографий; осмысленные подписи, сами изображения, цены, остальная проза и даты публикации сохранены. Тексты и адреса перенесённых кредитов сверены с базовой версией; для Патагонии отдельно проверено удаление устаревшего описания прежних кадров без переноса этой ошибки. Прежние баллы, потолок и ограничения сохранены без повышения. Полной новой проверки фактов, исходных лицензий, личного опыта или адаптивного рендера этот delta-review не заявляет; исходное обоснование и дата предыдущей оценки сохранены в photoCaptionDeltaReview.previousAssessment.",
   "editKind": {
     "kind": "small",
-    "wordsAdded": 24,
-    "titleChanged": false,
-    "descriptionChanged": false,
-    "newImages": []
+    "wordsAdded": 0
   },
   "sourceChecks": [],
   "deltaChecks": {
@@ -38,5 +35,60 @@
     "qualityScoreUnchanged": false,
     "priorDelta": null,
     "note": "Дополнительные поля старого JSON сохранены, но относятся к прежнему рецензенту и дате. При отсутствии старого JSON источником унаследованной оценки служит историческая шапка, что явно указано."
+  },
+  "photoCaptionDeltaReview": {
+    "schemaVersion": 1,
+    "reviewer": "Codex (affiliate_review)",
+    "reviewedAt": "2026-09-24",
+    "verdict": "PASS_SCOPED_DELTA",
+    "baselineCommit": "219d258dde2f1cda4605c59a8451c00ce8c4ae67",
+    "baselineProseHash": "33269335b7b9e31a",
+    "proseHash": "3bf3de18095f5cb1",
+    "sourceSha256": "84cc59afdfcc29659376e06949976e749afaba975c4c24551ff928ef5626acda",
+    "edits": 1,
+    "editKind": "small",
+    "wordsAdded": 0,
+    "attributionFile": "src/data/photo-credit-notes.json",
+    "attributionKey": "armenia-guide-2026",
+    "attributionFileSha256": "5da3db7d9f1a1be3de4a1c62c41f758ca5e91f73c3f02bc655aa8e146ce94c11",
+    "checks": [
+      "Все изменения тела соответствуют независимо прочитанному реестру before/after.",
+      "Разметка изображений и импорты сохранены; нет новых цен, утверждений или дат публикации.",
+      "129 переносов кредитов и все 176 адресов сверены без потерь; три явно описанных исключения проверены отдельно.",
+      "Смысловые подписи, цены и оговорки об ограничениях личного опыта сохранены.",
+      "Классификатор small; в шапке добавлен только журнал малой правки, прежние записи сохранены."
+    ],
+    "limitations": [
+      "qualityScore и ceiling, если они существуют, унаследованы без новой полной оценки.",
+      "Прежние sourceChecks, risks, factChecks, assets и иные доказательства сохраняют исходные даты и объём проверки.",
+      "Новых исходных лицензий, поездок, котировок, медицинских и правовых фактов этот обзор не подтверждает.",
+      "Браузер, полный build, публикация и live-проверка этим рецензентом не запускались."
+    ],
+    "previousAssessment": {
+      "reviewer": "Codex (affiliate_review)",
+      "reviewedAt": "2026-09-23",
+      "reviewScope": "Малая ссылочная правка: независимая оценка дельты без выдуманного полного qualityScore старой статьи.",
+      "proseHash": "33269335b7b9e31a",
+      "sourceSha256": "07a3b8884cbc53b65781e54476dc28b3efb0a01f7ff4fe8e1fd45ae173eb169a",
+      "rationale": "Каталог туров по Армении находится у решения ехать в Татев и на юг с ночёвкой. Подпись просит проверить Татев, ночёвки и транспорт в конкретной программе; не выдаёт страновой каталог за определённую экскурсию. Старые источники и личные впечатления не переписаны.",
+      "editKind": {
+        "kind": "small",
+        "wordsAdded": 24,
+        "titleChanged": false,
+        "descriptionChanged": false,
+        "newImages": []
+      }
+    },
+    "retainedHistoricalFields": [
+      "schemaVersion",
+      "slug",
+      "status",
+      "baselineCommit",
+      "baselineProseHash",
+      "sourceChecks",
+      "deltaChecks",
+      "risks",
+      "inheritedAssessment"
+    ]
   }
 }

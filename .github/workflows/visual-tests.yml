@@ -41,6 +41,10 @@ on:
         description: 'Один проект Playwright; пусто — все проекты'
         type: string
         default: ''
+      qa_paths:
+        description: 'Дополнительные страницы preview: JSON-массив путей, со скриншотами'
+        type: string
+        default: ''
 
 # Отмена устаревших прогонов: два пуша в одну заявку давали ДВА полных набора,
 # и первый доезжал до конца впустую. Замер 03.08.2026 на заявке #171: набор в
@@ -158,6 +162,21 @@ jobs:
           PREVIEW_URL: http://localhost:4322
           BASELINE_GREP: ${{ inputs.baseline_grep }}
           BASELINE_PROJECT: ${{ inputs.baseline_project }}
+      - name: Дополнительные страницы выпуска
+        if: inputs.qa_paths != ''
+        run: node scripts/release-browser-qa.mjs
+        env:
+          QA_PATHS: ${{ inputs.qa_paths }}
+          QA_PREVIEW: '1'
+          QA_CAPTURE: '1'
+      - name: Сохранить проверку страниц выпуска
+        if: always() && inputs.qa_paths != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-browser-qa
+          path: artifacts/release-browser-qa/
+          if-no-files-found: error
+          retention-days: 7
       - name: Проверка стабильности (прогон 2 — сравнение с только что снятыми)
         run: |
           args=(-g "$BASELINE_GREP")
