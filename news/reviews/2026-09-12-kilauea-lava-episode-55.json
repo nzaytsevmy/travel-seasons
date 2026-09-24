@@ -2,52 +2,80 @@
   "schemaVersion": 1,
   "slug": "2026-09-12-kilauea-lava-episode-55",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
-  "reviewedAt": "2026-09-23",
-  "sha256": "4f5255ac8582f3eb79d3b94e38ce826d0c5dcc5f0e1ebe1e2f2351a572eba6b2",
-  "rationale": "UPDATE. Суточная сводка USGS от 22 сентября описывает небольшой поток у северного жерла 21 сентября в 19:23–19:24 HST, продвинувшийся примерно на 5–10 метров. Начало 55-го эпизода высоких фонтанов не объявлено, надёжного окна прогноза нет; WATCH/ORANGE сохраняются. Обновлённый текст точно передаёт этот короткий поток, не обещает видимую лаву и отделяет активность вулкана от доступных смотровых NPS. Оценка 4 сохранена.",
+  "reviewer": "Codex (news_lifecycle_review)",
+  "reviewedAt": "2026-09-24",
+  "reviewTimezone": "Asia/Shanghai",
+  "reviewedAtInstantUTC": "2026-09-23T19:29:37.740Z",
+  "sha256": "b1a11f66c7caca2a007d65d9eaed0aaa25709d4cbc467bd700dbe97b5fdb91a9",
+  "sourceSha256": "b1a11f66c7caca2a007d65d9eaed0aaa25709d4cbc467bd700dbe97b5fdb91a9",
+  "status": "pass",
+  "rationale": "UPDATE принят по новой дневной сводке23Sep08:23HST и сообщениюHVO08:41:34: серия предварительных излияний, шестое вместо устаревшего акцента на двух. Начало55-го эпизода высоких фонтанов не объявлено; факт наблюдения не гарантирует поток ко времени приезда. Понятное изменение наблюдаемой активности и границ посещения на нишевом направлении, без обещания фонтанов.",
   "risks": [
-    "Поток 5–10 метров не является объявлением 55-го эпизода.",
-    "Активность и видимость могут измениться к часу приезда; доступная смотровая не гарантирует лаву.",
-    "Зона извержения закрыта, наблюдение разрешено только с открытых точек по краю кальдеры."
+    "Начало и время 55-го эпизода не подтверждены. После последнего опубликованного сообщения не утверждаем непрерывное течение лавы."
   ],
   "blockingIssues": [],
+  "scope": "Окончательное независимое lifecycle-ревью текущего текста после авторских исправлений; первички прочитаны24SepShanghai. Без полного повторного исследования старой несвязанной фактуры, без новых фотографий, сборки, браузеров и публикации.",
   "evidence": [
     {
+      "id": "usgs-van",
       "url": "https://www.usgs.gov/volcanoes/kilauea/volcano-updates",
-      "publishedOn": "2026-09-22",
-      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
-      "finding": "Подтверждены время небольшого потока 21 сентября, расстояние 5–10 метров, свечение и отсутствие надёжного прогноза.",
-      "checkedOn": "2026-09-23"
+      "published": "2026-09-22T23:52:00-10:00",
+      "checked": "2026-09-24",
+      "access": "web full text; direct HTTP403",
+      "evidence": "lifecycle-sources/web-evidence.json",
+      "finding": "VAN 2026/H448: излияние у северного жерла началось 22 сентября около 22:10 HST и длилось 24 минуты; второе началось в 23:44. WATCH/ORANGE сохранены; отдельный VAN будет выпущен, когда начнётся эпизод фонтанов 55."
     },
     {
+      "id": "hvo-message",
       "url": "https://www.usgs.gov/observatories/hvo/observatory-messages",
-      "publishedOn": null,
-      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
-      "finding": "Короткие сообщения перечитаны 23 сентября; начала эпизода 55 не объявлено.",
-      "checkedOn": "2026-09-23"
+      "published": "2026-09-23T00:25:40-10:00",
+      "checked": "2026-09-24",
+      "access": "web full text; direct HTTP403",
+      "evidence": "lifecycle-sources/web-evidence.json",
+      "finding": "Второй поток завершился 23 сентября в 00:18 HST после 34 минут; наклон и тремор без изменения. Предварительная активность может идти часы или дни."
     },
     {
+      "id": "nps-havo",
       "url": "https://www.nps.gov/havo/planyourvisit/eruption-viewing.htm",
-      "publishedOn": "2026-09-08",
-      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
-      "finding": "Подтверждены закрытая зона извержения и наблюдение с доступных точек; видимая лава не гарантируется.",
-      "checkedOn": "2026-09-23"
+      "published": "2026-09-08",
+      "checked": "2026-09-24",
+      "access": "web full text + direct HTTP200",
+      "evidence": "lifecycle-sources/npsHavo.html",
+      "finding": "Зона извержения закрыта, доступны смотровые по краю кальдеры. Welcome Center, Kilauea Overlook и Uekahuna — Crater Rim Drive West; видимость и парковка не гарантированы."
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-09-24",
-    "reason": "Поток 5–10 метров не является объявлением 55-го эпизода.",
-    "decision": "UPDATE_SMALL_FLOW_NOT_EPISODE_55"
+    "decision": "UPDATE",
+    "checked": "2026-09-24",
+    "reviewOn": "2026-09-25",
+    "reason": "Следующий ежедневный выпуск либо раньше при новом VAN об эпизоде 55, изменении уровня или закрытий NPS. Не ждать будущей утренней сводки 23 сентября HST в этом запуске.",
+    "effectiveDate": null
   },
   "checks": {
+    "datePreserved": true,
+    "addedPreserved": true,
+    "bodyWords": 186,
     "capsuleWords": 47,
-    "bodyWords": 184,
     "titleChars": 52,
-    "internalLink": "/usa/",
-    "photoViewed": true,
+    "mediaMetadataUnchanged": true,
     "photoSha256": "c11653d481acf7a57ef5507facb67b5e7bb33734ca35017a6c5ac2dda837cbf1",
-    "photoFinding": "Архивный лавовый кратер Халемаумау; Ivtorov, CC BY-SA 4.0, метаданные Commons подтверждены через API 19.09.",
-    "scope": "Проверены финальные смысловые изменения и lifecycle-статус 23.09; прежняя фотоаттестация сохранена без нового поиска и просмотра; без сборки, браузерного прогона и публикации."
+    "photoViewedToday": false,
+    "mediaScope": "Фото/подпись совпадают сHEAD. Это сохранение прежней аттестации, не новое сегодняшнее визуальное/лицензионное ревью."
+  },
+  "priorReview": {
+    "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
+    "reviewedAt": "2026-09-23",
+    "sha256": "4f5255ac8582f3eb79d3b94e38ce826d0c5dcc5f0e1ebe1e2f2351a572eba6b2",
+    "scope": "Only prior provenance; not impersonating previous reviewer."
+  },
+  "finalNewSource": {
+    "checkedAtUTC": "2026-09-23T19:29:37.740Z",
+    "published": "23Sep2026 08:23HST daily;08:41:34HST short message",
+    "capture": ".run/2026-09-24/lifecycle-sources/kilauea-final-web.json",
+    "urls": [
+      "https://www.usgs.gov/volcanoes/kilauea/volcano-updates",
+      "https://www.usgs.gov/observatories/hvo/observatory-messages"
+    ],
+    "finding": "Sixth precursory overflow reported byHVO; WATCH/ORANGE; no55th high-fountain episode declaration. Supersedes initial leading two-flow summary."
   }
 }

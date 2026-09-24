@@ -2,46 +2,71 @@
   "schemaVersion": 1,
   "slug": "2026-09-22-new-zealand-tarakihi-limit",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
-  "reviewedAt": "2026-09-23",
-  "sha256": "70337b1bc0c77116bdb59b9f21a6f1d2486e5395a49a06926bd70a3e780948d8",
-  "rationale": "UNKNOWN по дате вступления любительского лимита. Beehive 22 сентября объявляет национальный лимит 10 рыб на человека в день, но точную дату введения не устанавливает. Дату 1 октября для коммерческих мер нельзя переносить на любительский лимит; доступ к решению MPI 23 сентября блокировала Incapsula, поэтому нового прочитанного акта с датой нет. Текст правильно оставляет правило будущим и прямо сообщает, что дата ещё не объявлена. Оценка 4 сохранена.",
+  "reviewer": "Codex (news_lifecycle_review)",
+  "reviewedAt": "2026-09-24",
+  "reviewTimezone": "Asia/Shanghai",
+  "reviewedAtInstantUTC": "2026-09-23T19:29:37.740Z",
+  "sha256": "6f4a7655981f630e6ced825fc7c2bc35c25bc20b6cd20bc695f65e330931ce0b",
+  "sourceSha256": "6f4a7655981f630e6ced825fc7c2bc35c25bc20b6cd20bc695f65e330931ce0b",
+  "status": "pass",
+  "rationale": "UNKNOWN сохранён: объявлениеBeehive22Sep подтверждает10рыб/день и коммерческие сокращения20%/около55%, но дата любительского лимита не установлена. MPI защищён от чтения; фраза, изображавшая прочитанный акт, удалена. checked23Sep оставлен, reviewOn25Sep;1Oct коммерческих мер не перенесено на любительское правило. Объявление конкретного лимита меняет планы узкой аудитории морских рыболовов; осторожный текст сохраняет пользу при неизвестной дате старта.",
   "risks": [
-    "Точная дата вступления любительского лимита не установлена; это UNKNOWN, а не подтверждение отсутствия акта.",
-    "Коммерческая дата 1 октября не доказывает дату любительского ограничения.",
-    "До официальной даты нельзя добавлять status или effectiveDate и писать, что лимит уже действует."
+    "Точная дата начала любительского лимита",
+    "Отсутствие найденной новой даты не доказывает, что её не выпустили; техническая недоступность MPI не является подтверждением неизменного статуса."
   ],
   "blockingIssues": [],
+  "scope": "Окончательное независимое lifecycle-ревью текущего текста после авторских исправлений; первички прочитаны24SepShanghai. Без полного повторного исследования старой несвязанной фактуры, без новых фотографий, сборки, браузеров и публикации.",
   "evidence": [
     {
+      "id": "beehive",
       "url": "https://www.beehive.govt.nz/release/tarakihi-catch-limits-cut-support-sustainability",
-      "publishedOn": "2026-09-22",
-      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
-      "finding": "Подтверждён объявленный национальный лимит 10 рыб на человека в день; точная дата введения в релизе отсутствует.",
-      "checkedOn": "2026-09-23"
+      "published": "2026-09-22",
+      "checked": "2026-09-24",
+      "access": "web full text; direct HTTP200 returned only a 212-byte interstitial, not the article",
+      "evidence": "lifecycle-sources/web-evidence.json",
+      "finding": "Министр объявил общенациональный recreational limit 10 таракихи на человека/день, снижение промыслового улова на востоке 20%, на западе около 55%. Сам пресс-релиз не устанавливает дату введения любительского ограничения."
     },
     {
+      "id": "mpi-round",
       "url": "https://www.mpi.govt.nz/consultations/review-of-fishery-sustainability-measures-october-2026-round",
-      "publishedOn": "2026-09-22",
-      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
-      "finding": "Страница решения обнаруживается, но прямое чтение 23 сентября вернуло Incapsula, поэтому новую дату из неё не подтверждали.",
-      "checkedOn": "2026-09-23"
+      "published": "2026-09-22 (search index)",
+      "checked": "2026-09-24",
+      "access": "web403/internal error; direct HTTP200 interstitial; indexed excerpt only",
+      "evidence": "lifecycle-sources/mpi.html",
+      "finding": "Поисковый индекс показывает решение 22 сентября, но полная живая страница сегодня не прочитана."
+    },
+    {
+      "id": "mpi-decision",
+      "url": "https://www.mpi.govt.nz/dmsdocument/72716-Minister-for-Oceans-and-Fisheries-decision-letter-for-the-review-of-sustainability-measures-October-2026-round-",
+      "published": null,
+      "checked": "2026-09-24",
+      "access": "web403; direct HTTP200 interstitial, not PDF",
+      "evidence": "lifecycle-sources/mpiDecision.html",
+      "finding": "Не получен актуальный полный текст решения. Вступление любительского лимита не установлено этой проверкой."
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-09-24",
-    "reason": "Точная дата вступления любительского лимита не установлена; это UNKNOWN, а не подтверждение отсутствия акта.",
-    "decision": "UNKNOWN_RECREATIONAL_EFFECTIVE_DATE"
+    "decision": "UNKNOWN",
+    "checked": "2026-09-23",
+    "reviewOn": "2026-09-25",
+    "reason": "25 сентября повторить адресную проверку MPI/действующих любительских правил. Если найден официальный срок раньше — вернуться по нему. UNKNOWN относится к началу действия, а не к самому подтверждённому объявлению.",
+    "effectiveDate": null
   },
   "checks": {
+    "datePreserved": true,
+    "addedPreserved": true,
+    "bodyWords": 187,
     "capsuleWords": 43,
-    "bodyWords": 181,
     "titleChars": 53,
-    "internalLink": "/blog/new-zealand-guide-2026/",
-    "internalLinkStatus": "exists locally",
-    "photoViewed": true,
+    "mediaMetadataUnchanged": true,
     "photoSha256": "bc2992741efe55c3361b3d33d473c88436ee77ac4ce61d0739ecad2902ecd35b",
-    "photoFinding": "Прилавок Auckland Fish Market с несколькими видами рыб; на табличке и в описании Commons присутствует tarakihi. Joe Ross, CC BY-SA 2.0; подпись честно предупреждает, что архивные цены не актуальны.",
-    "scope": "Ограниченный lifecycle-review 23.09: перечитан изменчивый статус, проза и прежняя фотоаттестация не исследовались заново; обновлены checked, reviewOn и SHA; без сборки и публикации."
+    "photoViewedToday": false,
+    "mediaScope": "Фото/подпись совпадают сHEAD. Это сохранение прежней аттестации, не новое сегодняшнее визуальное/лицензионное ревью."
+  },
+  "priorReview": {
+    "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
+    "reviewedAt": "2026-09-23",
+    "sha256": "70337b1bc0c77116bdb59b9f21a6f1d2486e5395a49a06926bd70a3e780948d8",
+    "scope": "Only prior provenance; not impersonating previous reviewer."
   }
 }

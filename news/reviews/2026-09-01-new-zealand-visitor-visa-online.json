@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "slug": "2026-09-01-new-zealand-visitor-visa-online",
+  "score": 4,
+  "reviewer": "Codex (news_lifecycle_review)",
+  "reviewedAt": "2026-09-24",
+  "reviewTimezone": "Asia/Shanghai",
+  "reviewedAtInstantUTC": "2026-09-23T19:29:37.740Z",
+  "sha256": "2ecaaebcbc30e35e2e421d08489bfcf93d2c10f6b8e4dc15bef29407d3865816",
+  "sourceSha256": "2ecaaebcbc30e35e2e421d08489bfcf93d2c10f6b8e4dc15bef29407d3865816",
+  "status": "pass",
+  "rationale": "UPDATE принят: большинство новых онлайн-заявлений с24Sep в enhanced Immigration Online; старый кабинет не принимает новые заявки именно по этим категориям. Черновики удаляют с8Oct. Норма не выдана за проверку исправности портала. Конкретно меняет подачу заявления, но Новая Зеландия — нишевое направление; оснований автоматически наследовать 5 нет.",
+  "risks": [
+    "Работу анкеты после авторизации не тестировали. На момент чтения в Новой Зеландии около 06:36 NZST, внутри объявленного окна обслуживания. Перечитанное правило не доказывает отсутствие технического перерыва."
+  ],
+  "blockingIssues": [],
+  "scope": "Окончательное независимое lifecycle-ревью текущего текста после авторских исправлений; первички прочитаны24SepShanghai. Без полного повторного исследования старой несвязанной фактуры, без новых фотографий, сборки, браузеров и публикации.",
+  "evidence": [
+    {
+      "id": "inz-announcement",
+      "url": "https://www.immigration.govt.nz/about-us/news-centre/important-visitor-visa-application-form-changes/",
+      "published": "2026-08-11",
+      "checked": "2026-09-24",
+      "access": "web full text + direct HTTP200",
+      "evidence": "lifecycle-sources/inz.html",
+      "excerpt": "From 8 October 2026",
+      "finding": "С 24 сентября новые онлайн-заявления затронутых категорий направляются в enhanced Immigration Online. С 8 октября формы в старой системе закрываются, оставшиеся черновики удаляются. Уже отправленные дела доступны до решения."
+    },
+    {
+      "id": "inz-access",
+      "url": "https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/applying-online/access-immigration-online/",
+      "published": null,
+      "checked": "2026-09-24",
+      "access": "direct HTTP200; web follow-up timed out",
+      "evidence": "lifecycle-sources/inzAccess.html",
+      "finding": "Страница подтверждает доступ к старым отправленным заявлениям. Баннер, выпущенный 18 сентября, предупреждает о возможной недоступности части форм до 60 минут в окне 06:00–08:00 NZST 24 сентября."
+    },
+    {
+      "id": "inz-visitor",
+      "url": "https://www.immigration.govt.nz/visas/visitor-visa/",
+      "published": null,
+      "checked": "2026-09-24",
+      "access": "web full text",
+      "evidence": "lifecycle-sources/web-evidence-additional.json",
+      "finding": "Кнопка Apply online ведёт на apply.immigration.govt.nz; бумажная подача имеет отдельную дату изменения 1 октября. В заметке лучше прямо ограничить речь онлайн-заявлениями."
+    }
+  ],
+  "lifecycle": {
+    "decision": "UPDATE",
+    "checked": "2026-09-24",
+    "reviewOn": "2026-10-08",
+    "reason": "8 октября перечитать INZ о закрытии старых форм и удалении черновиков. При отдельном сообщении о переносе или сбое — раньше. До завершения окна обслуживания не обещать доступность портала.",
+    "effectiveDate": "2026-09-24"
+  },
+  "checks": {
+    "datePreserved": true,
+    "addedPreserved": true,
+    "bodyWords": 155,
+    "capsuleWords": 46,
+    "titleChars": 68,
+    "mediaMetadataUnchanged": true,
+    "photoSha256": "8cb7abcd7f24a030c832f35a81bf2a0ee1ed840c1b56b7dc60c2604f19a0e482",
+    "photoViewedToday": false,
+    "mediaScope": "Фото/подпись совпадают сHEAD. Это сохранение прежней аттестации, не новое сегодняшнее визуальное/лицензионное ревью."
+  },
+  "priorReview": {
+    "reviewer": "Codex (news_lifecycle_review)",
+    "reviewedAt": "2026-09-24T03:27:58.078+08:00",
+    "sha256": "2ecaaebcbc30e35e2e421d08489bfcf93d2c10f6b8e4dc15bef29407d3865816",
+    "scope": "Only prior provenance; not impersonating previous reviewer."
+  }
+}
