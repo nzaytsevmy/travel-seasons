@@ -2,44 +2,69 @@
   "schemaVersion": 1,
   "slug": "2026-09-17-shanghai-festival-discount-hours",
   "score": 4,
-  "reviewer": "Codex GPT-6 (news_review_20260919)",
-  "reviewedAt": "2026-09-19",
-  "sha256": "502320db26749812a0ab5aab15fcb94e9f72fe727c6f8804c34aba080c3d6123",
-  "rationale": "Официальный портал Шанхая подтверждает разные сроки и условия: половинный тариф Huangpu River Cruise действовал 12–18 сентября, Guanfu Museum — 21–27 сентября, Jin Mao — 08:30–17:00 для взрослых и студентов, CXCC Summit 58 — 10:00–12:00 только для взрослых, Disney — после 15:00 в выбранные даты. Заголовок и текст своевременно переводят круизную акцию в прошедшее время и сохраняют будущую музейную. Оценка 4: конкретные окна влияют на выбор дня и часа, но относятся к отдельным достопримечательностям.",
-  "risks": [
-    "Общее окно фестиваля 12–27 сентября не распространяется автоматически на каждую площадку.",
-    "Наличие конкретного билета в продаже и квоты на выбранное время отдельно не проверялись.",
-    "Фото архивное и иллюстрирует город, а не конкретную акцию."
-  ],
+  "reviewer": "Codex GPT-6 — independent news_lifecycle_review (2026-09-29)",
+  "reviewedAt": "2026-09-29",
+  "reviewTimezone": "Europe/Moscow",
+  "reviewedAtInstantUTC": "2026-09-29T10:35:09.239Z",
+  "contentHash": "0166a1146988077ddeb7a2e088bf37f56c204c4ba71143bd36e5304d3460a707",
+  "contentHashAlgorithm": "sha256",
+  "contentHashScope": "Exact UTF-8 bytes of the entire Markdown file, including frontmatter",
+  "sha256": "0166a1146988077ddeb7a2e088bf37f56c204c4ba71143bd36e5304d3460a707",
+  "sourceSha256": "0166a1146988077ddeb7a2e088bf37f56c204c4ba71143bd36e5304d3460a707",
+  "status": "pass",
+  "rationale": "Оценка 4: закрытие жизненного цикла предотвращает покупку и планирование по уже истёкшим льготным условиям конкретных площадок. Все описанные скидки переведены в прошедшее время с правильными датами; окончание этих акций не приравнено к окончанию фестиваля или всех предложений Шанхая. Удаление reviewOn обосновано завершённым событием. Это полезное уточнение существующего материала, без утверждения о нынешних ценах или гарантированном отсутствии других скидок.",
   "blockingIssues": [],
+  "risks": [
+    "Конец скидок не доказывает окончание самого фестиваля.",
+    "Нельзя продлевать все акции до 7 октября по одному исключению списка."
+  ],
+  "scope": "Адресное независимое ревью семи исправленных UPDATE по завершённой сверке 29 сентября. Прозу автор исправлял отдельно. Новых широких поисков, визуального ревью, сборки и публикации нет.",
   "evidence": [
     {
       "url": "https://english.shanghai.gov.cn/en-2026ShanghaiTourismFestival/20260911/3e3819baabc249c6b82f8b2c64288cb8.html",
-      "publishedOn": "2026-09-11",
-      "checkedOn": "2026-09-19",
-      "capture": ".run/2026-09-19/sources/shanghai-review.txt",
-      "finding": "Сроки Huangpu 12–18.09 и Guanfu 21–27.09, часы Jin Mao/CXCC и послеобеденный Disney подтверждены."
+      "publishedOrUpdated": "2026-09-11",
+      "checkedOn": "2026-09-29",
+      "finding": "Основное окно 12–27 сентября; Гуаньфу 21–27, дневные круизы 12–18, специальное посещение Disney в окне 12–27. Для других площадок есть иные сроки.",
+      "access": "Открыта официальная городская публикация, сверены соответствующие площадки."
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-09-28",
-    "reason": "После окончания основного фестивального окна убрать завершившиеся предложения или архивировать заметку."
+    "decision": "UPDATE_ACCEPTED",
+    "checked": "2026-09-29",
+    "reviewOn": null,
+    "reason": "После исправления удалить reviewOn: жизненный цикл именно перечисленных акций завершён. Новый reviewOn только при добавлении конкретной продолжающейся акции с собственной конечной датой.",
+    "additionalTriggers": []
   },
   "checks": {
-    "capsuleWords": 50,
-    "bodyWords": 173,
-    "titleChars": 59,
-    "internalLinks": [
-      "/novosti/2026-09-14-shanghai-tourism-festival-floats/",
-      "/blog/china-guide-2026/"
-    ],
-    "internalLinkTargets": [
-      "src/content/news/2026-09-14-shanghai-tourism-festival-floats.md",
-      "src/content/blog/china-guide-2026.mdx"
-    ],
-    "photoViewed": true,
-    "photoSha256": "06437dc732168c3ed54b7bd24a9ac515f8218d46b53775539690fa02528f3b24",
-    "photoFinding": "Пудун, Восточная жемчужина и Хуанпу; Stefan Fussan, CC BY-SA 3.0, метаданные Commons подтверждены через API 19.09.",
-    "scope": "Финальный текст, сроки, часы, категории, язык, ссылки, изображение и лицензия; без сборки, публикации и live-проверки."
+    "capsule": {
+      "ok": true
+    },
+    "depthLink": {
+      "ok": true
+    },
+    "sourceDomains": {
+      "ok": true
+    },
+    "lifecycle": {
+      "ok": true
+    },
+    "score": {
+      "ok": true
+    },
+    "datePreserved": true,
+    "addedPreserved": true,
+    "bodyWords": 162,
+    "capsuleWords": 46,
+    "titleChars": 49,
+    "mediaMetadataUnchanged": true,
+    "photoViewedToday": false,
+    "mediaScope": "Метаданные прежней фотографии совпали с HEAD. Это сохранение прежнего состояния, не новое визуальное/лицензионное подтверждение."
+  },
+  "priorReview": {
+    "reviewer": "Codex GPT-6 (news_review_20260919)",
+    "reviewedAt": "2026-09-19",
+    "articleSha256": "502320db26749812a0ab5aab15fcb94e9f72fe727c6f8804c34aba080c3d6123",
+    "reviewArtifactSha256": "730762c01997f5322a18bcc6d8f3e13ed5e0542d612fdc99d8b2dfc04f7a1f10",
+    "scope": "Предыдущая аттестация, не выдаётся за сегодняшнюю проверку."
   }
 }
