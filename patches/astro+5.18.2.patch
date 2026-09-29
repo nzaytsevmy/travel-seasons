@@ -1,0 +1,16 @@
+diff --git a/node_modules/astro/dist/prefetch/index.js b/node_modules/astro/dist/prefetch/index.js
+index d9c13a2..1db1055 100644
+--- a/node_modules/astro/dist/prefetch/index.js
++++ b/node_modules/astro/dist/prefetch/index.js
+@@ -139,7 +139,10 @@ function prefetch(url, opts) {
+     for (const [key, value] of Object.entries(internalFetchHeaders)) {
+       headers.set(key, value);
+     }
+-    fetch(url, { priority: "low", headers });
++    fetch(url, { priority: "low", headers }).catch(() => {
++      // A speculative request can fail or be cancelled when the user navigates.
++      // The actual navigation must not inherit an unhandled prefetch rejection.
++    });
+   }
+ }
+ function canPrefetchUrl(url, ignoreSlowConnection) {
