@@ -2,61 +2,99 @@
   "schemaVersion": 1,
   "slug": "2026-09-17-olympic-hoh-bridge-road-closures",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review)",
-  "reviewedAt": "2026-09-24",
-  "reviewTimezone": "Asia/Shanghai",
-  "reviewedAtInstantUTC": "2026-09-23T19:29:37.740Z",
-  "sha256": "26d360b9f70ee8839dacf27ddbb896b8faa8b6f6c70084f8a15ae26887f07e30",
-  "sourceSha256": "26d360b9f70ee8839dacf27ddbb896b8faa8b6f6c70084f8a15ae26887f07e30",
+  "reviewer": "Codex GPT-6 — independent news_lifecycle_review (2026-09-29)",
+  "reviewedAt": "2026-09-29",
+  "reviewTimezone": "Europe/Moscow",
+  "reviewedAtInstantUTC": "2026-09-29T10:45:22.625Z",
+  "contentHash": "39e054fd66a758aeeb6bf2e598d7146d1ab6c71525cdfe339a90fe3cbe627412",
+  "contentHashAlgorithm": "sha256",
+  "contentHashScope": "Exact UTF-8 bytes of the entire Markdown file, including frontmatter",
+  "sha256": "39e054fd66a758aeeb6bf2e598d7146d1ab6c71525cdfe339a90fe3cbe627412",
+  "sourceSha256": "39e054fd66a758aeeb6bf2e598d7146d1ab6c71525cdfe339a90fe3cbe627412",
   "status": "pass",
-  "rationale": "UPDATE принят: прошедшие ночные перекрытия до22Sep убраны из текущего абзаца;24Sep05:00–29Sep17:00 остаётся будущим планом по местному времени. NPS/WSDOT подтверждают подъезд клесу со стороныФоркса и восточный объезд минимум4часа. Полезное изменение автомобильного маршрута с понятными сторонами закрытого моста и длинным объездом.",
-  "risks": [
-    "На момент проверки в Вашингтоне 23 сентября около 11:36 PDT. Начало фактического закрытия ещё в будущем: 24 сентября 20:00 Asia/Shanghai. Открытие в конце интервала зависит от осмотра."
-  ],
+  "rationale": "Оценка 4: три многодневных окна перекрытия и длительный объезд требуют менять порядок остановок и ночёвок на нишевом маршруте США. Указаны точные местные часы и попеременное движение по одной полосе после инспекции. Плановый конец первого окна не превращён в состоявшееся открытие. Дождевой лес Хох и мост разграничены; октябрьские окна описаны как график, без неподтверждённого заявления о новом продлении.",
   "blockingIssues": [],
-  "scope": "Окончательное независимое lifecycle-ревью текущего текста после авторских исправлений; первички прочитаны24SepShanghai. Без полного повторного исследования старой несвязанной фактуры, без новых фотографий, сборки, браузеров и публикации.",
+  "risks": [
+    "График не равен исполнению в указанную минуту.",
+    "Часы указаны местные Pacific; московская дата окончания отличается."
+  ],
+  "scope": "Адресное независимое ревью семи исправленных UPDATE по завершённой сверке 29 сентября. Прозу автор исправлял отдельно. Новых широких поисков, визуального ревью, сборки и публикации нет.",
   "evidence": [
     {
-      "id": "nps-hoh",
       "url": "https://www.nps.gov/olym/planyourvisit/hwy-101-closure-at-hoh-river-bridge.htm",
-      "published": "2026-09-15",
-      "checked": "2026-09-24",
-      "access": "web full text + direct HTTP200",
-      "evidence": "lifecycle-sources/npsHoh.html",
-      "finding": "График 24 сентября 05:00 — 29 сентября 17:00; доступ в лес от Forks сохраняется, восточный объезд добавляет минимум четыре часа."
+      "publishedOrUpdated": "2026-09-15",
+      "checkedOn": "2026-09-29",
+      "finding": "Лес Хох доступен со стороны Форкса; ближайшего объезда нет, восточный объезд добавляет минимум четыре часа.",
+      "access": "Официальная страница NPS."
     },
     {
-      "id": "wsdot",
       "url": "https://wsdot.wa.gov/construction-planning/search-projects/us-101-hoh-river-bridge-emergency-repair",
-      "published": null,
-      "checked": "2026-09-24",
-      "access": "direct HTTP200 full page; web open403/search excerpt stale",
-      "evidence": "lifecycle-sources/wsdot.html",
-      "finding": "Свежая прямая страница уже убрала этап ночных перекрытий и начинает с предстоящего закрытия 24–29 сентября. Те же часы; дополнительные окна 1–6 и 8–13 октября, после каждого — осмотр до открытия одной полосы."
+      "publishedOrUpdated": "Текущая страница проекта проверена 2026-09-29",
+      "checkedOn": "2026-09-29",
+      "finding": "24.09 05:00–29.09 17:00; 01.10 05:00–06.10 12:00; 08.10 05:00–13.10 12:00. Pacific. После инспекции — попеременно по одной полосе.",
+      "access": "HTTP и видимый текст официальной страницы в браузере; web возвращал 403."
     }
   ],
   "lifecycle": {
-    "decision": "UPDATE",
-    "checked": "2026-09-24",
-    "reviewOn": "2026-09-25",
-    "reason": "25 сентября Asia/Shanghai проверить сообщение WSDOT/traffic alerts после наступления первого окна. До этого сохранить формулировку плана. Следующие точки — конец окна 29 сентября 17:00 PDT и октябрьские этапы; не превращать график в доказательство фактического открытия.",
-    "effectiveDate": null
+    "decision": "UPDATE_ACCEPTED",
+    "checked": "2026-09-29",
+    "reviewOn": "2026-09-30",
+    "reason": "29 сентября 17:00 PDT = 30 сентября 03:00 МСК; проверить фактическую инспекцию и открытие после первого окна.",
+    "additionalTriggers": [
+      "01.10: следующее закрытие.",
+      "06.10 и 13.10: контроль окончания соответствующих окон."
+    ]
   },
   "checks": {
+    "capsule": {
+      "ok": true
+    },
+    "depthLink": {
+      "ok": true
+    },
+    "sourceDomains": {
+      "ok": true
+    },
+    "lifecycle": {
+      "ok": true
+    },
+    "score": {
+      "ok": true
+    },
     "datePreserved": true,
     "addedPreserved": true,
-    "bodyWords": 162,
-    "capsuleWords": 51,
-    "titleChars": 55,
+    "bodyWords": 180,
+    "capsuleWords": 45,
+    "titleChars": 51,
     "mediaMetadataUnchanged": true,
-    "photoSha256": "68ec8086af3cfa7696308cacea25af85f15e05185dd3e29a3c36f8acfe378754",
     "photoViewedToday": false,
-    "mediaScope": "Фото/подпись совпадают сHEAD. Это сохранение прежней аттестации, не новое сегодняшнее визуальное/лицензионное ревью."
+    "mediaScope": "Метаданные прежней фотографии совпали с HEAD. Это сохранение прежнего состояния, не новое визуальное/лицензионное подтверждение.",
+    "liveNewsGate": {
+      "ok": true,
+      "offline": false,
+      "scope": "one article",
+      "completedAtUTC": "2026-09-29T10:45:55.125Z",
+      "contentHash": "39e054fd66a758aeeb6bf2e598d7146d1ab6c71525cdfe339a90fe3cbe627412",
+      "rawLog": ".run/2026-09-29/news-gate-hoh-final.log",
+      "remarks": []
+    }
   },
   "priorReview": {
     "reviewer": "Codex (news_lifecycle_review)",
-    "reviewedAt": "2026-09-17",
-    "sha256": "3130009ff98b7e77d5921f150b1b830591abf8eef0c73e4cde2e3eb1c730063f",
-    "scope": "Only prior provenance; not impersonating previous reviewer."
+    "reviewedAt": "2026-09-24",
+    "articleSha256": "26d360b9f70ee8839dacf27ddbb896b8faa8b6f6c70084f8a15ae26887f07e30",
+    "reviewArtifactSha256": "0e4417a6047477a5a9b8c2d042999facc285c6da468c80c425be0f9d9ecb6f83",
+    "scope": "Предыдущая аттестация, не выдаётся за сегодняшнюю проверку."
+  },
+  "finalDelta": {
+    "scope": "Перестановка даты перед часами в двух абзацах без изменения границ окон; даты сверки двух ранее прочитанных 29 сентября источников актуализированы.",
+    "previousArticleSha256": "8ed62b5895fedfc8ffcea0a5f8300324b7daca5b0a7e52b559a603d1e62617be",
+    "dateTimeOrderingOnlyVerified": true,
+    "sourceVerificationLabels": "2026-09-29"
+  },
+  "previousAcceptedDelta": {
+    "scope": "Из последней проверенной версии изменён только заголовок: убрано неподтверждённое нахождение моста внутри парка.",
+    "previousArticleSha256": "a06abc27377cd78bd8f1a7b36c08e64a708bf39314dcc4286289eb5324bae6b0",
+    "titleOnlyVerified": true
   }
 }

@@ -2,63 +2,76 @@
   "schemaVersion": 1,
   "slug": "2026-09-15-tokachidake-level-3-shirogane-open",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review)",
-  "reviewedAt": "2026-09-24",
-  "reviewTimezone": "Asia/Shanghai",
-  "reviewedAtInstantUTC": "2026-09-23T19:29:37.740Z",
-  "sha256": "5dfc135f8d423ddb41fdea67156fa3e15c29167b9f335f3cd5a4eba7e9108d8e",
-  "sourceSha256": "5dfc135f8d423ddb41fdea67156fa3e15c29167b9f335f3cd5a4eba7e9108d8e",
+  "reviewer": "Codex GPT-6 — independent news_lifecycle_review (2026-09-29)",
+  "reviewedAt": "2026-09-29",
+  "reviewTimezone": "Europe/Moscow",
+  "reviewedAtInstantUTC": "2026-09-29T10:35:09.214Z",
+  "contentHash": "845bd330e0b2d7a70e4e93309403dd6517b12c42713e8910ee4e283a1abc1af9",
+  "contentHashAlgorithm": "sha256",
+  "contentHashScope": "Exact UTF-8 bytes of the entire Markdown file, including frontmatter",
+  "sha256": "845bd330e0b2d7a70e4e93309403dd6517b12c42713e8910ee4e283a1abc1af9",
+  "sourceSha256": "845bd330e0b2d7a70e4e93309403dd6517b12c42713e8910ee4e283a1abc1af9",
   "status": "pass",
-  "rationale": "KEEP принят: JMA21Sep16:00JST сохраняет уровень3/около3км; свежая страницаБиэй подтверждает Сироганэ вне зоны. Старый источник Минприроды не получил фиктивную новую дату. Дата открытия восхождения не придумана. Практично разделяет запрет восхождения и доступ к онсэну; направление и сценарий нишевые.",
-  "risks": [
-    "Срок снятия ограничения не объявлен. Работа каждого конкретного отеля не проверялась; не превращать общее сообщение администрации в гарантию услуги."
-  ],
+  "rationale": "Оценка 4: ограничение восхождения и горной дороги меняет локальный маршрут по Хоккайдо, сохраняя возможность ночёвки в Сироганэ. Исправление устраняет слишком широкое утверждение, будто ограничения касаются только кратера. Дорога 966, доступ до Богакудай и два разных онсэна описаны раздельно по сообщению Биэя. Уровень 3 подтверждён JMA, снятие ограничений и дата открытия горного проезда не обещаны.",
   "blockingIssues": [],
-  "scope": "Окончательное независимое lifecycle-ревью текущего текста после авторских исправлений; первички прочитаны24SepShanghai. Без полного повторного исследования старой несвязанной фактуры, без новых фотографий, сборки, браузеров и публикации.",
+  "risks": [
+    "Сироганэ-онсэн и Токатидакэ-онсэн — разные места.",
+    "Доступ к смотровой не разрешает восхождение."
+  ],
+  "scope": "Адресное независимое ревью семи исправленных UPDATE по завершённой сверке 29 сентября. Прозу автор исправлял отдельно. Новых широких поисков, визуального ревью, сборки и публикации нет.",
   "evidence": [
     {
-      "id": "jma",
       "url": "https://www.data.jma.go.jp/vois/data/report/activity_info/108.html",
-      "published": "2026-09-21T16:00:00+09:00",
-      "checked": "2026-09-24",
-      "access": "web full text + direct HTTP200",
-      "evidence": "lifecycle-sources/jma.html",
-      "excerpt": "噴火警戒レベル３、入山規制",
-      "finding": "Текущая страница прямо показывает уровень 3 и ограничение подъёма; последнее объяснение №25 от 21 сентября. Опасность крупных камней около 3 км, пепел может уходить дальше по ветру."
+      "publishedOrUpdated": "2026-09-28 16:00 JST",
+      "checkedOn": "2026-09-29",
+      "finding": "Уровень 3 сохраняется; крупные выбросы возможны примерно в радиусе 3 км от кратера.",
+      "access": "Живая сводка JMA."
     },
     {
-      "id": "biei",
       "url": "https://town.biei.hokkaido.jp/emergency/tokachidake.html",
-      "published": "2026-09-12 (раздел предупреждения)",
-      "checked": "2026-09-24",
-      "access": "web full text + direct HTTP200",
-      "evidence": "lifecycle-sources/biei.html",
-      "excerpt": "白金温泉地区は、平常営業",
-      "finding": "Администрация продолжает прямо указывать, что район Сироганэ и жилые районы не входят в ограничение, онсэн работает обычно. Здесь же подтверждены 12 сентября 09:30, землетрясение около 08:20, март/апрель и летние извержения."
+      "publishedOrUpdated": "Последняя указанная сводка 2026-09-25 16:00 JST",
+      "checkedOn": "2026-09-29",
+      "finding": "Сироганэ-онсэн работает; дорога 966 ограничена от ворот Богакудай к Токатидакэ-онсэн, до Богакудай подъезд возможен.",
+      "access": "Живая официальная страница Биэя."
     }
   ],
   "lifecycle": {
-    "decision": "KEEP",
-    "checked": "2026-09-24",
-    "reviewOn": "2026-09-25",
-    "reason": "Следующий ежедневный выпуск: свежая JMA, изменение зоны или муниципального сообщения. Никакую дату будущего бюллетеня либо открытия не предсказывать.",
-    "effectiveDate": null
+    "decision": "UPDATE_ACCEPTED",
+    "checked": "2026-09-29",
+    "reviewOn": "2026-10-01",
+    "reason": "Уровень 3 и дорога без даты снятия ограничений: проверить JMA и муниципальную схему через два дня.",
+    "additionalTriggers": []
   },
   "checks": {
+    "capsule": {
+      "ok": true
+    },
+    "depthLink": {
+      "ok": true
+    },
+    "sourceDomains": {
+      "ok": true
+    },
+    "lifecycle": {
+      "ok": true
+    },
+    "score": {
+      "ok": true
+    },
     "datePreserved": true,
     "addedPreserved": true,
-    "bodyWords": 178,
+    "bodyWords": 189,
     "capsuleWords": 52,
     "titleChars": 60,
     "mediaMetadataUnchanged": true,
-    "photoSha256": "de663685fe185724170be322a3ec32171d77975e888197e6586a60479afacf0a",
     "photoViewedToday": false,
-    "mediaScope": "Фото/подпись совпадают сHEAD. Это сохранение прежней аттестации, не новое сегодняшнее визуальное/лицензионное ревью."
+    "mediaScope": "Метаданные прежней фотографии совпали с HEAD. Это сохранение прежнего состояния, не новое визуальное/лицензионное подтверждение."
   },
   "priorReview": {
-    "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
-    "reviewedAt": "2026-09-23",
-    "sha256": "a5ccc7f60068f86d2113ce3d06b6962850adbd54d62c5d337ec7c55b08d602fb",
-    "scope": "Only prior provenance; not impersonating previous reviewer."
+    "reviewer": "Codex (news_lifecycle_review)",
+    "reviewedAt": "2026-09-24",
+    "articleSha256": "5dfc135f8d423ddb41fdea67156fa3e15c29167b9f335f3cd5a4eba7e9108d8e",
+    "reviewArtifactSha256": "1f84c6dda454d406e7f059e5db4b9ee0127820c04d453b2905676dfb56bf48ea",
+    "scope": "Предыдущая аттестация, не выдаётся за сегодняшнюю проверку."
   }
 }

@@ -2,80 +2,90 @@
   "schemaVersion": 1,
   "slug": "2026-09-12-kilauea-lava-episode-55",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review)",
-  "reviewedAt": "2026-09-24",
-  "reviewTimezone": "Asia/Shanghai",
-  "reviewedAtInstantUTC": "2026-09-23T19:29:37.740Z",
-  "sha256": "b1a11f66c7caca2a007d65d9eaed0aaa25709d4cbc467bd700dbe97b5fdb91a9",
-  "sourceSha256": "b1a11f66c7caca2a007d65d9eaed0aaa25709d4cbc467bd700dbe97b5fdb91a9",
+  "reviewer": "Codex GPT-6 — independent news_lifecycle_review (2026-09-29)",
+  "reviewedAt": "2026-09-29",
+  "reviewTimezone": "Europe/Moscow",
+  "reviewedAtInstantUTC": "2026-09-29T10:35:09.189Z",
+  "contentHash": "1a7e255200323b8540bcbfa26715dd42bd1a571c964e2cdb6a3e87391e432977",
+  "contentHashAlgorithm": "sha256",
+  "contentHashScope": "Exact UTF-8 bytes of the entire Markdown file, including frontmatter",
+  "sha256": "1a7e255200323b8540bcbfa26715dd42bd1a571c964e2cdb6a3e87391e432977",
+  "sourceSha256": "1a7e255200323b8540bcbfa26715dd42bd1a571c964e2cdb6a3e87391e432977",
   "status": "pass",
-  "rationale": "UPDATE принят по новой дневной сводке23Sep08:23HST и сообщениюHVO08:41:34: серия предварительных излияний, шестое вместо устаревшего акцента на двух. Начало55-го эпизода высоких фонтанов не объявлено; факт наблюдения не гарантирует поток ко времени приезда. Понятное изменение наблюдаемой активности и границ посещения на нишевом направлении, без обещания фонтанов.",
-  "risks": [
-    "Начало и время 55-го эпизода не подтверждены. После последнего опубликованного сообщения не утверждаем непрерывное течение лавы."
-  ],
+  "rationale": "Оценка 4: изменение наблюдаемой вулканической активности и невозможность прежнего прогнозирования важны для выбора поездки на нишевое направление. Счётчик излияний привязан к сводке USGS 28 сентября, начало эпизода 55 не объявлено фактом и не обещано к определённому часу. Доступ к смотровым отделён от активности вулкана. Дополнительная ссылка о частичном открытии парка после Ноло подтверждена отдельным релизом NPS 27 сентября.",
   "blockingIssues": [],
-  "scope": "Окончательное независимое lifecycle-ревью текущего текста после авторских исправлений; первички прочитаны24SepShanghai. Без полного повторного исследования старой несвязанной фактуры, без новых фотографий, сборки, браузеров и публикации.",
+  "risks": [
+    "HST = UTC−10: последняя короткая сводка соответствует 29 сентября 01:26 UTC.",
+    "Открытая смотровая не гарантирует видимой лавы и не разрешает вход в закрытую зону."
+  ],
+  "scope": "Адресное независимое ревью семи исправленных UPDATE по завершённой сверке 29 сентября. Прозу автор исправлял отдельно. Новых широких поисков, визуального ревью, сборки и публикации нет.",
   "evidence": [
     {
-      "id": "usgs-van",
       "url": "https://www.usgs.gov/volcanoes/kilauea/volcano-updates",
-      "published": "2026-09-22T23:52:00-10:00",
-      "checked": "2026-09-24",
-      "access": "web full text; direct HTTP403",
-      "evidence": "lifecycle-sources/web-evidence.json",
-      "finding": "VAN 2026/H448: излияние у северного жерла началось 22 сентября около 22:10 HST и длилось 24 минуты; второе началось в 23:44. WATCH/ORANGE сохранены; отдельный VAN будет выпущен, когда начнётся эпизод фонтанов 55."
+      "publishedOrUpdated": "2026-09-28 08:21 HST",
+      "checkedOn": "2026-09-29",
+      "finding": "63 предварительных излияния с 22 сентября; нерегулярная деформация больше не позволяет моделировать прежние окна прогноза.",
+      "access": "Живая сводка прочитана web-инструментом; локальный HTTP 403."
     },
     {
-      "id": "hvo-message",
       "url": "https://www.usgs.gov/observatories/hvo/observatory-messages",
-      "published": "2026-09-23T00:25:40-10:00",
-      "checked": "2026-09-24",
-      "access": "web full text; direct HTTP403",
-      "evidence": "lifecycle-sources/web-evidence.json",
-      "finding": "Второй поток завершился 23 сентября в 00:18 HST после 34 минут; наклон и тремор без изменения. Предварительная активность может идти часы или дни."
+      "publishedOrUpdated": "2026-09-28 15:26:05 HST",
+      "checkedOn": "2026-09-29",
+      "finding": "Излияния у северного и южного жерл; особенно сильный северный поток в 14:52–15:04 HST.",
+      "access": "Прочитана более поздняя короткая сводка; начало эпизода 55 не объявляет."
     },
     {
-      "id": "nps-havo",
       "url": "https://www.nps.gov/havo/planyourvisit/eruption-viewing.htm",
-      "published": "2026-09-08",
-      "checked": "2026-09-24",
-      "access": "web full text + direct HTTP200",
-      "evidence": "lifecycle-sources/npsHavo.html",
-      "finding": "Зона извержения закрыта, доступны смотровые по краю кальдеры. Welcome Center, Kilauea Overlook и Uekahuna — Crater Rim Drive West; видимость и парковка не гарантированы."
+      "publishedOrUpdated": "Текущая страница проверена 29 сентября",
+      "checkedOn": "2026-09-29",
+      "finding": "Welcome Center, Kīlauea Overlook и Uēkahuna: подъезд по Crater Rim Drive West; парковка только в обозначенных местах.",
+      "access": "Живой первоисточник NPS."
+    },
+    {
+      "url": "https://www.nps.gov/havo/learn/news/20260927_post_nolo.htm",
+      "publishedOrUpdated": "2026-09-27",
+      "checkedOn": "2026-09-29",
+      "finding": "Большая часть района вершины Килауэа и Кахуку открыта после Ноло, перечисленные дороги, тропа и мост остаются исключениями. Подтверждает новую внутреннюю ссылку в исправленной заметке.",
+      "access": "Официальный релиз открыт web-инструментом при адресной проверке новой зависимости."
     }
   ],
   "lifecycle": {
-    "decision": "UPDATE",
-    "checked": "2026-09-24",
-    "reviewOn": "2026-09-25",
-    "reason": "Следующий ежедневный выпуск либо раньше при новом VAN об эпизоде 55, изменении уровня или закрытий NPS. Не ждать будущей утренней сводки 23 сентября HST в этом запуске.",
-    "effectiveDate": null
+    "decision": "UPDATE_ACCEPTED",
+    "checked": "2026-09-29",
+    "reviewOn": "2026-09-30",
+    "reason": "Активность меняется за часы; проверить фактическое начало эпизода или новый режим прогноза.",
+    "additionalTriggers": []
   },
   "checks": {
+    "capsule": {
+      "ok": true
+    },
+    "depthLink": {
+      "ok": true
+    },
+    "sourceDomains": {
+      "ok": true
+    },
+    "lifecycle": {
+      "ok": true
+    },
+    "score": {
+      "ok": true
+    },
     "datePreserved": true,
     "addedPreserved": true,
-    "bodyWords": 186,
-    "capsuleWords": 47,
-    "titleChars": 52,
+    "bodyWords": 158,
+    "capsuleWords": 44,
+    "titleChars": 50,
     "mediaMetadataUnchanged": true,
-    "photoSha256": "c11653d481acf7a57ef5507facb67b5e7bb33734ca35017a6c5ac2dda837cbf1",
     "photoViewedToday": false,
-    "mediaScope": "Фото/подпись совпадают сHEAD. Это сохранение прежней аттестации, не новое сегодняшнее визуальное/лицензионное ревью."
+    "mediaScope": "Метаданные прежней фотографии совпали с HEAD. Это сохранение прежнего состояния, не новое визуальное/лицензионное подтверждение."
   },
   "priorReview": {
-    "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
-    "reviewedAt": "2026-09-23",
-    "sha256": "4f5255ac8582f3eb79d3b94e38ce826d0c5dcc5f0e1ebe1e2f2351a572eba6b2",
-    "scope": "Only prior provenance; not impersonating previous reviewer."
-  },
-  "finalNewSource": {
-    "checkedAtUTC": "2026-09-23T19:29:37.740Z",
-    "published": "23Sep2026 08:23HST daily;08:41:34HST short message",
-    "capture": ".run/2026-09-24/lifecycle-sources/kilauea-final-web.json",
-    "urls": [
-      "https://www.usgs.gov/volcanoes/kilauea/volcano-updates",
-      "https://www.usgs.gov/observatories/hvo/observatory-messages"
-    ],
-    "finding": "Sixth precursory overflow reported byHVO; WATCH/ORANGE; no55th high-fountain episode declaration. Supersedes initial leading two-flow summary."
+    "reviewer": "Codex (news_lifecycle_review)",
+    "reviewedAt": "2026-09-24",
+    "articleSha256": "b1a11f66c7caca2a007d65d9eaed0aaa25709d4cbc467bd700dbe97b5fdb91a9",
+    "reviewArtifactSha256": "6e471e9e070bf85789596a7df2188385944ca6c686f0b60f68b896171b980212",
+    "scope": "Предыдущая аттестация, не выдаётся за сегодняшнюю проверку."
   }
 }
