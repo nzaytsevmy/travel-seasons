@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "slug": "peresadka-v-stambule",
+  "reviewer": "codex-istanbul-independent-review-20260929",
+  "reviewedAt": "2026-09-29",
+  "status": "approved_editorial_pending_release_checks",
+  "reviewScope": "Полное независимое содержательное ревью новой статьи на финальном proseHash. Исходники, первичные факты, изображения, карта решений и данные спроса; без сборки/браузеров/публикации.",
+  "qualityScore": {
+    "topic": 8.5,
+    "facts": 9.1,
+    "visuals": 8,
+    "experience": 4,
+    "internalLinks": 8.5,
+    "legal": 9,
+    "overall": 8,
+    "ceiling": "Потолок 8,2: есть проверяемая схема решения, первичные правила и собственная панорама города, но нет личного прохождения этой пересадки, хронометража очередей и отчёта о пользовании тремя программами. Рендер, доступность новых ссылок и публичный вывод атрибуции требуют штатных проверок выпуска; эта рецензия их не подменяет."
+  },
+  "rationale": "Независимо прочитана вся новая статья и проверены первичные правила въезда, багажа, три разные программы TK, метро и условия доступа в отели. Структура следует решениям читателя, а не переводу одной чужой статьи. Не выдуманы собственная пересадка, хронометраж или деньги. Исправлены пропущенные ограничения программ, неправильная палитра/гарнитура схемы и длинные первые фразы checks. Пять кадров просмотрены, четыре внешние лицензии подтверждены публичным API Commons. Оценка 8,0 отражает пользу проверенной инструкции при слабой оси личного опыта; это не обещание дохода или прохождения выпускных гейтов.",
+  "proseHash": "fbca2176f66c9eb2",
+  "sourceSha256": "6743c908b1ed9b3242b8d55acc779e9895ba872511d36457e9a1e30606e52757",
+  "baselineCommit": "41e55d92399048a1fa37e368e295e2dd3f2ab5fc",
+  "axisRationale": {
+    "topic": "Есть спрос на конкретный вопрос и кластер пересадок; SERP сильный, регион замера не Москва, прогноза трафика нет.",
+    "facts": "Живые первички проверены; в Touristanbul сохранена осторожность из-за противоречия локалей.",
+    "visuals": "Пять содержательно верных фото и корректная пропорциональная шкала; рендер отложен исполнителю выпуска, видимой подписи обложки в шаблоне нет.",
+    "experience": "Собственная поездка в город подтверждается архивом фото; личного прохождения стыковки и пользования программами нет.",
+    "internalLinks": "Три уместных исходящих блога и две входящие ссылки, новый интент отделён от общего гайда.",
+    "legal": "Правила въезда и лицензии сверены; sponsored/центральные helpers сохранены, публичный вывод атрибуции и реальная атрибуция кликов ждут выпуска.",
+    "overall": "Практическая самостоятельная инструкция, честные ограничения и условная арифметика, без подгонки до 10."
+  },
+  "sourceChecks": [
+    {
+      "topic": "Въезд РФ и паспорт",
+      "urls": [
+        "https://www.mfa.gov.tr/visa-information-for-foreigners.en.mfa",
+        "https://www.mfa.gov.tr/general-information-about-turkish-visas.en.mfa"
+      ],
+      "result": "Обычный паспорт РФ: туристические/деловые поездки до 60 дней, общий предел 90/180. Паспорт должен действовать на 60 дней дольше разрешённого пребывания; 120 дней — корректный арифметический вывод. Прочитаны живые первички, HTTP 200.",
+      "evidence": [
+        "work/review-sources/entry.txt",
+        "work/review-sources/passport.txt"
+      ]
+    },
+    {
+      "topic": "Багаж и посадочный",
+      "urls": [
+        "https://www.turkishairlines.com/ru-ru/any-questions/transfer-transit-passengers/",
+        "https://www.sabihagokcen.aero/personalized-home-page/transfer/through-our-airport/reminder-for-transfer-passengers",
+        "https://www.sabihagokcen.aero/faq-frequently-asked-questions/security-and-baggage/do-i-have-to-recheck-my-luggage-on-connecting-flights"
+      ],
+      "result": "Сквозной билет/договор перевозчиков отделён от отдельных билетов. В международном транзите без посадочного предусмотрена стойка трансфера. Внутреннее продолжение не требует автоматически получать любой багаж в IST. Правило получения багажа при Stopover свыше 24 часов подтверждено отдельно.",
+      "evidence": [
+        "work/review-sources/tk-web-next.txt",
+        "work/review-sources/saw-transfer.txt",
+        "work/review-sources/saw-baggage.txt"
+      ]
+    },
+    {
+      "topic": "Hotel Service",
+      "urls": [
+        "https://www.turkishairlines.com/en-tr/flights/hotel-service/"
+      ],
+      "result": "12/9 часов, более короткого соединения нет даже при полной загрузке, единый подтверждённый билет; совместный рейс должен выполняться TK. Отель выбирает перевозчик, трансфер включён, транзитного отеля эта программа не обещает.",
+      "evidence": [
+        "work/review-sources/tk-web-next.txt"
+      ]
+    },
+    {
+      "topic": "Touristanbul и противоречие локалей",
+      "urls": [
+        "https://www.turkishairlines.com/en-int/flights/fly-different/touristanbul/faq/",
+        "https://www.turkishairlines.com/pt-int/flights/fly-different/touristanbul/faq/"
+      ],
+      "result": "6–24 часа, IST, билет 235, единый PNR, стойка за 30 минут и 1:25 между концом тура и вылетом подтверждены. Английский FAQ допускает TK-issued codeshare, португальский оставляет противоречащий старый абзац про два рейса TK. Статья не обещает участие codeshare и требует проверки конкретного билета. Touristanbul несовместим с бесплатным размещением на той же стыковке.",
+      "evidence": [
+        "work/review-sources/tk-web-next.txt"
+      ]
+    },
+    {
+      "topic": "Stopover",
+      "urls": [
+        "https://www.turkishairlines.com/ru-ru/flights/stopover/"
+      ],
+      "result": "20–168 часов, заявка не позже 72 часов, ваучер до поездки, туда-обратно в одной брони, начало/конец в одной стране, 235, все рейсы TK, codeshare и N/R исключены. Россия в списке. Базово 1/2 ночи, страновые исключения оговорены. Отель и завтрак включены; трансфер за счёт пассажира.",
+      "evidence": [
+        "work/review-sources/tk-web-next.txt",
+        "work/review-sources/tk-checkin.txt"
+      ]
+    },
+    {
+      "topic": "Время до вылета",
+      "urls": [
+        "https://www.turkishairlines.com/en-gb/legal-notice/conditions-of-online-services/"
+      ],
+      "result": "Первичка указывает 3 часа до международного вылета и завершение регистрации/сдачи багажа за 60 минут. Пропорциональная шкала — явно условный сценарий: 1,5 + 1,5 + 2,5 + 1,5 + 3 = 10 часов. Это не минимальная стыковка и не измерение очередей.",
+      "evidence": [
+        "work/review-sources/tk-checkin.txt"
+      ]
+    },
+    {
+      "topic": "Метро и YOTEL",
+      "urls": [
+        "https://www.uab.gov.tr/haberler/halkali-arnavutkoey-hatti-31-temmuz-a-kadar-uecretsiz/",
+        "https://www.metro.istanbul/en/Hatlarimiz/HatDetay?hat=M4",
+        "https://www.yotel.com/en/hotels/istanbul"
+      ],
+      "result": "M11/Gayrettepe со связью с линией Yenikapı–Hacıosman и M4/Kadıköy подтверждены; круглосуточность/точное время не обещаются. YOTELAIR airside требует международного посадочного; YOTEL landside с городской стороны.",
+      "evidence": [
+        "work/review-sources/m11.txt",
+        "work/review-sources/m4.txt",
+        "work/review-sources/yotel.txt"
+      ]
+    }
+  ],
+  "photoChecks": [
+    {
+      "file": "src/content/blog/_images/peresadka-v-stambule/ist-hall.jpg",
+      "sha256": "dd90fbef2eb7feb261bf6b45380c7150775a9a7d5972136ebd596c2b8a460bee",
+      "source": "https://commons.wikimedia.org/w/index.php?curid=77862150",
+      "creator": "Elgaard",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "primaryTitle": "File:Istanbul Airport inside hall.jpg",
+      "shot": "2019-04-07 03:27:07",
+      "verdict": "PASS_SOURCE_LICENSE_AND_VISUAL",
+      "caption": "Подпись и alt соответствуют просмотренному кадру.",
+      "proof": "work/review-sources/commons-api.json"
+    },
+    {
+      "file": "src/content/blog/_images/peresadka-v-stambule/ist-tower.jpg",
+      "sha256": "78ee4599685f2d178a6d687d14ae546568046fbba897f57879a9db9922c3b449",
+      "source": "https://commons.wikimedia.org/w/index.php?curid=82704519",
+      "creator": "TurkAviator",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "primaryTitle": "File:Istanbul Airport \"Lalekule\".jpg",
+      "shot": "2019-07-28 09:59:33",
+      "verdict": "PASS_SOURCE_LICENSE_AND_VISUAL",
+      "caption": "Точный coverAlt; шаблон не выводит видимую подпись обложки.",
+      "proof": "work/review-sources/commons-api.json"
+    },
+    {
+      "file": "src/content/blog/_images/peresadka-v-stambule/saw-metro.jpg",
+      "sha256": "c1d7b7f7c47d2c20fe0a1269c4de137c47292a1f5c9fe87007a888b6a44e97a2",
+      "source": "https://commons.wikimedia.org/w/index.php?curid=126110081",
+      "creator": "aveaoz",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "primaryTitle": "File:Sabiha Gokcen Airport, Metro Entry.jpg",
+      "shot": "2022-11-10 05:26:32",
+      "verdict": "PASS_SOURCE_LICENSE_AND_VISUAL",
+      "caption": "Подпись и alt соответствуют просмотренному кадру.",
+      "proof": "work/review-sources/commons-api.json"
+    },
+    {
+      "file": "src/content/blog/_images/peresadka-v-stambule/ist-terminal.jpg",
+      "sha256": "d32bf7eabc90719d391a738b9514cef91d2d4d11091363ab63e4484e63b71628",
+      "source": "https://commons.wikimedia.org/w/index.php?curid=115171675",
+      "creator": "Nick",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "primaryTitle": "File:Istanbul Airport (49012767697).jpg",
+      "shot": "2019-09-22 22:45",
+      "verdict": "PASS_SOURCE_LICENSE_AND_VISUAL",
+      "caption": "Подпись и alt соответствуют просмотренному кадру.",
+      "proof": "work/review-sources/commons-api.json"
+    },
+    {
+      "file": "src/content/blog/_images/turkey-own/istanbul.jpg",
+      "sha256": "08cfbb08d81fcf3fc40431ead014352d0650e2dfab4e2bc755e19570637b17a8",
+      "source": "src/content/blog/_images/turkey-own/_own.json#istanbul",
+      "creator": "Никита Зайцев",
+      "license": "Собственный кадр автора",
+      "shot": "август 2021",
+      "verdict": "PASS_LOCAL_PROVENANCE_AND_VISUAL",
+      "caption": "Золотой Рог и мосты совпадают с кадром; дата следует из _own.json. Исходник на диске повторно не загружался."
+    }
+  ],
+  "demandVerification": {
+    "scope": "Проверка согласованности предоставленных снимков и исследования; повторный запрос Wordstat/Wordcraft/GSC этим рецензентом не выполнялся.",
+    "files": [
+      "work/topic-metrics.json",
+      "work/radar-20.json",
+      "work/current-search-summary.json",
+      "research/istanbul-transit-2026-09-29.md"
+    ],
+    "result": "20 тем радара; WS 5727 включает 301 про волосы, вложенные частоты не суммируются; Wordcraft 47/40 не приравнен к WS. GSC 19 строк про Стамбул = 1 клик/44 показа; отсутствие transit в выборке не объявляется отсутствием спроса. 17335/419 — сайт целиком, не деньги этой темы. Ограничение региона SERP указано."
+  },
+  "affiliateCoverage": {
+    "verdict": "PASS_SOURCE_SCOPE_PENDING_RUNTIME",
+    "requiredSections": [
+      "Сначала билет: IST, SAW и кто отвечает за стыковку",
+      "Где спать, если бесплатный отель не положен"
+    ],
+    "helpers": [
+      "aviasalesRoute(MOW, IST, peresadka_stambul_flights)",
+      "ostrovokCity(turkey, istanbul, peresadka_stambul_hotels)"
+    ],
+    "result": "Два содержательных коммерческих решения покрыты по месту. Багаж/въезд/расчёт/метро/бесплатные услуги/проверка билета не требуют платного оффера. Отели честно названы городской подборкой. Источники программ не заменены рекламными ссылками.",
+    "limitations": "Реальные редиректы, кнопки в DOM и CTA-level attribution не проверялись рецензентом."
+  },
+  "findingsClosed": [
+    "Золотой акцент SVG заменён на синий; rx удалён, данные остались пропорциональны.",
+    "Golos Text alias заменён на действующий --ff-body.",
+    "Четыре употребления «уже» переписаны; новых штампов и выдуманного опыта нет.",
+    "Добавлены условия совмещения экскурсии/отеля, carrier для Hotel Service и платного трансфера Stopover.",
+    "Три слишком длинные первые фразы checks укорочены; адресный metadata gate RED → GREEN."
+  ],
+  "risks": [
+    "Условия трёх программ требуют пересверки до 29.10.2026; визы/багаж/метро/отели до 29.12.2026.",
+    "В Touristanbul разные официальные локали расходятся по codeshare; участие определяется подтверждением конкретного билета.",
+    "Нет личного хронометража этой стыковки и самостоятельного нового замера спроса рецензентом.",
+    "Обложка имеет описательный alt, но общий шаблон не выводит видимую подпись; 4 фото тела имеют подписи.",
+    "Build, браузерный рендер, публичная /legal/photos/, CI, deploy и live остаются обязательными проверками исполнителя выпуска."
+  ]
+}
