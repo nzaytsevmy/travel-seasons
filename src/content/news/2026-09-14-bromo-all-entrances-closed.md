@@ -1,8 +1,8 @@
 ---
 title: "Бромо снова открыт после пожара с 19 сентября"
 date: 2026-09-12
-checked: "2026-09-19"
-reviewOn: "2026-09-30"
+checked: "2026-09-30"
+reviewOn: "2026-10-01"
 added: 2026-09-14
 topic: transport
 impact: high
@@ -14,14 +14,12 @@ tldr: "Туристический район Бромо на Яве снова �
 countries:
   - bali
 sources:
-  - name: ANTARA, заявление дирекции TNBTS об открытии Бромо с 19.09.2026; проверено 19.09.2026
+  - name: ANTARA, заявление дирекции TNBTS об открытии Бромо с 19.09.2026; повторно проверено 30.09.2026
     url: https://en.antaranews.com/news/431932/mount-bromo-to-reopen-to-tourists-after-fireextinguished
   - name: ANTARA, 12.09.2026 — официальное заявление главы TNBTS о полном закрытии, четырёх входах, возвратах и Рану-Регуло; проверено 14.09.2026
     url: https://www.antaranews.com/berita/5738097/tnbts-tutup-total-aktivitas-wisata-bromo-guna-percepat-pemadaman
   - name: ANTARA, 13.09.2026 — репортаж с закрытых входов Бромо, подтверждение даты 12 сентября; проверено 14.09.2026
     url: https://www.antaranews.com/foto/5738632/kebakaran-masih-dalam-penanganan-wisata-gunung-bromo-ditutup-total
-  - name: CNN Indonesia, 14.09.2026 — порядок TNBTS для билетов 12–18 сентября и до открытия, срок заявки на возврат, период переноса, повторная подача; проверено 15.09.2026
-    url: https://www.cnnindonesia.com/gaya-hidup/20260914101434-269-1403565/wisatawan-bisa-refund-reschedule-usai-wisata-bromo-ditutup-total
 image: "./_images/2026-09-14-bromo-all-entrances-closed.jpg"
 imageAlt: "Кратер Бромо на Яве; архивный вид до сентябрьского закрытия"
 imageCredit: "Hugo van den Bos"
