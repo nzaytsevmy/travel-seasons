@@ -2,86 +2,65 @@
   "schemaVersion": 1,
   "slug": "2026-09-23-japan-local-lines-after-typhoon",
   "score": 4,
-  "reviewer": "Codex GPT-6 — independent news_lifecycle_review (2026-09-29)",
-  "reviewedAt": "2026-09-29",
-  "reviewTimezone": "Europe/Moscow",
-  "reviewedAtInstantUTC": "2026-09-29T10:35:09.272Z",
-  "contentHash": "1483274cf4dc1414cd8ae0de8a554890537d37369e7a1eff0948244c2fc3d3f8",
-  "contentHashAlgorithm": "sha256",
-  "contentHashScope": "Exact UTF-8 bytes of the entire Markdown file, including frontmatter",
-  "sha256": "1483274cf4dc1414cd8ae0de8a554890537d37369e7a1eff0948244c2fc3d3f8",
-  "sourceSha256": "1483274cf4dc1414cd8ae0de8a554890537d37369e7a1eff0948244c2fc3d3f8",
-  "status": "pass",
-  "rationale": "Оценка 4: новые станционные границы, доля движения и замещающий транспорт меняют конкретные поездки по Тибе. Текст соответствует оперативному срезу JR East 29 сентября и объявлению Kominato 25 сентября. Раздельно описаны участки Собу, Утибо и Курури; 2 октября сохранено планом. Отсутствие замены у Kominato больше не ограничено прошедшей датой 27 сентября, а ограничения не распространяются на весь регион Токио.",
+  "reviewer": "codex-gpt-6-independent-news-review-20260930-news_review_0930",
+  "reviewedAt": "2026-09-30",
+  "rationale": "Оценка 4: новая дата 3 октября вместо 2 октября прямо меняет поездку по Курури, а дата 4 октября для Нариты и различия замещающего транспорта дают нужную самостоятельную информацию. Сводка MLIT №14 от 30 сентября просмотрена на страницах 7–8: пять линий, границы участков, сроки Утибо/Собу и планы Курури/Нариты соответствуют тексту. Kominato подтверждает отсутствие замены за Кадзуса-Усику. Плановые даты не выданы за состоявшееся открытие.",
+  "contentHash": "73b18095bc1c1c05bd5ab9f2e0cd870c2039f0fb31f9ea648786d694d8a86fbf",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256": "b00f843d327a4f28a1743120bc6f973bb2d758aad4795c4384b009257822a748",
   "blockingIssues": [],
-  "risks": [
-    "Проценты относятся к участкам и времени суток, не ко всей линии.",
-    "2 октября — план, не состоявшееся открытие.",
-    "Историческая сводка MLIT не даёт текущего числа остановленных линий."
-  ],
-  "scope": "Адресное независимое ревью семи исправленных UPDATE по завершённой сверке 29 сентября. Прозу автор исправлял отдельно. Новых широких поисков, визуального ревью, сборки и публикации нет.",
   "evidence": [
     {
-      "url": "https://traininfo.jreast.co.jp/train_info/kanto.aspx",
-      "publishedOrUpdated": "Прочитан оперативный срез 2026-09-29 18:44 JST",
-      "checkedOn": "2026-09-29",
-      "finding": "Собу: 70% Тиба–Ятимата, 80% Наруто–Тёси; Утибо до Анэгасаки 30% утром/вечером и 70% днём; южный участок 50%; Курури ожидают 2 октября.",
-      "access": "Оперативная страница web; локальный HTTP 403."
+      "url": "https://www.mlit.go.jp/common/002025053.pdf",
+      "publishedOn": "2026-09-30",
+      "checkedOn": "2026-09-30",
+      "access": "Independent HTTP 200; local PDF byte-for-byte identical; relevant pages visually inspected",
+      "sha256": "d5f46feb4f9fe915b0c80fa0792dc89e9e09bed80ad3915430cdcc2624aef002",
+      "finding": "Сводка №14, 09:00 JST; железные дороги на 08:00 JST. Страницы 7–8: Кисарадзу–Курури план 3 октября; Савара–Тёси план 4 октября; Собу около месяца; Утибо минимум около трёх месяцев; пять закрытых обычных линий, ни одной остановленной линии синкансэнов."
     },
     {
       "url": "https://www.kominato.co.jp/",
-      "publishedOrUpdated": "2026-09-25",
-      "checkedOn": "2026-09-29",
-      "finding": "Гои–Кадзуса-Усику работает; до Кадзуса-Накано закрыто на неопределённый срок; «代行輸送はありません».",
-      "access": "Официальное свежее объявление."
-    },
-    {
-      "url": "https://www.mlit.go.jp/saigai/saigai_260920.html",
-      "publishedOrUpdated": "Исторический срез 2026-09-23",
-      "checkedOn": "2026-09-29",
-      "finding": "Сводка последствий тайфуна, исходник исторического числа закрытых линий.",
-      "access": "Не используется как текущий полный счёт."
+      "publishedOn": "2026-09-25",
+      "checkedOn": "2026-09-30",
+      "access": "Independent direct HTTP 200",
+      "finding": "Гои–Кадзуса-Усику работают; Кадзуса-Усику–Кадзуса-Накано приостановлены без замены. Через эту связку недоступны Ёро-Кэйкоку и пересадка на Isumi."
     }
   ],
   "lifecycle": {
-    "decision": "UPDATE_ACCEPTED",
-    "checked": "2026-09-29",
-    "reviewOn": "2026-09-30",
-    "reason": "Оперативная схема меняется ежедневно: проверить автобусы Утибо и подтверждение восстановления.",
-    "additionalTriggers": [
-      "2 октября: ожидаемый запуск Кисарадзу–Курури."
-    ]
+    "reviewOn": "2026-10-02",
+    "reason": "2 октября перепроверить даты планового открытия 3–4 октября и доступные замены; обещание возобновления не считать фактом."
   },
   "checks": {
+    "capsuleWords": 48,
+    "bodyWords": 182,
+    "titleChars": 53,
+    "clipTitle": "После тайфуна в Японии остаются закрыты местные линии",
     "capsule": {
       "ok": true
     },
     "depthLink": {
       "ok": true
     },
-    "sourceDomains": {
+    "linksSubset": {
       "ok": true
     },
     "lifecycle": {
       "ok": true
     },
-    "score": {
+    "sourceDomains": {
       "ok": true
     },
-    "datePreserved": true,
-    "addedPreserved": true,
-    "bodyWords": 188,
-    "capsuleWords": 45,
-    "titleChars": 53,
-    "mediaMetadataUnchanged": true,
     "photoViewedToday": false,
-    "mediaScope": "Метаданные прежней фотографии совпали с HEAD. Это сохранение прежнего состояния, не новое визуальное/лицензионное подтверждение."
+    "mediaScope": "Фотографии и лицензии в этом адресном lifecycle ревью повторно не проверялись. Предмет текущего ревью — изменившиеся факты, даты и смысл утверждений; прежний выпуск не считается новой визуальной проверкой.",
+    "publicationDate": "2026-09-23",
+    "added": "2026-09-23",
+    "scope": "Узкое независимое ревью пяти переданных lifecycle UPDATE по work/lifecycle-0930.json. Сверены текущий текст и изменённые даты/условия против доступных первичных источников. Сборка, browser CLI, git, PR, публикация и широкий повторный аудит не запускались."
   },
   "priorReview": {
-    "reviewer": "Codex GPT-6 (news_review_20260919)",
-    "reviewedAt": "2026-09-24",
-    "articleSha256": "ecc4202c9808ef31f2e5ec53290027dc9913ac30890a0e2115ee6a14628c517b",
-    "reviewArtifactSha256": "ef7d854fd6b8959ad6b0719f95bcc055594acf0d640118084462692331c93f55",
-    "scope": "Предыдущая аттестация, не выдаётся за сегодняшнюю проверку."
+    "reviewer": "Codex GPT-6 — independent news_lifecycle_review (2026-09-29)",
+    "reviewedAt": "2026-09-29",
+    "score": 4,
+    "contentHash": "1483274cf4dc1414cd8ae0de8a554890537d37369e7a1eff0948244c2fc3d3f8",
+    "sha256": "1483274cf4dc1414cd8ae0de8a554890537d37369e7a1eff0948244c2fc3d3f8"
   }
 }

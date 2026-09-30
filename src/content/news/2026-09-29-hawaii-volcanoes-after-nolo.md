@@ -2,8 +2,8 @@
 title: "Гавайи: парк вулканов частично открыт после урагана"
 date: "2026-09-27"
 added: "2026-09-29"
-checked: "2026-09-29"
-reviewOn: "2026-09-30"
+checked: "2026-09-30"
+reviewOn: "2026-10-02"
 topic: "transport"
 impact: "medium"
 score: 4
@@ -16,7 +16,7 @@ countries:
 sources:
   - name: "National Park Service — открытие после урагана Ноло, 27.09.2026"
     url: https://www.nps.gov/havo/learn/news/20260927_post_nolo.htm
-  - name: "National Park Service — условия и ограничения посещения; проверено 29.09.2026"
+  - name: "National Park Service — условия и ограничения посещения; проверено 30.09.2026"
     url: https://www.nps.gov/havo/planyourvisit/conditions.htm
 imageAlt: "Указатель у входа в национальный парк Hawaiʻi Volcanoes"
 imageTitle: "Архивный снимок указателя у входа в Hawaiʻi Volcanoes. Это не снимок последствий урагана Ноло."

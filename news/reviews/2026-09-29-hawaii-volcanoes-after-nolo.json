@@ -2,41 +2,63 @@
   "schemaVersion": 1,
   "slug": "2026-09-29-hawaii-volcanoes-after-nolo",
   "score": 4,
-  "reviewer": "codex-gpt-6-independent-news-review-20260929",
-  "reviewedAt": "2026-09-29",
-  "rationale": "Исправлены точное место обращения в Кахуку и прямая ссылка на NPS, удалена посторонняя оговорка про извержение. Конкретные границы частично закрытых дорог и различие между открытым сектором и обследованными тропами помогают изменить маршрут. Все ограничения отнесены к релизу 27 сентября; свежая страница условий сама по себе не выдана за подтверждение открытия каждого участка.",
+  "reviewer": "codex-gpt-6-independent-news-review-20260930-news_review_0930",
+  "reviewedAt": "2026-09-30",
+  "rationale": "Оценка 4 сохранена при узкой повторной проверке: релиз NPS 27 сентября по-прежнему подтверждает частичное открытие района Килауэа и Кахуку с конкретными исключениями. Текст не превращает общую страницу условий в доказательство открытия Hilina Pali, Mauna Loa, Кипукапуаулу или Sulphur Banks. Перенос reviewOn на 2 октября обоснован новой проверкой доступных первичных страниц, а исходная дата события остаётся 27 сентября.",
   "contentHash": "fc41471ecf8265e8723df213484ce7dc09ae805296a957e7747510ecf97547db",
   "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256": "2e3105cdaba1e87a669f5a0e6f4ab9720b3b01be6f8c8da3e6e5e52bc39a4165",
   "blockingIssues": [],
   "evidence": [
     {
       "url": "https://www.nps.gov/havo/learn/news/20260927_post_nolo.htm",
       "publishedOn": "2026-09-27",
-      "checkedOn": "2026-09-29",
-      "finding": "Большинство участков у вершины Килауэа и Kahuku Unit открыты; перечислены границы Hilina Pali/Mauna Loa Road, Kīpukapuaulu Trail и Sulphur Banks Bridge. Тропы Кахуку открываются после обследования; проверка у Welcome Center."
+      "checkedOn": "2026-09-30",
+      "access": "Opened independently via web reader and read saved primary text",
+      "finding": "Релиз подтверждает частичное открытие и четыре исключения. Тропы Кахуку открываются после обследований; указания у начала маршрутов и Welcome Center сохраняются."
     },
     {
       "url": "https://www.nps.gov/havo/planyourvisit/conditions.htm",
-      "publishedOn": null,
-      "checkedOn": "2026-09-29",
-      "finding": "Страница открыта и в web, и в браузере. Персональные статусы перечисленных дорог/троп в полученном содержимом отсутствуют; это не доказательство снятия ограничений."
+      "checkedOn": "2026-09-30",
+      "access": "Independent direct HTTP 200",
+      "finding": "Страница условий доступна. Её доступность сама по себе не подтверждает открытие исключений из релиза 27 сентября; такого утверждения в тексте нет."
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-09-30",
-    "reason": "Подходящий срок следующей проверки быстро меняющихся ограничений после урагана."
+    "reviewOn": "2026-10-02",
+    "reason": "2 октября проверить конкретные исключения на NPS; менять доступ только при новом прямом подтверждении."
   },
   "checks": {
     "capsuleWords": 46,
     "bodyWords": 189,
     "titleChars": 51,
     "clipTitle": "Гавайи: парк вулканов частично открыт после урагана",
-    "internalLink": "/usa/",
-    "internalLinkStatus": 200,
-    "photoViewed": true,
-    "photoSha256": "2e44c4d3e33b2e2dc27ffcd10ff45c45a510c151ac8f47ce7ae8b55abcdaa9f2",
-    "photoFinding": "Ken Lund; CC BY-SA 2.0; curid 54889910. Указатель Hawaiʻi Volcanoes, не последствия Ноло; подпись соответствует кадру.",
-    "publicAttribution": "Original work title, creator, license, source and resize/compression notice retained by existing publicPhotoCredits(records, news) with batch _credits.json. Production rendering remains release gate.",
-    "scope": "Пять переданных заметок; независимое редакторское ревью, факты/даты/clipTitle/ссылки/визуальный смысл/лицензии. Проза не менялась; сборка, browser CLI, PR и push не запускались."
+    "capsule": {
+      "ok": true
+    },
+    "depthLink": {
+      "ok": true
+    },
+    "linksSubset": {
+      "ok": true
+    },
+    "lifecycle": {
+      "ok": true
+    },
+    "sourceDomains": {
+      "ok": true
+    },
+    "photoViewedToday": false,
+    "mediaScope": "Фотографии и лицензии в этом адресном lifecycle ревью повторно не проверялись. Предмет текущего ревью — изменившиеся факты, даты и смысл утверждений; прежний выпуск не считается новой визуальной проверкой.",
+    "publicationDate": "2026-09-27",
+    "added": "2026-09-29",
+    "scope": "Узкое независимое ревью пяти переданных lifecycle UPDATE по work/lifecycle-0930.json. Сверены текущий текст и изменённые даты/условия против доступных первичных источников. Сборка, browser CLI, git, PR, публикация и широкий повторный аудит не запускались."
+  },
+  "priorReview": {
+    "reviewer": "codex-gpt-6-independent-news-review-20260929",
+    "reviewedAt": "2026-09-29",
+    "score": 4,
+    "contentHash": "fc41471ecf8265e8723df213484ce7dc09ae805296a957e7747510ecf97547db",
+    "sha256": null
   }
 }
