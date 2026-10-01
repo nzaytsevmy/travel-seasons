@@ -2,8 +2,8 @@
 title: "США расширят проверку соцсетей для виз I, TN и TD"
 date: "2026-09-18"
 added: "2026-09-24"
-checked: "2026-09-24"
-reviewOn: "2026-10-01"
+checked: "2026-10-01"
+reviewOn: "2026-10-02"
 topic: "visa"
 impact: "high"
 score: 4

@@ -140,6 +140,21 @@ test('объявленное, но не вступившее правило тр
     new Date('2026-09-16T00:00:00Z')).ok).toBe(true);
 });
 
+test('неподтверждённый старт можно отложить на сутки только после новой проверки источника', () => {
+  const pending = { ...baseNote, data: { ...baseNote.data,
+    status: 'принято, не вступило',
+    effectiveDate: '2026-10-01',
+    checked: '2026-10-01',
+    reviewOn: '2026-10-02',
+  } };
+  expect(checkLifecycle(pending, new Date('2026-10-01T12:00:00Z')).ok).toBe(true);
+  expect(checkLifecycle(pending, new Date('2026-10-02T00:00:00Z')).ok).toBe(false);
+  expect(checkLifecycle({ ...pending, data: { ...pending.data, checked: '2026-09-30' } },
+    new Date('2026-10-01T12:00:00Z')).ok).toBe(false);
+  expect(checkLifecycle({ ...pending, data: { ...pending.data, reviewOn: '2026-10-03' } },
+    new Date('2026-10-01T12:00:00Z')).ok).toBe(false);
+});
+
 test('оценка новой заметки подтверждена отдельным review-артефактом', () => {
   const root = mkdtempSync(join(tmpdir(), 'tt-news-review-'));
   try {
