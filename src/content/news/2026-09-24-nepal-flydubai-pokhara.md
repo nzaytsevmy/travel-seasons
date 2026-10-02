@@ -3,7 +3,7 @@ title: "Flydubai начала прямые рейсы из Дубая в Пок�
 date: "2026-09-23"
 added: "2026-09-24"
 checked: "2026-09-24"
-reviewOn: "2026-10-01"
+reviewOn: "2026-10-09"
 topic: "transport"
 impact: "medium"
 score: 4

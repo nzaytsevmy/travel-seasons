@@ -31,7 +31,7 @@ imageCredit: "Sam kawah ijen"
 imageLicense: "CC BY-SA"
 imageLicenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
 imageSource: "https://commons.wikimedia.org/w/index.php?curid=123743150"
-reviewOn: "2026-10-01"
+reviewOn: "2026-10-16"
 ---
 
 Иджен снова разрешено посещать с 28 сентября. Природоохранное управление BBKSDA Восточной Явы объявило об этом 26 сентября после оценки безопасности туристического парка. Прежнее закрытие началось 4 сентября из-за пожаров; теперь решение об открытии относится именно к территории TWA Kawah Ijen.

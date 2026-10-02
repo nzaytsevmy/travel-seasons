@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "slug": "2026-10-02-booderee-gardens-upgrade",
+  "score": 3,
+  "reviewer": "Codex GPT-6 (news_review_20261002)",
+  "reviewedAt": "2026-10-02",
+  "sha256": "8ec026902b4b9d707f222d59974fb52c0eb0bc18334cfb57a0fb949551ad4989",
+  "rationale": "Парк 29 сентября сообщил именно о начатой реконструкции и запланированной доступной петле 150 м с площадками отдыха; даты открытия в первоисточнике нет. Заметка делает полезный для посетителя вывод: не рассчитывать на полную доступность без подтверждения текущего маршрута. Конкретная нишевая новость о доступе заслуживает 3, но пока не даёт готового нового маршрута или основания для 4. Заголовок после clipTitle целый; архивный вход в сад не выдан за новую дорожку.",
+  "risks": [
+    "Нет объявленной даты завершения работ; reviewOn 09.10 нужен для проверки фактического доступа.",
+    "Прежняя заметка 13.09 о H5 в том же парке может быть полезной контекстной ссылкой, если предупреждение ещё действует."
+  ],
+  "blockingIssues": [],
+  "evidence": [
+    {
+      "url": "https://booderee.gov.au/news/major-accessibility-upgrades-underway-booderee-botanic-gardens/",
+      "publishedOn": "2026-09-29",
+      "checkedOn": "2026-10-02",
+      "finding": "Parks Australia: работы идут в дождевой части сада; новая 150-метровая доступная петля, обзорные площадки, мостики и обновление покрытий. Открытие петли не объявлено."
+    },
+    {
+      "url": "https://commons.wikimedia.org/w/index.php?curid=185333603",
+      "publishedOn": "2026-01-01",
+      "checkedOn": "2026-10-02",
+      "finding": "Commons API: File:Booderee Botanic Gardens, January 2026 03.jpg, DaHuzyBru, CC BY-SA 4.0. На локальном JPEG виден вход в сад, не новый настил."
+    }
+  ],
+  "lifecycle": {
+    "reviewOn": "2026-10-09",
+    "reason": "Проверить, завершена ли стройка, открыт ли новый доступный контур и какие части сада доступны."
+  },
+  "checks": {
+    "capsuleWords": 51,
+    "bodyWords": 185,
+    "titleChars": 54,
+    "clipTitle": "В ботсаду Будери строят доступную дорожку длиной 150 м",
+    "internalLink": "/australia-east/",
+    "internalLinkStatus": 200,
+    "photoViewed": true,
+    "photoSha256": "1b43bb8efd5e8aa58accad09267cb94e2d53db020b5f0e899d1dec9397d6a1a3",
+    "photoFinding": "Локальный JPEG просмотрен: въезд и вывеска Booderee Botanic Gardens, архивный январский кадр; alt и оговорка верны.",
+    "publicAttribution": "Commons API подтвердил автора, точное название, лицензию и URL; title первым в imageTitle, далее видимая архивная оговорка. Код /legal/photos/ выводит поля новости и общий текст о сжатии/возможном кадрировании; отдельной записи о преобразовании каждого news JPEG нет. Финальный рендер после сборки не проверялся.",
+    "scope": "Независимая сверка текста, дат, источников, ссылки и локального JPEG; без сборки, CI, публикации и живой страницы новости."
+  },
+  "contentHash": "ec418f1ed98fb5bbd37303de232a9fef13f35bff3db23019edf985d975b2124c",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256Scope": "full Markdown file bytes"
+}

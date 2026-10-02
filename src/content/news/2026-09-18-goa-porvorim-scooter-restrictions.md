@@ -3,7 +3,7 @@ title: "Гоа: скутеры не пускают на новую эстака�
 date: 2026-09-17
 added: 2026-09-18
 checked: 2026-09-23
-reviewOn: "2026-10-01"
+reviewOn: "2026-10-05"
 topic: transport
 impact: high
 score: 5
