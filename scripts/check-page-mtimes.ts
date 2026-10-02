@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import { expect } from '@playwright/test';
 import { readFileSync, statSync, existsSync, readdirSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 
 // Готовые HTML должны сохранять дату реального изменения, а не время сборки.
 // Иначе Last-Modified не даёт 304, и поисковые роботы перекачивают старые страницы.
@@ -41,6 +42,24 @@ test('1. время файла совпадает с более свежей и�
   expect(разошлись.length,
     `у ${разошлись.length} страниц время файла не равно max(карта, оболочка). ` +
     `Первые: ${разошлись.slice(0, 3).map((с) => `${с.путь} (${с.было} вместо ${с.надо})`).join(', ')}`).toBe(0);
+});
+
+test('главная обновляет sitemap и Last-Modified после правки исходника', () => {
+  const датаИсходника = Number(execFileSync('git',
+    ['log', '-1', '--format=%ct', '--', 'src/pages/index.astro'], { encoding: 'utf8' }).trim());
+  expect(датаИсходника, 'git-дата главной не определилась').toBeGreaterThan(0);
+  const главная = страницы().find((с) => с.путь === '/');
+  expect(главная, 'главная отсутствует в sitemap').toBeTruthy();
+  expect(new Date(главная!.дата).valueOf() / 1000,
+    'sitemap говорит, что изменённая главная не обновлялась').toBeGreaterThanOrEqual(датаИсходника);
+  expect(Math.floor(statSync(главная!.файл).mtimeMs / 1000),
+    'Last-Modified главной старше её исходника — условный запрос получит ложный 304')
+    .toBeGreaterThanOrEqual(датаИсходника);
+  const указатель = readFileSync(`${КАТАЛОГ}/sitemap-index.xml`, 'utf8');
+  const датаУказателя = указатель.match(/<lastmod>([^<]*)<\/lastmod>/)?.[1];
+  expect(датаУказателя, 'указатель sitemap без даты').toBeTruthy();
+  expect(new Date(датаУказателя!).valueOf(), 'указатель sitemap старше обновлённой главной')
+    .toBeGreaterThanOrEqual(new Date(главная!.дата).valueOf());
 });
 
 test('2. изменение общей оболочки действительно поднимает дату старых страниц', () => {
