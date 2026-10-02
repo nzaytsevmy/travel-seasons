@@ -4,7 +4,7 @@ date: 2026-09-14
 added: 2026-09-19
 checked: 2026-09-23
 effectiveDate: 2026-09-18
-reviewOn: "2026-10-02"
+reviewOn: "2026-10-05"
 topic: transport
 impact: medium
 score: 4

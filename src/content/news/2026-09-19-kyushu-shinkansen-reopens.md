@@ -3,7 +3,7 @@ title: "Синкансэн на Кюсю снова ходит по всей л�
 date: 2026-09-18
 added: 2026-09-19
 checked: 2026-09-19
-reviewOn: 2026-10-01
+reviewOn: "2026-10-10"
 topic: transport
 impact: high
 score: 4

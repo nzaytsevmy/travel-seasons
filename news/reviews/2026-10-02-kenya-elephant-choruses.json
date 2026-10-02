@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "slug": "2026-10-02-kenya-elephant-choruses",
+  "score": 3,
+  "reviewer": "Codex GPT-6 (news_review_20261002)",
+  "reviewedAt": "2026-10-02",
+  "sha256": "7da7ba58d4c0804f9a89836bd4ccfce7097559a84a25143f635ab3c091f48256",
+  "rationale": "Работа Scientific Reports опубликована 1 октября на архивных записях 1986–2022 из Амбосели: 902 записи одиночных и перекрывающихся звуков; 84 слона и 39 семей подтверждены объяснением Phys.org от той же даты. Акустическое сближение наблюдалось в отдельных контекстах, но авторы называют отсутствие playback-экспериментов ограничением. Текст объясняет это без выдуманного перевода «языка слонов» и без обещания услышать инфразвук на сафари. Это содержательная природная новость на 3. Исправленная подпись Phys.org теперь верно датирована 01.10.",
+  "risks": [
+    "Числа 84 и 39 явно даны в объяснении Phys.org; в открытом тексте статьи найдено 39 non-EB семей плюс одна EB, поэтому при следующей ревизии не смешивать эти знаменатели.",
+    "Локальный архивный кадр сделан в Aberdare NP, не в Амбосели; подпись не заявляет обратное."
+  ],
+  "blockingIssues": [],
+  "evidence": [
+    {
+      "url": "https://www.nature.com/articles/s41598-026-68525-3",
+      "publishedOn": "2026-10-01",
+      "checkedOn": "2026-10-02",
+      "finding": "Первичная статья Scientific Reports: архивные записи 1986–2022, итоговый набор 902 rumbles; классификация контекстов и сближение звуков в части хоров; авторы прямо указывают отсутствие playback-экспериментов."
+    },
+    {
+      "url": "https://phys.org/news/2026-10-elephant-choruses-rumbles-groups.html",
+      "publishedOn": "2026-10-01",
+      "checkedOn": "2026-10-02",
+      "finding": "Объяснение Nature Publishing Group, опубликованное на Phys.org 1 октября: 84 диких слона, 39 семей, 902 записи; перечислены контексты и ограничение исследования."
+    },
+    {
+      "url": "https://commons.wikimedia.org/w/index.php?curid=18995291",
+      "publishedOn": "2010-09-19",
+      "checkedOn": "2026-10-02",
+      "finding": "Commons API: File:African elephant in Aberdare NP.JPG, BIT1982, CC BY-SA 3.0; архивный слон в Кении, не животное из исследования."
+    }
+  ],
+  "lifecycle": {
+    "reviewOn": null,
+    "reason": "Разовое опубликованное исследование; обещанной даты изменения доступа или завершения события нет."
+  },
+  "checks": {
+    "capsuleWords": 45,
+    "bodyWords": 205,
+    "titleChars": 54,
+    "clipTitle": "В Кении записали, как хоры слонов меняются при встрече",
+    "internalLink": "/blog/kenya-guide-2026/",
+    "internalLinkStatus": 200,
+    "photoViewed": true,
+    "photoSha256": "968828ce1f09de5a1179a2dad2dab4a1bc092185a93c5bbebeb589bfe99f5f79",
+    "photoFinding": "Локальный JPEG просмотрен: один африканский слон в зелёной среде; он снят в Aberdare, а не в Амбосели, что не противоречит общей подписи.",
+    "publicAttribution": "Commons API подтвердил автора, точное название, лицензию и URL; title первым в imageTitle, далее видимая архивная оговорка. Код /legal/photos/ выводит поля новости и общий текст о сжатии/возможном кадрировании; отдельной записи о преобразовании каждого news JPEG нет. Финальный рендер после сборки не проверялся.",
+    "scope": "Независимая сверка текста, дат, источников, ссылки и локального JPEG; без сборки, CI, публикации и живой страницы новости."
+  },
+  "contentHash": "3aca651b059bbe82ca33d38279e32c9ab06c9d129eb154a9c374c6fe99b22e1d",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256Scope": "full Markdown file bytes"
+}

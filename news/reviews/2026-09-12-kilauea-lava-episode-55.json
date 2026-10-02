@@ -2,56 +2,53 @@
   "schemaVersion": 1,
   "slug": "2026-09-12-kilauea-lava-episode-55",
   "score": 4,
-  "reviewer": "codex-gpt-6-independent-news-review-20260930-news_review_0930",
-  "reviewedAt": "2026-09-30",
-  "rationale": "Оценка 4 сохранена при адресной проверке обновления: сводка USGS 29 сентября в 09:02 HST подтверждает короткие излияния и обратный сток южного жерла, свечение и отдельные выбросы обоих жерл. Начало 55-го эпизода и точное время новых фонтанов не заявлены. Эти ограничения прогноза существенны для поездки к вулкану; доступ в парк отделён от наблюдаемой активности. Устаревший срез заменён датированным наблюдением.",
-  "contentHash": "e4d06ea10ce52efa23cee7168fa6b0dae8f74f7f957afdf5032dce2015005a7e",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256": "4a21b44fbf148e0b35148b27f5364e5e4ea495d11cb21f78dc198dc2d7966997",
+  "reviewer": "Codex GPT-6 (news_review_20261002)",
+  "reviewedAt": "2026-10-02",
+  "sha256": "35cc380819d9b322be288ead75126d02e18cd9c23ba72d69d42c8c9f11757443",
+  "rationale": "Адресное обновление сохраняет оценку 4. Суточная сводка USGS/HVO от 1 октября 09:05 HST подтверждает неглубокое внедрение магмы у вершины, переливы и зарево у существующих жерл, отсутствие обнаруженного нового выхода лавы и невозможность теперь рассчитать окно 55-го эпизода из-за нерегулярной деформации. Текст не объявляет высокие фонтаны начавшимися, отделяет варианты дальнейшей активности от точного прогноза и направляет к отдельной заметке о доступе в парк. date/added прежние; новое checked отражает содержательную сверку.",
+  "risks": [
+    "Вулканическая активность быстро меняется; reviewOn 03.10 уместен, свежую сводку USGS надо проверить до новых обещаний посетителю."
+  ],
   "blockingIssues": [],
   "evidence": [
     {
       "url": "https://www.usgs.gov/volcanoes/kilauea/volcano-updates",
-      "publishedOn": "2026-09-29",
-      "checkedOn": "2026-09-30",
-      "finding": "Независимо открыта актуальная сводка 09:02 HST: циклы south vent overflows/drainback, свечение и spatter обоих жерл; episode 55 остаётся возможностью, точный прогноз невозможен. Закрытая зона извержения обозначена отдельно."
+      "publishedOn": "2026-10-01",
+      "checkedOn": "2026-10-02",
+      "finding": "Daily Update 09:05 HST: неглубокое внедрение 30.09–01.10 у вершины, краткие overflows/spatter у существующих жерл, нового места выхода магмы по вебкамерам нет. Начало 55-го эпизода не объявлено; окна фонтана более не моделируются."
+    },
+    {
+      "url": "https://www.nps.gov/havo/planyourvisit/eruption-viewing.htm",
+      "publishedOn": null,
+      "checkedOn": "2026-10-02",
+      "finding": "Страница условий наблюдения подтверждает необходимость отличать открытую обзорную точку от закрытой зоны извержения."
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-10-01",
-    "reason": "1 октября проверить последнюю сводку USGS/HVO и статус доступа; дату фонтанов не выводить из небольших излияний."
+    "reviewOn": "2026-10-03",
+    "reason": "Завтра проверить новую сводку USGS/HVO и доступные точки наблюдения; не выводить время эпизода из малых излияний."
   },
   "checks": {
-    "capsuleWords": 44,
-    "bodyWords": 165,
+    "capsuleWords": 46,
+    "bodyWords": 197,
     "titleChars": 50,
     "clipTitle": "Килауэа: начало 55-го эпизода пока не подтверждено",
-    "capsule": {
-      "ok": true
-    },
-    "depthLink": {
-      "ok": true
-    },
-    "linksSubset": {
-      "ok": true
-    },
-    "lifecycle": {
-      "ok": true
-    },
-    "sourceDomains": {
-      "ok": true
-    },
+    "internalLink": "/novosti/2026-09-29-hawaii-volcanoes-after-nolo/",
+    "internalLinkStatus": 200,
     "photoViewedToday": false,
-    "mediaScope": "Фотографии и лицензии в этом адресном lifecycle ревью повторно не проверялись. Предмет текущего ревью — изменившиеся факты, даты и смысл утверждений; прежний выпуск не считается новой визуальной проверкой.",
+    "mediaScope": "В этом адресном lifecycle review повторно не проверялось неизменённое фото; оценка относится к обновлённым фактам, датам, ссылкам и смыслу.",
     "publicationDate": "2026-09-11",
     "added": "2026-09-12",
-    "scope": "Узкое независимое ревью пяти переданных lifecycle UPDATE по work/lifecycle-0930.json. Сверены текущий текст и изменённые даты/условия против доступных первичных источников. Сборка, browser CLI, git, PR, публикация и широкий повторный аудит не запускались."
+    "scope": "Сверка финального текста против открытых первичных источников; без сборки, CI, нового деплоя и живого URL обновления."
   },
+  "contentHash": "58384fb857477133521e2aa292581f50246110e8baed4d88c66d85197b2102fd",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256Scope": "full Markdown file bytes",
   "priorReview": {
-    "reviewer": "Codex GPT-6 — independent news_lifecycle_review (2026-09-29)",
-    "reviewedAt": "2026-09-29",
+    "reviewer": "codex-gpt-6-independent-news-review-20260930-news_review_0930",
+    "reviewedAt": "2026-09-30",
     "score": 4,
-    "contentHash": "1a7e255200323b8540bcbfa26715dd42bd1a571c964e2cdb6a3e87391e432977",
-    "sha256": "1a7e255200323b8540bcbfa26715dd42bd1a571c964e2cdb6a3e87391e432977"
+    "contentHash": "e4d06ea10ce52efa23cee7168fa6b0dae8f74f7f957afdf5032dce2015005a7e",
+    "sha256": "4a21b44fbf148e0b35148b27f5364e5e4ea495d11cb21f78dc198dc2d7966997"
   }
 }

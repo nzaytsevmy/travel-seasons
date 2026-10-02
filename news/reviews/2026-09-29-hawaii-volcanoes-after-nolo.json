@@ -2,63 +2,61 @@
   "schemaVersion": 1,
   "slug": "2026-09-29-hawaii-volcanoes-after-nolo",
   "score": 4,
-  "reviewer": "codex-gpt-6-independent-news-review-20260930-news_review_0930",
-  "reviewedAt": "2026-09-30",
-  "rationale": "Оценка 4 сохранена при узкой повторной проверке: релиз NPS 27 сентября по-прежнему подтверждает частичное открытие района Килауэа и Кахуку с конкретными исключениями. Текст не превращает общую страницу условий в доказательство открытия Hilina Pali, Mauna Loa, Кипукапуаулу или Sulphur Banks. Перенос reviewOn на 2 октября обоснован новой проверкой доступных первичных страниц, а исходная дата события остаётся 27 сентября.",
-  "contentHash": "fc41471ecf8265e8723df213484ce7dc09ae805296a957e7747510ecf97547db",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256": "2e3105cdaba1e87a669f5a0e6f4ab9720b3b01be6f8c8da3e6e5e52bc39a4165",
+  "reviewer": "Codex GPT-6 (news_review_20261002)",
+  "reviewedAt": "2026-10-02",
+  "sha256": "1cca36cf15824638abab96d9eb7ade859852ce1353b107d135b698e1576d8479",
+  "rationale": "Оценка 4 сохраняется: релиз NPS от 27 сентября подтверждает частичное открытие районов Килауэа/Кахуку с конкретными исключениями, а самостоятельное сообщение NPS от 1 октября добавляет важный новый факт для посетителя — арка Холеи разрушилась не позднее вечера 27 сентября. Текст правильно отделяет дату объявления от интервала события, не приписывает обрушение урагану без доказательства, предупреждает об ограждениях и не объявляет закрытые 27 сентября участки снова открытыми. date/added сохранены.",
+  "risks": [
+    "Точный момент и причина обрушения неизвестны; связь с Ноло не утверждать.",
+    "Страница условий NPS на 02.10 не перечисляет все исключения релиза 27.09; их актуальность требует возврата 04.10.",
+    "Арка — самостоятельный новый повод; включение её в прежнюю заметку о том же парке допустимо как практическое обновление маршрута, но структуру ленты и текущий URL следует оставить согласованными."
+  ],
   "blockingIssues": [],
   "evidence": [
     {
       "url": "https://www.nps.gov/havo/learn/news/20260927_post_nolo.htm",
       "publishedOn": "2026-09-27",
-      "checkedOn": "2026-09-30",
-      "access": "Opened independently via web reader and read saved primary text",
-      "finding": "Релиз подтверждает частичное открытие и четыре исключения. Тропы Кахуку открываются после обследований; указания у начала маршрутов и Welcome Center сохраняются."
+      "checkedOn": "2026-10-02",
+      "finding": "NPS: большая часть парка вновь открыта; Hilina Pali Road, Mauna Loa Road, Kīpukapuaulu Trail и Sulphur Banks Bridge — исключения. Кахуку открывает тропы по мере обследования."
+    },
+    {
+      "url": "https://www.nps.gov/havo/learn/news/20261001-nr-holei-sea-arch_collapses.htm",
+      "publishedOn": "2026-10-01",
+      "checkedOn": "2026-10-02",
+      "finding": "Прямой HTTP 200 и текст NPS: арка стояла 23.09, к вечеру 27.09 обрушилась; точный момент/причина неизвестны; посетителей просят держаться подальше от закрытой кромки обрыва."
     },
     {
       "url": "https://www.nps.gov/havo/planyourvisit/conditions.htm",
-      "checkedOn": "2026-09-30",
-      "access": "Independent direct HTTP 200",
-      "finding": "Страница условий доступна. Её доступность сама по себе не подтверждает открытие исключений из релиза 27 сентября; такого утверждения в тексте нет."
+      "publishedOn": null,
+      "checkedOn": "2026-10-02",
+      "finding": "Общая страница условий открывается HTTP 200, но сама по себе не подтверждает снятие отдельных исключений из релиза 27.09."
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-10-02",
-    "reason": "2 октября проверить конкретные исключения на NPS; менять доступ только при новом прямом подтверждении."
+    "reviewOn": "2026-10-04",
+    "reason": "Через два дня проверить каждое исключение и актуальные сообщения NPS; при изменении доступа обновить ответ на прежнем URL."
   },
   "checks": {
     "capsuleWords": 46,
-    "bodyWords": 189,
+    "bodyWords": 248,
     "titleChars": 51,
     "clipTitle": "Гавайи: парк вулканов частично открыт после урагана",
-    "capsule": {
-      "ok": true
-    },
-    "depthLink": {
-      "ok": true
-    },
-    "linksSubset": {
-      "ok": true
-    },
-    "lifecycle": {
-      "ok": true
-    },
-    "sourceDomains": {
-      "ok": true
-    },
+    "internalLink": "/usa/",
+    "internalLinkStatus": 200,
     "photoViewedToday": false,
-    "mediaScope": "Фотографии и лицензии в этом адресном lifecycle ревью повторно не проверялись. Предмет текущего ревью — изменившиеся факты, даты и смысл утверждений; прежний выпуск не считается новой визуальной проверкой.",
+    "mediaScope": "В этом адресном lifecycle review повторно не проверялось неизменённое фото; оценка относится к обновлённым фактам, датам, ссылкам и смыслу.",
     "publicationDate": "2026-09-27",
     "added": "2026-09-29",
-    "scope": "Узкое независимое ревью пяти переданных lifecycle UPDATE по work/lifecycle-0930.json. Сверены текущий текст и изменённые даты/условия против доступных первичных источников. Сборка, browser CLI, git, PR, публикация и широкий повторный аудит не запускались."
+    "scope": "Сверка финального текста против открытых первичных источников; без сборки, CI, нового деплоя и живого URL обновления."
   },
+  "contentHash": "d984ac79299018bfb447494554e77b4b2b3ab99fe478f0a6e1bf3fa0525bdda5",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256Scope": "full Markdown file bytes",
   "priorReview": {
-    "reviewer": "codex-gpt-6-independent-news-review-20260929",
-    "reviewedAt": "2026-09-29",
+    "reviewer": "codex-gpt-6-independent-news-review-20260930-news_review_0930",
+    "reviewedAt": "2026-09-30",
     "score": 4,
     "contentHash": "fc41471ecf8265e8723df213484ce7dc09ae805296a957e7747510ecf97547db",
-    "sha256": null
+    "sha256": "2e3105cdaba1e87a669f5a0e6f4ab9720b3b01be6f8c8da3e6e5e52bc39a4165"
   }
 }

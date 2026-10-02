@@ -3,7 +3,7 @@ title: "Олимпик: мост через Хох будут закрывать
 date: "2026-09-15"
 added: "2026-09-17"
 checked: "2026-09-30"
-reviewOn: "2026-10-01"
+reviewOn: "2026-10-06"
 topic: transport
 impact: high
 score: 4
