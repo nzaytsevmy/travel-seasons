@@ -154,7 +154,7 @@ test('6. развороты дневника на месте и по-русск�
   //    самодельное усечение месяца сломало падеж, увидели на снимке.
   await page.goto('/');
   await expect(page.locator('.jr .tape')).toBeVisible();
-  await expect(page.locator('.pola')).toHaveCount(3);
+  await expect(page.locator('.pola')).toHaveCount(4);
   await expect(page.locator('.stamp')).toHaveCount(4);
   await expect(page.locator('.prow')).toHaveCount(6);
   await expect(page.locator('.anchor2 .anote')).toBeVisible();
@@ -165,9 +165,11 @@ test('6. развороты дневника на месте и по-русск�
     expect(т, `падеж месяца сломан: «${т.slice(0, 40)}»`)
       .toMatch(/до\s(января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)/);
   }
-  // тройка совпадает с порядком сезона — как таблица сортировала
+  // У всех четырёх направлений есть отдельная ссылка на страну.
   const имена = await page.locator('.pola .pcap').allTextContents();
-  expect(имена.length).toBe(3);
+  expect(имена.length).toBe(4);
+  const ссылки = await page.locator('.pola').evaluateAll((карточки) => карточки.map((карточка) => карточка.getAttribute('href')));
+  expect(new Set(ссылки).size).toBe(4);
 });
 
 test('7. текст подготовки не прилипает к следующему кадру', async ({ page }) => {
