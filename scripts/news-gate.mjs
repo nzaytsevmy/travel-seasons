@@ -193,9 +193,9 @@ const isoDay = (value) => {
 };
 
 /**
- * 7. Жизненный цикл будущего правила. Статус «принято, не вступило» не может
- *    жить вечно: к дате вступления источник нужно открыть заново и только
- *    после этого сменить статус, дату проверки и связанные страницы.
+ * 7. Жизненный цикл будущего правила. К объявленной дате источник открывают
+ *    заново. Если начало пока не подтверждено, оставляют честный статус и
+ *    назначают следующий просмотр не позднее следующего дня.
  */
 export function checkLifecycle(note, now = new Date()) {
   if (note.data.status !== 'принято, не вступило') return pass;
@@ -203,7 +203,13 @@ export function checkLifecycle(note, now = new Date()) {
   const review = isoDay(note.data.reviewOn);
   if (!effective) return fail('для будущего правила нет корректного effectiveDate');
   if (!review) return fail('для будущего правила нет корректного reviewOn');
-  if (review > effective) return fail(`reviewOn ${review} позже effectiveDate ${effective}`);
+  if (review > effective) {
+    const checked = isoDay(note.data.checked);
+    const nextDay = checked && new Date(Date.parse(`${checked}T00:00:00Z`) + 86400000).toISOString().slice(0, 10);
+    if (!checked || checked < effective || review > nextDay) {
+      return fail(`reviewOn ${review} позже effectiveDate ${effective} без свежей проверки и следующего просмотра в течение суток`);
+    }
+  }
   const today = isoDay(now);
   if (today && today >= review) {
     return fail(`наступила дата повторной проверки ${review}: перепроверь источник и обнови status`);
