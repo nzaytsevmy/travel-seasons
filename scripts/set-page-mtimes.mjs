@@ -49,7 +49,7 @@ if (!existsSync(КАРТА)) {
   process.exit(0);
 }
 
-const xml = readFileSync(КАРТА, 'utf8');
+let xml = readFileSync(КАРТА, 'utf8');
 let поставлено = 0, пропущено = 0;
 const изКарты = new Set();
 
@@ -97,6 +97,33 @@ const поставитьВремя = (файл, дата) => {
   const секунды = Math.floor(дата.valueOf() / 1000);
   utimesSync(файл, секунды, секунды);
 };
+
+// Главная меняет карточки при смене месяца и при правке src/pages/index.astro.
+// Общая дата данных в исходной карте оставляла её mtime от 15.09 даже после
+// октябрьского выпуска: условный If-Modified-Since получал ложный 304.
+const главнаяВКарте = /(<loc>https:\/\/traveltribe\.ru\/<\/loc><lastmod>)([^<]+)(<\/lastmod>)/;
+const записьГлавной = xml.match(главнаяВКарте);
+if (записьГлавной) {
+  const старая = new Date(записьГлавной[2]);
+  const сегодня = new Date();
+  const началоМесяца = new Date(сегодня.getFullYear(), сегодня.getMonth(), 1);
+  const исходник = gitДата(['src/pages/index.astro']);
+  const новая = new Date(Math.max(старая.valueOf(), началоМесяца.valueOf(), исходник?.valueOf() || 0));
+  if (новая > старая) {
+    xml = xml.replace(главнаяВКарте, (_, начало, _дата, конец) => `${начало}${новая.toISOString()}${конец}`);
+    writeFileSync(КАРТА, xml);
+    const картаКарт = join(КАТАЛОГ, 'sitemap-index.xml');
+    if (existsSync(картаКарт)) {
+      let указатель = readFileSync(картаКарт, 'utf8');
+      const записьКарты = /(<loc>https:\/\/traveltribe\.ru\/sitemap-0\.xml<\/loc><lastmod>)([^<]+)(<\/lastmod>)/;
+      const найдено = указатель.match(записьКарты);
+      if (найдено && новая > new Date(найдено[2])) {
+        указатель = указатель.replace(записьКарты, (_, начало, _дата, конец) => `${начало}${новая.toISOString()}${конец}`);
+        writeFileSync(картаКарт, указатель);
+      }
+    }
+  }
+}
 
 for (const m of xml.matchAll(/<loc>https:\/\/traveltribe\.ru([^<]*)<\/loc><lastmod>([^<]*)<\/lastmod>/g)) {
   const путь = m[1];
