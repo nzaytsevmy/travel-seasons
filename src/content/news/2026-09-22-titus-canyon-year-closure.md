@@ -2,12 +2,12 @@
 title: "Основную дорогу Тайтус-Каньона закроют со 2 октября"
 date: 2026-09-22
 added: 2026-09-22
-checked: 2026-10-01
+checked: 2026-10-02
 topic: transport
 impact: high
 status: "принято, не вступило"
 effectiveDate: 2026-10-02
-reviewOn: 2026-10-02
+reviewOn: 2026-10-03
 score: 4
 authoredBy: "codex-gpt-6"
 reviewRef: "news/reviews/2026-09-22-titus-canyon-year-closure.json"
@@ -16,7 +16,7 @@ tldr: "Служба национальных парков США изменил�
 countries:
   - usa
 sources:
-  - name: "NPS — дороги Долины Смерти, обновление 28.09.2026; проверено 01.10"
+  - name: "NPS — дороги Долины Смерти, обновление 28.09.2026; проверено 02.10"
     url: https://home.nps.gov/deva/planyourvisit/conditions.htm
 image: "./_images/2026-09-22-titus-canyon-year-closure.jpg"
 imageAlt: "Табличка посёлка Лидфилд среди сухих гор вдоль маршрута Тайтус-Каньон"
