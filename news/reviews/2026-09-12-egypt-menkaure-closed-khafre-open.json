@@ -2,48 +2,53 @@
   "schemaVersion": 1,
   "slug": "2026-09-12-egypt-menkaure-closed-khafre-open",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
-  "reviewedAt": "2026-09-23",
-  "sha256": "e2b353935fe40bb61a5e09d2c1523e7271996d0ed50b207417d9e63a289899f2",
-  "rationale": "UNKNOWN по фактическому началу ротации. Решение совета SCA от 10 сентября одобряет открытие пирамиды Хефрена и закрытие пирамиды Микерина для ротационного обслуживания, но не называет дату исполнения. Формулировка «решили открыть/закрыть» остаётся точной; менять её на совершившийся статус нельзя. Отсутствие нового сообщения не доказывает ни начало, ни отсутствие ротации. Оценка 4 сохранена.",
+  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+  "reviewedAt": "2026-10-06",
+  "sha256": "3e4b5aaa8c581e950c2b42154713e7e14885c19916f9583d9cd903a951a880fd",
+  "rationale": "Оценка 4: решение о ротации доступа к пирамидам Гизы может менять оплаченную экскурсию. Текст точно отделяет одобрение Хефрена/Микерина от не подтверждённой даты фактического переключения. Каталог министерства всё ещё показывает часы и билет Микерина, но статья честно не считает этот каталог подтверждением входа внутрь сегодня.",
   "risks": [
-    "Дата фактического начала ротации не установлена.",
-    "Нельзя заменять решение формулировками «открыли/закрыли» без нового официального подтверждения."
+    "Дата начала и окончания ротации не объявлена; проверять на месте или у продавца билета.",
+    "Сообщение о решении доступно в пересказе Egypt Independent; публичного первичного релиза Совета с точной датой не найдено."
   ],
   "blockingIssues": [],
   "evidence": [
     {
-      "url": "https://www.mota.gov.eg/ar/الأخبار-2-1-1/وزير-السياحة-والآثار-يترأس-اجتماع-مجلس-إدارة-المجلس-الأعلى-للآثار-20/",
-      "publishedOn": "2026-09-10",
-      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
-      "finding": "Официальный абзац подтверждает одобрение ротации, но не сообщает дату её фактического начала.",
-      "checkedOn": "2026-09-23"
-    },
-    {
       "url": "https://www.egyptindependent.com/egypt-announces-closure-of-the-pyramid-of-menkaure/",
       "publishedOn": "2026-09-11",
-      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
-      "finding": "Разрешённое медиа подтверждает объявленное решение; совершившийся доступ из него не следует.",
-      "checkedOn": "2026-09-23"
+      "finding": "Сообщает об одобренной ротации Хефрена и Микерина, без точной даты фактической смены доступа.",
+      "checkedOn": "2026-10-06"
+    },
+    {
+      "url": "https://egymonuments.gov.eg/en/monuments/pyramid-complex-of-menkaure/",
+      "finding": "Официальный каталог министерства показывает часы и билет; оперативность каталога не доказана и текущий вход внутрь из него не следует.",
+      "checkedOn": "2026-10-06"
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-09-25",
-    "reason": "Дата фактического начала ротации не установлена.",
-    "decision": "UNKNOWN_ROTATION_START"
+    "reviewOn": "2026-10-20",
+    "reason": "Повторно проверить фактическое переключение доступа по прямому сообщению ведомства или билетной системе."
   },
   "checks": {
-    "metadataOnlyConfirmed": true,
-    "priorSourceSha256": "9b3ffe97573d2ebec57f76fd78a4e91d4371a2aada0dc840358adf6482120373",
-    "titleUnchangedByClip": true,
-    "clippedTitle": "Гиза: Хефрена решили открыть, Микерина — закрыть",
-    "tldrGate": {
-      "ok": true
-    },
-    "scope": "Ограниченный lifecycle-review 23.09: перечитан изменчивый статус, проза и прежняя фотоаттестация не исследовались заново; обновлены checked, reviewOn и SHA; без сборки и публикации.",
     "capsuleWords": 47,
-    "bodyWords": 178,
-    "titleChars": 48
+    "bodyWords": 203,
+    "titleChars": 48,
+    "clipTitle": "Гиза: Хефрена решили открыть, Микерина — закрыть",
+    "internalLink": null,
+    "internalLinkStatus": null,
+    "photoViewedToday": false,
+    "mediaScope": "Фото в этих адресных lifecycle-правках не менялось; повторный осмотр локального JPEG не проводился.",
+    "publicationDate": "2026-09-11",
+    "added": "2026-09-12",
+    "scope": "Независимая сверка финальных текстов, дат и первоисточников; без браузерных тестов, сборки, CI и live-проверки обновлённых страниц."
   },
-  "evidenceReport": ".run/2026-09-18/lifecycle-review/review.json"
+  "contentHash": "9b96e6187550cbe0afe38036deb36c5a62add3b11e425b5bd710af49fc73e86b",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256Scope": "full Markdown file bytes",
+  "priorReview": {
+    "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
+    "reviewedAt": "2026-09-23",
+    "score": 4,
+    "contentHash": null,
+    "sha256": "e2b353935fe40bb61a5e09d2c1523e7271996d0ed50b207417d9e63a289899f2"
+  }
 }

@@ -25,7 +25,8 @@ import { bySlug } from '../../data/directions.js';
 export async function getStaticPaths() {
   const all = await getCollection('news');
   // Порядок тот же, что в ленте: он же задаёт «предыдущую / следующую».
-  const sorted = feedEntries(all);
+  // Архивная заметка сохраняет прежний адрес и соседей в месячном архиве.
+  const sorted = feedEntries(all, undefined, { includeArchived: true });
   return sorted.map((entry, i) => ({
     params: { slug: entry.slug },
     props: { entry, around: [sorted[i - 1], sorted[i + 1]].filter(Boolean) },
@@ -96,6 +97,7 @@ const ldJson = {
       <div class="nvp-meta">
         <time datetime={addedIso}>{formatDateRu(added)}</time>
         <span>{TOPIC_LABEL[d.topic]}</span>
+        {d.archived && <span class="nvp-status">архив</span>}
         {d.impact === 'high' && <span class="nvp-impact">{IMPACT_LABEL.high}</span>}
         {d.status && <span class="nvp-status">{d.status}</span>}
       </div>

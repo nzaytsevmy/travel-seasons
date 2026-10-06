@@ -2,63 +2,58 @@
   "schemaVersion": 1,
   "slug": "2026-09-17-olympic-hoh-bridge-road-closures",
   "score": 4,
-  "reviewer": "codex-gpt-6-independent-news-review-20260930-news_review_0930",
-  "reviewedAt": "2026-09-30",
-  "rationale": "Оценка 4: два будущих многодневных окна требуют изменить порядок остановок и ночёвок на Олимпийском полуострове. Независимо открытый WSDOT подтверждает 1–6 и 8–13 октября с указанными местными часами. 29 сентября описано как плановый конец прежнего окна, а не доказанное открытие. Инспекция перед попеременным движением сохранена; лес Хох доступен с севера и не смешан с закрытым мостом.",
-  "contentHash": "25173cf5eb7612b385745176d723322ca9dd7fee71d6172e49b9b8c4e45550cf",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256": "8fae335ac4a321ffcafcd9544918e553a7881fad3fe7d6f99d56bfbd9cd84e90",
+  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+  "reviewedAt": "2026-10-06",
+  "sha256": "dc3516ae3df14f44f48fdd209ad554737b4dbe577bafaff81d9b0fd86d9dfe06",
+  "rationale": "Оценка 4: WSDOT подтверждает два октябрьских полных закрытия US 101 через Хох. На момент проверки по местному времени ещё шло окно до 6 октября 12:00 PDT, следующее начинается 8 октября. Текст сохраняет важное различие: дождевой лес Хох доступен из Форкса, но сквозной проезд к югу разорван.",
+  "risks": [
+    "Время возобновления зависит от осмотра моста после работ; график следует сверять повторно после 6 октября 12:00 PDT."
+  ],
   "blockingIssues": [],
   "evidence": [
     {
       "url": "https://wsdot.wa.gov/construction-planning/search-projects/us-101-hoh-river-bridge-emergency-repair",
-      "checkedOn": "2026-09-30",
-      "access": "Independent direct HTTP 200 after web reader 403",
-      "finding": "Два оставшихся окна: 1 октября 05:00 — 6 октября 12:00 и 8 октября 05:00 — 13 октября 12:00. После каждого окна сначала инспекция, затем однополосное попеременное движение."
+      "finding": "WSDOT: закрытия 01.10 05:00–06.10 12:00 и 08.10 05:00–13.10 12:00, после каждого нужен осмотр перед открытием одной полосы.",
+      "checkedOn": "2026-10-06"
     },
     {
       "url": "https://www.nps.gov/olym/planyourvisit/hwy-101-closure-at-hoh-river-bridge.htm",
-      "publishedOn": "2026-09-15",
-      "checkedOn": "2026-09-30",
-      "access": "Current-run saved primary text 9d99795c423d.txt",
-      "finding": "Хох доступен из Форкса; север и юг закрытия, отсутствие короткого объезда через реку и минимум четыре дополнительных часа через восток полуострова подтверждены."
+      "finding": "NPS: доступ к Hoh Rain Forest остаётся из Forks; восточный объезд добавляет не менее четырёх часов.",
+      "checkedOn": "2026-10-06"
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-10-01",
-    "reason": "1 октября проверить фактическое начало окна и возможные изменения расписания WSDOT."
+    "reviewOn": "2026-10-07",
+    "reason": "После завершения первого октябрьского окна убрать его из оперативного лида и сверить следующее."
   },
   "checks": {
     "capsuleWords": 46,
     "bodyWords": 174,
     "titleChars": 51,
     "clipTitle": "Олимпик: мост через Хох будут закрывать и в октябре",
-    "capsule": {
-      "ok": true
-    },
-    "depthLink": {
-      "ok": true
-    },
-    "linksSubset": {
-      "ok": true
-    },
-    "lifecycle": {
-      "ok": true
-    },
-    "sourceDomains": {
-      "ok": true
-    },
+    "internalLink": null,
+    "internalLinkStatus": null,
     "photoViewedToday": false,
-    "mediaScope": "Фотографии и лицензии в этом адресном lifecycle ревью повторно не проверялись. Предмет текущего ревью — изменившиеся факты, даты и смысл утверждений; прежний выпуск не считается новой визуальной проверкой.",
+    "mediaScope": "Фото в этих адресных lifecycle-правках не менялось; повторный осмотр локального JPEG не проводился.",
     "publicationDate": "2026-09-15",
     "added": "2026-09-17",
-    "scope": "Узкое независимое ревью пяти переданных lifecycle UPDATE по work/lifecycle-0930.json. Сверены текущий текст и изменённые даты/условия против доступных первичных источников. Сборка, browser CLI, git, PR, публикация и широкий повторный аудит не запускались."
+    "scope": "Независимая сверка финальных текстов, дат и первоисточников; без браузерных тестов, сборки, CI и live-проверки обновлённых страниц."
   },
+  "contentHash": "25173cf5eb7612b385745176d723322ca9dd7fee71d6172e49b9b8c4e45550cf",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256Scope": "full Markdown file bytes",
   "priorReview": {
-    "reviewer": "Codex GPT-6 — independent news_lifecycle_review (2026-09-29)",
-    "reviewedAt": "2026-09-29",
+    "reviewer": "codex-gpt-6-independent-news-review-20260930-news_review_0930",
+    "reviewedAt": "2026-09-30",
     "score": 4,
-    "contentHash": "39e054fd66a758aeeb6bf2e598d7146d1ab6c71525cdfe339a90fe3cbe627412",
-    "sha256": "39e054fd66a758aeeb6bf2e598d7146d1ab6c71525cdfe339a90fe3cbe627412"
+    "contentHash": "25173cf5eb7612b385745176d723322ca9dd7fee71d6172e49b9b8c4e45550cf",
+    "sha256": "8fae335ac4a321ffcafcd9544918e553a7881fad3fe7d6f99d56bfbd9cd84e90",
+    "previous": {
+      "reviewer": "Codex GPT-6 — independent news_lifecycle_review (2026-09-29)",
+      "reviewedAt": "2026-09-29",
+      "score": 4,
+      "contentHash": "39e054fd66a758aeeb6bf2e598d7146d1ab6c71525cdfe339a90fe3cbe627412",
+      "sha256": "39e054fd66a758aeeb6bf2e598d7146d1ab6c71525cdfe339a90fe3cbe627412"
+    }
   }
 }

@@ -2,8 +2,8 @@
 title: "Олимпик: мост через Хох будут закрывать и в октябре"
 date: "2026-09-15"
 added: "2026-09-17"
-checked: "2026-09-30"
-reviewOn: "2026-10-06"
+checked: "2026-10-06"
+reviewOn: "2026-10-07"
 topic: transport
 impact: high
 score: 4
@@ -16,7 +16,7 @@ countries:
 sources:
   - name: National Park Service, обновлено 15.09.2026 — график закрытия моста и подъезды к районам парка; проверено 30.09.2026
     url: https://www.nps.gov/olym/planyourvisit/hwy-101-closure-at-hoh-river-bridge.htm
-  - name: WSDOT — проект ремонта Hoh River Bridge и график закрытий; проверено 30.09.2026
+  - name: WSDOT — проект ремонта Hoh River Bridge и график закрытий; проверено 06.10.2026
     url: https://wsdot.wa.gov/construction-planning/search-projects/us-101-hoh-river-bridge-emergency-repair
 image: ./_images/2026-09-17-olympic-hoh-bridge-road-closures.jpg
 imageAlt: Покрытые мхом деревья в дождевом лесу Хох; иллюстрация места, не снимок ремонтируемого моста

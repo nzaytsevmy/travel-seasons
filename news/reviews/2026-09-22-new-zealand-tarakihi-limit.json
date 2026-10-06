@@ -2,71 +2,59 @@
   "schemaVersion": 1,
   "slug": "2026-09-22-new-zealand-tarakihi-limit",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review)",
-  "reviewedAt": "2026-09-24",
-  "reviewTimezone": "Asia/Shanghai",
-  "reviewedAtInstantUTC": "2026-09-23T19:29:37.740Z",
-  "sha256": "6f4a7655981f630e6ced825fc7c2bc35c25bc20b6cd20bc695f65e330931ce0b",
-  "sourceSha256": "6f4a7655981f630e6ced825fc7c2bc35c25bc20b6cd20bc695f65e330931ce0b",
-  "status": "pass",
-  "rationale": "UNKNOWN сохранён: объявлениеBeehive22Sep подтверждает10рыб/день и коммерческие сокращения20%/около55%, но дата любительского лимита не установлена. MPI защищён от чтения; фраза, изображавшая прочитанный акт, удалена. checked23Sep оставлен, reviewOn25Sep;1Oct коммерческих мер не перенесено на любительское правило. Объявление конкретного лимита меняет планы узкой аудитории морских рыболовов; осторожный текст сохраняет пользу при неизвестной дате старта.",
+  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+  "reviewedAt": "2026-10-06",
+  "sha256": "888717e240ac44103e8ca342b774e475d8d4ae5de454ebc9639ded04445bf89b",
+  "rationale": "Оценка 4: единый любительский предел таракихи меняет планы рыбалки в Новой Зеландии, но пока лишь принят. MPI 1 октября запустило промысловые меры, а любительское ограничение обещает ввести «as soon as practicable» без даты; заметка не смешивает два режима и предупреждает проверять правила конкретного района.",
   "risks": [
-    "Точная дата начала любительского лимита",
-    "Отсутствие найденной новой даты не доказывает, что её не выпустили; техническая недоступность MPI не является подтверждением неизменного статуса."
+    "Дата вступления любительского лимита пока не опубликована; нельзя писать, что он уже действует."
   ],
   "blockingIssues": [],
-  "scope": "Окончательное независимое lifecycle-ревью текущего текста после авторских исправлений; первички прочитаны24SepShanghai. Без полного повторного исследования старой несвязанной фактуры, без новых фотографий, сборки, браузеров и публикации.",
   "evidence": [
     {
-      "id": "beehive",
       "url": "https://www.beehive.govt.nz/release/tarakihi-catch-limits-cut-support-sustainability",
-      "published": "2026-09-22",
-      "checked": "2026-09-24",
-      "access": "web full text; direct HTTP200 returned only a 212-byte interstitial, not the article",
-      "evidence": "lifecycle-sources/web-evidence.json",
-      "finding": "Министр объявил общенациональный recreational limit 10 таракихи на человека/день, снижение промыслового улова на востоке 20%, на западе около 55%. Сам пресс-релиз не устанавливает дату введения любительского ограничения."
+      "publishedOn": "2026-09-22",
+      "finding": "Министр объявил сокращение коммерческого улова на востоке на 20%, на западе примерно на 55%, и решение установить любительский дневной предел 10 таракихи.",
+      "checkedOn": "2026-10-06"
     },
     {
-      "id": "mpi-round",
       "url": "https://www.mpi.govt.nz/consultations/review-of-fishery-sustainability-measures-october-2026-round",
-      "published": "2026-09-22 (search index)",
-      "checked": "2026-09-24",
-      "access": "web403/internal error; direct HTTP200 interstitial; indexed excerpt only",
-      "evidence": "lifecycle-sources/mpi.html",
-      "finding": "Поисковый индекс показывает решение 22 сентября, но полная живая страница сегодня не прочитана."
-    },
-    {
-      "id": "mpi-decision",
-      "url": "https://www.mpi.govt.nz/dmsdocument/72716-Minister-for-Oceans-and-Fisheries-decision-letter-for-the-review-of-sustainability-measures-October-2026-round-",
-      "published": null,
-      "checked": "2026-09-24",
-      "access": "web403; direct HTTP200 interstitial, not PDF",
-      "evidence": "lifecycle-sources/mpiDecision.html",
-      "finding": "Не получен актуальный полный текст решения. Вступление любительского лимита не установлено этой проверкой."
+      "publishedOn": "2026-10-01",
+      "finding": "MPI: коммерческие меры вступили 1 октября, а изменение любительских суточных лимитов будет введено отдельно при первой практической возможности.",
+      "checkedOn": "2026-10-06"
     }
   ],
   "lifecycle": {
-    "decision": "UNKNOWN",
-    "checked": "2026-09-23",
-    "reviewOn": "2026-09-25",
-    "reason": "25 сентября повторить адресную проверку MPI/действующих любительских правил. Если найден официальный срок раньше — вернуться по нему. UNKNOWN относится к началу действия, а не к самому подтверждённому объявлению.",
-    "effectiveDate": null
+    "reviewOn": "2026-10-20",
+    "reason": "Проверить официальное объявление даты вступления любительского лимита и территориальные правила."
   },
   "checks": {
-    "datePreserved": true,
-    "addedPreserved": true,
-    "bodyWords": 187,
     "capsuleWords": 43,
+    "bodyWords": 187,
     "titleChars": 53,
-    "mediaMetadataUnchanged": true,
-    "photoSha256": "bc2992741efe55c3361b3d33d473c88436ee77ac4ce61d0739ecad2902ecd35b",
+    "clipTitle": "В Новой Зеландии ограничат любительский улов таракихи",
+    "internalLink": null,
+    "internalLinkStatus": null,
     "photoViewedToday": false,
-    "mediaScope": "Фото/подпись совпадают сHEAD. Это сохранение прежней аттестации, не новое сегодняшнее визуальное/лицензионное ревью."
+    "mediaScope": "Фото в этих адресных lifecycle-правках не менялось; повторный осмотр локального JPEG не проводился.",
+    "publicationDate": "2026-09-22",
+    "added": "2026-09-22",
+    "scope": "Независимая сверка финальных текстов, дат и первоисточников; без браузерных тестов, сборки, CI и live-проверки обновлённых страниц."
   },
+  "contentHash": "9f6293a7ad29219d5ce2f896d61ce6576c597e4cdb42a2beb46d33990decb598",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256Scope": "full Markdown file bytes",
   "priorReview": {
-    "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
-    "reviewedAt": "2026-09-23",
-    "sha256": "70337b1bc0c77116bdb59b9f21a6f1d2486e5395a49a06926bd70a3e780948d8",
-    "scope": "Only prior provenance; not impersonating previous reviewer."
+    "reviewer": "Codex (news_lifecycle_review)",
+    "reviewedAt": "2026-09-24",
+    "score": 4,
+    "contentHash": null,
+    "sha256": "6f4a7655981f630e6ced825fc7c2bc35c25bc20b6cd20bc695f65e330931ce0b",
+    "previous": {
+      "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
+      "reviewedAt": "2026-09-23",
+      "sha256": "70337b1bc0c77116bdb59b9f21a6f1d2486e5395a49a06926bd70a3e780948d8",
+      "scope": "Only prior provenance; not impersonating previous reviewer."
+    }
   }
 }

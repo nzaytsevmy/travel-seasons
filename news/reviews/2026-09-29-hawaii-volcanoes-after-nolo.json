@@ -2,61 +2,66 @@
   "schemaVersion": 1,
   "slug": "2026-09-29-hawaii-volcanoes-after-nolo",
   "score": 4,
-  "reviewer": "Codex GPT-6 (news_review_20261002)",
-  "reviewedAt": "2026-10-02",
-  "sha256": "1cca36cf15824638abab96d9eb7ade859852ce1353b107d135b698e1576d8479",
-  "rationale": "Оценка 4 сохраняется: релиз NPS от 27 сентября подтверждает частичное открытие районов Килауэа/Кахуку с конкретными исключениями, а самостоятельное сообщение NPS от 1 октября добавляет важный новый факт для посетителя — арка Холеи разрушилась не позднее вечера 27 сентября. Текст правильно отделяет дату объявления от интервала события, не приписывает обрушение урагану без доказательства, предупреждает об ограждениях и не объявляет закрытые 27 сентября участки снова открытыми. date/added сохранены.",
+  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+  "reviewedAt": "2026-10-06",
+  "sha256": "7e839adbbed222f1947713d9ccd655d63bbe4e92f2c14e57dd8483f7f4ed9e35",
+  "rationale": "Оценка 4: исходный NPS релиз 27 сентября верно описывает открытие большей части парка после Ноло, а обновление отделяет его от действующих адресных ограничений. Актуальные предупреждения NPS дают Hilina Pali Road как ограничение для машин только пн–чт 06:00–16:30, Mauna Loa Road как полное закрытие от второй решётки до lookout до 29 октября, и продолжающиеся закрытия Kīpukapuaulu Trail и Sulphur Banks Bridge. Исчезновение арки Hōlei датировано NPS без необоснованной причины.",
   "risks": [
-    "Точный момент и причина обрушения неизвестны; связь с Ноло не утверждать.",
-    "Страница условий NPS на 02.10 не перечисляет все исключения релиза 27.09; их актуальность требует возврата 04.10.",
-    "Арка — самостоятельный новый повод; включение её в прежнюю заметку о том же парке допустимо как практическое обновление маршрута, но структуру ленты и текущий URL следует оставить согласованными."
+    "Динамические предупреждения могут меняться; перед поездкой необходимо проверить текущие alerts NPS.",
+    "Hilina Pali Road открыта вне плановых часов работ лишь при отсутствии нового временного ограничения."
   ],
   "blockingIssues": [],
   "evidence": [
     {
       "url": "https://www.nps.gov/havo/learn/news/20260927_post_nolo.htm",
       "publishedOn": "2026-09-27",
-      "checkedOn": "2026-10-02",
-      "finding": "NPS: большая часть парка вновь открыта; Hilina Pali Road, Mauna Loa Road, Kīpukapuaulu Trail и Sulphur Banks Bridge — исключения. Кахуку открывает тропы по мере обследования."
+      "finding": "NPS: большая часть парка после Ноло открылась, ряд участков оставался закрыт; исторический срез 27 сентября.",
+      "checkedOn": "2026-10-06"
+    },
+    {
+      "url": "https://www.nps.gov/planyourvisit/alerts.htm?t=Closure&v=1",
+      "finding": "Активные предупреждения NPS: Hilina Pali Road закрыта моторному транспорту пн–чт 06:00–16:30 на работы до 19.11; Mauna Loa Road закрыта для всех от второй решётки до lookout до 29.10; Kīpukapuaulu Trail и Sulphur Banks Bridge закрыты.",
+      "checkedOn": "2026-10-06"
     },
     {
       "url": "https://www.nps.gov/havo/learn/news/20261001-nr-holei-sea-arch_collapses.htm",
       "publishedOn": "2026-10-01",
-      "checkedOn": "2026-10-02",
-      "finding": "Прямой HTTP 200 и текст NPS: арка стояла 23.09, к вечеру 27.09 обрушилась; точный момент/причина неизвестны; посетителей просят держаться подальше от закрытой кромки обрыва."
-    },
-    {
-      "url": "https://www.nps.gov/havo/planyourvisit/conditions.htm",
-      "publishedOn": null,
-      "checkedOn": "2026-10-02",
-      "finding": "Общая страница условий открывается HTTP 200, но сама по себе не подтверждает снятие отдельных исключений из релиза 27.09."
+      "finding": "NPS: Hōlei Sea Arch ещё стояла 23 сентября и уже обрушилась к вечеру 27 сентября; точный момент/причина не установлены.",
+      "checkedOn": "2026-10-06"
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-10-04",
-    "reason": "Через два дня проверить каждое исключение и актуальные сообщения NPS; при изменении доступа обновить ответ на прежнем URL."
+    "reviewOn": "2026-10-20",
+    "reason": "Сверить оперативные NPS alerts по каждой дороге, тропе и мосту; плановые даты окончания работ не гарантируют немедленного открытия."
   },
   "checks": {
-    "capsuleWords": 46,
-    "bodyWords": 248,
+    "capsuleWords": 59,
+    "bodyWords": 275,
     "titleChars": 51,
     "clipTitle": "Гавайи: парк вулканов частично открыт после урагана",
     "internalLink": "/usa/",
     "internalLinkStatus": 200,
     "photoViewedToday": false,
-    "mediaScope": "В этом адресном lifecycle review повторно не проверялось неизменённое фото; оценка относится к обновлённым фактам, датам, ссылкам и смыслу.",
+    "mediaScope": "Фото в этих адресных lifecycle-правках не менялось; повторный осмотр локального JPEG не проводился.",
     "publicationDate": "2026-09-27",
     "added": "2026-09-29",
-    "scope": "Сверка финального текста против открытых первичных источников; без сборки, CI, нового деплоя и живого URL обновления."
+    "scope": "Независимая сверка финальных текстов, дат и первоисточников; без браузерных тестов, сборки, CI и live-проверки обновлённых страниц."
   },
-  "contentHash": "d984ac79299018bfb447494554e77b4b2b3ab99fe478f0a6e1bf3fa0525bdda5",
+  "contentHash": "8a0d8d5b72cf4106900f172fbc028abdcbcf446c996a58db71096f3fdb48f3dc",
   "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
   "sha256Scope": "full Markdown file bytes",
   "priorReview": {
-    "reviewer": "codex-gpt-6-independent-news-review-20260930-news_review_0930",
-    "reviewedAt": "2026-09-30",
+    "reviewer": "Codex GPT-6 (news_review_20261002)",
+    "reviewedAt": "2026-10-02",
     "score": 4,
-    "contentHash": "fc41471ecf8265e8723df213484ce7dc09ae805296a957e7747510ecf97547db",
-    "sha256": "2e3105cdaba1e87a669f5a0e6f4ab9720b3b01be6f8c8da3e6e5e52bc39a4165"
+    "contentHash": "d984ac79299018bfb447494554e77b4b2b3ab99fe478f0a6e1bf3fa0525bdda5",
+    "sha256": "1cca36cf15824638abab96d9eb7ade859852ce1353b107d135b698e1576d8479",
+    "previous": {
+      "reviewer": "codex-gpt-6-independent-news-review-20260930-news_review_0930",
+      "reviewedAt": "2026-09-30",
+      "score": 4,
+      "contentHash": "fc41471ecf8265e8723df213484ce7dc09ae805296a957e7747510ecf97547db",
+      "sha256": "2e3105cdaba1e87a669f5a0e6f4ab9720b3b01be6f8c8da3e6e5e52bc39a4165"
+    }
   }
 }

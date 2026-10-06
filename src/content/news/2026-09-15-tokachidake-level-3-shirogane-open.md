@@ -1,8 +1,8 @@
 ---
 title: "Токатидакэ: подъём на вулкан закрыт, Сироганэ-онсэн работает"
 date: "2026-09-12"
-checked: "2026-09-29"
-reviewOn: "2026-10-05"
+checked: "2026-10-06"
+reviewOn: "2026-10-13"
 added: "2026-09-15"
 topic: transport
 impact: medium
@@ -18,7 +18,7 @@ sources:
     url: https://hokkaido.env.go.jp/emergency/emergency_00004.html
   - name: Администрация посёлка Биэй — зона ограничения, статус Сироганэ-онсэн, хронология активности; проверено 24.09.2026
     url: https://town.biei.hokkaido.jp/emergency/tokachidake.html
-  - name: JMA — действующий бюллетень Токатидакэ, 28.09.2026, 16:00 JST; проверено 29.09.2026
+  - name: JMA — действующий бюллетень Токатидакэ; уровень 3 сохранён на 05.10.2026, проверено 06.10.2026
     url: https://www.data.jma.go.jp/vois/data/report/activity_info/108.html
 image: ./_images/2026-09-15-tokachidake-level-3-shirogane-open.jpg
 imageAlt: Заснеженный массив Токатидакэ на Хоккайдо весной; архивный кадр, не сентябрь 2026 года

@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "slug": "2026-10-06-yosemite-dome-fire-access",
+  "score": 4,
+  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+  "reviewedAt": "2026-10-06",
+  "sha256": "05497c47e9ce81b3493674188b49d6dc8595b3b11b9c6e101604c6643db376bb",
+  "rationale": "Утренняя сводка NPS за 5 октября подтверждает закрытие Glacier Point Road из-за дыма и работы пожарных при открытом парке и открытых Four Mile и Panorama Trail. 6760 акров и 40% локализации помечены временем сводки; ограничения Chilnualna Falls и Ostrander Lake Trail переданы точно. Это немедленно меняет поездку к популярной смотровой, но американское направление для российской аудитории нишевое, оценка 4.",
+  "risks": [
+    "Пожар и закрытия меняются быстрее обычных новостей: reviewOn установлен на следующий день, 7 октября.",
+    "Фотография показывает другой пожар, Empire Fire 2017 года, с видимым дымом; imageTitle и alt теперь явно отделяют её от Dome Fire 2026."
+  ],
+  "blockingIssues": [],
+  "evidence": [
+    {
+      "url": "https://www.nps.gov/yose/learn/news/dome-fire-update-october-5-2026-morning.htm",
+      "publishedOn": "2026-10-05",
+      "checkedOn": "2026-10-06",
+      "finding": "NPS: 6760 acres, 40% contained утром 5 октября; Glacier Point Road закрыта из-за дыма и пожарных работ, Four Mile и Panorama открыты; Chilnualna Falls Trail и Ostrander Lake Trail с южной зоной закрыты. Парк в целом открыт; дату открытия дороги не называли."
+    },
+    {
+      "url": "https://www.nps.gov/yose/learn/management/closures.htm",
+      "checkedOn": "2026-10-06",
+      "finding": "Действующий приказ NPS о зоне безопасности Dome Fire датирован 2 октября и действует до отдельной отмены; нужен новый просмотр при изменении обстановки."
+    },
+    {
+      "url": "https://commons.wikimedia.org/w/index.php?curid=62482418",
+      "publishedOn": "2017-09-16",
+      "checkedOn": "2026-10-06",
+      "finding": "Commons API: Empire Fire from Glacier Point Road, 13 сентября 2017 года, Yosemite National Park / NPS, public domain. Локальный JPEG действительно показывает дым другого пожара и участок дороги."
+    }
+  ],
+  "lifecycle": {
+    "reviewOn": "2026-10-07",
+    "reason": "На следующий день сверить свежие ограничения дороги и троп и, если есть, новую сводку пожарных."
+  },
+  "checks": {
+    "capsuleWords": 51,
+    "bodyWords": 203,
+    "titleChars": 53,
+    "clipTitle": "Йосемити: из-за пожара закрыта дорога к Глейшер-Пойнт",
+    "internalLink": "/usa/",
+    "internalLinkStatus": 200,
+    "photoViewed": true,
+    "photoSha256": "b60cc67e738e52680b919c4fa63cc82bce32f49ee2927d99b62a908cf3173123",
+    "photoFinding": "Локальный JPEG просмотрен: дорога и дым Empire Fire 2017 года; новые imageTitle и alt прямо отделяют его от Dome Fire 2026.",
+    "publicAttribution": "Commons API подтвердил NPS как источник изображения и public domain; оригинальный URL сохранён в заметке. Public domain не требует обязательной публичной подписи.",
+    "scope": "Независимая сверка текста, дат, первоисточников, внутренней ссылки и локального JPEG; без сборки, CI, публикации и live-проверки новой заметки."
+  },
+  "contentHash": "4b05fe333cc45a3c9d485cacbbe1c304ba70aea97c6aa3b5f93202c29dfbbeb0",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256Scope": "full Markdown file bytes"
+}

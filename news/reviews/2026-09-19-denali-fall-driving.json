@@ -2,53 +2,51 @@
   "schemaVersion": 1,
   "slug": "2026-09-19-denali-fall-driving",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
-  "reviewedAt": "2026-09-23",
-  "sha256": "eda4907f289bddf898e9b39c7fb1c79b37ca5b823dc1f5b96f36e2578ceaf355",
-  "rationale": "UPDATE формулировки при подтверждённом режиме. NPS Current Conditions и осенняя страница, обновлённые 21 сентября, подтверждают проезд до 30-й мили при подходящей погоде, возможность сократить доступный участок и бесплатный Bear Loop с 21 сентября. Текст исправляет устаревшее будущее время, сохраняет отсутствие воды и вывоза мусора и не выдаёт 15 октября за гарантированный последний день проезда. Оценка 4 сохранена.",
+  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+  "reviewedAt": "2026-10-06",
+  "sha256": "d89d4c99d5a5754e744778cae745182e0b30ff8828a4438b63d2d4c6314c1570",
+  "rationale": "Оценка 4: NPS допускает автомобили до площадки Teklanika на 30-й миле при подходящей погоде до 15 октября, с возможным сокращением открытого участка. Новая практическая оговорка точно передаёт отдельное закрытие миль 26–37 для пеших и велосипедистов из-за диких животных: доехать можно, уходить за пределы площадки нельзя.",
   "risks": [
-    "Проезд до 30-й мили зависит от погоды и может быть сокращён без долгого предупреждения.",
-    "15 октября не является гарантией доступности дороги до этой даты.",
-    "В Bear Loop нет воды и вывоза мусора; бесплатный режим не отменяет эти ограничения."
+    "Дорогу могут закрыть раньше из-за снега и льда; wildlife-запрет может измениться отдельно."
   ],
   "blockingIssues": [],
   "evidence": [
     {
-      "url": "https://www.nps.gov/dena/learn/news/fall-road-to-tek-open-091426.htm",
-      "publishedOn": "2026-09-14",
-      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
-      "finding": "Исходное сообщение подтверждает осеннее открытие дороги до Текланики.",
-      "checkedOn": "2026-09-23"
-    },
-    {
       "url": "https://www.nps.gov/dena/planyourvisit/conditions.htm",
-      "publishedOn": "2026-09-21",
-      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
-      "finding": "Текущие условия подтверждают проезд до 30-й мили при подходящей погоде и возможность сокращения участка.",
-      "checkedOn": "2026-09-23"
+      "finding": "NPS: при погоде личные автомобили до Teklanika mile 30, максимум до 15 октября; возможны более ранние ограничения у mile 13 или headquarters.",
+      "checkedOn": "2026-10-06"
     },
     {
-      "url": "https://www.nps.gov/dena/planyourvisit/shoulder-season.htm",
-      "publishedOn": "2026-09-21",
-      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
-      "finding": "Подтверждены бесплатный Bear Loop с 21 сентября, порядок прибытия, отсутствие воды и вывоза мусора.",
-      "checkedOn": "2026-09-23"
+      "url": "https://www.nps.gov/planyourvisit/alerts.htm?t=Closure&v=1",
+      "finding": "Действующее предупреждение NPS: mile 26–37 закрыты пешим и велосипедистам, но автомобилем можно до Teklanika Rest Stop; выходить за площадку нельзя.",
+      "checkedOn": "2026-10-06"
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-09-25",
-    "reason": "Проезд до 30-й мили зависит от погоды и может быть сокращён без долгого предупреждения.",
-    "decision": "UPDATE_CURRENT_TENSE_AND_CURRENT_CONDITIONS"
+    "reviewOn": "2026-10-09",
+    "reason": "Повторно проверить состояние дороги и wildlife-запрет перед ближайшими осенними поездками."
   },
   "checks": {
-    "capsuleWords": 47,
-    "bodyWords": 168,
+    "capsuleWords": 48,
+    "bodyWords": 229,
     "titleChars": 52,
+    "clipTitle": "Денали: на своей машине разрешили ехать до Текланики",
     "internalLink": "/usa/",
     "internalLinkStatus": 200,
-    "photoViewed": true,
-    "photoSha256": "192c681c27ac6bd4b8dc1774598220df21623becf6e64cca250a2ffb2fd827c5",
-    "photoFinding": "Разветвлённая река в Denali NP, вероятно Teklanika; Nic McPhee, 23.07.2006, CC BY-SA 2.0.",
-    "scope": "Проверены финальные смысловые изменения и lifecycle-статус 23.09; прежняя фотоаттестация сохранена без нового поиска и просмотра; без сборки, браузерного прогона и публикации."
+    "photoViewedToday": false,
+    "mediaScope": "Фото в этих адресных lifecycle-правках не менялось; повторный осмотр локального JPEG не проводился.",
+    "publicationDate": "2026-09-14",
+    "added": "2026-09-19",
+    "scope": "Независимая сверка финальных текстов, дат и первоисточников; без браузерных тестов, сборки, CI и live-проверки обновлённых страниц."
+  },
+  "contentHash": "05b1afe3c5a6b4d302779ea7c27a48b8c5aae9dd2637cd06c72b9ed30158ead5",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256Scope": "full Markdown file bytes",
+  "priorReview": {
+    "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
+    "reviewedAt": "2026-09-23",
+    "score": 4,
+    "contentHash": null,
+    "sha256": "eda4907f289bddf898e9b39c7fb1c79b37ca5b823dc1f5b96f36e2578ceaf355"
   }
 }

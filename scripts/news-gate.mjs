@@ -42,7 +42,9 @@ export function parseNote(raw, slug) {
     const [, key, val] = kv;
     if (val === '') { list = key; if (!data[key]) data[key] = []; continue; }
     list = null;
-    data[key] = key === 'score' ? Number(val) : unquote(val);
+    data[key] = key === 'score' ? Number(val)
+      : key === 'archived' && ['true', 'false'].includes(unquote(val)) ? unquote(val) === 'true'
+      : unquote(val);
   }
   for (const key of ['date', 'checked', 'effectiveDate', 'reviewOn']) {
     if (data[key]) data[key] = new Date(data[key]);
@@ -331,10 +333,16 @@ export function checkOwnPhoto(note) {
 }
 
 /** 8. Порог интересности по news/RUBRIC.md. */
-export function gradeNote(note, minScore) {
+export function gradeNote(note, minScore, { previouslyPublished = false } = {}) {
   const s = note.data.score;
   if (typeof s !== 'number' || Number.isNaN(s)) return fail('нет оценки score');
-  if (s < minScore) return fail(`оценка ${s} ниже порога ${minScore}`);
+  // Уже опубликованное краткое событие может перейти в архив после проверки.
+  // Его прежний балл нельзя сохранять искусственно, а новые низкие оценки
+  // по-прежнему не проходят в активную ленту.
+  if (note.data.archived === true && !previouslyPublished) {
+    return fail('архивировать можно только уже опубликованную заметку');
+  }
+  if (s < minScore && note.data.archived !== true) return fail(`оценка ${s} ниже порога ${minScore}`);
   return pass;
 }
 
@@ -477,7 +485,7 @@ export async function fetchSources(note, { timeoutMs = 20000, attempts = 3, root
 
 // ── прогон ────────────────────────────────────────────────────────────────────
 
-export async function runGate(note, { allowed, media = [], minScore, published, offline = false, root = process.cwd() }) {
+export async function runGate(note, { allowed, media = [], minScore, published, previouslyPublished = false, offline = false, root = process.cwd() }) {
   const checks = [
     ['домены', () => checkDomains(note, allowed, media)],
     ['ссылки в тексте', () => checkLinksSubset(note)],
@@ -485,7 +493,7 @@ export async function runGate(note, { allowed, media = [], minScore, published, 
     ['YMYL-форма', () => checkYmylForm(note)],
     ['жизненный цикл', () => checkLifecycle(note)],
     ['дубль', () => checkDedup(note, published)],
-    ['оценка', () => gradeNote(note, minScore)],
+    ['оценка', () => gradeNote(note, minScore, { previouslyPublished })],
     ['независимая оценка', () => checkIndependentReview(note, root)],
     ['капсула-ответ', () => checkTldr(note)],
     ['ссылка вглубь', () => checkDepthLink(note)],
@@ -567,6 +575,17 @@ const GIT_ENV = (() => {
   return e;
 })();
 
+export function wasPublishedOnMain(root, slug) {
+  if (!/^[a-z0-9-]+$/.test(slug)) return false;
+  try {
+    execFileSync('git', ['cat-file', '-e', `origin/main:src/content/news/${slug}.md`],
+      { cwd: root, env: GIT_ENV, stdio: 'ignore' });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function filesToCheck(root, dirArg) {
   if (dirArg) return readdirSync(join(root, dirArg)).filter((f) => f.endsWith('.md'));
   const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8', env: GIT_ENV })
@@ -601,7 +620,7 @@ if (isMain) {
     const note = parseNote(readFileSync(join(dir, f), 'utf8'), slug);
     const r = await runGate(note, {
       allowed: cfg.allowedSourceDomains, media: cfg.mediaSourceDomains ?? [],
-      minScore: cfg.minScore, offline, root,
+      minScore: cfg.minScore, previouslyPublished: wasPublishedOnMain(root, slug), offline, root,
       // Сравнивать заметку с ней же бессмысленно: она совпадёт сама с собой.
       published: published.filter((p) => p.slug !== slug),
     });

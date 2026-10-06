@@ -2,10 +2,10 @@
 title: В Новой Зеландии ограничат любительский улов таракихи
 date: "2026-09-22"
 added: "2026-09-22"
-checked: "2026-09-23"
+checked: "2026-10-06"
 topic: nature
 impact: medium
-reviewOn: "2026-10-05"
+reviewOn: "2026-10-20"
 score: 4
 authoredBy: codex-gpt-6
 reviewRef: news/reviews/2026-09-22-new-zealand-tarakihi-limit.json

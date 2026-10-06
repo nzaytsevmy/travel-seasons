@@ -2,23 +2,30 @@
   "schemaVersion": 1,
   "slug": "2026-09-29-hooker-valley-bridge-limit",
   "score": 4,
-  "reviewer": "codex-gpt-6-independent-news-review-20260929",
-  "reviewedAt": "2026-09-29",
-  "rationale": "Ограничение на первом мосту меняет проход по популярной тропе нишевого направления. Подтверждены 20 человек, износ 47-летнего моста и будущая установка калиток. Текст различает первый старый и новый мост выше по долине; закрытие всей тропы и завершённая установка не заявляются. Предыдущий prose contentHash не изменился.",
-  "contentHash": "366f6f9d2d4be51d76138934f81d3c72935d8239ae5847c737753b2cdbcf4161",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+  "reviewedAt": "2026-10-06",
+  "sha256": "88885e83fa212c68c42d7fa6a61533e05467c6b0564f49225d89f84071fd1444",
+  "rationale": "Оценка 4: DOC установил лимит 20 человек одновременно на первом мосту Hooker Valley Track из-за износа тросов и лишь планирует самозакрывающиеся калитки. Текст не путает первый мост с новым дальним и не объявляет закрытой всю тропу; официальное описание DOC сейчас представляет маршрут как доступный.",
+  "risks": [
+    "Дата установки калиток и ремонта первого моста не объявлена; статус маршрута стоит проверить перед выходом."
+  ],
   "blockingIssues": [],
   "evidence": [
     {
       "url": "https://www.doc.govt.nz/news/media-releases/2026-media-releases/doc-plans-to-install-a-gate-to-manage-visitors-on-the-hooker-valley-track/",
       "publishedOn": "2026-09-22",
-      "checkedOn": "2026-09-29",
-      "finding": "Подтверждены 47 лет, 20 человек, более 40 на мосту, самозакрывающиеся калитки на обоих концах как план, летние дежурства рейнджеров и отдельный новый мост выше по долине."
+      "finding": "DOC: лимит 20 человек, износ тросов первого моста, план самозакрывающихся калиток, дата монтажа не названа.",
+      "checkedOn": "2026-10-06"
+    },
+    {
+      "url": "https://www.doc.govt.nz/parks-and-recreation/places-to-go/canterbury/places/aoraki-mount-cook-national-park/things-to-do/tracks/hooker-valley-track/",
+      "finding": "DOC описывает тропу до Hooker Lake как доступный прогулочный маршрут, включая первый мост.",
+      "checkedOn": "2026-10-06"
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-10-06",
-    "reason": "Возврат для проверки установки калиток и изменения режима доступа; закрытия без срока релиз не объявляет."
+    "reviewOn": "2026-10-20",
+    "reason": "Проверить сообщение DOC о монтаже калиток и доступность первого моста."
   },
   "checks": {
     "capsuleWords": 46,
@@ -27,10 +34,20 @@
     "clipTitle": "На мосту Хукер-Вэлли поставят калитки для контроля потока",
     "internalLink": "/blog/new-zealand-guide-2026/",
     "internalLinkStatus": 200,
-    "photoViewed": true,
-    "photoSha256": "1321d3674c26535698ad939d39349f33883655891f6b3ece1c865f0dde4ea694",
-    "photoFinding": "Jan Helebrant; CC0 1.0; curid 157638909. Подвесной мост на тропе Хукер-Вэлли. Подпись отделяет архивный вид от состояния тросов и будущих калиток.",
-    "publicAttribution": "Original work title, creator, license, source and resize/compression notice retained by existing publicPhotoCredits(records, news) with batch _credits.json. Production rendering remains release gate.",
-    "scope": "Пять переданных заметок; независимое редакторское ревью, факты/даты/clipTitle/ссылки/визуальный смысл/лицензии. Проза не менялась; сборка, browser CLI, PR и push не запускались."
+    "photoViewedToday": false,
+    "mediaScope": "Фото в этих адресных lifecycle-правках не менялось; повторный осмотр локального JPEG не проводился.",
+    "publicationDate": "2026-09-22",
+    "added": "2026-09-29",
+    "scope": "Независимая сверка финальных текстов, дат и первоисточников; без браузерных тестов, сборки, CI и live-проверки обновлённых страниц."
+  },
+  "contentHash": "366f6f9d2d4be51d76138934f81d3c72935d8239ae5847c737753b2cdbcf4161",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256Scope": "full Markdown file bytes",
+  "priorReview": {
+    "reviewer": "codex-gpt-6-independent-news-review-20260929",
+    "reviewedAt": "2026-09-29",
+    "score": 4,
+    "contentHash": "366f6f9d2d4be51d76138934f81d3c72935d8239ae5847c737753b2cdbcf4161",
+    "sha256": null
   }
 }
