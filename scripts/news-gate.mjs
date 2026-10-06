@@ -598,6 +598,21 @@ export function filesToCheck(root, dirArg) {
   return [...new Set(touched)].sort();
 }
 
+// pre-push receives the exact committed files from its Git diff. The default
+// working-tree discovery above deliberately stays available for editors.
+export function parseCommittedNewsPaths(raw) {
+  const paths = raw.split(/\r?\n/).filter(Boolean);
+  if (paths.length === 0) throw new Error('пустой список путей новостей');
+  const files = new Set();
+  for (const path of paths) {
+    if (!/^src\/content\/news\/[a-z0-9-]+\.md$/.test(path)) {
+      throw new Error(`недопустимый путь новости: ${path}`);
+    }
+    files.add(basename(path));
+  }
+  return [...files].sort();
+}
+
 // ── CLI ───────────────────────────────────────────────────────────────────────
 
 const isMain = process.argv[1] && import.meta.url.endsWith(basename(process.argv[1]));
@@ -605,6 +620,8 @@ if (isMain) {
   const args = process.argv.slice(2);
   const dirArg = args.find((a) => !a.startsWith('--'));
   const offline = args.includes('--offline');
+  const pathsStdin = args.includes('--paths-stdin');
+  if (pathsStdin && dirArg) throw new Error('--paths-stdin несовместим с каталогом');
   const root = process.cwd();
   const cfg = JSON.parse(readFileSync(join(root, 'news/config.json'), 'utf8'));
   const dir = dirArg ? join(root, dirArg) : join(root, 'src/content/news');
@@ -613,7 +630,7 @@ if (isMain) {
   // и дедуп не работал вовсе — так одна новость про ЮНЕСКО вышла дважды.
   const published = loadPublished(root);
 
-  const files = filesToCheck(root, dirArg);
+  const files = pathsStdin ? parseCommittedNewsPaths(readFileSync(0, 'utf8')) : filesToCheck(root, dirArg);
   let bad = 0;
   for (const f of files) {
     const slug = basename(f, '.md');
