@@ -9,6 +9,7 @@ const blog = defineCollection({
     updatedDate: z.coerce.date().optional(),
     coverImage: img(),
     coverAlt: z.string().min(15).optional(),
+    coverCaption: z.string().optional(),
     author: z.string().default('Никита Зайцев'),
     tags: z.array(z.string()).default([]),
     tripDate: z.string().optional(),
