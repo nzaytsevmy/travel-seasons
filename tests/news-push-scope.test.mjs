@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { classifyNewsPush } from '../scripts/news-push-scope.mjs';
 import { parseCommittedNewsPaths } from '../scripts/news-gate.mjs';
+import { gitEnvironment } from '../scripts/release-scope.mjs';
 
 const modified = path => ({ path, status: 'M', oldMode: '100644', newMode: '100644' });
 const added = path => ({ path, status: 'A', oldMode: '000000', newMode: '100644' });
@@ -65,8 +66,9 @@ test('pre-push runs the committed news gate before the build', () => {
 test('CLI reads a real committed Git diff and rejects a later configuration change', () => {
   const repo = mkdtempSync(join(tmpdir(), 'tt-news-scope-'));
   const script = new URL('../scripts/news-push-scope.mjs', import.meta.url).pathname;
+  const env = gitEnvironment();
   const git = (...args) => {
-    const run = spawnSync('git', args, { cwd: repo, encoding: 'utf8' });
+    const run = spawnSync('git', args, { cwd: repo, env, encoding: 'utf8' });
     assert.equal(run.status, 0, run.stderr);
     return run.stdout.trim();
   };
@@ -83,7 +85,7 @@ test('CLI reads a real committed Git diff and rejects a later configuration chan
     writeFileSync(join(repo, 'src/content/news/2026-10-06-new-note.md'), 'note\n');
     commit('news');
     const run = () => spawnSync(process.execPath,
-      [script, '--base', base, '--head', 'HEAD', '--paths-only'], { cwd: repo, encoding: 'utf8' });
+      [script, '--base', base, '--head', 'HEAD', '--paths-only'], { cwd: repo, env, encoding: 'utf8' });
     const news = run();
     assert.equal(news.status, 0, news.stderr);
     assert.equal(news.stdout.trim(), 'src/content/news/2026-10-06-new-note.md');
