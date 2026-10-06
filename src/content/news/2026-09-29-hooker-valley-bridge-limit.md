@@ -2,8 +2,8 @@
 title: "На мосту Хукер-Вэлли поставят калитки для контроля потока"
 date: "2026-09-22"
 added: "2026-09-29"
-checked: "2026-09-29"
-reviewOn: "2026-10-06"
+checked: "2026-10-06"
+reviewOn: "2026-10-20"
 topic: "transport"
 impact: "medium"
 score: 4
@@ -16,6 +16,8 @@ countries:
 sources:
   - name: "DOC — ограничение на первом мосту Хукер-Вэлли, 22.09.2026"
     url: https://www.doc.govt.nz/news/media-releases/2026-media-releases/doc-plans-to-install-a-gate-to-manage-visitors-on-the-hooker-valley-track/
+  - name: "DOC — действующее описание открытой тропы Хукер-Вэлли; проверено 06.10.2026"
+    url: https://www.doc.govt.nz/parks-and-recreation/places-to-go/canterbury/places/aoraki-mount-cook-national-park/things-to-do/tracks/hooker-valley-track/
 imageAlt: "Подвесной мост в горной долине Хукер-Вэлли"
 imageTitle: "Архивный вид тропы Хукер-Вэлли. Снимок не показывает состояние тросов или новые калитки."
 image: "./_images/2026-09-29-hooker-valley-bridge-limit.jpg"

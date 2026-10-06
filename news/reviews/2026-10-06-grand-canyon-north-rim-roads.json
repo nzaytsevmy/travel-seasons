@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "slug": "2026-10-06-grand-canyon-north-rim-roads",
+  "score": 4,
+  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+  "reviewedAt": "2026-10-06",
+  "sha256": "b7301ae5d5ab8e819b104e01f4916affcc668eff46424e2ca5526f2d65e2f9a5",
+  "rationale": "NPS 30 сентября объявила именно будущую временную остановку движения по Cape Royal Road и Point Imperial Road от заката 15 октября до рассвета 3 ноября, а текущая страница парка сохраняет North Rim открытым до 30 ноября либо раннего сильного снегопада. Текст разделяет дорожный ремонт, уже закрытую North Kaibab Trail и осеннее сворачивание сервисов, не превращая план в действующее закрытие. Для осеннего маршрута к двум смотровым это реальная перемена плана в нишевой части США, оценка 4.",
+  "risks": [
+    "До 15 октября дорожный режим остаётся объявленным планом; reviewOn совпадает с датой начала, статус нужно перепроверить в NPS.",
+    "Фактический доступ к северному краю зависит от первого серьёзного снегопада; дата 30 ноября не гарантия.",
+    "Архивный снимок Point Imperial 2012 года показывает место, а не ремонт."
+  ],
+  "blockingIssues": [],
+  "evidence": [
+    {
+      "url": "https://www.nps.gov/grca/learn/news/modified-fall-operations-north-rim-2026.htm",
+      "publishedOn": "2026-09-30",
+      "checkedOn": "2026-10-06",
+      "finding": "NPS: дороги Cape Royal и Point Imperial закрываются от заката 15 октября до рассвета 3 ноября; информационный центр закрывается в полдень 15-го, магазин в 16:00, кемпинг утром 16-го; заправка закрыта 19 сентября; State Route 67 планируется закрыть 30 ноября либо раньше после сильного снегопада; Jacob Lake около 45 миль."
+    },
+    {
+      "url": "https://www.nps.gov/grca/northrimstatus.htm",
+      "checkedOn": "2026-10-06",
+      "finding": "Текущий статус NPS: North Rim открыт до 30 ноября/первого сильного снегопада, две scenic roads пока запланированы к закрытию; North Kaibab Trail закрыта целиком после паводка 29 августа."
+    },
+    {
+      "url": "https://commons.wikimedia.org/w/index.php?curid=31646018",
+      "publishedOn": "2014-03-16",
+      "checkedOn": "2026-10-06",
+      "finding": "Commons API: Grand Canyon from Point Imperial 02, Miguel Hermoso Cuesta, CC BY-SA 3.0; дата съёмки 25 июля 2012 года. Локальный JPEG показывает видовую точку, не стройку."
+    }
+  ],
+  "lifecycle": {
+    "reviewOn": "2026-10-15",
+    "reason": "В день планового начала закрытия заново проверить NPS и сменить status только после подтверждения факта."
+  },
+  "checks": {
+    "capsuleWords": 56,
+    "bodyWords": 208,
+    "titleChars": 51,
+    "clipTitle": "Гранд-Каньон: дороги к смотровым закроют 15 октября",
+    "internalLink": "/usa/",
+    "internalLinkStatus": 200,
+    "photoViewed": true,
+    "photoSha256": "63f28a0cf3c646f75ae37abbf2916156e7fa54b46fd23869cfdf17b6766d2310",
+    "photoFinding": "Локальный JPEG просмотрен: панорама Гранд-Каньона с Point Imperial; изображение архивное и не обещает видимость дороги или ремонта.",
+    "publicAttribution": "Commons API подтвердил автора, оригинальное название, CC BY-SA 3.0 и источник. imageTitle и imageChanges сохранены для /legal/photos/; финальный рендер страницы после сборки здесь не проверялся.",
+    "scope": "Независимая сверка текста, дат, первоисточников, внутренней ссылки и локального JPEG; без сборки, CI, публикации и live-проверки новой заметки."
+  },
+  "contentHash": "d12d5600977fe17c1b894f3a3160f680cef6d492ce1a9c1e587ee166b311414c",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256Scope": "full Markdown file bytes"
+}

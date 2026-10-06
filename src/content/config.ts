@@ -122,6 +122,7 @@ const news = defineCollection({
     impact: z.enum(['high', 'medium']).default('medium'),
     // Оценка по news/RUBRIC.md, её ставит вторая модель. Ниже minScore не публикуем.
     score: z.number().min(0).max(5),
+    archived: z.boolean().default(false),
     authoredBy: z.string().optional(),
     reviewRef: z.string().optional(),
     status: z.enum(['действует', 'принято, не вступило', 'отменено']).optional(),
@@ -142,6 +143,7 @@ const news = defineCollection({
     imageLicense: z.string().optional(),
     imageLicenseUrl: z.string().optional(),
     imageSource: z.string().optional(),
+    imageChanges: z.string().optional(),
     imageTitle: z.string().optional(),
     // Запрос для поиска фото — по-английски: сток ищет по английским тегам.
     photoQuery: z.string().optional(),

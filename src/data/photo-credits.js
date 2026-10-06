@@ -8,6 +8,7 @@ export function publicPhotoCredits(records, news = []) {
     licenseUrl: data.imageLicenseUrl,
     source: data.imageSource,
     title: data.imageTitle || data.imageAlt,
+    changes: data.imageChanges,
   }))]) {
     if (!record?.license) continue;
     // Исключаем только известные случаи без обязательной атрибуции. Неизвестная

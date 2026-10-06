@@ -1,53 +1,48 @@
 {
   "schemaVersion": 1,
   "slug": "2026-10-02-japan-motegi-motogp",
-  "score": 3,
-  "reviewer": "Codex GPT-6 (news_review_20261002)",
-  "reviewedAt": "2026-10-02",
-  "sha256": "8bf3bcd82326f953d71077ed0db84a6f60b01a57a5466145d827ceb8bedb5c54",
-  "rationale": "Официальная программа MotoGP от 28 сентября подтверждает тренировки в пятницу, квалификацию и спринт в субботу, основной старт в воскресенье 4 октября в 14:00 JST. Страница Мотеги различает часы зрительских ворот (08:30/08:00), входы, обычный автобус и бронируемый шаттл; предупреждает о пробках в день финала. Добавка помогает выбрать день билета и дорогу, но событие интересно узкой аудитории и потому 3. Заголовок после clipTitle сохраняет место и событие.",
+  "score": 2,
+  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+  "reviewedAt": "2026-10-06",
+  "sha256": "440abeb7895d2a7e17a5dd4331c8c72595159faf3e117699aec3a57deec9fd87",
+  "rationale": "Оценка 2: этап в Мотеги завершился 4 октября, поэтому прежние советы о воротах и автобусах утратили практический смысл. Историческая заметка точно передаёт официальный результат: Марк Маркес, Хорхе Мартин, Марко Беццекки; она не призывает ехать на окончившуюся гонку. В новом выпуске такой ретроспективный повод порог 3 не проходит.",
   "risks": [
-    "Даты и ворота могут меняться организатором; reviewOn 05.10 нужен после завершения."
+    "Старую страницу автодрома нельзя использовать как расписание следующего события; текст это оговаривает."
   ],
   "blockingIssues": [],
   "evidence": [
     {
-      "url": "https://www.motogp.com/en/news/2026/09/28/jadwal-motogp-jepang-2026/1092197",
-      "publishedOn": "2026-09-28",
-      "checkedOn": "2026-10-02",
-      "finding": "MotoGP: этап 2–4 октября; пятница тренировки, суббота квалификация/спринт, воскресенье 14:00 местного времени основная гонка."
-    },
-    {
-      "url": "https://www.mr-motegi.jp/guide/motogp/",
-      "publishedOn": null,
-      "checkedOn": "2026-10-02",
-      "finding": "Организатор: зрительские ворота 08:30 02.10, 08:00 03–04.10, отдельные ворота по парковочному билету, предупреждение о пробках и разделение рейсового автобуса/бронируемого шаттла."
-    },
-    {
-      "url": "https://commons.wikimedia.org/w/index.php?curid=76033275",
-      "publishedOn": "2018-10-21",
-      "checkedOn": "2026-10-02",
-      "finding": "Commons API: File:Valentino Rossi 2018 Motegi.jpg, Takayuki Suzuki, CC BY-SA 2.0; архивный кадр Мотеги."
+      "url": "https://www.motogp.com/en/news/2026/10/04/two-points-in-it-marc-marquez-doubles-up-at-motegi-to-reel-in-on-martin/1145007",
+      "publishedOn": "2026-10-04",
+      "finding": "Официальный отчёт MotoGP: гонка 4 октября закончилась победой Marc Márquez, Jorge Martín второй, Marco Bezzecchi третий.",
+      "checkedOn": "2026-10-06"
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-10-05",
-    "reason": "После 4 октября проверить завершение этапа и убрать будущее время/анонс при изменении статуса."
+    "reviewOn": null,
+    "reason": "Историческая запись завершённого этапа; нет будущего события, требующего reviewOn."
   },
   "checks": {
-    "capsuleWords": 48,
-    "bodyWords": 205,
-    "titleChars": 52,
-    "clipTitle": "В Мотеги 2–4 октября проходит Гран-при Японии MotoGP",
+    "capsuleWords": 43,
+    "bodyWords": 88,
+    "titleChars": 51,
+    "clipTitle": "Мотеги: Гран-при Японии MotoGP завершился 4 октября",
     "internalLink": "/blog/japan-guide-2026/",
     "internalLinkStatus": 200,
-    "photoViewed": true,
-    "photoSha256": "ed849fb5004aa47910c424e2f9c2d1e435626590fb11548f38192f009f3a61bd",
-    "photoFinding": "Локальный JPEG просмотрен: гонщик Valentino Rossi на трассе, архив MotoGP в Мотеги 2018 года; подпись не приписывает кадр 2026 году.",
-    "publicAttribution": "Commons API подтвердил автора, точное название, лицензию и URL; title первым в imageTitle, далее видимая архивная оговорка. Код /legal/photos/ выводит поля новости и общий текст о сжатии/возможном кадрировании; отдельной записи о преобразовании каждого news JPEG нет. Финальный рендер после сборки не проверялся.",
-    "scope": "Независимая сверка текста, дат, источников, ссылки и локального JPEG; без сборки, CI, публикации и живой страницы новости."
+    "photoViewedToday": false,
+    "mediaScope": "Фото в этих адресных lifecycle-правках не менялось; повторный осмотр локального JPEG не проводился.",
+    "publicationDate": "2026-10-02",
+    "added": "2026-10-02",
+    "scope": "Независимая сверка финальных текстов, дат и первоисточников; без браузерных тестов, сборки, CI и live-проверки обновлённых страниц."
   },
-  "contentHash": "1f2b4243a6e2e9e38ece0d2800c1e4a6b9aefadd1e161b71342d121ca8de87ba",
+  "contentHash": "bf7537ab711795f2d892c17f7a984435c85f00ad91f3a520fc9e84ff9df5ce96",
   "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256Scope": "full Markdown file bytes"
+  "sha256Scope": "full Markdown file bytes",
+  "priorReview": {
+    "reviewer": "Codex GPT-6 (news_review_20261002)",
+    "reviewedAt": "2026-10-02",
+    "score": 3,
+    "contentHash": "1f2b4243a6e2e9e38ece0d2800c1e4a6b9aefadd1e161b71342d121ca8de87ba",
+    "sha256": "8bf3bcd82326f953d71077ed0db84a6f60b01a57a5466145d827ceb8bedb5c54"
+  }
 }

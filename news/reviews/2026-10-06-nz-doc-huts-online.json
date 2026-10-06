@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "slug": "2026-10-06-nz-doc-huts-online",
+  "score": 4,
+  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+  "reviewedAt": "2026-10-06",
+  "sha256": "b72b0aea3474b19a36a78b252c7d5c1040eb6acd0ee08aa2c384138f147598cb",
+  "rationale": "DOC 1 октября описала две очереди из 32 и 30 домиков/стоянок с разными датами начала брони и ночёвок. Заметка правильно отделяет онлайн-бронь койки от будущих электронных Backcountry Hut Tickets для небронируемых мест; билет не гарантирует койку. Исправленная ссылка ведёт в каталог домиков DOC, а текст советует искать страницу конкретного объекта. Для самостоятельного похода в Новой Зеландии порядок бронирования меняет план, оценка 4.",
+  "risks": [
+    "Для каждого домика и стоянки условия следует сверять на собственной странице DOC; 62 не означает переход всех примерно 950 домиков на бронь.",
+    "Электронные билеты для небронируемых домиков заявлены с 1 ноября; reviewOn назначен на эту дату.",
+    "Mueller Hut на архивном снимке не заявлен одним из новых 62 объектов."
+  ],
+  "blockingIssues": [],
+  "evidence": [
+    {
+      "url": "https://www.doc.govt.nz/news/media-releases/2026-media-releases/more-doc-huts-go-online-as-booking-and-payment-gets-easier/",
+      "publishedOn": "2026-10-01",
+      "checkedOn": "2026-10-06",
+      "finding": "DOC: 32 объекта открыты для брони 1 октября на ночёвки с 1 ноября; 30 открыты 1 сентября на ночёвки с 1 октября. Онлайн Backcountry Hut Tickets начнутся 1 ноября и не резервируют койку; бумажные действуют до 1 ноября 2027; из примерно 950 домиков большинство небронируемые."
+    },
+    {
+      "url": "https://www.doc.govt.nz/parks-and-recreation/places-to-stay/stay-in-a-hut/",
+      "checkedOn": "2026-10-06",
+      "finding": "Официальная точка входа DOC в каталог домиков, HTTP 200; описание говорит о сети из более 950 домиков. Нужна карточка конкретного объекта для брони."
+    },
+    {
+      "url": "https://www.doc.govt.nz/news/media-releases/2026-media-releases/ready-set-naturing-doc-great-walk-hut-and-campsite-bookings-open-from-12-may/",
+      "publishedOn": "2026-03-26",
+      "checkedOn": "2026-10-06",
+      "finding": "DOC до октябрьского расширения системы называла Mueller Hut среди популярных объектов, места в которых регулярно раскупаются; этот архивный кадр не иллюстрирует один из 62 впервые добавленных объектов."
+    },
+    {
+      "url": "https://commons.wikimedia.org/w/index.php?curid=86752791",
+      "publishedOn": "2020-02-08",
+      "checkedOn": "2026-10-06",
+      "finding": "Commons API: Mueller Hut, Aoraki - Mount Cook National Park, New Zealand 10, Michal Klajban, CC BY-SA 4.0; архивный кадр января 2020 года. Локальный JPEG показывает красный домик среди снега."
+    }
+  ],
+  "lifecycle": {
+    "reviewOn": "2026-11-01",
+    "reason": "Проверить фактический запуск электронных Backcountry Hut Tickets и статусы домиков DOC."
+  },
+  "checks": {
+    "capsuleWords": 55,
+    "bodyWords": 209,
+    "titleChars": 57,
+    "clipTitle": "Новая Зеландия: 62 домика и стоянки получили онлайн-бронь",
+    "internalLink": "/blog/new-zealand-guide-2026/",
+    "internalLinkStatus": 200,
+    "photoViewed": true,
+    "photoSha256": "55a19a865e6dfd72215f42c911938871e85bdf3d3874e3546751a3098d841d46",
+    "photoFinding": "Локальный JPEG просмотрен: красный Mueller Hut в снегу; подпись и alt прямо говорят, что кадр архивный и не показывает один из новых объектов.",
+    "publicAttribution": "Commons API подтвердил автора, оригинальное название и CC BY-SA 4.0. imageTitle и imageChanges сохранены для /legal/photos/; финальный рендер после сборки не проверялся.",
+    "scope": "Независимая сверка текста, дат, первоисточников, внутренней ссылки и локального JPEG; без сборки, CI, публикации и live-проверки новой заметки."
+  },
+  "contentHash": "ceb3428c5e72a2b05fb48d0e7a69e40b5b643547be2184ea1d3e0114a5e897e6",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256Scope": "full Markdown file bytes"
+}

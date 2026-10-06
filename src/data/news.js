@@ -132,7 +132,7 @@ export function clipDescription(s, max = 155, min = 100) {
  */
 export function newsForCountry(entries, slug, limit = 3) {
   return entries
-    .filter((e) => (e.data.countries ?? []).includes(slug))
+    .filter((e) => !e.data.archived && (e.data.countries ?? []).includes(slug))
     .sort(byDateDesc)
     .slice(0, limit);
 }
@@ -150,7 +150,7 @@ export function newsForCountry(entries, slug, limit = 3) {
 export const publishedAt = (e) => new Date(addedAt(e));
 
 /** Заметки для RSS: тот же порядок, что на странице, и срез уже после сортировки. */
-export function feedEntries(entries, limit) {
-  const sorted = [...entries].sort(byDateDesc);
+export function feedEntries(entries, limit, { includeArchived = false } = {}) {
+  const sorted = (includeArchived ? [...entries] : entries.filter((e) => !e.data.archived)).sort(byDateDesc);
   return typeof limit === 'number' ? sorted.slice(0, limit) : sorted;
 }

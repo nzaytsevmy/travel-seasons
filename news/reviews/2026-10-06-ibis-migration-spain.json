@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "slug": "2026-10-06-ibis-migration-spain",
+  "score": 3,
+  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+  "reviewedAt": "2026-10-06",
+  "sha256": "c15adb5bb7ae960f10cf2a9ba8d9825678000458246bd58f98c9ead667fb8834",
+  "rationale": "Дневник самой Waldrappteam подтверждает прибытие оставшихся 15 северных лысых ибисов к Вехер-де-ла-Фронтере 2 октября после маршрута более 2500 км, пройденного командой. Заметка теперь различает первые 15 птиц, переданные фонду Alive в Каталонии 13 сентября, и вторые 15 у Вехер, а также полёт и автомобильные участки. Птицы остаются в вольере, зимний выпуск пока план. Не меняет поездку, но необычная миграция вслед за лёгким самолётом заслуживает 3.",
+  "risks": [
+    "Выпуск в дикую природу не состоялся; декабрьский reviewOn требует нового сообщения проекта, не экстраполяции даты из плана.",
+    "Иллюстрация iNaturalist снята в Кадисе в 2021 году и не изображает участников миграции 2026 года."
+  ],
+  "blockingIssues": [],
+  "evidence": [
+    {
+      "url": "https://www.waldrappteam.at/en/migration-2026/",
+      "publishedOn": "2026-10-02",
+      "checkedOn": "2026-10-06",
+      "finding": "Официальный дневник исполнителя миграции: 2 октября прибыли все 15 оставшихся птиц к Vejer de la Frontera; часть пути перевозили в машине, команда прошла более 2500 км. Первые 15 переданы Alive Foundation в Каталонии 13 сентября. Вторую группу держат в release aviary, выпуск планируется зимой; на визит просят приходить без собак и жёлтой одежды. Node fetch вернул HTTP 200 и читаемый HTML."
+    },
+    {
+      "url": "https://www.waldrappteam.at/en/projects/",
+      "checkedOn": "2026-10-06",
+      "finding": "Официальная страница проекта: Waldrappteam Conservation and Research управляет программой LIFE20 и проводит human-led migrations; домен waldrappteam.at обоснован как первоисточник, а не только как отвечающий HTTP 200 хост."
+    },
+    {
+      "url": "https://www.inaturalist.org/photos/170437424",
+      "checkedOn": "2026-10-06",
+      "finding": "Оригинальная страница в браузере: фото Abraham, CC0, Northern bald ibis Geronticus eremita; наблюдение в Cádiz, Испания, ноябрь 2021. Локальный кадр визуально совпадает."
+    }
+  ],
+  "lifecycle": {
+    "reviewOn": "2026-12-01",
+    "reason": "Проверить объявление зимнего выпуска птиц и обновить статус только по дневнику проекта."
+  },
+  "checks": {
+    "capsuleWords": 49,
+    "bodyWords": 188,
+    "titleChars": 46,
+    "clipTitle": "Испания: 15 редких ибисов добрались до зимовки",
+    "internalLink": "/spain/",
+    "internalLinkStatus": 200,
+    "photoViewed": true,
+    "photoSha256": "97471f64c5672bd45f27838d0b974d5072583119496131c3e0e74eed95b8b0fa",
+    "photoFinding": "Локальный JPEG просмотрен и визуально совпадает с iNaturalist: один северный лысый ибис; архивный кадр 2021 года, не участник показанной миграции.",
+    "publicAttribution": "Страница iNaturalist в браузере подтверждает Abraham и CC0; оригинальный URL и лицензия сохранены в заметке. CC0 не требует обязательной публичной подписи.",
+    "scope": "Независимая сверка текста, дат, первоисточников, внутренней ссылки и локального JPEG; без сборки, CI, публикации и live-проверки новой заметки."
+  },
+  "contentHash": "705de5e395b5e2a5ea5a1f92681f6850b5fc943d2d70d6a5bafecc969d8a5c21",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256Scope": "full Markdown file bytes"
+}

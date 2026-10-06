@@ -18,7 +18,7 @@ const gist = first.length <= 130 ? first : first.slice(0, 127).replace(/[\s,;:�
 <li class="nvc">
   <time datetime={added.toISOString().slice(0, 10)}>{formatDateRu(added)}</time>
   <a href={newsUrl(entry)}>{d.title}</a>
-  {gist && <span class="nvc-gist">{gist}</span>}
+  {(gist || d.archived) && <span class="nvc-gist">{d.archived && 'Архив · '}{gist}</span>}
 </li>
 
 <style>
