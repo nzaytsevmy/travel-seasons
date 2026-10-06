@@ -321,6 +321,7 @@ if (faqs.length >= 2) {
         pictureAttributes={{ style: `display:block;` }}
         style={`object-position: ${post.data.coverPosition};`}
       />
+      {post.data.coverCaption && <span class="post-cover-caption">{post.data.coverCaption}</span>}
     </div>
 
     <article class="post-content">
@@ -468,6 +469,16 @@ if (faqs.length >= 2) {
 }
 .post-cover picture { width: 100%; height: 100%; display: block; }
 .post-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.post-cover-caption {
+  position: absolute;
+  left: 1.4rem;
+  bottom: 1.2rem;
+  max-width: calc(100% - 2.8rem);
+  padding: .35rem .55rem;
+  color: #fff;
+  background: rgba(21, 23, 26, .76);
+  font: 400 .8rem/1.35 'Golos Text', sans-serif;
+}
 
 .post-content {
   max-width: 720px;
