@@ -59,10 +59,8 @@ CODE_TOUCHED="$(printf '%s\n' "$CHANGED" | grep -vE '^(src/content/|news/|review
 
 if [ -z "$CODE_TOUCHED" ] && [ -n "$CHANGED" ]; then
   MODE="text"
-  echo "▶ pre-push: правки только текстовые → сборка + гейты содержания (без визуальных)"
 else
   MODE="full"
-  echo "▶ pre-push визуал-гейт (build → :$PORT → playwright)…"
 fi
 
 if ! npm run check:delivery >${LOG}_delivery.log 2>&1; then
@@ -83,6 +81,40 @@ fi
 if [ "$RELEASE_SCOPE" = "accounting" ]; then
   echo "✔ изменена только DAILY-ARTICLE-QUEUE.md: секреты, delivery-контракты и диапазон ветки проверены — push разрешён."
   exit 0
+fi
+
+# Для чистой новостной ветки CLAUDE.md разрешает быстрый локальный гейт.
+# Классифицируем всю ветку относительно main с учётом статуса и режима Git:
+# правки кода, настроек гейта, удаления и смешанные выпуски остаются полными.
+# Передаём явный список файлов из HEAD: обычный check:news после коммита
+# ищет только рабочие изменения и ошибочно может проверить ноль заметок.
+NEWS_PATHS="$(node scripts/news-push-scope.mjs --base "$SCOPE_BASE" --head HEAD --paths-only)"
+NEWS_SCOPE_STATUS=$?
+if [ "$NEWS_SCOPE_STATUS" -eq 0 ]; then
+  echo "▶ pre-push: чистые новости → проверка отправляемых заметок + сроков пересмотра"
+  # Гейт читает файлы с диска; незакоммиченный черновик нельзя принять за HEAD.
+  if [ -n "$(git status --porcelain -- src/content/news news)" ]; then
+    echo "✖ в новостях есть незакоммиченные файлы — сохрани или убери их до push"; exit 1
+  fi
+  if ! printf '%s\n' "$NEWS_PATHS" | node scripts/news-gate.mjs --paths-stdin >${LOG}_news.log 2>&1; then
+    cat "${LOG}_news.log"
+    echo "✖ гейт новостей НЕ зелёный — push заблокирован"; exit 1
+  fi
+  if ! node scripts/news-lifecycle.mjs >>${LOG}_news.log 2>&1; then
+    cat "${LOG}_news.log"
+    echo "✖ срок пересмотра новостей просрочен — push заблокирован"; exit 1
+  fi
+  cat "${LOG}_news.log"
+  echo "✔ новостной гейт зелёный — push разрешён; сборка и браузеры обязательны в CI."
+  exit 0
+elif [ "$NEWS_SCOPE_STATUS" -ne 2 ]; then
+  echo "✖ область новостного выпуска не определена — push заблокирован"; exit 1
+fi
+
+if [ "$MODE" = "text" ]; then
+  echo "▶ pre-push: правки только текстовые → сборка + гейты содержания (без визуальных)"
+else
+  echo "▶ pre-push визуал-гейт (build → :$PORT → playwright)…"
 fi
 
 # Минификация HTML занимает три четверти сборки (79с против 21с, замерено
