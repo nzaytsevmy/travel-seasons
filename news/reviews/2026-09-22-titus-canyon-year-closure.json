@@ -2,43 +2,47 @@
   "schemaVersion": 1,
   "slug": "2026-09-22-titus-canyon-year-closure",
   "score": 4,
-  "reviewer": "Codex GPT-6 (tt_news_review_1001)",
-  "reviewedAt": "2026-10-02",
-  "sha256": "522d437c098b154f3cf58e487b79f5e90c6d1650d6a76033375ff7af45758b52",
-  "rationale": "Оценка 4: актуальная дорожная сводка NPS 2 октября в 00:05 UTC всё ещё обозначает Titus Canyon Road как temporarily open after initial repairs; в Калифорнии в этот момент 1 октября. Основной односторонний участок запланирован к закрытию 2 октября 2026 года до мая 2027-го, западный двухсторонний подъезд от North Highway до Fall Canyon Trailhead — с 27 октября до декабря. Заметка не объявляет запланированное закрытие уже состоявшимся и отделяет два участка. Проверка 3 октября покроет локальный день начала работ.",
+  "reviewer": "Codex GPT-6 (news_lifecycle_review_20261006)",
+  "reviewedAt": "2026-10-06",
+  "sha256": "cc2e99ad2e7e110433a28c721844e7ec3da9a44fc3ddb448d8e575302184e5ec",
+  "rationale": "Оценка 4 сохранена после независимой проверки окончательного текста 6 октября. Текущая сводка NPS прямо обозначает односторонний участок Titus Canyon Road как закрытый на ремонт и ожидает открытия в мае 2027 года. Западный двухсторонний подъезд от North Highway до Fall Canyon Trailhead выделен отдельно: его закрытие запланировано с 27 октября до конца декабря. Заметка различает подъезды и не обещает точной даты возобновления; это важно для проезда через каньон и доступа к пешему маршруту. Формулировка «до конца декабря» передаёт NPS «through December» точнее, чем прежнее «до декабря».",
   "risks": [
-    "После наступления 2 октября по времени Калифорнии фактический статус дороги нужно снова проверить у NPS.",
-    "Май 2027 года и декабрь 2026 года — плановые сроки завершения ограничений, не гарантированные даты открытия."
+    "NPS предупреждает, что состояние дорог может быстро меняться; открытость западного участка нужно сверять перед каждой поездкой.",
+    "С 27 октября планируется новое закрытие западного подъезда; reviewOn=27.10 отмечен в заметке, но status «действует» не заставляет scripts/news-lifecycle.mjs выполнить эту проверку."
   ],
   "blockingIssues": [],
   "evidence": [
     {
       "url": "https://home.nps.gov/deva/planyourvisit/conditions.htm",
+      "publishedOn": "2026-10-02",
+      "checkedOn": "2026-10-06",
+      "method": "Прямое чтение раздела Road Status на официальной странице NPS",
+      "finding": "One-way section closed for repairs; anticipated reopening May 2027. Western two-way section from North Highway to Fall Canyon Trailhead will close October 27, 2026 through December. Страница Last updated 02.10.2026."
+    },
+    {
+      "url": "https://www.nps.gov/deva/learn/news/titus-canyon-closing-oct-2-2026.htm",
       "publishedOn": "2026-09-28",
-      "checkedOn": "2026-10-02",
-      "access": "Independent direct HTTP 200 at approximately 00:05 UTC",
-      "finding": "Titus Canyon Road temporarily open after initial repairs; one-way section closes October 2, 2026 through May 2027; western two-way section closes October 27 through December. Страница указывает Last updated September 28, 2026."
+      "checkedOn": "2026-10-06",
+      "method": "Прямое чтение официального пресс-релиза NPS",
+      "finding": "Работы по ремонту и укреплению дороги были запланированы с 02.10.2026 по май 2027; фактическое закрытие устанавливает более свежая текущая сводка."
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-10-03",
-    "reason": "После наступления 2 октября в Калифорнии подтвердить по живой сводке NPS фактическое закрытие основного участка."
+    "reviewOn": "2026-10-27",
+    "reason": "В день планового закрытия западного подъезда проверить фактический статус по текущей сводке NPS; ручная проверка нужна, поскольку lifecycle-гейт status «действует» пропускает."
   },
   "checks": {
-    "capsuleWords": 56,
-    "bodyWords": 202,
-    "titleChars": 51,
+    "capsuleWords": 51,
+    "bodyWords": 178,
+    "titleChars": 48,
     "internalLink": "/usa/",
-    "internalLinkStatus": "exists locally",
-    "photoViewed": true,
-    "photoSha256": "c9a282afd2a1130ded71a26b52a04e0dba9145be87b2775868348df4e0c1caab",
-    "photoFinding": "Табличка Leadfield и сухие горы непосредственно вдоль Titus Canyon Road; Commons подтверждает Fabio Achilli и CC BY 2.0. Подпись честно называет кадр архивным.",
-    "scope": "Независимое адресное ревью окончательного текста, статуса и дат по источнику 02.10; без сборки, коммита, публикации и live-проверки страницы.",
-    "clipTitle": "Основную дорогу Тайтус-Каньона закроют со 2 октября",
+    "internalLinkStatus": 200,
     "photoViewedToday": false,
-    "mediaScope": "Фото и лицензия не менялись; SHA-256 совпадает с предыдущим визуальным ревью. Сегодня проверены изменившиеся факты и жизненный цикл."
+    "photoSha256": "c9a282afd2a1130ded71a26b52a04e0dba9145be87b2775868348df4e0c1caab",
+    "mediaScope": "Фото не изменено; SHA-256 совпадает с прежней визуальной рецензией, повторного просмотра кадра не было.",
+    "scope": "Независимая адресная проверка изменённого текста, статуса, дат и первичных страниц NPS 06.10; без сборки, CI, публикации и live-проверки."
   },
-  "contentHash": "ccba1f164d7522350b6a011bb0047e4146e6afeb0c0bd83e65b374f4f6dfe2db",
+  "contentHash": "ac2ffb2fb6da2e6c5e24b2bda456e154ef80dc63962756af817246e283d1743a",
   "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
   "sha256Scope": "full Markdown file bytes"
 }
