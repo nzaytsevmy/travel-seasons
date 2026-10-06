@@ -215,7 +215,13 @@ for (const page of PAGES) {
     }
     // Дополнительный wait — decode всех картинок которые получили src
     await pwPage.evaluate(async () => {
-      const imgs = Array.from(document.querySelectorAll('img')) as HTMLImageElement[];
+      // Ниже проверяем только свои картинки: внешние плитки карты могут
+      // зависнуть в decode() и исчерпать timeout, хотя в broken не входят.
+      const imgs = (Array.from(document.querySelectorAll('img')) as HTMLImageElement[])
+        .filter(img => {
+          const адрес = img.currentSrc || img.src;
+          return адрес && (адрес.startsWith(location.origin) || адрес.startsWith('data:'));
+        });
       await Promise.all(imgs.map(img => img.decode().catch(() => {})));
     });
     const broken = await pwPage.evaluate(() => {
