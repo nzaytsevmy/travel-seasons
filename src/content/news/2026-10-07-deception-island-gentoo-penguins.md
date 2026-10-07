@@ -4,7 +4,7 @@ date: "2026-10-07"
 added: "2026-10-07"
 checked: "2026-10-07"
 topic: nature
-impact: low
+impact: medium
 score: 4
 authoredBy: "codex-gpt-6"
 reviewRef: "news/reviews/2026-10-07-deception-island-gentoo-penguins.json"
