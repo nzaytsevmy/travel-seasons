@@ -2,8 +2,8 @@
 title: "На паромы Stena Line между Ирландией и Уэльсом нужен паспорт"
 date: "2026-09-28"
 added: "2026-09-30"
-checked: "2026-09-30"
-reviewOn: "2026-10-07"
+checked: "2026-10-07"
+reviewOn: "2026-10-21"
 topic: "visa"
 status: "действует"
 impact: "high"
@@ -22,6 +22,7 @@ imageLicense: "CC BY-SA"
 imageLicenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/"
 imageSource: "https://commons.wikimedia.org/w/index.php?curid=122386457"
 imageTitle: "Паромы в Холихеде, май 2013 года. Архивный снимок, не очередь на проверку паспортов."
+imageChanges: "Исходное название работы: Stena Lines' 'Stena Adventurer' and Irish Ferries' 'Ulysees' docked at the Salt Island Ferry Terminals in Holyhead - 1 - geograph.org.uk - 3732204.jpg. Подготовлена JPEG-копия."
 ---
 
 На двух пассажирских линиях Stena Line между Уэльсом и Ирландией с 28 сентября требуется паспорт при отправлении. Это Холихед — Дублин и Фишгард — Рослэр. Перевозчик связывает изменение с требованиями UK Border Force к данным пассажиров перед посадкой.

@@ -2,23 +2,34 @@
   "schemaVersion": 1,
   "slug": "2026-09-30-stena-ireland-wales-passports",
   "score": 4,
-  "reviewer": "codex-gpt-6-independent-news-review-20260930-news_review_0930",
-  "reviewedAt": "2026-09-30",
-  "rationale": "Оценка 4: действующее с 28 сентября требование документов меняет подготовку к двум конкретным паромным линиям. Оператор и маршруты названы точно, правило не распространено на все паромы Великобритании и Ирландии. Указаны дети и младенцы, ирландская паспортная карта, различие бронирования и допуска к посадке, исключение линий через Белфаст и ограниченные условия переноса/возврата. Это полезная нишевая транспортная перемена.",
-  "contentHash": "1b67af04665b2ebb24f88032bd893f249221387c0f73c283f8654846c190f220",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "reviewer": "Codex GPT-6 (independent news_review_20261007)",
+  "reviewedAt": "2026-10-07",
+  "sha256": "2f58eb6a95d70fe3e5e0a9eaba18085186829dc61102708a6b3c859cf2027b88",
+  "rationale": "Первичный Stena Line подтверждает требование паспорта с 28 сентября на двух линиях, включая младенцев, приём ирландской паспортной карты и исключение маршрутов через Белфаст. Текст объясняет семейный риск, разницу бронирования и посадки и ограниченные условия возврата, не подменяя визовое право въезда. Это непосредственно меняет подготовку к конкретному парому, но направление нишевое, оценка 4.",
+  "risks": [
+    "Это правило оператора для указанных маршрутов, а не общее обещание для всех британских и ирландских паромов.",
+    "Сайт описывает ограниченные исключения для экстренных случаев; обычному пассажиру нельзя рассчитывать на водительские права вместо паспорта.",
+    "Возможность переноса зависит от даты покупки и условий оператора; сторонние расходы не обещаны.",
+    "Кадр Холихеда мая 2013 года не показывает нынешнюю проверку документов."
+  ],
   "blockingIssues": [],
   "evidence": [
     {
       "url": "https://www.stenalinetravel.com/customer-service/pre-travel/what-identification-documents-do-i-need-to-travel/passport-requirements-on-holyhead-and-fishguard-routes",
-      "checkedOn": "2026-09-30",
-      "access": "Opened independently via web reader",
-      "finding": "С 28.09 паспорт на отправлениях Holyhead–Dublin и Fishguard–Rosslare нужен всем, включая детей и младенцев; Irish passport cards принимаются. Для обычных поездок через Belfast/Liverpool/Cairnryan/Heysham требования не изменены. Паспорт не требуется при бронировании. Условия ранних бронирований и невозмещение сторонних расходов отражены корректно."
+      "finding": "Первичный оператор: с 28 сентября паспорта всем возрастам и гражданствам на Dublin — Holyhead и Fishguard — Rosslare; Irish passport card принимается; обычные Belfast/Liverpool/Cairnryan/Heysham маршруты не затронуты. Бронь без данных возможна, но паспорт проверяют при отправлении; часть ранних бронирований можно изменить или вернуть, сторонние услуги не покрываются.",
+      "method": "Независимое чтение официальной страницы через web.run.",
+      "checkedOn": "2026-10-07"
+    },
+    {
+      "url": "https://commons.wikimedia.org/w/index.php?curid=122386457",
+      "checkedOn": "2026-10-07",
+      "finding": "File:Stena Lines' 'Stena Adventurer' and Irish Ferries' 'Ulysees' docked at the Salt Island Ferry Terminals in Holyhead - 1 - geograph.org.uk - 3732204.jpg; Terry Robinson; CC BY-SA 2.0. Просмотрены Stena Adventurer и Ulysses у терминалов Холихеда. Commons подтверждает Terry Robinson, май 2013 года, CC BY-SA 2.0. Подпись честно архивная, без изображения текущей очереди.",
+      "method": "Метаданные независимо получены через Commons API 2026-10-07T18:55:50.769Z; локальный JPEG просмотрен глазами рецензентом."
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-10-07",
-    "reason": "7 октября перепроверить FAQ перевозчика после вступления правила, включая условия ранних бронирований."
+    "reviewOn": "2026-10-21",
+    "reason": "21 октября повторно сверить закрепившееся правило оператора и условия для ранних бронирований; статус «действует» подтверждён."
   },
   "checks": {
     "capsuleWords": 46,
@@ -27,26 +38,13 @@
     "clipTitle": "На паромы Stena Line между Ирландией и Уэльсом нужен паспорт",
     "internalLink": "/blog/zagranpasport-rebenku-2026/",
     "internalLinkStatus": 200,
-    "internalLinkFinding": "Адрес независимо открыт HTTP 200; заголовок и содержание соответствуют анкору.",
     "photoViewed": true,
     "photoSha256": "419bd3ef032f56cc1981230cc2bea109f5def0487931de65e46b76dbb45ce9bc",
-    "photoFinding": "Просмотрен контактный лист: Stena Adventurer и Ulysses в Холихеде. Commons curid 122386457: Terry Robinson, CC BY-SA 2.0, 28.05.2013. Архивный портовый кадр, не паспортный контроль.",
-    "publicAttribution": "Commons metadata сверены с _credits.json. publicPhotoCredits исполняется на пяти записях и сохраняет оригинальное название, автора, URL лицензии, источник и изменения. src/pages/legal/photos.astro загружает каталог и выводит эти поля. Живой вывод после публикации остаётся гейтом выпуска.",
-    "capsule": {
-      "ok": true
-    },
-    "depthLink": {
-      "ok": true
-    },
-    "linksSubset": {
-      "ok": true
-    },
-    "lifecycle": {
-      "ok": true
-    },
-    "sourceDomains": {
-      "ok": true
-    },
-    "scope": "Независимое редакторское ревью переданных NEW: факты и даты, собственная добавка, русский текст, clipTitle, внутренние ссылки, визуальный смысл и лицензии фото. Прозу, сборку, browser CLI, git, PR и публикацию рецензент не запускал и не менял."
-  }
+    "photoFinding": "Просмотрены Stena Adventurer и Ulysses у терминалов Холихеда. Commons подтверждает Terry Robinson, май 2013 года, CC BY-SA 2.0. Подпись честно архивная, без изображения текущей очереди.",
+    "publicAttribution": "Автор, название оригинальной работы, адрес Commons и лицензия с адресом сохранены в данных. Чистая функция publicPhotoCredits включила запись и imageChanges в публичный реестр; фактический HTML /legal/photos/ после сборки остаётся публикационным гейтом.",
+    "scope": "Независимая редактура текста, дат, статуса и reviewOn; проверка источников, всех контекстных внутренних ссылок, локального JPEG и метаданных Commons. Без сборки, браузерных тестов, CI, публикации и live-проверки новых заметок."
+  },
+  "contentHash": "1b67af04665b2ebb24f88032bd893f249221387c0f73c283f8654846c190f220",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256Scope": "full Markdown file bytes"
 }

@@ -2,58 +2,55 @@
   "schemaVersion": 1,
   "slug": "2026-09-17-olympic-hoh-bridge-road-closures",
   "score": 4,
-  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
-  "reviewedAt": "2026-10-06",
-  "sha256": "dc3516ae3df14f44f48fdd209ad554737b4dbe577bafaff81d9b0fd86d9dfe06",
-  "rationale": "Оценка 4: WSDOT подтверждает два октябрьских полных закрытия US 101 через Хох. На момент проверки по местному времени ещё шло окно до 6 октября 12:00 PDT, следующее начинается 8 октября. Текст сохраняет важное различие: дождевой лес Хох доступен из Форкса, но сквозной проезд к югу разорван.",
+  "reviewer": "Codex GPT-6 (independent news_review_20261007)",
+  "reviewedAt": "2026-10-07",
+  "sha256": "e7a576e62aae48362e058e0a7ae3c75dca1f1531cdc89e731579016a9a68f39a",
+  "rationale": "NPS и WSDOT подтверждают следующее полное закрытие 8–13 октября и попеременный проезд между окнами после проверки. Текст правильно оставляет лес доступным с севера через Форкс и объясняет длинный восточный объезд и выбор ночёвки. Он не объявляет мост фактически открытым только по окончанию окна 1–6 октября. Это важное изменение конкретного маршрута, но США нишевое направление, оценка 4.",
   "risks": [
-    "Время возобновления зависит от осмотра моста после работ; график следует сверять повторно после 6 октября 12:00 PDT."
+    "График ремонта и разрешение движения могут меняться; календарный конец окна не подтверждает фактическое открытие.",
+    "Восточный объезд добавляет минимум четыре часа по оценке NPS, а не гарантированное точное время.",
+    "Архивный лес на фото не показывает ремонтируемый мост."
   ],
   "blockingIssues": [],
   "evidence": [
     {
-      "url": "https://wsdot.wa.gov/construction-planning/search-projects/us-101-hoh-river-bridge-emergency-repair",
-      "finding": "WSDOT: закрытия 01.10 05:00–06.10 12:00 и 08.10 05:00–13.10 12:00, после каждого нужен осмотр перед открытием одной полосы.",
-      "checkedOn": "2026-10-06"
+      "url": "https://www.nps.gov/olym/planyourvisit/hwy-101-closure-at-hoh-river-bridge.htm",
+      "updatedOn": "2026-09-15",
+      "finding": "NPS подтверждает полное окно 8 октября 05:00 — 13 октября 12:00, доступ к Хоху с Форкса, расположение районов по сторонам моста и восточный объезд с минимум четырьмя дополнительными часами.",
+      "method": "Независимое открытие официальной страницы через web.run.",
+      "checkedOn": "2026-10-07"
     },
     {
-      "url": "https://www.nps.gov/olym/planyourvisit/hwy-101-closure-at-hoh-river-bridge.htm",
-      "finding": "NPS: доступ к Hoh Rain Forest остаётся из Forks; восточный объезд добавляет не менее четырёх часов.",
-      "checkedOn": "2026-10-06"
+      "url": "https://wsdot.wa.gov/construction-planning/search-projects/us-101-hoh-river-bridge-emergency-repair",
+      "finding": "WSDOT подтверждает следующее окно и проезд по одной полосе после инспекции между перекрытиями.",
+      "method": "Независимый Node fetch: HTTP 200 и прочитан текст страницы; web.run вернул 403, он не выдан за успешную проверку.",
+      "checkedOn": "2026-10-07"
+    },
+    {
+      "url": "https://commons.wikimedia.org/w/index.php?curid=147061211",
+      "checkedOn": "2026-10-07",
+      "finding": "File:Hoh Rain Forest at Olympic NP in WA - 52816068780.jpg; jhvanwa; CC0. Просмотрены покрытые мхом деревья дождевого леса Хох. Моста на фото нет. Commons подтверждает jhvanwa и CC0; точный день съёмки не утверждён, подпись объясняет архивный смысл.",
+      "method": "Метаданные независимо получены через Commons API 2026-10-07T18:55:50.769Z; локальный JPEG просмотрен глазами рецензентом."
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-10-07",
-    "reason": "После завершения первого октябрьского окна убрать его из оперативного лида и сверить следующее."
+    "reviewOn": "2026-10-14",
+    "reason": "14 октября, после объявленного окна до полудня 13 октября, сверить фактическое состояние моста и следующие перекрытия."
   },
   "checks": {
     "capsuleWords": 46,
-    "bodyWords": 174,
+    "bodyWords": 172,
     "titleChars": 51,
     "clipTitle": "Олимпик: мост через Хох будут закрывать и в октябре",
-    "internalLink": null,
-    "internalLinkStatus": null,
-    "photoViewedToday": false,
-    "mediaScope": "Фото в этих адресных lifecycle-правках не менялось; повторный осмотр локального JPEG не проводился.",
-    "publicationDate": "2026-09-15",
-    "added": "2026-09-17",
-    "scope": "Независимая сверка финальных текстов, дат и первоисточников; без браузерных тестов, сборки, CI и live-проверки обновлённых страниц."
+    "internalLink": "/usa/",
+    "internalLinkStatus": 200,
+    "photoViewed": true,
+    "photoSha256": "68ec8086af3cfa7696308cacea25af85f15e05185dd3e29a3c36f8acfe378754",
+    "photoFinding": "Просмотрены покрытые мхом деревья дождевого леса Хох. Моста на фото нет. Commons подтверждает jhvanwa и CC0; точный день съёмки не утверждён, подпись объясняет архивный смысл.",
+    "publicAttribution": "Commons API подтвердил CC0. Публичная атрибуция для этой лицензии не обязательна; автор и исходный адрес сохранены, описательная подпись и архивная оговорка присутствуют.",
+    "scope": "Независимая редактура текста, дат, статуса и reviewOn; проверка источников, всех контекстных внутренних ссылок, локального JPEG и метаданных Commons. Без сборки, браузерных тестов, CI, публикации и live-проверки новых заметок."
   },
-  "contentHash": "25173cf5eb7612b385745176d723322ca9dd7fee71d6172e49b9b8c4e45550cf",
+  "contentHash": "1518858556e79ec35b52abdd099ad5553b343503ea87ef4187ce65b6cba5e1b6",
   "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256Scope": "full Markdown file bytes",
-  "priorReview": {
-    "reviewer": "codex-gpt-6-independent-news-review-20260930-news_review_0930",
-    "reviewedAt": "2026-09-30",
-    "score": 4,
-    "contentHash": "25173cf5eb7612b385745176d723322ca9dd7fee71d6172e49b9b8c4e45550cf",
-    "sha256": "8fae335ac4a321ffcafcd9544918e553a7881fad3fe7d6f99d56bfbd9cd84e90",
-    "previous": {
-      "reviewer": "Codex GPT-6 — independent news_lifecycle_review (2026-09-29)",
-      "reviewedAt": "2026-09-29",
-      "score": 4,
-      "contentHash": "39e054fd66a758aeeb6bf2e598d7146d1ab6c71525cdfe339a90fe3cbe627412",
-      "sha256": "39e054fd66a758aeeb6bf2e598d7146d1ab6c71525cdfe339a90fe3cbe627412"
-    }
-  }
+  "sha256Scope": "full Markdown file bytes"
 }

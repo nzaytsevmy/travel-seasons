@@ -2,8 +2,8 @@
 title: "Йосемити: из-за пожара закрыта дорога к Глейшер-Пойнт"
 date: "2026-10-05"
 added: "2026-10-06"
-checked: "2026-10-06"
-reviewOn: "2026-10-07"
+checked: "2026-10-07"
+reviewOn: "2026-10-08"
 topic: "transport"
 impact: "high"
 score: 4

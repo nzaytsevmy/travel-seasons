@@ -2,8 +2,8 @@
 title: После тайфуна в Японии остаются закрыты местные линии
 date: "2026-09-23"
 added: "2026-09-23"
-checked: "2026-10-06"
-reviewOn: "2026-10-07"
+checked: "2026-10-07"
+reviewOn: "2026-10-10"
 topic: transport
 impact: high
 score: 4
@@ -20,7 +20,7 @@ sources:
     url: https://www.mlit.go.jp/common/002025453.pdf
   - name: "MLIT — сводка №17 PDF, страницы 7–8; железные дороги на 05.10.2026, 08:00 JST"
     url: https://www.mlit.go.jp/common/002025687.pdf
-  - name: "Kominato Railway — условия движения, сообщение 25.09.2026; проверено 30.09.2026"
+  - name: "Kominato — условия движения, обновлено 04.10.2026; проверено 07.10.2026"
     url: https://www.kominato.co.jp/
 image: ./_images/2026-09-23-japan-local-lines-after-typhoon.jpg
 imageCredit: Io24gidf
@@ -29,6 +29,7 @@ imageLicenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
 imageSource: https://commons.wikimedia.org/w/index.php?curid=103042248
 imageAlt: Красно-кремовый поезд KiHa 200 на станции Кадзуса-Усику
 imageTitle: Поезд Kominato Railway на станции Кадзуса-Усику, март 2019 года. Архивный кадр одной из линий из сводки, не последствий тайфуна.
+imageChanges: "Исходное название работы: Kominato Railway Kiha 20x.jpg. Подготовлена JPEG-копия."
 ---
 
 По сводке MLIT от 5 октября, в Тибе движение остаётся остановленным на участках **четырёх линий двух перевозчиков**. На Курури это отрезок **Курури — Кадзуса-Камэяма**; срок возобновления не объявлен, работают замещающие автобусы и такси. Отрезок Кисарадзу — Курури уже не значится среди закрытых. Перед поездкой проверьте расписание конкретного поезда у JR East.
