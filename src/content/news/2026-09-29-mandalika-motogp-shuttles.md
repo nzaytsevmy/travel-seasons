@@ -2,8 +2,8 @@
 title: "К MotoGP на Ломбоке готовят автобусы внутри и вне Мандалики"
 date: "2026-09-28"
 added: "2026-09-29"
-checked: "2026-09-29"
-reviewOn: "2026-10-07"
+checked: "2026-10-07"
+reviewOn: "2026-10-12"
 topic: "transport"
 impact: "medium"
 score: 3
@@ -20,6 +20,7 @@ sources:
     url: https://cms.itdc.co.id/press-release/giant-helmet-appears-at-bundaran-hi-building-excitement-for-the-pertamina-grand-prix-of-indonesia-2026-20260928024422
 imageAlt: "Прибрежный пейзаж Мандалики на острове Ломбок"
 imageTitle: "Архивный пейзаж Мандалики. Снимок не показывает гонку или автобусы октября 2026 года."
+imageChanges: "Исходное название работы: Dji fly 20230119 175754 880 1674123083323 photo-01.jpg. Подготовлена JPEG-копия."
 image: "./_images/2026-09-29-mandalika-motogp-shuttles.jpg"
 imageCredit: "Yon Ilahi"
 imageLicense: "CC BY-SA"
