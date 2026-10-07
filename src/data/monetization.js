@@ -115,10 +115,11 @@ const PARTNERS = [
 ];
 
 const HIGH_INTENT_BLOG = /(?:strahov|insurance|(?:^|-)visa(?:-|$)|pay-|aviasales|ostrovok|travelata|sutochno|tutu-|yandex-puteshestviya|biblio-globus|skolko-stoit|esim)/;
-// Подтверждённый справочный интент: 1 409 органических визитов, 2 партнёрских
+// У статьи о Персеидах подтверждён справочный интент: 1 409 органических визитов, 2 партнёрских
 // клика и 12 переходов в Telegram. Aurora-гайды и документы сюда не входят:
 // в них есть конкретная поездка или страховой следующий шаг.
-const NO_COMMERCIAL_BLOG = /(?:perseidy)/;
+// Справка о возврате купленного билета не предлагает новую покупку.
+const NO_COMMERCIAL_BLOG = /(?:perseidy|^kupibilet-vozvrat-bileta-2026$)/;
 const COUNTRY_GUIDE = /^(.+?)-(?:guide|insurance|visa)-20\d\d$/;
 const RESERVED_ROOTS = new Set([
   '404', 'about', 'bezviz', 'blog', 'calculator', 'cards', 'compare', 'countries',

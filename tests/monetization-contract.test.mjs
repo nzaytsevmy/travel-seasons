@@ -75,6 +75,14 @@ test('информационная статья не получает выдум
   assert.equal(classifyPage('/blog/perseidy-zatmenie-avgust-2026/').intent, 'none');
 });
 
+test('статья о возврате Купибилета помогает отменить покупку без коммерческого intent', () => {
+  assert.deepEqual(classifyPage('/blog/kupibilet-vozvrat-bileta-2026/'), {
+    type: 'blog_article', intent: 'none', destination: '',
+  });
+  assert.equal(classifyPage('/blog/kupibilet-vozvrat-bileta-2026/?from=search#sroki').intent, 'none');
+  assert.equal(classifyPage('/blog/kupibilet-2026/').intent, 'medium');
+});
+
 test('гайд страны остаётся medium и сохраняет направление', () => {
   assert.deepEqual(classifyPage('/blog/georgia-guide-2026/'), {
     type: 'blog_article', intent: 'medium', destination: 'georgia',
