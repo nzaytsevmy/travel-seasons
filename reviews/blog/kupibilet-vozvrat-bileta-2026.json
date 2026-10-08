@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "slug": "kupibilet-vozvrat-bileta-2026",
-  "reviewer": "Codex (article_review_20261007)",
-  "reviewedAt": "2026-10-07",
+  "reviewer": "Codex (article_review_20261008)",
+  "reviewedAt": "2026-10-08",
   "approved": true,
-  "verdict": "Содержательная версия и узкое исключение intent одобрены в исходниках. Build, DOM, полный hook и live подтверждаются отдельно.",
+  "verdict": "Независимый review 08.10 завершён: новая статья 8/10, исправляемых редакционных блокеров нет. Кириллический font RED закрыт фактическим custom Golos и осмотром всех четырёх схем на 402/1280. Допуск относится к контенту и узкой денежной дельте; полный hook, CI и production QA остаются обязательными.",
   "qualityScore": {
     "topic": 8.5,
     "facts": 9,
@@ -13,40 +13,52 @@
     "internalLinks": 9,
     "legal": 8.5,
     "overall": 8,
-    "ceiling": "До 10 не хватает собственного заказа и подтверждённого возврата автора, проверки исполнения обещаний поддержки и выплаты, полного рендера статьи на телефоне и desktop и подтверждённого поискового результата. Неоднозначность компенсации возвратного тарифа требует расчёта конкретного заказа."
+    "ceiling": "До 10 не хватает собственного заказа и подтверждённого возврата автора, проверки исполнения обещаний поддержки и выплаты и подтверждённого поискового результата. Неоднозначность компенсации возвратного тарифа требует расчёта конкретного заказа."
   },
-  "rationale": "Независимо прочитана финальная статья и фактический возвращённый DOM шести официальных страниц Купибилета, сохранённый основным агентом. Сверены источник покупки и сборы 10%/16,9%, отдельный невозвратный сбор покупки, исключения, способ подтверждения и автоматическая отмена, карта сроков, ограниченная услуга 90% и отмена в день покупки. В первом круге найдены и затем исправлены отсутствие четвёртой иллюстрации, запрещённые скругления, недоказанная точка отсчёта 20–60 дней, неполный денежный путь услуги и размытые условия отмены. Все четыре свежих PNG и обложка осмотрены. Статья даёт отдельный ответ для уже купленного билета, имеет две входящие связи и три уместных исходящих URL; платного перехода в теле нет. Собственной покупки, общения с поддержкой и получения денег автору не приписано. Общая оценка отражает полезность проверенного объяснения, а не среднее арифметическое семи осей.",
-  "scope": "Полный редакционный review новой статьи: финальная проза, заголовок, description, факты против предоставленного фактического DOM первичек, схемы, происхождение обложки, ссылочный контекст и отсутствие CTA в теле. Рецензент не входил в личный заказ и не повторял Wordstat/Wordcraft; не запускал build, headless, CI и live.",
+  "rationale": "Свежая независимая проверка 08.10: прочитаны финальные title/description и весь текст, самостоятельно открыты шесть официальных справок Купибилета в Chrome, сверены проценты 10%/16,9%, исключения, отдельный сбор покупки, заявка/согласие/подтверждение, сроки и ограниченная услуга 90%. Неоднозначность базы 90% действительно присутствует в первичке и честно ограничена письменным расчётом заказа. Своего заказа, поддержки и полученных денег автору не приписано. Самостоятельно проверены Commons и публичные credits в preview. Обнаруженный fallback Helvetica для кириллицы исправлен автором: CDP проверил все 51 текстовый узел четырёх новых SVG; обычные буквы реально используют custom Golos Text. Четыре специальных символа используют читаемый платформенный fallback. Все четыре светлые схемы осмотрены в статье на 402/1280: последовательности и развилки понятны, подписи и символы читаются, обрезания и горизонтального overflow нет. Баллы присвоены по реальной полезности и ограничениям текста, без выдуманного опыта или прогноза трафика.",
+  "scope": "Свежий редакционный и денежный review готового объёма на 08.10: новая статья целиком, шесть первичек в собственной CUA-вкладке, SVG-исходники и фактические fonts всех текстовых узлов rebuilt SVG, все четыре схемы в preview 402/1280, фактический intent, публичная атрибуция, обе входящие ссылочные дельты и код классификации. Wordstat/Wordcraft/GSC API, старые первички соседей, полный hook, CI, deploy и production не повторялись.",
   "sourceChecks": [
     {
       "url": "https://www.kupibilet.ru/help/vozvrat-ili-obmen-aviabiletov/sub/vozvrat/art/kak-vernut-bilet",
-      "checkedVia": "Фактический DOM 2026-10-07T19:23:03.225Z в .run/kupibilet-primary-browser-proof.json",
-      "result": "Заявка, расчёт, согласие и письмо об отмене различаются; возможна автоматическая операция; единый маршрут отменяется целиком."
+      "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
+      "result": "Заявка, расчёт, согласие и письмо об отмене различаются; возможна автоматическая операция; единый маршрут отменяется целиком.",
+      "checkedAt": "2026-10-08"
     },
     {
       "url": "https://www.kupibilet.ru/help/vozvrat-ili-obmen-aviabiletov/sub/vozvrat/art/skolko-kupibilet-beret-za-vozvrat-bileta",
-      "result": "10% напрямую и 16,9% после перехода; вынужденный сбор 0%; сбор покупки отдельно не возвращается. Точная рублёвая база не придумана."
+      "result": "10% напрямую и 16,9% после перехода; вынужденный сбор 0%; сбор покупки отдельно не возвращается. Точная рублёвая база не придумана.",
+      "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
+      "checkedAt": "2026-10-08"
     },
     {
       "url": "https://www.kupibilet.ru/help/vozvrat-ili-obmen-aviabiletov/sub/vozvrat/art/v-kakih-sluchayah-kupibilet-ne-uderzhivaet-sbory-za-vozvrat",
-      "result": "Названия Максимум и Купибилет.Возврат сохранены; причины вынужденного отказа требуют признания перевозчиком."
+      "result": "Названия Максимум и Купибилет.Возврат сохранены; причины вынужденного отказа требуют признания перевозчиком.",
+      "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
+      "checkedAt": "2026-10-08"
     },
     {
       "url": "https://www.kupibilet.ru/help/vozvrat-ili-obmen-aviabiletov/sub/vozvrat/art/kakov-maksimalnyy-srok-dlya-vozvrata-sredstv-pri-oplate-kartoy",
-      "result": "Через Купибилет после оформления: до 30 дней, обычно 1–7 рабочих; напрямую перевозчику: до 60 дней. Срок заявки не смешан с зачислением."
+      "result": "Через Купибилет после оформления: до 30 дней, обычно 1–7 рабочих; напрямую перевозчику: до 60 дней. Срок заявки не смешан с зачислением.",
+      "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
+      "checkedAt": "2026-10-08"
     },
     {
       "url": "https://www.kupibilet.ru/help/vozvrat-ili-obmen-aviabiletov/sub/vozvrat/art/chto-takoe-vozvrat-bileta-v-den-pokupki",
-      "result": "Запрос до 22:00 МСК, дата квитанции и ограниченное окно перевозчика; менее 48 часов, регистрация или её закрытие не замалчиваются."
+      "result": "Запрос до 22:00 МСК, дата квитанции и ограниченное окно перевозчика; менее 48 часов, регистрация или её закрытие не замалчиваются.",
+      "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
+      "checkedAt": "2026-10-08"
     },
     {
       "url": "https://www.kupibilet.ru/help/uslugi-i-akcii/sub/dopolnitelnye-uslugi/art/vozvrat-ot-kupibilet",
-      "result": "48 часов, баллы/деньги, заявление плательщика, обещание письма 2 рабочих дня, ссылка 5 дней, доступ к контактам 24 часа, баллы 1 год/100 ₽ и исключения сверены. Противоречивое описание остатка возвратного тарифа не превращено в универсальную выплату."
+      "result": "48 часов, баллы/деньги, заявление плательщика, обещание письма 2 рабочих дня, ссылка 5 дней, доступ к контактам 24 часа, баллы 1 год/100 ₽ и исключения сверены. Противоречивое описание остатка возвратного тарифа не превращено в универсальную выплату.",
+      "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
+      "checkedAt": "2026-10-08"
     },
     {
       "url": "https://commons.wikimedia.org/wiki/File%3AZaventem_Brussels_airport_2.JPG",
-      "checkedVia": "Wikimedia Commons, web search 2026-10-07",
-      "result": "Ad Meskens, старое здание Brussels Airport, CC BY-SA 3.0; карточка совпадает с изображением и _credits.json. Публичный вывод attribution ещё должен проверить основной агент."
+      "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
+      "result": "Ad Meskens, старое здание Brussels Airport, CC BY-SA 3.0; источник curid=32567151. В preview /legal/photos/ найдены название, автор, source-link, license-link by-sa/3.0 и указанные изменения. Это не проверка production.",
+      "checkedAt": "2026-10-08"
     }
   ],
   "findingsClosed": [
@@ -55,55 +67,219 @@
     "Схема срока больше не задаёт недоказанный отсчёт 20–60 дней после одобрения.",
     "Добавлены действия денежной выплаты и ограничения платной услуги.",
     "Уточнены ограничения отмены в день покупки; введённое слово уже адресно заменено.",
-    "Узкое исключение exact slug даёт none; независимое сравнение с базой подтвердило неизменность 16 соседних URL и общебрендового kupibilet-2026."
+    "Узкое исключение exact slug даёт none; независимое сравнение с базой подтвердило неизменность 16 соседних URL и общебрендового kupibilet-2026.",
+    "Свежий RED Helvetica для обычной кириллицы закрыт 08.10: автор встроил корректные cyrillic/latin WOFF2, все 51 SVG text-узел независимо проверены CDP, четыре схемы осмотрены при 402/1280."
   ],
   "risks": [
-    "Реальный заказ, исполнение сроков, сумма удержаний и возврат денег рецензентом не проверялись.",
-    "Справка платной услуги неоднозначно описывает компенсацию возвратного тарифа; нужен письменный расчёт заказа.",
-    "Сборы и услуга имеют reviewAfter 2026-10-14; опубликованные правила способны измениться.",
-    "SVG осмотрены в исходном размере; читаемость мелких подписей и шрифты внутри полного рендера 402/1280 не доказаны.",
-    "Публичную attribution на /legal/photos/ необходимо подтвердить из финальной сборки и после выкладки.",
-    "Классификация none независимо подтверждена в исходниках; фактические data-monetization-intent и отсутствие assignment требуют проверки DOM из финальной сборки и live.",
-    "Свежие GSC/Вебмастер и собственная позиция не измерены; высокая конкурентность и рыночный спрос не доказывают трафик или доход."
+    "Реальный заказ, исполнение сроков поддержки, конкретная сумма удержаний и возврат денег автором и рецензентом не проверены.",
+    "Справка платной услуги содержит противоречащие описания компенсации возвратного тарифа; нужен письменный расчёт заказа.",
+    "Сборы и услуга пересматриваются 15.10.2026, сроки 08.11.2026; правила могут измениться.",
+    "Custom Golos подтверждён для обычных букв и цифр; ≥/→/₽ используют платформенный fallback. Их реальный вид проверен в четырёх схемах на 402/1280, дефекта читаемости или канона не обнаружено; allCustom для этих SVG не заявлен.",
+    "Фактический preview intent=none и пустые experiment-id/kind/assignment-unit подтверждены; полный браузерный hook, CI и production QA остаются обязательными.",
+    "Публичные credits подтверждены в локальном preview, после выкладки нужно проверить production.",
+    "Рыночный спрос и предоставленный свежий GSC-снимок не доказывают трафик или выручку нового URL; прогноз не установлен."
   ],
   "status": "content_approved_pending_release_checks",
   "proseHash": "4959ac5e0059daf0",
-  "baselineCommit": "192641a4f4622b3fd91a474144568bbc55e73295",
+  "baselineCommit": "6739b8cc388d59083bdc2d608cce635df1436e65",
   "author": "Codex (root)",
   "narrowCodeReview": {
-    "reviewer": "Codex (article_review_20261007)",
-    "reviewedAt": "2026-10-07",
+    "reviewer": "Codex (article_review_20261008)",
+    "reviewedAt": "2026-10-08",
     "paths": [
       "src/data/monetization.js",
       "tests/monetization-contract.test.mjs"
     ],
     "sourceSha256": "9160608bf98b7b27365df845a0317d7b92cf2948c171a1de294f5d00f3c41906",
     "testSha256": "cccdd4ac74dffe58360d58251e5988dfdd6f6101557be78a1401e78bb95023a0",
-    "scope": "Только законченная дельта классификации после редакционного review. Проза, оценки, денежные условия и старые статьи не переоценивались.",
-    "verdict": "approved_sources_pending_full_hook_build_dom_live",
+    "scope": "Законченная дельта exact-slug классификации и её использование Layout; денежные URL и атрибуция не меняются.",
+    "verdict": "approved_code_and_preview_dom_pending_full_hook_ci_live",
     "checks": {
-      "baselineCommit": "192641a4f4622b3fd91a474144568bbc55e73295",
+      "baselineCommit": "6739b8cc388d59083bdc2d608cce635df1436e65",
       "baselineIntent": "medium",
       "finalIntent": "none",
       "targetVariants": 3,
-      "unchangedNeighbors": 16,
+      "blogRoutesCompared": 122,
+      "unchangedBlogRoutes": 121,
       "brandOverviewIntent": "medium",
       "aviasalesIntent": "high",
       "insuranceIntent": "high",
       "perseidsIntent": "none",
-      "independentCommand": "node --test --test-reporter=dot tests/monetization-contract.test.mjs tests/monetization-report.test.mjs",
+      "independentCommand": "node --test --test-reporter=spec tests/monetization-contract.test.mjs tests/monetization-report.test.mjs",
       "independentResult": {
         "exitCode": 0,
         "pass": 54,
-        "fail": 0
+        "fail": 0,
+        "skip": 0
       },
-      "parentLog": ".run/monetization-unit-final.log"
+      "preview": {
+        "url": "http://localhost:4379/blog/kupibilet-vozvrat-bileta-2026/",
+        "width": 402,
+        "intent": "none",
+        "experimentId": "",
+        "experimentKind": "",
+        "assignmentUnit": "",
+        "bodyExternalLinks": 0
+      }
     },
-    "moneyAndAuthorization": "Изменена только классификация одного нового справочного slug; perseidy и его прежние метрики сохранены. Партнёрские URL, суммы, расчёт комиссии, атрибуционные идентификаторы и авторизационные проверки не менялись; нового пути оплаты или доступа нет. none в Layout отключает experiment assignment по существующему условию. Это вывод по исходникам, не наблюдение DOM.",
+    "moneyAndAuthorization": "Только один новый справочный slug. Партнёрские URL, erid/marker/sub_id, суммы, комиссии и доступ не менялись; платёж/авторизация не добавлены. none использует существующее раннее условие Layout. Отсутствие фактического assignment-события не выдаётся за записанный event trace.",
     "limits": [
-      "Полный hook обязателен из-за src/data и tests; его результат этим review не подтверждён.",
-      "Build, DOM и live не запускались.",
-      "Отдельный новостной CI не подтверждает этот смешанный diff."
+      "Полный hook смешанной ветки обязателен из-за src/data и tests.",
+      "CI, deploy и production этим review не подтверждены."
+    ]
+  },
+  "blockingFindings": [],
+  "assessmentBasis": {
+    "topic": "8.5: отдельная после-покупочная задача; нет прогноза своего поиска.",
+    "facts": "9: шесть свежих первичек и честное противоречие, без гарантии исполнения.",
+    "visuals": "7.5: четыре смысловые светлые схемы и корректная обложка; исправленный custom Golos подтверждён фактически, все схемы читаются на 402/1280. Иллюстрации не заменяют отсутствующий собственный заказ и первичную квитанцию.",
+    "experience": "4: собственный возврат и общение с поддержкой не подтверждены.",
+    "internalLinks": "9: два входящих контекста, три разных исходящих ответа.",
+    "legal": "8.5: услуги ограничены условиями заказа, лицензия и публичная атрибуция соблюдены в preview; полного правового исследования нет.",
+    "overall": "8: полезное объединение процедуры и ограничений, не арифметическое среднее; исправляемых редакционных блокеров после visual GREEN нет, обязательные release-гейты остаются."
+  },
+  "reviewReport": ".run/article-independent-review-2026-10-08.md",
+  "closedBlockingFindings": [
+    {
+      "id": "svg-cyrillic-fallback",
+      "paths": [
+        "src/content/blog/_images/kupibilet-vozvrat-bileta-2026/refund-choice.svg",
+        "src/content/blog/_images/kupibilet-vozvrat-bileta-2026/request-states.svg",
+        "src/content/blog/_images/kupibilet-vozvrat-bileta-2026/refund-timeline.svg",
+        "src/content/blog/_images/kupibilet-vozvrat-bileta-2026/paid-return-path.svg"
+      ],
+      "condition": "unicode-range excludes U+0410–U+044F",
+      "redEvidence": {
+        "url": "http://localhost:4379/_astro/refund-choice.BAToexlp_18RP5H.svg",
+        "method": "CDP CSS.getPlatformFontsForNode",
+        "nodeId": 7,
+        "text": "С чего начать возврат",
+        "familyName": "Helvetica",
+        "postScriptName": "Helvetica",
+        "isCustomFont": false,
+        "glyphCount": 21
+      },
+      "closeWhen": "Финальные SVG реально рисуют обычную кириллицу custom Golos; все четыре схемы читаются и не обрезаны на 402/1280.",
+      "closedAt": "2026-10-08",
+      "result": "GREEN: ordinary Cyrillic and Latin custom Golos Text; all four article diagrams readable without clipping at 402/1280; special-symbol fallback disclosed."
+    }
+  ],
+  "visualValidation": {
+    "reviewer": "Codex (article_review_20261008)",
+    "checkedAt": "2026-10-08",
+    "via": "Own normal Chrome tab through CUA; CDP CSS.getPlatformFontsForNode for every SVG text node; article screenshots at 402x900 and 1280x900",
+    "result": "PASS",
+    "plainCyrillicFont": "Golos Text",
+    "specialSymbolFallbackAccepted": true,
+    "note": "All ordinary Cyrillic and Latin letters and digits use custom Golos Text. Four rendered special-symbol glyphs fall back to platform fonts and remain readable; allCustom is false where reported.",
+    "page": {
+      "url": "http://localhost:4379/blog/kupibilet-vozvrat-bileta-2026/",
+      "viewportWidths": [
+        402,
+        1280
+      ],
+      "scrollWidths": [
+        402,
+        1280
+      ],
+      "allFourImagesLoaded": true,
+      "noHorizontalOverflow": true,
+      "noClipping": true
+    },
+    "diagrams": [
+      {
+        "path": "src/content/blog/_images/kupibilet-vozvrat-bileta-2026/refund-choice.svg",
+        "sourceSha256": "796eb61f20a1b9f07c002f3d36eb2cc82bf4a260c70347f660c65330316daac6",
+        "builtUrl": "http://localhost:4379/_astro/refund-choice.BFLR_HCP_18RP5H.svg",
+        "textNodes": 9,
+        "customFamilyName": "Golos Text",
+        "customGlyphs": 330,
+        "allCustom": false,
+        "fallbackFonts": [
+          {
+            "familyName": "Helvetica",
+            "glyphCount": 1,
+            "isCustomFont": false,
+            "symbol": "≥"
+          }
+        ],
+        "mobileWidth": 357.1953125,
+        "desktopWidth": 480,
+        "desktopHeight": 600,
+        "visuallyCheckedWidths": [
+          402,
+          1280
+        ]
+      },
+      {
+        "path": "src/content/blog/_images/kupibilet-vozvrat-bileta-2026/request-states.svg",
+        "sourceSha256": "72bd5422a294c7f09140d7bd6da52c62322c1fc6015edb26da68a28515348aef",
+        "builtUrl": "http://localhost:4379/_astro/request-states.C-ENjWoc_o5fAk.svg",
+        "textNodes": 14,
+        "customFamilyName": "Golos Text",
+        "customGlyphs": 371,
+        "allCustom": true,
+        "fallbackFonts": [],
+        "mobileWidth": 357.1953125,
+        "desktopWidth": 444.4375,
+        "desktopHeight": 600,
+        "visuallyCheckedWidths": [
+          402,
+          1280
+        ]
+      },
+      {
+        "path": "src/content/blog/_images/kupibilet-vozvrat-bileta-2026/refund-timeline.svg",
+        "sourceSha256": "ea19fa8aa2ca3d749270c6829b53716f86b458d6621905aa4e7750a89961a207",
+        "builtUrl": "http://localhost:4379/_astro/refund-timeline.y3P-ulto_B1SuU.svg",
+        "textNodes": 13,
+        "customFamilyName": "Golos Text",
+        "customGlyphs": 348,
+        "allCustom": false,
+        "fallbackFonts": [
+          {
+            "familyName": "Lucida Grande",
+            "glyphCount": 2,
+            "isCustomFont": false,
+            "symbol": "→"
+          }
+        ],
+        "mobileWidth": 357.1953125,
+        "desktopWidth": 468.75,
+        "desktopHeight": 600,
+        "visuallyCheckedWidths": [
+          402,
+          1280
+        ]
+      },
+      {
+        "path": "src/content/blog/_images/kupibilet-vozvrat-bileta-2026/paid-return-path.svg",
+        "sourceSha256": "0a2d5932f86aebb4de1ae13450a7c8eecc11430446da63232bf736e39cb37a38",
+        "builtUrl": "http://localhost:4379/_astro/paid-return-path.Ca1ZB9g8_Z1Rw6U5.svg",
+        "textNodes": 15,
+        "customFamilyName": "Golos Text",
+        "customGlyphs": 482,
+        "allCustom": false,
+        "fallbackFonts": [
+          {
+            "familyName": "STIX Two Math",
+            "glyphCount": 1,
+            "isCustomFont": false,
+            "symbol": "₽"
+          }
+        ],
+        "mobileWidth": 357.1953125,
+        "desktopWidth": 447.7578125,
+        "desktopHeight": 600,
+        "visuallyCheckedWidths": [
+          402,
+          1280
+        ]
+      }
+    ],
+    "limits": [
+      "Local preview only; this is not full Playwright coverage or production verification.",
+      "Readability is reviewer observation, not a measurement of every possible device."
     ]
   }
 }
