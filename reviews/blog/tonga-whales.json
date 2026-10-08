@@ -1,25 +1,40 @@
 {
   "schemaVersion": 1,
   "slug": "tonga-whales",
-  "reviewer": "codex-gpt-6-astra-final-reviewer",
-  "reviewedAt": "2026-10-06",
-  "status": "approved",
+  "reviewer": "codex-editorial-review-20261008",
+  "reviewedAt": "2026-10-08T15:15:34.305Z",
+  "status": "approved_with_limits",
+  "reviewScope": "Независимо прочитана вся проза, title, description/TLDR и подписи готового батча. После исправлений перечитаны изменённые части и смысловые зависимости. Проверка редакционная; сборка, полный браузерный рендер, CI, публикация и live QA не входят в этот вывод.",
   "qualityScore": {
     "topic": 8.5,
     "facts": 8.2,
-    "visuals": 8.0,
+    "visuals": 8,
     "experience": 7.6,
     "internalLinks": 8,
     "legal": 8.2,
-    "overall": 8.0,
-    "ceiling": "Потолок 8,4: год поездки, число выходов и личные расходы неизвестны; мобильный рендер новой подписи не проверен."
+    "overall": 8,
+    "ceiling": "Потолок 8,0/10: реальные авторские фото и рассказ дают опыт встречи с китами, но год поездки, число выходов и личные расходы не установлены."
   },
-  "rationale": "Замечание устранено: подпись видео на строке 135 описывает только сюжет. Подпись обложки и подписи всех четырёх фотографий также описывают кадры и соответствуют .claude/rules/illustrations.md:16–18. Личное происхождение материалов остаётся в отдельной прозе на строке 55. Оценка предыдущей рецензии сохранена.",
-  "findings": [],
+  "proseHash": "559dec2978c29b6a",
+  "sourceSha256": "efd36923e2b292881bc277ec6f20ec459d1c97cd4ec8a45f2921173ec982db67",
+  "rationale": "В тексте есть конкретные ограничения выхода к китам, сезон и неопределённость встречи; четыре авторских кадра и видео поддерживают личную часть. Подписи описывают сцены без механического объяснения редакционного процесса. Неизвестные год, число выходов и расходы не восполнены выдумкой, гарантированный контакт или безопасность не обещаны.",
+  "blockingIssues": [],
   "risks": [
-    "Мобильный рендер обновлённой подписи не проверен.",
-    "В статье пока отсутствуют reviewed, reviewRef и qualityScore для итогового редакционного гейта.",
-    "CI, деплой и live не проверены; цены и условия въезда требуют повторной проверки перед выпуском."
+    "Год поездки, число выходов и личные расходы не подтверждены.",
+    "Условия операторов и ограничения встреч требуют сверки перед бронированием; новая покупка или выход на воду не выполнены."
   ],
-  "proseHash": "2c19c07f09b6d3aa"
+  "verification": {
+    "fullProseRead": true,
+    "changedFragmentsReadAfterCorrections": true,
+    "firstPersonTravelOrTransactionInvented": false,
+    "renderedBrowserQa": false,
+    "ciDeployLive": false,
+    "previousFactsRecheckedWholesale": false
+  },
+  "previousArtifact": {
+    "reviewer": "codex-gpt-6-astra-final-reviewer",
+    "reviewedAt": "2026-10-06",
+    "proseHash": "2c19c07f09b6d3aa"
+  },
+  "sourceSha256Scope": "Full source bytes read for this editorial review; qualityScore frontmatter will be copied by author afterward. proseHash is the canonical final-prose binding."
 }

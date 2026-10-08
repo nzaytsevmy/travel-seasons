@@ -2,33 +2,83 @@
   "schemaVersion": 1,
   "slug": "2026-10-08-old-fall-river-road-season-closure",
   "score": 4,
-  "reviewer": "codex-news-review-20261008",
-  "reviewedAt": "2026-10-08",
-  "sha256": "0961d673631827a011d76d4afb98ed0495228438fe9cd9b55f1439fc3925772b",
-  "rationale": "Сезонное закрытие автомобильной дороги и чередование полных закрытий с доступом пешком меняют маршрут посетителя Роки-Маунтин. Это нишевый парк, оценка 4. Проверены все четыре периода, отдельная Trail Ridge Road и ограничение собак самой дорогой. Новость не превращает пешеходное окно 10–12 октября в разрешение проезда и не обещает погоду или открытие соседних трасс.",
-  "risks": [
-    "Сезонное закрытие машин не означает закрытие всей территории парка или Trail Ridge Road.",
-    "10–12 октября разрешены только объявленные немоторизованные способы; 13–16 октября снова полное закрытие.",
-    "План доступа 17 октября и погодные условия необходимо перепроверить перед выходом."
-  ],
+  "reviewer": "codex-editorial-review-20261008",
+  "reviewedAt": "2026-10-08T15:15:34.305Z",
+  "sha256": "ee19d9d40fabbfb4d49df5530eb71bb37dc89847200cddb9afb07feda8604871",
+  "sha256Scope": "full Markdown file bytes",
+  "contentHash": "d4a0e5e222b936f83a6f6557ab202031106b2c2975dd7d8ecc8f4901156002e8",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "proseHash": "d4a0e5e222b936f83a6f6557ab202031106b2c2975dd7d8ecc8f4901156002e8",
+  "proseHashScope": "same as contentHash",
+  "rationale": "Меняется конкретная дорога и даты доступной прогулки в Роки-Маунтин, уровень 4 по RUBRIC. Автомобильное сезонное закрытие отделено от окон для пеших и велосипедных посетителей; дни работ и 17 октября сверены с NPS. Отдельный режим Trail Ridge не превращён в закрытие всего парка, а архивная фотография дороги не свидетельствует о текущей погоде.",
   "blockingIssues": [],
-  "evidence": [
-    {
-      "url": "https://www.nps.gov/romo/planyourvisit/road_status.htm",
-      "checkedOn": "2026-10-08",
-      "finding": "NPS: машины закрыты на сезон; до 9 октября включительно все способы закрыты, 10–12 октября пешком/велосипеды/собаки на поводке, 13–16 октября все закрыты, с 17 октября немоторизованный зимний доступ. Велосипеды и собаки остаются на дороге, не на боковых тропах.",
-      "method": "Свежий текст NPS от 8 октября прочитан отдельно; официальная страница также независимо открыта через web.run и подтверждает эти интервалы.",
-      "artifact": ".run/sources-2026-10-08/old-fall-river.json",
-      "artifactSha256": "4c7270671171af4a08a7b4b328534fb39df4a7e92363a61844af254bf38ae488",
-      "updatedOn": "2026-10-06"
-    },
-    {
-      "url": "https://commons.wikimedia.org/wiki/File:Fall_River_Road.jpg",
-      "checkedOn": "2026-10-08",
-      "finding": "Просмотрена настоящая грунтовая Fall River Road с изгибом среди леса. Commons: Fall River Road, Footwarrior, 13.07.2012, CC BY-SA 3.0, исходный кадр 1280×960. Подпись называет архив, а не текущие условия. Это финальный кадр дороги, не ранее отклонённая хижина или недостаточно широкий пример.",
-      "method": "Локальный финальный JPEG независимо просмотрен глазами; сведения автора, даты, названия и лицензии независимо получены запросом Commons API 08.10.2026. Метаданные открытой лицензии проверены отдельно от картинки."
-    }
+  "risks": [
+    "Это редакторское ревью источника, смысла и фотографии; свежая проверка Commons лицензии/кредитов, CI иliveQA не заявлены."
   ],
+  "reviewScope": "Независимо прочитана вся проза, title, description/TLDR и подписи готового батча. После исправлений перечитаны изменённые части и смысловые зависимости. Проверка редакционная; сборка, полный браузерный рендер, CI, публикация и live QA не входят в этот вывод.",
+  "evidence": {
+    "primarySource": {
+      "url": "https://www.nps.gov/romo/planyourvisit/road_status.htm",
+      "method": "web primary page; updateOct6",
+      "checkedAt": "2026-10-08T15:15:34.305Z",
+      "confirmed": [
+        "allusesclosedthroughOct9",
+        "foot/bike/leashedpetsOct10–12",
+        "allusesclosedOct13–16",
+        "winterfoot/bike/petsfromOct17",
+        "bike/pets road only"
+      ]
+    },
+    "photo": {
+      "viewedByThisReviewer": true,
+      "scope": "Final repositoryJPG visually inspected; location/event attribution assessed in prose and metadata."
+    },
+    "previousSourceAndImageEvidence": {
+      "reviewer": "codex-news-review-20261008",
+      "reviewedAt": "2026-10-08",
+      "evidence": [
+        {
+          "url": "https://www.nps.gov/romo/planyourvisit/road_status.htm",
+          "checkedOn": "2026-10-08",
+          "finding": "NPS: машины закрыты на сезон; до 9 октября включительно все способы закрыты, 10–12 октября пешком/велосипеды/собаки на поводке, 13–16 октября все закрыты, с 17 октября немоторизованный зимний доступ. Велосипеды и собаки остаются на дороге, не на боковых тропах.",
+          "method": "Свежий текст NPS от 8 октября прочитан отдельно; официальная страница также независимо открыта через web.run и подтверждает эти интервалы.",
+          "artifact": ".run/sources-2026-10-08/old-fall-river.json",
+          "artifactSha256": "4c7270671171af4a08a7b4b328534fb39df4a7e92363a61844af254bf38ae488",
+          "updatedOn": "2026-10-06"
+        },
+        {
+          "url": "https://commons.wikimedia.org/wiki/File:Fall_River_Road.jpg",
+          "checkedOn": "2026-10-08",
+          "finding": "Просмотрена настоящая грунтовая Fall River Road с изгибом среди леса. Commons: Fall River Road, Footwarrior, 13.07.2012, CC BY-SA 3.0, исходный кадр 1280×960. Подпись называет архив, а не текущие условия. Это финальный кадр дороги, не ранее отклонённая хижина или недостаточно широкий пример.",
+          "method": "Локальный финальный JPEG независимо просмотрен глазами; сведения автора, даты, названия и лицензии независимо получены запросом Commons API 08.10.2026. Метаданные открытой лицензии проверены отдельно от картинки."
+        }
+      ],
+      "checks": {
+        "capsuleWords": 50,
+        "bodyWords": 173,
+        "titleChars": 51,
+        "clipTitle": "Роки-Маунтин: Old Fall River Road закрыта для машин",
+        "internalLink": "/usa/",
+        "internalLinkStatus": 200,
+        "internalLinkEvidence": ".run/deep-links-2026-10-08.json",
+        "internalLinkMethod": "Прочитан свежий ответ автора с фактическим HTTP 200 от 8 октября; анкор независимо сопоставлен с целевым материалом.",
+        "photoViewed": true,
+        "photoSha256": "6dd4955d3e7f35ef35e3bb58c8d814a96561f3bc883a04e323157fedc9be1d2c",
+        "photoFinding": "Просмотрена настоящая грунтовая Fall River Road с изгибом среди леса. Commons: Fall River Road, Footwarrior, 13.07.2012, CC BY-SA 3.0, исходный кадр 1280×960. Подпись называет архив, а не текущие условия. Это финальный кадр дороги, не ранее отклонённая хижина или недостаточно широкий пример.",
+        "publicAttribution": "Проверена реальная publicPhotoCredits с импортируемыми blog/_images/**/_credits.json и 11 финальными заметками: запись содержит автора, название, Commons, адрес лицензии и сведения о JPEG. Итоговый HTML /legal/photos/ после сборки остаётся публикационным гейтом.",
+        "editorialCriteria": {
+          "changesPlans": "Да: исключён автомобильный проезд, остаются отдельные окна прогулок.",
+          "surprisingNature": "Нет: практический доступ в парк.",
+          "concreteAndVerifiable": "Да: отдельная дорога и точные интервалы.",
+          "lastsLongerThanWeek": "Да: автомобильное закрытие на сезон продолжается зимой."
+        },
+        "selectionKind": "NEW",
+        "languageBannedWords": [],
+        "sourcesArray": true,
+        "scope": "Независимое редакторское ревью конечного текста, дат, единиц, статуса, сроков, ссылки, финального JPEG и прав. Без local build/Playwright, CI, публикации и live-проверки нового выпуска."
+      }
+    }
+  },
   "lifecycle": {
     "decision": "NEW",
     "status": "действует",
@@ -37,30 +87,13 @@
     "reason": "Перед заявленным пешеходным окном проверить NPS и погоду; дальнейшие интервалы сохранять как объявленные."
   },
   "checks": {
-    "capsuleWords": 50,
-    "bodyWords": 173,
-    "titleChars": 51,
-    "clipTitle": "Роки-Маунтин: Old Fall River Road закрыта для машин",
-    "internalLink": "/usa/",
-    "internalLinkStatus": 200,
-    "internalLinkEvidence": ".run/deep-links-2026-10-08.json",
-    "internalLinkMethod": "Прочитан свежий ответ автора с фактическим HTTP 200 от 8 октября; анкор независимо сопоставлен с целевым материалом.",
+    "fullProseRead": true,
+    "finalTldrRead": true,
+    "tldrWords": 48,
+    "primarySourceRead": true,
     "photoViewed": true,
-    "photoSha256": "6dd4955d3e7f35ef35e3bb58c8d814a96561f3bc883a04e323157fedc9be1d2c",
-    "photoFinding": "Просмотрена настоящая грунтовая Fall River Road с изгибом среди леса. Commons: Fall River Road, Footwarrior, 13.07.2012, CC BY-SA 3.0, исходный кадр 1280×960. Подпись называет архив, а не текущие условия. Это финальный кадр дороги, не ранее отклонённая хижина или недостаточно широкий пример.",
-    "publicAttribution": "Проверена реальная publicPhotoCredits с импортируемыми blog/_images/**/_credits.json и 11 финальными заметками: запись содержит автора, название, Commons, адрес лицензии и сведения о JPEG. Итоговый HTML /legal/photos/ после сборки остаётся публикационным гейтом.",
-    "editorialCriteria": {
-      "changesPlans": "Да: исключён автомобильный проезд, остаются отдельные окна прогулок.",
-      "surprisingNature": "Нет: практический доступ в парк.",
-      "concreteAndVerifiable": "Да: отдельная дорога и точные интервалы.",
-      "lastsLongerThanWeek": "Да: автомобильное закрытие на сезон продолжается зимой."
-    },
-    "selectionKind": "NEW",
-    "languageBannedWords": [],
-    "sourcesArray": true,
-    "scope": "Независимое редакторское ревью конечного текста, дат, единиц, статуса, сроков, ссылки, финального JPEG и прав. Без local build/Playwright, CI, публикации и live-проверки нового выпуска."
-  },
-  "contentHash": "1980581417359598403bb766d1249db755c6c4c1d02f557c9e1dd35ef7b522d6",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256Scope": "full Markdown file bytes"
+    "independentReviewer": true,
+    "commonsLicenseRechecked": false,
+    "buildBrowserCiLive": false
+  }
 }

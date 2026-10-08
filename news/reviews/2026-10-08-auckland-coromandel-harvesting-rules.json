@@ -2,33 +2,82 @@
   "schemaVersion": 1,
   "slug": "2026-10-08-auckland-coromandel-harvesting-rules",
   "score": 4,
-  "reviewer": "codex-news-review-20261008",
-  "reviewedAt": "2026-10-08",
-  "sha256": "233dc9ca7ce213ce603050adfd0698a79087190af3bb1429251f227d22ecda25",
-  "rationale": "Официальное решение меняет действия посетителя на конкретных участках побережья с 1 ноября, поэтому для нишевой Новой Зеландии оценка 4. Решение 8 октября не выдано за действующий запрет. Текст сохраняет видовые исключения, лимиты осьминогов и крабов, глубинную границу и прежние локальные запреты; из ограничения сбора не выведено закрытие всех пляжей.",
-  "risks": [
-    "Фронтматтер должен оставаться «принято, не вступило» до свежей проверки 1 ноября.",
-    "Граница у глубины двух метров движется с приливом; для конкретного места необходима официальная карта.",
-    "Исключённый из нового запрета вид не отменяет существующий местный запрет или иной лимит."
-  ],
+  "reviewer": "codex-editorial-review-20261008",
+  "reviewedAt": "2026-10-08T15:15:34.305Z",
+  "sha256": "31886e9a3e19f963af62df246776c60faef4b2e278bb4f2975386a2fa66d6d69",
+  "sha256Scope": "full Markdown file bytes",
+  "contentHash": "7e29499bfe660db8d8a197ae1fc1e06ccb23e8ba2f3f1162d7906f0e2e32abdd",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "proseHash": "7e29499bfe660db8d8a197ae1fc1e06ccb23e8ba2f3f1162d7906f0e2e32abdd",
+  "proseHashScope": "same as contentHash",
+  "rationale": "Локальные правила меняют допустимые действия путешественника на указанных берегах, поэтому 4 по RUBRIC. Дата 01 ноября, приливная граница до 2 м, отдельные пределы для осьминогов и крабов и сохранение местных закрытий сверены с MPI. Запрет сбора не превращён в закрытие побережья; фото Хахеи не выдаётся за карту ограничений.",
   "blockingIssues": [],
-  "evidence": [
-    {
-      "url": "https://www.mpi.govt.nz/consultations/review-of-measures-for-shore-based-shellfish-harvesting-in-the-auckland-coromandel-area",
-      "publishedOn": "2026-10-08",
-      "checkedOn": "2026-10-08",
-      "finding": "Решение министра от 8 октября вводит ограничения 1 ноября 2026 года в обозначенных прибрежных районах и на Уаихеке. Граница от среднего уровня полной воды до глубины 2 м; таблица сохраняет исключения: осьминог 1 в день, крабы 10. Ранее действовавшие локальные ограничения остаются.",
-      "method": "Независимо прочитаны раздел решения и таблица на живой официальной странице в обычном Chrome через cua_repl; отдельно прочитан сохранённый фактический DOM. JS-only серверный ответ не использован как доказательство.",
-      "artifact": "news/snapshots/8702bd622a0cb206.json",
-      "artifactSha256": "9a370234feb0069cf729cf95ae5ab9a9a3339742ba2f5c018e4a02045c7fad3a"
-    },
-    {
-      "url": "https://commons.wikimedia.org/w/index.php?curid=64475517",
-      "checkedOn": "2026-10-08",
-      "finding": "Просмотрено скалистое побережье Хахеи на Короманделе. Commons: Spectacular coast - Seakayaking from Hahei, New Zealand (7078993977), Takver from Australia, 11.04.2012, CC BY-SA 2.0. Подпись не представляет фотографию картой ограничений.",
-      "method": "Локальный финальный JPEG независимо просмотрен глазами; сведения автора, даты, названия и лицензии независимо получены запросом Commons API 08.10.2026. Метаданные открытой лицензии проверены отдельно от картинки."
-    }
+  "risks": [
+    "Это редакторское ревью источника, смысла и фотографии; свежая проверка Commons лицензии/кредитов, CI иliveQA не заявлены."
   ],
+  "reviewScope": "Независимо прочитана вся проза, title, description/TLDR и подписи готового батча. После исправлений перечитаны изменённые части и смысловые зависимости. Проверка редакционная; сборка, полный браузерный рендер, CI, публикация и live QA не входят в этот вывод.",
+  "evidence": {
+    "primarySource": {
+      "url": "https://www.mpi.govt.nz/consultations/review-of-measures-for-shore-based-shellfish-harvesting-in-the-auckland-coromandel-area",
+      "method": "Own IAB primary page after web403",
+      "checkedAt": "2026-10-08T15:15:34.305Z",
+      "confirmed": [
+        "effective2026-11-01",
+        "mean high-water to2m; tidal boundary",
+        "species limits1octopus/day and10crabs/day separately",
+        "prior local restrictions remain"
+      ]
+    },
+    "photo": {
+      "viewedByThisReviewer": true,
+      "scope": "Final repositoryJPG visually inspected; location/event attribution assessed in prose and metadata."
+    },
+    "previousSourceAndImageEvidence": {
+      "reviewer": "codex-news-review-20261008",
+      "reviewedAt": "2026-10-08",
+      "evidence": [
+        {
+          "url": "https://www.mpi.govt.nz/consultations/review-of-measures-for-shore-based-shellfish-harvesting-in-the-auckland-coromandel-area",
+          "publishedOn": "2026-10-08",
+          "checkedOn": "2026-10-08",
+          "finding": "Решение министра от 8 октября вводит ограничения 1 ноября 2026 года в обозначенных прибрежных районах и на Уаихеке. Граница от среднего уровня полной воды до глубины 2 м; таблица сохраняет исключения: осьминог 1 в день, крабы 10. Ранее действовавшие локальные ограничения остаются.",
+          "method": "Независимо прочитаны раздел решения и таблица на живой официальной странице в обычном Chrome через cua_repl; отдельно прочитан сохранённый фактический DOM. JS-only серверный ответ не использован как доказательство.",
+          "artifact": "news/snapshots/8702bd622a0cb206.json",
+          "artifactSha256": "9a370234feb0069cf729cf95ae5ab9a9a3339742ba2f5c018e4a02045c7fad3a"
+        },
+        {
+          "url": "https://commons.wikimedia.org/w/index.php?curid=64475517",
+          "checkedOn": "2026-10-08",
+          "finding": "Просмотрено скалистое побережье Хахеи на Короманделе. Commons: Spectacular coast - Seakayaking from Hahei, New Zealand (7078993977), Takver from Australia, 11.04.2012, CC BY-SA 2.0. Подпись не представляет фотографию картой ограничений.",
+          "method": "Локальный финальный JPEG независимо просмотрен глазами; сведения автора, даты, названия и лицензии независимо получены запросом Commons API 08.10.2026. Метаданные открытой лицензии проверены отдельно от картинки."
+        }
+      ],
+      "checks": {
+        "capsuleWords": 50,
+        "bodyWords": 171,
+        "titleChars": 55,
+        "clipTitle": "Новая Зеландия ограничит сбор морских животных с ноября",
+        "internalLink": "/blog/new-zealand-guide-2026/",
+        "internalLinkStatus": 200,
+        "internalLinkEvidence": ".run/deep-links-2026-10-08.json",
+        "internalLinkMethod": "Прочитан свежий ответ автора с фактическим HTTP 200 от 8 октября; анкор независимо сопоставлен с целевым материалом.",
+        "photoViewed": true,
+        "photoSha256": "dd9a3a5d42b38673cbaa1336f86087b972c8b4904668d83b14201a24c1563eea",
+        "photoFinding": "Просмотрено скалистое побережье Хахеи на Короманделе. Commons: Spectacular coast - Seakayaking from Hahei, New Zealand (7078993977), Takver from Australia, 11.04.2012, CC BY-SA 2.0. Подпись не представляет фотографию картой ограничений.",
+        "publicAttribution": "Проверена реальная publicPhotoCredits с импортируемыми blog/_images/**/_credits.json и 11 финальными заметками: запись содержит автора, название, Commons, адрес лицензии и сведения о JPEG. Итоговый HTML /legal/photos/ после сборки остаётся публикационным гейтом.",
+        "editorialCriteria": {
+          "changesPlans": "Да: изъятие животных после 1 ноября требует проверки вида и места.",
+          "surprisingNature": "Нет: повод о природоохранном правиле, не о необычной популяции.",
+          "concreteAndVerifiable": "Да: решение, дата, зона и точные исключения.",
+          "lastsLongerThanWeek": "Да: продолжающееся правило с будущим вступлением."
+        },
+        "selectionKind": "NEW",
+        "languageBannedWords": [],
+        "sourcesArray": true,
+        "scope": "Независимое редакторское ревью конечного текста, дат, единиц, статуса, сроков, ссылки, финального JPEG и прав. Без local build/Playwright, CI, публикации и live-проверки нового выпуска."
+      }
+    }
+  },
   "lifecycle": {
     "decision": "NEW",
     "status": "принято, не вступило",
@@ -37,30 +86,13 @@
     "reason": "В день вступления перечитать MPI и карту, затем подтвердить фактическую действующую редакцию правила."
   },
   "checks": {
-    "capsuleWords": 50,
-    "bodyWords": 171,
-    "titleChars": 55,
-    "clipTitle": "Новая Зеландия ограничит сбор морских животных с ноября",
-    "internalLink": "/blog/new-zealand-guide-2026/",
-    "internalLinkStatus": 200,
-    "internalLinkEvidence": ".run/deep-links-2026-10-08.json",
-    "internalLinkMethod": "Прочитан свежий ответ автора с фактическим HTTP 200 от 8 октября; анкор независимо сопоставлен с целевым материалом.",
+    "fullProseRead": true,
+    "finalTldrRead": true,
+    "tldrWords": 43,
+    "primarySourceRead": true,
     "photoViewed": true,
-    "photoSha256": "dd9a3a5d42b38673cbaa1336f86087b972c8b4904668d83b14201a24c1563eea",
-    "photoFinding": "Просмотрено скалистое побережье Хахеи на Короманделе. Commons: Spectacular coast - Seakayaking from Hahei, New Zealand (7078993977), Takver from Australia, 11.04.2012, CC BY-SA 2.0. Подпись не представляет фотографию картой ограничений.",
-    "publicAttribution": "Проверена реальная publicPhotoCredits с импортируемыми blog/_images/**/_credits.json и 11 финальными заметками: запись содержит автора, название, Commons, адрес лицензии и сведения о JPEG. Итоговый HTML /legal/photos/ после сборки остаётся публикационным гейтом.",
-    "editorialCriteria": {
-      "changesPlans": "Да: изъятие животных после 1 ноября требует проверки вида и места.",
-      "surprisingNature": "Нет: повод о природоохранном правиле, не о необычной популяции.",
-      "concreteAndVerifiable": "Да: решение, дата, зона и точные исключения.",
-      "lastsLongerThanWeek": "Да: продолжающееся правило с будущим вступлением."
-    },
-    "selectionKind": "NEW",
-    "languageBannedWords": [],
-    "sourcesArray": true,
-    "scope": "Независимое редакторское ревью конечного текста, дат, единиц, статуса, сроков, ссылки, финального JPEG и прав. Без local build/Playwright, CI, публикации и live-проверки нового выпуска."
-  },
-  "contentHash": "b8018dc1c72a14052a50807d5966c58bebc529a125c2a46354b9628ac2818b6d",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256Scope": "full Markdown file bytes"
+    "independentReviewer": true,
+    "commonsLicenseRechecked": false,
+    "buildBrowserCiLive": false
+  }
 }
