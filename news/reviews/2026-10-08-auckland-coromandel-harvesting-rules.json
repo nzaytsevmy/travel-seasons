@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "slug": "2026-10-08-auckland-coromandel-harvesting-rules",
+  "score": 4,
+  "reviewer": "codex-news-review-20261008",
+  "reviewedAt": "2026-10-08",
+  "sha256": "233dc9ca7ce213ce603050adfd0698a79087190af3bb1429251f227d22ecda25",
+  "rationale": "Официальное решение меняет действия посетителя на конкретных участках побережья с 1 ноября, поэтому для нишевой Новой Зеландии оценка 4. Решение 8 октября не выдано за действующий запрет. Текст сохраняет видовые исключения, лимиты осьминогов и крабов, глубинную границу и прежние локальные запреты; из ограничения сбора не выведено закрытие всех пляжей.",
+  "risks": [
+    "Фронтматтер должен оставаться «принято, не вступило» до свежей проверки 1 ноября.",
+    "Граница у глубины двух метров движется с приливом; для конкретного места необходима официальная карта.",
+    "Исключённый из нового запрета вид не отменяет существующий местный запрет или иной лимит."
+  ],
+  "blockingIssues": [],
+  "evidence": [
+    {
+      "url": "https://www.mpi.govt.nz/consultations/review-of-measures-for-shore-based-shellfish-harvesting-in-the-auckland-coromandel-area",
+      "publishedOn": "2026-10-08",
+      "checkedOn": "2026-10-08",
+      "finding": "Решение министра от 8 октября вводит ограничения 1 ноября 2026 года в обозначенных прибрежных районах и на Уаихеке. Граница от среднего уровня полной воды до глубины 2 м; таблица сохраняет исключения: осьминог 1 в день, крабы 10. Ранее действовавшие локальные ограничения остаются.",
+      "method": "Независимо прочитаны раздел решения и таблица на живой официальной странице в обычном Chrome через cua_repl; отдельно прочитан сохранённый фактический DOM. JS-only серверный ответ не использован как доказательство.",
+      "artifact": "news/snapshots/8702bd622a0cb206.json",
+      "artifactSha256": "9a370234feb0069cf729cf95ae5ab9a9a3339742ba2f5c018e4a02045c7fad3a"
+    },
+    {
+      "url": "https://commons.wikimedia.org/w/index.php?curid=64475517",
+      "checkedOn": "2026-10-08",
+      "finding": "Просмотрено скалистое побережье Хахеи на Короманделе. Commons: Spectacular coast - Seakayaking from Hahei, New Zealand (7078993977), Takver from Australia, 11.04.2012, CC BY-SA 2.0. Подпись не представляет фотографию картой ограничений.",
+      "method": "Локальный финальный JPEG независимо просмотрен глазами; сведения автора, даты, названия и лицензии независимо получены запросом Commons API 08.10.2026. Метаданные открытой лицензии проверены отдельно от картинки."
+    }
+  ],
+  "lifecycle": {
+    "decision": "NEW",
+    "status": "принято, не вступило",
+    "effectiveDate": "2026-11-01",
+    "reviewOn": "2026-11-01",
+    "reason": "В день вступления перечитать MPI и карту, затем подтвердить фактическую действующую редакцию правила."
+  },
+  "checks": {
+    "capsuleWords": 50,
+    "bodyWords": 171,
+    "titleChars": 55,
+    "clipTitle": "Новая Зеландия ограничит сбор морских животных с ноября",
+    "internalLink": "/blog/new-zealand-guide-2026/",
+    "internalLinkStatus": 200,
+    "internalLinkEvidence": ".run/deep-links-2026-10-08.json",
+    "internalLinkMethod": "Прочитан свежий ответ автора с фактическим HTTP 200 от 8 октября; анкор независимо сопоставлен с целевым материалом.",
+    "photoViewed": true,
+    "photoSha256": "dd9a3a5d42b38673cbaa1336f86087b972c8b4904668d83b14201a24c1563eea",
+    "photoFinding": "Просмотрено скалистое побережье Хахеи на Короманделе. Commons: Spectacular coast - Seakayaking from Hahei, New Zealand (7078993977), Takver from Australia, 11.04.2012, CC BY-SA 2.0. Подпись не представляет фотографию картой ограничений.",
+    "publicAttribution": "Проверена реальная publicPhotoCredits с импортируемыми blog/_images/**/_credits.json и 11 финальными заметками: запись содержит автора, название, Commons, адрес лицензии и сведения о JPEG. Итоговый HTML /legal/photos/ после сборки остаётся публикационным гейтом.",
+    "editorialCriteria": {
+      "changesPlans": "Да: изъятие животных после 1 ноября требует проверки вида и места.",
+      "surprisingNature": "Нет: повод о природоохранном правиле, не о необычной популяции.",
+      "concreteAndVerifiable": "Да: решение, дата, зона и точные исключения.",
+      "lastsLongerThanWeek": "Да: продолжающееся правило с будущим вступлением."
+    },
+    "selectionKind": "NEW",
+    "languageBannedWords": [],
+    "sourcesArray": true,
+    "scope": "Независимое редакторское ревью конечного текста, дат, единиц, статуса, сроков, ссылки, финального JPEG и прав. Без local build/Playwright, CI, публикации и live-проверки нового выпуска."
+  },
+  "contentHash": "b8018dc1c72a14052a50807d5966c58bebc529a125c2a46354b9628ac2818b6d",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256Scope": "full Markdown file bytes"
+}
