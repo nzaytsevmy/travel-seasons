@@ -2,71 +2,63 @@
   "schemaVersion": 1,
   "slug": "2026-09-01-new-zealand-visitor-visa-online",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review)",
-  "reviewedAt": "2026-09-24",
-  "reviewTimezone": "Asia/Shanghai",
-  "reviewedAtInstantUTC": "2026-09-23T19:29:37.740Z",
-  "sha256": "2ecaaebcbc30e35e2e421d08489bfcf93d2c10f6b8e4dc15bef29407d3865816",
-  "sourceSha256": "2ecaaebcbc30e35e2e421d08489bfcf93d2c10f6b8e4dc15bef29407d3865816",
-  "status": "pass",
-  "rationale": "UPDATE принят: большинство новых онлайн-заявлений с24Sep в enhanced Immigration Online; старый кабинет не принимает новые заявки именно по этим категориям. Черновики удаляют с8Oct. Норма не выдана за проверку исправности портала. Конкретно меняет подачу заявления, но Новая Зеландия — нишевое направление; оснований автоматически наследовать 5 нет.",
+  "reviewer": "codex-news-review-20261008",
+  "reviewedAt": "2026-10-08",
+  "sha256": "bd03cd02883388cf000b369cc88d1699ea7dcd9c50c331604fad6f6837e12adc",
+  "rationale": "Наступивший 8 октября срок черновиков меняет дальнейшие действия заявителя: неотправленную анкету приходится начинать в обновлённой системе, поданное дело сохраняется в старой. Первичный INZ подтверждает даты и исключения. Текст не утверждает, что рецензент входил в личный кабинет или видел удаление конкретного черновика. Практическое изменение на нишевом направлении соответствует оценке 4.",
   "risks": [
-    "Работу анкеты после авторизации не тестировали. На момент чтения в Новой Зеландии около 06:36 NZST, внутри объявленного окна обслуживания. Перечитанное правило не доказывает отсутствие технического перерыва."
+    "Удаление конкретного черновика и работоспособность личного кабинета после авторизации независимо не проверялись.",
+    "Правило затрагивает перечисленные онлайн-категории; исключения для партнёров и детей граждан Новой Зеландии сохранены."
   ],
   "blockingIssues": [],
-  "scope": "Окончательное независимое lifecycle-ревью текущего текста после авторских исправлений; первички прочитаны24SepShanghai. Без полного повторного исследования старой несвязанной фактуры, без новых фотографий, сборки, браузеров и публикации.",
   "evidence": [
     {
-      "id": "inz-announcement",
       "url": "https://www.immigration.govt.nz/about-us/news-centre/important-visitor-visa-application-form-changes/",
-      "published": "2026-08-11",
-      "checked": "2026-09-24",
-      "access": "web full text + direct HTTP200",
-      "evidence": "lifecycle-sources/inz.html",
-      "excerpt": "From 8 October 2026",
-      "finding": "С 24 сентября новые онлайн-заявления затронутых категорий направляются в enhanced Immigration Online. С 8 октября формы в старой системе закрываются, оставшиеся черновики удаляются. Уже отправленные дела доступны до решения."
+      "checkedOn": "2026-10-08",
+      "finding": "INZ: новые онлайн-заявления перечисленных категорий идут в обновлённую систему с 24 сентября; оставшиеся старые черновики удаляются с 8 октября. Уже поданные заявления доступны до решения, включая документы и ответы. Групповые и сопровождающие перенесены 24 августа.",
+      "method": "Первичная официальная страница независимо открыта через web.run 8 октября; отдельно прочитан свежий сохранённый текст объявления.",
+      "artifact": ".run/sources-2026-10-08/2026-09-01-new-zealand-visitor-visa-online.json",
+      "artifactSha256": "3bbda72ad090b67005e9fae07d108acbf2707d5d8c2aeefeb4e80f2097ae780a",
+      "publishedOn": "2026-08-11"
     },
     {
-      "id": "inz-access",
-      "url": "https://www.immigration.govt.nz/process-to-apply/applying-for-a-visa/applying-online/access-immigration-online/",
-      "published": null,
-      "checked": "2026-09-24",
-      "access": "direct HTTP200; web follow-up timed out",
-      "evidence": "lifecycle-sources/inzAccess.html",
-      "finding": "Страница подтверждает доступ к старым отправленным заявлениям. Баннер, выпущенный 18 сентября, предупреждает о возможной недоступности части форм до 60 минут в окне 06:00–08:00 NZST 24 сентября."
-    },
-    {
-      "id": "inz-visitor",
-      "url": "https://www.immigration.govt.nz/visas/visitor-visa/",
-      "published": null,
-      "checked": "2026-09-24",
-      "access": "web full text",
-      "evidence": "lifecycle-sources/web-evidence-additional.json",
-      "finding": "Кнопка Apply online ведёт на apply.immigration.govt.nz; бумажная подача имеет отдельную дату изменения 1 октября. В заметке лучше прямо ограничить речь онлайн-заявлениями."
+      "url": "https://commons.wikimedia.org/w/index.php?curid=1490369",
+      "checkedOn": "2026-10-08",
+      "finding": "Просмотрен Нельсон и побережье с холма, без узнаваемых лиц. Commons: Nelson New Zealand, Markus Koljonen (Dilaudid), 15.11.2006, CC BY-SA 3.0. Добавленная подпись прямо архивная; исходное название и уменьшение JPEG сохранены в imageChanges.",
+      "method": "Локальный финальный JPEG независимо просмотрен глазами; сведения автора, даты, названия и лицензии независимо получены запросом Commons API 08.10.2026. Метаданные открытой лицензии проверены отдельно от картинки."
     }
   ],
   "lifecycle": {
     "decision": "UPDATE",
-    "checked": "2026-09-24",
-    "reviewOn": "2026-10-08",
-    "reason": "8 октября перечитать INZ о закрытии старых форм и удалении черновиков. При отдельном сообщении о переносе или сбое — раньше. До завершения окна обслуживания не обещать доступность портала.",
-    "effectiveDate": "2026-09-24"
+    "status": "действует",
+    "effectiveDate": "2026-09-24",
+    "reason": "Срок черновиков наступил. Новый обязательный будущий переход данным объявлением не установлен; карточка сохраняет свершившийся порядок без обещания исправности портала."
   },
   "checks": {
-    "datePreserved": true,
-    "addedPreserved": true,
-    "bodyWords": 155,
-    "capsuleWords": 46,
-    "titleChars": 68,
-    "mediaMetadataUnchanged": true,
+    "capsuleWords": 44,
+    "bodyWords": 173,
+    "titleChars": 52,
+    "clipTitle": "Новая Зеландия: срок старых визовых черновиков истёк",
+    "internalLink": "/visa/new-zealand/",
+    "internalLinkStatus": 200,
+    "internalLinkEvidence": ".run/deep-links-2026-10-08.json",
+    "internalLinkMethod": "Прочитан свежий ответ автора с фактическим HTTP 200 от 8 октября; анкор независимо сопоставлен с целевым материалом.",
+    "photoViewed": true,
     "photoSha256": "8cb7abcd7f24a030c832f35a81bf2a0ee1ed840c1b56b7dc60c2604f19a0e482",
-    "photoViewedToday": false,
-    "mediaScope": "Фото/подпись совпадают сHEAD. Это сохранение прежней аттестации, не новое сегодняшнее визуальное/лицензионное ревью."
+    "photoFinding": "Просмотрен Нельсон и побережье с холма, без узнаваемых лиц. Commons: Nelson New Zealand, Markus Koljonen (Dilaudid), 15.11.2006, CC BY-SA 3.0. Добавленная подпись прямо архивная; исходное название и уменьшение JPEG сохранены в imageChanges.",
+    "publicAttribution": "Проверена реальная publicPhotoCredits с импортируемыми blog/_images/**/_credits.json и 11 финальными заметками: запись содержит автора, название, Commons, адрес лицензии и сведения о JPEG. Итоговый HTML /legal/photos/ после сборки остаётся публикационным гейтом.",
+    "editorialCriteria": {
+      "changesPlans": "Да: выбор системы и необходимость начать неотправленную анкету заново.",
+      "surprisingNature": "Нет: визовый порядок.",
+      "concreteAndVerifiable": "Да: первичный INZ, категории и разные сроки.",
+      "lastsLongerThanWeek": "Да: устойчивый порядок работы двух систем."
+    },
+    "selectionKind": "UPDATE",
+    "languageBannedWords": [],
+    "sourcesArray": true,
+    "scope": "Независимое редакторское ревью конечного текста, дат, единиц, статуса, сроков, ссылки, финального JPEG и прав. Без local build/Playwright, CI, публикации и live-проверки нового выпуска."
   },
-  "priorReview": {
-    "reviewer": "Codex (news_lifecycle_review)",
-    "reviewedAt": "2026-09-24T03:27:58.078+08:00",
-    "sha256": "2ecaaebcbc30e35e2e421d08489bfcf93d2c10f6b8e4dc15bef29407d3865816",
-    "scope": "Only prior provenance; not impersonating previous reviewer."
-  }
+  "contentHash": "c7e67849d506cf8fce14db93aa798027b6f1ffe9f3d5a2c522db17a9b3462a5b",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256Scope": "full Markdown file bytes"
 }

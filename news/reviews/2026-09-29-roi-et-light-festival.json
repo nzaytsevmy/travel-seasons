@@ -2,41 +2,72 @@
   "schemaVersion": 1,
   "slug": "2026-09-29-roi-et-light-festival",
   "score": 4,
-  "reviewer": "codex-gpt-6-independent-news-review-20260929",
-  "reviewedAt": "2026-09-29",
-  "rationale": "После доработки есть содержательный выбор даты: 9 октября совмещает открытие, заявленный фейерверк в 19:30 и музыку; музыка также назначена на 10–11 и 17–18 октября. Десять инсталляций и вечерние часы подтверждены двумя релизами TAT. Будущая программа не объявлена состоявшейся, финальный title закончен. Прежняя оценка 2 относилась к другой версии с общими оговорками; новая версия меняет план нишевой поездки и заслуживает 4.",
-  "contentHash": "51a7d393c162a143265336563820386a8b1510e2b8dc4078c94b234a913f95e0",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "reviewer": "codex-news-review-20261008",
+  "reviewedAt": "2026-10-08",
+  "sha256": "7b508c35c87d6755dfac5c238ace248427fb3c811f2b10227bddcd6a83a6889b",
+  "rationale": "Верифицированные даты, часы и отдельные вечера программы меняют выбор дня поездки в нишевый Ройэт, оценка 4. Перепроверка официального TAT 8 октября не нашла содержательного изменения в выбранной фактуре, поэтому это CHECK_ONLY. Фейерверк не распространён на все даты, часы фестиваля не выданы за непрерывный концерт, программа сохранена как анонс до начала события.",
+  "risks": [
+    "Анонс не доказывает, что программа фактически состоялась; возможны изменения организаторов.",
+    "Фейерверк заявлен только на 9 октября в 19:30; музыка отдельно на 9–11 и 17–18 октября.",
+    "Архивный парк со святилищем не является снимком светового фестиваля 2026 года."
+  ],
   "blockingIssues": [],
   "evidence": [
     {
-      "url": "https://www.tatnews.org/2026/09/october-event-and-calendar/",
-      "publishedOn": "2026-09-29",
-      "checkedOn": "2026-09-29",
-      "finding": "Открыт через Codex In-app Browser после двух недоступных web-обращений: 9–18.10.2026, 17:00–00:00, Bueng Phlan Chai, Roi Et."
+      "url": "https://www.tatnews.org/2026/09/tat-illuminates-vijit-thailand-2026-across-three-distinctive-regions/",
+      "checkedOn": "2026-10-08",
+      "finding": "Официальная программа: 9–18 октября, Bueng Phlan Chai, 17:00–00:00, десять инсталляций; фейерверк 9 октября 19:30, музыка 9–11 и 17–18 октября.",
+      "method": "Независимо прочитан содержательный текст свежего извлечения от 08.10.2026; извлечение источника выполнил автор, редакторская проверка выполнена отдельно.",
+      "artifact": ".run/sources-2026-10-08/2026-09-29-roi-et-light-festival.json",
+      "artifactSha256": "2cc88a02c545117a7e5b5dacfa286a8b99fc6750dfa8a1736205a85c20e1b289",
+      "publishedOn": "2026-09-23"
     },
     {
-      "url": "https://www.tatnews.org/2026/09/tat-illuminates-vijit-thailand-2026-across-three-distinctive-regions/",
-      "publishedOn": "2026-09-23",
-      "checkedOn": "2026-09-29",
-      "finding": "Открыт переходом из календаря: 10 инсталляций; фейерверк 09.10 в 19:30; живая музыка 9–11 и 17–18.10. Есть названия инсталляций и используемые эффекты."
+      "url": "https://www.tatnews.org/2026/09/october-event-and-calendar/",
+      "checkedOn": "2026-10-08",
+      "finding": "Октябрьский календарь TAT подтверждает 9–18 октября и площадку. Это повторная проверка прежнего анонса, не новое событие.",
+      "method": "Независимо прочитан содержательный текст свежего извлечения от 08.10.2026; извлечение источника выполнил автор, редакторская проверка выполнена отдельно.",
+      "artifact": ".run/sources-2026-10-08/2026-09-29-roi-et-light-festival.json",
+      "artifactSha256": "2cc88a02c545117a7e5b5dacfa286a8b99fc6750dfa8a1736205a85c20e1b289",
+      "publishedOn": "2026-09-29"
+    },
+    {
+      "url": "https://commons.wikimedia.org/w/index.php?curid=150359676",
+      "checkedOn": "2026-10-08",
+      "finding": "Просмотрено святилище городского столба у Буенг-Пхлан-Чай. Commons: Bueng Phlan Chai Lak mueang, Mapleonade, 15.07.2024, CC BY 4.0. Архивная подпись не выдаёт кадр за фестиваль; исходное название и уменьшение сохранены в импортируемом blog/_images/news-2026-09-29/_credits.json.",
+      "method": "Локальный финальный JPEG независимо просмотрен глазами; сведения автора, даты, названия и лицензии независимо получены запросом Commons API 08.10.2026. Метаданные открытой лицензии проверены отдельно от картинки."
     }
   ],
   "lifecycle": {
-    "reviewOn": "2026-10-08",
-    "reason": "Перед стартом перепроверить программу; при этой проверке назначить возврат на старт/окончание, чтобы анонс сопровождался после 18.10."
+    "decision": "CHECK_ONLY",
+    "reviewOn": "2026-10-09",
+    "reason": "В первый день искать сообщение организаторов о начале и изменениях программы."
   },
   "checks": {
     "capsuleWords": 43,
-    "bodyWords": 164,
+    "bodyWords": 161,
     "titleChars": 53,
     "clipTitle": "Световой фестиваль в Ройэте пройдёт с 9 по 18 октября",
     "internalLink": "/thailand/",
     "internalLinkStatus": 200,
+    "internalLinkEvidence": ".run/deep-links-2026-10-08.json",
+    "internalLinkMethod": "Прочитан свежий ответ автора с фактическим HTTP 200 от 8 октября; анкор независимо сопоставлен с целевым материалом.",
     "photoViewed": true,
     "photoSha256": "b2118bbbda6fc778909d08a5c91492f889c2dbcd54dc16f4fa3e8ffafcf73e93",
-    "photoFinding": "Mapleonade; CC BY 4.0; curid 150359676. Святилище городского столба на острове в озере Буенг-Пхлан-Чай; не тёмная башня и не октябрьский фестиваль.",
-    "publicAttribution": "Original work title, creator, license, source and resize/compression notice retained by existing publicPhotoCredits(records, news) with batch _credits.json. Production rendering remains release gate.",
-    "scope": "Пять переданных заметок; независимое редакторское ревью, факты/даты/clipTitle/ссылки/визуальный смысл/лицензии. Проза не менялась; сборка, browser CLI, PR и push не запускались."
-  }
+    "photoFinding": "Просмотрено святилище городского столба у Буенг-Пхлан-Чай. Commons: Bueng Phlan Chai Lak mueang, Mapleonade, 15.07.2024, CC BY 4.0. Архивная подпись не выдаёт кадр за фестиваль; исходное название и уменьшение сохранены в импортируемом blog/_images/news-2026-09-29/_credits.json.",
+    "publicAttribution": "Проверена реальная publicPhotoCredits с импортируемыми blog/_images/**/_credits.json и 11 финальными заметками: запись содержит автора, название, Commons, адрес лицензии и сведения о JPEG. Итоговый HTML /legal/photos/ после сборки остаётся публикационным гейтом.",
+    "editorialCriteria": {
+      "changesPlans": "Да: выбор вечера фейерверка или музыки и поездка в Ройэт.",
+      "surprisingNature": "Нет: культурное событие.",
+      "concreteAndVerifiable": "Да: место, даты, часы и отдельные части программы.",
+      "lastsLongerThanWeek": "Да в окне исходного анонса: многонедельное планирование и десятидневная программа, до окончания события."
+    },
+    "selectionKind": "CHECK_ONLY",
+    "languageBannedWords": [],
+    "sourcesArray": true,
+    "scope": "Независимое редакторское ревью конечного текста, дат, единиц, статуса, сроков, ссылки, финального JPEG и прав. Без local build/Playwright, CI, публикации и live-проверки нового выпуска."
+  },
+  "contentHash": "409e78cfdbd84d9755634a8b832dabb0ccfefb8651c77bda39a744650a08def2",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "sha256Scope": "full Markdown file bytes"
 }

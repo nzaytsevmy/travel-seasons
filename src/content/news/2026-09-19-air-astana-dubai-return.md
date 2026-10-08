@@ -2,8 +2,8 @@
 title: "Air Astana объявила о рейсах в Дубай с октября"
 date: 2026-09-16
 added: 2026-09-19
-checked: "2026-10-07"
-reviewOn: "2026-10-08"
+checked: "2026-10-08"
+reviewOn: "2026-10-10"
 topic: transport
 impact: high
 score: 3
