@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "slug": "australia-visa-2026",
   "reviewer": "codex-editorial-review-20261008",
-  "reviewedAt": "2026-10-08T17:55:49.036Z",
+  "reviewedAt": "2026-10-08T19:08:33.687Z",
   "status": "approved_with_limits",
-  "reviewScope": "Полное независимое чтение батча ранее завершено08.10.2026. Этот closeout проверяет только конкретные новые фрагменты и их смысловые зависимости после2c193111, title/description при изменении и новые checks/volatileFacts. Применена QUALITY-2026 v3.1 SHA25608b1363373d5827f79de75379701da7708d54bca1fe8e3106f18eee8f4fc3a23; полное повторное чтение, полный браузерный QA, CI, публикация и live здесь не заявлены.",
+  "reviewScope": "Первое полное независимое чтение батча ранее завершено08.10.2026. Этот адресный closeout после1f6f69f4bb5f50a5fc959085dcde6a7e0f91dda3 касается только удаления неподтверждённого рублёвого пересчёта из Australia MDX, structured HowTo и visa-cost-time.svg, связанных банковских формулировок, checks/ceiling и их FAQ/партнёрских зависимостей. Текущий AU MDX прочитан, в новой схеме прочитаны все title/desc/видимые строки; общего повторного ревью, нового браузера, CI/release/live здесь нет. QUALITY-2026 v3.1 SHA25608b1363373d5827f79de75379701da7708d54bca1fe8e3106f18eee8f4fc3a23.",
   "qualityScore": {
     "topic": 8.5,
     "facts": 8.5,
@@ -13,14 +13,14 @@
     "internalLinks": 9,
     "legal": 9,
     "overall": 7.8,
-    "ceiling": "Потолок 7,8/10: ключевые условия подтверждены Home Affairs, но нет собственной подачи; рублёвый эквивалент прежний, текущая процедура центров и банковский платёж не проверены."
+    "ceiling": "Потолок 7,8/10: ключевые условия подтверждены Home Affairs, но нет собственной подачи; текущая процедура центров и банковский платёж не проверены."
   },
-  "proseHash": "adb29ac50de10ae3",
-  "sourceSha256": "56d63e8b7a6d3583cf6bd852d4e1de2cdc144752e0c35e2045652a0fe67c175c",
-  "rationale": "Первичная сверка Home Affairs подтвердила AUD250 и индивидуальное условие8501; статистика сроков не превращена в минимум или гарантию. Текст, HowTo и триSVG согласованы по страховке, биометрии и допрасходам. ПовторныйFAQ о невозвратных билетах снят, смысловая рекомендация осталась в основном тексте. Прежний рублёвый ориентир, отсутствие собственной подачи и банковской транзакции ограничивают оценку.",
+  "proseHash": "70c4a005c73d385f",
+  "sourceSha256": "d8464d27101201b8bff7ad93dd5a0622bc70c435106adce94adc0fa511e0e588",
+  "rationale": "Сбор250AUD одинаков во вступлении, основном разделе, HowTo и схеме. Прежний рублёвый пересчёт снят из текущего текста и структурированных шагов; исторические checks не передатированы. Банковская конвертация и допрасходы отделены от базового сбора без новых цифр или обещания платежа. FAQ и три партнёрских вызова сохраняют прежний смысл и точные аргументы. Новая личная подача, биометрия и транзакция не придуманы; оценка7,8 остаётся прежней.",
   "blockingIssues": [],
   "risks": [
-    "Около 14 900 ₽ — прежний ориентир; свежий курс и банковское списание не проверены.",
+    "Базовый сбор250AUD не определяет полную стоимость: возможные услуги, курс конвертации, комиссия и фактическое списание не измерены; нового рублёвого эквивалента нет.",
     "Процедуру конкретного центра следует брать из запроса департамента; самостоятельная подача, биометрия и результат визы не выполнены."
   ],
   "verification": {
@@ -60,10 +60,10 @@
     }
   ],
   "assetSha256": {
-    "visa-cost-time.svg": "d5bd5d1fb4e93768554d1fa251d746aafedfd4dccaa140f27eb2a9d029f5d0cd",
+    "visa-cost-time.svg": "72741772f8c34e390c41684e0edb8963b487b74a93f9e84160465799925a2910",
     "timeline.svg": "c4a3f3b35ea00a660100d7c0aa88ce0128d0544d4cfb8e667f6a175cfd9c4c66",
     "application-path.svg": "6da94f9e03104be46824e3d7a02eb659f0ea4978bd561ce8f184dc2f015e253a"
   },
-  "assetReviewScope": "Прочитаны title,desc и все видимые строки трёх SVG; проверена смысловая согласованность с прозой и HowTo. Новый рендер на 402/1280 не заявлен.",
-  "sourceSha256Scope": "Full final MDX bytes after addressed corrections and metadata/checks/volatileFacts closeout on2026-10-08. proseHash covers final title, description and collapsed body by scripts/article-review-gate.mjs. Historical prices/measurements and legal-footer dates preserved. Scores and ceilings unchanged; no frontmatter or prose changed by reviewer."
+  "assetReviewScope": "Первоначально прочитаны title/desc и все видимые строки трёх SVG; текущим closeout перечитана только изменённая visa-cost-time.svg. Она согласована с prose/HowTo:250AUD, допрасходы и зависимость конвертации/комиссии от банка. Другие две схемы совпадают по SHA; нового собственного рендера402/1280 нет.",
+  "sourceSha256Scope": "Full current MDX bytes after removing the unverified RUB estimate from prose and structured HowTo on2026-10-08, including corrected checks and ceiling. proseHash covers title, description and collapsed body; HowTo metadata is covered by this full SHA256. Historical journal facts remain dated; numerical scores and affiliate arguments preserved."
 }

@@ -127,7 +127,7 @@ const ldJson = {
         <p>Никаких баннеров, попапов и платной подписки. Партнёрские ссылки на перелёт, жильё и страховку есть — помечены по закону, и цена для вас от них не меняется. Персональные данные не собираю, кроме обязательной аналитики (Я.Метрика + Ahrefs).</p>
       </section>
 
-      <section>
+      <section id="contact">
         <h2>Контакт</h2>
         <p>Telegram: <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> — основной канал, там пишу про текущие поездки. Email для серьёзных вопросов: <a class="email-link" href="#contact" data-u="nzaytsev.my" data-d="gmail.com">показать email</a>.</p>
       </section>
@@ -231,5 +231,6 @@ code {
     });
   }
   if (document.readyState !== 'loading') _initEmails();
+  else document.addEventListener('DOMContentLoaded', _initEmails, { once: true });
   document.addEventListener('astro:page-load', _initEmails);
 </script>
