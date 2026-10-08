@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "slug": "bolshoy-egipetskiy-muzey",
   "reviewer": "codex-editorial-review-20261008",
-  "reviewedAt": "2026-10-08T15:15:34.305Z",
+  "reviewedAt": "2026-10-08T17:55:49.036Z",
   "status": "approved_with_limits",
-  "reviewScope": "Независимо прочитана вся проза, title, description/TLDR и подписи готового батча. После исправлений перечитаны изменённые части и смысловые зависимости. Проверка редакционная; сборка, полный браузерный рендер, CI, публикация и live QA не входят в этот вывод.",
+  "reviewScope": "Полное независимое чтение батча ранее завершено08.10.2026. Этот closeout проверяет только конкретные новые фрагменты и их смысловые зависимости после2c193111, title/description при изменении и новые checks/volatileFacts. Применена QUALITY-2026 v3.1 SHA25608b1363373d5827f79de75379701da7708d54bca1fe8e3106f18eee8f4fc3a23; полное повторное чтение, полный браузерный QA, CI, публикация и live здесь не заявлены.",
   "qualityScore": {
     "topic": 9.5,
     "facts": 9,
@@ -15,13 +15,14 @@
     "overall": 8.8,
     "ceiling": "Потолок 8,8/10: самостоятельный план музея и сильные иллюстрации, но нет подтверждённого посещения GEM; очереди, темп осмотра и оплата российской картой не проверены."
   },
-  "proseHash": "656a6d58ad7a49aa",
-  "sourceSha256": "a9bd3492b374394fd3775d626e89c3ac2396156b43ee8336248443dbfd226609",
-  "rationale": "Материал помогает выбрать билет, время и порядок залов, при этом иллюстрации объясняют конкретные объекты. Плановые 4–5 часов не выданы за личное измерение, музейные кадры не превращены в свидетельство посещения автора. Цены и часы сохраняют прежнюю дату проверки. Отсутствие опыта очередей и банковской оплаты ограничивает оценку, несмотря на полноту практического плана.",
+  "proseHash": "6baf22d3c5c43467",
+  "sourceSha256": "a32273d03447d5fc0d023533f621cce84e679aaeca49af68bc216ceb9cf28e63",
+  "rationale": "Материал помогает выбрать билет, время входа и порядок залов; плановые4–5часов не выданы за личное измерение. Официальная форма для9октября показала1570/790EGP в первичном наблюдении автора; арифметика3930EGP независимо проверена. Сегодня reviewer сверил часы и правила, включая исключение для форс-мажора, а опубликованную рублёвую оплату посредника отделил от реального платежа. Очереди, посещение и транзакция остаются неизвестными.",
   "blockingIssues": [],
   "risks": [
     "Подтверждённого личного посещения GEM нет; фактические очереди и темп осмотра неизвестны.",
-    "Оплата российской картой и нынешний режим музея в этом проходе не тестировались."
+    "1570/790EGP относятся к выбранному Admission на9октября2026; разбиение тарифа на дополнительные сборы не установлено.",
+    "Способы рублёвой оплаты и состав билета опубликованы посредником; платёж, выдача кода и цена выбранной даты у посредника не проверены."
   ],
   "verification": {
     "fullProseRead": true,
@@ -36,5 +37,55 @@
     "reviewedAt": "2026-09-24",
     "proseHash": "2a53d2a324500854"
   },
-  "sourceSha256Scope": "Full current MDX bytes after metadata-only updatedDate correction on 2026-10-08. Original title, description, body, proseHash and qualityScore preserved; historical price and measurement dates unchanged."
+  "sourceSha256Scope": "Full final MDX bytes after addressed corrections and metadata/checks/volatileFacts closeout on2026-10-08. proseHash covers final title, description and collapsed body by scripts/article-review-gate.mjs. Historical prices/measurements and legal-footer dates preserved. Scores and ceilings unchanged; no frontmatter or prose changed by reviewer.",
+  "sourceChecks": [
+    {
+      "url": "https://tickets.gem.eg/",
+      "method": "Own web primary hours and Ticketing Terms",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "complex08:30–19 and galleries09–18 on regular days",
+        "Wednesday/Saturday complex08:30–22 and galleries09–21",
+        "last entry1hour before galleries close",
+        "slot is entry window",
+        "nonrefundable except force majeure recognized by GEM"
+      ]
+    },
+    {
+      "url": "https://tickets.gem.eg/",
+      "method": "Author primary IAB observation supplied to independent reviewer",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "Admission adult1570EGP above24years with valid ID",
+        "child790EGP ages6–12",
+        "student790EGP ages13–24 with student ID",
+        "two adults plus one child3930EGP arithmetic checked independently"
+      ],
+      "observer": "codex-editorial-20261008",
+      "selectedVisit": "2026-10-09",
+      "category": "Arab or Other Nationality",
+      "entryWindow": "08:30–11:00",
+      "limits": "Reviewer did not view this dynamic form; author kept basket0/EGP0, without contact details or Review&Pay. No purchase."
+    },
+    {
+      "url": "https://www.sputnik8.com/ru/cairo/activities/98711-bilet-v-bolshoy-egipetskiy-muzey-drevnie-artefakty-i-piramidy",
+      "method": "Own web product page",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "permanent exhibitions",
+        "no guide or meals",
+        "nonrefundable"
+      ],
+      "limits": "Displayed storefront price is not a selected-date checkout quote; official museum hours take precedence."
+    },
+    {
+      "url": "https://www.sputnik8.com/ru/payment-methods",
+      "method": "Own web payment-methods page",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "rubles and Visa/Mastercard/Mir published"
+      ],
+      "limits": "No actual payment or code-delivery check."
+    }
+  ]
 }

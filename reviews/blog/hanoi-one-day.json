@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "slug": "hanoi-one-day",
   "reviewer": "codex-editorial-review-20261008",
-  "reviewedAt": "2026-10-08T15:15:34.305Z",
+  "reviewedAt": "2026-10-08T17:55:49.036Z",
   "status": "approved_with_limits",
-  "reviewScope": "Независимо прочитана вся проза, title, description/TLDR и подписи готового батча. После исправлений перечитаны изменённые части и смысловые зависимости. Проверка редакционная; сборка, полный браузерный рендер, CI, публикация и live QA не входят в этот вывод.",
+  "reviewScope": "Полное независимое чтение батча ранее завершено08.10.2026. Этот closeout проверяет только конкретные новые фрагменты и их смысловые зависимости после2c193111, title/description при изменении и новые checks/volatileFacts. Применена QUALITY-2026 v3.1 SHA25608b1363373d5827f79de75379701da7708d54bca1fe8e3106f18eee8f4fc3a23; полное повторное чтение, полный браузерный QA, CI, публикация и live здесь не заявлены.",
   "qualityScore": {
     "topic": 8,
     "facts": 8.5,
@@ -15,13 +15,14 @@
     "overall": 7.8,
     "ceiling": "Потолок 7,8/10: полезный план дня и варианты по погоде, но маршрут не пройден автором, переходы и повороты не измерены; фотографии архивные."
   },
-  "proseHash": "2973a29e2fa25eb3",
-  "sourceSha256": "e482c4a9b414aa4c592b96f4c81f2f9577155d9ff79fe46dd92dddc308a3b3a4",
-  "rationale": "Маршрут отвечает на выбор первого дня через пять сценариев, развилки и ограничения. Редакторские указания читателю удалены, выбор Хоало привязан к содержанию музея. Цены и режимы не объявлены заново проверенными. Прогулочные интервалы остаются планом, а не измеренным авторским маршрутом; личное посещение всех точек не приписано.",
+  "proseHash": "593048da7ee3cc0e",
+  "sourceSha256": "a80498f4b8bc824f913772a4fa9ab787c541b276e481fcedf8f1e6849eb5721d",
+  "rationale": "Маршрут отвечает на выбор первого дня через пять сценариев, развилки и ограничения. Сегодня первично подтверждены часы и билеты музеев и наличие русскоязычных экскурсий в обеих подборках. Рублёвые ориентиры прямо относятся к курсу2октября. Редакторские команды сняты; план переходов и архивные фотографии не выданы за прохождение маршрута автором.",
   "blockingIssues": [],
   "risks": [
     "Нет авторского прохождения предложенной цепочки и измерения переходов; схему нельзя использовать как точную навигацию.",
-    "Архивные кадры и прежние цены не доказывают текущую обстановку или полный бюджет."
+    "Последний вход и праздничные исключения не установлены; рублёвые ориентиры основаны на прежнем курсе.",
+    "Подборки читаются сегодня, но полная браузерная tracking-цепочка и оплата не проверены: машинный GET Sputnik дал401 при доступном web-содержимом."
   ],
   "verification": {
     "fullProseRead": true,
@@ -36,5 +37,54 @@
     "reviewedAt": "2026-10-02",
     "proseHash": "b6226e6294f5eaad"
   },
-  "sourceSha256Scope": "Full current MDX bytes after metadata-only updatedDate correction on 2026-10-08. Original title, description, body, proseHash and qualityScore preserved; historical price and measurement dates unchanged."
+  "sourceSha256Scope": "Full final MDX bytes after addressed corrections and metadata/checks/volatileFacts closeout on2026-10-08. proseHash covers final title, description and collapsed body by scripts/article-review-gate.mjs. Historical prices/measurements and legal-footer dates preserved. Scores and ceilings unchanged; no frontmatter or prose changed by reviewer.",
+  "sourceChecks": [
+    {
+      "url": "https://www.vanmieu.gov.vn/en/introduction/visitor-information",
+      "method": "Own web primary page",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "daily08:00–17:00",
+        "standard adult70000VND"
+      ]
+    },
+    {
+      "url": "https://hoalo.vn/EN/Home/Ve",
+      "method": "Own web primary page",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "daily08:00–17:00 including holidays",
+        "standard50000VND"
+      ]
+    },
+    {
+      "url": "https://baotangphunu.org.vn/en/visit-2/",
+      "method": "Own single alternative HTTP GET after web403",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "08:00–17:00 Monday–Sunday",
+        "English audio guide listed",
+        "Russian audio guide not listed"
+      ]
+    },
+    {
+      "url": "https://experience.tripster.ru/experience/Hanoi/",
+      "method": "Own web destination; exact existing tpkDeep GET",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "Russian-language excursions present",
+        "helper redirect reached destination HTTP200 JS shell"
+      ],
+      "limits": "No full rendered tracking-chain or payment check."
+    },
+    {
+      "url": "https://www.sputnik8.com/ru/hanoi",
+      "method": "Own web destination; exact existing tpkDeep GET",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "Russian-language excursions present"
+      ],
+      "limits": "Generated helper GET returned401 to the machine client; this does not prove a broken user link. No full browser-chain or payment check."
+    }
+  ]
 }

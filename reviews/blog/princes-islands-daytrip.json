@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "slug": "princes-islands-daytrip",
   "reviewer": "codex-editorial-review-20261008",
-  "reviewedAt": "2026-10-08T15:15:34.305Z",
+  "reviewedAt": "2026-10-08T17:55:49.036Z",
   "status": "approved_with_limits",
-  "reviewScope": "Независимо прочитана вся проза, title, description/TLDR и подписи готового батча. После исправлений перечитаны изменённые части и смысловые зависимости. Проверка редакционная; сборка, полный браузерный рендер, CI, публикация и live QA не входят в этот вывод.",
+  "reviewScope": "Полное независимое чтение батча ранее завершено08.10.2026. Этот closeout проверяет только конкретные новые фрагменты и их смысловые зависимости после2c193111, title/description при изменении и новые checks/volatileFacts. Применена QUALITY-2026 v3.1 SHA25608b1363373d5827f79de75379701da7708d54bca1fe8e3106f18eee8f4fc3a23; полное повторное чтение, полный браузерный QA, CI, публикация и live здесь не заявлены.",
   "qualityScore": {
     "topic": 8.5,
     "facts": 8.5,
@@ -15,13 +15,13 @@
     "overall": 7.4,
     "ceiling": "Потолок 7,4/10: расписание и выбор острова дают план дня, но нет авторского прохождения, точной геометрии прогулки и собственных кадров; внутренних переходов немного."
   },
-  "proseHash": "65d8180df944b940",
-  "sourceSha256": "9b846b08756cb413f2c1c00c6ba8b327812ac95f2c3239a7b64e79a3ed64e264",
-  "rationale": "Статья связывает выбор острова, посадки и обратный рейс с доступным временем, а подъём допускает спокойную альтернативу. Фраза о фотографиях как доказательстве поездки удалена. Расписание остаётся датированным снимком; маршрут и время подъёма не заявлены собственным измерением. Архивные фото помогают представить места, но не создают авторского опыта.",
+  "proseHash": "ea0bf089717ad519",
+  "sourceSha256": "d767a0281dcb1b6b9cd069c626aa8797777a9fcc8010d6dbe9dd83d3f103d45e",
+  "rationale": "Статья связывает выбор острова, посадки и обратный рейс с доступным временем, а подъём допускает спокойную альтернативу. Сегодня первично сверены зимний период2026/27, указанные рейсы и тариф151,23TRY; две посадки302,46TRY пересчитаны. Рубли явно относятся к курсу1октября. Архивные фото, маршрут и время подъёма не создают подтверждённого авторского опыта.",
   "blockingIssues": [],
   "risks": [
     "Нет прохождения маршрута автором и проверенной геометрии пути.",
-    "Расписание и тарифы датированы прежней сверкой, зависят от режима перевозчика; новая сверка в этом ревью не заявлена."
+    "Расписание и тариф сверены08октября, но отмены, погода и остановки конкретного рейса требуют проверки перед поездкой; рубли рассчитаны по прежнему курсу."
   ],
   "verification": {
     "fullProseRead": true,
@@ -36,5 +36,37 @@
     "reviewedAt": "2026-10-01",
     "proseHash": "676468fe7bef7f30"
   },
-  "sourceSha256Scope": "Full current MDX bytes after metadata-only updatedDate correction on 2026-10-08. Original title, description, body, proseHash and qualityScore preserved; historical price and measurement dates unchanged."
+  "sourceSha256Scope": "Full final MDX bytes after addressed corrections and metadata/checks/volatileFacts closeout on2026-10-08. proseHash covers final title, description and collapsed body by scripts/article-review-gate.mjs. Historical prices/measurements and legal-footer dates preserved. Scores and ceilings unchanged; no frontmatter or prose changed by reviewer.",
+  "sourceChecks": [
+    {
+      "url": "https://sehirhatlari.istanbul/tr/duyurular/sehir-hatlari-kis-tarifesine-geciyor-3788",
+      "method": "Own web primary announcement",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "published2026-09-03",
+        "winter timetable2026-09-07 through2027-06-27"
+      ]
+    },
+    {
+      "url": "https://sehirhatlari.istanbul/en/timetables/domestic-trips/adalar-princes-islands-lines/adalar-lines-177",
+      "method": "Own web primary timetable",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "Kabatas weekday/Saturday08:00→09:45 and09:00→10:45",
+        "Sunday/holiday07:30→09:15 and08:30→10:15",
+        "Buyukada returns16:30→18:20 and17:35→19:25"
+      ]
+    },
+    {
+      "url": "https://sehirhatlari.istanbul/tr/ucret-tarifeleri/vapur-hatlari-79",
+      "method": "Own web primary tariff",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "151.23TRY without AdaKart",
+        "90.70TRY with AdaKart",
+        "ordinary transfer discount does not apply to Adalar",
+        "two ordinary fares302.46TRY"
+      ]
+    }
+  ]
 }

@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "slug": "trip-com-2026",
   "reviewer": "codex-editorial-review-20261008",
-  "reviewedAt": "2026-10-08T15:15:34.305Z",
+  "reviewedAt": "2026-10-08T17:55:49.036Z",
   "status": "approved_with_limits",
-  "reviewScope": "Независимо прочитана вся проза, title, description/TLDR и подписи готового батча. После исправлений перечитаны изменённые части и смысловые зависимости. Проверка редакционная; сборка, полный браузерный рендер, CI, публикация и live QA не входят в этот вывод.",
+  "reviewScope": "Полное независимое чтение батча ранее завершено08.10.2026. Этот closeout проверяет только конкретные новые фрагменты и их смысловые зависимости после2c193111, title/description при изменении и новые checks/volatileFacts. Применена QUALITY-2026 v3.1 SHA25608b1363373d5827f79de75379701da7708d54bca1fe8e3106f18eee8f4fc3a23; полное повторное чтение, полный браузерный QA, CI, публикация и live здесь не заявлены.",
   "qualityScore": {
     "topic": 8.5,
     "facts": 8.5,
@@ -15,13 +15,13 @@
     "overall": 8.1,
     "ceiling": "Потолок 8,1/10: полезный разбор тарифов и возврата, но нет собственной оплаты или возврата; российские способы платежа изменчивы, лицензия фрагментов интерфейса отдельно не подтверждена."
   },
-  "proseHash": "2d62865b250459e0",
-  "sourceSha256": "3a4fc527d5ab1054777eeb1494f7257fd1eb155d54adc9bc3eb75f1134b207ff",
-  "rationale": "Договорные развилки, сборы и ограничения тарифов важнее общих обещаний экономии. Скриншоты служат конкретным примерам, вопросы помогают принять решение перед оплатой, а ссылки дают продолжение по соседним сервисам. Реальная транзакция или возврат автору не приписаны; старые проверки способов оплаты не превращены в текущую гарантию.",
+  "proseHash": "c528a9dd4de5a5d4",
+  "sourceSha256": "23e14dc124de90b1a8f85c20e0986c503637c062c24eb897899de787b6444abb",
+  "rationale": "Разбор связывает подтверждение заказа и возврат с условиями выбранного тарифа. Исправленная атрибуция отличает публикацию стороннего участника13июля от официальных Terms25августа; новый абзац предупреждает против повторной оплаты при неопределённом статусе. Сегодняшняя первичная сверка автора учтена с явными границами: собственной транзакции, успешной оплаты российской картой или возврата нет. Старые измерения не передатированы.",
   "blockingIssues": [],
   "risks": [
-    "Нет подтверждённой собственной оплаты и возврата.",
-    "Российские способы платежа и тарифы изменчивы; редакционное использование интерфейса не подкреплено отдельной лицензией в этом ревью."
+    "Нет подтверждённой собственной оплаты и возврата; публикация стороннего участника не доказывает приём конкретной российской карты.",
+    "Тарифы и российские способы платежа изменчивы; редакционное использование фрагментов интерфейса не подкреплено отдельной лицензией в этом ревью."
   ],
   "verification": {
     "fullProseRead": true,
@@ -36,5 +36,29 @@
     "reviewedAt": "2026-10-06",
     "proseHash": "12fcdb4a6150687a"
   },
-  "sourceSha256Scope": "Full current MDX bytes after metadata-only updatedDate correction on 2026-10-08. Original title, description, body, proseHash and qualityScore preserved; historical price and measurement dates unchanged."
+  "sourceSha256Scope": "Full final MDX bytes after addressed corrections and metadata/checks/volatileFacts closeout on2026-10-08. proseHash covers final title, description and collapsed body by scripts/article-review-gate.mjs. Historical prices/measurements and legal-footer dates preserved. Scores and ceilings unchanged; no frontmatter or prose changed by reviewer.",
+  "sourceChecks": [
+    {
+      "url": "https://ru.trip.com/contents/service-guideline/terms.html?curr=RUB&locale=ru-RU",
+      "method": "Author fresh primary reading supplied; reviewer checked changed claims and dependencies",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "Terms revision2026-08-25",
+        "warning against repeated payment when order or payment status is uncertain"
+      ],
+      "observer": "codex-editorial-20261008",
+      "limits": "No transaction or refund test."
+    },
+    {
+      "url": "https://ru.trip.com/guide/info/trip-com-%D0%BC%D0%BE%D0%B6%D0%BD%D0%BE-%D0%BB%D0%B8-%D0%BE%D0%BF%D0%BB%D0%B0%D1%82%D0%B8%D1%82%D1%8C-%D1%80%D0%BE%D1%81%D1%81%D0%B8%D0%B9%D1%81%D0%BA%D0%BE%D0%B9-%D0%BA%D0%B0%D1%80%D1%82%D0%BE%D0%B9.html",
+      "method": "Author primary IAB attribution reading supplied to independent reviewer",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "publication2026-07-13",
+        "independent contributor / third-party disclaimer"
+      ],
+      "observer": "codex-editorial-20261008",
+      "limits": "Not an official payment-support statement or proof that a particular card is accepted."
+    }
+  ]
 }
