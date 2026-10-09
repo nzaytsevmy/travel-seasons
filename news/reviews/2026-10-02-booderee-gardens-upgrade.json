@@ -2,47 +2,110 @@
   "schemaVersion": 1,
   "slug": "2026-10-02-booderee-gardens-upgrade",
   "score": 3,
-  "reviewer": "Codex GPT-6 (news_review_20261002)",
-  "reviewedAt": "2026-10-02",
-  "sha256": "8ec026902b4b9d707f222d59974fb52c0eb0bc18334cfb57a0fb949551ad4989",
-  "rationale": "Парк 29 сентября сообщил именно о начатой реконструкции и запланированной доступной петле 150 м с площадками отдыха; даты открытия в первоисточнике нет. Заметка делает полезный для посетителя вывод: не рассчитывать на полную доступность без подтверждения текущего маршрута. Конкретная нишевая новость о доступе заслуживает 3, но пока не даёт готового нового маршрута или основания для 4. Заголовок после clipTitle целый; архивный вход в сад не выдан за новую дорожку.",
-  "risks": [
-    "Нет объявленной даты завершения работ; reviewOn 09.10 нужен для проверки фактического доступа.",
-    "Прежняя заметка 13.09 о H5 в том же парке может быть полезной контекстной ссылкой, если предупреждение ещё действует."
-  ],
+  "reviewer": "codex-independent-news-review-20261009",
+  "checkedAt": "2026-10-09T05:50:45.306Z",
+  "reviewedAt": "2026-10-09T05:50:45.306Z",
+  "sha256": "6dc95ccf93a67f42819bbc11889e61db2a947ff6682c6dbc9ef215b2b7673250",
+  "sha256Scope": "full Markdown file bytes at editorial review; later header score synchronization may change this byte hash",
+  "contentHash": "7432991b2158c000fbd9e216c19c297092a137707ceb08c1d44750ec4010b945",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "proseHash": "7432991b2158c000fbd9e216c19c297092a137707ceb08c1d44750ec4010b945",
+  "proseHashScope": "same as contentHash",
+  "rationale": "Конкретная доступная петля длиной 150 м и защита корней дают любопытную заметку уровня 3. Строительство идёт, но не даёт новой подтверждённой возможности посещения прямо сейчас. Проект и намерение сделать дорожку доступной не превращены в завершённый маршрут или гарантию безбарьерности всего сада.",
   "blockingIssues": [],
-  "evidence": [
-    {
-      "url": "https://booderee.gov.au/news/major-accessibility-upgrades-underway-booderee-botanic-gardens/",
-      "publishedOn": "2026-09-29",
-      "checkedOn": "2026-10-02",
-      "finding": "Parks Australia: работы идут в дождевой части сада; новая 150-метровая доступная петля, обзорные площадки, мостики и обновление покрытий. Открытие петли не объявлено."
-    },
-    {
-      "url": "https://commons.wikimedia.org/w/index.php?curid=185333603",
-      "publishedOn": "2026-01-01",
-      "checkedOn": "2026-10-02",
-      "finding": "Commons API: File:Booderee Botanic Gardens, January 2026 03.jpg, DaHuzyBru, CC BY-SA 4.0. На локальном JPEG виден вход в сад, не новый настил."
-    }
+  "risks": [
+    "Нельзя обещать независимое прохождение нового маршрута до сообщения о завершении и проверки индивидуальных потребностей.",
+    "Редакционная готовность не подтверждает сборку, браузерный рендер, CI, публикацию, SSR/фид или live QA; эти гейты остаются у автора выпуска."
   ],
+  "reviewScope": "Свежий независимый Codex reviewer не писал заметки. Прочитаны весь title/TLDR/body и конечный JPEG всех 17; после адресных исправлений перечитаны изменённые части и смысловые зависимости. Это редакторское ревью, не reader-test. MD, Git, CI и публикация этим reviewer не менялись.",
+  "evidence": {
+    "primarySource": {
+      "url": "https://booderee.gov.au/news/major-accessibility-upgrades-underway-booderee-botanic-gardens/",
+      "checkedAt": "2026-10-09T05:50:45.306Z",
+      "method": "Независимо прочитаны содержательные тексты первоисточников/прямых репортажей в свежих captures от 9 октября; даты публикации отделены от даты открытия.",
+      "confirmed": [
+        "Parks Australia 29 сентября: работы 2026/27 идут; предусмотрена новая доступная петля 150 м.",
+        "Предусмотрены места отдыха, смотровые, обновление мостов и настил над корнями.",
+        "Завершение и открытие новой петли не объявлены; точную проходимость следует уточнять у парка."
+      ],
+      "sourceArtifacts": [
+        {
+          "path": ".run/sources-2026-10-09/2026-10-02-booderee-gardens-upgrade.json",
+          "sha256": "2cbec144987855c1de84af042fe1e609f96553fc591d00514bfb868cf4e48b19",
+          "capturedAt": "2026-10-09T04:26:23.796Z",
+          "capturedBy": null,
+          "completePageClaimed": false
+        }
+      ],
+      "independentlyVerifiedWebSources": []
+    },
+    "photo": {
+      "viewedByThisReviewer": true,
+      "path": "src/content/news/_images/2026-10-02-booderee-gardens-upgrade.jpg",
+      "sha256": "1b43bb8efd5e8aa58accad09267cb94e2d53db020b5f0e899d1dec9397d6a1a3",
+      "finding": "Вход в ботанический сад в январе 2026 года. Подпись прямо говорит, что новая дорожка на снимке не показана.",
+      "scope": "Сам финальный локальный JPEG просмотрен глазами, а не старый контактный лист.",
+      "credit": "DaHuzyBru",
+      "license": "CC BY-SA",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "source": "https://commons.wikimedia.org/w/index.php?curid=185333603",
+      "title": "Booderee Botanic Gardens, January 2026 03 — архивный кадр, не новая дорожка",
+      "alt": "Вход в ботанический сад Будери в Австралии; архивный кадр, не новая дорожка",
+      "commonsMetadataRechecked": false,
+      "commonsMetadataMethod": "Повторное открытие Commons для прежнего кадра не выполнено; проверены конечная картинка и сохранённые metadata, не заявлена новая перепроверка лицензии.",
+      "commonsMetadataArtifacts": [],
+      "publicAttributionPrepared": "Настоящая publicPhotoCredits([],17 notes) возвращает 15 CC-записей, все с creator/source/licenseUrl; два Public domain законно исключены. Публичный /legal/photos/ после сборки ещё не проверен."
+    },
+    "internalLinks": {
+      "method": "Собственные свежие HTTP GET reviewer 9 октября, конечный адрес и title ответа; anchor по смыслу сопоставлен с целевой страницей. Ответ 200 не выдан за браузерную проверку.",
+      "results": [
+        {
+          "path": "/australia-east/",
+          "status": 200,
+          "url": "https://traveltribe.ru/australia-east/",
+          "checkedAt": "2026-10-09T05:35:02.838Z",
+          "title": "Восточная Австралия 2026: Сидней, Мельбурн, когда ехать",
+          "bodySha256": "17e330de6e9d596deb13287878ee703764338ef92373b238deff261969ef6861"
+        }
+      ]
+    },
+    "editorialCriteria": {
+      "changesPlans": false,
+      "surprisingNature": true,
+      "concreteAndVerifiable": true,
+      "lastsLongerThanWeek": true,
+      "editorialRubric": "transport",
+      "backendTopic": "transport"
+    }
+  },
   "lifecycle": {
-    "reviewOn": "2026-10-09",
-    "reason": "Проверить, завершена ли стройка, открыт ли новый доступный контур и какие части сада доступны."
+    "decision": "CHECK_ONLY",
+    "status": null,
+    "effectiveDate": null,
+    "reviewOn": "2026-10-23",
+    "reason": "Официальная страница сохраняет программуработ2026/27и150метров; завершениестроительстванеобъявлено. Проверкачерез2недели.",
+    "originalDate": "2026-09-29",
+    "originalAdded": "2026-10-02",
+    "datePreserved": true,
+    "addedPreserved": true
   },
   "checks": {
-    "capsuleWords": 51,
-    "bodyWords": 185,
+    "fullProseRead": true,
+    "finalTldrRead": true,
     "titleChars": 54,
     "clipTitle": "В ботсаду Будери строят доступную дорожку длиной 150 м",
-    "internalLink": "/australia-east/",
-    "internalLinkStatus": 200,
+    "clipTitleMeaningPreserved": true,
+    "tldrWords": 50,
+    "bodyWords": 180,
+    "primarySourceRead": true,
     "photoViewed": true,
-    "photoSha256": "1b43bb8efd5e8aa58accad09267cb94e2d53db020b5f0e899d1dec9397d6a1a3",
-    "photoFinding": "Локальный JPEG просмотрен: въезд и вывеска Booderee Botanic Gardens, архивный январский кадр; alt и оговорка верны.",
-    "publicAttribution": "Commons API подтвердил автора, точное название, лицензию и URL; title первым в imageTitle, далее видимая архивная оговорка. Код /legal/photos/ выводит поля новости и общий текст о сжатии/возможном кадрировании; отдельной записи о преобразовании каждого news JPEG нет. Финальный рендер после сборки не проверялся.",
-    "scope": "Независимая сверка текста, дат, источников, ссылки и локального JPEG; без сборки, CI, публикации и живой страницы новости."
-  },
-  "contentHash": "ec418f1ed98fb5bbd37303de232a9fef13f35bff3db23019edf985d975b2124c",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256Scope": "full Markdown file bytes"
+    "independentReviewer": true,
+    "commonsLicenseRechecked": false,
+    "languageBannedWords": [],
+    "languageMethod": "Редакторский проход всего текста; адресно устранены ранее найденные «уже» и «в рамках».",
+    "internalLinksHttp200": true,
+    "publicCreditDataPrepared": true,
+    "readerTest": false,
+    "buildBrowserCiLive": false
+  }
 }

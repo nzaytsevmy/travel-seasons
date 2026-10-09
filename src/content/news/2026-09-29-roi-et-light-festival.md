@@ -2,8 +2,8 @@
 title: "Световой фестиваль в Ройэте пройдёт с 9 по 18 октября"
 date: "2026-09-29"
 added: "2026-09-29"
-checked: "2026-10-08"
-reviewOn: "2026-10-09"
+checked: "2026-10-09"
+reviewOn: "2026-10-10"
 topic: "transport"
 impact: "medium"
 score: 4

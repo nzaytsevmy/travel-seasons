@@ -2,42 +2,111 @@
   "schemaVersion": 1,
   "slug": "2026-09-13-fray-jorge-park-reopens",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
-  "reviewedAt": "2026-09-23",
-  "sha256": "c3c91262de07c83dc1afad2561f1d336cce66a6ab97e533037c7aa21af0a5d90",
-  "rationale": "KEEP. Текущая страница CONAF сохраняет уведомление об открытии общественных пространств с 10 сентября, подъезд по D-540 и закрытый D-560. Маршруты El Mineral и Semiárido по-прежнему требуют предварительного разрешения; 3,1 километра и два часа у El Mineral относятся к пути в одну сторону. Текст отражает эти ограничения и не обещает неизменную дорожную обстановку. Оценка 4 сохранена.",
-  "risks": [
-    "D-560 остаётся закрытой без объявленного срока открытия.",
-    "El Mineral и Semiárido требуют предварительного разрешения администрации.",
-    "Текущая страница CONAF не гарантирует отсутствие нового погодного ограничения после проверки."
-  ],
+  "reviewer": "codex-independent-news-review-20261009",
+  "checkedAt": "2026-10-09T05:50:45.306Z",
+  "reviewedAt": "2026-10-09T05:50:45.306Z",
+  "sha256": "8f090828db1926a235af4f4f4f575e1e87fd1b5baadf6500ae2497b4c0c7dd28",
+  "sha256Scope": "full Markdown file bytes at editorial review; later header score synchronization may change this byte hash",
+  "contentHash": "4f3435795a6bf98517c075cceed10df4c5432352f5d96c6855237d7a161b58e3",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "proseHash": "4f3435795a6bf98517c075cceed10df4c5432352f5d96c6855237d7a161b58e3",
+  "proseHashScope": "same as contentHash",
+  "rationale": "Изменились въезд и доступ к походам, уровень 4 для нишевого парка. CONAF подтверждает открытие с 10 сентября, въезд D-540 и закрытую D-560. В тексте сохранены разрешения для двух маршрутов и односторонняя база длины El Mineral; нет обещания питьевой воды или кемпинга внутри парка.",
   "blockingIssues": [],
-  "evidence": [
-    {
-      "url": "https://www.conaf.cl/parque_nacionales/parque-nacional-bosque-fray-jorge/",
-      "publishedOn": null,
-      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
-      "finding": "Подтверждены открытие с 10 сентября, D-540, закрытый D-560, разрешения и параметры El Mineral в одну сторону.",
-      "checkedOn": "2026-09-23"
-    }
+  "risks": [
+    "Маршруты и дорога зависят от погоды; разрешение на поход не выводится из общего открытия парка.",
+    "Редакционная готовность не подтверждает сборку, браузерный рендер, CI, публикацию, SSR/фид или live QA; эти гейты остаются у автора выпуска."
   ],
+  "reviewScope": "Свежий независимый Codex reviewer не писал заметки. Прочитаны весь title/TLDR/body и конечный JPEG всех 17; после адресных исправлений перечитаны изменённые части и смысловые зависимости. Это редакторское ревью, не reader-test. MD, Git, CI и публикация этим reviewer не менялись.",
+  "evidence": {
+    "primarySource": {
+      "url": "https://www.conaf.cl/parque_nacionales/parque-nacional-bosque-fray-jorge/",
+      "checkedAt": "2026-10-09T05:50:45.306Z",
+      "method": "Независимо прочитаны содержательные тексты первоисточников/прямых репортажей в свежих captures от 9 октября; даты публикации отделены от даты открытия.",
+      "confirmed": [
+        "CONAF: открытие с 10 сентября после погодного закрытия.",
+        "Въезд обозначен D-540; указание навигаторов на D-560 ошибочно, D-560 закрыта.",
+        "Bosque Relicto 958 м/40 мин; El Mineral 3,1 км и 2 часа в одну сторону; Semiárido 2,2 км/90 мин; для двух последних нужны разрешения.",
+        "Внутри нет оборудованных мест для кемпинга; вода у площадок непитьевая."
+      ],
+      "sourceArtifacts": [
+        {
+          "path": ".run/sources-2026-10-09/2026-09-13-fray-jorge-park-reopens.json",
+          "sha256": "51d532c446db1c1f93d9cc345dbb689f686f0342b9bce9138e9949ff67bda568",
+          "capturedAt": "2026-10-09T04:26:22.958Z",
+          "capturedBy": null,
+          "completePageClaimed": false
+        }
+      ],
+      "independentlyVerifiedWebSources": []
+    },
+    "photo": {
+      "viewedByThisReviewer": true,
+      "path": "src/content/news/_images/2026-09-13-fray-jorge-park-reopens.jpg",
+      "sha256": "d1d80e24b179fa7d5ee5023f84030f3f5d3018394958633866f1b25e0a111daa",
+      "finding": "Склон с кактусами и облачным лесом соответствует ландшафту Фрай-Хорхе; кадр не доказывает текущий проезд D-540.",
+      "scope": "Сам финальный локальный JPEG просмотрен глазами, а не старый контактный лист.",
+      "credit": "Nicolás Fernando Valdés Ortega",
+      "license": "CC BY-SA",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "source": "https://commons.wikimedia.org/w/index.php?curid=80192059",
+      "title": null,
+      "alt": "Холмы, прибрежные облака и растительность национального парка Фрай-Хорхе в Чили",
+      "commonsMetadataRechecked": false,
+      "commonsMetadataMethod": "Повторное открытие Commons для прежнего кадра не выполнено; проверены конечная картинка и сохранённые metadata, не заявлена новая перепроверка лицензии.",
+      "commonsMetadataArtifacts": [],
+      "publicAttributionPrepared": "Настоящая publicPhotoCredits([],17 notes) возвращает 15 CC-записей, все с creator/source/licenseUrl; два Public domain законно исключены. Публичный /legal/photos/ после сборки ещё не проверен."
+    },
+    "internalLinks": {
+      "method": "Собственные свежие HTTP GET reviewer 9 октября, конечный адрес и title ответа; anchor по смыслу сопоставлен с целевой страницей. Ответ 200 не выдан за браузерную проверку.",
+      "results": [
+        {
+          "path": "/chile/",
+          "status": 200,
+          "url": "https://traveltribe.ru/chile/",
+          "checkedAt": "2026-10-09T05:35:02.987Z",
+          "title": "Чили 2026: регионы, когда ехать и куда лететь",
+          "bodySha256": "15b75d1b46178e5f59954798c37f6bf2e242a3705b05d58e6d0dfaddffa382a7"
+        }
+      ]
+    },
+    "editorialCriteria": {
+      "changesPlans": true,
+      "surprisingNature": false,
+      "concreteAndVerifiable": true,
+      "lastsLongerThanWeek": true,
+      "editorialRubric": "transport",
+      "backendTopic": "transport"
+    }
+  },
   "lifecycle": {
-    "reviewOn": "2026-09-26",
-    "reason": "D-560 остаётся закрытой без объявленного срока открытия.",
-    "decision": "KEEP_CURRENT_CARD"
+    "decision": "CHECK_ONLY",
+    "status": null,
+    "effectiveDate": null,
+    "reviewOn": "2026-10-23",
+    "reason": "CONAF содержит актуальный AVISO об открытии с10Sep и предупреждение D560закрыта/D540въезд. Нового изменения состояния нет; проверка через2недели.",
+    "originalDate": "2026-09-10",
+    "originalAdded": "2026-09-13",
+    "datePreserved": true,
+    "addedPreserved": true
   },
   "checks": {
-    "metadataOnlyConfirmed": true,
-    "priorSourceSha256": "078b72ab29f78a40fbdfa4e0108078f3fa628570e4735eb57a04f8c8a43e6abf",
-    "titleUnchangedByClip": true,
-    "clippedTitle": "Фрай-Хорхе открыли: въезд по D-540, два похода по разрешению",
-    "tldrGate": {
-      "ok": true
-    },
-    "scope": "Ограниченный lifecycle-review 23.09: перечитан изменчивый статус, проза и прежняя фотоаттестация не исследовались заново; обновлены checked, reviewOn и SHA; без сборки и публикации.",
-    "capsuleWords": 50,
-    "bodyWords": 181,
-    "titleChars": 60
-  },
-  "evidenceReport": ".run/2026-09-18/lifecycle-review/review.json"
+    "fullProseRead": true,
+    "finalTldrRead": true,
+    "titleChars": 60,
+    "clipTitle": "Фрай-Хорхе открыли: въезд по D-540, два похода по разрешению",
+    "clipTitleMeaningPreserved": true,
+    "tldrWords": 44,
+    "bodyWords": 180,
+    "primarySourceRead": true,
+    "photoViewed": true,
+    "independentReviewer": true,
+    "commonsLicenseRechecked": false,
+    "languageBannedWords": [],
+    "languageMethod": "Редакторский проход всего текста; адресно устранены ранее найденные «уже» и «в рамках».",
+    "internalLinksHttp200": true,
+    "publicCreditDataPrepared": true,
+    "readerTest": false,
+    "buildBrowserCiLive": false
+  }
 }

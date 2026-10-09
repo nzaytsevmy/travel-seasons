@@ -2,8 +2,8 @@
 title: "Йосемити: из-за пожара закрыта дорога к Глейшер-Пойнт"
 date: "2026-10-05"
 added: "2026-10-06"
-checked: "2026-10-08"
-reviewOn: "2026-10-09"
+checked: "2026-10-09"
+reviewOn: "2026-10-11"
 topic: "transport"
 impact: "high"
 score: 4
@@ -14,9 +14,9 @@ tldr: "Glacier Point Road в Йосемити остаётся закрытой 
 countries:
   - usa
 sources:
-  - name: "NPS — текущие условия, обновление 07.10.2026; проверено 08.10.2026"
+  - name: "NPS — текущие условия, обновление 07.10.2026; проверено 09.10.2026"
     url: "https://www.nps.gov/yose/planyourvisit/conditions.htm"
-  - name: "NPS — утренняя сводка Dome Fire 06.10.2026; проверено 08.10.2026"
+  - name: "NPS — утренняя сводка Dome Fire 06.10.2026; проверено 09.10.2026"
     url: "https://www.nps.gov/yose/learn/news/dome-fire-update-october-6-2026-morning.htm"
 image: "./_images/2026-10-06-yosemite-dome-fire-access.jpg"
 imageCredit: "Yosemite National Park / National Park Service"

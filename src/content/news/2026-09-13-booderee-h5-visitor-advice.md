@@ -1,12 +1,12 @@
 ---
 title: "Будери: после обнаружения H5 парк остаётся открытым"
 date: 2026-09-11
-checked: 2026-09-23
-reviewOn: "2026-10-09"
+checked: "2026-10-09"
+reviewOn: "2026-10-16"
 added: 2026-09-13
 topic: nature
 impact: high
-score: 3
+score: 4
 photoQuery: "Booderee National Park beach"
 authoredBy: "codex-gpt-6"
 reviewRef: "news/reviews/2026-09-13-booderee-h5-visitor-advice.json"
