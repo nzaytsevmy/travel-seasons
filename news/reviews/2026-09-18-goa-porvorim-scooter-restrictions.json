@@ -2,54 +2,110 @@
   "schemaVersion": 1,
   "slug": "2026-09-18-goa-porvorim-scooter-restrictions",
   "score": 5,
-  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
-  "reviewedAt": "2026-10-06",
-  "sha256": "e9725d269754084308f51216826bf987712c99a877dc8d1eba8151260e25350d",
-  "rationale": "Оценка 5: запрет скутеров на эстакаде Порворима прямо меняет поездку в популярном для российской аудитории Гоа. The Goan наблюдал открытие двух разных подъездов у Majestic 23–24 сентября; интервью с инженером PWD 4 октября подтверждает, что съезд к двум мостам Мандови лишь планируют испытывать, а двухколёсные по-прежнему не допускаются. Текст не выдаёт план за состоявшееся открытие.",
-  "risks": [
-    "Открытие третьего съезда могут объявить без долгого предупреждения; reviewOn 9 октября.",
-    "Публичный текущий приказ PWD в проверенной выдаче не найден; новые факты атрибутированы местной газете и прямой речи инженера PWD."
-  ],
+  "reviewer": "codex-independent-news-review-20261009",
+  "checkedAt": "2026-10-09T05:50:45.306Z",
+  "reviewedAt": "2026-10-09T05:50:45.306Z",
+  "sha256": "e8769b7d784f95ad1c4725923c601c79c09bb5f7d5bd3c205fc8ced51a94e200",
+  "sha256Scope": "full Markdown file bytes at editorial review; later header score synchronization may change this byte hash",
+  "contentHash": "79d2c9fc2d136ea4d06e75833c37669e6714088d6bf935679793ebd204044bb9",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "proseHash": "79d2c9fc2d136ea4d06e75833c37669e6714088d6bf935679793ebd204044bb9",
+  "proseHashScope": "same as contentHash",
+  "rationale": "Ограничение действует на популярном у российских путешественников направлении и прямо меняет поездку на скутере, уровень 5. Разведены открытые в сентябре подъезды и обещанный в октябре съезд. План инженера на 10–15 дней не превращён в выполненное открытие; допуск машин не распространён на двухколёсный транспорт.",
   "blockingIssues": [],
-  "evidence": [
-    {
-      "url": "https://www.thegoan.net/goa-news/panaji-traffic-gets-access-to-porvorim-flyover-on-trial-basis-/154579.html",
-      "publishedOn": "2026-09-24",
-      "finding": "Газета наблюдала два открытых подъезда у Majestic: выход с Atal Setu от Merces и въезд на эстакаду от Panaji; двухколёсные запрещены.",
-      "checkedOn": "2026-10-06"
-    },
-    {
-      "url": "https://www.thegoan.net/goa-news/porvorim-flyover-exit-may-finally-open-next-week/155062.html",
-      "publishedOn": "2026-10-04",
-      "finding": "Инженер PWD Gajanan Desai: съезд с эстакады к двум мостам Мандови ещё планируют открыть на 10–15-дневный тест; мотоциклы пока не разрешают.",
-      "checkedOn": "2026-10-06"
-    }
+  "risks": [
+    "Доказательство — местные репортажи с прямыми заявлениями PWD, а не отдельный найденный приказ; новый допуск скутеров не подтверждён.",
+    "Редакционная готовность не подтверждает сборку, браузерный рендер, CI, публикацию, SSR/фид или live QA; эти гейты остаются у автора выпуска."
   ],
+  "reviewScope": "Свежий независимый Codex reviewer не писал заметки. Прочитаны весь title/TLDR/body и конечный JPEG всех 17; после адресных исправлений перечитаны изменённые части и смысловые зависимости. Это редакторское ревью, не reader-test. MD, Git, CI и публикация этим reviewer не менялись.",
+  "evidence": {
+    "primarySource": {
+      "url": "https://www.thegoan.net/goa-news/accident-aftermath-2wheelers-banned-on-porvorim-flyover/154154.html",
+      "checkedAt": "2026-10-09T05:50:45.306Z",
+      "method": "Независимо прочитаны содержательные тексты первоисточников/прямых репортажей в свежих captures от 9 октября; даты публикации отделены от даты открытия.",
+      "confirmed": [
+        "The Goan цитирует PWD о запрете двухколёсного транспорта на новой эстакаде Порворима.",
+        "Два подъезда фактически открывались на пробной основе в сентябре.",
+        "Интервью 4 октября содержит план выезда на 10–15 дней, не доказательство доступного 9 октября съезда."
+      ],
+      "sourceArtifacts": [
+        {
+          "path": ".run/sources-2026-10-09/2026-09-18-goa-porvorim-scooter-restrictions.json",
+          "sha256": "6345ea0abf6cd32a1943e16f6cf67bb7dc93871c04c7de980e85bff4b8b837fc",
+          "capturedAt": "2026-10-09T04:26:22.095Z",
+          "capturedBy": null,
+          "completePageClaimed": false
+        }
+      ],
+      "independentlyVerifiedWebSources": []
+    },
+    "photo": {
+      "viewedByThisReviewer": true,
+      "path": "src/content/news/_images/2026-09-18-goa-porvorim-scooter-restrictions.jpg",
+      "sha256": "ea842626d95d161b31b6830b07689f2a3feae562098b47e4924168c2473419c4",
+      "finding": "Строительство моста через Мандови в марте 2018 года явно подписано архивом; фотография не выдана за новую эстакаду или сегодняшний режим.",
+      "scope": "Сам финальный локальный JPEG просмотрен глазами, а не старый контактный лист.",
+      "credit": "Harriet Vidyasagar",
+      "license": "CC BY-SA",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "source": "https://commons.wikimedia.org/w/index.php?curid=87531265",
+      "title": "Строительство моста через Мандови в марте 2018 года. Архивный кадр: он не показывает нынешний режим движения и новую эстакаду Порворима.",
+      "alt": "Бетонный пролёт строящегося моста через Мандови, снятый снизу",
+      "commonsMetadataRechecked": false,
+      "commonsMetadataMethod": "Повторное открытие Commons для прежнего кадра не выполнено; проверены конечная картинка и сохранённые metadata, не заявлена новая перепроверка лицензии.",
+      "commonsMetadataArtifacts": [],
+      "publicAttributionPrepared": "Настоящая publicPhotoCredits([],17 notes) возвращает 15 CC-записей, все с creator/source/licenseUrl; два Public domain законно исключены. Публичный /legal/photos/ после сборки ещё не проверен."
+    },
+    "internalLinks": {
+      "method": "Собственные свежие HTTP GET reviewer 9 октября, конечный адрес и title ответа; anchor по смыслу сопоставлен с целевой страницей. Ответ 200 не выдан за браузерную проверку.",
+      "results": [
+        {
+          "path": "/blog/goa-guide-2026/",
+          "status": 200,
+          "url": "https://traveltribe.ru/blog/goa-guide-2026/",
+          "checkedAt": "2026-10-09T05:35:03.052Z",
+          "title": "Отдых на Гоа 2026: сезон, цены, Северный или Южный",
+          "bodySha256": "28a9adabaaa78bc640f6f44a7ac61b04da31b190473c8f6141369be6a9b42b2a"
+        }
+      ]
+    },
+    "editorialCriteria": {
+      "changesPlans": true,
+      "surprisingNature": false,
+      "concreteAndVerifiable": true,
+      "lastsLongerThanWeek": true,
+      "editorialRubric": "transport",
+      "backendTopic": "transport"
+    }
+  },
   "lifecycle": {
-    "reviewOn": "2026-10-09",
-    "reason": "Проверить, открылся ли третий съезд, и действует ли запрет двухколёсных."
+    "decision": "CHECK_ONLY",
+    "status": null,
+    "effectiveDate": null,
+    "reviewOn": "2026-10-11",
+    "reason": "Открыт материал04Oct с планом открыть выезд; это не подтверждение выполненного открытия. Условная формулировка сохраняется, возврат через2дня.",
+    "originalDate": "2026-09-17",
+    "originalAdded": "2026-09-18",
+    "datePreserved": true,
+    "addedPreserved": true
   },
   "checks": {
-    "capsuleWords": 52,
-    "bodyWords": 235,
+    "fullProseRead": true,
+    "finalTldrRead": true,
     "titleChars": 51,
     "clipTitle": "Гоа: скутеры не пускают на новую эстакаду Порворима",
-    "internalLink": null,
-    "internalLinkStatus": null,
-    "photoViewedToday": false,
-    "mediaScope": "Фото в этих адресных lifecycle-правках не менялось; повторный осмотр локального JPEG не проводился.",
-    "publicationDate": "2026-09-17",
-    "added": "2026-09-18",
-    "scope": "Независимая сверка финальных текстов, дат и первоисточников; без браузерных тестов, сборки, CI и live-проверки обновлённых страниц."
-  },
-  "contentHash": "b2ffd48e32ce4d78b9efa8ebf44440e288326e61326e364deda4f29d20c197d3",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256Scope": "full Markdown file bytes",
-  "priorReview": {
-    "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
-    "reviewedAt": "2026-09-23",
-    "score": 5,
-    "contentHash": null,
-    "sha256": "825420111a1f22d584f8cbe610a9c5eb4b55ce7a2306c93bf87541b159a4c53b"
+    "clipTitleMeaningPreserved": true,
+    "tldrWords": 52,
+    "bodyWords": 236,
+    "primarySourceRead": true,
+    "photoViewed": true,
+    "independentReviewer": true,
+    "commonsLicenseRechecked": false,
+    "languageBannedWords": [],
+    "languageMethod": "Редакторский проход всего текста; адресно устранены ранее найденные «уже» и «в рамках».",
+    "internalLinksHttp200": true,
+    "publicCreditDataPrepared": true,
+    "readerTest": false,
+    "buildBrowserCiLive": false
   }
 }

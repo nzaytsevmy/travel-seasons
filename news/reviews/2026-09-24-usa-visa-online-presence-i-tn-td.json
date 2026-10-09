@@ -2,45 +2,117 @@
   "schemaVersion": 1,
   "slug": "2026-09-24-usa-visa-online-presence-i-tn-td",
   "score": 4,
-  "reviewer": "Codex GPT-6 (tt_news_review_1001)",
-  "reviewedAt": "2026-10-02",
-  "sha256": "41d0077b39f6c29cb47ab50c75648d79cd78025813434d700bc4577c81e86fe7",
-  "rationale": "Оценка 4: при независимой проверке 2 октября официальная страница Госдепартамента по-прежнему устанавливает Effective October 1 для расширения online-presence review на визы I, TN и TD. В США дата 1 октября уже наступила; формулировки «действует с 1 октября» и статус «действует» соответствуют объявленному правилу. Госдеп требует public/open для всех профилей соцсетей этих заявителей; B1/B2 в новую группу не добавлены. Текст не притворяется проверкой реализации в каждом консульстве.",
-  "risks": [
-    "Официальное объявление подтверждает действующее правило, но не описывает работу процедуры в каждом консульстве.",
-    "Открытые профили сами по себе не гарантируют одобрения визы."
-  ],
+  "reviewer": "codex-independent-news-review-20261009",
+  "checkedAt": "2026-10-09T05:50:45.306Z",
+  "reviewedAt": "2026-10-09T05:50:45.306Z",
+  "sha256": "68c2943ff3fad7e28e8aa543f7cf3e3fb09d366d5a6663121f284969fe8d0288",
+  "sha256Scope": "full Markdown file bytes at editorial review; later header score synchronization may change this byte hash",
+  "contentHash": "dbdb3ca8f2f9ae10dcd5c1de9763d94cbcf5e6f1880aa3be2710ccf52e972ab9",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "proseHash": "dbdb3ca8f2f9ae10dcd5c1de9763d94cbcf5e6f1880aa3be2710ccf52e972ab9",
+  "proseHashScope": "same as contentHash",
+  "rationale": "Визовый порядок меняет подготовку заявителей I, TN и TD, но касается узких категорий: уровень 4. Официальное объявление Госдепартамента реально открыто 9 октября; сохранены дата 1 октября и точный список. Проверка не расширена на все туристические визы или всех россиян, открытый профиль не обещает одобрение.",
   "blockingIssues": [],
-  "evidence": [
-    {
-      "url": "https://travel.state.gov/content/travel/en/News/visas-news/announcement-of-expanded-screening-and-vetting-for-visa-applicants.html",
-      "publishedOn": "2026-09-18",
-      "checkedOn": "2026-10-02",
-      "access": "Independent web reader, crawled today",
-      "finding": "Effective October 1; additional I foreign media representatives, TN/TD USMCA professionals and dependents; all social media profiles public/open. Новая группа не включает B1/B2."
-    }
+  "risks": [
+    "Прочитан свежий собственный браузерный снимок автора, а не заявлено повторное открытие State этим reviewer; исходный HTTP 403 не принят за отсутствие официального правила.",
+    "Редакционная готовность не подтверждает сборку, браузерный рендер, CI, публикацию, SSR/фид или live QA; эти гейты остаются у автора выпуска."
   ],
+  "reviewScope": "Свежий независимый Codex reviewer не писал заметки. Прочитаны весь title/TLDR/body и конечный JPEG всех 17; после адресных исправлений перечитаны изменённые части и смысловые зависимости. Это редакторское ревью, не reader-test. MD, Git, CI и публикация этим reviewer не менялись.",
+  "evidence": {
+    "primarySource": {
+      "url": "https://travel.state.gov/content/travel/en/News/visas-news/announcement-of-expanded-screening-and-vetting-for-visa-applicants.html",
+      "checkedAt": "2026-10-09T05:50:45.306Z",
+      "method": "Независимо прочитаны все содержательные абзацы и перечень в официальном объявлении, реально открытом автором через Chrome 9 октября; HTTP-запрос без браузера давал 403.",
+      "confirmed": [
+        "Госдепартамент, обновление 18 сентября: с 1 октября проверка online presence распространяется на I, TN и TD.",
+        "Заявителей перечисленных категорий просят сделать профили общедоступными.",
+        "Текст не объявляет новую процедуру для всех B1/B2 и не гарантирует выдачу визы."
+      ],
+      "sourceArtifacts": [
+        {
+          "path": ".run/sources-2026-10-09/2026-09-24-usa-visa-online-presence-i-tn-td.json",
+          "sha256": "e6d019ad5f9e2bd35a8c82040ba516ec91e75c7692291573d3b93ee4fba8a986",
+          "capturedAt": "2026-10-09T04:26:23.211Z",
+          "capturedBy": null,
+          "completePageClaimed": false
+        },
+        {
+          "path": "news/snapshots/98c5f86fe85c37c5.json",
+          "sha256": "7cea1fc86be2a22daf9af3222e1261d4eadd48bd108eda9ea7e0376facbdb97c",
+          "capturedAt": "2026-10-09",
+          "capturedBy": "Codex via cua_repl Chrome; complete substantive announcement paragraphs and list observed in DOM snapshot",
+          "completePageClaimed": false
+        }
+      ],
+      "independentlyVerifiedWebSources": []
+    },
+    "photo": {
+      "viewedByThisReviewer": true,
+      "path": "src/content/news/_images/2026-09-24-usa-visa-online-presence-i-tn-td.jpg",
+      "sha256": "311f96ce74838d5408c2a61948da1ff485c1c79c74de3e5b18976f518c6c49ca",
+      "finding": "Здание Госдепартамента, архив 2024 года. Public domain отмечен в metadata; кадр не изображает визовую проверку.",
+      "scope": "Сам финальный локальный JPEG просмотрен глазами, а не старый контактный лист.",
+      "credit": "U.S. Department of State",
+      "license": "Public domain",
+      "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+      "source": "https://commons.wikimedia.org/w/index.php?curid=148444939",
+      "title": "Harry S. Truman Building весной 2024 года. Архивный кадр.",
+      "alt": "Здание Госдепартамента США в Вашингтоне",
+      "commonsMetadataRechecked": false,
+      "commonsMetadataMethod": "Повторное открытие Commons для прежнего кадра не выполнено; проверены конечная картинка и сохранённые metadata, не заявлена новая перепроверка лицензии.",
+      "commonsMetadataArtifacts": [],
+      "publicAttributionPrepared": "Настоящая publicPhotoCredits([],17 notes) возвращает 15 CC-записей, все с creator/source/licenseUrl; два Public domain законно исключены. Публичный /legal/photos/ после сборки ещё не проверен."
+    },
+    "internalLinks": {
+      "method": "Собственные свежие HTTP GET reviewer 9 октября, конечный адрес и title ответа; anchor по смыслу сопоставлен с целевой страницей. Ответ 200 не выдан за браузерную проверку.",
+      "results": [
+        {
+          "path": "/visa/usa/",
+          "status": 200,
+          "url": "https://traveltribe.ru/visa/usa/",
+          "checkedAt": "2026-10-09T05:35:03.128Z",
+          "title": "Виза в США для россиян 2026 — документы, цена, сроки",
+          "bodySha256": "9ffd425c77c48a7557d0fc283108137c9f3898c62e42ba10a54d4e0b63d22962"
+        }
+      ]
+    },
+    "editorialCriteria": {
+      "changesPlans": true,
+      "surprisingNature": false,
+      "concreteAndVerifiable": true,
+      "lastsLongerThanWeek": true,
+      "editorialRubric": "visa",
+      "backendTopic": "visa"
+    }
+  },
   "lifecycle": {
-    "reviewOn": "2026-10-09",
-    "reason": "Проверить изменения официального объявления и практические указания для заявителей через неделю после вступления."
+    "decision": "CHECK_ONLY",
+    "status": "действует",
+    "effectiveDate": "2026-10-01",
+    "reviewOn": "2026-11-01",
+    "reason": "Госдеп18Sepобъявление реально открыто09OctвChrome; переченьI/TN/TDи1Octсохраняются. Снимокобновлёнсобственнымнаблюдением,не старымкешем. Контрольчерезмесяц.",
+    "originalDate": "2026-09-18",
+    "originalAdded": "2026-09-24",
+    "datePreserved": true,
+    "addedPreserved": true
   },
   "checks": {
-    "capsuleWords": 49,
-    "bodyWords": 165,
+    "fullProseRead": true,
+    "finalTldrRead": true,
     "titleChars": 50,
-    "internalLink": "/visa/usa/",
-    "internalLinkStatus": "exists locally",
-    "photoViewed": true,
-    "photoSha256": "311f96ce74838d5408c2a61948da1ff485c1c79c74de3e5b18976f518c6c49ca",
-    "photoFinding": "Визуально подтверждены Harry S. Truman Building и табличка Department of State. Commons описывает официальный снимок Госдепартамента весной 2024 года, public domain; это архивный вид здания, а не визовый процесс.",
-    "schemaTopic": "visa",
-    "editorialCategory": "visa",
-    "scope": "Независимое адресное ревью окончательного текста, статуса и дат по источнику 02.10; без сборки, коммита, публикации и live-проверки страницы.",
     "clipTitle": "США расширили проверку соцсетей для виз I, TN и TD",
-    "photoViewedToday": false,
-    "mediaScope": "Фото и лицензия не менялись; SHA-256 совпадает с предыдущим визуальным ревью. Сегодня проверены изменившиеся факты и жизненный цикл."
-  },
-  "contentHash": "bf0ea78352ecef827c658d7ed171d6cccb03d3fc4f17271009d37fc888060f13",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256Scope": "full Markdown file bytes"
+    "clipTitleMeaningPreserved": true,
+    "tldrWords": 49,
+    "bodyWords": 164,
+    "primarySourceRead": true,
+    "photoViewed": true,
+    "independentReviewer": true,
+    "commonsLicenseRechecked": false,
+    "languageBannedWords": [],
+    "languageMethod": "Редакторский проход всего текста; адресно устранены ранее найденные «уже» и «в рамках».",
+    "internalLinksHttp200": true,
+    "publicCreditDataPrepared": true,
+    "readerTest": false,
+    "buildBrowserCiLive": false
+  }
 }

@@ -2,72 +2,267 @@
   "schemaVersion": 1,
   "slug": "2026-09-12-kilauea-lava-episode-55",
   "score": 4,
-  "reviewer": "codex-news-review-20261008",
-  "reviewedAt": "2026-10-08",
-  "sha256": "f192910b5a77da299425fb717bf6aae4d911975d134176d04219f37b6f64c5af",
-  "rationale": "Смена предсказуемых эпизодов на неопределённый сценарий внедрения магмы существенна для поездки к кратеру и заслуживает оценки 4 на нишевом направлении. Последнее сообщение USGS 7 октября HST не подтверждает начало 55-го эпизода и прямо исключает надёжный прогноз. Финальный текст не выдаёт небольшой поток на камере за новый эпизод; глубина около 300 метров согласуется с примерно 1000 футами.",
-  "risks": [
-    "Статус и доступ динамичны; проверка 8 октября не обещает состояние на 9 октября или на день поездки.",
-    "Ни камера, ни внедрение магмы не подтверждают начало 55-го эпизода высоких фонтанов.",
-    "Архивное лавовое озеро 2017 года не является фотографией эпизода 2026 года."
-  ],
+  "reviewer": "codex-independent-news-review-20261009",
+  "checkedAt": "2026-10-09T06:31:00.476Z",
+  "reviewedAt": "2026-10-09T06:31:00.476Z",
+  "sha256": "ed9f59182481e8d73440da4bde4127141b0f006f66ac3a0e7c244c0f4aa8d3d5",
+  "sha256Scope": "full current Markdown file bytes after source replacement and additional HVO source; prose unchanged",
+  "contentHash": "cfec35dc4ef4d904108e0b6ae028b650f6a03c42713ae174a654076ac6550c48",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "proseHash": "cfec35dc4ef4d904108e0b6ae028b650f6a03c42713ae174a654076ac6550c48",
+  "proseHashScope": "same as contentHash",
+  "rationale": "Меняется безопасный подход к вулкану, уровень 4 для нишевого направления. Новые закрытия Halemaʻumaʻu и части Byron Ledge отделены от неподтверждённого начала 55-го эпизода. Сверены 1,3 мили/около 2,1 км и характер неглубокой интрузии; старый прогноз фонтанирования не выдан за наблюдаемое событие.",
   "blockingIssues": [],
-  "evidence": [
-    {
-      "url": "https://www.usgs.gov/volcanoes/kilauea/volcano-updates",
-      "checkedOn": "2026-10-08",
-      "finding": "USGS 7 октября HST: внедрение 30 сентября — 1 октября вдоль трещин обрушения 2018 года местами примерно в 1000 футах от поверхности или ближе; прежние прогнозные признаки отсутствуют, дальнейший исход неизвестен. Начало нового эпизода высоких фонтанов не объявлено.",
-      "method": "Последнее сообщение независимо прочитано на USGS через web.run 8 октября; отдельно проверен актуальный текст свежего извлечения. Старое сообщение HVO не использовано для сегодняшнего статуса.",
-      "artifact": ".run/sources-2026-10-08/2026-09-12-kilauea-lava-episode-55.json",
-      "artifactSha256": "c903f5e01a899d11ff66f7ac3eb1d4deb7220317b2031f2345a18feb15465b79",
-      "updatedOn": "2026-10-07",
-      "sourceTimezone": "Pacific/Honolulu"
-    },
-    {
-      "url": "https://www.nps.gov/havo/planyourvisit/eruption-viewing.htm",
-      "checkedOn": "2026-10-08",
-      "finding": "NPS требует соблюдать закрытые зоны и обозначенные парковки; видимость и загруженность смотровых меняются, вебкамера не даёт разрешения на проход.",
-      "method": "Независимо прочитан содержательный текст свежего извлечения от 08.10.2026; извлечение источника выполнил автор, редакторская проверка выполнена отдельно.",
-      "artifact": ".run/sources-2026-10-08/2026-09-12-kilauea-lava-episode-55.json",
-      "artifactSha256": "c903f5e01a899d11ff66f7ac3eb1d4deb7220317b2031f2345a18feb15465b79"
-    },
-    {
-      "url": "https://commons.wikimedia.org/w/index.php?curid=63394488",
-      "checkedOn": "2026-10-08",
-      "finding": "Просмотрено лавовое озеро Халемаумау и пар на Килауэа. Commons: 2017-Halemaumau-lava-lake.jpg, Ivtorov, 13.06.2017, CC BY-SA 4.0. Подпись прямо исключает 55-й эпизод 2026 года.",
-      "method": "Локальный финальный JPEG независимо просмотрен глазами; сведения автора, даты, названия и лицензии независимо получены запросом Commons API 08.10.2026. Метаданные открытой лицензии проверены отдельно от картинки."
-    }
+  "risks": [
+    "Извержение и доступ к тропам могут измениться быстрее reviewOn; архивный лавовый кадр не показывает текущую активность.",
+    "Редакционная готовность не подтверждает сборку, браузерный рендер, CI, публикацию, SSR/фид или live QA; эти гейты остаются у автора выпуска.",
+    "HANS /volcano/hi3 — динамическая последняя сводка; review фиксирует конкретный bulletin8Oct08:25HST и его байты на9Oct.",
+    "Прежние pre-push FAIL не стали PASS от замены URL. Полный нормальный hook/CI, merge/deploy/live этим reviewer не запускались.",
+    "Оценка4 и прежние contentHash/proseHash сохранены; фото, другие16заметок и общий отчёт не перерецензировались."
   ],
+  "reviewScope": "Свежий независимый Codex reviewer не писал заметки. Прочитаны весь title/TLDR/body и конечный JPEG всех 17; после адресных исправлений перечитаны изменённые части и смысловые зависимости. Это редакторское ревью, не reader-test. MD, Git, CI и публикация этим reviewer не менялись.",
+  "evidence": {
+    "primarySource": {
+      "url": "https://volcanoes.usgs.gov/hans-public/volcano/hi3",
+      "checkedAt": "2026-10-09T06:31:00.476Z",
+      "method": "Первоначальное полное независимое редакторское ревью сохранено. Адресно9Oct отдельно прочитаны полный Daily Update8Oct на официальном HANS и Status Report7Oct; перечитан неизменённый NPS closure. Фактический конечный набор4источников проверен функциями реального gate.",
+      "confirmed": [
+        "USGS 8 октября: небольшое разбрызгивание и интрузивная активность не подтверждают начало 55-го эпизода фонтанов.",
+        "NPS 7 октября: закрываются Halemaʻumaʻu и часть Byron Ledge; совокупный участок 1,3 мили, около 2,1 км.",
+        "Дополнительное сообщение HVO об интрузии у 2018 fractures: в пределах 1000 футов, около 300 м, от поверхности; прежняя схема прогноза не действует."
+      ],
+      "sourceArtifacts": [
+        {
+          "path": ".run/sources-2026-10-09/2026-09-12-kilauea-lava-episode-55.json",
+          "sha256": "a6908bc666569209b4a7a82b12ad78f0034af5e99d6d804c7eb0305fd7c0225e",
+          "capturedAt": "2026-10-09T04:26:20.078Z",
+          "capturedBy": null,
+          "completePageClaimed": false,
+          "scope": "Исторический capture9Oct общего USGS landing, включавший Daily Update и Status Report; прежний landing URL заменён и не выдан за доступный источник."
+        },
+        {
+          "path": ".run/sources-2026-10-09/kilauea-closures.json",
+          "sha256": "52289d5bfc42decbc1b6f2c167695855debc9a5da25b7a9dc151c10f79351b18",
+          "capturedAt": "2026-10-09T04:33:55.782Z",
+          "capturedBy": null,
+          "completePageClaimed": false
+        },
+        {
+          "path": ".run/usgs-hans-2026-10-09.html",
+          "sha256": "9ed6753c53a78e06631c8d051b6d0b4f267b3fac68c154d95937838e4fd71b8c",
+          "capturedAt": "2026-10-09T06:22:44.797Z",
+          "completePageClaimed": true,
+          "scope": "Сохранённые полные байты официальной страницы HANS"
+        },
+        {
+          "path": ".run/usgs-hans-2026-10-09.json",
+          "sha256": "050859169c1d92e0946c192eaaa34eb38203afd5d8ff79379d2d4c0fba81c68f",
+          "capturedAt": "2026-10-09T06:22:44.797Z",
+          "completePageClaimed": true,
+          "scope": "HTTP manifest и извлечённый текст HANS"
+        }
+      ],
+      "independentlyVerifiedWebSources": [
+        "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-10-08T01:00:28+00:00",
+        "https://volcanoes.usgs.gov/hans-public/volcano/hi3"
+      ],
+      "currentSources": [
+        {
+          "name": "NPS — закрытие Halemaʻumaʻu и части Byron Ledge, 07.10.2026; прочитано 09.10.2026",
+          "url": "https://www.nps.gov/havo/learn/news/20261007-nr-trail-closures.htm"
+        },
+        {
+          "name": "USGS HANS — сообщение 08.10.2026, 08:25 HST; проверено 09.10.2026; начало нового эпизода фонтанов не подтверждено",
+          "url": "https://volcanoes.usgs.gov/hans-public/volcano/hi3"
+        },
+        {
+          "name": "USGS HVO — внедрение магмы и глубина около 300 м, 07.10.2026, 15:13 HST; прочитано 09.10.2026",
+          "url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-10-08T01:00:28+00:00"
+        },
+        {
+          "name": "NPS — доступ к смотровым, парковки и закрытая зона; проверено 09.10.2026",
+          "url": "https://www.nps.gov/havo/planyourvisit/eruption-viewing.htm"
+        }
+      ]
+    },
+    "photo": {
+      "viewedByThisReviewer": true,
+      "path": "src/content/news/_images/2026-09-12-kilauea-lava-episode-55.jpg",
+      "sha256": "c11653d481acf7a57ef5507facb67b5e7bb33734ca35017a6c5ac2dda837cbf1",
+      "finding": "Финальный JPEG показывает лавовое озеро 2017 года; подпись прямо называет архив, а не эпизод 55.",
+      "scope": "Сам финальный локальный JPEG просмотрен глазами, а не старый контактный лист.",
+      "credit": "Ivtorov",
+      "license": "CC BY-SA",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "source": "https://commons.wikimedia.org/w/index.php?curid=63394488",
+      "title": "Лавовое озеро Халемаумау, 13 июня 2017 года. Архивный снимок, не 55-го эпизода 2026 года.",
+      "alt": "Оранжевое зарево лавы и клубы пара в кратере Халемаумау на Килауэа в сумерках, вокруг чёрное застывшее поле",
+      "commonsMetadataRechecked": false,
+      "commonsMetadataMethod": "Повторное открытие Commons для прежнего кадра не выполнено; проверены конечная картинка и сохранённые metadata, не заявлена новая перепроверка лицензии.",
+      "commonsMetadataArtifacts": [],
+      "publicAttributionPrepared": "Настоящая publicPhotoCredits([],17 notes) возвращает 15 CC-записей, все с creator/source/licenseUrl; два Public domain законно исключены. Публичный /legal/photos/ после сборки ещё не проверен."
+    },
+    "internalLinks": {
+      "method": "Собственные свежие HTTP GET reviewer 9 октября, конечный адрес и title ответа; anchor по смыслу сопоставлен с целевой страницей. Ответ 200 не выдан за браузерную проверку.",
+      "results": [
+        {
+          "path": "/usa/",
+          "status": 200,
+          "url": "https://traveltribe.ru/usa/",
+          "checkedAt": "2026-10-09T05:35:02.376Z",
+          "title": "США 2026 для россиян: когда ехать, цены, маршрут",
+          "bodySha256": "852fa746bf7c1e8628c0434dcfa3d0172654df25d7c48d85fe4055e2af703ed6"
+        }
+      ]
+    },
+    "editorialCriteria": {
+      "changesPlans": true,
+      "surprisingNature": false,
+      "concreteAndVerifiable": true,
+      "lastsLongerThanWeek": true,
+      "editorialRubric": "nature",
+      "backendTopic": "nature"
+    },
+    "sourceFollowup": {
+      "result": "PASS",
+      "reviewer": "codex-independent-news-review-20261009",
+      "reviewedAt": "2026-10-09T06:31:00.476Z",
+      "checkedAt": "2026-10-09T06:31:00.476Z",
+      "scope": "Адресное независимое ревью замены источника Килауэа; не повторный обзор17 и не reader-test.",
+      "initialReviewedAt": "2026-10-09T05:50:45.306Z",
+      "oldSourceUrl": "https://www.usgs.gov/volcanoes/kilauea/volcano-updates",
+      "oldSourceStatus": "HTTP504, затем AbortError в нормальном pre-push автора; не повторялись этим reviewer и остаются FAIL.",
+      "replacementSourceUrl": "https://volcanoes.usgs.gov/hans-public/volcano/hi3",
+      "additionalRequiredSourceUrl": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-10-08T01:00:28+00:00",
+      "finalSources": [
+        {
+          "name": "NPS — закрытие Halemaʻumaʻu и части Byron Ledge, 07.10.2026; прочитано 09.10.2026",
+          "url": "https://www.nps.gov/havo/learn/news/20261007-nr-trail-closures.htm"
+        },
+        {
+          "name": "USGS HANS — сообщение 08.10.2026, 08:25 HST; проверено 09.10.2026; начало нового эпизода фонтанов не подтверждено",
+          "url": "https://volcanoes.usgs.gov/hans-public/volcano/hi3"
+        },
+        {
+          "name": "USGS HVO — внедрение магмы и глубина около 300 м, 07.10.2026, 15:13 HST; прочитано 09.10.2026",
+          "url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-10-08T01:00:28+00:00"
+        },
+        {
+          "name": "NPS — доступ к смотровым, парковки и закрытая зона; проверено 09.10.2026",
+          "url": "https://www.nps.gov/havo/planyourvisit/eruption-viewing.htm"
+        }
+      ],
+      "unchanged": {
+        "score": 4,
+        "contentHash": "cfec35dc4ef4d904108e0b6ae028b650f6a03c42713ae174a654076ac6550c48",
+        "proseHash": "cfec35dc4ef4d904108e0b6ae028b650f6a03c42713ae174a654076ac6550c48",
+        "titleTldrBody": true,
+        "photoNotRereviewed": true
+      },
+      "dailyBulletin": {
+        "url": "https://volcanoes.usgs.gov/hans-public/volcano/hi3",
+        "officialPublisher": "U.S. Geological Survey / Hawaiian Volcano Observatory",
+        "bulletinDate": "2026-10-08",
+        "bulletinTime": "08:25 HST / 18:25 UTC",
+        "status": 200,
+        "localCapturedAt": "2026-10-09T06:22:44.797Z",
+        "independentlyOpenedWebAt": "2026-10-09",
+        "htmlSha256": "9ed6753c53a78e06631c8d051b6d0b4f267b3fac68c154d95937838e4fd71b8c",
+        "htmlBytes": 19902,
+        "htmlChars": 19836,
+        "gateTextChars": 9005,
+        "fullSubstantiveTextRead": true,
+        "confirmed": [
+          "Наблюдалось лишь небольшое разбрызгивание; начало эпизода55 не объявлено.",
+          "Ранее прогнозируемая схема фонтанирования нарушена, точное следующее окно не прогнозируется.",
+          "Ссылки на Status Report7Oct и NPS closures7Oct присутствуют прямо в бюллетене."
+        ]
+      },
+      "statusReport": {
+        "url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-10-08T01:00:28+00:00",
+        "officialPublisher": "U.S. Geological Survey / Hawaiian Volcano Observatory",
+        "reportDate": "2026-10-07",
+        "reportTime": "15:13 HST / 01:13 UTC 8 October",
+        "liveHttpStatus": 200,
+        "liveCheckedAt": "2026-10-09T06:28:11.180Z",
+        "htmlBytes": 23681,
+        "htmlSha256": "cd2565214919c8099bbc13db8e248ba207b0da0d4f4924730888019eff921247",
+        "fullSubstantiveTextRead": true,
+        "confirmation": "Текст прямо указывает внедрение в пределах thousand feet (about 300 meters) or less of the surface и трещины2018; сохраняет несколько возможных исходов без точного прогноза.",
+        "method": "Официальная страница отдельно прочитана через web.run; затем собственный конечный HTTP GET200 reviewer, текст извлечён настоящей stripHtml news gate."
+      },
+      "npsClosure": {
+        "url": "https://www.nps.gov/havo/learn/news/20261007-nr-trail-closures.htm",
+        "artifact": ".run/sources-2026-10-09/kilauea-closures.json",
+        "capturedAt": "2026-10-09T04:33:55.782Z",
+        "artifactSha256": "52289d5bfc42decbc1b6f2c167695855debc9a5da25b7a9dc151c10f79351b18",
+        "method": "Неизменённый полный содержательный релиз NPS7Oct в свежем capture9Oct перечитан; закрытие независимо подтверждается именно NPS, HANS даёт прямую официальную ссылку.",
+        "confirmed": [
+          "Halemaʻumaʻu Trail и часть Byron Ledge закрываются7Octк17:00, вместе1,3мили≈2,1км.",
+          "Причина — сейсмичность и опасность камнепадов; Keanakākoʻi viewing areas закрыты на предыдущей неделе."
+        ]
+      },
+      "realGate": {
+        "script": "scripts/news-gate.mjs",
+        "scriptSha256": "cccadda323e3d0d760bca734e429fad1bb58d4d25a575c7f4ac0e8c7fabe373a",
+        "config": "news/config.json",
+        "configSha256": "c12e5ada4ad08d46dbb2fc2d1f198fcaba0b41027f748235bfa793d0a512671f",
+        "domainFunction": "checkDomains",
+        "domainResult": {
+          "ok": true
+        },
+        "allowedDomain": "usgs.gov",
+        "domainRule": "host===d || host.endsWith(\".\" + d); volcanoes.usgs.gov разрешён как официальный поддомен без правок whitelist.",
+        "corroborationFunction": "checkCorroboration",
+        "corroborationResult": {
+          "ok": true
+        },
+        "initialThreeSourceReplacement": {
+          "ok": false,
+          "reason": "числа 300 нет на странице источника"
+        },
+        "finalSourceCount": 4,
+        "npsViewingCapture": "Неизменённый текст NPS eruption-viewing из .run/sources-2026-10-09/2026-09-12-kilauea-lava-episode-55.json, источник№2 того capture. Полный свежий сетевой news gate выполняет автор в обычном hook."
+      },
+      "limits": [
+        "HANS /volcano/hi3 — динамическая последняя сводка; review фиксирует конкретный bulletin8Oct08:25HST и его байты на9Oct.",
+        "Прежние pre-push FAIL не стали PASS от замены URL. Полный нормальный hook/CI, merge/deploy/live этим reviewer не запускались.",
+        "Оценка4 и прежние contentHash/proseHash сохранены; фото, другие16заметок и общий отчёт не перерецензировались."
+      ]
+    }
+  },
   "lifecycle": {
-    "decision": "UPDATE",
-    "reviewOn": "2026-10-09",
-    "reason": "Ежедневная перепроверка статуса USGS и условий NPS; не назначать прогнозное окно без нового сообщения."
+    "decision": "REVISE",
+    "status": null,
+    "effectiveDate": null,
+    "reviewOn": "2026-10-11",
+    "reason": "USGS08Oct: фонтанирование55неподтверждено. NPS07Oct: закрытыHalemaumau/частьByronLedge; новая содержательная добавка. Возврат через2дня.",
+    "originalDate": "2026-09-11",
+    "originalAdded": "2026-09-12",
+    "datePreserved": true,
+    "addedPreserved": true
   },
   "checks": {
-    "capsuleWords": 41,
-    "bodyWords": 167,
+    "fullProseRead": true,
+    "finalTldrRead": true,
     "titleChars": 50,
     "clipTitle": "Килауэа: начало 55-го эпизода пока не подтверждено",
-    "internalLink": "/usa/",
-    "internalLinkStatus": 200,
-    "internalLinkEvidence": ".run/deep-links-2026-10-08.json",
-    "internalLinkMethod": "Прочитан свежий ответ автора с фактическим HTTP 200 от 8 октября; анкор независимо сопоставлен с целевым материалом.",
+    "clipTitleMeaningPreserved": true,
+    "tldrWords": 46,
+    "bodyWords": 217,
+    "primarySourceRead": true,
     "photoViewed": true,
-    "photoSha256": "c11653d481acf7a57ef5507facb67b5e7bb33734ca35017a6c5ac2dda837cbf1",
-    "photoFinding": "Просмотрено лавовое озеро Халемаумау и пар на Килауэа. Commons: 2017-Halemaumau-lava-lake.jpg, Ivtorov, 13.06.2017, CC BY-SA 4.0. Подпись прямо исключает 55-й эпизод 2026 года.",
-    "publicAttribution": "Проверена реальная publicPhotoCredits с импортируемыми blog/_images/**/_credits.json и 11 финальными заметками: запись содержит автора, название, Commons, адрес лицензии и сведения о JPEG. Итоговый HTML /legal/photos/ после сборки остаётся публикационным гейтом.",
-    "editorialCriteria": {
-      "changesPlans": "Да: нельзя выбирать поездку под обещанное окно высоких фонтанов.",
-      "surprisingNature": "Да: изменившаяся картина вулканической активности.",
-      "concreteAndVerifiable": "Да: последний официальный статус, механизм и глубина.",
-      "lastsLongerThanWeek": "Ограниченно: научный контекст сохраняется, оперативный статус требует возврата 9 октября; это UPDATE существующей записи, не новый краткосрочный повод."
-    },
-    "selectionKind": "UPDATE",
+    "independentReviewer": true,
+    "commonsLicenseRechecked": false,
     "languageBannedWords": [],
-    "sourcesArray": true,
-    "scope": "Независимое редакторское ревью конечного текста, дат, единиц, статуса, сроков, ссылки, финального JPEG и прав. Без local build/Playwright, CI, публикации и live-проверки нового выпуска."
+    "languageMethod": "Редакторский проход всего текста; адресно устранены ранее найденные «уже» и «в рамках».",
+    "internalLinksHttp200": true,
+    "publicCreditDataPrepared": true,
+    "readerTest": false,
+    "buildBrowserCiLive": false,
+    "sourceReplacementPass": true,
+    "realDomainGatePass": true,
+    "realCorroborationPass": true
   },
-  "contentHash": "1b83c2eecf5490e3de2c1a7d5dd1404fc97ba62e1d2cfe8a841c0f82d9be1f23",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256Scope": "full Markdown file bytes"
+  "initialReviewedAt": "2026-10-09T05:50:45.306Z"
 }

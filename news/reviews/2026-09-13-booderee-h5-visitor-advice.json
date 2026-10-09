@@ -1,42 +1,111 @@
 {
   "schemaVersion": 1,
   "slug": "2026-09-13-booderee-h5-visitor-advice",
-  "score": 3,
-  "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
-  "reviewedAt": "2026-09-23",
-  "sha256": "6a3c5bd9bf41e4448e2d25ee37f0a9257be2d8680e1f85579c8cdb1685fd1282",
-  "rationale": "KEEP. Parks Australia по-прежнему сообщает, что Будери остаётся открытым после выявления H5 у большой хохлатой крачки, и сохраняет рекомендации не трогать животных и сообщать о нескольких больных или погибших птицах. Текст соответствует опубликованной рекомендации. Это не аттестация каждой тропы и не заявление об окончании H5; нового объявления именно 23 сентября нет. Оценка 3 сохранена.",
-  "risks": [
-    "Открытый парк не означает доступность каждого участка без отдельной текущей проверки.",
-    "Повторное чтение уведомления не доказывает прекращение H5 или отсутствие новых случаев."
-  ],
+  "score": 4,
+  "reviewer": "codex-independent-news-review-20261009",
+  "checkedAt": "2026-10-09T05:50:45.306Z",
+  "reviewedAt": "2026-10-09T05:50:45.306Z",
+  "sha256": "ac2e34cde0af20c7e34cd86cfa35076dbdd66e880a2d71f03fa7e17fdd50f3c1",
+  "sha256Scope": "full Markdown file bytes at editorial review; later header score synchronization may change this byte hash",
+  "contentHash": "cdacc1e708f42a24f40e8f2884ce6a061f6b3900a75a89bae88c3b0db1a93d99",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "proseHash": "cdacc1e708f42a24f40e8f2884ce6a061f6b3900a75a89bae88c3b0db1a93d99",
+  "proseHashScope": "same as contentHash",
+  "rationale": "Официальное предупреждение меняет поведение посетителя в открытом парке: не трогать птиц, фиксировать наблюдение и сообщать о нескольких погибших животных. Это уровень 4 для нишевой Австралии, выше простой любопытной новости. Текст не расширяет найденный H5 до неподтверждённого подтипа и не объявляет закрытие парка.",
   "blockingIssues": [],
-  "evidence": [
-    {
-      "url": "https://parksaustralia.gov.au/news/h5-bird-flu-detected-booderee-national-park/",
-      "publishedOn": "2026-09-11",
-      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
-      "finding": "Подтверждены открытый парк, H5 у крачки, правила не трогать животных и телефон сообщения о нескольких больных или погибших животных.",
-      "checkedOn": "2026-09-23"
-    }
+  "risks": [
+    "Рекомендация парка не является медицинской диагностикой; изменения мер требуют нового официального сообщения.",
+    "Редакционная готовность не подтверждает сборку, браузерный рендер, CI, публикацию, SSR/фид или live QA; эти гейты остаются у автора выпуска."
   ],
+  "reviewScope": "Свежий независимый Codex reviewer не писал заметки. Прочитаны весь title/TLDR/body и конечный JPEG всех 17; после адресных исправлений перечитаны изменённые части и смысловые зависимости. Это редакторское ревью, не reader-test. MD, Git, CI и публикация этим reviewer не менялись.",
+  "evidence": {
+    "primarySource": {
+      "url": "https://parksaustralia.gov.au/news/h5-bird-flu-detected-booderee-national-park/",
+      "checkedAt": "2026-10-09T05:50:45.306Z",
+      "method": "Независимо прочитаны содержательные тексты первоисточников/прямых репортажей в свежих captures от 9 октября; даты публикации отделены от даты открытия.",
+      "confirmed": [
+        "Parks Australia: H5 обнаружен у большой хохлатой крачки; парк остаётся открытым.",
+        "Не трогать заболевших или погибших птиц; записать дату, время и место, фото делать лишь безопасно.",
+        "При нескольких погибших животных сообщить по указанному официальному номеру 1800 675 888."
+      ],
+      "sourceArtifacts": [
+        {
+          "path": ".run/sources-2026-10-09/2026-09-13-booderee-h5-visitor-advice.json",
+          "sha256": "b3f841f294adc7cd98c1f013c0ad221ec85c43059c8c066393a018a713371145",
+          "capturedAt": "2026-10-09T04:26:04.518Z",
+          "capturedBy": null,
+          "completePageClaimed": false
+        }
+      ],
+      "independentlyVerifiedWebSources": []
+    },
+    "photo": {
+      "viewedByThisReviewer": true,
+      "path": "src/content/news/_images/2026-09-13-booderee-h5-visitor-advice.jpg",
+      "sha256": "fa8979eb6d635871460da49727f04baa18e2dca9946d845a86f04c7198be2097",
+      "finding": "Архивный пляж Бхерверре в Будери уместен как вид парка; фотография не изображает заражённых птиц.",
+      "scope": "Сам финальный локальный JPEG просмотрен глазами, а не старый контактный лист.",
+      "credit": "Andrea Schaffer",
+      "license": "CC BY",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "source": "https://commons.wikimedia.org/w/index.php?curid=90056045",
+      "title": null,
+      "alt": "Пляж Бхерверре в национальном парке Будери; архивный вид берега",
+      "commonsMetadataRechecked": false,
+      "commonsMetadataMethod": "Повторное открытие Commons для прежнего кадра не выполнено; проверены конечная картинка и сохранённые metadata, не заявлена новая перепроверка лицензии.",
+      "commonsMetadataArtifacts": [],
+      "publicAttributionPrepared": "Настоящая publicPhotoCredits([],17 notes) возвращает 15 CC-записей, все с creator/source/licenseUrl; два Public domain законно исключены. Публичный /legal/photos/ после сборки ещё не проверен."
+    },
+    "internalLinks": {
+      "method": "Собственные свежие HTTP GET reviewer 9 октября, конечный адрес и title ответа; anchor по смыслу сопоставлен с целевой страницей. Ответ 200 не выдан за браузерную проверку.",
+      "results": [
+        {
+          "path": "/australia-east/",
+          "status": 200,
+          "url": "https://traveltribe.ru/australia-east/",
+          "checkedAt": "2026-10-09T05:35:02.838Z",
+          "title": "Восточная Австралия 2026: Сидней, Мельбурн, когда ехать",
+          "bodySha256": "17e330de6e9d596deb13287878ee703764338ef92373b238deff261969ef6861"
+        }
+      ]
+    },
+    "editorialCriteria": {
+      "changesPlans": true,
+      "surprisingNature": false,
+      "concreteAndVerifiable": true,
+      "lastsLongerThanWeek": true,
+      "editorialRubric": "nature",
+      "backendTopic": "nature"
+    }
+  },
   "lifecycle": {
-    "reviewOn": "2026-09-25",
-    "reason": "Открытый парк не означает доступность каждого участка без отдельной текущей проверки.",
-    "decision": "KEEP_PUBLISHED_ADVICE"
+    "decision": "CHECK_ONLY",
+    "status": null,
+    "effectiveDate": null,
+    "reviewOn": "2026-10-16",
+    "reason": "Текущая страница сохраняет меры предосторожности и открытие парка; объявления об отмене мер нет. Следующая проверка через неделю.",
+    "originalDate": "2026-09-11",
+    "originalAdded": "2026-09-13",
+    "datePreserved": true,
+    "addedPreserved": true
   },
   "checks": {
-    "metadataOnlyConfirmed": true,
-    "priorSourceSha256": "43db37c7470c4e36cef83b89bb74f8471e05287917e856b79e311da24139c35a",
-    "titleUnchangedByClip": true,
-    "clippedTitle": "Будери: после обнаружения H5 парк остаётся открытым",
-    "tldrGate": {
-      "ok": true
-    },
-    "scope": "Ограниченный lifecycle-review 23.09: перечитан изменчивый статус, проза и прежняя фотоаттестация не исследовались заново; обновлены checked, reviewOn и SHA; без сборки и публикации.",
-    "capsuleWords": 46,
-    "bodyWords": 172,
-    "titleChars": 51
-  },
-  "evidenceReport": ".run/2026-09-18/lifecycle-review/review.json"
+    "fullProseRead": true,
+    "finalTldrRead": true,
+    "titleChars": 51,
+    "clipTitle": "Будери: после обнаружения H5 парк остаётся открытым",
+    "clipTitleMeaningPreserved": true,
+    "tldrWords": 46,
+    "bodyWords": 174,
+    "primarySourceRead": true,
+    "photoViewed": true,
+    "independentReviewer": true,
+    "commonsLicenseRechecked": false,
+    "languageBannedWords": [],
+    "languageMethod": "Редакторский проход всего текста; адресно устранены ранее найденные «уже» и «в рамках».",
+    "internalLinksHttp200": true,
+    "publicCreditDataPrepared": true,
+    "readerTest": false,
+    "buildBrowserCiLive": false
+  }
 }

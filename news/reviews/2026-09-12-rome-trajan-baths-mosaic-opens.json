@@ -2,45 +2,111 @@
   "schemaVersion": 1,
   "slug": "2026-09-12-rome-trajan-baths-mosaic-opens",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review)",
-  "reviewedAt": "2026-09-18",
-  "sha256": "9fb981151a9b167f0bf95916558c825e0bf0498509700bb12f24af576b5dd254",
-  "rationale": "Независимая lifecycle-аттестация по свежему чтению 18.09.2026. Карточка заново получена 18 сентября: сентябрьские бесплатные сеансы по записи отмечены TUTTO ESAURITO. С октября вход платный, сопровождение бесплатное; выходные для одиночных посетителей, пятница для своих групп/школ. У одиночных посетителей и групп места отмечены закончившимися, у школ такой отметки нет. Оценка 4 остаётся моей: открытие нового археологического объекта и ограничения записи влияют на выбор конкретной экскурсии. Обратная замена только checked/reviewOn восстановила SHA исходника первого круга: тело, заголовок, источники и изображения не менялись. Это текущая проверка перечисленных событий и условий, а не новая полная ревизия исторической справки, фотографий или рендера.",
-  "risks": [
-    "Инвентарь 060608/Vivaticket не проверялся: отменённые места неизвестны. Тариф 7,50/6 евро есть в карточке, но дата его добавления неизвестна и для заметки он необязателен.",
-    "Фотографии и внутренние ссылки в этом наборе из семи lifecycle-дельт заново не проверялись; унаследованные поля не являются доказательством их свежей проверки."
-  ],
+  "reviewer": "codex-independent-news-review-20261009",
+  "checkedAt": "2026-10-09T05:50:45.306Z",
+  "reviewedAt": "2026-10-09T05:50:45.306Z",
+  "sha256": "24e3be95276d18d79fac55164ddc8dabb7bb53f68973c1c8f199e6cfcee97316",
+  "sha256Scope": "full Markdown file bytes at editorial review; later header score synchronization may change this byte hash",
+  "contentHash": "2eb9c2b0fed18e2a81c272ae9efa92c3d61969ddcc6e6df65bddba6b441638c7",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "proseHash": "2eb9c2b0fed18e2a81c272ae9efa92c3d61969ddcc6e6df65bddba6b441638c7",
+  "proseHashScope": "same as contentHash",
+  "rationale": "Посещение конкретного археологического объекта требует записи и меняет план дня, уровень 4. Финальный H1 больше не утверждает, что места закончились: текущая карточка ведёт к экскурсионным билетам. Сентябрьские бесплатные сеансы и старое sold out сняты; 060608 не представлено как часы открытия галереи.",
   "blockingIssues": [],
-  "evidence": [
-    {
-      "url": "https://sovraintendenzaroma.it/content/colle-oppio-terme-di-traiano-1",
-      "sourceDate": "Дата правки не указана; получение 2026-09-18",
-      "checkedOn": "2026-09-18",
-      "method": "Full saved source text independently read; exact fetch status recorded in sources-index.json",
-      "capture": ".run/2026-09-18/lifecycle-review/rome-card.txt"
-    },
-    {
-      "url": "https://www.sovraintendenzaroma.it/content/caput-mundi-terme-di-traiano-concluso-l%E2%80%99intervento-di-riqualificazione-dell%E2%80%99esedra-e-della",
-      "sourceDate": "2026-09-08",
-      "checkedOn": "2026-09-18",
-      "method": "Full saved source text independently read; exact fetch status recorded in sources-index.json",
-      "capture": ".run/2026-09-18/lifecycle-review/rome-announcement.txt"
-    }
+  "risks": [
+    "Наличие мест в конкретном слоте следует проверять в билетной системе; это ревью не подтверждает свободный билет.",
+    "Редакционная готовность не подтверждает сборку, браузерный рендер, CI, публикацию, SSR/фид или live QA; эти гейты остаются у автора выпуска."
   ],
+  "reviewScope": "Свежий независимый Codex reviewer не писал заметки. Прочитаны весь title/TLDR/body и конечный JPEG всех 17; после адресных исправлений перечитаны изменённые части и смысловые зависимости. Это редакторское ревью, не reader-test. MD, Git, CI и публикация этим reviewer не менялись.",
+  "evidence": {
+    "primarySource": {
+      "url": "https://www.sovraintendenzaroma.it/content/caput-mundi-terme-di-traiano-concluso-l%E2%80%99intervento-di-riqualificazione-dell%E2%80%99esedra-e-della",
+      "checkedAt": "2026-10-09T05:50:45.306Z",
+      "method": "Независимо прочитаны содержательные тексты первоисточников/прямых репортажей в свежих captures от 9 октября; даты публикации отделены от даты открытия.",
+      "confirmed": [
+        "Галерея и экседра восстановлены; помещение I века предшествует термам 109 года.",
+        "Текущая карточка объекта: посещение с экскурсиями и записью, ссылка на билеты.",
+        "060608 — информационная служба; её время работы не приравнено к расписанию объекта.",
+        "Текущий октябрьский sold out не подтверждён и в окончательном H1/body не заявлен."
+      ],
+      "sourceArtifacts": [
+        {
+          "path": ".run/sources-2026-10-09/2026-09-12-rome-trajan-baths-mosaic-opens.json",
+          "sha256": "e3990d39c7c15eb2b764504d4e05408dcfccc37741c21ef746cbf1eb416f1897",
+          "capturedAt": "2026-10-09T04:26:04.399Z",
+          "capturedBy": null,
+          "completePageClaimed": false
+        }
+      ],
+      "independentlyVerifiedWebSources": []
+    },
+    "photo": {
+      "viewedByThisReviewer": true,
+      "path": "src/content/news/_images/2026-09-12-rome-trajan-baths-mosaic-opens.jpg",
+      "sha256": "54978c5ab1004d958fd99cc73e45a5b8b4eee790c8daedb8abbe38ae4be8d763",
+      "finding": "Внешний вид цистерн «Семь залов» при термах Траяна: связанная иллюстрация, не фото открытой галереи; alt честно описывает объект.",
+      "scope": "Сам финальный локальный JPEG просмотрен глазами, а не старый контактный лист.",
+      "credit": "Lalupa",
+      "license": "CC BY-SA",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "source": "https://commons.wikimedia.org/w/index.php?curid=5704066",
+      "title": null,
+      "alt": "Кирпичные своды и ниши цистерны «Семь залов» при термах Траяна на Оппиевом холме в Риме, сверху пинии и трава",
+      "commonsMetadataRechecked": false,
+      "commonsMetadataMethod": "Повторное открытие Commons для прежнего кадра не выполнено; проверены конечная картинка и сохранённые metadata, не заявлена новая перепроверка лицензии.",
+      "commonsMetadataArtifacts": [],
+      "publicAttributionPrepared": "Настоящая publicPhotoCredits([],17 notes) возвращает 15 CC-записей, все с creator/source/licenseUrl; два Public domain законно исключены. Публичный /legal/photos/ после сборки ещё не проверен."
+    },
+    "internalLinks": {
+      "method": "Собственные свежие HTTP GET reviewer 9 октября, конечный адрес и title ответа; anchor по смыслу сопоставлен с целевой страницей. Ответ 200 не выдан за браузерную проверку.",
+      "results": [
+        {
+          "path": "/italy-south/",
+          "status": 200,
+          "url": "https://traveltribe.ru/italy-south/",
+          "checkedAt": "2026-10-09T05:35:02.377Z",
+          "title": "Италия (центр и юг) 2026: когда ехать, цены, маршрут",
+          "bodySha256": "a106879bddfb67207845493bdbdab7d5ceec9294fc80b537d6b475b27ccd67cf"
+        }
+      ]
+    },
+    "editorialCriteria": {
+      "changesPlans": true,
+      "surprisingNature": false,
+      "concreteAndVerifiable": true,
+      "lastsLongerThanWeek": true,
+      "editorialRubric": "transport",
+      "backendTopic": "transport"
+    }
+  },
   "lifecycle": {
-    "reviewOn": "2026-10-01",
-    "reason": "Карточка назначает показ онлайн-билетов на первое воскресенье в предшествующий четверг. Для 4 октября это 1 октября (календарный расчёт): проверить появление сеансов и октябрьский режим, не обещая наличие. Раньше — при новом объявлении мест.",
-    "decision": "KEEP_CURRENT_CARD_MARKINGS"
+    "decision": "REVISE",
+    "status": null,
+    "effectiveDate": null,
+    "reviewOn": "2026-10-16",
+    "reason": "Карточка терм ведёт к текущему платному бронированию; старые сентябрьские сеансы и утверждение об отсутствии всех мест больше не выдаются за текущие. Возврат через неделю.",
+    "originalDate": "2026-09-08",
+    "originalAdded": "2026-09-12",
+    "datePreserved": true,
+    "addedPreserved": true
   },
   "checks": {
-    "metadataOnlyConfirmed": true,
-    "priorSourceSha256": "cc9ca47de73fdcdacbdf5eaba97e2ee5f3a1b69b3992064263a242b9521e6868",
-    "titleUnchangedByClip": true,
-    "clippedTitle": "Рим открыл галерею терм Траяна: места по записи закончились",
-    "tldrGate": {
-      "ok": true
-    },
-    "scope": "Current facts and exact metadata-only delta; no build, browser, publication, new photo or link audit"
-  },
-  "evidenceReport": ".run/2026-09-18/lifecycle-review/review.json"
+    "fullProseRead": true,
+    "finalTldrRead": true,
+    "titleChars": 56,
+    "clipTitle": "Рим: галерея терм Траяна принимает посетителей по записи",
+    "clipTitleMeaningPreserved": true,
+    "tldrWords": 51,
+    "bodyWords": 171,
+    "primarySourceRead": true,
+    "photoViewed": true,
+    "independentReviewer": true,
+    "commonsLicenseRechecked": false,
+    "languageBannedWords": [],
+    "languageMethod": "Редакторский проход всего текста; адресно устранены ранее найденные «уже» и «в рамках».",
+    "internalLinksHttp200": true,
+    "publicCreditDataPrepared": true,
+    "readerTest": false,
+    "buildBrowserCiLive": false
+  }
 }

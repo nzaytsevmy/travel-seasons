@@ -2,47 +2,110 @@
   "schemaVersion": 1,
   "slug": "2026-09-24-nepal-flydubai-pokhara",
   "score": 4,
-  "reviewer": "Codex GPT-6 (news_review_20260919)",
-  "reviewedAt": "2026-09-24",
-  "sha256": "8f706d7a544204de59f6287b7836818b125aab43749cf293db76b098646e264c",
-  "rationale": "Kathmandu Post подтверждает фактический первый регулярный рейс flydubai в Покхару 23 сентября: посадку в 18:18, Boeing 737 MAX 8 и 113 прибывших пассажиров. Официальный анонс перевозчика подтверждает маршрут и первоначальный план ежедневных рейсов. Финальный текст честно называет ежедневный режим планом, требует проверить календарь и условия билета, не обещает удобную пересадку из России и ведёт на существующий раздел Непала. Оценка 4: новый прямой международный участок заметно меняет логистику поездки.",
-  "risks": [
-    "Ежедневный режим заявлен в июньском анонсе как план; фактическую доступность на конкретные даты и текущую рабочую частоту нужно проверять перед покупкой.",
-    "Наличие прямого участка не гарантирует удобную стыковку, единый билет, багаж до конца маршрута или одинаковый терминал.",
-    "Фото показывает международный аэропорт Покхары в 2023 году, а не первый рейс flydubai."
-  ],
+  "reviewer": "codex-independent-news-review-20261009",
+  "checkedAt": "2026-10-09T05:50:45.306Z",
+  "reviewedAt": "2026-10-09T05:50:45.306Z",
+  "sha256": "979a15b88bf78fc5fbfb50a908aaa3571cb32c0acb7a2d00b9e72a894007c289",
+  "sha256Scope": "full Markdown file bytes at editorial review; later header score synchronization may change this byte hash",
+  "contentHash": "9fa9ab1731eb9778d2645ff5c9a8be0367a3feecc51c14733386caa16861124d",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "proseHash": "9fa9ab1731eb9778d2645ff5c9a8be0367a3feecc51c14733386caa16861124d",
+  "proseHashScope": "same as contentHash",
+  "rationale": "Появилось прямое сообщение в нишевый аэропорт, уровень 4. Первый реальный прилёт 23 сентября подтверждён отдельно от июньского анонса ежедневной программы. Текст правильно называет DXB и международный аэропорт Покхары, не обещает исполнение каждого сегодняшнего рейса или единый билет через Дубай.",
   "blockingIssues": [],
-  "evidence": [
-    {
-      "url": "https://kathmandupost.com/money/2026/09/23/flydubai-begins-regular-international-flights-from-pokhara",
-      "publishedOn": "2026-09-23",
-      "capture": null,
-      "finding": "Подтверждены фактический первый регулярный рейс, посадка в 18:18, Boeing 737 MAX 8 и 113 прибывших пассажиров.",
-      "checkedOn": "2026-09-24"
-    },
-    {
-      "url": "https://news.flydubai.com/flydubai-announces-new-daily-service-to-pokhara-expanding-connectivity-to-nepal",
-      "publishedOn": "2026-06-09",
-      "capture": null,
-      "finding": "Официальный анонс подтверждает маршрут и первоначально заявленную ежедневную частоту.",
-      "checkedOn": "2026-09-24"
-    }
+  "risks": [
+    "Текущие цены, каждый полёт и условия пересадки в отдельном бронировании не проверялись и не обещаны.",
+    "Редакционная готовность не подтверждает сборку, браузерный рендер, CI, публикацию, SSR/фид или live QA; эти гейты остаются у автора выпуска."
   ],
+  "reviewScope": "Свежий независимый Codex reviewer не писал заметки. Прочитаны весь title/TLDR/body и конечный JPEG всех 17; после адресных исправлений перечитаны изменённые части и смысловые зависимости. Это редакторское ревью, не reader-test. MD, Git, CI и публикация этим reviewer не менялись.",
+  "evidence": {
+    "primarySource": {
+      "url": "https://kathmandupost.com/money/2026/09/23/flydubai-begins-regular-international-flights-from-pokhara",
+      "checkedAt": "2026-10-09T05:50:45.306Z",
+      "method": "Независимо прочитаны содержательные тексты первоисточников/прямых репортажей в свежих captures от 9 октября; даты публикации отделены от даты открытия.",
+      "confirmed": [
+        "Kathmandu Post: первый регулярный flydubai прибыл в Покхару 23 сентября, 113 пассажиров.",
+        "flydubai заранее объявляла ежедневное сообщение с 23 сентября из Dubai Terminal 3.",
+        "Официальная объявленная программа не равна проверенному исполнению каждого рейса 9 октября."
+      ],
+      "sourceArtifacts": [
+        {
+          "path": ".run/sources-2026-10-09/2026-09-24-nepal-flydubai-pokhara.json",
+          "sha256": "994c0557c1b90ddf398ca449fe3fb5f8317f21b342ea2c33fdd20455f39184f7",
+          "capturedAt": "2026-10-09T04:26:21.506Z",
+          "capturedBy": null,
+          "completePageClaimed": false
+        }
+      ],
+      "independentlyVerifiedWebSources": []
+    },
+    "photo": {
+      "viewedByThisReviewer": true,
+      "path": "src/content/news/_images/2026-09-24-nepal-flydubai-pokhara.jpg",
+      "sha256": "e9a3805bc7e7f2b0a10e948686a4a1061864841e4634b71c0e89155af3542526",
+      "finding": "Финальный кадр терминала Покхары подписан архивной иллюстрацией; он не выдан за фотографию первого прилёта.",
+      "scope": "Сам финальный локальный JPEG просмотрен глазами, а не старый контактный лист.",
+      "credit": "Hariram sigdel h",
+      "license": "CC BY",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "source": "https://commons.wikimedia.org/w/index.php?curid=154602504",
+      "title": "Международный аэропорт Покхары. Архивная иллюстрация аэропорта, не первого рейса flydubai.",
+      "alt": "Терминал международного аэропорта Покхары",
+      "commonsMetadataRechecked": false,
+      "commonsMetadataMethod": "Повторное открытие Commons для прежнего кадра не выполнено; проверены конечная картинка и сохранённые metadata, не заявлена новая перепроверка лицензии.",
+      "commonsMetadataArtifacts": [],
+      "publicAttributionPrepared": "Настоящая publicPhotoCredits([],17 notes) возвращает 15 CC-записей, все с creator/source/licenseUrl; два Public domain законно исключены. Публичный /legal/photos/ после сборки ещё не проверен."
+    },
+    "internalLinks": {
+      "method": "Собственные свежие HTTP GET reviewer 9 октября, конечный адрес и title ответа; anchor по смыслу сопоставлен с целевой страницей. Ответ 200 не выдан за браузерную проверку.",
+      "results": [
+        {
+          "path": "/nepal/",
+          "status": 200,
+          "url": "https://traveltribe.ru/nepal/",
+          "checkedAt": "2026-10-09T05:35:03.109Z",
+          "title": "Непал 2026: регионы, когда ехать и куда лететь",
+          "bodySha256": "c12c40f79b4164a67dbd69147e5209b25e8a4dbedf61062789923c6065f29771"
+        }
+      ]
+    },
+    "editorialCriteria": {
+      "changesPlans": true,
+      "surprisingNature": false,
+      "concreteAndVerifiable": true,
+      "lastsLongerThanWeek": true,
+      "editorialRubric": "transport",
+      "backendTopic": "transport"
+    }
+  },
   "lifecycle": {
-    "reviewOn": "2026-10-01",
-    "reason": "Нужно проверить рабочую частоту и календарь после первой недели регулярной эксплуатации."
+    "decision": "CHECK_ONLY",
+    "status": null,
+    "effectiveDate": null,
+    "reviewOn": "2026-10-23",
+    "reason": "Первоисточник flydubai подтверждает заявленную ежедневную программу с23Sep; KathmanduPost сохраняет факт первого прибытия23Sep. Реальное исполнение каждого рейса09Octнепроверялось, текст этого не обещает. Возврат через2недели.",
+    "originalDate": "2026-09-23",
+    "originalAdded": "2026-09-24",
+    "datePreserved": true,
+    "addedPreserved": true
   },
   "checks": {
-    "capsuleWords": 43,
-    "bodyWords": 160,
+    "fullProseRead": true,
+    "finalTldrRead": true,
     "titleChars": 47,
-    "internalLink": "/nepal/",
-    "internalLinkStatus": "exists locally",
+    "clipTitle": "Flydubai начала прямые рейсы из Дубая в Покхару",
+    "clipTitleMeaningPreserved": true,
+    "tldrWords": 43,
+    "bodyWords": 158,
+    "primarySourceRead": true,
     "photoViewed": true,
-    "photoSha256": "e9a3805bc7e7f2b0a10e948686a4a1061864841e4634b71c0e89155af3542526",
-    "photoFinding": "Визуально подтверждён терминал международного аэропорта Покхары. Commons указывает Hariram sigdel h, 28 мая 2023 года и CC BY 4.0; подпись отделяет архивный вид аэропорта от первого рейса flydubai.",
-    "schemaTopic": "transport",
-    "editorialCategory": "transport",
-    "scope": "Финальный текст, факты, даты, числа, русский язык, свежесть, источники, внутренняя ссылка, лицензия и визуальный просмотр изображения; без сборки, публикации и live-проверки страницы."
+    "independentReviewer": true,
+    "commonsLicenseRechecked": false,
+    "languageBannedWords": [],
+    "languageMethod": "Редакторский проход всего текста; адресно устранены ранее найденные «уже» и «в рамках».",
+    "internalLinksHttp200": true,
+    "publicCreditDataPrepared": true,
+    "readerTest": false,
+    "buildBrowserCiLive": false
   }
 }

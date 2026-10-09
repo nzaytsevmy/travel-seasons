@@ -2,51 +2,120 @@
   "schemaVersion": 1,
   "slug": "2026-09-19-denali-fall-driving",
   "score": 4,
-  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
-  "reviewedAt": "2026-10-06",
-  "sha256": "d89d4c99d5a5754e744778cae745182e0b30ff8828a4438b63d2d4c6314c1570",
-  "rationale": "Оценка 4: NPS допускает автомобили до площадки Teklanika на 30-й миле при подходящей погоде до 15 октября, с возможным сокращением открытого участка. Новая практическая оговорка точно передаёт отдельное закрытие миль 26–37 для пеших и велосипедистов из-за диких животных: доехать можно, уходить за пределы площадки нельзя.",
-  "risks": [
-    "Дорогу могут закрыть раньше из-за снега и льда; wildlife-запрет может измениться отдельно."
-  ],
+  "reviewer": "codex-independent-news-review-20261009",
+  "checkedAt": "2026-10-09T05:50:45.306Z",
+  "reviewedAt": "2026-10-09T05:50:45.306Z",
+  "sha256": "671e198ab49474c03065059af7786822a67827342966cc53a7d2f9952997d351",
+  "sha256Scope": "full Markdown file bytes at editorial review; later header score synchronization may change this byte hash",
+  "contentHash": "542c4463e91c7c35b1454f80909fdf132e35291923eeb581d2493c73bce890cf",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "proseHash": "542c4463e91c7c35b1454f80909fdf132e35291923eeb581d2493c73bce890cf",
+  "proseHashScope": "same as contentHash",
+  "rationale": "Сезонный проезд до конкретной площадки меняет маршрут в нишевом направлении, уровень 4. Финальная версия сохраняет погодную зависимость и 15 октября как условную границу. Неподтверждённое текущее закрытие миль 26–37 удалено; пустой фильтр NPS не превращён в доказательство открытых пеших маршрутов.",
   "blockingIssues": [],
-  "evidence": [
-    {
-      "url": "https://www.nps.gov/dena/planyourvisit/conditions.htm",
-      "finding": "NPS: при погоде личные автомобили до Teklanika mile 30, максимум до 15 октября; возможны более ранние ограничения у mile 13 или headquarters.",
-      "checkedOn": "2026-10-06"
-    },
-    {
-      "url": "https://www.nps.gov/planyourvisit/alerts.htm?t=Closure&v=1",
-      "finding": "Действующее предупреждение NPS: mile 26–37 закрыты пешим и велосипедистам, но автомобилем можно до Teklanika Rest Stop; выходить за площадку нельзя.",
-      "checkedOn": "2026-10-06"
-    }
+  "risks": [
+    "Showing 0 - 0 of 0 в фильтре Denali/Closure не доказывает открытия всех троп; автомобильное окно может закончиться раньше 15 октября.",
+    "Редакционная готовность не подтверждает сборку, браузерный рендер, CI, публикацию, SSR/фид или live QA; эти гейты остаются у автора выпуска."
   ],
+  "reviewScope": "Свежий независимый Codex reviewer не писал заметки. Прочитаны весь title/TLDR/body и конечный JPEG всех 17; после адресных исправлений перечитаны изменённые части и смысловые зависимости. Это редакторское ревью, не reader-test. MD, Git, CI и публикация этим reviewer не менялись.",
+  "evidence": {
+    "primarySource": {
+      "url": "https://www.nps.gov/dena/learn/news/fall-road-to-tek-open-091426.htm",
+      "checkedAt": "2026-10-09T05:50:45.306Z",
+      "method": "Независимо прочитаны содержательные тексты первоисточников/прямых репортажей в свежих captures от 9 октября; даты публикации отделены от даты открытия.",
+      "confirmed": [
+        "NPS Current Conditions, обновлено 6 октября и открыто 9 октября: личные машины до Teklanika mile 30 при подходящих условиях до 15 октября.",
+        "При ухудшении погоды граница может сместиться к mile 13 или штаб-квартире около mile 3,4.",
+        "Временные ограничения из-за животных могут отсутствовать на карте; перед прогулкой уточнить их в visitor center.",
+        "С 21 сентября Bear Loop бесплатен; нет воды и вывоза мусора."
+      ],
+      "sourceArtifacts": [
+        {
+          "path": ".run/sources-2026-10-09/2026-09-19-denali-fall-driving.json",
+          "sha256": "87996baabe58ba9a2a008352adbc09e05adc9e9cb00b93608ebd7cb58362dc44",
+          "capturedAt": "2026-10-09T04:26:20.689Z",
+          "capturedBy": null,
+          "completePageClaimed": false
+        },
+        {
+          "path": ".run/denali-alert-observation-2026-10-09.json",
+          "sha256": "4b98a9f729f445f725d33bbab857126eb01133aa4d3157d229803b5719b811b4",
+          "capturedAt": "2026-10-09",
+          "capturedBy": "Chrome actual visible DOM",
+          "completePageClaimed": false
+        }
+      ],
+      "independentlyVerifiedWebSources": [
+        "https://www.nps.gov/dena/planyourvisit/conditions.htm"
+      ]
+    },
+    "photo": {
+      "viewedByThisReviewer": true,
+      "path": "src/content/news/_images/2026-09-19-denali-fall-driving.jpg",
+      "sha256": "192c681c27ac6bd4b8dc1774598220df21623becf6e64cca250a2ffb2fd827c5",
+      "finding": "Река Текланика в июле 2006 года, дорога не видна. Подпись правильно отделяет иллюстрацию местности от текущего проезда.",
+      "scope": "Сам финальный локальный JPEG просмотрен глазами, а не старый контактный лист.",
+      "credit": "Nic McPhee",
+      "license": "CC BY-SA",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "source": "https://commons.wikimedia.org/w/index.php?curid=16120927",
+      "title": "Река Текланика в Денали, июль 2006 года. Архивный кадр; дорога на снимке не показана.",
+      "alt": "Разветвлённое русло реки Текланика среди хвойного леса в национальном парке Денали",
+      "commonsMetadataRechecked": false,
+      "commonsMetadataMethod": "Повторное открытие Commons для прежнего кадра не выполнено; проверены конечная картинка и сохранённые metadata, не заявлена новая перепроверка лицензии.",
+      "commonsMetadataArtifacts": [],
+      "publicAttributionPrepared": "Настоящая publicPhotoCredits([],17 notes) возвращает 15 CC-записей, все с creator/source/licenseUrl; два Public domain законно исключены. Публичный /legal/photos/ после сборки ещё не проверен."
+    },
+    "internalLinks": {
+      "method": "Собственные свежие HTTP GET reviewer 9 октября, конечный адрес и title ответа; anchor по смыслу сопоставлен с целевой страницей. Ответ 200 не выдан за браузерную проверку.",
+      "results": [
+        {
+          "path": "/usa/",
+          "status": 200,
+          "url": "https://traveltribe.ru/usa/",
+          "checkedAt": "2026-10-09T05:35:02.376Z",
+          "title": "США 2026 для россиян: когда ехать, цены, маршрут",
+          "bodySha256": "852fa746bf7c1e8628c0434dcfa3d0172654df25d7c48d85fe4055e2af703ed6"
+        }
+      ]
+    },
+    "editorialCriteria": {
+      "changesPlans": true,
+      "surprisingNature": false,
+      "concreteAndVerifiable": true,
+      "lastsLongerThanWeek": true,
+      "editorialRubric": "transport",
+      "backendTopic": "transport"
+    }
+  },
   "lifecycle": {
-    "reviewOn": "2026-10-09",
-    "reason": "Повторно проверить состояние дороги и wildlife-запрет перед ближайшими осенними поездками."
+    "decision": "REVISE",
+    "status": null,
+    "effectiveDate": "2026-09-18",
+    "reviewOn": "2026-10-11",
+    "reason": "Официальная текущая страница сохраняет погодную зависимость осеннего проезда; новость о полной дороге относится к лету2027, не к нынешней осени. Дата15Octпокаусловна; возврат через2дня.",
+    "originalDate": "2026-09-14",
+    "originalAdded": "2026-09-19",
+    "datePreserved": true,
+    "addedPreserved": true
   },
   "checks": {
-    "capsuleWords": 48,
-    "bodyWords": 229,
+    "fullProseRead": true,
+    "finalTldrRead": true,
     "titleChars": 52,
     "clipTitle": "Денали: на своей машине разрешили ехать до Текланики",
-    "internalLink": "/usa/",
-    "internalLinkStatus": 200,
-    "photoViewedToday": false,
-    "mediaScope": "Фото в этих адресных lifecycle-правках не менялось; повторный осмотр локального JPEG не проводился.",
-    "publicationDate": "2026-09-14",
-    "added": "2026-09-19",
-    "scope": "Независимая сверка финальных текстов, дат и первоисточников; без браузерных тестов, сборки, CI и live-проверки обновлённых страниц."
-  },
-  "contentHash": "05b1afe3c5a6b4d302779ea7c27a48b8c5aae9dd2637cd06c72b9ed30158ead5",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256Scope": "full Markdown file bytes",
-  "priorReview": {
-    "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
-    "reviewedAt": "2026-09-23",
-    "score": 4,
-    "contentHash": null,
-    "sha256": "eda4907f289bddf898e9b39c7fb1c79b37ca5b823dc1f5b96f36e2578ceaf355"
+    "clipTitleMeaningPreserved": true,
+    "tldrWords": 50,
+    "bodyWords": 209,
+    "primarySourceRead": true,
+    "photoViewed": true,
+    "independentReviewer": true,
+    "commonsLicenseRechecked": false,
+    "languageBannedWords": [],
+    "languageMethod": "Редакторский проход всего текста; адресно устранены ранее найденные «уже» и «в рамках».",
+    "internalLinksHttp200": true,
+    "publicCreditDataPrepared": true,
+    "readerTest": false,
+    "buildBrowserCiLive": false
   }
 }

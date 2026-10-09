@@ -2,48 +2,110 @@
   "schemaVersion": 1,
   "slug": "2026-07-30-iguazu-devils-throat-boardwalk",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
-  "reviewedAt": "2026-09-23",
-  "sha256": "51bf4b32dec1b673ba16ec40ff631828570cd729befe8f7ee3cd75cd22ee00f7",
-  "rationale": "KEEP. APN в сообщении 17 сентября по-прежнему указывает, что мостки к Garganta del Diablo сняты ещё в августе, а парк принимает посетителей на маршрутах Superior, Inferior, Verde и Macuco. Текст сохраняет датированную атрибуцию и не объявляет восстановление мостков. Повторное чтение 23 сентября подтверждает пригодность формулировки, но не гарантирует фактическую доступность каждого маршрута в любую минуту. Оценка 4 сохранена.",
-  "risks": [
-    "Мостки к Глотке Дьявола не восстановлены; дата нового открытия не объявлена.",
-    "Сообщение APN от 17 сентября не является оперативной сводкой на каждый час 23 сентября.",
-    "Аргентинский источник не подтверждает текущий режим бразильской стороны."
-  ],
+  "reviewer": "codex-independent-news-review-20261009",
+  "checkedAt": "2026-10-09T05:50:45.306Z",
+  "reviewedAt": "2026-10-09T05:50:45.306Z",
+  "sha256": "6250f4732ca2956cd7523f129a665740260a1f9b08ec15c0c3dbf2f8ad06baa4",
+  "sha256Scope": "full Markdown file bytes at editorial review; later header score synchronization may change this byte hash",
+  "contentHash": "ccbae7a14f071e6c6d31e6e74e41b02ff208868b3c224154f8b6f7b6c5ecdbec",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "proseHash": "ccbae7a14f071e6c6d31e6e74e41b02ff208868b3c224154f8b6f7b6c5ecdbec",
+  "proseHashScope": "same as contentHash",
+  "rationale": "Конкретное ограничение меняет маршрут по нишевому направлению: национальный парк открыт, но настил к Глотке Дьявола снят. Текст перечисляет доступные маршруты и разводит аргентинский парк с бразильской стороной. Отсутствие нового объявления о настиле не превращено в обещание его открытия; это уровень 4 по RUBRIC.",
   "blockingIssues": [],
-  "evidence": [
-    {
-      "url": "https://www.argentina.gob.ar/noticias/parque-nacional-iguazu-abierto-todo-el-ano",
-      "publishedOn": "2026-09-17",
-      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
-      "finding": "Подтверждены снятые в августе мостки и перечисленные доступные маршруты; нового срока восстановления Garganta del Diablo нет.",
-      "checkedOn": "2026-09-23"
-    }
+  "risks": [
+    "Статус настила зависит от воды; поездку нельзя строить на предполагаемом открытии.",
+    "Редакционная готовность не подтверждает сборку, браузерный рендер, CI, публикацию, SSR/фид или live QA; эти гейты остаются у автора выпуска."
   ],
+  "reviewScope": "Свежий независимый Codex reviewer не писал заметки. Прочитаны весь title/TLDR/body и конечный JPEG всех 17; после адресных исправлений перечитаны изменённые части и смысловые зависимости. Это редакторское ревью, не reader-test. MD, Git, CI и публикация этим reviewer не менялись.",
+  "evidence": {
+    "primarySource": {
+      "url": "https://www.argentina.gob.ar/noticias/parque-nacional-iguazu-abierto-todo-el-ano",
+      "checkedAt": "2026-10-09T05:50:45.306Z",
+      "method": "Независимо прочитаны содержательные тексты первоисточников/прямых репортажей в свежих captures от 9 октября; даты публикации отделены от даты открытия.",
+      "confirmed": [
+        "Аргентинский парк открыт; снятый настил к Глотке Дьявола не объявлен открытым.",
+        "APN называет открытыми Upper, Lower, Green, Macuco, Yvyra Reta и Territorio Yaguarete.",
+        "Закрытие бразильской смотровой не приравнено к закрытию всего аргентинского парка."
+      ],
+      "sourceArtifacts": [
+        {
+          "path": ".run/sources-2026-10-09/2026-07-30-iguazu-devils-throat-boardwalk.json",
+          "sha256": "97cbe136410b76499b0a8ae6340f8f31247f97220d9d8b24a73b743154e5948d",
+          "capturedAt": "2026-10-09T04:26:07.435Z",
+          "capturedBy": null,
+          "completePageClaimed": false
+        }
+      ],
+      "independentlyVerifiedWebSources": []
+    },
+    "photo": {
+      "viewedByThisReviewer": true,
+      "path": "src/content/news/_images/2026-07-30-iguazu-devils-throat-boardwalk.jpg",
+      "sha256": "22a337ae404f29a65d0ff5e17659078e52de3738cc91b46671863d0e46951693",
+      "finding": "Архивный кадр водопадов соответствует Игуасу; он не доказывает состояние мостиков 9 октября.",
+      "scope": "Сам финальный локальный JPEG просмотрен глазами, а не старый контактный лист.",
+      "credit": "P. Hughes",
+      "license": "CC BY",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "source": "https://commons.wikimedia.org/w/index.php?curid=195776898",
+      "title": "Глотка Дьявола на Игуасу. Архивный вид водопадов, не демонтаж мостиков.",
+      "alt": "Потоки воды и брызги у Глотки Дьявола на Игуасу",
+      "commonsMetadataRechecked": false,
+      "commonsMetadataMethod": "Повторное открытие Commons для прежнего кадра не выполнено; проверены конечная картинка и сохранённые metadata, не заявлена новая перепроверка лицензии.",
+      "commonsMetadataArtifacts": [],
+      "publicAttributionPrepared": "Настоящая publicPhotoCredits([],17 notes) возвращает 15 CC-записей, все с creator/source/licenseUrl; два Public domain законно исключены. Публичный /legal/photos/ после сборки ещё не проверен."
+    },
+    "internalLinks": {
+      "method": "Собственные свежие HTTP GET reviewer 9 октября, конечный адрес и title ответа; anchor по смыслу сопоставлен с целевой страницей. Ответ 200 не выдан за браузерную проверку.",
+      "results": [
+        {
+          "path": "/visa/argentina/",
+          "status": 200,
+          "url": "https://traveltribe.ru/visa/argentina/",
+          "checkedAt": "2026-10-09T05:35:02.326Z",
+          "title": "Виза в Аргентину не нужна россиянам в 2026 — безвиз",
+          "bodySha256": "cdb42edc3d7f5c8476cc485535e813d753438bd970772494a93c70f6596883f0"
+        }
+      ]
+    },
+    "editorialCriteria": {
+      "changesPlans": true,
+      "surprisingNature": false,
+      "concreteAndVerifiable": true,
+      "lastsLongerThanWeek": true,
+      "editorialRubric": "transport",
+      "backendTopic": "transport"
+    }
+  },
   "lifecycle": {
-    "reviewOn": "2026-09-25",
-    "reason": "Мостки к Глотке Дьявола не восстановлены; дата нового открытия не объявлена.",
-    "decision": "KEEP_DATED_APN_STATUS"
+    "decision": "CHECK_ONLY",
+    "status": null,
+    "effectiveDate": null,
+    "reviewOn": "2026-10-11",
+    "reason": "Страница парка подтверждает другие открытые маршруты и предохранительный демонтаж; нового объявления об открытии настила нет. Закрытие без срока: возврат через2дня.",
+    "originalDate": "2026-07-30",
+    "originalAdded": "2026-08-01",
+    "datePreserved": true,
+    "addedPreserved": true
   },
   "checks": {
-    "capsuleWords": 46,
+    "fullProseRead": true,
+    "finalTldrRead": true,
+    "titleChars": 48,
+    "clipTitle": "Игуасу открыт, но мостики к Глотке Дьявола сняты",
+    "clipTitleMeaningPreserved": true,
+    "tldrWords": 46,
     "bodyWords": 179,
-    "wordCountMethod": "Unicode letter/number tokens with internal hyphens; Markdown link URLs excluded",
-    "clippedTitle": "Игуасу открыт, но мостики к Глотке Дьявола сняты",
-    "titleUnchangedByClip": true,
-    "tldrGate": {
-      "ok": true
-    },
-    "internalLinkEvidence": ".run/2026-09-18/review-evidence/internal-iguazu.json",
+    "primarySourceRead": true,
     "photoViewed": true,
-    "photoSha256": "22a337ae404f29a65d0ff5e17659078e52de3738cc91b46671863d0e46951693",
-    "photoMetadataEvidence": ".run/2026-09-18/review-evidence/commons-195776898.json",
-    "photoFinding": "Commons 195776898: Devil's Throat, Iguazu Falls, Argentina, 2025, P. Hughes, CC BY 4.0. Просмотренный кадр — водопад, не демонтаж.",
-    "visiblePhotoCaptionField": "imageTitle",
-    "imageTitle": "Глотка Дьявола на Игуасу. Архивный вид водопадов, не демонтаж мостиков.",
-    "imageAlt": "Потоки воды и брызги у Глотки Дьявола на Игуасу",
-    "scope": "Ограниченный lifecycle-review 23.09: перечитан изменчивый статус, проза и прежняя фотоаттестация не исследовались заново; обновлены checked, reviewOn и SHA; без сборки и публикации.",
-    "titleChars": 48
+    "independentReviewer": true,
+    "commonsLicenseRechecked": false,
+    "languageBannedWords": [],
+    "languageMethod": "Редакторский проход всего текста; адресно устранены ранее найденные «уже» и «в рамках».",
+    "internalLinksHttp200": true,
+    "publicCreditDataPrepared": true,
+    "readerTest": false,
+    "buildBrowserCiLive": false
   }
 }
