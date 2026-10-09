@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "slug": "2026-10-09-kyoto-genji-exhibition",
+  "score": 4,
+  "reviewer": "codex-independent-news-review-20261009",
+  "checkedAt": "2026-10-09T05:50:45.306Z",
+  "reviewedAt": "2026-10-09T05:50:45.306Z",
+  "sha256": "7af02861af7e225126212d98af3b0fdd2cd8c556e54080951b83d034a4c06873",
+  "sha256Scope": "full Markdown file bytes at editorial review; later header score synchronization may change this byte hash",
+  "contentHash": "3e6c8cd7101993e2db1e1f25f4562025cadffa9e4e5c6bf0abb69d45bc2b7d52",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "proseHash": "3e6c8cd7101993e2db1e1f25f4562025cadffa9e4e5c6bf0abb69d45bc2b7d52",
+  "proseHashScope": "same as contentHash",
+  "rationale": "Текущая специальная выставка меняет посещение музея и режим постоянных галерей, уровень 4. Даты 6 октября–29 ноября подтверждены официально. Календарь 26 октября показывает понедельник без посещения, но не закрытие музея на весь сезон; отдельный вход к снятой коллекции не обещан.",
+  "blockingIssues": [],
+  "risks": [
+    "Режим конкретного дня и наличие билета следует проверять в календаре; фотография показывает здание, не экспонаты Genji.",
+    "Редакционная готовность не подтверждает сборку, браузерный рендер, CI, публикацию, SSR/фид или live QA; эти гейты остаются у автора выпуска."
+  ],
+  "reviewScope": "Свежий независимый Codex reviewer не писал заметки. Прочитаны весь title/TLDR/body и конечный JPEG всех 17; после адресных исправлений перечитаны изменённые части и смысловые зависимости. Это редакторское ревью, не reader-test. MD, Git, CI и публикация этим reviewer не менялись.",
+  "evidence": {
+    "primarySource": {
+      "url": "https://www.kyohaku.go.jp/eng/exhibitions/special/",
+      "checkedAt": "2026-10-09T05:50:45.306Z",
+      "method": "Независимо прочитаны содержательные тексты первоисточников/прямых репортажей в свежих captures от 9 октября; даты публикации отделены от даты открытия.",
+      "confirmed": [
+        "Kyoto National Museum: выставка о The Tale of Genji проходит 6 октября–29 ноября 2026.",
+        "Именно календарь текущей выставки: все экспонаты постоянной коллекции убраны, отдельного билета в неё нет.",
+        "Страница с date=26 относится к закрытому понедельнику 26 октября, а не к закрытию музея до ноября."
+      ],
+      "sourceArtifacts": [
+        {
+          "path": ".run/sources-2026-10-09/kyoto.json",
+          "sha256": "96ef46c1272cc0899f9e36409d47f6f57aff75ee3f548ce1fc030cca2b11165a",
+          "capturedAt": "2026-10-09T04:57:41.645Z",
+          "capturedBy": null,
+          "completePageClaimed": false
+        },
+        {
+          "path": ".run/sources-2026-10-09/kyoto-calendar.json",
+          "sha256": "4e65f762e39290a88a14bfed0e74711389be063111faeb8ca5e5de5b87067168",
+          "capturedAt": "2026-10-09T04:57:41.784Z",
+          "capturedBy": null,
+          "completePageClaimed": false
+        }
+      ],
+      "independentlyVerifiedWebSources": [
+        "https://www.kyohaku.go.jp/eng/exhibitions/special/"
+      ]
+    },
+    "photo": {
+      "viewedByThisReviewer": true,
+      "path": "src/content/news/_images/2026-10-09-kyoto-genji-exhibition.jpg",
+      "sha256": "f826f9ccf19b74e1211227426b5b3f27c00c1e6e8abc0d3099d922929b83f84e",
+      "finding": "Финальный JPEG действительно показывает Kyoto National Museum в августе 2023 года; это не отклонённый кадр Киёмидзу. Подпись не заявляет съёмку текущей выставки.",
+      "scope": "Сам финальный локальный JPEG просмотрен глазами, а не старый контактный лист.",
+      "credit": "Mauricio V. Genta",
+      "license": "CC BY-SA",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Ky%C5%8Dto_Kokuritsu_Hakubutsukan_2023-08-30.jpg",
+      "title": "Киотский национальный музей в августе 2023 года; архивное фото здания, не выставки 2026 года.",
+      "alt": "Киотский национальный музей; иллюстрация места, не фотография экспонатов выставки 2026 года",
+      "commonsMetadataRechecked": true,
+      "commonsMetadataMethod": "Независимо прочитаны свежие metadata Commons API в артефактах автора 9 октября; автор, исходный объект, год и лицензия сопоставлены с конечным кадром и шапкой.",
+      "commonsMetadataArtifacts": [
+        {
+          "path": ".run/kyoto-photo-candidates-2026-10-09.json",
+          "sha256": "7972bbc2ef80f0e7ce2724de3742ecbf72ef80973d487b8524365d20262b28da"
+        }
+      ],
+      "publicAttributionPrepared": "Настоящая publicPhotoCredits([],17 notes) возвращает 15 CC-записей, все с creator/source/licenseUrl; два Public domain законно исключены. Публичный /legal/photos/ после сборки ещё не проверен."
+    },
+    "internalLinks": {
+      "method": "Собственные свежие HTTP GET reviewer 9 октября, конечный адрес и title ответа; anchor по смыслу сопоставлен с целевой страницей. Ответ 200 не выдан за браузерную проверку.",
+      "results": [
+        {
+          "path": "/blog/japan-guide-2026/",
+          "status": 200,
+          "url": "https://traveltribe.ru/blog/japan-guide-2026/",
+          "checkedAt": "2026-10-09T05:35:03.517Z",
+          "title": "Япония 2026 россиянам: виза бесплатно, бюджет от $50/день",
+          "bodySha256": "7fcd7f77e057ea1b733aaf4d0b8c95e20b8bc62bc4023320d54f5f0d8f1936f0"
+        }
+      ]
+    },
+    "editorialCriteria": {
+      "changesPlans": true,
+      "surprisingNature": false,
+      "concreteAndVerifiable": true,
+      "lastsLongerThanWeek": true,
+      "editorialRubric": "культура и выставки",
+      "backendTopic": "nature"
+    }
+  },
+  "lifecycle": {
+    "decision": "NEW",
+    "status": null,
+    "effectiveDate": null,
+    "reviewOn": "2026-11-29",
+    "reason": "reviewOn 29 ноября: проверить окончание объявленной выставки и следующий режим музейных галерей.",
+    "originalDate": "2026-10-06",
+    "originalAdded": "2026-10-09",
+    "datePreserved": null,
+    "addedPreserved": null
+  },
+  "checks": {
+    "fullProseRead": true,
+    "finalTldrRead": true,
+    "titleChars": 46,
+    "clipTitle": "Киото: открылась выставка о «Повести о Гэндзи»",
+    "clipTitleMeaningPreserved": true,
+    "tldrWords": 49,
+    "bodyWords": 181,
+    "primarySourceRead": true,
+    "photoViewed": true,
+    "independentReviewer": true,
+    "commonsLicenseRechecked": true,
+    "languageBannedWords": [],
+    "languageMethod": "Редакторский проход всего текста; адресно устранены ранее найденные «уже» и «в рамках».",
+    "internalLinksHttp200": true,
+    "publicCreditDataPrepared": true,
+    "readerTest": false,
+    "buildBrowserCiLive": false
+  }
+}
