@@ -16,8 +16,10 @@ countries:
 sources:
   - name: "NPS — закрытие Halemaʻumaʻu и части Byron Ledge, 07.10.2026; прочитано 09.10.2026"
     url: "https://www.nps.gov/havo/learn/news/20261007-nr-trail-closures.htm"
-  - name: "USGS — сообщение 08.10.2026 HST; проверено 09.10.2026; начало нового эпизода фонтанов не подтверждено"
-    url: "https://www.usgs.gov/volcanoes/kilauea/volcano-updates"
+  - name: "USGS HANS — сообщение 08.10.2026, 08:25 HST; проверено 09.10.2026; начало нового эпизода фонтанов не подтверждено"
+    url: "https://volcanoes.usgs.gov/hans-public/volcano/hi3"
+  - name: "USGS HVO — внедрение магмы и глубина около 300 м, 07.10.2026, 15:13 HST; прочитано 09.10.2026"
+    url: "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-10-08T01:00:28+00:00"
   - name: "NPS — доступ к смотровым, парковки и закрытая зона; проверено 09.10.2026"
     url: "https://www.nps.gov/havo/planyourvisit/eruption-viewing.htm"
 image: ./_images/2026-09-12-kilauea-lava-episode-55.jpg
