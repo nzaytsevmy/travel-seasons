@@ -119,7 +119,7 @@ const HIGH_INTENT_BLOG = /(?:strahov|insurance|(?:^|-)visa(?:-|$)|pay-|aviasales
 // клика и 12 переходов в Telegram. Aurora-гайды и документы сюда не входят:
 // в них есть конкретная поездка или страховой следующий шаг.
 // Справка о возврате купленного билета не предлагает новую покупку.
-const NO_COMMERCIAL_BLOG = /(?:perseidy|^kupibilet-vozvrat-bileta-2026$)/;
+const NO_COMMERCIAL_BLOG = /(?:perseidy|^kupibilet-vozvrat-bileta-2026$|^tutu-vozvrat-bileta-na-poezd-2026$)/;
 const COUNTRY_GUIDE = /^(.+?)-(?:guide|insurance|visa)-20\d\d$/;
 const RESERVED_ROOTS = new Set([
   '404', 'about', 'bezviz', 'blog', 'calculator', 'cards', 'compare', 'countries',

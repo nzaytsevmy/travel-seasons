@@ -83,6 +83,13 @@ test('статья о возврате Купибилета помогает о�
   assert.equal(classifyPage('/blog/kupibilet-2026/').intent, 'medium');
 });
 
+test('отмена ж/д билета Туту имеет none, а сравнение цен Туту сохраняет high', () => {
+  assert.deepEqual(classifyPage('/blog/tutu-vozvrat-bileta-na-poezd-2026/'), {
+    type: 'blog_article', intent: 'none', destination: '',
+  });
+  assert.equal(classifyPage('/blog/tutu-ru-2026/').intent, 'high');
+});
+
 test('гайд страны остаётся medium и сохраняет направление', () => {
   assert.deepEqual(classifyPage('/blog/georgia-guide-2026/'), {
     type: 'blog_article', intent: 'medium', destination: 'georgia',
