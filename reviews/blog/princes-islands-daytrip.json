@@ -1,8 +1,10 @@
 {
   "schemaVersion": 1,
   "slug": "princes-islands-daytrip",
-  "reviewer": "codex-gpt-6-independent-editor-2026-10-01",
-  "reviewedAt": "2026-10-01",
+  "reviewer": "codex-editorial-review-20261008",
+  "reviewedAt": "2026-10-08T17:55:49.036Z",
+  "status": "approved_with_limits",
+  "reviewScope": "Полное независимое чтение батча ранее завершено08.10.2026. Этот closeout проверяет только конкретные новые фрагменты и их смысловые зависимости после2c193111, title/description при изменении и новые checks/volatileFacts. Применена QUALITY-2026 v3.1 SHA25608b1363373d5827f79de75379701da7708d54bca1fe8e3106f18eee8f4fc3a23; полное повторное чтение, полный браузерный QA, CI, публикация и live здесь не заявлены.",
   "qualityScore": {
     "topic": 8.5,
     "facts": 8.5,
@@ -11,14 +13,60 @@
     "internalLinks": 5,
     "legal": 8.5,
     "overall": 7.4,
-    "ceiling": "Потолок 7,4/10: расписание, тариф, курс и места сверены по первичным источникам, но пешеходный маршрут не пройден автором, нет проверенной геометрии пути и собственных кадров; архивных фото много, входящих ссылок пока нет."
+    "ceiling": "Потолок 7,4/10: расписание и выбор острова дают план дня, но нет авторского прохождения, точной геометрии прогулки и собственных кадров; внутренних переходов немного."
   },
-  "rationale": "Зимние рейсы по направлениям и дням недели, цена без AdaKart 151,23 лиры, обратная арифметика и курс Банка России проверены по первичным страницам. Описание островов и Айя-Йорги подтверждено Go Türkiye и муниципалитетом. Метаданные всех 11 снимков сверены с Wikimedia Commons, изменения указаны; личная поездка не заявлена. Статья отвечает на отдельный вопрос о самостоятельном дне на островах, но прогулка дана без точной пешеходной карты, фотографии стоят слишком плотно и входящих контекстных ссылок нет. Спрос Wordstat и Wordcraft, записанный автором в demand, этим ревью не воспроизведён.",
+  "proseHash": "ea0bf089717ad519",
+  "sourceSha256": "1361e1ce3b65928691321a7a5c1fa109be5e17b5bb976a4d3a0420f8bc9edd91",
+  "rationale": "Статья связывает выбор острова, посадки и обратный рейс с доступным временем, а подъём допускает спокойную альтернативу. Сегодня первично сверены зимний период2026/27, указанные рейсы и тариф151,23TRY; две посадки302,46TRY пересчитаны. Рубли явно относятся к курсу1октября. Архивные фото, маршрут и время подъёма не создают подтверждённого авторского опыта.",
+  "blockingIssues": [],
   "risks": [
-    "Тариф и расписание Şehir Hatları требуют повторной проверки к 15.10.2026 и утром перед поездкой: возможны изменения и отмены по погоде.",
-    "Временные слоты прогулки — редакционный план без личной проверки расстояний и подъёма; не выдавать их за измеренное время.",
-    "До публикации добавить уместные входящие ссылки из уже опубликованных материалов и проверить вывод всех 11 атрибуций на /legal/photos/ в финальной сборке.",
-    "Спрос Wordstat/Wordcraft и формат выдачи из поля demand не перепроверялись этим независимым ревью."
+    "Нет прохождения маршрута автором и проверенной геометрии пути.",
+    "Расписание и тариф сверены08октября, но отмены, погода и остановки конкретного рейса требуют проверки перед поездкой; рубли рассчитаны по прежнему курсу."
   ],
-  "proseHash": "676468fe7bef7f30"
+  "verification": {
+    "fullProseRead": true,
+    "changedFragmentsReadAfterCorrections": true,
+    "firstPersonTravelOrTransactionInvented": false,
+    "renderedBrowserQa": false,
+    "ciDeployLive": false,
+    "previousFactsRecheckedWholesale": false
+  },
+  "previousArtifact": {
+    "reviewer": "codex-gpt-6-independent-editor-2026-10-01",
+    "reviewedAt": "2026-10-01",
+    "proseHash": "676468fe7bef7f30"
+  },
+  "sourceSha256Scope": "Full final MDX bytes after addressed corrections and metadata/checks/volatileFacts closeout on2026-10-08. proseHash covers final title, description and collapsed body by scripts/article-review-gate.mjs. Historical prices/measurements and legal-footer dates preserved. Scores and ceilings unchanged; no frontmatter or prose changed by reviewer.",
+  "sourceChecks": [
+    {
+      "url": "https://sehirhatlari.istanbul/tr/duyurular/sehir-hatlari-kis-tarifesine-geciyor-3788",
+      "method": "Own web primary announcement",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "published2026-09-03",
+        "winter timetable2026-09-07 through2027-06-27"
+      ]
+    },
+    {
+      "url": "https://sehirhatlari.istanbul/en/timetables/domestic-trips/adalar-princes-islands-lines/adalar-lines-177",
+      "method": "Own web primary timetable",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "Kabatas weekday/Saturday08:00→09:45 and09:00→10:45",
+        "Sunday/holiday07:30→09:15 and08:30→10:15",
+        "Buyukada returns16:30→18:20 and17:35→19:25"
+      ]
+    },
+    {
+      "url": "https://sehirhatlari.istanbul/tr/ucret-tarifeleri/vapur-hatlari-79",
+      "method": "Own web primary tariff",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "151.23TRY without AdaKart",
+        "90.70TRY with AdaKart",
+        "ordinary transfer discount does not apply to Adalar",
+        "two ordinary fares302.46TRY"
+      ]
+    }
+  ]
 }

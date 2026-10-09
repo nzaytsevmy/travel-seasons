@@ -1,25 +1,122 @@
 {
   "schemaVersion": 1,
   "slug": "tonga-whales",
-  "reviewer": "codex-gpt-6-astra-final-reviewer",
-  "reviewedAt": "2026-10-06",
-  "status": "approved",
+  "reviewer": "codex-editorial-review-20261008",
+  "reviewedAt": "2026-10-08T17:55:49.036Z",
+  "status": "approved_with_limits",
+  "reviewScope": "Полное независимое чтение батча ранее завершено08.10.2026. Этот closeout проверяет только конкретные новые фрагменты и их смысловые зависимости после2c193111, title/description при изменении и новые checks/volatileFacts. Применена QUALITY-2026 v3.1 SHA25608b1363373d5827f79de75379701da7708d54bca1fe8e3106f18eee8f4fc3a23; полное повторное чтение, полный браузерный QA, CI, публикация и live здесь не заявлены.",
   "qualityScore": {
     "topic": 8.5,
     "facts": 8.2,
-    "visuals": 8.0,
+    "visuals": 8,
     "experience": 7.6,
     "internalLinks": 8,
     "legal": 8.2,
-    "overall": 8.0,
-    "ceiling": "Потолок 8,4: год поездки, число выходов и личные расходы неизвестны; мобильный рендер новой подписи не проверен."
+    "overall": 8,
+    "ceiling": "Потолок 8,0/10: реальные авторские фото и рассказ дают опыт встречи с китами, но год поездки, число выходов и личные расходы не установлены."
   },
-  "rationale": "Замечание устранено: подпись видео на строке 135 описывает только сюжет. Подпись обложки и подписи всех четырёх фотографий также описывают кадры и соответствуют .claude/rules/illustrations.md:16–18. Личное происхождение материалов остаётся в отдельной прозе на строке 55. Оценка предыдущей рецензии сохранена.",
-  "findings": [],
+  "proseHash": "ae13c8b35f9d09b4",
+  "sourceSha256": "bafc89df7b396280e91267331cb0f7aa96ba86ec452fc878deaefc6ed0526c42",
+  "rationale": "Конкретный сезон, ограничения плавания и неопределённость встречи связаны с реальными авторскими кадрами. Сегодня отдельно сверены прямые TOP350/400 и NZD255/290 на другой площадке, их различная длительность и официальные правила. Новая строка въезда точно атрибутирует31день по прибытии посольству; неподтверждённые универсальные паспортные условия сняты. Год поездки, расходы, лицензия конкретного оператора и гарантированный контакт не придуманы.",
+  "blockingIssues": [],
   "risks": [
-    "Мобильный рендер обновлённой подписи не проверен.",
-    "В статье пока отсутствуют reviewed, reviewRef и qualityScore для итогового редакционного гейта.",
-    "CI, деплой и live не проверены; цены и условия въезда требуют повторной проверки перед выпуском."
+    "Год поездки, число выходов и личные расходы не подтверждены.",
+    "Лицензия Kingdom Encounters на сезон2026 отдельно не установлена; тариф конкретной даты и безопасность выхода требуют сверки до бронирования.",
+    "Revenue сегодня недоступен из-за timeout/ошибки цепочки TLS; консульская заявка в Пекине не подтверждает универсальные паспортные/финансовые требования российского въезда по прибытии. Расписание конкретных авиарейсов не проверено."
   ],
-  "proseHash": "2c19c07f09b6d3aa"
+  "verification": {
+    "fullProseRead": true,
+    "changedFragmentsReadAfterCorrections": true,
+    "firstPersonTravelOrTransactionInvented": false,
+    "renderedBrowserQa": false,
+    "ciDeployLive": false,
+    "previousFactsRecheckedWholesale": false
+  },
+  "previousArtifact": {
+    "reviewer": "codex-gpt-6-astra-final-reviewer",
+    "reviewedAt": "2026-10-06",
+    "proseHash": "2c19c07f09b6d3aa"
+  },
+  "sourceSha256Scope": "Full final MDX bytes after addressed corrections and metadata/checks/volatileFacts closeout on2026-10-08. proseHash covers final title, description and collapsed body by scripts/article-review-gate.mjs. Historical prices/measurements and legal-footer dates preserved. Scores and ceilings unchanged; no frontmatter or prose changed by reviewer.",
+  "sourceChecks": [
+    {
+      "url": "https://kingdomencounters.to/",
+      "method": "Own web primary operator page",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "watching TOP350",
+        "swimming TOP400",
+        "07:30–15:30",
+        "lunch and swimming equipment published"
+      ]
+    },
+    {
+      "url": "https://book.tongapocketguide.com/kingdom-encounters/whale-watching-in-tongatapu-not-swimming",
+      "method": "Own single alternative HTTP GET200 after web error",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "NZD255 per person",
+        "7hours",
+        "non-swimming product and lunch"
+      ]
+    },
+    {
+      "url": "https://book.tongapocketguide.com/kingdom-encounters/swimming-with-whales-in-tongatapu",
+      "method": "Own web booking-channel page",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "NZD290 per person",
+        "7hours",
+        "lunch and swimming equipment"
+      ]
+    },
+    {
+      "url": "https://www.tongatourism.travel/see-and-do/whale-watching",
+      "method": "Own web primary tourism page",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "July–October",
+        "choose licensed operators"
+      ]
+    },
+    {
+      "url": "https://ago.gov.to/cms/images/LEGISLATION/SUBORDINATE/2013/2013-0004/WhaleWatchingandSwimmingRegulations2013_3.pdf",
+      "method": "Own web primary legislation",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "CAP17.17.01 revised2020",
+        "4clients and1trained local guide in water",
+        "provider determines safety",
+        "swimmers not approach closer than5metres"
+      ]
+    },
+    {
+      "url": "https://www.tongatourism.travel/plan/getting-here",
+      "method": "Own web and single direct HTTP GET200",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "routes from Auckland, Sydney and Fiji Nadi/Suva listed"
+      ],
+      "limits": "No date-specific operating-flight check."
+    },
+    {
+      "url": "https://tongaembassycn.gov.to/en/going-to-tonga-en/visas-en",
+      "method": "Own web primary embassy page",
+      "checkedAt": "2026-10-08",
+      "confirmed": [
+        "Russian Federation in visa-waiver list",
+        "visitor visa on arrival31days free",
+        "valid return/onward ticket to an entry-eligible country"
+      ],
+      "limits": "Extension is separate, not automatic six-month admission."
+    },
+    {
+      "url": "https://www.revenue.gov.to/immigration-and-general-services",
+      "method": "Own web timeout and one alternative HTTP client",
+      "checkedAt": "2026-10-08",
+      "confirmed": [],
+      "status": "unavailable",
+      "limits": "UNABLE_TO_VERIFY_LEAF_SIGNATURE; TLS validation retained, no repeated failures."
+    }
+  ]
 }
