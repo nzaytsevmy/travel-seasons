@@ -127,6 +127,26 @@ case "$BRANCH" in
     ;;
 esac
 
+# Решение Никиты 10.10.2026: переработка трёх ботов без задержек на занятом Mac.
+# Узкий список workflow/scripts/tests; сайт и данные не попадают в исключение.
+# Секреты и все delivery-тесты уже проверены выше; CI физически обязателен
+# серверной защитой PR/статусов, которую проверяет этот отдельный гейт.
+if [ -f scripts/workflow-push-scope.mjs ]; then
+  node scripts/workflow-push-scope.mjs --base "$SCOPE_BASE" --head HEAD >${LOG}_workflow.log 2>&1
+  WORKFLOW_SCOPE_STATUS=$?
+  if [ "$WORKFLOW_SCOPE_STATUS" -eq 0 ]; then
+    if ! node scripts/check-workflows.mjs >>${LOG}_workflow.log 2>&1; then
+      cat "${LOG}_workflow.log"; exit 1
+    fi
+    cat "${LOG}_workflow.log"
+    echo "✔ локальные контракты зелёные; полный 26-check CI обязателен до merge."
+    exit 0
+  elif [ "$WORKFLOW_SCOPE_STATUS" -ne 2 ]; then
+    cat "${LOG}_workflow.log"
+    echo "✖ workflow-гейт не подтверждён — push заблокирован"; exit 1
+  fi
+fi
+
 if [ "$MODE" = "text" ]; then
   echo "▶ pre-push: правки только текстовые → сборка + гейты содержания (без визуальных)"
 else

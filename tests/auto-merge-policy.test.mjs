@@ -69,10 +69,37 @@ test('слияние разрешено только когда каждый о�
 
 test('после auto-merge явно запускается production deploy', () => {
   const workflow = readFileSync('.github/workflows/auto-merge.yml', 'utf8');
+  const controller = readFileSync('scripts/checked-pr-controller.mjs', 'utf8');
 
   assert.match(workflow, /^\s{2}actions: write$/m);
-  assert.match(workflow, /actions\.createWorkflowDispatch/);
-  assert.match(workflow, /workflow_id: 'deploy\.yml'/);
+  assert.match(controller, /actions\.createWorkflowDispatch/);
+  assert.match(controller, /workflow_id: 'deploy\.yml'/);
+});
+
+test('новая красная проверка не наследует старый зелёный результат', () => {
+  const runs = [
+    { id: 12, name: 'scan', status: 'completed', conclusion: 'failure' },
+    { id: 10, name: 'scan', status: 'completed', conclusion: 'success' },
+  ];
+  assert.equal(evaluateChecks(['scan'], runs).ready, false);
+  assert.deepEqual(evaluateChecks(['scan'], runs).failed, ['scan']);
+});
+
+test('пропущенный или отменённый обязательный гейт не разрешает слияние', () => {
+  for (const conclusion of ['skipped', 'cancelled', 'neutral', 'timed_out']) {
+    assert.equal(evaluateChecks(['scan'], [
+      { id: 10, name: 'scan', status: 'completed', conclusion },
+    ]).ready, false);
+  }
+});
+
+test('ожидание разрешения запуска остаётся HOLD до настоящего результата', () => {
+  const result = evaluateChecks(['scan'], [
+    { id: 10, name: 'scan', status: 'completed', conclusion: 'action_required' },
+  ]);
+  assert.equal(result.ready, false);
+  assert.deepEqual(result.pending, ['scan']);
+  assert.deepEqual(result.failed, []);
 });
 
 // Артефакт независимой оценки reviews/blog/<slug>.json — числа и текст рецензии.
