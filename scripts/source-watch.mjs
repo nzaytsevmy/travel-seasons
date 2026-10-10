@@ -76,15 +76,58 @@ async function fetchPage(url) {
   }
 }
 
-export async function run({ write = false } = {}) {
+/** Ограниченный обход: свободное место занимает следующий доступный сайт.
+ * Ожидание занятого домена не держит остальные сетевые слоты. Результат всегда
+ * возвращается в исходном порядке; ошибки остаются ошибками, а не свежей сверкой. */
+export async function fetchSources(sources, { concurrency = 16, perHost = 2,
+  fetcher = fetchPage, progress = () => {} } = {}) {
+  if (!Number.isInteger(concurrency) || concurrency < 1 || concurrency > 16 ||
+    !Number.isInteger(perHost) || perHost < 1 || perHost > 2) {
+    throw new RangeError('Обход допускает 1–16 запросов и не больше двух к одному сайту');
+  }
+  const pending = [...sources].map(([url, slugs], index) => {
+    let host;
+    try { host = new URL(url).hostname; } catch { host = `invalid:${index}`; }
+    return { url, slugs, index, host };
+  });
+  const total = pending.length;
+  if (!total) return [];
+  const results = new Array(total);
+  const hosts = new Map();
+  let active = 0, completed = 0;
+  return new Promise((resolve, reject) => {
+    function schedule() {
+      while (active < concurrency) {
+        const position = pending.findIndex((item) => (hosts.get(item.host) || 0) < perHost);
+        if (position === -1) break;
+        const item = pending.splice(position, 1)[0];
+        active++;
+        hosts.set(item.host, (hosts.get(item.host) || 0) + 1);
+        Promise.resolve().then(() => fetcher(item.url))
+          .then((result) => { results[item.index] = { ...item, ...result }; })
+          .catch((error) => { results[item.index] = { ...item, error: String(error.message || error).slice(0, 60) }; })
+          .finally(() => {
+            active--;
+            hosts.set(item.host, hosts.get(item.host) - 1);
+            completed++;
+            progress(completed, total);
+            if (completed === total) resolve(results);
+            else schedule();
+          }).catch(reject);
+      }
+    }
+    schedule();
+  });
+}
+
+export async function run({ write = false, progress } = {}) {
   const sources = collectSources();
   const prev = existsSync(SNAP) ? JSON.parse(readFileSync(SNAP, 'utf8')) : {};
   const next = {};
   const changed = [];
   const broken = [];
 
-  for (const [url, slugs] of sources) {
-    const { html, error } = await fetchPage(url);
+  for (const { url, slugs, html, error } of await fetchSources(sources, { progress })) {
     if (error) {
       broken.push({ url, error, slugs: [...slugs] });
       next[url] = prev[url] ?? null;   // недоступность — не повод терять слепок
@@ -108,7 +151,9 @@ export async function run({ write = false } = {}) {
 }
 
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split('/').pop())) {
-  const r = await run({ write: process.argv.includes('--write') });
+  const r = await run({ write: process.argv.includes('--write'), progress: (done, total) => {
+    if (done % 50 === 0 || done === total) console.error(`Обработано первоисточников: ${done}/${total}`);
+  } });
   console.log(`Первоисточников под наблюдением: ${r.total}`);
   if (r.first) console.log('Первый прогон — слепки только что созданы, сравнивать не с чем.');
   if (r.changed.length) {
