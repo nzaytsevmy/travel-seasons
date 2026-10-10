@@ -187,6 +187,29 @@ test('9. без JavaScript список мест и ссылки с коорди
   expect(безТочки, 'каждая ссылка ведёт в точку с координатами').toEqual([]);
 });
 
+test('карта ждёт CSS, даже если JavaScript пришёл первым', async ({ page }) => {
+  await page.setViewportSize({ width: 402, height: 850 });
+  let releaseCss!: () => void;
+  const cssGate = new Promise<void>(resolve => releaseCss = resolve);
+  await page.route('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', async route => {
+    await cssGate;
+    await route.continue();
+  });
+  let before: number;
+  try {
+    await page.goto('/blog/vietnam-guide-2026/', { waitUntil: 'domcontentloaded' });
+    await page.locator('.cm-map').scrollIntoViewIfNeeded();
+    await page.waitForFunction(() => Boolean((window as any).L && document.querySelector('link[data-leaflet]')), null, { timeout: 45000 });
+    await expect(page.locator('.leaflet-marker-icon')).toHaveCount(0);
+    before = await page.locator('.cm-map').evaluate(el => el.getBoundingClientRect().height);
+  } finally {
+    releaseCss();
+  }
+  await expect(page.locator('.leaflet-marker-icon').first()).toBeVisible({ timeout: 45000 });
+  const after = await page.locator('.cm-map').evaluate(el => el.getBoundingClientRect().height);
+  expect(after).toBeCloseTo(before!, 0);
+});
+
 // ── 10 ─ карта не двигает вёрстку и не ломает ширину на телефоне ───────────
 test('10. на телефоне карта не сдвигает вёрстку и не едет вбок', async ({ page }) => {
   await page.setViewportSize({ width: 402, height: 850 });
