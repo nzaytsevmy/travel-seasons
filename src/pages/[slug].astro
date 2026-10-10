@@ -366,7 +366,7 @@ const ldJson = {
       "mainEntity": faqs.map(f => ({
         "@type": "Question",
         "name": f.q,
-        "acceptedAnswer": { "@type": "Answer", "text": f.a }
+        "acceptedAnswer": { "@type": "Answer", "text": f.link ? `${f.a} ${f.link.text}` : f.a }
       }))
     },
     {
@@ -756,7 +756,7 @@ if (guide?.itinerary?.length) {
     <section class="om-sec" id="faq">
       <h2>FAQ: что чаще спрашивают про {d.cases.acc}</h2>
       <dl class="om-faq">
-        {faqs.map((f) => (<><dt>{typo(f.q)}</dt><dd>{typo(f.a)}</dd></>))}
+        {faqs.map((f) => (<><dt>{typo(f.q)}</dt><dd>{typo(f.a)}{f.link && <> <a href={f.link.href}>{typo(f.link.text)}</a></>}</dd></>))}
       </dl>
     </section>
 

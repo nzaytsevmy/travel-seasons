@@ -4,6 +4,7 @@ description: "Чем отличаются маршруты Мачу-Пикчу 2
 pubDate: 2026-10-10
 format: "answer"
 coverImage: "./_images/peru-own/machu2.jpg"
+coverQuality: 55
 coverAlt: "Каменные кварталы и террасы Мачу-Пикчу под горой Уайна-Пикчу, облака над гребнем"
 coverCaption: "Мачу-Пикчу в октябре 2025 года."
 coverPosition: "center 55%"
