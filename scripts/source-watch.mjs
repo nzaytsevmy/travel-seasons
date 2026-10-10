@@ -127,13 +127,17 @@ export async function run({ write = false, progress } = {}) {
   const changed = [];
   const broken = [];
 
-  for (const { url, slugs, html, error } of await fetchSources(sources, { progress })) {
+  // В очереди результатов остаются отпечатки, а не HTML всех 831 страниц.
+  const fetched = await fetchSources(sources, { progress, fetcher: async (url) => {
+    const { html, error } = await fetchPage(url);
+    return error ? { error } : { fp: fingerprint(html) };
+  } });
+  for (const { url, slugs, fp, error } of fetched) {
     if (error) {
       broken.push({ url, error, slugs: [...slugs] });
       next[url] = prev[url] ?? null;   // недоступность — не повод терять слепок
       continue;
     }
-    const fp = fingerprint(html);
     const before = prev[url];
     if (before && before.hash !== fp.hash) {
       // Крошечная разница чаще всего означает баннер или подпись «обновлено»,
