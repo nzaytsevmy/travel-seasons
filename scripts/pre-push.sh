@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # traveltribe визуал-гейт перед push: build → preview :<порт копии> → playwright regression.
-# Зелёный → push уходит. Не зелёный → блок. Намеренный обход: git push --no-verify
+# Зелёный → push уходит. Не зелёный → блок. Обязательный hook не обходить.
 set -uo pipefail
 
 REPO="$(git rev-parse --show-toplevel)" || exit 1
@@ -111,6 +111,22 @@ elif [ "$NEWS_SCOPE_STATUS" -ne 2 ]; then
   echo "✖ область новостного выпуска не определена — push заблокирован"; exit 1
 fi
 
+# Решение Никиты 10.10.2026: тяжёлые проверки публикационных рутин выполняет CI.
+# Проверяем весь отправляемый HEAD; существующая автоматика требует 6/26 зелёных
+# статусов по фактическим файлам. Обычная разработка сохраняет локальный прогон.
+BRANCH="$(git branch --show-current)" || exit 1
+case "$BRANCH" in
+  tt-news/*|tt-publish/*)
+    if ! node scripts/routine-preflight.mjs --base "$SCOPE_BASE" --head HEAD >${LOG}_routine.log 2>&1; then
+      cat "${LOG}_routine.log"
+      echo "✖ исходники публикационной рутины не прошли проверку — push заблокирован"; exit 1
+    fi
+    cat "${LOG}_routine.log"
+    echo "✔ локальные проверки публикации зелёные — push разрешён; полные проверки и merge выполняет CI."
+    exit 0
+    ;;
+esac
+
 if [ "$MODE" = "text" ]; then
   echo "▶ pre-push: правки только текстовые → сборка + гейты содержания (без визуальных)"
 else
@@ -152,7 +168,6 @@ if [ "$MODE" = "text" ]; then
   if ! SKIP_PAGE_MTIME_TESTS=1 npx playwright test --grep-invert "— visual" \
       --project=chromium-desktop --workers=1 >${LOG}_pw.log 2>&1; then
     echo "✖ гейты содержания НЕ зелёные → ${LOG}_pw.log"
-    echo "  намеренный обход: git push --no-verify"
     exit 1
   fi
   echo "✔ гейты содержания зелёные — push разрешён."
