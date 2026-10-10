@@ -100,6 +100,12 @@ test('все цены каталога ведут на своё направле
   }
   const dagestan = page.locator('.cd').filter({ has: page.getByRole('link', { name: 'Дагестан', exact: true }) });
   const originalPrice = amount(await dagestan.locator('.cd-price').innerText());
+  // click сам прокручивал длинный каталог и сразу уничтожил документ, пока
+  // WebKit ещё предзагружал оказавшиеся в viewport ссылки (CI #718).
+  // Сначала фиксируем viewport и даём IntersectionObserver запустить запросы.
+  await dagestan.locator('.cd-price').scrollIntoViewIfNeeded();
+  await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+  await page.waitForLoadState('networkidle');
   await dagestan.locator('.cd-price').click();
   await expect(page.locator('#calcRegion')).toHaveValue(String(priceIndex('dagestan')));
   await page.locator('#daysUp').click();
@@ -114,9 +120,12 @@ test('все цены каталога ведут на своё направле
   await expect(page.locator('.tc-hero-amount')).toContainText('$');
   await page.locator('#currGroup [data-cur="rub"]').click();
   await expect(page.locator('.tc-hero-amount')).toContainText('₽');
+  await page.locator('.tc-visa-pill').scrollIntoViewIfNeeded();
+  await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
   await page.waitForLoadState('networkidle');
   await page.locator('.tc-visa-pill').click();
   await expect(page).toHaveURL(/\/visa\/dagestan\//);
+  await page.waitForLoadState('networkidle');
   await page.goBack();
   await expect(page.locator('#calcDaysDisplay')).toHaveText('8');
   await page.locator('#daysUp').click();

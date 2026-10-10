@@ -10,6 +10,7 @@ const WORKFLOW_FILES = new Set([
   'scripts/checked-pr-controller.mjs', 'scripts/auto-merge-policy.mjs',
   'scripts/workflow-push-scope.mjs', 'scripts/pre-push.sh',
   'tests/bot-updates.test.mjs', 'tests/auto-merge-policy.test.mjs',
+  'tests/trip-budget-consistency.spec.ts',
   'tests/workflow-push-scope.test.mjs', 'CLAUDE.md', 'AGENTS.md',
 ]);
 
