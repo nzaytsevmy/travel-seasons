@@ -208,4 +208,7 @@ test('bot schedules stay intact and every active writer uses the guarded publish
   const controller = readFileSync('.github/workflows/auto-merge.yml', 'utf8');
   assert.match(controller, /ref: main/); assert.match(controller, /checks: write/);
   assert.doesNotMatch(controller, /ref:.*head|secrets\.(?:PAT|GH_PAT)/);
+  const report = readFileSync(BOTS['seo-pulse'].workflow, 'utf8');
+  assert.match(report, /fetch-depth: 0/);
+  assert.match(report, /filter: blob:none/);
 });

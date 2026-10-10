@@ -39,6 +39,8 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: false
           fetch-depth: 0
+          # Сохраняем весь граф для watchdog, старые версии фото не скачиваем.
+          filter: blob:none
 
       - uses: actions/setup-node@v4
         with:
