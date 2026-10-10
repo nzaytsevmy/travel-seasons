@@ -36,9 +36,10 @@ export function requiredChecks(files) {
 export function evaluateChecks(required, runs) {
   const byName = new Map();
   for (const run of runs) {
-    const sameName = byName.get(run.name) || [];
-    sameName.push(run);
-    byName.set(run.name, sameName);
+    const previous = byName.get(run.name);
+    if (!previous || Number(run.id || 0) >= Number(previous.id || 0)) {
+      byName.set(run.name, run);
+    }
   }
 
   const missing = [];
@@ -46,19 +47,19 @@ export function evaluateChecks(required, runs) {
   const failed = [];
 
   for (const name of required) {
-    const matching = byName.get(name) || [];
-    if (matching.length === 0) {
+    const matching = byName.get(name);
+    if (!matching) {
       missing.push(name);
       continue;
     }
 
-    if (matching.some((run) => run.status !== 'completed')) {
+    if (matching.status !== 'completed' || matching.conclusion === 'action_required') {
       pending.push(name);
       continue;
     }
 
-    // Повторный успешный запуск исправляет прежний красный результат.
-    if (!matching.some((run) => run.conclusion === 'success')) {
+    // Только последний запуск: старый зелёный не маскирует новое падение.
+    if (matching.conclusion !== 'success') {
       failed.push(name);
     }
   }

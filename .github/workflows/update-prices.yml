@@ -6,17 +6,27 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: update-flight-prices
+  cancel-in-progress: false
 
 jobs:
   update:
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
     runs-on: ubuntu-latest
     # 1 044 запроса с паузой 250 мс — минут пять; без предела задача наследует шесть часов.
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.sha }}
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -25,27 +35,14 @@ jobs:
           TRAVELPAYOUTS_TOKEN: ${{ secrets.TRAVELPAYOUTS_TOKEN }}
           TP_TOKEN: ${{ secrets.TP_TOKEN }}
         run: node scripts/fetch-prices.mjs
-      - name: Commit and push if changed
-        run: |
-          git config user.email "action@github.com"
-          git config user.name "GitHub Actions"
-          git add src/data/prices-cache.json
-          if git diff --staged --quiet; then
-            echo "Цены не изменились — коммит не нужен"
-            exit 0
-          fi
-          git commit -m "chore: update flight prices"
-          # ⛔ В главную ветку пишут ещё два бота: одна попытка отправки падала на гонке,
-          #    и цены молча не обновлялись (аудит 12.09.2026).
-          for i in 1 2 3; do
-            if git pull --rebase origin "${GITHUB_REF_NAME}" && git push; then
-              exit 0
-            fi
-            echo "push: попытка $i не удалась, повтор через 5 с"
-            sleep 5
-          done
-          echo "push не прошёл после 3 попыток" >&2
-          exit 1
+      - name: Проверить контракт издателя
+        run: node --test tests/bot-updates.test.mjs tests/auto-merge-policy.test.mjs
+
+      - name: Создать или обновить проверяемую заявку
+        id: publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/bot-publish.mjs prices
 
       - name: Alert on job failure
         if: failure()
