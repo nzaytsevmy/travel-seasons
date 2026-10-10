@@ -25,6 +25,7 @@ const { post } = Astro.props;
 const { Content, headings } = await post.render();
 const url = `https://traveltribe.ru/blog/${post.slug}/`;
 const coverUrl = typeof post.data.coverImage === 'string' ? post.data.coverImage : `https://traveltribe.ru${post.data.coverImage.src}`;
+const coverQuality = post.data.coverQuality;
 
 // Preload hero cover для LCP <2.5s: АДАПТИВНЫЙ srcset, точно совпадающий с <Picture>
 // ниже (те же widths/sizes/format/quality), чтобы preload попал ровно в тот вариант,
@@ -36,7 +37,7 @@ const heroPreload = typeof post.data.coverImage === 'string' ? null : await getI
   src: post.data.coverImage,
   widths: [640, 960, 1280],
   format: 'webp',
-  quality: 65,
+  quality: coverQuality,
 });
 const ogImageUrl = `https://traveltribe.ru/og/${post.slug}.png`;
 const wordCount = post.body.trim().split(/\s+/).length;
@@ -315,7 +316,7 @@ if (faqs.length >= 2) {
         sizes="100vw"
         formats={['webp']}
         fallbackFormat="jpg"
-        quality={65}
+        quality={coverQuality}
         loading="eager"
         fetchpriority="high"
         pictureAttributes={{ style: `display:block;` }}
