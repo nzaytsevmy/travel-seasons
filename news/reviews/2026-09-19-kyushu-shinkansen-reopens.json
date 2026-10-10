@@ -2,37 +2,187 @@
   "schemaVersion": 1,
   "slug": "2026-09-19-kyushu-shinkansen-reopens",
   "score": 4,
-  "reviewer": "Codex GPT-6 (news_review_20260919)",
-  "reviewedAt": "2026-09-19",
-  "sha256": "df3e372e0747ae20ee9ca9a24bbd91337c9e17d73b58b179aae0c0fa6077ebd5",
-  "rationale": "Страница JR Kyushu подтверждает восстановление движения Kyushu Shinkansen по всей линии с 18 сентября, закрытие обычной линии Кагосима между Уто и Яцусиро, сокращённое движение Кумамото — Уто, приоритет заменяющих автобусов для учащихся и ориентир восстановления в середине октября с оговоркой о повторных толчках. Заметка точно разводит скоростной и местный маршруты и не обещает туристам свободное место в школьном автобусе. Оценка 4: изменение заметно влияет на маршрут по нишевому для русской аудитории острову. Кадр просмотрен: салон серии 800 на станции Хаката, архивный 2012 год, без людей; подпись это раскрывает.",
-  "risks": [
-    "Срок восстановления обычной линии ориентировочный и может измениться.",
-    "Текущее расписание нужно перепроверять перед поездкой."
-  ],
+  "reviewer": "codex-independent-news-review-20261010",
+  "checkedAt": "2026-10-10T15:12:53.409Z",
+  "reviewedAt": "2026-10-10T15:12:53.409Z",
+  "sha256": "519c50923a44035178161c9f1826bffa3662ba7cd7814c60162385dd00ad6f65",
+  "sha256Scope": "full Markdown file bytes at editorial review; later header score synchronization may change this byte hash",
+  "contentHash": "04ffc4f232dbe8ecc58f96cca781d2d2c008c2b673bfcdabaa049bef2de0ac7d",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
+  "proseHash": "04ffc4f232dbe8ecc58f96cca781d2d2c008c2b673bfcdabaa049bef2de0ac7d",
+  "proseHashScope": "same as contentHash",
+  "rationale": "Региональный транспортный доступ меняет маршрут:4. Синкансэн с 18 Sep по всей линии сохраняет изменённое расписание; обычная Kagoshima Main Line с 10 Oct по всей линии работает по нормальному расписанию. Адресная вставка normal timetable точно соответствует ранее прочитанному JR Kyushu. Это содержательный REVISE с сохранёнными исходными date/added.",
   "blockingIssues": [],
-  "evidence": [
-    {
-      "url": "https://www.jrkyushu.co.jp/common/inc/emergency/",
-      "publishedOn": "2026-09-18",
-      "capture": ".run/2026-09-19/sources/jr-emergency.txt",
-      "finding": "Подтверждены восстановление синкансэна, ограничения обычной линии, автобусы и ориентировочный срок работ.",
-      "checkedOn": "2026-09-19"
-    }
+  "risks": [
+    "Интервалы/остановки конкретного поезда требуют текущего расписания. Полный путь не равен прежнему числу поездов синкансэна.",
+    "Редакционное ревью не подтверждает сборку, CI, публикацию, SSR/фид, индексацию или живую версию изменённой страницы; обязательные гейты финального выпуска остаются у автора."
   ],
+  "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
+  "reviewScope": "Независимый Codex reviewer не писал эти новости. Прочитаны текущие title/TLDR/body и весь применимый канон; проверены реальные scores, точные первичные факты, даты/местное время, внутренние URL и конечный локальный JPEG. Это редакторское ревью, не пользовательский тест. Проза, конфиги, сборка, Git и публикация этим reviewer не изменялись. Адресный refresh 2026-10-10T15:12:53.409Z: сверены только согласованные изменения в этой версии, неизменность остальных frontmatter/date/added и фото-зависимостей; первичные источники, фото и API повторно не просматривались. Первичное ревью/его ограничения сохраняются.",
+  "evidence": {
+    "primarySource": {
+      "url": "https://www.jrkyushu.co.jp/common/inc/emergency/",
+      "checkedAt": "2026-10-10T15:00:16.801Z",
+      "method": "Текущий JR Kyushu emergency полностью независимо прочитан Web; события двух разных линий разделены.",
+      "confirmed": [
+        "Kyushu Shinkansen: вся линия открыта 18 Sep, modifiedtimetable сохраняется.",
+        "Kagoshima Main Line: вся линия открыта 10 Oct по normal timetable; старый разрыв Uto–Yatsushiro нельзя сохранять актуальным.",
+        "Дата события 18 Sep и added 19 Sep сохранены; review On 13 Oct."
+      ],
+      "sourceArtifacts": [
+        {
+          "path": "/Users/nikitazaytsev/wt.noindex/tt-news-20261007/.run/news-facts-2026-10-10.md",
+          "sha256": "b38c70a93464ba49b692c44d9e916056d2a1a402ec36a0a2d8cf21a7e204fa45",
+          "capturedBy": "Codex (root)",
+          "completePageClaimed": false
+        },
+        {
+          "path": "/Users/nikitazaytsev/wt.noindex/tt-news-20261007/.run/emsc-primary-observation-2026-10-10.txt",
+          "sha256": "bd1e427501fc32ed65ef7238c91c9d10c09ec96ec465b7b0bd123ac7e30ca1bb",
+          "capturedBy": "Codex (root)",
+          "completePageClaimed": false
+        },
+        {
+          "path": "/Users/nikitazaytsev/wt.noindex/tt-news-20261007/news/selection/2026-10-10.json",
+          "sha256": "7ecec505fb2caed36fe4fdf88a1b3a3886bce38701d302a35278c7bbf8b33979",
+          "capturedBy": "Codex (root)",
+          "completePageClaimed": false,
+          "initialSha256": "70bd4ad7b00842cf6a7d509c16819f18e48f1f8d58cbf988667f8d875875333f",
+          "capturedAt": "2026-10-10T15:08:36.301Z",
+          "addressedRefreshReason": "Обновлены role/audienceUse/addedValue; первичные факты не менялись."
+        }
+      ],
+      "independentlyVerifiedWebSources": [
+        "https://www.jrkyushu.co.jp/common/inc/emergency/"
+      ]
+    },
+    "photo": {
+      "viewedByThisReviewer": true,
+      "path": "src/content/news/_images/2026-09-19-kyushu-shinkansen-reopens.jpg",
+      "sha256": "c07d4bbca8ab6495c42d92c0cd933fcb11ef9189b1c208f411e4cfdd70b0be15",
+      "finding": "Салон Series 800-0, Hakata,27 Feb 2012. JKT-c/CCBY 3.0 Unported; изображение не показывает восстановительные работы.",
+      "scope": "Сам финальный локальный JPEG просмотрен глазами; неизменность просмотренного файла проверена по SHA-256 перед записью ревью.",
+      "credit": "JKT-c",
+      "license": "CC BY",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "source": "https://commons.wikimedia.org/w/index.php?curid=21022788",
+      "title": "Салон синкансэна JR Kyushu серии 800 на станции Хаката, февраль 2012 года. Архивный кадр.",
+      "alt": "Пустой пассажирский салон синкансэна JR Kyushu серии 800 на станции Хаката",
+      "commonsMetadataRechecked": true,
+      "commonsMetadataMethod": "Финальный JPEG просмотрен; Commonscurid 21022788 независимо прочитан Chrome.",
+      "publicAttributionPrepared": "Чистая штатная функция publicPhotoCredits для этих11 возвращает9 CC-записей с creator/source/licenseUrl; собственный Bangkok и Pixabay Tokyo исключены по правилам. Рендер и live /legal/photos/ новой версии ещё не проверены.",
+      "publicAttributionRenderedForThisRelease": false
+    },
+    "internalLinks": {
+      "method": "Свежие собственные HTTP GET10Oct; конечный URL,title и hash тела. 200 не является browser/render/live проверкой изменённой новости.",
+      "results": [
+        {
+          "path": "/blog/japan-guide-2026/",
+          "status": 200,
+          "url": "https://traveltribe.ru/blog/japan-guide-2026/",
+          "checkedAt": "2026-10-10T14:38:38.165Z",
+          "title": "Япония 2026 россиянам: виза бесплатно, бюджет от $50/день",
+          "bodySha256": "a0678207c111451ee687c285cf9a67b34289af51cb8017515c1c567e4ef50034"
+        }
+      ]
+    },
+    "editorialCriteria": {
+      "changesPlans": true,
+      "surprisingNature": false,
+      "concreteAndVerifiable": true,
+      "lastsLongerThanWeek": true,
+      "editorialRubric": "транспорт/восстановление",
+      "backendTopic": "transport",
+      "readerRole": "наследуемая заметка; роль нового выбора не назначается",
+      "audienceUse": "Путешественник, различающий скоростной переезд и местные остановки на Кюсю.",
+      "readerRoleEvidence": "Соответствие роли чтения/распространения: факт, сюжет и следующий шаг проверены; поисковой спрос и эффект не приписаны."
+    },
+    "quality14": {
+      "scores": [
+        10,
+        10,
+        5,
+        10,
+        10,
+        10,
+        10,
+        10,
+        5,
+        10,
+        5,
+        10,
+        5,
+        0
+      ],
+      "scale": "0 absent/contradicts, 5 partial with named gap, 10 done and verified",
+      "scope": "После адресного refresh только изменённая проза и её зависимости. Содержательные редакционные блокеры устранены; исходные первичные/фото наблюдения переиспользованы для неизменных данных. Публичное авторство/SEO/рендер/полный выпуск остаются5/0.",
+      "report": ".run/editorial-review-news-2026-10-10.md"
+    }
+  },
   "lifecycle": {
-    "reviewOn": "2026-10-01",
-    "reason": "Проверить ход восстановления обычной линии и актуальность ориентировочного срока."
+    "decision": "REVISE",
+    "status": null,
+    "effectiveDate": null,
+    "reviewOn": "2026-10-13T00:00:00.000Z",
+    "reason": "Дата исходного события/анонса отделена от added/checked; сроки reviewOn соответствуют следующему триггеру.",
+    "originalDate": "2026-09-18T00:00:00.000Z",
+    "originalAdded": "2026-09-19",
+    "datePreserved": true,
+    "addedPreserved": true,
+    "proseUnchangedFromBase": false
   },
   "checks": {
-    "capsuleWords": 44,
-    "bodyWords": 163,
+    "fullProseRead": true,
+    "fullProseFactReview": true,
+    "finalTldrRead": true,
     "titleChars": 43,
-    "internalLink": "/blog/japan-guide-2026/",
-    "internalLinkStatus": 200,
+    "clipTitle": "Синкансэн на Кюсю снова ходит по всей линии",
+    "clipTitleMeaningPreserved": true,
+    "tldrWords": 48,
+    "bodyWords": 169,
+    "primarySourceRead": true,
+    "primarySourceReadScope": "Текущий JR Kyushu emergency полностью независимо прочитан Web; события двух разных линий разделены.",
     "photoViewed": true,
-    "photoSha256": "c07d4bbca8ab6495c42d92c0cd933fcb11ef9189b1c208f411e4cfdd70b0be15",
-    "photoFinding": "Салон JR Kyushu серии 800-0 на станции Хаката; JKT-c, 27.02.2012, CC BY 3.0.",
-    "scope": "Финальный текст, числа, смысл, язык, ссылка и изображение; без сборки, публикации и live-проверки."
+    "independentReviewer": true,
+    "commonsLicenseRechecked": true,
+    "languageBannedWords": [],
+    "languageMethod": "Чтение всей видимой прозы и поиск запрещённых слов как отдельных слов; это не доказательство происхождения текста.",
+    "internalLinksHttp200": true,
+    "publicCreditDataPrepared": true,
+    "readerTest": false,
+    "buildBrowserCiLive": false,
+    "tldrGate": {
+      "ok": true
+    },
+    "wordCountMethod": "trim().split(/\\s+/).length — текущие фактические слова; диапазоны проверены штатной checkTldr",
+    "addressedChecks": {
+      "independentReview": {
+        "ok": true
+      },
+      "tldr": {
+        "ok": true
+      },
+      "depthLink": {
+        "ok": true
+      },
+      "lifecycle": {
+        "ok": true
+      }
+    }
+  },
+  "addressedRefresh": {
+    "at": "2026-10-10T15:12:53.409Z",
+    "method": "Сравнение каждого changed body/TLDR с точным пакетом; before backup соответствует независимому исходному SHA; source/photo dependencies unchanged; без нового общего ревью.",
+    "originalSha256": "4b42b6afbdbdbb3abd1cd1270bd9c6230c97cd3dcbef15e7babfd76864d61930",
+    "originalContentHash": "0cb561f5fdf483c657a8257ea1e84fae38ce1fc06ef19afdd3c0b00796ea87c3",
+    "baselineBackup": "/Users/nikitazaytsev/wt.noindex/tt-news-20261007/.run/news-before-editorial-2026-10-10/2026-09-19-kyushu-shinkansen-reopens.md",
+    "resolvedIssues": [],
+    "sourceRechecked": false,
+    "photoReViewed": false,
+    "apiCalled": false,
+    "datePreserved": true,
+    "addedPreserved": true,
+    "ledgerSha256": "7ecec505fb2caed36fe4fdf88a1b3a3886bce38701d302a35278c7bbf8b33979",
+    "qualityChanges": []
   }
 }
