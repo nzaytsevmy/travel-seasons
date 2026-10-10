@@ -4,7 +4,7 @@ name: Source Watch
 # которым сверялись факты статей, и присылает список тех, что поменялись.
 #
 # Почему это отдельная задача, а не часть понедельничного отчёта: обход трёх
-# десятков госсайтов занимает минуты и часть из них регулярно отвечает отказом.
+# сотен страниц занимает минуты и часть из них регулярно отвечает отказом.
 # Внутри общего отчёта такая секция роняла бы его целиком либо заставляла ждать.
 #
 # Слепки коммитятся в репозиторий: сравнивать не с чем, если хранить их в
@@ -30,7 +30,9 @@ jobs:
       pull-requests: write
       actions: write
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # 831 адрес на 10.10.2026: ограниченный параллельный обход, 25 с на запрос.
+    # Общий потолок оставляет время завершить весь список даже при массовых отказах.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -64,8 +66,8 @@ jobs:
       - name: Проверить первоисточники
         id: watch
         run: |
-          node scripts/source-watch.mjs --write > /tmp/watch.txt 2>&1 || true
-          cat /tmp/watch.txt
+          set -o pipefail
+          node scripts/source-watch.mjs --write 2>&1 | tee /tmp/watch.txt
           # ⛔ В переменные задачи уходит только флаг, а не текст отчёта: в отчёте
           # адреса и сообщения чужих сайтов, то есть недоверенный ввод. Пропускать
           # его через GITHUB_OUTPUT — приглашение сломать разбор или подставить
@@ -91,7 +93,7 @@ jobs:
             --data-urlencode "text=${TEXT}"
 
       - name: Проверить контракт издателя
-        run: node --test tests/bot-updates.test.mjs tests/auto-merge-policy.test.mjs
+        run: node --test tests/bot-updates.test.mjs tests/auto-merge-policy.test.mjs tests/source-watch.test.mjs
 
       - name: Создать или обновить проверяемую заявку
         id: publish

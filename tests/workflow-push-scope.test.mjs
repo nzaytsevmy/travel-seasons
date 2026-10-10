@@ -11,6 +11,7 @@ const rules = (names) => [{ type: 'pull_request' }, { type: 'required_status_che
 
 test('workflow-only gate is narrow: no source, data, images, dependency or unrelated script changes', () => {
   assert.equal(workflowOnly([entry('.github/workflows/source-watch.yml'), entry('scripts/checked-pr-controller.mjs')]), true);
+  assert.equal(workflowOnly([entry('scripts/source-watch.mjs'), entry('tests/source-watch.test.mjs')]), true);
   for (const path of ['src/data/prices-cache.json', 'src/pages/index.astro', 'package.json',
     'scripts/fetch-prices.mjs', '.github/workflows/deploy.yml', 'src/content/blog/post.md']) {
     assert.equal(workflowOnly([entry('scripts/bot-publish.mjs'), entry(path)]), false);

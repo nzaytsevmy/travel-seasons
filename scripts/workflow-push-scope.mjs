@@ -8,6 +8,7 @@ const WORKFLOW_FILES = new Set([
   '.github/workflows/seo-pulse.yml', '.github/workflows/source-watch.yml',
   'scripts/bot-update-policy.mjs', 'scripts/bot-publish.mjs',
   'scripts/checked-pr-controller.mjs', 'scripts/auto-merge-policy.mjs',
+  'scripts/source-watch.mjs', 'tests/source-watch.test.mjs',
   'scripts/workflow-push-scope.mjs', 'scripts/pre-push.sh',
   'tests/bot-updates.test.mjs', 'tests/auto-merge-policy.test.mjs',
   'tests/trip-budget-consistency.spec.ts',

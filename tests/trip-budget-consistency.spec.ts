@@ -88,7 +88,22 @@ test('цена в талоне открывает расчёт, название
 
 test('все цены каталога ведут на своё направление; смена параметров и возврат работают', async ({ page }) => {
   const errors: string[] = [];
+  const inFlight = new Set();
   page.on('pageerror', error => errors.push(error.message));
+  page.on('request', request => inFlight.add(request));
+  page.on('requestfinished', request => inFlight.delete(request));
+  page.on('requestfailed', request => inFlight.delete(request));
+  const settlePrefetch = async () => {
+    // Astro запускает viewport-prefetch через 300 мс после IntersectionObserver.
+    // networkidle, однажды достигнутый документом, не ждёт будущий таймер:
+    // трасса PR #723 показала click через 217 мс и fetch уже при уничтожении страницы.
+    await page.evaluate(async () => {
+      await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+      await new Promise<void>(resolve => setTimeout(resolve, 350));
+    });
+    await expect.poll(() => inFlight.size, { timeout: 10000,
+      message: 'Запросы завершаются до перехода, перезагрузки или возврата' }).toBe(0);
+  };
   await page.goto('/countries/');
   const cards = await page.locator('.cd').evaluateAll(cards => cards.map(card => ({
     slug: card.querySelector('.cd-name')!.getAttribute('href')?.split('/')[1],
@@ -100,20 +115,15 @@ test('все цены каталога ведут на своё направле
   }
   const dagestan = page.locator('.cd').filter({ has: page.getByRole('link', { name: 'Дагестан', exact: true }) });
   const originalPrice = amount(await dagestan.locator('.cd-price').innerText());
-  // click сам прокручивал длинный каталог и сразу уничтожил документ, пока
-  // WebKit ещё предзагружал оказавшиеся в viewport ссылки (CI #718).
-  // Сначала фиксируем viewport и даём IntersectionObserver запустить запросы.
   await dagestan.locator('.cd-price').scrollIntoViewIfNeeded();
-  await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
-  await page.waitForLoadState('networkidle');
+  await dagestan.locator('.cd-price').hover();
+  await settlePrefetch();
   await dagestan.locator('.cd-price').click();
   await expect(page.locator('#calcRegion')).toHaveValue(String(priceIndex('dagestan')));
   await page.locator('#daysUp').click();
   await expect(page.locator('#calcDaysDisplay')).toHaveText('8');
   await expect.poll(async () => amount(await page.locator('.tc-hero-amount').innerText())).toBeGreaterThan(originalPrice);
-  // В WebKit Astro предзагружает видимые ссылки через fetch без catch. Дождёмся
-  // этих запросов перед принудительной перезагрузкой, чтобы не оборвать их тестом.
-  await page.waitForLoadState('networkidle');
+  await settlePrefetch();
   await page.reload();
   await expect(page.locator('#calcDaysDisplay')).toHaveText('8');
   await page.locator('#currGroup [data-cur="usd"]').click();
@@ -121,14 +131,15 @@ test('все цены каталога ведут на своё направле
   await page.locator('#currGroup [data-cur="rub"]').click();
   await expect(page.locator('.tc-hero-amount')).toContainText('₽');
   await page.locator('.tc-visa-pill').scrollIntoViewIfNeeded();
-  await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
-  await page.waitForLoadState('networkidle');
+  await page.locator('.tc-visa-pill').hover();
+  await settlePrefetch();
   await page.locator('.tc-visa-pill').click();
   await expect(page).toHaveURL(/\/visa\/dagestan\//);
-  await page.waitForLoadState('networkidle');
+  await settlePrefetch();
   await page.goBack();
   await expect(page.locator('#calcDaysDisplay')).toHaveText('8');
   await page.locator('#daysUp').click();
   await expect(page.locator('#calcDaysDisplay')).toHaveText('9');
+  await settlePrefetch();
   expect(errors).toEqual([]);
 });
