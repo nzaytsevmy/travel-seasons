@@ -131,6 +131,7 @@ jobs:
           echo "часть $SHARD из $SHARDS: $(echo "$URLS" | wc -w) адресов"
           echo "заходов на страницу: $RUNS"
           lhci autorun --config="$CONF" --collect.numberOfRuns="$RUNS" $URLS
+          node scripts/check-lighthouse-indexability.mjs .lighthouseci "$CONF"
 
       # Keep the diagnostic capture separate from the three-run acceptance.
       # It retains the raw browser trace needed to explain homepage regressions.
