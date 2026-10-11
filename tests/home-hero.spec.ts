@@ -227,3 +227,27 @@ test('доступное название ссылки автора включа
   await page.goto('/');
   await expect(page.locator('.manifest .me')).toHaveAccessibleName(/Никита.*60.*стран.*цены/s);
 });
+
+test('включение фотографий не сдвигает и не меняет размеры карточек', async ({ page }) => {
+  await page.addInitScript(() => {
+    addEventListener('DOMContentLoaded', () => {
+      (window as any).__homePhotoBoxes = [...document.querySelectorAll('.seasonal-grid .home-card-photo')].map(e => {
+        const r = e.getBoundingClientRect(); return { top: r.top, width: r.width, height: r.height };
+      });
+    }, { once: true });
+  });
+  await page.goto('/?m=10');
+  await expect(page.locator('html')).not.toHaveClass(/home-photo-pending/);
+  const sizes = await page.evaluate(() => ({
+    before: (window as any).__homePhotoBoxes,
+    after: [...document.querySelectorAll('.seasonal-grid .home-card-photo')].map(e => {
+      const r = e.getBoundingClientRect(); return { top: r.top, width: r.width, height: r.height };
+    }),
+  }));
+  expect(sizes.before).toHaveLength(6);
+  for (let i = 0; i < sizes.after.length; i++) {
+    for (const key of ['top', 'width', 'height']) {
+      expect(Math.abs(sizes.after[i][key] - sizes.before[i][key]), i + ':' + key).toBeLessThanOrEqual(1);
+    }
+  }
+});

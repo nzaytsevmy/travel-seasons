@@ -219,6 +219,9 @@ const finalLd = {
   <link rel="dns-prefetch" href="https://mc.yandex.ru" />
   <link rel="dns-prefetch" href="https://analytics.ahrefs.com" />
 
+  {/* Start the homepage image before the font preload queue. */}
+  {preloadJournalFonts && preloadImageSrcset && <link media={preloadImageMedia} rel="preload" as="image" href={preloadImageSrcset.split(' ')[0]} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
+
   <!-- Шрифты: один гротеск Golos Text (variable). @font-face с font-display:optional
        объявлен здесь (не через fontsource index.css со swap → это и давало CLS).
        preload cyrillic + latin — двух сабсетов, что реально используются на любой странице
@@ -266,7 +269,7 @@ const finalLd = {
       Браузеры с поддержкой imagesrcset (все современные) href игнорируют и
       берут вариант из набора, так что двойной загрузки нет; href — самый
       лёгкий вариант, запас для странного клиента. */}
-  {preloadImageSrcset && <link media={preloadImageMedia} rel="preload" as="image" href={preloadImageSrcset.split(' ')[0]} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
+  {!preloadJournalFonts && preloadImageSrcset && <link media={preloadImageMedia} rel="preload" as="image" href={preloadImageSrcset.split(' ')[0]} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
 
   <!-- Аналитика: базовая Яндекс.Метрика (обезличенная статистика + ПФ) и Ahrefs (cookieless)
        грузятся на production-домене для работы/улучшения Сайта (тот же законный интерес, что
