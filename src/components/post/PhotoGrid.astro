@@ -65,12 +65,13 @@ const { images, caption } = Astro.props;
 .photo-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: minmax(160px, 1fr);
-  gap: 6px;
-  border-radius: var(--radius-4, 8px);
+  align-items: start;
+  gap: 1.2rem;
+  border-radius: 0;
   overflow: hidden;
 }
 /* Layouts that look balanced for different counts */
+.photo-grid--2 { grid-template-columns: repeat(2, 1fr); }
 .photo-grid--3 { grid-template-columns: repeat(3, 1fr); }
 .photo-grid--4 { grid-template-columns: repeat(2, 1fr); }
 .photo-grid--5,
@@ -80,30 +81,23 @@ const { images, caption } = Astro.props;
   position: relative;
   display: block;
   overflow: hidden;
-  aspect-ratio: 4 / 3;
-  background: var(--bg3);
+  background: transparent;
   text-decoration: none;
 }
 .pg-cell.pg-wide { grid-column: span 2; }
-.pg-cell.pg-tall { grid-row: span 2; aspect-ratio: 3 / 4; }
+.pg-cell.pg-tall { grid-row: span 2; }
 .pg-cell img,
 .pg-cell picture {
-  width: 100%; height: 100%; object-fit: cover; display: block;
+  width: 100%; height: auto; display: block;
   transition: transform 0.5s var(--ease-out, ease);
 }
-.pg-cell:hover img { transform: scale(1.04); }
-.pg-cell::after {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0) 40%);
-  opacity: 0; transition: opacity 0.2s ease;
-  pointer-events: none;
-}
-.pg-cell:hover::after { opacity: 1; }
+
+
 .pg-caption {
-  position: absolute; left: 12px; right: 12px; bottom: 10px;
-  font-size: 0.78rem; color: #fff; line-height: 1.4;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
-  opacity: 0; transition: opacity 0.2s ease;
+  display: block;
+  padding: .65rem 0;
+  font-size: 0.85rem; color: var(--text-faint); line-height: 1.55;
+  opacity: 1; transition: opacity 0.2s ease;
   pointer-events: none;
 }
 .pg-cell:hover .pg-caption { opacity: 1; }
@@ -112,15 +106,15 @@ const { images, caption } = Astro.props;
   margin-top: 0.7rem;
   font-size: 0.82rem;
   color: var(--text-faint);
-  text-align: center;
+  text-align: left;
   font-style: italic;
 }
 
 /* Mobile — single column for clarity */
 @media (max-width: 600px) {
   .photo-grid,
-  .photo-grid--4 { grid-template-columns: repeat(2, 1fr); }
-  .pg-cell.pg-wide { grid-column: span 2; }
-  .pg-cell.pg-tall { grid-row: auto; aspect-ratio: 4 / 3; }
+  .photo-grid--4 { grid-template-columns: 1fr; }
+  .pg-cell.pg-wide { grid-column: span 1; }
+  .pg-cell.pg-tall { grid-row: auto; }
 }
 </style>

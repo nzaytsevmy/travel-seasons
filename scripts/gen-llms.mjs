@@ -3,6 +3,7 @@
 // + даты DATA_UPDATED. Запускается в pre-push (feedback_llms_txt_sync) —
 // файлы всегда синхронны контенту и имеют актуальную дату.
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { readArticleLead } from './article-lead.mjs';
 import { DATA_UPDATED } from '../src/data/meta.js';
 import { NOUN } from '../src/data/plural.js';
 import { HOLIDAYS } from '../src/data/country-holidays.js';
@@ -95,6 +96,7 @@ const posts = readdirSync(BLOG)
       slug,
       title: get(/^title:\s*(.+)$/m),
       description: get(/^description:\s*(.+)$/m),
+      lead: readArticleLead(fm),
       pubDate: get(/^pubDate:\s*(.+)$/m),
       updatedDate: get(/^updatedDate:\s*(.+)$/m),
       sourceType: get(/^sourceType:\s*(.+)$/m) || 'hybrid',
@@ -188,7 +190,7 @@ ${[
 
 ---
 
-${cleanBody(p.body, p.slug)}
+${[p.lead, cleanBody(p.body, p.slug)].filter(Boolean).join('\n\n')}
 
 ---`).join('\n')}
 `;

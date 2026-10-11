@@ -11,6 +11,7 @@
 // подписи проверяются как раньше.
 import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { readArticleLead } from './article-lead.mjs';
 
 export const SMALL_EDIT_MAX_WORDS = 40;
 const IMAGE_REF = /\.\/_images\/([A-Za-z0-9._/-]+?\.(?:jpe?g|png|webp|svg))/g;
@@ -20,6 +21,7 @@ export function splitPost(src) {
   return m ? { fm: m[1], body: m[2] } : { fm: '', body: src };
 }
 const scalar = (fm, key) => fm.match(new RegExp(`^${key}:\\s*(.*)$`, 'm'))?.[1]?.trim() ?? '';
+export const articleProse = (src) => { const { fm, body } = splitPost(src); return [readArticleLead(fm), body].filter(Boolean).join('\n\n'); };
 const words = (text) => text.split(/\s+/).filter(Boolean);
 const refs = (body) => [...body.matchAll(IMAGE_REF)].map((m) => m[1]);
 
@@ -91,20 +93,21 @@ export function classifyEdit(before, after) {
   const now = splitPost(after);
   if (before == null) {
     return {
-      kind: 'new', wordsChanged: words(now.body).length, titleChanged: true, descriptionChanged: true,
-      newImages: [...new Set(refs(now.body))], addedLines: now.body.split('\n'),
+      kind: 'new', wordsChanged: words(articleProse(after)).length, titleChanged: true, descriptionChanged: true,
+      newImages: [...new Set(refs(now.body))], addedLines: articleProse(after).split('\n'),
     };
   }
   const was = splitPost(before);
   const titleChanged = scalar(was.fm, 'title') !== scalar(now.fm, 'title');
   const descriptionChanged = scalar(was.fm, 'description') !== scalar(now.fm, 'description');
-  const { removed, added } = lineDiff(was.body, now.body);
-  const wordsChanged = changedWords(was.body, now.body);
-  const wordsAdded = addedWords(was.body, now.body);
+  const { removed, added } = lineDiff(articleProse(before), articleProse(after));
+  const leadChanged = readArticleLead(was.fm) !== readArticleLead(now.fm);
+  const wordsChanged = changedWords(articleProse(before), articleProse(after));
+  const wordsAdded = addedWords(articleProse(before), articleProse(after));
   const known = new Set(refs(was.body));
   const newImages = [...new Set(refs(now.body))].filter((r) => !known.has(r));
   let kind = 'small';
-  if (titleChanged || descriptionChanged || wordsAdded > SMALL_EDIT_MAX_WORDS) kind = 'rework';
+  if (titleChanged || descriptionChanged || leadChanged || wordsAdded > SMALL_EDIT_MAX_WORDS) kind = 'rework';
   else if (wordsChanged === 0 && !newImages.length) kind = 'meta';
   return { kind, wordsChanged, wordsAdded, titleChanged, descriptionChanged, newImages, addedLines: added };
 }

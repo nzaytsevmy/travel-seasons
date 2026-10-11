@@ -79,3 +79,10 @@ test('чистое удаление абзаца в 60 слов — мелкая
   assert.equal(r.wordsAdded, 0);
   assert.equal(r.wordsChanged, 60);
 });
+
+
+test('изменение короткого ответа требует ревью, даже когда тело неизменно', () => {
+  const before = base.replace('---\n', '---\nlead: "Возврат зависит от тарифа."\n');
+  const after = before.replace('Возврат зависит от тарифа.', 'Возврат гарантирован при любом тарифе.');
+  assert.equal(classifyEdit(before, after).kind, 'rework');
+});

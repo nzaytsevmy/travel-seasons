@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "slug": "madrid-gde-ostanovitsya",
-  "reviewer": "Codex (article_review_20261011)",
+  "reviewer": "Codex (article_refresh_review_20261011)",
   "reviewedAt": "2026-10-11",
-  "status": "approved_with_limits",
+  "status": "approved_with_limits_pending_release_checks",
   "qualityScore": {
     "topic": 8,
     "facts": 9.5,
@@ -11,10 +11,10 @@
     "experience": 4.5,
     "internalLinks": 9,
     "legal": 9,
-    "overall": 8.2,
-    "ceiling": "Потолок 8,2/10: полезное редакционное сравнение шести сценариев с проверенными транспортными и платёжными границами; спрос, доля кликов и эффект не измерены, проживание автора и свойства конкретных номеров не подтверждены. Полный CI, адаптив готовой страницы, публичная атрибуция и live ожидают выпуска."
+    "overall": 8.4,
+    "ceiling": "Потолок 8,4/10: подтверждены 10 из 14 критериев QUALITY. Собственный вклад усилен матрицей 18 путей метро; проживание и свойства номеров не проверены, свежий спрос не измерен. Публичный слой авторства частичный; ссылки, адаптив, полный gate, CI, deploy/live и читательский тест ещё не закрыты."
   },
-  "rationale": "Независимо прочитаны финальные title, description и весь текст; ключевые факты сопоставлены с Madrid Destino, EMT, Aena и справкой Островка, а противоречивые сообщения о сне — с двумя реально открытыми Reddit-ветками. Проверены семь фотографий на контактном листе, их alt и подписи, все семь записей лицензий и финальная пространственная схема. Автор исправил неоднозначное «в одном предложении», добавил проверку работы нужной линии на дату поездки и заменил Albert Sans на Golos Text. Проверены две входящие связи и отсутствие подмены compilation личным опытом; три исходящих внутренних URL реально вернули 200. Состав и порядок схемы статьи отличаются от восьми районов материала Lonely Planet, прочитаны его заголовки и существенные фрагменты; перевод или копирование абзацев не обнаружены. Практический вклад — выбор базы с последующей проверкой конкретного номера, оплаты и ночного приезда; он не заменяет авторское проживание, проверку тарифов и пользовательский тест. Есть повторение части ответов в FAQ. Это редакционная готовность с ограничениями, а не доказанный выпуск или рост трафика и денег.",
+  "rationale": "Весь финальный MDX, title, description и lead прочитаны отдельно от автора. Полная официальная схема метро декабря2025 просмотрена, проверены реальные пересадки и18 последовательностей, ограничение обычной сети сохранено. Оплата и ночной Airport Express сопоставлены с первичками. Семь фото просмотрены; Пласа-Майор не названа Соль. Матрица маршрутов добавляет воспроизводимый вклад, но не опыт проживания. Повторные FAQ убраны. HTTP preview200 подтвердил title/H1/description/OG/canonical и единственный lead. Это допуск текста к обязательным гейтам с10 подтверждёнными критериями, не доказанный выпуск. Адресное повторное ревью11.10.2026 после языкового гейта: единственная фраза «а не только оставлять чемодан» заменена на «а не оставлять чемодан до вечера». Прочитан весь соседний абзац и начало таблицы; смысл рекомендации сохранён, новых фактов нет. Обратная подстановка дала предыдущий proseHash, поэтому неизменная проза не оценивалась заново. Оценки и ограничения выпуска сохранены.",
   "blockingIssues": [],
   "risks": [
     "Wordstat пропущен по прямому разовому разрешению Никиты; Wordcraft и свежий срез аналитики темы отсутствуют. Не делать из этого нулевой спрос или прогноз посещений.",
@@ -23,38 +23,104 @@
     "Восемь выбранных сообщений из двух публичных обсуждений — малая нерепрезентативная выборка. Тишина зависит от адреса, окон и номера; личное проживание Никиты не подтверждено.",
     "Схема условная, без масштаба, улиц и границ; фотографии архивные и не показывают выбранный гостиничный номер.",
     "Публичный вывод пяти обязательных CC-атрибуций, финальный SSR, якоря оглавления, адаптив и денежный click_id-контракт должны быть подтверждены штатным CI и после публикации. Browser Guard не обходился.",
-    "Прямой destination Островка проверен автором в обычном Chrome; рецензент не имитировал партнёрский клик и не совершал покупку. Статус сайта или наличие CTA не подтверждает бронь либо доход."
+    "Прямой destination Островка проверен автором в обычном Chrome; рецензент не имитировал партнёрский клик и не совершал покупку. Статус сайта или наличие CTA не подтверждает бронь либо доход.",
+    "Производственные гейты, рендер402/1280, реальный читательский тест и deploy/live финальной версии ещё не выполнены."
   ],
-  "proseHash": "fbcb309063eab5a9",
+  "proseHash": "b0ba1a93a8ac6b59",
   "verification": {
     "fullFinalProseRead": true,
-    "changedFragmentsAfterCorrectionsRead": true,
+    "leadIncludedInHash": true,
     "independentReviewer": true,
-    "primaryTransportAndPaymentBoundariesChecked": true,
-    "redditDiscussionsReadViaWeb": true,
-    "photoContactSheetViewed": true,
-    "finalSvgSourceAndPreviewChecked": true,
-    "licenseMetadataComparedWithCommonsHtml": true,
-    "existingInternalTargetsHttp200": true,
+    "arithmeticRecomputed": true,
+    "localHttpMetadataPreview": true,
     "finalPageRenderedAt402And1280": false,
     "readerTest": false,
     "ciDeployLive": false,
-    "demandOrRevenueMeasured": false,
-    "affiliateCoverageMapReview": {
-      "reviewedAt": "2026-10-11",
-      "scope": "Только новая запись madrid-gde-ostanovitsya в reviews/article-affiliate-coverage.json; весь MDX, фото и оценки повторно не пересматривались.",
-      "sourceCiHead": "dc77571816b0ddab5a4794f2f959cfe28191d274",
-      "sourceFailure": "Нет редакционной карты requiredSections в реестре покрытия",
-      "registryRecordSha256": "a854f80c7d53da801f1e012a4d3b31d8005881d95f6193c0398a0267d8a33cd7",
-      "requiredSections": [
-        "Как быстро выбрать район под свою поездку?"
-      ],
-      "exactHeadingAndContextualLinkMatched": true,
-      "omittedIndependentProductDecisionFound": false,
-      "editorialCoverageReasonAccepted": true,
-      "reason": "Один городской выбор базы сравнивается в общей таблице шести сценариев и получает ранний переход на проверенный каталог жилья Мадрида. Районные блоки раскрывают тот же выбор; поздний приезд, конкретный номер и полная предоплата проверяют применимость уже выбранного жилья. Новые названные отели, датозависимые тарифы, самостоятельный трансфер либо иной покупаемый оффер не сравниваются. Общая ссылка соответствует всем шести базам; вымышленные районные deep links не требуются. Финал и sticky не засчитаны.",
-      "fullSiteHtmlAuditRerun": false,
-      "ciOnNewHeadStillRequired": true
+    "demandOrRevenueMeasured": false
+  },
+  "qualityCriteria": [
+    {
+      "criterion": 1,
+      "score": 10,
+      "evidence": "См. .run/article-refresh-20261011/editorial-review.md, критерий1."
+    },
+    {
+      "criterion": 2,
+      "score": 10,
+      "evidence": "См. .run/article-refresh-20261011/editorial-review.md, критерий2."
+    },
+    {
+      "criterion": 3,
+      "score": 10,
+      "evidence": "См. .run/article-refresh-20261011/editorial-review.md, критерий3."
+    },
+    {
+      "criterion": 4,
+      "score": 10,
+      "evidence": "См. .run/article-refresh-20261011/editorial-review.md, критерий4."
+    },
+    {
+      "criterion": 5,
+      "score": 10,
+      "evidence": "См. .run/article-refresh-20261011/editorial-review.md, критерий5."
+    },
+    {
+      "criterion": 6,
+      "score": 10,
+      "evidence": "См. .run/article-refresh-20261011/editorial-review.md, критерий6."
+    },
+    {
+      "criterion": 7,
+      "score": 10,
+      "evidence": "См. .run/article-refresh-20261011/editorial-review.md, критерий7."
+    },
+    {
+      "criterion": 8,
+      "score": 10,
+      "evidence": "См. .run/article-refresh-20261011/editorial-review.md, критерий8."
+    },
+    {
+      "criterion": 9,
+      "score": 5,
+      "evidence": "Поля автора и compilation честны; выдуманного проживания нет. Публичный метод транспортного сравнения описан, но общая sourceNote скрыта штатным шаблоном; личное проживание не подтверждено."
+    },
+    {
+      "criterion": 10,
+      "score": 10,
+      "evidence": "См. .run/article-refresh-20261011/editorial-review.md, критерий10."
+    },
+    {
+      "criterion": 11,
+      "score": 10,
+      "evidence": "См. .run/article-refresh-20261011/editorial-review.md, критерий11."
+    },
+    {
+      "criterion": 12,
+      "score": 5,
+      "evidence": "Кластер и анкоры уместны; полный HTTP/якорный аудит финальной сборки не выполнен."
+    },
+    {
+      "criterion": 13,
+      "score": 5,
+      "evidence": "Контакт7 фото и схема просмотрены, лицензии в прежнем артефакте и реестре; 402/1280 и публичный вывод атрибуций не проверены."
+    },
+    {
+      "criterion": 14,
+      "score": 0,
+      "evidence": "Полный gate,CI,deploy иlive финальной версии не выполнены; BrowserGuardHOLD."
     }
+  ],
+  "confirmedTens": 10,
+  "reviewReport": ".run/article-refresh-20261011/editorial-review.md",
+  "languageDeltaReview": {
+    "reviewedAt": "2026-10-11",
+    "baselineProseHash": "482dfba2c9513588",
+    "finalProseHash": "b0ba1a93a8ac6b59",
+    "scope": "Одна фраза в первом абзаце раздела выбора района; соседний абзац и начало таблицы.",
+    "factsUnchanged": true,
+    "scoresUnchanged": true,
+    "releaseGatePassed": false,
+    "ciDeployLive": false,
+    "readerTest": false
   }
 }
