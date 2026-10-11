@@ -38,19 +38,22 @@ function init() {
   try { saved = JSON.parse(sessionStorage.getItem('tt_home_selection')); } catch { /* storage unavailable */ }
   const hasQuery = ['m', 'max_budget', 'visa', 'vibe'].some(k => new URLSearchParams(location.search).has(k));
   let state = hasQuery ? readSelection(location.search, moscowMonth()) : normalizeSelection(saved || { m: moscowMonth() }, moscowMonth());
-  async function render(write = false, reuseServerCards = false) {
-    state.m ||= moscowMonth();
-    const requested = { ...state };
-    // Keep navigation aligned with the requested conditions while cards load.
-    document.getElementById('homeCatalog').href = catalogHref(requested);
-    document.getElementById('homeFreeCatalog').href = catalogHref({ m: requested.m, visa: 'free' });
-    document.getElementById('homeCheapCatalog').href = catalogHref({ m: requested.m, sort: 'asc' });
-    document.querySelectorAll('[data-home-vibe]').forEach(a => { a.href = catalogHref(requested, { vibe: a.dataset.homeVibe }); });
+  function updateNavigation() {
+    document.getElementById('homeCatalog').href = catalogHref(state);
+    document.getElementById('homeFreeCatalog').href = catalogHref({ m: state.m, visa: 'free' });
+    document.getElementById('homeCheapCatalog').href = catalogHref({ m: state.m, sort: 'asc' });
+    document.querySelectorAll('[data-home-vibe]').forEach(a => { a.href = catalogHref(state, { vibe: a.dataset.homeVibe }); });
     document.querySelectorAll('.home-budget, [data-home-calculator]').forEach(a => {
       const target = new URL(a.href, location.href);
-      target.searchParams.set('m', String(requested.m));
+      target.searchParams.set('m', String(state.m));
       a.href = `${target.pathname}${target.search}${target.hash}`;
     });
+  }
+  async function render(write = false, reuseServerCards = false) {
+    state.m ||= moscowMonth();
+    // Navigation must preserve the request while the seasonal card data is loading.
+    updateNavigation();
+    const requested = { ...state };
     const error = document.getElementById('homeLoadError');
     if (!reuseServerCards) {
       try { ({ rows, pools, reserved } = await planningData()); }
@@ -58,6 +61,7 @@ function init() {
         error.hidden = false;
         error.querySelector('a').href = catalogHref(requested);
         state = normalizeSelection({ m: month });
+        updateNavigation();
         try { sessionStorage.setItem('tt_home_selection', JSON.stringify(state)); sessionStorage.removeItem('tt_home_journey'); } catch { /* storage unavailable */ }
         document.body.dataset.journeySource = 'home_planner';
         return;

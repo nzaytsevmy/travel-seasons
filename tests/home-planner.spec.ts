@@ -1,7 +1,24 @@
 import { test, expect } from './browser-fixture';
 import { DIRECTIONS } from '../src/data/directions.js';
 import { PRICES } from '../src/data/prices.js';
+import { HOME_SEASON_CAPTIONS } from '../src/data/home-season-captions.js';
+import { MONTHS_PREP } from '../src/utils/destination-selection.js';
 const priceIndex = (slug: string) => PRICES.findIndex(p => p.name === DIRECTIONS.find(d => d.slug === slug)?.price?.name);
+// SSR typography binds short words with NBSP; the dynamic payload has ordinary spaces.
+const captionText = (value: string | undefined) => value?.replaceAll('\u00a0', ' ');
+
+test('сезонные подписи обновляются вместе с месяцем во всех трёх подборках', async ({ page }) => {
+  for (const month of [1, 7, 10, 11]) {
+    await page.goto(`/?m=${month}`);
+    await expect(page.locator('[data-home-month]').first()).toHaveText(MONTHS_PREP[month]);
+    const cards = await page.locator('.home-card').evaluateAll(elements => elements.map(card => ({
+      slug: card.getAttribute('data-destination')!,
+      text: card.querySelector('.home-season')?.textContent?.trim(),
+    })));
+    expect(cards.length).toBeGreaterThan(0);
+    for (const card of cards) expect(captionText(card.text), `${card.slug}/${month}`).toBe(HOME_SEASON_CAPTIONS[card.slug][month - 1]);
+  }
+});
 
 test('главная объясняет основу бюджета и не обещает неработающий поиск в разметке', async ({ page }) => {
   await page.goto('/?m=10');
@@ -114,8 +131,29 @@ test('на первом экране остаются шесть читаемы�
   }
 });
 
+test('ссылки сохраняют условия до загрузки сезонных карточек', async ({ page }) => {
+  let release!: () => void;
+  const pending = new Promise<void>(resolve => { release = resolve; });
+  await page.route('**/home-planner-data-*.json', async route => {
+    await pending;
+    await route.continue();
+  });
+  try {
+    await page.goto('/?m=7&max_budget=100000&visa=free_evisa');
+    // The requested month must be available even while the cards still show SSR data.
+    await expect(page.locator('#homeCatalog')).toHaveAttribute('href', '/countries/?m=7&max_budget=100000&visa=free_evisa');
+    await expect(page.locator('[data-home-vibe="nature"]')).toHaveAttribute('href', '/countries/?m=7&max_budget=100000&visa=free_evisa&vibe=nature');
+    await expect(page.locator('#homeFreeCatalog')).toHaveAttribute('href', '/countries/?m=7&visa=free');
+    await expect(page.locator('#homeCheapCatalog')).toHaveAttribute('href', '/countries/?m=7&sort=asc');
+  } finally {
+    release();
+  }
+  await expect(page.locator('[data-home-month]').first()).toHaveText('июле');
+});
+
 test('условия из ссылки обновляют подборки, жильё и сохраняются при возврате', async ({ page }) => {
   await page.goto('/?m=7&max_budget=100000&visa=free_evisa');
+  await expect(page.locator('[data-home-month]').first()).toHaveText('июле');
   await expect(page.locator('#homePlanner')).toHaveCount(0);
   const count = await page.locator('#homeRecommendations .home-card').count();
   await expect(page.locator('#homeResultCount')).toContainText(String(count));
@@ -219,6 +257,13 @@ test('главная без JavaScript сохраняет 30 фото, прям�
     for (const a of await page.locator('#homeRecommendations h3 a').all()) await expect(a).toHaveAttribute('href', /^\/[a-z-]+\/$/);
     await expect(page.locator('#homePlanner')).toHaveCount(0);
     await expect(page.locator('.hero-nav a')).toHaveCount(6);
+    const monthText = await page.locator('[data-home-month]').first().textContent();
+    const month = MONTHS_PREP.indexOf(monthText!);
+    expect(month).toBeGreaterThan(0);
+    const cards = await page.locator('.home-card').evaluateAll(elements => elements.map(card => ({
+      slug: card.getAttribute('data-destination')!, text: card.querySelector('.home-season')?.textContent?.trim(),
+    })));
+    for (const card of cards) expect(captionText(card.text), `${card.slug}/${month}, без JavaScript`).toBe(HOME_SEASON_CAPTIONS[card.slug][month - 1]);
     await page.locator('.hero-nav a[href="/countries/"]').click();
     await expect(page).toHaveURL(/\/countries\/$/);
     await expect(page.locator('h1')).toBeVisible();
