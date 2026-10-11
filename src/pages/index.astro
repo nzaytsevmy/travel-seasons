@@ -39,7 +39,11 @@ const pools = Object.fromEntries(await Promise.all(rows.map(async row => [row.sl
 async function prepareCroppedPhoto(p, ratio, cropPosition = 'centre') {
   const original = await preparePhoto(p);
   const metadata = await photoFiles[`../content/blog/_images/${p.file}`]();
-  const image = await getImage({ src: metadata, width: 640, height: Math.round(640 / ratio), widths: [240, 480, 640], fit: 'cover', position: cropPosition, format: 'webp', quality: 76 });
+  // The image service prevents enlargement for fitted crops. Bound both axes
+  // to the source so the largest srcset candidate retains the intended ratio.
+  const width = Math.min(640, metadata.width, Math.floor(metadata.height * ratio));
+  const widths = [...new Set([240, 480, width].filter(candidate => candidate <= width))];
+  const image = await getImage({ src: metadata, width, height: Math.round(width / ratio), widths, fit: 'cover', position: cropPosition, format: 'webp', quality: 76 });
   return { ...original, src: image.src, srcset: image.srcSet.attribute, width: image.attributes.width, height: image.attributes.height };
 }
 const moods = await Promise.all(HOME_MOODS.map(async mood => ({ ...mood,
