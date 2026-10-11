@@ -24,7 +24,7 @@ imageCredit: "Io24gidf"
 imageLicense: "CC BY-SA 4.0"
 imageLicenseUrl: "https://creativecommons.org/licenses/by-sa/4.0"
 imageSource: "https://commons.wikimedia.org/w/index.php?curid=103042248"
-imageTitle: "Kominato Railway Kiha 20x.jpg. Архивный иллюстративный кадр, 2019-03-05."
+imageTitle: "Поезд Коминато в Японии, 2019 год. Архивное фото, не повреждение линии и не замещающий автобус."
 imageChanges: "Исходное название: Kominato Railway Kiha 20x.jpg. Подготовлена уменьшенная JPEG-копия."
 ---
 
