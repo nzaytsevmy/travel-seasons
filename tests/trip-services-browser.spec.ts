@@ -85,7 +85,9 @@ test.describe('без JavaScript',()=>{
       await expect(links.nth(i)).toHaveAttribute('data-go',/.+/);
     }
     await page.goto('/go/');
-    await expect(page.getByText(/с включённым JavaScript/)).toBeVisible();
+    const explanation=page.locator('p').first();
+    await expect(explanation).toBeVisible();
+    expect((await explanation.innerText()).replace(/\u2060/g,'').replace(/\s+/g,' ')).toMatch(/с включённым JavaScript/);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content','noindex, nofollow');
   });
 });
