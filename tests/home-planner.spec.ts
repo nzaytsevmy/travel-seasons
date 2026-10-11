@@ -238,3 +238,15 @@ test('неизвестный въезд не превращает стоимос
   expect(await page.evaluate(() => (window as any).homeCardRemovals)).toBe(0);
   await expect(page.locator('#homeRecommendations .home-card')).toHaveCount(6);
 });
+
+ test('deep journal anchor reveals its photographs and opens the existing story', async ({ page }) => {
+  await page.goto('/#storiesTitle');
+  await expect(page.locator('#storiesTitle')).toBeInViewport();
+  const story = page.locator('[aria-labelledby="storiesTitle"] .journal-post').first();
+  await expect(story.locator('img')).toBeVisible();
+  const link = story.locator('h3 a');
+  const href = await link.getAttribute('href');
+  await link.click();
+  await expect(page).toHaveURL(new RegExp(href!.replaceAll('/', '\\/') + '$'));
+  await expect(page.locator('h1')).toBeVisible();
+});
