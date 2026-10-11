@@ -93,6 +93,7 @@ const clientData = JSON.stringify({ rows, pools, reserved, month }).replace(/</g
 
   <section class="wrap journal-section jr" id="recommendations" aria-labelledby="seasonTitle">
     <header class="section-head"><div><h2 id="seasonTitle">Куда ехать в <span data-home-month>{MONTHS_PREP[month]}</span></h2></div><a id="homeCatalog" href={catalogHref(state)}>Все подходящие направления</a></header>
+    <p class="home-load-error" id="homeLoadError" role="status" hidden>Не удалось применить условия. <a href="/countries/">Открыть каталог с выбранными условиями</a></p>
     <p class="budget-basis">Бюджет — неделя на одного человека из Москвы, экономный вариант. Неучтённые расходы указаны в карточке.</p>
     <p id="homeResultCount" class="selection-summary" role="status" aria-live="polite">{formatRecommendationCount(collections.recommendations.length)} · хороший или пиковый сезон</p>
     <div class="home-cards seasonal-grid" id="homeRecommendations">{collections.recommendations.map((row, i) => <HomeDestinationCard row={row} placement="recommendation" lead={i === 0} lodging />)}</div>
@@ -247,6 +248,7 @@ const clientData = JSON.stringify({ rows, pools, reserved, month }).replace(/</g
 .journal .manifest .vi a{display:flex;align-items:center;height:100%}
 @media(max-width:760px){.journal .hero-nav{grid-row:auto}}
 
+.journal .home-load-error{padding:12px 16px;border-left:2px solid var(--blue);font-size:14px;line-height:1.6}.journal .home-load-error a{color:var(--blue);text-decoration:underline;display:inline-flex;align-items:center;min-height:44px}
 /* Lower photo collections render as they approach the viewport; the measured
    reserve sizes keep the scroll range stable before their first rendering. */
 .journal .journal-section:not(.jr){content-visibility:auto;contain-intrinsic-block-size:auto var(--deferred-height,900px)}

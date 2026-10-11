@@ -250,3 +250,20 @@ test('неизвестный въезд не превращает стоимос
   await expect(page).toHaveURL(new RegExp(href!.replaceAll('/', '\\/') + '$'));
   await expect(page.locator('h1')).toBeVisible();
 });
+
+ test('default homepage does not download the complete planning library', async ({ page }) => {
+  const requests: string[] = [];
+  page.on('request', request => { if (request.url().includes('home-planner-data-')) requests.push(request.url()); });
+  await page.goto('/');
+  await expect(page.locator('body')).toHaveAttribute('data-journey-source', 'home_planner');
+  expect(requests).toEqual([]);
+  await expect(page.locator('#homeRecommendations .home-card')).toHaveCount(6);
+});
+ test('failed planning data keeps guide cards and a catalog link with requested conditions', async ({ page }) => {
+  await page.route('**/home-planner-data-*.json', route => route.abort());
+  await page.goto('/?m=7&max_budget=100000&visa=free_evisa');
+  await expect(page.locator('#homeLoadError')).toBeVisible();
+  await expect(page.locator('#homeLoadError a')).toHaveAttribute('href', '/countries/?m=7&max_budget=100000&visa=free_evisa');
+  await expect(page.locator('#homeRecommendations .home-card')).toHaveCount(6);
+  await expect(page.locator('#homeRecommendations h3 a').first()).toBeVisible();
+});

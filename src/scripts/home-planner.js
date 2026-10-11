@@ -20,19 +20,45 @@ function init() {
   const host = document.getElementById('homeData');
   if (!host || initialized.has(host)) return;
   initialized.add(host);
-  const { rows, pools, reserved, month } = JSON.parse(host.textContent);
+  const bootstrap = JSON.parse(host.textContent);
+  const { month } = bootstrap;
+  let rows, pools, reserved, dataPromise;
+  async function planningData() {
+    if (!dataPromise) dataPromise = bootstrap.rows ? Promise.resolve(bootstrap) :
+      fetch(bootstrap.dataUrl, { credentials: 'same-origin' }).then(async response => {
+        if (!response.ok) throw new Error('Planner data unavailable');
+        const payload = await response.json();
+        if (!Array.isArray(payload.rows) || !payload.pools || !Array.isArray(payload.reserved)) throw new Error('Invalid planner data');
+        return payload;
+      });
+    try { return await dataPromise; }
+    catch (error) { dataPromise = null; throw error; }
+  }
   let saved = null;
   try { saved = JSON.parse(sessionStorage.getItem('tt_home_selection')); } catch { /* storage unavailable */ }
   const hasQuery = ['m', 'max_budget', 'visa', 'vibe'].some(k => new URLSearchParams(location.search).has(k));
   let state = hasQuery ? readSelection(location.search, moscowMonth()) : normalizeSelection(saved || { m: moscowMonth() }, moscowMonth());
-  function render(write = false, reuseServerCards = false) {
+  async function render(write = false, reuseServerCards = false) {
     state.m ||= moscowMonth();
-    const c = allocateHomePhotos(homeCollections(rows, state), pools, reserved, state.m);
+    const requested = { ...state };
+    const error = document.getElementById('homeLoadError');
     if (!reuseServerCards) {
+      try { ({ rows, pools, reserved } = await planningData()); }
+      catch {
+        error.hidden = false;
+        error.querySelector('a').href = catalogHref(requested);
+        state = normalizeSelection({ m: month });
+        try { sessionStorage.setItem('tt_home_selection', JSON.stringify(state)); sessionStorage.removeItem('tt_home_journey'); } catch { /* storage unavailable */ }
+        document.body.dataset.journeySource = 'home_planner';
+        return;
+      }
+    }
+    error.hidden = true;
+    if (!reuseServerCards) {
+    const c = allocateHomePhotos(homeCollections(rows, state), pools, reserved, state.m);
     document.getElementById('homeRecommendations').innerHTML = c.recommendations.map((r, i) => card(r, 'recommendation', true, i === 0)).join('');
     document.getElementById('homeFree').innerHTML = c.free.map(r => card(r, 'visa_free', false)).join('');
     document.getElementById('homeCheap').innerHTML = c.cheap.map(r => card(r, 'budget', true)).join('');
-    }
     document.getElementById('homeResultCount').textContent = `${formatRecommendationCount(c.recommendations.length)}${state.vibe ? ' под выбранный отдых' : ''} · хороший или пиковый сезон`;
     document.getElementById('homeEmpty').hidden = c.recommendations.length > 0;
     document.querySelectorAll('[data-home-month]').forEach(e => { e.textContent = MONTHS_PREP[state.m]; });
@@ -41,6 +67,7 @@ function init() {
     document.getElementById('homeCheapCatalog').href = catalogHref({ m: state.m, sort: 'asc' });
     document.querySelectorAll('[data-home-vibe]').forEach(a => { a.href = catalogHref(state, { vibe: a.dataset.homeVibe }); });
     document.querySelectorAll('[data-home-calculator]').forEach(a => { a.href = c.recommendations[0]?.calcUrl || `/calculator/?m=${state.m}`; });
+    }
     try { sessionStorage.setItem('tt_home_selection', JSON.stringify(state)); sessionStorage.setItem('tt_home_journey', String(Date.now())); } catch { /* storage unavailable */ }
     // Существующий идентификатор пути сохраняется для совместимости отчётов.
     document.body.dataset.journeySource = 'home_planner';
