@@ -6,6 +6,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
+import { readArticleLead } from './article-lead.mjs';
 
 export const REVIEW_REQUIRED_FROM = '2026-09-03';
 export const AXES = ['topic', 'facts', 'visuals', 'experience', 'internalLinks', 'legal', 'overall'];
@@ -47,7 +48,10 @@ export function proseHash(raw) {
   const fm = parts[1] ?? '';
   const body = parts.slice(2).join('---');
   // Заголовок и описание — тоже текст, который читает рецензент: их правка после оценки ломает хеш.
-  const head = ['title', 'description'].map((k) => fm.match(new RegExp(`^${k}:\\s*(.*)$`, 'm'))?.[1]?.trim() ?? '').join('\n');
+  const lead = readArticleLead(fm);
+  const fields = ['title', 'description'].map((k) => fm.match(new RegExp(`^${k}:\\s*(.*)$`, 'm'))?.[1]?.trim() ?? '');
+  if (lead !== undefined) fields.push(JSON.stringify(lead));
+  const head = fields.join('\n');
   return createHash('sha256').update((head + '\n' + body).replace(/\s+/g, ' ').trim()).digest('hex').slice(0, 16);
 }
 

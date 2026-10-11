@@ -95,3 +95,12 @@ test('артефакт от другого slug, без даты или с ко�
   assert.match(checkArticleReview({ slug: 'probnaya', meta }, fixture({ ...good, reviewedAt: '' })).reason, /reviewedAt/);
   assert.match(checkArticleReview({ slug: 'probnaya', meta }, fixture({ ...good, rationale: 'коротко' })).reason, /rationale/);
 });
+
+test('короткий ответ после независимого ревью нельзя подменить без новой оценки', () => {
+  const reviewed = post.replace('title: "Пробная"', 'title: "Пробная"\nlead: "Возврат зависит от тарифа."');
+  const changed = reviewed.replace('Возврат зависит от тарифа.', 'Возврат гарантирован при любом тарифе.');
+  const review = { ...good, proseHash: proseHash(reviewed) };
+  const result = checkArticleReview({ slug: 'probnaya', meta, proseHash: proseHash(changed) }, fixture(review));
+  assert.equal(result.ok, false);
+  assert.match(result.reason, /proseHash/);
+});

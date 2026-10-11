@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, copyFileSync, existsSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, copyFileSync, existsSync, rmSync, symlinkSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execFileSync, spawnSync } from 'node:child_process';
@@ -17,11 +17,13 @@ function fixture(branch, options = {}) {
   try {
     git(['init', '-b', 'main']);
     git(['config', 'user.name', 'Test']);git(['config', 'user.email', 'test@example.invalid']);
-    for (const file of ['pre-push.sh', 'release-scope.mjs', 'news-push-scope.mjs', 'article-review-gate.mjs', 'edit-kind.mjs', 'auto-merge-policy.mjs', 'routine-preflight.mjs']) {
+    for (const file of ['pre-push.sh', 'release-scope.mjs', 'news-push-scope.mjs', 'article-review-gate.mjs', 'article-lead.mjs', 'edit-kind.mjs', 'auto-merge-policy.mjs', 'routine-preflight.mjs']) {
       const src = new URL(`scripts/${file}`, project);
       if (existsSync(src)) { mkdirSync(join(root, 'scripts'), { recursive: true }); copyFileSync(src, join(root, 'scripts', file)); }
     }
     put('package.json', '{"type":"module"}\n');
+    mkdirSync(join(root, 'node_modules'), { recursive: true });
+    symlinkSync(new URL('node_modules/yaml', project), join(root, 'node_modules/yaml'), 'dir');
     put('scripts/preview-port.mjs', 'console.log(4432);\n');
     put('scripts/secret-scan.py', 'import sys\nsys.exit(0)\n');
     put('scripts/check-journal-metadata.mjs', 'console.log("metadata fixture PASS");\n');
