@@ -41,6 +41,16 @@ function init() {
   async function render(write = false, reuseServerCards = false) {
     state.m ||= moscowMonth();
     const requested = { ...state };
+    // Keep navigation aligned with the requested conditions while cards load.
+    document.getElementById('homeCatalog').href = catalogHref(requested);
+    document.getElementById('homeFreeCatalog').href = catalogHref({ m: requested.m, visa: 'free' });
+    document.getElementById('homeCheapCatalog').href = catalogHref({ m: requested.m, sort: 'asc' });
+    document.querySelectorAll('[data-home-vibe]').forEach(a => { a.href = catalogHref(requested, { vibe: a.dataset.homeVibe }); });
+    document.querySelectorAll('.home-budget, [data-home-calculator]').forEach(a => {
+      const target = new URL(a.href, location.href);
+      target.searchParams.set('m', String(requested.m));
+      a.href = `${target.pathname}${target.search}${target.hash}`;
+    });
     const error = document.getElementById('homeLoadError');
     if (!reuseServerCards) {
       try { ({ rows, pools, reserved } = await planningData()); }
@@ -62,10 +72,6 @@ function init() {
     document.getElementById('homeResultCount').textContent = `${formatRecommendationCount(c.recommendations.length)}${state.vibe ? ' под выбранный отдых' : ''} · хороший или пиковый сезон`;
     document.getElementById('homeEmpty').hidden = c.recommendations.length > 0;
     document.querySelectorAll('[data-home-month]').forEach(e => { e.textContent = MONTHS_PREP[state.m]; });
-    document.getElementById('homeCatalog').href = catalogHref(state);
-    document.getElementById('homeFreeCatalog').href = catalogHref({ m: state.m, visa: 'free' });
-    document.getElementById('homeCheapCatalog').href = catalogHref({ m: state.m, sort: 'asc' });
-    document.querySelectorAll('[data-home-vibe]').forEach(a => { a.href = catalogHref(state, { vibe: a.dataset.homeVibe }); });
     document.querySelectorAll('[data-home-calculator]').forEach(a => { a.href = c.recommendations[0]?.calcUrl || `/calculator/?m=${state.m}`; });
     }
     try { sessionStorage.setItem('tt_home_selection', JSON.stringify(state)); sessionStorage.setItem('tt_home_journey', String(Date.now())); } catch { /* storage unavailable */ }
