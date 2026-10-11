@@ -131,3 +131,20 @@ jobs:
           echo "часть $SHARD из $SHARDS: $(echo "$URLS" | wc -w) адресов"
           echo "заходов на страницу: $RUNS"
           lhci autorun --config="$CONF" --collect.numberOfRuns="$RUNS" $URLS
+
+      # Keep the diagnostic capture separate from the three-run acceptance.
+      # It retains the raw browser trace needed to explain homepage regressions.
+      - name: Capture homepage performance trace
+        if: ${{ matrix.preset == 'mobile' && matrix.shard == 1 }}
+        run: |
+          lhci collect --config=./lighthouserc.mobile.json --url=http://localhost/index.html --numberOfRuns=1 --settings.saveAssets=true
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() && matrix.preset == 'mobile' && matrix.shard == 1 }}
+        with:
+          name: home-performance-trace-${{ github.sha }}
+          path: |
+            *.trace.json
+            *.devtoolslog.json
+          if-no-files-found: error
+          retention-days: 2

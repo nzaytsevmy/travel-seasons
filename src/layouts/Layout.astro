@@ -235,8 +235,13 @@ const finalLd = {
     (() => {
       const root = document.documentElement;
       root.classList.add('home-photo-pending');
-      let observer, loaded = false, painted = false;
-      const reveal = () => { root.classList.remove('home-photo-pending'); observer?.disconnect(); };
+      let observer, fallbackTimer, loaded = false, painted = false;
+      const reveal = () => {
+        clearTimeout(fallbackTimer);
+        root.classList.remove('home-photo-pending');
+        observer?.disconnect();
+        removeEventListener('scroll', reveal);
+      };
       const ready = () => { if (loaded && painted) requestAnimationFrame(reveal); };
       // Keep SSR sources and dimensions. Release below-fold photos after an
       // observed first paint, or immediately when the visitor starts scrolling.
@@ -250,7 +255,7 @@ const finalLd = {
         painted = true;
       }
       addEventListener('load', () => { loaded = true; requestAnimationFrame(ready); }, { once: true });
-      setTimeout(reveal, 2000); // Restore photos even if an unrelated resource stalls.
+      fallbackTimer = setTimeout(reveal, 2000); // Restore photos even if an unrelated resource stalls.
     })();
   </script>}
   {/* The homepage trace uses these six journal subsets before its first paint.
