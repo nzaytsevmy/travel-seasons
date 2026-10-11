@@ -19,6 +19,24 @@ export function normalizeTrip(options = {}) {
   };
 }
 
+// Суммируем только распознаваемые обязательные сборы. Другие валюты,
+// диапазоны и неполные тарифы требуют уточнения, а не нулевого сбора.
+function entryFeeRub(visa, rates) {
+  if (!visa) return 0;
+  const cost = String(visa.cost ?? '').trim();
+  if (cost.includes('/')) {
+    const alternatives = cost.split('/').map(part => entryFeeRub({ cost: part }, rates));
+    return alternatives.every(fee => fee !== null && fee === alternatives[0]) ? alternatives[0] : null;
+  }
+  if (/в билете/i.test(cost)) return 0;
+  if (!cost || /[a-z]\$|\b(?:AUD|NZD|SGD|IDR|JPY|INR|ILS|CAD)\b|шекел|₩|(?:^|\s)до\s*\d|\d\s*[–−-]\s*\d|\+\s*$|\//i.test(cost)) return null;
+  const amounts = [...cost.matchAll(/([$€])\s*(\d+(?:[.,]\d+)?)/g)]
+    .map(([, currency, amount]) => Number(amount.replace(',', '.')) * rates[currency === '$' ? 'USD' : 'EUR']);
+  for (const [, amount] of cost.matchAll(/(\d+(?:[.,]\d+)?)\s*(?:₽|руб(?:\.|лей)?)/gi)) amounts.push(Number(amount.replace(',', '.')));
+  if (amounts.length) return amounts.reduce((sum, amount) => sum + amount, 0);
+  return /бесплатно|не нужна/i.test(cost) ? 0 : null;
+}
+
 export function calculateTripBudget(price, { rates, visa, seasons, ...options } = {}) {
   if (![rates?.USD, rates?.EUR].every(n => Number.isFinite(n) && n > 0)) throw new Error('Нужен общий курс бюджета');
   const trip = normalizeTrip(options);
@@ -27,23 +45,33 @@ export function calculateTripBudget(price, { rates, visa, seasons, ...options } 
   if (!values.every(n => Number.isFinite(n) && n >= 0)) throw new Error('Неполные расходы направления');
   const [flight, hotel, food] = values;
   const seasonMult = month ? SEASON_MULT[seasons?.[month - 1]] ?? 1 : 1;
-  // Сохраняем существующий состав расчёта: виза в USD/EUR, если она платная.
   // Включённый в билет сбор второй раз к перелёту не прибавляется.
-  const cost = visa?.cost || '';
-  const usd = cost.match(/\$\s*(\d+(?:[.,]\d+)?)/);
-  const eur = cost.match(/€\s*(\d+(?:[.,]\d+)?)/);
-  const visaRub = /бесплатно|в билете/i.test(cost) ? 0
-    : usd ? Number(usd[1].replace(',', '.')) * rates.USD
-    : eur ? Number(eur[1].replace(',', '.')) * rates.EUR : 0;
+  const visaRub = entryFeeRub(visa, rates);
   const convert = currency === 'rub' ? rates.USD : 1;
   const flightTotal = Math.round(flight * seasonMult * travelers * convert);
   const hotelTotal = Math.round(hotel * days * convert);
   const foodTotal = Math.round(food * days * travelers * convert);
-  const visaTotal = Math.round(visaRub * travelers / (currency === 'rub' ? 1 : rates.USD));
+  const visaTotal = visaRub === null ? null : Math.round(visaRub * travelers / (currency === 'rub' ? 1 : rates.USD));
+  const unknownCosts = visaTotal === null ? ['Сборы за въезд'] : [];
+  let knownMandatory = 0;
+  for (const expense of visa?.mandatoryCosts || []) {
+    if (!Number.isFinite(expense.rub) || expense.rub < 0) unknownCosts.push(expense.label);
+    else knownMandatory += Math.round(expense.rub * travelers / (currency === 'rub' ? 1 : rates.USD));
+  }
+  const mandatoryTotal = unknownCosts.some(cost => cost !== 'Сборы за въезд') ? null : knownMandatory;
+  const knownTotal = flightTotal + hotelTotal + foodTotal + (visaTotal ?? 0) + knownMandatory;
   return {
-    ...trip, p: price, visa, seasonMult, flightTotal, hotelTotal, foodTotal, visaTotal,
-    grand: flightTotal + hotelTotal + foodTotal + visaTotal,
+    ...trip, p: price, visa, seasonMult, flightTotal, hotelTotal, foodTotal, visaTotal, mandatoryTotal, knownTotal, unknownCosts,
+    grand: unknownCosts.length ? null : knownTotal,
   };
+}
+
+export function budgetExclusions(unknownCosts = []) {
+  const terms = [];
+  if (unknownCosts.includes('Сборы за въезд')) terms.push('сборов за въезд');
+  if (unknownCosts.includes('Медицинская страховка')) terms.push('страховки');
+  if (unknownCosts.some(cost => !['Сборы за въезд', 'Медицинская страховка'].includes(cost))) terms.push('обязательных расходов');
+  return terms.join(' и ');
 }
 
 export function calculatorHref(index, options = {}) {

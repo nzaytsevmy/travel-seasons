@@ -440,6 +440,7 @@ export function joinRevenueRowsToClicks(revenueRows, clickRows) {
       reader_cohort: clean(click.reader_cohort ?? click.readerCohort),
       audience_source: clean(click.audience_source ?? click.audienceSource),
       metrikaClick: true,
+      ...(click.journey_source === 'home_planner' ? { journey_source: 'home_planner' } : {}),
     };
   });
   const total = rows.length;
@@ -621,3 +622,4 @@ export function computeRevenueMetrics({ organicSessions = 0, approvedRevenue = 0
 }
 
 export { PARTNERS };
+export const HOME_ORGANIC_ENTRY_FILTER = "ym:s:lastTrafficSource=='organic' AND ym:s:startURLPath=='/'";

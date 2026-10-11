@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { buildReport, flattenTraffic, parseCsv } from '../scripts/monetization-report.mjs';
+import { HOME_ORGANIC_ENTRY_FILTER } from '../src/data/monetization.js';
 
 const traffic = {
   updated: '2026-08-30',
@@ -12,6 +13,36 @@ const traffic = {
   packing: { 'turkey/september': { visits: 60, live: 50, partner: 2 } },
   guides: { japan: { visits: 30, live: 25, partner: 2 } },
 };
+
+function homeInput() {
+  const homeClick = 'c00112233445566778899';
+  const otherClick = 'cffeeddccbbaa99887766';
+  return {
+    trafficSnapshot: { ...traffic, dateFrom: '2026-08-01', dateTo: '2026-08-31' },
+    ingestion: { status: 'complete', from: '2026-08-01', through: '2026-08-31', completedAt: '2026-09-01T00:00:00Z', rowCount: 2 },
+    asOfDate: '2026-10-30', maturityDaysByPartner: { aviasales: 30 },
+    revenueRows: [homeClick, otherClick].map((id, i) => ({ partner: 'aviasales', state: 'paid', commission_rub: i ? '900' : '100', action_id: `home-test-${i}`, sub_id: `tt2__calculator_georgia_flight__baseline__na__${id}` })),
+    clickRows: [homeClick, otherClick].map(id => ({ click_id: id, event_time: '2026-08-29T12:34:56+03:00', event_count: 1 })),
+    homeCohort: { status: 'complete', filter: HOME_ORGANIC_ENTRY_FILTER, dateFrom: '2026-08-01', dateTo: '2026-08-31', organicSessions: 50, partnerClicks: 1, clickEvents: [{ click_id: homeClick, event_time: '2026-08-29T12:34:56+03:00', event_count: 1, page_path: '/calculator/' }] },
+  };
+}
+
+test('главная: доход включает последующий калькулятор только из органической входной когорты', () => {
+  const report = buildReport(homeInput());
+  assert.match(report, /Сессий с органическим входом на главную: \*\*50\*\*/);
+  assert.match(report, /Чистая комиссия входной когорты: \*\*100,00 ₽\*\*/);
+  assert.match(report, /Доход с главной на 1 000 органических сессий: \*\*2[\s ]?000,00 ₽\*\*/);
+});
+
+test('главная: несогласованная телеметрия, другое окно или отсутствие выгрузки не становятся нулём или доходом', () => {
+  for (const change of [
+    { homeCohort: null },
+    { homeCohort: { ...homeInput().homeCohort, partnerClicks: 2 } },
+    { homeCohort: { ...homeInput().homeCohort, dateFrom: '2026-09-01' } },
+    { homeCohort: { ...homeInput().homeCohort, organicSessions: 0 } },
+    { ingestion: null },
+  ]) assert.match(buildReport({ ...homeInput(), ...change }), /Доход с главной на 1 000 органических сессий: \*\*нет данных\*\*/);
+});
 
 test('снимок Метрики раскладывается по page type и intent', () => {
   const rows = flattenTraffic(traffic);

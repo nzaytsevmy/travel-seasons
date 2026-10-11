@@ -7,6 +7,7 @@ import {
   computeRevenueMetrics,
   isRevenueRowMature,
   joinRevenueRowsToClicks,
+  HOME_ORGANIC_ENTRY_FILTER,
 } from '../src/data/monetization.js';
 
 function argsOf(argv) {
@@ -128,6 +129,7 @@ export function buildReport({
   maturityDaysByPartner = {},
   readerCohortCounts = {},
   audienceSourceCounts = {},
+  homeCohort = null,
   ingestion = null,
 }) {
   const traffic = flattenTraffic(trafficSnapshot);
@@ -165,6 +167,17 @@ export function buildReport({
       Date.parse(row.clickDate) < Date.parse(`${trafficSnapshot.dateTo}T00:00:00Z`) + 86400000);
   const canComputeRpm = ingestionComplete && comparableWindows && normalized.length > 0 && maturityConfigured && validClickDates &&
     joined.stats.coverage === 1 && knownRows.length === normalized.length && mature.length === normalized.length;
+  const homeClicks = Array.isArray(homeCohort?.clickEvents) ? homeCohort.clickEvents : [];
+  const homeIds = new Set(homeClicks.map(row => row.click_id));
+  const homeSessionsKnown = homeCohort?.status === 'complete' && homeCohort.filter === HOME_ORGANIC_ENTRY_FILTER &&
+    Number.isInteger(homeCohort.organicSessions) && homeCohort.organicSessions >= 0 &&
+    homeCohort.dateFrom === trafficSnapshot.dateFrom && homeCohort.dateTo === trafficSnapshot.dateTo;
+  const homeTelemetryComplete = Number.isInteger(homeCohort?.partnerClicks) && homeCohort.partnerClicks >= 0 &&
+    homeIds.size === homeClicks.length && homeClicks.every(row => row.click_id && row.event_count === 1) &&
+    homeClicks.length === homeCohort.partnerClicks;
+  const homeNet = decisionRows.filter(row => homeIds.has(row.clickId))
+    .reduce((sum, row) => sum + row.approvedRevenue - row.reversedRevenue, 0);
+  const canComputeHome = canComputeRpm && homeSessionsKnown && homeCohort.organicSessions > 0 && homeTelemetryComplete;
   const readerValueTable = renderValueTable({
     counts: readerCohortCounts,
     clickRows,
@@ -219,6 +232,13 @@ export function buildReport({
     + `- Полнота выгрузки: **${ingestionComplete ? `успешно завершена, строк: ${ingestion.rowCount}; период ${ingestion.from} — ${ingestion.through}; завершение ${ingestion.completedAt}` : 'полнота не подтверждена'}**\n`
     + `- Доход на 1 000 органических визитов: **${!canComputeRpm || metrics.revenuePerThousand == null ? 'нет данных' : money(metrics.revenuePerThousand)}**\n`
     + `- Статус: **${status}**\n\n`
+    + `## Главная: органический вход и дальнейший путь\n\n`
+    + `Когорта определяется страницей входа в Метрике; включает клики из последующих гидов и калькулятора. Пометка пути в браузере сама по себе не подтверждает органический вход.\n\n`
+    + `- Сессий с органическим входом на главную: **${homeSessionsKnown ? homeCohort.organicSessions : 'нет данных'}**\n`
+    + `- Кликов к партнёрам в этой когорте: **${homeSessionsKnown ? homeCohort.partnerClicks : 'нет данных'}**; уникальных click_id: ${homeClicks.length}\n`
+    + `- Чистая комиссия входной когорты: **${canComputeHome ? money(homeNet) : 'нет данных'}**\n`
+    + `- Доход с главной на 1 000 органических сессий: **${canComputeHome ? money(homeNet / homeCohort.organicSessions * 1000) : 'нет данных'}**\n`
+    + `- Учёт: **${canComputeHome ? 'периоды, зрелость, полнота и точные клики согласованы' : 'HOLD — требуется согласованный зрелый реестр и полная телеметрия входной когорты'}**\n\n`
     + `## По типам страниц\n\n${renderTable(sumBy(traffic, 'type'))}\n\n`
     + `## По намерению\n\n${renderTable(sumBy(traffic, 'intent'))}\n\n`
     + `## Ценность читательских когорт\n\n${readerValueTable}\n\n`
@@ -244,6 +264,7 @@ if (process.argv[1] && resolve(process.argv[1]) === new URL(import.meta.url).pat
     maturityDaysByPartner,
     readerCohortCounts: privateExport.readerCohortCounts ?? {},
     audienceSourceCounts: privateExport.audienceSourceCounts ?? {},
+    homeCohort: privateExport.homeCohort ?? null,
     ingestion: privateExport.ingestion ?? null,
   });
   if (args.output) {

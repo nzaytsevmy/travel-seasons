@@ -72,12 +72,12 @@ const MONTH_FULL  = ['январе','феврале','марте','апреле'
 // порознь: в разметке стояли пять вопросов, на странице — шесть других, ни один
 // не совпадал дословно. Разметка без видимого текста — спам-флаг по чеклисту.
 const FAQS = [
-  { q: 'Как считается несколько путешественников?',
-    a: 'Перелёт и питание умножаются на число людей. Отель — нет: один номер вмещает 2-4 человек. Это даёт реалистичную сумму — семья из 2 платит ≈ в 1.6× больше одного, а не в 2×.' },
+  { q: 'Как считается бюджет на несколько человек?',
+    a: 'Перелёт и питание умножаются на число людей. Жильё остаётся одной общей суммой. Проверь, что выбранный вариант размещения вмещает всех путешественников.' },
   { q: 'Виза включена в итог?',
-    a: 'Да, если виза платная — в разбивке появляется строка со стоимостью. Если безвиз — «безвиз». По клику открывается детальная страница визы по выбранной стране.' },
+    a: 'Известные сборы за въезд входят в сумму. Если цена сборов или обязательной страховки неизвестна, калькулятор показывает известную часть бюджета и перечисляет невключённые расходы.' },
   { q: 'Что такое «лучший месяц»?',
-    a: 'Калькулятор смотрит 12-месячный рейтинг страны и подсвечивает месяц с минимальным коэффициентом цены и нормальной погодой. «В ноябре та же поездка обойдётся на 28% дешевле».' },
+    a: 'Это месяц с наиболее низкой оценкой перелёта среди месяцев с подходящим сезоном. Процент экономии в подсказке относится к перелёту. Жильё и питание остаются с прежними оценками.' },
   { q: 'Учитывает ли курс рубля?',
     a: 'Да. Суммы можно смотреть в рублях или долларах — переключатель рядом с уровнем комфорта.' },
 ];
@@ -155,7 +155,7 @@ const ldJson = {
     <section class="tc-hero">
       <div class="tc-container">
         <h1 class="tc-h1">Сколько стоит твоя поездка</h1>
-        <p class="tc-lede">70+ направлений · сезонный коэффициент по 12 месяцам · сравнение до трёх стран · реальные траты путешественников из 12 источников.</p>
+        <p class="tc-lede">Примерный бюджет из Москвы: перелёт, жильё, питание и известные сборы за въезд. 70+ направлений, от одного до четырёх путешественников и сравнение до трёх поездок.</p>
         <p class="tc-byline">
           <a href="/about/" class="tc-byline-author">Никита Зайцев</a> ·
           <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>
@@ -423,7 +423,7 @@ const ldJson = {
   border: 1px solid var(--line);
   color: var(--text);
   font-family: var(--ff-body);
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 500;
   padding: 0.6rem 0.85rem;
   border-radius: 0;
@@ -431,6 +431,7 @@ const ldJson = {
   transition: border-color 0.15s, box-shadow 0.15s;
   width: 100%;
   min-width: 0;
+  min-height: 46px;
 }
 .tc-input:hover { border-color: var(--gold-dim, var(--gold)); }
 .tc-input:focus-visible {
@@ -452,13 +453,13 @@ const ldJson = {
   background: var(--bg);
   border: 1px solid var(--line);
   border-radius: 0;
-  height: 40px;
+  height: 46px;
 }
 .tc-stepper-btn {
   background: transparent; border: none;
   font-size: 1.2rem; line-height: 1;
   color: var(--text-dim);
-  width: 36px; height: 100%;
+  width: 46px; height: 100%;
   cursor: pointer;
   transition: color 0.15s, background 0.15s;
   border-radius: 0;
@@ -479,17 +480,16 @@ const ldJson = {
   background: var(--bg);
   border: 1px solid var(--line);
   border-radius: 0;
-  padding: 3px;
+  padding: 0;
   gap: 2px;
-  /* Высоты у рамки нет намеренно: её задаёт min-height кнопки ниже (рамка =
-     кнопка + 2×3px отступа + 2×1px границы). ⛔ Фиксированные 40px здесь при
-     минимуме кнопки 44px давали кнопку выше рамки на 8 точек (июль–сентябрь 2026). */
+  /* Высоту рамки задаёт кнопка 44px плюс две границы по 1px.
+     Фиксированная меньшая высота обрезала кнопки в старом калькуляторе. */
 }
 .tc-seg-btn {
   flex: 1 1 0;
   min-width: 0;
-  /* 32px → рамка 40px, вровень со степпером и списком. На телефоне 44px — см. @640. */
-  min-height: 32px;
+  /* Кнопка 44px и рамка 46px совпадают со степпером и списком на всех ширинах. */
+  min-height: 44px;
   background: transparent;
   border: none;
   color: var(--text-dim);
@@ -525,11 +525,12 @@ const ldJson = {
   border: 1px dashed var(--gold-dim, var(--gold));
   color: var(--gold);
   font-family: var(--ff-body);
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: 500;
   padding: 0.45rem 0.9rem;
   border-radius: 0;
   cursor: pointer;
+  min-height: 46px;
   appearance: none; -webkit-appearance: none;
   padding-right: 1.8rem;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238e6618' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
@@ -812,6 +813,7 @@ const ldJson = {
 
 .tc-compare-grid {
   display: grid;
+  grid-template-columns: repeat(var(--compare-columns, 1), minmax(0, 1fr));
   gap: 1rem;
   margin-bottom: 1.5rem;
 }
@@ -831,7 +833,7 @@ const ldJson = {
 .tc-cmp-head {
   min-height: 4.2rem;
   display: flex; flex-direction: column; gap: 0.4rem;
-  padding-right: 28px;
+  padding-right: 48px;
 }
 .tc-cmp-card:hover { border-color: var(--gold-dim); }
 .tc-cmp-card--best {
@@ -842,7 +844,7 @@ const ldJson = {
   position: absolute; top: 0.7rem; right: 0.7rem;
   background: var(--surface, #fff);
   border: 1px solid var(--line);
-  width: 26px; height: 26px;
+  width: 44px; height: 44px;
   border-radius: 0;
   cursor: pointer;
   font-size: 1rem; line-height: 1;
@@ -955,6 +957,19 @@ const ldJson = {
   background: #1d40ae;
 }
 .tc-cmp-card--best .tc-cmp-cta:hover { background: #1d40ae; }
+
+.tc-cmp-partners {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1rem;
+  margin: 0;
+}
+.tc-cmp-partners a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+}
 
 .tc-compare-aux {
   display: flex; gap: 1.2rem; flex-wrap: wrap; align-items: center;

@@ -2,7 +2,7 @@
 
 import { mkdirSync, writeFileSync, renameSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { MONETIZATION_EXPERIMENT } from '../src/data/monetization.js';
+import { MONETIZATION_EXPERIMENT, HOME_ORGANIC_ENTRY_FILTER } from '../src/data/monetization.js';
 
 const METRIKA_COUNTER = '95832375';
 const METRIKA_OUTBOUND_GOAL = '566338531';
@@ -57,8 +57,9 @@ export function normalizeMetrikaClickRows(apiRows) {
     let clickId = rawValue;
     let readerCohort = '';
     let audienceSource = '';
+    let journeySource = '';
     if (key === 'click_context') {
-      [clickId, readerCohort = '', audienceSource = ''] = String(rawValue).split('__');
+      [clickId, readerCohort = '', audienceSource = '', journeySource = ''] = String(rawValue).split('__');
     } else if (key !== 'click_id') {
       continue;
     }
@@ -73,6 +74,7 @@ export function normalizeMetrikaClickRows(apiRows) {
     current.event_count = Math.max(current.event_count, Number.isFinite(eventCount) ? eventCount : 0);
     if (readerCohort) current.reader_cohort = readerCohort;
     if (audienceSource) current.audience_source = audienceSource;
+    if (journeySource === 'home_planner') current.journey_source = journeySource;
     byClick.set(clickId, current);
   }
   return [...byClick.values()];
@@ -160,7 +162,7 @@ async function fetchMetrikaRows(params, token) {
   return rows;
 }
 
-export async function fetchMetrikaClicks({ token, dateFrom, dateTo }) {
+export async function fetchMetrikaClicks({ token, dateFrom, dateTo, visitFilter = '' }) {
   const rows = await fetchMetrikaRows({
     ids: METRIKA_COUNTER,
     date1: dateFrom,
@@ -169,9 +171,25 @@ export async function fetchMetrikaClicks({ token, dateFrom, dateTo }) {
     metrics: 'ym:ep:eventsNumber',
     sort: '-ym:ep:eventsNumber',
     dimensions: 'ym:ep:dateTime,ym:ep:eventURLPath,ym:ep:actionGoal,ym:ep:eventParamsLevel1,ym:ep:eventParamsLevel2',
-    filters: `ym:ep:actionGoal==${METRIKA_OUTBOUND_GOAL} AND (ym:ep:eventParamsLevel1=='click_context' OR ym:ep:eventParamsLevel1=='click_id')`,
+    filters: `ym:ep:actionGoal==${METRIKA_OUTBOUND_GOAL} AND (ym:ep:eventParamsLevel1=='click_context' OR ym:ep:eventParamsLevel1=='click_id')${visitFilter ? ' AND ' + visitFilter : ''}`,
   }, token);
   return normalizeMetrikaClickRows(rows);
+}
+
+export async function fetchHomeCohort({ token, dateFrom, dateTo }) {
+  const [rows, clickEvents] = await Promise.all([
+    fetchMetrikaRows({ ids: METRIKA_COUNTER, date1: dateFrom, date2: dateTo,
+      metrics: `ym:s:visits,ym:s:goal${METRIKA_OUTBOUND_GOAL}reaches`,
+      dimensions: 'ym:s:startURLPath', sort: '-ym:s:visits', filters: HOME_ORGANIC_ENTRY_FILTER }, token),
+    fetchMetrikaClicks({ token, dateFrom, dateTo, visitFilter: HOME_ORGANIC_ENTRY_FILTER }),
+  ]);
+  if (rows.some(row => row.dimensions?.[0]?.name !== '/' ||
+    ![row.metrics?.[0], row.metrics?.[1]].every(n => Number.isInteger(n) && n >= 0))) {
+    throw new Error('Метрика: неполный счётчик входной когорты главной');
+  }
+  return { status: 'complete', dateFrom, dateTo, filter: HOME_ORGANIC_ENTRY_FILTER,
+    organicSessions: rows.reduce((sum, row) => sum + row.metrics[0], 0),
+    partnerClicks: rows.reduce((sum, row) => sum + row.metrics[1], 0), clickEvents };
 }
 
 export async function fetchAssignmentCounts({ token, dateFrom, dateTo, experimentId }) {
@@ -277,12 +295,13 @@ if (process.argv[1] && resolve(process.argv[1]) === new URL(import.meta.url).pat
   const metrikaToken = process.env.METRIKA_OAUTH_TOKEN || process.env.YANDEX_OAUTH_TOKEN;
   const travelpayoutsToken = process.env.TRAVELPAYOUTS_TOKEN;
   if (!metrikaToken || !travelpayoutsToken) throw new Error('Нужны METRIKA_OAUTH_TOKEN и TRAVELPAYOUTS_TOKEN.');
-  const [clickEvents, assignmentCounts, readerCohortCounts, audienceSourceCounts, actions] = await Promise.all([
+  const [clickEvents, assignmentCounts, readerCohortCounts, audienceSourceCounts, actions, homeCohort] = await Promise.all([
     fetchMetrikaClicks({ token: metrikaToken, dateFrom: args.dateFrom, dateTo: args.dateTo }),
     fetchAssignmentCounts({ token: metrikaToken, dateFrom: args.dateFrom, dateTo: args.dateTo, experimentId: args.experimentId }),
     fetchReaderCohortCounts({ token: metrikaToken, dateFrom: args.dateFrom, dateTo: args.dateTo }),
     fetchAudienceSourceCounts({ token: metrikaToken, dateFrom: args.dateFrom, dateTo: args.dateTo }),
     fetchTravelpayoutsActions({ token: travelpayoutsToken, dateFrom: args.dateFrom, dateTo: args.actionsThrough || args.dateTo }),
+    fetchHomeCohort({ token: metrikaToken, dateFrom: args.dateFrom, dateTo: args.dateTo }),
   ]);
   const output = resolve(args.output);
   mkdirSync(dirname(output), { recursive: true });
@@ -301,6 +320,7 @@ if (process.argv[1] && resolve(process.argv[1]) === new URL(import.meta.url).pat
     assignmentCounts,
     readerCohortCounts,
     audienceSourceCounts,
+    homeCohort,
     clickEvents,
     actions,
   }, null, 2)}\n`, {mode:0o600});

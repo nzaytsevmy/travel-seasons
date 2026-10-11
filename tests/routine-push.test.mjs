@@ -66,3 +66,15 @@ test('publication preflight rejects an absent independent review', () => {
 test('publication preflight checks the committed article, not an unreviewed working draft', () => {
   const r = fixture('tt-publish/2026-10-10', { draft: true });assert.notEqual(r.status, 0);assert.match(r.output, /HEAD|коммит/);
 });
+
+test('authorized homepage release forwards all 26 checks to CI without a Mac build', () => {
+  const r = fixture('feat/home-photojournal-20261010');
+  assert.equal(r.status, 0, r.output);
+  assert.match(r.output, /26.*CI|CI.*26/);
+  assert.doesNotMatch(r.output, /LOCAL_BUILD_STARTED|LOCAL_BROWSER_STARTED/);
+});
+test('similarly named homepage branch keeps the ordinary local gate', () => {
+  const r = fixture('feat/home-photojournal-other');
+  assert.notEqual(r.status, 0);
+  assert.match(r.output, /build/);
+});

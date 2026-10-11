@@ -1,603 +1,265 @@
 ---
-// Главная — Swiss / International Typographic по BRANDBOOK.md (пилот миграции).
-// Layout — только для <head>/SEO/schema/аналитики; визуал — самодостаточный Swiss,
-// scoped, light-only (свои токены, не зависят от тёмной темы остального сайта).
 import Layout from '../layouts/Layout.astro';
-import { Image } from 'astro:assets';
+import Footer from '../components/Footer.astro';
+import HomeDestinationCard from '../components/HomeDestinationCard.astro';
+import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import { DIRECTIONS } from '../data/directions.js';
 import { PRICES } from '../data/prices.js';
 import { VISA_DETAILS } from '../data/visa-details.js';
-import { calculateTripBudget, calculatorHref } from '../utils/trip-budget.js';
+import { ACTIVITY_TAGS } from '../data/country-activity-tags.js';
 import { getBudgetRates } from '../utils/budget-rates.js';
-import { TP_LINKS, aviasalesUrl, ostrovokSearch, cherehapaTravel, youtravelSub } from '../data/affiliate.js';
+import { homePhotoProvenance } from '../utils/home-photo-provenance.js';
+import { formatRecommendationCount, createDestinationRows, homeCollections, moscowMonth, MONTHS_PREP, catalogHref  } from '../utils/destination-selection.js';
+import { HOME_HERO, HOME_STORIES, HOME_STORY_PHOTOS, HOME_MOODS, countryPhotoSources, allocateHomePhotos } from '../data/home-journal.js';
+import { COUNTRY_PHOTOS } from '../data/country-photos.js';
+import { feedEntries, formatDateRu, newsUrl } from '../data/news.js';
 import authorPhoto from '../assets/author/nikita.jpg';
 import heroCover from '../assets/destinations/georgia.jpg';
-
-import { ACTIVITY_TAGS } from '../data/country-activity-tags.js';
-import { feedEntries, formatDateRu, newsUrl } from '../data/news.js';
-import { byFreshness } from '../data/freshness.js';
-const covers = import.meta.glob('../assets/destinations/*.jpg', { eager: true, import: 'default' });
-
-const VISA_LABEL = { free: 'Безвиз', evisa: 'e-Visa', required: 'Виза' };
-const VISA_CLASS = { free: 'free', evisa: 'evisa', required: 'visa' };
-const VIBE_RU = { beach: 'Пляж', mountains: 'Горы', city: 'Город', nature: 'Природа' };
-const VIBE_MAP = { beach:'beach', mountain:'mountains', altitude:'mountains', ski:'mountains', city:'city', culture:'city', food:'city', jungle:'nature', safari:'nature', dive:'nature', desert:'nature', photo:'nature' };
-const MON_ABBR = ['', 'янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
-const fmt = (n) => n.toLocaleString('ru-RU');
+import heroMobileCover from '../assets/destinations/georgia-mobile.png';
+const heroMobile = await getImage({ src: heroMobileCover, widths: [480, 800, 1200], format: 'webp', quality: 64 });
+const photoFiles = import.meta.glob('../content/blog/_images/**/*.{jpg,jpeg,webp}', { import: 'default' });
 const rates = await getBudgetRates();
-const tier = (t) => (t < 100000 ? 'low' : t <= 200000 ? 'mid' : 'high'); // вся поездка с перелётом, ₽
-function seasonLabel(r) {
-  let idx = r.map((c, i) => (c === 'P' ? i + 1 : 0)).filter(Boolean);
-  if (!idx.length) idx = r.map((c, i) => (c === 'G' ? i + 1 : 0)).filter(Boolean);
-  if (!idx.length) return 'круглый год';
-  const g = []; let s = idx[0], p = idx[0];
-  for (let k = 1; k < idx.length; k++) { if (idx[k] === p + 1) p = idx[k]; else { g.push([s, p]); s = idx[k]; p = idx[k]; } }
-  g.push([s, p]);
-  // Сезон через Новый год — один: «ноя–фев», а не «янв–фев, ноя–дек»; так же его называет страница страны.
-  if (g.length > 1 && g[0][0] === 1 && g[g.length - 1][1] === 12) g.unshift([g.pop()[0], g.shift()[1]]);
-  return g.map(([a, b]) => (a === b ? MON_ABBR[a] : `${MON_ABBR[a]}–${MON_ABBR[b]}`)).join(', ');
+const rows = createDestinationRows(DIRECTIONS, PRICES, VISA_DETAILS, rates, ACTIVITY_TAGS);
+const month = moscowMonth();
+const state = { m: month, max_budget: 0, visa: 'any', vibe: '' };
+const photoCache = new Map();
+const photoHash = key => homePhotoProvenance(key).id;
+async function preparePhoto(p, fallbackAlt = '') {
+  const key = `src/content/blog/_images/${p.file}`;
+  const metadata = await photoFiles[`../content/blog/_images/${p.file}`]?.();
+  if (!metadata) throw new Error(`Кадр не найден: ${key}`);
+  if (!photoCache.has(metadata.src)) {
+    const image = await getImage({ src: metadata, widths: [256, 480, 960, 1200], format: 'webp', quality: 72 });
+    photoCache.set(metadata.src, { id: await photoHash(key), key, src: image.src, srcset: image.srcSet.attribute, width: image.attributes.width, height: image.attributes.height });
+  }
+  return { ...photoCache.get(metadata.src), alt: p.alt || fallbackAlt, months: p.months || [], position: p.position || '50% 50%', mobilePosition: p.mobilePosition || '50% 45%' };
 }
-// Эконом-неделя на одного: тот же состав расходов и курс, что в калькуляторе.
-const rows = DIRECTIONS.map((d) => {
-  const options = { rates, visa: VISA_DETAILS[d.slug], seasons: d.r };
-  const budget = d.price?.flight ? calculateTripBudget(d.price, options).grand : null;
-  const priceIdx = PRICES.findIndex(p => p.name === d.price?.name);
-  const cover = covers[`../assets/destinations/${d.slug}.jpg`];
-  if (!budget || !d.r || !cover) return null;
-  const vibe = [...new Set((ACTIVITY_TAGS[d.slug] || []).map((t) => VIBE_MAP[t]).filter(Boolean))];
-  const vibeRu = vibe.length ? vibe.map((v) => VIBE_RU[v]).join(' · ') : (d.sub || '');
-  // r — коды сезона по 12 месяцам: P пик / G хороший / O так себе / B плохо / X закрыто
-  // Подбор дальнего безвиза сохраняет прежний уровень отбора; показанная
-  // стоимость, как и в остальных блоках, относится к эконом-неделе.
-  const selectionBudget = calculateTripBudget(d.price, { ...options, level: 1 }).grand;
-  return { slug: d.slug, nom: d.cases.nom, visa: d.visa, budget, selectionBudget, calcUrl: calculatorHref(priceIdx), r: d.r, vibe, vibeRu, cover, season: seasonLabel(d.r) };
-}).filter(Boolean); // порядок = релевантность (DIRECTIONS); сортировка по цене — переключателем на клиенте
-
-const MONTHS_PREP = ['', 'январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
-const month = new Date().getMonth() + 1;
-const monthWord = MONTHS_PREP[month];
-const inSeason = (codes, mo) => codes[mo - 1] === 'P' || codes[mo - 1] === 'G'; // пик или хороший (shoulder)
-const nowRows = rows.filter((r) => inSeason(r.r, month));
-const nowNames = nowRows.slice(0, 6).map((r) => r.nom);
-const plural = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'направление' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'направления' : 'направлений'));
-const nowWord = plural(nowRows.length);
-
-// Свежие посты
-const allPosts = (await getCollection('blog')).sort(byFreshness);
-const posts = allPosts.slice(0, 3);
-
-// ── Данные главной-дневника (макет утверждён 28.08.2026) ─────────────────────
-// Четыре направления месяца: «пик раньше хорошего, дальше порядок подборки».
-const rankOf = (r) => (r.r[month - 1] === 'P' ? 0 : r.r[month - 1] === 'G' ? 1 : 2);
-const top4 = [...nowRows].map((r, i) => [r, i])
-  .sort((a, b) => rankOf(a[0]) - rankOf(b[0]) || a[1] - b[1])
-  .slice(0, 4).map(([r]) => r);
-// Рукописная строка полароида: сезонная подсказка месту.
-const MON_SHORT = ['', 'января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-const концСезона = (r) => {
-  // от текущего месяца ищем, где кончается полоса P/G
-  let m = month - 1;
-  for (let i = 0; i < 12; i++) { const n = (m + 1) % 12; if ('PG'.includes(r.r[n])) m = n; else break; }
-  return MON_SHORT[m + 1];
-};
-// Штампы: безвиз, куда далеко — ближний безвиз человек и так знает.
-const безвиз = rows.filter((r) => r.visa === 'free' && r.selectionBudget > 150000).slice(0, 4);
-// Талон: самые дешёвые недели.
-const дёшево = [...rows].sort((a, b) => a.budget - b.budget).slice(0, 6);
-// Кадр-якорь: Кения, пока идёт сафари-сезон; вне сезона — второй из тройки.
-const кения = rows.find((r) => r.slug === 'kenya');
-const якорь = (кения && 'PG'.includes(кения.r[month - 1])) ? кения : nowRows[1] || nowRows[0];
-
-// Три свежие заметки строками. Без картинок и без карточек: главная не должна
-// потяжелеть, а задача блока — увести читателя вглубь сайта. Глубина просмотра и
-// невозврат в поиск — главный вес Яндекса, откуда приходит почти весь трафик.
+const pools = Object.fromEntries(await Promise.all(rows.map(async row => [row.slug, await Promise.all(countryPhotoSources(row.slug).map(p => preparePhoto(p, row.nom)))])));
+async function prepareCroppedPhoto(p, ratio, cropPosition = 'centre') {
+  const original = await preparePhoto(p);
+  const metadata = await photoFiles[`../content/blog/_images/${p.file}`]();
+  // The image service prevents enlargement for fitted crops. Bound both axes
+  // to the source so the largest srcset candidate retains the intended ratio.
+  const width = Math.min(640, metadata.width, Math.floor(metadata.height * ratio));
+  const widths = [...new Set([240, 480, width].filter(candidate => candidate <= width))];
+  const image = await getImage({ src: metadata, width, height: Math.round(width / ratio), widths, fit: 'cover', position: cropPosition, format: 'webp', quality: 76 });
+  return { ...original, src: image.src, srcset: image.srcSet.attribute, width: image.attributes.width, height: image.attributes.height };
+}
+const moods = await Promise.all(HOME_MOODS.map(async mood => ({ ...mood,
+  image: await prepareCroppedPhoto(mood.photo, .8, mood.vibe === 'nature' ? 'right' : 'centre'),
+  mobile: await prepareCroppedPhoto(mood.photo, 1, mood.vibe === 'nature' ? 'right' : 'centre'),
+})));
+const featureSource = COUNTRY_PHOTOS.kenya.practice[1];
+const featureBase = await preparePhoto(featureSource);
+const featureImage = await getImage({ src: await photoFiles[`../content/blog/_images/${featureSource.file}`](), widths: [720, 1280, 1920], format: 'webp', quality: 76 });
+const feature = { ...featureBase, src: featureImage.src, srcset: featureImage.srcSet.attribute, width: featureImage.attributes.width, height: featureImage.attributes.height };
+const allPosts = await getCollection('blog');
+const stories = HOME_STORIES.map(slug => {
+  const post = allPosts.find(p => p.slug === slug);
+  if (!post?.data.coverImage) throw new Error(`Нет существующей обложки: ${slug}`);
+  return post;
+});
+const reserved = [await photoHash(HOME_HERO.key), feature.id, ...moods.map(m => m.image.id), ...await Promise.all(stories.map(p => photoHash(HOME_STORY_PHOTOS[p.slug])))];
+const collections = allocateHomePhotos(homeCollections(rows, state), pools, reserved, month);
 const freshNews = feedEntries(await getCollection('news'), 3);
-const readingTime = (body) => Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
-
 const brandYear = new Date().getFullYear();
-const desc = `Куда поехать из России в ${brandYear}: визы, сезоны и реальные цены с перелётом по 70+ направлениям — в одной таблице. Автор был лично на 7 континентах.`;
-const ldJson = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    { '@type': 'WebPage', '@id': 'https://traveltribe.ru/#webpage', url: 'https://traveltribe.ru/', name: `TravelTribe — куда поехать из России в ${brandYear}`, description: desc, isPartOf: { '@id': 'https://traveltribe.ru/#website' }, about: { '@id': 'https://traveltribe.ru/#org' }, inLanguage: 'ru-RU' },
-    { '@type': 'ItemList', name: `Куда поехать из России в ${brandYear} — направления`, itemListElement: rows.map((r, i) => ({ '@type': 'ListItem', position: i + 1, name: r.nom, url: `https://traveltribe.ru/${r.slug}/` })) },
-  ],
-};
+const desc = 'Куда и когда ехать, сколько стоит неделя: 70+ направлений, визы, сезоны и авторские гиды TravelTribe. Личные истории и фотографии из путешествий.';
+const visible = [...new Map(Object.values(collections).flat().map(r => [r.slug, r])).values()];
+const ldJson = { '@context': 'https://schema.org', '@graph': [
+  { '@type': 'WebPage', '@id': 'https://traveltribe.ru/#webpage', url: 'https://traveltribe.ru/', name: `TravelTribe — куда поехать из России в ${brandYear}`, description: desc, isPartOf: { '@id': 'https://traveltribe.ru/#website' }, about: { '@id': 'https://traveltribe.ru/#org' }, inLanguage: 'ru-RU' },
+  { '@type': 'ItemList', name: 'Направления на главной', itemListElement: visible.map((r, i) => ({ '@type': 'ListItem', position: i + 1, name: r.nom, url: `https://traveltribe.ru/${r.slug}/` })) },
+] };
+const clientData = JSON.stringify({ rows, pools, reserved, month }).replace(/</g, '\\u003c');
 ---
-<Layout title={`Куда поехать из России в ${brandYear}: визы, сезоны, цены · TravelTribe`} description={desc} canonical="https://traveltribe.ru/" ldJson={ldJson}>
-<div class="sw">
+<Layout title={`Куда поехать из России в ${brandYear}: визы, сезоны, цены · TravelTribe`} description={desc} canonical="https://traveltribe.ru/" ldJson={ldJson} deferHomePhotos preloadJournalFonts preloadImageSrcset={heroMobile.srcSet.attribute} preloadImageSizes="max(100vw, min(80svh, 620px))" preloadImageMedia="(max-width:480px) and (min-height:600px)">
+<div class="sw journal">
+<main id="main">
+  <section class="manifest" aria-labelledby="homeTitle">
+    <picture class="hero-picture">
+      <source media="(max-width:480px) and (min-height:600px)" srcset={heroMobile.srcSet.attribute} sizes="max(100vw, min(80svh, 620px))" type="image/webp" />
+    <Image src={heroCover} alt={HOME_HERO.alt} class="hero-ph" widths={[900, 1400, 1920]} sizes="(max-width:760px) max(100vw, min(160svh, 1240px)), max(100vw, min(176svh, 1520px))" format="webp" quality={72} loading="eager" fetchpriority="high" data-travel-photo data-photo-file={HOME_HERO.key} />
+    </picture>
+    <div class="veil"></div>
+    <div class="wrap hero-in">
+      <h1 class="h1" id="homeTitle">Куда, когда,<br /><span class="rd">за сколько</span></h1>
+      <a class="me" href="/about/">
+        <Image src={authorPhoto} alt="Никита Зайцев" class="me-ph" width={88} height={88} format="webp" quality={78} loading="eager" />
+        <p class="sub"><b>Никита</b> · 60 стран лично · цены, что платил сам</p>
+      </a>
+      <nav class="hero-nav" aria-label="Разделы TravelTribe">
+        <ul class="vlist">
+          <li class="vi"><a href="/visa/"><span class="vi-l">Визы РФ</span></a></li>
+          <li class="vi"><a href="/seasons/"><span class="vi-l">Когда ехать</span></a></li>
+          <li class="vi"><a href="/calculator/"><span class="vi-l">Цена с перелётом</span></a></li>
+          <li class="vi"><a href="/trips/"><span class="vi-l">Поездки</span></a></li>
+          <li class="vi"><a href="/packing/"><span class="vi-l">Чек-листы</span></a></li>
+          <li class="vi"><a href="/countries/"><span class="vi-l">70+ направлений</span></a></li>
+        </ul>
+      </nav>
+    </div>
+  </section>
 
-  <main id="main">
-    <!-- Манифест: кадр во весь экран, текст поверх -->
-    <section class="manifest">
-      <Image src={heroCover} alt="Троицкая церковь в Гергети под Казбеком, Грузия" class="hero-ph"
-             widths={[900, 1400, 2000]} sizes="100vw" formats={['webp']} quality={72}
-             loading="eager" fetchpriority="high" />
-      <div class="veil"></div>
-      <div class="wrap grid hero-in">
-      <h1 class="h1">Куда, когда,<br><span class="rd">за сколько</span></h1>
-      <div class="me">
-        <Image src={authorPhoto} alt="Никита Зайцев" class="me-ph" width={88} height={88}
-               formats={['webp']} quality={78} loading="eager" />
-        <p class="sub"><a href="/about/"><b>Никита</b></a> · 60 стран лично · цены, что платил
-        сам</p>
-      </div>
-      <ul class="vlist">
-        <li class="vi"><a href="/visa/"><span class="vi-l">Визы РФ</span></a></li>
-        <li class="vi"><a href="/seasons/"><span class="vi-l">Когда ехать</span></a></li>
-        <li class="vi"><a href="/calculator/"><span class="vi-l">Цена с перелётом</span></a></li>
-        <li class="vi"><a href="/trips/"><span class="vi-l">Поездки</span></a></li>
-        <li class="vi"><a href="/packing/"><span class="vi-l">Чек-листы</span></a></li>
-        <li class="vi"><a href="/countries/"><span class="vi-l">70+ направлений</span></a></li>
-      </ul>
-      </div>
-    </section>
+  <section class="wrap journal-section jr" id="recommendations" aria-labelledby="seasonTitle">
+    <header class="section-head"><div><h2 id="seasonTitle">Куда ехать в <span data-home-month>{MONTHS_PREP[month]}</span></h2></div><a id="homeCatalog" href={catalogHref(state)}>Все подходящие направления</a></header>
+    <p class="home-load-error" id="homeLoadError" role="status" hidden>Не удалось применить условия. <a href="/countries/">Открыть каталог с выбранными условиями</a></p>
+    <p class="budget-basis">Бюджет — неделя на одного человека из Москвы, экономный вариант. Неучтённые расходы указаны в карточке.</p>
+    <p id="homeResultCount" class="selection-summary" role="status" aria-live="polite">{formatRecommendationCount(collections.recommendations.length)} · хороший или пиковый сезон</p>
+    <div class="home-cards seasonal-grid" id="homeRecommendations">{collections.recommendations.map((row, i) => <HomeDestinationCard row={row} placement="recommendation" lead={i === 0} lodging />)}</div>
+    <div class="home-empty" id="homeEmpty" hidden><h3>Под эти условия направлений нет</h3><p>Измените месяц в каталоге или снимите ограничения. В подбор по бюджету входят только направления с известной полной стоимостью обязательных расходов.</p><button type="button" id="homeReset">Снять ограничения</button></div>
+  </section>
 
-    <!-- Дневник: полоса доверия и вопросы-развороты -->
-    <section class="jr"><div class="wrap">
-      <p class="tape mono">60 СТРАН ЛИЧНО · 7 КОНТИНЕНТОВ · 70+ НАПРАВЛЕНИЙ С ЦЕНОЙ И ВИЗОЙ · 82 РАЗБОРА С ДАТАМИ ПРОВЕРКИ</p>
+  <section class="wrap journal-section" aria-labelledby="freeTitle">
+    <header class="section-head"><div><h2 id="freeTitle">Без визы</h2></div><a id="homeFreeCatalog" href={catalogHref({ m: month, visa: 'free' })}>Все безвизовые направления</a></header>
+    <p class="selection-summary">Хороший сезон в <span data-home-month>{MONTHS_PREP[month]}</span> · паспорт РФ · без ограничения бюджета</p>
+    <div class="home-cards free-grid" id="homeFree">{collections.free.map(row => <HomeDestinationCard row={row} placement="visa_free" />)}</div>
+  </section>
 
-      <div class="spread">
-        <div class="qside">
-          <h2 class="qq">Куда поехать <em>в {monthWord}?</em></h2>
-          <p class="qlead"><b>В сезоне {nowRows.length} {nowWord}.</b> Начать можно с этих четырёх.</p>
-          <a class="qmore" href="/countries/">Все {rows.length} с фильтрами</a>
-        </div>
-        <div class="polas">
-          {top4.map((r, i) => (
-            <a class={`pola p${i + 1}`} href={`/${r.slug}/`}>
-              <span class="pph"><Image src={r.cover} alt={r.nom} widths={[420, 640]} sizes="(max-width: 720px) 88vw, 300px" formats={['webp']} quality={72} loading="lazy" /></span>
-              <span class="hand pcap">{r.nom} — сезон до {концСезона(r)}<span class="pdat">≈ {fmt(r.budget)} ₽ за неделю · {VISA_LABEL[r.visa]}</span></span>
-            </a>
-          ))}
-        </div>
-      </div>
+  <aside class="wrap practical-strip" aria-label="Ответы перед поездкой"><p>Ответы перед поездкой</p><a href="/visa/">Документы для въезда</a><a href="/calculator/" data-home-calculator>Из чего складывается бюджет</a><a href="/blog/pay-abroad-2026/">Как платить за границей</a></aside>
 
-      <div class="spread">
-        <div class="qside">
-          <h2 class="qq">Куда пускают <em>без визы?</em></h2>
-          <p class="qlead"><b>Больше 50 стран</b> — с одним загранпаспортом. Дальние тоже.</p>
-          <a class="qmore" href="/bezviz/">Полный список с условиями</a>
-        </div>
-        <div class="stamps">
-          {безвиз.map((r) => (
-            <a class="stamp" href={`/${r.slug}/`}><b>{r.nom}</b><span class="mono">≈ {fmt(r.budget)} ₽ / НЕДЕЛЯ</span></a>
-          ))}
-        </div>
-      </div>
+  <section class="wrap journal-section" aria-labelledby="cheapTitle">
+    <header class="section-head"><div><h2 id="cheapTitle">Неделя недорого</h2></div><a id="homeCheapCatalog" href={catalogHref({ m: month, sort: 'asc' })}>Сравнить все по цене</a></header>
+    <p class="selection-summary">Шесть самых дешёвых направлений с хорошим сезоном в <span data-home-month>{MONTHS_PREP[month]}</span>. Без ограничения бюджета и условий въезда.</p>
+    <div class="home-cards cheap-grid" id="homeCheap">{collections.cheap.map(row => <HomeDestinationCard row={row} placement="budget" lodging />)}</div>
+  </section>
 
-      <div class="spread spread-last">
-        <div class="qside">
-          <h2 class="qq">Сколько стоит <em>неделя?</em></h2>
-          <p class="qlead"><b>От {fmt(дёшево[0].budget)} ₽.</b> Перелёт из Москвы, жильё и еда на неделю.</p>
-          <a class="qmore" href="/calculator/">Посчитать свою</a>
-        </div>
-        <div class="pass mono">
-          <div class="phead"><span>TRAVELTRIBE · ЭКОНОМ-НЕДЕЛЯ</span><span>МСК — МИР</span></div>
-          {дёшево.map((r) => (
-            <div class="prow"><a class="pguide" href={`/${r.slug}/`}><b>{r.nom}</b></a><span class="pv">{VISA_LABEL[r.visa]}</span><span class="pd"></span><a class="pprice" href={r.calcUrl} aria-label={`${fmt(r.budget)} ₽ — рассчитать поездку: ${r.nom}`}>{fmt(r.budget)} ₽</a></div>
-          ))}
-          <div class="pfoot">ПЕРЕЛЁТ + ЖИЛЬЁ + ЕДА · 7 ДНЕЙ · НА ОДНОГО</div>
-        </div>
-      </div>
-    </div></section>
+  <section class="wrap journal-section" aria-labelledby="moodTitle">
+    <header class="section-head"><div><h2 id="moodTitle">Какого отдыха хочется</h2></div></header>
+    <div class="mood-grid">{moods.map(mood => <a href={catalogHref(state, { vibe: mood.vibe })} class="mood-card" data-home-vibe={mood.vibe} data-photo-file={mood.image.key}><picture><source media="(max-width:767px)" srcset={mood.mobile.srcset} sizes="46vw" width={mood.mobile.width} height={mood.mobile.height} type="image/webp" /><img src={mood.image.src} srcset={mood.image.srcset} sizes="(max-width:767px) 46vw, 25vw" width={mood.image.width} height={mood.image.height} loading="lazy" decoding="async" alt={mood.image.alt} /></picture><h3>{mood.title}</h3><p>{mood.note}</p></a>)}</div>
+  </section>
 
+  <section class="feature-story anchor2" aria-labelledby="featureTitle">
+    <a href="/kenya/" class="feature-photo" data-home-action="guide" data-destination="kenya" data-photo-file={feature.key}><img src={feature.src} srcset={feature.srcset} sizes="100vw" width={feature.width} height={feature.height} loading="lazy" decoding="async" alt={feature.alt} /></a>
+    <div class="wrap feature-copy"><p class="eyebrow">Большая история · Кения</p><h2 id="featureTitle"><a href="/kenya/" data-home-action="guide" data-destination="kenya">Выйти за пределы<br />привычного маршрута</a></h2><p>Сафари, озёра и Индийский океан. Разберитесь с сезонами, въездом и расходами — и соберите свою поездку.</p><a class="text-link" href="/kenya/" data-home-action="guide" data-destination="kenya">Исследовать Кению</a></div>
+  </section>
 
-    <!-- Что оформить до поездки: единственный денежный блок главной.
-         Стоит ПОСЛЕ разворотов выбора — манифест объясняет сайт, этот блок
-         помогает уже выбравшему. Строками в тексте, без коробов и картинок:
-         айтрекинг показывает, что блоки, похожие на рекламу, треть людей
-         не видит вовсе. -->
-    <section class="sec before"><div class="wrap">
-      <div class="shead"><div><h2>Что оформить до поездки</h2></div></div>
-      <ul class="blist">
-        <li><b>Страховка.</b> В Грузию и Шенген без полиса не пустят, в остальные страны лечение платное. Неделя стоит от 233 ₽ — <a href={cherehapaTravel('home')} rel="sponsored noopener" target="_blank">подобрать полис по датам</a>.</li>
-        <li><b>Билеты.</b> Цена месяца видна сразу, без перебора дат — <a href={aviasalesUrl('', 'home')} rel="sponsored noopener" target="_blank">посмотреть рейсы из Москвы</a>.</li>
-        <li><b>Карты и связь.</b> Российские карты за границей не работают: что выпустить заранее — <a href="/cards/">разбор карт</a>.</li>
-        <li><b>Готовый маршрут.</b> Когда собирать самому некогда, берут место в небольшой группе — <a href={youtravelSub('home')} rel="sponsored noopener" target="_blank">авторские туры по миру</a>.</li>
-      </ul>
-    </div></section>
+  <section class="wrap journal-section" aria-labelledby="storiesTitle">
+    <header class="section-head"><div><h2 id="storiesTitle">Гиды и ответы</h2></div><a href="/blog/">Все материалы</a></header>
+    <div class="stories-grid">{stories.map((post, i) => <article class:list={['journal-post', { 'journal-post-lead': i === 0 }]} data-photo-file={HOME_STORY_PHOTOS[post.slug]}><a class="post-photo" href={`/blog/${post.slug}/`}><Image src={post.data.coverImage} alt={post.data.coverImageAlt || post.data.title} widths={i === 0 ? [480, 960, 1200] : [256, 480, 720]} sizes={i === 0 ? '(max-width:767px) 92vw, 60vw' : '(max-width:767px) 46vw, 25vw'} format="webp" quality={74} loading="lazy" /></a><p class="eyebrow">{i === 0 ? 'Дальнее путешествие' : 'Практический гид'}</p><h3><a href={`/blog/${post.slug}/`}>{post.data.title}</a></h3></article>)}</div>
+  </section>
 
-    <!-- Кадр-якорь -->
-    <section class="anchor2">
-      <Image src={якорь.cover} alt={якорь.nom} widths={[900, 1400, 2000]} sizes="100vw" formats={['webp']} quality={70} loading="lazy" />
-      <div class="anote">
-        <b>{якорь.nom}: сезон до {концСезона(якорь)}</b>
-        <span>≈ {fmt(якорь.budget)} ₽ за неделю с перелётом · {VISA_LABEL[якорь.visa]}</span>
-        <a href={`/${якорь.slug}/`}>Разбор — {якорь.nom}</a>
-      </div>
-    </section>
+  <section class="wrap news-strip" aria-labelledby="newsTitle"><h2 id="newsTitle">Что меняется в поездках</h2><div>{freshNews.map(entry => <a href={newsUrl(entry)}><time datetime={entry.data.date.toISOString()}>{formatDateRu(entry.data.date)}</time><span>{entry.data.title}</span></a>)}</div><a href="/novosti/">Все новости</a></section>
 
-    <!-- Свежие истории -->
-    <section class="sec"><div class="wrap grid">
-      <div class="shead"><div><h2>Свежие истории</h2></div><a href="/blog/">Весь блог</a></div>
-      <div class="posts">
-        {posts.map((p, i) => (
-          <a class="post" href={`/blog/${p.slug}/`}>
-            {/* На планшете эта обложка показывается в 226px, а файл ехал в 760px.
-                Пропорцию держит .ph, поэтому меняются только размеры файла. */}
-            <div class="ph"><Image src={p.data.coverImage} alt={p.data.title} widths={[480, 760]} sizes="(max-width: 720px) 92vw, (max-width: 1100px) 30vw, 390px" formats={['webp']} /></div>
-            <div class="tg">{(p.data.tags || []).slice(0, 2).join(' · ')}</div>
-            <h3>{p.data.title}</h3>
-            <div class="mt">{readingTime(p.body)} мин{p.data.sourceType === 'personal' && <span class="pers"> · был лично</span>}</div>
-          </a>
-        ))}
-      </div>
-      <p class="topics">Темы: <a href="/visa/">Визы</a> · <a href="/blog/pay-abroad-2026/">Деньги за границей</a> · <a href="/blog/esim-zagranicey-2026/">eSIM и связь</a> · <a href="/trips/">Поездки</a></p>
-
-      {freshNews.length > 0 && (
-        <div class="nvhome">
-          <div class="shead"><div><h2>Свежее в ленте</h2></div><a href="/novosti/">Все новости</a></div>
-          <ul class="nvhome-list">
-            {freshNews.map((e) => (
-              <li>
-                <time datetime={e.data.date.toISOString().slice(0, 10)}>{formatDateRu(e.data.date)}</time>
-                <a href={newsUrl(e)}>{e.data.title}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div></section>
-
-    <!-- Сообщество + автор -->
-    <section><div class="wrap grid">
-      <div class="comm">
-        <div class="tg2"><div class="k">Telegram</div><h3>Свежие истории и апдейты виз — раньше, чем на сайте</h3><a href="https://t.me/traveltriberu" rel="noopener" target="_blank">Подписаться на @traveltriberu</a></div>
-        <div class="au"><div class="au-ph"><Image src={authorPhoto} alt="Никита Зайцев" width={156} height={156} formats={['webp']} /></div><div><div class="nm">Никита Зайцев</div><p>Был на всех 7 континентах, 60+ стран. Где был сам — пишу от себя, остальное разбираю по первоисточникам.</p><a class="method" href="/about/">Как я считаю бюджет и проверяю визы</a></div></div>
-      </div>
-    </div></section>
-  </main>
-
-  <footer class="sw-foot"><div class="wrap ft">
-    <nav class="fnav" aria-label="Подвал"><a href="/countries/">Направления</a><a href="/visa/">Визы</a><a href="/seasons/">Сезоны</a><a href="/trips/">Поездки</a><a href="/calculator/">Калькулятор</a><a href="/packing/">Чек-листы</a><a href="/blog/">Блог</a><a href="/about/">Об авторе</a><a href="/legal/photos/">Фотографии</a></nav>
-    <div class="fbot"><div>© {brandYear} TravelTribe — Никита Зайцев</div><div>Telegram <a href="https://t.me/traveltriberu" rel="noopener" target="_blank">@traveltriberu</a> · Aviasales · Ostrovok</div></div>
-  </div></footer>
+  <section class="wrap author-end" aria-labelledby="authorTitle"><Image src={authorPhoto} alt="Никита Зайцев, автор TravelTribe" width={160} height={160} format="webp" quality={78} loading="lazy" /><div><h2 id="authorTitle">Никита Зайцев</h2><p>60+ стран и все семь континентов. Здесь — личные истории, фотографии и практические разборы для тех, кто планирует поездку сам.</p><a href="/about/">Об авторе</a><a href="https://t.me/traveltriberu" target="_blank" rel="noopener">Дневник в Telegram</a></div></section>
+</main>
+<Footer />
 </div>
+<script type="application/json" id="homeData" set:html={clientData}></script>
+<script>import '../scripts/home-planner.js';</script>
 </Layout>
 
 <style is:global>
-  /* Swiss-главная: фон только этой страницы (is:global грузится лишь на этом маршруте) */
-  body { background: #fbfbfa; }
-</style>
+html.home-photo-pending .journal .home-card-photo img{display:none}
+.sw.journal{--paper:#fbfbfa;--ink:#15171a;--mid:#5c626b;--blue:#1d40ae;background:var(--paper);color:var(--ink);font-family:var(--ff-body,'Golos Text Variable','Golos Text',sans-serif);line-height:1.45}
+.journal *{box-sizing:border-box}.journal .wrap{max-width:1280px;margin-inline:auto;padding-inline:clamp(16px,3.5vw,48px)}
+.journal :is(h1,h2,h3){font-family:var(--ff-head,'Old Standard TT',Georgia,serif);color:var(--ink);font-weight:400;margin:0;line-height:1.1}.journal h2{scroll-margin-top:80px;font-size:clamp(30px,3.6vw,48px)}.journal h3{font-size:clamp(22px,2.1vw,30px)}
+.journal a{color:inherit;text-decoration:none}.journal a:focus-visible,.journal :is(button,select):focus-visible{outline:2px solid var(--blue);outline-offset:4px}.journal :is(button,select){font:inherit;color:var(--ink);border-radius:0}
+.journal img{display:block;max-width:100%;filter:grayscale(.06) contrast(1.02)}
 
-<style>
-.sw{--paper:#fbfbfa;--ink:#15171a;--mid:#5c626b;--line:#15171a;--hair:#d9dbde;--gold:#1d40ae;
-  --ff:'Golos Text Variable','Golos Text',Helvetica,Arial,sans-serif;--edge:clamp(1.1rem,3vw,2.6rem);
-  background:var(--paper);color:var(--ink);font-family:var(--ff);font-weight:400;line-height:1.4;
-  font-variant-numeric:tabular-nums lining-nums;-webkit-font-smoothing:antialiased}
-:where(.sw) :where(h1,h2,h3,h4,p,ul,li){margin:0}
-/* Заголовки берут шрифт из --ff-head (антиква дневника, задана глобально),
-   органы управления остаются гротеском: форма — инструмент, не текст. */
-.sw :where(h1,h2,h3,h4){font-family:var(--ff-head,var(--ff));color:var(--ink)}
-.sw :where(button,select,input){font-family:var(--ff);color:var(--ink)}
-.sw img{display:block;width:100%;height:100%;object-fit:cover;filter:grayscale(.06) contrast(1.02)}
-.sw a{color:inherit;text-decoration:none}
-.sw :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
-.wrap{max-width:1280px;margin-inline:auto;padding-inline:var(--edge)}
-.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:0 clamp(.8rem,2vw,1.6rem)}
+.journal button{min-height:44px;background:transparent;border:1px solid var(--ink);padding:10px 14px;cursor:pointer}.journal button:hover{border-color:var(--blue);color:var(--blue)}
+.journal .journal-section{scroll-margin-top:80px;padding-top:72px;padding-bottom:8px}.journal .section-head{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-bottom:20px}.journal .section-head>a{font-size:13px;min-height:44px;display:flex;align-items:center;border-bottom:1px solid var(--blue);color:var(--blue)}.journal .eyebrow{font-family:var(--ff-mono,'PT Mono',monospace);font-size:11px;letter-spacing:.055em;line-height:1.55;color:var(--mid);margin:0 0 11px}.journal .selection-summary{font-size:13px;max-width:800px;color:var(--mid);margin:0 0 22px}
+.journal .home-cards{display:grid;gap:28px 24px}.journal .home-card{min-width:0;display:flex;flex-direction:column}.journal .home-card-photo{display:block;width:100%;min-width:0;aspect-ratio:4/3;overflow:hidden;flex:none}.journal .home-card-photo img{width:100%;height:100%;object-fit:cover;object-position:var(--focal,50% 50%)}.journal .home-card-text{padding-top:13px;display:grid;grid-template-rows:auto 1fr auto auto auto;align-items:start;flex:1}.journal .home-budget,.journal .home-entry{justify-self:start}.journal .home-card h3 a{display:inline-block;min-height:44px}.journal .home-season{font-size:14px;color:var(--mid);margin:7px 0}.journal .home-budget{font-family:var(--ff-mono,'PT Mono',monospace);font-size:13px;line-height:1.55;border-bottom:1px solid var(--ink);min-height:44px;padding-block:4px}.journal .home-entry{font-size:14px;color:var(--mid);min-height:44px;padding-block:7px}.journal .home-stay{font-size:14px;color:var(--blue);margin-top:7px;padding-top:10px;border-top:1px solid var(--line,#dcdedc);min-height:44px;width:100%}
+.journal .seasonal-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.journal .seasonal-grid .home-card:first-child{grid-column:1/-1;grid-row:auto;display:grid;grid-template-columns:1.25fr 1fr;gap:32px;align-items:center}.journal .seasonal-grid .home-card:first-child .home-card-text{padding-top:0}.journal .seasonal-grid .home-card:first-child .home-card-photo{aspect-ratio:4/3;min-height:0}.journal .seasonal-grid .home-card:first-child h3{font-size:38px}.journal .free-grid{grid-template-columns:1.25fr 1fr 1fr 1.25fr}.journal .free-grid .home-card:nth-child(even){padding-top:35px}.journal .free-grid .home-card-photo{aspect-ratio:4/5}.journal .cheap-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.journal .cheap-grid .home-card-photo{aspect-ratio:4/3}.journal .home-empty{border-block:1px solid var(--line,#dcdedc);padding:28px 0}.journal .home-empty p{font-size:14px}.journal [hidden]{display:none!important}
+.journal .practical-strip{margin-top:62px;display:grid;grid-template-columns:1.25fr 1fr 1fr 1fr;gap:24px;align-items:center}.journal .practical-strip>*{border-top:1px solid var(--ink);padding-top:16px;min-height:64px;font-size:14px;margin:0}.journal .practical-strip p{font-family:var(--ff-head,Georgia);font-size:24px;line-height:1.2}.journal .practical-strip a{color:var(--blue)}
+.journal .mood-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}.journal .mood-card img{aspect-ratio:4/5;width:100%;height:auto;object-fit:cover}.journal .mood-card h3{margin:15px 0 7px}.journal .mood-card p{font-size:14px;color:var(--mid);margin:0}.journal .feature-story{margin-top:72px;position:relative}.journal .feature-photo{display:block;aspect-ratio:2/1;overflow:hidden}.journal .feature-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 48%}.journal .feature-copy{display:grid;grid-template-columns:1fr 1fr;gap:14px 48px;padding-top:25px}.journal .feature-copy .eyebrow{grid-column:1/-1;margin:0}.journal .feature-copy h2{grid-row:span 2}.journal .feature-copy>p:not(.eyebrow){font-size:16px;max-width:460px;margin:0;line-height:1.7}.journal .text-link{color:var(--blue);min-height:44px;display:flex;align-items:center;text-decoration:underline;text-underline-offset:5px}
+.journal .stories-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:36px 24px;align-items:start}.journal .journal-post{min-width:0}.journal .budget-basis{font-size:14px;line-height:1.6;color:var(--mid);max-width:780px;margin:0 0 16px}.journal .post-photo{display:block;aspect-ratio:4/3;overflow:hidden;margin-bottom:14px}.journal .post-photo img{width:100%;height:100%;object-fit:cover}.journal .journal-post h3{font-size:23px;line-height:1.24}.journal .journal-post .eyebrow{font-size:10px;margin-bottom:6px}.journal .journal-post-lead{grid-column:span 2;grid-row:span 2}.journal .journal-post-lead .post-photo{aspect-ratio:4/5}.journal .journal-post-lead h3{font-size:35px}.journal .journal-post:last-child{grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}.journal .journal-post:last-child .post-photo{grid-row:span 2;margin:0;aspect-ratio:4/3}.journal .journal-post:last-child .eyebrow{align-self:end}
+.journal .news-strip{padding-top:64px;display:grid;grid-template-columns:1fr 2fr;gap:20px 40px}.journal .news-strip h2{font-size:30px}.journal .news-strip>div>a{display:grid;grid-template-columns:90px 1fr;gap:14px;padding:13px 0;border-bottom:1px solid var(--line,#dcdedc);font-size:13px;min-height:44px}.journal .news-strip time{font-family:var(--ff-mono,monospace);font-size:10px;color:var(--mid)}.journal .news-strip>a{grid-column:2;font-size:13px;color:var(--blue);min-height:44px}.journal .author-end{padding-top:76px;padding-bottom:72px;display:grid;grid-template-columns:160px minmax(0,600px);gap:36px;align-items:center}.journal .author-end>img{width:160px;height:160px;border-radius:50%;filter:grayscale(.3)}.journal .author-end p:not(.eyebrow){font-size:15px;line-height:1.7}.journal .author-end a{display:inline-flex;align-items:center;min-height:44px;margin-right:24px;color:var(--blue);border-bottom:1px solid var(--blue)}
+@media(max-width:1023px){.journal .seasonal-grid{gap:26px 18px}.journal .free-grid{gap:18px}.journal .mood-grid,.journal .stories-grid{gap:25px 18px}.journal .home-card h3{font-size:24px}.journal .home-card-text{padding-top:10px}}
+@media(min-width:768px) and (max-width:1023px){.journal .seasonal-grid{grid-template-columns:repeat(6,minmax(0,1fr))}.journal .seasonal-grid .home-card{grid-column:span 2}.journal .seasonal-grid .home-card:nth-last-child(-n+2){grid-column:span 3}}
+@media(max-width:767px){.journal .home-card-photo,.journal .post-photo{aspect-ratio:1}.journal .home-card-photo img{object-position:var(--focal-mobile,var(--focal,50% 50%))}.journal .journal-section{padding-top:48px}.journal .section-head{display:block;margin-bottom:15px}.journal .section-head>a{display:inline-flex;font-size:12px;margin-top:8px}.journal .eyebrow{font-size:10px;margin-bottom:8px}.journal h2{font-size:31px}.journal .selection-summary{font-size:12px;margin-bottom:18px}.journal .home-cards,.journal .free-grid,.journal .cheap-grid,.journal .seasonal-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 14px}.journal .seasonal-grid .home-card:first-child{grid-column:1/-1;grid-row:auto;display:flex;gap:0}.journal .seasonal-grid .home-card:first-child .home-card-text{padding-top:13px}.journal .seasonal-grid .home-card:first-child .home-card-photo{aspect-ratio:4/3;min-height:0}.journal .seasonal-grid .home-card:first-child h3{font-size:31px}.journal .seasonal-grid .home-card:nth-child(6){grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:14px}.journal .seasonal-grid .home-card:nth-child(6) .home-card-photo{aspect-ratio:1}.journal .seasonal-grid .home-card:nth-child(6) .home-card-text{padding-top:0}.journal .home-card h3{font-size:23px}.journal .home-season,.journal .home-entry,.journal .home-stay{font-size:14px}.journal .home-budget{font-size:13px}.journal .free-grid .home-card:nth-child(even){padding-top:0}.journal .free-grid .home-card-photo{aspect-ratio:1}.journal .cheap-grid .home-card-photo{aspect-ratio:1}.journal .practical-strip{grid-template-columns:1fr 1fr;gap:20px 14px;margin-top:42px}.journal .practical-strip>*{font-size:13px;min-height:64px;padding-top:12px}.journal .practical-strip p{font-size:22px}.journal .mood-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 14px}.journal .mood-card img{aspect-ratio:1}.journal .mood-card h3{font-size:26px}.journal .feature-story{margin-top:48px}.journal .feature-photo{aspect-ratio:4/3}.journal .feature-copy{display:block;padding-top:22px}.journal .feature-copy h2{margin:10px 0 16px;font-size:36px}.journal .feature-copy>p:not(.eyebrow){font-size:14px}.journal .stories-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 14px}.journal .journal-post-lead{grid-column:1/-1;grid-row:auto}.journal .journal-post-lead .post-photo{aspect-ratio:4/3}.journal .journal-post-lead h3{font-size:31px}.journal .journal-post h3{font-size:21px}.journal .journal-post:last-child{gap:10px 14px}.journal .journal-post:last-child .post-photo{aspect-ratio:1}.journal .news-strip{display:block;padding-top:46px}.journal .news-strip h2{font-size:28px;margin-bottom:16px}.journal .news-strip>div>a{grid-template-columns:74px 1fr;font-size:12px;gap:10px}.journal .news-strip>a{display:inline-flex;align-items:center;margin-top:8px}.journal .author-end{grid-template-columns:76px 1fr;gap:20px;padding-top:50px;padding-bottom:48px;align-items:start}.journal .author-end>img{width:76px;height:76px}.journal .author-end h2{font-size:29px}.journal .author-end p:not(.eyebrow){font-size:13px}.journal .author-end a{font-size:12px;margin-right:14px}}
+@media(prefers-reduced-motion:reduce){.journal *{scroll-behavior:auto}}
+.journal .seasonal-grid .home-card:first-child .home-card-text{flex:0}
 
-/* Верхнее меню вынесено в общий компонент SwissHeader.astro (через Layout). */
 
-/* Первый экран — кадр во весь экран, текст поверх.
-   ⛔ Замер 27.08.2026: у восьми живых травел-блогов в первом экране от 1 до 65
-   фотографий, у нас было НОЛЬ при самом крупном заголовке из всех — выходил
-   типографский плакат, а не сайт о поездках. Кадр здесь несёт смысл, а не
-   украшает: человек попадает не в справочник, а в место. */
-.manifest{position:relative;min-height:min(88svh, 760px);padding-top:var(--head-h, 100px);display:flex;align-items:flex-end;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media(max-width:1023px){}
+@media(max-width:767px){}
+
+.journal .manifest{position:relative;min-height:min(88svh, 760px);padding-top:var(--head-h, 100px);display:flex;align-items:flex-end;
   padding:0 0 clamp(1.4rem,3vw,2.6rem);overflow:hidden}
-/* Прямой потомок: иначе портрет автора внутри тоже стал бы фоном во весь экран. */
-.sw .manifest > .hero-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+.journal .hero-picture{position:absolute;inset:0;z-index:0}
+.journal .manifest .hero-ph{width:100%;height:100%;object-fit:cover;
   object-position:58% 52%;z-index:0}
-/* Вуаль держит контраст текста: без неё белое по светлому небу читается на 2,1:1
-   при норме 4,5 (WCAG 2.2 AA). Снизу плотнее — там мелкий текст и ссылки. */
-/* Плотность подобрана замером, а не на глаз: со слабой вуалью белый заголовок
-   на светлом небе давал 2,35 к 1 при норме 3,0 для крупного текста, а подпись
-   3,90 при норме 4,5 (WCAG 2.2 AA). Замер считает худший участок фона под
-   каждой строкой, а не средний — светлого пятна достаточно, чтобы текст пропал. */
-.veil{position:absolute;inset:0;z-index:1;
+.journal .veil{position:absolute;inset:0;z-index:1;
   background:linear-gradient(180deg,rgba(10,12,14,.46) 0%,rgba(10,12,14,.40) 24%,
     rgba(10,12,14,.58) 52%,rgba(10,12,14,.74) 78%,rgba(10,12,14,.9) 100%)}
-.hero-in{width:100%;position:relative;z-index:2}
-.sw .manifest .h1{grid-column:1/13;grid-row:1;font-weight:700;font-size:clamp(2.4rem,7vw,6.4rem);
+.journal .hero-in{width:100%;position:relative;z-index:2}
+.journal .manifest .h1{grid-column:1/13;grid-row:1;font-weight:700;font-size:clamp(2.4rem,7vw,6.4rem);
   line-height:1.02;letter-spacing:-.035em;padding-bottom:.06em;color:#fff}
-.sw .manifest .h1 .rd{color:#fff;text-decoration:underline;text-decoration-thickness:.055em;
+.journal .manifest .h1 .rd{color:#fff;text-decoration:underline;text-decoration-thickness:.055em;
   text-underline-offset:.12em;text-decoration-color:rgba(255,255,255,.55)}
-.me{grid-column:1/10;grid-row:2;display:flex;align-items:center;gap:.7rem;
+.journal .me{grid-column:1/10;grid-row:2;display:flex;align-items:center;gap:.7rem;
   margin-top:clamp(1.2rem,2vw,1.8rem)}
-/* ⛔ Портрет ужат с 112 до 44 пикселей, представление сведено к одной строке.
-   Никита: «мне не нравится так много информации обо мне, будто людям пофиг
-   будет на это, а место занимает». Блок занимал 112 пикселей из 760 в первом
-   экране — седьмую часть — ради того, что человеку в этот момент не нужно.
-   Совсем убирать нельзя: «был лично» и «цены платил сам» — единственное, чем
-   мы отличаемся от агрегаторов, а видимое авторство держит доверие. */
-.sw .me-ph{width:44px;height:44px;flex:none;object-fit:cover;object-position:50% 20%}
-.sub{font-size:clamp(.95rem,1.1vw,1.04rem);color:rgba(255,255,255,.92);max-width:62ch;margin:0}
-.sub b{color:#fff;font-weight:600}
-.sub a{color:inherit;text-decoration:underline 1px rgba(255,255,255,.45);text-underline-offset:.2em}
-.sub a:hover,.sub a:focus-visible{text-decoration-color:#fff}
-/* Дата держит свежесть для поиска, но не тянет на себя взгляд. */
-.vlist{grid-column:1/13;grid-row:3;margin-top:clamp(1.3rem,2.4vw,2rem);display:grid;
+.journal .me-ph{width:44px;height:44px;flex:none;object-fit:cover;object-position:50% 20%}
+.journal .sub{font-size:clamp(.95rem,1.1vw,1.04rem);color:rgba(255,255,255,.92);max-width:62ch;margin:0}
+.journal .sub b{color:#fff;font-weight:600}
+.journal .sub a{color:inherit;text-decoration:underline 1px rgba(255,255,255,.45);text-underline-offset:.2em}
+.journal .sub a:hover,.journal .sub a:focus-visible{text-decoration-color:#fff}
+.journal .vlist{grid-column:1/13;grid-row:3;margin-top:clamp(1.3rem,2.4vw,2rem);display:grid;
   grid-template-columns:repeat(6,1fr);border-top:1px solid rgba(255,255,255,.4);
   border-bottom:1px solid rgba(255,255,255,.4);list-style:none}
-.vi{border-right:1px solid rgba(255,255,255,.22)}
-.vi-l{display:block;font-size:.92rem;font-weight:600;line-height:1.25;color:#fff}
-.vi:first-child{padding-left:0}.vi:last-child{border-right:none}
-.vi a{display:block;color:inherit;min-height:48px;padding:.7rem 1rem}
-.vi a:hover,.vi a:focus-visible{background:rgba(255,255,255,.12)}
-/* ⛔ Горизонтальный кадр на вертикальном экране обрезается по бокам: держим
-   экран ниже и сдвигаем точку кадрирования к церкви, иначе в кадр попадает
-   пустой склон. Портрет уменьшается, но остаётся — он и есть доверие. */
+.journal .vi{border-right:1px solid rgba(255,255,255,.22)}
+.journal .vi-l{display:block;font-size:.92rem;font-weight:600;line-height:1.25;color:#fff}
+.journal .vi:first-child{padding-left:0}
+.journal .vi:last-child{border-right:none}
+.journal .vi a{display:block;color:inherit;min-height:48px;padding:.7rem 1rem}
+.journal .vi a:hover,.journal .vi a:focus-visible{background:rgba(255,255,255,.12)}
+
 @media(max-width:760px){
-  .sw .manifest .h1,.sub,.vlist,.me{grid-column:1/-1;grid-row:auto}
-  .manifest{min-height:min(80svh, 620px);padding-bottom:1.1rem}
-  .sw .manifest > .hero-ph{object-position:40% 46%}
-  .sw .manifest .h1{font-size:clamp(2.1rem,7.4vw,3.4rem)}
-  .me{margin-top:1.1rem;gap:.8rem}
-  .sw .me-ph{width:40px;height:40px}
-  .sub{font-size:.95rem}
-  .vlist{margin-top:1.2rem;grid-template-columns:repeat(3,1fr)}
-  .vi{border-bottom:1px solid rgba(255,255,255,.22)}
-  .vi:nth-child(3n){border-right:none}
-  .vi:nth-child(4),.vi:nth-child(5),.vi:nth-child(6){border-bottom:none}
-  .vi:nth-child(3n+1) a{padding-left:0}
-  .vi a{padding:.6rem .5rem;min-height:44px}
-  .vi-l{font-size:.85rem}
+.journal .manifest .h1,.journal .sub,.journal .vlist,.journal .me{grid-column:1/-1;grid-row:auto}
+.journal .manifest{min-height:min(80svh, 620px);padding-bottom:1.1rem}
+.journal .manifest .hero-ph{object-position:40% 46%}
+.journal .manifest .h1{font-size:clamp(2.1rem,7.4vw,3.4rem)}
+.journal .me{margin-top:1.1rem;gap:.8rem}
+.journal .me-ph{width:40px;height:40px}
+.journal .sub{font-size:.95rem}
+.journal .vlist{margin-top:1.2rem;grid-template-columns:repeat(3,1fr)}
+.journal .vi{border-bottom:1px solid rgba(255,255,255,.22)}
+.journal .vi:nth-child(3n){border-right:none}
+.journal .vi:nth-child(4),.journal .vi:nth-child(5),.journal .vi:nth-child(6){border-bottom:none}
+.journal .vi:nth-child(3n+1) a{padding-left:0}
+.journal .vi a{padding:.6rem .5rem;min-height:44px}
+.journal .vi-l{font-size:.85rem}
 }
 
-/* Область нажатия по WCAG 2.2 §2.5.8: управляющие элементы не мельче 24×24,
-   у кнопок и переключателей — от 44 px. Замер 18.08.2026 нашёл на главной
-   девять целей мельче нормы; правим ПЛОЩАДЬ нажатия отступами, размер шрифта
-   и вид не трогаем. Ссылки внутри предложения прозой под критерий не подпадают
-   (исключение inline) — их не раздуваем, иначе поедут межстрочные интервалы. */
-.more-cell a{display:inline-block;padding:.8rem 0;min-height:44px}
-.topics a{display:inline-block;padding:.45rem 0;min-height:26px}
-.fbot a{display:inline-block;padding:.35rem 0;min-height:26px}
-.freset{font:inherit;font-size:.82rem;line-height:1;padding:.55rem .9rem;min-height:44px;cursor:pointer;border:1px solid var(--hair);background:transparent;color:var(--mid)}
-.freset:hover,.freset:focus-visible{border-color:var(--gold);color:var(--gold)}
-.freset[hidden]{display:none}
-.filters{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:.7rem 1.8rem;padding:.7rem 0;border-bottom:1px solid var(--line)}
-.fg{display:flex;align-items:center;gap:.6rem}
-.fright{display:flex;align-items:center;gap:1.2rem;width:100%;justify-content:space-between;border-top:1px solid var(--hair);padding-top:.7rem;margin-top:.3rem}   /* всегда своя строка с hairline-разделителем — margin-left:auto тянул блок к правому краю 1280px-контейнера, оставляя пустой провал на любом обычном десктопе (аудит 2026-07-07) */
-.fl{font-size:.66rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
-.fopts{display:flex;gap:.4rem}
-.t{font-family:var(--ff);font-size:.84rem;font-weight:500;color:var(--ink);background:none;border:none;padding:0 .15rem;min-height:44px;display:inline-flex;align-items:center;cursor:pointer;text-decoration:underline 1px transparent;text-underline-offset:.22em}
-.t:hover{text-decoration-color:var(--hair)}.t.on{color:var(--gold);text-decoration-color:var(--gold)}
-/* чипы-переключатели (бюджет/вайб/сортировка): hairline-рамка → читаются как кнопки; активный = gold-рамка + лёгкий фон (язык .pck-chip) */
-.fopts .t{border:1px solid var(--hair);padding:0 .7rem;color:var(--mid);text-decoration:none;transition:border-color .15s,color .15s,background .15s}
-.fopts .t:hover{border-color:var(--mid);color:var(--ink);text-decoration:none}
-.fopts .t.on{border-color:var(--gold);color:var(--gold);background:rgba(29,64,174,.06)}
-select.t{-webkit-appearance:none;-moz-appearance:none;appearance:none;border:none;border-bottom:2px solid var(--ink);border-radius:0;padding:0 1.2rem 0 .15rem;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' fill='none' stroke='%2315140f' stroke-width='1.8'%3E%3Cpath d='M1 1l3.5 3.5L8 1'/%3E%3C/svg%3E") right .1rem center no-repeat;width:6.2em}                     /* фикс-ширина: intrinsic-width select по опциям расходится между Chromium и WebKit («сентябрь») — без width точка переноса .filters плывёт по движку */
-.fcount{font-size:.8rem;font-weight:600;border-left:1px solid var(--hair);padding-left:1rem;white-space:nowrap}.fcount b{color:var(--gold);font-size:1.5rem;font-weight:700;margin-right:.2rem;vertical-align:-1px}
-/* Мобайл: фильтры в столбик, подписи фикс-ширины → опции выровнены ровной колонкой */
-@media(max-width:760px){
-  /* подпись НАД чипами → опции на всю ширину (влезают в один ряд, без сирот), тесный ритм */
-  .filters{flex-direction:column;align-items:stretch;gap:.55rem;margin-top:.2rem;padding:.2rem 0}
-  .fg{flex-direction:column;align-items:flex-start;gap:.35rem}
-  .fright{margin-left:0;flex-direction:column;align-items:flex-start;gap:.5rem;border-top:1px solid var(--hair);padding-top:.7rem}
-  .fl{width:auto}
-  .fopts{flex:none;flex-wrap:wrap;gap:.4rem;width:100%}
-  .fcount{margin-left:0;margin-top:.3rem;border-left:none;padding-left:0}
-}
-.seasonlead{grid-column:1/-1;font-size:.95rem;color:var(--ink);margin:1rem 0 .2rem}.seasonlead b{color:var(--gold);font-weight:600}
 
-.dashwrap{grid-column:1/-1}
-.dash{width:100%;border-collapse:collapse;font-size:.92rem}
-.dash thead th{font-size:.64rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid);text-align:left;padding:.5rem .8rem .55rem 0;border-bottom:1px solid var(--line)}
-.dash thead th.r{text-align:right;padding-right:0}
-.dash td{padding:.95rem .8rem;border-bottom:1px solid var(--hair);vertical-align:middle}
-.dash td:first-child,.dash th:first-child{padding-left:0}.dash td.r{text-align:right;padding-right:0}
-@media(hover:hover){.dash tbody tr:hover td{background:rgba(29,64,174,.07)}}
-.no{font-size:.72rem;font-weight:600;color:var(--gold);width:2.2rem}
-.dest{display:flex;align-items:center;gap:.9rem}
-.th{width:62px;height:46px;flex:none}
-.th img{display:block;width:100%;height:100%;object-fit:cover}
-.nm{display:block;font-weight:600;font-size:1.15rem;letter-spacing:-.01em;line-height:1.15;padding:.18rem 0;min-height:24px}
-.nm:hover{text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
-@media(hover:hover){.dash tbody tr:hover .nm{color:var(--gold)}}
-.vibe{display:block;font-size:.74rem;color:var(--mid);margin-top:.15rem}
-.sq{display:inline-block;margin-top:.22rem;font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
-.sq.peak{color:var(--gold)}
-.sq.good{color:var(--mid)}
-.price{font-weight:700;font-size:1.2rem}.price small{font-size:.7rem;color:var(--mid);font-weight:500}
-.visa{font-size:.74rem;font-weight:600;letter-spacing:.02em;text-transform:uppercase}
-.visa.free{color:var(--gold)}.visa.evisa{color:var(--ink)}.visa.visa{color:#56534c}
-.season{font-size:.86rem}.flight{font-size:.86rem;color:var(--mid)}
-.fly{display:inline-block;padding:.28rem .2rem;min-height:24px;color:var(--ink);font-weight:600;white-space:nowrap;text-decoration:underline 1px transparent;text-underline-offset:.22em}
-.fly:hover{color:var(--gold);text-decoration-color:var(--gold)}
-.dash tr[hidden]{display:none}
-.nomatch{grid-column:1/-1;display:none;color:var(--mid);padding:1.4rem 0;font-size:.92rem}
-.dfoot{grid-column:1/-1;font-size:.72rem;color:var(--mid);padding:.8rem 0 0}.dfoot a{color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto}
-.more-cell{padding:1.1rem 0!important}.more-cell::before{content:none!important}.more-cell a{color:var(--gold);font-weight:600;text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto}.more-cell b{color:var(--gold)}
-@media(max-width:760px){
-  .dash thead{position:absolute;left:-9999px}
-  .dash,.dash tbody,.dash tr{display:block;width:100%}
-  .dash tr{border:none;padding:0 0 1.6rem}
-  .dash td{border:none;padding:0;text-align:left}
-  .dash td::before{display:none}                                  /* подписи не нужны — значения самоочевидны */
-  /* ── ФОТО-КАРТОЧКА (Airbnb-style): чистое фото, инфо снизу, бейдж сезона уголком ── */
-  .dash td.cdest{display:block;width:100%;margin-bottom:.55rem}
-  .cdest .dest{position:relative;display:block}
-  .cdest .th{width:100%;height:200px;border-radius:12px;overflow:hidden;display:block;margin-bottom:.6rem}
-  .cdest .dest>span:not(.th){display:block}
-  .cdest .nm{color:var(--ink);font-size:1.3rem;display:inline-flex;align-items:center;min-height:44px}
-  .cdest .vibe{color:var(--mid);margin-top:.1rem}
-  .cdest .sq{position:absolute;top:.6rem;left:.6rem;margin:0;padding:.3rem .55rem;background:var(--paper);border-radius:5px;font-size:.58rem;box-shadow:0 1px 3px rgba(0,0,0,.18)}
-  .cdest .sq.peak{color:var(--gold)}.cdest .sq.good{color:var(--mid)}
-  /* ── под фото: цена крупно, виза·сезон мета, ссылка ── */
-  .dash td[data-l="Поездка"]{display:block;margin-bottom:.2rem}
-  .price{font-size:1.45rem}
-  .dash td[data-l="Виза"],.dash td.season{display:inline;font-size:.84rem;color:var(--mid)}
-  .dash td[data-l="Виза"] .visa{font-size:.84rem}
-  .dash td[data-l="Виза"]::after{content:" · ";color:var(--hair)}
-  .dash td.flight{display:block;margin-top:.5rem;text-align:left}
-  .dash td.flight .fly{display:inline-flex;align-items:center;min-height:44px}
-  .cno{display:none}
-}
+.journal .hero-in{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:clamp(.8rem,2vw,1.6rem);padding-inline:clamp(1.1rem,3vw,2.6rem)}
+.journal .hero-nav{grid-column:1/-1;grid-row:3;min-width:0}
+.journal .vlist{padding:0;margin-bottom:0}
+.journal .me{min-height:44px}
+.journal .sub b{text-decoration:underline 1px rgba(255,255,255,.45);text-underline-offset:.2em}
+.journal .manifest .vi a{display:flex;align-items:center;height:100%}
+@media(max-width:760px){.journal .hero-nav{grid-row:auto}}
 
-.gear{grid-column:1/-1;margin-top:2.4rem}
-.gear-h{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;border-top:1px solid var(--line);padding-top:.8rem;margin-bottom:1rem}
-.gear-h h2{font-weight:700;font-size:clamp(1.4rem,2.6vw,2rem);letter-spacing:-.02em}
-.gear-h .adm{font-size:.6rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
-.gear-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.gi{padding:1rem 1.2rem 1.1rem;border-right:1px solid var(--hair)}.gi:nth-child(3n+1){padding-left:0}.gi:nth-child(3n){border-right:none}.gi:nth-child(n+4){border-top:1px solid var(--hair)}
-.gi .gl{font-size:.66rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
-.gi .gt{font-weight:700;font-size:1.05rem;margin:.25rem 0 .15rem}
-.gi .gd{font-size:.78rem;color:var(--mid);margin-bottom:.4rem}
-.gi a.cta{font-size:.82rem;font-weight:600;color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto;display:inline-flex;align-items:center;min-height:44px}
-.gi a.cta:hover{text-decoration-color:var(--gold)}
-@media(max-width:760px){.gear-grid{grid-template-columns:repeat(2,1fr)}.gi{border-top:none;border-right:1px solid var(--hair)}.gi:nth-child(2n){border-right:none}.gi:nth-child(2n+1){padding-left:0}.gi:nth-child(n+3){border-top:1px solid var(--hair)}}
-@media(max-width:640px){.gear-grid{grid-template-columns:1fr}.gi{border-right:none;border-top:1px solid var(--hair);padding-left:0}.gi:first-child{border-top:none}}
+.journal .home-load-error{padding:12px 16px;border-left:2px solid var(--blue);font-size:14px;line-height:1.6}.journal .home-load-error a{color:var(--blue);text-decoration:underline;display:inline-flex;align-items:center;min-height:44px}
 
-.visaband{grid-column:1/-1;margin-top:2.4rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:1.1rem 0}
-.visaband .vt{font-weight:600;font-size:1.02rem;max-width:64ch}.visaband .vt b{color:var(--gold)}
-.visaband a{font-size:.86rem;font-weight:600;color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto;display:inline-flex;align-items:center;min-height:44px}
-.visaband a:hover{text-decoration-color:var(--gold)}
-.tourcta{grid-column:1/-1;margin-top:2.4rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem 1rem;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:1.1rem 0}
-.tourcta-t{font-size:1.02rem;color:var(--ink);max-width:62ch}.tourcta-t b{color:var(--gold)}
-.tourcta-a{font-size:.86rem;font-weight:600;color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto;display:inline-flex;align-items:center;min-height:44px}
-.tourcta-a:hover{text-decoration-color:var(--gold)}
-.tourcta .adm{font-size:.6rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
 
-.sec{padding:clamp(2.4rem,5vw,4rem) 0 0}
-.shead{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:1rem;border-top:1px solid var(--line);padding-top:.8rem;margin-bottom:1.4rem}
-@media(max-width:760px){.shead{flex-direction:column;align-items:flex-start;gap:.2rem;margin-bottom:.5rem}}
-.shead .n{font-size:.74rem;font-weight:600;color:var(--gold);margin-right:.8rem}
-.shead h2{display:inline;font-weight:700;font-size:clamp(1.4rem,2.6vw,2rem);letter-spacing:-.02em}
-.shead a{font-size:.84rem;font-weight:600;color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto;display:inline-flex;align-items:center;min-height:44px}
-.shead a:hover{text-decoration-color:var(--gold)}
-
-.tools{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:0 clamp(1rem,2vw,2.4rem)}
-.tcard{border-top:1px solid var(--line);padding:1.2rem 0}
-.tcard .tt{font-weight:700;font-size:1.15rem}.tcard .ts{font-size:.8rem;color:var(--mid);margin:.2rem 0 1rem}
-.heat{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}.heat .mh{height:clamp(1.5rem,2.6vw,2rem)}
-.heatlbl{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:.25rem;font-size:.56rem;color:var(--mid);text-align:center;font-weight:500}
-.lg{display:flex;gap:1rem;margin-top:.7rem;font-size:.7rem;color:var(--mid);font-weight:500}.lg i{width:9px;height:9px;display:inline-block;margin-right:.3rem;vertical-align:middle}
-.bud .br{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--hair);font-size:.9rem}
-.tl{display:flex;flex-wrap:wrap;gap:1.2rem;margin-top:1.1rem}.tl a{font-size:.78rem;font-weight:600;color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto;display:inline-flex;align-items:center;min-height:44px}
-@media(max-width:760px){.tools{grid-template-columns:1fr}}
-
-.posts{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
-.post{padding-top:.7rem}
-.post .ph{aspect-ratio:3/2;margin:.7rem 0;overflow:hidden}.post .ph img{transition:transform .6s}.post:hover .ph img{transform:scale(1.04)}
-.post .tg{font-size:.66rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--mid)}
-.post h3{font-weight:600;font-size:1.15rem;line-height:1.15;letter-spacing:-.01em;margin:.3rem 0}
-.post .mt{font-size:.76rem;color:var(--mid)}.post .pers{color:var(--gold);font-weight:600}
-/* Свежее в ленте: строки, а не карточки — блок не должен спорить с историями
-   выше и не должен добавлять главной вес. Только hairline и золото. */
-.nvhome{grid-column:1/-1;margin-top:2.4rem;padding-top:1.6rem;border-top:1px solid var(--line)}
-.nvhome-list{list-style:none;margin:0;padding:0}
-.nvhome-list li{display:flex;gap:.9rem;align-items:baseline;padding:.6rem 0}
-.nvhome-list time{flex:0 0 auto;font-size:.78rem;color:var(--mid);font-variant-numeric:tabular-nums}
-.nvhome-list a{color:var(--ink);text-decoration:underline 1px transparent;text-underline-offset:.22em}
-.nvhome-list a:hover{text-decoration-color:var(--gold)}
-@media(max-width:560px){.nvhome-list li{flex-direction:column;gap:.15rem}}
-.topics{grid-column:1/-1;font-size:.8rem;color:var(--mid);margin-top:1rem}.topics a{color:var(--ink);font-weight:500;text-decoration:underline 1px transparent;text-underline-offset:.22em}.topics a:hover{text-decoration-color:var(--gold)}
-@media(max-width:760px){.posts{grid-template-columns:1fr}}
-/* Ровный ритм секций на мобиле — единый зазор 2.4rem (было manifest→финдер 1.2, comm 2.0) */
-@media(max-width:760px){.comm{margin-top:2.4rem}}
-
-.comm{grid-column:1/-1;display:grid;grid-template-columns:1.4fr 1fr;border-top:1px solid var(--line);margin-top:clamp(2rem,4vw,3.5rem)}
-.tg2{padding:1.6rem 2rem 1.8rem 0;border-right:1px solid var(--hair)}
-.tg2 .k{font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
-.tg2 h3{font-weight:700;font-size:clamp(1.4rem,2.4vw,1.9rem);letter-spacing:-.02em;margin:.5rem 0 1rem;max-width:20ch}
-.tg2 a{font-size:.8rem;font-weight:600;color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto;display:inline-flex;align-items:center;min-height:44px}
-.au{padding:1.6rem 0 1.8rem 2rem;align-self:center;display:flex;gap:1.1rem;align-items:flex-start}
-.au-ph{width:78px;height:78px;flex:none;overflow:hidden}.au-ph img{filter:grayscale(.3) contrast(1.03)}
-.au .nm{font-weight:700;font-size:1.2rem}.au p{font-size:.85rem;color:var(--mid);margin-top:.4rem;max-width:32ch}
-.au .method{display:inline-flex;align-items:center;min-height:44px;margin-top:.4rem;font-size:.76rem;font-weight:600;color:var(--gold);text-decoration:underline 1px color-mix(in srgb,var(--gold) 55%,transparent);text-underline-offset:.22em;text-decoration-skip-ink:auto}
-@media(max-width:760px){.comm{grid-template-columns:1fr}.tg2{border-right:none;border-bottom:1px solid var(--hair);padding:1.4rem 0}.au{padding:1.4rem 0}}
-
-.sw-foot{border-top:1px solid var(--line);margin-top:clamp(2rem,4vw,3.5rem);display:block;max-width:none;margin-inline:0;padding:0}
-.ft{display:flex;flex-direction:column;gap:1.1rem;padding-block:1.6rem;font-size:.74rem;color:var(--mid);font-weight:500}
-.fnav{display:flex;flex-wrap:wrap;gap:.1rem 1.4rem}
-.fnav a{min-height:44px;display:inline-flex;align-items:center;color:var(--ink);text-decoration:underline 1px transparent;text-underline-offset:.22em}
-.fnav a:hover,.fnav a:focus-visible{text-decoration-color:var(--gold)}
-.fbot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.6rem 1rem}
-.fbot a{color:inherit;text-decoration:underline}
-
-/* ── Дневник: развороты, полароиды, штампы, талон ──────────────────────────
-   Канон приёмов — BRANDBOOK.md §2а. Повороты и «рукотворность» — предметные
-   метафоры поездки, не декор: монотонность одинаковых блоков — главная примета
-   машинной страницы (замер 27.08.2026). */
-.jr .tape{border-bottom:1.5px solid var(--line);padding:1rem 0;font-size:.82rem;
-  letter-spacing:.05em;color:var(--ink)}
-.mono{font-family:var(--ff-mono)}
-.spread{display:grid;grid-template-columns:4fr 8fr;gap:3rem;
-  border-bottom:1px solid var(--hair);padding:2.8rem 0}
-.spread-last{border-bottom:0}
-.qq{font-size:clamp(1.8rem,3.4vw,2.5rem);line-height:1.05;font-weight:700;
-  letter-spacing:-.01em;text-wrap:balance}
-.qq em{font-style:italic}
-.qlead{margin-top:.9rem;font-size:1rem;color:var(--ink);max-width:26ch}
-.qlead b{font-weight:600}
-.before{padding-bottom:clamp(2rem,4vw,3rem)}
-.before .blist{list-style:none;margin:0;padding:0;display:grid;gap:.9rem;max-width:56ch}
-.before .blist li{font-size:1rem;line-height:1.55;color:var(--ink)}
-.before .blist a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:3px}
-.before .blist a:hover,.before .blist a:focus-visible{color:var(--gold)}
-.qmore{display:inline-block;margin-top:.6rem;padding:.4rem 0;min-height:24px;color:var(--ink);font-size:.95rem;
-  text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.22em}
-.qmore:hover,.qmore:focus-visible{color:var(--gold);text-decoration-color:var(--gold)}
-.polas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.8rem;align-items:start}
-.pola{display:block;min-width:0;background:#fff;border:1px solid var(--hair);
-  padding:.65rem .65rem 0;box-shadow:0 1px 0 var(--hair)}
-.pola.p1{transform:rotate(-1.4deg)}
-.pola.p2{transform:rotate(1deg);margin-top:1.4rem}
-.pola.p3{transform:rotate(-.6deg);margin-top:.4rem}
-.pola.p4{transform:rotate(.8deg);margin-top:1.1rem}
-.pph{display:block;width:100%;aspect-ratio:4/3.35;overflow:hidden}
-.pph img{width:100%;height:100%;object-fit:cover}
-.hand{font-family:'Neucha',cursive}
-.pcap{display:block;font-size:1.22rem;line-height:1.12;padding:.5rem .15rem .6rem;color:var(--ink)}
-.pdat{display:block;font-family:var(--ff);font-size:.78rem;color:var(--mid);padding-top:.12rem}
-.pola:hover .pcap,.pola:focus-visible .pcap{color:var(--gold)}
-.stamps{display:flex;flex-wrap:wrap;gap:1.1rem;align-content:flex-start}
-.stamp{display:block;border:2px solid var(--gold);color:var(--gold);
-  padding:.8rem 1.05rem;border-radius:3px;transform:rotate(-1.8deg)}
-.stamp:nth-child(2){transform:rotate(1.3deg)}
-.stamp:nth-child(3){transform:rotate(-.5deg)}
-.stamp:nth-child(4){transform:rotate(1.9deg)}
-.stamp b{display:block;font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:.08em}
-.stamp span{font-size:.76rem}
-.stamp:hover,.stamp:focus-visible{background:rgba(29,64,174,.06)}
-.pass{background:#fff;border:1px solid var(--hair);max-width:600px;font-size:.92rem}
-.phead{display:flex;justify-content:space-between;padding:.75rem 1.1rem;
-  border-bottom:1.5px dashed var(--hair);font-size:.74rem;letter-spacing:.07em}
-.prow{display:flex;align-items:baseline;gap:.7rem;padding:.5rem 1.1rem;color:var(--ink)}
-.prow b{font-weight:600;font-family:var(--ff);white-space:nowrap}
-.prow .pv{font-size:.7rem;color:var(--mid);white-space:nowrap}
-.prow .pd{flex:1;border-bottom:1.5px dotted var(--hair);transform:translateY(-4px)}
-.prow .pguide,.prow .pprice{padding:.5rem 0;margin:-.5rem 0}
-.prow .pprice{white-space:nowrap}
-.prow .pguide:hover b,.prow .pguide:focus-visible b,.prow .pprice:hover,.prow .pprice:focus-visible{color:var(--gold)}
-.pfoot{padding:.65rem 1.1rem .9rem;font-size:.68rem;color:var(--mid);
-  border-top:1.5px dashed var(--hair);margin-top:.35rem}
-.anchor2{position:relative;overflow:hidden}
-.anchor2 img{display:block;width:100%;height:clamp(320px,44vw,560px);object-fit:cover}
-.anote{position:absolute;right:clamp(1rem,5vw,3rem);bottom:2rem;background:#fff;
-  padding:1.05rem 1.3rem;max-width:340px;transform:rotate(-1deg);border:1px solid var(--hair)}
-.anote:before{content:'';position:absolute;top:-11px;left:34px;width:86px;height:22px;
-  background:rgba(233,231,215,.7);transform:rotate(-3deg);border:1px solid rgba(190,186,168,.45)}
-.anote b{font-family:var(--ff-head,Georgia);font-size:1.25rem;line-height:1.15;display:block}
-.anote span{display:block;font-size:.88rem;color:var(--mid);padding-top:.3rem}
-.anote a{display:inline-block;margin-top:.2rem;padding:.35rem 0;min-height:24px;color:var(--ink);font-size:.9rem;
-  text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.22em}
-.anote a:hover{color:var(--gold)}
-@media(max-width:960px){
-  .spread{grid-template-columns:1fr;gap:1.4rem;padding:2.2rem 0}
-  .pph{width:min(420px,100%)}
-  .pola.p2,.pola.p3,.pola.p4{margin-top:0}
-}
-@media(max-width:760px){
-  .polas{grid-template-columns:1fr;gap:1.2rem}
-  .pola{width:100%;padding:.55rem .55rem 0}
-  .pph{width:100%}
-  .anote{position:static;transform:none;max-width:none;border-top:1px solid var(--line)}
-  .anote:before{display:none}
-  .anchor2 img{height:52vw}
-}
 </style>
-
-<!-- скрипт фильтров уехал на /countries/ вместе с таблицей -->

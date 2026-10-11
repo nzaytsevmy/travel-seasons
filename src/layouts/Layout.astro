@@ -22,6 +22,10 @@ import ostCyrI from '@fontsource/old-standard-tt/files/old-standard-tt-cyrillic-
 import ostLat from '@fontsource/old-standard-tt/files/old-standard-tt-latin-400-normal.woff2';
 import ostLatB from '@fontsource/old-standard-tt/files/old-standard-tt-latin-700-normal.woff2';
 import ostLatI from '@fontsource/old-standard-tt/files/old-standard-tt-latin-400-italic.woff2';
+import homeGolosLat from '../assets/fonts/home/golos-text-latin-wght-normal.woff2';
+import homeOstB from '../assets/fonts/home/old-standard-tt-700-normal.woff2';
+import homeOst from '../assets/fonts/home/old-standard-tt-400-normal.woff2';
+import homeMono from '../assets/fonts/home/pt-mono-400-normal.woff2';
 import neuchaCyr from '@fontsource/neucha/files/neucha-cyrillic-400-normal.woff2';
 import neuchaLat from '@fontsource/neucha/files/neucha-latin-400-normal.woff2';
 import ptMonoCyr from '@fontsource/pt-mono/files/pt-mono-cyrillic-400-normal.woff2';
@@ -37,7 +41,10 @@ interface Props {
   ogImage?: string;
   ogImageAlt?: string;
   ldJson?: object;
+  deferHomePhotos?: boolean;
+  preloadJournalFonts?: boolean;
   preloadImage?: string;
+  preloadImageMedia?: string;
   preloadImageSrcset?: string;
   preloadImageSizes?: string;
   noindex?: boolean;
@@ -55,6 +62,9 @@ const {
   ogImage,
   ogImageAlt = 'TravelTribe — куда поехать: сезоны, визы и бюджет для 70+ направлений',
   ldJson,
+  deferHomePhotos = false,
+  preloadJournalFonts = false,
+  preloadImageMedia,
   preloadImage,
   preloadImageSrcset,
   preloadImageSizes = '100vw',
@@ -100,6 +110,14 @@ const journalFontFace = [
 ].map(([fam, style, w, url, range]) =>
   `@font-face{font-family:'${fam}';font-style:${style};font-display:swap;font-weight:${w};src:url(${url}) format('woff2');unicode-range:${range}}`
 ).join('');
+// The homepage uses the same outlines and advances with fewer font requests.
+// Complete original faces above remain available for characters outside these ranges.
+const HOME_LAT_R = 'U+0020-007E,U+00A0-00BF,U+00D7,U+00F7,U+2000-206F,U+20AC,U+20BD,U+2116,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD';
+const homeFontFace = preloadJournalFonts ?
+  `@font-face{font-family:'Golos Text Variable';font-style:normal;font-display:optional;font-weight:400 900;src:url(${homeGolosLat}) format('woff2-variations');unicode-range:${HOME_LAT_R}}` +
+  [['Old Standard TT', 400, homeOst], ['Old Standard TT', 700, homeOstB], ['PT Mono', 400, homeMono]].map(([family, weight, url]) =>
+    `@font-face{font-family:'${family}';font-style:normal;font-display:swap;font-weight:${weight};src:url(${url}) format('woff2');unicode-range:${CYR_R},${HOME_LAT_R}}`
+  ).join('') : '';
 
 // Baseline entity graph — Organization + WebSite эмитятся на КАЖДОЙ
 // странице, чтобы site-wide ссылки isPartOf:#website / publisher:#org
@@ -121,11 +139,7 @@ const SITE = {
   "description": "Авторский тревел-блог из России: личные отчёты, визы, сезоны, бюджет 70+ направлений мира",
   "inLanguage": "ru-RU",
   "publisher": { "@id": "https://traveltribe.ru/#org" },
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": { "@type": "EntryPoint", "urlTemplate": "https://traveltribe.ru/?s={search_term_string}" },
-    "query-input": "required name=search_term_string",
-  },
+
 };
 // Канонический Person — резолвит author/founder/#person на ВСЕХ страницах
 // (раньше определялся только на /about/ = висячий @id везде остальном).
@@ -217,6 +231,9 @@ const finalLd = {
   <link rel="dns-prefetch" href="https://mc.yandex.ru" />
   <link rel="dns-prefetch" href="https://analytics.ahrefs.com" />
 
+  {/* Start the homepage image before the font preload queue. */}
+  {preloadJournalFonts && preloadImageSrcset && <link media={preloadImageMedia} rel="preload" as="image" href={preloadImageSrcset.split(' ')[0]} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
+
   <!-- Шрифты: один гротеск Golos Text (variable). @font-face с font-display:optional
        объявлен здесь (не через fontsource index.css со swap → это и давало CLS).
        preload cyrillic + latin — двух сабсетов, что реально используются на любой странице
@@ -225,8 +242,38 @@ const finalLd = {
        fallback → разъезд высоты (blog-japan). cyrillic-ext/latin-ext (редкие глифы) не
        преложены намеренно. Newsreader/Onest убраны 2026-05-23. JetBrains Mono — в global.css. -->
   <link rel="preload" as="font" type="font/woff2" href={golosCyr} crossorigin="anonymous" />
-  <link rel="preload" as="font" type="font/woff2" href={golosLat} crossorigin="anonymous" />
-  <style set:html={golosFontFace + journalFontFace}></style>
+  <link rel="preload" as="font" type="font/woff2" href={preloadJournalFonts ? homeGolosLat : golosLat} crossorigin="anonymous" />
+  {deferHomePhotos && <script is:inline>
+    (() => {
+      const root = document.documentElement;
+      root.classList.add('home-photo-pending');
+      let observer, fallbackTimer, loaded = false, painted = false;
+      const reveal = () => {
+        clearTimeout(fallbackTimer);
+        root.classList.remove('home-photo-pending');
+        observer?.disconnect();
+        removeEventListener('scroll', reveal);
+      };
+      const ready = () => { if (loaded && painted) requestAnimationFrame(reveal); };
+      // Keep SSR sources and dimensions. Release below-fold photos after an
+      // observed first paint, or immediately when the visitor starts scrolling.
+      addEventListener('scroll', reveal, { once: true, passive: true });
+      if ('PerformanceObserver' in window && PerformanceObserver.supportedEntryTypes?.includes('paint')) {
+        observer = new PerformanceObserver(entries => {
+          if (entries.getEntries().some(entry => entry.name === 'first-contentful-paint')) { painted = true; ready(); }
+        });
+        observer.observe({ type: 'paint', buffered: true });
+      } else {
+        painted = true;
+      }
+      addEventListener('load', () => { loaded = true; requestAnimationFrame(ready); }, { once: true });
+      fallbackTimer = setTimeout(reveal, 2000); // Restore photos even if an unrelated resource stalls.
+    })();
+  </script>}
+  {/* Discover the three combined journal fonts before the first layout. */}
+  {preloadJournalFonts && [homeOstB, homeOst, homeMono].map(href =>
+    <link rel="preload" as="font" type="font/woff2" href={href} crossorigin="anonymous" />)}
+  <style set:html={golosFontFace + journalFontFace + homeFontFace}></style>
 
   <script type="application/ld+json" set:html={JSON.stringify(finalLd)} />
 
@@ -238,7 +285,7 @@ const finalLd = {
       Браузеры с поддержкой imagesrcset (все современные) href игнорируют и
       берут вариант из набора, так что двойной загрузки нет; href — самый
       лёгкий вариант, запас для странного клиента. */}
-  {preloadImageSrcset && <link rel="preload" as="image" href={preloadImageSrcset.split(' ')[0]} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
+  {!preloadJournalFonts && preloadImageSrcset && <link media={preloadImageMedia} rel="preload" as="image" href={preloadImageSrcset.split(' ')[0]} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
 
   <!-- Аналитика: базовая Яндекс.Метрика (обезличенная статистика + ПФ) и Ahrefs (cookieless)
        грузятся на production-домене для работы/улучшения Сайта (тот же законный интерес, что
@@ -396,6 +443,9 @@ const finalLd = {
 
   <script>
     import { initMonetizationTracking } from '../scripts/monetization-tracking.js';
+    import { initTripJourney } from '../scripts/trip-journey.js';
+    initTripJourney();
+    document.addEventListener('astro:page-load', () => initTripJourney());
     initMonetizationTracking();
   </script>
 

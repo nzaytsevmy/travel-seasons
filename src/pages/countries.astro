@@ -7,7 +7,7 @@ import { Image } from 'astro:assets';
 import { DIRECTIONS } from '../data/directions.js';
 import { PRICES } from '../data/prices.js';
 import { VISA_DETAILS } from '../data/visa-details.js';
-import { calculateTripBudget, calculatorHref } from '../utils/trip-budget.js';
+import { createDestinationRows, directionForMonth } from '../utils/destination-selection.js';
 import { getBudgetRates } from '../utils/budget-rates.js';
 import { ACTIVITY_TAGS } from '../data/country-activity-tags.js';
 
@@ -41,17 +41,13 @@ function seasonLabel(r) {
   return g.map(([a, b]) => (a === b ? MON_ABBR[a] : `${MON_ABBR[a]}–${MON_ABBR[b]}`)).join(', ');
 }
 
-const cards = groupOrder.flatMap(g => grouped[g]).map((d) => {
-  const budgetRub = d.price?.flight ? calculateTripBudget(d.price, { rates, visa: VISA_DETAILS[d.slug], seasons: d.r }).grand : null;
-  const priceIdx = PRICES.findIndex(p => p.name === d.price?.name);
-  const btier = budgetRub ? tierOf(budgetRub) : (d.budget || null);
-  const vibe = [...new Set((ACTIVITY_TAGS[d.slug] || []).map(t => VIBE_MAP[t]).filter(Boolean))];
-  return {
-    slug: d.slug, nom: d.cases.nom, visa: d.visa, r: d.r || null,
-    budgetRub, calcUrl: calculatorHref(priceIdx), btier, vibe, season: seasonLabel(d.r),
-    photo: destPhotos[`../assets/destinations/${d.slug}.jpg`], visual: d.visual,
-  };
+const sharedRows = createDestinationRows(DIRECTIONS, PRICES, VISA_DETAILS, rates, ACTIVITY_TAGS);
+const cards = groupOrder.flatMap(g => grouped[g]).map(d => {
+  const row = directionForMonth(sharedRows.find(r => r.slug === d.slug));
+  return { ...row, budgetRub: row.budget, knownBudget: row.knownBudget, btier: row.budget === null ? null : tierOf(row.budget),
+    season: seasonLabel(d.r), photo: destPhotos[`../assets/destinations/${d.slug}.jpg`], visual: d.visual };
 });
+const catalogData = JSON.stringify(sharedRows).replace(/</g, '\\u003c');
 
 const stats = {
   total: DIRECTIONS.length,
@@ -67,8 +63,8 @@ const ldJson = {
   "@graph": [
     {
       "@type": "CollectionPage", "@id": `${url}#page`, "url": url,
-      "name": `Каталог направлений ${brandYear} — 70+ стран для поездки из России`,
-      "description": "Каталог всех 70+ направлений: виза для россиян, лучший сезон и цена всей поездки с перелётом. Фильтр по визе, бюджету, сезону и настроению.",
+      "name": `Каталог направлений ${brandYear} — 70+ направлений для поездки из России`,
+      "description": "Каталог всех 70+ направлений: виза для россиян, лучший сезон и примерная стоимость недели с перелётом. Фильтр по визе, бюджету, сезону и настроению.",
       "inLanguage": "ru-RU",
       "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".cat-lede"] }, "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "mainEntity": {
@@ -86,19 +82,19 @@ const ldJson = {
 };
 ---
 <Layout
-  title={`Направления ${brandYear} — каталог 70+ стран из России: виза, сезон, цена`}
+  title={`Куда поехать в ${brandYear} — 70+ направлений из России`}
   description="Все 70+ направлений в каталоге: виза для россиян, лучший сезон и цена поездки с перелётом. Фильтр по визе, бюджету и сезону."
   canonical={url}
   ogTitle="Каталог направлений · TravelTribe"
-  ogDescription="70+ стран с визой, сезоном и ценой поездки — фильтруй и выбирай"
+  ogDescription="70+ направлений с визой, сезоном и ценой поездки — фильтруй и выбирай"
   ldJson={ldJson}
 >
   <Breadcrumbs crumbs={[{ label: 'Направления' }]} />
 
   <main id="main" class="cat">
     <header class="cat-head">
-      <h1 class="cat-h1">Все направления — 70+ стран для поездки из России</h1>
-      <p class="cat-lede">70+ направлений в одной сетке: <b>виза</b> для россиян, <b>лучший сезон</b> и <b>цена всей поездки</b> с перелётом из Москвы. Отфильтруй под себя — и открой полный гайд страны.</p>
+      <h1 class="cat-h1">70+ направлений для поездки из России</h1>
+      <p class="cat-lede">70+ направлений в одной сетке: <b>виза</b> для россиян, <b>лучший сезон</b> и <b>примерная стоимость недели</b> с перелётом из Москвы. Отфильтруй под себя — и открой полный гайд страны.</p>
       <p class="cat-byline">Собрал <a href="/about/">Никита Зайцев</a> · был на 7 континентах, 60+ стран</p>
       <a class="editorial-cta cat-planner" href="/calculator/">
         <strong>Уже выбрали страну? Посчитайте всю поездку</strong>
@@ -113,15 +109,14 @@ const ldJson = {
         <button type="button" id="catSearchClear" class="cf-clear" aria-label="Очистить" hidden>×</button>
       </div>
       <div class="cf-row"><span class="cf-lbl">Виза</span><div class="cf-opts" data-g="visa">
-        <button type="button" class="cf-t" data-v="free">Без визы <i>{stats.free}</i></button>
-        <button type="button" class="cf-t" data-v="evisa">eVisa <i>{stats.evisa}</i></button>
-        <button type="button" class="cf-t" data-v="required">Виза <i>{stats.required}</i></button>
+        <button type="button" class="cf-t" data-v="free_evisa">Без визы или eVisa</button>
+        <button type="button" class="cf-t" data-v="free">Без визы <i data-visa-count="free">{stats.free}</i></button>
+        <button type="button" class="cf-t" data-v="evisa">eVisa <i data-visa-count="evisa">{stats.evisa}</i></button>
+        <button type="button" class="cf-t" data-v="required">Виза <i data-visa-count="required">{stats.required}</i></button>
       </div></div>
-      <div class="cf-row"><span class="cf-lbl">Бюджет</span><div class="cf-opts" data-g="b">
-        <button type="button" class="cf-t" data-v="low">до 100к</button>
-        <button type="button" class="cf-t" data-v="mid">100–200к</button>
-        <button type="button" class="cf-t" data-v="high">200к+</button>
-      </div></div>
+      <div class="cf-row"><label class="cf-lbl" for="catMaxBudget">Бюджет недели</label>
+        <select class="cf-sel" id="catMaxBudget" aria-label="Бюджет на неделю"><option value="0">Любой бюджет</option><option value="100000">До 100 000 ₽</option><option value="200000">До 200 000 ₽</option></select>
+      </div>
       <div class="cf-row"><span class="cf-lbl">Настроение</span><div class="cf-opts" data-g="vibe">
         <button type="button" class="cf-t" data-v="beach">Пляж</button>
         <button type="button" class="cf-t" data-v="mountains">Горы</button>
@@ -140,17 +135,20 @@ const ldJson = {
           <button type="button" class="cf-t" data-s="desc">дороже</button>
         </div>
       </div>
-      <p class="cf-count"><b id="catN">{stats.total}</b> <span id="catW">направлений</span></p>
+      <button type="button" class="cf-t" id="catReset">Сбросить фильтры</button>
+      <p class="cf-count" role="status" aria-live="polite"><b id="catN">{stats.total}</b> <span id="catW">направлений</span></p>
     </section>
 
+    <p class="cat-budget-note">Оценка экономной недели на одного из Москвы: перелёт, 7 ночей, питание и известные сборы за въезд. Без экскурсий и трансферов. Направления с неизвестной полной стоимостью не проходят фильтр бюджета.</p>
+    <noscript><p>Все фотографии и гиды доступны ниже. Для изменения фильтров нужен JavaScript.</p></noscript>
     <p class="cat-empty" id="catEmpty" hidden>Под эти фильтры ничего не нашлось — ослабь один: визу, бюджет, сезон или настроение.</p>
 
     {/* ─── Сетка направлений ─── */}
     <div class="cgrid" id="cgrid">
       {cards.map((c, i) => (
         <article class="cd"
-           data-name={c.nom.toLowerCase()} data-visa={c.visa} data-b={c.btier || ''}
-           data-vibe={c.vibe.join(',')} data-r={c.r ? c.r.join('') : ''} data-budget={c.budgetRub || 0}>
+           data-slug={c.slug} data-name={c.nom.toLowerCase()} data-visa={c.visa} data-b={c.btier || ''}
+           data-vibe={c.vibe.join(',')} data-r={c.r ? c.r.join('') : ''} data-budget={c.budgetRub ?? ''}>
           <a class="cd-ph" href={`/${c.slug}/`} aria-label={`Путеводитель: ${c.nom}`}>
             {/* Карточка показывается от 170px на телефоне до 224px на планшете,
                 а файл ехал один и тот же в 600px — вдвое-втрое больше нужного по
@@ -170,7 +168,7 @@ const ldJson = {
               <span class={`cd-visa cd-visa--${c.visa}`}>{VISA_LABEL[c.visa]}</span>
               {c.season && <span class="cd-season">{c.season}</span>}
             </span>
-            <a class="cd-price" href={c.calcUrl} aria-label={`${c.budgetRub ? `≈ ${fmt(c.budgetRub)} ₽` : BUDGET_LABEL[c.btier] || ''} — рассчитать поездку: ${c.nom}`}>{c.budgetRub ? `≈ ${fmt(c.budgetRub)}\u00A0₽` : (c.btier ? BUDGET_LABEL[c.btier] : '')}</a>
+            <a class="cd-price" href={c.calcUrl}>{c.budgetRub === null ? `≈ ${fmt(c.knownBudget)} ₽ без ${c.budgetExclusions}` : `≈ ${fmt(c.budgetRub)} ₽ / неделя`}</a>
           </span>
         </article>
       ))}
@@ -183,6 +181,7 @@ const ldJson = {
   </main>
 
   <Footer />
+  <script type="application/json" id="catalogData" set:html={catalogData}></script>
 </Layout>
 
 <style>
@@ -199,9 +198,9 @@ const ldJson = {
   /* ── Фильтры ── */
   .cfilters { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 1rem 0; display: flex; flex-direction: column; gap: .7rem; }
   .cf-search { position: relative; }
-  .cf-search input { width: 100%; font: inherit; font-size: 1rem; padding: .65rem 2.2rem .65rem .9rem; background: var(--bg2); border: 1px solid var(--line); border-radius: 0; color: var(--text); }
+  .cf-search input { width: 100%; font: inherit; font-size: 1rem; padding: .65rem 3.5rem .65rem .9rem; background: var(--bg2); border: 1px solid var(--line); border-radius: 0; color: var(--text); }
   .cf-search input:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; border-color: var(--gold); }
-  .cf-clear { position: absolute; right: .5rem; top: 50%; transform: translateY(-50%); width: 1.7rem; height: 1.7rem; border: none; background: none; font-size: 1.3rem; line-height: 1; color: var(--text-faint); cursor: pointer; }
+  .cf-clear { position: absolute; right: .5rem; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border: none; background: none; font-size: 1.3rem; line-height: 1; color: var(--text-faint); cursor: pointer; }
   .cf-row { display: flex; align-items: center; flex-wrap: wrap; gap: .35rem 1.1rem; }
   .cf-lbl { font-size: .66rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text-faint); flex: none; width: 4.4rem; }
   .cf-lbl--sort { width: auto; margin-left: .4rem; }
@@ -212,7 +211,7 @@ const ldJson = {
   .cf-t:hover { border-color: var(--text-faint); color: var(--text); }
   .cf-t.on { border-color: var(--gold); color: var(--gold); background: rgba(29, 64, 174, 0.06); }
   .cf-t.on i { color: var(--gold); }
-  .cf-sel { font: inherit; font-size: .9rem; min-height: 44px; padding: 0 1.6rem 0 .1rem; border: none; border-bottom: 2px solid var(--text); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' fill='none' stroke='%231b1914' stroke-width='1.8'%3E%3Cpath d='M1 1l3.5 3.5L8 1'/%3E%3C/svg%3E") right .1rem center no-repeat; -webkit-appearance: none; appearance: none; color: var(--text); cursor: pointer; }
+  .cf-sel { font: inherit; font-size: 1rem; min-height: 44px; padding: 0 1.6rem 0 .1rem; border: none; border-bottom: 2px solid var(--text); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' fill='none' stroke='%231b1914' stroke-width='1.8'%3E%3Cpath d='M1 1l3.5 3.5L8 1'/%3E%3C/svg%3E") right .1rem center no-repeat; -webkit-appearance: none; appearance: none; color: var(--text); cursor: pointer; }
   .cf-count { font-size: .85rem; color: var(--text-faint); margin: .1rem 0 0; }
   .cf-count b { font-size: 1.4rem; font-weight: 700; color: var(--gold); margin-right: .15rem; }
 
@@ -248,68 +247,4 @@ const ldJson = {
   }
 </style>
 
-<script>
-  const grid = document.getElementById('cgrid');
-  if (grid) {
-    const cards = Array.from(grid.querySelectorAll('.cd'));
-    const order = new Map(cards.map((c, i) => [c, i]));
-    const state = { q: '', m: 0, visa: null, b: null, vibe: null, sort: 'rel' };
-    const PREP = ['', 'январе','феврале','марте','апреле','мае','июне','июле','августе','сентябре','октябре','ноябре','декабре'];
-    const pl = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'направление' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'направления' : 'направлений'));
-    const qcode = (c) => (state.m ? ((c.dataset.r || '')[state.m - 1] || '') : '');
-    const rank = (c) => { const x = qcode(c); return x === 'P' ? 0 : (x === 'G' ? 1 : 2); };
-    const countN = document.getElementById('catN'), countW = document.getElementById('catW'), empty = document.getElementById('catEmpty');
-
-    function ordered() {
-      if (state.sort === 'asc') return [...cards].sort((a, b) => (+a.dataset.budget || 1e12) - (+b.dataset.budget || 1e12));
-      if (state.sort === 'desc') return [...cards].sort((a, b) => (+b.dataset.budget || 0) - (+a.dataset.budget || 0));
-      if (state.m) return [...cards].sort((a, b) => rank(a) - rank(b) || order.get(a) - order.get(b));
-      return cards;
-    }
-    function apply() {
-      ordered().forEach((c) => grid.appendChild(c));
-      let n = 0;
-      cards.forEach((c) => {
-        const vibe = c.dataset.vibe ? c.dataset.vibe.split(',') : [];
-        const code = qcode(c);
-        let ok = true;
-        if (state.q && !c.dataset.name.includes(state.q)) ok = false;
-        if (state.visa && c.dataset.visa !== state.visa) ok = false;
-        if (state.b && c.dataset.b !== state.b) ok = false;
-        if (state.vibe && !vibe.includes(state.vibe)) ok = false;
-        if (state.m && code !== 'P' && code !== 'G') ok = false;
-        const sq = c.querySelector('.cd-sq');
-        if (sq) {
-          if (state.m && (code === 'P' || code === 'G')) { sq.hidden = false; sq.textContent = code === 'P' ? 'пик сезона' : 'хороший сезон'; sq.className = 'cd-sq ' + (code === 'P' ? 'peak' : 'good'); }
-          else sq.hidden = true;
-        }
-        c.hidden = !ok; if (ok) n++;
-      });
-      countN.textContent = String(n);
-      countW.textContent = pl(n);
-      if (empty) empty.hidden = n > 0;
-    }
-
-    const search = document.getElementById('catSearch'), clearBtn = document.getElementById('catSearchClear');
-    search.addEventListener('input', () => { state.q = search.value.trim().toLowerCase(); if (clearBtn) clearBtn.hidden = !search.value; apply(); });
-    if (clearBtn) clearBtn.addEventListener('click', () => { search.value = ''; state.q = ''; clearBtn.hidden = true; apply(); search.focus(); });
-
-    document.querySelectorAll('.cf-opts[data-g]').forEach((g) => g.addEventListener('click', (e) => {
-      const t = e.target.closest('.cf-t'); if (!t) return;
-      const grp = g.dataset.g, was = t.classList.contains('on');
-      g.querySelectorAll('.cf-t').forEach((x) => x.classList.remove('on'));
-      if (!was) { t.classList.add('on'); state[grp] = t.dataset.v; } else state[grp] = null;
-      apply();
-    }));
-    const sortG = document.getElementById('catSort');
-    if (sortG) sortG.addEventListener('click', (e) => {
-      const t = e.target.closest('.cf-t'); if (!t) return;
-      sortG.querySelectorAll('.cf-t').forEach((x) => x.classList.remove('on'));
-      t.classList.add('on'); state.sort = t.dataset.s; apply();
-    });
-    const month = document.getElementById('catMonth');
-    if (month) month.addEventListener('change', (e) => { state.m = +e.target.value; apply(); });
-
-    apply();
-  }
-</script>
+<script>import '../scripts/catalog-selection.js';</script>

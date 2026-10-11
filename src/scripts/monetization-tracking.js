@@ -51,7 +51,6 @@ export function prepareAffiliateLinks(doc = document, pathname = window.location
   const counters = new Map();
   const links = [...doc.querySelectorAll('a[href^="http"]')];
   for (const anchor of links) {
-    if (anchor.dataset.ctaPrepared === '1') continue;
     const known = classifyPartner(anchor.href);
     if (!known && !isSponsored(anchor)) continue;
 
@@ -61,10 +60,15 @@ export function prepareAffiliateLinks(doc = document, pathname = window.location
     const counterKey = `${partner}:${placement}`;
     const ordinal = (counters.get(counterKey) ?? 0) + 1;
     counters.set(counterKey, ordinal);
-    const ctaId = buildCtaId(pathname, partner, placement, ordinal);
+    if (anchor.dataset.ctaPrepared === '1') continue;
+    const ctaId = /^[a-z0-9_]{5,64}$/.test(anchor.dataset.ctaId || '')
+      ? anchor.dataset.ctaId : buildCtaId(pathname, partner, placement, ordinal);
+    const destination = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(anchor.dataset.destination || '')
+      ? anchor.dataset.destination : page.destination;
+    const intent = /^(high|medium|low)$/.test(anchor.dataset.intent || '') ? anchor.dataset.intent : page.intent;
 
-    if (known && page.destination && isGenericAffiliateUrl(anchor.href, partner)) {
-      const destinationUrl = destinationAffiliateUrl(partner, page.destination, ctaId);
+    if (known && destination && isGenericAffiliateUrl(anchor.href, partner)) {
+      const destinationUrl = destinationAffiliateUrl(partner, destination, ctaId);
       if (destinationUrl) {
         anchor.href = destinationUrl;
         anchor.dataset.deepLink = 'destination';
@@ -81,8 +85,8 @@ export function prepareAffiliateLinks(doc = document, pathname = window.location
     anchor.dataset.placement = placement;
     anchor.dataset.linkPosition = String(ordinal);
     anchor.dataset.pageType = page.type;
-    anchor.dataset.intent = page.intent;
-    anchor.dataset.destination = page.destination;
+    anchor.dataset.intent = intent;
+    anchor.dataset.destination = destination;
     anchor.dataset.experimentId ||= doc.body.dataset.experimentId || '';
     anchor.dataset.variant ||= doc.body.dataset.experimentVariant || '';
 
@@ -122,6 +126,7 @@ export function prepareOwnChannelLinks(doc = document, pathname = window.locatio
 export function monetizationPayload(anchor, pathname = window.location.pathname, clickId = '') {
   const readerCohort = anchor.ownerDocument?.body?.dataset.readerCohort || 'unknown';
   const audienceSource = anchor.ownerDocument?.body?.dataset.audienceSource || 'unattributed';
+  const journeySource = anchor.ownerDocument?.body?.dataset.journeySource === 'home_planner' ? 'home_planner' : '';
   return {
     page_path: pathname,
     page_type: anchor.dataset.pageType || 'unknown',
@@ -136,13 +141,14 @@ export function monetizationPayload(anchor, pathname = window.location.pathname,
     variant: anchor.dataset.variant || '',
     assignment_unit: anchor.ownerDocument?.body?.dataset.assignmentUnit || '',
     click_id: clickId,
-    click_context: `${clickId}__${readerCohort}__${audienceSource}`,
+    click_context: `${clickId}__${readerCohort}__${audienceSource}${journeySource ? `__${journeySource}` : ''}`,
     reader_cohort: readerCohort,
     audience_source: audienceSource,
     partner_join: classifyPartner(anchor.dataset.attributionHref || anchor.href)?.attribution === 'sub_id'
       ? 'click_id'
       : 'metrika_only',
     anchor: cleanText(anchor.textContent),
+    journey_source: anchor.ownerDocument?.body?.dataset.journeySource || '',
     contract: 'revenue_v2',
   };
 }
@@ -186,6 +192,10 @@ export function initMonetizationTracking(doc = document, win = window) {
   }
   prepareAffiliateLinks(doc, win.location.pathname);
   prepareOwnChannelLinks(doc, win.location.pathname);
+  doc.addEventListener('tt:affiliate-links-updated', () => {
+    prepareAffiliateLinks(doc, win.location.pathname);
+    prepareOwnChannelLinks(doc, win.location.pathname);
+  });
 
   doc.addEventListener('astro:page-load', () => {
     const nextAudience = updateAudienceAttribution(win.localStorage, win.location.href, new Date());
@@ -239,16 +249,20 @@ export function initMonetizationTracking(doc = document, win = window) {
 export function observeAffiliateImpressions(doc = document, win = window) {
   if (typeof win.IntersectionObserver !== 'function') return null;
   const seen = new WeakSet();
+  const watched = new Set();
   const observer = new win.IntersectionObserver((entries) => {
     for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
+      if (!entry.isIntersecting || entry.intersectionRatio < 0.5) continue;
       const anchor = entry.target;
       observer.unobserve(anchor);
+      watched.delete(anchor);
       if (seen.has(anchor)) continue;
       seen.add(anchor);
       const payload = {
         page_path: win.location.pathname,
         page_type: anchor.dataset.pageType || doc.body?.dataset.pageType || 'unknown',
+        destination: anchor.dataset.destination || '',
+        intent: anchor.dataset.intent || 'unknown',
         placement: anchor.dataset.placement || 'body',
         form: formOf(anchor),
         partner: anchor.dataset.partner || 'unknown',
@@ -262,13 +276,18 @@ export function observeAffiliateImpressions(doc = document, win = window) {
     }
   }, { threshold: 0.5 });
   const attach = () => {
+    for (const anchor of watched) {
+      if (anchor.isConnected === false) { observer.unobserve(anchor); watched.delete(anchor); }
+    }
     for (const anchor of doc.querySelectorAll('a[data-cta-id]:not([data-impression-watched])')) {
       anchor.dataset.impressionWatched = '1';
       observer.observe(anchor);
+      watched.add(anchor);
     }
   };
   attach();
   doc.addEventListener('astro:page-load', attach);
+  doc.addEventListener('tt:affiliate-links-updated', attach);
   return observer;
 }
 

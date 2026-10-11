@@ -5,6 +5,55 @@ import { PRICES } from '../src/data/prices.js';
 const amount = (s: string) => Number(s.replace(/[^0-9]/g, ''));
 const priceIndex = (slug: string) => PRICES.findIndex(p => p.name === DIRECTIONS.find(d => d.slug === slug)?.price?.name);
 
+test('сравнение двух и трёх поездок не обрезает цены и сохраняет удобные денежные ссылки', async ({ page }) => {
+  await page.goto(`/calculator/?r=${priceIndex('kyrgyzstan')}&m=7`);
+  await expect(page.locator('.tc-hero-amount')).toBeVisible();
+  for (const [slug, count] of [['georgia', 2], ['dagestan', 3]] as const) {
+    await page.locator('#addCountrySelect').selectOption(String(priceIndex(slug)));
+    await expect(page.locator('.tc-cmp-card')).toHaveCount(count);
+    for (const width of [360, 402, 768, 1024, 1280]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+      const cards = await page.locator('.tc-cmp-card').evaluateAll(elements => elements.map(element => ({
+        name: element.querySelector('h3')!.textContent,
+        scrollWidth: element.scrollWidth, clientWidth: element.clientWidth,
+      })));
+      for (const card of cards) expect(card.scrollWidth, `${width}px: ${card.name}`).toBeLessThanOrEqual(card.clientWidth + 1);
+      const partners = await page.locator('#calcResult a[data-offer], .tc-cmp-remove').evaluateAll(elements => elements.map(element => {
+        const box = element.getBoundingClientRect();
+        return { offer: (element as HTMLElement).dataset.offer || 'remove', width: box.width, height: box.height };
+      }));
+      for (const partner of partners) {
+        expect(partner.width, `${width}px: ${partner.offer}`).toBeGreaterThanOrEqual(44);
+        expect(partner.height, `${width}px: ${partner.offer}`).toBeGreaterThanOrEqual(44);
+      }
+    }
+    await expect(page.locator('.tc-cmp-badge')).toHaveCount(0);
+    await expect(page.locator('.tc-cmp-card').filter({ hasText: 'Грузия' }).locator('.tc-incomplete')).toContainText('медицинская страховка');
+  }
+});
+
+test('поля каталога и калькулятора читаются без увеличения и имеют зону касания 44px', async ({ page }) => {
+  for (const type of ['catalog', 'calculator']) {
+    await page.goto(type === 'catalog' ? '/countries/?m=7' : `/calculator/?r=${priceIndex('kyrgyzstan')}&m=7`);
+    if (type === 'catalog') await expect(page.locator('#catMonth')).toHaveValue('7');
+    else await expect(page.locator('.tc-hero-amount')).toBeVisible();
+    for (const width of [360, 402, 768]) {
+      await page.setViewportSize({ width, height: 800 });
+      const selector = type === 'catalog' ? '.cfilters input, .cfilters select' : '#tcForm select, #tcForm button';
+      const controls = await page.locator(selector).evaluateAll(elements => elements.map(element => {
+        const box = element.getBoundingClientRect();
+        return { id: element.id, isInput: element.tagName !== 'BUTTON', fontSize: parseFloat(getComputedStyle(element).fontSize), width: box.width, height: box.height };
+      }).filter(element => element.width && element.height));
+      for (const control of controls) {
+        if (control.isInput) expect(control.fontSize, `${type} ${width}px: ${control.id}`).toBeGreaterThanOrEqual(16);
+        expect(control.width, `${type} ${width}px: ${control.id}`).toBeGreaterThanOrEqual(44);
+        expect(control.height, `${type} ${width}px: ${control.id}`).toBeGreaterThanOrEqual(44);
+      }
+    }
+  }
+});
+
 test('текст данных калькулятора не превращается в HTML при выводе результата', async ({ page }) => {
   const payload = '"><img src="/__budget_xss_probe" onerror="window.__budgetXss=1">';
   await page.route('**/calculator/**', async route => {
@@ -43,34 +92,40 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('одна эконом-неделя: главная, каталог и калькулятор показывают одну сумму', async ({ page }) => {
-  await page.goto('/');
-  const offers = await page.locator('.pass .prow').evaluateAll(rows => rows.map(row => ({
+  const month = '7';
+  await page.goto('/?m=' + month);
+  await expect(page.locator('[data-home-month]').first()).toHaveText('июле');
+  const offers = await page.locator('#homeCheap .home-card').evaluateAll(rows => rows.map(row => ({
     slug: (row.getAttribute('href') || row.querySelector('a')!.getAttribute('href')!).split('/')[1],
-    price: Number(row.lastElementChild!.textContent!.replace(/[^0-9]/g, '')),
+    price: Number(row.getAttribute('data-budget')),
   })));
   expect(offers).toHaveLength(6);
-  await page.goto('/countries/');
+  await page.goto(`/countries/?m=${month}`);
   const catalog = await page.locator('.cd').evaluateAll(cards => Object.fromEntries(cards.map(card => [
     (card.getAttribute('href') || card.querySelector('.cd-name')!.getAttribute('href')!).split('/')[1],
     Number(card.getAttribute('data-budget')),
   ])));
   for (const offer of offers) {
     expect(catalog[offer.slug], offer.slug + ': каталог').toBe(offer.price);
-    await page.goto(`/calculator/?r=${priceIndex(offer.slug)}&d=7&l=0&c=rub&t=1&m=0`);
+    await page.goto(`/calculator/?r=${priceIndex(offer.slug)}&d=7&l=0&c=rub&t=1&m=${month}`);
     await expect(page.locator('.tc-hero-amount')).toBeVisible();
     await expect.poll(async () => amount(await page.locator('.tc-hero-amount').innerText()), { message: offer.slug + ': калькулятор', timeout: 5000 }).toBe(offer.price);
   }
 });
 
-test('цена в талоне открывает расчёт, название открывает путеводитель', async ({ page }) => {
-  await page.goto('/');
-  const rows = page.locator('.pass .prow');
+test('цена в фотокарточке открывает расчёт, название открывает путеводитель', async ({ page }) => {
+  await page.goto('/?m=10');
+  const rows = page.locator('#homeCheap .home-card');
   const first = rows.first();
-  const guide = first.locator('a').first();
+  await first.scrollIntoViewIfNeeded();
+  const guide = first.locator('h3 a');
+  await guide.scrollIntoViewIfNeeded();
+  await expect(guide).toBeVisible();
+  await expect(guide).toHaveText(/\S/, { useInnerText: true });
   const slug = (await guide.getAttribute('href'))!.split('/')[1];
   const name = (await guide.innerText()).trim();
-  const price = first.locator('a').last();
-  await expect(first.locator('a')).toHaveCount(2);
+  const price = first.locator('.home-budget');
+  await expect(first.locator('.home-entry')).toBeVisible();
   const href = new URL((await price.getAttribute('href'))!, 'https://traveltribe.ru');
   expect(href.pathname).toBe('/calculator/');
   expect(Object.fromEntries(href.searchParams)).toMatchObject({ r: String(priceIndex(slug)), d: '7', l: '0', c: 'rub', t: '1' });
@@ -80,9 +135,9 @@ test('цена в талоне открывает расчёт, название
   await expect(page.locator('#calcDaysDisplay')).toHaveText('7');
   await expect(page.locator('#travelersDisplay')).toHaveText('1');
   await expect(page.locator('#levelGroup [data-lvl="0"]')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('#monthSelect')).toHaveValue('0');
+  await expect(page.locator('#monthSelect')).toHaveValue('10');
   await page.goBack();
-  await page.locator('.pass .prow').getByRole('link', { name, exact: true }).click();
+  await page.locator('#homeCheap .home-card h3').getByRole('link', { name, exact: true }).click();
   await expect(page).toHaveURL(new RegExp('/' + slug + '/$'));
 });
 
