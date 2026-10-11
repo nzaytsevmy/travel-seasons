@@ -38,8 +38,16 @@ function init() {
   try { saved = JSON.parse(sessionStorage.getItem('tt_home_selection')); } catch { /* storage unavailable */ }
   const hasQuery = ['m', 'max_budget', 'visa', 'vibe'].some(k => new URLSearchParams(location.search).has(k));
   let state = hasQuery ? readSelection(location.search, moscowMonth()) : normalizeSelection(saved || { m: moscowMonth() }, moscowMonth());
+  function updateNavigation() {
+    document.getElementById('homeCatalog').href = catalogHref(state);
+    document.getElementById('homeFreeCatalog').href = catalogHref({ m: state.m, visa: 'free' });
+    document.getElementById('homeCheapCatalog').href = catalogHref({ m: state.m, sort: 'asc' });
+    document.querySelectorAll('[data-home-vibe]').forEach(a => { a.href = catalogHref(state, { vibe: a.dataset.homeVibe }); });
+  }
   async function render(write = false, reuseServerCards = false) {
     state.m ||= moscowMonth();
+    // Navigation must preserve the request while the seasonal card data is loading.
+    updateNavigation();
     const requested = { ...state };
     const error = document.getElementById('homeLoadError');
     if (!reuseServerCards) {
@@ -48,6 +56,7 @@ function init() {
         error.hidden = false;
         error.querySelector('a').href = catalogHref(requested);
         state = normalizeSelection({ m: month });
+        updateNavigation();
         try { sessionStorage.setItem('tt_home_selection', JSON.stringify(state)); sessionStorage.removeItem('tt_home_journey'); } catch { /* storage unavailable */ }
         document.body.dataset.journeySource = 'home_planner';
         return;
@@ -62,10 +71,6 @@ function init() {
     document.getElementById('homeResultCount').textContent = `${formatRecommendationCount(c.recommendations.length)}${state.vibe ? ' под выбранный отдых' : ''} · хороший или пиковый сезон`;
     document.getElementById('homeEmpty').hidden = c.recommendations.length > 0;
     document.querySelectorAll('[data-home-month]').forEach(e => { e.textContent = MONTHS_PREP[state.m]; });
-    document.getElementById('homeCatalog').href = catalogHref(state);
-    document.getElementById('homeFreeCatalog').href = catalogHref({ m: state.m, visa: 'free' });
-    document.getElementById('homeCheapCatalog').href = catalogHref({ m: state.m, sort: 'asc' });
-    document.querySelectorAll('[data-home-vibe]').forEach(a => { a.href = catalogHref(state, { vibe: a.dataset.homeVibe }); });
     document.querySelectorAll('[data-home-calculator]').forEach(a => { a.href = c.recommendations[0]?.calcUrl || `/calculator/?m=${state.m}`; });
     }
     try { sessionStorage.setItem('tt_home_selection', JSON.stringify(state)); sessionStorage.setItem('tt_home_journey', String(Date.now())); } catch { /* storage unavailable */ }
