@@ -246,4 +246,24 @@ const clientData = JSON.stringify({ rows, pools, reserved, month }).replace(/</g
 .journal .sub b{text-decoration:underline 1px rgba(255,255,255,.45);text-underline-offset:.2em}
 .journal .manifest .vi a{display:flex;align-items:center;height:100%}
 @media(max-width:760px){.journal .hero-nav{grid-row:auto}}
+
+/* Lower photo collections render as they approach the viewport; the measured
+   reserve sizes keep the scroll range stable before their first rendering. */
+.journal .journal-section:not(.jr){content-visibility:auto;contain-intrinsic-block-size:auto var(--deferred-height,900px)}
+.journal [aria-labelledby="freeTitle"]{--deferred-height:calc(270px + 35vw)}
+.journal [aria-labelledby="cheapTitle"]{--deferred-height:calc(850px + 30vw)}
+.journal [aria-labelledby="moodTitle"]{--deferred-height:calc(150px + 27vw)}
+.journal [aria-labelledby="storiesTitle"]{--deferred-height:calc(570px + 56vw)}
+@media(min-width:768px) and (max-width:1023px){
+.journal [aria-labelledby="freeTitle"]{--deferred-height:566px}
+.journal [aria-labelledby="cheapTitle"]{--deferred-height:1081px}
+.journal [aria-labelledby="moodTitle"]{--deferred-height:346px}
+.journal [aria-labelledby="storiesTitle"]{--deferred-height:1064px}}
+@media(max-width:767px){
+.journal [aria-labelledby="freeTitle"]{--deferred-height:calc(530px + 100vw)}
+.journal [aria-labelledby="cheapTitle"]{--deferred-height:1720px}
+.journal [aria-labelledby="moodTitle"]{--deferred-height:calc(410px + 50vw)}
+.journal [aria-labelledby="storiesTitle"]{--deferred-height:calc(890px + 212vw)}}
+@media print{.journal .journal-section:not(.jr){content-visibility:visible;contain-intrinsic-block-size:none}}
+
 </style>
