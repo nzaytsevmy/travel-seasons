@@ -37,7 +37,9 @@ interface Props {
   ogImage?: string;
   ogImageAlt?: string;
   ldJson?: object;
+  preloadJournalFonts?: boolean;
   preloadImage?: string;
+  preloadImageMedia?: string;
   preloadImageSrcset?: string;
   preloadImageSizes?: string;
   noindex?: boolean;
@@ -55,6 +57,8 @@ const {
   ogImage,
   ogImageAlt = 'TravelTribe — куда поехать: сезоны, визы и бюджет для 70+ направлений',
   ldJson,
+  preloadJournalFonts = false,
+  preloadImageMedia,
   preloadImage,
   preloadImageSrcset,
   preloadImageSizes = '100vw',
@@ -222,6 +226,10 @@ const finalLd = {
        преложены намеренно. Newsreader/Onest убраны 2026-05-23. JetBrains Mono — в global.css. -->
   <link rel="preload" as="font" type="font/woff2" href={golosCyr} crossorigin="anonymous" />
   <link rel="preload" as="font" type="font/woff2" href={golosLat} crossorigin="anonymous" />
+  {/* The homepage trace uses these six journal subsets before its first paint.
+      Discover the same files from the head instead of a later layout pass. */}
+  {preloadJournalFonts && [ostCyrB, ostLatB, ostCyr, ostLat, ptMonoCyr, ptMonoLat].map(href =>
+    <link rel="preload" as="font" type="font/woff2" href={href} crossorigin="anonymous" />)}
   <style set:html={golosFontFace + journalFontFace}></style>
 
   <script type="application/ld+json" set:html={JSON.stringify(finalLd)} />
@@ -234,7 +242,7 @@ const finalLd = {
       Браузеры с поддержкой imagesrcset (все современные) href игнорируют и
       берут вариант из набора, так что двойной загрузки нет; href — самый
       лёгкий вариант, запас для странного клиента. */}
-  {preloadImageSrcset && <link rel="preload" as="image" href={preloadImageSrcset.split(' ')[0]} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
+  {preloadImageSrcset && <link media={preloadImageMedia} rel="preload" as="image" href={preloadImageSrcset.split(' ')[0]} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
 
   <!-- Аналитика: базовая Яндекс.Метрика (обезличенная статистика + ПФ) и Ahrefs (cookieless)
        грузятся на production-домене для работы/улучшения Сайта (тот же законный интерес, что

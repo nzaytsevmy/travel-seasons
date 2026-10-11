@@ -68,7 +68,7 @@ const ldJson = { '@context': 'https://schema.org', '@graph': [
 ] };
 const clientData = JSON.stringify({ rows, pools, reserved, month }).replace(/</g, '\\u003c');
 ---
-<Layout title={`Куда поехать из России в ${brandYear}: визы, сезоны, цены · TravelTribe`} description={desc} canonical="https://traveltribe.ru/" ldJson={ldJson}>
+<Layout title={`Куда поехать из России в ${brandYear}: визы, сезоны, цены · TravelTribe`} description={desc} canonical="https://traveltribe.ru/" ldJson={ldJson} preloadJournalFonts preloadImageSrcset={heroMobile.srcSet.attribute} preloadImageSizes="max(100vw, min(80svh, 620px))" preloadImageMedia="(max-width:480px) and (min-height:600px)">
 <div class="sw journal">
 <main id="main">
   <section class="manifest" aria-labelledby="homeTitle">
