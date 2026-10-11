@@ -21,7 +21,8 @@ export function isContentOnly(files) {
 
   return files.every((file) =>
     file.startsWith('src/content/') ||
-    file.startsWith('news/') ||
+    /^news\/(?:reviews|selection|snapshots|samples)\//.test(file) ||
+    file === 'news/log.jsonl' ||
     file.startsWith('reviews/') ||
     /^public\/llms[^/]*\.txt$/.test(file) ||
     file.endsWith('.md'),

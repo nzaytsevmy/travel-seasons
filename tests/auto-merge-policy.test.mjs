@@ -30,6 +30,19 @@ test('код или смешанная заявка ждёт полный гей
   assert.ok(required.includes('mobile (8/8)'));
 });
 
+test('настройки ленты требуют полного гейта даже рядом с новостью', () => {
+  for (const files of [
+    ['news/config.json'],
+    ['src/content/news/example.md', 'news/config.json'],
+  ]) {
+    assert.equal(isContentOnly(files), false);
+    const required = requiredChecks(files);
+    assert.equal(required.length, 26);
+    assert.ok(required.includes('visual (4/4)'));
+    assert.ok(required.includes('mobile (8/8)'));
+  }
+});
+
 test('слияние разрешено только когда каждый обязательный check зелёный', () => {
   const required = ['build', 'scan'];
 
@@ -114,7 +127,11 @@ test('ожидание разрешения запуска остаётся HOLD
 //     GitHub из-за paths-ignore не запускал, и заявка висит до таймаута 42 минуты.
 const CONTENT_ONLY_IGNORE = [
   'src/content/**',
-  'news/**',
+  'news/reviews/**',
+  'news/selection/**',
+  'news/snapshots/**',
+  'news/samples/**',
+  'news/log.jsonl',
   'reviews/**',
   'public/llms*.txt',
   '**/*.md',
@@ -123,12 +140,19 @@ const CONTENT_ONLY_IGNORE = [
 const CONTENT_SAMPLES = [
   'src/content/blog/peru.mdx',
   'news/2026-09-07-example.md',
+  'news/reviews/2026-10-11-example.json',
+  'news/selection/2026-10-11.json',
+  'news/snapshots/2026-10-11-example.html',
+  'news/samples/bad/example.txt',
+  'news/log.jsonl',
   'reviews/blog/zimovka-2027.json',
   'public/llms-full.txt',
   'AGENTS.md',
 ];
 
 const CODE_SAMPLES = [
+  'news/config.json',
+  'news/unknown-settings.json',
   'src/components/Header.astro',
   'src/data/countries.json',
   'scripts/pre-push.sh',

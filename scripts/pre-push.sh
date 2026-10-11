@@ -55,7 +55,7 @@ fi
 # scripts/article-review-gate.mjs, в шапке статьи лежит одна строка reviewRef.
 # Артефакт обязателен у каждой новой статьи, поэтому без этой строки любая
 # чисто текстовая публикация уходила в MODE=full: 947 тестов, 20 минут.
-CODE_TOUCHED="$(printf '%s\n' "$CHANGED" | grep -vE '^(src/content/|news/|reviews/|public/llms|measurements/|tests/visual\.spec\.ts-snapshots/[^/]*-linux\.png$|.*\.md$)' | grep -v '^$' || true)"
+CODE_TOUCHED="$(printf '%s\n' "$CHANGED" | grep -vE '^(src/content/|news/(reviews/|selection/|snapshots/|samples/|log\.jsonl$)|reviews/|public/llms|measurements/|tests/visual\.spec\.ts-snapshots/[^/]*-linux\.png$|.*\.md$)' | grep -v '^$' || true)"
 
 if [ -z "$CODE_TOUCHED" ] && [ -n "$CHANGED" ]; then
   MODE="text"
