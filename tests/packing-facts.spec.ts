@@ -80,7 +80,16 @@ test('Все партнёрские кнопки страховой статьи
   expect(await links.count()).toBeGreaterThan(0);
   const labels = await links.allTextContents();
   expect(labels.filter(label => /413/.test(label))).toEqual([]);
-  await expect(page.getByRole('link', { name: 'Собрать полис под свои даты', exact: true })).toBeVisible();
+  // Общий блок подготовки заменяет прежний одиночный переход в конце статьи.
+  const insurance = page.locator('[data-trip-planning] a[data-cta-id*="_cherehapa_"]');
+  await expect(insurance).toHaveCount(1);
+  await expect(insurance).toBeVisible();
+  await expect(insurance).toHaveText(/Сравнить\s+страховки\s+для\s+поездки/);
+  await expect(insurance).toHaveAttribute('rel', 'sponsored noopener');
+  await expect(insurance).toHaveAttribute('href', /^https:\/\/cherehapa\.tpk\.mx\//);
+  const target = new URL((await insurance.getAttribute('href'))!);
+  expect(target.searchParams.get('erid')).toBeTruthy();
+  expect(target.searchParams.get('sub_id')).toBe(await insurance.getAttribute('data-cta-id'));
 });
 
 test('Уточнённый пункт паспорта сохраняет отметку после перезагрузки', async ({ page }) => {

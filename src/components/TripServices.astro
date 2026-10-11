@@ -4,8 +4,8 @@ interface Props { destination?: string; heading?: string; pathname?: string; }
 const { destination, heading='Подготовить поездку', pathname=Astro.url.pathname } = Astro.props;
 const items = tripServices({pathname,destination});
 ---
-<section class="trip-services" data-trip-planning aria-label={heading}>
-  <h2>{heading}</h2>
+<section class="trip-services" data-trip-planning aria-labelledby="trip-services-title">
+  <h2 id="trip-services-title">{heading}</h2>
   <dl>
     {items.map(item => <div class="trip-services-row">
       <dt>{item.offer === 'stay' ? 'Жильё' : item.offer === 'flight' ? 'Перелёт' : 'Страховка'}</dt>
