@@ -232,11 +232,21 @@ const finalLd = {
     (() => {
       const root = document.documentElement;
       root.classList.add('home-photo-pending');
-      const reveal = () => root.classList.remove('home-photo-pending');
-      // Below-fold native lazy images otherwise start before the hero is painted.
-      // Keep their dimensions and SSR sources; release immediately on user scroll.
+      let observer, loaded = false, painted = false;
+      const reveal = () => { root.classList.remove('home-photo-pending'); observer?.disconnect(); };
+      const ready = () => { if (loaded && painted) requestAnimationFrame(reveal); };
+      // Keep SSR sources and dimensions. Release below-fold photos after an
+      // observed first paint, or immediately when the visitor starts scrolling.
       addEventListener('scroll', reveal, { once: true, passive: true });
-      addEventListener('load', () => requestAnimationFrame(() => requestAnimationFrame(reveal)), { once: true });
+      if ('PerformanceObserver' in window && PerformanceObserver.supportedEntryTypes?.includes('paint')) {
+        observer = new PerformanceObserver(entries => {
+          if (entries.getEntries().some(entry => entry.name === 'first-contentful-paint')) { painted = true; ready(); }
+        });
+        observer.observe({ type: 'paint', buffered: true });
+      } else {
+        painted = true;
+      }
+      addEventListener('load', () => { loaded = true; requestAnimationFrame(ready); }, { once: true });
       setTimeout(reveal, 2000); // Restore photos even if an unrelated resource stalls.
     })();
   </script>}

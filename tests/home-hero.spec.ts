@@ -222,3 +222,8 @@ test('фотографии подборок начинают загружать�
   }
   await expect(image).toBeVisible();
 });
+
+test('доступное название ссылки автора включает её видимый текст', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.manifest .me')).toHaveAccessibleName(/Никита.*60.*стран.*цены/s);
+});
