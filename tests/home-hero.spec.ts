@@ -190,3 +190,18 @@ test('8. первый экран сохраняет меню разделов б
     expect(box!.height).toBeGreaterThanOrEqual(44);
   }
 });
+
+test('мобильный первый экран получает отдельный чёткий кроп того же кадра', async ({ page }) => {
+  await page.setViewportSize({ width: 402, height: 800 });
+  await page.goto('/');
+  const image = page.locator('.manifest .hero-ph');
+  await expect(image).toBeVisible();
+  const src = await image.evaluate((e: HTMLImageElement) => e.currentSrc);
+  expect(src).toContain('georgia-mobile');
+  const response = await page.request.get(src);
+  expect(response.ok()).toBe(true);
+  const metadata = await sharp(await response.body()).metadata();
+  expect(metadata.width).toEqual(metadata.height);
+  expect(metadata.height).toBeGreaterThanOrEqual(620);
+  expect((await response.body()).length).toBeLessThan(65000);
+});

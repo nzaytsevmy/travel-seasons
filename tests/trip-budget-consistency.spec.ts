@@ -117,7 +117,9 @@ test('цена в фотокарточке открывает расчёт, на
   await page.goto('/?m=10');
   const rows = page.locator('#homeCheap .home-card');
   const first = rows.first();
+  await first.scrollIntoViewIfNeeded();
   const guide = first.locator('h3 a');
+  await expect(guide).toBeVisible();
   const slug = (await guide.getAttribute('href'))!.split('/')[1];
   const name = (await guide.innerText()).trim();
   const price = first.locator('.home-budget');
