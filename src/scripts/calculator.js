@@ -1,4 +1,6 @@
 import { calculateTripBudget, SEASON_MULT, tripInteger } from '../utils/trip-budget.js';
+import { aviasalesRoute, cherehapaCountry } from '../data/affiliate.js';
+import { destinationStay } from '../utils/destination-stay.js';
 
 // Inline-код может выполниться повторно после перехода Astro. На новой форме
 // нужны обработчики, на уже инициализированной (включая bfcache) — только один набор.
@@ -17,12 +19,6 @@ let compareList = [];
 
 const SEASON_LABEL = { P:'Пик', G:'Хорошо', O:'Норма', B:'Не сезон' };
 const SEASON_CLASS = { P:'peak', G:'good', O:'ok', B:'bad' };
-
-// Aviasales через tpk.mx-обёртку: трекинг кликов (свежий sub-id на клик) + erid + .ru.
-// Прямой ?marker со статичным sub-id давал 0 кликов в TP (проверено 2026-06-04).
-const AVIASALES_TPK = atob('aHR0cHM6Ly9hdmlhc2FsZXMudHBrLm14L0pDU1BsQzE3P2VyaWQ9MlZ0enF4a240TEYmc3ViX2lkPWNhbGN1bGF0b3ImdT0='); // aviasales.tpk.mx: адрес спрятан от роботов, см. scripts/affiliate-shield.mjs
-const CHEREHAPA = atob('aHR0cHM6Ly9jaGVyZWhhcGEudHBrLm14L2ZrTTdzdXplP2VyaWQ9MlZ0enF1WlR3YjUmc3ViX2lkPWNhbGN1bGF0b3ImdT1odHRwcyUzQSUyRiUyRmNoZXJlaGFwYS5ydSUyRnRyYXZlbCUyRg=='); // cherehapa.tpk.mx: адрес спрятан от роботов, см. scripts/affiliate-shield.mjs
-const OSTROVOK = atob('aHR0cHM6Ly9vc3Ryb3Zvay50cGsubXgveHR5VGNVY1k/ZXJpZD0yVnR6cXZFMWN2MyZzdWJfaWQ9Y2FsY3VsYXRvcg=='); // ostrovok.tpk.mx: адрес спрятан от роботов, см. scripts/affiliate-shield.mjs
 
 const CAT_COLORS = { flight: '#1d40ae', hotel: '#15171a', food: '#5c626b', visa: '#a8a294' };
 
@@ -90,19 +86,15 @@ function fmt(value) {
   return Math.round(value).toLocaleString(calcCurrency === 'rub' ? 'ru-RU' : 'en-US') + (calcCurrency === 'rub' ? '\u00a0₽' : '\u00a0$');
 }
 
-function aviasalesUrl(iata, monthNum) {
-  let inner = 'https://www.aviasales.ru/';
-  if (iata) {
-    inner += `?origin_iata=MOW&destination_iata=${iata}`;
-    if (monthNum && monthNum >= 1 && monthNum <= 12) {
-      const now = new Date();
-      let y = now.getFullYear();
-      if ((monthNum - 1) < now.getMonth()) y += 1;
-      inner += `&depart_date=${y}-${String(monthNum).padStart(2,'0')}-15`;
-    }
-  }
-  return AVIASALES_TPK + encodeURIComponent(inner);
+function flightUrl(pi) {
+  return aviasalesRoute('MOW', PRICES[pi].iata, `calc_${priceIdxToSlug[pi]}_flight`, selectedMonth ? selectedMonth - 1 : undefined);
 }
+function partnerAttrs(pi, offer) {
+  const slug = priceIdxToSlug[pi];
+  return `data-destination="${escapeHtml(slug || '')}" data-intent="high" data-placement="calculator_result" data-cta-id="calc_${escapeHtml(slug || 'trip').replace(/-/g, '_')}_${offer}"`;
+}
+function stayUrl(pi) { return destinationStay(priceIdxToSlug[pi], `calc_${priceIdxToSlug[pi]}_stay`).href; }
+function insuranceUrl(pi) { return cherehapaCountry(priceIdxToSlug[pi], `calc_${priceIdxToSlug[pi]}_insurance`); }
 
 function computeForPriceIndex(pi) {
   const result = calculateTripBudget(PRICES[pi], {
@@ -120,7 +112,7 @@ function findBestMonth(pi) {
   let bestIdx = -1, bestMult = 999;
   ratings.forEach((r, i) => {
     const mu = SEASON_MULT[r] || 1;
-    if (mu < bestMult && r !== 'B') { bestMult = mu; bestIdx = i; }
+    if (mu < bestMult && 'PGO'.includes(r)) { bestMult = mu; bestIdx = i; }
   });
   if (bestIdx === -1) ratings.forEach((r, i) => { if (r === 'O' && bestIdx === -1) bestIdx = i; });
   if (bestIdx === -1) bestIdx = 0;
@@ -135,9 +127,9 @@ function escapeHtml(s) {
 function renderSingle(pi) {
   const r = computeForPriceIndex(pi);
   const piIdx = pi;
-  const aviUrl = aviasalesUrl(r.p.iata, selectedMonth > 0 ? selectedMonth : null);
-  const perPerson = r.grand / Math.max(1, r.travelers);
-  const perDay = r.grand / Math.max(1, r.days);
+  const aviUrl = flightUrl(pi);
+  const perPerson = (r.grand ?? r.knownTotal) / Math.max(1, r.travelers);
+  const perDay = (r.grand ?? r.knownTotal) / Math.max(1, r.days);
 
   const categories = [
     { name: 'Перелёт', value: r.flightTotal, color: CAT_COLORS.flight, icon: '' },
@@ -145,17 +137,18 @@ function renderSingle(pi) {
     { name: 'Питание', value: r.foodTotal, color: CAT_COLORS.food, icon: '' },
   ];
   if (r.visa && r.visaTotal > 0) categories.push({ name: 'Виза', value: r.visaTotal, color: CAT_COLORS.visa, icon: '' });
+  if (r.mandatoryTotal > 0) categories.push({ name: 'Обязательные расходы', value: r.mandatoryTotal, color: CAT_COLORS.visa, icon: '' });
 
-  const total = r.grand;
+  const total = r.grand ?? r.knownTotal;
 
   // Best month nudge
   const best = findBestMonth(pi);
   let nudge = '';
   if (best && selectedMonth > 0 && best.monthNum !== selectedMonth) {
     const saving = Math.round((1 - best.mult / r.seasonMult) * 100);
-    if (saving > 5) nudge = `<div class="tc-nudge"><span class="tc-nudge-icon">↘</span> В <strong>${escapeHtml(best.monthName)}</strong> на <strong>${saving}%</strong> дешевле — лучший месяц года</div>`;
+    if (saving > 5) nudge = `<div class="tc-nudge"><span class="tc-nudge-icon">↘</span> В <strong>${escapeHtml(best.monthName)}</strong> на <strong>${saving}%</strong> дешевле по модели перелёта</div>`;
   } else if (best && selectedMonth === 0) {
-    nudge = `<div class="tc-nudge tc-nudge--soft"><span class="tc-nudge-icon"></span> Самый дешёвый месяц — <strong>${escapeHtml(best.monthName)}</strong></div>`;
+    nudge = `<div class="tc-nudge tc-nudge--soft"><span class="tc-nudge-icon"></span> Перелёт по модели дешевле в <strong>${escapeHtml(best.monthName)}</strong></div>`;
   }
 
   // Visa info
@@ -184,7 +177,7 @@ function renderSingle(pi) {
       </header>
 
       <div class="tc-hero-total">
-        <div class="tc-hero-label">Итого на поездку</div>
+        <div class="tc-hero-label">${r.grand === null ? 'Известная часть бюджета' : 'Оценка поездки'}</div>
         <div class="tc-hero-amount">${fmt(total)}</div>
         <div class="tc-hero-sub">
           ${r.travelers > 1 ? `<span>${fmt(perPerson)} на человека</span><span class="tc-sep">·</span>` : ''}
@@ -192,6 +185,7 @@ function renderSingle(pi) {
         </div>
       </div>
 
+      ${r.grand === null ? `<p class="tc-incomplete">Не включено: ${escapeHtml(r.unknownCosts.join(', ').toLocaleLowerCase('ru'))}. Полная стоимость пока неизвестна.</p>` : ''}
       ${nudge}
 
       <div class="tc-cats">
@@ -211,16 +205,16 @@ function renderSingle(pi) {
       </div>
 
       <div class="tc-cta-block">
-        <a href="${aviUrl}" target="_blank" rel="noopener sponsored" class="tc-cta-primary">
+        <a href="${aviUrl}" ${partnerAttrs(pi, 'flight')} target="_blank" rel="noopener sponsored" class="tc-cta-primary">
           <span class="tc-cta-icon"></span>
-          <span class="tc-cta-text">Найти билет на эти даты</span>
+          <span class="tc-cta-text">Посмотреть рейсы на выбранный месяц</span>
         </a>
         <div class="tc-cta-side-row">
-          <a href="${OSTROVOK}" target="_blank" rel="noopener sponsored" class="tc-cta-side">
-            <span></span> Отель под маршрут
+          <a href="${stayUrl(pi)}" ${partnerAttrs(pi, 'stay')} target="_blank" rel="noopener sponsored" class="tc-cta-side">
+            <span></span> Жильё в направлении
           </a>
-          <a href="${CHEREHAPA}" target="_blank" rel="noopener sponsored" class="tc-cta-side">
-            <span></span> Страховка под даты
+          <a href="${insuranceUrl(pi)}" ${partnerAttrs(pi, 'insurance')} target="_blank" rel="noopener sponsored" class="tc-cta-side">
+            <span></span> Страховка для страны
           </a>
         </div>
 
@@ -239,19 +233,19 @@ function renderSingle(pi) {
 function renderTable(piList) {
   const rows = piList.map(pi => computeForPriceIndex(pi));
   const cols = rows.length;
-  const minTotal = Math.min(...rows.map(r => r.grand));
+  const minTotal = rows.every(r => r.grand !== null) ? Math.min(...rows.map(r => r.grand)) : null;
 
   let html = `<div class="tc-compare">
     <div class="tc-compare-head">
       <h2 class="tc-compare-title">Сравнение ${cols} направлений</h2>
       <p class="tc-compare-sub">${rows[0].travelers} ${rows[0].travelers===1?'человек':'чел.'} · ${rows[0].days} ${rows[0].days===1?'день':'дней'}${selectedMonth>0?` · ${['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'][selectedMonth-1]}`:''}</p>
     </div>
-    <div class="tc-compare-grid" style="grid-template-columns: repeat(${cols}, minmax(0, 1fr))">`;
+    <div class="tc-compare-grid" style="--compare-columns:${cols}">`;
 
   rows.forEach((r, idx) => {
     const pi = piList[idx];
-    const isMin = r.grand === minTotal;
-    const aviUrl = aviasalesUrl(r.p.iata, selectedMonth > 0 ? selectedMonth : null);
+    const isMin = minTotal !== null && r.grand === minTotal;
+    const aviUrl = flightUrl(pi);
 
     // Сезон-бейдж: всегда показываем (placeholder для равной высоты)
     const seasonPill = r.seasonLabel
@@ -285,9 +279,9 @@ function renderTable(piList) {
         </div>
 
         <div class="tc-cmp-total">
-          <div class="tc-cmp-total-label">Итого</div>
-          <div class="tc-cmp-total-amount">${fmt(r.grand)}</div>
-          <div class="tc-cmp-total-pp">${r.travelers > 1 ? `${fmt(r.grand / r.travelers)} / чел.` : `${fmt(r.grand / r.days)} / день`}</div>
+          <div class="tc-cmp-total-label">${r.grand === null ? 'Известная часть бюджета' : 'Оценка поездки'}</div>
+          <div class="tc-cmp-total-amount">${fmt(r.grand ?? r.knownTotal)}</div>
+          <div class="tc-cmp-total-pp">${r.travelers > 1 ? `${fmt((r.grand ?? r.knownTotal) / r.travelers)} / чел.` : `${fmt((r.grand ?? r.knownTotal) / r.days)} / день`}</div>
         </div>
 
         <ul class="tc-cmp-list">
@@ -295,20 +289,17 @@ function renderTable(piList) {
           <li><span class="tc-cmp-key">Отель × ${r.days}</span><span class="tc-cmp-val">${fmt(r.hotelTotal)}</span></li>
           <li><span class="tc-cmp-key">Питание</span><span class="tc-cmp-val">${fmt(r.foodTotal)}</span></li>
           <li><span class="tc-cmp-key">Виза</span><span class="tc-cmp-val tc-cmp-visa">${visaLink ? `<a href="${visaLink}" target="_blank" rel="noopener">${visaText}</a>` : visaText}</span></li>
+          ${r.mandatoryTotal > 0 ? `<li><span class="tc-cmp-key">Обязательные расходы</span><span class="tc-cmp-val">${fmt(r.mandatoryTotal)}</span></li>` : ''}
         </ul>
 
-        <a href="${aviUrl}" target="_blank" rel="noopener sponsored" class="tc-cmp-cta">Найти билет</a>
+        <a href="${aviUrl}" ${partnerAttrs(pi, 'flight')} target="_blank" rel="noopener sponsored" class="tc-cmp-cta">Посмотреть рейсы</a>
+        <p class="tc-cmp-partners"><a href="${stayUrl(pi)}" ${partnerAttrs(pi, 'stay')} target="_blank" rel="noopener sponsored">Жильё</a><a href="${insuranceUrl(pi)}" ${partnerAttrs(pi, 'insurance')} target="_blank" rel="noopener sponsored">Страховка</a></p>
+        ${r.grand === null ? `<p class="tc-incomplete">Не включено: ${escapeHtml(r.unknownCosts.join(', ').toLocaleLowerCase('ru'))}.</p>` : ''}
       </div>
     `;
   });
 
   html += `</div>
-    <div class="tc-compare-aux">
-      <span class="tc-aux-label">Партнёры:</span>
-      <a href="${OSTROVOK}" target="_blank" rel="noopener sponsored">Отель под маршрут</a>
-      <a href="${CHEREHAPA}" target="_blank" rel="noopener sponsored">Страховка под даты</a>
-
-    </div>
   </div>
 
   <div class="tc-utility">
@@ -326,6 +317,7 @@ function renderCalc() {
   const isCompare = all.length > 1;
 
   resultEl.innerHTML = isCompare ? renderTable(all) : renderSingle(all[0]);
+  document.dispatchEvent(new CustomEvent('tt:affiliate-links-updated'));
 
   // Add country select state
   if (compareList.length < 2 && all.length < 3) {
@@ -428,8 +420,10 @@ resultEl.addEventListener('click', async e => {
   let text = `Бюджет поездки${monthLine}\n${days} дн · ${travelers} чел · ${lvlNames[calcLevel]}\n─────\n`;
   all.forEach(pi => {
     const r = computeForPriceIndex(pi);
-    text += `${r.p.name}\n  ИТОГО: ${fmt(r.grand)}\n  Перелёт: ${fmt(r.flightTotal)}\n  Отель × ${days}: ${fmt(r.hotelTotal)}\n  Еда × ${days}: ${fmt(r.foodTotal)}\n`;
+    text += `${r.p.name}\n  ${r.grand === null ? 'ИЗВЕСТНАЯ ЧАСТЬ БЮДЖЕТА' : 'ОЦЕНКА ПОЕЗДКИ'}: ${fmt(r.grand ?? r.knownTotal)}\n  Перелёт: ${fmt(r.flightTotal)}\n  Отель × ${days}: ${fmt(r.hotelTotal)}\n  Еда × ${days}: ${fmt(r.foodTotal)}\n`;
+    if (r.unknownCosts.length) text += `  Не включено: ${r.unknownCosts.join(', ')}\n`;
     if (r.visa && r.visaTotal > 0) text += `  Виза: ${fmt(r.visaTotal)} (${r.visa.cost})\n`;
+    if (r.mandatoryTotal > 0) text += `  Обязательные расходы: ${fmt(r.mandatoryTotal)}\n`;
     text += `\n`;
   });
   text += `${window.location.href}\ntraveltribe.ru/calculator/`;

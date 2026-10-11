@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {
   fetchAssignmentCounts,
   fetchReaderCohortCounts,
+  fetchHomeCohort,
   normalizeAssignmentRows,
   normalizeMetrikaClickRows,
   normalizeReaderCohortRows,
@@ -11,6 +12,35 @@ import {
 } from '../scripts/monetization-data-export.mjs';
 
 const dimension = (name) => ({ name });
+
+test('входная когорта главной фильтрует и сессии, и последующие клики по органическому старту /', async () => {
+  const originalFetch = globalThis.fetch;
+  const urls = [];
+  globalThis.fetch = async url => {
+    const u = new URL(url); urls.push(u);
+    const session = u.searchParams.get('metrics').startsWith('ym:s:visits');
+    return new Response(JSON.stringify({ sampled: false, total_rows: session ? 1 : 0,
+      data: session ? [{ dimensions: [dimension('/')], metrics: [50, 0] }] : [] }), { status: 200, headers: { 'content-type': 'application/json' } });
+  };
+  try {
+    const cohort = await fetchHomeCohort({ token: 'test', dateFrom: '2026-08-01', dateTo: '2026-08-31' });
+    assert.equal(cohort.organicSessions, 50);
+    assert.equal(cohort.partnerClicks, 0);
+    for (const u of urls) {
+      assert.match(u.searchParams.get('filters'), /ym:s:lastTrafficSource=='organic'/);
+      assert.match(u.searchParams.get('filters'), /ym:s:startURLPath=='\/'/);
+    }
+  } finally { globalThis.fetch = originalFetch; }
+});
+
+test('путь с главной сохраняется в экспорте и после перехода в гид', () => {
+  const [row] = normalizeMetrikaClickRows([{ dimensions: [
+    dimension('2026-10-10 12:00:00'), dimension('/georgia/'), dimension('Переход к партнёру'),
+    dimension('click_context'), dimension('c00112233445566778899__new__unattributed__home_planner'),
+  ], metrics: [1] }]);
+  assert.equal(row.journey_source, 'home_planner');
+  assert.equal(row.page_path, '/georgia/');
+});
 
 test('экспорт Метрики превращает click_id-параметр в нормализованное событие', () => {
   const rows = normalizeMetrikaClickRows([{

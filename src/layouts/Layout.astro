@@ -121,11 +121,7 @@ const SITE = {
   "description": "Авторский тревел-блог из России: личные отчёты, визы, сезоны, бюджет 70+ направлений мира",
   "inLanguage": "ru-RU",
   "publisher": { "@id": "https://traveltribe.ru/#org" },
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": { "@type": "EntryPoint", "urlTemplate": "https://traveltribe.ru/?s={search_term_string}" },
-    "query-input": "required name=search_term_string",
-  },
+
 };
 // Канонический Person — резолвит author/founder/#person на ВСЕХ страницах
 // (раньше определялся только на /about/ = висячий @id везде остальном).
@@ -396,6 +392,9 @@ const finalLd = {
 
   <script>
     import { initMonetizationTracking } from '../scripts/monetization-tracking.js';
+    import { initTripJourney } from '../scripts/trip-journey.js';
+    initTripJourney();
+    document.addEventListener('astro:page-load', () => initTripJourney());
     initMonetizationTracking();
   </script>
 

@@ -41,7 +41,7 @@
 - [ ] Самопроверка QRG: «забукмаркил бы / порекомендовал? уровень печатного справочника?»
 
 ## D. Schema / структурированные данные
-- [ ] Organization + WebSite + SearchAction (на главной)
+- [ ] Organization + WebSite (на главной); не объявлять неработающий поиск
 - [ ] BreadcrumbList на всех вложенных страницах (3 уровня)
 - [ ] Article/BlogPosting (блог) с datePublished + dateModified
 - [x] ~~FAQPage там где есть FAQ-блок~~ — снято 28.08.2026: Google не показывает блок вопросов с 07.05.2026 и убрал документацию 15.06.2026; видимый блок вопросов на странице остаётся
@@ -77,7 +77,7 @@
 | `[slug]` hub (68) | FAQ≥3, помесячная сетка, price-блок, CTA с erid, перелинковка ✅ готово |
 | `seasons/[country]/[month]` | FAQ, breadcrumb, byline, answer-first по «когда ехать» |
 | `blog/[...slug]` | BlogPosting+datesModified, автор, 3+ внутр. ссылки, FAQ если уместно |
-| `index` | WebSite+SearchAction+Organization schema, не тонкий |
+| `index` | WebSite+Organization schema, не тонкий |
 | `seasons` / `trips/*` / `countries` / `cards` (листинги) | breadcrumb, FAQ-блок про «как выбрать», EEAT-строка |
 | `calculator` (high-intent) | видимый блок вопросов (без FAQPage — снят 28.08.2026), описание методики, EEAT |
 | `about` | глубокий EEAT (есть ✅), Person schema |
@@ -203,3 +203,5 @@ Google отдельно отрицает. Замер 28.08.2026 говорит �
 - Микроистория из опыта внутри совета — приём доверия №1 (Стивз); брать из канала.
 - Навигация по статье (оглавление) на телефоне свёрнута: ответ важнее списка ссылок.
 - Анти-образцы: врезки-продажи в середине чтения, дедлайн-давление, «обновлено» без датирования цифр, хабы на 150 ссылок.
+
+Уточнение 11.10.2026: Google отменил sitelinks search box 21.11.2024; SearchAction не обязателен. Не объявлять неработающий поиск. WebSite для названия сайта сохраняется. Первоисточник: https://developers.google.com/search/blog/2024/10/sitelinks-search-box

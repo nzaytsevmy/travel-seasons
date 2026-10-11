@@ -1,0 +1,23 @@
+---
+import { VISA_LABELS } from '../utils/destination-selection.js';
+import { destinationStay } from '../utils/destination-stay.js';
+const { row, placement, lodging = false, lead = false } = Astro.props;
+const { photo } = row;
+const stay = destinationStay(row.slug, `home_${placement}_${row.slug}`);
+const fmt = value => value.toLocaleString('ru-RU');
+const reason = row.seasonReason;
+---
+<article class="home-card" data-destination={row.slug} data-budget={row.budget ?? ''} data-photo-file={photo.key}>
+  <a class="home-card-photo" href={`/${row.slug}/`} data-home-action="guide" aria-label={`Гид: ${row.nom}`}>
+    <img src={photo.src} srcset={photo.srcset} sizes={lead ? '(max-width:767px) 92vw, (max-width:1023px) 62vw, 760px' : '(max-width:767px) 46vw, (max-width:1023px) 30vw, 360px'} width={photo.width} height={photo.height} alt={photo.alt} loading="lazy" decoding="async" style={`--focal:${photo.position || '50% 50%'};--focal-mobile:${photo.mobilePosition || photo.position || '50% 50%'}`} />
+  </a>
+  <div class="home-card-text">
+    <h3><a href={`/${row.slug}/`} data-home-action="guide">{row.nom}</a></h3>
+    <p class="home-season">{reason}</p>
+    <a class="home-budget pprice" href={row.calcUrl} data-home-action="budget">
+      {row.budget === null ? `≈ ${fmt(row.knownBudget)} ₽ без ${row.budgetExclusions}` : `≈ ${fmt(row.budget)} ₽ / неделя`}
+    </a>
+    <a class="home-entry" href={`/visa/${row.slug}/`}>{VISA_LABELS[row.visa]}</a>
+    {lodging && <a class="home-stay" href={stay.href} data-destination={row.slug} data-intent="high" data-placement={placement} data-cta-id={`home_${row.slug.replace(/-/g, '_')}_stay_${placement}`} rel="noopener sponsored" target="_blank">Посмотреть жильё</a>}
+  </div>
+</article>

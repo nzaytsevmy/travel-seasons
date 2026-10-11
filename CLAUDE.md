@@ -33,6 +33,10 @@ CI выполняется на публичных стандартных ран�
 
 Все применимые пункты ниже обязательны до merge и публикации. Место выполнения для двух рутин определено следующим правилом; остальные изменения сохраняют локальный порядок.
 
+### Homepage release exception (2026-10-11)
+
+User explicitly authorized full browser and performance checks in GitHub Actions for this release. Only branch `feat/home-photojournal-20261010` uses the existing committed-source preflight. All 26 CI checks, browsers, thresholds and three Lighthouse runs remain mandatory before merge. Browser Guard and ordinary development gates remain unchanged. Deployment requires acceptance and separate live verification.
+
 ### Публикационные рутины: полный прогон в CI (решение Никиты 10.10.2026)
 
 По просьбе ускорить оба выпуска ветки `tt-news/*` и `tt-publish/*` выполняют тяжёлую сборку и браузерные проверки в существующем GitHub Actions. Обычный pre-push обязателен: секреты отправляемого HEAD, delivery-контракты, метаданные журнала, совпадение проверяемых файлов с коммитом, независимые оценки новой/переработанной статьи с точным proseHash, гейт изменённых новостей и сроки пересмотра. Проверка не принимает незакоммиченный текст или артефакт вместо HEAD.

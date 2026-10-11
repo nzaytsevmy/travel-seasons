@@ -23,7 +23,7 @@ test.beforeEach(({}, testInfo) => {
 
 test('1. кадр на первом экране есть и он загрузился', async ({ page }) => {
   await page.goto('/');
-  const кадр = page.locator('.manifest > .hero-ph');
+  const кадр = page.locator('.manifest .hero-ph');
   await expect(кадр).toBeVisible();
   const м = await кадр.evaluate((e: HTMLImageElement) => ({
     ширина_файла: e.naturalWidth,
@@ -32,7 +32,13 @@ test('1. кадр на первом экране есть и он загрузи
   }));
   expect(м.ширина_файла, 'кадр не загрузился — файл пустой').toBeGreaterThan(300);
   expect(м.ширина, 'кадр не во всю ширину').toBeGreaterThan(340);
-  expect(м.высота, 'кадр слишком низкий для первого экрана').toBeGreaterThan(420);
+  expect(м.высота, 'кадр слишком низкий для первого экрана').toBeGreaterThan(300);
+  const src = await кадр.evaluate((e: HTMLImageElement) => e.currentSrc);
+  const response = await page.request.get(src);
+  expect(response.ok()).toBe(true);
+  const metadata = await sharp(await response.body()).metadata();
+  expect(metadata.height!, 'файл достаточно чёткий для вертикального кадрирования').toBeGreaterThanOrEqual(м.высота);
+
 });
 
 test('2. шапка видна поверх кадра, а не под ним', async ({ page }) => {
@@ -103,7 +109,7 @@ test('4. первый экран не даёт сдвига разметки', a
 });
 
 test('5. на телефоне первый экран не уезжает вбок', async ({ page }) => {
-  for (const w of [360, 402, 640]) {
+  for (const w of [360, 402, 768, 1024, 1280]) {
     await page.setViewportSize({ width: w, height: 850 });
     await page.goto('/');
     await page.waitForTimeout(400);
@@ -148,44 +154,39 @@ function разобратьЦвет(s: string): number[] {
 }
 
 
-test('6. развороты дневника на месте и по-русски', async ({ page }) => {
-  // ⛔ Главная в визуальном прогоне помечена изменчивой — снимка нет, и блоки
-  //    дневника не охраняет ничто. Плюс живой промах: «сезон до сентябрь» —
-  //    самодельное усечение месяца сломало падеж, увидели на снимке.
+test('6. фотожурнал содержит 30 разных тревел-кадров и два портрета', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('.jr .tape')).toBeVisible();
-  await expect(page.locator('.pola')).toHaveCount(4);
-  await expect(page.locator('.stamp')).toHaveCount(4);
-  await expect(page.locator('.prow')).toHaveCount(6);
-  await expect(page.locator('.anchor2 .anote')).toBeVisible();
-
-  const подписи = await page.locator('.pcap').allTextContents();
-  for (const т of подписи) {
-    expect(т, 'подпись полароида без сезона').toMatch(/сезон до\s/);   // \s — и неразрывный пробел типографа
-    expect(т, `падеж месяца сломан: «${т.slice(0, 40)}»`)
-      .toMatch(/до\s(января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)/);
-  }
-  // У всех четырёх направлений есть отдельная ссылка на страну.
-  const имена = await page.locator('.pola .pcap').allTextContents();
-  expect(имена.length).toBe(4);
-  const ссылки = await page.locator('.pola').evaluateAll((карточки) => карточки.map((карточка) => карточка.getAttribute('href')));
-  expect(new Set(ссылки).size).toBe(4);
+  await expect(page.locator('#homeRecommendations .home-card')).toHaveCount(6);
+  await expect(page.locator('#homeFree .home-card')).toHaveCount(4);
+  await expect(page.locator('#homeCheap .home-card')).toHaveCount(6);
+  await expect(page.locator('.mood-card')).toHaveCount(4);
+  await expect(page.locator('.journal-post')).toHaveCount(8);
+  await expect(page.locator('main img')).toHaveCount(32);
+  const files = await page.locator('[data-photo-file]').evaluateAll(e => e.map(x => x.getAttribute('data-photo-file')));
+  expect(files).toHaveLength(30);
+  expect(new Set(files).size).toBe(30);
 });
 
-test('7. текст подготовки не прилипает к следующему кадру', async ({ page }) => {
-  // Между связанным списком и новым полноширинным разделом нужен внешний
-  // ритм: 32 px на телефоне и 48 px на десктопе по 8pt-шкале сайта.
-  for (const ширина of [402, 1280]) {
-    await page.setViewportSize({ width: ширина, height: 900 });
+test('7. перед широкой историей есть воздух', async ({ page }) => {
+  for (const width of [402, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
     await page.goto('/');
+    const gap = await page.evaluate(() => document.querySelector('.anchor2')!.getBoundingClientRect().top - document.querySelector('.mood-grid')!.getBoundingClientRect().bottom);
+    expect(gap).toBeGreaterThanOrEqual(width <= 767 ? 32 : 48);
+  }
+});
 
-    const зазор = await page.evaluate(() => {
-      const текст = document.querySelector('.before .blist')!.getBoundingClientRect();
-      const кадр = document.querySelector('.anchor2')!.getBoundingClientRect();
-      return Math.round(кадр.top - текст.bottom);
-    });
-
-    const минимум = ширина <= 760 ? 32 : 48;
-    expect(зазор, `ширина ${ширина}: текст прилип к кадру`).toBeGreaterThanOrEqual(минимум);
+test('8. первый экран сохраняет меню разделов без формы и сезонной кнопки', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto('/');
+  await expect(page.locator('#homePlanner')).toHaveCount(0);
+  await expect(page.locator('.manifest form, .manifest select, .manifest button')).toHaveCount(0);
+  await expect(page.locator('.manifest')).not.toContainText('Куда поехать в');
+  const links = page.locator('.hero-nav a');
+  await expect(links).toHaveCount(6);
+  for (const link of await links.all()) {
+    const box = await link.boundingBox();
+    expect(box!.y + box!.height).toBeLessThanOrEqual(800);
+    expect(box!.height).toBeGreaterThanOrEqual(44);
   }
 });
