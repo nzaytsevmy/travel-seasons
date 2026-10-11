@@ -13,7 +13,7 @@ import { видимыйТекст } from './visible-text';
 import { fileURLToPath } from 'node:url';
 import { buildQueue } from '../scripts/revision-queue.mjs';
 import { checkArticleReview, readPostMeta, proseHash, REVIEW_REQUIRED_FROM } from '../scripts/article-review-gate.mjs';
-import { classifyEdit, baseVersion } from '../scripts/edit-kind.mjs';
+import { articleProse, classifyEdit, baseVersion } from '../scripts/edit-kind.mjs';
 import { journalMetadataProblems } from '../scripts/check-journal-metadata.mjs';
 
 // Инвариант-гейт по СБОРКЕ (dist/): ловит КЛАССЫ багов на ЛЮБОМ посте, в т.ч. вне
@@ -1299,7 +1299,7 @@ test('Язык: в тронутой статье нет слов-паразит�
     // Мелкая правка: старый текст не чистим, смотрим только добавленные строки —
     // иначе исправление даты требует вычистить всю статью (медиана 3 паразита).
     const edit = editKind(rel);
-    const prose = isRework(rel) ? src.split('---').slice(2).join('---') : edit.addedLines.join('\n');
+    const prose = isRework(rel) ? articleProse(src) : edit.addedLines.join('\n');
     // ⛔ Цитаты чужих людей из проверки исключаются: их слова — факт, а не наш
     //    текст, и править их ради гейта значит подделывать цитату. Найдено
     //    29.08.2026: «очередь формируется очень быстро» — дословный отзыв
