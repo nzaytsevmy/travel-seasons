@@ -37,6 +37,7 @@ interface Props {
   ogImage?: string;
   ogImageAlt?: string;
   ldJson?: object;
+  deferHomePhotos?: boolean;
   preloadJournalFonts?: boolean;
   preloadImage?: string;
   preloadImageMedia?: string;
@@ -57,6 +58,7 @@ const {
   ogImage,
   ogImageAlt = 'TravelTribe — куда поехать: сезоны, визы и бюджет для 70+ направлений',
   ldJson,
+  deferHomePhotos = false,
   preloadJournalFonts = false,
   preloadImageMedia,
   preloadImage,
@@ -226,6 +228,18 @@ const finalLd = {
        преложены намеренно. Newsreader/Onest убраны 2026-05-23. JetBrains Mono — в global.css. -->
   <link rel="preload" as="font" type="font/woff2" href={golosCyr} crossorigin="anonymous" />
   <link rel="preload" as="font" type="font/woff2" href={golosLat} crossorigin="anonymous" />
+  {deferHomePhotos && <script is:inline>
+    (() => {
+      const root = document.documentElement;
+      root.classList.add('home-photo-pending');
+      const reveal = () => root.classList.remove('home-photo-pending');
+      // Below-fold native lazy images otherwise start before the hero is painted.
+      // Keep their dimensions and SSR sources; release immediately on user scroll.
+      addEventListener('scroll', reveal, { once: true, passive: true });
+      addEventListener('load', () => requestAnimationFrame(() => requestAnimationFrame(reveal)), { once: true });
+      setTimeout(reveal, 2000); // Restore photos even if an unrelated resource stalls.
+    })();
+  </script>}
   {/* The homepage trace uses these six journal subsets before its first paint.
       Discover the same files from the head instead of a later layout pass. */}
   {preloadJournalFonts && [ostCyrB, ostLatB, ostCyr, ostLat, ptMonoCyr, ptMonoLat].map(href =>

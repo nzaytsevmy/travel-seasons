@@ -119,7 +119,9 @@ test('цена в фотокарточке открывает расчёт, на
   const first = rows.first();
   await first.scrollIntoViewIfNeeded();
   const guide = first.locator('h3 a');
+  await guide.scrollIntoViewIfNeeded();
   await expect(guide).toBeVisible();
+  await expect(guide).toHaveText(/\S/, { useInnerText: true });
   const slug = (await guide.getAttribute('href'))!.split('/')[1];
   const name = (await guide.innerText()).trim();
   const price = first.locator('.home-budget');

@@ -205,3 +205,20 @@ test('мобильный первый экран получает отдельн
   expect(metadata.height).toBeGreaterThanOrEqual(620);
   expect((await response.body()).length).toBeLessThan(65000);
 });
+
+test('фотографии подборок начинают загружаться после первого показа страницы', async ({ page }) => {
+  await page.goto('/?m=10');
+  await expect(page.locator('html')).not.toHaveClass(/home-photo-pending/);
+  const image = page.locator('.seasonal-grid img').first();
+  await image.scrollIntoViewIfNeeded();
+  await image.evaluate((e: HTMLImageElement) => e.decode());
+  const timing = await image.evaluate((e: HTMLImageElement) => ({
+    firstPaint: performance.getEntriesByType('paint').find(p => p.name === 'first-contentful-paint')?.startTime,
+    photoStart: performance.getEntriesByName(e.currentSrc).at(-1)?.startTime,
+  }));
+  // Paint Timing is Chromium-only; the WebKit run still proves visible decoded photos.
+  if (timing.firstPaint !== undefined) {
+    expect(timing.photoStart).toBeGreaterThanOrEqual(timing.firstPaint);
+  }
+  await expect(image).toBeVisible();
+});

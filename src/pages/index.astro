@@ -68,7 +68,7 @@ const ldJson = { '@context': 'https://schema.org', '@graph': [
 ] };
 const clientData = JSON.stringify({ rows, pools, reserved, month }).replace(/</g, '\\u003c');
 ---
-<Layout title={`Куда поехать из России в ${brandYear}: визы, сезоны, цены · TravelTribe`} description={desc} canonical="https://traveltribe.ru/" ldJson={ldJson} preloadJournalFonts preloadImageSrcset={heroMobile.srcSet.attribute} preloadImageSizes="max(100vw, min(80svh, 620px))" preloadImageMedia="(max-width:480px) and (min-height:600px)">
+<Layout title={`Куда поехать из России в ${brandYear}: визы, сезоны, цены · TravelTribe`} description={desc} canonical="https://traveltribe.ru/" ldJson={ldJson} deferHomePhotos preloadJournalFonts preloadImageSrcset={heroMobile.srcSet.attribute} preloadImageSizes="max(100vw, min(80svh, 620px))" preloadImageMedia="(max-width:480px) and (min-height:600px)">
 <div class="sw journal">
 <main id="main">
   <section class="manifest" aria-labelledby="homeTitle">
@@ -145,6 +145,7 @@ const clientData = JSON.stringify({ rows, pools, reserved, month }).replace(/</g
 </Layout>
 
 <style is:global>
+html.home-photo-pending .journal .home-card-photo{content-visibility:hidden}
 .sw.journal{--paper:#fbfbfa;--ink:#15171a;--mid:#5c626b;--blue:#1d40ae;background:var(--paper);color:var(--ink);font-family:var(--ff-body,'Golos Text Variable','Golos Text',sans-serif);line-height:1.45}
 .journal *{box-sizing:border-box}.journal .wrap{max-width:1280px;margin-inline:auto;padding-inline:clamp(16px,3.5vw,48px)}
 .journal :is(h1,h2,h3){font-family:var(--ff-head,'Old Standard TT',Georgia,serif);color:var(--ink);font-weight:400;margin:0;line-height:1.1}.journal h2{scroll-margin-top:80px;font-size:clamp(30px,3.6vw,48px)}.journal h3{font-size:clamp(22px,2.1vw,30px)}
