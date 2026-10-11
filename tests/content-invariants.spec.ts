@@ -718,10 +718,14 @@ test('hero-обложка: вес варианта под мобайл не вы
     // минификатор их убрать не может (проверено: 0 из 51 без кавычек).
     const src = html.slice(coverAt).match(/<source[^>]*type=["']?image\/webp["']?[^>]*>/i);
     if (!src) { broken.push({ page: f.replace(DIST, ''), why: 'у post-cover нет <source webp>' }); continue; }
-    // Калибровка NEED_W верна только при sizes=100vw. Сменится sizes — гейт обязан
-    // упасть и потребовать перекалибровки, а не тихо мерить не тот вариант.
-    if (!/sizes=["']?100vw/i.test(src[0])) {
-      broken.push({ page: f.replace(DIST, ''), why: 'sizes у hero не 100vw — перекалибруй NEED_W в этом тесте' }); continue;
+    // Новая обложка ограничена колонкой 675px и уже 100vw на телефоне.
+    // Сохраняем прежний консервативный NEED_W=824: он проверяет не меньший
+    // вариант, чем прежняя мобильная калибровка, и тот же лимит 150 КБ.
+    // Любой другой sizes требует отдельной проверки выбора ресурса браузером.
+    const sizes = src[0].match(/\bsizes=(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
+    const value = sizes?.[1] ?? sizes?.[2] ?? sizes?.[3];
+    if (value !== '100vw' && value !== '(max-width: 720px) calc(100vw - 2.8rem), 675px') {
+      broken.push({ page: f.replace(DIST, ''), why: 'неизвестный sizes у hero — проверь выбор мобильного ресурса' }); continue;
     }
     const ss = src[0].match(/srcset=["']([^"']+)["']/i);
     if (!ss) { broken.push({ page: f.replace(DIST, ''), why: 'у hero-source нет srcset' }); continue; }
