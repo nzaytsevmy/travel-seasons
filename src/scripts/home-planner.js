@@ -4,7 +4,8 @@ import { destinationStay } from '../utils/destination-stay.js';
 
 const initialized = new WeakSet();
 const esc = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const fmt = n => n.toLocaleString('ru-RU');
+const budgetFormat = new Intl.NumberFormat('ru-RU');
+const fmt = n => budgetFormat.format(n);
 function card(row, placement, lodging, lead = false) {
   const p = row.photo;
   const stay = destinationStay(row.slug, `home_${placement}_${row.slug}`);
@@ -19,17 +20,19 @@ function init() {
   const host = document.getElementById('homeData');
   if (!host || initialized.has(host)) return;
   initialized.add(host);
-  const { rows, pools, reserved } = JSON.parse(host.textContent);
+  const { rows, pools, reserved, month } = JSON.parse(host.textContent);
   let saved = null;
   try { saved = JSON.parse(sessionStorage.getItem('tt_home_selection')); } catch { /* storage unavailable */ }
   const hasQuery = ['m', 'max_budget', 'visa', 'vibe'].some(k => new URLSearchParams(location.search).has(k));
   let state = hasQuery ? readSelection(location.search, moscowMonth()) : normalizeSelection(saved || { m: moscowMonth() }, moscowMonth());
-  function render(write = false) {
+  function render(write = false, reuseServerCards = false) {
     state.m ||= moscowMonth();
     const c = allocateHomePhotos(homeCollections(rows, state), pools, reserved, state.m);
+    if (!reuseServerCards) {
     document.getElementById('homeRecommendations').innerHTML = c.recommendations.map((r, i) => card(r, 'recommendation', true, i === 0)).join('');
     document.getElementById('homeFree').innerHTML = c.free.map(r => card(r, 'visa_free', false)).join('');
     document.getElementById('homeCheap').innerHTML = c.cheap.map(r => card(r, 'budget', true)).join('');
+    }
     document.getElementById('homeResultCount').textContent = `${formatRecommendationCount(c.recommendations.length)}${state.vibe ? ' под выбранный отдых' : ''} · хороший или пиковый сезон`;
     document.getElementById('homeEmpty').hidden = c.recommendations.length > 0;
     document.querySelectorAll('[data-home-month]').forEach(e => { e.textContent = MONTHS_PREP[state.m]; });
@@ -58,7 +61,8 @@ function init() {
     if (typeof window.ym === 'function') window.ym(95832375, 'reachGoal', goal, { destination, month: state.m, journey_source: 'home_planner' });
   });
   window.addEventListener('popstate', () => { if (!host.isConnected) return; state = readSelection(location.search, moscowMonth()); render(); });
-  render();
+  // Preserve the already-rendered cards when the visitor has no different selection.
+  render(false, selectionParams(state).toString() === selectionParams({ m: month }).toString());
 }
 init();
 document.addEventListener('astro:page-load', init);

@@ -224,3 +224,17 @@ test('неизвестный въезд не превращает стоимос
   await expect(page.locator('.tc-cmp-card')).toHaveCount(2);
   await expect(page.locator('.tc-cmp-badge')).toHaveCount(0);
 });
+
+ test('default hydration preserves server photo cards instead of rebuilding them', async ({ page }) => {
+  await page.addInitScript(() => {
+    (window as any).homeCardRemovals = 0;
+    new MutationObserver(records => {
+      for (const record of records) for (const removed of record.removedNodes)
+        if (removed instanceof Element && removed.matches('.home-card')) (window as any).homeCardRemovals++;
+    }).observe(document, { childList: true, subtree: true });
+  });
+  await page.goto('/');
+  await expect(page.locator('body')).toHaveAttribute('data-journey-source', 'home_planner');
+  expect(await page.evaluate(() => (window as any).homeCardRemovals)).toBe(0);
+  await expect(page.locator('#homeRecommendations .home-card')).toHaveCount(6);
+});

@@ -92,8 +92,9 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('одна эконом-неделя: главная, каталог и калькулятор показывают одну сумму', async ({ page }) => {
-  await page.goto('/');
-  const month = await page.locator('#homeMonth').inputValue();
+  const month = '7';
+  await page.goto('/?m=' + month);
+  await expect(page.locator('[data-home-month]').first()).toHaveText('июле');
   const offers = await page.locator('#homeCheap .home-card').evaluateAll(rows => rows.map(row => ({
     slug: (row.getAttribute('href') || row.querySelector('a')!.getAttribute('href')!).split('/')[1],
     price: Number(row.getAttribute('data-budget')),
@@ -113,7 +114,7 @@ test('одна эконом-неделя: главная, каталог и ка
 });
 
 test('цена в фотокарточке открывает расчёт, название открывает путеводитель', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/?m=10');
   const rows = page.locator('#homeCheap .home-card');
   const first = rows.first();
   const guide = first.locator('h3 a');
@@ -130,9 +131,9 @@ test('цена в фотокарточке открывает расчёт, на
   await expect(page.locator('#calcDaysDisplay')).toHaveText('7');
   await expect(page.locator('#travelersDisplay')).toHaveText('1');
   await expect(page.locator('#levelGroup [data-lvl="0"]')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('#monthSelect')).toHaveValue('0');
+  await expect(page.locator('#monthSelect')).toHaveValue('10');
   await page.goBack();
-  await page.locator('.pass .prow').getByRole('link', { name, exact: true }).click();
+  await page.locator('#homeCheap .home-card h3').getByRole('link', { name, exact: true }).click();
   await expect(page).toHaveURL(new RegExp('/' + slug + '/$'));
 });
 
