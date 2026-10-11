@@ -131,8 +131,29 @@ test('на первом экране остаются шесть читаемы�
   }
 });
 
+test('ссылки сохраняют условия до загрузки сезонных карточек', async ({ page }) => {
+  let release!: () => void;
+  const pending = new Promise<void>(resolve => { release = resolve; });
+  await page.route('**/home-planner-data-*.json', async route => {
+    await pending;
+    await route.continue();
+  });
+  try {
+    await page.goto('/?m=7&max_budget=100000&visa=free_evisa');
+    // The requested month must be available even while the cards still show SSR data.
+    await expect(page.locator('#homeCatalog')).toHaveAttribute('href', '/countries/?m=7&max_budget=100000&visa=free_evisa');
+    await expect(page.locator('[data-home-vibe="nature"]')).toHaveAttribute('href', '/countries/?m=7&max_budget=100000&visa=free_evisa&vibe=nature');
+    await expect(page.locator('#homeFreeCatalog')).toHaveAttribute('href', '/countries/?m=7&visa=free');
+    await expect(page.locator('#homeCheapCatalog')).toHaveAttribute('href', '/countries/?m=7&sort=asc');
+  } finally {
+    release();
+  }
+  await expect(page.locator('[data-home-month]').first()).toHaveText('июле');
+});
+
 test('условия из ссылки обновляют подборки, жильё и сохраняются при возврате', async ({ page }) => {
   await page.goto('/?m=7&max_budget=100000&visa=free_evisa');
+  await expect(page.locator('[data-home-month]').first()).toHaveText('июле');
   await expect(page.locator('#homePlanner')).toHaveCount(0);
   const count = await page.locator('#homeRecommendations .home-card').count();
   await expect(page.locator('#homeResultCount')).toContainText(String(count));
