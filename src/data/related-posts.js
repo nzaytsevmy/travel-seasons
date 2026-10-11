@@ -5,6 +5,9 @@
 // Тот же приём, что для affiliate.js (трекинг-плумбинг, не датированная фактура).
 
 export const RELATED_POSTS = {
+  'spain': [
+    { slug: 'madrid-gde-ostanovitsya', title: 'Где остановиться в Мадриде: какой район выбрать', kind: 'guide' },
+  ],
   'hong-kong': [
     { slug: 'chto-posmotret-v-gonkonge', title: 'Что посмотреть в Гонконге за 3 дня: бухта, Пик и Лантау', kind: 'guide' },
   ],

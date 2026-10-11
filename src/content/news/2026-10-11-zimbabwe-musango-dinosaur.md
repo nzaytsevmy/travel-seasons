@@ -19,7 +19,7 @@ imageCredit: "Suesen"
 imageLicense: "CC BY-SA 3.0"
 imageLicenseUrl: "https://creativecommons.org/licenses/by-sa/3.0"
 imageSource: "https://commons.wikimedia.org/w/index.php?curid=30948866"
-imageTitle: "Kariba, Zimbabwe 04.JPG. Архивный иллюстративный кадр, 2014-01-07 08:06:04."
+imageTitle: "Озеро Кариба в Зимбабве, 2014 год. Архивный вид места; на снимке нет находки динозавра."
 imageChanges: "Исходное название: Kariba, Zimbabwe 04.JPG. Подготовлена уменьшенная JPEG-копия."
 ---
 

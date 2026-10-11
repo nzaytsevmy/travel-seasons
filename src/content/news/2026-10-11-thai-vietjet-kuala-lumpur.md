@@ -22,7 +22,7 @@ imageCredit: "David McKelvey from Brisbane, Australia"
 imageLicense: "CC BY 2.0"
 imageLicenseUrl: "https://creativecommons.org/licenses/by/2.0"
 imageSource: "https://commons.wikimedia.org/w/index.php?curid=105220580"
-imageTitle: "Concourse G, Suvarnabhumi Airport Terminal, Bangkok (7081072409).jpg. Архивный иллюстративный кадр, 2012-03-13 16:34."
+imageTitle: "Аэропорт Суварнабхуми в Бангкоке, 2012 год. Архивное фото, не первый рейс Thai Vietjet."
 imageChanges: "Исходное название: Concourse G, Suvarnabhumi Airport Terminal, Bangkok (7081072409).jpg. Подготовлена уменьшенная JPEG-копия."
 ---
 
