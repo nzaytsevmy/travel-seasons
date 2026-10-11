@@ -2,267 +2,240 @@
   "schemaVersion": 1,
   "slug": "2026-09-12-kilauea-lava-episode-55",
   "score": 4,
-  "reviewer": "codex-independent-news-review-20261009",
-  "checkedAt": "2026-10-09T06:31:00.476Z",
-  "reviewedAt": "2026-10-09T06:31:00.476Z",
-  "sha256": "ed9f59182481e8d73440da4bde4127141b0f006f66ac3a0e7c244c0f4aa8d3d5",
-  "sha256Scope": "full current Markdown file bytes after source replacement and additional HVO source; prose unchanged",
-  "contentHash": "cfec35dc4ef4d904108e0b6ae028b650f6a03c42713ae174a654076ac6550c48",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "proseHash": "cfec35dc4ef4d904108e0b6ae028b650f6a03c42713ae174a654076ac6550c48",
+  "reviewer": "codex-independent-news-review-20261011",
+  "reviewedAt": "2026-10-11T04:48:43.947Z",
+  "checkedAt": "2026-10-11T04:48:43.947Z",
+  "sha256": "ca964d8a5dafd788f992940453d54b6a5b2dc4626c39ef19b068a569d04ca56f",
+  "sha256Scope": "full Markdown file bytes after reviewer score synchronization; author prose not changed",
+  "contentHash": "b27bc4319194353a6d504bad81a132afe5581925b1733fd7d0c46413cb412820",
+  "proseHash": "b27bc4319194353a6d504bad81a132afe5581925b1733fd7d0c46413cb412820",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body.trim(); score excluded",
   "proseHashScope": "same as contentHash",
-  "rationale": "Меняется безопасный подход к вулкану, уровень 4 для нишевого направления. Новые закрытия Halemaʻumaʻu и части Byron Ledge отделены от неподтверждённого начала 55-го эпизода. Сверены 1,3 мили/около 2,1 км и характер неглубокой интрузии; старый прогноз фонтанирования не выдан за наблюдаемое событие.",
+  "rationale": "4/5: важное сопровождение развивающегося вулканического сюжета для нишевого направления. Уточнённое состояние с minor spatter не объявлено 55-м эпизодом; опасные прогнозы и снятие закрытий не выдуманы. Прежний URL и исходные date/added сохранены.",
   "blockingIssues": [],
   "risks": [
-    "Извержение и доступ к тропам могут измениться быстрее reviewOn; архивный лавовый кадр не показывает текущую активность.",
-    "Редакционная готовность не подтверждает сборку, браузерный рендер, CI, публикацию, SSR/фид или live QA; эти гейты остаются у автора выпуска.",
-    "HANS /volcano/hi3 — динамическая последняя сводка; review фиксирует конкретный bulletin8Oct08:25HST и его байты на9Oct.",
-    "Прежние pre-push FAIL не стали PASS от замены URL. Полный нормальный hook/CI, merge/deploy/live этим reviewer не запускались.",
-    "Оценка4 и прежние contentHash/proseHash сохранены; фото, другие16заметок и общий отчёт не перерецензировались."
+    "Активность меняется быстро; текущая сводка — 10 октября 08:45 HST, не гарантированное состояние после этого времени.",
+    "Закрытия подтверждены новым чтением релиза 7 октября; дата в sources всё ещё честно содержит прежнюю авторскую проверку 9 октября.",
+    "Независимая редакционная проверка не подтверждает CI, сборку, публикацию или измеренный трафик. Все обязательные гейты финальной версии остаются у автора."
   ],
-  "reviewScope": "Свежий независимый Codex reviewer не писал заметки. Прочитаны весь title/TLDR/body и конечный JPEG всех 17; после адресных исправлений перечитаны изменённые части и смысловые зависимости. Это редакторское ревью, не reader-test. MD, Git, CI и публикация этим reviewer не менялись.",
+  "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
+  "releaseReady": false,
+  "releaseBlockingIssues": [
+    "Полный обязательный CI финального HEAD ещё не подтверждён.",
+    "402/1280, SSR/SEO, exact deploy/live и публичная атрибуция новой версии ожидают штатный выпуск."
+  ],
+  "reviewScope": "Reviewer не писал эти новости. Независимо прочитаны title/TLDR/body, актуальные AGENTS/CLAUDE/NEWS-SELECTION/RUBRIC/travel-article и QUALITY-2026. Проверены первичные тексты, механические поля, внутренние HTTP-адреса, фото/лицензии. Текст автора не изменён; reviewer меняет только score и артефакты. Тяжёлые сборки/браузеры и публикация не запускались.",
   "evidence": {
     "primarySource": {
-      "url": "https://volcanoes.usgs.gov/hans-public/volcano/hi3",
-      "checkedAt": "2026-10-09T06:31:00.476Z",
-      "method": "Первоначальное полное независимое редакторское ревью сохранено. Адресно9Oct отдельно прочитаны полный Daily Update8Oct на официальном HANS и Status Report7Oct; перечитан неизменённый NPS closure. Фактический конечный набор4источников проверен функциями реального gate.",
+      "urls": [
+        "https://www.nps.gov/havo/learn/news/20261007-nr-trail-closures.htm",
+        "https://volcanoes.usgs.gov/hans-public/volcano/hi3",
+        "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-10-08T01:00:28+00:00",
+        "https://www.nps.gov/havo/planyourvisit/eruption-viewing.htm"
+      ],
       "confirmed": [
-        "USGS 8 октября: небольшое разбрызгивание и интрузивная активность не подтверждают начало 55-го эпизода фонтанов.",
-        "NPS 7 октября: закрываются Halemaʻumaʻu и часть Byron Ledge; совокупный участок 1,3 мили, около 2,1 км.",
-        "Дополнительное сообщение HVO об интрузии у 2018 fractures: в пределах 1000 футов, около 300 м, от поверхности; прежняя схема прогноза не действует."
+        "USGS daily update 10 октября 08:45 HST: minor spatter overnight и several small overflows; давление высокое.",
+        "Эпизод 54 был 25 августа; нерегулярная деформация не позволяет прежнее моделирование следующего фонтанирования. Варианты развития не равны началу эпизода 55.",
+        "NPS релиз 7 октября, независимо прочитанный 11 октября: Halemaʻumaʻu и часть Byron Ledge, всего 1,3 мили; Keanakākoʻi закрыты."
       ],
       "sourceArtifacts": [
         {
-          "path": ".run/sources-2026-10-09/2026-09-12-kilauea-lava-episode-55.json",
-          "sha256": "a6908bc666569209b4a7a82b12ad78f0034af5e99d6d804c7eb0305fd7c0225e",
-          "capturedAt": "2026-10-09T04:26:20.078Z",
-          "capturedBy": null,
-          "completePageClaimed": false,
-          "scope": "Исторический capture9Oct общего USGS landing, включавший Daily Update и Status Report; прежний landing URL заменён и не выдан за доступный источник."
-        },
-        {
-          "path": ".run/sources-2026-10-09/kilauea-closures.json",
-          "sha256": "52289d5bfc42decbc1b6f2c167695855debc9a5da25b7a9dc151c10f79351b18",
-          "capturedAt": "2026-10-09T04:33:55.782Z",
-          "capturedBy": null,
-          "completePageClaimed": false
-        },
-        {
-          "path": ".run/usgs-hans-2026-10-09.html",
-          "sha256": "9ed6753c53a78e06631c8d051b6d0b4f267b3fac68c154d95937838e4fd71b8c",
-          "capturedAt": "2026-10-09T06:22:44.797Z",
-          "completePageClaimed": true,
-          "scope": "Сохранённые полные байты официальной страницы HANS"
-        },
-        {
-          "path": ".run/usgs-hans-2026-10-09.json",
-          "sha256": "050859169c1d92e0946c192eaaa34eb38203afd5d8ff79379d2d4c0fba81c68f",
-          "capturedAt": "2026-10-09T06:22:44.797Z",
-          "completePageClaimed": true,
-          "scope": "HTTP manifest и извлечённый текст HANS"
+          "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/sources/kilauea.txt",
+          "sha256": "693a7d0e4d1d74ec01631a0b480bce171ff3c339641a3a1e1323223b9a62b2d6"
         }
       ],
-      "independentlyVerifiedWebSources": [
-        "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-10-08T01:00:28+00:00",
-        "https://volcanoes.usgs.gov/hans-public/volcano/hi3"
-      ],
-      "currentSources": [
-        {
-          "name": "NPS — закрытие Halemaʻumaʻu и части Byron Ledge, 07.10.2026; прочитано 09.10.2026",
-          "url": "https://www.nps.gov/havo/learn/news/20261007-nr-trail-closures.htm"
-        },
-        {
-          "name": "USGS HANS — сообщение 08.10.2026, 08:25 HST; проверено 09.10.2026; начало нового эпизода фонтанов не подтверждено",
-          "url": "https://volcanoes.usgs.gov/hans-public/volcano/hi3"
-        },
-        {
-          "name": "USGS HVO — внедрение магмы и глубина около 300 м, 07.10.2026, 15:13 HST; прочитано 09.10.2026",
-          "url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-10-08T01:00:28+00:00"
-        },
-        {
-          "name": "NPS — доступ к смотровым, парковки и закрытая зона; проверено 09.10.2026",
-          "url": "https://www.nps.gov/havo/planyourvisit/eruption-viewing.htm"
-        }
-      ]
+      "independentObservations": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/review-evidence/independent-source-observations.json",
+      "method": "Независимый Web и сохранённый текст источника от 11 октября."
     },
     "photo": {
-      "viewedByThisReviewer": true,
-      "path": "src/content/news/_images/2026-09-12-kilauea-lava-episode-55.jpg",
+      "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/src/content/news/_images/2026-09-12-kilauea-lava-episode-55.jpg",
       "sha256": "c11653d481acf7a57ef5507facb67b5e7bb33734ca35017a6c5ac2dda837cbf1",
-      "finding": "Финальный JPEG показывает лавовое озеро 2017 года; подпись прямо называет архив, а не эпизод 55.",
-      "scope": "Сам финальный локальный JPEG просмотрен глазами, а не старый контактный лист.",
+      "viewedByThisReviewer": true,
+      "viewMethod": "Отдельно просмотрен конечный локальный JPEG.",
+      "finding": "Финальный локальный JPEG отдельно просмотрен: лавовое озеро 13 июня 2017, Ivtorov / CC BY-SA 4.0, не эпизод 55. Commons API независимо подтверждён 11 октября.",
+      "source": "https://commons.wikimedia.org/w/index.php?curid=63394488",
       "credit": "Ivtorov",
       "license": "CC BY-SA",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "source": "https://commons.wikimedia.org/w/index.php?curid=63394488",
-      "title": "Лавовое озеро Халемаумау, 13 июня 2017 года. Архивный снимок, не 55-го эпизода 2026 года.",
-      "alt": "Оранжевое зарево лавы и клубы пара в кратере Халемаумау на Килауэа в сумерках, вокруг чёрное застывшее поле",
-      "commonsMetadataRechecked": false,
-      "commonsMetadataMethod": "Повторное открытие Commons для прежнего кадра не выполнено; проверены конечная картинка и сохранённые metadata, не заявлена новая перепроверка лицензии.",
-      "commonsMetadataArtifacts": [],
-      "publicAttributionPrepared": "Настоящая publicPhotoCredits([],17 notes) возвращает 15 CC-записей, все с creator/source/licenseUrl; два Public domain законно исключены. Публичный /legal/photos/ после сборки ещё не проверен."
+      "provenanceArtifact": ".run/batch-2026-10-11/review-evidence/revised-photo-metadata.json",
+      "publicAttributionPrepared": true,
+      "publicAttributionRenderedForThisRelease": false
     },
     "internalLinks": {
-      "method": "Собственные свежие HTTP GET reviewer 9 октября, конечный адрес и title ответа; anchor по смыслу сопоставлен с целевой страницей. Ответ 200 не выдан за браузерную проверку.",
+      "method": "Свежий независимый HTTP GET 11 октября; title, H1, статус и hash; не считается live-проверкой новой заметки.",
       "results": [
         {
+          "anchor": "раздел о США",
           "path": "/usa/",
-          "status": 200,
-          "url": "https://traveltribe.ru/usa/",
-          "checkedAt": "2026-10-09T05:35:02.376Z",
-          "title": "США 2026 для россиян: когда ехать, цены, маршрут",
-          "bodySha256": "852fa746bf7c1e8628c0434dcfa3d0172654df25d7c48d85fe4055e2af703ed6"
+          "verification": {
+            "path": "/usa/",
+            "url": "https://traveltribe.ru/usa/",
+            "status": 200,
+            "checkedAt": "2026-10-11T04:43:11.035Z",
+            "sha256": "78c1d625f2626e0eea7a11e8aa05b3d7f6e653f2557c3fcc86d646010f84bd91",
+            "title": " США 2026 для россиян: когда ехать, цены, маршрут ",
+            "h1": " США 2026 ",
+            "chars": 205078,
+            "relevantContext": " Главная Страны США США 2026 США — это десяток разных стран в одной: Нью-Йорк, национальные парки Запада, Калифорния, Майами. Виза россиянам нужна заранее Лучшие месяцы апр–⁠июн, сен–⁠окт Бюджет в день от $250 Перелёт из Москвы от $769 Неделя на одного от $1644 Билеты в США от $769 Никита Зайцев , автор traveltribe.ru. Был здесь сам. Обзор Когда ехать Виза Что взять На этой странице 11 разделов Зачем ехать в США Что посмотреть в США Когда ехать в США: погода по месяцам Маршрут на 7–⁠10 дней Как добраться в США Где остановиться Сколько стоит поездка в США Въезд, деньги и связь Что нужно знать на месте Что взять в США FAQ: что чаще спрашивают про США Зачем ехать в США США — это десяток разных ",
+            "mentions": [
+              "Йосемити",
+              "Йосемити",
+              "Йосемити",
+              "Йосемити",
+              "Йосемити",
+              "Йосемити",
+              "Йосемити"
+            ]
+          }
         }
       ]
     },
     "editorialCriteria": {
-      "changesPlans": true,
-      "surprisingNature": false,
-      "concreteAndVerifiable": true,
-      "lastsLongerThanWeek": true,
-      "editorialRubric": "nature",
-      "backendTopic": "nature"
+      "rubric": "access/safety",
+      "readerTask": "Отделить небольшие выбросы лавы от нового фонтанирования и не строить поездку на утратившем силу прогнозе.",
+      "addedValue": "Соединены наблюдение USGS, предел прогнозирования и ограничения NPS; камера не названа пропуском на закрытую территорию.",
+      "demand": "Подтверждённого измеренного спроса нет; прогноз роли не выдан за трафик."
     },
-    "sourceFollowup": {
-      "result": "PASS",
-      "reviewer": "codex-independent-news-review-20261009",
-      "reviewedAt": "2026-10-09T06:31:00.476Z",
-      "checkedAt": "2026-10-09T06:31:00.476Z",
-      "scope": "Адресное независимое ревью замены источника Килауэа; не повторный обзор17 и не reader-test.",
-      "initialReviewedAt": "2026-10-09T05:50:45.306Z",
-      "oldSourceUrl": "https://www.usgs.gov/volcanoes/kilauea/volcano-updates",
-      "oldSourceStatus": "HTTP504, затем AbortError в нормальном pre-push автора; не повторялись этим reviewer и остаются FAIL.",
-      "replacementSourceUrl": "https://volcanoes.usgs.gov/hans-public/volcano/hi3",
-      "additionalRequiredSourceUrl": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-10-08T01:00:28+00:00",
-      "finalSources": [
+    "quality14": {
+      "scores": [
+        10,
+        10,
+        5,
+        10,
+        10,
+        10,
+        10,
+        10,
+        5,
+        10,
+        5,
+        5,
+        5,
+        0
+      ],
+      "criteria": [
         {
-          "name": "NPS — закрытие Halemaʻumaʻu и части Byron Ledge, 07.10.2026; прочитано 09.10.2026",
-          "url": "https://www.nps.gov/havo/learn/news/20261007-nr-trail-closures.htm"
+          "criterion": 1,
+          "name": "Задача читателя",
+          "score": 10,
+          "evidence": "Отделить небольшие выбросы лавы от нового фонтанирования и не строить поездку на утратившем силу прогнозе."
         },
         {
-          "name": "USGS HANS — сообщение 08.10.2026, 08:25 HST; проверено 09.10.2026; начало нового эпизода фонтанов не подтверждено",
-          "url": "https://volcanoes.usgs.gov/hans-public/volcano/hi3"
+          "criterion": 2,
+          "name": "Обоснование темы",
+          "score": 10,
+          "evidence": "Редакционная рубрика access/safety; источник и аудитория зафиксированы в news-candidates.json. Спрос/трафик не заявлены измеренными."
         },
         {
-          "name": "USGS HVO — внедрение магмы и глубина около 300 м, 07.10.2026, 15:13 HST; прочитано 09.10.2026",
-          "url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-10-08T01:00:28+00:00"
+          "criterion": 3,
+          "name": "Место в проекте",
+          "score": 5,
+          "evidence": "Точный URL выбран; поиск по архиву не выявил повторного нового события, три ревизии остаются на прежних URL. Пробел: контекстные входящие связи новой сборки не проверены."
         },
         {
-          "name": "NPS — доступ к смотровым, парковки и закрытая зона; проверено 09.10.2026",
-          "url": "https://www.nps.gov/havo/planyourvisit/eruption-viewing.htm"
+          "criterion": 4,
+          "name": "Полнота и прямой ответ",
+          "score": 10,
+          "evidence": "Капсула 48 слов и тело 180 слов прочитаны; в начале прямой ответ, ограничения есть."
+        },
+        {
+          "criterion": 5,
+          "name": "Собственный вклад",
+          "score": 10,
+          "evidence": "Соединены наблюдение USGS, предел прогнозирования и ограничения NPS; камера не названа пропуском на закрытую территорию."
+        },
+        {
+          "criterion": 6,
+          "name": "Факты и источники",
+          "score": 10,
+          "evidence": "USGS daily update 10 октября 08:45 HST: minor spatter overnight и several small overflows; давление высокое. Эпизод 54 был 25 августа; нерегулярная деформация не позволяет прежнее моделирование следующего фонтанирования. Варианты развития не равны началу эпизода 55. NPS релиз 7 октября, независимо прочитанный 11 октября: Halemaʻumaʻu и часть Byron Ledge, всего 1,3 мили; Keanakākoʻi закрыты."
+        },
+        {
+          "criterion": 7,
+          "name": "Числа и примеры",
+          "score": 10,
+          "evidence": "Все видимые числовые условия сверены по источникам; даты события и публикации различены. Исходные date=11 сентября и added=12 сентября сохранены. checked 11 октября отражает новую сводку; reviewOn 12 октября."
+        },
+        {
+          "criterion": 8,
+          "name": "Исключения и применимость",
+          "score": 10,
+          "evidence": "Тело и подпись сохраняют применимость/неизвестное; Активность меняется быстро; текущая сводка — 10 октября 08:45 HST, не гарантированное состояние после этого времени."
+        },
+        {
+          "criterion": 9,
+          "name": "Авторство и доверие",
+          "score": 5,
+          "evidence": "authoredBy=Codex (root), reviewer=codex-independent-news-review-20261011: разные реальные участники Codex. Пробел: публичная подпись/профиль и атрибуция в итоговом рендере не просмотрены. Читательского теста нет."
+        },
+        {
+          "criterion": 10,
+          "name": "Редактура и естественный язык",
+          "score": 10,
+          "evidence": "Вся проза прочитана в фактическом и смысловом проходе; запрещённых отдельных слов, служебных меток и выдуманного личного опыта не найдено. Композиция следует одному факту."
+        },
+        {
+          "criterion": 11,
+          "name": "SEO-обещание и метаданные",
+          "score": 5,
+          "evidence": "clipTitle: Килауэа: начало 55-го эпизода пока не подтверждено. Смысл сохранён; Исходные date=11 сентября и added=12 сентября сохранены. checked 11 октября отражает новую сводку; reviewOn 12 октября. Пробел: canonical/OG/SSR финальной сборки ещё не проверены."
+        },
+        {
+          "criterion": 12,
+          "name": "Ссылки и навигация",
+          "score": 5,
+          "evidence": "Внутренняя ссылка /usa/ — свежий HTTP 200 и соответствующий анкору материал. Пробел: входящие тематические связи новой версии не подтверждены."
+        },
+        {
+          "criterion": 13,
+          "name": "Оформление и доступность",
+          "score": 5,
+          "evidence": "Финальный локальный JPEG отдельно просмотрен: лавовое озеро 13 июня 2017, Ivtorov / CC BY-SA 4.0, не эпизод 55. Commons API независимо подтверждён 11 октября. Пробел: рендер этой версии на 402/1280 и применимая доступность не проверены."
+        },
+        {
+          "criterion": 14,
+          "name": "Готовность выпуска",
+          "score": 0,
+          "evidence": "Полный CI, exact deploy, публичные изменённые URL, SSR/NewsArticle/canonical/sitemap/фид/индексация и живая проверка этой версии ещё не выполнены; 0, не N/A."
         }
       ],
-      "unchanged": {
-        "score": 4,
-        "contentHash": "cfec35dc4ef4d904108e0b6ae028b650f6a03c42713ae174a654076ac6550c48",
-        "proseHash": "cfec35dc4ef4d904108e0b6ae028b650f6a03c42713ae174a654076ac6550c48",
-        "titleTldrBody": true,
-        "photoNotRereviewed": true
-      },
-      "dailyBulletin": {
-        "url": "https://volcanoes.usgs.gov/hans-public/volcano/hi3",
-        "officialPublisher": "U.S. Geological Survey / Hawaiian Volcano Observatory",
-        "bulletinDate": "2026-10-08",
-        "bulletinTime": "08:25 HST / 18:25 UTC",
-        "status": 200,
-        "localCapturedAt": "2026-10-09T06:22:44.797Z",
-        "independentlyOpenedWebAt": "2026-10-09",
-        "htmlSha256": "9ed6753c53a78e06631c8d051b6d0b4f267b3fac68c154d95937838e4fd71b8c",
-        "htmlBytes": 19902,
-        "htmlChars": 19836,
-        "gateTextChars": 9005,
-        "fullSubstantiveTextRead": true,
-        "confirmed": [
-          "Наблюдалось лишь небольшое разбрызгивание; начало эпизода55 не объявлено.",
-          "Ранее прогнозируемая схема фонтанирования нарушена, точное следующее окно не прогнозируется.",
-          "Ссылки на Status Report7Oct и NPS closures7Oct присутствуют прямо в бюллетене."
-        ]
-      },
-      "statusReport": {
-        "url": "https://volcanoes.usgs.gov/hans-public/notice/DOI-USGS-HVO-2026-10-08T01:00:28+00:00",
-        "officialPublisher": "U.S. Geological Survey / Hawaiian Volcano Observatory",
-        "reportDate": "2026-10-07",
-        "reportTime": "15:13 HST / 01:13 UTC 8 October",
-        "liveHttpStatus": 200,
-        "liveCheckedAt": "2026-10-09T06:28:11.180Z",
-        "htmlBytes": 23681,
-        "htmlSha256": "cd2565214919c8099bbc13db8e248ba207b0da0d4f4924730888019eff921247",
-        "fullSubstantiveTextRead": true,
-        "confirmation": "Текст прямо указывает внедрение в пределах thousand feet (about 300 meters) or less of the surface и трещины2018; сохраняет несколько возможных исходов без точного прогноза.",
-        "method": "Официальная страница отдельно прочитана через web.run; затем собственный конечный HTTP GET200 reviewer, текст извлечён настоящей stripHtml news gate."
-      },
-      "npsClosure": {
-        "url": "https://www.nps.gov/havo/learn/news/20261007-nr-trail-closures.htm",
-        "artifact": ".run/sources-2026-10-09/kilauea-closures.json",
-        "capturedAt": "2026-10-09T04:33:55.782Z",
-        "artifactSha256": "52289d5bfc42decbc1b6f2c167695855debc9a5da25b7a9dc151c10f79351b18",
-        "method": "Неизменённый полный содержательный релиз NPS7Oct в свежем capture9Oct перечитан; закрытие независимо подтверждается именно NPS, HANS даёт прямую официальную ссылку.",
-        "confirmed": [
-          "Halemaʻumaʻu Trail и часть Byron Ledge закрываются7Octк17:00, вместе1,3мили≈2,1км.",
-          "Причина — сейсмичность и опасность камнепадов; Keanakākoʻi viewing areas закрыты на предыдущей неделе."
-        ]
-      },
-      "realGate": {
-        "script": "scripts/news-gate.mjs",
-        "scriptSha256": "cccadda323e3d0d760bca734e429fad1bb58d4d25a575c7f4ac0e8c7fabe373a",
-        "config": "news/config.json",
-        "configSha256": "c12e5ada4ad08d46dbb2fc2d1f198fcaba0b41027f748235bfa793d0a512671f",
-        "domainFunction": "checkDomains",
-        "domainResult": {
-          "ok": true
-        },
-        "allowedDomain": "usgs.gov",
-        "domainRule": "host===d || host.endsWith(\".\" + d); volcanoes.usgs.gov разрешён как официальный поддомен без правок whitelist.",
-        "corroborationFunction": "checkCorroboration",
-        "corroborationResult": {
-          "ok": true
-        },
-        "initialThreeSourceReplacement": {
-          "ok": false,
-          "reason": "числа 300 нет на странице источника"
-        },
-        "finalSourceCount": 4,
-        "npsViewingCapture": "Неизменённый текст NPS eruption-viewing из .run/sources-2026-10-09/2026-09-12-kilauea-lava-episode-55.json, источник№2 того capture. Полный свежий сетевой news gate выполняет автор в обычном hook."
-      },
-      "limits": [
-        "HANS /volcano/hi3 — динамическая последняя сводка; review фиксирует конкретный bulletin8Oct08:25HST и его байты на9Oct.",
-        "Прежние pre-push FAIL не стали PASS от замены URL. Полный нормальный hook/CI, merge/deploy/live этим reviewer не запускались.",
-        "Оценка4 и прежние contentHash/proseHash сохранены; фото, другие16заметок и общий отчёт не перерецензировались."
-      ]
+      "confirmedTens": 8,
+      "minimumFiveConfirmedTens": true,
+      "criticalDefectsOverrideScore": true,
+      "report": ".run/batch-2026-10-11/editorial-review.md"
     }
   },
   "lifecycle": {
     "decision": "REVISE",
-    "status": null,
-    "effectiveDate": null,
-    "reviewOn": "2026-10-11",
-    "reason": "USGS08Oct: фонтанирование55неподтверждено. NPS07Oct: закрытыHalemaumau/частьByronLedge; новая содержательная добавка. Возврат через2дня.",
-    "originalDate": "2026-09-11",
-    "originalAdded": "2026-09-12",
+    "date": "2026-09-11T00:00:00.000Z",
+    "added": "2026-09-12",
+    "reviewOn": "2026-10-12T00:00:00.000Z",
+    "explanation": "Исходные date=11 сентября и added=12 сентября сохранены. checked 11 октября отражает новую сводку; reviewOn 12 октября.",
     "datePreserved": true,
     "addedPreserved": true
   },
   "checks": {
     "fullProseRead": true,
-    "finalTldrRead": true,
     "titleChars": 50,
     "clipTitle": "Килауэа: начало 55-го эпизода пока не подтверждено",
     "clipTitleMeaningPreserved": true,
-    "tldrWords": 46,
-    "bodyWords": 217,
-    "primarySourceRead": true,
-    "photoViewed": true,
-    "independentReviewer": true,
-    "commonsLicenseRechecked": false,
+    "clipDescription": "USGS сообщила о небольших выбросах и переливах лавы у северного жерла Килауэа в сводке 10 октября. Начало 55-го эпизода высоких фонтанов по-прежнему…",
+    "tldrWords": 48,
+    "bodyWords": 180,
+    "tldrGate": {
+      "ok": true
+    },
+    "depthLink": {
+      "ok": true
+    },
+    "lifecycle": {
+      "ok": true
+    },
+    "yamlParser": "PASS",
+    "duplicateImageAltInitialFailure": null,
     "languageBannedWords": [],
-    "languageMethod": "Редакторский проход всего текста; адресно устранены ранее найденные «уже» и «в рамках».",
-    "internalLinksHttp200": true,
-    "publicCreditDataPrepared": true,
+    "independentReviewer": true,
     "readerTest": false,
-    "buildBrowserCiLive": false,
-    "sourceReplacementPass": true,
-    "realDomainGatePass": true,
-    "realCorroborationPass": true
-  },
-  "initialReviewedAt": "2026-10-09T05:50:45.306Z"
+    "buildBrowserCiLive": false
+  }
 }
