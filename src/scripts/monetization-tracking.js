@@ -63,7 +63,7 @@ export function prepareAffiliateLinks(doc = document, pathname = window.location
     if (anchor.dataset.ctaPrepared === '1') continue;
     const providedId = anchor.dataset.ctaId;
     const ctaId = /^[a-z0-9_]{5,64}$/.test(providedId || '') ? providedId : buildCtaId(pathname, partner, placement, ordinal);
-    const linkDestination = anchor.hasAttribute('data-destination') ? anchor.dataset.destination : page.destination;
+    const linkDestination = Object.prototype.hasOwnProperty.call(anchor.dataset, 'destination') ? anchor.dataset.destination : page.destination;
     const destination = linkDestination === '' || /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(linkDestination || '')
       ? linkDestination : page.destination;
     const intent = /^(high|medium|low)$/.test(anchor.dataset.intent || '') ? anchor.dataset.intent : page.intent;
