@@ -43,6 +43,11 @@ function init() {
     document.getElementById('homeFreeCatalog').href = catalogHref({ m: state.m, visa: 'free' });
     document.getElementById('homeCheapCatalog').href = catalogHref({ m: state.m, sort: 'asc' });
     document.querySelectorAll('[data-home-vibe]').forEach(a => { a.href = catalogHref(state, { vibe: a.dataset.homeVibe }); });
+    document.querySelectorAll('.home-budget, [data-home-calculator]').forEach(a => {
+      const target = new URL(a.href, location.href);
+      target.searchParams.set('m', String(state.m));
+      a.href = `${target.pathname}${target.search}${target.hash}`;
+    });
   }
   async function render(write = false, reuseServerCards = false) {
     state.m ||= moscowMonth();

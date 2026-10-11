@@ -1,0 +1,36 @@
+---
+import { tripServices } from '../data/trip-services.js';
+interface Props { destination?: string; heading?: string; pathname?: string; }
+const { destination, heading='Подготовить поездку', pathname=Astro.url.pathname } = Astro.props;
+const items = tripServices({pathname,destination});
+---
+<section class="trip-services" data-trip-planning aria-labelledby="trip-services-title">
+  <h2 id="trip-services-title">{heading}</h2>
+  <dl>
+    {items.map(item => <div class="trip-services-row">
+      <dt>{item.offer === 'stay' ? 'Жильё' : item.offer === 'flight' ? 'Перелёт' : 'Страховка'}</dt>
+      <dd>
+        <a href={item.href} class="aff-cta" rel="sponsored noopener" target="_blank"
+          data-cta-id={item.ctaId} data-placement={item.placement} data-destination={item.destination}
+          data-generic-fallback={item.generic ? '1' : undefined}>{item.label}</a>
+        <p>{item.note}</p>
+      </dd>
+    </div>)}
+  </dl>
+</section>
+<style>
+  .trip-services { max-width: 72ch; margin: 2.4rem auto; padding-top: 1.4rem; border-top: 1px solid var(--line); text-align: left; }
+  .trip-services h2 { font-family: var(--ff-display); font-weight: 700; font-size: clamp(1.4rem,2.6vw,1.8rem); margin: 0 0 .8rem; scroll-margin-top: 80px; }
+  .trip-services dl { margin: 0; }
+  .trip-services-row { display: grid; grid-template-columns: 7rem minmax(0,1fr); gap: 1rem; padding: .8rem 0; border-bottom: 1px solid var(--line); }
+  .trip-services dt { font-weight: 600; padding-top: .65rem; }
+  .trip-services dd { margin: 0; min-width: 0; }
+  .trip-services a { display: inline-flex; align-items: center; min-height: 44px; max-width: 100%; color: var(--gold); font-weight: 600; text-decoration: underline 1px; text-underline-offset: .22em; white-space: normal; }
+  .trip-services p { color: var(--text-faint); line-height: 1.5; margin: .15rem 0 0; font-size: .88rem; }
+  @media (max-width: 600px) { .trip-services-row { grid-template-columns: 1fr; gap: 0; } .trip-services dt { padding-top: 0; } }
+</style>
+<style is:global>
+  .prose .trip-context { margin: 1.2rem 0 1.6rem; padding: .7rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .prose .trip-context p { margin: .3rem 0; font-size: .94rem; line-height: 1.6; color: var(--text-faint); }
+  .prose .trip-context a { display: inline-flex; align-items: center; min-height: 44px; max-width: 100%; white-space: normal; }
+</style>

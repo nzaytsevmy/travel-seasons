@@ -175,7 +175,7 @@ export function classifyPage(pathname = '/') {
       destination: match?.[1] ?? '',
     };
   }
-  if (top === 'novosti') return { type: parts.length >= 2 ? 'news_article' : 'news_index', intent: 'none', destination: '' };
+  if (top === 'novosti') return { type: parts.length >= 2 && !/^20\d\d-(?:0[1-9]|1[0-2])$/.test(second) ? 'news_article' : 'news_index', intent: 'none', destination: '' };
   if (top === 'legal' || ['404', 'about', 'izmeneniya', 'my'].includes(top)) return { type: top === 'legal' ? 'legal' : top, intent: 'none', destination: '' };
   if (top === 'events') return { type: parts.length >= 2 ? 'events_month' : 'events_index', intent: 'low', destination: '' };
   if (top === 'seasons') return { type: parts.length >= 2 ? 'seasons_detail' : 'seasons_index', intent: 'low', destination: parts.length >= 3 ? third : '' };
@@ -252,10 +252,14 @@ export function isGenericAffiliateUrl(href, partnerName) {
 }
 
 export function buildCtaId(pathname, partner, placement, ordinal = 1) {
-  const page = clean(String(pathname).replace(/^\/+|\/+$/g, '')) || 'home';
+  const address = String(pathname).replace(/^\/+|\/+$/g, '');
+  const readable = clean(address) || 'home';
+  // Transliteration-free tag URLs still need distinct attribution; preserve
+  // existing Latin page IDs while hashing characters lost by the sanitizer.
+  const page = /[^\x00-\x7f]/.test(address) ? `${readable}_${hash32(address)}` : readable;
   const raw = clean(`${page}_${partner}_${placement}_${ordinal}`) || 'cta';
   if (raw.length <= 64) return raw;
-  return `${raw.slice(0, 56)}_${hash32(raw)}`;
+  return `${raw.slice(0, 56).replace(/_+$/g, '')}_${hash32(raw)}`;
 }
 
 export function addCtaAttribution(href, ctaId) {

@@ -16,6 +16,7 @@ import Layout from '../../layouts/Layout.astro';
 import { newsPhotoCaption } from '../../data/photo-credits.js';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Footer from '../../components/Footer.astro';
+import TripServices from '../../components/TripServices.astro';
 import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu, addedAt, newsUrl, feedEntries, clipTitle, clipDescription } from '../../data/news.js';
@@ -150,9 +151,10 @@ const ldJson = {
       </ul>
     </section>
 
+    <TripServices destination={dirs.length === 1 ? dirs[0].slug : ''} />
   </main>
 
-  <Footer />
+  <Footer planning={false} />
 </Layout>
 
 <style>

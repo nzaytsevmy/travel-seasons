@@ -15,6 +15,8 @@ import { directionForTags } from '../../data/article-country.js';
 import { EXPENSIVE_DESTINATIONS } from '../../data/monetization.js';
 import { TP_LINKS, aviasalesRoute, youtravelCountry, cherehapaCountry, cherehapaTravel, ostrovokCountry, otelloStay } from '../../data/affiliate.js';
 import StickyCta from '../../components/StickyCta.astro';
+import TripServices from '../../components/TripServices.astro';
+import { tripServices } from '../../data/trip-services.js';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -184,16 +186,14 @@ function главныйОффер() {
   if (ДОКУМЕНТ.test(post.slug)) {
     const href = monetizationDestination ? cherehapaCountry(monetizationDestination, метка) : cherehapaTravel(метка);
     return { href, панель: 'Страховка под даты поездки',
-             финал: post.slug === 'strahovka-dlya-puteshestviy-2026'
-               ? 'Собрать полис под свои даты'
-               : 'Собрать полис под свои даты — от 413 ₽' };
+             финал: 'Собрать полис под свои даты' };
   }
   if (monetizationDestination) {
     const дом = RU_STAY_POSTS.has(monetizationDestination);
-    const href = дом ? otelloStay(метка) : ostrovokCountry(monetizationDestination, метка);
-    const где = primaryDir?.cases?.loc || primaryDir?.cases?.prep || '';
-    return { href, панель: `Жильё ${где}`.trim(),
-             финал: `Подобрать жильё ${где} с оплатой картой РФ`.trim() };
+    const stay = tripServices({pathname:`/blog/${post.slug}/`,destination:monetizationDestination,placement:'sticky'}).find(item=>item.offer==='stay')!;
+    const href = дом ? otelloStay(метка) : stay.href;
+    const label = stay.label.replace(/^Выбрать жильё/, 'Жильё');
+    return { href, панель: label, финал: stay.label };
   }
   return null;
 }
@@ -390,7 +390,7 @@ if (faqs.length >= 2) {
           в подписи автора, в справке об авторе, в подвале, в дисклеймере. То
           есть дело не в числе ссылок, а в том, что ни одна из них ничего не
           обещает: это голый ник. Здесь — одна ссылка с понятной причиной. */}
-      {оффер && (
+      {оффер && ДЕНЬГИ_ЗА_ГРАНИЦЕЙ.test(post.slug) && (
         <p class="post-end-money">
           {/* Строка для дочитавших: конец статьи — сильное место (JCMC, 4,5 млн визитов:
               конец выигрывает у середины), а до правки 07.09.2026 денег здесь не было
@@ -398,6 +398,8 @@ if (faqs.length >= 2) {
           <a href={оффер.href} class="aff-cta" rel="sponsored noopener" target="_blank">{оффер.финал}</a>
         </p>
       )}
+
+      <TripServices destination={monetizationDestination || ''} heading={/vozvrat|perseidy/.test(post.slug) ? 'Подготовить следующую поездку' : 'Подготовить поездку'} />
 
       <aside class="tg-sub">
         <p class="tg-sub-text">
@@ -451,7 +453,7 @@ if (faqs.length >= 2) {
   </main>
   {оффер && <StickyCta href={оффер.href} label={оффер.панель} />}
 
-  <Footer />
+  <Footer planning={false} />
 </Layout>
 
 <style>

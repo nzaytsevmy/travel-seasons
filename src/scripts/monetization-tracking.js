@@ -61,13 +61,14 @@ export function prepareAffiliateLinks(doc = document, pathname = window.location
     const ordinal = (counters.get(counterKey) ?? 0) + 1;
     counters.set(counterKey, ordinal);
     if (anchor.dataset.ctaPrepared === '1') continue;
-    const ctaId = /^[a-z0-9_]{5,64}$/.test(anchor.dataset.ctaId || '')
-      ? anchor.dataset.ctaId : buildCtaId(pathname, partner, placement, ordinal);
-    const destination = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(anchor.dataset.destination || '')
-      ? anchor.dataset.destination : page.destination;
+    const providedId = anchor.dataset.ctaId;
+    const ctaId = /^[a-z0-9_]{5,64}$/.test(providedId || '') ? providedId : buildCtaId(pathname, partner, placement, ordinal);
+    const linkDestination = Object.prototype.hasOwnProperty.call(anchor.dataset, 'destination') ? anchor.dataset.destination : page.destination;
+    const destination = linkDestination === '' || /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(linkDestination || '')
+      ? linkDestination : page.destination;
     const intent = /^(high|medium|low)$/.test(anchor.dataset.intent || '') ? anchor.dataset.intent : page.intent;
 
-    if (known && destination && isGenericAffiliateUrl(anchor.href, partner)) {
+    if (known && destination && anchor.dataset.genericFallback !== '1' && isGenericAffiliateUrl(anchor.href, partner)) {
       const destinationUrl = destinationAffiliateUrl(partner, destination, ctaId);
       if (destinationUrl) {
         anchor.href = destinationUrl;
@@ -86,7 +87,7 @@ export function prepareAffiliateLinks(doc = document, pathname = window.location
     anchor.dataset.linkPosition = String(ordinal);
     anchor.dataset.pageType = page.type;
     anchor.dataset.intent = intent;
-    anchor.dataset.destination = destination;
+    anchor.dataset.destination = destination || '';
     anchor.dataset.experimentId ||= doc.body.dataset.experimentId || '';
     anchor.dataset.variant ||= doc.body.dataset.experimentVariant || '';
 

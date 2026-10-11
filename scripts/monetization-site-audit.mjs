@@ -6,6 +6,7 @@ import { join, relative, resolve } from 'node:path';
 import { classifyPage, classifyPartner, isGenericAffiliateUrl, expensiveDestinationSlug, EXPENSIVE_FIRST_OFFERS } from '../src/data/monetization.js';
 import { destinationAffiliateUrl } from '../src/data/affiliate.js';
 import { auditArticlePlacement, placementProblems } from './article-affiliate-placement.mjs';
+import { auditTripServices } from './trip-service-audit.mjs';
 
 const coverage = JSON.parse(readFileSync(new URL('../reviews/article-affiliate-coverage.json', import.meta.url), 'utf8')).articles;
 
@@ -84,7 +85,8 @@ export function auditMonetization(dist, articleCoverage = coverage) {
       const partner = classifyPartner(href);
       if (!partner) continue;
       const relValue = attr(tag, 'rel').split(/\s+/).filter(Boolean);
-      const record = { path, ...partner, href, destination, generic: isGenericBuiltHref(href, partner.partner) };
+      const linkDestination = /\bdata-destination=/.test(tag) ? attr(tag,'data-destination') : destination;
+      const record = { path, ...partner, href, destination:linkDestination, placement:attr(tag,'data-placement') || 'body', generic: isGenericBuiltHref(href, partner.partner) };
       pageLinks.push(record);
       links.push(record);
 
@@ -104,8 +106,8 @@ export function auditMonetization(dist, articleCoverage = coverage) {
 
       if (!relValue.includes('sponsored')) errors.push(`${path}: ${partner.partner} без rel=sponsored`);
       if (!hasAttribution(href, partner.partner)) errors.push(`${path}: ${partner.partner} без постраничной метки`);
-      if (destination && DEEP_LINK_REQUIRED.has(partner.partner) && record.generic) {
-        const clientDeepLink = destinationAffiliateUrl(partner.partner, destination, 'audit');
+      if (linkDestination && attr(tag,'data-generic-fallback') !== '1' && DEEP_LINK_REQUIRED.has(partner.partner) && record.generic) {
+        const clientDeepLink = destinationAffiliateUrl(partner.partner, linkDestination, 'audit');
         if (clientDeepLink && !isGenericAffiliateUrl(clientDeepLink, partner.partner)) {
           record.deepenedByContract = true;
         } else if (info.type === 'blog_article') {
@@ -138,7 +140,9 @@ export function auditMonetization(dist, articleCoverage = coverage) {
       errors.push(`${path}: дорогое направление без ссылки на дорогу или тур`);
     }
 
-    if (info.intent === 'none' && pageLinks.length) errors.push(`${path}: intent=none, но партнёрских ссылок ${pageLinks.length}`);
+    const planning=auditTripServices(html,path);
+    errors.push(...planning.errors.map(e=>`${path}: ${e}`));
+    if (info.intent === 'none' && pageLinks.some(link=>!planning.eligible || link.placement!=='planning')) errors.push(`${path}: intent=none, но партнёрские ссылки прерывают справочный ответ`);
     if (info.intent === 'high' && !pageLinks.length) warnings.push(`${path}: высокий intent без партнёрского следующего шага`);
     let placement;
     if (info.type === 'blog_article' && info.intent !== 'none') {
@@ -152,7 +156,7 @@ export function auditMonetization(dist, articleCoverage = coverage) {
       }
       errors.push(...placementProblems(placement, rule).map(problem => `${path}: ${problem}`));
     }
-    pages.push({ path, ...info, destination, affiliateLinks: pageLinks.length, ...(placement ? { placement } : {}) });
+    pages.push({ path, ...info, destination, affiliateLinks: pageLinks.length, planning, ...(placement ? { placement } : {}) });
   }
   return { pages, links, errors: [...new Set(errors)], warnings: [...new Set(warnings)] };
 }

@@ -10,6 +10,7 @@ import rehypeTableWrap from './tools/rehype-table-wrap.mjs';
 import rehypeFaqAccordion from './tools/rehype-faq-accordion.mjs';
 import rehypeCountryRow from './tools/rehype-country-row.mjs';
 import rehypeHeadingNobr from './tools/rehype-heading-nobr.mjs';
+import rehypeTripServices from './tools/rehype-trip-services.mjs';
 import ttTypography from './tools/typo-dist.mjs';
 import { DATA_UPDATED } from './src/data/meta.js';
 import ДАТЫ_НАПРАВЛЕНИЙ from './src/data/page-lastmod.generated.json' with { type: 'json' };
@@ -179,7 +180,7 @@ export default defineConfig({
   },
   markdown: {
     remarkPlugins: [remarkNumerals],
-    rehypePlugins: [rehypeTableWrap, rehypeFaqAccordion, rehypeCountryRow, rehypeHeadingNobr],
+    rehypePlugins: [rehypeTableWrap, rehypeFaqAccordion, rehypeCountryRow, rehypeTripServices, rehypeHeadingNobr],
   },
   integrations: [
     // Щит партнёрских ссылок: адреса партнёров прячутся от роботов без JavaScript,

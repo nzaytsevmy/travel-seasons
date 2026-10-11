@@ -214,6 +214,31 @@ test('переход по настроению сохраняет месяц, б
   await expect(page).toHaveURL(/vibe=nature/);
 });
 
+test('быстрый переход до загрузки подборки сохраняет выбранные условия', async ({ page }) => {
+  let releaseData!: () => void;
+  const pendingData = new Promise<void>(resolve => { releaseData = resolve; });
+  await page.route('**/home-planner-data-*.json', async route => {
+    await pendingData;
+    await route.abort();
+  });
+  try {
+    await page.goto('/?m=7&max_budget=100000&visa=free_evisa', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#homeCatalog')).toHaveAttribute('href', '/countries/?m=7&max_budget=100000&visa=free_evisa');
+    for (const link of await page.locator('.home-budget, [data-home-calculator]').all()) {
+      expect(new URL((await link.getAttribute('href'))!, 'https://traveltribe.ru').searchParams.get('m')).toBe('7');
+    }
+    await page.locator('[data-home-vibe="nature"]').click();
+    await expect(page).toHaveURL(/m=7/);
+    await expect(page).toHaveURL(/max_budget=100000/);
+    await expect(page).toHaveURL(/visa=free_evisa/);
+    await expect(page).toHaveURL(/vibe=nature/);
+    await expect(page.locator('#catMonth')).toHaveValue('7');
+    await expect(page.locator('#catMaxBudget')).toHaveValue('100000');
+  } finally {
+    releaseData();
+  }
+});
+
 test('стоимость обязательной страховки Грузии явно остаётся неизвестной', async ({ page }) => {
   await page.goto(`/calculator/?r=${priceIndex('georgia')}&m=10`);
   await expect(page.locator('.tc-hero-label')).toHaveText('Известная часть бюджета');
