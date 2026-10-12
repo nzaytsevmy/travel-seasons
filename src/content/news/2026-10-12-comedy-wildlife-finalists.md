@@ -5,7 +5,7 @@ added: "2026-10-12"
 checked: "2026-10-12"
 reviewOn: "2026-12-09"
 topic: nature
-impact: low
+impact: medium
 score: 3
 authoredBy: "Codex (root)"
 reviewRef: "news/reviews/2026-10-12-comedy-wildlife-finalists.json"
