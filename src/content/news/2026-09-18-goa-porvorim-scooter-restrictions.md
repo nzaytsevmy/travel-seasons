@@ -2,12 +2,12 @@
 title: "Гоа: скутеры не пускают на новую эстакаду Порворима"
 date: 2026-09-17
 added: 2026-09-18
-checked: "2026-10-09"
-reviewOn: "2026-10-11"
+checked: "2026-10-12"
+reviewOn: "2026-10-15"
 topic: transport
 impact: high
 score: 5
-authoredBy: "codex-gpt-6"
+authoredBy: "codex-news-author-20261012"
 reviewRef: "news/reviews/2026-09-18-goa-porvorim-scooter-restrictions.json"
 photoQuery: "Mandovi bridge Goa Panaji"
 tldr: "На эстакаде Порворима в Гоа по-прежнему запрещены скутеры и мотоциклы: они едут по нижним дорогам. Для автомобилей 23–24 сентября снова открыли два подъезда у Majestic, но съезд с эстакады в сторону мостов Мандови власти только планируют открыть на пробный срок. Для поездки между Панаджи и Северным Гоа сверяйте действующие знаки перед выездом."

@@ -2,13 +2,13 @@
 title: "Денали: на своей машине разрешили ехать до Текланики"
 date: 2026-09-14
 added: 2026-09-19
-checked: "2026-10-09"
+checked: "2026-10-12"
 effectiveDate: 2026-09-18
-reviewOn: "2026-10-11"
+reviewOn: "2026-10-16"
 topic: transport
 impact: medium
 score: 4
-authoredBy: "codex-gpt-6"
+authoredBy: "codex-news-author-20261012"
 reviewRef: "news/reviews/2026-09-19-denali-fall-driving.json"
 photoQuery: "Denali Teklanika river road autumn"
 tldr: "В Денали при подходящей погоде личные автомобили могут доехать до площадки Текланика на 30-й миле до 15 октября. Дорогу могут закрыть раньше из-за снега и льда. Автомобильный доступ не означает разрешения гулять по соседним участкам: ограничения из-за диких животных уточняйте у рейнджера перед выходом, даже если их нет на карте."

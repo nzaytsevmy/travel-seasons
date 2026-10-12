@@ -2,12 +2,12 @@
 title: "Air Astana объявила о рейсах в Дубай с октября"
 date: 2026-09-16
 added: 2026-09-19
-checked: "2026-10-10"
-reviewOn: "2026-10-12"
+checked: "2026-10-12"
+reviewOn: "2026-10-15"
 topic: transport
 impact: high
 score: 3
-authoredBy: "codex-gpt-6"
+authoredBy: "codex-news-author-20261012"
 reviewRef: "news/reviews/2026-09-19-air-astana-dubai-return.json"
 photoQuery: "Air Astana Boeing 767"
 tldr: "Air Astana объявила о плане возобновить рейсы Алматы — Дубай с 1 октября и Астана — Дубай со 2 октября. Объявленные даты прошли, но проверенный официальный анонс не подтверждает, что рейсы действительно состоялись. Перевозчик допускал изменения расписания. Перед покупкой стыковки проверьте конкретные рейсы и условия переноса у авиакомпании."

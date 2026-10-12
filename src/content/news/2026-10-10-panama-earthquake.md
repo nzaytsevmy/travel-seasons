@@ -2,15 +2,14 @@
 title: "В Панаме произошло землетрясение магнитудой 7,7"
 date: "2026-10-09"
 added: "2026-10-10"
-checked: "2026-10-11"
+checked: "2026-10-12"
 topic: nature
 impact: high
 score: 4
-authoredBy: "Codex (root)"
+authoredBy: "codex-news-author-20261012"
 reviewRef: "news/reviews/2026-10-10-panama-earthquake.json"
 photoQuery: "Panama landscape Azuero"
 tldr: "Землетрясение в Панаме произошло 9 октября около 12:56 местного времени. Уточнённая карточка USGS указывает магнитуду 7,7 и глубину около 12,6 км. PTWC в итоговом бюллетене сообщил, что угроза цунами от этого землетрясения миновала. Это не подтверждает доступность каждой дороги или гостиницы: ближайший маршрут нужно уточнять у местного перевозчика."
-reviewOn: "2026-10-12"
 countries: [costa-rica-panama]
 sources:
   - name: "USGS — событие us6000u18k, reviewed, предпочтительная оценка; GeoJSON прочитан 11.10.2026"

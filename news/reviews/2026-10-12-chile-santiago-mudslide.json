@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "slug": "2026-10-12-chile-santiago-mudslide",
+  "reviewer": "Codex (tt_final_review)",
+  "reviewerTask": "/root/tt_final_review",
+  "authoredBy": "Codex (root)",
+  "reviewedAt": "2026-10-12",
+  "checkedAt": "2026-10-12",
+  "score": 3,
+  "rationale": "Локальное происшествие четырёхдневной давности остаётся значимым и укладывается в недельное окно: 3. В MercoPress дата события — четверг 8 октября, публикации — 9 октября. Заголовок сужен до одного квартала. Полезный вклад — различение Сан-Карлос-де-Апокиндо и всей столицы; текущий список открытых дорог отсутствует, поэтому 4 за изменение подтверждённого текущего маршрута не присваивается.",
+  "facts": [
+    "MercoPress: поток 8 октября затронул Сан-Карлос-де-Апокиндо в Лас-Кондес на востоке Сантьяго, унёс автомобили и автобус.",
+    "Первоначальное объяснение канала позднее сменилось версией заблокированного подземного водоотвода; текст не выдаёт их за окончательный собственный диагноз."
+  ],
+  "sourceChecks": [
+    {
+      "url": "https://en.mercopress.com/2026/10/09/a-mudslide-sweeps-away-cars-and-a-bus-in-santiago-after-the-wettest-october-on-record",
+      "checkedAt": "2026-10-12",
+      "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
+      "artifact": ".run/chile-source.txt",
+      "artifactSha256": "b50af074c1ccfd94f799315932f7331d454f431159ee4cef066cec641c416c50"
+    }
+  ],
+  "contentHash": "0406e1b4cc9477fa1cde42a15cd5b15f6554ce1d536cb156ee8cfde749a71090",
+  "proseHash": "0406e1b4cc9477fa1cde42a15cd5b15f6554ce1d536cb156ee8cfde749a71090",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body:body.trim()})); score and provenance metadata excluded",
+  "sha256": "36bb3549ebefde05b8ae648a106981ab8f8b23a352767a0b63a2c69370999f85",
+  "sha256Scope": "Полный окончательный Markdown после синхронизации score и даты checked, на момент этого ревью.",
+  "photo": {
+    "source": "https://commons.wikimedia.org/wiki/File:Gran_Santiago_Tower,_Views_from_San_Crit%C3%B3bal_Hill_-_Santiago_-_Chile_02.jpg",
+    "creator": "3BRBS",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "commonsPageId": 30949441,
+    "rightsEvidence": ".run/reviewer-commons-20261012.json",
+    "rightsMethod": "Независимый свежий Commons API imageinfo/extmetadata: автор и точная версия лицензии сверены."
+  },
+  "risks": [
+    "Текущая доступность каждой дороги не установлена; reviewOn 13 октября.",
+    "Фотография — архивный вид Сантьяго, не последствия селя.",
+    "Редакционная оценка не подтверждает CI, публикацию, публичную страницу, SSR, sitemap/фид или индексацию. Обязательные гейты финальной версии остаются незавершёнными."
+  ],
+  "blockingIssues": [],
+  "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
+  "releaseStatus": {
+    "ci": "NOT_REVIEWED",
+    "deploy": "NOT_REVIEWED",
+    "live": "NOT_REVIEWED"
+  },
+  "reviewScope": "Независимый рецензент не писал прозу. Прочитаны окончательные title, TLDR и body, применимый канон, существенные источники и изменение жизненного цикла. Старые оценки не переносились автоматически. Число score определено по RUBRIC; source/source date/checked и фото рассмотрены отдельно от свежести события."
+}
