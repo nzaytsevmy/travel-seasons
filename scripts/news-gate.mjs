@@ -118,7 +118,12 @@ const words = (s) => s.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').split(/\s
  *    а копипаста, пусть и переставленная.
  */
 export function checkShingles(note, sourceTexts, n = 8) {
-  const noteWords = words(note.body);
+  // Compare the prose readers see. A source's URL can contain its headline;
+  // keep visible link labels, but do not mistake the destination for copied text.
+  const prose = note.body
+    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/https?:\/\/[^\s<>)]+/g, ' ');
+  const noteWords = words(prose);
   if (noteWords.length < n) return pass;
   const noteShingles = new Set();
   for (let i = 0; i + n <= noteWords.length; i++) noteShingles.add(noteWords.slice(i, i + n).join(' '));
