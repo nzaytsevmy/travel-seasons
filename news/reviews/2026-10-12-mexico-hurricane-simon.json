@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "slug": "2026-10-12-mexico-hurricane-simon",
+  "reviewer": "Codex (tt_final_review)",
+  "reviewerTask": "/root/tt_final_review",
+  "authoredBy": "Codex (root)",
+  "reviewedAt": "2026-10-12",
+  "checkedAt": "2026-10-12",
+  "score": 4,
+  "rationale": "Действующая угроза меняет поездку на нишевое мексиканское побережье: 4. Первичный NHC advisory 19A от 12 октября 06:00 UTC сопоставлен с сообщением 11 октября. Статус категории 3, 185 км/ч и расположение центра подтверждены; ослабление не превращено в окончание опасных дождей, волн и ветра. Архивная погода на фото не описывает ураган.",
+  "facts": [
+    "NHC 19A: 12 октября 06:00 UTC, категория 3, ветер 185 км/ч, центр около 75 км к юго-западу от Кабо-Корриентес.",
+    "Предупреждение от Playa Perula до El Roblito включает Las Islas Marias; сохраняются угрозы сильных дождей, внезапных паводков и оползней.",
+    "Al Jazeera 11 октября передаёт призыв президента жителям прибрежных районов Халиско, Колимы, Наярита и Мичоакана укрыться."
+  ],
+  "sourceChecks": [
+    {
+      "url": "https://www.nhc.noaa.gov/archive/2026/ep20/ep202026.public_a.019.shtml",
+      "checkedAt": "2026-10-12",
+      "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
+      "artifact": ".run/simon-latest.html",
+      "artifactSha256": "eb05b183b499092652bea9648407c6d54c83bff16acdd5a571b418a0b084fcc4"
+    },
+    {
+      "url": "https://www.aljazeera.com/news/2026/10/11/mexican-president-urges-residents-to-shelter-as-hurricane-simon-approaches",
+      "checkedAt": "2026-10-12",
+      "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
+      "artifact": ".run/source-text/ae10f6d4360faf41.txt",
+      "artifactSha256": "fee5517f104009f1d07256d38d9912e8762c7f53f7180b6422ffa1a876529fad"
+    }
+  ],
+  "contentHash": "1b9d164f3210ef573370b41ad84244d224b5986989cedf8e77ba6e7aec0855c2",
+  "proseHash": "1b9d164f3210ef573370b41ad84244d224b5986989cedf8e77ba6e7aec0855c2",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body:body.trim()})); score and provenance metadata excluded",
+  "sha256": "43e642a69acbefc43a17a5cd37bcacc686cb3a5678a8d32090bb10bc58c1c1b0",
+  "sha256Scope": "Полный окончательный Markdown после синхронизации score и даты checked, на момент этого ревью.",
+  "photo": {
+    "source": "https://commons.wikimedia.org/w/index.php?curid=128960235",
+    "creator": "Another Believer",
+    "license": "CC BY-SA",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "commonsPageId": 128960235,
+    "rightsEvidence": ".run/reviewer-commons-20261012.json",
+    "rightsMethod": "Независимый свежий Commons API imageinfo/extmetadata: автор и точная версия лицензии сверены."
+  },
+  "risks": [
+    "Положение и сила урагана быстро меняются; текст относится к сводке 06:00 UTC и требует пересмотра 13 октября.",
+    "Фото Puerto Vallarta 2023 года не свидетельствует о погоде 2026 года.",
+    "Редакционная оценка не подтверждает CI, публикацию, публичную страницу, SSR, sitemap/фид или индексацию. Обязательные гейты финальной версии остаются незавершёнными."
+  ],
+  "blockingIssues": [],
+  "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
+  "releaseStatus": {
+    "ci": "NOT_REVIEWED",
+    "deploy": "NOT_REVIEWED",
+    "live": "NOT_REVIEWED"
+  },
+  "reviewScope": "Независимый рецензент не писал прозу. Прочитаны окончательные title, TLDR и body, применимый канон, существенные источники и изменение жизненного цикла. Старые оценки не переносились автоматически. Число score определено по RUBRIC; source/source date/checked и фото рассмотрены отдельно от свежести события."
+}

@@ -161,6 +161,7 @@ jobs:
           #    сторожа того же дня оказались мёртвыми. Фильтр берёт всё, кроме пиксельных
           #    снимков: замер на машине — 307 проверок за 2,8 минуты.
           SKIP_PAGE_MTIME_TESTS=1 npx playwright test --grep-invert "— visual" --project=chromium-desktop
+          SKIP_PAGE_MTIME_TESTS=1 node scripts/check-remaining-changed-pages.mjs
         env:
           PREVIEW_URL: http://localhost:4322
           CHANGED_FILES: ${{ steps.changed.outputs.files }}
@@ -172,5 +173,6 @@ jobs:
           name: content-gate-report
           path: |
             tests/.html-report/
+            tests/.results/
             test-results/
           retention-days: 14

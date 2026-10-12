@@ -1,254 +1,56 @@
 {
   "schemaVersion": 1,
   "slug": "2026-10-10-panama-earthquake",
+  "reviewer": "Codex (tt_final_review)",
+  "reviewerTask": "/root/tt_final_review",
+  "authoredBy": "codex-news-author-20261012",
+  "reviewedAt": "2026-10-12",
+  "checkedAt": "2026-10-12",
   "score": 4,
-  "reviewer": "codex-independent-news-review-20261011",
-  "reviewedAt": "2026-10-11T04:48:43.947Z",
-  "checkedAt": "2026-10-11T04:48:43.947Z",
-  "sha256": "3b548f27f9fc9580f840ef50562a2a4b8b94d271c8024b8ef7f4535b75cc9591",
-  "sha256Scope": "full Markdown file bytes after reviewer score synchronization; author prose not changed",
+  "rationale": "Сильное землетрясение и снятие угрозы цунами меняют конкретное решение путешественника в нишевом направлении: 4. Прочитаны USGS GeoJSON со статусом reviewed и итоговый бюллетень PTWC № 4. Предпочтительная оценка 7,7 и глубина 12,6 км не усредняются с ранними оценками других служб; снятие угрозы цунами не обещает восстановление дорог.",
+  "facts": [
+    "USGS us6000u18k: reviewed, магнитуда 7,7, глубина 12,647 км, 12 км WSW Pitaloza Arriba; округление до 12,6 км корректно.",
+    "09 октября 17:56:06 UTC соответствует 12:56 по местному времени Панамы.",
+    "PTWC № 4 от 09 октября 19:39 UTC завершает предупреждение о региональной угрозе цунами."
+  ],
+  "sourceChecks": [
+    {
+      "url": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/us6000u18k.geojson",
+      "checkedAt": "2026-10-12",
+      "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
+      "artifact": ".run/source-text/e2962aefbc771414.txt",
+      "artifactSha256": "e7c25322c5072cb7622369c25cb5e42c9e057877000435a5b0ca7e825e8c52de"
+    },
+    {
+      "url": "https://www.tsunami.gov/events/PHEB/2026/10/09/26282000/4/WEPA40/WEPA40.txt",
+      "checkedAt": "2026-10-12",
+      "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
+      "artifact": ".run/source-text/b080b719226dae7a.txt",
+      "artifactSha256": "978da887c60353a16641fb50a04abe6dbb4a7d21851a4d4a64500d210c0d4b30"
+    }
+  ],
   "contentHash": "57ec32d8d3591932b5497154ed2e3f260c2206bd19a883c388a0a5ae79ccf016",
   "proseHash": "57ec32d8d3591932b5497154ed2e3f260c2206bd19a883c388a0a5ae79ccf016",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body.trim(); score excluded",
-  "proseHashScope": "same as contentHash",
-  "rationale": "4/5: содержательная ревизия крупного природного события на нишевом направлении. Preferred USGS и итоговый PTWC проверены отдельно, величины не усреднены. «Угроза цунами миновала» ограничена именно этим землетрясением, а про инфраструктуру неизвестное не замаскировано.",
-  "blockingIssues": [],
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body:body.trim()})); score and provenance metadata excluded",
+  "sha256": "4724c962854a9a0a7fdd9af6b3aafd338c83f29637a7c087a06c6a8c0b78f1a8",
+  "sha256Scope": "Полный окончательный Markdown после синхронизации score и даты checked, на момент этого ревью.",
+  "photo": {
+    "source": "https://commons.wikimedia.org/wiki/File:Miraflores_Locks,_Panama_-_11.jpg",
+    "creator": "Ivo Kruusamägi",
+    "license": "CC BY-SA",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "rightsMethod": "Сохранён неизменный кадр и его прежняя атрибуция. Новые права на старый кадр этим проходом не заявляются; публичный реестр проверяется гейтами выпуска."
+  },
   "risks": [
-    "В национальных предупреждениях и состоянии отдельных объектов пробел; тело его называет.",
-    "Предварительные параметры PTWC 7,6/33 км нельзя подменять ими текущие preferred 7,7/12,647 USGS.",
-    "У заметки imageChanges отсутствует; неизменный архивный кадр используется также хабом. Итоговый публичный реестр должен сохранять сведения о его подготовленной копии, если они есть в данных хаба.",
-    "Независимая редакционная проверка не подтверждает CI, сборку, публикацию или измеренный трафик. Все обязательные гейты финальной версии остаются у автора."
+    "Исторический итоговый бюллетень не устанавливает сегодняшний доступ к каждой дороге, порту или жилью.",
+    "Редакционная оценка не подтверждает CI, публикацию, публичную страницу, SSR, sitemap/фид или индексацию. Обязательные гейты финальной версии остаются незавершёнными."
   ],
+  "blockingIssues": [],
   "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
-  "releaseReady": false,
-  "releaseBlockingIssues": [
-    "Полный обязательный CI финального HEAD ещё не подтверждён.",
-    "402/1280, SSR/SEO, exact deploy/live и публичная атрибуция новой версии ожидают штатный выпуск."
-  ],
-  "reviewScope": "Reviewer не писал эти новости. Независимо прочитаны title/TLDR/body, актуальные AGENTS/CLAUDE/NEWS-SELECTION/RUBRIC/travel-article и QUALITY-2026. Проверены первичные тексты, механические поля, внутренние HTTP-адреса, фото/лицензии. Текст автора не изменён; reviewer меняет только score и артефакты. Тяжёлые сборки/браузеры и публикация не запускались.",
-  "evidence": {
-    "primarySource": {
-      "urls": [
-        "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/us6000u18k.geojson",
-        "https://www.tsunami.gov/events/PHEB/2026/10/09/26282000/4/WEPA40/WEPA40.txt",
-        "https://static1.emsc-csem.org/Earthquake_information/earthquake.php?id=2071955"
-      ],
-      "confirmed": [
-        "Независимый GET USGS us6000u18k: status reviewed, mag 7,7, preferred geometry depth 12,647 км; place 12 km WSW of Pitaloza Arriba.",
-        "Epoch 1791568566036 соответствует 9 октября 17:56:06 UTC и 12:56:06 America/Panama. Глубина округляется до 12,6 км.",
-        "NOAA/PTWC final № 4, 9 октября 19:39 UTC: tsunami threat passed; minor sea level fluctuations возможны в следующие после бюллетеня часы; national authorities определяют local alerts."
-      ],
-      "sourceArtifacts": [
-        {
-          "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/sources/usgs-panama.json",
-          "sha256": "bf6d596760bfce0d4c1fbeb4f2f740e50d080816c17d33c61219a0efb36df6ad"
-        }
-      ],
-      "independentObservations": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/review-evidence/independent-source-observations.json",
-      "method": "Независимое чтение сохранённого текста и свежего HTTP GET; для PTWC также полный Web bulletin."
-    },
-    "photo": {
-      "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/src/content/blog/_images/hub-costa-rica-panama/miraflores.jpg",
-      "sha256": "acfd608347638b7bf8eb3666c6557ba1011db7d13b468e22acb689b3c41f4d93",
-      "viewedByThisReviewer": true,
-      "viewMethod": "Отдельно просмотрен конечный локальный JPEG.",
-      "finding": "Финальный локальный JPEG отдельно просмотрен: контейнеровоз Sakaka у Мирафлорес, 8 июля 2015; Commons Web подтверждает Ivo Kruusamägi / CC BY-SA 4.0. Это не эпицентр и не последствия.",
-      "source": "https://commons.wikimedia.org/wiki/File:Miraflores_Locks,_Panama_-_11.jpg",
-      "credit": "Ivo Kruusamägi",
-      "license": "CC BY-SA",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "provenanceArtifact": "Commons Web 11 October 2026",
-      "publicAttributionPrepared": true,
-      "publicAttributionRenderedForThisRelease": false
-    },
-    "internalLinks": {
-      "method": "Свежий независимый HTTP GET 11 октября; title, H1, статус и hash; не считается live-проверкой новой заметки.",
-      "results": [
-        {
-          "anchor": "справке по Коста-Рике и Панаме",
-          "path": "/costa-rica-panama/",
-          "verification": {
-            "path": "/costa-rica-panama/",
-            "url": "https://traveltribe.ru/costa-rica-panama/",
-            "status": 200,
-            "checkedAt": "2026-10-11T04:43:10.951Z",
-            "sha256": "0a2051e9657114c9ef3fbe6f279b0455c06686e99114e36e75b1c8cda6a56e92",
-            "title": " Коста-Рика и Панама 2026: когда ехать, цены, маршрут ",
-            "h1": " Коста-Рика и Панама 2026 ",
-            "chars": 209743,
-            "relevantContext": " Главная Страны Коста-Рика и Панама Коста-Рика и Панама 2026 Коста-Рика и Панама — это джунгли, вулканы и два океана на одном узком перешейке: в Коста-Рике — облачный лес Монтеверде, вулкан Ареналь и пляжи внутри национальных парков, в Панаме — канал, старый город Каско-Вьехо и острова на Карибах. Виза россиянам не нужна, до 90 дней Лучшие месяцы фев–⁠мар Бюджет в день $80–⁠250 Перелёт из Москвы от $1183 Неделя на одного от $1554 Билеты в Коста-Рику и Панаму от $1183 Никита Зайцев , автор traveltribe.ru. Обзор Когда ехать Виза Что взять На этой странице 11 разделов Зачем ехать в Коста-Рику и Панаму Что посмотреть в Коста-Рике и Панаме Когда ехать в Коста-Рику и Панаму и когда купаться: погод",
-            "mentions": [
-              "Панама",
-              "Панама",
-              "Панама",
-              "Кариба",
-              "Панама",
-              "Кариба",
-              "Панама",
-              "Панама",
-              "Панама",
-              "Панама",
-              "Кариба",
-              "Панама",
-              "Панама",
-              "Панама",
-              "Панама",
-              "Панама",
-              "Панама",
-              "Панама",
-              "Панама",
-              "Панама"
-            ]
-          }
-        }
-      ]
-    },
-    "editorialCriteria": {
-      "rubric": "safety",
-      "readerTask": "Понять уточнённые параметры землетрясения и окончание угрозы цунами без ложного обещания доступности всех маршрутов.",
-      "addedValue": "Разрешено расхождение preferred USGS/предварительного PTWC/старого EMSC; отдельный сценарий уточнения участков дороги и размещения без ложного общего all-clear.",
-      "demand": "Подтверждённого измеренного спроса нет; прогноз роли не выдан за трафик."
-    },
-    "quality14": {
-      "scores": [
-        10,
-        10,
-        5,
-        10,
-        10,
-        10,
-        10,
-        10,
-        5,
-        10,
-        5,
-        5,
-        5,
-        0
-      ],
-      "criteria": [
-        {
-          "criterion": 1,
-          "name": "Задача читателя",
-          "score": 10,
-          "evidence": "Понять уточнённые параметры землетрясения и окончание угрозы цунами без ложного обещания доступности всех маршрутов."
-        },
-        {
-          "criterion": 2,
-          "name": "Обоснование темы",
-          "score": 10,
-          "evidence": "Редакционная рубрика safety; источник и аудитория зафиксированы в news-candidates.json. Спрос/трафик не заявлены измеренными."
-        },
-        {
-          "criterion": 3,
-          "name": "Место в проекте",
-          "score": 5,
-          "evidence": "Точный URL выбран; поиск по архиву не выявил повторного нового события, три ревизии остаются на прежних URL. Пробел: контекстные входящие связи новой сборки не проверены."
-        },
-        {
-          "criterion": 4,
-          "name": "Полнота и прямой ответ",
-          "score": 10,
-          "evidence": "Капсула 48 слов и тело 164 слов прочитаны; в начале прямой ответ, ограничения есть."
-        },
-        {
-          "criterion": 5,
-          "name": "Собственный вклад",
-          "score": 10,
-          "evidence": "Разрешено расхождение preferred USGS/предварительного PTWC/старого EMSC; отдельный сценарий уточнения участков дороги и размещения без ложного общего all-clear."
-        },
-        {
-          "criterion": 6,
-          "name": "Факты и источники",
-          "score": 10,
-          "evidence": "Независимый GET USGS us6000u18k: status reviewed, mag 7,7, preferred geometry depth 12,647 км; place 12 km WSW of Pitaloza Arriba. Epoch 1791568566036 соответствует 9 октября 17:56:06 UTC и 12:56:06 America/Panama. Глубина округляется до 12,6 км. NOAA/PTWC final № 4, 9 октября 19:39 UTC: tsunami threat passed; minor sea level fluctuations возможны в следующие после бюллетеня часы; national authorities определяют local alerts."
-        },
-        {
-          "criterion": 7,
-          "name": "Числа и примеры",
-          "score": 10,
-          "evidence": "Все видимые числовые условия сверены по источникам; даты события и публикации различены. date=9 октября и added=10 октября сохранены; новая checked=11 октября относится к уточнению, а не новому землетрясению."
-        },
-        {
-          "criterion": 8,
-          "name": "Исключения и применимость",
-          "score": 10,
-          "evidence": "Тело и подпись сохраняют применимость/неизвестное; В национальных предупреждениях и состоянии отдельных объектов пробел; тело его называет."
-        },
-        {
-          "criterion": 9,
-          "name": "Авторство и доверие",
-          "score": 5,
-          "evidence": "authoredBy=Codex (root), reviewer=codex-independent-news-review-20261011: разные реальные участники Codex. Пробел: публичная подпись/профиль и атрибуция в итоговом рендере не просмотрены. Читательского теста нет."
-        },
-        {
-          "criterion": 10,
-          "name": "Редактура и естественный язык",
-          "score": 10,
-          "evidence": "Вся проза прочитана в фактическом и смысловом проходе; запрещённых отдельных слов, служебных меток и выдуманного личного опыта не найдено. Композиция следует одному факту."
-        },
-        {
-          "criterion": 11,
-          "name": "SEO-обещание и метаданные",
-          "score": 5,
-          "evidence": "clipTitle: В Панаме произошло землетрясение магнитудой 7,7. Смысл сохранён; date=9 октября и added=10 октября сохранены; новая checked=11 октября относится к уточнению, а не новому землетрясению. Пробел: canonical/OG/SSR финальной сборки ещё не проверены."
-        },
-        {
-          "criterion": 12,
-          "name": "Ссылки и навигация",
-          "score": 5,
-          "evidence": "Внутренняя ссылка /costa-rica-panama/ — свежий HTTP 200 и соответствующий анкору материал. Пробел: входящие тематические связи новой версии не подтверждены."
-        },
-        {
-          "criterion": 13,
-          "name": "Оформление и доступность",
-          "score": 5,
-          "evidence": "Финальный локальный JPEG отдельно просмотрен: контейнеровоз Sakaka у Мирафлорес, 8 июля 2015; Commons Web подтверждает Ivo Kruusamägi / CC BY-SA 4.0. Это не эпицентр и не последствия. Пробел: рендер этой версии на 402/1280 и применимая доступность не проверены."
-        },
-        {
-          "criterion": 14,
-          "name": "Готовность выпуска",
-          "score": 0,
-          "evidence": "Полный CI, exact deploy, публичные изменённые URL, SSR/NewsArticle/canonical/sitemap/фид/индексация и живая проверка этой версии ещё не выполнены; 0, не N/A."
-        }
-      ],
-      "confirmedTens": 8,
-      "minimumFiveConfirmedTens": true,
-      "criticalDefectsOverrideScore": true,
-      "report": ".run/batch-2026-10-11/editorial-review.md"
-    }
+  "releaseStatus": {
+    "ci": "NOT_REVIEWED",
+    "deploy": "NOT_REVIEWED",
+    "live": "NOT_REVIEWED"
   },
-  "lifecycle": {
-    "decision": "REVISE",
-    "date": "2026-10-09T00:00:00.000Z",
-    "added": "2026-10-10",
-    "reviewOn": "2026-10-12T00:00:00.000Z",
-    "explanation": "date=9 октября и added=10 октября сохранены; новая checked=11 октября относится к уточнению, а не новому землетрясению.",
-    "datePreserved": true,
-    "addedPreserved": true
-  },
-  "checks": {
-    "fullProseRead": true,
-    "titleChars": 47,
-    "clipTitle": "В Панаме произошло землетрясение магнитудой 7,7",
-    "clipTitleMeaningPreserved": true,
-    "clipDescription": "Землетрясение в Панаме произошло 9 октября около 12:56 местного времени. Уточнённая карточка USGS указывает магнитуду 7,7 и глубину около 12,6 км.",
-    "tldrWords": 48,
-    "bodyWords": 164,
-    "tldrGate": {
-      "ok": true
-    },
-    "depthLink": {
-      "ok": true
-    },
-    "lifecycle": {
-      "ok": true
-    },
-    "yamlParser": "PASS",
-    "duplicateImageAltInitialFailure": null,
-    "languageBannedWords": [],
-    "independentReviewer": true,
-    "readerTest": false,
-    "buildBrowserCiLive": false
-  }
+  "reviewScope": "Независимый рецензент не писал прозу. Прочитаны окончательные title, TLDR и body, применимый канон, существенные источники и изменение жизненного цикла. Старые оценки не переносились автоматически. Число score определено по RUBRIC; source/source date/checked и фото рассмотрены отдельно от свежести события."
 }

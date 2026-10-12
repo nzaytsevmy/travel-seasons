@@ -1,111 +1,55 @@
 {
   "schemaVersion": 1,
   "slug": "2026-07-30-iguazu-devils-throat-boardwalk",
+  "reviewer": "Codex (tt_final_review)",
+  "reviewerTask": "/root/tt_final_review",
+  "authoredBy": "codex-news-author-20261012",
+  "reviewedAt": "2026-10-12",
+  "checkedAt": "2026-10-12",
   "score": 4,
-  "reviewer": "codex-independent-news-review-20261009",
-  "checkedAt": "2026-10-09T05:50:45.306Z",
-  "reviewedAt": "2026-10-09T05:50:45.306Z",
-  "sha256": "6250f4732ca2956cd7523f129a665740260a1f9b08ec15c0c3dbf2f8ad06baa4",
-  "sha256Scope": "full Markdown file bytes at editorial review; later header score synchronization may change this byte hash",
-  "contentHash": "ccbae7a14f071e6c6d31e6e74e41b02ff208868b3c224154f8b6f7b6c5ecdbec",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "proseHash": "ccbae7a14f071e6c6d31e6e74e41b02ff208868b3c224154f8b6f7b6c5ecdbec",
-  "proseHashScope": "same as contentHash",
-  "rationale": "Конкретное ограничение меняет маршрут по нишевому направлению: национальный парк открыт, но настил к Глотке Дьявола снят. Текст перечисляет доступные маршруты и разводит аргентинский парк с бразильской стороной. Отсутствие нового объявления о настиле не превращено в обещание его открытия; это уровень 4 по RUBRIC.",
-  "blockingIssues": [],
-  "risks": [
-    "Статус настила зависит от воды; поездку нельзя строить на предполагаемом открытии.",
-    "Редакционная готовность не подтверждает сборку, браузерный рендер, CI, публикацию, SSR/фид или live QA; эти гейты остаются у автора выпуска."
+  "rationale": "Доступ к конкретной смотровой меняет маршрут в нишевом направлении: 4. Независимо прочитаны обе страницы APN: открытые аргентинские тропы не означают открытие снятой металлической галереи. Ревизия сохраняет старую дату события и полезную границу между двумя берегами, не обещает отсутствующую дату возвращения прохода.",
+  "facts": [
+    "APN 17 сентября перечисляет открытые аргентинские маршруты, включая Inferior, Superior, Verde и Macuco.",
+    "Снятие металлической галереи связано с защитой от паводка; открытие парка не подтверждает доступ к закрытой бразильской площадке."
   ],
-  "reviewScope": "Свежий независимый Codex reviewer не писал заметки. Прочитаны весь title/TLDR/body и конечный JPEG всех 17; после адресных исправлений перечитаны изменённые части и смысловые зависимости. Это редакторское ревью, не reader-test. MD, Git, CI и публикация этим reviewer не менялись.",
-  "evidence": {
-    "primarySource": {
+  "sourceChecks": [
+    {
       "url": "https://www.argentina.gob.ar/noticias/parque-nacional-iguazu-abierto-todo-el-ano",
-      "checkedAt": "2026-10-09T05:50:45.306Z",
-      "method": "Независимо прочитаны содержательные тексты первоисточников/прямых репортажей в свежих captures от 9 октября; даты публикации отделены от даты открытия.",
-      "confirmed": [
-        "Аргентинский парк открыт; снятый настил к Глотке Дьявола не объявлен открытым.",
-        "APN называет открытыми Upper, Lower, Green, Macuco, Yvyra Reta и Territorio Yaguarete.",
-        "Закрытие бразильской смотровой не приравнено к закрытию всего аргентинского парка."
-      ],
-      "sourceArtifacts": [
-        {
-          "path": ".run/sources-2026-10-09/2026-07-30-iguazu-devils-throat-boardwalk.json",
-          "sha256": "97cbe136410b76499b0a8ae6340f8f31247f97220d9d8b24a73b743154e5948d",
-          "capturedAt": "2026-10-09T04:26:07.435Z",
-          "capturedBy": null,
-          "completePageClaimed": false
-        }
-      ],
-      "independentlyVerifiedWebSources": []
+      "checkedAt": "2026-10-12",
+      "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
+      "artifact": ".run/source-text/ed72410f3959ac32.txt",
+      "artifactSha256": "1ca5acbdd83d2ef97c6697cc60f4b4408fabeb7fbda179735a2cbcf38d279505"
     },
-    "photo": {
-      "viewedByThisReviewer": true,
-      "path": "src/content/news/_images/2026-07-30-iguazu-devils-throat-boardwalk.jpg",
-      "sha256": "22a337ae404f29a65d0ff5e17659078e52de3738cc91b46671863d0e46951693",
-      "finding": "Архивный кадр водопадов соответствует Игуасу; он не доказывает состояние мостиков 9 октября.",
-      "scope": "Сам финальный локальный JPEG просмотрен глазами, а не старый контактный лист.",
-      "credit": "P. Hughes",
-      "license": "CC BY",
-      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
-      "source": "https://commons.wikimedia.org/w/index.php?curid=195776898",
-      "title": "Глотка Дьявола на Игуасу. Архивный вид водопадов, не демонтаж мостиков.",
-      "alt": "Потоки воды и брызги у Глотки Дьявола на Игуасу",
-      "commonsMetadataRechecked": false,
-      "commonsMetadataMethod": "Повторное открытие Commons для прежнего кадра не выполнено; проверены конечная картинка и сохранённые metadata, не заявлена новая перепроверка лицензии.",
-      "commonsMetadataArtifacts": [],
-      "publicAttributionPrepared": "Настоящая publicPhotoCredits([],17 notes) возвращает 15 CC-записей, все с creator/source/licenseUrl; два Public domain законно исключены. Публичный /legal/photos/ после сборки ещё не проверен."
-    },
-    "internalLinks": {
-      "method": "Собственные свежие HTTP GET reviewer 9 октября, конечный адрес и title ответа; anchor по смыслу сопоставлен с целевой страницей. Ответ 200 не выдан за браузерную проверку.",
-      "results": [
-        {
-          "path": "/visa/argentina/",
-          "status": 200,
-          "url": "https://traveltribe.ru/visa/argentina/",
-          "checkedAt": "2026-10-09T05:35:02.326Z",
-          "title": "Виза в Аргентину не нужна россиянам в 2026 — безвиз",
-          "bodySha256": "cdb42edc3d7f5c8476cc485535e813d753438bd970772494a93c70f6596883f0"
-        }
-      ]
-    },
-    "editorialCriteria": {
-      "changesPlans": true,
-      "surprisingNature": false,
-      "concreteAndVerifiable": true,
-      "lastsLongerThanWeek": true,
-      "editorialRubric": "transport",
-      "backendTopic": "transport"
+    {
+      "url": "https://www.argentina.gob.ar/noticias/iguazu-finalizo-julio-con-un-balance-positivo-para-la-actividad-turistica",
+      "checkedAt": "2026-10-12",
+      "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
+      "artifact": ".run/source-text/04060f9049073b70.txt",
+      "artifactSha256": "a7038508ded9a5da067b23666bbb52b4bc8410090cdbf777650a95126bca2533"
     }
+  ],
+  "contentHash": "ccbae7a14f071e6c6d31e6e74e41b02ff208868b3c224154f8b6f7b6c5ecdbec",
+  "proseHash": "ccbae7a14f071e6c6d31e6e74e41b02ff208868b3c224154f8b6f7b6c5ecdbec",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body:body.trim()})); score and provenance metadata excluded",
+  "sha256": "8f0d6c1e011ad639ebb1e194d2fb67c4545062f84a6b9537dfd1c2cf267f4d01",
+  "sha256Scope": "Полный окончательный Markdown после синхронизации score и даты checked, на момент этого ревью.",
+  "photo": {
+    "source": "https://commons.wikimedia.org/w/index.php?curid=195776898",
+    "creator": "P. Hughes",
+    "license": "CC BY",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "rightsMethod": "Сохранён неизменный кадр и его прежняя атрибуция. Новые права на старый кадр этим проходом не заявляются; публичный реестр проверяется гейтами выпуска."
   },
-  "lifecycle": {
-    "decision": "CHECK_ONLY",
-    "status": null,
-    "effectiveDate": null,
-    "reviewOn": "2026-10-11",
-    "reason": "Страница парка подтверждает другие открытые маршруты и предохранительный демонтаж; нового объявления об открытии настила нет. Закрытие без срока: возврат через2дня.",
-    "originalDate": "2026-07-30",
-    "originalAdded": "2026-08-01",
-    "datePreserved": true,
-    "addedPreserved": true
+  "risks": [
+    "Не установлен срок восстановления галереи; reviewOn 15 октября требует новой проверки доступа.",
+    "Редакционная оценка не подтверждает CI, публикацию, публичную страницу, SSR, sitemap/фид или индексацию. Обязательные гейты финальной версии остаются незавершёнными."
+  ],
+  "blockingIssues": [],
+  "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
+  "releaseStatus": {
+    "ci": "NOT_REVIEWED",
+    "deploy": "NOT_REVIEWED",
+    "live": "NOT_REVIEWED"
   },
-  "checks": {
-    "fullProseRead": true,
-    "finalTldrRead": true,
-    "titleChars": 48,
-    "clipTitle": "Игуасу открыт, но мостики к Глотке Дьявола сняты",
-    "clipTitleMeaningPreserved": true,
-    "tldrWords": 46,
-    "bodyWords": 179,
-    "primarySourceRead": true,
-    "photoViewed": true,
-    "independentReviewer": true,
-    "commonsLicenseRechecked": false,
-    "languageBannedWords": [],
-    "languageMethod": "Редакторский проход всего текста; адресно устранены ранее найденные «уже» и «в рамках».",
-    "internalLinksHttp200": true,
-    "publicCreditDataPrepared": true,
-    "readerTest": false,
-    "buildBrowserCiLive": false
-  }
+  "reviewScope": "Независимый рецензент не писал прозу. Прочитаны окончательные title, TLDR и body, применимый канон, существенные источники и изменение жизненного цикла. Старые оценки не переносились автоматически. Число score определено по RUBRIC; source/source date/checked и фото рассмотрены отдельно от свежести события."
 }

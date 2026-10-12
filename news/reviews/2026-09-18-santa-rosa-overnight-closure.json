@@ -1,48 +1,48 @@
 {
   "schemaVersion": 1,
   "slug": "2026-09-18-santa-rosa-overnight-closure",
+  "reviewer": "Codex (tt_final_review)",
+  "reviewerTask": "/root/tt_final_review",
+  "authoredBy": "codex-news-author-20261012",
+  "reviewedAt": "2026-10-12",
+  "checkedAt": "2026-10-12",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review)",
-  "reviewedAt": "2026-09-18",
-  "sha256": "d2c5fa824d6b9fb92049b22535872767c39c3cd3d1c2a9f5b49477e12ae125cb",
-  "rationale": "Финальная заметка и свежий прямой HTTP-ответ NPS прочитаны независимо. Подтверждены запрет всех ночёвок по меньшей мере по 12.10 включительно, отдельный срок юго-восточной зоны до конца сезона, пожар 15.05–04.06, дневной доступ с 01.07, закрытые Torrey Pines/Water Canyon/часть Cherry Canyon и открытые длинные маршруты. 3–4 часа — типичное время пассажиров Island Packers на острове, а не время переправы. Собственная польза — соотнести открытый маршрут с обратным катером; окончание минимального срока не обещает открытия. Дата 17.09 обозначает обновление страницы NPS, а не доказанную дату введения запрета. Оценка 4 для нишевой островной поездки. Ошибочное фото городского суда заменено: итоговый кадр и Commons подтверждают именно Santa Rosa Island в Калифорнии, CC0.",
-  "risks": [
-    "Web-экстракт вернул более старую редакцию NPS от 02.09 с иным абзацем о воде; для текущей аттестации использован полный прямой HTTP 200 с датой 17.09, сохранённый отдельно.",
-    "Не установлено, что ограничение по 12.10 впервые объявлено либо продлено именно 17.09; текст не создаёт такую свежесть.",
-    "Архивная тропа мая 2025 года не подтверждает сегодняшний доступ по конкретному изображённому участку."
+  "rationale": "Ограничение ночёвок меняет решение посетителя нишевого острова: 4. Официальная NPS-страница прочитана целиком. Закрытие ночёвок по 13 октября включительно отделено от возможности бронировать позднейшие даты и от закрытия юго-востока до конца сезона. Бронь не выдана за подтверждение доступа к каждой тропе.",
+  "facts": [
+    "NPS: ночёвки запрещены минимум по 13 октября включительно, юго-восточная часть остаётся закрытой на сезон 2026.",
+    "Дневной доступ восстановлен 1 июля; ряд троп и участков остаётся закрытым после майско-июньского пожара."
   ],
-  "blockingIssues": [],
-  "evidence": [
+  "sourceChecks": [
     {
       "url": "https://home.nps.gov/chis/planyourvisit/santa-rosa-island-fire-recovery.htm",
-      "publishedOn": "2026-09-17",
-      "capture": ".run/2026-09-18/review-evidence/santa-rosa-fresh.txt",
-      "finding": "Полная свежая редакция NPS: сроки ночёвок, дневной доступ, тропы и окно 3–4 часа.",
-      "checkedOn": "2026-09-18",
-      "method": "Full supplied primary/article text plus independent web or direct HTTP reading; exact limits stated in rationale"
+      "checkedAt": "2026-10-12",
+      "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
+      "artifact": ".run/source-text/dded4d7981db1063.txt",
+      "artifactSha256": "70fe5e2f97499bf01b3318c4a319121f2cea213d497ae47373cb70c0356dd3e5"
     }
   ],
-  "lifecycle": {
-    "reviewOn": "2026-10-12",
-    "reason": "12.10 — проверить, продлён ли запрет после минимальной даты; не предполагать открытие 13.10."
+  "contentHash": "03854b1a3f7a7edfee00b917546b6a4ab76866da7bb343cd75220e73523cdd37",
+  "proseHash": "03854b1a3f7a7edfee00b917546b6a4ab76866da7bb343cd75220e73523cdd37",
+  "contentHashScope": "sha256(JSON.stringify({title,tldr,body:body.trim()})); score and provenance metadata excluded",
+  "sha256": "c1a2df3df60f8bda43e278305eee39e2c2daad7e3f755d1f244ce461fcafbc93",
+  "sha256Scope": "Полный окончательный Markdown после синхронизации score и даты checked, на момент этого ревью.",
+  "photo": {
+    "source": "https://commons.wikimedia.org/w/index.php?curid=167312630",
+    "creator": "Mx. Granger",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en/",
+    "rightsMethod": "Сохранён неизменный кадр и его прежняя атрибуция. Новые права на старый кадр этим проходом не заявляются; публичный реестр проверяется гейтами выпуска."
   },
-  "checks": {
-    "capsuleWords": 47,
-    "bodyWords": 187,
-    "wordCountMethod": "Unicode letter/number tokens with internal hyphens; Markdown link URLs excluded",
-    "clippedTitle": "Санта-Роса: ночёвки закрыты как минимум до 12 октября",
-    "titleUnchangedByClip": true,
-    "tldrGate": {
-      "ok": true
-    },
-    "internalLinkEvidence": ".run/2026-09-18/review-evidence/internal-usa-corrected.json",
-    "photoViewed": true,
-    "photoSha256": "c952f745908be6deaec466d04d78ee53665d3f0b0b4358879f40ab417776a380",
-    "photoMetadataEvidence": ".run/2026-09-18/review-evidence/commons-167312630.json",
-    "photoFinding": "Commons 167312630: Santa Rosa Island, California, Mx. Granger, 26.05.2025, CC0. Просмотрен итоговый кадр тропы между склонами; городской суд отклонён.",
-    "visiblePhotoCaptionField": "imageTitle",
-    "imageTitle": "Тропа между склонами острова Санта-Роса, май 2025 года. Архивная иллюстрация.",
-    "imageAlt": "Тропа между покрытыми кустарником склонами острова Санта-Роса",
-    "scope": "Final full news content, numbers, meaning, photos and links; no build, browser or publication assertion."
-  }
+  "risks": [
+    "Бронирование после 13 октября не отменяет ограничений конкретного участка; reviewOn 14 октября.",
+    "Редакционная оценка не подтверждает CI, публикацию, публичную страницу, SSR, sitemap/фид или индексацию. Обязательные гейты финальной версии остаются незавершёнными."
+  ],
+  "blockingIssues": [],
+  "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
+  "releaseStatus": {
+    "ci": "NOT_REVIEWED",
+    "deploy": "NOT_REVIEWED",
+    "live": "NOT_REVIEWED"
+  },
+  "reviewScope": "Независимый рецензент не писал прозу. Прочитаны окончательные title, TLDR и body, применимый канон, существенные источники и изменение жизненного цикла. Старые оценки не переносились автоматически. Число score определено по RUBRIC; source/source date/checked и фото рассмотрены отдельно от свежести события."
 }
