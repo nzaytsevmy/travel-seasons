@@ -1,60 +1,89 @@
 {
   "schemaVersion": 1,
   "slug": "2026-09-15-tokachidake-level-3-shirogane-open",
+  "reviewer": "Codex (tt_release_review_20261013)",
+  "reviewerTask": "/root/tt_release_review_20261013",
+  "authoredBy": "codex-gpt-6",
+  "reviewedAt": "2026-10-13T10:55:47.900Z",
   "score": 4,
-  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
-  "reviewedAt": "2026-10-06",
-  "sha256": "e6aa876dee522f52a7d17ea71169ebaa18121e04c359412c3576401e8b6bb217",
-  "rationale": "Оценка 4: закрытие подъёма на Токатидакэ меняет горный маршрут, тогда как открытый Сироганэ-онсэн остаётся доступным. JMA 5 октября сохраняет уровень 3 и предупреждает о крупных камнях в радиусе около 3 км; муниципалитет Биэй прямо исключает район источников и жилую зону из ограничения.",
-  "risks": [
-    "Уровень опасности и границы доступа могут измениться до плановой даты ревью; перед выездом нужен свежий JMA."
+  "rationale": "Уровень 3 и зона около 3 км подтверждены JMA в бюллетене 12 октября 16:00. Администрация Биэя подтверждает работу Сироганэ-онсэн вне зоны и ограничение дороги 966 от Богакудай в сторону Токатидакэ-онсэн. Историческое повышение уровня 12 сентября не выдано за новое событие. Метадата источника и checked=13 октября опираются на реальные первички; срок снятия ограничения не выдуман. Оценка 4 сохранена для изменения планов на нишевом направлении.",
+  "classification": "UPDATE",
+  "facts": [
+    "JMA: сводка 12.10.2026 16:00, уровень 3 сохраняется; крупные камни опасны примерно в 3 км от кратера.",
+    "Сироганэ-онсэн вне запретной зоны и работает; Токатидакэ-онсэн — отдельное место.",
+    "Подъезд до Богакудай возможен; дорога 966 дальше в сторону Токатидакэ-онсэн ограничена."
   ],
-  "blockingIssues": [],
-  "evidence": [
+  "sourceChecks": [
     {
       "url": "https://www.data.jma.go.jp/vois/data/report/activity_info/108.html",
-      "publishedOn": "2026-10-05",
-      "finding": "Последнее пояснение JMA 05.10 16:00 JST сохраняет уровень 3 и запрет входа около кратера в радиусе примерно 3 км.",
-      "checkedOn": "2026-10-06"
+      "checkedAt": "2026-10-13",
+      "method": "Независимо прочитан сохранённый первичный текст 13 октября; текущая дельта сопоставлена с уже проверенными фактами. Дата доступа не подменяет время бюллетеня.",
+      "evidence": [
+        {
+          "artifact": ".run/release-20261013/independent-source-supplement.txt",
+          "artifactSha256": "c49c07c2acd93d65c2636ee15c807e6f58a88593b3bb421a03afc0eb36499e0d"
+        }
+      ],
+      "qualification": "Проверенная сводка выпущена 12 октября 16:00, открыта рецензентом 13 октября."
     },
     {
       "url": "https://town.biei.hokkaido.jp/emergency/tokachidake.html",
-      "finding": "Биэй: уровень 3 относится к кратеру; Сироганэ-онсэн и жилые районы работают обычно.",
-      "checkedOn": "2026-10-06"
+      "checkedAt": "2026-10-13",
+      "method": "Независимо прочитан сохранённый первичный текст 13 октября; текущая дельта сопоставлена с уже проверенными фактами. Дата доступа не подменяет время бюллетеня.",
+      "evidence": [
+        {
+          "artifact": ".run/release-20261013/sources/aed5f2326d2e3109.txt",
+          "artifactSha256": "903af69c2837157f325e995f0bea1a7c505eeae5c917c5719fad5a7cdbfe65e9"
+        }
+      ],
+      "qualification": "Подтверждает разные зоны и доступ до Богакудай; не гарантирует будущий статус дороги."
     }
   ],
-  "lifecycle": {
-    "reviewOn": "2026-10-13",
-    "reason": "Проверить новый бюллетень JMA и муниципальные ограничения."
-  },
-  "checks": {
-    "capsuleWords": 52,
-    "bodyWords": 189,
-    "titleChars": 60,
-    "clipTitle": "Токатидакэ: подъём на вулкан закрыт, Сироганэ-онсэн работает",
-    "internalLink": null,
-    "internalLinkStatus": null,
-    "photoViewedToday": false,
-    "mediaScope": "Фото в этих адресных lifecycle-правках не менялось; повторный осмотр локального JPEG не проводился.",
-    "publicationDate": "2026-09-12",
-    "added": "2026-09-15",
-    "scope": "Независимая сверка финальных текстов, дат и первоисточников; без браузерных тестов, сборки, CI и live-проверки обновлённых страниц."
-  },
-  "contentHash": "a581ca373cc452a6d96eb6396adedc87a0f041a761d6898dc94e2539af5be1e0",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256Scope": "full Markdown file bytes",
-  "priorReview": {
-    "reviewer": "Codex GPT-6 — independent news_lifecycle_review (2026-09-29)",
-    "reviewedAt": "2026-09-29",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote; метаданные источников и оценки проверены отдельно.",
+  "previousReviewEvidence": {
+    "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+    "reviewedAt": "2026-10-06",
     "score": 4,
-    "contentHash": "845bd330e0b2d7a70e4e93309403dd6517b12c42713e8910ee4e283a1abc1af9",
-    "sha256": "845bd330e0b2d7a70e4e93309403dd6517b12c42713e8910ee4e283a1abc1af9",
-    "previous": {
-      "reviewer": "Codex (news_lifecycle_review)",
-      "reviewedAt": "2026-09-24",
-      "articleSha256": "5dfc135f8d423ddb41fdea67156fa3e15c29167b9f335f3cd5a4eba7e9108d8e",
-      "reviewArtifactSha256": "1f84c6dda454d406e7f059e5db4b9ee0127820c04d453b2905676dfb56bf48ea",
-      "scope": "Предыдущая аттестация, не выдаётся за сегодняшнюю проверку."
-    }
+    "contentHash": "a581ca373cc452a6d96eb6396adedc87a0f041a761d6898dc94e2539af5be1e0",
+    "sourceChecks": null,
+    "qualification": "Сохранена история предыдущего ревью; она не заменяет независимую проверку новой дельты."
+  },
+  "photo": {
+    "delta": "Изображение и права не менялись в этой дельте. Прежняя запись сохранена только как история.",
+    "independentImageInspectionInDelta": false,
+    "previousRecord": null,
+    "finalRender": "PENDING"
+  },
+  "risks": [
+    "Срок снятия уровня 3 и будущая дорога неизвестны. Публичный рендер и фотография в этой дельте не проверялись."
+  ],
+  "blockingIssues": [],
+  "reviewScope": "Независимая адресная сверка готового UPDATE и уже прочитанных первичек; рецензент не писал и не изменял source, не делегировал, не запускал браузер/build/CI, не публиковал.",
+  "checkedAt": "2026-10-13",
+  "contentHash": "a581ca373cc452a6d96eb6396adedc87a0f041a761d6898dc94e2539af5be1e0",
+  "proseHash": "a581ca373cc452a6d96eb6396adedc87a0f041a761d6898dc94e2539af5be1e0",
+  "sha256": "6883161b41d703310f2942c760979dc903840b8e01f1baeca1fbfc54d6c2cd56",
+  "sha256Scope": "Полный текущий source-файл на момент независимого дельта-ревью; последующая синхронизация score/qualityScore меняет этот SHA, но не native contentHash/proseHash.",
+  "clipTitle": "Токатидакэ: подъём на вулкан закрыт, Сироганэ-онсэн работает",
+  "titleCharacters": 60,
+  "tldrWords": 52,
+  "bodyWords": 189,
+  "reviewOn": "2026-10-20",
+  "sourceChecked": "2026-10-13",
+  "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
+  "releaseStatus": {
+    "ci": "PENDING",
+    "build": "PENDING",
+    "browser": "PENDING",
+    "deploy": "PENDING",
+    "live": "PENDING",
+    "readerTest": "NOT_PERFORMED",
+    "seoEffect": "NOT_MEASURED"
+  },
+  "deltaReview": {
+    "reviewedAt": "2026-10-13T10:55:47.900Z",
+    "method": "Адресно прочитаны изменённые фрагменты и зависимости; неизменные части приняты по завершённому независимому ревью, без повторной полной разведки.",
+    "contentHash": "a581ca373cc452a6d96eb6396adedc87a0f041a761d6898dc94e2539af5be1e0",
+    "sourceSha256": "6883161b41d703310f2942c760979dc903840b8e01f1baeca1fbfc54d6c2cd56"
   }
 }

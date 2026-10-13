@@ -1,57 +1,111 @@
 {
   "schemaVersion": 1,
   "slug": "2026-10-10-singapore-haze",
-  "reviewer": "Codex (tt_final_review)",
-  "reviewerTask": "/root/tt_final_review",
+  "reviewer": "Codex (tt_release_review_20261013)",
+  "reviewerTask": "/root/tt_release_review_20261013",
   "authoredBy": "codex-news-author-20261012",
-  "reviewedAt": "2026-10-12",
-  "checkedAt": "2026-10-12",
+  "reviewedAt": "2026-10-13T10:55:47.900Z",
   "score": 5,
-  "rationale": "Дымка меняет прогулки и нагрузку на популярном направлении: 5. Прочитаны две официальные страницы NEA. Региональный статус обновлён 12 октября 10:54, а PSI 118–168 оставлен историческим значением 10 октября. Часовой PM2.5 и прогноз суточного PSI выполняют разные задачи; рекомендации здоровых и уязвимых групп не смешаны.",
+  "rationale": "Региональная NEA 13 октября 10:52 подтверждает дымку над Сингапуром. Исторический PSI 118–168 строго привязан к 10 октября 19:00; он не описывает нынешнюю станцию или весь отпуск. Практический выбор нагрузки опирается на свежие hourly PM2.5 и forecast PSI, с раздельными рекомендациями группам. Реальная связь с отдельной отменой Firefly не превращена в закрытие всех аэропортов. Оценка 5 сохранена: действующий эпизод меняет планы на популярном направлении, без выдуманного нынешнего значения загрязнения.",
+  "classification": "UPDATE",
   "facts": [
-    "NEA Regional Haze Situation: 12 октября 10:54 сохраняется умеренная/плотная трансграничная дымка над Сингапуром и соседними территориями.",
-    "NEA advisory 10 октября 19:00 SGT: суточный PSI 118–168, Unhealthy — исторический срез.",
-    "NEA советует здоровым людям сократить длительную или интенсивную нагрузку на улице; уязвимые группы имеют отдельные рекомендации."
+    "NEA regional update: 13.10.2026 10:52, умеренная и плотная трансграничная дымка затрагивает Сингапур.",
+    "PSI 118–168 — исторические 24-часовые значения на 10.10.2026 19:00 SGT, категория Unhealthy.",
+    "Часовая PM2.5 относится к ближайшей нагрузке, прогноз суточного PSI — к планированию следующего дня; рекомендации уязвимым группам не смешаны.",
+    "Отдельная новая заметка Firefly подтверждает ограничение одного маршрута до 14 октября; source-ссылка существует."
   ],
   "sourceChecks": [
     {
-      "url": "https://www.nea.gov.sg/media/news/advisories/index/haze-situation-update-10-october-2026",
-      "checkedAt": "2026-10-12",
-      "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
-      "artifact": ".run/source-text/95e97a0b282d9a4d.txt",
-      "artifactSha256": "f0dc48e34d746a7dc9baa963769bda7c90c77737abc8ef464317fba855b78c02"
+      "url": "https://www.nea.gov.sg/corporate-functions/weather/regional-haze-situation",
+      "checkedAt": "2026-10-13",
+      "method": "Независимо прочитан сохранённый первичный текст 13 октября; текущая дельта сопоставлена с уже проверенными фактами. Дата доступа не подменяет время бюллетеня.",
+      "evidence": [
+        {
+          "artifact": ".run/release-20261013/sources/ae22fc99e3f31321.txt",
+          "artifactSha256": "2e02f0e8337d805df606eedf47a66939e4c43255724bcc668d4512a479d1d807"
+        }
+      ],
+      "qualification": "Региональный эпизод подтверждён 13 октября 10:52; нынешнее городское значение PSI из этого текста не следует."
     },
     {
-      "url": "https://www.nea.gov.sg/corporate-functions/weather/regional-haze-situation",
-      "checkedAt": "2026-10-12",
-      "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
-      "artifact": ".run/source-text/ae22fc99e3f31321.txt",
-      "artifactSha256": "92040b957c2a8b74f2d8713cf7400d014cb33f9382762dceb8ba5a1b7ba3fbd1"
+      "url": "https://www.nea.gov.sg/media/news/advisories/index/haze-situation-update-10-october-2026",
+      "checkedAt": "2026-10-13",
+      "method": "Независимо прочитан сохранённый первичный текст 13 октября; текущая дельта сопоставлена с уже проверенными фактами. Дата доступа не подменяет время бюллетеня.",
+      "evidence": [
+        {
+          "artifact": ".run/release-20261013/sources/95e97a0b282d9a4d.txt",
+          "artifactSha256": "f0dc48e34d746a7dc9baa963769bda7c90c77737abc8ef464317fba855b78c02"
+        }
+      ],
+      "qualification": "Архивный индекс и рекомендации не выданы за измерения 13 октября."
     }
   ],
-  "contentHash": "545f4ef824e8dd132b5bf98fe161f7285bfc107d90b5ded7feba2e17d89149ea",
-  "proseHash": "545f4ef824e8dd132b5bf98fe161f7285bfc107d90b5ded7feba2e17d89149ea",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body:body.trim()})); score and provenance metadata excluded",
-  "sha256": "7dde0926f46d9a7aba7726399cb32cd8b3a617ae1935c0873b7942a32d7d8122",
-  "sha256Scope": "Полный окончательный Markdown после синхронизации score и даты checked, на момент этого ревью.",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote; метаданные источников и оценки проверены отдельно.",
+  "previousReviewEvidence": {
+    "reviewer": "Codex (tt_final_review)",
+    "reviewedAt": "2026-10-12",
+    "score": 5,
+    "contentHash": "545f4ef824e8dd132b5bf98fe161f7285bfc107d90b5ded7feba2e17d89149ea",
+    "sourceChecks": [
+      {
+        "url": "https://www.nea.gov.sg/media/news/advisories/index/haze-situation-update-10-october-2026",
+        "checkedAt": "2026-10-12",
+        "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
+        "artifact": ".run/source-text/95e97a0b282d9a4d.txt",
+        "artifactSha256": "f0dc48e34d746a7dc9baa963769bda7c90c77737abc8ef464317fba855b78c02"
+      },
+      {
+        "url": "https://www.nea.gov.sg/corporate-functions/weather/regional-haze-situation",
+        "checkedAt": "2026-10-12",
+        "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
+        "artifact": ".run/source-text/ae22fc99e3f31321.txt",
+        "artifactSha256": "92040b957c2a8b74f2d8713cf7400d014cb33f9382762dceb8ba5a1b7ba3fbd1"
+      }
+    ],
+    "qualification": "Сохранена история предыдущего ревью; она не заменяет независимую проверку новой дельты."
+  },
   "photo": {
-    "source": "https://commons.wikimedia.org/wiki/File:Singapore_(SG),_Gardens_By_The_Bay_--_2019_--_4755.jpg",
-    "creator": "Dietmar Rabich",
-    "license": "CC BY-SA",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "rightsMethod": "Сохранён неизменный кадр и его прежняя атрибуция. Новые права на старый кадр этим проходом не заявляются; публичный реестр проверяется гейтами выпуска."
+    "delta": "Изображение и права не менялись в этой дельте. Прежняя запись сохранена только как история.",
+    "independentImageInspectionInDelta": false,
+    "previousRecord": {
+      "source": "https://commons.wikimedia.org/wiki/File:Singapore_(SG),_Gardens_By_The_Bay_--_2019_--_4755.jpg",
+      "creator": "Dietmar Rabich",
+      "license": "CC BY-SA",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "rightsMethod": "Сохранён неизменный кадр и его прежняя атрибуция. Новые права на старый кадр этим проходом не заявляются; публичный реестр проверяется гейтами выпуска."
+    },
+    "finalRender": "PENDING"
   },
   "risks": [
-    "Нельзя использовать исторический PSI как текущий; состояние быстро меняется, reviewOn 13 октября.",
-    "Рекомендации NEA не являются персональным медицинским назначением.",
-    "Редакционная оценка не подтверждает CI, публикацию, публичную страницу, SSR, sitemap/фид или индексацию. Обязательные гейты финальной версии остаются незавершёнными."
+    "Текущие hourly PM2.5/PSI конкретной станции и погода следующего дня неизвестны. Связь Firefly проверена в source, публичный URL нового выпуска ещё не подтверждён."
   ],
   "blockingIssues": [],
+  "reviewScope": "Независимая адресная сверка готового UPDATE и уже прочитанных первичек; рецензент не писал и не изменял source, не делегировал, не запускал браузер/build/CI, не публиковал.",
+  "checkedAt": "2026-10-13",
+  "contentHash": "6eb50ab580168a417ef917702dca6406437b560275b50d590e89371c7277ae40",
+  "proseHash": "6eb50ab580168a417ef917702dca6406437b560275b50d590e89371c7277ae40",
+  "sha256": "ebfc4c3e3ceb77bc71df49310c858baaf6d7fb228b5211e2f989d272de5cd420",
+  "sha256Scope": "Полный текущий source-файл на момент независимого дельта-ревью; последующая синхронизация score/qualityScore меняет этот SHA, но не native contentHash/proseHash.",
+  "clipTitle": "Дымка в Сингапуре сохраняется: проверяйте воздух…",
+  "titleCharacters": 49,
+  "tldrWords": 46,
+  "bodyWords": 231,
+  "reviewOn": "2026-10-14",
+  "sourceChecked": "2026-10-13",
   "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
   "releaseStatus": {
-    "ci": "NOT_REVIEWED",
-    "deploy": "NOT_REVIEWED",
-    "live": "NOT_REVIEWED"
+    "ci": "PENDING",
+    "build": "PENDING",
+    "browser": "PENDING",
+    "deploy": "PENDING",
+    "live": "PENDING",
+    "readerTest": "NOT_PERFORMED",
+    "seoEffect": "NOT_MEASURED"
   },
-  "reviewScope": "Независимый рецензент не писал прозу. Прочитаны окончательные title, TLDR и body, применимый канон, существенные источники и изменение жизненного цикла. Старые оценки не переносились автоматически. Число score определено по RUBRIC; source/source date/checked и фото рассмотрены отдельно от свежести события."
+  "deltaReview": {
+    "reviewedAt": "2026-10-13T10:55:47.900Z",
+    "method": "Адресно прочитаны изменённые фрагменты и зависимости; неизменные части приняты по завершённому независимому ревью, без повторной полной разведки.",
+    "contentHash": "6eb50ab580168a417ef917702dca6406437b560275b50d590e89371c7277ae40",
+    "sourceSha256": "ebfc4c3e3ceb77bc71df49310c858baaf6d7fb228b5211e2f989d272de5cd420"
+  }
 }

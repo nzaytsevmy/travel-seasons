@@ -1,56 +1,110 @@
 {
   "schemaVersion": 1,
   "slug": "2026-09-12-kilauea-lava-episode-55",
-  "reviewer": "Codex (tt_final_review)",
-  "reviewerTask": "/root/tt_final_review",
+  "reviewer": "Codex (tt_release_review_20261013)",
+  "reviewerTask": "/root/tt_release_review_20261013",
   "authoredBy": "codex-news-author-20261012",
-  "reviewedAt": "2026-10-12",
-  "checkedAt": "2026-10-12",
+  "reviewedAt": "2026-10-13T10:55:47.900Z",
   "score": 4,
-  "rationale": "Изменение доступа и режима вулкана полезно посетителю нишевого парка: 4. Сводка USGS 11 октября 09:42 HST подтверждает небольшую активность у северного жерла, но не начало эпизода 55. TLDR и source.name синхронизированы с телом; пахоэхоэ объяснено. Закрытые тропы подтверждены NPS отдельно от картинки на веб-камере.",
+  "rationale": "Сводка HVO 12 октября 09:50 HST подтверждает ночное зарево, малые выбросы и окончание видимых выбросов около 06:35 при продолжающихся газовых процессах. Начало 55-го эпизода высоких фонтанов не объявлено; изменившаяся деформация мешает прежнему прогнозу. Ограничения NPS отделены от активности на камере. Нишевый парк и изменение доступа обосновывают 4, без повышения оценки за обновление. Текущая дельта соответствует первичке; будущий исход неизвестен.",
+  "classification": "UPDATE",
   "facts": [
-    "USGS 11 октября 09:42 HST: небольшие выбросы у северного жерла и короткий поток по лавовой трубке; эпизод 55 не объявлен.",
-    "NPS: закрыты Halemaʻumaʻu, часть Byron Ledge и смотровые Keanakākoʻi; для Byron Ledge указано 1,3 мили, округление около 2,1 км корректно."
+    "USGS HVO: 12.10.2026 09:50 HST / 19:50 UTC, зарево и малые выбросы; видимое spattering закончилось около 06:35, газовые процессы продолжаются.",
+    "Последний эпизод высоких фонтанов №54 — 25 августа; новый №55 в этой сводке не объявлен.",
+    "NPS: Halemaʻumaʻu и часть Byron Ledge вместе 1,3 мили; Keanakākoʻi остаётся закрытой. Закрытие отдельных участков не равно закрытию всего парка."
   ],
   "sourceChecks": [
     {
-      "url": "https://www.nps.gov/havo/learn/news/20261007-nr-trail-closures.htm",
-      "checkedAt": "2026-10-12",
-      "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
-      "artifact": ".run/source-text/d55896ad9756c144.txt",
-      "artifactSha256": "040c6c89c2d5d0c653c0a50d3f8c6d58735f7adbdaee731cc2d3e20737467635"
+      "url": "https://volcanoes.usgs.gov/hans-public/volcano/hi3",
+      "checkedAt": "2026-10-13",
+      "method": "Независимо прочитан сохранённый первичный текст 13 октября; текущая дельта сопоставлена с уже проверенными фактами. Дата доступа не подменяет время бюллетеня.",
+      "evidence": [
+        {
+          "artifact": ".run/release-20261013/sources/055a9c69a28e18c7.txt",
+          "artifactSha256": "96ee3aa5359d6cac399242c4322eceba94e233574115f20987fe4758c9b4806b"
+        }
+      ],
+      "qualification": "Наблюдения относятся к указанному бюллетеню 12 октября; новый эпизод и конкретная дата фонтанов не подтверждены."
     },
     {
-      "url": "https://volcanoes.usgs.gov/hans-public/volcano/hi3",
-      "checkedAt": "2026-10-12",
-      "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
-      "artifact": ".run/source-text/055a9c69a28e18c7.txt",
-      "artifactSha256": "238ab4b8a22561e6d4ee17682de13442d3aeddda6cb88916bf79db5e219391f4"
+      "url": "https://www.nps.gov/havo/learn/news/20261007-nr-trail-closures.htm",
+      "checkedAt": "2026-10-13",
+      "method": "Независимо прочитан сохранённый первичный текст 13 октября; текущая дельта сопоставлена с уже проверенными фактами. Дата доступа не подменяет время бюллетеня.",
+      "evidence": [
+        {
+          "artifact": ".run/release-20261013/sources/d55896ad9756c144.txt",
+          "artifactSha256": "040c6c89c2d5d0c653c0a50d3f8c6d58735f7adbdaee731cc2d3e20737467635"
+        }
+      ],
+      "qualification": "Закрытие объявлено 7 октября; состояние камеры не отменяет ограничения."
     }
   ],
-  "contentHash": "9ddd46c241ee802cd53802f8b4c499ae746fc9c5b19fc8b317ad66fb33773cb1",
-  "proseHash": "9ddd46c241ee802cd53802f8b4c499ae746fc9c5b19fc8b317ad66fb33773cb1",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body:body.trim()})); score and provenance metadata excluded",
-  "sha256": "e03bac90f993ac65cb2d8b8bc8a8125af853c57ab924ee29f0d3ebea08a94cd3",
-  "sha256Scope": "Полный окончательный Markdown после синхронизации score и даты checked, на момент этого ревью.",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote; метаданные источников и оценки проверены отдельно.",
+  "previousReviewEvidence": {
+    "reviewer": "Codex (tt_final_review)",
+    "reviewedAt": "2026-10-12",
+    "score": 4,
+    "contentHash": "9ddd46c241ee802cd53802f8b4c499ae746fc9c5b19fc8b317ad66fb33773cb1",
+    "sourceChecks": [
+      {
+        "url": "https://www.nps.gov/havo/learn/news/20261007-nr-trail-closures.htm",
+        "checkedAt": "2026-10-12",
+        "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
+        "artifact": ".run/source-text/d55896ad9756c144.txt",
+        "artifactSha256": "040c6c89c2d5d0c653c0a50d3f8c6d58735f7adbdaee731cc2d3e20737467635"
+      },
+      {
+        "url": "https://volcanoes.usgs.gov/hans-public/volcano/hi3",
+        "checkedAt": "2026-10-12",
+        "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
+        "artifact": ".run/source-text/055a9c69a28e18c7.txt",
+        "artifactSha256": "238ab4b8a22561e6d4ee17682de13442d3aeddda6cb88916bf79db5e219391f4"
+      }
+    ],
+    "qualification": "Сохранена история предыдущего ревью; она не заменяет независимую проверку новой дельты."
+  },
   "photo": {
-    "source": "https://commons.wikimedia.org/w/index.php?curid=63394488",
-    "creator": "Ivtorov",
-    "license": "CC BY-SA",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "rightsMethod": "Сохранён неизменный кадр и его прежняя атрибуция. Новые права на старый кадр этим проходом не заявляются; публичный реестр проверяется гейтами выпуска."
+    "delta": "Изображение и права не менялись в этой дельте. Прежняя запись сохранена только как история.",
+    "independentImageInspectionInDelta": false,
+    "previousRecord": {
+      "source": "https://commons.wikimedia.org/w/index.php?curid=63394488",
+      "creator": "Ivtorov",
+      "license": "CC BY-SA",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "rightsMethod": "Сохранён неизменный кадр и его прежняя атрибуция. Новые права на старый кадр этим проходом не заявляются; публичный реестр проверяется гейтами выпуска."
+    },
+    "finalRender": "PENDING"
   },
   "risks": [
-    "Активность и доступ меняются быстрее срока хранения заметки; следующая сверка 13 октября.",
-    "Фото 2017 года иллюстрирует место, не эпизод 2026 года.",
-    "Редакционная оценка не подтверждает CI, публикацию, публичную страницу, SSR, sitemap/фид или индексацию. Обязательные гейты финальной версии остаются незавершёнными."
+    "Будущая активность, видимость и новые ограничения неизвестны. Локальный снимок и финальный рендер в этой дельте не перепроверялись."
   ],
   "blockingIssues": [],
+  "reviewScope": "Независимая адресная сверка готового UPDATE и уже прочитанных первичек; рецензент не писал и не изменял source, не делегировал, не запускал браузер/build/CI, не публиковал.",
+  "checkedAt": "2026-10-13",
+  "contentHash": "e691a9a8b49f97e69c1040e0012a29c4e31452a9ab4d89b86376239546badb55",
+  "proseHash": "e691a9a8b49f97e69c1040e0012a29c4e31452a9ab4d89b86376239546badb55",
+  "sha256": "7d424d6bd0786505d243e966d8e7191c28b681406f93d3c99f5e03bbb91d2592",
+  "sha256Scope": "Полный текущий source-файл на момент независимого дельта-ревью; последующая синхронизация score/qualityScore меняет этот SHA, но не native contentHash/proseHash.",
+  "clipTitle": "Килауэа: начало 55-го эпизода пока не подтверждено",
+  "titleCharacters": 50,
+  "tldrWords": 47,
+  "bodyWords": 187,
+  "reviewOn": "2026-10-14",
+  "sourceChecked": "2026-10-13",
   "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
   "releaseStatus": {
-    "ci": "NOT_REVIEWED",
-    "deploy": "NOT_REVIEWED",
-    "live": "NOT_REVIEWED"
+    "ci": "PENDING",
+    "build": "PENDING",
+    "browser": "PENDING",
+    "deploy": "PENDING",
+    "live": "PENDING",
+    "readerTest": "NOT_PERFORMED",
+    "seoEffect": "NOT_MEASURED"
   },
-  "reviewScope": "Независимый рецензент не писал прозу. Прочитаны окончательные title, TLDR и body, применимый канон, существенные источники и изменение жизненного цикла. Старые оценки не переносились автоматически. Число score определено по RUBRIC; source/source date/checked и фото рассмотрены отдельно от свежести события."
+  "deltaReview": {
+    "reviewedAt": "2026-10-13T10:55:47.900Z",
+    "method": "Адресно прочитаны изменённые фрагменты и зависимости; неизменные части приняты по завершённому независимому ревью, без повторной полной разведки.",
+    "contentHash": "e691a9a8b49f97e69c1040e0012a29c4e31452a9ab4d89b86376239546badb55",
+    "sourceSha256": "7d424d6bd0786505d243e966d8e7191c28b681406f93d3c99f5e03bbb91d2592"
+  }
 }

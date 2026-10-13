@@ -1,446 +1,80 @@
 {
   "schemaVersion": 1,
   "slug": "2026-10-11-madrid-thyssen-free-day",
-  "score": 4,
-  "reviewer": "codex-independent-news-review-20261011",
-  "reviewedAt": "2026-10-11T05:55:08.358Z",
-  "checkedAt": "2026-10-11T05:55:08.358Z",
-  "sha256": "affa8b088eb6a0323ae6b851cd8b437350934e575f2f46fccd3039cc5df2eb09",
-  "sha256Scope": "full Markdown file bytes after reviewer score synchronization; author prose not changed",
-  "contentHash": "a33e494a0b39bb4bdb21af97d62b5ba7bdbaf5dce35295a9320369b240cfb258",
-  "proseHash": "a33e494a0b39bb4bdb21af97d62b5ba7bdbaf5dce35295a9320369b240cfb258",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body.trim(); score excluded",
-  "proseHashScope": "same as contentHash",
-  "rationale": "4/5: краткосрочное культурное событие меняет план посещения Мадрида. Временное окно и официальный путь бронирования точны. Это локальный музейный повод; исключение для события с конечной датой предусмотрено инструкцией рутины, reviewOn 13 октября. Адресная связка с новой статьёй о выборе района соответствует поездке с ночёвкой; основной факт и оговорки сохранены. Добавление ссылки не повышает оценку 4/5.",
+  "reviewer": "Codex (tt_release_review_20261013)",
+  "reviewerTask": "/root/tt_release_review_20261013",
+  "authoredBy": "codex-news-author-20261013",
+  "reviewedAt": "2026-10-13T10:55:47.900Z",
+  "checkedAt": "2026-10-13",
+  "score": 3,
+  "rationale": "Объявление бесплатного дня 12 октября осталось историческим, без утверждения о фактическом проведении. Исторические часы 13–19 и редакционное «сохраняем» удалены. Нынешняя страница не приглашает на закончившееся окно; reviewOn снят. Оценка 3 сохранена: завершённое одноразовое объявление больше не меняет будущую поездку. L05 закрыт; sourceChecked относится к проверке ограничения нынешней программы, а не проведению события.",
+  "classification": "UPDATE",
+  "sourceChecks": [
+    {
+      "url": "https://www.museothyssen.org/en/exhibitions-activities/autumn-madrid",
+      "checkedAt": "2026-10-13",
+      "method": "Адресно прочитаны новая проза и уже сохранённый native первичный текст 13 октября; историческое не превращено в обещание сегодняшнего доступа.",
+      "artifact": ".run/release-20261013/sources/b4f4c3a0005713a9.txt",
+      "artifactSha256": "4952774b44277bf976240469f7eea4e31b0d36a65d2463c6d8823bf881fe5d2f"
+    }
+  ],
+  "contentHash": "406c71bac1468e3a21e5a9a3c2d36e72763307844d73a6d45373e9e577fd2ba1",
+  "proseHash": "406c71bac1468e3a21e5a9a3c2d36e72763307844d73a6d45373e9e577fd2ba1",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote; метаданные источников и оценки проверены отдельно.",
+  "sha256": "6d8991e97cf6e1c2c8536ec579b8646aa6aa225e5621a2fe29d2ac17c6dc7e06",
+  "sha256Scope": "Полный текущий source-файл на момент независимого дельта-ревью; последующая синхронизация score/qualityScore меняет этот SHA, но не native contentHash/proseHash.",
+  "clipTitle": "Тиссен: бесплатное окно было объявлено на 12 октября",
+  "tldrWords": 42,
+  "bodyWords": 170,
+  "previousReviewEvidence": {
+    "reviewedAt": "2026-10-11T05:55:08.358Z",
+    "sourceChecks": null,
+    "contentHash": "a33e494a0b39bb4bdb21af97d62b5ba7bdbaf5dce35295a9320369b240cfb258",
+    "qualification": "Предыдущая оценка — свидетельство проверки, а не автоматическое подтверждение новой прозы/исторических часов."
+  },
   "blockingIssues": [],
-  "risks": [
-    "День объявления неизвестен, поэтому нельзя писать «музей объявил 11 октября».",
-    "По окончании окна новость требует сопровождения; стоимость и доступ на другие даты не обобщаются.",
-    "Независимая редакционная проверка не подтверждает CI, сборку, публикацию или измеренный трафик. Все обязательные гейты финальной версии остаются у автора."
-  ],
   "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
-  "releaseReady": false,
-  "releaseBlockingIssues": [
-    "Полный обязательный CI финального HEAD ещё не подтверждён.",
-    "402/1280, SSR/SEO, exact deploy/live и публичная атрибуция новой версии ожидают штатный выпуск."
+  "releaseStatus": {
+    "ci": "PENDING",
+    "build": "PENDING",
+    "browser": "PENDING",
+    "deploy": "PENDING",
+    "live": "PENDING",
+    "readerTest": "NOT_PERFORMED",
+    "seoEffect": "NOT_MEASURED"
+  },
+  "photo": {
+    "qualification": "Не менялась в адресном UPDATE; этот повтор не выдаётся за новое визуальное/лицензионное ревью."
+  },
+  "risks": [
+    "Полный выпуск, финальные ссылки, canonical/render/live ещё не проверены.",
+    "Датированный архив не доказывает нынешний режим."
   ],
-  "reviewScope": "Reviewer не писал эти новости. Независимо прочитаны title/TLDR/body, актуальные AGENTS/CLAUDE/NEWS-SELECTION/RUBRIC/travel-article и QUALITY-2026. Проверены первичные тексты, механические поля, внутренние HTTP-адреса, фото/лицензии. Текст автора не изменён; reviewer меняет только score и артефакты. Тяжёлые сборки/браузеры и публикация не запускались. Последний адресный этап проверяет только новую контекстную ссылку и объём мадридской заметки. Принятые подписи сохранены; факты, отбор и остальные заметки повторно не проверялись.",
-  "evidence": {
-    "primarySource": {
-      "urls": [
-        "https://www.museothyssen.org/en/exhibitions-activities/autumn-madrid"
-      ],
-      "confirmed": [
-        "Официальный баннер музея: 12 октября бесплатный доступ с 13:00 до 19:00; предложено заранее бронировать бесплатный билет.",
-        "Маурицхёйс ♥ Тиссен-Борнемиса: временная выставка с 9 октября 2026 до 10 января 2027.",
-        "День объявления музеем не показан; 11 октября — наша публикация и проверка. Наличие мест не утверждается."
-      ],
-      "sourceArtifacts": [
-        {
-          "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/sources/thyssen.txt",
-          "sha256": "20cc0160d051452ae6ba050f46ab25f5c5e89ce4781945490e1adc1d7c2c2ee1"
-        }
-      ],
-      "independentObservations": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/review-evidence/independent-source-observations.json",
-      "method": "Независимый Web и сохранённый текст источника от 11 октября."
-    },
-    "photo": {
-      "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/src/content/news/_images/2026-10-11-madrid-thyssen-free-day.jpg",
-      "sha256": "fe97b94a098bf279ae2a92379645cd81ed8b1923e429d5610b2717f1a625ccf8",
-      "viewedByThisReviewer": true,
-      "viewMethod": "Просмотр соответствующего кадра на .run/batch-2026-10-11/photo-contact.jpg; отдельно хеширован конечный JPEG.",
-      "finding": "Контактный лист — фасад Вильяэрмоса, в котором находится музей; Luis García / CC BY-SA 3.0, 12 февраля 2011. Не очередь и не состояние слотов.",
-      "source": "https://commons.wikimedia.org/w/index.php?curid=13282652",
-      "credit": "Luis García (Zaqarbal)",
-      "license": "CC BY-SA 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-      "provenanceArtifact": ".run/batch-2026-10-11/photo-provenance.json",
-      "publicAttributionPrepared": true,
-      "publicAttributionRenderedForThisRelease": false,
-      "captionReview": {
-        "scope": "Только изменённые imageTitle и сохранённые imageChanges, точность по прежнему визуальному просмотру неизменного JPEG, Commons metadata и публичная атрибуция по данным. Отбор, title/TLDR/body и оценки не проверялись повторно.",
-        "reviewedAt": "2026-10-11T05:37:31.665Z",
-        "baseEditorialReviewedAt": "2026-10-11T04:48:43.947Z",
-        "branch": "tt-publish/2026-10-11-final",
-        "baseCommit": "23b8200dec1883482a39362fce03787c4c682068",
-        "caption": "Музей Тиссена в Мадриде, 2011 год. Архивное фото, не бесплатный день 12 октября 2026 года.",
-        "captionAccurate": true,
-        "finding": "Фасад Вильяэрмоса / музея Тиссена, Мадрид; 12 февраля 2011. Подпись архивная, не бесплатный день 12 октября 2026. Пропущенный пробел перед 2026 автор исправил.",
-        "photoUnchangedBySha256": true,
-        "photoSha256": "fe97b94a098bf279ae2a92379645cd81ed8b1923e429d5610b2717f1a625ccf8",
-        "contentHashUnchanged": true,
-        "scoreUnchanged": true,
-        "originalTitle": "Исходное название: Museo Thyssen-Bornemisza (Madrid) 07.jpg. Подготовлена уменьшенная JPEG-копия.",
-        "originalFilenamePreserved": true,
-        "commonsDate": "2011-02-12",
-        "commonsArtist": "Luis García (Zaqarbal)",
-        "commonsLicenseVerified": true,
-        "preparedCredit": {
-          "creator": "Luis García (Zaqarbal)",
-          "title": "Музей Тиссена в Мадриде, 2011 год. Архивное фото, не бесплатный день 12 октября 2026 года.",
-          "license": "CC BY-SA 3.0",
-          "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-          "source": "https://commons.wikimedia.org/w/index.php?curid=13282652",
-          "changes": [
-            "Исходное название: Museo Thyssen-Bornemisza (Madrid) 07.jpg. Подготовлена уменьшенная JPEG-копия."
-          ]
-        },
-        "existingLivePublicAttribution": {
-          "url": "https://traveltribe.ru/legal/photos/",
-          "photoRecordFound": true,
-          "text": "Museo Thyssen-Bornemisza (Madrid) 07.jpg. Архивный иллюстративный кадр, 2011-02-12. — Luis García (Zaqarbal). CC BY-SA 3.0. Исходное название: Museo Thyssen-Bornemisza (Madrid) 07.jpg. Подготовлена уменьшенная JPEG-копия.",
-          "creatorMatches": true,
-          "licenseAnchor": {
-            "href": "https://creativecommons.org/licenses/by-sa/3.0",
-            "text": "CC BY-SA 3.0"
-          },
-          "licenseMatches": true,
-          "licenseVersionVerifiedByExactLinkedUri": true,
-          "originalNamePresent": true,
-          "changesDisclosurePresent": true,
-          "unicodeSpaceNormalization": "HTML text content without inserted spaces around inline tags; numeric/entity decoding; Unicode NFC; all Unicode whitespace collapsed to ordinary spaces",
-          "nbspObserved": true
-        },
-        "newCaptionLiveRendered": false,
-        "sourceObservations": [
-          {
-            "kind": "legal",
-            "url": "https://traveltribe.ru/legal/photos/",
-            "status": 200,
-            "checkedAt": "2026-10-11T05:33:28.198Z",
-            "sha256": "ebde2eb9e6d6533253362b27ad9cad3779c2e356c48e7e685a7eb7cf6c640053"
-          },
-          {
-            "kind": "commons",
-            "url": "https://commons.wikimedia.org/w/api.php?action=query&format=json&pageids=30948866%7C105220580%7C103042248%7C13282652&prop=imageinfo&iiprop=url%7Cextmetadata",
-            "status": 200,
-            "checkedAt": "2026-10-11T05:33:27.993Z",
-            "sha256": "b5ce9d1af72e0a043a5aa9ba8cad828bf868c9b0bab6306ab24f88f43f334ab6"
-          }
-        ],
-        "sourceArtifacts": [
-          {
-            "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/review-evidence/caption-photo-metadata.json",
-            "sha256": "d937d43c27187f561ecfb17c91c0f6bb0d4b536198df741e40430afd5ccc4667"
-          },
-          {
-            "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/review-evidence/caption-source-observations.json",
-            "sha256": "dbaeeffc5042496b4b98b8519bf237de87a71c451cea147b46031a8f0589e79c"
-          },
-          {
-            "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/review-evidence/caption-live-legal-photos.html",
-            "sha256": "ebde2eb9e6d6533253362b27ad9cad3779c2e356c48e7e685a7eb7cf6c640053"
-          },
-          {
-            "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/review-evidence/caption-attribution-integrity.json",
-            "sha256": "839253aab79a0487d55dacfd36479761cc855139f1bd2a304e1a3a83da9f12cd"
-          }
-        ],
-        "blockingIssues": [],
-        "report": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/caption-review.md"
-      },
-      "publicExistingAttributionVerified": true
-    },
-    "internalLinks": {
-      "method": "Неизменная /spain/ — прежний независимый HTTP 200 от 11 октября. Новая /blog/madrid-gde-ostanovitsya/ — только локальный MDX и маршрут Astro; публичный ответ/рендер не проверялись в этом адресном этапе.",
-      "results": [
-        {
-          "anchor": "справке по Испании",
-          "path": "/spain/",
-          "verification": {
-            "path": "/spain/",
-            "url": "https://traveltribe.ru/spain/",
-            "status": 200,
-            "checkedAt": "2026-10-11T04:43:11.008Z",
-            "sha256": "c970a01f6fb398ad4dc8fade0a3efffd68517bf2d13f7525b62e7dab84a6ad98",
-            "title": " Испания 2026 для россиян: когда ехать, цены, маршрут ",
-            "h1": " Испания 2026 ",
-            "chars": 231993,
-            "relevantContext": " Главная Страны Испания Испания 2026 Испания собирает в одну поездку большие музеи, море и мавританский юг: Прадо в Мадриде, Саграду Фамилию в Барселоне, Альгамбру в Гранаде, а зимой ещё и тёплые Канары. Виза россиянам нужна заранее Лучшие месяцы апр, сен Бюджет в день $80–⁠250 Перелёт из Москвы от $236 Неделя на одного от $740 Билеты в Испанию от $236 Никита Зайцев , автор traveltribe.ru. Обзор Когда ехать Виза Что взять Сравнить На этой странице 12 разделов Зачем ехать в Испанию Когда ехать в Испанию: погода по месяцам События по месяцам Маршрут на 7–⁠10 дней Где смотреть Как добраться в Испанию Где остановиться Сколько стоит поездка в Испанию Въезд, деньги и связь Что нужно знать на месте",
-            "mentions": [
-              "Мадрид",
-              "Мадрид",
-              "Мадрид",
-              "Мадрид",
-              "Мадрид",
-              "Мадрид",
-              "Мадрид",
-              "Мадрид",
-              "Мадрид",
-              "Мадрид",
-              "Мадрид",
-              "Мадрид",
-              "Мадрид",
-              "Мадрид",
-              "Мадрид",
-              "Мадрид",
-              "Мадрид",
-              "Мадрид",
-              "Мадрид",
-              "Мадрид"
-            ]
-          }
-        },
-        {
-          "anchor": "сравнение районов Мадрида",
-          "path": "/blog/madrid-gde-ostanovitsya/",
-          "verification": {
-            "type": "LOCAL_MDX_AND_ROUTE_ONLY",
-            "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/src/content/blog/madrid-gde-ostanovitsya.mdx",
-            "sha256": "e93bb54c15e952e35fd1252b1d23fe500e0edafdaa723bc849eb4e7eb0d19f67",
-            "title": "Где остановиться в Мадриде: какой район выбрать",
-            "description": "Шесть вариантов для первой поездки в Мадрид: музеи, прогулки, парк, ночная жизнь и спокойный сон. Как проверить адрес, номер и поздний заезд.",
-            "headings": [
-              "Как быстро выбрать район под свою поездку?",
-              "Баррио де лас Летрас: музеи и первый приезд",
-              "Ретиро: парк рядом, но с какой стороны?",
-              "Соль и Гран-Виа: короткая поездка пешком",
-              "Ла-Латина: ужин важнее раннего отбоя",
-              "Маласанья: если хочется выходить вечером",
-              "Чамбери: для более долгого пребывания",
-              "Стоит ли жить у Аточи или аэропорта?",
-              "Как проверить номер до оплаты?",
-              "Как бронировать с российской картой?",
-              "Что говорят постояльцы о шуме",
-              "Частые вопросы"
-            ],
-            "draft": false,
-            "slugOverride": null,
-            "expectedRoute": "/blog/madrid-gde-ostanovitsya/",
-            "routeFile": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/src/pages/blog/[...slug].astro",
-            "routeFileSha256": "9595f56a5ce70aa885ec663450402e2e92196c84acd86f801d74d9d7f289ee4d",
-            "routeMappingVerified": true,
-            "checkedAt": "2026-10-11T05:55:08.358Z",
-            "publicHttpStatus": null,
-            "publicRenderingChecked": false,
-            "scope": "Проверены наличие локального MDX, название/описание/разделы сравнения районов и соответствие URL штатному маршруту Astro. Полное редакционное/фактическое ревью статьи не входит в объём."
-          },
-          "context": "Фраза «Для поездки с ночёвкой» задаёт уместный следующий шаг: выбрать район размещения для музейного городского маршрута. Условия бесплатного входа и бронирования не меняет."
-        }
-      ]
-    },
-    "editorialCriteria": {
-      "rubric": "event",
-      "readerTask": "Спланировать бесплатное посещение музея 12 октября в правильное окно и получить билет без обещания свободного слота.",
-      "addedValue": "Разделены бесплатное окно, утренний визит, выбранный слот и объём доступа по билету; информация о свободных местах не достроена.",
-      "demand": "Подтверждённого измеренного спроса нет; прогноз роли не выдан за трафик."
-    },
-    "quality14": {
-      "scores": [
-        10,
-        10,
-        5,
-        10,
-        10,
-        10,
-        10,
-        10,
-        5,
-        10,
-        5,
-        5,
-        5,
-        0
-      ],
-      "criteria": [
-        {
-          "criterion": 1,
-          "name": "Задача читателя",
-          "score": 10,
-          "evidence": "Спланировать бесплатное посещение музея 12 октября в правильное окно и получить билет без обещания свободного слота."
-        },
-        {
-          "criterion": 2,
-          "name": "Обоснование темы",
-          "score": 10,
-          "evidence": "Редакционная рубрика event; источник и аудитория зафиксированы в news-candidates.json. Спрос/трафик не заявлены измеренными."
-        },
-        {
-          "criterion": 3,
-          "name": "Место в проекте",
-          "score": 5,
-          "evidence": "Точный URL выбран; поиск по архиву не выявил повторного нового события, три ревизии остаются на прежних URL. Пробел: контекстные входящие связи новой сборки не проверены."
-        },
-        {
-          "criterion": 4,
-          "name": "Полнота и прямой ответ",
-          "score": 10,
-          "evidence": "Капсула 47 слов и окончательное тело 170 слов; прямой ответ и необходимые условия сохранились. Адресно прочитан изменённый последний абзац: контекстная ссылка добавляет сценарий размещения, не меняет бесплатный вход/бронирование."
-        },
-        {
-          "criterion": 5,
-          "name": "Собственный вклад",
-          "score": 10,
-          "evidence": "Разделены бесплатное окно, утренний визит, выбранный слот и объём доступа по билету; информация о свободных местах не достроена."
-        },
-        {
-          "criterion": 6,
-          "name": "Факты и источники",
-          "score": 10,
-          "evidence": "Официальный баннер музея: 12 октября бесплатный доступ с 13:00 до 19:00; предложено заранее бронировать бесплатный билет. Маурицхёйс ♥ Тиссен-Борнемиса: временная выставка с 9 октября 2026 до 10 января 2027. День объявления музеем не показан; 11 октября — наша публикация и проверка. Наличие мест не утверждается."
-        },
-        {
-          "criterion": 7,
-          "name": "Числа и примеры",
-          "score": 10,
-          "evidence": "Все видимые числовые условия сверены по источникам; даты события и публикации различены. date/added/checked=11 октября — наша публикация/проверка; событие 12 октября; reviewOn 13 октября. Нет ложной даты музейного объявления."
-        },
-        {
-          "criterion": 8,
-          "name": "Исключения и применимость",
-          "score": 10,
-          "evidence": "Тело и подпись сохраняют применимость/неизвестное; День объявления неизвестен, поэтому нельзя писать «музей объявил 11 октября»."
-        },
-        {
-          "criterion": 9,
-          "name": "Авторство и доверие",
-          "score": 5,
-          "evidence": "authoredBy=Codex (root), reviewer=codex-independent-news-review-20261011: разные реальные участники Codex. Пробел: публичная подпись/профиль и атрибуция в итоговом рендере не просмотрены. Читательского теста нет."
-        },
-        {
-          "criterion": 10,
-          "name": "Редактура и естественный язык",
-          "score": 10,
-          "evidence": "Вся проза прочитана в фактическом и смысловом проходе; запрещённых отдельных слов, служебных меток и выдуманного личного опыта не найдено. Композиция следует одному факту."
-        },
-        {
-          "criterion": 11,
-          "name": "SEO-обещание и метаданные",
-          "score": 5,
-          "evidence": "clipTitle: Мадрид: музей Тиссена будет бесплатным 12 октября. Смысл сохранён; date/added/checked=11 октября — наша публикация/проверка; событие 12 октября; reviewOn 13 октября. Нет ложной даты музейного объявления. Пробел: canonical/OG/SSR финальной сборки ещё не проверены."
-        },
-        {
-          "criterion": 12,
-          "name": "Ссылки и навигация",
-          "score": 5,
-          "evidence": "Справка /spain/ — прежний независимый HTTP 200, URL и смысл не изменились. Новое «сравнение районов Мадрида» соответствует локальному готовому MDX «Где остановиться в Мадриде: какой район выбрать» и штатному маршруту /blog/madrid-gde-ostanovitsya/. Пробел: публичный ответ нового URL и входящие связи финального выпуска ещё не подтверждены; балл остаётся 5."
-        },
-        {
-          "criterion": 13,
-          "name": "Оформление и доступность",
-          "score": 5,
-          "evidence": "Фасад Вильяэрмоса / музея Тиссена, Мадрид; 12 февраля 2011. Подпись архивная, не бесплатный день 12 октября 2026. Пропущенный пробел перед 2026 автор исправил. Новый imageTitle независимо проверен; оригинальное название сохранено в imageChanges. Commons автор/дата/лицензия и существующая публичная атрибуция подтверждены свежими HTTP 200. У Luis García (Zaqarbal) Unicode-пробелы нормализованы; автор совпадает. Пробел: новый рендер подписи, 402/1280 и применимая доступность не проверены; балл остаётся 5."
-        },
-        {
-          "criterion": 14,
-          "name": "Готовность выпуска",
-          "score": 0,
-          "evidence": "Полный CI, exact deploy, публичные изменённые URL, SSR/NewsArticle/canonical/sitemap/фид/индексация и живая проверка этой версии ещё не выполнены; 0, не N/A."
-        }
-      ],
-      "confirmedTens": 8,
-      "minimumFiveConfirmedTens": true,
-      "criticalDefectsOverrideScore": true,
-      "report": ".run/batch-2026-10-11/editorial-review.md"
-    },
-    "captionOnlyRefresh": {
-      "scope": "Только изменённые imageTitle и сохранённые imageChanges, точность по прежнему визуальному просмотру неизменного JPEG, Commons metadata и публичная атрибуция по данным. Отбор, title/TLDR/body и оценки не проверялись повторно.",
-      "at": "2026-10-11T05:37:31.665Z",
-      "baseEditorialReviewedAt": "2026-10-11T04:48:43.947Z",
-      "report": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/caption-review.md"
-    },
-    "linkOnlyRefresh": {
-      "scope": "Одна добавленная контекстная ссылка в последнем абзаце и итоговый объём мадридской новости. Отбор, первички, фото, цены и даты повторно не проверялись.",
-      "reviewedAt": "2026-10-11T05:55:08.358Z",
-      "previousReviewedAt": "2026-10-11T05:37:31.665Z",
-      "previousContentHash": "6c7c6109a37b608fbaf127b3e9e43c49510a7535970fc4b9649e5c0ec044f6fb",
-      "newContentHash": "a33e494a0b39bb4bdb21af97d62b5ba7bdbaf5dce35295a9320369b240cfb258",
-      "titleUnchanged": true,
-      "tldrUnchanged": true,
-      "firstThreeParagraphsUnchanged": true,
-      "bookingCaveatsUnchanged": true,
-      "acceptedCaptionUnchanged": true,
-      "scoreUnchanged": true,
-      "target": {
-        "type": "LOCAL_MDX_AND_ROUTE_ONLY",
-        "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/src/content/blog/madrid-gde-ostanovitsya.mdx",
-        "sha256": "e93bb54c15e952e35fd1252b1d23fe500e0edafdaa723bc849eb4e7eb0d19f67",
-        "title": "Где остановиться в Мадриде: какой район выбрать",
-        "description": "Шесть вариантов для первой поездки в Мадрид: музеи, прогулки, парк, ночная жизнь и спокойный сон. Как проверить адрес, номер и поздний заезд.",
-        "headings": [
-          "Как быстро выбрать район под свою поездку?",
-          "Баррио де лас Летрас: музеи и первый приезд",
-          "Ретиро: парк рядом, но с какой стороны?",
-          "Соль и Гран-Виа: короткая поездка пешком",
-          "Ла-Латина: ужин важнее раннего отбоя",
-          "Маласанья: если хочется выходить вечером",
-          "Чамбери: для более долгого пребывания",
-          "Стоит ли жить у Аточи или аэропорта?",
-          "Как проверить номер до оплаты?",
-          "Как бронировать с российской картой?",
-          "Что говорят постояльцы о шуме",
-          "Частые вопросы"
-        ],
-        "draft": false,
-        "slugOverride": null,
-        "expectedRoute": "/blog/madrid-gde-ostanovitsya/",
-        "routeFile": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/src/pages/blog/[...slug].astro",
-        "routeFileSha256": "9595f56a5ce70aa885ec663450402e2e92196c84acd86f801d74d9d7f289ee4d",
-        "routeMappingVerified": true,
-        "checkedAt": "2026-10-11T05:55:08.358Z",
-        "publicHttpStatus": null,
-        "publicRenderingChecked": false,
-        "scope": "Проверены наличие локального MDX, название/описание/разделы сравнения районов и соответствие URL штатному маршруту Astro. Полное редакционное/фактическое ревью статьи не входит в объём."
-      },
-      "tldrWords": 47,
-      "bodyWords": 170,
-      "report": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/caption-review.md",
-      "blockingIssues": []
+  "resolvedIssues": [
+    {
+      "id": "L05",
+      "priority": "P2",
+      "critical": false,
+      "scope": "due-lifecycle",
+      "file": "src/content/news/2026-10-11-madrid-thyssen-free-day.md",
+      "blocking": false,
+      "problem": "Текущий UPDATE снял будущее приглашение 12 октября. Исторические часы 13–19 не представлены нынешней официальной программой. Старый review 11 октября — свидетельство проверки, но оригинал объявления не предъявлен.",
+      "requiredChange": "Предъявить сохранённый оригинал объявления 11 октября для исторических часов либо убрать подробность 13–19. Убрать редакционную фразу «Сохраняем дату объявления как часть истории».",
+      "source": "https://www.museothyssen.org/en/exhibitions-activities/autumn-madrid",
+      "evidence": ".run/release-20261013/sources/b4f4c3a0005713a9.txt",
+      "verification": "Адресно проверить историческое доказательство/удаление часов и новый contentHash; будущее предложение уже RESOLVED.",
+      "status": "RESOLVED_BY_TARGETED_DELTA_REVIEW",
+      "resolvedAt": "2026-10-13T10:55:47.900Z",
+      "resolution": "Неподтверждённые исторические часы 13–19 и редакционное «сохраняем» удалены. Осталось историческое объявление, без утверждения о проведении и без будущего приглашения; reviewOn снят."
     }
-  },
-  "lifecycle": {
-    "decision": "NEW",
-    "date": "2026-10-11T00:00:00.000Z",
-    "added": "2026-10-11",
-    "reviewOn": "2026-10-13T00:00:00.000Z",
-    "explanation": "date/added/checked=11 октября — наша публикация/проверка; событие 12 октября; reviewOn 13 октября. Нет ложной даты музейного объявления."
-  },
-  "checks": {
-    "fullProseRead": true,
-    "titleChars": 49,
-    "clipTitle": "Мадрид: музей Тиссена будет бесплатным 12 октября",
-    "clipTitleMeaningPreserved": true,
-    "clipDescription": "Музей Тиссена-Борнемисы в Мадриде объявил бесплатный вход 12 октября, в День Испании, с 13:00 до 19:00.",
-    "tldrWords": 47,
-    "bodyWords": 170,
-    "tldrGate": {
-      "ok": true
-    },
-    "depthLink": {
-      "ok": true
-    },
-    "lifecycle": {
-      "ok": true
-    },
-    "yamlParser": "PASS",
-    "duplicateImageAltInitialFailure": "Initial js-yaml duplicated mapping key; root removed duplicate; final parse rechecked PASS.",
-    "languageBannedWords": [],
-    "independentReviewer": true,
-    "readerTest": false,
-    "buildBrowserCiLive": false,
-    "captionOnlyReview": {
-      "ok": true,
-      "photoUnchangedByHash": true,
-      "contentHashUnchanged": true,
-      "scoreUnchanged": true,
-      "originalFilenamePreserved": true,
-      "commonsMetadata": true,
-      "publicExistingAttribution": true,
-      "nbspNormalization": true,
-      "newCaptionLive": false,
-      "reviewedAt": "2026-10-11T05:37:31.665Z",
-      "contentHashUnchangedScope": "Историческая проверка изменений только подписей; следующая правка контекстной ссылки изменила proseHash и проверена отдельно."
-    },
-    "linkOnlyReview": {
-      "ok": true,
-      "titleTldrUnchanged": true,
-      "bookingCaveatsUnchanged": true,
-      "acceptedCaptionUnchanged": true,
-      "targetMdxExists": true,
-      "targetRouteMatches": true,
-      "bodyWithin150to350": true,
-      "scoreUnchanged": true,
-      "networkPhotoReviewRepeated": false
-    }
+  ],
+  "titleCharacters": 52,
+  "reviewOn": null,
+  "sourceChecked": "2026-10-13",
+  "deltaReview": {
+    "reviewedAt": "2026-10-13T10:55:47.900Z",
+    "method": "Адресно прочитаны изменённые фрагменты и зависимости; неизменные части приняты по завершённому независимому ревью, без повторной полной разведки.",
+    "contentHash": "406c71bac1468e3a21e5a9a3c2d36e72763307844d73a6d45373e9e577fd2ba1",
+    "sourceSha256": "6d8991e97cf6e1c2c8536ec579b8646aa6aa225e5621a2fe29d2ac17c6dc7e06"
   }
 }
