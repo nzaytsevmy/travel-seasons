@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "slug": "fiji-shark-diving",
-  "reviewer": "codex-independent-fiji-review-20261012",
-  "reviewedAt": "2026-10-12",
-  "authoredBy": "codex-editorial-fiji-20261012",
-  "proseHash": "aaff88cc24003afc",
+  "reviewer": "codex-independent-fiji-revision-review-20261013",
+  "reviewedAt": "2026-10-13",
+  "authoredBy": "codex-editorial-fiji-seo-20261013",
+  "proseHash": "5154d1a011390b07",
   "qualityScore": {
     "topic": 9.5,
     "facts": 9.5,
@@ -13,15 +13,84 @@
     "internalLinks": 9,
     "legal": 9,
     "overall": 9,
-    "ceiling": "Год поездки и личные расходы не установлены. Исходные видео имеют ограниченную детализацию. Итоговые CI, рендер, deploy и live ещё не проверены; читательский и поисковый эффект не измерен."
+    "ceiling": "Год поездки и личные расходы не установлены; исходные видео ограничивают детализацию. Первый выпуск 12.10.2026 прошёл CI, deploy и live. Для ревизии 13.10.2026 эти проверки на момент редакционного ревью ещё не выполнены; читательский и поисковый эффект не измерен."
   },
-  "rationale": "Независимо прочитана законченная личная история и сверены первичные условия Aqua-Trek, официальный контакт/география и текущий XML Банка России. Никита подтвердил дату без года, около20м/30мин, бычьих и тигровую акул и оператора. Просмотрены контактные листы видео и выбранные кадры, включая новый вертикальный6.2s; четыре восстановленных оригинала совпадают с сохранёнными sha256. Исправлены запас времени, двусмысленная валюта, неподтверждённое измерение дистанции и название конкретного сайта в подписи личного кадра; добавлен полезный прямой переход к программе. Условный бюджет не приписан личному чеку. У входящих ссылок small18/13слов, исходящие4адреса дают200/H1. Полный выпуск, доступность, schema, публичный вывод прав и измеренный эффект остаются HOLD, поэтому десятка всему выпуску не присвоена.",
+  "rationale": "Независимо прочитана финальная ревизия существующей статьи: заголовок, описание, новый lead, весь MDX и оба VideoObject. Сегодня открыты первичные страницы Aqua-Trek /sharkdive, /faqs и /contact и документация Google VideoObject. Полная цена и допуск совпали; USD в первом бюджете указан явно. Сохранённый оригинальный XML ЦБ на 13.10.2026 прочитан независимо, все пять сумм пересчитаны точным BigInt. uploadDate 12.10.2026 подтверждён первым успешным deploy и означает публикацию, не съёмку; секунд нет. Длительности сверены ffprobe; все 10 неизменных файлов медиа совпали с прежним независимым журналом по sha256 и размеру. Личные сведения и происхождение кадров переиспользованы из подтверждённой проверки первого выпуска, новая поездка или новый просмотр оригиналов не заявлены. Существующие JsonLd, post-lead, #article и карты услуг сохранены; новая вёрстка не изобретена. Редакционный PASS и overall 9 относятся к этому proseHash. Полные CI, рендер и live этой ревизии ожидаются, поэтому выпуску не присвоено 10/10.",
+  "independence": {
+    "actualAgent": "/root/fiji_revision_review",
+    "authorAgent": "/root",
+    "role": "Independent Codex child agent reviewing the finished Fiji revision; this agent did not write the prose",
+    "claudeUsed": false,
+    "subagentsSpawned": false
+  },
+  "priorReview": {
+    "reviewer": "codex-independent-fiji-review-20261012",
+    "reviewedAt": "2026-10-12",
+    "proseHash": "aaff88cc24003afc",
+    "actualAgent": "/root/tt_final_review",
+    "gitRef": "8dae6a84ad71a3f5b5e3244af0804dda0122861a",
+    "path": "reviews/blog/fiji-shark-diving.json",
+    "scope": "Historical source for owner-confirmed trip details, media provenance and unchanged internal-link checks. Its pending release flags are superseded by the verified original release evidence."
+  },
+  "sources": [
+    {
+      "url": "https://www.aquatrek.com/sharkdive",
+      "publisher": "Aqua-Trek",
+      "checkedAt": "2026-10-13",
+      "checkedBy": "/root/fiji_revision_review",
+      "evidence": "190 USD from 01.04.2026 for two dives with tanks/weight belts; additional 15 USD reserve fee; 25 USD/day gear. Age at least 15, Open Water without junior certification; minors accompanied by certified parent/guardian. Feeding at The Bistro without cage; species not guaranteed."
+    },
+    {
+      "url": "https://www.aquatrek.com/faqs",
+      "publisher": "Aqua-Trek",
+      "checkedAt": "2026-10-13",
+      "checkedBy": "/root/fiji_revision_review",
+      "evidence": "Full wetsuit for shark dive, no dive-computer rental, no non-diving passengers. Return 13:00–13:30 differs from sharkdive 12:30; article keeps a time buffer and asks the operator."
+    },
+    {
+      "url": "https://www.aquatrek.com/contact",
+      "publisher": "Aqua-Trek",
+      "checkedAt": "2026-10-13",
+      "checkedBy": "/root/fiji_revision_review",
+      "evidence": "The Pearl Resort dive centre, Pacific Harbour, main island Viti Levu. No personal stay at this hotel is claimed."
+    },
+    {
+      "url": "https://www.cbr.ru/scripts/XML_daily.asp?date_req=13/10/2026",
+      "publisher": "Банк России",
+      "checkedAt": "2026-10-13",
+      "checkedBy": "/root/fiji_revision_review",
+      "evidence": "Original saved XML Date=13.10.2026, USD nominal 1, value 83,9153. XML inspected independently; the author fetched it today.",
+      "localEvidence": "/Users/nikitazaytsev/Documents/Codex/2026-10-12/new-chat/work/fiji-seo-20261013/cbr.xml",
+      "sha256": "1174b71f461916b1e53cc762b6b9984d0f3815c2d7b2fc68ca31d79ae807a4d3"
+    },
+    {
+      "url": "https://developers.google.com/search/docs/appearance/structured-data/video",
+      "publisher": "Google Search Central",
+      "checkedAt": "2026-10-13",
+      "checkedBy": "/root/fiji_revision_review",
+      "evidence": "Unique name and thumbnailUrl, first-published uploadDate, contentUrl to actual video bytes, ISO duration and creator. Official microdata examples use date-only uploadDate 2024-07-19. Markup does not guarantee indexing or search visibility."
+    },
+    {
+      "url": "https://github.com/nzaytsevmy/travel-seasons/actions/runs/38262086250",
+      "publisher": "TravelTribe GitHub Actions",
+      "checkedAt": "2026-10-13",
+      "checkedBy": "/root/fiji_revision_review",
+      "evidence": "Saved native run metadata: completed success, exact merge head 8dae6a84ad71a3f5b5e3244af0804dda0122861a, created 2026-10-12T14:19:39Z, completed 14:32:11Z. Same unchanged videos were published in this release.",
+      "localEvidence": "/Users/nikitazaytsev/Documents/Codex/2026-10-12/new-chat/work/fiji-seo-20261013/first-published-deploy.json"
+    }
+  ],
   "facts": [
     {
       "claim": "26сентября, около20м и30мин; бычьи и тигровая акулы; Aqua-Trek",
-      "basis": "Прямое подтверждение Никиты в сообщениях, переданное автором задачи независимому рецензенту; визуальные материалы из ранее предоставленных вложений",
+      "basis": "Owner-confirmed details supplied directly in the review task and documented in prior independent review at 8dae6a84ad71a3f5b5e3244af0804dda0122861a",
       "confidence": "confirmed_by_user",
-      "limits": "Год, личный чек, число его погружений, чувства, размеры и дистанция не установлены и не добавлены."
+      "limits": "Год поездки, личный чек, число личных погружений, чувства, размеры и дистанция неизвестны; текущая ревизия их не добавляет."
+    },
+    {
+      "claim": "Бюджет двух погружений со сбором: 205 USD; с дневной арендой: 230 USD",
+      "basis": "190+15=205; 190+15+25=230. BigInt: rate=839153/10000 RUB/USD; round to 100 RUB. 190=15900, 15=1300, 25=2100, 205=17200, 230=19300 RUB.",
+      "confidence": "independent_exact_calculation",
+      "limits": "Оценка новой поездки, не личный чек. Перелёт, жильё, дорога, банковский курс и отдельный компьютер не включены."
     },
     {
       "claim": "Кадры и два опубликованных видео относятся к восстановленным материалам Никиты",
@@ -32,76 +101,50 @@
         "/Users/nikitazaytsev/Documents/Codex/2026-10-12/new-chat/work/fiji-trip/frames/dji-0097-contact.jpg",
         "/Users/nikitazaytsev/Documents/Codex/2026-10-12/new-chat/work/fiji-trip/frames/portrait-contact.jpg"
       ],
-      "confidence": "verified_media_chain",
-      "limits": "Все пять JPEG — стоп-кадры, не отдельная фотосессия. Старый bull15.7s из final-frames-contact не принимался за актуальный: просмотрен новый bull6.2s. Вид каждой отдельной акулы в монтажном ролике по имени файла не определялся."
+      "confidence": "prior_provenance_retained_10_files_hash_verified_today",
+      "limits": "Медиа и подписи не изменены. Новый визуальный просмотр исходников не заявляется; цепочка прежней независимой проверки переиспользована после совпадения всех 10 sha256 и размеров."
     },
     {
-      "claim": "205USD без аренды;230USD с арендой",
-      "basis": "190+15=205;190+15+25=230. Независимый точный BigInt расчёт с84,9048RUB/USD и округлением к100₽:16100,1300,2100,17400,19500₽.",
-      "confidence": "verified_calculation",
-      "limits": "Рубли ориентировочны по официальному курсу; личная оплата, банковский курс, перелёт, проживание и дорога не включены."
+      "claim": "VideoObject для двух видимых роликов; публикация 12.10.2026, длительности 25.633 и 30.016 секунды",
+      "basis": "Исходный MDX использует те же MP4 и постеры в видимом video и JSON-LD. ffprobe tiger=25.633008s, sharks=30.016000s. Уникальные #tiger-video/#sharks-video, name, description; creator #person и isPartOf #article совпадают с существующими графами.",
+      "confidence": "independent_source_and_media_metadata_check",
+      "limits": "Это проверка исходников. Фактические адреса Astro и граф финального SSR должны подтвердиться в CI/live. Нет заявления об индексации видео или годе съёмки."
     },
     {
       "claim": "Датированные Wordstat43/28 и отдельная0",
       "basis": "/Users/nikitazaytsev/Documents/Codex/2026-10-12/new-chat/work/fiji-trip/wordstat.json",
-      "confidence": "author_native_observation_reviewed",
-      "limits": "Рецензент прочёл артефакт наблюдения автора, сам интерфейс Wordstat не открывал.43/28:05.09–04.10,0:11.09–11.10; все регионы/устройства, широкие пересекающиеся фразы. Не сумма и не прогноз."
+      "confidence": "historical_native_observation_from_prior_review",
+      "limits": "Датированный снимок Wordstat не переизмерен сегодня; тема и ревизия прямо заданы владельцем. Пересекающиеся широкие частоты не складываются и не превращаются в прогноз."
     }
-  ],
-  "sources": [
-    {
-      "url": "https://www.aquatrek.com/sharkdive",
-      "publisher": "Aqua-Trek",
-      "checkedAt": "2026-10-12",
-      "evidence": "190USD с01.04.2026 за2погружения; баллоны и пояса включены;15USD дополнительный сбор;25USD/день аренда. Возраст≥15, OpenWater безjunior, несовершеннолетний ссертифицированным родителем/опекуном. Программа TheBistro18м, около50мин; возможны довосьми видов, клеток нет, кормление организовано. Возвращение около12:30."
-    },
-    {
-      "url": "https://www.aquatrek.com/faqs",
-      "publisher": "Aqua-Trek",
-      "checkedAt": "2026-10-12",
-      "evidence": "Для sharkdive полный гидрокостюм круглый год; дайв-компьютеры не сдают; пассажиров без погружения не берут, глубина/течение не подходят для снорклинга. Возврат13:00–13:30 противоречит странице программы: точное время снято, в тексте запас до второй половины дня."
-    },
-    {
-      "url": "https://www.aquatrek.com/contact",
-      "publisher": "Aqua-Trek",
-      "checkedAt": "2026-10-12",
-      "evidence": "Дайв-центр на территории ThePearl Resort, в PacificHarbour на главном острове VitiLevu. Это поддерживает географию; историческое проживание Никиты здесь не заявлено."
-    },
-    {
-      "url": "https://www.cbr.ru/scripts/XML_daily.asp?date_req=12/10/2026",
-      "publisher": "Банк России",
-      "checkedAt": "2026-10-12",
-      "evidence": "Независимый curl получил активный XML Date=10.10.2026, USD nominal1/value84,9048; sha256775c867f5d68d7730149a4929f28b46a89dd224574394c1933dc50e16b6ae0dc. Web-инструмент этот XML не открыл; прямое чтение успешно.",
-      "localEvidence": ".run/fiji-cbr-independent.xml"
-    }
-  ],
-  "editorialCorrections": [
-    "Убран личный отрицательный факт «я не измерял»; оставлено проверяемое ограничение определения дистанции по кадру.",
-    "В alt вертикального кадра описаны акулы без определения всех особей по имени файла.",
-    "PacificHarbour и VitiLevu основаны на официальной странице /contact; неподтверждённый TheBistro убран только из подписи личного кадра, сохранён как название программы оператора.",
-    "Первая цена явно выражена в долларах США; добавлен прямой полезный переход перед бронированием.",
-    "Первая половина дня заменена запасом до второй половины, чтобы не противоречить FAQ13:00–13:30."
   ],
   "links": [
     {
       "url": "https://www.aquatrek.com/sharkdive",
       "status": 200,
-      "h1": "Shark Dive at The Bistro"
+      "h1": "Shark Dive at The Bistro",
+      "checkedAt": "2026-10-13",
+      "checkedBy": "/root/fiji_revision_review"
     },
     {
       "url": "https://traveltribe.ru/blog/luchshie-oteli-mira-2026/",
       "status": 200,
-      "h1": "Лучшие новые отели мира 2026: топ-20 National Geographic"
+      "h1": "Лучшие новые отели мира 2026: топ-20 National Geographic",
+      "checkedAt": "2026-10-12",
+      "checkedBy": "/root/tt_final_review"
     },
     {
       "url": "https://traveltribe.ru/blog/strahovka-dlya-puteshestviy-2026/",
       "status": 200,
-      "h1": "Страховка для путешествий за границу 2026: какая лучше"
+      "h1": "Страховка для путешествий за границу 2026: какая лучше",
+      "checkedAt": "2026-10-12",
+      "checkedBy": "/root/tt_final_review"
     },
     {
       "url": "https://traveltribe.ru/blog/tonga-whales/",
       "status": 200,
-      "h1": "Киты в Тонга: сезон, перелёт, цены и мой опыт"
+      "h1": "Киты в Тонга: сезон, перелёт, цены и мой опыт",
+      "checkedAt": "2026-10-12",
+      "checkedBy": "/root/tt_final_review"
     }
   ],
   "media": {
@@ -159,50 +202,168 @@
     }
   ],
   "monetization": {
-    "status": "SOURCE_MAP_REVIEWED",
+    "status": "UNCHANGED_SOURCE_MAP_REVIEWED",
     "requiredSections": [
       "Как подготовиться к такому погружению"
     ],
     "offer": "insurance",
     "destination": "",
-    "lateReasonAccepted": "История и наблюдения идут первыми; страховка относится к подготовке с сертификатом и глубиной. Прямое бронирование Aqua-Trek не подменяется партнёром. Общие flights/stay предлагаются завершающим TripServices без выдуманного маршрута.",
-    "renderStatus": "HOLD"
+    "lateReasonAccepted": "Проверка покрытия дайвинга следует за допуском, сертификатом и глубиной; прямой оператор не подменён партнёром. Новый lead даёт бюджет и условия; карты услуг и денежный путь не изменены.",
+    "renderStatus": "HOLD_FOR_CURRENT_REVISION"
+  },
+  "qualityRubric": {
+    "standard": "QUALITY-2026.md v3.1 section 12",
+    "scope": "Finished source and editorial readiness of the owner-requested revision; pending release checks remain separate",
+    "criteria": [
+      {
+        "id": 1,
+        "criterion": "Задача читателя",
+        "score": 10,
+        "evidence": "src/content/blog/fiji-shark-diving.mdx lead, «Сколько стоит повторить такой выезд», «Как подготовиться»: посмотреть личную встречу и понять бюджет/допуск."
+      },
+      {
+        "id": 2,
+        "criterion": "Обоснование темы",
+        "score": 10,
+        "evidence": "Прямой запрос владельца на существующую статью; demand хранит датированные окна и ограничения, прогноз не выдуман."
+      },
+      {
+        "id": 3,
+        "criterion": "Место в проекте",
+        "score": 10,
+        "evidence": "Существующий /blog/fiji-shark-diving/ сохранён; новая страница или дубль не созданы. Две входящие ссылки в tonga-whales.mdx:137 и luchshie-oteli-mira-2026.mdx:149 присутствуют; исходящие продолжают дайвинг/островной выбор."
+      },
+      {
+        "id": 4,
+        "criterion": "Полнота и прямой ответ",
+        "score": 10,
+        "evidence": "Lead до обложки сообщает Pacific Harbour/Viti Levu, полные 205/230 USD, возраст/сертификат и исключённые расходы. Далее даны прямой оператор и действия до оплаты."
+      },
+      {
+        "id": 5,
+        "criterion": "Собственный вклад",
+        "score": 10,
+        "evidence": "Owner-confirmed dive, two personal videos and five labelled video stills; unchanged provenance reused with 10/10 matching hashes. New budget independently calculated."
+      },
+      {
+        "id": 6,
+        "criterion": "Факты и источники",
+        "score": 10,
+        "evidence": "Current independent Aqua-Trek pages and Google documentation; original dated CBR XML inspected. Personal vs operator dive length/depth and inconsistent return times remain separated."
+      },
+      {
+        "id": 7,
+        "criterion": "Числа и примеры",
+        "score": 10,
+        "evidence": "Independent exact BigInt confirms all five RUB rows; explicit USD/person/two dives/daily rental, excluded travel expenses. ffprobe verifies both duration fields."
+      },
+      {
+        "id": 8,
+        "criterion": "Исключения и применимость",
+        "score": 10,
+        "evidence": "Age 15+, non-junior Open Water, certified parent/guardian for minors; no diving partner passenger, no rental computer; own depth not a permission, species and return not guaranteed."
+      },
+      {
+        "id": 9,
+        "criterion": "Авторство и доверие",
+        "score": 10,
+        "evidence": "Никита Зайцев и реальная поездка с ограничениями; штатная подпись/profile #person; current independent Codex role/actualAgent recorded, authoredBy differs."
+      },
+      {
+        "id": 10,
+        "criterion": "Редактура и естественный язык",
+        "score": 10,
+        "evidence": "Entire final source read and factual/editorial pass performed. Lead and title match the scope; no invented memories, filler, chat citations or service-source prose. Prior findings USD/uploadDate are corrected."
+      },
+      {
+        "id": 11,
+        "criterion": "SEO-обещание и метаданные",
+        "score": 5,
+        "evidence": "Source title/description/lead and dates aligned; two distinct VideoObject records and graph references checked. Final SSR/canonical/OG/schema for this revision await CI/live."
+      },
+      {
+        "id": 12,
+        "criterion": "Ссылки и навигация",
+        "score": 5,
+        "evidence": "Unchanged two incoming and four outgoing links reviewed; operator opened today, internal HTTP proof retained from 12.10.2026. Final rendered navigation/anchors not rechecked on current build."
+      },
+      {
+        "id": 13,
+        "criterion": "Оформление и доступность",
+        "score": 5,
+        "evidence": "Existing post-lead and JsonLd patterns; 10 unchanged media hashes, explicit video sizes/controls, author cover PASS12.41KiB. New 402/1280 layout, focus and playback on final deployed source still pending."
+      },
+      {
+        "id": 14,
+        "criterion": "Готовность выпуска",
+        "score": 5,
+        "evidence": "/Users/nikitazaytsev/Documents/Codex/2026-10-12/new-chat/work/fiji-seo-20261013/preparation.json: source-preflight/cover/MDX PASS; /Users/nikitazaytsev/Documents/Codex/2026-10-12/new-chat/work/fiji-seo-20261013/feature-red.json confirms old live version misses requested features. Current normal hook, complete CI, exact deploy and live are still HOLD."
+      }
+    ],
+    "confirmedTens": 10,
+    "criticalEditorialDefects": [],
+    "releaseBlock": "Mandatory current-revision CI/deploy/live checks have not run; editorial PASS does not authorize bypass."
   },
   "checks": {
-    "officialProseHash": "PASS",
-    "journalMetadata": "PASS3articles",
-    "languageCanonicalSourceLists": "0hits",
-    "technicalLitterSourceScan": "0hits",
-    "mediaOriginalHashes": "PASS4of4",
-    "publishedVideoMetadata": "H264/AAC682x512~25.63s;512x910~30.016s",
-    "minorIncomingScope": "PASS18/13addedWords",
-    "outgoingHttp": "PASS4of4",
-    "nativeDevEvidence": {
-      "path": "/Users/nikitazaytsev/Documents/Codex/2026-10-12/new-chat/work/fiji-trip/local-browser-media.json",
-      "owner": "author",
-      "scope": "Earlier dev preview:1280/402 no overflow,1H1, both videos decoded/played, noautoplay; no production proof, no final rereview of changed text wrapping."
-    }
+    "sourceRead": "PASS_FINISHED_HASH_5154d1a011390b07",
+    "changedPrimaryFacts": "PASS_INDEPENDENT_CURRENT_READ",
+    "exactBudget": "PASS_5_OF_5",
+    "mediaHashes": "PASS_10_OF_10_UNCHANGED",
+    "videoMetadata": "PASS_FFPROBE_25.633008s_30.016000s",
+    "schemaSource": "PASS_TWO_DISTINCT_VISIBLE_VIDEO_RECORDS",
+    "sourceTemplate": "PASS_EXISTING_LEAD_BEFORE_COVER_AND_RESOLVED_GRAPH_IDS",
+    "nativeReviewBefore": {
+      "ok": false,
+      "reason": "reviewedAt 2026-10-12 раньше reviewed 2026-10-13"
+    },
+    "nativeReviewAfter": {
+      "ok": true
+    },
+    "nativeProseHash": {
+      "status": "PASS",
+      "hash": "5154d1a011390b07"
+    },
+    "authorEarlyPreflight": {
+      "path": "/Users/nikitazaytsev/Documents/Codex/2026-10-12/new-chat/work/fiji-seo-20261013/preparation.json",
+      "owner": "/root",
+      "source": "PASS1file3links0errors",
+      "cover": "PASS12.41KiB",
+      "mdxCompile": "PASS0messages",
+      "scope": "Early source checks do not replace final release gates"
+    },
+    "checkedAt": "2026-10-13T07:04:49.641Z"
   },
   "risks": [
-    "Тариф, аренда и сбор пересмотреть26.10.2026; допуск/расписание12.11.2026 либо при изменении сайта оператора.",
-    "Точный возврат и набор увиденных акул не гарантированы.",
-    "Год личной поездки, личные расходы и число личных погружений неизвестны.",
-    "Исходные широкие видео682x512 и вертикальное512x910 ограничивают качество увеличения; это реальные кадры, не реконструкция.",
-    "Финальные CI/SSR/canonical/OG/schema,402/1280, доступность видео и публичный вывод photo-rights до выпуска ещё не подтверждены.",
-    "Данных о читательском эффекте, поисковых переходах или доходе новой страницы нет."
+    "Тариф, сбор и аренда пересмотреть 26.10.2026; допуск/расписание 12.11.2026 или при изменении оператора.",
+    "Год личной поездки, личные расходы и число личных погружений неизвестны и не добавлены.",
+    "Видео и пять стоп-кадров подлинные, но исходная детализация 682x512/512x910 ограничивает увеличение.",
+    "Точный возврат, видовой состав встречи и допустимая глубина конкретного дайвера не гарантированы.",
+    "Для этой ревизии обязательны финальные CI, SSR/schema, 402/1280, exact deploy и live; доказательства 12 октября относятся к прежнему proseHash.",
+    "Date-only uploadDate основан на подтверждённой первой публикации и официальном примере Google; время и год съёмки не заявлены.",
+    "Пользовательский, поисковый и денежный эффект не измерен; VideoObject не гарантирует видеоиндексацию."
   ],
   "publication": {
     "editorial": "PASS",
-    "fullCI": "HOLD",
-    "deploy": "HOLD",
-    "live": "HOLD",
+    "originalRelease": {
+      "date": "2026-10-12",
+      "commit": "8dae6a84ad71a3f5b5e3244af0804dda0122861a",
+      "fullCI": "PASS_6_REQUIRED",
+      "deploy": "PASS",
+      "live": "PASS_12_OF_12",
+      "accounting": "RECORDED",
+      "evidence": "/Users/nikitazaytsev/Documents/Codex/2026-10-12/new-chat/outputs/fiji-publication-checks.json",
+      "nativeLiveEvidence": "/Users/nikitazaytsev/Documents/Codex/2026-10-12/new-chat/work/fiji-trip/production-live.json",
+      "firstVideoDeploy": "/Users/nikitazaytsev/Documents/Codex/2026-10-12/new-chat/work/fiji-seo-20261013/first-published-deploy.json"
+    },
+    "currentRevision": {
+      "date": "2026-10-13",
+      "proseHash": "5154d1a011390b07",
+      "fullCI": "HOLD",
+      "render": "HOLD",
+      "deploy": "HOLD",
+      "live": "HOLD",
+      "accounting": "HOLD"
+    },
     "measuredEffect": "UNKNOWN"
-  },
-  "independence": {
-    "actualAgent": "/root/tt_final_review",
-    "authorAgent": "/root",
-    "role": "Independent Codex child agent on finished version",
-    "claudeUsed": false,
-    "subagentsSpawned": false
   }
 }
