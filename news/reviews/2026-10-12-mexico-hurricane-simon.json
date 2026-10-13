@@ -1,59 +1,123 @@
 {
   "schemaVersion": 1,
   "slug": "2026-10-12-mexico-hurricane-simon",
-  "reviewer": "Codex (tt_final_review)",
-  "reviewerTask": "/root/tt_final_review",
+  "reviewer": "Codex (tt_release_review_20261013)",
+  "reviewerTask": "/root/tt_release_review_20261013",
   "authoredBy": "Codex (root)",
-  "reviewedAt": "2026-10-12",
-  "checkedAt": "2026-10-12",
+  "reviewedAt": "2026-10-13T11:12:09.458Z",
   "score": 4,
-  "rationale": "Действующая угроза меняет поездку на нишевое мексиканское побережье: 4. Первичный NHC advisory 19A от 12 октября 06:00 UTC сопоставлен с сообщением 11 октября. Статус категории 3, 185 км/ч и расположение центра подтверждены; ослабление не превращено в окончание опасных дождей, волн и ветра. Архивная погода на фото не описывает ураган.",
+  "rationale": "Прочитана историческая редакция: ветер 185 км/ч, категория 3, положение и предупреждения относятся только к NHC 19A 12 октября 06:00 UTC. Нынешний статус 13 октября прямо неизвестен; архив не доказывает ни отмены, ни продолжения предупреждений. checked=12 октября сохранён, reviewOn снят. Напоминание проверять конкретный переезд и указания местных служб полезно для нишевого направления и обосновывает сохранение 4; новая текущая погода не подтверждена.",
+  "classification": "UPDATE",
   "facts": [
-    "NHC 19A: 12 октября 06:00 UTC, категория 3, ветер 185 км/ч, центр около 75 км к юго-западу от Кабо-Корриентес.",
-    "Предупреждение от Playa Perula до El Roblito включает Las Islas Marias; сохраняются угрозы сильных дождей, внезапных паводков и оползней.",
-    "Al Jazeera 11 октября передаёт призыв президента жителям прибрежных районов Халиско, Колимы, Наярита и Мичоакана укрыться."
+    "NHC 19A: 12.10.2026 06:00 UTC, категория 3, ветер 185 км/ч, центр примерно в 75 км к юго-западу от Cabo Corrientes.",
+    "Предупреждение Playa Perula–El Roblito, включая Islas Marias, ограничено датой архивного бюллетеня.",
+    "Текущая категория и действующие ограничения 13 октября в статье прямо не подтверждены."
   ],
   "sourceChecks": [
     {
       "url": "https://www.nhc.noaa.gov/archive/2026/ep20/ep202026.public_a.019.shtml",
-      "checkedAt": "2026-10-12",
-      "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
-      "artifact": ".run/simon-latest.html",
-      "artifactSha256": "eb05b183b499092652bea9648407c6d54c83bff16acdd5a571b418a0b084fcc4"
+      "checkedAt": "2026-10-13",
+      "method": "Независимо прочитан сохранённый первичный текст 13 октября; текущая дельта сопоставлена с уже проверенными фактами. Дата доступа не подменяет время бюллетеня.",
+      "evidence": [
+        {
+          "artifact": ".run/release-20261013/sources/3ce86e9c2c695803.txt",
+          "artifactSha256": "8ebcbb959deda3f3525b811e8903cace83cb2c02d0a5e95c18ed09dbc200dcd1"
+        }
+      ],
+      "qualification": "Повторное чтение архива 13 октября подтверждает только содержание 12 октября 06:00 UTC. Действующий бюллетень 13 октября не получен; checked в source не продвигался."
     },
     {
-      "url": "https://www.aljazeera.com/news/2026/10/11/mexican-president-urges-residents-to-shelter-as-hurricane-simon-approaches",
-      "checkedAt": "2026-10-12",
-      "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
-      "artifact": ".run/source-text/ae10f6d4360faf41.txt",
-      "artifactSha256": "fee5517f104009f1d07256d38d9912e8762c7f53f7180b6422ffa1a876529fad"
+      "url": "https://www.nhc.noaa.gov/",
+      "checkedAt": null,
+      "method": "Адресно сопоставлен уже существовавший href проверенной прозы и новый metadata source. Последний действующий бюллетень в этой дельте не открывался.",
+      "role": "NAVIGATION_TO_LATEST_WARNINGS",
+      "qualification": "Не доказательство текущих параметров, предупреждений или отмены опасности 13 октября. Единственное подтверждение исторических параметров остаётся архив NHC 19A 12 октября 06:00 UTC."
     }
   ],
-  "contentHash": "1b9d164f3210ef573370b41ad84244d224b5986989cedf8e77ba6e7aec0855c2",
-  "proseHash": "1b9d164f3210ef573370b41ad84244d224b5986989cedf8e77ba6e7aec0855c2",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body:body.trim()})); score and provenance metadata excluded",
-  "sha256": "43e642a69acbefc43a17a5cd37bcacc686cb3a5678a8d32090bb10bc58c1c1b0",
-  "sha256Scope": "Полный окончательный Markdown после синхронизации score и даты checked, на момент этого ревью.",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote; метаданные источников и оценки проверены отдельно.",
+  "previousReviewEvidence": {
+    "reviewer": "Codex (tt_final_review)",
+    "reviewedAt": "2026-10-12",
+    "score": 4,
+    "contentHash": "1b9d164f3210ef573370b41ad84244d224b5986989cedf8e77ba6e7aec0855c2",
+    "sourceChecks": [
+      {
+        "url": "https://www.nhc.noaa.gov/archive/2026/ep20/ep202026.public_a.019.shtml",
+        "checkedAt": "2026-10-12",
+        "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
+        "artifact": ".run/simon-latest.html",
+        "artifactSha256": "eb05b183b499092652bea9648407c6d54c83bff16acdd5a571b418a0b084fcc4"
+      },
+      {
+        "url": "https://www.aljazeera.com/news/2026/10/11/mexican-president-urges-residents-to-shelter-as-hurricane-simon-approaches",
+        "checkedAt": "2026-10-12",
+        "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
+        "artifact": ".run/source-text/ae10f6d4360faf41.txt",
+        "artifactSha256": "fee5517f104009f1d07256d38d9912e8762c7f53f7180b6422ffa1a876529fad"
+      }
+    ],
+    "qualification": "Сохранена история предыдущего ревью; она не заменяет независимую проверку новой дельты."
+  },
   "photo": {
-    "source": "https://commons.wikimedia.org/w/index.php?curid=128960235",
-    "creator": "Another Believer",
-    "license": "CC BY-SA",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "commonsPageId": 128960235,
-    "rightsEvidence": ".run/reviewer-commons-20261012.json",
-    "rightsMethod": "Независимый свежий Commons API imageinfo/extmetadata: автор и точная версия лицензии сверены."
+    "delta": "Изображение и права не менялись в этой дельте. Прежняя запись сохранена только как история.",
+    "independentImageInspectionInDelta": false,
+    "previousRecord": {
+      "source": "https://commons.wikimedia.org/w/index.php?curid=128960235",
+      "creator": "Another Believer",
+      "license": "CC BY-SA",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "commonsPageId": 128960235,
+      "rightsEvidence": ".run/reviewer-commons-20261012.json",
+      "rightsMethod": "Независимый свежий Commons API imageinfo/extmetadata: автор и точная версия лицензии сверены."
+    },
+    "finalRender": "PENDING"
   },
   "risks": [
-    "Положение и сила урагана быстро меняются; текст относится к сводке 06:00 UTC и требует пересмотра 13 октября.",
-    "Фото Puerto Vallarta 2023 года не свидетельствует о погоде 2026 года.",
-    "Редакционная оценка не подтверждает CI, публикацию, публичную страницу, SSR, sitemap/фид или индексацию. Обязательные гейты финальной версии остаются незавершёнными."
+    "Погода, предупреждения, работа дорог и остаточные последствия 13 октября неизвестны; архив не заменяет последние NHC/local-service сообщения."
   ],
   "blockingIssues": [],
+  "reviewScope": "Независимая адресная сверка готового UPDATE и уже прочитанных первичек; рецензент не писал и не изменял source, не делегировал, не запускал браузер/build/CI, не публиковал.",
+  "checkedAt": "2026-10-13",
+  "contentHash": "44971e9de5350bee01425a9d2196706b1d485b6d7f4f6b78b605c8b7623c45a0",
+  "proseHash": "44971e9de5350bee01425a9d2196706b1d485b6d7f4f6b78b605c8b7623c45a0",
+  "sha256": "4d7d2a65baf8c7b130946109b1611bfbcc84db3ed89e5550f318b6fa4cd5b26a",
+  "sha256Scope": "Полный текущий source-файл на момент независимого дельта-ревью; последующая синхронизация score/qualityScore меняет этот SHA, но не native contentHash/proseHash.",
+  "clipTitle": "Саймон у Мексики: что сообщал NHC 12 октября",
+  "titleCharacters": 44,
+  "tldrWords": 46,
+  "bodyWords": 228,
+  "reviewOn": null,
+  "sourceChecked": "2026-10-12",
   "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
   "releaseStatus": {
-    "ci": "NOT_REVIEWED",
-    "deploy": "NOT_REVIEWED",
-    "live": "NOT_REVIEWED"
+    "ci": "PENDING",
+    "build": "PENDING",
+    "browser": "PENDING",
+    "deploy": "PENDING",
+    "live": "PENDING",
+    "readerTest": "NOT_PERFORMED",
+    "seoEffect": "NOT_MEASURED"
   },
-  "reviewScope": "Независимый рецензент не писал прозу. Прочитаны окончательные title, TLDR и body, применимый канон, существенные источники и изменение жизненного цикла. Старые оценки не переносились автоматически. Число score определено по RUBRIC; source/source date/checked и фото рассмотрены отдельно от свежести события."
+  "deltaReview": {
+    "reviewedAt": "2026-10-13T10:55:47.900Z",
+    "method": "Адресно прочитаны изменённые фрагменты и зависимости; неизменные части приняты по завершённому независимому ревью, без повторной полной разведки.",
+    "contentHash": "44971e9de5350bee01425a9d2196706b1d485b6d7f4f6b78b605c8b7623c45a0",
+    "sourceSha256": "e03f8ce9ea72752396d063fb77df504f5156024981b58cc8386141b1d5740dd8"
+  },
+  "sourceDate": "2026-10-12",
+  "metadataDeltaReview": {
+    "reviewedAt": "2026-10-13T11:12:09.458Z",
+    "before": {
+      "sha256": "e03f8ce9ea72752396d063fb77df504f5156024981b58cc8386141b1d5740dd8",
+      "reviewedAt": "2026-10-13T10:55:47.900Z",
+      "contentHash": "44971e9de5350bee01425a9d2196706b1d485b6d7f4f6b78b605c8b7623c45a0"
+    },
+    "sourceSha256": "4d7d2a65baf8c7b130946109b1611bfbcc84db3ed89e5550f318b6fa4cd5b26a",
+    "contentHashUnchanged": true,
+    "changes": [
+      "В sources добавлен уже присутствовавший в проверенной прозе портал NHC. Он служит для проверки перед поездкой и не подтверждает погоду 13 октября. checked=12 октября сохранён."
+    ],
+    "scope": "Только metadata и их доказательные зависимости; новое полное ревью, браузер, CI и публикация не выполнялись.",
+    "gateEvidenceQualification": "Parent сообщил GREEN адресного runGate(offline); этот факт не выдаётся за независимо запущенный CI или живую проверку."
+  }
 }

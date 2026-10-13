@@ -32,6 +32,7 @@ export const RELATED_POSTS = {
     { slug: 'bali-guide-2026', title: 'Бали 2026: виза, цены, районы', kind: 'guide' },
   ],
   'hainan': [
+    { slug: 'fukuok-ili-haynan', title: 'Фукуок или Хайнань: сезон, бухта и полный бюджет', kind: 'guide' },
     { slug: 'hainan-guide-2026', title: 'Хайнань 2026: безвиз, Alipay, VPN, цены', kind: 'guide' },
   ],
   'india-goa': [
@@ -94,6 +95,7 @@ export const RELATED_POSTS = {
     { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
   ],
   'vietnam': [
+    { slug: 'fukuok-ili-haynan', title: 'Фукуок или Хайнань: сезон, бухта и полный бюджет', kind: 'guide' },
     { slug: 'vietnam-guide-2026', title: 'Вьетнам 2026: виза, Нячанг, Фукуок, цены', kind: 'guide' },
     { slug: 'nyachang-fukuok-2026', title: 'Нячанг или Фукуок 2026: где лучше отдыхать', kind: 'guide' },
     { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
