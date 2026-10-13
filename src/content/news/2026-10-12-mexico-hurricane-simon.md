@@ -16,6 +16,8 @@ countries:
 sources:
   - name: "NHC — бюллетень Саймон 19A, 12.10.2026 06:00 UTC; прочитано 12.10.2026"
     url: "https://www.nhc.noaa.gov/archive/2026/ep20/ep202026.public_a.019.shtml"
+  - name: "NHC — последние сообщения и действующие предупреждения; ссылка для проверки перед выездом, текущая погода 13.10.2026 в заметке не подтверждена"
+    url: "https://www.nhc.noaa.gov/"
   - name: "Al Jazeera / Reuters и AP — предупреждения властей побережья, 11.10.2026; прочитано 12.10.2026"
     url: "https://www.aljazeera.com/news/2026/10/11/mexican-president-urges-residents-to-shelter-as-hurricane-simon-approaches"
 image: "./_images/2026-10-12-mexico-hurricane-simon.jpg"

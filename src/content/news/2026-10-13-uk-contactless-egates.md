@@ -5,6 +5,7 @@ added: "2026-10-13"
 checked: "2026-10-13"
 reviewOn: "2027-01-07"
 topic: visa
+status: "действует"
 impact: medium
 score: 3
 authoredBy: "codex-news-author-20261013"
