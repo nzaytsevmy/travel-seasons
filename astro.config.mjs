@@ -5,7 +5,7 @@ import compress from 'astro-compress';
 import brokenLinks from 'astro-broken-links-checker';
 import { readFileSync, readdirSync } from 'node:fs';
 import remarkNumerals from './tools/remark-numerals.mjs';
-import { monthKey, FEED_SIZE, feedEntries } from './src/data/news.js';
+import { monthKey, FEED_SIZE, frontPageEntries } from './src/data/news.js';
 import { latestFeedCheck } from './src/data/news-discovery.js';
 import rehypeTableWrap from './tools/rehype-table-wrap.mjs';
 import rehypeFaqAccordion from './tools/rehype-faq-accordion.mjs';
@@ -77,6 +77,8 @@ for (const f of readdirSync(NEWS_DIR)) {
     // Дата выпуска — тот же ключ, по которому лента сортирует и режется.
     added: new Date(added || checked), slug: f.replace(/\.mdx?$/, ''),
     archived: /^archived:\s*true\s*$/m.test(fm),
+    score: Number(fm.match(/^score:\s*(\d+)/m)?.[1] ?? 0),
+    impact: (fm.match(/^impact:\s*(.+)$/m)?.[1] || '').replace(/['"]/g, '').trim(),
   });
 }
 // ⛔ У самой заметки даты не было: лента и архив месяца её получали, а страница
@@ -89,7 +91,7 @@ const maxChecked = (list) => latestFeedCheck(list.map(data => ({ data })));
 // них. Считать максимум по ВСЕМ заметкам нельзя: пересверка старой заметки,
 // которой на ленте нет, объявила бы ленту обновлённой без единой правки на ней.
 const newsFeedLastmod = maxChecked(
-  feedEntries(newsChecked.map(data => ({ slug: data.slug, data })), FEED_SIZE).map(entry => entry.data),
+  frontPageEntries(newsChecked.map(data => ({ slug: data.slug, data })), FEED_SIZE).map(entry => entry.data),
 );
 // Страница есть у каждого месяца с заметками, включая текущий: её дата — самая
 // поздняя сверка внутри месяца.

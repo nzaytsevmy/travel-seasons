@@ -6,6 +6,23 @@ const config = { selectionMode: 'editorial', targetPerDay: null, maxPerDay: null
 const day = '2026-10-14';
 const note = (i, score = 4, added = day) => ({ file: `src/content/news/story-${String(i).padStart(2, '0')}.md`, note: { data: { score, added, checked: day, topic: 'nature' } } });
 const inventory = (candidates = [], tracked = [], cfg = config) => buildEditorialInventory({ config: cfg, candidates, tracked, day });
+test('important access change ranks first, then verified attention, without discarding other candidates', () => {
+  const urgent = note(1, 3); urgent.note.data.impact = 'high';
+  const rising = note(2, 4); rising.note.data.attentionQuery = 'Шереметьево';
+  const ordinary = note(3, 5); ordinary.note.data.attentionQuery = 'Альдабра';
+  const now = new Date('2026-10-14T11:00:00Z');
+  const attention = { status: 'ok', region: 'RU', observedAt: now.toISOString(), items: [
+    { query: 'Шереметьево', startedAt: '2026-10-14T09:50:00Z', reportedTraffic: '1000+' },
+  ] };
+  const r = buildEditorialInventory({ config, day, now, attention, candidates: [ordinary, rising, urgent] });
+  assert.deepEqual(r.ready_for_source_and_independent_review.map(x => x.file), [urgent.file, rising.file, ordinary.file]);
+  assert.equal(r.ready_for_source_and_independent_review[1].searchSurge[0].reportedTraffic, '1000+');
+  assert.deepEqual(r.deleted_files, []);
+  assert.equal(r.attention_status, 'fresh_ru');
+  const stale = buildEditorialInventory({ config, day, now, attention: { ...attention, observedAt: '2026-10-01' }, candidates: [ordinary, rising] });
+  assert.equal(stale.attention_status, 'unavailable_or_stale');
+  assert.deepEqual(stale.ready_for_source_and_independent_review.map(x => x.file), [ordinary.file, rising.file]);
+});
 test('zero candidates: no invented deficit or publication', () => {
   const r = inventory(); assert.equal(r.candidate_count, 0); assert.equal(r.publication, 'NOT_ATTEMPTED');
   for (const key of ['target', 'deficit', 'published']) assert.equal(key in r, false);
@@ -39,7 +56,7 @@ test('inputs are not mutated', () => { const notes = [note(2, 3), note(1, 5)]; c
 test('score ties are deterministic', () => assert.deepEqual(inventory([note(2), note(1)]).ready_for_source_and_independent_review.map(x => x.file), [note(1).file, note(2).file]));
 test('tracked-day accounting uses added rather than later check', () => assert.equal(inventory([], [note(1, 4, '2026-10-01')]).tracked_for_day.length, 0));
 test('paused flag is preserved', () => assert.equal(inventory([], [], { ...config, paused: true }).paused, true));
-test('invalid report date is rejected', () => assert.throws(() => buildEditorialInventory({ config, day: '2026-02-30' }), /valid UTC date/));
+test('invalid report date is rejected', () => assert.throws(() => buildEditorialInventory({ config, day: '2026-02-30' }), /valid Moscow date/));
 test('older publication with later check determines feed check', () => {
   const r = latestFeedCheck([{ data: { added: '2026-10-14', checked: '2026-10-14' } }, { data: { added: '2026-10-10', checked: '2026-10-15' } }]);
   assert.equal(r.toISOString(), '2026-10-15T00:00:00.000Z');

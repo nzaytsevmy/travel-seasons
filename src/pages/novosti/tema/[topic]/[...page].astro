@@ -1,0 +1,65 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../../../layouts/Layout.astro';
+import Breadcrumbs from '../../../../components/Breadcrumbs.astro';
+import Footer from '../../../../components/Footer.astro';
+import NewsCompact from '../../../../components/NewsCompact.astro';
+import { newsUrl } from '../../../../data/news.js';
+import { NEWS_TOPICS, newsTopicPages, newsTopicUrl } from '../../../../data/news-topics.js';
+
+export async function getStaticPaths() {
+  return newsTopicPages(await getCollection('news')).map(props => ({
+    params: { topic: props.topic.slug, page: props.page === 1 ? undefined : String(props.page) }, props,
+  }));
+}
+const { topic, page, totalPages, items } = Astro.props;
+const title = `${topic.title}${page > 1 ? ` — страница ${page}` : ''}`;
+const url = `https://traveltribe.ru${newsTopicUrl(topic.slug, page)}`;
+const ldJson = { '@context': 'https://schema.org', '@graph': [
+  { '@type': 'CollectionPage', '@id': `${url}#page`, url, name: title,
+    description: topic.description, inLanguage: 'ru-RU',
+    author: { '@id': 'https://traveltribe.ru/about/#person' },
+    mainEntity: { '@id': `${url}#list` } },
+  { '@type': 'ItemList', '@id': `${url}#list`, itemListElement: items.map((entry, i) => ({
+    '@type': 'ListItem', position: i + 1, name: entry.data.title,
+    url: `https://traveltribe.ru${newsUrl(entry)}`,
+  })) },
+  { '@type': 'BreadcrumbList', itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://traveltribe.ru/' },
+    { '@type': 'ListItem', position: 2, name: 'Новости', item: 'https://traveltribe.ru/novosti/' },
+    { '@type': 'ListItem', position: 3, name: title, item: url },
+  ] },
+] };
+---
+<Layout title={title} description={topic.description} canonical={url} ldJson={ldJson}>
+  <Breadcrumbs crumbs={[{ label: 'Новости', href: '/novosti/' }, { label: title }]} />
+  <main id="main" class="nvt">
+    <header>
+      <h1>{title}</h1>
+      <p>{topic.description}</p>
+      <p class="nvt-byline">Ведёт <a href="/about/">Никита Зайцев</a></p>
+    </header>
+    <nav aria-label="Темы новостей" class="nvt-nav">
+      <a href="/novosti/">Все новости</a>
+      {NEWS_TOPICS.map(item => <a href={newsTopicUrl(item.slug)} aria-current={item.slug === topic.slug && page === 1 ? 'page' : undefined}>{item.title}</a>)}
+    </nav>
+    <ol class="nvt-list">{items.map(entry => <NewsCompact entry={entry} />)}</ol>
+    {totalPages > 1 && <nav aria-label="Страницы новостей" class="nvt-nav">
+      {page > 1 && <a href={newsTopicUrl(topic.slug, page - 1)} rel="prev">Предыдущая страница</a>}
+      <span>Страница {page} из {totalPages}</span>
+      {page < totalPages && <a href={newsTopicUrl(topic.slug, page + 1)} rel="next">Следующая страница</a>}
+    </nav>}
+  </main>
+  <Footer />
+</Layout>
+<style>
+  .nvt { max-width: 780px; margin: 0 auto; padding: 0 var(--gutter, 16px) 4rem; }
+  .nvt h1 { font-size: clamp(1.6rem, 4vw, 2.3rem); line-height: 1.15; margin: 0 0 .9rem; }
+  .nvt p { max-width: 62ch; line-height: 1.6; }
+  .nvt-byline { font-size: .85rem; color: var(--text-dim); }
+  .nvt a { color: var(--gold); text-decoration: underline 1px; text-underline-offset: .22em; }
+  .nvt-nav { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem 1.3rem; padding: .7rem 0; border-block: 1px solid var(--line); }
+  .nvt-nav a, .nvt-nav span { display: inline-flex; align-items: center; min-height: 44px; }
+  .nvt-nav a[aria-current] { color: var(--text); font-weight: 700; }
+  .nvt-list { list-style: none; padding: 0; margin: 1rem 0; }
+</style>

@@ -121,6 +121,8 @@ const news = defineCollection({
     // добавления. `checked` при этом остаётся про доверие: когда сверяли факты.
     added: z.coerce.date().optional(),
     topic: z.enum(['visa', 'nature', 'transport']),
+    // A phrase to compare with actual search-surge observations, not a claim of popularity.
+    attentionQuery: z.string().min(2).max(160).optional(),
     impact: z.enum(['high', 'medium']).default('medium'),
     // Оценка по news/RUBRIC.md, её ставит вторая модель. Ниже minScore не публикуем.
     score: z.number().min(0).max(5),

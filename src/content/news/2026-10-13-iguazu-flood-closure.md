@@ -3,7 +3,7 @@ title: "Игуасу закрыл тропы 12 октября из-за пав�
 date: "2026-10-12"
 added: "2026-10-13"
 checked: "2026-10-13"
-reviewOn: "2026-10-14"
+reviewOn: "2026-10-15"
 topic: transport
 impact: high
 score: 4

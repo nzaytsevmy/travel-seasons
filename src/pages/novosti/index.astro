@@ -25,13 +25,14 @@ import Footer from '../../components/Footer.astro';
 import NewsItem from '../../components/NewsItem.astro';
 import NewsCompact from '../../components/NewsCompact.astro';
 import { getCollection } from 'astro:content';
-import { feedEntries, monthKeys, entriesOfMonth, monthTitleRu, newsUrl,
+import { frontPageEntries, monthKeys, entriesOfMonth, monthTitleRu, newsUrl,
          FULL_ON_FEED, FEED_SIZE } from '../../data/news.js';
 import { plural } from '../../data/plural.js';
 import { latestFeedCheck } from '../../data/news-discovery.js';
+import { NEWS_TOPICS, newsTopicUrl } from '../../data/news-topics.js';
 
 const all = await getCollection('news');
-const fresh = feedEntries(all, FEED_SIZE);
+const fresh = frontPageEntries(all, FEED_SIZE);
 const months = monthKeys(all).map((k) => ({ key: k, count: entriesOfMonth(all, k).length }));
 
 const full = fresh.slice(0, FULL_ON_FEED);
@@ -97,6 +98,9 @@ const ldJson = {
         Ведёт <a href="/about/">Никита Зайцев</a> ·
         <a href="/novosti/rss.xml">RSS</a>
       </p>
+      <nav class="nv-topics" aria-label="Темы новостей">
+        {NEWS_TOPICS.map(item => <a href={newsTopicUrl(item.slug)}>{item.title}</a>)}
+      </nav>
     </header>
 
     {full.length > 0 ? (
@@ -176,6 +180,8 @@ const ldJson = {
   .nv-lead { max-width: 62ch; line-height: 1.6; margin: 0 0 1rem; }
   .nv-byline { font-size: .85rem; color: var(--text-dim); margin: 0; }
   .nv-byline a { color: var(--gold); text-decoration: underline 1px var(--gold); text-underline-offset: .22em; }
+  .nv-topics { display: flex; flex-wrap: wrap; gap: .25rem 1.2rem; margin-top: .7rem; }
+  .nv-topics a { display: inline-flex; align-items: center; min-height: 44px; color: var(--gold); text-decoration: underline 1px; text-underline-offset: .22em; }
 
   .nv-list { list-style: none; margin: 0; padding: 0; }
   .nv-compact { list-style: none; margin: 0; padding: 0; }

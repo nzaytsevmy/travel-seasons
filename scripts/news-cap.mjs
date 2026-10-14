@@ -1,9 +1,10 @@
 // Редакционный отбор без дневной квоты: сохраняем все файлы кандидатов.
 // Реестр не заменяет source-gate, независимое ревью и подтверждённую публикацию.
-import { appendFileSync, mkdirSync, readFileSync, lstatSync } from 'node:fs';
+import { appendFileSync, mkdirSync, readFileSync, lstatSync, existsSync } from 'node:fs';
 import { resolve, relative, isAbsolute } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { attentionMatches } from './news-attention.mjs';
 
 export function validateEditorialConfig(config) {
   if (!config || config.selectionMode !== 'editorial') {
@@ -21,7 +22,9 @@ export function validateEditorialConfig(config) {
 function dayOf(value) {
   if (!(value instanceof Date) && (typeof value !== 'string' || !value.trim())) return null;
   const date = value instanceof Date ? value : new Date(value);
-  return Number.isFinite(date.valueOf()) ? date.toISOString().slice(0, 10) : null;
+  return Number.isFinite(date.valueOf()) ? new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit',
+  }).format(date) : null;
 }
 
 function normalize(item) {
@@ -34,16 +37,17 @@ function normalize(item) {
     throw new Error(`Invalid score in ${item.file}`);
   }
   return {
-    file: item.file, score, topic: data.topic ?? null,
+    file: item.file, score, topic: data.topic ?? null, title: data.title ?? '',
+    attentionQuery: data.attentionQuery ?? data.title ?? '', impact: data.impact ?? 'medium',
     reviewRef: data.reviewRef ?? null, addedDay: dayOf(data.added ?? data.checked),
   };
 }
 
-export function buildEditorialInventory({ config, candidates = [], tracked = [], day }) {
+export function buildEditorialInventory({ config, candidates = [], tracked = [], day, attention = null, now = new Date() }) {
   validateEditorialConfig(config);
   if (!Array.isArray(candidates) || !Array.isArray(tracked)) throw new TypeError('Expected arrays.');
   if (typeof day !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(day) || dayOf(day) !== day) {
-    throw new Error('Expected a valid UTC date in YYYY-MM-DD format.');
+    throw new Error('Expected a valid Moscow date in YYYY-MM-DD format.');
   }
   const seen = new Set();
   const records = [...candidates, ...tracked].map(item => {
@@ -52,10 +56,14 @@ export function buildEditorialInventory({ config, candidates = [], tracked = [],
     seen.add(record.file);
     return record;
   });
-  const newNotes = records.slice(0, candidates.length).sort((a, b) =>
+  const newNotes = records.slice(0, candidates.length).map(record => ({
+    ...record, searchSurge: attentionMatches([record.attentionQuery], attention, now),
+  })).sort((a, b) =>
+    Number(b.impact === 'high') - Number(a.impact === 'high') ||
+    Number(Boolean(b.searchSurge?.length)) - Number(Boolean(a.searchSurge?.length)) ||
     (b.score ?? -1) - (a.score ?? -1) || (a.file < b.file ? -1 : a.file > b.file ? 1 : 0));
   return {
-    schemaVersion: 2, date: day, timezone: 'UTC', selectionMode: 'editorial',
+    schemaVersion: 2, date: day, timezone: 'Europe/Moscow', selectionMode: 'editorial',
     paused: config.paused === true,
     candidate_count: newNotes.length,
     // A file tracked in this checkout is not necessarily deployed to production.
@@ -64,6 +72,9 @@ export function buildEditorialInventory({ config, candidates = [], tracked = [],
     below_score_floor: newNotes.filter(item => item.score !== null && item.score < config.minScore),
     unscored: newNotes.filter(item => item.score === null),
     source_gate: 'NOT_RUN_BY_INVENTORY', independent_review: 'NOT_VERIFIED_BY_INVENTORY',
+    attention_fetch_status: attention?.status ?? 'not_measured',
+    attention_status: !attention ? 'not_measured'
+      : attentionMatches([], attention, now) === null ? 'unavailable_or_stale' : 'fresh_ru',
     publication: 'NOT_ATTEMPTED', deleted_files: [],
   };
 }
@@ -86,9 +97,11 @@ export async function main(root = process.cwd()) {
   };
   const report = buildEditorialInventory({
     config,
+    attention: existsSync(resolve(root, '.run/news-attention.json'))
+      ? JSON.parse(readFileSync(resolve(root, '.run/news-attention.json'), 'utf8')) : null,
     candidates: list(['ls-files', '--others', '--exclude-standard']).map(load),
     tracked: list(['ls-files']).map(load),
-    day: new Date().toISOString().slice(0, 10),
+    day: dayOf(new Date()),
   });
   mkdirSync(resolve(root, 'news'), { recursive: true });
   appendFileSync(resolve(root, 'news/log.jsonl'), JSON.stringify(report) + '\n');
