@@ -91,3 +91,17 @@ test.describe('без JavaScript',()=>{
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content','noindex, nofollow');
   });
 });
+
+test('flight-delay claim guidance keeps all optional affiliate steps after the answer',async({page})=>{
+  await page.goto('/blog/strahovka-ot-zaderzhki-reysa/');
+  await expect(page.locator('[data-trip-planning]')).toHaveCount(1);
+  await expect(page.locator('.post-end-money')).toHaveCount(0);
+  const outside=await page.locator('a[rel~="sponsored"]').evaluateAll(nodes=>nodes.filter(n=>!n.closest('[data-trip-planning]')).map(n=>n.textContent));
+  expect(outside).toEqual([]);
+});
+
+test('insurance purchase guidance retains its relevant main offer',async({page})=>{
+  await page.goto('/blog/strahovka-dlya-puteshestviy-2026/');
+  await expect(page.locator('.post-end-money')).toHaveCount(1);
+  await expect(page.locator('[data-trip-planning]')).toHaveCount(1);
+});
