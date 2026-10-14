@@ -1,12 +1,12 @@
 # News product and editorial decision — 14 October 2026
 
-The fixed daily five is cancelled by the owner's current request. A release contains all independently qualified useful stories; neither padding to a target nor deleting excess candidate files is allowed. Quality/source/licence/lifecycle/release gates remain mandatory. This package contains one NEW informational article, three NEW news, five substantive news revisions and eight review-date follow-ups. A revision does not count as NEW. Preparation is not publication.
+The fixed daily five is cancelled by the owner's current request. A release contains all independently qualified useful stories; neither padding to a target nor deleting excess candidate files is allowed. Quality/source/licence/lifecycle/release gates remain mandatory. This package contains one NEW informational article, two NEW news, five substantive news revisions and eight review-date follow-ups. A revision does not count as NEW. Preparation is not publication.
 
 ## Selection that can be audited
 
 `npm run news:attention` reads the public Google Trends Trending Now RSS for RU. It saves exact queries, observation time, trend beginning, the original traffic string and coverage links in a local run artifact. Successful feed retrieval does not mean zero demand for absent topics. Unavailable/stale/non-RU evidence is unknown. A match uses complete normalized tokens, so Goa does not match Iguazu. No monthly demand is invented from recent traffic. News inventory ranks important changes first, then verified recent interest, then editorial score; it preserves all files. Independent editorial scoring remains decisive.
 
-The current signal is Шереметьево, observed14Oct10:53:32UTC with reported1000+ and beginning09:50UTC, corroborated by Aeroflot's own14Oct05:40MSK post. Restrictions are not asserted to remain in force all day. Banff and Aldabra have no established Russian surge; a useful primary-confirmed story does not require one. `news/selection/2026-10-14.json` records20distinct candidates and exact outcomes, including unavailable sources and incomplete primary qualification. It is not presented as20finished scientific investigations.
+The current signal is Шереметьево, observed14Oct10:53:32UTC with reported1000+ and beginning09:50UTC, corroborated by Aeroflot's own14Oct05:40MSK post. Restrictions are not asserted to remain in force all day. Banff has no established Russian surge; a useful primary-confirmed story does not require one. Aldabra was excluded as a duplicate of the live 8 October story. `news/selection/2026-10-14.json` records20distinct candidates and exact outcomes, including unavailable sources and incomplete primary qualification. It is not presented as20finished scientific investigations.
 
 ## Product and discovery
 
