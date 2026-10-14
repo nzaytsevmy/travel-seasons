@@ -1,0 +1,79 @@
+name: Publication source preflight
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publication-preflight-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  preflight:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'tt-publish/2026-10-14-prepared-package'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          filter: blob:none
+          persist-credentials: false
+      - name: Verify exact checkout and export tracked text sources
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git switch -c tt-publish/2026-10-14-prepared-package
+          mkdir -p /tmp/tt-publication-evidence
+          python3 - <<'PY'
+          import hashlib, json, pathlib, subprocess, zipfile
+          root = pathlib.Path.cwd()
+          suffixes = {'.md', '.mjs', '.js', '.json', '.jsonl', '.ts', '.astro', '.yml', '.yaml', '.py', '.sh', '.toml', '.html', '.css', '.txt'}
+          paths = subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0')
+          manifest = {'head': subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip(), 'files': {}}
+          with zipfile.ZipFile('/tmp/tt-publication-evidence/tracked-text-sources.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
+              for name in paths:
+                  if not name:
+                      continue
+                  p = root / name
+                  if p.is_symlink() or not p.is_file() or p.suffix not in suffixes or p.stat().st_size > 4194304:
+                      continue
+                  data = p.read_bytes()
+                  try:
+                      data.decode('utf-8')
+                  except UnicodeDecodeError:
+                      continue
+                  archive.writestr(name, data)
+                  manifest['files'][name] = hashlib.sha256(data).hexdigest()
+              archive.writestr('PUBLICATION-SOURCE-MANIFEST.json', json.dumps(manifest, ensure_ascii=False, indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: publication-text-${{ github.event.pull_request.head.sha }}
+          path: /tmp/tt-publication-evidence/tracked-text-sources.zip
+          if-no-files-found: error
+          retention-days: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Native committed-source publication gate
+        shell: bash
+        run: |
+          set -o pipefail
+          bash scripts/pre-push.sh </dev/null 2>&1 | tee /tmp/tt-publication-evidence/preflight.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: publication-preflight-${{ github.event.pull_request.head.sha }}
+          path: |
+            /tmp/tt-publication-evidence/preflight.log
+            /tmp/ttb_prepush_*.log
+          if-no-files-found: warn
+          retention-days: 7
