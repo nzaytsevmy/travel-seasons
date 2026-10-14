@@ -28,6 +28,7 @@ import { getCollection } from 'astro:content';
 import { feedEntries, monthKeys, entriesOfMonth, monthTitleRu, newsUrl,
          FULL_ON_FEED, FEED_SIZE } from '../../data/news.js';
 import { plural } from '../../data/plural.js';
+import { latestFeedCheck } from '../../data/news-discovery.js';
 
 const all = await getCollection('news');
 const fresh = feedEntries(all, FEED_SIZE);
@@ -40,7 +41,7 @@ const url = 'https://traveltribe.ru/novosti/';
 const title = 'Новости путешествий 2026: визы, природа, транспорт';
 const description = 'Что произошло за последние дни: изменения въездных правил, новости нацпарков и перелёты — коротко и с датами.';
 
-const lastChecked = fresh.length ? fresh[0].data.checked : null;
+const lastChecked = latestFeedCheck(fresh);
 
 const ldJson = {
   "@context": "https://schema.org",

@@ -5,7 +5,8 @@ import compress from 'astro-compress';
 import brokenLinks from 'astro-broken-links-checker';
 import { readFileSync, readdirSync } from 'node:fs';
 import remarkNumerals from './tools/remark-numerals.mjs';
-import { monthKey, FEED_SIZE } from './src/data/news.js';
+import { monthKey, FEED_SIZE, feedEntries } from './src/data/news.js';
+import { latestFeedCheck } from './src/data/news-discovery.js';
 import rehypeTableWrap from './tools/rehype-table-wrap.mjs';
 import rehypeFaqAccordion from './tools/rehype-faq-accordion.mjs';
 import rehypeCountryRow from './tools/rehype-country-row.mjs';
@@ -75,6 +76,7 @@ for (const f of readdirSync(NEWS_DIR)) {
     date: new Date(date), checked: new Date(checked),
     // Дата выпуска — тот же ключ, по которому лента сортирует и режется.
     added: new Date(added || checked), slug: f.replace(/\.mdx?$/, ''),
+    archived: /^archived:\s*true\s*$/m.test(fm),
   });
 }
 // ⛔ У самой заметки даты не было: лента и архив месяца её получали, а страница
@@ -82,12 +84,12 @@ for (const f of readdirSync(NEWS_DIR)) {
 //    все 70 заметок переписаны заново.
 const newsItemLastmod = {};
 for (const e of newsChecked) if (e.slug) newsItemLastmod[`https://traveltribe.ru/novosti/${e.slug}/`] = e.checked;
-const maxChecked = (list) => (list.length ? new Date(Math.max(...list.map((e) => e.checked))) : null);
+const maxChecked = (list) => latestFeedCheck(list.map(data => ({ data })));
 // Лента показывает FEED_SIZE самых свежих — её дата обновления берётся ровно с
 // них. Считать максимум по ВСЕМ заметкам нельзя: пересверка старой заметки,
 // которой на ленте нет, объявила бы ленту обновлённой без единой правки на ней.
 const newsFeedLastmod = maxChecked(
-  [...newsChecked].sort((a, b) => b.added - a.added || b.date - a.date).slice(0, FEED_SIZE),
+  feedEntries(newsChecked.map(data => ({ slug: data.slug, data })), FEED_SIZE).map(entry => entry.data),
 );
 // Страница есть у каждого месяца с заметками, включая текущий: её дата — самая
 // поздняя сверка внутри месяца.
@@ -244,6 +246,7 @@ export default defineConfig({
       filter: (page) => !page.includes('/404')
         && !page.includes('/blog/tag/')
         && !page.includes('sitemap-images')
+        && !page.includes('/sitemap-news')
         && !page.includes('/og/')
         // юр-страницы noindex (privacy/cookie/terms) — не в sitemap (только индексируемые)
         && !page.includes('/legal/')

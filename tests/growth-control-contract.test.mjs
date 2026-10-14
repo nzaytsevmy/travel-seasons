@@ -56,54 +56,27 @@ test('поисковая выдача не блокирует интересну
   assert.match(seoRules, /для новостной ленты[^\n]{0,220}не стоп-кран/i);
 });
 
-test('лимиты новостного пайплайна совпадают в правилах и исполняемом конфиге', async () => {
+test('редакционный режим согласован, квота отменена без ослабления качества', async () => {
   const [prompt, rubric, projectRules, configRaw, cap, control] = await Promise.all([
-    read('NEWS-SELECTION-PROMPT.md'),
-    read('news/RUBRIC.md'),
-    read('CLAUDE.md'),
-    read('news/config.json'),
-    read('scripts/news-cap.mjs'),
-    read('GROWTH-CONTROL.md'),
+    read('NEWS-SELECTION-PROMPT.md'), read('news/RUBRIC.md'), read('CLAUDE.md'),
+    read('news/config.json'), read('scripts/news-cap.mjs'), read('GROWTH-CONTROL.md'),
   ]);
   const config = JSON.parse(configRaw);
-
-  assert.equal(config.targetPerDay, 5);
-  assert.equal(config.maxPerDay, 5);
-
-  // ⛔ Норма дня живёт в одном поле, документы её только цитируют.
-  // До 07.09.2026 здесь стояло дословное «цель ежедневного выпуска — 4 заметки»,
-  // и это число жило в трёх файлах сразу: в рубрикаторе, в промте отбора и в
-  // CLAUDE.md. В тот день контролёр срезал норму до двух, дневной заход прочитал
-  // старое число на старте и собрал сайт с четырьмя заметками — одну пришлось
-  // снимать, а все проверки гонять заново. Контракт держит ИСТОЧНИК истины.
-  // С 11.09.2026 число — решение Никиты: пять насовсем, контролёр его не меняет.
-  // Поэтому норма обязана совпадать с целью в исполняемом конфиге: срезать её
-  // в одном файле, не тронув другой, больше нельзя.
-  const quota = control.match(/`news_quota`:\s*\*\*(\d+)\*\*/);
-  assert.ok(quota, 'в GROWTH-CONTROL.md нет поля news_quota с числом');
-  const quotaValue = Number(quota[1]);
-  assert.ok(
-    quotaValue >= 1 && quotaValue <= config.maxPerDay,
-    `news_quota ${quotaValue} вне диапазона 1..${config.maxPerDay}`,
-  );
-  assert.equal(
-    quotaValue,
-    config.targetPerDay,
-    'норму ленты задал Никита 11.09.2026: news_quota обязана совпадать с targetPerDay',
-  );
-  for (const [name, text] of [['news/RUBRIC.md', rubric], ['NEWS-SELECTION-PROMPT.md', prompt]]) {
-    assert.match(text, /news_quota/, `${name} обязан называть источник нормы`);
-    assert.doesNotMatch(
-      text,
-      /цель (?:ежедневного выпуска|запуска) — (?:\d+|одна|две|три|четыре) /i,
-      `${name} снова прибивает норму числом вместо ссылки на решение контролёра`,
-    );
+  assert.equal(config.selectionMode, 'editorial');
+  assert.equal(config.targetPerDay, null);
+  assert.equal(config.maxPerDay, null);
+  assert.equal(config.minScore, 3);
+  assert.match(control, /`news_quota`:\s*\*\*null\*\*/);
+  assert.match(control, /`news_selection_mode`:\s*\*\*editorial\*\*/);
+  for (const text of [prompt, rubric, projectRules]) {
+    assert.match(text, /14\.10\.2026/);
+    assert.match(text, /news_quota/);
+    assert.match(text, /независим/i);
+    assert.doesNotMatch(text, /максимум 5 заметок в день|пять, решение Никиты 11\.09\.2026, насовсем/i);
   }
-  assert.match(rubric, /максимум 5 заметок в день/i);
+  assert.doesNotMatch(cap, /unlinkSync|rmSync|dropped_over_cap|deficit/);
+  assert.match(cap, /NOT_ATTEMPTED/);
   assert.match(prompt, /не останавливаться после первой принятой темы/i);
-  assert.doesNotMatch(rubric, /максимум 4 заметки в день/i);
-  assert.match(cap, /trackedToday/);
-  assert.match(cap, /cfg\.maxPerDay - trackedToday\.length/);
   assert.match(prompt, /капсула ответа \*\*40–60 слов\*\*/i);
   assert.match(rubric, /заметка — 150–350 слов[^\n]{0,80}до 600/i);
   assert.match(projectRules, /новостная заметка 150–350/i);
