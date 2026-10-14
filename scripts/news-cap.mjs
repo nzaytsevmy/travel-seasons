@@ -5,6 +5,7 @@ import { resolve, relative, isAbsolute } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { attentionMatches } from './news-attention.mjs';
+import { gitEnvironment } from './release-scope.mjs';
 
 export function validateEditorialConfig(config) {
   if (!config || config.selectionMode !== 'editorial') {
@@ -85,7 +86,7 @@ export async function main(root = process.cwd()) {
   // Reuse the project's parser; do not introduce a second YAML implementation.
   const { parseNote } = await import('./news-gate.mjs');
   const list = args => execFileSync('git', [...args, '-z', '--', 'src/content/news'], {
-    cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024,
+    cwd: root, env: gitEnvironment(), encoding: 'utf8', maxBuffer: 16 * 1024 * 1024,
   }).split('\0').filter(file => file.endsWith('.md'));
   const load = file => {
     const absolute = resolve(root, file);
