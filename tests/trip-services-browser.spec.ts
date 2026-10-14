@@ -102,6 +102,7 @@ test('flight-delay claim guidance keeps all optional affiliate steps after the a
 
 test('insurance purchase guidance retains its relevant main offer',async({page})=>{
   await page.goto('/blog/strahovka-dlya-puteshestviy-2026/');
-  await expect(page.locator('.post-end-money')).toHaveCount(1);
+  await expect(page.locator('.sticky-cta a')).toHaveCount(1);
+  await expect(page.locator('.sticky-cta a')).toHaveAttribute('href',/cherehapa\.tpk\.mx/);
   await expect(page.locator('[data-trip-planning]')).toHaveCount(1);
 });
