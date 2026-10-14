@@ -1,77 +1,115 @@
-// Потолок на день. Гейт отвечает за «правда ли это», а этот скрипт — за «сколько».
-// Без потолка в горячий день лента выдаст десяток заметок и размоет главные,
-// а в пустой не выдаст ничего — и это правильно, пустой день ничем не добивается.
-//
-// Оставляем только сегодняшние заметки с лучшими оценками, остальные удаляем:
-// заметка, не попавшая сегодня, завтра уже не новость.
-
-import { readFileSync, unlinkSync, appendFileSync, existsSync, mkdirSync } from 'node:fs';
-import { join, basename } from 'node:path';
+// Редакционный отбор без дневной квоты: сохраняем все файлы кандидатов.
+// Реестр не заменяет source-gate, независимое ревью и подтверждённую публикацию.
+import { appendFileSync, mkdirSync, readFileSync, lstatSync, existsSync } from 'node:fs';
+import { resolve, relative, isAbsolute } from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { parseNote } from './news-gate.mjs';
+import { fileURLToPath } from 'node:url';
+import { attentionMatches } from './news-attention.mjs';
+import { gitEnvironment } from './release-scope.mjs';
 
-const root = process.cwd();
-const dir = join(root, 'src/content/news');
-const cfg = JSON.parse(readFileSync(join(root, 'news/config.json'), 'utf8'));
-const today = new Date().toISOString().slice(0, 10);
-
-// Новые = НЕОТСЛЕЖИВАЕМЫЕ файлы, а не «те, чьё имя начинается с сегодняшней даты».
-// Первый прогон 31.07.2026 показал, почему это важно: имя файла несёт дату
-// СОБЫТИЯ, а не дату сбора, поэтому робот создал 2026-07-29-… и 2026-08-01-…,
-// фильтр по сегодняшнему числу не нашёл ничего, и потолок молча не применился.
-// Молчаливое бездействие хуже падения: лимит выглядел рабочим, но не работал.
-const untracked = execFileSync('git', ['ls-files', '--others', '--exclude-standard', '--', 'src/content/news'],
-  { cwd: root, encoding: 'utf8' })
-  .split('\n').map((x) => x.trim()).filter((x) => x.endsWith('.md'));
-
-// Повторный запуск в тот же день должен учитывать заметки, которые уже успели
-// попасть в main. Иначе после утренней одиночной публикации робот увидит четыре
-// свободных слота, добавит ещё четыре и нарушит дневной лимит.
-const trackedToday = execFileSync('git', ['ls-files', '--', 'src/content/news'],
-  { cwd: root, encoding: 'utf8' })
-  .split('\n').map((x) => x.trim()).filter((x) => x.endsWith('.md'))
-  .map((rel) => basename(rel))
-  .map((f) => ({ file: f, note: parseNote(readFileSync(join(dir, f), 'utf8'), basename(f, '.md')) }))
-  .filter(({ note }) => {
-    const added = note.data.added ?? note.data.checked;
-    return String(added ?? '').slice(0, 10) === today;
-  });
-
-const todays = untracked
-  .map((rel) => basename(rel))
-  .map((f) => ({ file: f, note: parseNote(readFileSync(join(dir, f), 'utf8'), basename(f, '.md')) }))
-  .sort((a, b) => (b.note.data.score ?? 0) - (a.note.data.score ?? 0));
-
-const target = cfg.targetPerDay ?? cfg.maxPerDay;
-const availableSlots = Math.max(0, cfg.maxPerDay - trackedToday.length);
-const keep = todays.slice(0, availableSlots);
-const drop = todays.slice(availableSlots);
-const published = trackedToday.length + keep.length;
-
-for (const d of drop) {
-  unlinkSync(join(dir, d.file));
-  console.log(`сверх лимита, удалено: ${d.file} (оценка ${d.note.data.score})`);
+export function validateEditorialConfig(config) {
+  if (!config || config.selectionMode !== 'editorial') {
+    throw new Error('Set selectionMode to editorial before using this inventory.');
+  }
+  if (config.targetPerDay != null || config.maxPerDay != null) {
+    throw new Error('Editorial selection must not retain numeric daily quotas.');
+  }
+  if (!Number.isFinite(config.minScore) || config.minScore < 3 || config.minScore > 5) {
+    throw new Error('Preserve the existing score floor (3–5).');
+  }
+  return config;
 }
 
-// Аудит: без него непонятно, почему в ленте оказалось именно это.
-if (!existsSync(join(root, 'news'))) mkdirSync(join(root, 'news'), { recursive: true });
-appendFileSync(join(root, 'news/log.jsonl'), JSON.stringify({
-  date: today,
-  candidates: trackedToday.length + todays.length,
-  target,
-  already_published: trackedToday.map((item) => ({ file: item.file, score: item.note.data.score })),
-  published,
-  deficit: Math.max(0, target - published),
-  dropped_over_cap: drop.map((d) => ({ file: d.file, score: d.note.data.score })),
-  kept: keep.map((k) => ({
-    file: k.file,
-    score: k.note.data.score,
-    topic: k.note.data.topic,
-    reviewRef: k.note.data.reviewRef ?? null,
-  })),
-}) + '\n');
+function dayOf(value) {
+  if (!(value instanceof Date) && (typeof value !== 'string' || !value.trim())) return null;
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isFinite(date.valueOf()) ? new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit',
+  }).format(date) : null;
+}
 
-console.log(`сегодня уже было ${trackedToday.length}, новых кандидатов ${todays.length}, добавлено ${keep.length} (цель ${target}, лимит ${cfg.maxPerDay})`);
-if (published < target) {
-  console.warn(`дефицит выпуска: ${target - published} — продолжить поиск или зафиксировать HOLD с причинами`);
+function normalize(item) {
+  if (!item || typeof item.file !== 'string' || !item.file.endsWith('.md')) {
+    throw new Error('Each inventory item must identify a Markdown file.');
+  }
+  const data = item.note?.data ?? {};
+  const score = data.score ?? null;
+  if (score !== null && (!Number.isFinite(score) || score < 0 || score > 5)) {
+    throw new Error(`Invalid score in ${item.file}`);
+  }
+  return {
+    file: item.file, score, topic: data.topic ?? null, title: data.title ?? '',
+    attentionQuery: data.attentionQuery ?? data.title ?? '', impact: data.impact ?? 'medium',
+    reviewRef: data.reviewRef ?? null, addedDay: dayOf(data.added ?? data.checked),
+  };
+}
+
+export function buildEditorialInventory({ config, candidates = [], tracked = [], day, attention = null, now = new Date() }) {
+  validateEditorialConfig(config);
+  if (!Array.isArray(candidates) || !Array.isArray(tracked)) throw new TypeError('Expected arrays.');
+  if (typeof day !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(day) || dayOf(day) !== day) {
+    throw new Error('Expected a valid Moscow date in YYYY-MM-DD format.');
+  }
+  const seen = new Set();
+  const records = [...candidates, ...tracked].map(item => {
+    const record = normalize(item);
+    if (seen.has(record.file)) throw new Error(`Duplicate file: ${record.file}`);
+    seen.add(record.file);
+    return record;
+  });
+  const newNotes = records.slice(0, candidates.length).map(record => ({
+    ...record, searchSurge: attentionMatches([record.attentionQuery], attention, now),
+  })).sort((a, b) =>
+    Number(b.impact === 'high') - Number(a.impact === 'high') ||
+    Number(Boolean(b.searchSurge?.length)) - Number(Boolean(a.searchSurge?.length)) ||
+    (b.score ?? -1) - (a.score ?? -1) || (a.file < b.file ? -1 : a.file > b.file ? 1 : 0));
+  return {
+    schemaVersion: 2, date: day, timezone: 'Europe/Moscow', selectionMode: 'editorial',
+    paused: config.paused === true,
+    candidate_count: newNotes.length,
+    // A file tracked in this checkout is not necessarily deployed to production.
+    tracked_for_day: records.slice(candidates.length).filter(item => item.addedDay === day),
+    ready_for_source_and_independent_review: newNotes.filter(item => item.score !== null && item.score >= config.minScore),
+    below_score_floor: newNotes.filter(item => item.score !== null && item.score < config.minScore),
+    unscored: newNotes.filter(item => item.score === null),
+    source_gate: 'NOT_RUN_BY_INVENTORY', independent_review: 'NOT_VERIFIED_BY_INVENTORY',
+    attention_fetch_status: attention?.status ?? 'not_measured',
+    attention_status: !attention ? 'not_measured'
+      : attentionMatches([], attention, now) === null ? 'unavailable_or_stale' : 'fresh_ru',
+    publication: 'NOT_ATTEMPTED', deleted_files: [],
+  };
+}
+
+export async function main(root = process.cwd()) {
+  root = resolve(root);
+  const config = validateEditorialConfig(JSON.parse(readFileSync(resolve(root, 'news/config.json'), 'utf8')));
+  // Reuse the project's parser; do not introduce a second YAML implementation.
+  const { parseNote } = await import('./news-gate.mjs');
+  const list = args => execFileSync('git', [...args, '-z', '--', 'src/content/news'], {
+    cwd: root, env: gitEnvironment(), encoding: 'utf8', maxBuffer: 16 * 1024 * 1024,
+  }).split('\0').filter(file => file.endsWith('.md'));
+  const load = file => {
+    const absolute = resolve(root, file);
+    const rel = relative(resolve(root, 'src/content/news'), absolute);
+    if (!/^[a-z0-9-]+\.md$/.test(rel) || isAbsolute(rel) || !lstatSync(absolute).isFile()) {
+      throw new Error(`Invalid news file: ${file}`);
+    }
+    return { file, note: parseNote(readFileSync(absolute, 'utf8'), rel.replace(/\.md$/, '')) };
+  };
+  const report = buildEditorialInventory({
+    config,
+    attention: existsSync(resolve(root, '.run/news-attention.json'))
+      ? JSON.parse(readFileSync(resolve(root, '.run/news-attention.json'), 'utf8')) : null,
+    candidates: list(['ls-files', '--others', '--exclude-standard']).map(load),
+    tracked: list(['ls-files']).map(load),
+    day: dayOf(new Date()),
+  });
+  mkdirSync(resolve(root, 'news'), { recursive: true });
+  appendFileSync(resolve(root, 'news/log.jsonl'), JSON.stringify(report) + '\n');
+  console.log(`Кандидатов: ${report.candidate_count}. Файлы не удалены; публикация не выполнялась.`);
+  return report;
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch(error => { console.error(error.message); process.exitCode = 1; });
 }

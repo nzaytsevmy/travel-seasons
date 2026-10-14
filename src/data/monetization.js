@@ -118,8 +118,8 @@ const HIGH_INTENT_BLOG = /(?:strahov|insurance|(?:^|-)visa(?:-|$)|pay-|aviasales
 // У статьи о Персеидах подтверждён справочный интент: 1 409 органических визитов, 2 партнёрских
 // клика и 12 переходов в Telegram. Aurora-гайды и документы сюда не входят:
 // в них есть конкретная поездка или страховой следующий шаг.
-// Справка о возврате купленного билета не предлагает новую покупку.
-const NO_COMMERCIAL_BLOG = /(?:perseidy|^kupibilet-vozvrat-bileta-2026$|^tutu-vozvrat-bileta-na-poezd-2026$)/;
+// Справка о возврате купленного билета или выплате по существующему полису не предлагает новую покупку.
+const NO_COMMERCIAL_BLOG = /(?:perseidy|^kupibilet-vozvrat-bileta-2026$|^tutu-vozvrat-bileta-na-poezd-2026$|^strahovka-ot-zaderzhki-reysa$)/;
 const COUNTRY_GUIDE = /^(.+?)-(?:guide|insurance|visa)-20\d\d$/;
 const RESERVED_ROOTS = new Set([
   '404', 'about', 'bezviz', 'blog', 'calculator', 'cards', 'compare', 'countries',
@@ -175,7 +175,7 @@ export function classifyPage(pathname = '/') {
       destination: match?.[1] ?? '',
     };
   }
-  if (top === 'novosti') return { type: parts.length >= 2 && !/^20\d\d-(?:0[1-9]|1[0-2])$/.test(second) ? 'news_article' : 'news_index', intent: 'none', destination: '' };
+  if (top === 'novosti') return { type: parts.length >= 2 && second !== 'tema' && !/^20\d\d-(?:0[1-9]|1[0-2])$/.test(second) ? 'news_article' : 'news_index', intent: 'none', destination: '' };
   if (top === 'legal' || ['404', 'about', 'izmeneniya', 'my'].includes(top)) return { type: top === 'legal' ? 'legal' : top, intent: 'none', destination: '' };
   if (top === 'events') return { type: parts.length >= 2 ? 'events_month' : 'events_index', intent: 'low', destination: '' };
   if (top === 'seasons') return { type: parts.length >= 2 ? 'seasons_detail' : 'seasons_index', intent: 'low', destination: parts.length >= 3 ? third : '' };

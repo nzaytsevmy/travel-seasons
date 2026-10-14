@@ -3,7 +3,7 @@ title: После тайфуна в Японии остаются закрыты
 date: "2026-09-23"
 added: "2026-09-23"
 checked: "2026-10-10"
-reviewOn: "2026-10-14"
+reviewOn: "2026-10-15"
 topic: transport
 impact: high
 score: 4

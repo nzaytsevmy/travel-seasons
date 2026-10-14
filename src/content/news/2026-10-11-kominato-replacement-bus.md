@@ -3,7 +3,7 @@ title: "Япония: автобусы заменят часть поездов 
 date: "2026-10-09"
 added: "2026-10-11"
 checked: "2026-10-11"
-reviewOn: "2026-10-14"
+reviewOn: "2026-10-15"
 topic: transport
 impact: high
 score: 4

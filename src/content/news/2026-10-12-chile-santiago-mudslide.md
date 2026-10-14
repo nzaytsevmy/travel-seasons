@@ -5,7 +5,7 @@ title: "Селевой поток повредил квартал на вост�
 date: "2026-10-09"
 added: "2026-10-12"
 checked: "2026-10-12"
-reviewOn: "2026-10-13"
+reviewOn: "2026-10-15"
 topic: nature
 impact: medium
 score: 3

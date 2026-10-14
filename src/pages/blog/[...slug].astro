@@ -12,7 +12,7 @@ import TableOfContents from '../../components/post/TableOfContents.astro';
 import authorPhoto from '../../assets/author/nikita.jpg';
 import { DIRECTIONS } from '../../data/directions.js';
 import { directionForTags } from '../../data/article-country.js';
-import { EXPENSIVE_DESTINATIONS } from '../../data/monetization.js';
+import { classifyPage, EXPENSIVE_DESTINATIONS } from '../../data/monetization.js';
 import { TP_LINKS, aviasalesRoute, youtravelCountry, cherehapaCountry, cherehapaTravel, ostrovokCountry, otelloStay } from '../../data/affiliate.js';
 import StickyCta from '../../components/StickyCta.astro';
 import TripServices from '../../components/TripServices.astro';
@@ -170,6 +170,8 @@ const RU_STAY_POSTS = new Set(['abkhazia', 'kamchatka', 'karelia', 'dagestan', '
 const ДЕНЬГИ_ЗА_ГРАНИЦЕЙ = /(pay-|oplata|karty|cards)/i;
 const ДОКУМЕНТ = /(strahov|insurance|viza|visa|esim|zagranpasport|chto-vzyat|sbory|ees)/i;
 function главныйОффер() {
+  // Ответ по уже купленному билету/полису предшествует добровольному планированию новой поездки.
+  if (classifyPage(`/blog/${post.slug}/`).intent === 'none') return null;
   const метка = `${post.slug}_main`;
   const дорогое = EXPENSIVE_DESTINATIONS[post.slug] ?? null;
   if (дорогое) {

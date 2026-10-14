@@ -19,6 +19,7 @@ import NewsCompact from '../../components/NewsCompact.astro';
 import { getCollection } from 'astro:content';
 import { monthKeys, monthKey, entriesOfMonth, monthTitleRu, newsUrl } from '../../data/news.js';
 import { plural } from '../../data/plural.js';
+import { latestFeedCheck } from '../../data/news-discovery.js';
 
 export async function getStaticPaths() {
   const all = await getCollection('news');
@@ -42,7 +43,7 @@ const description = `Новости путешествий за ${monthRu.toLowe
 // Самая поздняя проверка внутри месяца. Именно она, а не дата сборки: прошлый
 // месяц уже не меняется, и помечать его «обновлён сегодня» — враньё поисковику.
 // У текущего месяца эта дата двигается сама, когда выходит новая заметка.
-const lastChecked = items.reduce((a, e) => (e.data.checked > a ? e.data.checked : a), items[0].data.checked);
+const lastChecked = latestFeedCheck(items);
 
 const ldJson = {
   "@context": "https://schema.org",
@@ -54,7 +55,7 @@ const ldJson = {
       "name": title,
       "description": description,
       "inLanguage": "ru-RU",
-      "dateModified": lastChecked.toISOString().slice(0, 10),
+      ...(lastChecked ? { "dateModified": lastChecked.toISOString().slice(0, 10) } : {}),
       "author": { "@id": "https://traveltribe.ru/about/#person" },
       "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".nv-tldr"] },
     },

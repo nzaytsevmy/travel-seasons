@@ -19,9 +19,10 @@ import Footer from '../../components/Footer.astro';
 import TripServices from '../../components/TripServices.astro';
 import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu, addedAt, newsUrl, feedEntries, clipTitle, clipDescription } from '../../data/news.js';
+import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu, addedAt, newsUrl, feedEntries, relatedNews, clipTitle, clipDescription } from '../../data/news.js';
 import { pickNewsImage, newsImageNote } from '../../data/news-images.js';
 import { bySlug } from '../../data/directions.js';
+import { NEWS_TOPICS, newsTopicUrl } from '../../data/news-topics.js';
 
 export async function getStaticPaths() {
   const all = await getCollection('news');
@@ -30,12 +31,13 @@ export async function getStaticPaths() {
   const sorted = feedEntries(all, undefined, { includeArchived: true });
   return sorted.map((entry, i) => ({
     params: { slug: entry.slug },
-    props: { entry, around: [sorted[i - 1], sorted[i + 1]].filter(Boolean) },
+    props: { entry, related: relatedNews(all, entry), around: [sorted[i - 1], sorted[i + 1]].filter(Boolean) },
   }));
 }
 
-const { entry, around } = Astro.props;
+const { entry, related, around } = Astro.props;
 const d = entry.data;
+const topicPage = NEWS_TOPICS.find(item => item.topic === d.topic);
 const { Content } = await entry.render();
 
 const url = `https://traveltribe.ru${newsUrl(entry)}`;
@@ -142,11 +144,12 @@ const ldJson = {
     )}
 
     <section class="nvp-section">
-      <h2>Ещё из ленты</h2>
+      <h2>{related.length ? 'Об этом направлении' : 'Ещё из ленты'}</h2>
       <ul class="nvp-links">
-        {around.map((e) => (
+        {(related.length ? related : around).map((e) => (
           <li><a href={newsUrl(e)}>{e.data.title}</a></li>
         ))}
+        {topicPage && <li><a href={newsTopicUrl(topicPage.slug)}>{topicPage.title}</a></li>}
         <li><a href="/novosti/">Все новости путешествий</a></li>
       </ul>
     </section>

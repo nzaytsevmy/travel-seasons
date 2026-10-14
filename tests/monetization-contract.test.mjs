@@ -390,3 +390,11 @@ test('Telegram assist хранит только день прихода и ст�
   });
   assert.doesNotMatch(values.get('tt_audience_attribution_v1'), /(?:user|email|phone|cookie|client)/i);
 });
+
+test('flight delay claim guidance has no purchase intent; general insurance keeps its purchase intent',()=>{
+  assert.deepEqual(classifyPage('/blog/strahovka-ot-zaderzhki-reysa/'), {
+    type:'blog_article',intent:'none',destination:'',
+  });
+  assert.equal(classifyPage('/blog/strahovka-ot-zaderzhki-reysa/?from=news#dokumenty').intent,'none');
+  assert.equal(classifyPage('/blog/strahovka-dlya-puteshestviy-2026/').intent,'high');
+});

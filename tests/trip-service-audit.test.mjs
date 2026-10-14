@@ -54,3 +54,11 @@ test('legal pages stay free of commercial planners',()=> {
   assert.deepEqual(auditTripServices('<main>Privacy</main>','/legal/privacy/').errors,[]);
   assert.ok(auditTripServices(block(items),'/legal/privacy/').errors.length);
 });
+
+test('topic news archives and their pagination keep the collection layout',()=>{
+  for(const archive of ['/novosti/tema/priroda/','/novosti/tema/priroda/2/','/novosti/tema/transport-i-dostup/','/novosti/tema/vizy-i-vezd/']) {
+    const html=`<main><h1>Новости по теме</h1><ol><li>Заметка</li></ol></main>${block(tripServices({pathname:archive}))}`;
+    assert.equal(classifyPage(archive).type,'news_index');
+    assert.deepEqual(auditTripServices(html,archive).errors,[]);
+  }
+});
