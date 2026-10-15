@@ -2,8 +2,8 @@
 title: "Аэрофлот перенёс и отменил часть рейсов 14 октября"
 date: "2026-10-14"
 added: "2026-10-14"
-checked: "2026-10-14"
-reviewOn: "2026-10-15"
+checked: "2026-10-15"
+reviewOn: "2026-10-16"
 topic: transport
 impact: high
 score: 5

@@ -8,8 +8,8 @@ imageSource: "https://commons.wikimedia.org/w/index.php?curid=9998689"
 title: "Паводок на Буди-Гандаки смыл мосты в Непале"
 date: "2026-10-11"
 added: "2026-10-12"
-checked: "2026-10-12"
-reviewOn: "2026-10-15"
+checked: "2026-10-15"
+reviewOn: "2026-10-16"
 topic: nature
 impact: high
 score: 4

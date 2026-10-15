@@ -1,197 +1,160 @@
 {
   "schemaVersion": 1,
   "slug": "2026-09-23-japan-local-lines-after-typhoon",
+  "reviewer": "Codex (tt_editorial_review_20261015)",
+  "reviewerTask": "/root/tt_editorial_review_20261015",
+  "authoredBy": "codex-traveltribe-author-20261015",
+  "reviewedAt": "2026-10-15T19:24:08.571Z",
+  "checkedAt": "2026-10-15",
   "score": 4,
-  "reviewer": "codex-independent-news-review-20261010",
-  "checkedAt": "2026-10-10T15:12:53.409Z",
-  "reviewedAt": "2026-10-10T15:12:53.409Z",
-  "sha256": "3ad8ca9f8f5ce503d8e4685bf9924947f727b2e2cc7420cb249c09ac81f03c30",
-  "sha256Scope": "full Markdown file bytes at editorial review; later header score synchronization may change this byte hash",
-  "contentHash": "1642a0eaffc646dff65ae2722a3ecd14ec7e1f365abc2112e63cb7964d977c61",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "proseHash": "1642a0eaffc646dff65ae2722a3ecd14ec7e1f365abc2112e63cb7964d977c61",
-  "proseHashScope": "same as contentHash",
-  "rationale": "MLIT 5 Oct и Kominato 9 Oct дают конкретный региональный доступ:4. Четыре линии двух перевозчиков привязаны к снимку 5 Oct; автобус 14 Oct не довезёт доYoro Keikoku/Isumi. Единственный языковой блокер «уже» удалён, отсутствие Kisarazu–Kururi ограничено именно этой сводкой. Исходные date/added и плановая проверка 14 Oct сохранены.",
-  "blockingIssues": [],
-  "risks": [
-    "MLIT факт относится 5 Oct 08:00 JST, не свежему универсальному закрытию 10 Oct. Отсутствие в списке не доказывает любой поезд/пересадку; запуск автобуса проверить 14 Oct.",
-    "Редакционное ревью не подтверждает сборку, CI, публикацию, SSR/фид, индексацию или живую версию изменённой страницы; обязательные гейты финального выпуска остаются у автора."
-  ],
-  "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
-  "reviewScope": "Независимый Codex reviewer не писал эти новости. Прочитаны текущие title/TLDR/body и весь применимый канон; проверены реальные scores, точные первичные факты, даты/местное время, внутренние URL и конечный локальный JPEG. Это редакторское ревью, не пользовательский тест. Проза, конфиги, сборка, Git и публикация этим reviewer не изменялись. Адресный refresh 2026-10-10T15:12:53.409Z: сверены только согласованные изменения в этой версии, неизменность остальных frontmatter/date/added и фото-зависимостей; первичные источники, фото и API повторно не просматривались. Первичное ревью/его ограничения сохраняются.",
-  "evidence": {
-    "primarySource": {
+  "approved": true,
+  "approvalScope": "EDITORIAL_CONTENT_ONLY",
+  "classification": "UPDATE",
+  "baseCommit": "647f67b848ba2f91efd213476a2eb0510ac021b6",
+  "previousReview": {
+    "artifactPath": "news/reviews/2026-09-23-japan-local-lines-after-typhoon.json",
+    "gitRef": "647f67b848ba2f91efd213476a2eb0510ac021b6",
+    "sha256": "59d570ec59e89932d5e448d61519fa7475e5ea3fe9c58e04ba995c6d96f7d1d4",
+    "reviewer": "codex-independent-news-review-20261010",
+    "reviewedAt": "2026-10-10T15:12:53.409Z",
+    "score": 4,
+    "scope": "Историческое полное ревью сохранено в указанной Git-ревизии; новая запись ниже не переименовывает его в сегодняшнюю полную проверку."
+  },
+  "rationale": "Обновлённая часть проверена по текущему HTML Kominato: автобус объявлен с14 октября, конечная не соединяет Ёро-Кэйкоку/Исуми, поездной участок сохранён. Старые таблицы MLIT от5 октября и прежние PDF не названы заново прочитанными: бинарный вывод stripHtml не подтверждает чтение PDF. Новых чисел из этих PDF не добавлено, ограничение возраста сводки видно читателю.",
+  "ownAddition": "Объявленная автобусная дата отделена от отчёта о состоявшемся рейсе и от восстановления сквозного маршрута.",
+  "factReview": "Изменённые утверждения подтверждены Kominato HTML с обновлением9Oct, повторно прочитанным15Oct. Прежняя таблица MLIT остаётся датированной5Oct.",
+  "sourceChecks": [
+    {
+      "url": "https://www.kominato.co.jp/",
+      "artifact": "work/source-evidence-20261015/e7788575ddb07189.txt",
+      "artifactSha256": "cab343fc2e1b95f50622a229a60a38a14b852b6edb95b623f5b44a5f834ac6df",
+      "observedAt": "2026-10-15T18:42:32.849Z",
+      "scope": "Прочитаны релевантные описанным в factReview утверждениям разделы; hash оригинала проверен. Не означает инструментальный тест туристического сценария."
+    },
+    {
       "url": "https://www.mlit.go.jp/saigai/saigai_260920.html",
-      "checkedAt": "2026-10-10T15:00:16.801Z",
-      "method": "MLITPDF найден/прочитан в Web по железнодорожным строкам 249–270; screenshot URL не разрешился, ссылка-ID дала результат без доступных изображений — визуальный просмотр таблицы не утверждается. Kominato полностью независимо прочитан Web.",
-      "confirmed": [
-        "MLIT№17 railway 5 Oct 08:00 JST, PDF стр 7–8:2 перевозчика/4 линии; Kururi–Kazusa Kameyama, Yachimata–Naruto, Anegasaki–Nagaura, Kazusa Ushiku–Kazusa Nakano.",
-        "MLIT: Собу≈месяц; Утибо≥около 3 месяцев; дата Курури/Коминато не установлена. Narita Sawara–Choshi и Kisarazu–Kururi не входят вэтот список.",
-        "Kominato 9 Oct: G о i–Ushiku normal;14 Oct автобус Ushiku→Okubo→Ichihara Ishigami, реже поездов; не Yoro Keikoku/Isumi."
-      ],
-      "sourceArtifacts": [
-        {
-          "path": "/Users/nikitazaytsev/wt.noindex/tt-news-20261007/.run/news-facts-2026-10-10.md",
-          "sha256": "b38c70a93464ba49b692c44d9e916056d2a1a402ec36a0a2d8cf21a7e204fa45",
-          "capturedBy": "Codex (root)",
-          "completePageClaimed": false
-        },
-        {
-          "path": "/Users/nikitazaytsev/wt.noindex/tt-news-20261007/.run/emsc-primary-observation-2026-10-10.txt",
-          "sha256": "bd1e427501fc32ed65ef7238c91c9d10c09ec96ec465b7b0bd123ac7e30ca1bb",
-          "capturedBy": "Codex (root)",
-          "completePageClaimed": false
-        },
-        {
-          "path": "/Users/nikitazaytsev/wt.noindex/tt-news-20261007/news/selection/2026-10-10.json",
-          "sha256": "7ecec505fb2caed36fe4fdf88a1b3a3886bce38701d302a35278c7bbf8b33979",
-          "capturedBy": "Codex (root)",
-          "completePageClaimed": false,
-          "initialSha256": "70bd4ad7b00842cf6a7d509c16819f18e48f1f8d58cbf988667f8d875875333f",
-          "capturedAt": "2026-10-10T15:08:36.301Z",
-          "addressedRefreshReason": "Обновлены role/audienceUse/addedValue; первичные факты не менялись."
-        }
-      ],
-      "independentlyVerifiedWebSources": [
-        "https://www.mlit.go.jp/common/002025687.pdf",
-        "https://www.kominato.co.jp/"
-      ]
-    },
-    "photo": {
-      "viewedByThisReviewer": true,
-      "path": "src/content/news/_images/2026-09-23-japan-local-lines-after-typhoon.jpg",
-      "sha256": "71e8276876d183a1e9cfe656183102690eaaf6285ebd918f0a75dd2ae1a15c86",
-      "finding": "Ki Ha 200 на Kazusa Ushiku,5 Mar 2019; Io 24 gidf/CCBY-SA 4.0. Архивный поезд правильной линии, не последствиятайфуна.",
-      "scope": "Сам финальный локальный JPEG просмотрен глазами; неизменность просмотренного файла проверена по SHA-256 перед записью ревью.",
-      "credit": "Io24gidf",
-      "license": "CC BY-SA",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "source": "https://commons.wikimedia.org/w/index.php?curid=103042248",
-      "title": "Поезд Kominato Railway на станции Кадзуса-Усику, март 2019 года. Архивный кадр одной из линий из сводки, не последствий тайфуна.",
-      "alt": "Красно-кремовый поезд KiHa 200 на станции Кадзуса-Усику",
-      "commonsMetadataRechecked": true,
-      "commonsMetadataMethod": "Финальный JPEG просмотрен; Commonscurid 103042248 независимо прочитан Chrome.",
-      "publicAttributionPrepared": "Чистая штатная функция publicPhotoCredits для этих11 возвращает9 CC-записей с creator/source/licenseUrl; собственный Bangkok и Pixabay Tokyo исключены по правилам. Рендер и live /legal/photos/ новой версии ещё не проверены.",
-      "publicAttributionRenderedForThisRelease": false
-    },
-    "internalLinks": {
-      "method": "Свежие собственные HTTP GET10Oct; конечный URL,title и hash тела. 200 не является browser/render/live проверкой изменённой новости.",
-      "results": [
-        {
-          "path": "/blog/kamakura-chto-posmotret/",
-          "status": 200,
-          "url": "https://traveltribe.ru/blog/kamakura-chto-posmotret/",
-          "checkedAt": "2026-10-10T14:38:38.166Z",
-          "title": "Камакура: что посмотреть за один день из Токио",
-          "bodySha256": "f3b2ae472302c9192682348f6783a7e11ecd56960fc8a691b807f70f36d62cb1"
-        }
-      ]
-    },
-    "editorialCriteria": {
-      "changesPlans": true,
-      "surprisingNature": false,
-      "concreteAndVerifiable": true,
-      "lastsLongerThanWeek": true,
-      "editorialRubric": "транспорт/частичный доступ",
-      "backendTopic": "transport",
-      "readerRole": "наследуемая заметка; роль нового выбора не назначается",
-      "audienceUse": "Путешественник по Тибе, проверяющий последний отрезок до Ёро-Кэйкоку/пересадкина Isumi.",
-      "readerRoleEvidence": "Соответствие роли чтения/распространения: факт, сюжет и следующий шаг проверены; поисковой спрос и эффект не приписаны."
-    },
-    "quality14": {
-      "scores": [
-        10,
-        10,
-        5,
-        10,
-        10,
-        10,
-        10,
-        10,
-        5,
-        10,
-        5,
-        10,
-        5,
-        0
-      ],
-      "scale": "0 absent/contradicts, 5 partial with named gap, 10 done and verified",
-      "scope": "После адресного refresh только изменённая проза и её зависимости. Содержательные редакционные блокеры устранены; исходные первичные/фото наблюдения переиспользованы для неизменных данных. Публичное авторство/SEO/рендер/полный выпуск остаются5/0.",
-      "report": ".run/editorial-review-news-2026-10-10.md"
+      "artifact": "work/source-evidence-20261015/5a5da6fd2b61b9f4.txt",
+      "artifactSha256": "5c214f7eb38a2beaa2ee1286b8903acc04617b4108a92966ba2fb968270a2814",
+      "observedAt": "2026-10-15T18:42:27.431Z",
+      "scope": "Прочитаны релевантные описанным в factReview утверждениям разделы; hash оригинала проверен. Не означает инструментальный тест туристического сценария."
     }
+  ],
+  "contentHash": "4bd40ca6609e7e5675e6b989940ff0353d9d323bb1d0db11c265763604aa7080",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote; метаданные проверены отдельно.",
+  "sourceSha256": "ae245d16482546f34f1510f70856bdc1840a59f9e0853d9b5d6461f74e542207",
+  "nativeClipTitle": "После тайфуна в Японии остаются закрыты местные линии",
+  "photo": {
+    "image": "./_images/2026-09-23-japan-local-lines-after-typhoon.jpg",
+    "creator": "Io24gidf",
+    "license": "CC BY-SA",
+    "source": "https://commons.wikimedia.org/w/index.php?curid=103042248",
+    "scope": "Кадр не менялся; прежняя атрибуция/квалификация сохранена, повторная полная проверка исходного авторства не заявлена.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
   },
-  "lifecycle": {
-    "decision": "REVISE",
-    "status": null,
-    "effectiveDate": null,
-    "reviewOn": "2026-10-14T00:00:00.000Z",
-    "reason": "Дата исходного события/анонса отделена от added/checked; сроки reviewOn соответствуют следующему триггеру.",
-    "originalDate": "2026-09-23T00:00:00.000Z",
-    "originalAdded": "2026-09-23",
-    "datePreserved": true,
-    "addedPreserved": true,
-    "proseUnchangedFromBase": false
-  },
-  "checks": {
-    "fullProseRead": true,
-    "fullProseFactReview": true,
-    "finalTldrRead": true,
-    "titleChars": 53,
-    "clipTitle": "После тайфуна в Японии остаются закрыты местные линии",
-    "clipTitleMeaningPreserved": true,
-    "tldrWords": 45,
-    "bodyWords": 235,
-    "primarySourceRead": true,
-    "primarySourceReadScope": "MLITPDF найден/прочитан в Web по железнодорожным строкам 249–270; screenshot URL не разрешился, ссылка-ID дала результат без доступных изображений — визуальный просмотр таблицы не утверждается. Kominato полностью независимо прочитан Web.",
-    "photoViewed": true,
-    "independentReviewer": true,
-    "commonsLicenseRechecked": true,
-    "languageBannedWords": [],
-    "languageMethod": "Чтение всей видимой прозы и поиск запрещённых слов как отдельных слов; это не доказательство происхождения текста.",
-    "internalLinksHttp200": true,
-    "publicCreditDataPrepared": true,
-    "readerTest": false,
-    "buildBrowserCiLive": false,
-    "tldrGate": {
-      "ok": true
+  "criteria14": [
+    {
+      "id": 1,
+      "criterion": "Задача читателя",
+      "score": 10,
+      "evidence": "Один самостоятельный вопрос читается из title/tldr; проверена завершённая версия."
     },
-    "wordCountMethod": "trim().split(/\\s+/).length — текущие фактические слова; диапазоны проверены штатной checkTldr",
-    "addressedChecks": {
-      "independentReview": {
-        "ok": true
-      },
-      "tldr": {
-        "ok": true
-      },
-      "depthLink": {
-        "ok": true
-      },
-      "lifecycle": {
-        "ok": true
-      }
+    {
+      "id": 2,
+      "criterion": "Обоснование темы",
+      "score": 10,
+      "evidence": "Датированный источник и польза соответствуют разрешённой новостной рутине; спрос/клики не придуманы."
+    },
+    {
+      "id": 3,
+      "criterion": "Место в проекте",
+      "score": 10,
+      "evidence": "Сохранён свой URL; тематическая внутренняя ссылка продолжает вопрос. NEW/UPDATE/metadata разделены относительно базы."
+    },
+    {
+      "id": 4,
+      "criterion": "Полнота и прямой ответ",
+      "score": 10,
+      "evidence": "Прочитаны капсула и полное тело; существенные условия и неизвестность названы. Размер капсулы проверяется native checkTldr."
+    },
+    {
+      "id": 5,
+      "criterion": "Собственный вклад",
+      "score": 10,
+      "evidence": "Объявленная автобусная дата отделена от отчёта о состоявшемся рейсе и от восстановления сквозного маршрута."
+    },
+    {
+      "id": 6,
+      "criterion": "Факты и источники",
+      "score": 5,
+      "evidence": "Изменённые утверждения подтверждены Kominato HTML с обновлением9Oct, повторно прочитанным15Oct. Прежняя таблица MLIT остаётся датированной5Oct. См. sourceChecks; непрочитанные старые PDF не считаются новым подтверждением."
+    },
+    {
+      "id": 7,
+      "criterion": "Числа и примеры",
+      "score": 10,
+      "evidence": "Числа и даты в этой версии сверены по описанной источниками области; несопоставимые выборки/объявления не объединены."
+    },
+    {
+      "id": 8,
+      "criterion": "Исключения и применимость",
+      "score": 10,
+      "evidence": "Фактический рейс и обратный автобус не подтверждены; статические старые PDF не переаттестованы. Следующий просмотр16 октября."
+    },
+    {
+      "id": 9,
+      "criterion": "Авторство и доверие",
+      "score": 10,
+      "evidence": "Реальный отдельный Codex reviewer отличается от authoredBy. Нет выдуманного личного опыта, человеческого тестирования или экспертного заключения."
+    },
+    {
+      "id": 10,
+      "criterion": "Редактура и естественный язык",
+      "score": 10,
+      "evidence": "Финальные title/tldr/body прочитаны после конкретных замечаний; итоговый clipTitle сохраняет законченную мысль."
+    },
+    {
+      "id": 11,
+      "criterion": "SEO-обещание и метаданные",
+      "score": 5,
+      "evidence": "Проверены исходные title/tldr/date/added; SSR/canonical/OG и финальный HTML ещё не проверены."
+    },
+    {
+      "id": 12,
+      "criterion": "Ссылки и навигация",
+      "score": 5,
+      "evidence": "Ссылка проверена по смыслу и раннему реестру35 внутренних адресов; финальный URL/якоря после сборки ещё не проверены."
+    },
+    {
+      "id": 13,
+      "criterion": "Оформление и доступность",
+      "score": 5,
+      "evidence": "Новые кадры просмотрены на контактных листах/оригиналах; архивность и данные лицензии проверены. У неизменных кадров прежняя квалификация сохранена. Рендер402/1280 и доступность ожидаются."
+    },
+    {
+      "id": 14,
+      "criterion": "Готовность выпуска",
+      "score": 0,
+      "evidence": "Обязательные финальные hook/CI/build/deploy/live отсутствуют в этом ревью; редакционное одобрение не разрешает обход этих гейтов."
     }
+  ],
+  "minimumFiveVerifiedTens": true,
+  "blockingIssues": [],
+  "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
+  "releaseApproved": false,
+  "releaseStatus": {
+    "sourceEditorial": "ACCEPTED",
+    "build": "PENDING",
+    "ci": "PENDING",
+    "browser": "PENDING",
+    "deploy": "PENDING",
+    "live": "PENDING",
+    "publicPhotoAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
+    "readerTest": "NOT_PERFORMED",
+    "seoEffect": "NOT_MEASURED",
+    "revenueEffect": "NOT_MEASURED"
   },
-  "addressedRefresh": {
-    "at": "2026-10-10T15:12:53.409Z",
-    "method": "Сравнение каждого changed body/TLDR с точным пакетом; before backup соответствует независимому исходному SHA; source/photo dependencies unchanged; без нового общего ревью.",
-    "originalSha256": "0f8b7280052e137807b51d2499f501cdfc18ee19e82358f19791d03a448fd918",
-    "originalContentHash": "1374eb3fb5ee5c25e1ecf59befa40d9cc66175977d07357b065c3eb0c77fe8c5",
-    "baselineBackup": "/Users/nikitazaytsev/wt.noindex/tt-news-20261007/.run/news-before-editorial-2026-10-10/2026-09-23-japan-local-lines-after-typhoon.md",
-    "resolvedIssues": [
-      "LANGUAGE: слово «уже» запрещено каноном; применить точную замену с областью «в этой сводке»."
-    ],
-    "sourceRechecked": false,
-    "photoReViewed": false,
-    "apiCalled": false,
-    "datePreserved": true,
-    "addedPreserved": true,
-    "ledgerSha256": "7ecec505fb2caed36fe4fdf88a1b3a3886bce38701d302a35278c7bbf8b33979",
-    "qualityChanges": [
-      {
-        "criterion": 10,
-        "before": 5,
-        "after": 10
-      }
-    ]
-  }
+  "risks": [
+    "Фактический рейс и обратный автобус не подтверждены; статические старые PDF не переаттестованы. Следующий просмотр16 октября.",
+    "Финальные HTML/публичная атрибуция/402–1280/доступность, CI, deploy и live ожидаются; поиск и деньги не измерены."
+  ]
 }

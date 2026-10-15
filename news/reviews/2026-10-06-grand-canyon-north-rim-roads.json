@@ -1,54 +1,160 @@
 {
   "schemaVersion": 1,
   "slug": "2026-10-06-grand-canyon-north-rim-roads",
+  "reviewer": "Codex (tt_editorial_review_20261015)",
+  "reviewerTask": "/root/tt_editorial_review_20261015",
+  "authoredBy": "codex-traveltribe-author-20261015",
+  "reviewedAt": "2026-10-15T19:24:08.571Z",
+  "checkedAt": "2026-10-15",
   "score": 4,
-  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
-  "reviewedAt": "2026-10-06",
-  "sha256": "b7301ae5d5ab8e819b104e01f4916affcc668eff46424e2ca5526f2d65e2f9a5",
-  "rationale": "NPS 30 сентября объявила именно будущую временную остановку движения по Cape Royal Road и Point Imperial Road от заката 15 октября до рассвета 3 ноября, а текущая страница парка сохраняет North Rim открытым до 30 ноября либо раннего сильного снегопада. Текст разделяет дорожный ремонт, уже закрытую North Kaibab Trail и осеннее сворачивание сервисов, не превращая план в действующее закрытие. Для осеннего маршрута к двум смотровым это реальная перемена плана в нишевой части США, оценка 4.",
-  "risks": [
-    "До 15 октября дорожный режим остаётся объявленным планом; reviewOn совпадает с датой начала, статус нужно перепроверить в NPS.",
-    "Фактический доступ к северному краю зависит от первого серьёзного снегопада; дата 30 ноября не гарантия.",
-    "Архивный снимок Point Imperial 2012 года показывает место, а не ремонт."
-  ],
-  "blockingIssues": [],
-  "evidence": [
+  "approved": true,
+  "approvalScope": "EDITORIAL_CONTENT_ONLY",
+  "classification": "UPDATE",
+  "baseCommit": "647f67b848ba2f91efd213476a2eb0510ac021b6",
+  "previousReview": {
+    "artifactPath": "news/reviews/2026-10-06-grand-canyon-north-rim-roads.json",
+    "gitRef": "647f67b848ba2f91efd213476a2eb0510ac021b6",
+    "sha256": "3238f5ca8221ee3b70e7dda9cf8c27d650b634c39165980c520cf729954414b5",
+    "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+    "reviewedAt": "2026-10-06",
+    "score": 4,
+    "scope": "Историческое полное ревью сохранено в указанной Git-ревизии; новая запись ниже не переименовывает его в сегодняшнюю полную проверку."
+  },
+  "rationale": "Два первичных NPS источника подтверждают закрытие дорог от заката15 октября до рассвета3 ноября, отдельные сроки сервисов и закрытый North Kaibab Trail. На момент чтения закат Arizona ещё впереди: status принятого будущего ограничения сохранён. Исправлены внешние варианты топлива North Rim Country Store и Jacob Lake; их фактический запас не гарантирован.",
+  "ownAddition": "Разделены закрытие двух дорог, доступ к North Rim, закрытая пешая линия и внешняя заправка.",
+  "factReview": "NPS press release30Sep и current North Rim Status; закрытие15Oct привязано к закату местного времени.",
+  "sourceChecks": [
     {
       "url": "https://www.nps.gov/grca/learn/news/modified-fall-operations-north-rim-2026.htm",
-      "publishedOn": "2026-09-30",
-      "checkedOn": "2026-10-06",
-      "finding": "NPS: дороги Cape Royal и Point Imperial закрываются от заката 15 октября до рассвета 3 ноября; информационный центр закрывается в полдень 15-го, магазин в 16:00, кемпинг утром 16-го; заправка закрыта 19 сентября; State Route 67 планируется закрыть 30 ноября либо раньше после сильного снегопада; Jacob Lake около 45 миль."
+      "artifact": "work/source-evidence-20261015/485c2b07d6297b12.txt",
+      "artifactSha256": "c5110f5cd1842aee568036fa84d7ac658014be327a3968f6825462a37b95a18f",
+      "observedAt": "2026-10-15T18:42:29.863Z",
+      "scope": "Прочитаны релевантные описанным в factReview утверждениям разделы; hash оригинала проверен. Не означает инструментальный тест туристического сценария."
     },
     {
       "url": "https://www.nps.gov/grca/northrimstatus.htm",
-      "checkedOn": "2026-10-06",
-      "finding": "Текущий статус NPS: North Rim открыт до 30 ноября/первого сильного снегопада, две scenic roads пока запланированы к закрытию; North Kaibab Trail закрыта целиком после паводка 29 августа."
-    },
-    {
-      "url": "https://commons.wikimedia.org/w/index.php?curid=31646018",
-      "publishedOn": "2014-03-16",
-      "checkedOn": "2026-10-06",
-      "finding": "Commons API: Grand Canyon from Point Imperial 02, Miguel Hermoso Cuesta, CC BY-SA 3.0; дата съёмки 25 июля 2012 года. Локальный JPEG показывает видовую точку, не стройку."
+      "artifact": "work/source-evidence-20261015/d6e8d72fb6a9d291.txt",
+      "artifactSha256": "25f79b59a815f0d7e18235297f4d9955a5102ff78e9426adcb8bc9ad09a4468c",
+      "observedAt": "2026-10-15T18:42:30.005Z",
+      "scope": "Прочитаны релевантные описанным в factReview утверждениям разделы; hash оригинала проверен. Не означает инструментальный тест туристического сценария."
     }
   ],
-  "lifecycle": {
-    "reviewOn": "2026-10-15",
-    "reason": "В день планового начала закрытия заново проверить NPS и сменить status только после подтверждения факта."
+  "contentHash": "f112954fd6214ed294f17d4b66dbf9f0f735f2831d52fd2e07f139de8b252d62",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote; метаданные проверены отдельно.",
+  "sourceSha256": "61954fd9223069074234dfa3cb626ea542fdd5585803aa36365af1780c8a8939",
+  "nativeClipTitle": "Гранд-Каньон: дороги к смотровым закроют 15 октября",
+  "photo": {
+    "image": "./_images/2026-10-06-grand-canyon-north-rim-roads.jpg",
+    "creator": "Miguel Hermoso Cuesta",
+    "license": "CC BY-SA 3.0",
+    "source": "https://commons.wikimedia.org/w/index.php?curid=31646018",
+    "scope": "Кадр не менялся; прежняя атрибуция/квалификация сохранена, повторная полная проверка исходного авторства не заявлена.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
   },
-  "checks": {
-    "capsuleWords": 56,
-    "bodyWords": 208,
-    "titleChars": 51,
-    "clipTitle": "Гранд-Каньон: дороги к смотровым закроют 15 октября",
-    "internalLink": "/usa/",
-    "internalLinkStatus": 200,
-    "photoViewed": true,
-    "photoSha256": "63f28a0cf3c646f75ae37abbf2916156e7fa54b46fd23869cfdf17b6766d2310",
-    "photoFinding": "Локальный JPEG просмотрен: панорама Гранд-Каньона с Point Imperial; изображение архивное и не обещает видимость дороги или ремонта.",
-    "publicAttribution": "Commons API подтвердил автора, оригинальное название, CC BY-SA 3.0 и источник. imageTitle и imageChanges сохранены для /legal/photos/; финальный рендер страницы после сборки здесь не проверялся.",
-    "scope": "Независимая сверка текста, дат, первоисточников, внутренней ссылки и локального JPEG; без сборки, CI, публикации и live-проверки новой заметки."
+  "criteria14": [
+    {
+      "id": 1,
+      "criterion": "Задача читателя",
+      "score": 10,
+      "evidence": "Один самостоятельный вопрос читается из title/tldr; проверена завершённая версия."
+    },
+    {
+      "id": 2,
+      "criterion": "Обоснование темы",
+      "score": 10,
+      "evidence": "Датированный источник и польза соответствуют разрешённой новостной рутине; спрос/клики не придуманы."
+    },
+    {
+      "id": 3,
+      "criterion": "Место в проекте",
+      "score": 10,
+      "evidence": "Сохранён свой URL; тематическая внутренняя ссылка продолжает вопрос. NEW/UPDATE/metadata разделены относительно базы."
+    },
+    {
+      "id": 4,
+      "criterion": "Полнота и прямой ответ",
+      "score": 10,
+      "evidence": "Прочитаны капсула и полное тело; существенные условия и неизвестность названы. Размер капсулы проверяется native checkTldr."
+    },
+    {
+      "id": 5,
+      "criterion": "Собственный вклад",
+      "score": 10,
+      "evidence": "Разделены закрытие двух дорог, доступ к North Rim, закрытая пешая линия и внешняя заправка."
+    },
+    {
+      "id": 6,
+      "criterion": "Факты и источники",
+      "score": 10,
+      "evidence": "NPS press release30Sep и current North Rim Status; закрытие15Oct привязано к закату местного времени. См. sourceChecks; непрочитанные старые PDF не считаются новым подтверждением."
+    },
+    {
+      "id": 7,
+      "criterion": "Числа и примеры",
+      "score": 10,
+      "evidence": "Числа и даты в этой версии сверены по описанной источниками области; несопоставимые выборки/объявления не объединены."
+    },
+    {
+      "id": 8,
+      "criterion": "Исключения и применимость",
+      "score": 10,
+      "evidence": "После местного заката требуется подтверждение фактического закрытия; reviewOn16 октября. Внутрипарковая заправка закрыта, внешние условия меняются."
+    },
+    {
+      "id": 9,
+      "criterion": "Авторство и доверие",
+      "score": 10,
+      "evidence": "Реальный отдельный Codex reviewer отличается от authoredBy. Нет выдуманного личного опыта, человеческого тестирования или экспертного заключения."
+    },
+    {
+      "id": 10,
+      "criterion": "Редактура и естественный язык",
+      "score": 10,
+      "evidence": "Финальные title/tldr/body прочитаны после конкретных замечаний; итоговый clipTitle сохраняет законченную мысль."
+    },
+    {
+      "id": 11,
+      "criterion": "SEO-обещание и метаданные",
+      "score": 5,
+      "evidence": "Проверены исходные title/tldr/date/added; SSR/canonical/OG и финальный HTML ещё не проверены."
+    },
+    {
+      "id": 12,
+      "criterion": "Ссылки и навигация",
+      "score": 5,
+      "evidence": "Ссылка проверена по смыслу и раннему реестру35 внутренних адресов; финальный URL/якоря после сборки ещё не проверены."
+    },
+    {
+      "id": 13,
+      "criterion": "Оформление и доступность",
+      "score": 5,
+      "evidence": "Новые кадры просмотрены на контактных листах/оригиналах; архивность и данные лицензии проверены. У неизменных кадров прежняя квалификация сохранена. Рендер402/1280 и доступность ожидаются."
+    },
+    {
+      "id": 14,
+      "criterion": "Готовность выпуска",
+      "score": 0,
+      "evidence": "Обязательные финальные hook/CI/build/deploy/live отсутствуют в этом ревью; редакционное одобрение не разрешает обход этих гейтов."
+    }
+  ],
+  "minimumFiveVerifiedTens": true,
+  "blockingIssues": [],
+  "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
+  "releaseApproved": false,
+  "releaseStatus": {
+    "sourceEditorial": "ACCEPTED",
+    "build": "PENDING",
+    "ci": "PENDING",
+    "browser": "PENDING",
+    "deploy": "PENDING",
+    "live": "PENDING",
+    "publicPhotoAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
+    "readerTest": "NOT_PERFORMED",
+    "seoEffect": "NOT_MEASURED",
+    "revenueEffect": "NOT_MEASURED"
   },
-  "contentHash": "d12d5600977fe17c1b894f3a3160f680cef6d492ce1a9c1e587ee166b311414c",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256Scope": "full Markdown file bytes"
+  "risks": [
+    "После местного заката требуется подтверждение фактического закрытия; reviewOn16 октября. Внутрипарковая заправка закрыта, внешние условия меняются.",
+    "Финальные HTML/публичная атрибуция/402–1280/доступность, CI, deploy и live ожидаются; поиск и деньги не измерены."
+  ]
 }

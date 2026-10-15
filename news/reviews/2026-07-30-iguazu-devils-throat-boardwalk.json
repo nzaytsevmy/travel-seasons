@@ -1,95 +1,153 @@
 {
   "schemaVersion": 1,
   "slug": "2026-07-30-iguazu-devils-throat-boardwalk",
-  "reviewer": "Codex (tt_release_review_20261013)",
-  "reviewerTask": "/root/tt_release_review_20261013",
+  "reviewer": "Codex (tt_editorial_review_20261015)",
+  "reviewerTask": "/root/tt_editorial_review_20261015",
   "authoredBy": "codex-news-author-20261013",
-  "reviewedAt": "2026-10-13T10:55:47.900Z",
-  "checkedAt": "2026-10-13",
+  "reviewedAt": "2026-10-15T19:24:08.571Z",
+  "checkedAt": "2026-10-15",
   "score": 4,
-  "rationale": "Паводок 12 октября отделён от исторического сентябрьского списка открытых троп. Нынешнее открытие не обещано; бразильский режим проверяется отдельно. Финальная капсула содержит 42 слова, href /novosti/ ведёт к новому source. Сохранены исходные date/added, оценка 4 соответствует изменению поездки на нишевое направление. Прежний фактический конфликт и L01 закрыты; выпуск требует отдельных release-гейтов.",
-  "classification": "UPDATE",
+  "approved": true,
+  "approvalScope": "METADATA_DELTA_AND_PRESERVED_UNCERTAINTY",
+  "classification": "METADATA_RECHECK",
+  "baseCommit": "647f67b848ba2f91efd213476a2eb0510ac021b6",
+  "previousReview": {
+    "artifactPath": "news/reviews/2026-07-30-iguazu-devils-throat-boardwalk.json",
+    "gitRef": "647f67b848ba2f91efd213476a2eb0510ac021b6",
+    "sha256": "fd6860f67c84b92e9770503a9706c5f10491a3334986d68a95333ff6ce3150f9",
+    "reviewer": "Codex (tt_release_review_20261013)",
+    "reviewedAt": "2026-10-13T10:55:47.900Z",
+    "score": 4,
+    "scope": "Историческое полное ревью сохранено в указанной Git-ревизии; новая запись ниже не переименовывает его в сегодняшнюю полную проверку."
+  },
+  "rationale": "Дельта проверена: меняются checked/reviewOn, прежние текст и даты выпуска сохранены. MercoPress12Oct подтверждает полное закрытие и только возможное открытие13Oct. Старые сентябрьские маршруты не названы актуальным доступом, а неизвестность фактического открытия сохранена.",
+  "ownAddition": "Сохранено разделение сентябрьских настилов, октябрьского паводка и двух берегов.",
+  "factReview": "Прочитан текущий сохранённый репортаж12Oct; новый доступ к парку не подтверждён.",
   "sourceChecks": [
     {
       "url": "https://en.mercopress.com/2026/10/12/iguazu-falls-closed-as-the-river-s-flow-tops-12-000-cubic-metres-per-second",
-      "checkedAt": "2026-10-13",
-      "method": "Адресно прочитаны новая проза и уже сохранённый native первичный текст 13 октября; историческое не превращено в обещание сегодняшнего доступа.",
-      "artifact": ".run/release-20261013/sources/90fac49128ee1662.txt",
-      "artifactSha256": "cf16690e2f54519e6ca44c63bd1b1f01c72639676d76e7c77a2f817a12aac3e8"
+      "artifact": "work/source-evidence-20261015/90fac49128ee1662.txt",
+      "artifactSha256": "0e3355fcae0f57927711bbbeaba52ca37f24128f60c8fcc189222ed1afa2809f",
+      "observedAt": "2026-10-15T18:42:22.157Z",
+      "scope": "Прочитаны релевантные описанным в factReview утверждениям разделы; hash оригинала проверен. Не означает инструментальный тест туристического сценария."
     }
   ],
   "contentHash": "72996f6fc6e01aa1c474d7616742d667c984e1187d0306c83cd6405e30187f9a",
-  "proseHash": "72996f6fc6e01aa1c474d7616742d667c984e1187d0306c83cd6405e30187f9a",
-  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote; метаданные источников и оценки проверены отдельно.",
-  "sha256": "9b21a9e7f5d38e37268a5a5a9d7eb425f3fd8aa9652223951e02cc4e308fe049",
-  "sha256Scope": "Полный текущий source-файл на момент независимого дельта-ревью; последующая синхронизация score/qualityScore меняет этот SHA, но не native contentHash/proseHash.",
-  "clipTitle": "Игуасу закрылся 12 октября: прежний список троп устарел",
-  "tldrWords": 42,
-  "bodyWords": 156,
-  "previousReviewEvidence": {
-    "reviewedAt": "2026-10-12",
-    "sourceChecks": [
-      {
-        "url": "https://www.argentina.gob.ar/noticias/parque-nacional-iguazu-abierto-todo-el-ano",
-        "checkedAt": "2026-10-12",
-        "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
-        "artifact": ".run/source-text/ed72410f3959ac32.txt",
-        "artifactSha256": "1ca5acbdd83d2ef97c6697cc60f4b4408fabeb7fbda179735a2cbcf38d279505"
-      },
-      {
-        "url": "https://www.argentina.gob.ar/noticias/iguazu-finalizo-julio-con-un-balance-positivo-para-la-actividad-turistica",
-        "checkedAt": "2026-10-12",
-        "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
-        "artifact": ".run/source-text/04060f9049073b70.txt",
-        "artifactSha256": "a7038508ded9a5da067b23666bbb52b4bc8410090cdbf777650a95126bca2533"
-      }
-    ],
-    "contentHash": "ccbae7a14f071e6c6d31e6e74e41b02ff208868b3c224154f8b6f7b6c5ecdbec",
-    "qualification": "Предыдущая оценка — свидетельство проверки, а не автоматическое подтверждение новой прозы/исторических часов."
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote; метаданные проверены отдельно.",
+  "sourceSha256": "4e9708e716f1fb3257d2d6580aac5b8be3b9b79bdd2e4ca1c40b684fc7140769",
+  "nativeClipTitle": "Игуасу закрылся 12 октября: прежний список троп устарел",
+  "photo": {
+    "image": "./_images/2026-07-30-iguazu-devils-throat-boardwalk.jpg",
+    "creator": "P. Hughes",
+    "license": "CC BY",
+    "source": "https://commons.wikimedia.org/w/index.php?curid=195776898",
+    "scope": "Кадр не менялся; прежняя атрибуция/квалификация сохранена, повторная полная проверка исходного авторства не заявлена.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
   },
+  "criteria14": [
+    {
+      "id": 1,
+      "criterion": "Задача читателя",
+      "score": 10,
+      "evidence": "Один самостоятельный вопрос читается из title/tldr; проза не менялась и сопоставлена с базой."
+    },
+    {
+      "id": 2,
+      "criterion": "Обоснование темы",
+      "score": 5,
+      "evidence": "Сопровождение ранее опубликованного сюжета, а не новый измеренный спрос."
+    },
+    {
+      "id": 3,
+      "criterion": "Место в проекте",
+      "score": 10,
+      "evidence": "Сохранён свой URL; тематическая внутренняя ссылка продолжает вопрос. NEW/UPDATE/metadata разделены относительно базы."
+    },
+    {
+      "id": 4,
+      "criterion": "Полнота и прямой ответ",
+      "score": 10,
+      "evidence": "Прочитаны капсула и полное тело; существенные условия и неизвестность названы. Размер капсулы проверяется native checkTldr."
+    },
+    {
+      "id": 5,
+      "criterion": "Собственный вклад",
+      "score": 5,
+      "evidence": "Сохранено разделение сентябрьских настилов, октябрьского паводка и двух берегов."
+    },
+    {
+      "id": 6,
+      "criterion": "Факты и источники",
+      "score": 5,
+      "evidence": "Прочитан текущий сохранённый репортаж12Oct; новый доступ к парку не подтверждён. См. sourceChecks; непрочитанные старые PDF не считаются новым подтверждением."
+    },
+    {
+      "id": 7,
+      "criterion": "Числа и примеры",
+      "score": 5,
+      "evidence": "Новые числа не добавлены; прежняя числовая квалификация сохранена, предел повторного чтения назван."
+    },
+    {
+      "id": 8,
+      "criterion": "Исключения и применимость",
+      "score": 10,
+      "evidence": "Нет подтверждения фактического открытия; следующий просмотр16 октября."
+    },
+    {
+      "id": 9,
+      "criterion": "Авторство и доверие",
+      "score": 10,
+      "evidence": "Реальный отдельный Codex reviewer отличается от authoredBy. Нет выдуманного личного опыта, человеческого тестирования или экспертного заключения."
+    },
+    {
+      "id": 10,
+      "criterion": "Редактура и естественный язык",
+      "score": 10,
+      "evidence": "Полное тело прочитано, затем доказано отсутствие прозаической дельты; новый текст не имитирован сменой даты."
+    },
+    {
+      "id": 11,
+      "criterion": "SEO-обещание и метаданные",
+      "score": 5,
+      "evidence": "Проверены исходные title/tldr/date/added; SSR/canonical/OG и финальный HTML ещё не проверены."
+    },
+    {
+      "id": 12,
+      "criterion": "Ссылки и навигация",
+      "score": 5,
+      "evidence": "Ссылка проверена по смыслу и раннему реестру35 внутренних адресов; финальный URL/якоря после сборки ещё не проверены."
+    },
+    {
+      "id": 13,
+      "criterion": "Оформление и доступность",
+      "score": 5,
+      "evidence": "Новые кадры просмотрены на контактных листах/оригиналах; архивность и данные лицензии проверены. У неизменных кадров прежняя квалификация сохранена. Рендер402/1280 и доступность ожидаются."
+    },
+    {
+      "id": 14,
+      "criterion": "Готовность выпуска",
+      "score": 0,
+      "evidence": "Обязательные финальные hook/CI/build/deploy/live отсутствуют в этом ревью; редакционное одобрение не разрешает обход этих гейтов."
+    }
+  ],
+  "minimumFiveVerifiedTens": true,
   "blockingIssues": [],
   "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
+  "releaseApproved": false,
   "releaseStatus": {
-    "ci": "PENDING",
+    "sourceEditorial": "ACCEPTED",
     "build": "PENDING",
+    "ci": "PENDING",
     "browser": "PENDING",
     "deploy": "PENDING",
     "live": "PENDING",
+    "publicPhotoAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
     "readerTest": "NOT_PERFORMED",
-    "seoEffect": "NOT_MEASURED"
-  },
-  "photo": {
-    "qualification": "Не менялась в адресном UPDATE; этот повтор не выдаётся за новое визуальное/лицензионное ревью."
+    "seoEffect": "NOT_MEASURED",
+    "revenueEffect": "NOT_MEASURED"
   },
   "risks": [
-    "Полный выпуск, финальные ссылки, canonical/render/live ещё не проверены.",
-    "Датированный архив не доказывает нынешний режим."
-  ],
-  "resolvedIssues": [
-    {
-      "id": "L01",
-      "priority": "P1",
-      "critical": true,
-      "scope": "adjacent-lifecycle",
-      "file": "src/content/news/2026-07-30-iguazu-devils-throat-boardwalk.md",
-      "line": 2,
-      "blocking": false,
-      "problem": "Фактический конфликт старой страницы уже снят текущим UPDATE автора. Но ссылка на новую новость ошибочно /news/ вместо /novosti/, капсула содержит 38 слов при обязательных 40–60.",
-      "requiredChange": "Исправить href на /novosti/2026-10-13-iguazu-flood-closure/ и расширить капсулу минимум до 40 слов без нового неподтверждённого факта.",
-      "source": "https://en.mercopress.com/2026/10/12/iguazu-falls-closed-as-the-river-s-flow-tops-12-000-cubic-metres-per-second",
-      "verification": "Адресно проверить href/TLDR/contentHash; прежний смысловой конфликт RESOLVED.",
-      "status": "RESOLVED_BY_TARGETED_DELTA_REVIEW",
-      "resolvedAt": "2026-10-13T10:55:47.900Z",
-      "resolution": "Исторический сентябрьский режим отделён от закрытия 12 октября; href исправлен на /novosti/, капсула содержит 42 слова. Доступ 13 октября и бразильская сторона не объявлены подтверждёнными."
-    }
-  ],
-  "titleCharacters": 55,
-  "reviewOn": "2026-10-14",
-  "sourceChecked": "2026-10-13",
-  "deltaReview": {
-    "reviewedAt": "2026-10-13T10:55:47.900Z",
-    "method": "Адресно прочитаны изменённые фрагменты и зависимости; неизменные части приняты по завершённому независимому ревью, без повторной полной разведки.",
-    "contentHash": "72996f6fc6e01aa1c474d7616742d667c984e1187d0306c83cd6405e30187f9a",
-    "sourceSha256": "9b21a9e7f5d38e37268a5a5a9d7eb425f3fd8aa9652223951e02cc4e308fe049"
-  }
+    "Нет подтверждения фактического открытия; следующий просмотр16 октября.",
+    "Финальные HTML/публичная атрибуция/402–1280/доступность, CI, deploy и live ожидаются; поиск и деньги не измерены."
+  ]
 }

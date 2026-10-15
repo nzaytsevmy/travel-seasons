@@ -1,374 +1,153 @@
 {
   "schemaVersion": 1,
   "slug": "2026-10-11-kominato-replacement-bus",
+  "reviewer": "Codex (tt_editorial_review_20261015)",
+  "reviewerTask": "/root/tt_editorial_review_20261015",
+  "authoredBy": "codex-traveltribe-author-20261015",
+  "reviewedAt": "2026-10-15T19:24:08.571Z",
+  "checkedAt": "2026-10-15",
   "score": 4,
-  "reviewer": "codex-independent-news-review-20261011",
-  "reviewedAt": "2026-10-11T05:37:31.665Z",
-  "checkedAt": "2026-10-11T05:37:31.665Z",
-  "sha256": "5b4eeafb43b8a6b90f4df7c02f2da3ffee306b561a2e05fef11dc74e153d049d",
-  "sha256Scope": "full Markdown file bytes after reviewer score synchronization; author prose not changed",
-  "contentHash": "0ab3646d452e44075393e8f600f0f996c2735dc969c9a288306d782f335c7b0a",
-  "proseHash": "0ab3646d452e44075393e8f600f0f996c2735dc969c9a288306d782f335c7b0a",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body.trim(); score excluded",
-  "proseHashScope": "same as contentHash",
-  "rationale": "4/5: конкретно меняет локальную поездку по Японии. Конечная точка автобуса и сломанная пересадка подтверждены оператором. После адресной правки проверены TLDR и тело: замена с 14 октября действует только по будням, как прямо указано в первичном PDF от 8 октября. Запуск остаётся будущим; reviewOn соответствует началу.",
+  "approved": true,
+  "approvalScope": "EDITORIAL_CONTENT_ONLY",
+  "classification": "UPDATE",
+  "baseCommit": "647f67b848ba2f91efd213476a2eb0510ac021b6",
+  "previousReview": {
+    "artifactPath": "news/reviews/2026-10-11-kominato-replacement-bus.json",
+    "gitRef": "647f67b848ba2f91efd213476a2eb0510ac021b6",
+    "sha256": "45ad922672836e2732f164df8d67f13974b9695e917d3df9ce8eda21abf71736",
+    "reviewer": "codex-independent-news-review-20261011",
+    "reviewedAt": "2026-10-11T05:37:31.665Z",
+    "score": 4,
+    "scope": "Историческое полное ревью сохранено в указанной Git-ревизии; новая запись ниже не переименовывает его в сегодняшнюю полную проверку."
+  },
+  "rationale": "Текст честно сохраняет объявленный старт14 октября вместо утверждения, что автобусы фактически вышли. Текущий операторский HTML подтверждает границы работающих поездов, конечную Исигами и невозможность прежней пересадки на Исуми. Старое условие будней из ранее прочитанного PDF не выдаётся за новую PDF-проверку; новых PDF-чисел нет.",
+  "ownAddition": "Название конечной станции и неполная замена маршрута важнее самого объявления автобуса.",
+  "factReview": "Текущий HTML Kominato сверён, прежняя PDF-схема не переаттестована в этом ревью.",
+  "sourceChecks": [
+    {
+      "url": "https://www.kominato.co.jp/",
+      "artifact": "work/source-evidence-20261015/e7788575ddb07189.txt",
+      "artifactSha256": "cab343fc2e1b95f50622a229a60a38a14b852b6edb95b623f5b44a5f834ac6df",
+      "observedAt": "2026-10-15T18:42:32.849Z",
+      "scope": "Прочитаны релевантные описанным в factReview утверждениям разделы; hash оригинала проверен. Не означает инструментальный тест туристического сценария."
+    }
+  ],
+  "contentHash": "aa6a1cd2f1505f5dab7f9f33a05b2405fe6ef04c7c231c5a4ffe7b07288ace58",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote; метаданные проверены отдельно.",
+  "sourceSha256": "b0ebda833e893f8926b777b5b3735faaab40a496632db4ab11994fca25f7b505",
+  "nativeClipTitle": "Япония: автобусы заменят часть поездов Коминато",
+  "photo": {
+    "image": "./_images/2026-10-11-kominato-replacement-bus.jpg",
+    "creator": "Io24gidf",
+    "license": "CC BY-SA 4.0",
+    "source": "https://commons.wikimedia.org/w/index.php?curid=103042248",
+    "scope": "Кадр не менялся; прежняя атрибуция/квалификация сохранена, повторная полная проверка исходного авторства не заявлена.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+  },
+  "criteria14": [
+    {
+      "id": 1,
+      "criterion": "Задача читателя",
+      "score": 10,
+      "evidence": "Один самостоятельный вопрос читается из title/tldr; проверена завершённая версия."
+    },
+    {
+      "id": 2,
+      "criterion": "Обоснование темы",
+      "score": 10,
+      "evidence": "Датированный источник и польза соответствуют разрешённой новостной рутине; спрос/клики не придуманы."
+    },
+    {
+      "id": 3,
+      "criterion": "Место в проекте",
+      "score": 10,
+      "evidence": "Сохранён свой URL; тематическая внутренняя ссылка продолжает вопрос. NEW/UPDATE/metadata разделены относительно базы."
+    },
+    {
+      "id": 4,
+      "criterion": "Полнота и прямой ответ",
+      "score": 10,
+      "evidence": "Прочитаны капсула и полное тело; существенные условия и неизвестность названы. Размер капсулы проверяется native checkTldr."
+    },
+    {
+      "id": 5,
+      "criterion": "Собственный вклад",
+      "score": 10,
+      "evidence": "Название конечной станции и неполная замена маршрута важнее самого объявления автобуса."
+    },
+    {
+      "id": 6,
+      "criterion": "Факты и источники",
+      "score": 5,
+      "evidence": "Текущий HTML Kominato сверён, прежняя PDF-схема не переаттестована в этом ревью. См. sourceChecks; непрочитанные старые PDF не считаются новым подтверждением."
+    },
+    {
+      "id": 7,
+      "criterion": "Числа и примеры",
+      "score": 10,
+      "evidence": "Числа и даты в этой версии сверены по описанной источниками области; несопоставимые выборки/объявления не объединены."
+    },
+    {
+      "id": 8,
+      "criterion": "Исключения и применимость",
+      "score": 10,
+      "evidence": "Нужный автобус и расписание уточняются перед выездом; reviewOn16 октября."
+    },
+    {
+      "id": 9,
+      "criterion": "Авторство и доверие",
+      "score": 10,
+      "evidence": "Реальный отдельный Codex reviewer отличается от authoredBy. Нет выдуманного личного опыта, человеческого тестирования или экспертного заключения."
+    },
+    {
+      "id": 10,
+      "criterion": "Редактура и естественный язык",
+      "score": 10,
+      "evidence": "Финальные title/tldr/body прочитаны после конкретных замечаний; итоговый clipTitle сохраняет законченную мысль."
+    },
+    {
+      "id": 11,
+      "criterion": "SEO-обещание и метаданные",
+      "score": 5,
+      "evidence": "Проверены исходные title/tldr/date/added; SSR/canonical/OG и финальный HTML ещё не проверены."
+    },
+    {
+      "id": 12,
+      "criterion": "Ссылки и навигация",
+      "score": 5,
+      "evidence": "Ссылка проверена по смыслу и раннему реестру35 внутренних адресов; финальный URL/якоря после сборки ещё не проверены."
+    },
+    {
+      "id": 13,
+      "criterion": "Оформление и доступность",
+      "score": 5,
+      "evidence": "Новые кадры просмотрены на контактных листах/оригиналах; архивность и данные лицензии проверены. У неизменных кадров прежняя квалификация сохранена. Рендер402/1280 и доступность ожидаются."
+    },
+    {
+      "id": 14,
+      "criterion": "Готовность выпуска",
+      "score": 0,
+      "evidence": "Обязательные финальные hook/CI/build/deploy/live отсутствуют в этом ревью; редакционное одобрение не разрешает обход этих гейтов."
+    }
+  ],
+  "minimumFiveVerifiedTens": true,
   "blockingIssues": [],
-  "risks": [
-    "Будущий запуск и число рейсов могут измениться. 14 октября требуется новый первоисточник, прежде чем объявлять автобусы действующими.",
-    "Источник — изменяемая главная оператора; сохранён текущий текст, не вечная гарантия расписания.",
-    "Независимая редакционная проверка не подтверждает CI, сборку, публикацию или измеренный трафик. Все обязательные гейты финальной версии остаются у автора."
-  ],
   "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
-  "releaseReady": false,
-  "releaseBlockingIssues": [
-    "Полный обязательный CI финального HEAD ещё не подтверждён.",
-    "402/1280, SSR/SEO, exact deploy/live и публичная атрибуция новой версии ожидают штатный выпуск."
-  ],
-  "reviewScope": "Reviewer не писал эти новости. Независимо прочитаны title/TLDR/body, актуальные AGENTS/CLAUDE/NEWS-SELECTION/RUBRIC/travel-article и QUALITY-2026. Проверены первичные тексты, механические поля, внутренние HTTP-адреса, фото/лицензии. Текст автора не изменён; reviewer меняет только score и артефакты. Тяжёлые сборки/браузеры и публикация не запускались. Последний адресный этап проверяет только изменённые подписи и атрибуцию; неизменный текст и отбор не проходили повторного общего ревью.",
-  "evidence": {
-    "primarySource": {
-      "urls": [
-        "https://www.kominato.co.jp/",
-        "https://www.kominato.co.jp/wp-content/uploads/2026/10/3e2d0cebe290fe70f933aeca86aeb572.pdf"
-      ],
-      "confirmed": [
-        "Официальный статус обновлён 9 октября: Гои — Кадзуса-Усику работает; Кадзуса-Усику — Кадзуса-Накано закрыт после тайфуна 21 сентября.",
-        "С 14 октября автобусы Кадзуса-Усику — Кадзуса-Окубо — Исигами; рейсов меньше, чем поездов.",
-        "Оператор прямо исключает доезд к Ёро-Кэйкоку и пересадку на Исуми в Кадзуса-Накано; Torokko работает на Гои — Кадзуса-Усику.",
-        "PDF оператора датирован 8 октября 2026. Страница 1, раздел 3(1): с 14 октября замещающие автобус или такси только по будням (平日に限り). До участка перекрытой дороги перед Ёро-Кэйкоку; частота существенно ниже поездов. Раздел 2 подтверждает Гои — Кадзуса-Усику работает, дальше поезда отменены."
-      ],
-      "sourceArtifacts": [
-        {
-          "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/sources/kominato-home.txt",
-          "sha256": "f558273b2580b632fa9fe800259d607d190f5d5c7d7622f703bec4be474a8b30"
-        },
-        {
-          "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/sources/kominato-restoration.pdf",
-          "sha256": "7308a90dbd54f890b2ff8afc1981f2b15de26b372e10e06d2a2b63a83674c609"
-        },
-        {
-          "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/sources/kominato-restoration.txt",
-          "sha256": "46125728e414b1127d1a53962f3444f76d4dd39fca3511401e37e5bdc8b2c53c"
-        },
-        {
-          "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/review-evidence/kominato-restoration-page-1.png",
-          "sha256": "11e95180095386727907456311fb8dcc3dc20af602df55620849b9a951cefedd"
-        }
-      ],
-      "independentObservations": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/review-evidence/independent-source-observations.json",
-      "method": "Независимый Web и сохранённый текст источника от 11 октября. Адресное дополнение: сохранённый первичный PDF и его текст прочитаны; первая страница отрендерена Poppler и независимо просмотрена, раздел 3(1). Web PDF дважды не загрузился; это не выдаётся за недоступность первоисточника."
-    },
-    "photo": {
-      "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/src/content/news/_images/2026-10-11-kominato-replacement-bus.jpg",
-      "sha256": "71e8276876d183a1e9cfe656183102690eaaf6285ebd918f0a75dd2ae1a15c86",
-      "viewedByThisReviewer": true,
-      "viewMethod": "Просмотр соответствующего кадра на .run/batch-2026-10-11/photo-contact.jpg; отдельно хеширован конечный JPEG.",
-      "finding": "Контактный лист — Kiha 200 на станции, архивный 5 марта 2019; Io24gidf / CC BY-SA 4.0. Повреждение или автобус не изображены.",
-      "source": "https://commons.wikimedia.org/w/index.php?curid=103042248",
-      "credit": "Io24gidf",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-      "provenanceArtifact": ".run/batch-2026-10-11/photo-provenance.json",
-      "publicAttributionPrepared": true,
-      "publicAttributionRenderedForThisRelease": false,
-      "captionReview": {
-        "scope": "Только изменённые imageTitle и сохранённые imageChanges, точность по прежнему визуальному просмотру неизменного JPEG, Commons metadata и публичная атрибуция по данным. Отбор, title/TLDR/body и оценки не проверялись повторно.",
-        "reviewedAt": "2026-10-11T05:37:31.665Z",
-        "baseEditorialReviewedAt": "2026-10-11T04:58:02.452Z",
-        "branch": "tt-publish/2026-10-11-final",
-        "baseCommit": "23b8200dec1883482a39362fce03787c4c682068",
-        "caption": "Поезд Коминато в Японии, 2019 год. Архивное фото, не повреждение линии и не замещающий автобус.",
-        "captionAccurate": true,
-        "finding": "Поезд Kominato Kiha 200, Япония; 5 марта 2019. Подпись прямо исключает повреждение линии и замещающий автобус.",
-        "photoUnchangedBySha256": true,
-        "photoSha256": "71e8276876d183a1e9cfe656183102690eaaf6285ebd918f0a75dd2ae1a15c86",
-        "contentHashUnchanged": true,
-        "scoreUnchanged": true,
-        "originalTitle": "Исходное название: Kominato Railway Kiha 20x.jpg. Подготовлена уменьшенная JPEG-копия.",
-        "originalFilenamePreserved": true,
-        "commonsDate": "2019-03-05",
-        "commonsArtist": "Io24gidf",
-        "commonsLicenseVerified": true,
-        "preparedCredit": {
-          "creator": "Io24gidf",
-          "title": "Поезд Коминато в Японии, 2019 год. Архивное фото, не повреждение линии и не замещающий автобус.",
-          "license": "CC BY-SA 4.0",
-          "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-          "source": "https://commons.wikimedia.org/w/index.php?curid=103042248",
-          "changes": [
-            "Исходное название: Kominato Railway Kiha 20x.jpg. Подготовлена уменьшенная JPEG-копия."
-          ]
-        },
-        "existingLivePublicAttribution": {
-          "url": "https://traveltribe.ru/legal/photos/",
-          "photoRecordFound": true,
-          "text": "Поезд Kominato Railway на станции Кадзуса-Усику, март 2019 года. Архивный кадр одной из линий из сводки, не последствий тайфуна. — Io24gidf. CC BY-SA. Исходное название работы: Kominato Railway Kiha 20x.jpg. Подготовлена JPEG-копия.",
-          "creatorMatches": true,
-          "licenseAnchor": {
-            "href": "https://creativecommons.org/licenses/by-sa/4.0/",
-            "text": "CC BY-SA"
-          },
-          "licenseMatches": true,
-          "licenseVersionVerifiedByExactLinkedUri": true,
-          "originalNamePresent": true,
-          "changesDisclosurePresent": true,
-          "unicodeSpaceNormalization": "HTML text content without inserted spaces around inline tags; numeric/entity decoding; Unicode NFC; all Unicode whitespace collapsed to ordinary spaces",
-          "nbspObserved": true
-        },
-        "newCaptionLiveRendered": false,
-        "sourceObservations": [
-          {
-            "kind": "legal",
-            "url": "https://traveltribe.ru/legal/photos/",
-            "status": 200,
-            "checkedAt": "2026-10-11T05:33:28.198Z",
-            "sha256": "ebde2eb9e6d6533253362b27ad9cad3779c2e356c48e7e685a7eb7cf6c640053"
-          },
-          {
-            "kind": "commons",
-            "url": "https://commons.wikimedia.org/w/api.php?action=query&format=json&pageids=30948866%7C105220580%7C103042248%7C13282652&prop=imageinfo&iiprop=url%7Cextmetadata",
-            "status": 200,
-            "checkedAt": "2026-10-11T05:33:27.993Z",
-            "sha256": "b5ce9d1af72e0a043a5aa9ba8cad828bf868c9b0bab6306ab24f88f43f334ab6"
-          }
-        ],
-        "sourceArtifacts": [
-          {
-            "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/review-evidence/caption-photo-metadata.json",
-            "sha256": "d937d43c27187f561ecfb17c91c0f6bb0d4b536198df741e40430afd5ccc4667"
-          },
-          {
-            "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/review-evidence/caption-source-observations.json",
-            "sha256": "dbaeeffc5042496b4b98b8519bf237de87a71c451cea147b46031a8f0589e79c"
-          },
-          {
-            "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/review-evidence/caption-live-legal-photos.html",
-            "sha256": "ebde2eb9e6d6533253362b27ad9cad3779c2e356c48e7e685a7eb7cf6c640053"
-          },
-          {
-            "path": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/review-evidence/caption-attribution-integrity.json",
-            "sha256": "839253aab79a0487d55dacfd36479761cc855139f1bd2a304e1a3a83da9f12cd"
-          }
-        ],
-        "blockingIssues": [],
-        "report": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/caption-review.md"
-      },
-      "publicExistingAttributionVerified": true
-    },
-    "internalLinks": {
-      "method": "Свежий независимый HTTP GET 11 октября; title, H1, статус и hash; не считается live-проверкой новой заметки.",
-      "results": [
-        {
-          "anchor": "гайдом по Японии",
-          "path": "/japan/",
-          "verification": {
-            "path": "/japan/",
-            "url": "https://traveltribe.ru/japan/",
-            "status": 200,
-            "checkedAt": "2026-10-11T04:43:10.929Z",
-            "sha256": "f48941f571339e0f6d9c1981a94968ea67b69e41ef98fbeda701df69f2298200",
-            "title": " Япония 2026: гайд, виза, сезоны, бюджет для россиян ",
-            "h1": " Япония 2026 ",
-            "chars": 173681,
-            "relevantContext": " Был в ноябре 2023 Япония 2026 Виза, сезоны, бюджет, маршруты — всё что нужно для первой поездки из России. Без воды, с реальными цифрами из чеков. Виза Бесплатно Сбор JVAC 970 ₽ Бюджет $50–⁠300 / день Когда лучше Октябрь–ноябрь Мин. маршрут 10 дней JR Pass Не нужен Обзор Когда ехать Виза Что взять Сравнить Если коротко Виза бесплатна , сервисный сбор JVAC 970 ₽ , отказов &lt;5%. Лучший сезон — октябрь–ноябрь (момидзи). Избегать: Золотая неделя 29 апр — 6 мая 2026 , Обон (середина августа), цую (июнь–⁠июль). Бюджет: $50/день эконом, $150–⁠250 комфорт, $300+ премиум. JR Pass с 2023 чаще не нужен. Минимум 10 дней на Golden Route Токио — Хаконе — Киото — Осака. Никита Зайцев · @traveltriberu · ",
-            "mentions": [
-              "Япония",
-              "Токио",
-              "Токио",
-              "Япония",
-              "Япония",
-              "Япония",
-              "Токио",
-              "Токио",
-              "Токио",
-              "Токио",
-              "Токио",
-              "Токио",
-              "Токио",
-              "Япония",
-              "Токио",
-              "Япония",
-              "Токио",
-              "Япония",
-              "Токио",
-              "Токио"
-            ]
-          }
-        }
-      ]
-    },
-    "editorialCriteria": {
-      "rubric": "transport",
-      "readerTask": "Перестроить поездку по Босо: понять, где заканчивается автобусная замена и почему сквозная пересадка не работает.",
-      "addedValue": "Разделены доступная короткая прогулка, конечная остановка автобуса и невыполнимый обычный сквозной железнодорожный план.",
-      "demand": "Подтверждённого измеренного спроса нет; прогноз роли не выдан за трафик."
-    },
-    "quality14": {
-      "scores": [
-        10,
-        10,
-        5,
-        10,
-        10,
-        10,
-        10,
-        10,
-        5,
-        10,
-        5,
-        5,
-        5,
-        0
-      ],
-      "criteria": [
-        {
-          "criterion": 1,
-          "name": "Задача читателя",
-          "score": 10,
-          "evidence": "Перестроить поездку по Босо: понять, где заканчивается автобусная замена и почему сквозная пересадка не работает."
-        },
-        {
-          "criterion": 2,
-          "name": "Обоснование темы",
-          "score": 10,
-          "evidence": "Редакционная рубрика transport; источник и аудитория зафиксированы в news-candidates.json. Спрос/трафик не заявлены измеренными."
-        },
-        {
-          "criterion": 3,
-          "name": "Место в проекте",
-          "score": 5,
-          "evidence": "Точный URL выбран; поиск по архиву не выявил повторного нового события, три ревизии остаются на прежних URL. Пробел: контекстные входящие связи новой сборки не проверены."
-        },
-        {
-          "criterion": 4,
-          "name": "Полнота и прямой ответ",
-          "score": 10,
-          "evidence": "Капсула 50 слов и тело 158 слов прочитаны в окончательной версии; в начале прямой ответ, ограничение буднями присутствует в обоих местах."
-        },
-        {
-          "criterion": 5,
-          "name": "Собственный вклад",
-          "score": 10,
-          "evidence": "Разделены доступная короткая прогулка, конечная остановка автобуса и невыполнимый обычный сквозной железнодорожный план."
-        },
-        {
-          "criterion": 6,
-          "name": "Факты и источники",
-          "score": 10,
-          "evidence": "Официальный статус обновлён 9 октября: Гои — Кадзуса-Усику работает; Кадзуса-Усику — Кадзуса-Накано закрыт после тайфуна 21 сентября. С 14 октября автобусы Кадзуса-Усику — Кадзуса-Окубо — Исигами; рейсов меньше, чем поездов. Оператор прямо исключает доезд к Ёро-Кэйкоку и пересадку на Исуми в Кадзуса-Накано; Torokko работает на Гои — Кадзуса-Усику. Добавленный PDF от 8 октября, стр. 1 раздел 3(1), прямо ограничивает замену буднями; извлечение текста и изображение страницы независимо прочитаны."
-        },
-        {
-          "criterion": 7,
-          "name": "Числа и примеры",
-          "score": 10,
-          "evidence": "Все видимые числовые условия сверены по источникам; даты события и публикации различены. Тайфун 21 сентября; обновление оператора 9 октября; автобусная замена с 14 октября; reviewOn 14 октября. PDF 8 октября и статус HTML 9 октября относятся к объявлению, запуск 14 октября — будущий. Условие буднями сохранено."
-        },
-        {
-          "criterion": 8,
-          "name": "Исключения и применимость",
-          "score": 10,
-          "evidence": "Замена только по будням; автобус не довозит до Ёро-Кэйкоку и пересадки Исуми. Будущий запуск и число рейсов могут измениться; 14 октября требуется новый первоисточник, прежде чем объявлять автобусы действующими."
-        },
-        {
-          "criterion": 9,
-          "name": "Авторство и доверие",
-          "score": 5,
-          "evidence": "authoredBy=Codex (root), reviewer=codex-independent-news-review-20261011: разные реальные участники Codex. Пробел: публичная подпись/профиль и атрибуция в итоговом рендере не просмотрены. Читательского теста нет."
-        },
-        {
-          "criterion": 10,
-          "name": "Редактура и естественный язык",
-          "score": 10,
-          "evidence": "Вся проза прочитана в фактическом и смысловом проходе; запрещённых отдельных слов, служебных меток и выдуманного личного опыта не найдено. Композиция следует одному факту."
-        },
-        {
-          "criterion": 11,
-          "name": "SEO-обещание и метаданные",
-          "score": 5,
-          "evidence": "clipTitle: Япония: автобусы заменят часть поездов Коминато. Смысл сохранён; Тайфун 21 сентября; обновление оператора 9 октября; автобусная замена с 14 октября; reviewOn 14 октября. Пробел: canonical/OG/SSR финальной сборки ещё не проверены."
-        },
-        {
-          "criterion": 12,
-          "name": "Ссылки и навигация",
-          "score": 5,
-          "evidence": "Внутренняя ссылка /japan/ — свежий HTTP 200 и соответствующий анкору материал. Пробел: входящие тематические связи новой версии не подтверждены."
-        },
-        {
-          "criterion": 13,
-          "name": "Оформление и доступность",
-          "score": 5,
-          "evidence": "Поезд Kominato Kiha 200, Япония; 5 марта 2019. Подпись прямо исключает повреждение линии и замещающий автобус. Новый imageTitle независимо проверен; оригинальное название сохранено в imageChanges. Commons автор/дата/лицензия и существующая публичная атрибуция подтверждены свежими HTTP 200. Версия CC BY-SA 4.0 подтверждена точным URL лицензии; публичное короткое обозначение семейства лицензии допустимо. Пробел: новый рендер подписи, 402/1280 и применимая доступность не проверены; балл остаётся 5."
-        },
-        {
-          "criterion": 14,
-          "name": "Готовность выпуска",
-          "score": 0,
-          "evidence": "Полный CI, exact deploy, публичные изменённые URL, SSR/NewsArticle/canonical/sitemap/фид/индексация и живая проверка этой версии ещё не выполнены; 0, не N/A."
-        }
-      ],
-      "confirmedTens": 8,
-      "minimumFiveConfirmedTens": true,
-      "criticalDefectsOverrideScore": true,
-      "report": ".run/batch-2026-10-11/editorial-review.md"
-    },
-    "targetedRefresh": {
-      "reviewedAt": "2026-10-11T04:58:02.452Z",
-      "reason": "Автор добавил только существенное ограничение буднями в TLDR/тело и источник PDF; прежний score не повышен. Незатронутые семь текстов не проходили повторного общего ревью.",
-      "previousContentHash": "4d1019d091bd5cb764df11fe7794e38329b10fc9e38ac011d6696b91f6f283a2",
-      "newContentHash": "0ab3646d452e44075393e8f600f0f996c2735dc969c9a288306d782f335c7b0a",
-      "pdfPage": 1,
-      "pdfSection": "3(1)",
-      "textLines": "42–43",
-      "renderedPageViewed": true
-    },
-    "captionOnlyRefresh": {
-      "scope": "Только изменённые imageTitle и сохранённые imageChanges, точность по прежнему визуальному просмотру неизменного JPEG, Commons metadata и публичная атрибуция по данным. Отбор, title/TLDR/body и оценки не проверялись повторно.",
-      "at": "2026-10-11T05:37:31.665Z",
-      "baseEditorialReviewedAt": "2026-10-11T04:58:02.452Z",
-      "report": "/Users/nikitazaytsev/wt.noindex/tt-publish-20261007/.run/batch-2026-10-11/caption-review.md"
-    }
+  "releaseApproved": false,
+  "releaseStatus": {
+    "sourceEditorial": "ACCEPTED",
+    "build": "PENDING",
+    "ci": "PENDING",
+    "browser": "PENDING",
+    "deploy": "PENDING",
+    "live": "PENDING",
+    "publicPhotoAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
+    "readerTest": "NOT_PERFORMED",
+    "seoEffect": "NOT_MEASURED",
+    "revenueEffect": "NOT_MEASURED"
   },
-  "lifecycle": {
-    "decision": "NEW",
-    "date": "2026-10-09T00:00:00.000Z",
-    "added": "2026-10-11",
-    "reviewOn": "2026-10-14T00:00:00.000Z",
-    "explanation": "Тайфун 21 сентября; обновление оператора 9 октября; автобусная замена с 14 октября; reviewOn 14 октября. Только по будням: первичный PDF 8 октября, раздел 3(1)."
-  },
-  "checks": {
-    "fullProseRead": true,
-    "titleChars": 47,
-    "clipTitle": "Япония: автобусы заменят часть поездов Коминато",
-    "clipTitleMeaningPreserved": true,
-    "clipDescription": "Железная дорога Коминато в японской префектуре Тиба объявила автобусную замену по будням с 14 октября на части закрытого после тайфуна участка.",
-    "tldrWords": 50,
-    "bodyWords": 158,
-    "tldrGate": {
-      "ok": true
-    },
-    "depthLink": {
-      "ok": true
-    },
-    "lifecycle": {
-      "ok": true
-    },
-    "yamlParser": "PASS",
-    "duplicateImageAltInitialFailure": "Initial js-yaml duplicated mapping key; root removed duplicate; final parse rechecked PASS.",
-    "languageBannedWords": [],
-    "independentReviewer": true,
-    "readerTest": false,
-    "buildBrowserCiLive": false,
-    "weekdaysRestrictionVerified": true,
-    "captionOnlyReview": {
-      "ok": true,
-      "photoUnchangedByHash": true,
-      "contentHashUnchanged": true,
-      "scoreUnchanged": true,
-      "originalFilenamePreserved": true,
-      "commonsMetadata": true,
-      "publicExistingAttribution": true,
-      "nbspNormalization": true,
-      "newCaptionLive": false
-    }
-  }
+  "risks": [
+    "Нужный автобус и расписание уточняются перед выездом; reviewOn16 октября.",
+    "Финальные HTML/публичная атрибуция/402–1280/доступность, CI, deploy и live ожидаются; поиск и деньги не измерены."
+  ]
 }
