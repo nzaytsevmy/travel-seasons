@@ -2,8 +2,8 @@
 title: "Гоа: скутеры не пускают на новую эстакаду Порворима"
 date: 2026-09-17
 added: 2026-09-18
-checked: "2026-10-12"
-reviewOn: "2026-10-15"
+checked: "2026-10-15"
+reviewOn: "2026-10-16"
 topic: transport
 impact: high
 score: 5

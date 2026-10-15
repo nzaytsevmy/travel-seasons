@@ -2,8 +2,8 @@
 title: "Места обитания филиппинского орла пересекаются с концессиями"
 date: "2026-09-30"
 added: "2026-10-01"
-checked: "2026-10-01"
-reviewOn: "2026-10-15"
+checked: "2026-10-15"
+reviewOn: "2026-11-15"
 topic: "nature"
 impact: "medium"
 score: 3

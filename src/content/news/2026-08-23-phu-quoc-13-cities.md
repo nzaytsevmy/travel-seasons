@@ -1,14 +1,14 @@
 ---
 title: "Фукуок: Anex расширил зимнюю полётную программу"
 date: 2026-08-21
-checked: "2026-09-29"
+checked: "2026-10-15"
 added: 2026-08-23
 topic: transport
 impact: medium
 score: 5
 authoredBy: "codex-gpt-6"
 reviewRef: "news/reviews/2026-08-23-phu-quoc-13-cities.json"
-reviewOn: "2026-10-15"
+reviewOn: "2026-10-30"
 photoQuery: "Phu Quoc Vietnam beach palm trees sunset photo"
 tldr: "Anex 28 сентября объявил о расширении полётной программы на Фукуок: из Москвы рейсы SUN PHU QUOC AIRWAYS заявлены шесть раз в неделю с середины ноября до конца марта, плюс вылеты ещё из 11 городов. Августовское число 13 относится к отдельному плану FUN&SUN; фактический старт этой программы не установлен."
 countries:
