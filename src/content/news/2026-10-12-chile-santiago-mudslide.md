@@ -4,8 +4,8 @@ imageTitle: "Gran Santiago Tower, Views from San Critóbal Hill - Santiago - Chi
 title: "Селевой поток повредил квартал на востоке Сантьяго"
 date: "2026-10-09"
 added: "2026-10-12"
-checked: "2026-10-15"
-reviewOn: "2026-10-16"
+checked: "2026-10-16"
+reviewOn: "2026-10-23"
 topic: nature
 impact: medium
 score: 3

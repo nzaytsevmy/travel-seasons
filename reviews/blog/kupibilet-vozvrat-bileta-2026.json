@@ -1,10 +1,11 @@
 {
   "schemaVersion": 1,
   "slug": "kupibilet-vozvrat-bileta-2026",
-  "reviewer": "Codex (article_review_20261009)",
-  "reviewedAt": "2026-10-09",
+  "reviewer": "Codex (tt_article_review_20261016)",
+  "reviewedAt": "2026-10-16",
   "approved": true,
-  "verdict": "Сегодня проверена только контекстная добавка и смысловая зависимость от нового разбора Туту. Баллы основного текста сохранены из документированного независимого review 08.10; новых цен, операций и полного свежего фактчекинга Купибилета не заявлено.",
+  "status": "approved_link_delta_pending_release_checks",
+  "verdict": "Независимо одобрена только входящая ссылка на новый разбор покупки Купибилета и запись checks. Исторические баллы сохранены; полный свежий фактчек старого материала не заявлен.",
   "qualityScore": {
     "topic": 8.5,
     "facts": 9,
@@ -15,12 +16,17 @@
     "overall": 8,
     "ceiling": "До 10 не хватает собственного заказа и подтверждённого возврата автора, проверки исполнения обещаний поддержки и выплаты и подтверждённого поискового результата. Неоднозначность компенсации возвратного тарифа требует расчёта конкретного заказа."
   },
-  "rationale": "Текущий текст прочитан, добавленный заключительный абзац проверен отдельно: он прямо отделяет авиабилет от железнодорожного билета, предупреждает о непереносимости процентов и ведёт к нужной задаче Туту. Сравнение хеша основного текста из HEAD с предыдущим артефактом подтвердило 4959ac5e0059daf0; сегодняшняя проза отличается только этой добавкой. Свежие правила и операции Купибилета не перепроверялись; их оценки и ограничения относятся к независимой проверке 08.10.2026.",
-  "scope": "Сегодня — чтение текста для смысловой зависимости и review одной контекстной ссылочной добавки. Полная проверка первичек, SVG, 402/1280 и фактических шрифтов основного материала выполнена предыдущим рецензентом 08.10 и не обозначается сегодняшней.",
+  "rationale": "Diff против 68fbd0c2 показывает только добавление ссылки на проверку итоговой цены при следующей покупке и новую запись checks. Контекст явно отделяет существующую задачу возврата купленного билета от выбора нового продавца; основная процедура возврата и её цифры не перенесены на новый URL. Native proseHash базы совпал с предыдущим артефактом; title, description, даты и правила не изменены. Исторические оценки сохранены и не обозначают свежую проверку всех сборов, исключений и сроков.",
+  "scope": "Только ссылочная дельта и её непосредственный смысловой контекст, точный diff относительно 68fbd0c2a5e766b7685c854605d78360a3f060c2, новая запись checks, существование целевого MDX и соответствие его обещания. Старые первички, юридические выводы, собственный опыт, изображения, партнёрские назначения и полный текст заново не пересверялись; рендер, HTTP нового URL, CI и live остаются у владельца выпуска.",
+  "baselineCommit": "68fbd0c2a5e766b7685c854605d78360a3f060c2",
+  "assessmentMethod": "independent_targeted_link_delta_review_preserving_historical_scores",
   "previousReview": {
-    "reviewer": "Codex (article_review_20261008)",
-    "reviewedAt": "2026-10-08",
-    "proseHash": "4959ac5e0059daf0",
+    "schemaVersion": 1,
+    "slug": "kupibilet-vozvrat-bileta-2026",
+    "reviewer": "Codex (article_review_20261009)",
+    "reviewedAt": "2026-10-09",
+    "approved": true,
+    "verdict": "Сегодня проверена только контекстная добавка и смысловая зависимость от нового разбора Туту. Баллы основного текста сохранены из документированного независимого review 08.10; новых цен, операций и полного свежего фактчекинга Купибилета не заявлено.",
     "qualityScore": {
       "topic": 8.5,
       "facts": 9,
@@ -31,188 +37,293 @@
       "overall": 8,
       "ceiling": "До 10 не хватает собственного заказа и подтверждённого возврата автора, проверки исполнения обещаний поддержки и выплаты и подтверждённого поискового результата. Неоднозначность компенсации возвратного тарифа требует расчёта конкретного заказа."
     },
-    "reviewReport": ".run/article-independent-review-2026-10-08.md",
-    "sourceChecks": [
-      {
-        "url": "https://www.kupibilet.ru/help/vozvrat-ili-obmen-aviabiletov/sub/vozvrat/art/kak-vernut-bilet",
-        "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
-        "result": "Заявка, расчёт, согласие и письмо об отмене различаются; возможна автоматическая операция; единый маршрут отменяется целиком.",
-        "checkedAt": "2026-10-08"
-      },
-      {
-        "url": "https://www.kupibilet.ru/help/vozvrat-ili-obmen-aviabiletov/sub/vozvrat/art/skolko-kupibilet-beret-za-vozvrat-bileta",
-        "result": "10% напрямую и 16,9% после перехода; вынужденный сбор 0%; сбор покупки отдельно не возвращается. Точная рублёвая база не придумана.",
-        "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
-        "checkedAt": "2026-10-08"
-      },
-      {
-        "url": "https://www.kupibilet.ru/help/vozvrat-ili-obmen-aviabiletov/sub/vozvrat/art/v-kakih-sluchayah-kupibilet-ne-uderzhivaet-sbory-za-vozvrat",
-        "result": "Названия Максимум и Купибилет.Возврат сохранены; причины вынужденного отказа требуют признания перевозчиком.",
-        "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
-        "checkedAt": "2026-10-08"
-      },
-      {
-        "url": "https://www.kupibilet.ru/help/vozvrat-ili-obmen-aviabiletov/sub/vozvrat/art/kakov-maksimalnyy-srok-dlya-vozvrata-sredstv-pri-oplate-kartoy",
-        "result": "Через Купибилет после оформления: до 30 дней, обычно 1–7 рабочих; напрямую перевозчику: до 60 дней. Срок заявки не смешан с зачислением.",
-        "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
-        "checkedAt": "2026-10-08"
-      },
-      {
-        "url": "https://www.kupibilet.ru/help/vozvrat-ili-obmen-aviabiletov/sub/vozvrat/art/chto-takoe-vozvrat-bileta-v-den-pokupki",
-        "result": "Запрос до 22:00 МСК, дата квитанции и ограниченное окно перевозчика; менее 48 часов, регистрация или её закрытие не замалчиваются.",
-        "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
-        "checkedAt": "2026-10-08"
-      },
-      {
-        "url": "https://www.kupibilet.ru/help/uslugi-i-akcii/sub/dopolnitelnye-uslugi/art/vozvrat-ot-kupibilet",
-        "result": "48 часов, баллы/деньги, заявление плательщика, обещание письма 2 рабочих дня, ссылка 5 дней, доступ к контактам 24 часа, баллы 1 год/100 ₽ и исключения сверены. Противоречивое описание остатка возвратного тарифа не превращено в универсальную выплату.",
-        "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
-        "checkedAt": "2026-10-08"
-      },
-      {
-        "url": "https://commons.wikimedia.org/wiki/File%3AZaventem_Brussels_airport_2.JPG",
-        "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
-        "result": "Ad Meskens, старое здание Brussels Airport, CC BY-SA 3.0; источник curid=32567151. В preview /legal/photos/ найдены название, автор, source-link, license-link by-sa/3.0 и указанные изменения. Это не проверка production.",
-        "checkedAt": "2026-10-08"
-      }
-    ],
-    "visualValidation": {
+    "rationale": "Текущий текст прочитан, добавленный заключительный абзац проверен отдельно: он прямо отделяет авиабилет от железнодорожного билета, предупреждает о непереносимости процентов и ведёт к нужной задаче Туту. Сравнение хеша основного текста из HEAD с предыдущим артефактом подтвердило 4959ac5e0059daf0; сегодняшняя проза отличается только этой добавкой. Свежие правила и операции Купибилета не перепроверялись; их оценки и ограничения относятся к независимой проверке 08.10.2026.",
+    "scope": "Сегодня — чтение текста для смысловой зависимости и review одной контекстной ссылочной добавки. Полная проверка первичек, SVG, 402/1280 и фактических шрифтов основного материала выполнена предыдущим рецензентом 08.10 и не обозначается сегодняшней.",
+    "previousReview": {
       "reviewer": "Codex (article_review_20261008)",
-      "checkedAt": "2026-10-08",
-      "via": "Own normal Chrome tab through CUA; CDP CSS.getPlatformFontsForNode for every SVG text node; article screenshots at 402x900 and 1280x900",
-      "result": "PASS",
-      "plainCyrillicFont": "Golos Text",
-      "specialSymbolFallbackAccepted": true,
-      "note": "All ordinary Cyrillic and Latin letters and digits use custom Golos Text. Four rendered special-symbol glyphs fall back to platform fonts and remain readable; allCustom is false where reported.",
-      "page": {
-        "url": "http://localhost:4379/blog/kupibilet-vozvrat-bileta-2026/",
-        "viewportWidths": [
-          402,
-          1280
-        ],
-        "scrollWidths": [
-          402,
-          1280
-        ],
-        "allFourImagesLoaded": true,
-        "noHorizontalOverflow": true,
-        "noClipping": true
+      "reviewedAt": "2026-10-08",
+      "proseHash": "4959ac5e0059daf0",
+      "qualityScore": {
+        "topic": 8.5,
+        "facts": 9,
+        "visuals": 7.5,
+        "experience": 4,
+        "internalLinks": 9,
+        "legal": 8.5,
+        "overall": 8,
+        "ceiling": "До 10 не хватает собственного заказа и подтверждённого возврата автора, проверки исполнения обещаний поддержки и выплаты и подтверждённого поискового результата. Неоднозначность компенсации возвратного тарифа требует расчёта конкретного заказа."
       },
-      "diagrams": [
+      "reviewReport": ".run/article-independent-review-2026-10-08.md",
+      "sourceChecks": [
         {
-          "path": "src/content/blog/_images/kupibilet-vozvrat-bileta-2026/refund-choice.svg",
-          "sourceSha256": "796eb61f20a1b9f07c002f3d36eb2cc82bf4a260c70347f660c65330316daac6",
-          "builtUrl": "http://localhost:4379/_astro/refund-choice.BFLR_HCP_18RP5H.svg",
-          "textNodes": 9,
-          "customFamilyName": "Golos Text",
-          "customGlyphs": 330,
-          "allCustom": false,
-          "fallbackFonts": [
-            {
-              "familyName": "Helvetica",
-              "glyphCount": 1,
-              "isCustomFont": false,
-              "symbol": "≥"
-            }
-          ],
-          "mobileWidth": 357.1953125,
-          "desktopWidth": 480,
-          "desktopHeight": 600,
-          "visuallyCheckedWidths": [
-            402,
-            1280
-          ]
+          "url": "https://www.kupibilet.ru/help/vozvrat-ili-obmen-aviabiletov/sub/vozvrat/art/kak-vernut-bilet",
+          "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
+          "result": "Заявка, расчёт, согласие и письмо об отмене различаются; возможна автоматическая операция; единый маршрут отменяется целиком.",
+          "checkedAt": "2026-10-08"
         },
         {
-          "path": "src/content/blog/_images/kupibilet-vozvrat-bileta-2026/request-states.svg",
-          "sourceSha256": "72bd5422a294c7f09140d7bd6da52c62322c1fc6015edb26da68a28515348aef",
-          "builtUrl": "http://localhost:4379/_astro/request-states.C-ENjWoc_o5fAk.svg",
-          "textNodes": 14,
-          "customFamilyName": "Golos Text",
-          "customGlyphs": 371,
-          "allCustom": true,
-          "fallbackFonts": [],
-          "mobileWidth": 357.1953125,
-          "desktopWidth": 444.4375,
-          "desktopHeight": 600,
-          "visuallyCheckedWidths": [
-            402,
-            1280
-          ]
+          "url": "https://www.kupibilet.ru/help/vozvrat-ili-obmen-aviabiletov/sub/vozvrat/art/skolko-kupibilet-beret-za-vozvrat-bileta",
+          "result": "10% напрямую и 16,9% после перехода; вынужденный сбор 0%; сбор покупки отдельно не возвращается. Точная рублёвая база не придумана.",
+          "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
+          "checkedAt": "2026-10-08"
         },
         {
-          "path": "src/content/blog/_images/kupibilet-vozvrat-bileta-2026/refund-timeline.svg",
-          "sourceSha256": "ea19fa8aa2ca3d749270c6829b53716f86b458d6621905aa4e7750a89961a207",
-          "builtUrl": "http://localhost:4379/_astro/refund-timeline.y3P-ulto_B1SuU.svg",
-          "textNodes": 13,
-          "customFamilyName": "Golos Text",
-          "customGlyphs": 348,
-          "allCustom": false,
-          "fallbackFonts": [
-            {
-              "familyName": "Lucida Grande",
-              "glyphCount": 2,
-              "isCustomFont": false,
-              "symbol": "→"
-            }
-          ],
-          "mobileWidth": 357.1953125,
-          "desktopWidth": 468.75,
-          "desktopHeight": 600,
-          "visuallyCheckedWidths": [
-            402,
-            1280
-          ]
+          "url": "https://www.kupibilet.ru/help/vozvrat-ili-obmen-aviabiletov/sub/vozvrat/art/v-kakih-sluchayah-kupibilet-ne-uderzhivaet-sbory-za-vozvrat",
+          "result": "Названия Максимум и Купибилет.Возврат сохранены; причины вынужденного отказа требуют признания перевозчиком.",
+          "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
+          "checkedAt": "2026-10-08"
         },
         {
-          "path": "src/content/blog/_images/kupibilet-vozvrat-bileta-2026/paid-return-path.svg",
-          "sourceSha256": "0a2d5932f86aebb4de1ae13450a7c8eecc11430446da63232bf736e39cb37a38",
-          "builtUrl": "http://localhost:4379/_astro/paid-return-path.Ca1ZB9g8_Z1Rw6U5.svg",
-          "textNodes": 15,
-          "customFamilyName": "Golos Text",
-          "customGlyphs": 482,
-          "allCustom": false,
-          "fallbackFonts": [
-            {
-              "familyName": "STIX Two Math",
-              "glyphCount": 1,
-              "isCustomFont": false,
-              "symbol": "₽"
-            }
-          ],
-          "mobileWidth": 357.1953125,
-          "desktopWidth": 447.7578125,
-          "desktopHeight": 600,
-          "visuallyCheckedWidths": [
-            402,
-            1280
-          ]
+          "url": "https://www.kupibilet.ru/help/vozvrat-ili-obmen-aviabiletov/sub/vozvrat/art/kakov-maksimalnyy-srok-dlya-vozvrata-sredstv-pri-oplate-kartoy",
+          "result": "Через Купибилет после оформления: до 30 дней, обычно 1–7 рабочих; напрямую перевозчику: до 60 дней. Срок заявки не смешан с зачислением.",
+          "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "url": "https://www.kupibilet.ru/help/vozvrat-ili-obmen-aviabiletov/sub/vozvrat/art/chto-takoe-vozvrat-bileta-v-den-pokupki",
+          "result": "Запрос до 22:00 МСК, дата квитанции и ограниченное окно перевозчика; менее 48 часов, регистрация или её закрытие не замалчиваются.",
+          "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "url": "https://www.kupibilet.ru/help/uslugi-i-akcii/sub/dopolnitelnye-uslugi/art/vozvrat-ot-kupibilet",
+          "result": "48 часов, баллы/деньги, заявление плательщика, обещание письма 2 рабочих дня, ссылка 5 дней, доступ к контактам 24 часа, баллы 1 год/100 ₽ и исключения сверены. Противоречивое описание остатка возвратного тарифа не превращено в универсальную выплату.",
+          "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "url": "https://commons.wikimedia.org/wiki/File%3AZaventem_Brussels_airport_2.JPG",
+          "checkedVia": "Самостоятельно открыт и прочитан живой DOM Chrome через CUA 2026-10-08",
+          "result": "Ad Meskens, старое здание Brussels Airport, CC BY-SA 3.0; источник curid=32567151. В preview /legal/photos/ найдены название, автор, source-link, license-link by-sa/3.0 и указанные изменения. Это не проверка production.",
+          "checkedAt": "2026-10-08"
         }
       ],
-      "limits": [
-        "Local preview only; this is not full Playwright coverage or production verification.",
-        "Readability is reviewer observation, not a measurement of every possible device."
-      ]
-    }
+      "visualValidation": {
+        "reviewer": "Codex (article_review_20261008)",
+        "checkedAt": "2026-10-08",
+        "via": "Own normal Chrome tab through CUA; CDP CSS.getPlatformFontsForNode for every SVG text node; article screenshots at 402x900 and 1280x900",
+        "result": "PASS",
+        "plainCyrillicFont": "Golos Text",
+        "specialSymbolFallbackAccepted": true,
+        "note": "All ordinary Cyrillic and Latin letters and digits use custom Golos Text. Four rendered special-symbol glyphs fall back to platform fonts and remain readable; allCustom is false where reported.",
+        "page": {
+          "url": "http://localhost:4379/blog/kupibilet-vozvrat-bileta-2026/",
+          "viewportWidths": [
+            402,
+            1280
+          ],
+          "scrollWidths": [
+            402,
+            1280
+          ],
+          "allFourImagesLoaded": true,
+          "noHorizontalOverflow": true,
+          "noClipping": true
+        },
+        "diagrams": [
+          {
+            "path": "src/content/blog/_images/kupibilet-vozvrat-bileta-2026/refund-choice.svg",
+            "sourceSha256": "796eb61f20a1b9f07c002f3d36eb2cc82bf4a260c70347f660c65330316daac6",
+            "builtUrl": "http://localhost:4379/_astro/refund-choice.BFLR_HCP_18RP5H.svg",
+            "textNodes": 9,
+            "customFamilyName": "Golos Text",
+            "customGlyphs": 330,
+            "allCustom": false,
+            "fallbackFonts": [
+              {
+                "familyName": "Helvetica",
+                "glyphCount": 1,
+                "isCustomFont": false,
+                "symbol": "≥"
+              }
+            ],
+            "mobileWidth": 357.1953125,
+            "desktopWidth": 480,
+            "desktopHeight": 600,
+            "visuallyCheckedWidths": [
+              402,
+              1280
+            ]
+          },
+          {
+            "path": "src/content/blog/_images/kupibilet-vozvrat-bileta-2026/request-states.svg",
+            "sourceSha256": "72bd5422a294c7f09140d7bd6da52c62322c1fc6015edb26da68a28515348aef",
+            "builtUrl": "http://localhost:4379/_astro/request-states.C-ENjWoc_o5fAk.svg",
+            "textNodes": 14,
+            "customFamilyName": "Golos Text",
+            "customGlyphs": 371,
+            "allCustom": true,
+            "fallbackFonts": [],
+            "mobileWidth": 357.1953125,
+            "desktopWidth": 444.4375,
+            "desktopHeight": 600,
+            "visuallyCheckedWidths": [
+              402,
+              1280
+            ]
+          },
+          {
+            "path": "src/content/blog/_images/kupibilet-vozvrat-bileta-2026/refund-timeline.svg",
+            "sourceSha256": "ea19fa8aa2ca3d749270c6829b53716f86b458d6621905aa4e7750a89961a207",
+            "builtUrl": "http://localhost:4379/_astro/refund-timeline.y3P-ulto_B1SuU.svg",
+            "textNodes": 13,
+            "customFamilyName": "Golos Text",
+            "customGlyphs": 348,
+            "allCustom": false,
+            "fallbackFonts": [
+              {
+                "familyName": "Lucida Grande",
+                "glyphCount": 2,
+                "isCustomFont": false,
+                "symbol": "→"
+              }
+            ],
+            "mobileWidth": 357.1953125,
+            "desktopWidth": 468.75,
+            "desktopHeight": 600,
+            "visuallyCheckedWidths": [
+              402,
+              1280
+            ]
+          },
+          {
+            "path": "src/content/blog/_images/kupibilet-vozvrat-bileta-2026/paid-return-path.svg",
+            "sourceSha256": "0a2d5932f86aebb4de1ae13450a7c8eecc11430446da63232bf736e39cb37a38",
+            "builtUrl": "http://localhost:4379/_astro/paid-return-path.Ca1ZB9g8_Z1Rw6U5.svg",
+            "textNodes": 15,
+            "customFamilyName": "Golos Text",
+            "customGlyphs": 482,
+            "allCustom": false,
+            "fallbackFonts": [
+              {
+                "familyName": "STIX Two Math",
+                "glyphCount": 1,
+                "isCustomFont": false,
+                "symbol": "₽"
+              }
+            ],
+            "mobileWidth": 357.1953125,
+            "desktopWidth": 447.7578125,
+            "desktopHeight": 600,
+            "visuallyCheckedWidths": [
+              402,
+              1280
+            ]
+          }
+        ],
+        "limits": [
+          "Local preview only; this is not full Playwright coverage or production verification.",
+          "Readability is reviewer observation, not a measurement of every possible device."
+        ]
+      }
+    },
+    "sourceChecks": [
+      {
+        "id": "repayment",
+        "url": "https://www.tutu.ru/2read/poezda/repayment2/",
+        "archive": ".run/primary-2026-10-09/repayment.json",
+        "capturedAt": "2026-10-09T04:33:13.974Z",
+        "status": 200,
+        "verified": "Сбор 3,5% с минимумом 20 и потолком 500 ₽ за билет; порядок отмены, части цены, ФПК/ДОСС, другие перевозчики, касса, документы, акция ко дню рождения",
+        "checkedVia": "Самостоятельно открыта официальная страница web, сопоставлена с полным архивом 09.10"
+      }
+    ],
+    "risks": [
+      "Все баллы основного текста унаследованы из проверки 08.10; свежий анализ цен, поддержки, выплаты и кабинетов Купибилета сегодня не выполнялся.",
+      "Сохраняется неоднозначность платной услуги возврата 90% и отсутствие личного заказа/возврата.",
+      "Изменчивые сборы и услуга пересматриваются 15.10.2026; сроки — 08.11.2026.",
+      "Сегодняшняя добавка ещё требует SSR/anchor/HTTP-проверки в готовом выпуске; прежний визуальный результат не является проверкой новой версии.",
+      "Реального читательского теста на эту версию нет."
+    ],
+    "reviewReport": ".run/article-independent-2026-10-09.md",
+    "proseHash": "21ee7b2818d02a37"
   },
-  "sourceChecks": [
-    {
-      "id": "repayment",
-      "url": "https://www.tutu.ru/2read/poezda/repayment2/",
-      "archive": ".run/primary-2026-10-09/repayment.json",
-      "capturedAt": "2026-10-09T04:33:13.974Z",
-      "status": 200,
-      "verified": "Сбор 3,5% с минимумом 20 и потолком 500 ₽ за билет; порядок отмены, части цены, ФПК/ДОСС, другие перевозчики, касса, документы, акция ко дню рождения",
-      "checkedVia": "Самостоятельно открыта официальная страница web, сопоставлена с полным архивом 09.10"
-    }
-  ],
   "risks": [
     "Все баллы основного текста унаследованы из проверки 08.10; свежий анализ цен, поддержки, выплаты и кабинетов Купибилета сегодня не выполнялся.",
     "Сохраняется неоднозначность платной услуги возврата 90% и отсутствие личного заказа/возврата.",
     "Изменчивые сборы и услуга пересматриваются 15.10.2026; сроки — 08.11.2026.",
     "Сегодняшняя добавка ещё требует SSR/anchor/HTTP-проверки в готовом выпуске; прежний визуальный результат не является проверкой новой версии.",
-    "Реального читательского теста на эту версию нет."
+    "Реального читательского теста на эту версию нет.",
+    "16.10.2026: старые оценки и ограничения исторические. Ссылочная правка не является свежим полным фактчеком; новая дата checks не передатирует публикацию.",
+    "Новый /blog/kupibilet-2026/ должен пройти финальные CI, deploy и live. Проверено соответствие ссылки исходнику, а не production HTTP/SSR/якоря."
   ],
-  "reviewReport": ".run/article-independent-2026-10-09.md",
-  "proseHash": "21ee7b2818d02a37"
+  "qualityCriteria14": {
+    "scope": "Только сегодняшняя ссылочная дельта; оценки ниже не распространяются на полный старый материал.",
+    "items": [
+      {
+        "id": 1,
+        "score": 5,
+        "evidence": "Назначение нового перехода ясно; полный главный ответ старой статьи не оценивался сегодня."
+      },
+      {
+        "id": 2,
+        "score": "N/A",
+        "evidence": "Новой темы и нового URL в этой дельте нет; спрос старого материала не передатирован."
+      },
+      {
+        "id": 3,
+        "score": 10,
+        "evidence": "Контекстная связь покупка/продавец/возврат соответствует кластеру; отдельный существующий URL возврата сохраняет свой интент."
+      },
+      {
+        "id": 4,
+        "score": 5,
+        "evidence": "Обещание новой ссылки выполняется целевым исходником; полнота основного старого ответа не пересверена."
+      },
+      {
+        "id": 5,
+        "score": "N/A",
+        "evidence": "Исследование, опыт или инструмент в старую статью не добавлялись; меняется только ссылка."
+      },
+      {
+        "id": 6,
+        "score": 5,
+        "evidence": "Новых внешних утверждений нет; старые первичные факты сегодня полностью не проверены."
+      },
+      {
+        "id": 7,
+        "score": "N/A",
+        "evidence": "Новых чисел, периодов, сумм и расчётов дельта не содержит."
+      },
+      {
+        "id": 8,
+        "score": 5,
+        "evidence": "Новая связь не переносит правила сервисов; полный набор исключений старого ответа не пересверен."
+      },
+      {
+        "id": 9,
+        "score": 5,
+        "evidence": "Настоящий отдельный рецензент дельты; старое авторство и опыт не получили нового подтверждения, SSR не проверен."
+      },
+      {
+        "id": 10,
+        "score": 10,
+        "evidence": "Точные добавленные слова и анкор прочитаны в контексте; повторов, выдуманного опыта и служебного мусора в дельте нет."
+      },
+      {
+        "id": 11,
+        "score": 5,
+        "evidence": "Title/description/даты не изменены; canonical и окончательный SSR нового выпуска ещё не проверены."
+      },
+      {
+        "id": 12,
+        "score": 5,
+        "evidence": "Анкор и относительный путь точны, целевой MDX существует; HTTP и SSR после выпуска ожидаются."
+      },
+      {
+        "id": 13,
+        "score": 5,
+        "evidence": "Медиа и шаблон не менялись; фактический перенос ссылки на 402/1280 ещё не проверен."
+      },
+      {
+        "id": 14,
+        "score": 5,
+        "evidence": "Рецензия и исходники подготовлены; полный CI, точный deploy и live этой версии пока не выполнены."
+      }
+    ]
+  },
+  "sourceChecks": [],
+  "sourceSha256": "447687175db54a649f79fc4b80ab00409191ea0b783fb0852ff56627b0173ed1",
+  "proseHash": "0288177be9b7aead",
+  "reviewReport": "work/article-review-result-20261016.md"
 }

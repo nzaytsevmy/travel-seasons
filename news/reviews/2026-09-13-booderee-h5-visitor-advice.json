@@ -1,111 +1,230 @@
 {
   "schemaVersion": 1,
   "slug": "2026-09-13-booderee-h5-visitor-advice",
+  "reviewer": "Codex (tt_news_review_20261016)",
+  "reviewerTask": "/root/tt_news_review_20261016",
+  "authoredBy": "codex-traveltribe-author-20261016",
+  "reviewedAt": "2026-10-16T14:13:47.242Z",
+  "checkedAt": "2026-10-16",
   "score": 4,
-  "reviewer": "codex-independent-news-review-20261009",
-  "checkedAt": "2026-10-09T05:50:45.306Z",
-  "reviewedAt": "2026-10-09T05:50:45.306Z",
-  "sha256": "ac2e34cde0af20c7e34cd86cfa35076dbdd66e880a2d71f03fa7e17fdd50f3c1",
-  "sha256Scope": "full Markdown file bytes at editorial review; later header score synchronization may change this byte hash",
-  "contentHash": "cdacc1e708f42a24f40e8f2884ce6a061f6b3900a75a89bae88c3b0db1a93d99",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "proseHash": "cdacc1e708f42a24f40e8f2884ce6a061f6b3900a75a89bae88c3b0db1a93d99",
-  "proseHashScope": "same as contentHash",
-  "rationale": "Официальное предупреждение меняет поведение посетителя в открытом парке: не трогать птиц, фиксировать наблюдение и сообщать о нескольких погибших животных. Это уровень 4 для нишевой Австралии, выше простой любопытной новости. Текст не расширяет найденный H5 до неподтверждённого подтипа и не объявляет закрытие парка.",
-  "blockingIssues": [],
-  "risks": [
-    "Рекомендация парка не является медицинской диагностикой; изменения мер требуют нового официального сообщения.",
-    "Редакционная готовность не подтверждает сборку, браузерный рендер, CI, публикацию, SSR/фид или live QA; эти гейты остаются у автора выпуска."
-  ],
-  "reviewScope": "Свежий независимый Codex reviewer не писал заметки. Прочитаны весь title/TLDR/body и конечный JPEG всех 17; после адресных исправлений перечитаны изменённые части и смысловые зависимости. Это редакторское ревью, не reader-test. MD, Git, CI и публикация этим reviewer не менялись.",
-  "evidence": {
-    "primarySource": {
+  "approved": true,
+  "approvalScope": "EDITORIAL_CONTENT_ONLY",
+  "classification": "UPDATE",
+  "baseCommit": "68fbd0c2a5e766b7685c854605d78360a3f060c2",
+  "previousReview": {
+    "artifact": "news/reviews/2026-09-13-booderee-h5-visitor-advice.json",
+    "sha256": "944463a2e1b6cddcf5bd0667bf7590466c95a8ff25b9558bb6004c93102107a5",
+    "scope": "Предыдущий файл заменён; прежние баллы и фактчек не перенесены как сегодняшнее независимое доказательство."
+  },
+  "rationale": "Полезное природоохранное предупреждение без придуманных подтипов и закрытия всего парка. После замечания открытость отнесена к 11 сентября, а сегодняшний режим оставлен отдельной проверкой.",
+  "readerTask": "Знать порядок действий при находке больных птиц в Будери.",
+  "ownAddition": "Порядок avoid/record/report переведён в действия без приближения ради фотографии; нового личного наблюдения нет.",
+  "factReview": "Parks Australia 11 Sep:greatercrestedtern,H 5,дистанция/дата/время/место,сообщение о нескольких животных 1800675888. Открытость в уведомлении относится к 11 Sep.",
+  "sourceChecks": [
+    {
       "url": "https://parksaustralia.gov.au/news/h5-bird-flu-detected-booderee-national-park/",
-      "checkedAt": "2026-10-09T05:50:45.306Z",
-      "method": "Независимо прочитаны содержательные тексты первоисточников/прямых репортажей в свежих captures от 9 октября; даты публикации отделены от даты открытия.",
-      "confirmed": [
-        "Parks Australia: H5 обнаружен у большой хохлатой крачки; парк остаётся открытым.",
-        "Не трогать заболевших или погибших птиц; записать дату, время и место, фото делать лишь безопасно.",
-        "При нескольких погибших животных сообщить по указанному официальному номеру 1800 675 888."
-      ],
-      "sourceArtifacts": [
-        {
-          "path": ".run/sources-2026-10-09/2026-09-13-booderee-h5-visitor-advice.json",
-          "sha256": "b3f841f294adc7cd98c1f013c0ad221ec85c43059c8c066393a018a713371145",
-          "capturedAt": "2026-10-09T04:26:04.518Z",
-          "capturedBy": null,
-          "completePageClaimed": false
-        }
-      ],
-      "independentlyVerifiedWebSources": []
-    },
-    "photo": {
-      "viewedByThisReviewer": true,
-      "path": "src/content/news/_images/2026-09-13-booderee-h5-visitor-advice.jpg",
-      "sha256": "fa8979eb6d635871460da49727f04baa18e2dca9946d845a86f04c7198be2097",
-      "finding": "Архивный пляж Бхерверре в Будери уместен как вид парка; фотография не изображает заражённых птиц.",
-      "scope": "Сам финальный локальный JPEG просмотрен глазами, а не старый контактный лист.",
-      "credit": "Andrea Schaffer",
-      "license": "CC BY",
-      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
-      "source": "https://commons.wikimedia.org/w/index.php?curid=90056045",
-      "title": null,
-      "alt": "Пляж Бхерверре в национальном парке Будери; архивный вид берега",
-      "commonsMetadataRechecked": false,
-      "commonsMetadataMethod": "Повторное открытие Commons для прежнего кадра не выполнено; проверены конечная картинка и сохранённые metadata, не заявлена новая перепроверка лицензии.",
-      "commonsMetadataArtifacts": [],
-      "publicAttributionPrepared": "Настоящая publicPhotoCredits([],17 notes) возвращает 15 CC-записей, все с creator/source/licenseUrl; два Public domain законно исключены. Публичный /legal/photos/ после сборки ещё не проверен."
-    },
-    "internalLinks": {
-      "method": "Собственные свежие HTTP GET reviewer 9 октября, конечный адрес и title ответа; anchor по смыслу сопоставлен с целевой страницей. Ответ 200 не выдан за браузерную проверку.",
-      "results": [
-        {
-          "path": "/australia-east/",
-          "status": 200,
-          "url": "https://traveltribe.ru/australia-east/",
-          "checkedAt": "2026-10-09T05:35:02.838Z",
-          "title": "Восточная Австралия 2026: Сидней, Мельбурн, когда ехать",
-          "bodySha256": "17e330de6e9d596deb13287878ee703764338ef92373b238deff261969ef6861"
-        }
-      ]
-    },
-    "editorialCriteria": {
-      "changesPlans": true,
-      "surprisingNature": false,
-      "concreteAndVerifiable": true,
-      "lastsLongerThanWeek": true,
-      "editorialRubric": "nature",
-      "backendTopic": "nature"
+      "artifact": ".run/tt-20261016/sources/72d5933aa27774ad.full.txt",
+      "artifactSha256": "e6fb6ab2b5aa487a7cf1b3690168c8a9ab9052aa424c45e65233542286858d5a",
+      "rawArtifact": ".run/tt-20261016/sources/72d5933aa27774ad.html",
+      "rawSha256": "d8ada5ba6936dc736ab05e864bb4725279fd431429e551fe3c89416bf4b91935",
+      "observedAt": "2026-10-16T13:05:28.982666+00:00",
+      "reviewedAt": "2026-10-16T14:03:09.172Z",
+      "status": "READ_WITH_DECLARED_LIMITS",
+      "scope": "Сохранённый оригинал и читаемая текстовая производная; прочитаны разделы, необходимые утверждениям заметки."
     }
+  ],
+  "contentHash": "80954df3ecef72b2704546c3be6ebb982fcddfee2a822a03ae4863d6b54fc406",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote; метаданные проверены отдельно.",
+  "sourceSha256": "66733e45814103881deb5ff3796987210dfb61ac1ffbb70078d4aba7d9f4c586",
+  "nativeClipTitle": "Будери: после находки H5 следите за режимом парка",
+  "clipTitleCodeSha256": "3cfd40e5fb33713ca77578f010d3c32b1c67b0f5e5fe2d8cf7959d5969a6abf7",
+  "photo": {
+    "image": "./_images/2026-09-13-booderee-h5-visitor-advice.jpg",
+    "imageSha256": "fa8979eb6d635871460da49727f04baa18e2dca9946d845a86f04c7198be2097",
+    "creator": "Andrea Schaffer",
+    "license": "CC BY",
+    "licenseURL": "https://creativecommons.org/licenses/by/2.0/",
+    "source": "https://commons.wikimedia.org/w/index.php?curid=90056045",
+    "title": null,
+    "alt": "Пляж Бхерверре в национальном парке Будери; архивный вид берега",
+    "changes": null,
+    "visualReview": "Кадр самостоятельно просмотрен в текущем файле. Смысл подписи и архивность/иллюстративность сверены; это не доказательство события, доступа или браузерной загрузки.",
+    "provenanceEvidence": {
+      "apiURL": "https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo&iiprop=url%7Cextmetadata&pageids=195776898%7C118265384%7C9998689%7C123743150%7C63394488%7C5704066%7C90056045%7C171000743%7C87531265%7C104893227%7C16120927%7C21022788%7C103042248%7C40845121%7C31646018%7C62482418%7C123908165%7C45307740%7C61772770%7C119638709%7C78730822",
+      "observedAt": "2026-10-16T13:50:55.692Z",
+      "pageid": 90056045,
+      "title": "File:Bherwerre Beach.jpg",
+      "description": "Bherwerre Beach, Booderee National Park, Jervis Bay",
+      "creator": "Andrea Schaffer",
+      "license": "CC BY 2.0",
+      "licenseURL": "https://creativecommons.org/licenses/by/2.0",
+      "date": "Taken on 8 September 2007, 14:12:41",
+      "credit": "https://www.flickr.com/photos/aschaf/1349433139/",
+      "source": "https://commons.wikimedia.org/wiki/File:Bherwerre_Beach.jpg"
+    },
+    "provenanceEvidenceSha256": "97ea752d0a6a001cfbac0f19dcf8b8bf8c80083c5d62b38d38e26110c6b64078",
+    "provenanceHashScope": "SHA-256 JSON.stringify(photo.provenanceEvidence); выбранные поля настоящего Commons API сохранены внутри этого reviewJSON.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
   },
-  "lifecycle": {
-    "decision": "CHECK_ONLY",
-    "status": null,
-    "effectiveDate": null,
-    "reviewOn": "2026-10-16",
-    "reason": "Текущая страница сохраняет меры предосторожности и открытие парка; объявления об отмене мер нет. Следующая проверка через неделю.",
-    "originalDate": "2026-09-11",
-    "originalAdded": "2026-09-13",
-    "datePreserved": true,
-    "addedPreserved": true
+  "embeddedSourceEvidence": {},
+  "criteria14": [
+    {
+      "id": 1,
+      "criterion": "Задача читателя",
+      "score": 10,
+      "evidence": "Знать порядок действий при находке больных птиц в Будери. Один основной вопрос и граница результата видны из title/tldr/body."
+    },
+    {
+      "id": 2,
+      "criterion": "Обоснование темы",
+      "score": 10,
+      "evidence": "Адресное сопровождение существующего URL, заданное сегодняшним сроком/изменением. Это UPDATE, не новый материал. Соответствует аудиторииTravelTribe; прогноз трафика и денег не присвоен."
+    },
+    {
+      "id": 3,
+      "criterion": "Место в проекте",
+      "score": 5,
+      "evidence": "Выбран прежний/отдельный URL и релевантная связь: /australia-east/. Дубли NEW проверены адресно; полная входящая структура и canonical итоговой сборки ещё не проверены. "
+    },
+    {
+      "id": 4,
+      "criterion": "Полнота и прямой ответ",
+      "score": 5,
+      "evidence": "Ответ начинается прямо, но ключевой оперативный слой остаётся внешней проверкой. Текущий режим 16 октября не установлен. Основной собственный слой — разъяснение исходного совета, без отдельного полевого исследования."
+    },
+    {
+      "id": 5,
+      "criterion": "Собственный вклад",
+      "score": 5,
+      "evidence": "Порядок avoid/record/report переведён в действия без приближения ради фотографии; нового личного наблюдения нет. Нового собственного измерения/полевого исследования нет; добавка объясняющая, потому 5."
+    },
+    {
+      "id": 6,
+      "criterion": "Факты и источники",
+      "score": 5,
+      "evidence": "Parks Australia 11 Sep:greatercrestedtern,H 5,дистанция/дата/время/место,сообщение о нескольких животных 1800675888. Открытость в уведомлении относится к 11 Sep. Полнота текущего подтверждения ограничена: Текущий режим 16 октября не установлен. Основной собственный слой — разъяснение исходного совета, без отдельного полевого исследования."
+    },
+    {
+      "id": 7,
+      "criterion": "Числа и примеры",
+      "score": 10,
+      "evidence": "Числа и даты в финальном тексте сопоставлены с указанными оригиналами. Диапазоны, единицы, план/состоявшееся и момент наблюдения не подменены; отсутствующий знаменатель или будущий результат не рассчитан. См. factReview и sourceChecks."
+    },
+    {
+      "id": 8,
+      "criterion": "Исключения и применимость",
+      "score": 10,
+      "evidence": "Применимость и ограничения названы в тексте: Текущий режим 16 октября не установлен. Основной собственный слой — разъяснение исходного совета, без отдельного полевого исследования. Архивное/иллюстративное изображение не доказывает текущий доступ или событие. Узкая повторная сверка относительных формулировок: дата события или поездки сохранена; новое разрешение доступа не заявлено."
+    },
+    {
+      "id": 9,
+      "criterion": "Авторство и доверие",
+      "score": 5,
+      "evidence": "Авторство в данных: codex-traveltribe-author-20261016. Независимый Codex reviewer другой и текст не писал; личный опыт/человеческий тест не присвоены. Публичный byline, профиль и SSR финального выпуска ещё не проверены."
+    },
+    {
+      "id": 10,
+      "criterion": "Редактура и естественный язык",
+      "score": 10,
+      "evidence": "Проведены отдельные фактический и смысловой проходы финального текста; исправленные места перечитаны. Обычный русский, одна задача, без технического мусора. Человеческий reader-test не проводился. Адресно перечитаны замены относительного времени; иных изменений по точному хешу нет."
+    },
+    {
+      "id": 11,
+      "criterion": "SEO-обещание и метаданные",
+      "score": 5,
+      "evidence": "Штатный clipTitle прочитан отдельно: «Будери: после находки H 5 следите за режимом парка». Он сохраняет законченную мысль, даты/капсула согласованы. Canonical, OG, SSR и schema финальной сборки ещё не проверены."
+    },
+    {
+      "id": 12,
+      "criterion": "Ссылки и навигация",
+      "score": 5,
+      "evidence": "Смысловые внутренние переходы прочитаны: /australia-east/. Буквальная допустимость проверялась ранним preflight автора; HTTP/входящие связи финальных URL и публичная навигация ещё не проверены мной."
+    },
+    {
+      "id": 13,
+      "criterion": "Оформление и доступность",
+      "score": 5,
+      "evidence": "Все используемые изображения просмотрены отдельно; сопоставлены alt/title, автор, лицензия и первичныйCommonsAPI. Это не рендер 402/1280, проверка загрузки вбраузере или доступности. Публичная атрибуция ожидает сборку/live."
+    },
+    {
+      "id": 14,
+      "criterion": "Готовность выпуска",
+      "score": 0,
+      "evidence": "Финальные обязательные hook/CI/build/SEO/браузеры/deploy/live/учёт не выполнены в этом ревью. Наличие текста/источника/схемы не засчитывает выпуск; releaseApproved=false."
+    }
+  ],
+  "verifiedTens": 5,
+  "minimumFiveVerifiedTens": true,
+  "resolvedFindings": [
+    "Сентябрьская открытость не выдана за сегодняшний режим;title/tldr/финалисправлены.",
+    "Относительные формулировки «сегодня» в согласованных местах заменены привязкой к поездке или октябрьскому событию; точное восстановление прежних хешей подтвердило границы изменения."
+  ],
+  "blockingIssues": [],
+  "editorialVerdict": "ACCEPT_WITH_DECLARED_LIMITS_AND_RELEASE_GATES_PENDING",
+  "releaseApproved": false,
+  "releaseStatus": {
+    "sourceEditorial": "ACCEPTED_WITH_DECLARED_LIMITS",
+    "build": "PENDING",
+    "ci": "PENDING",
+    "browser": "PENDING",
+    "deploy": "PENDING",
+    "live": "PENDING",
+    "publicPhotoAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
+    "readerTest": "NOT_PERFORMED",
+    "seoEffect": "NOT_MEASURED",
+    "revenueEffect": "NOT_MEASURED"
   },
-  "checks": {
-    "fullProseRead": true,
-    "finalTldrRead": true,
-    "titleChars": 51,
-    "clipTitle": "Будери: после обнаружения H5 парк остаётся открытым",
-    "clipTitleMeaningPreserved": true,
-    "tldrWords": 46,
-    "bodyWords": 174,
-    "primarySourceRead": true,
-    "photoViewed": true,
-    "independentReviewer": true,
-    "commonsLicenseRechecked": false,
-    "languageBannedWords": [],
-    "languageMethod": "Редакторский проход всего текста; адресно устранены ранее найденные «уже» и «в рамках».",
-    "internalLinksHttp200": true,
-    "publicCreditDataPrepared": true,
-    "readerTest": false,
-    "buildBrowserCiLive": false
-  }
+  "risks": [
+    "Текущий режим 16 октября не установлен. Основной собственный слой — разъяснение исходного совета, без отдельного полевого исследования.",
+    "Истёкший/старый документ не принят как сегодняшнее разрешение. Данные публикации, реальные читатели, поиск и доход ещё не проверены."
+  ],
+  "initialFullReviewAt": "2026-10-16T14:03:09.172Z",
+  "lastReviewScope": "VOLATILITY_LANGUAGE_DELTA_ONLY",
+  "deltaReviews": [
+    {
+      "reviewedAt": "2026-10-16T14:13:47.242Z",
+      "reviewer": "Codex (tt_news_review_20261016)",
+      "scope": "Адресная повторная сверка только указанных замен относительного времени. Обратные замены точно восстановили прежний полный Markdown и прежний prose hash; иных изменений нет. Свежий сетевой фактчек и повторное ревью остальных 24 заметок не проводились.",
+      "priorReviewFileSha256": "d165575c9cfa15f26de35c50f91889d4378e29fd1d06513fda16b8dbefec6b57",
+      "priorContentHash": "497bdf975f200cc8f0ba22331761b013c2c127107e698bbafd479f1c68da95de",
+      "priorSourceSha256": "835580dcfc5ca7fb18ea7dcdb165461c650a3b400236135ee88d61b0b2843a6f",
+      "currentContentHash": "80954df3ecef72b2704546c3be6ebb982fcddfee2a822a03ae4863d6b54fc406",
+      "currentSourceSha256": "66733e45814103881deb5ff3796987210dfb61ac1ffbb70078d4aba7d9f4c586",
+      "replacements": [
+        {
+          "from": "сегодняшний режим",
+          "to": "режим для новой поездки",
+          "count": 1
+        },
+        {
+          "from": "на сегодняшнюю дату",
+          "to": "на более позднюю дату",
+          "count": 1
+        }
+      ],
+      "reconstructedPriorContentHash": "497bdf975f200cc8f0ba22331761b013c2c127107e698bbafd479f1c68da95de",
+      "reconstructedPriorSourceSha256": "835580dcfc5ca7fb18ea7dcdb165461c650a3b400236135ee88d61b0b2843a6f",
+      "sourceArtifactHashesUnchanged": [
+        {
+          "artifact": ".run/tt-20261016/sources/72d5933aa27774ad.full.txt",
+          "unchanged": true
+        },
+        {
+          "artifact": ".run/tt-20261016/sources/72d5933aa27774ad.html",
+          "unchanged": true
+        }
+      ],
+      "imageHashUnchanged": true,
+      "nativeClipTitleUnchanged": true,
+      "retainedCriteria14": true,
+      "retainedVerifiedTenIds": [
+        1,
+        2,
+        7,
+        8,
+        10
+      ],
+      "retentionRationale": "Задача читателя, датированные факты, числа, ссылки и оговорки не изменились. Формулировки отнесены к поездке или событию; они не объявляют действующий доступ подтверждённым. Ранее доказанные оценки сохраняют прежние пределы, включая частичную компактность двух Бромо и непроверенный текущий режим. Выпуск, live, читательский тест и эффект этим проходом не подтверждены."
+    }
+  ]
 }
