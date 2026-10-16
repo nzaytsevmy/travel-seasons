@@ -1,0 +1,382 @@
+{
+  "schemaVersion": 1,
+  "slug": "kupibilet-2026",
+  "reviewer": "Codex (tt_article_review_20261016)",
+  "reviewedAt": "2026-10-16",
+  "approved": true,
+  "status": "approved_editorial_pending_release_checks",
+  "verdict": "Адресно одобрена четвёртая иллюстрация в теле: оригинальная геометрическая схема участков. В теле4 SVG, обложка учитывается отдельно. Оценки/ceiling8 сохранены. Полный26CI, рендер и live ещё не подтверждены.",
+  "qualityScore": {
+    "topic": 8,
+    "facts": 8.5,
+    "visuals": 7.5,
+    "experience": 3,
+    "internalLinks": 9,
+    "legal": 8,
+    "overall": 8,
+    "ceiling": "Потолок 8: нет подтверждённой покупки, платежа, общения с поддержкой и возврата автора; свежий спрос и прогноз неизвестны. Позитивный отзыв сверён по сохранённой web-транскрипции автора, независимый запрос вернул 507. Текст и четыре кадра проверены по исходникам и offline; полный CI, рендер 402/1280, точный deploy, live и измеренный эффект ещё не подтверждены."
+  },
+  "rationale": "Первичное полное ревью и адресная замена screenshot сохранены. После native Content Gate отдельно исправлен счёт иллюстраций: cover не считается телом. Текущий текст отличается от проверенного снимка620343 только добавленной строкой авторской маршрутной схемы и пустыми строками. Новый SVG/PNG полностью просмотрен: один билет на A–B–C и два отдельных билета показаны геометрией, без гарантии стыковки/компенсации. Body-stock отвергнут по BRAND-ARTICLE-PROMPT и отсутствует в финальном пакете. В теле4 схемы, CC BY-SA обложка отдельно, native hashes и фактический frontmatter проверяются. Числовые оценки и потолок дословно сохранены; полный CI/live ещё обязательны.",
+  "scope": "Первичное полное ревью плюс адресные исправления: screenshot→documents-path и добавление ticket-segments как четвёртой BODY-иллюстрации. Сейчас заново просмотрены только изменённые SVG/PNG/alt/credits и точный diff; остальная проза/qualityScore неизменны. Старая возвратная статья сегодня отдельно полностью пересверена по6 справкам; Aviasales сохраняет только link-delta review. Браузерные402/1280, полныйCI и live не подменяются этой редактурой.",
+  "baselineCommit": "68fbd0c2a5e766b7685c854605d78360a3f060c2",
+  "assessmentMethod": "independent_Codex_full_new_article_review_and_targeted_inbound_delta_review",
+  "sourceChecks": [
+    {
+      "url": "https://www.kupibilet.ru/help/oformlenie-i-pokupka-aviabiletov/sub/oplata/art/kak-oplatit-bilet",
+      "archive": ".run/tt-20261016/article-source-feasibility/b4107998cbb767c7.html",
+      "archiveSourceSha256": "542c907a12d8f779bf3cf04f468991b188869d403f30cacb1fc3f839e64a99f0",
+      "archiveHashMatchesIndex": true,
+      "checkedAt": "2026-10-16T14:07:56.777Z",
+      "checkedVia": "Независимый обычный Node HTTP fetch; web-fetch этих URL вернул 403. Видимый HTML-текст нормализован одинаково у свежего ответа и архива.",
+      "status": 200,
+      "currentRawSha256": "0ff5b91a31dcdd4a7656f8ee760ef33c9a1874c15ec1dbce6a605cf1ec9814e0",
+      "visibleTextSha256": "4e89eb569a47b1d69d871017e75d480c2ff831019f6847c6cd09a3554ec1094a",
+      "visibleTextExactWithArchive": true,
+      "result": "Два способа оплаты — банковская карта и СБП; рекомендация платить после создания заказа не превращена в гарантию конкретного платежа или бессрочной фиксации цены."
+    },
+    {
+      "url": "https://www.kupibilet.ru/help/chasto-zadavaemye-voprosy/art/kak-i-kuda-mozhno-otpravit-pretenziyu",
+      "archive": ".run/tt-20261016/article-source-feasibility/35d1c913fc55c7d7.html",
+      "archiveSourceSha256": "e67ccd50559992180f68ef2293e773c44951ce0b633aaa4432f6e69f9ebde2c7",
+      "archiveHashMatchesIndex": true,
+      "checkedAt": "2026-10-16T14:07:56.777Z",
+      "checkedVia": "Независимый обычный Node HTTP fetch; web-fetch этих URL вернул 403. Видимый HTML-текст нормализован одинаково у свежего ответа и архива.",
+      "status": 200,
+      "currentRawSha256": "22ab440adc08d8a731d5174a6857902f02ccee12761f4928dcf42ec0724fc64f",
+      "visibleTextSha256": "8d3227ce08dd5e8a82d86816c4717780cf1467b1d69facefbdbad943c3235738",
+      "visibleTextExactWithArchive": true,
+      "result": "Различаются продавец и выполнение рейса; дополнительные услуги описаны как добровольные; часть ошибок корректируется, критичные требуют обмена/возврата. Утверждения справки не выданы за проверенный checkout или юридическую гарантию."
+    },
+    {
+      "url": "https://www.kupibilet.ru/help/vozvrat-ili-obmen-aviabiletov/sub/vozvrat/art/skolko-kupibilet-beret-za-vozvrat-bileta",
+      "archive": ".run/tt-20261016/article-source-feasibility/91fc988a3d9a52a1.html",
+      "archiveSourceSha256": "02d666d358d5da51765094f1944909bd6575ca02a54944768ca9c1dc8bc42780",
+      "archiveHashMatchesIndex": true,
+      "checkedAt": "2026-10-16T14:07:56.777Z",
+      "checkedVia": "Независимый обычный Node HTTP fetch; web-fetch этих URL вернул 403. Видимый HTML-текст нормализован одинаково у свежего ответа и архива.",
+      "status": 200,
+      "currentRawSha256": "f13c65e6ace1a66294513cb1150640c122382d32757ceba56221fce3be68dbc4",
+      "visibleTextSha256": "02ee4913fcd73524bf911b38f4b998d7406156d22e18ac6a40a1fd0aeec4e859",
+      "visibleTextExactWithArchive": true,
+      "result": "Сбор продавца отделён от штрафа перевозчика; правила различают прямую покупку и переход со стороннего сервиса. Новая статья не копирует проценты и процедуру старого URL."
+    },
+    {
+      "url": "https://www.kupibilet.ru/download-documents",
+      "archive": ".run/tt-20261016/article-source-feasibility/c7a60bf4d5a16b8a.html",
+      "archiveSourceSha256": "0121037e6efa994b6847ffafe283d5e064c57417074356471f8b2fd749348eca",
+      "archiveHashMatchesIndex": true,
+      "checkedAt": "2026-10-16T14:07:56.777Z",
+      "checkedVia": "Независимый обычный Node HTTP fetch; web-fetch этих URL вернул 403. Видимый HTML-текст нормализован одинаково у свежего ответа и архива.",
+      "status": 200,
+      "currentRawSha256": "dc9a6f3fe0b20b2f2ff7aee1da34e8059db393af9d018dc23f8246bb4fabb8d3",
+      "visibleTextSha256": "fa908270e0ddfef2f96a46ff1bc925a949797f8bb10206cf7232aff84ba7c974",
+      "visibleTextExactWithArchive": true,
+      "result": "Квитанция приходит на почту бронирования; вход по одноразовому коду, «Заказы» в приложении, «Билеты» на сайте, блок «Документы», чат при отсутствии заказа."
+    }
+  ],
+  "customerExperienceChecks": [
+    {
+      "url": "https://www.tripadvisor.ru/ShowTopic-g1-i10702-k15509732-Air_Travel.html",
+      "checkedVia": "Независимое полное чтение web open 16.10.2026",
+      "result": "Три покупательских сообщения 08.03,18.06,03.08 и отдельный ответ 10.03 подтверждают изложенные темы жалоб. Обвинения участников не повторены как установленный факт, чеки и финальные исходы неизвестны."
+    },
+    {
+      "url": "https://otzovik.com/review_18625559.html",
+      "archive": ".run/tt-20261016/article/otzovik-18625559-web-read.txt",
+      "checkedVia": "Прочитана сохранённая автором транскрипция успешного web open/click; это не raw HTML и не независимая свежая загрузка. Собственные web и Node запросы дали 507.",
+      "result": "Транскрипция содержит дату 27.08.2026, несколько покупок и рассказ о помощи/возврате. Поддерживает только существование такого рассказа; правдивость/репрезентативность и конкретная транзакция не подтверждены."
+    }
+  ],
+  "visualValidation": {
+    "status": "current_sources_and_offline_images_passed_full_ci_and_browser_pending",
+    "images": [
+      {
+        "path": "src/content/blog/_images/kupibilet-2026/cover.jpg",
+        "sourceSha256": "c36def1fa381082fa3a1b69b511644b5d8867ef3f5654ba6b632e7793e3bf499",
+        "checked": "Просмотрен точный кадр; SHA равен ранее проверенной обложке статьи о возврате. Подпись называет Brussels Airport и не выдаёт его за интерфейс/офис Купибилета."
+      },
+      {
+        "path": "src/content/blog/_images/kupibilet-2026/price-check.svg",
+        "sourceSha256": "223ec44e30dd1bbebb35379dc03fa40be2da528e7efa0ea0a7792cb95362bf82",
+        "checked": "Просмотрен финальный offline PNG; сверены общий масштаб, условные суммы, разница 500 ₽, палитра и отсутствие скруглений. Embedded Golos проверен в коде, фактический браузерный шрифт не подтверждён."
+      },
+      {
+        "path": "src/content/blog/_images/kupibilet-2026/ticket-segments.svg",
+        "sourceSha256": "fa3ed80bdbd2e23d44c5a64bed24976e9ca6b4100786fe34593463405fa2757e",
+        "previewPath": ".run/tt-20261016/article/ticket-segments.png",
+        "previewSha256": "6777d801927a43e0b6b80d4c55cf7169cbd620e9fc5e24900276b56cd282cdfd",
+        "checked": "Полный offline PNG просмотрен; SVG400x430, A–B–C и скобки одного/двух билетов выражают реальную геометрию состава покупки. Alt называет схему, нет гарантии стыковки или компенсации. Палитра каноническая, rx/ry нет, лицензия Авторская схема; браузерные глифы и страничный рендер ещё не проверены."
+      },
+      {
+        "path": "src/content/blog/_images/kupibilet-2026/purchase-states.svg",
+        "sourceSha256": "db7e5687bd26477839dc87970fdac26c40b7b5e233d9a3af4a6af92c5d51c690",
+        "checked": "Просмотрен финальный offline PNG; видны три самостоятельных этапа и соединители; сверены палитра, ширина 400 и отсутствие скруглений. Браузерные глифы ещё не проверены."
+      },
+      {
+        "path": "src/content/blog/_images/kupibilet-2026/documents-path.svg",
+        "sourceSha256": "af273e5fa6a46fc6f85925db62001a552f8f111d8adc8d6d7876c77c53e6bf9f",
+        "previewPath": ".run/tt-20261016/article/documents-path.png",
+        "previewSha256": "4d4640d645b31de1f0bfc2cd764b586b50010f584af7bbf0ef2a147ebcb693ac",
+        "checked": "Финальный offline PNG просмотрен целиком. Это собственная схема маршрута входа: почта бронирования/код разветвляются на сайт «Билеты» и приложение «Заказы», затем объединяются в нужный заказ/блок «Документы». Alt прямо называет схему. SVG 400x456, правильная палитра, без rx/ry, видимые соединители. Это не снимок интерфейса; фактические браузерные шрифты и 402/1280 пока не проверены."
+      }
+    ],
+    "limits": [
+      "Текущий состав:4 BODY SVG +1 отдельная обложка; обложка не засчитывается в норматив тела.",
+      "Все актуальные изображения просмотрены на соответствующих этапах, изменённые — адресно; фактический браузерный рендер402/1280 и Golos/глифы не подтверждены.",
+      "Скриншот с неизвестной лицензией и body-stock из публичного пакета удалены. Текущая publicPhotoCredits проходит: обложка CC BY-SA и собственные SVG.",
+      "Полный26CI, сборка/SSR/SEO, live и учёт финальной версии остаются незавершёнными."
+    ]
+  },
+  "monetizationReview": {
+    "status": "source_map_approved_render_and_destination_checks_pending",
+    "articleAffiliateMap": "reviews/article-affiliate-coverage.json",
+    "tripServiceMap": "reviews/trip-service-coverage.json",
+    "coveredHeading": "Чем Купибилет отличается от Авиасейлса и авиакомпании?",
+    "offers": [
+      "flight"
+    ],
+    "destination": "",
+    "result": "Ранний активный Aviasales helper у решения сравнить продавцов, отдельный прямой Купибилет и выбранная авиакомпания. Общий поиск не обещает наличие или лучшую цену. Новая партнёрка Купибилета не введена. Сборы, документы и возврат не требуют несвязанного отдельного оффера. Footer/sticky не засчитаны как ссылки тела; A/B и рост дохода не заявлены."
+  },
+  "qualityCriteria14": {
+    "standard": "/Users/nikitazaytsev/.codex/routines/QUALITY-2026.md section 12, v3.1 2026-10-08",
+    "confirmedTens": 6,
+    "totalCriteria": 14,
+    "items": [
+      {
+        "id": 1,
+        "criterion": "Задача читателя",
+        "score": 10,
+        "evidence": [
+          "Title, описание, первые два абзаца и девять H2 дают одну задачу: выбрать продавца, сравнить полную цену, оплатить и получить маршрутную квитанцию. Отмена купленного билета вынесена в существующий самостоятельный ответ."
+        ]
+      },
+      {
+        "id": 2,
+        "criterion": "Обоснование темы",
+        "score": 5,
+        "evidence": [
+          "Прямое разрешение Никиты 16.10 на одну NEW без Wordstat/Wordcraft записано в demand и DAILY-ARTICLE-QUEUE до текста. Свежий спрос, кликабельность и прогноз неизвестны; смежные 0 кликов/43 показа Trip.com не названы спросом Купибилета."
+        ],
+        "gap": "Нет свежего независимого замера спроса/доли кликов; исключение разрешает работу, но не доказывает поисковый потенциал."
+      },
+      {
+        "id": 3,
+        "criterion": "Место в проекте",
+        "score": 10,
+        "evidence": [
+          "Поиск по src/content/blog и src/pages нашёл отдельный существующий ответ только о возврате. Новый текст не повторяет процедуру отмены и связывает её с покупкой. Две контекстные входящие ссылки подтверждены точным diff против 68fbd0c2; изменены ссылки и checks, старые даты/цифры сохранены."
+        ]
+      },
+      {
+        "id": 4,
+        "criterion": "Полнота и прямой ответ",
+        "score": 10,
+        "evidence": [
+          "Первый абзац даёт критерий покупки; дальше разобраны сопоставление условий, опции, маршрут/пассажиры, оплата, получение квитанции и выбор другого продавца. Следующий шаг и предел ответа ясны без выдуманной универсальной цены или гарантии платежа."
+        ]
+      },
+      {
+        "id": 5,
+        "criterion": "Собственный вклад",
+        "score": 5,
+        "evidence": [
+          "Есть последовательность решений, условный расчёт и три собственные геометрические схемы, включая разветвлённый путь к документам; это редакционный разбор публичных правил, а не транзакционный тест."
+        ],
+        "gap": "Нет собственного заказа, одинаковых реальных предложений двух продавцов на последнем экране, проверенной поддержки или выплаты. Разбор не выдаётся за транзакционный тест или уникальную рыночную выборку."
+      },
+      {
+        "id": 6,
+        "criterion": "Факты и источники",
+        "score": 5,
+        "evidence": [
+          "Четыре официальные страницы независимо дали HTTP 200; нормализованный видимый текст каждого полностью совпал с архивом автора, raw-хеши архивов совпали с index. Tripadvisor независимо прочитан: три покупателя и отдельный ответ участника. Позитивный отзыв сверён с сохранённой web-транскрипцией автора."
+        ],
+        "gap": "Позитивный отзыв независимо заново получить не удалось: web и обычный Node вернули 507. Ни один заказ из отзывов и исполнение обещаний сервиса не проверены; /agreement с homepage fallback не принят за оферту."
+      },
+      {
+        "id": 7,
+        "criterion": "Числа и примеры",
+        "score": 10,
+        "evidence": [
+          "Условный пример явно учебный: 18000 + 3000 = 21000 ₽; 21000 - 20500 = 500 ₽. В SVG общий ноль и масштаб до 21000, длины 274.29 + 45.71 = 320 и 312.38 ≈ 20500/21000*320; расхождение только от округления до двух знаков. Реальным тарифом Купибилета пример не назван."
+        ]
+      },
+      {
+        "id": 8,
+        "criterion": "Исключения и применимость",
+        "score": 10,
+        "evidence": [
+          "Нет гарантии конкретного банка/карты, лучшей цены, универсального размера сбора, бесплатного исправления любых данных или безопасной стыковки в одно число минут. Различены отдельные билеты/документы, заказ/платёж/квитанция и сбор/штраф/услуга. Чужой отзыв не устанавливает нарушение в другом заказе."
+        ]
+      },
+      {
+        "id": 9,
+        "criterion": "Авторство и доверие",
+        "score": 5,
+        "evidence": [
+          "sourceType=compilation и sourceNote честно исключают неподтверждённый личный платёж/поддержку/возврат. Никакой покупки от первого лица в прозе нет. authoredBy отличается от реального отдельного reviewer; существующий шаблон содержит ссылку на /about/ и Person."
+        ],
+        "gap": "Фактический SSR/byline/Person этой версии и читательская проверка ещё не выполнены; sourceNote по штатному шаблону не выводится для этого slug, поэтому не считаем её доказанным публичным методом."
+      },
+      {
+        "id": 10,
+        "criterion": "Редактура и естественный язык",
+        "score": 10,
+        "evidence": [
+          "Полный текст проверен на первом этапе, все последующие изменения проверены адресно; последняя дельта — единственная строка новой схемы+пустые. Текущий поиск пяти стоп-слов0, нового фактического обещания не появилось. Полный Content Gate ещё обязателен."
+        ]
+      },
+      {
+        "id": 11,
+        "criterion": "SEO-обещание и метаданные",
+        "score": 5,
+        "evidence": [
+          "Title 44 знака, description 144, дата новой публикации 16.10.2026; обещание соответствует прозе. Старые статьи не передатированы."
+        ],
+        "gap": "Canonical, robots, OG, BlogPosting и окончательный SSR новой сборки не проверены; до этого 10 невозможна."
+      },
+      {
+        "id": 12,
+        "criterion": "Ссылки и навигация",
+        "score": 5,
+        "evidence": [
+          "Две контекстные входящие ссылки проверены в исходниках и diff. Исходящие внутренние связи продолжают задачу; четыре официальных URL ответили 200. Обе карты коммерческого покрытия содержат точный первый H2; Aviasales helper сохраняет erid и отдельный sub_id, прямой Купибилет указан отдельно."
+        ],
+        "gap": "Новый публичный URL, якоря оглавления, готовый HTML, фактические редиректы и аналитическая атрибуция после сборки/deploy ещё не проверены."
+      },
+      {
+        "id": 13,
+        "criterion": "Оформление и доступность",
+        "score": 5,
+        "evidence": [
+          "Четыре SVG находятся именно в теле; отдельная обложка не засчитана. Новый маршрутный SVG/PNG/alt/credits просмотрены; схемы цены/статусов/документов неизменны по SHA. Схема маршрута не дублирует соседнюю таблицу и не обещает гарантий стыковки. PublicPhotoCredits на текущих данных проходит."
+        ],
+        "gap": "Нет фактической браузерной проверки Golos/глифов, 402/1280, внутреннего clipping и accessibility; успех адресной функции не заменяет полную сборку /legal/photos/ и live."
+      },
+      {
+        "id": 14,
+        "criterion": "Готовность выпуска",
+        "score": 5,
+        "evidence": [
+          "Две причины native Content Gate адресно исправлены:4 BODY-иллюстрации в NEW и отдельный фактический пересмотр просроченных условий возврата по6 свежим первичкам. Native review contract и SHA проверяются на финальных исходниках."
+        ],
+        "gap": "Полный26CI новогоHEAD, браузеры/SSR/SEO, deploy/live и учёт пока не подтверждены. Адресный source PASS не равен всему Content Gate."
+      }
+    ],
+    "admission": "Шесть подтверждённых 10 относятся к содержанию. Не являются средним допуском; критические дефекты и непройденные обязательные проверки по-прежнему блокируют соответствующую готовность."
+  },
+  "resolvedFindings": [
+    "Три «уже» исправлены; адресный финальный поиск пяти стоп-слов дал ноль.",
+    "Текстовая схема, повторявшая соседнюю таблицу, заменена геометрией условного расчёта с общим масштабом.",
+    "В схеме этапов добавлены видимые соединители; rx/ry удалены, палитра приведена к канону.",
+    "Добавлена обязательная строка новой статьи в reviews/trip-service-coverage.json.",
+    "После реального CI FAIL неподдержанный nonfree screenshot и его record убраны из публичного пакета; новая авторская схема документов проверена адресно.",
+    "Старый record воспроизводит ошибку штатной publicPhotoCredits; текущие records проходят, функция/гейт не менялись.",
+    "Native Content Gate выявил необходимость4 иллюстраций именно в теле; добавлен ticket-segments.svg, cover исключён из этого счёта.",
+    "Body-stock с действительной лицензией снят по редакционному BRAND-ARTICLE-PROMPT; финальная четвёртая BODY-иллюстрация собственная."
+  ],
+  "risks": [
+    "Свежий спрос и доля кликов не измерены по прямому исключению Никиты; исторические broad и смежные GSC не являются текущим спросом этой страницы.",
+    "Собственная покупка, реальный платёж, поддержка и возврат автора не подтверждены; исполнения обещаний сервиса не тестировались.",
+    "Четыре саморассказа — целевая нерепрезентативная выборка; один доступен рецензенту только по транскрипции автора, свежий независимый запрос 507.",
+    "Способы оплаты и правила сборов пересмотреть 23.10.2026, путь документов 16.11.2026 по volatileFacts; изменение источника требует более раннего пересмотра.",
+    "Зрелый органический и денежный эффект неизвестен; редакционный 8/10 его не измеряет.",
+    "Рендер 402/1280, фактические браузерные шрифты/доступность, SSR/SEO, точный deploy, live, распространение и учёт текущей версии ещё не подтверждены.",
+    "Последние известные full CI/Content Gate были красными; причины исправлены адресно, успешный полный26CI повтор и live ещё не подтверждены."
+  ],
+  "reviewReport": "work/article-review-result-20261016.md",
+  "sourceSha256": "db37eb961745f48f7161a0d21de1f8a5581d8bb964a69ef8c5637988e05984b0",
+  "reviewedSourceSha256": "db37eb961745f48f7161a0d21de1f8a5581d8bb964a69ef8c5637988e05984b0",
+  "sourceSha256Basis": "Финальный MDX с неизменным qualityScore после единственной добавки markdown-строки ticket-segments.svg и пустых строк; точная дельта подтверждена.",
+  "proseHash": "2606af37ea870aca",
+  "metadataRefreshPolicy": "На этой адресно проверенной версии qualityScore уже присутствует и дословно совпадает с артефактом. sourceSha256/reviewedSourceSha256 относятся к текущему полному файлу; прежние хеши сохранены в previousEditorialSnapshots. Последующая правка метаданных требует точного diff, неизменного native proseHash и сохранения исходного проверенного снимка; новая проза/title/description/alt требует адресного повторного ревью.",
+  "statistics": {
+    "bodyWords": 1727,
+    "bodyIllustrations": 4,
+    "illustrationsIncludingCover": 5,
+    "h2": 9
+  },
+  "artifactValidationAtReview": {
+    "jsonParse": true,
+    "qualityScoreAlreadyPresentAndUnchanged": true,
+    "sourceAndNativeProseHashesMatch": true,
+    "allFiveMediaHashesMatch": true,
+    "bodyIllustrations": 4,
+    "coverExcludedFromBodyCount": true,
+    "all14CriteriaPresent": true,
+    "confirmedTens": 6,
+    "fullCIRerunPassed": false,
+    "livePassed": false,
+    "nativeContractWithActualFrontmatter": true,
+    "validatedAt": "2026-10-16T18:19:55.291Z"
+  },
+  "metadataCopyAudit": {
+    "performedBy": "root",
+    "source": "Exact independent qualityScore object",
+    "reviewedSourceSha256": "31ba36d1c003ea14f542d027b6a687feba84c8b4d01ec38f8db030f689ccd0fd",
+    "finalSourceSha256": "48bc5d93ba840943389d27f284fed482df552687e264aa19beaeb20d46f8570b",
+    "proseHashUnchanged": true,
+    "reconstructionVerified": true
+  },
+  "previousEditorialSnapshots": [
+    {
+      "sourceSha256": "48bc5d93ba840943389d27f284fed482df552687e264aa19beaeb20d46f8570b",
+      "reviewedSourceSha256": "31ba36d1c003ea14f542d027b6a687feba84c8b4d01ec38f8db030f689ccd0fd",
+      "proseHash": "99aecd073d3b01f3",
+      "replacedImage": {
+        "path": "src/content/blog/_images/kupibilet-2026/documents.png",
+        "sourceSha256": "0b4e419cf179872638f4a560b7b1f57174aff382321d07595473757cef690d28",
+        "checked": "Просмотрен финальный фрагмент 560x638 публичной инструкции; логина, одноразового кода, почты и заказа в кадре нет. Фрагмент не назван мобильным снимком."
+      },
+      "qualityScoreUnchanged": true,
+      "note": "Историческое доказательство первичного полного ревью и последующего переноса только qualityScore. Прежний screenshot больше не является частью публичного пакета."
+    },
+    {
+      "sourceSha256": "62034317a051af14d141023e3b691bf1b7e40b43d86827c684fb3c9fc7ae8a2d",
+      "reviewedSourceSha256": "62034317a051af14d141023e3b691bf1b7e40b43d86827c684fb3c9fc7ae8a2d",
+      "proseHash": "2fa1bfd79e5993aa",
+      "note": "Снимок до добавления четвёртой иллюстрации в теле. Cover ранее был ошибочно включён в общий счёт; native Content Gate требует4 именно в теле."
+    }
+  ],
+  "initialReviewedSourceSha256": "31ba36d1c003ea14f542d027b6a687feba84c8b4d01ec38f8db030f689ccd0fd",
+  "initialReviewedProseHash": "99aecd073d3b01f3",
+  "targetedRecheck": {
+    "checkedAt": "2026-10-16T14:38:15.226Z",
+    "trigger": "Реальный CI FAIL: /legal/photos/ отверг неизвестную лицензию screenshot без licenseUrl.",
+    "changedScope": [
+      "MDX: только image alt/path documents.png -> documents-path.svg",
+      "Новая собственная геометрическая SVG/PNG схема входа к документам",
+      "Удалён nonfree documents record; добавлен documents-path как TravelTribe / Авторская схема",
+      "Неизменные три кадра подтверждены SHA"
+    ],
+    "unchangedQualityScore": true,
+    "unchangedProseExceptImageAltAndPath": true,
+    "officialFacts": "Новые фактические правила не добавлены; схема сопоставлена с ранее независимо проверенными полями официальной download-documents.",
+    "attributionReproduction": {
+      "function": "src/data/photo-credits.js / publicPhotoCredits",
+      "oldRecordRejected": true,
+      "oldError": "У фотографии Публичная инструкция получения маршрутной квитанции,16.10.2026 неполная атрибуция",
+      "currentRecordsPass": true,
+      "requiredPublicCredits": 1,
+      "coverCreditPreserved": true,
+      "ownSchemesRecognizedByExistingFunction": true,
+      "oldPublicScreenshotAbsent": true,
+      "oldNonfreeRecordAbsent": true
+    },
+    "releaseStatus": "FAIL/PENDING: последний известный полный CI был красным; успешный полный повтор финальной версии, deploy и live ещё не подтверждены."
+  },
+  "targetedFourthBodyReview": {
+    "scope": "Добавлена только markdown-строка ticket-segments.svg и пустые строки",
+    "exactDiffVerified": true,
+    "bodyIllustrations": 4,
+    "coverCounted": false,
+    "totalImages": 5,
+    "stockBodyAbsent": true,
+    "publicCreditFunctionPass": true,
+    "qualityScoreUnchanged": true,
+    "sourceSha256": "db37eb961745f48f7161a0d21de1f8a5581d8bb964a69ef8c5637988e05984b0",
+    "proseHash": "2606af37ea870aca",
+    "releaseStatus": "Полный26CI финальногоHEAD и live ещё не подтверждены."
+  }
+}

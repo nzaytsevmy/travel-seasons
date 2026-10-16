@@ -2,8 +2,8 @@
 title: "Йосемити: дорога к Глейшер-Пойнт снова открыта"
 date: "2026-10-05"
 added: "2026-10-06"
-checked: "2026-10-15"
-reviewOn: "2026-10-16"
+checked: "2026-10-16"
+reviewOn: "2026-10-19"
 topic: "transport"
 impact: "high"
 score: 4

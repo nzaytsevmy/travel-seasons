@@ -2,11 +2,11 @@
 title: "Аэрофлот перенёс и отменил часть рейсов 14 октября"
 date: "2026-10-14"
 added: "2026-10-14"
-checked: "2026-10-15"
-reviewOn: "2026-10-16"
+checked: "2026-10-16"
+reviewOn: "2026-10-17"
 topic: transport
 impact: high
-score: 5
+score: 4
 authoredBy: "codex-traveltribe-author-20261014"
 reviewRef: "news/reviews/2026-10-14-aeroflot-flight-changes.json"
 attentionQuery: "Шереметьево"
