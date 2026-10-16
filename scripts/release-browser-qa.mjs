@@ -4,11 +4,12 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { chromium } from 'playwright';
 import { checkPageStructure, WIDTHS } from './structural-checks.mjs';
+import { isReleaseQaPath } from './release-qa-paths.mjs';
 
 const allPaths = JSON.parse(process.env.QA_PATHS || '[]');
 assert.ok(Array.isArray(allPaths) && allPaths.length > 0 && allPaths.length <= 100);
 assert.equal(new Set(allPaths).size, allPaths.length, 'Duplicate paths');
-for (const path of allPaths) assert.match(path, /^\/(?:[a-z0-9-]+\/)*$/);
+for (const path of allPaths) assert.ok(isReleaseQaPath(path), `Invalid release QA path: ${path}`);
 const shard = Number(process.env.QA_SHARD || 1);
 const shards = Number(process.env.QA_SHARDS || 1);
 assert.ok(Number.isInteger(shard) && Number.isInteger(shards) && shard >= 1 && shard <= shards && shards <= 4);
