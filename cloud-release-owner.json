@@ -1,17 +1,30 @@
 {
   "schema": 1,
-  "generation": 5,
-  "state": "CLAIMED",
-  "owner_nonce": "ec6342eb-0b33-4207-987e-64c2875c4bce",
-  "routine": "tt-news+tt-publish",
-  "claimed_at": "2026-10-16T14:27:12.719Z",
-  "updated_at": "2026-10-16T14:27:12.719Z",
+  "generation": 6,
+  "state": "IDLE",
+  "owner_nonce": null,
+  "routine": null,
+  "claimed_at": null,
+  "updated_at": "2026-10-16T19:11:49.887Z",
   "purpose": "Single publication owner for TravelTribe cloud routines. Contents API blob SHA is mandatory for every update.",
   "last_result": {
-    "status": "TT_PUBLISH_DIAGNOSTIC_CANARY_PASSED",
-    "stale_writer_rejected": true,
-    "published": false,
-    "evidence_reference": "tt-publish-canary-2026-10-16-e01dfd37"
+    "status": "HOLD_DEPLOY_SSH",
+    "batch_date": "2026-10-16",
+    "qualified_pr_head": "d96d11b07c4f23860a550af850c21997a8f69adc",
+    "source_tree": "cedc098405df60e98038e17b14c2511edfa38bc8",
+    "pending_main_commit": "2a9c93ccc9fdc2c763bd138ff54fe3377238910d",
+    "pull_request": 750,
+    "required_ci": "26/26PASS",
+    "deploy_run": 38949779158,
+    "deploy_attempt": 2,
+    "failed_step": "Setup SSH / ssh-keyscan",
+    "files_transferred": false,
+    "published_verified": false,
+    "observed_production_commit": "68fbd0c2a5e766b7685c854605d78360a3f060c2",
+    "same_source_network_retry_exhausted": true,
+    "safe_abort_no_active_release_operations": true,
+    "continuation": "Resume the existing reviewed batch; do not create duplicate NEW content. Retry only after verified server reachability or a confirmed hosting change. Owner REG.RU sign-in requested.",
+    "evidence_reference": "https://github.com/nzaytsevmy/travel-seasons/actions/runs/38949779158/attempts/2"
   },
-  "execution": "User-authorized manual 16 October editorial run; not a verified hosted trigger"
+  "execution": "Manual 16 October publisher safely stopped after pre-transfer SSH failures; hosted autonomy remains unverified."
 }
