@@ -11,7 +11,7 @@ test('release QA accepts generated Cyrillic tag URLs and existing site paths', (
 });
 
 test('release QA rejects alternate origins, traversal, encoded separators and malformed UTF-8', () => {
-  for (const path of [null, '', 'https://example.com/', '//example.com/',
+  for (const path of [null, '', '/\n', '/blog/test/\r\n', 'https://example.com/', '//example.com/',
     '/blog/tag/../', '/blog/tag/%2e%2e/', '/blog/tag/%2F/', '/blog/tag/%5c/',
     '/blog/tag/%252f/', '/blog/tag/%D0/', '/blog/tag/%zz/',
     '/blog/tag/test/?next=https://example.com', '/blog/tag/test/#fragment',
