@@ -1,8 +1,8 @@
 ---
-reviewOn: "2026-10-17"
+reviewOn: "2026-10-18"
 title: "Манаслу: сентябрьское открытие не подтверждает доступ"
 date: 2026-09-09
-checked: "2026-10-16"
+checked: "2026-10-17"
 added: 2026-09-10
 topic: transport
 impact: high

@@ -1,8 +1,8 @@
 ---
 title: "Бромо: новый пожар требует перепроверить маршрут"
 date: 2026-09-12
-checked: "2026-10-16"
-reviewOn: "2026-10-17"
+checked: "2026-10-17"
+reviewOn: "2026-10-18"
 added: 2026-09-14
 topic: transport
 impact: high
