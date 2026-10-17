@@ -24,7 +24,7 @@ async function loadedImages(images: import('@playwright/test').Locator) {
 }
 
 async function noOverflow(page: import('@playwright/test').Page) {
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
+  expect(await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) <= document.documentElement.clientWidth + 1)).toBe(true);
 }
 
 for (const [country, collection] of published) {
