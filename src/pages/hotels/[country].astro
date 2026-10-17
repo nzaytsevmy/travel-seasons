@@ -61,7 +61,7 @@ const ldJson = {
           <h2>{hotel.name}</h2>
           <p>{hotel.reason}</p>
           <p class="hotel-entry-caveat">{hotel.caveat}</p>
-          <a class="hotel-entry-book" href={hotelBookingUrl(country, hotel)} target="_blank" rel="sponsored noopener" data-cta-id={`hotel_${country}_${hotel.id}`} data-destination={country} data-placement="hotel_card">Выбрать номер в {hotel.name}</a>
+          <a class="hotel-entry-book" href={hotelBookingUrl(country, hotel)} target="_blank" rel="sponsored noopener" data-cta-id={`hotels_${country}_${hotel.id}`.replaceAll('-', '_')} data-destination={country} data-placement="hotel_card">Выбрать номер в {hotel.name}</a>
         </div>
       </article>)}
     </div>

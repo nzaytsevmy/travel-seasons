@@ -56,7 +56,8 @@ for (const [country, collection] of published) {
       expect(url.hostname).toBe('ostrovok.tpk.mx');
       expect(url.searchParams.get('u')).toBe(hotel.booking.target);
       expect(url.searchParams.get('erid')).toBe('2VtzqvE1cv3');
-      expect(url.searchParams.get('sub_id')).toContain(hotel.id.replaceAll('-', '_'));
+      expect(url.searchParams.get('sub_id')).toBe(`hotels_${country}_${hotel.id}`.replaceAll('-', '_'));
+      await expect(booking).toHaveAttribute('data-cta-id', `hotels_${country}_${hotel.id}`.replaceAll('-', '_')); 
       await expect(booking).toHaveAttribute('rel', /\bsponsored\b/);
       await expect(booking).toHaveAttribute('rel', /\bnoopener\b/);
     }
