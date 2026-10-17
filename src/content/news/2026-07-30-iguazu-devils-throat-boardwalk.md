@@ -1,8 +1,8 @@
 ---
 title: "Игуасу закрылся 12 октября: прежний список троп устарел"
 date: 2026-07-30
-checked: "2026-10-16"
-reviewOn: "2026-10-17"
+checked: "2026-10-17"
+reviewOn: "2026-10-18"
 authoredBy: "codex-news-author-20261013"
 reviewRef: "news/reviews/2026-07-30-iguazu-devils-throat-boardwalk.json"
 added: 2026-08-01

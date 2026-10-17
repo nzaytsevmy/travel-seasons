@@ -2,8 +2,8 @@
 title: "Аэрофлот перенёс и отменил часть рейсов 14 октября"
 date: "2026-10-14"
 added: "2026-10-14"
-checked: "2026-10-16"
-reviewOn: "2026-10-17"
+checked: "2026-10-17"
+reviewOn: "2026-10-18"
 topic: transport
 impact: high
 score: 4
@@ -23,7 +23,7 @@ imageLicense: "CC BY-SA"
 imageLicenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
 imageSource: "https://commons.wikimedia.org/w/index.php?curid=61772770"
 imageTitle: "RA-89064 Sheremetyevo airport 03"
-imageChanges: "Уменьшение до1600пикселей по ширине и сжатие JPEG. Архивный кадр."
+imageChanges: "Уменьшение до 1600 пикселей по ширине и сжатие JPEG. Архивный кадр."
 ---
 
 **14 октября 2026 года Аэрофлот сообщил о переносах времени вылета и отменах некоторых рейсов** из-за временных ограничений на прилёт и вылет в аэропортах московского авиаузла. Утреннее сообщение вышло в **05:40 по Москве**. Часть самолётов направили на запасные аэродромы.

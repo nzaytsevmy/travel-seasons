@@ -2,8 +2,8 @@
 title: "Сбой сети ограничил авиасообщение в Италии"
 date: "2026-10-16"
 added: "2026-10-16"
-checked: "2026-10-16"
-reviewOn: "2026-10-17"
+checked: "2026-10-17"
+reviewOn: "2026-10-18"
 topic: transport
 impact: high
 score: 5

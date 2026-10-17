@@ -2,7 +2,7 @@
 title: "Роки-Маунтин: Old Fall River Road закрыта для машин"
 date: "2026-10-06"
 added: "2026-10-08"
-checked: "2026-10-13"
+checked: "2026-10-17"
 topic: transport
 impact: medium
 score: 4
@@ -12,7 +12,7 @@ photoQuery: "Old Fall River Road Rocky Mountain"
 tldr: "Old Fall River Road в Роки-Маунтин закрыта для машин до следующего сезона. По опубликованному NPS графику 13–16 октября дорога закрыта и для пешеходов с велосипедистами: окно 10–12 октября закончилось. Зимний доступ планируют с 17 октября. Этот график не подтверждает открытие заранее: перед прогулкой нужны свежие условия парка."
 status: "действует"
 effectiveDate: "2026-10-06"
-reviewOn: "2026-10-17"
+reviewOn: "2026-10-18"
 countries:
   - usa
 sources:
