@@ -1,0 +1,48 @@
+---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+import { hotelCollection, hotelCountrySlug, hotelHubPicks } from '../data/hotels.js';
+interface Props { destination: string; }
+const collection = hotelCollection(Astro.props.destination, { includeDraft: import.meta.env.DEV });
+const images = import.meta.glob<{ default: ImageMetadata }>('../assets/hotels/**/*.webp', { eager: true });
+const href = `/hotels/${hotelCountrySlug(Astro.props.destination)}/`;
+const picks = hotelHubPicks(Astro.props.destination, collection);
+---
+{collection && <section class="best-hotels" aria-labelledby="best-hotels-title" id="oteli">
+  <div class="best-hotels-head">
+    <h2 id="best-hotels-title">{collection.heading}</h2>
+    <a href={href}>Все 10 отелей</a>
+  </div>
+  <div class="best-hotels-grid">
+    {picks.map((hotel, i) => <article class:list={['best-hotel', { 'best-hotel-lead': i === 0 }]}>
+      <a class="best-hotel-photo" href={`${href}#${hotel.id}`} aria-label={`${hotel.name}: посмотреть в подборке`}>
+        <Image src={images[`../assets/hotels/${hotel.image}`].default} alt={hotel.photoAlt || `${hotel.name}, ${hotel.location}`} widths={[400, 720, 1200]} sizes={i === 0 ? '(min-width: 768px) 60vw, 100vw' : '(min-width: 768px) 30vw, 100vw'} format="webp" quality={80} loading="lazy" />
+      </a>
+      <div class="best-hotel-copy"><p class="best-hotel-location">{hotel.location}</p>
+        <h3><a href={`${href}#${hotel.id}`}>{hotel.name}</a></h3>
+        <p>{hotel.reason}</p>
+      </div>
+    </article>)}
+  </div>
+</section>}
+<style>
+  .best-hotels { padding-block: 40px 0; }
+  .best-hotels-head { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px 24px; border-top:2px solid var(--text); padding-top:24px; margin-bottom:24px; }
+  .best-hotels h2 { margin:0; font-family:var(--ff-display); font-weight:400; font-size:clamp(1.8rem,3.4vw,2.9rem); line-height:1.1; scroll-margin-top:80px; }
+  .best-hotels-head > a { display:inline-flex; align-items:center; min-height:44px; font-weight:600; color:var(--gold); text-decoration:underline 1px; text-underline-offset:.22em; }
+  .best-hotels-grid { display:grid; grid-template-columns:minmax(0,1.8fr) minmax(0,1fr); gap:32px; }
+  .best-hotel { min-width:0; }
+  .best-hotel-lead { grid-row:span 2; }
+  .best-hotel-photo { display:block; aspect-ratio:16 / 9; background:var(--bg2); overflow:hidden; }
+  .best-hotel-photo img { display:block; width:100%; height:100%; object-fit:cover; }
+  .best-hotel-lead .best-hotel-photo { aspect-ratio:4 / 3; }
+  .best-hotel-copy { padding-top:12px; }
+  .best-hotel-location { font-size:.82rem; color:var(--text-dim); margin:0 0 6px; }
+  .best-hotel h3 { font-family:var(--ff-display); font-weight:400; font-size:clamp(1.25rem,2vw,1.65rem); line-height:1.15; margin:0 0 8px; overflow-wrap:anywhere; }
+  .best-hotel-lead h3 { font-size:clamp(1.65rem,3vw,2.3rem); }
+  .best-hotel h3 a { color:var(--text); text-decoration:none; }
+  .best-hotel h3 a:hover { text-decoration:underline 1px; text-underline-offset:.15em; }
+  .best-hotel-copy > p:last-child { font-size:.95rem; line-height:1.6; margin:0; max-width:58ch; }
+  .best-hotels a:focus-visible { outline:2px solid var(--gold); outline-offset:4px; }
+  @media (max-width:767px) { .best-hotels-grid { grid-template-columns:1fr; gap:24px; } .best-hotel-lead { grid-row:auto; } .best-hotel-photo, .best-hotel-lead .best-hotel-photo { aspect-ratio:4 / 3; } .best-hotels-head { padding-top:20px; margin-bottom:20px; } }
+</style>

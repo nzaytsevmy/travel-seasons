@@ -15,6 +15,7 @@ import { Image, getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Footer from '../components/Footer.astro';
+import BestHotels from '../components/BestHotels.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
 import YearClimateChart from '../components/YearClimateChart.astro';
 import { DIRECTIONS, MONTHS, VISITED } from '../data/directions.js';
@@ -237,6 +238,8 @@ const ldJson = {
       <Image src={wahiba} alt="Гребни дюн песков Вахибы" widths={[800, 1200, 1800]} sizes="100vw" format="webp" quality={82} loading="lazy" />
       <figcaption>{typo('Пески Вахибы — вторая причина ехать зимой: летом здесь за сорок.')}</figcaption>
     </figure>
+
+    <BestHotels destination="oman" />
 
     <section class="om-sec">
       <h2>Сколько стоит поездка в Оман</h2>

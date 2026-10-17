@@ -369,6 +369,8 @@ const OSTROVOK_COUNTRY = {
   'bali': 'indonesia', 'sumatra-kalimantan': 'indonesia', 'raja-ampat': 'indonesia',
   'new-zealand': 'new_zealand', 'south-africa': 'south_africa',
   'uae': 'united_arab_emirates', 'japan-hokkaido': 'japan',
+  // 16.10.2026: /hotel/saudi-arabia/ возвращает 404; адрес с подчёркиванием найден в каталоге партнёра.
+  'saudi-arabia': 'saudi_arabia',
   // Гонконг отдельной страницы у партнёра нет — ведём в Китай, это ближайшее верное.
   'hong-kong': 'china', 'hainan': 'china',
   'south-korea': 'south_korea', 'india-goa': 'india', 'sri-lanka': 'sri_lanka',
