@@ -153,6 +153,9 @@ const subtitle = topics.length ? `${topics.join(', ').replace(/^./, (c) => c.toU
 .ec-cus { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .ec-cus li { font-size: .9375rem; line-height: 1.5; color: var(--text); display: flex; gap: 10px; }
 .ec-x { color: var(--gold); font-weight: 700; flex: none; width: 1rem; }
+@media (max-width: 900px) {
+  .ec-vl--cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (max-width: 760px) {
   .ec { padding: 40px 0; }
   .ec-vl--cols-4, .ec-vl--cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
