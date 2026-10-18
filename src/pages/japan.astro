@@ -29,7 +29,8 @@ const герой = await сКадром(фотоЯпонии.hero);
 const широкий = await сКадром(фотоЯпонии.wide);
 const практика = await Promise.all(фотоЯпонии.practice.map(сКадром));
 // Ширины обложки и предзагрузки совпадают, иначе браузер скачает не тот вариант.
-const HERO_WIDTHS = [512, 768, 1024, 1600];
+const HERO_WIDTHS = [320, 384, 512, 640, 720, 768, 1024, 1280, 1600];
+const HERO_SIZES = '(max-width: 767px) calc(100vw - 2rem), 100vw';
 const heroPreload = await getImage({ src: герой.img, widths: HERO_WIDTHS, formats: ['webp'], quality: 72 });
 
 const faqs = [
@@ -117,13 +118,13 @@ const ldJson = {
   ogImage="https://traveltribe.ru/og/hub-japan.png"
   ldJson={ldJson}
   preloadImageSrcset={heroPreload?.srcSet?.attribute}
-  preloadImageSizes="100vw"
+  preloadImageSizes={HERO_SIZES}
 >
   <Breadcrumbs crumbs={[{ label: 'Япония' }]} />
 
   <main id="main" class="jp">
     <figure class="jp-hero">
-      <Image src={герой.img} alt={герой.alt} widths={HERO_WIDTHS} sizes="100vw" formats={['webp']} quality={72} loading="eager" fetchpriority="high" />
+      <Image src={герой.img} alt={герой.alt} widths={HERO_WIDTHS} sizes={HERO_SIZES} formats={['webp']} quality={72} loading="eager" fetchpriority="high" />
     </figure>
 
     {/* MANIFEST */}
