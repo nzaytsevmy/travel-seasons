@@ -323,4 +323,9 @@ const ldJson = {
 .pack-months-grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(116px, 1fr)); gap: 0.5rem; }
 .pack-months-grid a { display: flex; align-items: center; min-height: 44px; padding: 0.6rem 0.9rem; border: 1px solid var(--line); color: var(--text); font-size: 0.92rem; text-transform: capitalize; transition: border-color 0.15s ease, color 0.15s ease; }
 .pack-months-grid a:hover { border-color: var(--gold); color: var(--gold); }
+@media (max-width: 767px) {
+  .pack-wrap { padding-inline: var(--page-edge); padding-bottom: 3rem; }
+  .pack-hero { margin-inline: calc(-1 * var(--page-edge)); }
+  .pack-header { margin-block: 1.5rem; }
+}
 </style>

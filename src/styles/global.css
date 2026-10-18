@@ -12,6 +12,7 @@
    Тёмная — opt-in через .dark-theme на <html>.
    ───────────────────────────────────────────────────────── */
 :root {
+  --page-edge: clamp(1.1rem, 3vw, 2.6rem);
   /* «Дорожный дневник» (28.08.2026): холодный лист, чернильный синий, антиква */
   --bg:          #fbfbfa;   /* paper */
   --bg2:         #f6f7f6;   /* карточки */
@@ -119,7 +120,6 @@ body {
   line-height: 1.65;
   min-height: 100dvh;  /* dvh, не vh — iOS Safari не «прыгает» при появлении URL-бара */
   overflow-x: clip;  /* clip вместо hidden — sticky-nav работает в Safari (clip с iOS 16+) */
-  padding-bottom: 4rem;
   position: relative;
   touch-action: manipulation;
   -webkit-touch-callout: none;
@@ -230,7 +230,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* ─── FOOTER ─── */
-footer {
+.site-footer {
   max-width: 1200px; margin: 0 auto;
   padding: 1.5rem 2rem;
   display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem;
@@ -855,3 +855,9 @@ h1, h2, h3 { font-family: var(--ff-head); }
 
 /* Кусок, который строка не рвёт: составное слово с дефисом в заголовке (src/utils/nobr.js). */
 .nobr { white-space: nowrap; }
+
+/* Mobile page edges shared by header, breadcrumbs, content and footer. */
+@media (max-width: 767px) {
+  :root { --page-edge: var(--edge-mobile, 1rem); }
+  .site-footer { padding-inline: var(--page-edge); }
+}

@@ -589,14 +589,14 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
   --line-hair: var(--line);
   max-width: 980px;
   margin: 0 auto;
-  padding: 0 clamp(1.1rem, 3vw, 2.6rem) clamp(2rem, 4vw, 4rem);
+  padding: 0 var(--page-edge) clamp(2rem, 4vw, 4rem);
   font-variant-numeric: tabular-nums lining-nums;
   color: var(--text);
 }
 
 /* COVER PHOTO */
 .pmu-cover {
-  margin: 0 calc(-1 * clamp(1.1rem, 3vw, 2.6rem)) clamp(1.4rem, 2.5vw, 2rem);
+  margin: 0 calc(-1 * var(--page-edge)) clamp(1.4rem, 2.5vw, 2rem);
   aspect-ratio: 21 / 9;
   max-height: 380px;
   overflow: hidden;

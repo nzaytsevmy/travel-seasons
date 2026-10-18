@@ -39,8 +39,7 @@ for (const path of ['/', '/countries/', '/seasons/', '/trips/', '/trips/july/', 
         bottom: parseFloat(getComputedStyle(document.body).paddingBottom),
       }));
       expect(geometry.overflow, `${path} overflow at ${width}`).toBeLessThanOrEqual(1);
-      // A generic body spacing rule may remain, but the old 76px panel reserve cannot.
-      expect(geometry.bottom, `${path} stale panel reserve at ${width}`).not.toBe(76);
+      expect(geometry.bottom, `${path} stale panel reserve at ${width}`).toBe(0);
     }
   });
 }
@@ -61,4 +60,20 @@ test('mobile contents stay collapsed and their anchors remain usable', async ({ 
   await expect(page.locator('a[href="/visa/australia-east/"]').first()).toBeAttached();
   await expect(page.locator('a[href="/packing/australia-east/"]').first()).toBeAttached();
   await expect(page.locator('a[href^="/trips/"]').first()).toBeAttached();
+});
+
+test('mobile page shell uses one gutter and the search field has a full touch target', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const path of ['/australia-east/', '/packing/japan/', '/visa/turkey/', '/blog/strahovka-dlya-puteshestviy-2026/']) {
+    await page.goto(path);
+    const edges = await page.evaluate(() => {
+      const title = document.querySelector('h1')!.getBoundingClientRect();
+      return { title: title.left, crumbs: document.querySelector('.breadcrumbs')!.getBoundingClientRect().left + parseFloat(getComputedStyle(document.querySelector('.breadcrumbs')!).paddingLeft), footer: parseFloat(getComputedStyle(document.querySelector('.site-footer')!).paddingLeft) };
+    });
+    expect(edges.title, path).toBeCloseTo(16, 0);
+    expect(edges.crumbs, path).toBeCloseTo(16, 0);
+    expect(edges.footer, path).toBeCloseTo(16, 0);
+  }
+  await page.goto('/seasons/');
+  expect((await page.getByRole('searchbox', { name: 'Поиск по таблице' }).boundingBox())!.height).toBeGreaterThanOrEqual(44);
 });
