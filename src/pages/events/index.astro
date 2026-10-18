@@ -129,4 +129,8 @@ const ldJson = {
 .evh-top a b, .evh-related a b { color: var(--gold); text-decoration: underline; text-underline-offset:.22em; }
 .evh-top span, .evh-related span { font-size: .82rem; color: var(--text-faint); margin-top: .15rem; }
 
+@media (max-width: 767px) {
+  .evh-months { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .evh-months a { flex-wrap: wrap; gap: .25rem .5rem; align-items: center; min-width: 0; }
+}
 </style>

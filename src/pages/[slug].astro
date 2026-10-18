@@ -847,6 +847,7 @@ if (guide?.itinerary?.length) {
   .om-embed--sec { border-top: 1px solid var(--line); }
   .om-body { font-size: 1.0625rem; line-height: 1.65; margin: 0 0 16px; max-width: 68ch; }
   .om-dim { color: var(--text-faint); }
+  .om > :global(.breadcrumbs) { padding-inline: 0; }
   .om-small { font-size: 0.9375rem; font-weight: 400; }
 
   .om-hero { margin: 0 -24px 20px; }
@@ -999,13 +1000,17 @@ if (guide?.itinerary?.length) {
     .om-answer { grid-column: span 5; }
   }
   @media (max-width: 900px) {
-    .om-top, .om-pair, .om-money, .om-practice { grid-template-columns: 1fr; gap: 28px; }
+    .om-top, .om-pair, .om-money, .om-practice { grid-template-columns: minmax(0, 1fr); gap: 28px; }
     .om-title, .om-answer, .om-byline, .om-pair > *, .om-money > *, .om-practice > * { grid-column: 1 / -1; }
     .om-heat { grid-template-columns: repeat(6, 1fr); }
   }
   @media (max-width: 768px) {
     .om { padding: 0 16px 48px; }
     /* Автор и оглавление не должны добавлять пустой экран перед ответом. */
+    .om { overflow-wrap: anywhere; }
+    .om-facts > div { flex-wrap: wrap; gap: 4px 16px; }
+    .om-facts dt, .om-facts dd { max-width: 100%; min-width: 0; }
+    .om-facts dd { margin-left: auto; }
     .om-top { padding-block: 16px 24px; row-gap: 24px; }
     .om-lead { margin-bottom: 0; }
     .om-answer { padding-top: 0; }

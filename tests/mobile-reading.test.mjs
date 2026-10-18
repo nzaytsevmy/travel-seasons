@@ -19,3 +19,10 @@ test('every page renders without destination tabs or a fixed affiliate panel', a
   }
   assert.deepEqual(offenders, [], 'removed navigation and panels must not survive in another template');
 });
+
+import { hasReadingObstruction } from '../scripts/mobile-reading-contract.mjs';
+test('obstruction scan distinguishes destination navigation from trip data tables', () => {
+  assert.equal(hasReadingObstruction('<table class="dt"><tr><td>Перелёт</td></tr></table>'), false);
+  assert.equal(hasReadingObstruction('<nav class="dt" aria-label="Разделы направления: Турция">'), true);
+  assert.equal(hasReadingObstruction('<div class="sticky-cta"><a>Билеты</a></div>'), true);
+});

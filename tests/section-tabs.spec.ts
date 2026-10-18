@@ -1,6 +1,7 @@
 import { test, expect } from './browser-fixture';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { hasReadingObstruction } from '../scripts/mobile-reading-contract.mjs';
 
 // Owner decision 18.10.2026: destination tabs and fixed affiliate panels are
 // removed everywhere. Scan the entire build so a forgotten template fails too.
@@ -15,7 +16,7 @@ test('all built routes omit destination tabs and fixed affiliate panels', () => 
       else if (entry.name.endsWith('.html')) {
         pages++;
         const html = readFileSync(file, 'utf8');
-        if (/class="(?:[^"]*\s)?(?:dt|sticky-cta)(?:\s[^"]*)?"|aria-label="Разделы направления:/.test(html)) failures.push(file);
+        if (hasReadingObstruction(html)) failures.push(file);
       }
     }
   }
@@ -30,7 +31,7 @@ for (const path of ['/', '/countries/', '/seasons/', '/trips/', '/trips/july/', 
     const response = await page.goto(path);
     expect(response?.status(), path).toBe(200);
     await expect(page.locator('h1')).toHaveCount(1);
-    await expect(page.locator('.dt, .sticky-cta')).toHaveCount(0);
+    await expect(page.locator('nav[aria-label^="Разделы направления:"], .sticky-cta')).toHaveCount(0);
     const hasAffiliate = await page.locator('main a[rel~="sponsored"], [data-trip-planning] a[rel~="sponsored"]').count();
     expect(hasAffiliate, 'affiliate actions must remain in the document').toBeGreaterThan(0);
     for (const width of [320, 360, 390, 402, 430, 768, 1024, 1280]) {
@@ -38,8 +39,13 @@ for (const path of ['/', '/countries/', '/seasons/', '/trips/', '/trips/july/', 
       const geometry = await page.evaluate(() => ({
         overflow: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - innerWidth,
         bottom: parseFloat(getComputedStyle(document.body).paddingBottom),
+        worst: [...document.querySelectorAll('main *')].map(e => ({
+          tag: e.tagName, cls: typeof e.className === 'string' ? e.className : '',
+          right: Math.round(e.getBoundingClientRect().right),
+          width: Math.round(e.getBoundingClientRect().width), text: e.textContent?.slice(0, 60),
+        })).filter(e => e.width > 0 && e.right > innerWidth + 1).sort((a,b) => b.right-a.right).slice(0,4),
       }));
-      expect(geometry.overflow, `${path} overflow at ${width}`).toBeLessThanOrEqual(1);
+      expect(geometry.overflow, `${path} overflow at ${width}: ${JSON.stringify(geometry.worst)}`).toBeLessThanOrEqual(1);
       expect(geometry.bottom, `${path} stale panel reserve at ${width}`).toBe(0);
     }
   });
@@ -79,12 +85,12 @@ test('mobile page shell uses one gutter and the search field has a full touch ta
   expect((await page.getByRole('searchbox', { name: 'Поиск по таблице' }).boundingBox())!.height).toBeGreaterThanOrEqual(44);
 });
 
-for (const path of ['/about/', '/legal/privacy/', '/legal/cookie/', '/legal/terms/', '/legal/photos/', '/my/', '/cards/', '/izmeneniya/', '/status/', '/seasons/japan/june/', '/novosti/2026-05-01-torres-del-paine-tariff/']) {
+for (const path of ['/about/', '/legal/privacy/', '/legal/cookie/', '/legal/terms/', '/legal/photos/', '/my/', '/cards/', '/izmeneniya/', '/status/', '/seasons/japan/january/', '/novosti/2026-05-01-torres-del-paine-tariff/']) {
   test(`auxiliary template geometry ${path}`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     const response = await page.goto(path);
     expect(response?.status(), path).toBe(200);
-    await expect(page.locator('.dt, .sticky-cta')).toHaveCount(0);
+    await expect(page.locator('nav[aria-label^="Разделы направления:"], .sticky-cta')).toHaveCount(0);
     for (const width of [320, 360, 390, 402, 430, 768, 1024, 1280]) {
       await page.setViewportSize({ width, height: 844 });
       expect(await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - innerWidth), `${path} @${width}`).toBeLessThanOrEqual(1);

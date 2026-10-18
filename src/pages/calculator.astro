@@ -1151,4 +1151,10 @@ const ldJson = {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+@media (max-width: 767px) {
+  .tc-cats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tc-cat { min-width: 0; overflow-wrap: anywhere; }
+  .tc-cat-head { flex-wrap: wrap; gap: .25rem .5rem; }
+  .tc-seg { max-width: 100%; }
+}
 </style>
