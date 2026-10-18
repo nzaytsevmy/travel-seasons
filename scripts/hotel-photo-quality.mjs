@@ -199,6 +199,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     const output = process.argv[2];
     if (output) await fs.writeFile(output, JSON.stringify(result, null, 2));
     console.log(JSON.stringify({ photos: result.photos, failed: result.failed }));
-    process.exitCode = result.failed ? 1 : 0;
+    process.exitCode = result.failed && !process.argv.includes('--baseline') ? 1 : 0;
   }
 }
