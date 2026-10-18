@@ -33,6 +33,10 @@ on:
       - '**/*.md'
   workflow_dispatch:
     inputs:
+      hotel_materials:
+        description: 'Подготовить оригиналы фото и проверить все 700 живых редиректов; без публикации'
+        type: boolean
+        default: false
       gen_linux:
         description: 'Снять linux-эталоны и проверить их стабильность (одноразово)'
         type: boolean
@@ -63,7 +67,36 @@ permissions:
   contents: read
 
 jobs:
+  hotel-materials:
+    if: github.event_name == 'workflow_dispatch' && inputs.hotel_materials
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Source photo density baseline
+        run: |
+          mkdir -p artifacts/hotel-materials
+          node scripts/hotel-photo-quality.mjs artifacts/hotel-materials/baseline.json || test "$?" -eq 1
+      - name: Verify published hotel targets and partner identity
+        run: node scripts/hotel-referral-audit.mjs artifacts/hotel-materials/referrals.json
+      - name: Fetch original hotel photographs
+        if: success() || failure()
+        run: node scripts/hotel-photo-quality.mjs --refresh artifacts/hotel-materials/photos
+      - name: Preserve original diagnostic results and photographs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hotel-materials-${{ github.sha }}
+          path: artifacts/hotel-materials/
+          if-no-files-found: error
+          retention-days: 7
   prepare:
+    if: github.event_name != 'workflow_dispatch' || !inputs.hotel_materials
     uses: ./.github/workflows/site-artifact.yml
     with:
       skip_html_min: ${{ inputs.gen_linux && '0' || '1' }}
