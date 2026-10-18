@@ -158,6 +158,18 @@
               }
             ]
           }
+        },
+        {
+          "matchingUrlPattern": "^https?://[^/]+/japan/(?:index\\.html)?(?:[?#].*)?$",
+          "assertions": {
+            "largest-contentful-paint": [
+              "error",
+              {
+                "maxNumericValue": 2500,
+                "aggregationMethod": "median"
+              }
+            ]
+          }
         }
       ]
     },
