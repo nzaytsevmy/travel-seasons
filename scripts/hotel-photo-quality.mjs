@@ -34,6 +34,9 @@ export async function auditPhotos() {
   for (const photo of photoManifest()) {
     const file = `src/assets/hotels/${photo.image}`;
     const meta = await sharp(file).metadata();
+    const rotated = [5, 6, 7, 8].includes(meta.orientation);
+    const nativeWidth = rotated ? meta.height : meta.width;
+    const nativeHeight = rotated ? meta.width : meta.height;
     const frames = PHOTO_VIEWPORTS.map(viewport => ({ viewport, ...galleryFrame(viewport, photo.lead) }));
     // Country previews may use another hotel as the large 4:3 image.
     for (const hub of hotelGuideHubs(photo.country)) {
@@ -48,8 +51,8 @@ export async function auditPhotos() {
         frames.push({ viewport, width, height: width * (pickIndex === 0 || viewport < 768 ? .75 : 9 / 16) });
       }
     }
-    const density = Math.min(...frames.map(frame => coverDensity(meta.width, meta.height, frame.width, frame.height)));
-    rows.push({ ...photo, width: meta.width, height: meta.height, density, passed: density >= 2 });
+    const density = Math.min(...frames.map(frame => coverDensity(nativeWidth, nativeHeight, frame.width, frame.height)));
+    rows.push({ ...photo, width: nativeWidth, height: nativeHeight, density, passed: density >= 2 });
   }
   return { checkedAt: new Date().toISOString(), photos: rows.length,
     failed: rows.filter(row => !row.passed).length, rows };
@@ -69,7 +72,8 @@ async function refreshPhotos(output) {
   async function refreshOne(photo) {
     const credit = credits[photo.creditKey];
     const existing = saved.get(photo.image);
-    if (existing?.status === 'FETCHED_ORIGINAL' && existing.asset && existing.creditSource === credit?.source) {
+    if (existing?.status === 'FETCHED_ORIGINAL' && existing.asset && existing.creditSource === credit?.source &&
+      (!credit?.sourcePhoto || existing.sourcePhoto === originalPhotoUrl(credit.sourcePhoto))) {
       try {
         const buffer = await fs.readFile(`${output}/${existing.asset}`);
         if (createHash('sha256').update(buffer).digest('hex') === existing.originalSha256) {
@@ -147,7 +151,7 @@ async function refreshPhotos(output) {
         width: rotated ? metadata.height : metadata.width, height: rotated ? metadata.width : metadata.height,
         orientation: metadata.orientation || 1, originalWidth: metadata.width,
         originalHeight: metadata.height, originalSha256: digest.digest('hex'),
-        bytes, status: 'FETCHED_ORIGINAL' });
+        bytes, fetchedAt: new Date().toISOString(), status: 'FETCHED_ORIGINAL' });
     } catch (error) {
       receipts.push({ image: photo.image, sourcePhoto: url, status: 'HOLD', error: error.message });
     } finally {
