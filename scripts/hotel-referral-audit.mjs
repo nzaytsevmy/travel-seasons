@@ -29,11 +29,13 @@ export function checkHotelLanding(target, final, status) {
 async function fetchBounded(url, options = {}) {
   const response = await fetch(url, { ...options, signal: AbortSignal.timeout(30_000) });
   let body = ''; let size = 0;
+  const decoder = new TextDecoder();
   for await (const chunk of response.body || []) {
     size += chunk.length;
     if (size > 5 * 1024 * 1024) { await response.body?.cancel().catch(() => {}); throw new Error('HTML exceeds 5 MiB'); }
-    body += Buffer.from(chunk).toString('utf8');
+    body += decoder.decode(chunk, { stream: true });
   }
+  body += decoder.decode();
   return { response, body };
 }
 async function audit(output) {
