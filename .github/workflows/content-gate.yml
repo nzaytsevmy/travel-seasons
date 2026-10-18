@@ -49,7 +49,10 @@ jobs:
   content-gate:
     name: контент и функциональные тесты
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # The 70 hotel collections add complete gallery and booking journeys.
+    # Native run 39109102041 reached the 15-minute job deadline mid-suite.
+    # Keep the full checks; allow bounded time for build plus browser journeys.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:

@@ -16,6 +16,9 @@
         "http://localhost/blog/bolivia-guide-2026/index.html",
         "http://localhost/blog/chile-guide-2026/index.html",
         "http://localhost/peru/index.html",
+        "http://localhost/japan/index.html",
+        "http://localhost/oman/index.html",
+        "http://localhost/hotels/singapore/index.html",
         "http://localhost/packing/index.html",
         "http://localhost/packing/egypt/june/index.html",
         "http://localhost/bezviz/index.html",
@@ -42,7 +45,7 @@
     "assert": {
       "assertMatrix": [
         {
-          "matchingUrlPattern": "^(?!https?://[^/]+/blog/tag/[^/]+/(?:index\\.html)?(?:[?#].*)?$)",
+          "matchingUrlPattern": "^(?!https?://[^/]+/blog/tag/[^/]+/(?:index\\.html)?(?:[?#].*)?$)(?!https?://[^/]+/japan/(?:index\\.html)?(?:[?#].*)?$)",
           "assertions": {
             "categories:performance": [
               "error",
@@ -152,6 +155,42 @@
               {
                 "minScore": 1,
                 "aggregationMethod": "pessimistic"
+              }
+            ]
+          }
+        },
+        {
+          "matchingUrlPattern": "^https?://[^/]+/japan/(?:index\\.html)?(?:[?#].*)?$",
+          "assertions": {
+            "categories:performance": [
+              "error",
+              {
+                "minScore": 0.85
+              }
+            ],
+            "categories:accessibility": [
+              "error",
+              {
+                "minScore": 0.9
+              }
+            ],
+            "categories:best-practices": [
+              "error",
+              {
+                "minScore": 0.75
+              }
+            ],
+            "categories:seo": [
+              "error",
+              {
+                "minScore": 0.95
+              }
+            ],
+            "largest-contentful-paint": [
+              "error",
+              {
+                "maxNumericValue": 2500,
+                "aggregationMethod": "median"
               }
             ]
           }

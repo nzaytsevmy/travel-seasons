@@ -116,7 +116,7 @@ fi
 # статусов по фактическим файлам. Обычная разработка сохраняет локальный прогон.
 BRANCH="$(git branch --show-current)" || exit 1
 case "$BRANCH" in
-  tt-news/*|tt-publish/*|feat/home-photojournal-20261010)
+  tt-news/*|tt-publish/*|feat/home-photojournal-20261010|feat/country-best-hotels-20261016)
     if ! node scripts/routine-preflight.mjs --base "$SCOPE_BASE" --head HEAD >${LOG}_routine.log 2>&1; then
       cat "${LOG}_routine.log"
       echo "✖ исходники публикационной рутины не прошли проверку — push заблокирован"; exit 1

@@ -78,3 +78,15 @@ test('similarly named homepage branch keeps the ordinary local gate', () => {
   assert.notEqual(r.status, 0);
   assert.match(r.output, /build/);
 });
+
+test('authorized hotel release forwards all 26 checks to CI without a Mac build', () => {
+  const r = fixture('feat/country-best-hotels-20261016');
+  assert.equal(r.status, 0, r.output);
+  assert.match(r.output, /26.*CI|CI.*26/);
+  assert.doesNotMatch(r.output, /LOCAL_BUILD_STARTED|LOCAL_BROWSER_STARTED/);
+});
+test('similarly named hotel branch keeps the ordinary local gate', () => {
+  const r = fixture('feat/country-best-hotels-other');
+  assert.notEqual(r.status, 0);
+  assert.match(r.output, /build/);
+});

@@ -3,10 +3,12 @@ import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Footer from '../../components/Footer.astro';
 import notes from '../../data/photo-credit-notes.json';
+import hotelCredits from '../../data/hotel-photo-credits.json';
 import { publicPhotoCredits } from '../../data/photo-credits.js';
 
 const sources = import.meta.glob('../../content/blog/_images/**/_credits.json', { eager: true, import: 'default' });
-const credits = publicPhotoCredits(Object.values(sources).flatMap((records) => Object.values(records)), await getCollection('news'));
+const credits = publicPhotoCredits([...Object.values(sources).flatMap((records) => Object.values(records)), ...Object.values(hotelCredits).filter(credit => credit.license)], await getCollection('news'));
+const hotelSources = Object.values(hotelCredits).filter(credit => !credit.license);
 const articles = Object.entries(notes).sort(([,a], [,b]) => a.title.localeCompare(b.title, 'ru'));
 const canonical = 'https://traveltribe.ru/legal/photos/';
 const ldJson = {
@@ -23,7 +25,7 @@ const ldJson = {
 <Layout title="Авторы фотографий — TravelTribe" description="Авторы снимков, оригиналы и лицензии фотографий, используемых на TravelTribe." canonical={canonical} ldJson={ldJson} noindex={true}>
   <main id="main" class="legal-doc photo-credits">
     <h1>Авторы фотографий</h1>
-    <p>Здесь собраны сведения о снимках на TravelTribe. Условия использования каждого кадра указаны по ссылке на его лицензию. Для показа на сайте фотографии сжаты и могут быть кадрированы.</p>
+    <p>Здесь собраны сведения о снимках на TravelTribe. Для снимков с указанной лицензией приведена ссылка на её условия. Для показа на сайте фотографии сжаты и могут быть кадрированы.</p>
     <h2>Фотографии в статьях</h2>
     {articles.map(([slug, article]) => (
       <details id={slug}>
@@ -34,6 +36,18 @@ const ldJson = {
         </div>
       </details>
     ))}
+    <h2>Фотографии отелей</h2>
+    <p>Снимки из карточек отелей и официальных сайтов. Если источник не указывает автора или лицензию, это отмечено в записи.</p>
+    <ul class="photo-credits-list">
+      {hotelSources.map((credit) => (
+        <li>
+          <a href={credit.source} rel="noopener" target="_blank">{credit.title}</a>
+          <span> — {credit.creator || 'Автор не указан в источнике'}. Лицензия в источнике не указана. </span>
+          <a href={credit.sourcePhoto} rel="noopener" target="_blank">Исходное изображение</a>.
+          <span> {credit.changes}</span>
+        </li>
+      ))}
+    </ul>
     <h2>Снимки по открытым лицензиям</h2>
     <p>Имена авторов и названия работ сохранены в исходном написании.</p>
     <ul class="photo-credits-list">

@@ -123,7 +123,7 @@ const NO_COMMERCIAL_BLOG = /(?:perseidy|^kupibilet-vozvrat-bileta-2026$|^tutu-vo
 const COUNTRY_GUIDE = /^(.+?)-(?:guide|insurance|visa)-20\d\d$/;
 const RESERVED_ROOTS = new Set([
   '404', 'about', 'bezviz', 'blog', 'calculator', 'cards', 'compare', 'countries',
-  'events', 'izmeneniya', 'legal', 'my', 'novosti', 'packing', 'seasons', 'trips', 'visa',
+  'events', 'hotels', 'izmeneniya', 'legal', 'my', 'novosti', 'packing', 'seasons', 'trips', 'visa',
 ]);
 const NON_CONTENT_ROOTS = new Set(['404.html', 'japan-momiji', 'japan_momiji', 'mexico_old', 'status']);
 
@@ -149,6 +149,7 @@ export function classifyPage(pathname = '/') {
   if (NON_CONTENT_ROOTS.has(top) || /^yandex_[a-z0-9]+\.html$/i.test(top) || /^zen_[a-z0-9]+\.html$/i.test(top)) {
     return { type: 'non_content', intent: 'none', destination: '' };
   }
+  if (top === 'hotels') return { type: parts.length === 2 ? 'hotels_country' : 'hotels_index', intent: parts.length === 2 ? 'high' : 'low', destination: parts.length === 2 ? second : '' };
   if (top === 'packing') {
     if (parts.length >= 3) return { type: 'packing_month', intent: 'high', destination: second };
     if (parts.length === 2) return { type: 'packing_country', intent: 'medium', destination: second };

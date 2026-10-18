@@ -12,6 +12,8 @@
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
+import BestHotels from '../components/BestHotels.astro';
+import { hotelCollection } from '../data/hotels.js';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import DestinationTabs from '../components/DestinationTabs.astro';
 import { Image, getImage } from 'astro:assets';
@@ -332,6 +334,7 @@ const tocItems = [
   guide?.itinerary?.length && { id: 'marshrut', t: 'Маршрут на 7–10 дней' },
   hasPois(d.slug) && { id: 'mesta', t: 'Где смотреть' },
   (guide?.getThere || guide?.compare?.options?.length || (RU_STAY.has(d.slug) && трансфер)) && { id: 'doroga', t: `Как добраться ${d.cases.vP}` },
+  hotelCollection(d.slug, { includeDraft: import.meta.env.DEV }) && { id: 'oteli', t: 'Лучшие отели' },
   (guide?.stay?.length || RU_STAY.has(d.slug)) && { id: 'zhile', t: 'Где остановиться' },
   { id: 'dengi', t: `Сколько стоит поездка ${d.cases.vP}` },
   { id: 'viza', t: визаH2 },
@@ -628,6 +631,8 @@ if (guide?.itinerary?.length) {
         )}
       </section>
     )}
+
+    <BestHotels destination={d.slug} />
 
     {(guide?.stay?.length > 0 || RU_STAY.has(d.slug)) && (
       <section class="om-sec" id="zhile">

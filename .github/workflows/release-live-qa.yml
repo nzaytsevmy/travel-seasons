@@ -12,6 +12,15 @@ on:
         required: true
         type: string
 
+      capture:
+        description: 'Сохранить изображения выбранных страниц на 402 и 1280 px'
+        type: boolean
+        default: false
+      hotel_guides:
+        description: 'Дополнительно проверить все галереи отелей в четырёх браузерных проектах'
+        type: boolean
+        default: false
+
 permissions:
   contents: read
 
@@ -44,11 +53,87 @@ jobs:
           QA_EXPECTED_COMMIT: ${{ inputs.expected_commit }}
           QA_SHARD: ${{ matrix.shard }}
           QA_SHARDS: '4'
+          QA_CAPTURE: ${{ inputs.capture && '1' || '0' }}
       - name: Сохранить полный результат
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: release-browser-qa-${{ matrix.shard }}
           path: artifacts/release-browser-qa/
+          if-no-files-found: error
+          retention-days: 7
+
+  hotel-guides-live:
+    if: inputs.hotel_guides
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium-desktop, webkit-desktop, chromium-tablet, webkit-mobile]
+    env:
+      QA_EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+      HOTEL_PROJECT: ${{ matrix.project }}
+      PREVIEW_URL: https://traveltribe.ru
+      PLAYWRIGHT_JSON_OUTPUT_NAME: artifacts/hotel-guides-live-${{ matrix.project }}/tests.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Install cached browser engines
+        timeout-minutes: 10
+        run: npx playwright install chromium webkit
+      - name: Install WebKit system libraries
+        timeout-minutes: 10
+        run: npx playwright install-deps webkit
+      - name: Verify exact published build before hotel journeys
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs/promises';
+          import assert from 'node:assert/strict';
+          assert.match(process.env.QA_EXPECTED_COMMIT, /^[a-f0-9]{40}$/);
+          assert.equal(process.env.QA_EXPECTED_COMMIT, process.env.GITHUB_SHA, 'Live QA must execute the exact trusted dispatch source');
+          const r = await fetch(`https://traveltribe.ru/build-version.json?hotel_qa=${Date.now()}`, { signal: AbortSignal.timeout(30000), headers: { 'Cache-Control': 'no-cache' } });
+          assert.equal(r.status, 200);
+          const value = await r.json();
+          assert.equal(value.commit, process.env.QA_EXPECTED_COMMIT);
+          const dir = `artifacts/hotel-guides-live-${process.env.HOTEL_PROJECT}`;
+          await fs.mkdir(dir, { recursive: true });
+          await fs.writeFile(`${dir}/identity-before.json`, JSON.stringify(value));
+          console.log(JSON.stringify(value));
+          JS
+      - name: Check every hotel gallery, booking target and country journey
+        run: npx playwright test tests/hotel-guides.spec.ts --project="$HOTEL_PROJECT" --reporter=line,json
+      - name: Verify published build did not change during hotel journeys
+        if: always()
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs/promises';
+          import assert from 'node:assert/strict';
+          const r = await fetch(`https://traveltribe.ru/build-version.json?hotel_qa=${Date.now()}`, { signal: AbortSignal.timeout(30000), headers: { 'Cache-Control': 'no-cache' } });
+          assert.equal(r.status, 200);
+          const value = await r.json();
+          assert.equal(value.commit, process.env.QA_EXPECTED_COMMIT);
+          const dir = `artifacts/hotel-guides-live-${process.env.HOTEL_PROJECT}`;
+          const before = JSON.parse(await fs.readFile(`${dir}/identity-before.json`, 'utf8'));
+          assert.deepEqual(value, before);
+          await fs.writeFile(`${dir}/identity-after.json`, JSON.stringify(value));
+          console.log(JSON.stringify(value));
+          JS
+      - name: Preserve hotel journey evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hotel-guides-live-${{ matrix.project }}
+          path: |
+            artifacts/hotel-guides-live-${{ matrix.project }}/
+            test-results/
           if-no-files-found: error
           retention-days: 7

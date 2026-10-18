@@ -133,6 +133,18 @@ jobs:
           lhci autorun --config="$CONF" --collect.numberOfRuns="$RUNS" $URLS
           node scripts/check-lighthouse-indexability.mjs .lighthouseci "$CONF"
 
+      - name: Preserve original three-sample Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-${{ matrix.preset }}-${{ matrix.shard }}-${{ github.sha }}
+          path: |
+            .lighthouseci/lhr-*.json
+            .lighthouseci/assertion-results.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3
+
       # Keep the diagnostic capture separate from the three-run acceptance.
       # It retains the raw browser trace needed to explain homepage regressions.
       - name: Capture homepage performance trace

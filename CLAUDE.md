@@ -37,6 +37,10 @@ CI выполняется на публичных стандартных ран�
 
 User explicitly authorized full browser and performance checks in GitHub Actions for this release. Only branch `feat/home-photojournal-20261010` uses the existing committed-source preflight. All 26 CI checks, browsers, thresholds and three Lighthouse runs remain mandatory before merge. Browser Guard and ordinary development gates remain unchanged. Deployment requires acceptance and separate live verification.
 
+### Hotel collection release exception (2026-10-18)
+
+The owner explicitly authorized moving the complete hotel batch checks to existing GitHub Actions. Only branch `feat/country-best-hotels-20261016` uses the existing committed-source preflight. All 26 required CI checks, four browser projects, unchanged category thresholds and three Lighthouse samples remain mandatory before merge. Japan mobile LCP must meet the existing 2.5 s target. Browser Guard and budgets remain unchanged; deployment and live verification of all changed pages remain mandatory.
+
 ### Публикационные рутины: полный прогон в CI (решение Никиты 10.10.2026)
 
 По просьбе ускорить оба выпуска ветки `tt-news/*` и `tt-publish/*` выполняют тяжёлую сборку и браузерные проверки в существующем GitHub Actions. Обычный pre-push обязателен: секреты отправляемого HEAD, delivery-контракты, метаданные журнала, совпадение проверяемых файлов с коммитом, независимые оценки новой/переработанной статьи с точным proseHash, гейт изменённых новостей и сроки пересмотра. Проверка не принимает незакоммиченный текст или артефакт вместо HEAD.

@@ -1,0 +1,111 @@
+---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { hotelRouteCollections, hotelBookingUrl, hotelGallery, hotelGuideHubs } from '../../data/hotels.js';
+
+export function getStaticPaths() {
+  return hotelRouteCollections({ development: import.meta.env.DEV }).map(([country, collection]) => ({ params: { country }, props: { collection } }));
+}
+const { collection } = Astro.props;
+const country = Astro.params.country!;
+const destinations = hotelGuideHubs(country);
+const crumbs = [{ label: 'Направления', href: '/countries/' }, ...(destinations.length === 1 ? [{ label: destinations[0].cases.nom, href: `/${destinations[0].slug}/` }] : []), { label: 'Отели' }];
+const images = import.meta.glob<{ default: ImageMetadata }>('../../assets/hotels/**/*.webp', { eager: true });
+const canonical = `https://traveltribe.ru/hotels/${country}/`;
+const ldJson = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  '@id': `${canonical}#collection`,
+  name: collection.title,
+  url: canonical,
+  inLanguage: 'ru-RU',
+  isPartOf: { '@id': 'https://traveltribe.ru/#website' },
+  mainEntity: { '@type': 'ItemList', itemListElement: collection.hotels.map((hotel, i) => ({
+    '@type': 'ListItem', position: i + 1, item: { '@type': 'Hotel', name: hotel.name, url: `${canonical}#${hotel.id}` },
+  })) },
+};
+---
+<Layout title={`${collection.heading}: 10 вариантов — TravelTribe`} description={collection.intro} canonical={canonical} ldJson={ldJson} monetizationDestination={country} noindex={collection.status !== 'ready'}>
+  <main id="main" class="hotel-guide">
+    <Breadcrumbs crumbs={crumbs} />
+    <header class="hotel-guide-head">
+      <h1>{collection.title}</h1>
+      <p class="hotel-guide-intro">{collection.intro}</p>
+      <p class="hotel-guide-note">Выбирали по расположению, архитектуре и характеру интерьеров. Это редакционная подборка; номер в списке не означает оценку. По ссылкам на бронирование TravelTribe может получить комиссию. <a href="/legal/photos/">Источники фотографий</a>.</p>
+      <details class="hotel-guide-directory">
+        <summary>Выбрать из 10 отелей</summary>
+      <nav class="hotel-guide-jump" aria-label="Выбор отеля">
+        {collection.hotels.map(hotel => <a href={`#${hotel.id}`}>{hotel.name}</a>)}
+      </nav>
+      </details>
+    </header>
+    <div class="hotel-guide-list">
+      {collection.hotels.map((hotel, i) => <article id={hotel.id} class:list={['hotel-entry', { 'hotel-entry-lead': i === 0 }]}>
+        <div class="hotel-photos">
+        <div class="hotel-gallery" id={`photos-${hotel.id}`} role="region" aria-label={`Фотографии ${hotel.name}`} tabindex="0">
+          {hotelGallery(country, hotel).map((photo, photoIndex) => <figure>
+            <Image src={images[`../../assets/hotels/${photo.image}`].default} alt={photo.alt} widths={[400, 800, 1200, 1600]} sizes={i === 0 ? '(min-width: 1280px) 1200px, 100vw' : '(min-width: 768px) 58vw, 100vw'} format="webp" quality={80} loading={i === 0 && photoIndex === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 && photoIndex === 0 ? 'high' : 'auto'} />
+            <figcaption>{photoIndex + 1} / {hotelGallery(country, hotel).length} · {photo.caption || photo.alt}</figcaption>
+          </figure>)}
+        </div>
+        <div class="hotel-gallery-controls" hidden>
+          <button type="button" data-photo-prev aria-controls={`photos-${hotel.id}`} aria-label={`Предыдущее фото ${hotel.name}`}>Назад</button>
+          <button type="button" data-photo-next aria-controls={`photos-${hotel.id}`} aria-label={`Следующее фото ${hotel.name}`}>Далее</button>
+        </div>
+        </div>
+        <div class="hotel-entry-copy">
+          <p class="hotel-entry-location">{hotel.location}</p>
+          <h2>{hotel.name}</h2>
+          <p>{hotel.reason}</p>
+          <p class="hotel-entry-caveat">{hotel.caveat}</p>
+          <a class="hotel-entry-book" href={hotelBookingUrl(country, hotel)} target="_blank" rel="sponsored noopener" data-cta-id={`hotels_${country}_${hotel.id}`.replaceAll('-', '_')} data-destination={country} data-placement="hotel_card">Выбрать номер в {hotel.name}</a>
+        </div>
+      </article>)}
+    </div>
+    <div class="hotel-guide-return">{destinations.map(destination => <p><a href={`/${destination.slug}/`}>Путеводитель {destination.cases.loc}: когда ехать и что посмотреть</a></p>)}</div>
+  </main>
+  <Footer />
+</Layout>
+<script>
+  import { initHotelGalleries } from '../../scripts/hotel-gallery.js';
+  initHotelGalleries();
+</script>
+<style>
+  .hotel-guide { max-width:1280px; margin-inline:auto; padding:24px clamp(1.1rem,3vw,2.6rem) 64px; }
+  .hotel-guide-head { margin-block:32px 40px; }
+  .hotel-guide h1 { font-family:var(--ff-display); font-weight:400; font-size:clamp(2.5rem,5.6vw,4.9rem); line-height:1.03; max-width:20ch; margin:0 0 24px; }
+  .hotel-guide-intro { max-width:65ch; font-size:clamp(1rem,1.6vw,1.2rem); line-height:1.65; color:var(--text-dim); margin:0 0 24px; }
+  .hotel-guide-note { max-width:80ch; margin:0 0 24px; color:var(--text-dim); font-size:.85rem; line-height:1.65; }
+  .hotel-guide-note a { color:inherit; text-underline-offset:.22em; }
+  .hotel-guide-directory summary { min-height:44px; display:flex; align-items:center; color:var(--gold); font-weight:600; cursor:pointer; text-decoration:underline 1px; text-underline-offset:.22em; }
+  .hotel-guide-directory summary:focus-visible { outline:2px solid var(--gold); outline-offset:4px; }
+  .hotel-guide-jump { display:flex; flex-wrap:wrap; gap:0 20px; border-block:1px solid var(--line); padding:8px 0; }
+  .hotel-guide-jump a { display:inline-flex; align-items:center; min-height:44px; color:var(--text); font-size:.85rem; text-decoration:underline 1px; text-underline-offset:.22em; }
+  .hotel-entry { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(0,1fr); gap:32px; padding:40px 0; border-bottom:1px solid var(--line); scroll-margin-top:96px; }
+  .hotel-entry-lead { display:block; padding-top:0; }
+  .hotel-entry figure { min-width:0; margin:0; }
+  .hotel-gallery { display:flex; overflow-x:auto; gap:16px; scroll-snap-type:x mandatory; min-width:0; padding-bottom:12px; }
+  .hotel-gallery figure { flex:0 0 92%; scroll-snap-align:start; }
+  .hotel-gallery:focus-visible { outline:2px solid var(--gold); outline-offset:4px; }
+  .hotel-photos { min-width:0; }
+  .hotel-gallery-controls:not([hidden]) { display:flex; justify-content:space-between; gap:16px; }
+  .hotel-gallery-controls button { min-height:44px; padding:8px 0; border:0; background:transparent; color:var(--gold); font:inherit; cursor:pointer; text-decoration:underline; text-underline-offset:.22em; }
+  .hotel-gallery-controls button:disabled { opacity:.4; cursor:default; }
+  .hotel-gallery-controls button:focus-visible { outline:2px solid var(--gold); outline-offset:4px; }
+  .hotel-entry img { display:block; width:100%; height:auto; aspect-ratio:4 / 3; object-fit:cover; }
+  .hotel-entry-lead img { aspect-ratio:16 / 9; }
+  .hotel-entry figcaption { font-size:.8rem; margin-top:8px; color:var(--text-dim); }
+  .hotel-entry-copy { padding-block:8px; }
+  .hotel-entry-lead .hotel-entry-copy { padding-top:24px; max-width:75ch; }
+  .hotel-entry-location { margin:0 0 8px; font-size:.85rem; color:var(--text-dim); }
+  .hotel-entry h2 { font-family:var(--ff-display); font-weight:400; font-size:clamp(1.8rem,3vw,2.7rem); line-height:1.12; margin:0 0 16px; overflow-wrap:anywhere; scroll-margin-top:96px; }
+  .hotel-entry-copy > p:not(.hotel-entry-location) { line-height:1.7; margin:0 0 16px; }
+  .hotel-entry-caveat { color:var(--text-dim); font-size:.9rem; }
+  .hotel-entry-book { display:inline-flex; align-items:center; min-height:48px; padding:8px 0; color:var(--gold); font-weight:600; text-decoration:underline 1px; text-underline-offset:.22em; }
+  .hotel-guide-return { margin-top:32px; line-height:1.6; }
+  .hotel-guide a:focus-visible { outline:2px solid var(--gold); outline-offset:4px; }
+  @media(max-width:767px) { .hotel-entry { grid-template-columns:1fr; gap:16px; padding-block:32px; } .hotel-entry-lead { padding-top:0; } .hotel-entry-lead img { aspect-ratio:4 / 3; } .hotel-entry-copy, .hotel-entry-lead .hotel-entry-copy { padding-top:0; } .hotel-guide-head { margin-top:24px; margin-bottom:24px; } .hotel-guide-jump { gap:0 16px; } }
+</style>

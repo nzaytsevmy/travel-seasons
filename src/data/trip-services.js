@@ -3,7 +3,7 @@ import { classifyPage, buildCtaId } from './monetization.js';
 import { aviasalesRoute, aviasalesUrl, cherehapaCountry, cherehapaTravel, ostrovokCountry, ostrovokCity, ostrovokSearch } from './affiliate.js';
 
 const MONTHS = ['january','february','march','april','may','june','july','august','september','october','november','december'];
-const PAGE_TYPES = new Set(['home','blog_article','blog_index','blog_tag','news_article','news_index','country_hub','packing_month','packing_country','packing_index','trips_country_month','trips_month','trips_index','visa_country','visa_index','calculator','cards','countries','bezviz','seasons_index','seasons_detail','events_index','events_month','compare_index','compare_page']);
+const PAGE_TYPES = new Set(['home','hotels_country','hotels_index','blog_article','blog_index','blog_tag','news_article','news_index','country_hub','packing_month','packing_country','packing_index','trips_country_month','trips_month','trips_index','visa_country','visa_index','calculator','cards','countries','bezviz','seasons_index','seasons_detail','events_index','events_month','compare_index','compare_page']);
 
 // Explicit city destinations. A country airport must not replace the city of a guide.
 const CITY_POSTS = {
