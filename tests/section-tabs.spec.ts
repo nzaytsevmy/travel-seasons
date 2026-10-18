@@ -27,7 +27,8 @@ test('all built routes omit destination tabs and fixed affiliate panels', () => 
 for (const path of ['/', '/countries/', '/seasons/', '/trips/', '/trips/july/', '/visa/', '/packing/', '/blog/', '/novosti/', '/compare/', '/compare/turkey-vs-egypt/', '/events/', '/events/july/', '/calculator/', '/hotels/australia/', '/oman/', '/australia-east/', '/turkey/', '/japan/', '/antarctica/', '/visa/turkey/', '/packing/japan/', '/packing/egypt/june/', '/trips/july/turkey/', '/bezviz/', '/blog/strahovka-dlya-puteshestviy-2026/']) {
   test(`reading space and contextual links ${path}`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto(path);
+    const response = await page.goto(path);
+    expect(response?.status(), path).toBe(200);
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('.dt, .sticky-cta')).toHaveCount(0);
     const hasAffiliate = await page.locator('main a[rel~="sponsored"], [data-trip-planning] a[rel~="sponsored"]').count();
@@ -76,4 +77,27 @@ test('mobile page shell uses one gutter and the search field has a full touch ta
   }
   await page.goto('/seasons/');
   expect((await page.getByRole('searchbox', { name: 'Поиск по таблице' }).boundingBox())!.height).toBeGreaterThanOrEqual(44);
+});
+
+for (const path of ['/about/', '/legal/privacy/', '/legal/cookie/', '/legal/terms/', '/legal/photos/', '/my/', '/cards/', '/izmeneniya/', '/status/', '/seasons/japan/june/', '/novosti/2026-05-01-torres-del-paine-tariff/']) {
+  test(`auxiliary template geometry ${path}`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const response = await page.goto(path);
+    expect(response?.status(), path).toBe(200);
+    await expect(page.locator('.dt, .sticky-cta')).toHaveCount(0);
+    for (const width of [320, 360, 390, 402, 430, 768, 1024, 1280]) {
+      await page.setViewportSize({ width, height: 844 });
+      expect(await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - innerWidth), `${path} @${width}`).toBeLessThanOrEqual(1);
+    }
+  });
+}
+
+test('mobile reading survives doubled text size', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const path of ['/australia-east/', '/visa/turkey/', '/packing/japan/', '/blog/strahovka-dlya-puteshestviy-2026/']) {
+    await page.goto(path);
+    await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
+    expect(await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - innerWidth), path).toBeLessThanOrEqual(1);
+    await expect(page.locator('h1')).toBeVisible();
+  }
 });

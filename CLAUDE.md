@@ -41,6 +41,15 @@ User explicitly authorized full browser and performance checks in GitHub Actions
 
 The owner explicitly authorized moving the complete hotel batch checks to existing GitHub Actions. Only branch `feat/country-best-hotels-20261016` uses the existing committed-source preflight. All 26 required CI checks, four browser projects, unchanged category thresholds and three Lighthouse samples remain mandatory before merge. Japan mobile LCP must meet the existing 2.5 s target. Browser Guard and budgets remain unchanged; deployment and live verification of all changed pages remain mandatory.
 
+### Mobile reading release exception (2026-10-18)
+
+The owner approved the mobile reading implementation plan with full existing CI;
+the owner's global instructions also place full builds, browser matrices and
+Lighthouse in existing CI. Only branch `fix/mobile-reading-20261018` uses the
+existing committed-source preflight. All 26 required checks, four browser projects,
+unchanged thresholds and three Lighthouse samples remain mandatory before merge.
+Browser Guard, budgets, release ownership, deploy and live verification remain in force.
+
 ### Публикационные рутины: полный прогон в CI (решение Никиты 10.10.2026)
 
 По просьбе ускорить оба выпуска ветки `tt-news/*` и `tt-publish/*` выполняют тяжёлую сборку и браузерные проверки в существующем GitHub Actions. Обычный pre-push обязателен: секреты отправляемого HEAD, delivery-контракты, метаданные журнала, совпадение проверяемых файлов с коммитом, независимые оценки новой/переработанной статьи с точным proseHash, гейт изменённых новостей и сроки пересмотра. Проверка не принимает незакоммиченный текст или артефакт вместо HEAD.
