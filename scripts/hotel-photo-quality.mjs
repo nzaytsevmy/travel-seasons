@@ -31,7 +31,32 @@ export function photoManifest() {
     hotelGallery(country, hotel).map(photo => ({ country, hotelId: hotel.id, hotelName: hotel.name,
       target: hotel.booking.target, lead: index === 0, ...photo }))));
 }
+export function photoFrames(photo) {
+  const frames = PHOTO_VIEWPORTS.map(viewport => ({ viewport, ...galleryFrame(viewport, photo.lead) }));
+  for (const hub of hotelGuideHubs(photo.country)) {
+    const collection = readyHotelCollections().find(([country]) => country === photo.country)[1];
+    const picks = hotelHubPicks(hub.slug, collection);
+    const pickIndex = picks.findIndex(hotel => hotel.id === photo.hotelId && hotel.image === photo.image);
+    if (pickIndex < 0) continue;
+    for (const viewport of PHOTO_VIEWPORTS) {
+      const padding = Math.min(41.6, Math.max(17.6, viewport * .03));
+      const inner = Math.min(1280, viewport) - 2 * padding;
+      const width = viewport < 768 ? inner : (inner - 32) * (pickIndex === 0 ? 1.8 : 1) / 2.8;
+      frames.push({ viewport, width, height: width * (pickIndex === 0 || viewport < 768 ? .75 : 9 / 16) });
+    }
+  }
+  return frames;
+}
+export function photoRequirements(photo) {
+  const frames = photoFrames(photo);
+  return {
+    requiredWidth: Math.ceil(Math.max(...frames.map(frame => frame.width)) * 2),
+    requiredHeight: Math.ceil(Math.max(...frames.map(frame => frame.height)) * 2),
+  };
+}
 export async function auditPhotos() {
+  sharp.cache(false);
+  sharp.concurrency(2);
   const rows = [];
   for (const photo of photoManifest()) {
     const file = `src/assets/hotels/${photo.image}`;
@@ -39,24 +64,10 @@ export async function auditPhotos() {
     const rotated = [5, 6, 7, 8].includes(meta.orientation);
     const nativeWidth = rotated ? meta.height : meta.width;
     const nativeHeight = rotated ? meta.width : meta.height;
-    const frames = PHOTO_VIEWPORTS.map(viewport => ({ viewport, ...galleryFrame(viewport, photo.lead) }));
-    // Country previews may use another hotel as the large 4:3 image.
-    for (const hub of hotelGuideHubs(photo.country)) {
-      const collection = readyHotelCollections().find(([country]) => country === photo.country)[1];
-      const picks = hotelHubPicks(hub.slug, collection);
-      const pickIndex = picks.findIndex(hotel => hotel.id === photo.hotelId && hotel.image === photo.image);
-      if (pickIndex < 0) continue;
-      for (const viewport of PHOTO_VIEWPORTS) {
-        const padding = Math.min(41.6, Math.max(17.6, viewport * .03));
-        const inner = Math.min(1280, viewport) - 2 * padding;
-        const width = viewport < 768 ? inner : (inner - 32) * (pickIndex === 0 ? 1.8 : 1) / 2.8;
-        frames.push({ viewport, width, height: width * (pickIndex === 0 || viewport < 768 ? .75 : 9 / 16) });
-      }
-    }
+    const frames = photoFrames(photo);
     const density = Math.min(...frames.map(frame => coverDensity(nativeWidth, nativeHeight, frame.width, frame.height)));
     rows.push({ ...photo, width: nativeWidth, height: nativeHeight,
-      requiredWidth: Math.ceil(Math.max(...frames.map(frame => frame.width)) * 2),
-      requiredHeight: Math.ceil(Math.max(...frames.map(frame => frame.height)) * 2), density, passed: density >= 2 });
+      ...photoRequirements(photo), density, passed: density >= 2 });
   }
   return { checkedAt: new Date().toISOString(), photos: rows.length,
     failed: rows.filter(row => !row.passed).length, rows };
@@ -65,7 +76,9 @@ export async function auditPhotos() {
 async function refreshPhotos(output) {
   sharp.cache(false); sharp.concurrency(2);
   const credits = JSON.parse(await fs.readFile('src/data/hotel-photo-credits.json', 'utf8'));
-  const baseline = await auditPhotos();
+  // Downloading originals does not require decoding or re-auditing old thumbnails.
+  const manifest = photoManifest();
+  const baseline = { photos: manifest.length, rows: manifest };
   const receipts = [];
   await fs.mkdir(output, { recursive: true });
   const fixture = 'https://cdn.ostrovok.ru/t/2048x2048/content/18/b1/18b15c224785d44399ebaa858f58dd91687c2f5c.png';
@@ -140,7 +153,7 @@ async function refreshPhotos(output) {
         source = info?.thumburl || info?.url;
       } catch (error) { hold({ error: error.message }); return; }
     }
-    if (!source) { receipts.push({ image: photo.image, status: photo.passed ? 'ALREADY_DENSE' : 'MISSING_ORIGINAL_URL' }); return; }
+    if (!source) { receipts.push({ image: photo.image, status: 'MISSING_ORIGINAL_URL' }); return; }
     const url = originalPhotoUrl(source);
     const temporary = `${output}/${photo.image}.original`;
     try {
