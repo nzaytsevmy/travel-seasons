@@ -60,8 +60,22 @@ async function refreshPhotos(output) {
   const baseline = await auditPhotos();
   const receipts = [];
   await fs.mkdir(output, { recursive: true });
+  let previous = [];
+  try { previous = JSON.parse(await fs.readFile(`${output}/receipts.json`, 'utf8')); }
+  catch (error) { if (error.code !== 'ENOENT') throw error; }
+  const saved = new Map(previous.map(row => [row.image, row]));
+  let checkpoint = Promise.resolve();
   async function refreshOne(photo) {
     const credit = credits[photo.creditKey];
+    const existing = saved.get(photo.image);
+    if (existing?.status === 'FETCHED_ORIGINAL' && existing.creditSource === credit?.source) {
+      try {
+        const buffer = await fs.readFile(`${output}/${photo.image}`);
+        if (createHash('sha256').update(buffer).digest('hex') === existing.webpSha256) {
+          receipts.push(existing); return;
+        }
+      } catch (error) { if (error.code !== 'ENOENT') throw error; }
+    }
     let source = credit?.sourcePhoto;
     if (!source && credit?.source?.startsWith('https://commons.wikimedia.org/wiki/File:')) {
       const api = new URL('https://commons.wikimedia.org/w/api.php');
@@ -94,7 +108,11 @@ async function refreshPhotos(output) {
       await sharp(raw, { limitInputPixels: 40_000_000 }).rotate()
         .resize({ width: 3000, height: 3000, fit: 'inside', withoutEnlargement: true })
         .webp({ quality: 88, effort: 4 }).toFile(file);
-      receipts.push({ image: photo.image, sourcePhoto: url, originalWidth: metadata.width,
+      const encoded = await fs.readFile(file);
+      const encodedMeta = await sharp(encoded).metadata();
+      receipts.push({ image: photo.image, sourcePhoto: url, creditSource: credit.source,
+        width: encodedMeta.width, height: encodedMeta.height,
+        webpSha256: createHash('sha256').update(encoded).digest('hex'), originalWidth: metadata.width,
         originalHeight: metadata.height, originalSha256: createHash('sha256').update(raw).digest('hex'),
         bytes, status: 'FETCHED_ORIGINAL' });
     } catch (error) { receipts.push({ image: photo.image, sourcePhoto: url, status: 'HOLD', error: error.message }); }
@@ -102,8 +120,19 @@ async function refreshPhotos(output) {
   }
   let cursor = 0;
   await Promise.all(Array.from({ length: 4 }, async () => {
-    while (cursor < baseline.rows.length) await refreshOne(baseline.rows[cursor++]);
+    while (cursor < baseline.rows.length) {
+      await refreshOne(baseline.rows[cursor++]);
+      if (receipts.length % 25 === 0) {
+        const snapshot = JSON.stringify(receipts, null, 2);
+        checkpoint = checkpoint.then(async () => {
+          await fs.writeFile(`${output}/receipts.json.tmp`, snapshot);
+          await fs.rename(`${output}/receipts.json.tmp`, `${output}/receipts.json`);
+        });
+        await checkpoint;
+      }
+    }
   }));
+  await checkpoint;
   await fs.writeFile(`${output}/receipts.json`, JSON.stringify(receipts, null, 2));
   console.log(JSON.stringify({ total: receipts.length, fetched: receipts.filter(r => r.status === 'FETCHED_ORIGINAL').length }));
 }
