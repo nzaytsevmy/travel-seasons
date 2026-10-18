@@ -104,7 +104,9 @@ jobs:
           # закэшированная страница ссылается на уже удалённый файл и показывает битую
           # картинку. Именно так 31.07.2026 поехала карточка Roys Peak на главной.
           # Ассеты неизменяемы по своей природе, поэтому их НЕ удаляем — только досылаем.
-          rsync -avz \
+          # File mtimes can change on a rebuild. Compare bytes so unchanged
+          # hashed images are not uploaded again just because of their mtimes.
+          rsync -avz --checksum \
             -e "ssh -i ~/.ssh/deploy_key" \
             dist/_astro/ \
             u3502181@server290.hosting.reg.ru:/var/www/u3502181/data/www/traveltribe.ru/_astro/
@@ -212,16 +214,15 @@ jobs:
       - name: Collect changed files
         id: changed
         run: |
+          TT_CHANGED_FILE_LIST="$RUNNER_TEMP/traveltribe-changed-files.nul"
           if git rev-parse HEAD~1 >/dev/null 2>&1; then
-            FILES=$(git diff --name-only HEAD~1 HEAD)
+            git diff --name-only -z HEAD~1 HEAD > "$TT_CHANGED_FILE_LIST"
           else
-            FILES=$(git show --pretty="" --name-only HEAD)
+            git ls-tree -r --name-only -z HEAD > "$TT_CHANGED_FILE_LIST"
           fi
-          {
-            echo 'files<<EOF'
-            echo "$FILES"
-            echo 'EOF'
-          } >> "$GITHUB_OUTPUT"
+          # A large image batch exceeds Linux's per-environment-string limit.
+          # Pass only the file path to later processes, retaining every record.
+          echo "files_file=$TT_CHANGED_FILE_LIST" >> "$GITHUB_OUTPUT"
 
       # ⛔ Адрес страницы динамического роута из имени файла не выводится:
       # правка src/pages/[slug].astro меняет десятки страниц сразу. Раньше
@@ -231,7 +232,7 @@ jobs:
       # репозитория PING_URLS — её задаёт тот, кто знает, что поменял.
       - name: Ping IndexNow + Yandex recrawl
         env:
-          CHANGED_FILES: ${{ steps.changed.outputs.files }}
+          CHANGED_FILES_FILE: ${{ steps.changed.outputs.files_file }}
           PING_URLS: ${{ vars.PING_URLS }}
           YANDEX_OAUTH_TOKEN: ${{ secrets.YANDEX_OAUTH_TOKEN }}
           YANDEX_USER_ID: ${{ secrets.YANDEX_USER_ID }}
@@ -242,7 +243,7 @@ jobs:
       # скрипту; не скачался — скрипт скажет об этом сам при первой отправке.
       - name: Post news to MAX channel
         env:
-          CHANGED_FILES: ${{ steps.changed.outputs.files }}
+          CHANGED_FILES_FILE: ${{ steps.changed.outputs.files_file }}
           MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
           MAX_CHAT_ID: ${{ secrets.MAX_CHAT_ID }}
           MAX_CA_FILE: /tmp/russian_trusted_root_ca.pem
