@@ -537,7 +537,9 @@ const pageDescription = snip
 @media(max-width:760px){
   .h1,.sub,.byl,.hero > :global(.tsb-wrap){grid-column:1/-1;grid-row:auto}
   .lead{margin-left:0}
-  .mgrid{grid-template-columns:repeat(3,1fr)}
+  .wrap{overflow-wrap:anywhere}
+  .mgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .mg{min-width:0}
   .mg:nth-child(3n) {border-right:none}
   /* Бюджет-таблица → блоки */
   .dt{font-size:.875rem}

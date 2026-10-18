@@ -69,9 +69,9 @@ test('mobile contents stay collapsed and their anchors remain usable', async ({ 
   await expect(page.locator('a[href^="/trips/"]').first()).toBeAttached();
 });
 
-test('mobile page shell uses one gutter and the search field has a full touch target', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  for (const path of ['/australia-east/', '/packing/japan/', '/visa/turkey/', '/blog/strahovka-dlya-puteshestviy-2026/']) {
+for (const path of ['/australia-east/', '/oman/', '/japan/', '/packing/japan/', '/visa/turkey/', '/blog/strahovka-dlya-puteshestviy-2026/', '/about/', '/legal/privacy/']) {
+  test(`mobile page shell uses one gutter ${path}`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(path);
     const edges = await page.evaluate(() => {
       const title = document.querySelector('h1')!.getBoundingClientRect();
@@ -80,7 +80,11 @@ test('mobile page shell uses one gutter and the search field has a full touch ta
     expect(edges.title, path).toBeCloseTo(16, 0);
     expect(edges.crumbs, path).toBeCloseTo(16, 0);
     expect(edges.footer, path).toBeCloseTo(16, 0);
-  }
+  });
+}
+
+test('season search has a full mobile touch target', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/seasons/');
   expect((await page.getByRole('searchbox', { name: 'Поиск по таблице' }).boundingBox())!.height).toBeGreaterThanOrEqual(44);
 });
@@ -98,12 +102,12 @@ for (const path of ['/about/', '/legal/privacy/', '/legal/cookie/', '/legal/term
   });
 }
 
-test('mobile reading survives doubled text size', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  for (const path of ['/australia-east/', '/visa/turkey/', '/packing/japan/', '/blog/strahovka-dlya-puteshestviy-2026/']) {
+for (const path of ['/australia-east/', '/oman/', '/japan/', '/antarctica/', '/visa/turkey/', '/packing/japan/', '/packing/egypt/june/', '/trips/july/turkey/', '/blog/strahovka-dlya-puteshestviy-2026/']) {
+  test(`mobile reading survives doubled text size ${path}`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(path);
     await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
     expect(await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - innerWidth), path).toBeLessThanOrEqual(1);
     await expect(page.locator('h1')).toBeVisible();
-  }
-});
+  });
+}
