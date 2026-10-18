@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import sharp from 'sharp';
+import { parse } from 'parse5';
 import { readyHotelCollections, hotelGallery, hotelHubPicks, hotelGuideHubs } from '../src/data/hotels.js';
 
 export const PHOTO_VIEWPORTS = [402, 768, 1024, 1280, 1440, 1920];
@@ -77,6 +78,27 @@ async function refreshPhotos(output) {
       } catch (error) { if (error.code !== 'ENOENT') throw error; }
     }
     let source = credit?.sourcePhoto;
+    if (!source && new URL(credit?.source || 'https://invalid.example').hostname === 'www.flickr.com') {
+      try {
+        const response = await fetch(credit.source, { signal: AbortSignal.timeout(30_000),
+          headers: { 'User-Agent': 'TravelTribePhotoQA/1.0 (https://traveltribe.ru/)' } });
+        if (!response.ok) throw new Error(`Flickr HTTP ${response.status}`);
+        const decoder = new TextDecoder(); let html = ''; let length = 0;
+        for await (const chunk of response.body) {
+          length += chunk.length;
+          if (length > 5 * 1024 * 1024) throw new Error('Flickr HTML exceeds 5 MiB');
+          html += decoder.decode(chunk, { stream: true });
+        }
+        html += decoder.decode();
+        function find(node) {
+          if (node.tagName === 'meta' && node.attrs?.some(a => a.name === 'property' && a.value === 'og:image'))
+            return node.attrs.find(a => a.name === 'content')?.value;
+          for (const child of node.childNodes || []) { const found = find(child); if (found) return found; }
+        }
+        source = find(parse(html));
+        if (!source || new URL(source).hostname !== 'live.staticflickr.com') throw new Error('No public publisher image');
+      } catch (error) { receipts.push({ image: photo.image, status: 'HOLD', error: error.message }); return; }
+    }
     if (!source && credit?.source?.startsWith('https://commons.wikimedia.org/wiki/File:')) {
       const api = new URL('https://commons.wikimedia.org/w/api.php');
       api.search = new URLSearchParams({ action: 'query', format: 'json', prop: 'imageinfo', iiprop: 'url|size', iiurlwidth: '3000',
@@ -95,7 +117,8 @@ async function refreshPhotos(output) {
     const temporary = `${output}/${photo.image}.original`;
     try {
       await fs.mkdir(temporary.slice(0, temporary.lastIndexOf('/')), { recursive: true });
-      const response = await fetch(url, { signal: AbortSignal.timeout(30_000) });
+      const response = await fetch(url, { signal: AbortSignal.timeout(30_000),
+        headers: { 'User-Agent': 'TravelTribePhotoQA/1.0 (https://traveltribe.ru/)' } });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const digest = createHash('sha256'); let bytes = 0;
       const handle = await fs.open(temporary, 'w');
@@ -104,7 +127,12 @@ async function refreshPhotos(output) {
           bytes += chunk.length;
           if (bytes > 32 * 1024 * 1024) throw new Error('Image exceeds 32 MiB');
           digest.update(chunk);
-          await handle.write(chunk);
+          let offset = 0;
+          while (offset < chunk.length) {
+            const written = await handle.write(chunk, offset, chunk.length - offset);
+            if (!written.bytesWritten) throw new Error('Original image write made no progress');
+            offset += written.bytesWritten;
+          }
         }
       } finally { await handle.close(); }
       const metadata = await sharp(temporary, { limitInputPixels: 40_000_000 }).metadata();
