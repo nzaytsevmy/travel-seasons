@@ -75,10 +75,12 @@ for (const path of ['/australia-east/', '/oman/', '/japan/', '/packing/japan/', 
     await page.goto(path);
     const edges = await page.evaluate(() => {
       const title = document.querySelector('h1')!.getBoundingClientRect();
-      return { title: title.left, crumbs: document.querySelector('.breadcrumbs')!.getBoundingClientRect().left + parseFloat(getComputedStyle(document.querySelector('.breadcrumbs')!).paddingLeft), footer: parseFloat(getComputedStyle(document.querySelector('.site-footer')!).paddingLeft) };
+      const crumbs = document.querySelector('.breadcrumbs');
+      return { title: title.left, crumbs: crumbs ? crumbs.getBoundingClientRect().left + parseFloat(getComputedStyle(crumbs).paddingLeft) : null, footer: parseFloat(getComputedStyle(document.querySelector('.site-footer')!).paddingLeft) };
     });
     expect(edges.title, path).toBeCloseTo(16, 0);
-    expect(edges.crumbs, path).toBeCloseTo(16, 0);
+    if (path === '/about/' || path === '/legal/privacy/') expect(edges.crumbs, path).toBeNull();
+    else expect(edges.crumbs, path).toBeCloseTo(16, 0);
     expect(edges.footer, path).toBeCloseTo(16, 0);
   });
 }
