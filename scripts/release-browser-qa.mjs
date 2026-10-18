@@ -52,6 +52,15 @@ try {
             const prefix = `${directory}/${path.replaceAll('/', '-').replace(/^-|-$/g, '') || 'home'}-${width}`;
             await page.evaluate(() => document.fonts.ready);
             await page.screenshot({ path: `${prefix}-top.png` });
+            const hotels = page.locator('.best-hotels, .hotel-entry').first();
+            if (await hotels.count()) {
+              await hotels.scrollIntoViewIfNeeded();
+              await hotels.locator('img').evaluateAll(images => Promise.all(images.map(async image => {
+                image.loading = 'eager';
+                await Promise.race([image.decode(), new Promise((_, reject) => setTimeout(() => reject(new Error('Hotel capture image did not decode')), 30000))]);
+              })));
+              await hotels.screenshot({ path: `${prefix}-hotels.png` });
+            }
             const revised = page.locator('h2').filter({ hasText: /добраться|стоит|цены|стоимость|бюджет/iu }).first();
             if (await revised.count()) {
               await revised.scrollIntoViewIfNeeded();
