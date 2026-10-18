@@ -14,7 +14,6 @@ import { DIRECTIONS } from '../../data/directions.js';
 import { directionForTags } from '../../data/article-country.js';
 import { classifyPage, EXPENSIVE_DESTINATIONS } from '../../data/monetization.js';
 import { TP_LINKS, aviasalesRoute, youtravelCountry, cherehapaCountry, cherehapaTravel, ostrovokCountry, otelloStay } from '../../data/affiliate.js';
-import StickyCta from '../../components/StickyCta.astro';
 import TripServices from '../../components/TripServices.astro';
 import { tripServices } from '../../data/trip-services.js';
 
@@ -311,7 +310,6 @@ if (faqs.length >= 2) {
   <Breadcrumbs crumbs={crumbs} />
   <main id="main" class="post-page">
 
-
     <article class="post-content">
       <div class="post-meta-top">
         <div class="post-tags">
@@ -453,7 +451,6 @@ if (faqs.length >= 2) {
       </div>
     </article>
   </main>
-  {оффер && <StickyCta href={оффер.href} label={оффер.панель} />}
 
   <Footer planning={false} />
 </Layout>
@@ -818,7 +815,6 @@ h1 {
 /* Жирным — только «Был лично»: список мест бывает на три строки, и жирный текст на всю ширину давил шапку. */
 .trip-marker b { font-weight: 600; color: var(--text); }
 .trip-marker .trip-icon { font-weight: 800; color: var(--gold); margin-right: 0.1em; }
-
 
 .prose { color: var(--text); line-height: 1.85; font-size: 1rem; }
 .prose :global(h2) {

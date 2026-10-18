@@ -8,7 +8,6 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { DIRECTIONS } from '../data/directions.js';
 import { getVisaDetails } from '../data/visa-details.js';
 import { DATA_UPDATED } from '../data/meta.js';
-import StickyCta from '../components/StickyCta.astro';
 
 const url = 'https://traveltribe.ru/bezviz/';
 const monthIdx = new Date().getMonth();
@@ -203,8 +202,6 @@ const ldJson = {
     </section>
   </main>
 
-  <StickyCta href="https://cherehapa.tpk.mx/fkM7suze?erid=2VtzquZTwb5&sub_id=bezviz&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F" label="Страховка в поездку — под даты" />
-
   <Footer />
 </Layout>
 
@@ -258,7 +255,6 @@ const ldJson = {
   .bv-faq-i summary { cursor: pointer; padding: .85rem .1rem; font-weight: 600; list-style: none; }
   .bv-faq-i summary::-webkit-details-marker { display: none; }
   .bv-faq-i p { margin: 0 0 1rem; color: var(--text-dim); line-height: 1.6; max-width: 68ch; }
-
 
   .bv-related { list-style: none; margin: 0; padding: 0; }
   .bv-related li { padding: .55rem 0; font-size: .95rem; color: var(--text-dim); }

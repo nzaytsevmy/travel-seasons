@@ -15,7 +15,6 @@ import Footer from '../components/Footer.astro';
 import BestHotels from '../components/BestHotels.astro';
 import { hotelCollection } from '../data/hotels.js';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
-import DestinationTabs from '../components/DestinationTabs.astro';
 import { Image, getImage } from 'astro:assets';
 import { DIRECTIONS, MONTHS, VISITED } from '../data/directions.js';
 import { месяцыНаправления } from '../utils/best-months.js';
@@ -25,7 +24,6 @@ import { getHubSnippet } from '../data/hub-snippets.js';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
 import { newsForCountry, newsUrl, formatDateRu } from '../data/news.js';
 import AviasalesWidget from '../components/post/AviasalesWidget.astro';
-import StickyCta from '../components/StickyCta.astro';
 import BudgetBlock from '../components/BudgetBlock.astro';
 import EssentialsCard from '../components/EssentialsCard.astro';
 import YearClimateChart from '../components/YearClimateChart.astro';
@@ -463,8 +461,6 @@ if (guide?.itinerary?.length) {
       </div>
     </header>
 
-    <DestinationTabs d={d} active="hub" />
-
     {/* Оглавление: сразу под шапкой, в теле страницы, пункты слово в слово как
         заголовки разделов (NN/g, Tables of Contents). Разделы открыты целиком —
         Google даёт ссылки-переходы к разделам только на видимый при загрузке текст.
@@ -820,7 +816,6 @@ if (guide?.itinerary?.length) {
       </div>
     </section>
 
-
     <div class="om-foot">
       <Image src={author} alt="Никита Зайцев" width={60} height={74} format="webp" quality={80} />
       <div>
@@ -830,11 +825,6 @@ if (guide?.itinerary?.length) {
     </div>
   </main>
 
-  {билеты && flightFrom ? (
-    <StickyCta href={билеты} label={`Билеты ${d.cases.vP} от $${flightFrom}`} />
-  ) : RU_STAY.has(d.slug) && (
-    <StickyCta href={otelloStay(`hub_${d.slug}`)} label={`Подобрать жильё ${d.cases.loc}`} />
-  )}
 
   <Footer />
 </Layout>
@@ -1015,6 +1005,14 @@ if (guide?.itinerary?.length) {
   }
   @media (max-width: 768px) {
     .om { padding: 0 16px 48px; }
+    /* Автор и оглавление не должны добавлять пустой экран перед ответом. */
+    .om-top { padding-block: 16px 24px; row-gap: 24px; }
+    .om-lead { margin-bottom: 0; }
+    .om-answer { padding-top: 0; }
+    .om-byline { flex-wrap: nowrap; gap: 12px; }
+    .om-byline :global(img) { width: 40px; height: 48px; }
+    .om-byline > p { flex: 1 1 0; min-width: 0; margin: 0; line-height: 1.6; }
+    .om-byline a { display: inline; min-height: 0; }
     .om-sec { padding: 40px 0; }
     .om-hero, .om-wide { margin-left: -16px; margin-right: -16px; }
     .om-wide figcaption { padding: 0 16px; }

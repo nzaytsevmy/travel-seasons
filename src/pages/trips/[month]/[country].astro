@@ -6,19 +6,17 @@ import { freshPrices } from '../../../data/price-freshness.js';
 import Layout from '../../../layouts/Layout.astro';
 import Footer from '../../../components/Footer.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
-import DestinationTabs from '../../../components/DestinationTabs.astro';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
 import { месяцыНаправления } from '../../../utils/best-months.js';
 import { COUNTRIES as RICH_COUNTRIES } from '../../../data/programmatic-seasons.js';
 import { NICHE_TRIPS } from '../../../data/niche-trips.js';
-import { aviasalesRoute, ostrovokCountry, cherehapaCountry, youtravelCountry, sputnik8City, otelloStay } from '../../../data/affiliate.js';
+import { aviasalesRoute, ostrovokCountry, cherehapaCountry, youtravelCountry, sputnik8City } from '../../../data/affiliate.js';
 import { DATA_UPDATED, yearForMonth } from '../../../data/meta.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
 import { getWeatherBucket } from '../../../data/country-month-bucket.js';
 import { getBucket } from '../../../data/packing-weather-buckets.js';
 import { hasTripSnippet, tripSnippetDescription } from '../../../data/trip-snippets.js';
 import TripSaveButton from '../../../components/TripSaveButton.astro';
-import StickyCta from '../../../components/StickyCta.astro';
 // «О» или «об»: «об» перед словом с гласной а, и, о, у, э в начале («об Алтае», «об июне»), иначе «о».
 const об = (w) => (/^[аиоуэ]/i.test(String(w || '')) ? 'об' : 'о');
 
@@ -88,16 +86,6 @@ const liveFlight = iata ? freshPrices(livePrices, iata)[`${yr}-${String(monthIdx
 const flightTiers = d.price?.flight || [0,0,0];
 const hotelTiers = d.price?.hotel || [0,0,0];
 const foodTiers = d.price?.food || [0,0,0];
-// Липкая панель на телефоне: у этого шаблона 924 страницы с высоким интентом, и до
-// 07.09.2026 денежной точки внизу экрана здесь не было вовсе. Оффер — главный по типу
-// направления: у российских жильё, у остальных перелёт своего месяца.
-const RU_STAY_TRIPS = new Set(['abkhazia', 'kamchatka', 'karelia', 'dagestan', 'altai']);
-const меткаСтраницы = `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`;
-const панельОффер = RU_STAY_TRIPS.has(d.slug)
-  ? { href: otelloStay(меткаСтраницы), label: `Жильё ${d.cases.loc}` }
-  : (iata
-      ? { href: aviasalesRoute('MOW', iata, меткаСтраницы, monthIdx), label: `Билеты ${d.cases.vP} в ${m.prep}` }
-      : { href: ostrovokCountry(d.slug, меткаСтраницы), label: `Жильё ${d.cases.loc}` });
 
 const flightFrom = flightTiers[0];
 const hotelFrom = hotelTiers[0];
@@ -244,8 +232,6 @@ const pageDescription = snip
         </p>
         <TripSaveButton slug={d.slug} nom={d.cases.nom} monthIdx={monthIdx} />
       </header>
-
-      <DestinationTabs d={d} active="when" />
 
       <p class="lead">{text}</p>
 
@@ -438,8 +424,6 @@ const pageDescription = snip
       </section>
     </div>
   </main>
-
-  <StickyCta href={панельОффер.href} label={панельОффер.label} />
 
   <Footer />
 </Layout>
