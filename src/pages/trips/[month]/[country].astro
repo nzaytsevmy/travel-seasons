@@ -538,9 +538,10 @@ const pageDescription = snip
   .h1,.sub,.byl,.hero > :global(.tsb-wrap){grid-column:1/-1;grid-row:auto}
   .lead{margin-left:0}
   .wrap{overflow-wrap:anywhere}
-  .mgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .mg{min-width:0}
-  .mg:nth-child(3n) {border-right:none}
+  /* Крупный текст переводит календарь в две или одну колонку. */
+  .mgrid{display:flex;flex-wrap:wrap}
+  .mg{flex:1 1 30%;min-width:min(100%,calc(4rem + 16px))}
+  .mg a{padding-inline:8px}
   /* Бюджет-таблица → блоки */
   .dt{font-size:.875rem}
   .dt th,.dt td{padding:.45rem .5rem}

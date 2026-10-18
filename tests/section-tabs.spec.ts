@@ -111,5 +111,10 @@ for (const path of ['/australia-east/', '/oman/', '/japan/', '/antarctica/', '/v
     await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
     expect(await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - innerWidth), path).toBeLessThanOrEqual(1);
     await expect(page.locator('h1')).toBeVisible();
+    if (path === '/japan/' || path === '/trips/july/turkey/') {
+      const words = page.locator(path === '/japan/' ? '.jp-vi > div' : '.mg-n');
+      const broken = await words.evaluateAll(nodes => nodes.map(node => ({ text: node.textContent, height: node.getBoundingClientRect().height, line: parseFloat(getComputedStyle(node).lineHeight) })).filter(word => word.height > word.line + 1));
+      expect(broken, 'short facts and complete month names must remain readable at 200%').toEqual([]);
+    }
   });
 }
