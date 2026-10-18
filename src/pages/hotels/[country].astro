@@ -13,7 +13,7 @@ const { collection } = Astro.props;
 const country = Astro.params.country!;
 const destinations = hotelGuideHubs(country);
 const crumbs = [{ label: 'Направления', href: '/countries/' }, ...(destinations.length === 1 ? [{ label: destinations[0].cases.nom, href: `/${destinations[0].slug}/` }] : []), { label: 'Отели' }];
-const images = import.meta.glob<{ default: ImageMetadata }>('../../assets/hotels/**/*.webp', { eager: true });
+const images = import.meta.glob<{ default: ImageMetadata }>('../../assets/hotels/**/*.{webp,jpg,jpeg,png}', { eager: true });
 const canonical = `https://traveltribe.ru/hotels/${country}/`;
 const ldJson = {
   '@context': 'https://schema.org',

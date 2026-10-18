@@ -4,7 +4,7 @@ import HotelPhoto from './HotelPhoto.astro';
 import { hotelCollection, hotelCountrySlug, hotelHubPicks } from '../data/hotels.js';
 interface Props { destination: string; }
 const collection = hotelCollection(Astro.props.destination, { includeDraft: import.meta.env.DEV });
-const images = import.meta.glob<{ default: ImageMetadata }>('../assets/hotels/**/*.webp', { eager: true });
+const images = import.meta.glob<{ default: ImageMetadata }>('../assets/hotels/**/*.{webp,jpg,jpeg,png}', { eager: true });
 const href = `/hotels/${hotelCountrySlug(Astro.props.destination)}/`;
 const picks = hotelHubPicks(Astro.props.destination, collection);
 ---

@@ -68,10 +68,10 @@ async function refreshPhotos(output) {
   async function refreshOne(photo) {
     const credit = credits[photo.creditKey];
     const existing = saved.get(photo.image);
-    if (existing?.status === 'FETCHED_ORIGINAL' && existing.creditSource === credit?.source) {
+    if (existing?.status === 'FETCHED_ORIGINAL' && existing.asset && existing.creditSource === credit?.source) {
       try {
-        const buffer = await fs.readFile(`${output}/${photo.image}`);
-        if (createHash('sha256').update(buffer).digest('hex') === existing.webpSha256) {
+        const buffer = await fs.readFile(`${output}/${existing.asset}`);
+        if (createHash('sha256').update(buffer).digest('hex') === existing.originalSha256) {
           receipts.push(existing); return;
         }
       } catch (error) { if (error.code !== 'ENOENT') throw error; }
@@ -79,43 +79,52 @@ async function refreshPhotos(output) {
     let source = credit?.sourcePhoto;
     if (!source && credit?.source?.startsWith('https://commons.wikimedia.org/wiki/File:')) {
       const api = new URL('https://commons.wikimedia.org/w/api.php');
-      api.search = new URLSearchParams({ action: 'query', format: 'json', prop: 'imageinfo', iiprop: 'url|size',
+      api.search = new URLSearchParams({ action: 'query', format: 'json', prop: 'imageinfo', iiprop: 'url|size', iiurlwidth: '3000',
         titles: decodeURIComponent(new URL(credit.source).pathname.slice('/wiki/'.length)) });
       try {
         const response = await fetch(api, { signal: AbortSignal.timeout(30_000),
           headers: { 'User-Agent': 'TravelTribePhotoQA/1.0 (https://traveltribe.ru/)' } });
         if (!response.ok) throw new Error(`Commons HTTP ${response.status}`);
         const data = await response.json();
-        source = Object.values(data.query?.pages || {})[0]?.imageinfo?.[0]?.url;
+        const info = Object.values(data.query?.pages || {})[0]?.imageinfo?.[0];
+        source = info?.thumburl || info?.url;
       } catch (error) { receipts.push({ image: photo.image, status: 'HOLD', error: error.message }); return; }
     }
     if (!source) { receipts.push({ image: photo.image, status: photo.passed ? 'ALREADY_DENSE' : 'MISSING_ORIGINAL_URL' }); return; }
     const url = originalPhotoUrl(source);
+    const temporary = `${output}/${photo.image}.original`;
     try {
+      await fs.mkdir(temporary.slice(0, temporary.lastIndexOf('/')), { recursive: true });
       const response = await fetch(url, { signal: AbortSignal.timeout(30_000) });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const chunks = []; let bytes = 0;
-      for await (const chunk of response.body) {
-        bytes += chunk.length;
-        if (bytes > 32 * 1024 * 1024) throw new Error('Image exceeds 32 MiB');
-        chunks.push(chunk);
-      }
-      const raw = Buffer.concat(chunks);
-      const metadata = await sharp(raw, { limitInputPixels: 40_000_000 }).metadata();
-      const file = `${output}/${photo.image}`;
-      await fs.mkdir(file.slice(0, file.lastIndexOf('/')), { recursive: true });
-      // Preserve original pixels up to a bounded master; never enlarge a source.
-      await sharp(raw, { limitInputPixels: 40_000_000 }).rotate()
-        .resize({ width: 3000, height: 3000, fit: 'inside', withoutEnlargement: true })
-        .webp({ quality: 88, effort: 4 }).toFile(file);
-      const encoded = await fs.readFile(file);
-      const encodedMeta = await sharp(encoded).metadata();
-      receipts.push({ image: photo.image, sourcePhoto: url, creditSource: credit.source,
-        width: encodedMeta.width, height: encodedMeta.height,
-        webpSha256: createHash('sha256').update(encoded).digest('hex'), originalWidth: metadata.width,
-        originalHeight: metadata.height, originalSha256: createHash('sha256').update(raw).digest('hex'),
+      const digest = createHash('sha256'); let bytes = 0;
+      const handle = await fs.open(temporary, 'w');
+      try {
+        for await (const chunk of response.body) {
+          bytes += chunk.length;
+          if (bytes > 32 * 1024 * 1024) throw new Error('Image exceeds 32 MiB');
+          digest.update(chunk);
+          await handle.write(chunk);
+        }
+      } finally { await handle.close(); }
+      const metadata = await sharp(temporary, { limitInputPixels: 40_000_000 }).metadata();
+      const extension = { jpeg: 'jpg', png: 'png', webp: 'webp' }[metadata.format];
+      if (!extension) throw new Error(`Unsupported original format: ${metadata.format}`);
+      const asset = photo.image.replace(/\.[^.]+$/, `.${extension}`);
+      // Preserve received bytes. The only local lossy encoding is the final
+      // responsive WebP at quality 88 in Astro, never an intermediate master.
+      await fs.rename(temporary, `${output}/${asset}`);
+      const rotated = [5, 6, 7, 8].includes(metadata.orientation);
+      receipts.push({ image: photo.image, asset, sourcePhoto: url, creditSource: credit.source,
+        width: rotated ? metadata.height : metadata.width, height: rotated ? metadata.width : metadata.height,
+        orientation: metadata.orientation || 1, originalWidth: metadata.width,
+        originalHeight: metadata.height, originalSha256: digest.digest('hex'),
         bytes, status: 'FETCHED_ORIGINAL' });
-    } catch (error) { receipts.push({ image: photo.image, sourcePhoto: url, status: 'HOLD', error: error.message }); }
+    } catch (error) {
+      receipts.push({ image: photo.image, sourcePhoto: url, status: 'HOLD', error: error.message });
+    } finally {
+      await fs.rm(temporary, { force: true });
+      }
     if (receipts.length % 25 === 0) console.log(JSON.stringify({ processed: receipts.length, total: baseline.photos }));
   }
   let cursor = 0;
