@@ -700,6 +700,7 @@ if (faqs.length >= 2) {
 .ptag:hover { color: var(--gold-dim); text-decoration: underline; text-underline-offset: 3px; }
 .post-date { font-size: 0.7rem; color: var(--text-faint); letter-spacing: 0.04em; }
 .post-dates { white-space: nowrap; }
+@media (max-width: 767px) { .post-dates { min-width: 0; max-width: 100%; white-space: normal; overflow-wrap: anywhere; } }
 .post-updated { font-size: 0.7rem; color: var(--gold-dim); letter-spacing: 0.04em; }
 /* Подписка на канал — волосяная рамка, без фона и скруглений, как весь
    editorial-канон. Высота фиксированная, блок статичный: сдвига вёрстки нет. */
