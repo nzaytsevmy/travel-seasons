@@ -268,6 +268,7 @@ const pageDescription = snip
       {hasPrices && (
         <section class="sec">
           <div class="shead"><h2>Сколько стоит поездка {d.cases.vP} в {m.prep}</h2></div>
+          <div class="budget-scroll" role="region" aria-label="Стоимость поездки по длительности" tabindex="0">
           <table class="dt">
             <thead><tr><th>Длительность</th><th>Эконом</th><th>Средний</th><th>Комфорт</th></tr></thead>
             <tbody>
@@ -281,6 +282,7 @@ const pageDescription = snip
               ))}
             </tbody>
           </table>
+          </div>
           <p class="tnote">Перелёт из Москвы ${flightTiers[0]}–${flightTiers[2]}, отель ${hotelTiers[0]}–${hotelTiers[2]}/ночь, еда ${foodTiers[0]}–${foodTiers[2]}/день. Точный расчёт под маршрут — в <a href="/calculator/">калькуляторе поездки</a>.</p>
           <p class="findcta"><a class="find" href={ostrovokCountry(d.slug, `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc}</a> — оплата картой РФ, бесплатная отмена · <a class="find" href={cherehapaCountry(d.slug, `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">страховка под визу</a> </p>
         </section>
@@ -481,6 +483,8 @@ const pageDescription = snip
 .adm{font-size:.6rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
 .adm-row{margin-top:.55rem;font-size:.66rem;color:var(--mid)}
 
+/* На узком экране прокручивается только таблица, весь текст остаётся в колонке. */
+.budget-scroll{max-width:100%;overflow-x:auto}
 /* Бюджет-таблица */
 .dt{width:100%;border-collapse:collapse;font-size:.95rem;color:var(--ink)}
 .dt thead th{font-size:.64rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid);text-align:left;padding:.5rem .8rem .55rem 0;border-bottom:1px solid var(--line)}
