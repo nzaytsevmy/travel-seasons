@@ -11,8 +11,8 @@ test('checks cropped height as well as image width', () => {
   assert.ok(coverDensity(1600, 900, 650, 487.5) < 2);
   assert.ok(coverDensity(1920, 1440, 650, 487.5) >= 2);
 });
-test('uses documented fit-w source size and preserves the exact photo identity', () => {
+test('uses the verified shrink-only source size and preserves the exact photo identity', () => {
   assert.equal(originalPhotoUrl('https://cdn.ostrovok.ru/t/640x400/content/aa/photo.jpeg'),
-    'https://cdn.ostrovok.ru/t/2600x1240/content/aa/photo.jpeg');
+    'https://cdn.ostrovok.ru/t/2048x2048/content/aa/photo.jpeg');
   assert.equal(originalPhotoUrl('https://assets.example.com/photo.jpg'), 'https://assets.example.com/photo.jpg');
 });

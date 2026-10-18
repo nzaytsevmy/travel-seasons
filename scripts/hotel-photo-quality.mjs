@@ -13,8 +13,9 @@ export function coverDensity(width, height, frameWidth, frameHeight) {
 export function originalPhotoUrl(value) {
   const url = new URL(value);
   if (['cdn.ostrovok.ru', 'cdn.worldota.net'].includes(url.hostname)) {
-    // Documented fit-w size; unlike fit-w-min it does not request enlargement.
-    url.pathname = url.pathname.replace(/^\/t\/[^/]+\//, '/t/2600x1240/');
+    // The 2600x1240, 1920x and x1920 presets force dimensions and can upscale.
+    // 2048x2048 was checked against a native 650x450 publisher photograph.
+    url.pathname = url.pathname.replace(/^\/t\/[^/]+\//, '/t/2048x2048/');
   }
   return url.href;
 }
@@ -22,7 +23,7 @@ export function galleryFrame(viewport, lead) {
   const padding = Math.min(41.6, Math.max(17.6, viewport * .03));
   const inner = Math.min(1280, viewport) - 2 * padding;
   const column = lead || viewport < 768 ? inner : (inner - 32) * 1.45 / 2.45;
-  const width = column * .92;
+  const width = lead ? Math.min(1024, column * .92) : column * .92;
   return { width, height: width * (lead && viewport >= 768 ? 9 / 16 : 3 / 4) };
 }
 export function photoManifest() {
@@ -67,6 +68,16 @@ async function refreshPhotos(output) {
   const baseline = await auditPhotos();
   const receipts = [];
   await fs.mkdir(output, { recursive: true });
+  const fixture = 'https://cdn.ostrovok.ru/t/2048x2048/content/18/b1/18b15c224785d44399ebaa858f58dd91687c2f5c.png';
+  const fixtureResponse = await fetch(fixture, { signal: AbortSignal.timeout(30_000) });
+  if (!fixtureResponse.ok) throw new Error(`No-upscale source contract unavailable: HTTP ${fixtureResponse.status}`);
+  const fixtureBytes = Buffer.from(await fixtureResponse.arrayBuffer());
+  const fixtureMeta = await sharp(fixtureBytes).metadata();
+  if (fixtureMeta.width !== 650 || fixtureMeta.height !== 450) throw new Error('Publisher preset enlarged the known native photograph');
+  const sourcePolicy = 'native-safe2048-v1';
+  await fs.writeFile(`${output}/source-policy.json`, JSON.stringify({ sourcePolicy, fixture,
+    checkedAt: new Date().toISOString(), width: fixtureMeta.width, height: fixtureMeta.height,
+    sha256: createHash('sha256').update(fixtureBytes).digest('hex') }, null, 2));
   let previous = [];
   try { previous = JSON.parse(await fs.readFile(`${output}/receipts.json`, 'utf8')); }
   catch (error) { if (error.code !== 'ENOENT') throw error; }
@@ -75,7 +86,7 @@ async function refreshPhotos(output) {
   async function refreshOne(photo) {
     const credit = credits[photo.creditKey];
     const existing = saved.get(photo.image);
-    if (existing?.status === 'FETCHED_ORIGINAL' && existing.asset && existing.creditSource === credit?.source &&
+    if (existing?.status === 'FETCHED_ORIGINAL' && existing.sourcePolicy === sourcePolicy && existing.asset && existing.creditSource === credit?.source &&
       (!credit?.sourcePhoto || existing.sourcePhoto === originalPhotoUrl(credit.sourcePhoto))) {
       try {
         const hash = createHash('sha256');
@@ -151,7 +162,7 @@ async function refreshPhotos(output) {
       // responsive WebP at quality 88 in Astro, never an intermediate master.
       await fs.rename(temporary, `${output}/${asset}`);
       const rotated = [5, 6, 7, 8].includes(metadata.orientation);
-      receipts.push({ image: photo.image, asset, creditKey: photo.creditKey, sourcePhoto: url, creditSource: credit.source,
+      receipts.push({ image: photo.image, asset, creditKey: photo.creditKey, sourcePolicy, sourcePhoto: url, creditSource: credit.source,
         width: rotated ? metadata.height : metadata.width, height: rotated ? metadata.width : metadata.height,
         orientation: metadata.orientation || 1, originalWidth: metadata.width,
         originalHeight: metadata.height, originalSha256: digest.digest('hex'),

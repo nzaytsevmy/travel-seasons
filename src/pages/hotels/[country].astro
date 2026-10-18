@@ -47,7 +47,7 @@ const ldJson = {
         <div class="hotel-photos">
         <div class="hotel-gallery" id={`photos-${hotel.id}`} role="region" aria-label={`Фотографии ${hotel.name}`} tabindex="0">
           {hotelGallery(country, hotel).map((photo, photoIndex) => <figure>
-            <HotelPhoto src={images[`../../assets/hotels/${photo.image}`].default} alt={photo.alt} wide={i === 0} lead={i === 0} sizes={i === 0 ? '(min-width: 1280px) 1101px, calc((100vw - clamp(35.2px, 6vw, 83.2px)) * .92)' : '(min-width: 1280px) 633px, (min-width: 768px) calc((100vw - clamp(35.2px, 6vw, 83.2px) - 32px) * .5445), calc((100vw - clamp(35.2px, 6vw, 83.2px)) * .92)'} loading={i === 0 && photoIndex === 0 ? 'eager' : 'lazy'} />
+            <HotelPhoto src={images[`../../assets/hotels/${photo.image}`].default} alt={photo.alt} wide={i === 0} lead={i === 0} sizes={i === 0 ? '(min-width: 1185px) 1024px, calc((100vw - clamp(35.2px, 6vw, 83.2px)) * .92)' : '(min-width: 1280px) 633px, (min-width: 768px) calc((100vw - clamp(35.2px, 6vw, 83.2px) - 32px) * .5445), calc((100vw - clamp(35.2px, 6vw, 83.2px)) * .92)'} loading={i === 0 && photoIndex === 0 ? 'eager' : 'lazy'} />
             <figcaption>{photoIndex + 1} / {hotelGallery(country, hotel).length} · {photo.caption || photo.alt}</figcaption>
           </figure>)}
         </div>
@@ -89,6 +89,7 @@ const ldJson = {
   .hotel-entry figure { min-width:0; margin:0; }
   .hotel-gallery { display:flex; overflow-x:auto; gap:16px; scroll-snap-type:x mandatory; min-width:0; padding-bottom:12px; }
   .hotel-gallery figure { flex:0 0 92%; scroll-snap-align:start; }
+  .hotel-entry-lead .hotel-gallery figure { flex-basis:min(92%, 1024px); }
   .hotel-gallery:focus-visible { outline:2px solid var(--gold); outline-offset:4px; }
   .hotel-photos { min-width:0; }
   .hotel-gallery-controls:not([hidden]) { display:flex; justify-content:space-between; gap:16px; }
