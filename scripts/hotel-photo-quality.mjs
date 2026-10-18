@@ -86,6 +86,15 @@ async function refreshPhotos(output) {
   async function refreshOne(photo) {
     const credit = credits[photo.creditKey];
     const existing = saved.get(photo.image);
+    const requestKey = JSON.stringify([sourcePolicy, credit?.source, credit?.sourcePhoto]);
+    const sameRequest = existing?.requestKey === requestKey;
+    if (sameRequest && existing.status === 'HOLD' && existing.attempts >= 2) {
+      receipts.push(existing); return;
+    }
+    const attempts = sameRequest ? existing.attempts + 1 :
+      existing?.status === 'HOLD' && !existing.requestKey ? 2 : 1;
+    const hold = fields => receipts.push({ image: photo.image, requestKey, attempts,
+      status: 'HOLD', ...fields });
     if (existing?.status === 'FETCHED_ORIGINAL' && existing.sourcePolicy === sourcePolicy && existing.asset && existing.creditSource === credit?.source &&
       (!credit?.sourcePhoto || existing.sourcePhoto === originalPhotoUrl(credit.sourcePhoto))) {
       try {
@@ -116,7 +125,7 @@ async function refreshPhotos(output) {
         }
         source = find(parse(html));
         if (!source || new URL(source).hostname !== 'live.staticflickr.com') throw new Error('No public publisher image');
-      } catch (error) { receipts.push({ image: photo.image, status: 'HOLD', error: error.message }); return; }
+      } catch (error) { hold({ error: error.message }); return; }
     }
     if (!source && credit?.source?.startsWith('https://commons.wikimedia.org/wiki/File:')) {
       const api = new URL('https://commons.wikimedia.org/w/api.php');
@@ -129,7 +138,7 @@ async function refreshPhotos(output) {
         const data = await response.json();
         const info = Object.values(data.query?.pages || {})[0]?.imageinfo?.[0];
         source = info?.thumburl || info?.url;
-      } catch (error) { receipts.push({ image: photo.image, status: 'HOLD', error: error.message }); return; }
+      } catch (error) { hold({ error: error.message }); return; }
     }
     if (!source) { receipts.push({ image: photo.image, status: photo.passed ? 'ALREADY_DENSE' : 'MISSING_ORIGINAL_URL' }); return; }
     const url = originalPhotoUrl(source);
@@ -162,13 +171,13 @@ async function refreshPhotos(output) {
       // responsive WebP at quality 88 in Astro, never an intermediate master.
       await fs.rename(temporary, `${output}/${asset}`);
       const rotated = [5, 6, 7, 8].includes(metadata.orientation);
-      receipts.push({ image: photo.image, asset, creditKey: photo.creditKey, sourcePolicy, sourcePhoto: url, creditSource: credit.source,
+      receipts.push({ image: photo.image, asset, creditKey: photo.creditKey, sourcePolicy, requestKey, attempts, sourcePhoto: url, creditSource: credit.source,
         width: rotated ? metadata.height : metadata.width, height: rotated ? metadata.width : metadata.height,
         orientation: metadata.orientation || 1, originalWidth: metadata.width,
         originalHeight: metadata.height, originalSha256: digest.digest('hex'),
         bytes, fetchedAt: new Date().toISOString(), status: 'FETCHED_ORIGINAL' });
     } catch (error) {
-      receipts.push({ image: photo.image, sourcePhoto: url, status: 'HOLD', error: error.message });
+      hold({ sourcePhoto: url, error: error.message });
     } finally {
       await fs.rm(temporary, { force: true });
       }
