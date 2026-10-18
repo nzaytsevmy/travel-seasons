@@ -68,7 +68,8 @@ async function refreshPhotos(output) {
       api.search = new URLSearchParams({ action: 'query', format: 'json', prop: 'imageinfo', iiprop: 'url|size',
         titles: decodeURIComponent(new URL(credit.source).pathname.slice('/wiki/'.length)) });
       try {
-        const response = await fetch(api, { signal: AbortSignal.timeout(30_000) });
+        const response = await fetch(api, { signal: AbortSignal.timeout(30_000),
+          headers: { 'User-Agent': 'TravelTribePhotoQA/1.0 (https://traveltribe.ru/)' } });
         if (!response.ok) throw new Error(`Commons HTTP ${response.status}`);
         const data = await response.json();
         source = Object.values(data.query?.pages || {})[0]?.imageinfo?.[0]?.url;

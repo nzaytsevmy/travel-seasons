@@ -21,6 +21,7 @@ export function checkHotelLanding(target, final, status) {
   const expected = new URL(target), url = new URL(final);
   const mid = expected.pathname.match(/\/mid(\d+)\//)?.[1];
   return { sameProperty: !!mid && url.hostname === 'ostrovok.ru' && url.pathname.includes(`/mid${mid}/`),
+    sameLocation: expected.pathname.split('/mid')[0] === url.pathname.split('/mid')[0],
     partnerIdPreserved: (url.searchParams.get('sub_id') || '').endsWith(`-${TP_MARKER_SHORT}`),
     partnerSlug: url.searchParams.get('partner_slug'),
     eridPreserved: url.searchParams.get('erid') === '2VtzqvE1cv3', status };
@@ -48,7 +49,8 @@ async function audit(output) {
     for (const hotel of collection.hotels) {
       const ctaId = `hotels_${country}_${hotel.id}`.replaceAll('-', '_');
       const link = links.find(l => l.ctaId === ctaId);
-      const row = { country, id: hotel.id, expectedName: hotel.name, expectedTarget: hotel.booking.target,
+      const row = { country, id: hotel.id, expectedName: hotel.name,
+        expectedVerifiedName: hotel.research?.verifiedHeading || hotel.name, expectedLocation: hotel.location, expectedTarget: hotel.booking.target,
         statisticsReadback: 'NOT_VERIFIED', result: 'HOLD', hops: [] };
       try {
         if (!link || new URL(link.href).searchParams.get('u') !== hotel.booking.target) throw new Error('Published destination differs from selected hotel');
@@ -69,7 +71,7 @@ async function audit(output) {
           const root = parse(landing);
           row.heading = elements(root, n => n.tagName === 'h1').map(text).join(' ').trim();
           row.pageTitle = elements(root, n => n.tagName === 'title').map(text).join(' ').trim();
-          row.result = response.status === 200 && row.sameProperty && row.partnerIdPreserved && row.eridPreserved
+          row.result = response.status === 200 && row.sameProperty && row.sameLocation && row.partnerIdPreserved && row.eridPreserved
             && row.partnerSlug === 'travelpayouts.affiliate.9ce9' && row.heading ? 'PASS_REDIRECT' : 'NEEDS_REVIEW';
           break;
         }
