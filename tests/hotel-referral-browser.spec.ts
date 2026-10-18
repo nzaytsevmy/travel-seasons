@@ -6,6 +6,11 @@ for (const [country, collection] of readyHotelCollections()) {
     test.setTimeout(180_000);
     await context.route('https://ostrovok.tpk.mx/**', route => route.fulfill({ status: 200, body: 'Hotel QA' }));
     await page.goto(`/hotels/${country}/`);
+    await page.evaluate(() => {
+      document.addEventListener('tt:affiliate-click', event => {
+        document.documentElement.dataset.hotelQaClickId = (event as CustomEvent).detail.click_id;
+      });
+    });
     for (const hotel of collection.hotels) {
       const booking = page.locator(`.hotel-entry[id="${hotel.id}"] .hotel-entry-book`);
       const clickIds = new Set<string>();
@@ -23,6 +28,7 @@ for (const [country, collection] of readyHotelCollections()) {
           expect(subId).toMatch(/^tt2__/);
           const clickId = subId.split('__').at(-1)!;
           expect(clickId).toMatch(/^c[0-9a-f]{20}$/);
+          expect(await page.locator('html').getAttribute('data-hotel-qa-click-id')).toBe(clickId);
           expect(clickIds.has(clickId)).toBe(false);
           clickIds.add(clickId);
         } finally { await popup.close(); }
