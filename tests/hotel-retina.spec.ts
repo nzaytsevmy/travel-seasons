@@ -30,8 +30,8 @@ for (const [country] of readyHotelCollections()) {
         }
         const actual = dimensions.get(row.url)!;
         // naturalWidth is density-corrected by the browser and cannot prove file resolution.
-        expect(actual.width / row.width, `${country} ${width}px ${row.alt}: horizontal density`).toBeGreaterThanOrEqual(1.99);
-        expect(actual.height / row.height, `${country} ${width}px ${row.alt}: vertical density`).toBeGreaterThanOrEqual(1.99);
+        expect(actual.width + 1, `${country} ${width}px ${row.alt}: horizontal 2× pixels`).toBeGreaterThanOrEqual(Math.ceil(row.width * 2));
+        expect(actual.height + 1, `${country} ${width}px ${row.alt}: vertical 2× pixels`).toBeGreaterThanOrEqual(Math.ceil(row.height * 2));
       }
     }
     }
