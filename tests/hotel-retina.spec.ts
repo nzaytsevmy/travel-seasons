@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 import { test, expect } from './browser-fixture';
-import { readyHotelCollections } from '../src/data/hotels.js';
+import { readyHotelCollections, hotelGuideHubs } from '../src/data/hotels.js';
 
 test.use({ deviceScaleFactor: 2 });
 const widths = [402, 768, 1024, 1280, 1440, 1920];
@@ -8,9 +8,10 @@ const widths = [402, 768, 1024, 1280, 1440, 1920];
 for (const [country] of readyHotelCollections()) {
   test(`фотографии отелей сохраняют детализацию 2×: ${country}`, async ({ page, request }) => {
     test.setTimeout(180_000);
-    await page.goto(`/hotels/${country}/`);
-    const images = page.locator('.hotel-gallery img');
     const dimensions = new Map<string, { width: number; height: number }>();
+    for (const path of [`/hotels/${country}/`, ...hotelGuideHubs(country).map(hub => `/${hub.slug}/`)]) {
+    await page.goto(path);
+    const images = page.locator('.hotel-gallery img, .best-hotels img');
     for (const width of widths) {
       await page.setViewportSize({ width, height: 900 });
       await images.evaluateAll(nodes => nodes.forEach(node => { (node as HTMLImageElement).loading = 'eager'; }));
@@ -32,6 +33,7 @@ for (const [country] of readyHotelCollections()) {
         expect(actual.width / row.width, `${country} ${width}px ${row.alt}: horizontal density`).toBeGreaterThanOrEqual(1.99);
         expect(actual.height / row.height, `${country} ${width}px ${row.alt}: vertical density`).toBeGreaterThanOrEqual(1.99);
       }
+    }
     }
   });
 }
