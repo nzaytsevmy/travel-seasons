@@ -78,8 +78,6 @@ jobs:
       PLAYWRIGHT_JSON_OUTPUT_NAME: artifacts/hotel-guides-live-${{ matrix.project }}/tests.json
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.expected_commit }}
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -101,6 +99,7 @@ jobs:
           import fs from 'node:fs/promises';
           import assert from 'node:assert/strict';
           assert.match(process.env.QA_EXPECTED_COMMIT, /^[a-f0-9]{40}$/);
+          assert.equal(process.env.QA_EXPECTED_COMMIT, process.env.GITHUB_SHA, 'Live QA must execute the exact trusted dispatch source');
           const r = await fetch(`https://traveltribe.ru/build-version.json?hotel_qa=${Date.now()}`, { signal: AbortSignal.timeout(30000), headers: { 'Cache-Control': 'no-cache' } });
           assert.equal(r.status, 200);
           const value = await r.json();
