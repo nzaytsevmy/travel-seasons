@@ -95,6 +95,7 @@ async function refreshPhotos(output) {
   try { previous = JSON.parse(await fs.readFile(`${output}/receipts.json`, 'utf8')); }
   catch (error) { if (error.code !== 'ENOENT') throw error; }
   const saved = new Map(previous.map(row => [row.image, row]));
+  if (previous.length) await fs.copyFile(`${output}/receipts.json`, `${output}/receipts.before-resume.json`);
   let checkpoint = Promise.resolve();
   async function refreshOne(photo) {
     const credit = credits[photo.creditKey];
@@ -202,7 +203,9 @@ async function refreshPhotos(output) {
     while (cursor < baseline.rows.length) {
       await refreshOne(baseline.rows[cursor++]);
       if (receipts.length % 25 === 0) {
-        const snapshot = JSON.stringify(receipts, null, 2);
+        // A resumed prefix must not erase receipts for files not yet revisited.
+        for (const row of receipts) saved.set(row.image, row);
+        const snapshot = JSON.stringify([...saved.values()], null, 2);
         checkpoint = checkpoint.then(async () => {
           await fs.writeFile(`${output}/receipts.json.tmp`, snapshot);
           await fs.rename(`${output}/receipts.json.tmp`, `${output}/receipts.json`);
