@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import { createReadStream } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import sharp from 'sharp';
@@ -77,8 +78,9 @@ async function refreshPhotos(output) {
     if (existing?.status === 'FETCHED_ORIGINAL' && existing.asset && existing.creditSource === credit?.source &&
       (!credit?.sourcePhoto || existing.sourcePhoto === originalPhotoUrl(credit.sourcePhoto))) {
       try {
-        const buffer = await fs.readFile(`${output}/${existing.asset}`);
-        if (createHash('sha256').update(buffer).digest('hex') === existing.originalSha256) {
+        const hash = createHash('sha256');
+        for await (const chunk of createReadStream(`${output}/${existing.asset}`)) hash.update(chunk);
+        if (hash.digest('hex') === existing.originalSha256) {
           receipts.push(existing); return;
         }
       } catch (error) { if (error.code !== 'ENOENT') throw error; }
