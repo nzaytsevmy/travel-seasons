@@ -52,7 +52,9 @@ export async function auditPhotos() {
       }
     }
     const density = Math.min(...frames.map(frame => coverDensity(nativeWidth, nativeHeight, frame.width, frame.height)));
-    rows.push({ ...photo, width: nativeWidth, height: nativeHeight, density, passed: density >= 2 });
+    rows.push({ ...photo, width: nativeWidth, height: nativeHeight,
+      requiredWidth: Math.ceil(Math.max(...frames.map(frame => frame.width)) * 2),
+      requiredHeight: Math.ceil(Math.max(...frames.map(frame => frame.height)) * 2), density, passed: density >= 2 });
   }
   return { checkedAt: new Date().toISOString(), photos: rows.length,
     failed: rows.filter(row => !row.passed).length, rows };
@@ -147,7 +149,7 @@ async function refreshPhotos(output) {
       // responsive WebP at quality 88 in Astro, never an intermediate master.
       await fs.rename(temporary, `${output}/${asset}`);
       const rotated = [5, 6, 7, 8].includes(metadata.orientation);
-      receipts.push({ image: photo.image, asset, sourcePhoto: url, creditSource: credit.source,
+      receipts.push({ image: photo.image, asset, creditKey: photo.creditKey, sourcePhoto: url, creditSource: credit.source,
         width: rotated ? metadata.height : metadata.width, height: rotated ? metadata.width : metadata.height,
         orientation: metadata.orientation || 1, originalWidth: metadata.width,
         originalHeight: metadata.height, originalSha256: digest.digest('hex'),
