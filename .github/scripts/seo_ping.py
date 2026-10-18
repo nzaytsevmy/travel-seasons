@@ -2,9 +2,9 @@
 """
 SEO ping after deploy: IndexNow (Bing/Yandex) + Yandex Webmaster recrawl queue.
 
-Reads changed files from CHANGED_FILES env var (newline-separated, set in workflow
-via `git diff --name-only`). Maps blog content + page sources to public URLs and
-fires both APIs.
+Reads NUL-separated Git paths from CHANGED_FILES_FILE, with the legacy
+newline-separated CHANGED_FILES environment input retained for other callers.
+Maps blog content + page sources to public URLs and fires both APIs.
 
 Quotas:
   - IndexNow: 10 000 URL/day, batch size up to 10 000
@@ -25,6 +25,8 @@ import sys
 import urllib.request
 import urllib.error
 
+from changed_file_input import read_changed_files
+
 SITE = "https://traveltribe.ru"
 INDEXNOW_KEY = os.environ.get("INDEXNOW_KEY", "f0944e36f6c3d1316f235088467c0383")
 INDEXNOW_HOST = "traveltribe.ru"
@@ -34,8 +36,7 @@ YANDEX_HOST = "https:traveltribe.ru:443"
 
 
 def changed_files() -> list[str]:
-    raw = os.environ.get("CHANGED_FILES", "").strip()
-    return [line.strip() for line in raw.splitlines() if line.strip()]
+    return read_changed_files()
 
 
 def explicit_urls() -> list[str]:

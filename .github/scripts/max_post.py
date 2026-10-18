@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Пост новых заметок ленты в канал MAX после выкладки.
 
-Читает CHANGED_FILES (как seo_ping), берёт ТОЛЬКО новые файлы заметок
+Читает CHANGED_FILES_FILE или прежний CHANGED_FILES (как seo_ping), берёт ТОЛЬКО новые файлы заметок
 (которых не было в предыдущем коммите), шлёт в канал: заголовок + выжимка
 + кнопка-ссылка на страницу заметки.
 
@@ -31,6 +31,8 @@ import sys
 import time
 import uuid
 import urllib.request
+
+from changed_file_input import read_changed_files
 
 API = "https://platform-api2.max.ru"
 SITE = "https://traveltribe.ru"
@@ -86,10 +88,8 @@ def upload_photo(token: str, path: str) -> str | None:
 
 
 def new_news_files() -> list[str]:
-    raw = os.environ.get("CHANGED_FILES", "")
     picked = []
-    for line in raw.splitlines():
-        p = line.strip()
+    for p in read_changed_files():
         if not re.fullmatch(r"src/content/news/[^/]+\.md", p):
             continue
         # только ДОБАВЛЕННЫЕ: существовавшие в HEAD~1 — правки, их не постим
