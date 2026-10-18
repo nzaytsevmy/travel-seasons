@@ -127,8 +127,9 @@ async function refreshPhotos(output) {
         const decoder = new TextDecoder(); let html = ''; let length = 0;
         for await (const chunk of response.body) {
           length += chunk.length;
-          if (length > 5 * 1024 * 1024) throw new Error('Flickr HTML exceeds 5 MiB');
+          if (length > 256 * 1024) throw new Error('Flickr public image metadata exceeds 256 KiB');
           html += decoder.decode(chunk, { stream: true });
+          if (/<\/head\s*>/i.test(html)) break;
         }
         html += decoder.decode();
         function find(node) {
