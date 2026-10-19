@@ -118,3 +118,17 @@ for (const path of ['/australia-east/', '/oman/', '/japan/', '/antarctica/', '/v
     }
   });
 }
+
+test('keyboard skip link stays hidden at doubled text size and reveals on focus', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/australia-east/');
+  await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
+  const skip = page.locator('.skip-link');
+  const hidden = await skip.boundingBox();
+  expect(hidden!.y + hidden!.height, 'unfocused skip link must stay above the viewport at any text size').toBeLessThanOrEqual(1);
+  await page.keyboard.press('Tab');
+  await expect(skip).toBeFocused();
+  await expect.poll(async () => (await skip.boundingBox())!.y).toBeGreaterThanOrEqual(0);
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/#main$/);
+});
