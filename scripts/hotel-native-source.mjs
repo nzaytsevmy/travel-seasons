@@ -1,5 +1,13 @@
 // Native dimensions come from this property's published image metadata.
 // Forced-width transforms are permitted only when they shrink the original.
+export function photoSourceIdentity(value) {
+  const url = new URL(value);
+  if (['cdn.ostrovok.ru', 'cdn.worldota.net'].includes(url.hostname))
+    return `ostrovok:${url.pathname.replace(/^\/t\/[^/]+\//, '/')}`;
+  url.hash = '';
+  return url.href;
+}
+
 export function selectNativePhotoSource(photo, requiredWidth, requiredHeight) {
   return selectNativePhotoSources(photo, requiredWidth, requiredHeight)[0] || null;
 }

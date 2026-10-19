@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync, createReadStream } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { photoSourceIdentity } from '../scripts/hotel-native-source.mjs';
 import { hotelGallery, collectionHasCompleteGalleries, HOTEL_COLLECTIONS, hotelCollection, readyHotelCollections } from '../src/data/hotels.js';
 const credits = JSON.parse(readFileSync(new URL('../src/data/hotel-photo-credits.json',import.meta.url)));
 
@@ -43,7 +44,7 @@ test('Каждый сохранённый кадр существует, име�
       const source=credits[photo.creditKey]?.source;
       assert.equal(new URL(source).protocol,'https:',photo.creditKey);
       const sourceUrl=new URL(source);
-      const identity=sourceUrl.hostname==='www.flickr.com' ? `flickr:${sourceUrl.pathname.match(/\/photos\/[^/]+\/(\d+)/)?.[1]}` : sourceUrl.hostname==='commons.wikimedia.org' ? `commons:${decodeURIComponent(sourceUrl.pathname).replaceAll('_',' ').normalize('NFC')}` : credit.sourcePhoto;
+      const identity=sourceUrl.hostname==='www.flickr.com' ? `flickr:${sourceUrl.pathname.match(/\/photos\/[^/]+\/(\d+)/)?.[1]}` : sourceUrl.hostname==='commons.wikimedia.org' ? `commons:${decodeURIComponent(sourceUrl.pathname).replaceAll('_',' ').normalize('NFC')}` : photoSourceIdentity(credit.sourcePhoto);
       assert.ok(!identity.endsWith('undefined'),source);
       assert.ok(!sources.has(identity),`Повтор исходника: ${country}/${hotel.id}`);sources.add(identity);
       const hash=createHash('sha256'); for await(const chunk of createReadStream(file)) hash.update(chunk);

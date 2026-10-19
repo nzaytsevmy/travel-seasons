@@ -1,6 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { selectNativePhotoSource, selectNativePhotoSources, sourceDoesNotEnlarge } from '../scripts/hotel-native-source.mjs';
+import { selectNativePhotoSource, selectNativePhotoSources, sourceDoesNotEnlarge, photoSourceIdentity } from '../scripts/hotel-native-source.mjs';
+test('delivery profiles and provider host aliases do not create distinct photographs', () => {
+  assert.equal(photoSourceIdentity('https://cdn.ostrovok.ru/t/640x400/content/photo.JPEG'),
+    photoSourceIdentity('https://cdn.worldota.net/t/1920x/content/photo.JPEG?download=1'));
+  assert.notEqual(photoSourceIdentity('https://a.example/photo.jpg'), photoSourceIdentity('https://b.example/photo.jpg'));
+});
 const photo = { sourcePhoto: 'https://cdn.ostrovok.ru/t/640x400/content/photo.JPEG' };
 test('never stretches the known 650px miniature into a 2x gallery original', () => {
   assert.equal(selectNativePhotoSource({ ...photo, publisherWidth: 650, publisherHeight: 450 }, 2000, 1125), null);
