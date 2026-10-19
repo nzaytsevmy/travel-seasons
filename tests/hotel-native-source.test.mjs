@@ -10,6 +10,10 @@ test('a real 4085px original may be downsampled to the supported 2600px variant'
   assert.equal(selected.sourceVariant, '2600x1240');
   assert.equal(sourceDoesNotEnlarge({ ...selected, width: 2600, height: 1734 }), true);
 });
+test('a policy label cannot disguise a forced-width thumbnail as shrink-only', () => {
+  assert.equal(sourceDoesNotEnlarge({ sourcePolicy: 'native-safe2048-v1',
+    sourcePhoto: 'https://cdn.ostrovok.ru/t/2600x1240/content/photo.JPEG' }), false);
+});
 test('a 2000px original uses shrink-only delivery and cannot authorize a forced 2600px image', () => {
   const selected = selectNativePhotoSource({ ...photo, publisherWidth: 2000, publisherHeight: 1333 }, 2000, 1125);
   assert.equal(selected.sourceVariant, '2048x2048');

@@ -21,9 +21,14 @@ export function selectNativePhotoSource(photo, requiredWidth, requiredHeight) {
 }
 
 export function sourceDoesNotEnlarge(row) {
-  if (row.sourcePolicy === 'native-safe2048-v1') return true;
+  let source;
+  try { source = new URL(row.sourcePhoto); } catch { return false; }
+  const provider = ['cdn.ostrovok.ru', 'cdn.worldota.net'].includes(source.hostname);
+  if (row.sourcePolicy === 'native-safe2048-v1')
+    return source.protocol === 'https:' && (!provider || source.pathname.startsWith('/t/2048x2048/'));
   if (row.sourcePolicy !== 'publisher-native-bounds-v2') return false;
-  return Number.isInteger(row.publisherWidth) && Number.isInteger(row.publisherHeight) &&
+  return source.protocol === 'https:' && provider && source.pathname.startsWith(`/t/${row.sourceVariant}/`) &&
+    Number.isInteger(row.publisherWidth) && Number.isInteger(row.publisherHeight) &&
     row.publisherWidth >= row.width && row.publisherHeight >= row.height &&
     ['1920x1080', '2048x2048', '2600x1240'].includes(row.sourceVariant) &&
     (row.sourceVariant !== '2600x1240' || row.publisherWidth >= 2600);
