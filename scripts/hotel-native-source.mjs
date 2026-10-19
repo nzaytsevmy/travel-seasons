@@ -1,7 +1,25 @@
 // Native dimensions come from this property's published image metadata.
 // Forced-width transforms are permitted only when they shrink the original.
+export function publishedPhotoOriginalUrl(value) {
+  let url;
+  try { url = new URL(value); } catch { return null; }
+  if (url.protocol !== 'https:' || url.username || url.password) return null;
+  const parameter = {
+    'dam.melia.com': 'im',
+    'cdn-datahub.visitfinland.com': 's',
+    'images.squarespace-cdn.com': 'format',
+  }[url.hostname];
+  // Keep the exact published object path. Never strip signatures, invent a
+  // larger dimension, or change an unknown publisher's delivery contract.
+  if (!parameter || !url.searchParams.has(parameter) ||
+      [...url.searchParams.keys()].some(key => key !== parameter)) return null;
+  url.search = '';
+  url.hash = '';
+  return url.href;
+}
+
 export function photoSourceIdentity(value) {
-  const url = new URL(value);
+  const url = new URL(publishedPhotoOriginalUrl(value) || value);
   if (['cdn.ostrovok.ru', 'cdn.worldota.net'].includes(url.hostname))
     return `ostrovok:${url.pathname.replace(/^\/t\/[^/]+\//, '/')}`;
   if (url.hostname === 'irp.cdn-website.com' && url.pathname.includes('/dms3rep/multi/')) {
