@@ -25,3 +25,41 @@ test('ошибка фоновой предзагрузки не ломает с�
   await expect(page.locator('h1')).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+
+test('отложенная предзагрузка ждёт возврата активной страницы', async ({ page }) => {
+  await page.addInitScript(() => {
+    const supports = DOMTokenList.prototype.supports;
+    DOMTokenList.prototype.supports = function (token) {
+      return token === 'prefetch' ? false : supports.call(this, token);
+    };
+    const original = window.fetch.bind(window);
+    (window as any).__speculativePrivacyRequests = 0;
+    window.fetch = (input, init) => {
+      const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url, location.href);
+      if (url.pathname === '/legal/privacy/' && init?.priority === 'low') {
+        (window as any).__speculativePrivacyRequests++;
+      }
+      return original(input, init);
+    };
+  });
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/countries/');
+  // Allow the prefetch module to install its lifecycle and viewport observers.
+  await page.waitForLoadState('networkidle');
+  expect(await page.evaluate(() => (window as any).__speculativePrivacyRequests)).toBe(0);
+  await page.evaluate(() => {
+    window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true }));
+    document.querySelector('footer a[href="/legal/privacy/"]')!.scrollIntoView();
+  });
+  // The actual viewport callback waits 300 ms; exercise it while the page is inactive.
+  await page.waitForTimeout(600);
+  expect(await page.evaluate(() => (window as any).__speculativePrivacyRequests), 'Закрывающийся документ не начинает фоновый запрос').toBe(0);
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true })));
+  await expect.poll(() => page.evaluate(() => (window as any).__speculativePrivacyRequests)).toBeGreaterThan(0);
+  await page.locator('footer a[href="/legal/privacy/"]').click();
+  await expect(page).toHaveURL(/\/legal\/privacy\/$/);
+  await expect(page.locator('h1')).toBeVisible();
+  expect(errors).toEqual([]);
+});
