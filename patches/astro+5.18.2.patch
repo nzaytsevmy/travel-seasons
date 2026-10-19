@@ -1,8 +1,69 @@
 diff --git a/node_modules/astro/dist/prefetch/index.js b/node_modules/astro/dist/prefetch/index.js
-index d9c13a2..1db1055 100644
 --- a/node_modules/astro/dist/prefetch/index.js
 +++ b/node_modules/astro/dist/prefetch/index.js
-@@ -139,7 +139,10 @@ function prefetch(url, opts) {
+@@ -7,10 +7,27 @@
+ let defaultStrategy = __PREFETCH_DEFAULT_STRATEGY__;
+ let clientPrerender = __EXPERIMENTAL_CLIENT_PRERENDER__;
+ let inited = false;
++let pageActive = true;
++let restoreViewportPrefetch;
+ function init(defaultOpts) {
+   if (!inBrowser) return;
+   if (inited) return;
+   inited = true;
++  window.addEventListener("pagehide", () => { pageActive = false; });
++  const resumePrefetch = () => {
++    pageActive = true;
++    restoreViewportPrefetch?.();
++  };
++  window.addEventListener("pageshow", resumePrefetch);
++  // A history traversal can reject fetches before pagehide is dispatched.
++  window.navigation?.addEventListener("navigate", (event) => {
++    if (event.destination.sameDocument) return;
++    pageActive = false;
++    queueMicrotask(() => {
++      if (event.defaultPrevented) resumePrefetch();
++    });
++  });
++  window.navigation?.addEventListener("navigateerror", resumePrefetch);
+   debug?.(`[astro] Initializing prefetch script`);
+   prefetchAll ??= defaultOpts?.prefetchAll ?? false;
+   defaultStrategy ??= defaultOpts?.defaultStrategy ?? "hover";
+@@ -72,16 +89,20 @@
+ }
+ function initViewportStrategy() {
+   let observer;
+-  onPageLoad(() => {
++  const observeAnchors = (restored = false) => {
+     for (const anchor of document.getElementsByTagName("a")) {
+-      if (listenedAnchors.has(anchor)) continue;
++      if (!restored && listenedAnchors.has(anchor)) continue;
+       if (elMatchesStrategy(anchor, "viewport")) {
+         listenedAnchors.add(anchor);
+         observer ??= createViewportIntersectionObserver();
+         observer.observe(anchor);
+       }
+     }
+-  });
++  };
++  onPageLoad(observeAnchors);
++  // Timers may have unobserved links while a document was leaving.
++  // Restore viewport prefetching after a return or cancelled navigation.
++  restoreViewportPrefetch = () => observeAnchors(true);
+ }
+ function createViewportIntersectionObserver() {
+   const timeouts = /* @__PURE__ */ new WeakMap();
+@@ -120,6 +141,9 @@
+   });
+ }
+ function prefetch(url, opts) {
++  // WebKit reports fetches started during teardown as native JS console errors.
++  // Catching a rejected promise cannot prevent starting such a request.
++  if (!pageActive) return;
+   url = url.replace(/#.*/, "");
+   const ignoreSlowConnection = opts?.ignoreSlowConnection ?? false;
+   if (!canPrefetchUrl(url, ignoreSlowConnection)) return;
+@@ -139,7 +163,10 @@
      for (const [key, value] of Object.entries(internalFetchHeaders)) {
        headers.set(key, value);
      }

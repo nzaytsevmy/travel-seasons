@@ -34,7 +34,7 @@ const colClass = `pricing-cards--cols-${tiers.length}${hasCta ? ' pricing-cards-
         {(t.badge || t.featured) && <span class="pc-badge">{t.badge || 'Лучший выбор'}</span>}
       </div>
       <div class="pc-price-wrap">
-        <div class="pc-price">{t.price}</div>
+        <div class="pc-price">{t.price.split(/(?<=[–—])/u).map((part, i) => <Fragment>{i > 0 && <wbr />}{part}</Fragment>)}</div>
         {t.priceNote && <div class="pc-price-note">{t.priceNote}</div>}
       </div>
       <ul class="pc-features">
@@ -144,6 +144,7 @@ const colClass = `pricing-cards--cols-${tiers.length}${hasCta ? ' pricing-cards-
   font-variant-numeric: tabular-nums lining-nums;
   white-space: nowrap;
 }
+@media (max-width: 767px) { .pc-price { white-space: normal; overflow-wrap: anywhere; } }
 .pc-card--featured .pc-price { color: var(--gold); }
 .pc-price-note { font-size: 0.76rem; color: var(--text-faint); }
 

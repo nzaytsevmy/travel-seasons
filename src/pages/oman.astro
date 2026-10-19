@@ -17,7 +17,6 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Footer from '../components/Footer.astro';
 import BestHotels from '../components/BestHotels.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
-import YearClimateChart from '../components/YearClimateChart.astro';
 import { DIRECTIONS, MONTHS, VISITED } from '../data/directions.js';
 import { PRICES } from '../data/prices.js';
 import { getVisaDetails } from '../data/visa-details.js';
@@ -213,7 +212,6 @@ const ldJson = {
 
     <section class="om-sec">
       <h2>Погода в Омане по месяцам: когда ехать и когда купаться</h2>
-      <YearClimateChart slug="oman" />
 
       <div class="om-heat">
         {monthsRanked.map((m, i) => {
@@ -349,6 +347,7 @@ const ldJson = {
   .om-top, .om-pair, .om-money, .om-practice {
     display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 28px;
   }
+  .om > :global(.breadcrumbs) { padding-inline: 0; }
   .om-top { align-items: start; padding: 24px 0 56px; row-gap: 32px; }
   .om-title { grid-column: span 8; }
   .om-answer { grid-column: span 4; }
@@ -442,13 +441,27 @@ const ldJson = {
     .om-answer { grid-column: span 5; }
   }
   @media (max-width: 900px) {
-    .om-top, .om-pair, .om-money, .om-practice { grid-template-columns: 1fr; gap: 28px; }
+    .om-top, .om-pair, .om-money, .om-practice { grid-template-columns: minmax(0, 1fr); gap: 28px; }
     .om-title, .om-answer, .om-byline,
     .om-pair > *, .om-money > *, .om-practice > * { grid-column: 1 / -1; }
     .om-heat { grid-template-columns: repeat(6, 1fr); }
   }
   @media (max-width: 768px) {
-    .om { padding: 0 16px 48px; }
+    .om { padding: 0 16px 48px; overflow-wrap: anywhere; }
+    .om-top { padding-block: 16px 24px; row-gap: 24px; }
+    .om-lead { margin-bottom: 0; }
+    .om-answer { padding-top: 0; }
+    .om-facts > div { flex-wrap: wrap; gap: 4px 16px; }
+    .om-facts dt, .om-facts dd { max-width: 100%; min-width: 0; }
+    .om-facts dd { margin-left: auto; }
+    .om-byline { gap: 12px; }
+    .om-byline :global(img) { width: 40px; height: 48px; }
+    .om-byline > p { flex: 1 1 0; min-width: 0; margin: 0; line-height: 1.6; }
+    .om-byline a { display: inline; min-height: 0; }
+    .om-prow { flex-wrap: wrap; gap: 4px 16px; padding-block: 8px; }
+    .om-prow span { min-width: 0; max-width: 100%; }
+    .om-rules .om-prow { flex-direction: column; gap: 0; }
+    .om-rules .om-prow span:first-child { flex: none; padding: 12px 0 0; }
     .om-sec { padding: 40px 0; }
     .om-hero, .om-wide { margin-left: -16px; margin-right: -16px; }
     .om-hero figcaption, .om-wide figcaption { padding: 0 16px; }

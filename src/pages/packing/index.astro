@@ -639,4 +639,11 @@ html.dark-theme .pl-badge-visa-required { background: rgba(245, 158, 11, 0.18); 
   }
   .pl-top-card:hover { transform: none; }
 }
+@media (max-width: 767px) {
+  .pl-wrap { padding-inline: var(--page-edge); }
+  .pl-top-head { flex-wrap: wrap; align-items: center; gap: .4rem 1rem; }
+  .pl-top-preview-item { grid-template-columns: 88px minmax(0, 1fr); }
+  .pl-all-link { grid-template-columns: minmax(0, 1fr) auto; min-width: 0; }
+  .pl-top-name, .pl-all-name, .pl-top-preview-item { overflow-wrap: anywhere; min-width: 0; }
+}
 </style>

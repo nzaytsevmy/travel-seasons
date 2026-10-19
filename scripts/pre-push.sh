@@ -186,7 +186,7 @@ if [ "$MODE" = "text" ]; then
   # ⛔ Не список файлов, а фильтр: список молча терял проверки — 12.09.2026 два новых
   #    сторожа не запускались ни здесь, ни в облаке. Берём всё, кроме пиксельных снимков.
   if ! SKIP_PAGE_MTIME_TESTS=1 npx playwright test --grep-invert "— visual" \
-      --project=chromium-desktop --workers=1 >${LOG}_pw.log 2>&1; then
+      --project=chromium-desktop >${LOG}_pw.log 2>&1; then
     echo "✖ гейты содержания НЕ зелёные → ${LOG}_pw.log"
     exit 1
   fi
@@ -194,7 +194,7 @@ if [ "$MODE" = "text" ]; then
   exit 0
 fi
 
-if ! npx playwright test --workers=1 >${LOG}_pw.log 2>&1; then
+if ! npx playwright test >${LOG}_pw.log 2>&1; then
   echo "✖ Playwright: ошибка или flaky — push заблокирован."
   echo "  лог: ${LOG}_pw.log | отчёт: npm run check:visual:report"
   exit 1

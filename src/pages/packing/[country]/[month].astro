@@ -6,7 +6,6 @@
 import Layout from '../../../layouts/Layout.astro';
 import Footer from '../../../components/Footer.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
-import DestinationTabs from '../../../components/DestinationTabs.astro';
 import { Image, getImage } from 'astro:assets';
 import { DIRECTIONS, MONTHS, VISITED } from '../../../data/directions.js';
 import { месяцыНаправления } from '../../../utils/best-months.js';
@@ -16,7 +15,6 @@ import { getWeatherBucket } from '../../../data/country-month-bucket.js';
 import { ACTIVITY_TAGS, ACTIVITY_LABEL, ACTIVITY_GEAR } from '../../../data/country-activity-tags.js';
 import { PLUG_TYPES, plugAdvice } from '../../../data/country-plug-types.js';
 import { aviasalesRoute, cherehapaCountry, youtravelCountry } from '../../../data/affiliate.js';
-import StickyCta from '../../../components/StickyCta.astro';
 import { getHolidaysByMonth } from '../../../data/country-holidays.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
 import { regionsRich } from '../../../data/regions-rich.js';
@@ -313,8 +311,6 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       </p>
     </section>
 
-    <DestinationTabs d={d} active="packing" />
-
     {/* QUICK FACTS. Без номеров «01–04» (декоративные индексы сняты с сайта 06.07.2026) и без «Сезона» —
         он уже стоит плашкой в шапке. Цена та же, что в блоке перелёта ниже, иначе на странице два разных числа. */}
     <section class="pmu-section pmu-section--first">
@@ -583,25 +579,25 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       к страховщику — больше, чем любая другая кнопка этих страниц (билеты — 2).
       Контекстная ссылка в пункте чек-листа показывается только на ширинах от 768,
       где панели нет: иначе две одинаковые кнопки попадают на один экран телефона. */}
-  <StickyCta href={cherehapaCountry(d.slug, affiliateSubId)} label={`Страховка ${d.cases.vP} — под даты`} />
 
   <Footer />
 </Layout>
 
 <style>
 .pmu {
+  overflow-wrap: anywhere;
   --line-strong: var(--line);
   --line-hair: var(--line);
   max-width: 980px;
   margin: 0 auto;
-  padding: 0 clamp(1.1rem, 3vw, 2.6rem) clamp(2rem, 4vw, 4rem);
+  padding: 0 var(--page-edge) clamp(2rem, 4vw, 4rem);
   font-variant-numeric: tabular-nums lining-nums;
   color: var(--text);
 }
 
 /* COVER PHOTO */
 .pmu-cover {
-  margin: 0 calc(-1 * clamp(1.1rem, 3vw, 2.6rem)) clamp(1.4rem, 2.5vw, 2rem);
+  margin: 0 calc(-1 * var(--page-edge)) clamp(1.4rem, 2.5vw, 2rem);
   aspect-ratio: 21 / 9;
   max-height: 380px;
   overflow: hidden;
@@ -960,7 +956,6 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
   font-weight: 700;
 }
 .pmu-related a span { display: block; color: var(--text-faint); font-size: .8rem; margin-top: .2rem; }
-
 
 /* ===== КАДРЫ — слоты макета Омана: широкий после погоды, три после «Документов и денег» ===== */
 .pmu figure { margin: 0; }

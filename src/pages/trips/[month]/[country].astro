@@ -6,19 +6,17 @@ import { freshPrices } from '../../../data/price-freshness.js';
 import Layout from '../../../layouts/Layout.astro';
 import Footer from '../../../components/Footer.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
-import DestinationTabs from '../../../components/DestinationTabs.astro';
 import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
 import { месяцыНаправления } from '../../../utils/best-months.js';
 import { COUNTRIES as RICH_COUNTRIES } from '../../../data/programmatic-seasons.js';
 import { NICHE_TRIPS } from '../../../data/niche-trips.js';
-import { aviasalesRoute, ostrovokCountry, cherehapaCountry, youtravelCountry, sputnik8City, otelloStay } from '../../../data/affiliate.js';
+import { aviasalesRoute, ostrovokCountry, cherehapaCountry, youtravelCountry, sputnik8City } from '../../../data/affiliate.js';
 import { DATA_UPDATED, yearForMonth } from '../../../data/meta.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
 import { getWeatherBucket } from '../../../data/country-month-bucket.js';
 import { getBucket } from '../../../data/packing-weather-buckets.js';
 import { hasTripSnippet, tripSnippetDescription } from '../../../data/trip-snippets.js';
 import TripSaveButton from '../../../components/TripSaveButton.astro';
-import StickyCta from '../../../components/StickyCta.astro';
 // «О» или «об»: «об» перед словом с гласной а, и, о, у, э в начале («об Алтае», «об июне»), иначе «о».
 const об = (w) => (/^[аиоуэ]/i.test(String(w || '')) ? 'об' : 'о');
 
@@ -88,16 +86,6 @@ const liveFlight = iata ? freshPrices(livePrices, iata)[`${yr}-${String(monthIdx
 const flightTiers = d.price?.flight || [0,0,0];
 const hotelTiers = d.price?.hotel || [0,0,0];
 const foodTiers = d.price?.food || [0,0,0];
-// Липкая панель на телефоне: у этого шаблона 924 страницы с высоким интентом, и до
-// 07.09.2026 денежной точки внизу экрана здесь не было вовсе. Оффер — главный по типу
-// направления: у российских жильё, у остальных перелёт своего месяца.
-const RU_STAY_TRIPS = new Set(['abkhazia', 'kamchatka', 'karelia', 'dagestan', 'altai']);
-const меткаСтраницы = `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`;
-const панельОффер = RU_STAY_TRIPS.has(d.slug)
-  ? { href: otelloStay(меткаСтраницы), label: `Жильё ${d.cases.loc}` }
-  : (iata
-      ? { href: aviasalesRoute('MOW', iata, меткаСтраницы, monthIdx), label: `Билеты ${d.cases.vP} в ${m.prep}` }
-      : { href: ostrovokCountry(d.slug, меткаСтраницы), label: `Жильё ${d.cases.loc}` });
 
 const flightFrom = flightTiers[0];
 const hotelFrom = hotelTiers[0];
@@ -217,6 +205,7 @@ const pageDescription = snip
 
 ---
 <Layout
+  preloadJournalFonts
   title={pageTitle}
   description={pageDescription}
   canonical={url}
@@ -244,8 +233,6 @@ const pageDescription = snip
         </p>
         <TripSaveButton slug={d.slug} nom={d.cases.nom} monthIdx={monthIdx} />
       </header>
-
-      <DestinationTabs d={d} active="when" />
 
       <p class="lead">{text}</p>
 
@@ -282,6 +269,7 @@ const pageDescription = snip
       {hasPrices && (
         <section class="sec">
           <div class="shead"><h2>Сколько стоит поездка {d.cases.vP} в {m.prep}</h2></div>
+          <div class="budget-scroll" role="region" aria-label="Стоимость поездки по длительности" tabindex="0">
           <table class="dt">
             <thead><tr><th>Длительность</th><th>Эконом</th><th>Средний</th><th>Комфорт</th></tr></thead>
             <tbody>
@@ -295,6 +283,7 @@ const pageDescription = snip
               ))}
             </tbody>
           </table>
+          </div>
           <p class="tnote">Перелёт из Москвы ${flightTiers[0]}–${flightTiers[2]}, отель ${hotelTiers[0]}–${hotelTiers[2]}/ночь, еда ${foodTiers[0]}–${foodTiers[2]}/день. Точный расчёт под маршрут — в <a href="/calculator/">калькуляторе поездки</a>.</p>
           <p class="findcta"><a class="find" href={ostrovokCountry(d.slug, `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc}</a> — оплата картой РФ, бесплатная отмена · <a class="find" href={cherehapaCountry(d.slug, `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">страховка под визу</a> </p>
         </section>
@@ -439,8 +428,6 @@ const pageDescription = snip
     </div>
   </main>
 
-  <StickyCta href={панельОффер.href} label={панельОффер.label} />
-
   <Footer />
 </Layout>
 
@@ -450,7 +437,7 @@ const pageDescription = snip
 
 <style>
 .sw{--paper:#fbfbfa;--ink:#15171a;--mid:#5c626b;--line:#15171a;--hair:#d9dbde;--gold:#1d40ae;
-  --ff:'Golos Text Variable','Golos Text',Helvetica,Arial,sans-serif;--edge:clamp(1.1rem,3vw,2.6rem);
+  --ff:'Golos Text Variable','Golos Text',Helvetica,Arial,sans-serif;--edge:var(--page-edge);
   background:var(--paper);color:var(--ink);font-family:var(--ff);font-weight:400;line-height:1.4;
   font-variant-numeric:tabular-nums lining-nums;-webkit-font-smoothing:antialiased;padding-bottom:clamp(3rem,6vw,5rem)}
 :where(.sw) :where(h1,h2,h3,h4,p,ul,li){margin:0}
@@ -497,6 +484,8 @@ const pageDescription = snip
 .adm{font-size:.6rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
 .adm-row{margin-top:.55rem;font-size:.66rem;color:var(--mid)}
 
+/* На узком экране прокручивается только таблица, весь текст остаётся в колонке. */
+.budget-scroll{max-width:100%;overflow-x:auto}
 /* Бюджет-таблица */
 .dt{width:100%;border-collapse:collapse;font-size:.95rem;color:var(--ink)}
 .dt thead th{font-size:.64rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mid);text-align:left;padding:.5rem .8rem .55rem 0;border-bottom:1px solid var(--line)}
@@ -549,8 +538,11 @@ const pageDescription = snip
 @media(max-width:760px){
   .h1,.sub,.byl,.hero > :global(.tsb-wrap){grid-column:1/-1;grid-row:auto}
   .lead{margin-left:0}
-  .mgrid{grid-template-columns:repeat(3,1fr)}
-  .mg:nth-child(3n) {border-right:none}
+  .wrap{overflow-wrap:anywhere}
+  /* Крупный текст переводит календарь в две или одну колонку. */
+  .mgrid{display:flex;flex-wrap:wrap}
+  .mg{flex:1 1 30%;min-width:min(100%,calc(4rem + 16px))}
+  .mg a{padding-inline:8px}
   /* Бюджет-таблица → блоки */
   .dt{font-size:.875rem}
   .dt th,.dt td{padding:.45rem .5rem}

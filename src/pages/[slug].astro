@@ -15,7 +15,6 @@ import Footer from '../components/Footer.astro';
 import BestHotels from '../components/BestHotels.astro';
 import { hotelCollection } from '../data/hotels.js';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
-import DestinationTabs from '../components/DestinationTabs.astro';
 import { Image, getImage } from 'astro:assets';
 import { DIRECTIONS, MONTHS, VISITED } from '../data/directions.js';
 import { месяцыНаправления } from '../utils/best-months.js';
@@ -25,10 +24,8 @@ import { getHubSnippet } from '../data/hub-snippets.js';
 import { DATA_UPDATED, DATA_UPDATED_RU } from '../data/meta.js';
 import { newsForCountry, newsUrl, formatDateRu } from '../data/news.js';
 import AviasalesWidget from '../components/post/AviasalesWidget.astro';
-import StickyCta from '../components/StickyCta.astro';
 import BudgetBlock from '../components/BudgetBlock.astro';
 import EssentialsCard from '../components/EssentialsCard.astro';
-import YearClimateChart from '../components/YearClimateChart.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
 import ClimateChart from '../components/ClimateChart.astro';
 import CountryMap from '../components/CountryMap.astro';
@@ -463,8 +460,6 @@ if (guide?.itinerary?.length) {
       </div>
     </header>
 
-    <DestinationTabs d={d} active="hub" />
-
     {/* Оглавление: сразу под шапкой, в теле страницы, пункты слово в слово как
         заголовки разделов (NN/g, Tables of Contents). Разделы открыты целиком —
         Google даёт ссылки-переходы к разделам только на видимый при загрузке текст.
@@ -541,7 +536,6 @@ if (guide?.itinerary?.length) {
     <section class="om-sec" id="pogoda">
       <h2>{погодаH2}</h2>
       <p class="om-body">{typo(`Лучшие месяцы — ${лучшиеСловами || '—'}${худшиеСловами ? `; хуже всего — ${худшиеСловами}` : ''}.`)}</p>
-      <YearClimateChart slug={d.slug} />
       <div class="om-heat">
         {monthsRanked.map((m, i) => {
           const cls = m.status === 'P' ? 'peak' : m.status === 'G' ? 'good' : m.status === 'O' ? 'off' : m.status === 'B' ? 'bad' : 'closed';
@@ -820,7 +814,6 @@ if (guide?.itinerary?.length) {
       </div>
     </section>
 
-
     <div class="om-foot">
       <Image src={author} alt="Никита Зайцев" width={60} height={74} format="webp" quality={80} />
       <div>
@@ -830,11 +823,6 @@ if (guide?.itinerary?.length) {
     </div>
   </main>
 
-  {билеты && flightFrom ? (
-    <StickyCta href={билеты} label={`Билеты ${d.cases.vP} от $${flightFrom}`} />
-  ) : RU_STAY.has(d.slug) && (
-    <StickyCta href={otelloStay(`hub_${d.slug}`)} label={`Подобрать жильё ${d.cases.loc}`} />
-  )}
 
   <Footer />
 </Layout>
@@ -857,6 +845,7 @@ if (guide?.itinerary?.length) {
   .om-embed--sec { border-top: 1px solid var(--line); }
   .om-body { font-size: 1.0625rem; line-height: 1.65; margin: 0 0 16px; max-width: 68ch; }
   .om-dim { color: var(--text-faint); }
+  .om > :global(.breadcrumbs) { padding-inline: 0; }
   .om-small { font-size: 0.9375rem; font-weight: 400; }
 
   .om-hero { margin: 0 -24px 20px; }
@@ -1009,12 +998,24 @@ if (guide?.itinerary?.length) {
     .om-answer { grid-column: span 5; }
   }
   @media (max-width: 900px) {
-    .om-top, .om-pair, .om-money, .om-practice { grid-template-columns: 1fr; gap: 28px; }
+    .om-top, .om-pair, .om-money, .om-practice { grid-template-columns: minmax(0, 1fr); gap: 28px; }
     .om-title, .om-answer, .om-byline, .om-pair > *, .om-money > *, .om-practice > * { grid-column: 1 / -1; }
     .om-heat { grid-template-columns: repeat(6, 1fr); }
   }
   @media (max-width: 768px) {
     .om { padding: 0 16px 48px; }
+    /* Автор и оглавление не должны добавлять пустой экран перед ответом. */
+    .om { overflow-wrap: anywhere; }
+    .om-facts > div { flex-wrap: wrap; gap: 4px 16px; }
+    .om-facts dt, .om-facts dd { max-width: 100%; min-width: 0; }
+    .om-facts dd { margin-left: auto; }
+    .om-top { padding-block: 16px 24px; row-gap: 24px; }
+    .om-lead { margin-bottom: 0; }
+    .om-answer { padding-top: 0; }
+    .om-byline { flex-wrap: nowrap; gap: 12px; }
+    .om-byline :global(img) { width: 40px; height: 48px; }
+    .om-byline > p { flex: 1 1 0; min-width: 0; margin: 0; line-height: 1.6; }
+    .om-byline a { display: inline; min-height: 0; }
     .om-sec { padding: 40px 0; }
     .om-hero, .om-wide { margin-left: -16px; margin-right: -16px; }
     .om-wide figcaption { padding: 0 16px; }
