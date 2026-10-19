@@ -6,6 +6,15 @@ test('delivery profiles and provider host aliases do not create distinct photogr
     photoSourceIdentity('https://cdn.worldota.net/t/1920x/content/photo.JPEG?download=1'));
   assert.notEqual(photoSourceIdentity('https://a.example/photo.jpg'), photoSourceIdentity('https://b.example/photo.jpg'));
 });
+test('published hotel gallery thumbnail sizes do not count as different photos', () => {
+  for (const [small, large] of [
+    ['https://irp.cdn-website.com/site/dms3rep/multi/opt/room-640w.jpeg','https://irp.cdn-website.com/site/dms3rep/multi/room.jpeg'],
+    ['https://hotel.example/wp-content/uploads/2026/room-300x200.jpg','https://hotel.example/wp-content/uploads/2026/room.jpg'],
+    ['https://images.squarespace-cdn.com/content/room.jpg?format=500w','https://images.squarespace-cdn.com/content/room.jpg?format=2500w'],
+    ['https://live.staticflickr.com/12/123456_abcdef_b.jpg','https://live.staticflickr.com/12/123456_abcdef_k.jpg'],
+    ['https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Hotel_room.jpg/1280px-Hotel_room.jpg','https://upload.wikimedia.org/wikipedia/commons/a/ab/Hotel_room.jpg'],
+  ]) assert.equal(photoSourceIdentity(small),photoSourceIdentity(large));
+});
 const photo = { sourcePhoto: 'https://cdn.ostrovok.ru/t/640x400/content/photo.JPEG' };
 test('never stretches the known 650px miniature into a 2x gallery original', () => {
   assert.equal(selectNativePhotoSource({ ...photo, publisherWidth: 650, publisherHeight: 450 }, 2000, 1125), null);

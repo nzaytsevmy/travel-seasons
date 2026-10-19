@@ -4,6 +4,22 @@ export function photoSourceIdentity(value) {
   const url = new URL(value);
   if (['cdn.ostrovok.ru', 'cdn.worldota.net'].includes(url.hostname))
     return `ostrovok:${url.pathname.replace(/^\/t\/[^/]+\//, '/')}`;
+  if (url.hostname === 'irp.cdn-website.com' && url.pathname.includes('/dms3rep/multi/')) {
+    url.pathname = url.pathname.replace('/dms3rep/multi/opt/', '/dms3rep/multi/')
+      .replace(/-\d+w(?=\.(?:jpe?g|png|webp)$)/i, '');
+    url.search = '';
+  }
+  if (url.pathname.includes('/wp-content/uploads/'))
+    url.pathname = url.pathname.replace(/-\d+x\d+(?=\.(?:jpe?g|png|webp)$)/i, '');
+  if (url.hostname === 'images.squarespace-cdn.com') url.searchParams.delete('format');
+  if (url.hostname === 'live.staticflickr.com') {
+    const id = url.pathname.match(/\/(\d+)_[a-f\d]+(?:_[a-z\d]+)?\.(?:jpe?g|png)$/i)?.[1];
+    if (id) return `flickr:${id}`;
+  }
+  if (url.hostname === 'upload.wikimedia.org') {
+    const file = url.pathname.match(/^\/wikipedia\/commons\/(?:thumb\/)?[^/]+\/[^/]+\/([^/]+)/)?.[1];
+    if (file) return `commons:/wiki/File:${decodeURIComponent(file).replaceAll('_', ' ').normalize('NFC')}`;
+  }
   url.hash = '';
   return url.href;
 }
