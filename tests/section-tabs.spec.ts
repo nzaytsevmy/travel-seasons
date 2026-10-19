@@ -79,7 +79,7 @@ for (const path of ['/', '/countries/', '/seasons/', '/trips/', '/trips/july/', 
       return { title: title.left, crumbs: crumbs ? crumbs.getBoundingClientRect().left + parseFloat(getComputedStyle(crumbs).paddingLeft) : null, footer: parseFloat(getComputedStyle(document.querySelector('.site-footer')!).paddingLeft) };
     });
     expect(edges.title, path).toBeCloseTo(16, 0);
-    if (['/', '/calculator/', '/about/', '/legal/privacy/'].includes(path)) expect(edges.crumbs, path).toBeNull();
+    if (['/', '/seasons/', '/calculator/', '/about/', '/legal/privacy/'].includes(path)) expect(edges.crumbs, path).toBeNull();
     else expect(edges.crumbs, path).toBeCloseTo(16, 0);
     expect(edges.footer, path).toBeCloseTo(16, 0);
     if (path === '/hotels/australia/') {
