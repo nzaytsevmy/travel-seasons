@@ -4,7 +4,8 @@ export function publishedPhotoOriginalUrl(value) {
   let url;
   try { url = new URL(value); } catch { return null; }
   if (url.protocol !== 'https:' || url.username || url.password) return null;
-  const parameters = {
+  const parameters = url.hostname.endsWith('.imgix.net')
+    ? ['auto', 'fit', 'crop', 'w', 'h', 'q', 'fm', 'rect', 'ar', 'dpr'] : {
     'dam.melia.com': ['im'],
     'cdn-datahub.visitfinland.com': ['s'],
     'images.squarespace-cdn.com': ['format'],
