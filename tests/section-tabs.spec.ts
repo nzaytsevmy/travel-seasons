@@ -69,7 +69,7 @@ test('mobile contents stay collapsed and their anchors remain usable', async ({ 
   await expect(page.locator('a[href^="/trips/"]').first()).toBeAttached();
 });
 
-for (const path of ['/australia-east/', '/oman/', '/japan/', '/packing/japan/', '/visa/turkey/', '/blog/strahovka-dlya-puteshestviy-2026/', '/about/', '/legal/privacy/']) {
+for (const path of ['/', '/countries/', '/seasons/', '/trips/', '/trips/july/', '/visa/', '/packing/', '/blog/', '/novosti/', '/compare/', '/compare/turkey-vs-egypt/', '/events/', '/events/july/', '/calculator/', '/hotels/australia/', '/oman/', '/australia-east/', '/turkey/', '/japan/', '/visa/turkey/', '/packing/japan/', '/packing/egypt/june/', '/trips/july/turkey/', '/bezviz/', '/blog/strahovka-dlya-puteshestviy-2026/', '/blog/tag/2026/', '/about/', '/legal/privacy/']) {
   test(`mobile page shell uses one gutter ${path}`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(path);
@@ -79,9 +79,20 @@ for (const path of ['/australia-east/', '/oman/', '/japan/', '/packing/japan/', 
       return { title: title.left, crumbs: crumbs ? crumbs.getBoundingClientRect().left + parseFloat(getComputedStyle(crumbs).paddingLeft) : null, footer: parseFloat(getComputedStyle(document.querySelector('.site-footer')!).paddingLeft) };
     });
     expect(edges.title, path).toBeCloseTo(16, 0);
-    if (path === '/about/' || path === '/legal/privacy/') expect(edges.crumbs, path).toBeNull();
+    if (['/', '/calculator/', '/about/', '/legal/privacy/'].includes(path)) expect(edges.crumbs, path).toBeNull();
     else expect(edges.crumbs, path).toBeCloseTo(16, 0);
     expect(edges.footer, path).toBeCloseTo(16, 0);
+    if (path === '/hotels/australia/') {
+      for (const width of [768, 1280]) {
+        await page.setViewportSize({ width, height: 900 });
+        const aligned = await page.evaluate(() => {
+          const crumbs = document.querySelector('.breadcrumbs')!;
+          return { title: document.querySelector('h1')!.getBoundingClientRect().left,
+            crumbs: crumbs.getBoundingClientRect().left + parseFloat(getComputedStyle(crumbs).paddingLeft) };
+        });
+        expect(aligned.crumbs, `nested breadcrumbs align with the content at ${width}px`).toBeCloseTo(aligned.title, 0);
+      }
+    }
   });
 }
 
@@ -104,7 +115,7 @@ for (const path of ['/about/', '/legal/privacy/', '/legal/cookie/', '/legal/term
   });
 }
 
-for (const path of ['/australia-east/', '/oman/', '/japan/', '/antarctica/', '/visa/turkey/', '/packing/japan/', '/packing/egypt/june/', '/trips/july/turkey/', '/blog/strahovka-dlya-puteshestviy-2026/', '/seasons/']) {
+for (const path of ['/australia-east/', '/oman/', '/japan/', '/antarctica/', '/visa/turkey/', '/packing/japan/', '/packing/egypt/june/', '/trips/july/turkey/', '/blog/strahovka-dlya-puteshestviy-2026/', '/seasons/', '/blog/', '/blog/tag/2026/']) {
   test(`mobile reading survives doubled text size ${path}`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(path);
