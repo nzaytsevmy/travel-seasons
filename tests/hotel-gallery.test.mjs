@@ -33,7 +33,7 @@ test('У всех десяти отелей Сингапура есть полн
 });
 
 test('Каждый сохранённый кадр существует, имеет источник и не подменяет фотографии другого отеля', async () => {
-  const hotelByDigest=new Map();
+  const hotelByDigest=new Map(),visualDuplicates=[];
   for(const [country,collection] of Object.entries(HOTEL_COLLECTIONS)) for(const hotel of collection.hotels) {
     const hashes=new Set(), sources=new Set(), fingerprints=[];
     for(const photo of hotelGallery(country,hotel)) {
@@ -51,12 +51,13 @@ test('Каждый сохранённый кадр существует, име�
       const hash=createHash('sha256'); for await(const chunk of createReadStream(file)) hash.update(chunk);
       const digest=hash.digest('hex');assert.ok(!hashes.has(digest),`Повтор файла: ${photo.image}`);hashes.add(digest);
       const fingerprint=await photoFingerprint(file);
-      for(const previous of fingerprints)assert.ok(photoFingerprintDistance(previous.fingerprint,fingerprint)>=2,
-        `Один визуальный кадр в разных файлах: ${previous.image} и ${photo.image}`);
+      for(const previous of fingerprints)if(photoFingerprintDistance(previous.fingerprint,fingerprint)<2)
+        visualDuplicates.push({hotel:`${country}/${hotel.id}`,first:previous.image,second:photo.image});
       fingerprints.push({image:photo.image,fingerprint});
       assert.ok(!hotelByDigest.has(digest),`Одинаковое фото у ${hotelByDigest.get(digest)} и ${country}/${hotel.id}`);hotelByDigest.set(digest,`${country}/${hotel.id}`);
     }
   }
+  assert.deepEqual(visualDuplicates,[], 'Один визуальный кадр в разных файлах; проверены все галереи');
 });
 
 test('У всех десяти отелей Гонконга есть полная галерея', () => {
