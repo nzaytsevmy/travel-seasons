@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import sharp from 'sharp';
 import { parse } from 'parse5';
+import { curlPhotoRequest } from './hotel-photo-request.mjs';
 import { readyHotelCollections, hotelGallery, hotelHubPicks, hotelGuideHubs } from '../src/data/hotels.js';
 
 export const PHOTO_VIEWPORTS = [402, 768, 1024, 1280, 1440, 1920];
@@ -74,6 +75,7 @@ export async function auditPhotos() {
 }
 
 async function refreshPhotos(output) {
+  const request = process.argv.includes('--curl') ? curlPhotoRequest : fetch;
   sharp.cache(false); sharp.concurrency(2);
   const credits = JSON.parse(await fs.readFile('src/data/hotel-photo-credits.json', 'utf8'));
   // Downloading originals does not require decoding or re-auditing old thumbnails.
@@ -82,7 +84,7 @@ async function refreshPhotos(output) {
   const receipts = [];
   await fs.mkdir(output, { recursive: true });
   const fixture = 'https://cdn.ostrovok.ru/t/2048x2048/content/18/b1/18b15c224785d44399ebaa858f58dd91687c2f5c.png';
-  const fixtureResponse = await fetch(fixture, { signal: AbortSignal.timeout(30_000) });
+  const fixtureResponse = await request(fixture, { signal: AbortSignal.timeout(30_000) });
   if (!fixtureResponse.ok) throw new Error(`No-upscale source contract unavailable: HTTP ${fixtureResponse.status}`);
   const fixtureBytes = Buffer.from(await fixtureResponse.arrayBuffer());
   const fixtureMeta = await sharp(fixtureBytes).metadata();
@@ -122,7 +124,7 @@ async function refreshPhotos(output) {
     let source = credit?.sourcePhoto;
     if (!source && new URL(credit?.source || 'https://invalid.example').hostname === 'www.flickr.com') {
       try {
-        const response = await fetch(credit.source, { signal: AbortSignal.timeout(30_000),
+        const response = await request(credit.source, { signal: AbortSignal.timeout(30_000),
           headers: { 'User-Agent': 'TravelTribePhotoQA/1.0 (https://traveltribe.ru/)' } });
         if (!response.ok) throw new Error(`Flickr HTTP ${response.status}`);
         const decoder = new TextDecoder(); let html = ''; let length = 0;
@@ -147,7 +149,7 @@ async function refreshPhotos(output) {
       api.search = new URLSearchParams({ action: 'query', format: 'json', prop: 'imageinfo', iiprop: 'url|size', iiurlwidth: '3000',
         titles: decodeURIComponent(new URL(credit.source).pathname.slice('/wiki/'.length)) });
       try {
-        const response = await fetch(api, { signal: AbortSignal.timeout(30_000),
+        const response = await request(api, { signal: AbortSignal.timeout(30_000),
           headers: { 'User-Agent': 'TravelTribePhotoQA/1.0 (https://traveltribe.ru/)' } });
         if (!response.ok) throw new Error(`Commons HTTP ${response.status}`);
         const data = await response.json();
@@ -160,7 +162,7 @@ async function refreshPhotos(output) {
     const temporary = `${output}/${photo.image}.original`;
     try {
       await fs.mkdir(temporary.slice(0, temporary.lastIndexOf('/')), { recursive: true });
-      const response = await fetch(url, { signal: AbortSignal.timeout(30_000),
+      const response = await request(url, { signal: AbortSignal.timeout(30_000),
         headers: { 'User-Agent': 'TravelTribePhotoQA/1.0 (https://traveltribe.ru/)' } });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const digest = createHash('sha256'); let bytes = 0;
