@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { selectNativePhotoSource, sourceDoesNotEnlarge } from '../scripts/hotel-native-source.mjs';
+import { selectNativePhotoSource, selectNativePhotoSources, sourceDoesNotEnlarge } from '../scripts/hotel-native-source.mjs';
 const photo = { sourcePhoto: 'https://cdn.ostrovok.ru/t/640x400/content/photo.JPEG' };
 test('never stretches the known 650px miniature into a 2x gallery original', () => {
   assert.equal(selectNativePhotoSource({ ...photo, publisherWidth: 650, publisherHeight: 450 }, 2000, 1125), null);
@@ -26,4 +26,10 @@ test('a native 1280x960 photo covers the body crop without forced enlargement', 
 test('the country lead crop cannot rely on the legacy variant capped at 1080px high', () => {
   const selected = selectNativePhotoSource({ ...photo, publisherWidth: 2000, publisherHeight: 1500 }, 1540, 1155);
   assert.equal(selected.sourceVariant, '2048x2048');
+});
+test('transport fallbacks all preserve photo identity and the native 2x crop', () => {
+  const sources = selectNativePhotoSources({ ...photo, publisherWidth: 4000, publisherHeight: 3000 }, 1327, 995);
+  assert.deepEqual(sources.map(source => source.sourceVariant), ['2600x1240', '1920x1080', '2048x2048']);
+  for (const source of sources) assert.ok(source.sourcePhoto.endsWith('/content/photo.JPEG'));
+  assert.deepEqual(selectNativePhotoSources({ ...photo, publisherWidth: 1280, publisherHeight: 960 }, 1327, 995), []);
 });
