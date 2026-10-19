@@ -4,15 +4,16 @@ export function publishedPhotoOriginalUrl(value) {
   let url;
   try { url = new URL(value); } catch { return null; }
   if (url.protocol !== 'https:' || url.username || url.password) return null;
-  const parameter = {
-    'dam.melia.com': 'im',
-    'cdn-datahub.visitfinland.com': 's',
-    'images.squarespace-cdn.com': 'format',
+  const parameters = {
+    'dam.melia.com': ['im'],
+    'cdn-datahub.visitfinland.com': ['s'],
+    'images.squarespace-cdn.com': ['format'],
+    'dynamic-media-cdn.tripadvisor.com': ['w', 'h', 's'],
   }[url.hostname];
   // Keep the exact published object path. Never strip signatures, invent a
   // larger dimension, or change an unknown publisher's delivery contract.
-  if (!parameter || !url.searchParams.has(parameter) ||
-      [...url.searchParams.keys()].some(key => key !== parameter)) return null;
+  if (!parameters || !url.search ||
+      [...url.searchParams.keys()].some(key => !parameters.includes(key))) return null;
   url.search = '';
   url.hash = '';
   return url.href;
