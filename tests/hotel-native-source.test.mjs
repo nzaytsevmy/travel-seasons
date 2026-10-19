@@ -23,3 +23,7 @@ test('a native 1280x960 photo covers the body crop without forced enlargement', 
   const selected = selectNativePhotoSource({ ...photo, publisherWidth: 1280, publisherHeight: 960 }, 1266, 950);
   assert.equal(selected.sourceVariant, '1920x1080');
 });
+test('the country lead crop cannot rely on the legacy variant capped at 1080px high', () => {
+  const selected = selectNativePhotoSource({ ...photo, publisherWidth: 2000, publisherHeight: 1500 }, 1540, 1155);
+  assert.equal(selected.sourceVariant, '2048x2048');
+});
