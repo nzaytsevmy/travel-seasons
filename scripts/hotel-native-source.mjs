@@ -11,6 +11,8 @@ export function selectNativePhotoSources(photo, requiredWidth, requiredHeight) {
   const variants = [
     ...(width >= 2600 ? [{ name: '2600x1240', scale: 2600 / width }] : []),
     { name: '1920x1080', scale: Math.min(1, 1920 / width, 1080 / height) },
+    ...(width >= 1920 ? [{ name: '1920x', scale: 1920 / width }] : []),
+    ...(height >= 1920 ? [{ name: 'x1920', scale: 1920 / height }] : []),
     { name: '2048x2048', scale: Math.min(1, 2048 / Math.max(width, height)) },
   ];
   const eligible = variants.filter(item => Math.floor(width * item.scale) >= requiredWidth &&
@@ -36,6 +38,8 @@ export function sourceDoesNotEnlarge(row) {
   return source.protocol === 'https:' && provider && source.pathname.startsWith(`/t/${row.sourceVariant}/`) &&
     Number.isInteger(row.publisherWidth) && Number.isInteger(row.publisherHeight) &&
     row.publisherWidth >= row.width && row.publisherHeight >= row.height &&
-    ['1920x1080', '2048x2048', '2600x1240'].includes(row.sourceVariant) &&
-    (row.sourceVariant !== '2600x1240' || row.publisherWidth >= 2600);
+    ['1920x1080', '2048x2048', '2600x1240', '1920x', 'x1920'].includes(row.sourceVariant) &&
+    (row.sourceVariant !== '2600x1240' || row.publisherWidth >= 2600) &&
+    (row.sourceVariant !== '1920x' || row.publisherWidth >= 1920) &&
+    (row.sourceVariant !== 'x1920' || row.publisherHeight >= 1920);
 }

@@ -25,11 +25,23 @@ test('a native 1280x960 photo covers the body crop without forced enlargement', 
 });
 test('the country lead crop cannot rely on the legacy variant capped at 1080px high', () => {
   const selected = selectNativePhotoSource({ ...photo, publisherWidth: 2000, publisherHeight: 1500 }, 1540, 1155);
-  assert.equal(selected.sourceVariant, '2048x2048');
+  assert.equal(selected.sourceVariant, '1920x');
+});
+test('forced one-axis variants are available only below verified native bounds', () => {
+  const wide = selectNativePhotoSources({ ...photo, publisherWidth: 2000, publisherHeight: 1500 }, 1540, 1155);
+  assert.ok(wide.some(row => row.sourceVariant === '1920x'));
+  assert.equal(wide.some(row => row.sourceVariant === 'x1920'), false);
+  const small = selectNativePhotoSources({ ...photo, publisherWidth: 1280, publisherHeight: 960 }, 1200, 900);
+  assert.equal(small.some(row => ['1920x', 'x1920'].includes(row.sourceVariant)), false);
+  for (const sourceVariant of ['1920x', 'x1920']) assert.equal(sourceDoesNotEnlarge({
+    sourcePolicy: 'publisher-native-bounds-v2', sourceVariant,
+    sourcePhoto: `https://cdn.ostrovok.ru/t/${sourceVariant}/content/photo.JPEG`,
+    width: 650, height: 450, publisherWidth: 650, publisherHeight: 450,
+  }), false);
 });
 test('transport fallbacks all preserve photo identity and the native 2x crop', () => {
   const sources = selectNativePhotoSources({ ...photo, publisherWidth: 4000, publisherHeight: 3000 }, 1327, 995);
-  assert.deepEqual(sources.map(source => source.sourceVariant), ['2600x1240', '1920x1080', '2048x2048']);
+  assert.deepEqual(sources.map(source => source.sourceVariant), ['2600x1240', '1920x1080', '1920x', 'x1920', '2048x2048']);
   for (const source of sources) assert.ok(source.sourcePhoto.endsWith('/content/photo.JPEG'));
   assert.deepEqual(selectNativePhotoSources({ ...photo, publisherWidth: 1280, publisherHeight: 960 }, 1327, 995), []);
 });
