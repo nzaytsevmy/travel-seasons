@@ -5,8 +5,8 @@ export function selectNativePhotoSource(photo, requiredWidth, requiredHeight) {
   if (!Number.isInteger(width) || !Number.isInteger(height) || Math.min(width, height) <= 0) return null;
   if (width < requiredWidth || height < requiredHeight) return null;
   const variants = [
-    { name: '1920x1080', scale: Math.min(1, 1920 / Math.max(width, height)) },
     ...(width >= 2600 ? [{ name: '2600x1240', scale: 2600 / width }] : []),
+    { name: '1920x1080', scale: Math.min(1, 1920 / Math.max(width, height)) },
     { name: '2048x2048', scale: Math.min(1, 2048 / Math.max(width, height)) },
   ];
   const variant = variants.find(item => Math.floor(width * item.scale) >= requiredWidth &&
