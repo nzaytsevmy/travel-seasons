@@ -1,10 +1,10 @@
-import sharp from 'sharp';
 import { fileURLToPath } from 'node:url';
 
 // A tiny colour fingerprint detects another encoding of the same frame even
 // when its URL, dimensions and byte hash changed. Original files stay untouched.
 export async function photoFingerprint(input) {
-  return sharp(input instanceof URL?fileURLToPath(input):input,{limitInputPixels:40_000_000}).rotate()
+  const {default:sharp}=await import('sharp');
+  return sharp(input instanceof URL?fileURLToPath(input):input,{limitInputPixels:40_000_000,sequentialRead:true}).rotate()
     .resize(32,32,{fit:'fill'}).removeAlpha().toColourspace('srgb').raw().toBuffer();
 }
 
