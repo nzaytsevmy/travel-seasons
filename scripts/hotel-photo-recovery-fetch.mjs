@@ -45,13 +45,17 @@ for (const row of originals) {
 const accepted=await optionalJson('work/hotel-native-final-selection.json',{selected:[]});
 const reserved=new Map();
 for(const row of accepted.selected){const slot=slotByImage.get(row.image);if(!slot)throw Error('Accepted photo outside manifest');const key=`${slot.country}/${slot.hotelId}`;used.get(key).add(identity(row.sourcePhoto));hashes.get(key).add(row.originalSha256);reserved.set(`${key}:${identity(row.sourcePhoto)}`,row.image);}
-const fixture = 'https://cdn.ostrovok.ru/t/2048x2048/content/18/b1/18b15c224785d44399ebaa858f58dd91687c2f5c.png';
-const fixtureBytes = await (await curlPhotoRequest(fixture)).arrayBuffer();
-const fixtureMetadata = await sharp(fixtureBytes).metadata();
-if (fixtureMetadata.width !== 650 || fixtureMetadata.height !== 450) throw new Error('No-upscale control failed');
-await fs.writeFile(`${directory}/source-policy.json`, JSON.stringify({ sourcePolicy: 'publisher-native-bounds-v2', controlPolicy: 'native-safe2048-v1',
-  checkedAt: new Date().toISOString(), fixture, width: 650, height: 450,
-  sha256: createHash('sha256').update(fixtureBytes).digest('hex') }));
+const controls=[];
+for(const fixture of [
+ {url:'https://cdn.ostrovok.ru/t/2048x2048/content/18/b1/18b15c224785d44399ebaa858f58dd91687c2f5c.png',width:650,height:450},
+ {url:'https://cdn.ostrovok.ru/t/2048x2048/content/3a/86/3a8652717e83b4dd97215cb5a9036073c7f4816f.JPEG',width:2000,height:1333},
+]){
+ const bytes=await(await curlPhotoRequest(fixture.url)).arrayBuffer();
+ const meta=await sharp(bytes).metadata();
+ if(meta.width!==fixture.width||meta.height!==fixture.height)throw Error('No-upscale PNG/JPEG control failed');
+ controls.push({fixture:fixture.url,width:meta.width,height:meta.height,sha256:createHash('sha256').update(bytes).digest('hex')});
+}
+await fs.writeFile(`${directory}/source-policy.json`,JSON.stringify({sourcePolicy:'publisher-native-bounds-v2',controlPolicy:'native-safe2048-v1',checkedAt:new Date().toISOString(),...controls[0],controls}));
 let persistence = Promise.resolve(), processed = 0;
 async function save(row) {
   results.set(row.image, row);

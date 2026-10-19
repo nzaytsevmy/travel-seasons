@@ -24,5 +24,6 @@ await fs.mkdir('work',{recursive:true});
 for(const[name,value]of Object.entries({'hotel-native-selection-plan.json':manifest.slots,'hotel-native-replacement-plan.json':manifest.plan,'hotel-native-final-selection.json':manifest.accepted,'hotel-native-visual-rejections.json':manifest.rejections}))await fs.writeFile(`work/${name}`,JSON.stringify(value));
 const out='artifacts/hotel-materials/photos';await fs.mkdir(out,{recursive:true});
 await fs.writeFile('artifacts/hotel-materials/recovery-input.json',JSON.stringify({sourceHead:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),inputSha256:createHash('sha256').update(input).digest('hex'),generatedAt:manifest.generatedAt,slots:manifest.plan.rows.length,sourceCatalogs:manifest.sourceCatalogs,status:'FETCH_ONLY_SCENE_REVIEW_AND_COMPLETE_RELEASE_GATES_STILL_REQUIRED'},null,2));
+await fs.writeFile('artifacts/hotel-materials/recovery-manifest.json',input);
 process.env.HOTEL_RECOVERY_OUTPUT=out;
 await import('./hotel-photo-recovery-fetch.mjs');
