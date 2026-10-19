@@ -10,6 +10,7 @@ export function publishedPhotoOriginalUrl(value) {
     'cdn-datahub.visitfinland.com': ['s'],
     'images.squarespace-cdn.com': ['format'],
     'dynamic-media-cdn.tripadvisor.com': ['w', 'h', 's'],
+    'resort98acres.eme-devops.com': ['auto', 'crop', 'fit', 'h', 'q', 'w'],
   }[url.hostname];
   // Keep the exact published object path. Never strip signatures, invent a
   // larger dimension, or change an unknown publisher's delivery contract.
@@ -24,6 +25,8 @@ export function photoSourceIdentity(value) {
   const url = new URL(publishedPhotoOriginalUrl(value) || value);
   if (['cdn.ostrovok.ru', 'cdn.worldota.net'].includes(url.hostname))
     return `ostrovok:${url.pathname.replace(/^\/t\/[^/]+\//, '/')}`;
+  if (url.hostname.endsWith('.website-files.com'))
+    url.pathname = url.pathname.replace(/-p-\d+(?=\.(?:jpe?g|png|webp)$)/i, '');
   if (url.hostname === 'irp.cdn-website.com' && url.pathname.includes('/dms3rep/multi/')) {
     url.pathname = url.pathname.replace('/dms3rep/multi/opt/', '/dms3rep/multi/')
       .replace(/-\d+w(?=\.(?:jpe?g|png|webp)$)/i, '');

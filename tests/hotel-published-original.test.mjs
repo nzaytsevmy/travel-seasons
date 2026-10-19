@@ -11,3 +11,9 @@ test('removes only known shrinking delivery transforms from the same published C
 test('never invents image paths or removes authentication and unrelated parameters',()=>{
  for(const value of ['https://example.com/a.jpg?w=300','https://dam.melia.com/a.jpg?token=private&im=crop','https://dam.melia.com/a.jpg','http://dam.melia.com/a.jpg?im=crop','https://:0','https://webbox.imgix.net/images/room.jpg?w=800&s=signature'])assert.equal(publishedPhotoOriginalUrl(value),null);
 });
+test('Webflow widths refer to one photo rather than distinct gallery frames',async()=>{
+ const {photoSourceIdentity}=await import('../scripts/hotel-native-source.mjs');
+ const base='https://cdn.prod.website-files.com/property/photo';
+ assert.equal(photoSourceIdentity(base+'-p-1600.jpg'),photoSourceIdentity(base+'-p-3200.jpg'));
+ assert.notEqual(photoSourceIdentity('https://example.com/photo-p-1600.jpg'),photoSourceIdentity('https://example.com/photo-p-3200.jpg'));
+});
