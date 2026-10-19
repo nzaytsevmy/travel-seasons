@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync, createReadStream } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { photoSourceIdentity } from '../scripts/hotel-native-source.mjs';
+import { photoFingerprint, photoFingerprintDistance } from '../scripts/hotel-photo-distinctness.mjs';
 import { hotelGallery, collectionHasCompleteGalleries, HOTEL_COLLECTIONS, hotelCollection, readyHotelCollections } from '../src/data/hotels.js';
 const credits = JSON.parse(readFileSync(new URL('../src/data/hotel-photo-credits.json',import.meta.url)));
 
@@ -34,7 +35,7 @@ test('У всех десяти отелей Сингапура есть полн
 test('Каждый сохранённый кадр существует, имеет источник и не подменяет фотографии другого отеля', async () => {
   const hotelByDigest=new Map();
   for(const [country,collection] of Object.entries(HOTEL_COLLECTIONS)) for(const hotel of collection.hotels) {
-    const hashes=new Set(), sources=new Set();
+    const hashes=new Set(), sources=new Set(), fingerprints=[];
     for(const photo of hotelGallery(country,hotel)) {
       const file=new URL(`../src/assets/hotels/${photo.image}`,import.meta.url);
       assert.ok(existsSync(file),photo.image);
@@ -49,6 +50,10 @@ test('Каждый сохранённый кадр существует, име�
       assert.ok(!sources.has(identity),`Повтор исходника: ${country}/${hotel.id}`);sources.add(identity);
       const hash=createHash('sha256'); for await(const chunk of createReadStream(file)) hash.update(chunk);
       const digest=hash.digest('hex');assert.ok(!hashes.has(digest),`Повтор файла: ${photo.image}`);hashes.add(digest);
+      const fingerprint=await photoFingerprint(file);
+      for(const previous of fingerprints)assert.ok(photoFingerprintDistance(previous.fingerprint,fingerprint)>=2,
+        `Один визуальный кадр в разных файлах: ${previous.image} и ${photo.image}`);
+      fingerprints.push({image:photo.image,fingerprint});
       assert.ok(!hotelByDigest.has(digest),`Одинаковое фото у ${hotelByDigest.get(digest)} и ${country}/${hotel.id}`);hotelByDigest.set(digest,`${country}/${hotel.id}`);
     }
   }
