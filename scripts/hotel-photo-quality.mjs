@@ -21,7 +21,7 @@ export function originalPhotoUrl(value) {
   return url.href;
 }
 export function galleryFrame(viewport, lead) {
-  const padding = Math.min(41.6, Math.max(17.6, viewport * .03));
+  const padding = viewport < 768 ? 16 : Math.min(41.6, Math.max(17.6, viewport * .03));
   const inner = Math.min(1280, viewport) - 2 * padding;
   const column = lead || viewport < 768 ? inner : (inner - 32) * 1.45 / 2.45;
   const width = lead ? Math.min(1000, column * .92) : column * .92;
@@ -40,7 +40,11 @@ export function photoFrames(photo) {
     const pickIndex = picks.findIndex(hotel => hotel.id === photo.hotelId && hotel.image === photo.image);
     if (pickIndex < 0) continue;
     for (const viewport of PHOTO_VIEWPORTS) {
-      const padding = Math.min(41.6, Math.max(17.6, viewport * .03));
+      // Japan uses --page-edge; the shared country/Oman template has 24px
+      // desktop edges and switches to 16px through its inclusive 768px rule.
+      const padding = hub.slug === 'japan'
+        ? (viewport < 768 ? 16 : Math.min(41.6, Math.max(17.6, viewport * .03)))
+        : viewport <= 768 ? 16 : 24;
       const inner = Math.min(1280, viewport) - 2 * padding;
       const width = viewport < 768 ? inner : (inner - 32) * (pickIndex === 0 ? 1.8 : 1) / 2.8;
       frames.push({ viewport, width, height: width * (pickIndex === 0 || viewport < 768 ? .75 : 9 / 16) });

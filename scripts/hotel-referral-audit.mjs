@@ -17,11 +17,14 @@ export function publishedBookings(html) {
     .map(node => ({ href: attr(node, 'data-go') ? Buffer.from(attr(node, 'data-go'), 'base64').toString('utf8') : attr(node, 'href'),
       name: text(node).trim(), ctaId: attr(node, 'data-cta-id'), rel: attr(node, 'rel') }));
 }
-export function checkHotelLanding(target, final, status) {
+export function checkHotelLanding(target, final, status, expectedName, heading) {
   const expected = new URL(target), url = new URL(final);
   const mid = expected.pathname.match(/\/mid(\d+)\//)?.[1];
+  const normalize = value => (value || '').normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+  const name = normalize(heading), wanted = normalize(expectedName);
   return { sameProperty: !!mid && url.hostname === 'ostrovok.ru' && url.pathname.includes(`/mid${mid}/`),
     sameLocation: expected.pathname.split('/mid')[0] === url.pathname.split('/mid')[0],
+    nameVerified: !!wanted && !!name && (name === wanted || name.includes(wanted) || wanted.includes(name) && name.length > 8),
     partnerIdPreserved: (url.searchParams.get('sub_id') || '').endsWith(`-${TP_MARKER_SHORT}`),
     partnerSlug: url.searchParams.get('partner_slug'),
     eridPreserved: url.searchParams.get('erid') === '2VtzqvE1cv3', status };
@@ -69,12 +72,13 @@ async function audit(output) {
           row.hops.push({ status: response.status, host: url.hostname, path: url.pathname });
           const location = response.headers.get('location');
           if (response.status >= 300 && response.status < 400 && location) { url = new URL(location, url); continue; }
-          Object.assign(row, checkHotelLanding(hotel.booking.target, url.href, response.status));
           const root = parse(landing);
           row.heading = elements(root, n => n.tagName === 'h1').map(text).join(' ').trim();
           row.pageTitle = elements(root, n => n.tagName === 'title').map(text).join(' ').trim();
+          Object.assign(row, checkHotelLanding(hotel.booking.target, url.href, response.status,
+            hotel.research?.verifiedHeading || hotel.name, row.heading));
           row.result = response.status === 200 && row.sameProperty && row.sameLocation && row.partnerIdPreserved && row.eridPreserved
-            && row.partnerSlug === 'travelpayouts.affiliate.9ce9' && row.heading ? 'PASS_REDIRECT' : 'NEEDS_REVIEW';
+            && row.partnerSlug === 'travelpayouts.affiliate.9ce9' && row.nameVerified ? 'PASS_REDIRECT' : 'NEEDS_REVIEW';
           break;
         }
         if (!row.hops.length || row.hops.length === 8) throw new Error('Redirect did not terminate');

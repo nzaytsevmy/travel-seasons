@@ -10,6 +10,13 @@ test('rejects a different hotel even when the partner ID survives', () => {
   assert.equal(checkHotelLanding(target, target.replace('8068982', '8447154') + query, 200).sameProperty, false);
   assert.equal(checkHotelLanding(target, target + '?sub_id=generated-123456', 200).partnerIdPreserved, false);
 });
+test('requires the selected hotel name as well as its MID and partner ID', () => {
+  const target = 'https://ostrovok.ru/hotel/turkey/istanbul/mid8068982/shangrila/';
+  const final = target + '?sub_id=generated-546042&erid=2VtzqvE1cv3';
+  assert.equal(checkHotelLanding(target, final, 200, 'Shangri-La Bosphorus', 'Another Hotel').nameVerified, false);
+  assert.equal(checkHotelLanding(target, final, 200, 'Shangri-La Bosphorus', '').nameVerified, false);
+  assert.equal(checkHotelLanding(target, final, 200, 'Shangri-La Bosphorus', 'Shangri-La Bosphorus, Istanbul').nameVerified, true);
+});
 test('reads the deployed affiliate shield instead of treating /go/ as the target', () => {
   const url = 'https://ostrovok.tpk.mx/xtyTcUcY?sub_id=hotels_test';
   const encoded = Buffer.from(url).toString('base64');

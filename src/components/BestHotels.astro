@@ -7,6 +7,15 @@ const collection = hotelCollection(Astro.props.destination, { includeDraft: impo
 const images = import.meta.glob<{ default: ImageMetadata }>('../assets/hotels/**/*.{webp,jpg,jpeg,png}', { eager: true });
 const href = `/hotels/${hotelCountrySlug(Astro.props.destination)}/`;
 const picks = hotelHubPicks(Astro.props.destination, collection);
+const hubInner = Astro.props.destination === 'japan'
+  ? 'min(100vw, 1280px) - clamp(35.2px, 6vw, 83.2px) - 32px'
+  : 'min(100vw, 1280px) - 80px';
+const photoSizes = (lead: boolean) => {
+  const fraction = lead ? '* 1.8 / 2.8' : '/ 2.8';
+  const tablet = Astro.props.destination === 'japan' ? ''
+    : `(min-width: 768px) calc((100vw - 64px) ${fraction}), `;
+  return `(min-width: ${Astro.props.destination === 'japan' ? 768 : 769}px) calc((${hubInner}) ${fraction}), ${tablet}calc(100vw - 32px)`;
+};
 ---
 {collection && <section class="best-hotels" aria-labelledby="best-hotels-title" id="oteli">
   <div class="best-hotels-head">
@@ -16,7 +25,7 @@ const picks = hotelHubPicks(Astro.props.destination, collection);
   <div class="best-hotels-grid">
     {picks.map((hotel, i) => <article class:list={['best-hotel', { 'best-hotel-lead': i === 0 }]}>
       <a class="best-hotel-photo" href={`${href}#${hotel.id}`} aria-label={`${hotel.name}: посмотреть в подборке`}>
-        <HotelPhoto src={images[`../assets/hotels/${hotel.image}`].default} alt={hotel.photoAlt || `${hotel.name}, ${hotel.location}`} wide={i !== 0} sizes={i === 0 ? '(min-width: 1280px) 800px, (min-width: 768px) 64vw, 100vw' : '(min-width: 1280px) 440px, (min-width: 768px) 36vw, 100vw'} />
+        <HotelPhoto src={images[`../assets/hotels/${hotel.image}`].default} alt={hotel.photoAlt || `${hotel.name}, ${hotel.location}`} wide={i !== 0} sizes={photoSizes(i === 0)} />
       </a>
       <div class="best-hotel-copy"><p class="best-hotel-location">{hotel.location}</p>
         <h3><a href={`${href}#${hotel.id}`}>{hotel.name}</a></h3>

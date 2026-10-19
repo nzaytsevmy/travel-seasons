@@ -4,6 +4,7 @@ import { readyHotelCollections } from '../src/data/hotels.js';
 for (const [country, collection] of readyHotelCollections()) {
   test(`каждый отель сохраняет цель и уникальный click_id: ${country}`, async ({ page, context }, testInfo) => {
     test.setTimeout(180_000);
+    const receipts: { country: string; id: string; mode: string; href: string; target: string }[] = [];
     await context.route('https://ostrovok.tpk.mx/**', route => route.fulfill({ status: 200, body: 'Hotel QA' }));
     await page.goto(`/hotels/${country}/`);
     await page.evaluate(() => {
@@ -30,9 +31,16 @@ for (const [country, collection] of readyHotelCollections()) {
           expect(clickId).toMatch(/^c[0-9a-f]{20}$/);
           expect(await page.locator('html').getAttribute('data-hotel-qa-click-id')).toBe(clickId);
           expect(clickIds.has(clickId)).toBe(false);
+          receipts.push({ country, id: hotel.id,
+            mode: button === 'middle' ? 'new-tab' : clickIds.size ? 'repeat' : 'normal',
+            href: popup.url(), target: hotel.booking.target });
           clickIds.add(clickId);
         } finally { await popup.close(); }
       }
     }
+    await testInfo.attach(`hotel-referral-clicks-${country}`, {
+      body: Buffer.from(JSON.stringify({ kind: 'HOTEL_REFERRAL_CLICK_RECEIPTS', project: testInfo.project.name, rows: receipts })),
+      contentType: 'application/json',
+    });
   });
 }

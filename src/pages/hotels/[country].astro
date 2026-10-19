@@ -47,7 +47,7 @@ const ldJson = {
         <div class="hotel-photos">
         <div class="hotel-gallery" id={`photos-${hotel.id}`} role="region" aria-label={`Фотографии ${hotel.name}`} tabindex="0">
           {hotelGallery(country, hotel).map((photo, photoIndex) => <figure>
-            <HotelPhoto src={images[`../../assets/hotels/${photo.image}`].default} alt={photo.alt} wide={i === 0} lead={i === 0} sizes={i === 0 ? '(min-width: 1157px) 1000px, calc((100vw - clamp(35.2px, 6vw, 83.2px)) * .92)' : '(min-width: 1280px) 633px, (min-width: 768px) calc((100vw - clamp(35.2px, 6vw, 83.2px) - 32px) * .5445), calc((100vw - clamp(35.2px, 6vw, 83.2px)) * .92)'} loading={i === 0 && photoIndex === 0 ? 'eager' : 'lazy'} />
+            <HotelPhoto src={images[`../../assets/hotels/${photo.image}`].default} alt={photo.alt} wide={i === 0} lead={i === 0} sizes={i === 0 ? '(min-width: 768px) min(1000px, calc((min(100vw, 1280px) - clamp(35.2px, 6vw, 83.2px)) * .92)), calc((100vw - 32px) * .92)' : '(min-width: 768px) calc((min(100vw, 1280px) - clamp(35.2px, 6vw, 83.2px) - 32px) * 1.45 / 2.45 * .92), calc((100vw - 32px) * .92)'} loading={i === 0 && photoIndex === 0 ? 'eager' : 'lazy'} />
             <figcaption>{photoIndex + 1} / {hotelGallery(country, hotel).length} · {photo.caption || photo.alt}</figcaption>
           </figure>)}
         </div>
