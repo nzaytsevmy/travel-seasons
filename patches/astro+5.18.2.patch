@@ -1,21 +1,35 @@
 diff --git a/node_modules/astro/dist/prefetch/index.js b/node_modules/astro/dist/prefetch/index.js
 --- a/node_modules/astro/dist/prefetch/index.js
 +++ b/node_modules/astro/dist/prefetch/index.js
-@@ -7,10 +7,13 @@
+@@ -7,10 +7,27 @@
  let defaultStrategy = __PREFETCH_DEFAULT_STRATEGY__;
  let clientPrerender = __EXPERIMENTAL_CLIENT_PRERENDER__;
  let inited = false;
 +let pageActive = true;
++let restoreViewportPrefetch;
  function init(defaultOpts) {
    if (!inBrowser) return;
    if (inited) return;
    inited = true;
 +  window.addEventListener("pagehide", () => { pageActive = false; });
-+  window.addEventListener("pageshow", () => { pageActive = true; });
++  const resumePrefetch = () => {
++    pageActive = true;
++    restoreViewportPrefetch?.();
++  };
++  window.addEventListener("pageshow", resumePrefetch);
++  // A history traversal can reject fetches before pagehide is dispatched.
++  window.navigation?.addEventListener("navigate", (event) => {
++    if (event.destination.sameDocument) return;
++    pageActive = false;
++    queueMicrotask(() => {
++      if (event.defaultPrevented) resumePrefetch();
++    });
++  });
++  window.navigation?.addEventListener("navigateerror", resumePrefetch);
    debug?.(`[astro] Initializing prefetch script`);
    prefetchAll ??= defaultOpts?.prefetchAll ?? false;
    defaultStrategy ??= defaultOpts?.defaultStrategy ?? "hover";
-@@ -72,15 +75,21 @@
+@@ -72,16 +89,20 @@
  }
  function initViewportStrategy() {
    let observer;
@@ -30,16 +44,16 @@ diff --git a/node_modules/astro/dist/prefetch/index.js b/node_modules/astro/dist
          observer.observe(anchor);
        }
      }
+-  });
 +  };
 +  onPageLoad(observeAnchors);
-+  window.addEventListener("pageshow", (event) => {
-+    // Timers may have unobserved links while the document was leaving.
-+    // A restored page must regain its normal viewport prefetching.
-+    if (event.persisted) observeAnchors(true);
-   });
++  // Timers may have unobserved links while a document was leaving.
++  // Restore viewport prefetching after a return or cancelled navigation.
++  restoreViewportPrefetch = () => observeAnchors(true);
  }
  function createViewportIntersectionObserver() {
-@@ -120,6 +129,9 @@
+   const timeouts = /* @__PURE__ */ new WeakMap();
+@@ -120,6 +141,9 @@
    });
  }
  function prefetch(url, opts) {
@@ -49,7 +63,7 @@ diff --git a/node_modules/astro/dist/prefetch/index.js b/node_modules/astro/dist
    url = url.replace(/#.*/, "");
    const ignoreSlowConnection = opts?.ignoreSlowConnection ?? false;
    if (!canPrefetchUrl(url, ignoreSlowConnection)) return;
-@@ -139,7 +151,10 @@
+@@ -139,7 +163,10 @@
      for (const [key, value] of Object.entries(internalFetchHeaders)) {
        headers.set(key, value);
      }
