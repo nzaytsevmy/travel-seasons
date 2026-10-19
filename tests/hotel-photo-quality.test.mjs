@@ -11,6 +11,12 @@ test('checks cropped height as well as image width', () => {
   assert.ok(coverDensity(1600, 900, 650, 487.5) < 2);
   assert.ok(coverDensity(1920, 1440, 650, 487.5) >= 2);
 });
+test('covers the wider single-column frame immediately before the tablet breakpoint', () => {
+  const edge = galleryFrame(767, false);
+  const desktop = galleryFrame(1280, false);
+  assert.ok(coverDensity(1280, 960, desktop.width, desktop.height) >= 2);
+  assert.ok(coverDensity(1280, 960, edge.width, edge.height) < 2);
+});
 test('uses the verified shrink-only source size and preserves the exact photo identity', () => {
   assert.equal(originalPhotoUrl('https://cdn.ostrovok.ru/t/640x400/content/aa/photo.jpeg'),
     'https://cdn.ostrovok.ru/t/2048x2048/content/aa/photo.jpeg');

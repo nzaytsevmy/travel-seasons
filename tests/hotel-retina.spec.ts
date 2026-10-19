@@ -3,7 +3,7 @@ import { test, expect } from './browser-fixture';
 import { readyHotelCollections, hotelGuideHubs } from '../src/data/hotels.js';
 
 test.use({ deviceScaleFactor: 2 });
-const widths = [402, 768, 1024, 1280, 1440, 1920];
+const widths = [402, 767, 768, 1024, 1280, 1440, 1920];
 
 for (const [country] of readyHotelCollections()) {
   test(`фотографии отелей сохраняют детализацию 2×: ${country}`, async ({ page, request }) => {

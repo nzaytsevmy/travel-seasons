@@ -7,7 +7,7 @@ import { parse } from 'parse5';
 import { curlPhotoRequest } from './hotel-photo-request.mjs';
 import { readyHotelCollections, hotelGallery, hotelHubPicks, hotelGuideHubs } from '../src/data/hotels.js';
 
-export const PHOTO_VIEWPORTS = [402, 768, 1024, 1280, 1440, 1920];
+export const PHOTO_VIEWPORTS = [402, 767, 768, 1024, 1280, 1440, 1920];
 export function coverDensity(width, height, frameWidth, frameHeight) {
   return Math.min(width / frameWidth, height / frameHeight);
 }
