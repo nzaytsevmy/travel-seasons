@@ -13,7 +13,7 @@ const { src, alt, sizes, wide = false, lead = false, loading = 'lazy' } = Astro.
 async function candidates(aspect: number, maximum: number) {
   // A crop must fit both native dimensions. Width-only checks admit blurry crops.
   const limit = Math.floor(Math.min(maximum, src.width, src.height * aspect));
-  const widths = [...new Set([400, 800, 1200, 1600, 2400, limit].filter(width => width <= limit))].sort((a, b) => a - b);
+  const widths = [...new Set([400, 800, 1200, 1600, 2000, 2400, limit].filter(width => width <= limit))].sort((a, b) => a - b);
   const variants = await Promise.all(widths.map(width => getImage({ src, width,
     height: Math.round(width / aspect), fit: 'cover', format: 'webp', quality: 88 })));
   return { srcset: variants.map((image, i) => `${image.src} ${widths[i]}w`).join(', '),
