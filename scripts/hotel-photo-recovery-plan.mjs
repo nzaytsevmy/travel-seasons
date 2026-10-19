@@ -21,8 +21,8 @@ for(const slot of slots.filter(s=>needed.has(s.image))){
   // This bounded fit profile is independently controlled with a 650x450 source.
   // It never asks for enlargement, even when a property's display metadata is small.
   const url=new URL(photo.sourcePhoto);url.pathname=url.pathname.replace(/^\/t\/[^/]+\//,'/t/2048x2048/');
-  candidates.push({...photo,sourcePhoto:url.href,sourceVariant:'2048x2048',sourcePolicy:'native-safe2048-v1',sourceType:'PUBLISHED_BOUNDED_FIT',isSamePhoto:same});
   for(const variant of variants)candidates.push({...variant,isSamePhoto:same});
+  candidates.push({...photo,sourcePhoto:url.href,sourceVariant:'2048x2048',sourcePolicy:'native-safe2048-v1',sourceType:'PUBLISHED_BOUNDED_FIT',isSamePhoto:same});
  }
  if(official.status==='EXTRACTED')for(const photo of official.candidates||[]){
   const native=publishedPhotoOriginalUrl(photo.sourcePhoto);
