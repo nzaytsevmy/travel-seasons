@@ -84,7 +84,7 @@ jobs:
           node scripts/hotel-photo-quality.mjs artifacts/hotel-materials/baseline.json --baseline
       - name: Fetch original hotel photographs
         if: success() || failure()
-        run: node scripts/hotel-photo-quality.mjs --refresh artifacts/hotel-materials/photos
+        run: node scripts/hotel-photo-recovery.mjs
       - name: Preserve original diagnostic results and photographs
         if: always()
         uses: actions/upload-artifact@v4
