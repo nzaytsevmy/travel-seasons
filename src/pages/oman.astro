@@ -17,7 +17,6 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Footer from '../components/Footer.astro';
 import BestHotels from '../components/BestHotels.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
-import YearClimateChart from '../components/YearClimateChart.astro';
 import { DIRECTIONS, MONTHS, VISITED } from '../data/directions.js';
 import { PRICES } from '../data/prices.js';
 import { getVisaDetails } from '../data/visa-details.js';
@@ -213,7 +212,6 @@ const ldJson = {
 
     <section class="om-sec">
       <h2>Погода в Омане по месяцам: когда ехать и когда купаться</h2>
-      <YearClimateChart slug="oman" />
 
       <div class="om-heat">
         {monthsRanked.map((m, i) => {

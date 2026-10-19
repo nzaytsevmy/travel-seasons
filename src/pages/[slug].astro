@@ -26,7 +26,6 @@ import { newsForCountry, newsUrl, formatDateRu } from '../data/news.js';
 import AviasalesWidget from '../components/post/AviasalesWidget.astro';
 import BudgetBlock from '../components/BudgetBlock.astro';
 import EssentialsCard from '../components/EssentialsCard.astro';
-import YearClimateChart from '../components/YearClimateChart.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
 import ClimateChart from '../components/ClimateChart.astro';
 import CountryMap from '../components/CountryMap.astro';
@@ -537,7 +536,6 @@ if (guide?.itinerary?.length) {
     <section class="om-sec" id="pogoda">
       <h2>{погодаH2}</h2>
       <p class="om-body">{typo(`Лучшие месяцы — ${лучшиеСловами || '—'}${худшиеСловами ? `; хуже всего — ${худшиеСловами}` : ''}.`)}</p>
-      <YearClimateChart slug={d.slug} />
       <div class="om-heat">
         {monthsRanked.map((m, i) => {
           const cls = m.status === 'P' ? 'peak' : m.status === 'G' ? 'good' : m.status === 'O' ? 'off' : m.status === 'B' ? 'bad' : 'closed';
