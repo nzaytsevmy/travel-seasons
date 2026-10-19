@@ -1,5 +1,5 @@
 import {
-  ACTIONS_APP_ID, GATE_NAME, approvableRun, isBotCandidate, isInternalPr,
+  GATE_NAME, approvableRun, isBotCandidate, isInternalPr,
   trustedChecks, validateBotPr,
 } from './bot-update-policy.mjs';
 import { evaluateChecks, requiredChecks } from './auto-merge-policy.mjs';
@@ -9,15 +9,12 @@ export async function handleCheckedPr({ github, owner, repo, number, eventHead,
   now = Date.now, log = console.log }) {
   const params = { owner, repo };
   const deadline = now() + waitMs;
-  let head, gate, names;
+  let head, names;
   const approved = new Set();
   for (;;) {
     const { data: pr } = await github.rest.pulls.get({ ...params, pull_number: number });
     if (!isInternalPr(pr, owner, repo)) return { status: 'ineligible' };
     if ((eventHead && pr.head.sha !== eventHead) || (head && pr.head.sha !== head)) {
-      if (gate) await github.rest.checks.update({ ...params, check_run_id: gate.id,
-        status: 'completed', conclusion: 'cancelled',
-        output: { title: 'В заявке новый коммит', summary: 'Новый HEAD требует собственного полного гейта.' } });
       return { status: 'head_changed' };
     }
     if (!head) {
@@ -28,13 +25,6 @@ export async function handleCheckedPr({ github, owner, repo, number, eventHead,
       if (!ownerPr && !botPr) return { status: 'untrusted' };
       head = pr.head.sha;
       names = requiredChecks(files.map((file) => file.filename));
-      const previous = await github.paginate(github.rest.checks.listForRef, { ...params, ref: head, filter: 'latest', per_page: 100 });
-      gate = trustedChecks(previous, head).filter((run) => run.name === GATE_NAME)
-        .sort((a, b) => b.id - a.id)[0];
-      const pending = { status: 'in_progress',
-        output: { title: `${names.length} обязательных проверок`, summary: `PR #${number}; HEAD ${head}. Красный, отсутствующий или пропущенный гейт блокирует слияние.` } };
-      if (gate) await github.rest.checks.update({ ...params, check_run_id: gate.id, ...pending });
-      else gate = (await github.rest.checks.create({ ...params, name: GATE_NAME, head_sha: head, ...pending })).data;
       log(`PR #${number}: HEAD ${head}; обязательных проверок ${names.length}`);
     }
     if (isBotCandidate(pr, owner, repo)) {
@@ -48,18 +38,15 @@ export async function handleCheckedPr({ github, owner, repo, number, eventHead,
       }
     }
     const runs = await github.paginate(github.rest.checks.listForRef, { ...params, ref: head, filter: 'latest', per_page: 100 });
-    const result = evaluateChecks(names, trustedChecks(runs, head));
+    // The aggregate must be a completed native job, never a status fabricated
+    // by the actor that is about to merge. Its workflow checks the same policy.
+    const result = evaluateChecks([...names, GATE_NAME], trustedChecks(runs, head));
     if (result.failed.length) {
-      await github.rest.checks.update({ ...params, check_run_id: gate.id, status: 'completed', conclusion: 'failure',
-        output: { title: 'Слияние заблокировано', summary: `Не прошли: ${result.failed.join(', ')}. HEAD ${head}.` } });
       return { status: 'failed', ...result };
     }
     if (result.ready) {
       const { data: fresh } = await github.rest.pulls.get({ ...params, pull_number: number });
       if (fresh.head.sha !== head || !isInternalPr(fresh, owner, repo)) return { status: 'head_changed' };
-      await github.rest.checks.update({ ...params, check_run_id: gate.id, status: 'completed', conclusion: 'success',
-        output: { title: `Все ${names.length} проверок зелёные`,
-          summary: `HEAD ${head}; GitHub Actions app ${ACTIONS_APP_ID}.\n\n${names.map((name) => `- ${name}`).join('\n')}` } });
       if (fresh.mergeable === false) return { status: 'conflict' };
       if (fresh.mergeable === null || fresh.mergeable === undefined) {
         if (now() >= deadline) return { status: 'mergeability_pending' };

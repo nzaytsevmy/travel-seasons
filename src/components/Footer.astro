@@ -5,7 +5,7 @@ const { planning=true } = Astro.props;
 ---
 {planning && planningEligible(Astro.url.pathname) && <div class="footer-planning"><TripServices /></div>}
 <hr class="divider" />
-<footer>
+<footer class="site-footer">
   <div class="footer-logo">TravelTribe</div>
   <div class="footer-note">
     traveltribe.ru ·
@@ -23,8 +23,8 @@ const { planning=true } = Astro.props;
 </footer>
 
 <style>
-  .footer-planning { padding: 0 clamp(1.1rem,3vw,2.6rem); }
-  .divider { border: none; border-top: 1px solid var(--line); margin: 0 2rem; }
+  .footer-planning { padding: 0 var(--page-edge); }
+  .divider { border: none; border-top: 1px solid var(--line); margin: 0 var(--page-edge); }
   /* Площадь нажатия по WCAG 2.2 §2.5.8: ссылки подвала были 12 и 16 px
      по высоте — в них попадают со второго раза. Наращиваем область, а не
      шрифт: вид подвала не меняется. */

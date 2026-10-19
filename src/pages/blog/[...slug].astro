@@ -14,7 +14,6 @@ import { DIRECTIONS } from '../../data/directions.js';
 import { directionForTags } from '../../data/article-country.js';
 import { classifyPage, EXPENSIVE_DESTINATIONS } from '../../data/monetization.js';
 import { TP_LINKS, aviasalesRoute, youtravelCountry, cherehapaCountry, cherehapaTravel, ostrovokCountry, otelloStay } from '../../data/affiliate.js';
-import StickyCta from '../../components/StickyCta.astro';
 import TripServices from '../../components/TripServices.astro';
 import { tripServices } from '../../data/trip-services.js';
 
@@ -311,7 +310,6 @@ if (faqs.length >= 2) {
   <Breadcrumbs crumbs={crumbs} />
   <main id="main" class="post-page">
 
-
     <article class="post-content">
       <div class="post-meta-top">
         <div class="post-tags">
@@ -453,7 +451,6 @@ if (faqs.length >= 2) {
       </div>
     </article>
   </main>
-  {оффер && <StickyCta href={оффер.href} label={оффер.панель} />}
 
   <Footer planning={false} />
 </Layout>
@@ -703,6 +700,7 @@ if (faqs.length >= 2) {
 .ptag:hover { color: var(--gold-dim); text-decoration: underline; text-underline-offset: 3px; }
 .post-date { font-size: 0.7rem; color: var(--text-faint); letter-spacing: 0.04em; }
 .post-dates { white-space: nowrap; }
+@media (max-width: 767px) { .post-dates { min-width: 0; max-width: 100%; white-space: normal; overflow-wrap: anywhere; } }
 .post-updated { font-size: 0.7rem; color: var(--gold-dim); letter-spacing: 0.04em; }
 /* Подписка на канал — волосяная рамка, без фона и скруглений, как весь
    editorial-канон. Высота фиксированная, блок статичный: сдвига вёрстки нет. */
@@ -819,7 +817,6 @@ h1 {
 .trip-marker b { font-weight: 600; color: var(--text); }
 .trip-marker .trip-icon { font-weight: 800; color: var(--gold); margin-right: 0.1em; }
 
-
 .prose { color: var(--text); line-height: 1.85; font-size: 1rem; }
 .prose :global(h2) {
   /* ⛔ Антиква — хвост перехода на язык дневника. */
@@ -870,4 +867,8 @@ h1 {
 .post-footer { margin-top: 2rem; }
 .back-link { font-size: 0.82rem; color: var(--text-dim); letter-spacing: 0.04em; }
 .back-link:hover { color: var(--gold); }
+@media (max-width: 767px) {
+  .post-content { padding: 1.5rem var(--page-edge) 0; --bleed: 0px; }
+  .post-page { padding-bottom: 3rem; }
+}
 </style>

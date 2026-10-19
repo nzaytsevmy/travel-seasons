@@ -19,7 +19,7 @@ function fixture(bot = 'prices') {
   const state = {
     pr, files, checks: requiredChecks(files.map((f) => f.filename)).map((name, id) => ({
       id: id + 10, name, head_sha: HEAD, app: { id: 15368 }, status: 'completed', conclusion: 'success',
-    })),
+    })).concat([{ id: 1000, name: GATE_NAME, head_sha: HEAD, app: { id: 15368 }, status: 'completed', conclusion: 'success' }]),
     source: { path: config.workflow, head_branch: 'main', head_sha: BASE, event: 'schedule', status: 'completed', conclusion: 'success' },
     commit: { parents: [{ sha: BASE }], tree: { sha: 'tree' } }, comparison: { status: 'ahead' },
     tree: { truncated: false, tree: files.map((file) => ({ path: file.filename, type: 'blob', mode: '100644' })) },
@@ -89,6 +89,7 @@ test('only the expected CI workflows on the exact PR head can be approved', () =
   const run = { id: 10, event: 'pull_request', head_sha: HEAD, path: '.github/workflows/build.yml',
     status: 'waiting', conclusion: 'action_required', pull_requests: [{ number: 7 }] };
   assert.equal(approvableRun(run, pr), true);
+  assert.equal(approvableRun({ ...run, path: '.github/workflows/required-checks.yml' }, pr), true);
   for (const patch of [{ head_sha: NEW }, { path: '.github/workflows/deploy.yml' },
     { event: 'workflow_dispatch' }, { pull_requests: [{ number: 8 }] }, { status: 'completed', conclusion: 'success' }]) {
     assert.equal(approvableRun({ ...run, ...patch }, pr), false);
@@ -103,8 +104,8 @@ test('all three bots pass the full 26-check gate before squash and explicit depl
     assert.equal(result.status, 'merged'); assert.equal(result.required, 26);
     const merged = f.calls.find((call) => call.kind === 'merge');
     assert.equal(merged.sha, HEAD); assert.equal(merged.merge_method, 'squash');
-    const success = f.calls.findIndex((call) => call.kind === 'gateUpdate' && call.conclusion === 'success');
-    assert.ok(success < f.calls.findIndex((call) => call.kind === 'merge'));
+    assert.equal(f.calls.some((call) => ['gateCreate', 'gateUpdate'].includes(call.kind)), false);
+    assert.ok(f.calls.findIndex((call) => call.kind === 'checks') < f.calls.findIndex((call) => call.kind === 'merge'));
     assert.equal(f.calls.filter((call) => call.kind === 'approve').length, 1);
     assert.equal(f.calls.filter((call) => call.kind === 'dispatch' && call.workflow_id === 'deploy.yml').length, 1);
   }
@@ -129,6 +130,27 @@ test('a moved head after green CI cannot inherit the previous attestation or be 
   const result = await handleCheckedPr({ ...f, owner: OWNER, repo: REPO, number: 7, log: () => {} });
   assert.equal(result.status, 'head_changed');
   assert.equal(f.calls.some((call) => call.kind === 'merge' || call.conclusion === 'success'), false);
+});
+
+test('green underlying CI without the real required Actions job cannot be attested or merged', async () => {
+  const f = fixture();
+  f.state.checks = f.state.checks.filter((run) => run.name !== GATE_NAME);
+  const result = await handleCheckedPr({ ...f, owner: OWNER, repo: REPO, number: 7, log: () => {} });
+  assert.notEqual(result.status, 'merged');
+  assert.equal(f.calls.some((call) => ['gateCreate', 'gateUpdate', 'merge', 'dispatch'].includes(call.kind)), false);
+});
+
+test('the native aggregate itself cannot be missing, skipped, red, foreign or pending', async () => {
+  for (const mutate of [
+    (r) => { r.conclusion = 'skipped'; }, (r) => { r.conclusion = 'failure'; },
+    (r) => { r.app.id = 999; }, (r) => { r.head_sha = NEW; },
+    (r) => { r.status = 'in_progress'; },
+  ]) {
+    const f = fixture(); mutate(f.state.checks.find((run) => run.name === GATE_NAME));
+    const result = await handleCheckedPr({ ...f, owner: OWNER, repo: REPO, number: 7, log: () => {} });
+    assert.notEqual(result.status, 'merged');
+    assert.equal(f.calls.some((call) => ['gateCreate', 'gateUpdate', 'merge', 'dispatch'].includes(call.kind)), false);
+  }
 });
 
 function publisherFixture({ changes = ['src/data/prices-cache.json'], open = [], remote = '', identical = false } = {}) {
@@ -206,7 +228,7 @@ test('bot schedules stay intact and every active writer uses the guarded publish
     assert.doesNotMatch(text, /git push|git pull|--autostash/);
   }
   const controller = readFileSync('.github/workflows/auto-merge.yml', 'utf8');
-  assert.match(controller, /ref: main/); assert.match(controller, /checks: write/);
+  assert.match(controller, /ref: main/); assert.match(controller, /checks: read/);
   assert.doesNotMatch(controller, /ref:.*head|secrets\.(?:PAT|GH_PAT)/);
   const report = readFileSync(BOTS['seo-pulse'].workflow, 'utf8');
   assert.match(report, /fetch-depth: 0/);

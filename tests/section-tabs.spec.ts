@@ -1,87 +1,152 @@
 import { test, expect } from './browser-fixture';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { hasReadingObstruction } from '../scripts/mobile-reading-contract.mjs';
 
-// Строка разделов направления: раскладка на ширинах живых телефонов.
-//
-// ⛔ 12.09.2026 Никита показал на страницу Кипра: пятый раздел «Сравнить» падал на вторую
-//    строку ОДИН — некрасивый перенос (его правило 10.09.2026). Замер брендовым шрифтом:
-//    до 340 px пять разделов и так ложатся 3+2, с 430 px влезают в одну строку, между ними
-//    выходило 4+1. Полосу 330–429 px чиним равными колонками по три.
-//
-// ⛔ Почему проверка по ширинам, а не «на глаз»: правило держится на ширине подписей
-//    брендовым шрифтом. Переименуют раздел — полоса сдвинется, и одинокий пятый вернётся
-//    молча. Здесь он краснеет.
-//
-// ⛔ Почему перезаход: шрифт бренда подключён с font-display:optional. Если файл не успел к
-//    первой раскладке, страница живёт с запасным шрифтом — он уже, и все пять влезают в
-//    строку даже там, где брендовым не влезают. Тогда проверка мерила бы не тот вид.
-const ШИРИНЫ = [320, 360, 375, 390, 402, 414, 430, 480, 768, 1024, 1280];
-
-test('строка разделов не оставляет один раздел на строке', async ({ page }) => {
-  const плохие: string[] = [];
-  await page.goto('/turkey/');
-  await page.reload();                       // шрифт из кеша — раскладка брендовая
-  for (const w of ШИРИНЫ) {
-    await page.setViewportSize({ width: w, height: 900 });
-    await page.evaluate(() => document.fonts.ready);
-    const r = await page.evaluate(() => {
-      const as = Array.from(document.querySelectorAll<HTMLElement>('.dt-a'));
-      const строки: Record<number, number> = {};
-      for (const a of as) {
-        const t = Math.round(a.getBoundingClientRect().top);
-        строки[t] = (строки[t] || 0) + 1;
+// Owner decision 18.10.2026: destination tabs and fixed affiliate panels are
+// removed everywhere. Scan the entire build so a forgotten template fails too.
+test('all built routes omit destination tabs and fixed affiliate panels', () => {
+  const root = process.env.DIST_DIR || join(process.cwd(), 'dist');
+  const failures: string[] = [];
+  let pages = 0;
+  function scan(dir: string) {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const file = join(dir, entry.name);
+      if (entry.isDirectory()) scan(file);
+      else if (entry.name.endsWith('.html')) {
+        pages++;
+        const html = readFileSync(file, 'utf8');
+        if (hasReadingObstruction(html)) failures.push(file);
       }
-      const линии = Object.keys(строки).map(Number).sort((x, y) => x - y).map((k) => строки[k]);
-      return {
-        линии,
-        всего: as.length,
-        вылез: as.some((a) => a.getBoundingClientRect().right > window.innerWidth + 1),
-        низкая: as.some((a) => a.getBoundingClientRect().height < 44),
-      };
-    });
-    if (!r.всего) { плохие.push(`${w} px: строки разделов нет вовсе`); continue; }
-    if (r.линии.length > 1 && r.линии[r.линии.length - 1] === 1) плохие.push(`${w} px: один раздел на последней строке (${r.линии.join('+')})`);
-    if (r.линии.length > 2) плохие.push(`${w} px: разделы разъехались на ${r.линии.length} строки (${r.линии.join('+')})`);
-    if (r.вылез) плохие.push(`${w} px: раздел вылезает за экран`);
-    if (r.низкая) плохие.push(`${w} px: цель для пальца ниже 44 px`);
+    }
   }
-  expect(плохие, `раскладка строки разделов:\n${плохие.join('\n')}`).toEqual([]);
+  scan(root);
+  expect(pages, 'the complete build must be scanned').toBeGreaterThan(2000);
+  expect(failures).toEqual([]);
 });
 
-// ⛔ Подпись вкладки «Когда ехать» сверяется с ТЕКСТОМ той же страницы, а не с тем же
-//    выражением, что стоит в компоненте. Первая версия этого сторожа сравнивала страницу с
-//    bestMonths[0] — то есть с собственной логикой компонента, — и потому объявляла верными
-//    11 направлений, где подпись спорила со сводкой: у Омана «январь» при «ноябрь–март».
-//    Нашёл внешний рецензент. Сравнение двух независимо напечатанных строк так соврать не может.
-const МЕСЯЦЫ_ПОЛНЫЕ = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
-const КОРОТКО: Record<string, string> = { янв:'январь', фев:'февраль', мар:'март', апр:'апрель', май:'май', июн:'июнь', июл:'июль', авг:'август', сен:'сентябрь', окт:'октябрь', ноя:'ноябрь', дек:'декабрь' };
+for (const path of ['/', '/countries/', '/seasons/', '/trips/', '/trips/july/', '/visa/', '/packing/', '/blog/', '/novosti/', '/compare/', '/compare/turkey-vs-egypt/', '/events/', '/events/july/', '/calculator/', '/hotels/australia/', '/oman/', '/australia-east/', '/turkey/', '/japan/', '/antarctica/', '/visa/turkey/', '/packing/japan/', '/packing/egypt/june/', '/trips/july/turkey/', '/bezviz/', '/blog/strahovka-dlya-puteshestviy-2026/']) {
+  test(`reading space and contextual links ${path}`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const response = await page.goto(path);
+    expect(response?.status(), path).toBe(200);
+    await expect(page.locator('h1')).toHaveCount(1);
+    await expect(page.locator('nav[aria-label^="Разделы направления:"], .sticky-cta')).toHaveCount(0);
+    const hasAffiliate = await page.locator('main a[rel~="sponsored"], [data-trip-planning] a[rel~="sponsored"]').count();
+    expect(hasAffiliate, 'affiliate actions must remain in the document').toBeGreaterThan(0);
+    for (const width of [320, 360, 390, 402, 430, 768, 1024, 1280]) {
+      await page.setViewportSize({ width, height: 844 });
+      const geometry = await page.evaluate(expectedWidth => ({
+        overflow: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - expectedWidth,
+        bottom: parseFloat(getComputedStyle(document.body).paddingBottom),
+        worst: [...document.querySelectorAll('main *')].map(e => ({
+          tag: e.tagName, cls: typeof e.className === 'string' ? e.className : '',
+          right: Math.round(e.getBoundingClientRect().right),
+          width: Math.round(e.getBoundingClientRect().width), text: e.textContent?.slice(0, 60),
+        })).filter(e => e.width > 0 && e.right > innerWidth + 1).sort((a,b) => b.right-a.right).slice(0,4),
+      }), width);
+      expect(geometry.overflow, `${path} overflow at ${width}: ${JSON.stringify(geometry.worst)}`).toBeLessThanOrEqual(1);
+      expect(geometry.bottom, `${path} stale panel reserve at ${width}`).toBe(0);
+    }
+  });
+}
 
-test('подпись вкладки совпадает со сводкой лучших месяцев на той же странице', async () => {
-  const { readFileSync, existsSync } = await import('node:fs');
-  const { join } = await import('node:path');
-  const { DIRECTIONS } = await import('../src/data/directions.js');
-  const DIST = process.env.DIST_DIR || join(process.cwd(), 'dist');
-  const плохие: string[] = [];
-  let сверено = 0;
-  let кругломесячных = 0;
-  for (const d of DIRECTIONS as any[]) {
-    const f = join(DIST, d.slug, 'index.html');
-    if (!existsSync(f)) continue;
-    const html = readFileSync(f, 'utf8').replace(/[\u00A0\u2060]/g, ' ');
-    const вкладка = html.match(/title="Лучший месяц — ([^"]+)"/)?.[1]?.trim();
-    // Сводка страницы: «Лучшие месяцы: ноябрь–февраль. …» или «Лучшие месяцы — апрель–май и октябрь.»
-    const сводка = html.match(/Лучшие месяцы(?::|\s—)\s*([^.<]{2,60})/)?.[1];
-    if (!вкладка || !сводка) continue;
-    сверено++;
-    // ⛔ «Круглый год» — законный ответ без месяца: у такого направления начала сезона нет,
-    //    и любая подпись вкладки верна. Первая версия сторожа называла это расхождением и
-    //    врала про Сингапур — проверка обязана знать свои законные исключения.
-    if (/круглый год/i.test(сводка)) { кругломесячных++; continue; }
-    const первый = МЕСЯЦЫ_ПОЛНЫЕ.find((м) => сводка.startsWith(м))
-      ?? КОРОТКО[сводка.slice(0, 3)]
-      ?? null;
-    if (!первый) { плохие.push(`${d.slug}: не разобрал сводку «${сводка.slice(0, 30)}»`); continue; }
-    if (вкладка !== первый) плохие.push(`${d.slug}: вкладка «${вкладка}», а сводка начинается с «${первый}» (${сводка.slice(0, 40)})`);
+test('mobile contents stay collapsed and their anchors remain usable', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/australia-east/');
+  const details = page.locator('.om-toc details');
+  await expect(details).not.toHaveAttribute('open', '');
+  const summary = details.locator('summary');
+  expect((await summary.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  await summary.click();
+  await expect(details).toHaveAttribute('open', '');
+  const target = details.locator('a[href="#doroga"]');
+  await target.click();
+  await expect(page).toHaveURL(/#doroga$/);
+  await expect(page.locator('#doroga h2')).toBeInViewport();
+  await expect(page.locator('a[href="/visa/australia-east/"]').first()).toBeAttached();
+  await expect(page.locator('a[href="/packing/australia-east/"]').first()).toBeAttached();
+  await expect(page.locator('a[href^="/trips/"]').first()).toBeAttached();
+});
+
+for (const path of ['/', '/countries/', '/seasons/', '/trips/', '/trips/july/', '/visa/', '/packing/', '/blog/', '/novosti/', '/compare/', '/compare/turkey-vs-egypt/', '/events/', '/events/july/', '/calculator/', '/hotels/australia/', '/oman/', '/australia-east/', '/turkey/', '/japan/', '/visa/turkey/', '/packing/japan/', '/packing/egypt/june/', '/trips/july/turkey/', '/bezviz/', '/blog/strahovka-dlya-puteshestviy-2026/', '/blog/tag/2026/', '/about/', '/legal/privacy/']) {
+  test(`mobile page shell uses one gutter ${path}`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(path);
+    const edges = await page.evaluate(() => {
+      const title = document.querySelector('h1')!.getBoundingClientRect();
+      const crumbs = document.querySelector('.breadcrumbs');
+      return { title: title.left, crumbs: crumbs ? crumbs.getBoundingClientRect().left + parseFloat(getComputedStyle(crumbs).paddingLeft) : null, footer: parseFloat(getComputedStyle(document.querySelector('.site-footer')!).paddingLeft) };
+    });
+    expect(edges.title, path).toBeCloseTo(16, 0);
+    if (['/', '/seasons/', '/calculator/', '/about/', '/legal/privacy/'].includes(path)) expect(edges.crumbs, path).toBeNull();
+    else expect(edges.crumbs, path).toBeCloseTo(16, 0);
+    expect(edges.footer, path).toBeCloseTo(16, 0);
+    if (path === '/hotels/australia/') {
+      for (const width of [768, 1280]) {
+        await page.setViewportSize({ width, height: 900 });
+        const aligned = await page.evaluate(() => {
+          const crumbs = document.querySelector('.breadcrumbs')!;
+          return { title: document.querySelector('h1')!.getBoundingClientRect().left,
+            crumbs: crumbs.getBoundingClientRect().left + parseFloat(getComputedStyle(crumbs).paddingLeft) };
+        });
+        expect(aligned.crumbs, `nested breadcrumbs align with the content at ${width}px`).toBeCloseTo(aligned.title, 0);
+      }
+    }
+  });
+}
+
+test('season search has a full mobile touch target', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/seasons/');
+  expect((await page.getByRole('searchbox', { name: 'Поиск по таблице' }).boundingBox())!.height).toBeGreaterThanOrEqual(44);
+});
+
+for (const path of ['/about/', '/legal/privacy/', '/legal/cookie/', '/legal/terms/', '/legal/photos/', '/my/', '/cards/', '/izmeneniya/', '/status/', '/seasons/japan/january/', '/novosti/2026-05-01-torres-del-paine-tariff/']) {
+  test(`auxiliary template geometry ${path}`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const response = await page.goto(path);
+    expect(response?.status(), path).toBe(200);
+    await expect(page.locator('nav[aria-label^="Разделы направления:"], .sticky-cta')).toHaveCount(0);
+    for (const width of [320, 360, 390, 402, 430, 768, 1024, 1280]) {
+      await page.setViewportSize({ width, height: 844 });
+      expect(await page.evaluate(expectedWidth => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - expectedWidth, width), `${path} @${width}`).toBeLessThanOrEqual(1);
+    }
+  });
+}
+
+for (const path of ['/australia-east/', '/oman/', '/japan/', '/antarctica/', '/visa/turkey/', '/packing/japan/', '/packing/egypt/june/', '/trips/july/turkey/', '/blog/strahovka-dlya-puteshestviy-2026/', '/seasons/', '/blog/', '/blog/tag/2026/']) {
+  test(`mobile reading survives doubled text size ${path}`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(path);
+    await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
+    expect(await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - 390), path).toBeLessThanOrEqual(1);
+    await expect(page.locator('h1')).toBeVisible();
+    if (path === '/japan/' || path === '/trips/july/turkey/') {
+      const words = page.locator(path === '/japan/' ? '.jp-vi > div' : '.mg-n');
+      const broken = await words.evaluateAll(nodes => nodes.map(node => ({ text: node.textContent, height: node.getBoundingClientRect().height, line: parseFloat(getComputedStyle(node).lineHeight) })).filter(word => word.height > word.line + 1));
+      expect(broken, 'short facts and complete month names must remain readable at 200%').toEqual([]);
+    }
+  });
+}
+
+test('keyboard skip link stays hidden at doubled text size and reveals on focus', async ({ page, browserName }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/australia-east/');
+  await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
+  const skip = page.locator('.skip-link');
+  const hidden = await skip.boundingBox();
+  expect(hidden!.y + hidden!.height, 'unfocused skip link must stay above the viewport at any text size').toBeLessThanOrEqual(1);
+  await page.keyboard.press('Tab');
+  if (browserName === 'webkit' && !await skip.evaluate(node => node === document.activeElement)) {
+    // Safari's default keyboard preference includes links with Option-Tab.
+    // https://support.apple.com/guide/safari/cpsh003/mac
+    await page.reload();
+    await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
+    await page.keyboard.press('Alt+Tab');
   }
-  expect(сверено + кругломесячных, 'ни одной страницы с подписью вкладки и сводкой не нашлось — проверка ничего не смотрит').toBeGreaterThan(40);
-  expect(плохие, `подпись вкладки спорит со сводкой на той же странице (${плохие.length} из ${сверено}):\n${плохие.slice(0, 12).join('\n')}`).toEqual([]);
+  await expect(skip).toBeFocused();
+  await expect.poll(async () => (await skip.boundingBox())!.y).toBeGreaterThanOrEqual(0);
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/#main$/);
 });

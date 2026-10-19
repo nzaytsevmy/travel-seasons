@@ -12,6 +12,7 @@
    Тёмная — opt-in через .dark-theme на <html>.
    ───────────────────────────────────────────────────────── */
 :root {
+  --page-edge: clamp(1.1rem, 3vw, 2.6rem);
   /* «Дорожный дневник» (28.08.2026): холодный лист, чернильный синий, антиква */
   --bg:          #fbfbfa;   /* paper */
   --bg2:         #f6f7f6;   /* карточки */
@@ -119,7 +120,6 @@ body {
   line-height: 1.65;
   min-height: 100dvh;  /* dvh, не vh — iOS Safari не «прыгает» при появлении URL-бара */
   overflow-x: clip;  /* clip вместо hidden — sticky-nav работает в Safari (clip с iOS 16+) */
-  padding-bottom: 4rem;
   position: relative;
   touch-action: manipulation;
   -webkit-touch-callout: none;
@@ -154,9 +154,9 @@ a { text-decoration: none; color: inherit; }
 /* Skip-link: visually hidden until focused via Tab */
 .skip-link {
   position: absolute;
-  top: -100px;
+  top: 0;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, calc(-100% - 1px));
   background: var(--gold);
   color: #fff;
   font-size: 0.85rem;
@@ -165,9 +165,9 @@ a { text-decoration: none; color: inherit; }
   padding: 10px 18px;
   border-radius: 0 0 4px 4px;
   z-index: 1000;
-  transition: top 0.18s ease;
+  transition: transform 0.18s ease;
 }
-.skip-link:focus { top: 0; outline: none; }
+.skip-link:focus { transform: translate(-50%, 0); outline: none; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
@@ -230,7 +230,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* ─── FOOTER ─── */
-footer {
+.site-footer {
   max-width: 1200px; margin: 0 auto;
   padding: 1.5rem 2rem;
   display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem;
@@ -768,7 +768,7 @@ td > .aff-cta {
 }
 
 /* ── Юридические страницы (privacy / cookie / terms) — простая prose под брендбук ── */
-.legal-doc { max-width: 760px; margin: 0 auto; padding: 3rem var(--container-edge, 1.5rem) 4rem; }
+.legal-doc { overflow-wrap: anywhere; max-width: 760px; margin: 0 auto; padding: 3rem var(--container-edge, 1.5rem) 4rem; }
 .legal-doc h1 { font-family: var(--ff-display); font-size: clamp(1.9rem, 4vw, 2.6rem); font-weight: 400; line-height: 1.1; margin-bottom: 0.5rem; }
 .legal-doc .legal-updated { font-size: 0.82rem; color: var(--text-faint); margin-bottom: 2.5rem; }
 .legal-doc .legal-lead { font-size: 1rem; color: var(--text); line-height: 1.75; margin-bottom: 1.5rem; }
@@ -855,3 +855,10 @@ h1, h2, h3 { font-family: var(--ff-head); }
 
 /* Кусок, который строка не рвёт: составное слово с дефисом в заголовке (src/utils/nobr.js). */
 .nobr { white-space: nowrap; }
+
+/* Mobile page edges shared by header, breadcrumbs, content and footer. */
+@media (max-width: 767px) {
+  :root { --page-edge: var(--edge-mobile, 1rem); }
+  .site-footer { padding-inline: var(--page-edge); }
+  .legal-doc { padding-inline: var(--page-edge); }
+}

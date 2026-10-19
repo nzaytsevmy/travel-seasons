@@ -23,7 +23,8 @@ export const BOTS = Object.freeze({
 export const CI_WORKFLOWS = new Set([
   '.github/workflows/build.yml', '.github/workflows/content-gate.yml',
   '.github/workflows/secret-scan.yml', '.github/workflows/visual-tests.yml',
-  '.github/workflows/lighthouse.yml', 'dynamic/github-code-scanning/codeql',
+  '.github/workflows/lighthouse.yml', '.github/workflows/required-checks.yml',
+  'dynamic/github-code-scanning/codeql',
 ]);
 
 export function allowedBotPath(bot, path) {

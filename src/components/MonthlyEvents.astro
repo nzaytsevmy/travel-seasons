@@ -89,6 +89,6 @@ const closedCount = events.filter(e => e.tag === 'closed').length;
 .me-more a { color: var(--gold); font-weight: 600; text-decoration: underline; text-underline-offset: .22em; }
 @media (max-width: 760px) {
   .me { padding: 40px 0; }
-  .me-month { grid-template-columns: 1fr; }
+  .me-month { grid-template-columns: minmax(0, 1fr); }
 }
 </style>

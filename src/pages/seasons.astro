@@ -756,7 +756,7 @@ document.addEventListener('astro:page-load', _seasonsInit);
 .search-input {
   background: var(--bg2); border: 1px solid var(--line); color: var(--text);
   font-family: var(--ff-body); font-size: 1rem;  /* iOS Safari: ≥16px, иначе zoom при тапе */
-  padding: 0.5rem 0.9rem; border-radius: 3px; min-width: 240px;
+  padding: 0.5rem 0.9rem; border-radius: 3px; min-width: 240px; min-height: 44px;
   transition: border-color 0.2s;
 }
 .search-input:focus { outline: none; border-color: var(--gold-dim); }
@@ -1047,7 +1047,7 @@ h1 em { color: var(--gold); font-style: normal; }
 .panel-cta-secondary:hover { color: var(--text); border-color: var(--gold-dim); }
 
 @media (max-width: 700px) {
-  body { padding-bottom: 3rem; }
+  #main { overflow-wrap: anywhere; }
 
   .controls {
     position: sticky; top: 64px; z-index: 80; background: var(--bg);
@@ -1071,7 +1071,7 @@ h1 em { color: var(--gold); font-style: normal; }
   /* строка региона → карточка-грид: инфо сверху, ниже тайлы месяцев 6×2 */
   #tbody tr:not(.group-header) {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 5px;
     padding: 0.85rem clamp(0.85rem, 4vw, 1.1rem) 1.05rem;
     border-bottom: 1px solid var(--line);
@@ -1108,7 +1108,7 @@ h1 em { color: var(--gold); font-style: normal; }
 
   /* квадратные тач-тайлы (~55px ≥44px на 360–430px), инициал месяца сверху */
   #tbody tr:not(.group-header) .cell {
-    height: auto; aspect-ratio: 1; border-width: 1px; border-radius: 8px;
+    min-width: 0; height: auto; aspect-ratio: 1; border-width: 1px; border-radius: 8px;
   }
   .cell-mo {
     display: block; position: absolute; top: 4px; left: 0; right: 0; text-align: center;
