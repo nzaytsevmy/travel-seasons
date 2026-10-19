@@ -89,6 +89,7 @@ test('only the expected CI workflows on the exact PR head can be approved', () =
   const run = { id: 10, event: 'pull_request', head_sha: HEAD, path: '.github/workflows/build.yml',
     status: 'waiting', conclusion: 'action_required', pull_requests: [{ number: 7 }] };
   assert.equal(approvableRun(run, pr), true);
+  assert.equal(approvableRun({ ...run, path: '.github/workflows/required-checks.yml' }, pr), true);
   for (const patch of [{ head_sha: NEW }, { path: '.github/workflows/deploy.yml' },
     { event: 'workflow_dispatch' }, { pull_requests: [{ number: 8 }] }, { status: 'completed', conclusion: 'success' }]) {
     assert.equal(approvableRun({ ...run, ...patch }, pr), false);
