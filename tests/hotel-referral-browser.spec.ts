@@ -17,7 +17,11 @@ for (const [country, collection] of readyHotelCollections()) {
       const clickIds = new Set<string>();
       const buttons: ('left' | 'middle')[] = testInfo.project.use.isMobile ? ['left', 'left'] : ['left', 'middle', 'left'];
       for (const button of buttons) {
-        const pending = page.waitForEvent('popup');
+        // A middle click can create a browser-context page without an opener.
+        // It still has to be a real new tab with the exact attributed URL below.
+        const pending = button === 'middle'
+          ? context.waitForEvent('page', { timeout: 15_000 })
+          : page.waitForEvent('popup', { timeout: 15_000 });
         await booking.click({ button });
         const popup = await pending;
         try {
