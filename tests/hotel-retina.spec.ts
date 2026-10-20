@@ -21,18 +21,22 @@ for (const [country] of readyHotelCollections()) {
         await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
       });
       await expect.poll(() => images.evaluateAll(async nodes => {
-        const pending = await Promise.all(nodes.map(async node => {
+        // Chromium can reject valid responsive images when many decode calls
+        // compete after resizing. Decode every image, one at a time.
+        const pending: string[] = [];
+        for (const node of nodes) {
           const image = node as HTMLImageElement;
           const selected = image.currentSrc;
           try {
             await image.decode();
           } catch (error) {
-            return `${image.currentSrc || image.src}: ${String(error)}`;
+            pending.push(`${image.currentSrc || image.src}: ${String(error)}`);
+            continue;
           }
-          return image.complete && image.naturalWidth > 0 && selected === image.currentSrc
-            ? null : `${image.currentSrc || image.src}: responsive source still changing`;
-        }));
-        return pending.filter(value => value !== null);
+          if (!image.complete || image.naturalWidth <= 0 || selected !== image.currentSrc)
+            pending.push(`${image.currentSrc || image.src}: responsive source still changing`);
+        }
+        return pending;
       }), { timeout: 15_000, message: `${country} ${width}px: selected images must finish decoding` }).toEqual([]);
       const rows = await images.evaluateAll(nodes => nodes.map(node => {
         const image = node as HTMLImageElement;
