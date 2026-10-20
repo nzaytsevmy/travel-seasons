@@ -344,17 +344,18 @@ jobs:
           SKIP_PAGE_MTIME_TESTS: '1'
 
       - name: Run visual regression tests
-        run: npx playwright test --shard=${{ matrix.shard }}/4
+        run: node scripts/run-balanced-browser-shard.mjs ${{ matrix.shard }}
         env:
           PREVIEW_URL: http://localhost:4322
           SKIP_PAGE_MTIME_TESTS: '1'
 
-      - name: Upload diff artifacts on failure
-        if: failure()
+      - name: Upload complete browser reports and failure artifacts
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-${{ matrix.shard }}
           path: |
             tests/.html-report/
             test-results/
+          include-hidden-files: true
           retention-days: 14

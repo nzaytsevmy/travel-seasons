@@ -1,0 +1,77 @@
+import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+
+export const browserProjects = ['chromium-desktop', 'webkit-desktop', 'chromium-tablet', 'webkit-mobile'];
+export function browserParts(index) {
+  assert(Number.isInteger(index) && index >= 1 && index <= 4);
+  // Rotate the quarters: assigning the same quarter in every project would
+  // concentrate all the expensive hotel tests in a single job again.
+  return browserProjects.map((project, i) => ({ project, shard: `${(index - 1 + i) % 4 + 1}/4` }));
+}
+export function caseKeys(report) {
+  const keys = [];
+  function visit(suites, parents = []) {
+    for (const suite of suites || []) {
+      const titles = [...parents, suite.title];
+      for (const spec of suite.specs || []) for (const test of spec.tests || []) {
+        const file = path.isAbsolute(spec.file) ? path.relative(report.config.rootDir, spec.file) : spec.file;
+        keys.push(JSON.stringify([test.projectName, file, ...titles, spec.title, test.repeatEachIndex || 0]));
+      }
+      visit(suite.suites, titles);
+    }
+  }
+  visit(report.suites);
+  assert.equal(keys.length, new Set(keys).size, 'Duplicate test identities');
+  return keys.sort();
+}
+function run(index) {
+  const cli = 'node_modules/@playwright/test/cli.js';
+  function inventory(args = []) {
+    const result = spawnSync(process.execPath, [cli, 'test', ...args, '--list', '--reporter=json'],
+      { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, env: process.env });
+    assert.equal(result.status, 0, result.stderr || 'Playwright inventory failed');
+    return JSON.parse(result.stdout);
+  }
+  const full = inventory();
+  assert.deepEqual(full.config.projects.map(p => p.name).sort(), [...browserProjects].sort());
+  const globalCaseKeys = caseKeys(full), parts = [];
+  let passed = true;
+  for (const part of browserParts(index)) {
+    const args = [`--project=${part.project}`, `--shard=${part.shard}`];
+    const expected = caseKeys(inventory(args));
+    assert(expected.length > 0 && expected.every(key => globalCaseKeys.includes(key)));
+    const directory = path.resolve('tests/.html-report', part.project);
+    fs.mkdirSync(directory, { recursive: true });
+    const jsonFile = path.resolve('test-results', part.project, 'tests.json');
+    console.log(JSON.stringify({ fullBrowserMatrixPart: part, expectedCases: expected.length }));
+    const result = spawnSync(process.execPath, [cli, 'test', ...args,
+      `--output=test-results/${part.project}`, '--reporter=list,html,json'],
+    { stdio: 'inherit', env: { ...process.env, PLAYWRIGHT_HTML_OUTPUT_DIR: directory,
+      PLAYWRIGHT_JSON_OUTPUT_FILE: jsonFile, PLAYWRIGHT_HTML_OPEN: 'never' } });
+    const receipt = { ...part, expectedCaseKeys: expected, reportFile: `test-results/${part.project}/tests.json`,
+      exitCode: result.status, passed: false };
+    try {
+      const actual = JSON.parse(fs.readFileSync(jsonFile, 'utf8'));
+      assert.deepEqual(caseKeys(actual), expected, 'Executed cases differ from the native inventory');
+      assert.equal(actual.stats.unexpected, 0); assert.equal(actual.stats.flaky, 0);
+      assert.equal(result.status, 0, 'The complete project part must pass');
+      receipt.passed = true;
+    } catch (error) { receipt.error = error.message; passed = false; }
+    parts.push(receipt);
+    // Continue after a failed part so every browser still gets its full coverage.
+  }
+  const proof = { shard: index, globalCaseKeys, globalCaseKeysSha256:
+    createHash('sha256').update(JSON.stringify(globalCaseKeys)).digest('hex'), parts, passed };
+  fs.writeFileSync('tests/.html-report/balanced-shard.json', JSON.stringify(proof, null, 2));
+  fs.writeFileSync('tests/.html-report/index.html', `<!doctype html><meta charset="utf-8">
+    <title>Complete browser matrix: shard ${index}/4</title>
+    <h1>Complete browser matrix: shard ${index}/4</h1><p>${passed ? 'Passed' : 'Failed'}</p>
+    <ul>${parts.map(p => `<li><a href="${p.project}/index.html">${p.project}, part ${p.shard}</a></li>`).join('')}</ul>
+    <a href="balanced-shard.json">Exact coverage and exit codes</a>`);
+  process.exitCode = passed ? 0 : 1;
+}
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) run(Number(process.argv[2]));
