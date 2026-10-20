@@ -30,7 +30,8 @@ for (const [country] of readyHotelCollections()) {
           // Decode each immutable, hashed URL once. Geometry and displayed-source
           // readiness are still checked at every width and on every poll.
           const decoded = new Map(cachedDimensions);
-          for (const node of nodes) {
+          for (let offset = 0; offset < nodes.length; offset += 4) {
+          await Promise.all(nodes.slice(offset, offset + 4).map(async node => {
             const image = node as HTMLImageElement;
             const selected = image.currentSrc;
             try {
@@ -54,10 +55,11 @@ for (const [country] of readyHotelCollections()) {
                 throw new Error('Responsive source does not yet cover the new frame at 2×');
             } catch (error) {
               pending.push(`${image.currentSrc || image.src}: ${String(error)}`);
-              continue;
+              return;
             }
             if (!image.complete || image.naturalWidth <= 0 || selected !== image.currentSrc)
               pending.push(`${image.currentSrc || image.src}: responsive source still changing`);
+          }));
           }
           return { pending, decoded: [...decoded] };
         }, [...decodedImages]);
@@ -69,13 +71,16 @@ for (const [country] of readyHotelCollections()) {
         const frame = image.getBoundingClientRect();
         return { url: image.currentSrc, width: frame.width, height: frame.height, alt: image.alt };
       }));
-      for (const row of rows) {
-        if (!dimensions.has(row.url)) {
-          const response = await request.get(row.url);
+      const missingUrls = [...new Set(rows.map(row => row.url))].filter(url => !dimensions.has(url));
+      for (let offset = 0; offset < missingUrls.length; offset += 4) {
+        await Promise.all(missingUrls.slice(offset, offset + 4).map(async url => {
+          const response = await request.get(url);
           expect(response.status()).toBe(200);
           const metadata = await sharp(await response.body()).metadata();
-          dimensions.set(row.url, { width: metadata.width!, height: metadata.height! });
-        }
+          dimensions.set(url, { width: metadata.width!, height: metadata.height! });
+        }));
+      }
+      for (const row of rows) {
         const actual = dimensions.get(row.url)!;
         // naturalWidth is density-corrected by the browser and cannot prove file resolution.
         expect(actual.width + 1, `${country} ${width}px ${row.alt}: horizontal 2× pixels`).toBeGreaterThanOrEqual(Math.ceil(row.width * 2));
