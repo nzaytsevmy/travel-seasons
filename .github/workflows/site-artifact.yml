@@ -16,7 +16,10 @@ permissions:
 jobs:
   artifact:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # Native hotel run 39364546751 finished the cold image build in 14m40s,
+    # then reached 20 minutes while uploading the exact archive. Keep time for
+    # checkout, the complete image set, transfer and cache save on this runner.
+    timeout-minutes: 40
     outputs:
       digest: ${{ steps.pack.outputs.digest }}
     steps:
@@ -32,8 +35,12 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: node_modules/.astro
-          key: astro-assets-${{ runner.os }}-${{ hashFiles('src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.png') }}
-          restore-keys: astro-assets-${{ runner.os }}-
+          # New widths/quality and WebP originals must produce a writable cache
+          # entry even when the JPEG/PNG originals were staged in an earlier PR.
+          key: astro-assets-v2-${{ runner.os }}-${{ hashFiles('src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.png', 'src/**/*.webp', 'src/**/*.astro', 'package-lock.json', 'astro.config.mjs') }}
+          restore-keys: |
+            astro-assets-v2-${{ runner.os }}-
+            astro-assets-${{ runner.os }}-
       - run: npm run build
         env:
           SKIP_HTML_MIN: ${{ inputs.skip_html_min }}
