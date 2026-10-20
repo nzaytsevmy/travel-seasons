@@ -28,12 +28,28 @@ async function candidates(aspect: number, maximum: number) {
 const desktop = await candidates(wide ? 16 / 9 : 4 / 3, lead ? 2400 : 1600);
 const mobile = wide ? await candidates(4 / 3, 1600) : desktop;
 ---
-<picture style={`--hotel-photo-ratio:${wide ? '16 / 9' : '4 / 3'}`}>
+<picture data-hotel-photo style={`--hotel-photo-ratio:${wide ? '16 / 9' : '4 / 3'}`}>
   {wide && <source media="(max-width: 767px)" srcset={mobile.srcset} sizes={sizes} type="image/webp" />}
   <img src={desktop.largest.src} srcset={desktop.srcset} sizes={sizes}
     width={desktop.width} height={desktop.height} alt={alt} loading={loading}
     decoding="async" fetchpriority={loading === 'eager' ? 'high' : 'auto'} />
 </picture>
+<script>
+  // Keep the declarative sizes fallback for the initial request and no-JS visits.
+  // Safari can retain the initial calc() source size after a viewport resize.
+  // Observing the actual box also covers grid changes without a window resize.
+  const photos = new ResizeObserver(entries => {
+    for (const { target, contentRect } of entries) {
+      if (contentRect.width <= 0) continue;
+      const sizes = `${Math.ceil(contentRect.width)}px`;
+      for (const image of target.querySelectorAll('img, source')) {
+        if (image.getAttribute('sizes') !== sizes) image.setAttribute('sizes', sizes);
+      }
+    }
+  });
+  document.querySelectorAll('[data-hotel-photo]').forEach(photo => photos.observe(photo));
+  window.addEventListener('pagehide', () => photos.disconnect(), { once: true });
+</script>
 <style>
   picture { display:block; width:100%; }
   img { display:block; width:100%; height:auto; aspect-ratio:var(--hotel-photo-ratio); object-fit:cover; }
