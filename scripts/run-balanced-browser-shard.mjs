@@ -30,10 +30,12 @@ export function caseKeys(report) {
 }
 function run(index) {
   const cli = 'node_modules/@playwright/test/cli.js';
-  function inventory(args = []) {
+  fs.mkdirSync('tests/.html-report', { recursive: true });
+  function inventory(args = [], filename = 'full-inventory.json') {
     const result = spawnSync(process.execPath, [cli, 'test', ...args, '--list', '--reporter=json'],
       { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, env: process.env });
     assert.equal(result.status, 0, result.stderr || 'Playwright inventory failed');
+    fs.writeFileSync(path.join('tests/.html-report', filename), result.stdout);
     return JSON.parse(result.stdout);
   }
   const full = inventory();
@@ -42,7 +44,7 @@ function run(index) {
   let passed = true;
   for (const part of browserParts(index)) {
     const args = [`--project=${part.project}`, `--shard=${part.shard}`];
-    const expected = caseKeys(inventory(args));
+    const expected = caseKeys(inventory(args, `${part.project}-inventory.json`));
     assert(expected.length > 0 && expected.every(key => globalCaseKeys.includes(key)));
     const directory = path.resolve('tests/.html-report', part.project);
     fs.mkdirSync(directory, { recursive: true });
