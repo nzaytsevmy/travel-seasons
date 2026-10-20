@@ -21,14 +21,22 @@ for (const [country] of readyHotelCollections()) {
         await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
       });
       await expect.poll(() => images.evaluateAll(async nodes => {
-        // Chromium can reject valid responsive images when many decode calls
-        // compete after resizing. Decode every image, one at a time.
+        // Responsive elements can retain a rejected decode promise after a
+        // source change. Decode the selected bytes independently, then verify
+        // that the displayed element has finished loading that same source.
         const pending: string[] = [];
         for (const node of nodes) {
           const image = node as HTMLImageElement;
           const selected = image.currentSrc;
           try {
-            await image.decode();
+            const response = await fetch(selected);
+            if (!response.ok) throw new Error(`Image HTTP ${response.status}`);
+            const bitmap = await createImageBitmap(await response.blob());
+            try {
+              if (bitmap.width <= 0 || bitmap.height <= 0) throw new Error('Empty image bitmap');
+            } finally {
+              bitmap.close();
+            }
           } catch (error) {
             pending.push(`${image.currentSrc || image.src}: ${String(error)}`);
             continue;
