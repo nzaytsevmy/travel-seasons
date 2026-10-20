@@ -11,10 +11,16 @@ interface Props {
 }
 const { src, alt, sizes, wide = false, lead = false, loading = 'lazy' } = Astro.props;
 async function candidates(aspect: number, maximum: number) {
+  // Read dimensions from getImage's resolved metadata. Reading the imported
+  // image proxy directly tells Astro to publish its untouched JPEG as well.
+  const seed = await getImage({ src, width: 400, height: Math.round(400 / aspect),
+    fit: 'cover', format: 'webp', quality: 88 });
+  const native = seed.options.src as ImageMetadata;
   // A crop must fit both native dimensions. Width-only checks admit blurry crops.
-  const limit = Math.floor(Math.min(maximum, src.width, src.height * aspect));
+  const limit = Math.floor(Math.min(maximum, native.width, native.height * aspect));
+  if (limit < 400) throw new Error('Hotel photo cannot cover the smallest native candidate');
   const widths = [...new Set([400, 800, 1200, 1600, 2000, 2400, limit].filter(width => width <= limit))].sort((a, b) => a - b);
-  const variants = await Promise.all(widths.map(width => getImage({ src, width,
+  const variants = await Promise.all(widths.map(width => width === 400 ? seed : getImage({ src, width,
     height: Math.round(width / aspect), fit: 'cover', format: 'webp', quality: 88 })));
   return { srcset: variants.map((image, i) => `${image.src} ${widths[i]}w`).join(', '),
     largest: variants.at(-1)!, width: limit, height: Math.round(limit / aspect) };
