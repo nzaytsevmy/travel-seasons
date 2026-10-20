@@ -337,7 +337,8 @@ jobs:
       # Отдельный прогон content-gate дублирует ОТСЮДА только контентную часть —
       # она идёт секунды, и это дешевле, чем городить деление без пересечений.
       - name: Early hotel Retina regression in all four browsers
-        run: npx playwright test tests/hotel-retina.spec.ts --grep '2×: costa-rica-panama$' --retries=0
+        run: |
+          npx playwright test tests/hotel-retina.spec.ts --grep '2×: costa-rica-panama$' --retries=0
         env:
           PREVIEW_URL: http://localhost:4322
           SKIP_PAGE_MTIME_TESTS: '1'
