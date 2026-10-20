@@ -48,7 +48,10 @@ const mobile = wide ? await candidates(4 / 3, 1600) : desktop;
     }
   });
   document.querySelectorAll('[data-hotel-photo]').forEach(photo => photos.observe(photo));
-  window.addEventListener('pagehide', () => photos.disconnect(), { once: true });
+  window.addEventListener('pagehide', event => {
+    // A page restored from the back/forward cache still needs resize updates.
+    if (!event.persisted) photos.disconnect();
+  });
 </script>
 <style>
   picture { display:block; width:100%; }
