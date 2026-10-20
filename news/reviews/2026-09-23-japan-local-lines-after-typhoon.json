@@ -1,76 +1,235 @@
 {
   "schemaVersion": 1,
   "slug": "2026-09-23-japan-local-lines-after-typhoon",
-  "reviewer": "Codex (tt_news_review_20261016)",
-  "reviewerTask": "/root/tt_news_review_20261016",
+  "reviewer": "Codex (editorial_review_20261020)",
+  "reviewerTask": "/root/editorial_review_20261020",
   "authoredBy": "codex-traveltribe-author-20261016",
-  "reviewedAt": "2026-10-16T14:03:09.172Z",
+  "reviewedAt": "2026-10-20",
   "checkedAt": "2026-10-16",
   "score": 4,
   "approved": true,
   "approvalScope": "EDITORIAL_CONTENT_ONLY",
-  "classification": "UPDATE",
-  "baseCommit": "68fbd0c2a5e766b7685c854605d78360a3f060c2",
-  "previousReview": {
-    "artifact": "news/reviews/2026-09-23-japan-local-lines-after-typhoon.json",
-    "sha256": "c03a9d2ad0c968796adf5a50720e801c5cd662578b35471f4cd6d3cc243cc9e1",
-    "scope": "Предыдущий файл заменён; прежние баллы и фактчек не перенесены как сегодняшнее независимое доказательство."
-  },
-  "rationale": "Адресное продолжение истории после тайфуна с новым сообщением Коминато. Масштаб сводки не распространён на все железные дороги региона; старые даты сохранены.",
-  "readerTask": "Собрать маршрут по Тибе, не спутывая железную дорогу и автобус.",
-  "ownAddition": "СравненыMLIT№16/17, исчезновениеНаритаизперечня и отдельно автобус доИсигами/перенос 19 Oct.",
-  "factReview": "Самостоятельно прочитаныPDF№16/17 pp 7–8:5→4 линии,участкиKururi/Sobu/Uchibo. Kominato 16 Oct:500 м,14 Octbus,19 Octstopmove,разрывдоNakano.",
+  "classification": "SOURCE_RECHECK",
+  "baseCommit": "707f7c57b591d3769d740b30de9024fecd0bede2",
+  "rationale": "Сохранённая оценка 4/5 относится к доказанно неизменному title/tldr/body: contentHash совпал с HEAD и прежней содержательной рецензией. Сегодня прочитан полный текст и проверена только ревизия метаданных/состояния. Kominato16.10:замещающий автобус доИсигами, около500м доYoro-Keikoku, объявленный перенос остановки19.10, нет пересадкивKazusaNakano. PDF, ошибочно прочитанный как текст, не доказательство; вывод по официальной странице.",
+  "factReview": "Kominato16.10:замещающий автобус доИсигами, около500м доYoro-Keikoku, объявленный перенос остановки19.10, нет пересадкивKazusaNakano. PDF, ошибочно прочитанный как текст, не доказательство; вывод по официальной странице. Прежняя содержательная проверка переиспользована после совпадения хеша; это не новая независимая перепроверка всех исторических фактов 20 октября.",
   "sourceChecks": [
     {
       "url": "https://www.mlit.go.jp/saigai/saigai_260920.html",
-      "artifact": ".run/tt-20261016/sources/5a5da6fd2b61b9f4.full.txt",
-      "artifactSha256": "09837f2a3a74bbc7ed5f98dd94d261f30172319d48b68955a903dac9afd7735e",
-      "rawArtifact": ".run/tt-20261016/sources/5a5da6fd2b61b9f4.html",
-      "rawSha256": "c258240114659291967ee9bd3187404d0268dd1c504c28bce6ffedac60cedaf6",
-      "observedAt": "2026-10-16T13:05:30.468364+00:00",
-      "reviewedAt": "2026-10-16T14:03:09.172Z",
-      "status": "READ_WITH_DECLARED_LIMITS",
-      "scope": "Сохранённый оригинал и читаемая текстовая производная; прочитаны разделы, необходимые утверждениям заметки."
+      "status": "AVAILABILITY_AND_METADATA_RECHECK_ONLY",
+      "artifact": ".run/source-check-20261020/5a5da6fd2b61b9f4.txt",
+      "artifactSha256": "aaf1da589e44ac85732cedbeea3ec80fcedc2402c823f850c2341b3ec5e58bfe",
+      "observedHttpStatus": 200,
+      "reviewedAt": "2026-10-20",
+      "scope": "Содержательная прежняя рецензия переиспользована по точному хешу; новая дата не означает повторное чтение всех первичек."
     },
     {
       "url": "https://www.mlit.go.jp/common/002025453.pdf",
-      "artifact": ".run/tt-20261016/sources/55d3dc287efbf47d.pdf",
-      "artifactSha256": "832b49331eb3af8d2b93a5474adfb8ec4293d7adb0c35b7e621f163ec1ec9468",
-      "rawArtifact": ".run/tt-20261016/sources/55d3dc287efbf47d.pdf",
-      "rawSha256": "832b49331eb3af8d2b93a5474adfb8ec4293d7adb0c35b7e621f163ec1ec9468",
-      "observedAt": "2026-10-16T13:05:30.550374+00:00",
-      "reviewedAt": "2026-10-16T14:03:09.172Z",
-      "status": "READ_WITH_DECLARED_LIMITS",
-      "scope": "Самостоятельно извлечены и прочитаны страницы 7–8 PDF; это датированные сводки 2/5 октября, не сегодняшний статус всехJRлиний."
+      "status": "AVAILABILITY_AND_METADATA_RECHECK_ONLY",
+      "observedHttpStatus": null,
+      "reviewedAt": "2026-10-20",
+      "scope": "Содержательная прежняя рецензия переиспользована по точному хешу; новая дата не означает повторное чтение всех первичек.",
+      "limitation": "Текстовая HTTP200производнаяPDF недействительна как доказательство; нынешнее содержательное решениеPDFнеопирается."
     },
     {
       "url": "https://www.mlit.go.jp/common/002025687.pdf",
-      "artifact": ".run/tt-20261016/sources/99213a0e12ef26c1.pdf",
-      "artifactSha256": "1d62f85858dde49ccd0e8655e93b9b1daef3710da39ac382acb74a41a4f3ef32",
-      "rawArtifact": ".run/tt-20261016/sources/99213a0e12ef26c1.pdf",
-      "rawSha256": "1d62f85858dde49ccd0e8655e93b9b1daef3710da39ac382acb74a41a4f3ef32",
-      "observedAt": "2026-10-16T13:05:30.775154+00:00",
-      "reviewedAt": "2026-10-16T14:03:09.172Z",
-      "status": "READ_WITH_DECLARED_LIMITS",
-      "scope": "Самостоятельно извлечены и прочитаны страницы 7–8 PDF; это датированные сводки 2/5 октября, не сегодняшний статус всехJRлиний."
+      "status": "AVAILABILITY_AND_METADATA_RECHECK_ONLY",
+      "observedHttpStatus": 200,
+      "reviewedAt": "2026-10-20",
+      "scope": "Содержательная прежняя рецензия переиспользована по точному хешу; новая дата не означает повторное чтение всех первичек.",
+      "limitation": "Текстовая HTTP200производнаяPDF недействительна как доказательство; нынешнее содержательное решениеPDFнеопирается."
     },
     {
       "url": "https://www.kominato.co.jp/",
-      "artifact": ".run/tt-20261016/sources/e7788575ddb07189.full.txt",
-      "artifactSha256": "dd146b0d8f799aa879b633427cb47ce72c6b17c3785a1c931fdc7ec11589df23",
-      "rawArtifact": ".run/tt-20261016/sources/e7788575ddb07189.html",
-      "rawSha256": "ddce8078e7b7754ad9c91f91826c646f78ca7eb5cdcb61a61388008594a65734",
-      "observedAt": "2026-10-16T13:05:30.843335+00:00",
-      "reviewedAt": "2026-10-16T14:03:09.172Z",
-      "status": "READ_WITH_DECLARED_LIMITS",
-      "scope": "Сохранённый оригинал и читаемая текстовая производная; прочитаны разделы, необходимые утверждениям заметки."
+      "status": "AVAILABILITY_AND_METADATA_RECHECK_ONLY",
+      "artifact": ".run/source-check-20261020/e7788575ddb07189.txt",
+      "artifactSha256": "9d3cbcef3ae511a8159e7c6e27ea4e119821c664ee5692aef569d0ce0b5969f2",
+      "observedHttpStatus": 200,
+      "reviewedAt": "2026-10-20",
+      "scope": "Содержательная прежняя рецензия переиспользована по точному хешу; новая дата не означает повторное чтение всех первичек."
     }
   ],
   "contentHash": "ddf7d7e441417551d4e13740a4d1bddaa53e4046116b161392ee25a15ebde80b",
-  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote; метаданные проверены отдельно.",
-  "sourceSha256": "11999221c53410808896f83e641ee32eeb43f28ad1d441b976bb0fa56a8dc287",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote.",
+  "sourceSha256": "99ed902c75a903f91d6eb4498d049f87ddb2fd5b0446d750e9e253372687fbe8",
+  "sourceSha256Scope": "SHA-256 полного исходного UTF-8 Markdown, включая frontmatter.",
   "nativeClipTitle": "Тиба: Коминато меняет остановку замещающего автобуса",
-  "clipTitleCodeSha256": "3cfd40e5fb33713ca77578f010d3c32b1c67b0f5e5fe2d8cf7959d5969a6abf7",
+  "clipTitleCodeSha256": "61aeac8ec0e88ff9175d1ebefe66fd9be9b17f211a045a943312de9f6fdc1b0f",
+  "previousReview": {
+    "reviewer": "Codex (tt_news_review_20261016)",
+    "reviewedAt": "2026-10-16T14:03:09.172Z",
+    "score": 4,
+    "rationale": "Адресное продолжение истории после тайфуна с новым сообщением Коминато. Масштаб сводки не распространён на все железные дороги региона; старые даты сохранены.",
+    "contentHash": "ddf7d7e441417551d4e13740a4d1bddaa53e4046116b161392ee25a15ebde80b",
+    "sourceSha256": "11999221c53410808896f83e641ee32eeb43f28ad1d441b976bb0fa56a8dc287",
+    "sourceChecks": [
+      {
+        "url": "https://www.mlit.go.jp/saigai/saigai_260920.html",
+        "artifact": ".run/tt-20261016/sources/5a5da6fd2b61b9f4.full.txt",
+        "artifactSha256": "09837f2a3a74bbc7ed5f98dd94d261f30172319d48b68955a903dac9afd7735e",
+        "rawArtifact": ".run/tt-20261016/sources/5a5da6fd2b61b9f4.html",
+        "rawSha256": "c258240114659291967ee9bd3187404d0268dd1c504c28bce6ffedac60cedaf6",
+        "observedAt": "2026-10-16T13:05:30.468364+00:00",
+        "reviewedAt": "2026-10-16T14:03:09.172Z",
+        "status": "READ_WITH_DECLARED_LIMITS",
+        "scope": "Сохранённый оригинал и читаемая текстовая производная; прочитаны разделы, необходимые утверждениям заметки."
+      },
+      {
+        "url": "https://www.mlit.go.jp/common/002025453.pdf",
+        "artifact": ".run/tt-20261016/sources/55d3dc287efbf47d.pdf",
+        "artifactSha256": "832b49331eb3af8d2b93a5474adfb8ec4293d7adb0c35b7e621f163ec1ec9468",
+        "rawArtifact": ".run/tt-20261016/sources/55d3dc287efbf47d.pdf",
+        "rawSha256": "832b49331eb3af8d2b93a5474adfb8ec4293d7adb0c35b7e621f163ec1ec9468",
+        "observedAt": "2026-10-16T13:05:30.550374+00:00",
+        "reviewedAt": "2026-10-16T14:03:09.172Z",
+        "status": "READ_WITH_DECLARED_LIMITS",
+        "scope": "Самостоятельно извлечены и прочитаны страницы 7–8 PDF; это датированные сводки 2/5 октября, не сегодняшний статус всехJRлиний."
+      },
+      {
+        "url": "https://www.mlit.go.jp/common/002025687.pdf",
+        "artifact": ".run/tt-20261016/sources/99213a0e12ef26c1.pdf",
+        "artifactSha256": "1d62f85858dde49ccd0e8655e93b9b1daef3710da39ac382acb74a41a4f3ef32",
+        "rawArtifact": ".run/tt-20261016/sources/99213a0e12ef26c1.pdf",
+        "rawSha256": "1d62f85858dde49ccd0e8655e93b9b1daef3710da39ac382acb74a41a4f3ef32",
+        "observedAt": "2026-10-16T13:05:30.775154+00:00",
+        "reviewedAt": "2026-10-16T14:03:09.172Z",
+        "status": "READ_WITH_DECLARED_LIMITS",
+        "scope": "Самостоятельно извлечены и прочитаны страницы 7–8 PDF; это датированные сводки 2/5 октября, не сегодняшний статус всехJRлиний."
+      },
+      {
+        "url": "https://www.kominato.co.jp/",
+        "artifact": ".run/tt-20261016/sources/e7788575ddb07189.full.txt",
+        "artifactSha256": "dd146b0d8f799aa879b633427cb47ce72c6b17c3785a1c931fdc7ec11589df23",
+        "rawArtifact": ".run/tt-20261016/sources/e7788575ddb07189.html",
+        "rawSha256": "ddce8078e7b7754ad9c91f91826c646f78ca7eb5cdcb61a61388008594a65734",
+        "observedAt": "2026-10-16T13:05:30.843335+00:00",
+        "reviewedAt": "2026-10-16T14:03:09.172Z",
+        "status": "READ_WITH_DECLARED_LIMITS",
+        "scope": "Сохранённый оригинал и читаемая текстовая производная; прочитаны разделы, необходимые утверждениям заметки."
+      }
+    ],
+    "photo": {
+      "image": "./_images/2026-09-23-japan-local-lines-after-typhoon.jpg",
+      "imageSha256": "71e8276876d183a1e9cfe656183102690eaaf6285ebd918f0a75dd2ae1a15c86",
+      "creator": "Io24gidf",
+      "license": "CC BY-SA",
+      "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "source": "https://commons.wikimedia.org/w/index.php?curid=103042248",
+      "title": "Поезд Kominato Railway на станции Кадзуса-Усику, март 2019 года. Архивный кадр одной из линий из сводки, не последствий тайфуна.",
+      "alt": "Красно-кремовый поезд KiHa 200 на станции Кадзуса-Усику",
+      "changes": "Исходное название работы: Kominato Railway Kiha 20x.jpg. Подготовлена JPEG-копия.",
+      "visualReview": "Кадр самостоятельно просмотрен в текущем файле. Смысл подписи и архивность/иллюстративность сверены; это не доказательство события, доступа или браузерной загрузки.",
+      "provenanceEvidence": {
+        "apiURL": "https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo&iiprop=url%7Cextmetadata&pageids=195776898%7C118265384%7C9998689%7C123743150%7C63394488%7C5704066%7C90056045%7C171000743%7C87531265%7C104893227%7C16120927%7C21022788%7C103042248%7C40845121%7C31646018%7C62482418%7C123908165%7C45307740%7C61772770%7C119638709%7C78730822",
+        "observedAt": "2026-10-16T13:50:55.692Z",
+        "pageid": 103042248,
+        "title": "File:Kominato Railway Kiha 20x.jpg",
+        "description": "Model Kiha 200|Exterior Mid 2019",
+        "creator": "Io24gidf",
+        "license": "CC BY-SA 4.0",
+        "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0",
+        "date": "2019-03-05",
+        "credit": "Own work",
+        "source": "https://commons.wikimedia.org/wiki/File:Kominato_Railway_Kiha_20x.jpg"
+      },
+      "provenanceEvidenceSha256": "6ccb37def160e3b2a3675310703aaf09ede3da45b2be4c3a9d88dacea64e3a04",
+      "provenanceHashScope": "SHA-256 JSON.stringify(photo.provenanceEvidence); выбранные поля настоящего Commons API сохранены внутри этого reviewJSON.",
+      "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+    },
+    "criteria14": [
+      {
+        "id": 1,
+        "criterion": "Задача читателя",
+        "score": 10,
+        "evidence": "Собрать маршрут по Тибе, не спутывая железную дорогу и автобус. Один основной вопрос и граница результата видны из title/tldr/body."
+      },
+      {
+        "id": 2,
+        "criterion": "Обоснование темы",
+        "score": 10,
+        "evidence": "Адресное сопровождение существующего URL, заданное сегодняшним сроком/изменением. Это UPDATE, не новый материал. Соответствует аудиторииTravelTribe; прогноз трафика и денег не присвоен."
+      },
+      {
+        "id": 3,
+        "criterion": "Место в проекте",
+        "score": 5,
+        "evidence": "Выбран прежний/отдельный URL и релевантная связь: /blog/kamakura-chto-posmotret/. Дубли NEW проверены адресно; полная входящая структура и canonical итоговой сборки ещё не проверены. "
+      },
+      {
+        "id": 4,
+        "criterion": "Полнота и прямой ответ",
+        "score": 5,
+        "evidence": "Ответ начинается прямо, но ключевой оперативный слой остаётся внешней проверкой. MLIT 5 октября не подтверждает сегодняшний режим всехJRлиний;500 м не объявлены гарантированно безопасной прогулкой."
+      },
+      {
+        "id": 5,
+        "criterion": "Собственный вклад",
+        "score": 10,
+        "evidence": "СравненыMLIT№16/17, исчезновениеНаритаизперечня и отдельно автобус доИсигами/перенос 19 Oct. Вклад — конкретное сопоставление или сценарий на прочитанных фактах, без присвоения чужого исследования."
+      },
+      {
+        "id": 6,
+        "criterion": "Факты и источники",
+        "score": 5,
+        "evidence": "Самостоятельно прочитаныPDF№16/17 pp 7–8:5→4 линии,участкиKururi/Sobu/Uchibo. Kominato 16 Oct:500 м,14 Octbus,19 Octstopmove,разрывдоNakano. Полнота текущего подтверждения ограничена: MLIT 5 октября не подтверждает сегодняшний режим всехJRлиний;500 м не объявлены гарантированно безопасной прогулкой."
+      },
+      {
+        "id": 7,
+        "criterion": "Числа и примеры",
+        "score": 10,
+        "evidence": "Числа и даты в финальном тексте сопоставлены с указанными оригиналами. Диапазоны, единицы, план/состоявшееся и момент наблюдения не подменены; отсутствующий знаменатель или будущий результат не рассчитан. См. factReview и sourceChecks."
+      },
+      {
+        "id": 8,
+        "criterion": "Исключения и применимость",
+        "score": 10,
+        "evidence": "Применимость и ограничения названы в тексте: MLIT 5 октября не подтверждает сегодняшний режим всехJRлиний;500 м не объявлены гарантированно безопасной прогулкой. Архивное/иллюстративное изображение не доказывает текущий доступ или событие."
+      },
+      {
+        "id": 9,
+        "criterion": "Авторство и доверие",
+        "score": 5,
+        "evidence": "Авторство в данных: codex-traveltribe-author-20261016. Независимый Codex reviewer другой и текст не писал; личный опыт/человеческий тест не присвоены. Публичный byline, профиль и SSR финального выпуска ещё не проверены."
+      },
+      {
+        "id": 10,
+        "criterion": "Редактура и естественный язык",
+        "score": 10,
+        "evidence": "Проведены отдельные фактический и смысловой проходы финального текста; исправленные места перечитаны. Обычный русский, одна задача, без технического мусора. Человеческий reader-test не проводился."
+      },
+      {
+        "id": 11,
+        "criterion": "SEO-обещание и метаданные",
+        "score": 5,
+        "evidence": "Штатный clipTitle прочитан отдельно: «Тиба: Коминато меняет остановку замещающего автобуса». Он сохраняет законченную мысль, даты/капсула согласованы. Canonical, OG, SSR и schema финальной сборки ещё не проверены."
+      },
+      {
+        "id": 12,
+        "criterion": "Ссылки и навигация",
+        "score": 5,
+        "evidence": "Смысловые внутренние переходы прочитаны: /blog/kamakura-chto-posmotret/. Буквальная допустимость проверялась ранним preflight автора; HTTP/входящие связи финальных URL и публичная навигация ещё не проверены мной."
+      },
+      {
+        "id": 13,
+        "criterion": "Оформление и доступность",
+        "score": 5,
+        "evidence": "Все используемые изображения просмотрены отдельно; сопоставлены alt/title, автор, лицензия и первичныйCommonsAPI. Это не рендер 402/1280, проверка загрузки вбраузере или доступности. Публичная атрибуция ожидает сборку/live."
+      },
+      {
+        "id": 14,
+        "criterion": "Готовность выпуска",
+        "score": 0,
+        "evidence": "Финальные обязательные hook/CI/build/SEO/браузеры/deploy/live/учёт не выполнены в этом ревью. Наличие текста/источника/схемы не засчитывает выпуск; releaseApproved=false."
+      }
+    ]
+  },
+  "reuseEvidence": {
+    "baseContentHash": "ddf7d7e441417551d4e13740a4d1bddaa53e4046116b161392ee25a15ebde80b",
+    "previousReviewContentHash": "ddf7d7e441417551d4e13740a4d1bddaa53e4046116b161392ee25a15ebde80b",
+    "titleTldrBodyUnchanged": true,
+    "checkedPreserved": true,
+    "currentScope": "SOURCE_RECHECK metadata/state only; previous substantive review reused"
+  },
   "photo": {
     "image": "./_images/2026-09-23-japan-local-lines-after-typhoon.jpg",
     "imageSha256": "71e8276876d183a1e9cfe656183102690eaaf6285ebd918f0a75dd2ae1a15c86",
@@ -99,113 +258,82 @@
     "provenanceHashScope": "SHA-256 JSON.stringify(photo.provenanceEvidence); выбранные поля настоящего Commons API сохранены внутри этого reviewJSON.",
     "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
   },
-  "embeddedSourceEvidence": {},
   "criteria14": [
     {
       "id": 1,
-      "criterion": "Задача читателя",
       "score": 10,
-      "evidence": "Собрать маршрут по Тибе, не спутывая железную дорогу и автобус. Один основной вопрос и граница результата видны из title/tldr/body."
+      "evidence": "Один вопрос читателя следует из title/tldr: Тиба: Коминато меняет остановку замещающего автобуса. Полный текст прочитан."
     },
     {
       "id": 2,
-      "criterion": "Обоснование темы",
-      "score": 10,
-      "evidence": "Адресное сопровождение существующего URL, заданное сегодняшним сроком/изменением. Это UPDATE, не новый материал. Соответствует аудиторииTravelTribe; прогноз трафика и денег не присвоен."
+      "score": 5,
+      "evidence": "Историческая редакционная значимость сохранена, сегодняшний поисковый/денежныйэффектнеизмерен."
     },
     {
       "id": 3,
-      "criterion": "Место в проекте",
-      "score": 5,
-      "evidence": "Выбран прежний/отдельный URL и релевантная связь: /blog/kamakura-chto-posmotret/. Дубли NEW проверены адресно; полная входящая структура и canonical итоговой сборки ещё не проверены. "
+      "score": 10,
+      "evidence": "Сохранён существующий сюжет либо самостоятельная новая тема; это новостьtravel/nature,невыдуманныйгайд."
     },
     {
       "id": 4,
-      "criterion": "Полнота и прямой ответ",
-      "score": 5,
-      "evidence": "Ответ начинается прямо, но ключевой оперативный слой остаётся внешней проверкой. MLIT 5 октября не подтверждает сегодняшний режим всехJRлиний;500 м не объявлены гарантированно безопасной прогулкой."
+      "score": 10,
+      "evidence": "Капсула и начало дают событие/состояние; ограничение результата и следующий конкретный шаг описаны."
     },
     {
       "id": 5,
-      "criterion": "Собственный вклад",
-      "score": 10,
-      "evidence": "СравненыMLIT№16/17, исчезновениеНаритаизперечня и отдельно автобус доИсигами/перенос 19 Oct. Вклад — конкретное сопоставление или сценарий на прочитанных фактах, без присвоения чужого исследования."
+      "score": 5,
+      "evidence": "Редакционное объяснение/применимость есть, собственное полевое исследование, эксклюзивные данные и посещение не заявлены."
     },
     {
       "id": 6,
-      "criterion": "Факты и источники",
       "score": 5,
-      "evidence": "Самостоятельно прочитаныPDF№16/17 pp 7–8:5→4 линии,участкиKururi/Sobu/Uchibo. Kominato 16 Oct:500 м,14 Octbus,19 Octstopmove,разрывдоNakano. Полнота текущего подтверждения ограничена: MLIT 5 октября не подтверждает сегодняшний режим всехJRлиний;500 м не объявлены гарантированно безопасной прогулкой."
+      "evidence": "Kominato16.10:замещающий автобус доИсигами, около500м доYoro-Keikoku, объявленный перенос остановки19.10, нет пересадкивKazusaNakano. PDF, ошибочно прочитанный как текст, не доказательство; вывод по официальной странице. Прежняя содержательная проверка переиспользована после совпадения хеша; это не новая независимая перепроверка всех исторических фактов 20 октября."
     },
     {
       "id": 7,
-      "criterion": "Числа и примеры",
       "score": 10,
-      "evidence": "Числа и даты в финальном тексте сопоставлены с указанными оригиналами. Диапазоны, единицы, план/состоявшееся и момент наблюдения не подменены; отсутствующий знаменатель или будущий результат не рассчитан. См. factReview и sourceChecks."
+      "evidence": "Значимые даты/числа и ихединицы сверены по названной фактическойоснове;неполученный текущийстатус не рассчитан и не выдуман. ДляSOURCE_RECHECK основание — точный неизменный текст и прежняя содержательнаярецензия."
     },
     {
       "id": 8,
-      "criterion": "Исключения и применимость",
       "score": 10,
-      "evidence": "Применимость и ограничения названы в тексте: MLIT 5 октября не подтверждает сегодняшний режим всехJRлиний;500 м не объявлены гарантированно безопасной прогулкой. Архивное/иллюстративное изображение не доказывает текущий доступ или событие."
+      "evidence": "Граница применимости, объявлено/состоялось/история и отсутствие разрешения на закрытый участок сохранены;см.factReview."
     },
     {
       "id": 9,
-      "criterion": "Авторство и доверие",
       "score": 5,
-      "evidence": "Авторство в данных: codex-traveltribe-author-20261016. Независимый Codex reviewer другой и текст не писал; личный опыт/человеческий тест не присвоены. Публичный byline, профиль и SSR финального выпуска ещё не проверены."
+      "evidence": "authoredBy и независимыйreviewer различны; выдуманного посещения нет. Публичныйbyline/SSRфинальнойверсии ещёнепроверен."
     },
     {
       "id": 10,
-      "criterion": "Редактура и естественный язык",
       "score": 10,
-      "evidence": "Проведены отдельные фактический и смысловой проходы финального текста; исправленные места перечитаны. Обычный русский, одна задача, без технического мусора. Человеческий reader-test не проводился."
+      "evidence": "Полностью прочитаныtitle,tldr,body; замечания об устаревших/обрезанныхtitle и дублеYosemite исправлены до этогохеша."
     },
     {
       "id": 11,
-      "criterion": "SEO-обещание и метаданные",
       "score": 5,
-      "evidence": "Штатный clipTitle прочитан отдельно: «Тиба: Коминато меняет остановку замещающего автобуса». Он сохраняет законченную мысль, даты/капсула согласованы. Canonical, OG, SSR и schema финальной сборки ещё не проверены."
+      "evidence": "ШтатныйclipTitle прочитан: Тиба: Коминато меняет остановку замещающего автобуса. SSR/canonical/OGфинальнойсборки ожидаютCI/live."
     },
     {
       "id": 12,
-      "criterion": "Ссылки и навигация",
       "score": 5,
-      "evidence": "Смысловые внутренние переходы прочитаны: /blog/kamakura-chto-posmotret/. Буквальная допустимость проверялась ранним preflight автора; HTTP/входящие связи финальных URL и публичная навигация ещё не проверены мной."
+      "evidence": "Контекстнаявнутренняясвязь соответствует задаче;фактическиеHTTPответы/якоряфинальнойверсии в этомредакционномревьюнепроверены."
     },
     {
       "id": 13,
-      "criterion": "Оформление и доступность",
       "score": 5,
-      "evidence": "Все используемые изображения просмотрены отдельно; сопоставлены alt/title, автор, лицензия и первичныйCommonsAPI. Это не рендер 402/1280, проверка загрузки вбраузере или доступности. Публичная атрибуция ожидает сборку/live."
+      "evidence": "Новые4фотографии просмотреныи сопоставленыс происхождением/alt;неизменные старыефото имеют прежнююпроверку.Рендер402/1280и публичнаяатрибуциянепроверены."
     },
     {
       "id": 14,
-      "criterion": "Готовность выпуска",
       "score": 0,
-      "evidence": "Финальные обязательные hook/CI/build/SEO/браузеры/deploy/live/учёт не выполнены в этом ревью. Наличие текста/источника/схемы не засчитывает выпуск; releaseApproved=false."
+      "evidence": "ФинальныеCI,exactdeploy,live200,SSR,sitemap/feed,индексируемостьи измеренныйэффект ещёнеподтверждены."
     }
   ],
-  "verifiedTens": 6,
-  "minimumFiveVerifiedTens": true,
-  "resolvedFindings": [],
-  "blockingIssues": [],
-  "editorialVerdict": "ACCEPT_WITH_DECLARED_LIMITS_AND_RELEASE_GATES_PENDING",
-  "releaseApproved": false,
-  "releaseStatus": {
-    "sourceEditorial": "ACCEPTED_WITH_DECLARED_LIMITS",
-    "build": "PENDING",
-    "ci": "PENDING",
-    "browser": "PENDING",
-    "deploy": "PENDING",
-    "live": "PENDING",
-    "publicPhotoAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
-    "readerTest": "NOT_PERFORMED",
-    "seoEffect": "NOT_MEASURED",
-    "revenueEffect": "NOT_MEASURED"
-  },
-  "risks": [
-    "MLIT 5 октября не подтверждает сегодняшний режим всехJRлиний;500 м не объявлены гарантированно безопасной прогулкой.",
-    "Истёкший/старый документ не принят как сегодняшнее разрешение. Данные публикации, реальные читатели, поиск и доход ещё не проверены."
-  ]
+  "limitations": [
+    "Редакционное одобрение не разрешает обход обязательныхгейтов и не подтверждает публикацию.",
+    "Источник/снимок поддерживает тольконазванный датированныйфакт; новая доступность каждойдороги/рейса/объектаизнего не следует.",
+    "Новыеphoto-rights сопоставлены с сохранённымCommonsAPI; публичная/legal/photos/ ожидаетфинальногорендера."
+  ],
+  "nextReview": "2026-10-23"
 }

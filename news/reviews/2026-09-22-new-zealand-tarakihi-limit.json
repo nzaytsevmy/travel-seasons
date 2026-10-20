@@ -1,60 +1,145 @@
 {
   "schemaVersion": 1,
   "slug": "2026-09-22-new-zealand-tarakihi-limit",
+  "reviewer": "Codex (editorial_review_20261020)",
+  "reviewerTask": "/root/editorial_review_20261020",
+  "authoredBy": "codex-gpt-6",
+  "reviewedAt": "2026-10-20",
+  "checkedAt": "2026-10-06",
   "score": 4,
-  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
-  "reviewedAt": "2026-10-06",
-  "sha256": "888717e240ac44103e8ca342b774e475d8d4ae5de454ebc9639ded04445bf89b",
-  "rationale": "Оценка 4: единый любительский предел таракихи меняет планы рыбалки в Новой Зеландии, но пока лишь принят. MPI 1 октября запустило промысловые меры, а любительское ограничение обещает ввести «as soon as practicable» без даты; заметка не смешивает два режима и предупреждает проверять правила конкретного района.",
-  "risks": [
-    "Дата вступления любительского лимита пока не опубликована; нельзя писать, что он уже действует."
-  ],
-  "blockingIssues": [],
-  "evidence": [
+  "approved": true,
+  "approvalScope": "EDITORIAL_CONTENT_ONLY",
+  "classification": "SOURCE_RECHECK",
+  "baseCommit": "707f7c57b591d3769d740b30de9024fecd0bede2",
+  "rationale": "Сохранённая оценка 4/5 относится к доказанно неизменному title/tldr/body: contentHash совпал с HEAD и прежней содержательной рецензией. Сегодня прочитан полный текст и проверена только ревизия метаданных/состояния. Beehive22.09 подтверждает10рыб/человека. Срок применения любительского ограничения в прочитанном сообщении не назван; MPI недоступен. Не объявлять уже вступившим.",
+  "factReview": "Beehive22.09 подтверждает10рыб/человека. Срок применения любительского ограничения в прочитанном сообщении не назван; MPI недоступен. Не объявлять уже вступившим. Прежняя содержательная проверка переиспользована после совпадения хеша; это не новая независимая перепроверка всех исторических фактов 20 октября.",
+  "sourceChecks": [
     {
       "url": "https://www.beehive.govt.nz/release/tarakihi-catch-limits-cut-support-sustainability",
-      "publishedOn": "2026-09-22",
-      "finding": "Министр объявил сокращение коммерческого улова на востоке на 20%, на западе примерно на 55%, и решение установить любительский дневной предел 10 таракихи.",
-      "checkedOn": "2026-10-06"
+      "status": "AVAILABILITY_AND_METADATA_RECHECK_ONLY",
+      "artifact": ".run/source-check-20261020/ad95bd5ef6200581.txt",
+      "artifactSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observedHttpStatus": 200,
+      "reviewedAt": "2026-10-20",
+      "scope": "Содержательная прежняя рецензия переиспользована по точному хешу; новая дата не означает повторное чтение всех первичек."
     },
     {
       "url": "https://www.mpi.govt.nz/consultations/review-of-fishery-sustainability-measures-october-2026-round",
-      "publishedOn": "2026-10-01",
-      "finding": "MPI: коммерческие меры вступили 1 октября, а изменение любительских суточных лимитов будет введено отдельно при первой практической возможности.",
-      "checkedOn": "2026-10-06"
+      "status": "AVAILABILITY_AND_METADATA_RECHECK_ONLY",
+      "observedHttpStatus": null,
+      "reviewedAt": "2026-10-20",
+      "scope": "Содержательная прежняя рецензия переиспользована по точному хешу; новая дата не означает повторное чтение всех первичек.",
+      "limitation": "См. factReview: независимый web/native просмотр либо указанное ограничение; отсутствиеHTTPартефакта не превращено в200."
     }
   ],
-  "lifecycle": {
-    "reviewOn": "2026-10-20",
-    "reason": "Проверить официальное объявление даты вступления любительского лимита и территориальные правила."
-  },
-  "checks": {
-    "capsuleWords": 43,
-    "bodyWords": 187,
-    "titleChars": 53,
-    "clipTitle": "В Новой Зеландии ограничат любительский улов таракихи",
-    "internalLink": null,
-    "internalLinkStatus": null,
-    "photoViewedToday": false,
-    "mediaScope": "Фото в этих адресных lifecycle-правках не менялось; повторный осмотр локального JPEG не проводился.",
-    "publicationDate": "2026-09-22",
-    "added": "2026-09-22",
-    "scope": "Независимая сверка финальных текстов, дат и первоисточников; без браузерных тестов, сборки, CI и live-проверки обновлённых страниц."
-  },
   "contentHash": "9f6293a7ad29219d5ce2f896d61ce6576c597e4cdb42a2beb46d33990decb598",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256Scope": "full Markdown file bytes",
-  "priorReview": {
-    "reviewer": "Codex (news_lifecycle_review)",
-    "reviewedAt": "2026-09-24",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote.",
+  "sourceSha256": "5788c8823612ed9582f37af3acf8a57de39c6638f86f06ad8069c70243ce99f2",
+  "sourceSha256Scope": "SHA-256 полного исходного UTF-8 Markdown, включая frontmatter.",
+  "nativeClipTitle": "В Новой Зеландии ограничат любительский улов таракихи",
+  "clipTitleCodeSha256": "61aeac8ec0e88ff9175d1ebefe66fd9be9b17f211a045a943312de9f6fdc1b0f",
+  "previousReview": {
+    "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+    "reviewedAt": "2026-10-06",
     "score": 4,
-    "contentHash": null,
-    "sha256": "6f4a7655981f630e6ced825fc7c2bc35c25bc20b6cd20bc695f65e330931ce0b",
-    "previous": {
-      "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
-      "reviewedAt": "2026-09-23",
-      "sha256": "70337b1bc0c77116bdb59b9f21a6f1d2486e5395a49a06926bd70a3e780948d8",
-      "scope": "Only prior provenance; not impersonating previous reviewer."
+    "rationale": "Оценка 4: единый любительский предел таракихи меняет планы рыбалки в Новой Зеландии, но пока лишь принят. MPI 1 октября запустило промысловые меры, а любительское ограничение обещает ввести «as soon as practicable» без даты; заметка не смешивает два режима и предупреждает проверять правила конкретного района.",
+    "contentHash": "9f6293a7ad29219d5ce2f896d61ce6576c597e4cdb42a2beb46d33990decb598"
+  },
+  "reuseEvidence": {
+    "baseContentHash": "9f6293a7ad29219d5ce2f896d61ce6576c597e4cdb42a2beb46d33990decb598",
+    "previousReviewContentHash": "9f6293a7ad29219d5ce2f896d61ce6576c597e4cdb42a2beb46d33990decb598",
+    "titleTldrBodyUnchanged": true,
+    "checkedPreserved": true,
+    "currentScope": "SOURCE_RECHECK metadata/state only; previous substantive review reused"
+  },
+  "photo": {
+    "image": "./_images/2026-09-22-new-zealand-tarakihi-limit.jpg",
+    "imageSha256": "bc2992741efe55c3361b3d33d473c88436ee77ac4ce61d0739ecad2902ecd35b",
+    "creator": "Joe Ross from Lansing, Michigan",
+    "license": "CC BY-SA",
+    "licenseURL": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "source": "https://commons.wikimedia.org/w/index.php?curid=109214940",
+    "title": "Рыбный прилавок с несколькими видами морской рыбы. Архивная иллюстрация; цены на фото не актуальны.",
+    "alt": "Морская рыба разных видов на льду рыбного прилавка",
+    "visualReview": "Финальный локальный кадр самостоятельно просмотрен20Oct; архивный/иллюстративный смысл соответствуетalt,нефото события/эксперимента.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+  },
+  "criteria14": [
+    {
+      "id": 1,
+      "score": 10,
+      "evidence": "Один вопрос читателя следует из title/tldr: В Новой Зеландии ограничат любительский улов таракихи. Полный текст прочитан."
+    },
+    {
+      "id": 2,
+      "score": 5,
+      "evidence": "Историческая редакционная значимость сохранена, сегодняшний поисковый/денежныйэффектнеизмерен."
+    },
+    {
+      "id": 3,
+      "score": 10,
+      "evidence": "Сохранён существующий сюжет либо самостоятельная новая тема; это новостьtravel/nature,невыдуманныйгайд."
+    },
+    {
+      "id": 4,
+      "score": 10,
+      "evidence": "Капсула и начало дают событие/состояние; ограничение результата и следующий конкретный шаг описаны."
+    },
+    {
+      "id": 5,
+      "score": 5,
+      "evidence": "Редакционное объяснение/применимость есть, собственное полевое исследование, эксклюзивные данные и посещение не заявлены."
+    },
+    {
+      "id": 6,
+      "score": 5,
+      "evidence": "Beehive22.09 подтверждает10рыб/человека. Срок применения любительского ограничения в прочитанном сообщении не назван; MPI недоступен. Не объявлять уже вступившим. Прежняя содержательная проверка переиспользована после совпадения хеша; это не новая независимая перепроверка всех исторических фактов 20 октября."
+    },
+    {
+      "id": 7,
+      "score": 10,
+      "evidence": "Значимые даты/числа и ихединицы сверены по названной фактическойоснове;неполученный текущийстатус не рассчитан и не выдуман. ДляSOURCE_RECHECK основание — точный неизменный текст и прежняя содержательнаярецензия."
+    },
+    {
+      "id": 8,
+      "score": 10,
+      "evidence": "Граница применимости, объявлено/состоялось/история и отсутствие разрешения на закрытый участок сохранены;см.factReview."
+    },
+    {
+      "id": 9,
+      "score": 5,
+      "evidence": "authoredBy и независимыйreviewer различны; выдуманного посещения нет. Публичныйbyline/SSRфинальнойверсии ещёнепроверен."
+    },
+    {
+      "id": 10,
+      "score": 10,
+      "evidence": "Полностью прочитаныtitle,tldr,body; замечания об устаревших/обрезанныхtitle и дублеYosemite исправлены до этогохеша."
+    },
+    {
+      "id": 11,
+      "score": 5,
+      "evidence": "ШтатныйclipTitle прочитан: В Новой Зеландии ограничат любительский улов таракихи. SSR/canonical/OGфинальнойсборки ожидаютCI/live."
+    },
+    {
+      "id": 12,
+      "score": 5,
+      "evidence": "Контекстнаявнутренняясвязь соответствует задаче;фактическиеHTTPответы/якоряфинальнойверсии в этомредакционномревьюнепроверены."
+    },
+    {
+      "id": 13,
+      "score": 5,
+      "evidence": "Новые4фотографии просмотреныи сопоставленыс происхождением/alt;неизменные старыефото имеют прежнююпроверку.Рендер402/1280и публичнаяатрибуциянепроверены."
+    },
+    {
+      "id": 14,
+      "score": 0,
+      "evidence": "ФинальныеCI,exactdeploy,live200,SSR,sitemap/feed,индексируемостьи измеренныйэффект ещёнеподтверждены."
     }
-  }
+  ],
+  "limitations": [
+    "Редакционное одобрение не разрешает обход обязательныхгейтов и не подтверждает публикацию.",
+    "Источник/снимок поддерживает тольконазванный датированныйфакт; новая доступность каждойдороги/рейса/объектаизнего не следует.",
+    "Новыеphoto-rights сопоставлены с сохранённымCommonsAPI; публичная/legal/photos/ ожидаетфинальногорендера."
+  ],
+  "nextReview": "2026-10-23"
 }

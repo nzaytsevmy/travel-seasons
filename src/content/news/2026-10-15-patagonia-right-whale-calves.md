@@ -3,7 +3,7 @@ title: "В Патагонии расследуют массовую гибель
 date: "2026-10-14"
 added: "2026-10-15"
 checked: "2026-10-15"
-reviewOn: "2026-10-18"
+reviewOn: "2026-12-01"
 topic: nature
 photoQuery: "southern right whale Valdes Peninsula Argentina"
 impact: high

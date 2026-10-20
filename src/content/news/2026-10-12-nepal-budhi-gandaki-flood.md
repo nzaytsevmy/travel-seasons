@@ -9,7 +9,7 @@ title: "Паводок на Буди-Гандаки смыл мосты в Не�
 date: "2026-10-11"
 added: "2026-10-12"
 checked: "2026-10-17"
-reviewOn: "2026-10-18"
+reviewOn: "2026-10-23"
 topic: nature
 impact: high
 score: 4

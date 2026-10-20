@@ -1,54 +1,145 @@
 {
   "schemaVersion": 1,
   "slug": "2026-09-12-egypt-menkaure-closed-khafre-open",
+  "reviewer": "Codex (editorial_review_20261020)",
+  "reviewerTask": "/root/editorial_review_20261020",
+  "authoredBy": "codex-gpt-6",
+  "reviewedAt": "2026-10-20",
+  "checkedAt": "2026-10-06",
   "score": 4,
-  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
-  "reviewedAt": "2026-10-06",
-  "sha256": "3e4b5aaa8c581e950c2b42154713e7e14885c19916f9583d9cd903a951a880fd",
-  "rationale": "Оценка 4: решение о ротации доступа к пирамидам Гизы может менять оплаченную экскурсию. Текст точно отделяет одобрение Хефрена/Микерина от не подтверждённой даты фактического переключения. Каталог министерства всё ещё показывает часы и билет Микерина, но статья честно не считает этот каталог подтверждением входа внутрь сегодня.",
-  "risks": [
-    "Дата начала и окончания ротации не объявлена; проверять на месте или у продавца билета.",
-    "Сообщение о решении доступно в пересказе Egypt Independent; публичного первичного релиза Совета с точной датой не найдено."
-  ],
-  "blockingIssues": [],
-  "evidence": [
+  "approved": true,
+  "approvalScope": "EDITORIAL_CONTENT_ONLY",
+  "classification": "SOURCE_RECHECK",
+  "baseCommit": "707f7c57b591d3769d740b30de9024fecd0bede2",
+  "rationale": "Сохранённая оценка 4/5 относится к доказанно неизменному title/tldr/body: contentHash совпал с HEAD и прежней содержательной рецензией. Сегодня прочитан полный текст и проверена только ревизия метаданных/состояния. Egypt Independent11.09 сообщает ротацию, официальная карточка описывает объект/старые часы. Дата фактической смены доступа и срок работ не подтверждены; их не придумывать.",
+  "factReview": "Egypt Independent11.09 сообщает ротацию, официальная карточка описывает объект/старые часы. Дата фактической смены доступа и срок работ не подтверждены; их не придумывать. Прежняя содержательная проверка переиспользована после совпадения хеша; это не новая независимая перепроверка всех исторических фактов 20 октября.",
+  "sourceChecks": [
     {
       "url": "https://www.egyptindependent.com/egypt-announces-closure-of-the-pyramid-of-menkaure/",
-      "publishedOn": "2026-09-11",
-      "finding": "Сообщает об одобренной ротации Хефрена и Микерина, без точной даты фактической смены доступа.",
-      "checkedOn": "2026-10-06"
+      "status": "AVAILABILITY_AND_METADATA_RECHECK_ONLY",
+      "artifact": ".run/source-check-20261020/bac4d86e8b4f704c.txt",
+      "artifactSha256": "6e233685c19e527c72b5ca1be36042cbcab968bc978c74306dadc054f398eda9",
+      "observedHttpStatus": 200,
+      "reviewedAt": "2026-10-20",
+      "scope": "Содержательная прежняя рецензия переиспользована по точному хешу; новая дата не означает повторное чтение всех первичек."
     },
     {
       "url": "https://egymonuments.gov.eg/en/monuments/pyramid-complex-of-menkaure/",
-      "finding": "Официальный каталог министерства показывает часы и билет; оперативность каталога не доказана и текущий вход внутрь из него не следует.",
-      "checkedOn": "2026-10-06"
+      "status": "AVAILABILITY_AND_METADATA_RECHECK_ONLY",
+      "artifact": ".run/source-check-20261020/e2c5b30740b1ca1b.txt",
+      "artifactSha256": "6a53b8b0e6a66a1bb9b197338ac845a28175f5c0c282f039f5923876ace10a48",
+      "observedHttpStatus": 200,
+      "reviewedAt": "2026-10-20",
+      "scope": "Содержательная прежняя рецензия переиспользована по точному хешу; новая дата не означает повторное чтение всех первичек."
     }
   ],
-  "lifecycle": {
-    "reviewOn": "2026-10-20",
-    "reason": "Повторно проверить фактическое переключение доступа по прямому сообщению ведомства или билетной системе."
-  },
-  "checks": {
-    "capsuleWords": 47,
-    "bodyWords": 203,
-    "titleChars": 48,
-    "clipTitle": "Гиза: Хефрена решили открыть, Микерина — закрыть",
-    "internalLink": null,
-    "internalLinkStatus": null,
-    "photoViewedToday": false,
-    "mediaScope": "Фото в этих адресных lifecycle-правках не менялось; повторный осмотр локального JPEG не проводился.",
-    "publicationDate": "2026-09-11",
-    "added": "2026-09-12",
-    "scope": "Независимая сверка финальных текстов, дат и первоисточников; без браузерных тестов, сборки, CI и live-проверки обновлённых страниц."
-  },
   "contentHash": "9b96e6187550cbe0afe38036deb36c5a62add3b11e425b5bd710af49fc73e86b",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256Scope": "full Markdown file bytes",
-  "priorReview": {
-    "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
-    "reviewedAt": "2026-09-23",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote.",
+  "sourceSha256": "80433608074a3a4525acd340e6566faaade01af3ba09cf6a4f45d727f2ba4516",
+  "sourceSha256Scope": "SHA-256 полного исходного UTF-8 Markdown, включая frontmatter.",
+  "nativeClipTitle": "Гиза: Хефрена решили открыть, Микерина — закрыть",
+  "clipTitleCodeSha256": "61aeac8ec0e88ff9175d1ebefe66fd9be9b17f211a045a943312de9f6fdc1b0f",
+  "previousReview": {
+    "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+    "reviewedAt": "2026-10-06",
     "score": 4,
-    "contentHash": null,
-    "sha256": "e2b353935fe40bb61a5e09d2c1523e7271996d0ed50b207417d9e63a289899f2"
-  }
+    "rationale": "Оценка 4: решение о ротации доступа к пирамидам Гизы может менять оплаченную экскурсию. Текст точно отделяет одобрение Хефрена/Микерина от не подтверждённой даты фактического переключения. Каталог министерства всё ещё показывает часы и билет Микерина, но статья честно не считает этот каталог подтверждением входа внутрь сегодня.",
+    "contentHash": "9b96e6187550cbe0afe38036deb36c5a62add3b11e425b5bd710af49fc73e86b"
+  },
+  "reuseEvidence": {
+    "baseContentHash": "9b96e6187550cbe0afe38036deb36c5a62add3b11e425b5bd710af49fc73e86b",
+    "previousReviewContentHash": "9b96e6187550cbe0afe38036deb36c5a62add3b11e425b5bd710af49fc73e86b",
+    "titleTldrBodyUnchanged": true,
+    "checkedPreserved": true,
+    "currentScope": "SOURCE_RECHECK metadata/state only; previous substantive review reused"
+  },
+  "photo": {
+    "image": "./_images/2026-09-12-egypt-menkaure-closed-khafre-open.jpg",
+    "imageSha256": "b00b070b14376eb38d97d3684f9f8ba2c4ea5800ae4f7c6e9efba2b260d76efc",
+    "creator": "Nina R from Africa",
+    "license": "CC BY",
+    "licenseURL": "https://creativecommons.org/licenses/by/2.0/",
+    "source": "https://commons.wikimedia.org/w/index.php?curid=113292476",
+    "alt": "Три пирамиды Гизы над пустой асфальтовой дорогой, на горизонте кварталы Каира в дымке",
+    "visualReview": "Финальный локальный кадр самостоятельно просмотрен20Oct; архивный/иллюстративный смысл соответствуетalt,нефото события/эксперимента.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+  },
+  "criteria14": [
+    {
+      "id": 1,
+      "score": 10,
+      "evidence": "Один вопрос читателя следует из title/tldr: Гиза: Хефрена решили открыть, Микерина — закрыть. Полный текст прочитан."
+    },
+    {
+      "id": 2,
+      "score": 5,
+      "evidence": "Историческая редакционная значимость сохранена, сегодняшний поисковый/денежныйэффектнеизмерен."
+    },
+    {
+      "id": 3,
+      "score": 10,
+      "evidence": "Сохранён существующий сюжет либо самостоятельная новая тема; это новостьtravel/nature,невыдуманныйгайд."
+    },
+    {
+      "id": 4,
+      "score": 10,
+      "evidence": "Капсула и начало дают событие/состояние; ограничение результата и следующий конкретный шаг описаны."
+    },
+    {
+      "id": 5,
+      "score": 5,
+      "evidence": "Редакционное объяснение/применимость есть, собственное полевое исследование, эксклюзивные данные и посещение не заявлены."
+    },
+    {
+      "id": 6,
+      "score": 5,
+      "evidence": "Egypt Independent11.09 сообщает ротацию, официальная карточка описывает объект/старые часы. Дата фактической смены доступа и срок работ не подтверждены; их не придумывать. Прежняя содержательная проверка переиспользована после совпадения хеша; это не новая независимая перепроверка всех исторических фактов 20 октября."
+    },
+    {
+      "id": 7,
+      "score": 10,
+      "evidence": "Значимые даты/числа и ихединицы сверены по названной фактическойоснове;неполученный текущийстатус не рассчитан и не выдуман. ДляSOURCE_RECHECK основание — точный неизменный текст и прежняя содержательнаярецензия."
+    },
+    {
+      "id": 8,
+      "score": 10,
+      "evidence": "Граница применимости, объявлено/состоялось/история и отсутствие разрешения на закрытый участок сохранены;см.factReview."
+    },
+    {
+      "id": 9,
+      "score": 5,
+      "evidence": "authoredBy и независимыйreviewer различны; выдуманного посещения нет. Публичныйbyline/SSRфинальнойверсии ещёнепроверен."
+    },
+    {
+      "id": 10,
+      "score": 10,
+      "evidence": "Полностью прочитаныtitle,tldr,body; замечания об устаревших/обрезанныхtitle и дублеYosemite исправлены до этогохеша."
+    },
+    {
+      "id": 11,
+      "score": 5,
+      "evidence": "ШтатныйclipTitle прочитан: Гиза: Хефрена решили открыть, Микерина — закрыть. SSR/canonical/OGфинальнойсборки ожидаютCI/live."
+    },
+    {
+      "id": 12,
+      "score": 5,
+      "evidence": "Контекстнаявнутренняясвязь соответствует задаче;фактическиеHTTPответы/якоряфинальнойверсии в этомредакционномревьюнепроверены."
+    },
+    {
+      "id": 13,
+      "score": 5,
+      "evidence": "Новые4фотографии просмотреныи сопоставленыс происхождением/alt;неизменные старыефото имеют прежнююпроверку.Рендер402/1280и публичнаяатрибуциянепроверены."
+    },
+    {
+      "id": 14,
+      "score": 0,
+      "evidence": "ФинальныеCI,exactdeploy,live200,SSR,sitemap/feed,индексируемостьи измеренныйэффект ещёнеподтверждены."
+    }
+  ],
+  "limitations": [
+    "Редакционное одобрение не разрешает обход обязательныхгейтов и не подтверждает публикацию.",
+    "Источник/снимок поддерживает тольконазванный датированныйфакт; новая доступность каждойдороги/рейса/объектаизнего не следует.",
+    "Новыеphoto-rights сопоставлены с сохранённымCommonsAPI; публичная/legal/photos/ ожидаетфинальногорендера."
+  ],
+  "nextReview": "2026-10-23"
 }

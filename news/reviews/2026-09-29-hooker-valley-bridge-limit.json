@@ -1,53 +1,146 @@
 {
   "schemaVersion": 1,
   "slug": "2026-09-29-hooker-valley-bridge-limit",
+  "reviewer": "Codex (editorial_review_20261020)",
+  "reviewerTask": "/root/editorial_review_20261020",
+  "authoredBy": "codex-gpt-6",
+  "reviewedAt": "2026-10-20",
+  "checkedAt": "2026-10-06",
   "score": 4,
-  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
-  "reviewedAt": "2026-10-06",
-  "sha256": "88885e83fa212c68c42d7fa6a61533e05467c6b0564f49225d89f84071fd1444",
-  "rationale": "Оценка 4: DOC установил лимит 20 человек одновременно на первом мосту Hooker Valley Track из-за износа тросов и лишь планирует самозакрывающиеся калитки. Текст не путает первый мост с новым дальним и не объявляет закрытой всю тропу; официальное описание DOC сейчас представляет маршрут как доступный.",
-  "risks": [
-    "Дата установки калиток и ремонта первого моста не объявлена; статус маршрута стоит проверить перед выходом."
-  ],
-  "blockingIssues": [],
-  "evidence": [
+  "approved": true,
+  "approvalScope": "EDITORIAL_CONTENT_ONLY",
+  "classification": "SOURCE_RECHECK",
+  "baseCommit": "707f7c57b591d3769d740b30de9024fecd0bede2",
+  "rationale": "Сохранённая оценка 4/5 относится к доказанно неизменному title/tldr/body: contentHash совпал с HEAD и прежней содержательной рецензией. Сегодня прочитан полный текст и проверена только ревизия метаданных/состояния. DOC22.09:план pausegates, лимит20, мост безопасенприлимите; нынешняя страница тропы не подтверждает установленную калитку. План не выдан за выполненный.",
+  "factReview": "DOC22.09:план pausegates, лимит20, мост безопасенприлимите; нынешняя страница тропы не подтверждает установленную калитку. План не выдан за выполненный. Прежняя содержательная проверка переиспользована после совпадения хеша; это не новая независимая перепроверка всех исторических фактов 20 октября.",
+  "sourceChecks": [
     {
       "url": "https://www.doc.govt.nz/news/media-releases/2026-media-releases/doc-plans-to-install-a-gate-to-manage-visitors-on-the-hooker-valley-track/",
-      "publishedOn": "2026-09-22",
-      "finding": "DOC: лимит 20 человек, износ тросов первого моста, план самозакрывающихся калиток, дата монтажа не названа.",
-      "checkedOn": "2026-10-06"
+      "status": "AVAILABILITY_AND_METADATA_RECHECK_ONLY",
+      "artifact": ".run/source-check-20261020/ebd0d7176e1754ef.txt",
+      "artifactSha256": "24060ce10155dfd60b90fd5546168cc03a0b76cae74de037ddb518291fa85bef",
+      "observedHttpStatus": 200,
+      "reviewedAt": "2026-10-20",
+      "scope": "Содержательная прежняя рецензия переиспользована по точному хешу; новая дата не означает повторное чтение всех первичек."
     },
     {
       "url": "https://www.doc.govt.nz/parks-and-recreation/places-to-go/canterbury/places/aoraki-mount-cook-national-park/things-to-do/tracks/hooker-valley-track/",
-      "finding": "DOC описывает тропу до Hooker Lake как доступный прогулочный маршрут, включая первый мост.",
-      "checkedOn": "2026-10-06"
+      "status": "AVAILABILITY_AND_METADATA_RECHECK_ONLY",
+      "artifact": ".run/source-check-20261020/63ddb106b59c522a.txt",
+      "artifactSha256": "9990f086b95959f441adaa9c1bbe7b6e3f32ca0c10ae57c9767adb8e4e93657a",
+      "observedHttpStatus": 200,
+      "reviewedAt": "2026-10-20",
+      "scope": "Содержательная прежняя рецензия переиспользована по точному хешу; новая дата не означает повторное чтение всех первичек."
     }
   ],
-  "lifecycle": {
-    "reviewOn": "2026-10-20",
-    "reason": "Проверить сообщение DOC о монтаже калиток и доступность первого моста."
-  },
-  "checks": {
-    "capsuleWords": 46,
-    "bodyWords": 163,
-    "titleChars": 57,
-    "clipTitle": "На мосту Хукер-Вэлли поставят калитки для контроля потока",
-    "internalLink": "/blog/new-zealand-guide-2026/",
-    "internalLinkStatus": 200,
-    "photoViewedToday": false,
-    "mediaScope": "Фото в этих адресных lifecycle-правках не менялось; повторный осмотр локального JPEG не проводился.",
-    "publicationDate": "2026-09-22",
-    "added": "2026-09-29",
-    "scope": "Независимая сверка финальных текстов, дат и первоисточников; без браузерных тестов, сборки, CI и live-проверки обновлённых страниц."
-  },
   "contentHash": "366f6f9d2d4be51d76138934f81d3c72935d8239ae5847c737753b2cdbcf4161",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256Scope": "full Markdown file bytes",
-  "priorReview": {
-    "reviewer": "codex-gpt-6-independent-news-review-20260929",
-    "reviewedAt": "2026-09-29",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote.",
+  "sourceSha256": "b1d7b872e7dfb247571162d94a603cf371bb2443672e07495fc7f7db3a86b52e",
+  "sourceSha256Scope": "SHA-256 полного исходного UTF-8 Markdown, включая frontmatter.",
+  "nativeClipTitle": "На мосту Хукер-Вэлли поставят калитки для контроля потока",
+  "clipTitleCodeSha256": "61aeac8ec0e88ff9175d1ebefe66fd9be9b17f211a045a943312de9f6fdc1b0f",
+  "previousReview": {
+    "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+    "reviewedAt": "2026-10-06",
     "score": 4,
-    "contentHash": "366f6f9d2d4be51d76138934f81d3c72935d8239ae5847c737753b2cdbcf4161",
-    "sha256": null
-  }
+    "rationale": "Оценка 4: DOC установил лимит 20 человек одновременно на первом мосту Hooker Valley Track из-за износа тросов и лишь планирует самозакрывающиеся калитки. Текст не путает первый мост с новым дальним и не объявляет закрытой всю тропу; официальное описание DOC сейчас представляет маршрут как доступный.",
+    "contentHash": "366f6f9d2d4be51d76138934f81d3c72935d8239ae5847c737753b2cdbcf4161"
+  },
+  "reuseEvidence": {
+    "baseContentHash": "366f6f9d2d4be51d76138934f81d3c72935d8239ae5847c737753b2cdbcf4161",
+    "previousReviewContentHash": "366f6f9d2d4be51d76138934f81d3c72935d8239ae5847c737753b2cdbcf4161",
+    "titleTldrBodyUnchanged": true,
+    "checkedPreserved": true,
+    "currentScope": "SOURCE_RECHECK metadata/state only; previous substantive review reused"
+  },
+  "photo": {
+    "image": "./_images/2026-09-29-hooker-valley-bridge-limit.jpg",
+    "imageSha256": "1321d3674c26535698ad939d39349f33883655891f6b3ece1c865f0dde4ea694",
+    "creator": "Jan Helebrant",
+    "license": "CC0",
+    "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/deed.en/",
+    "source": "https://commons.wikimedia.org/w/index.php?curid=157638909",
+    "title": "Архивный вид тропы Хукер-Вэлли. Снимок не показывает состояние тросов или новые калитки.",
+    "alt": "Подвесной мост в горной долине Хукер-Вэлли",
+    "visualReview": "Финальный локальный кадр самостоятельно просмотрен20Oct; архивный/иллюстративный смысл соответствуетalt,нефото события/эксперимента.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+  },
+  "criteria14": [
+    {
+      "id": 1,
+      "score": 10,
+      "evidence": "Один вопрос читателя следует из title/tldr: На мосту Хукер-Вэлли поставят калитки для контроля потока. Полный текст прочитан."
+    },
+    {
+      "id": 2,
+      "score": 5,
+      "evidence": "Историческая редакционная значимость сохранена, сегодняшний поисковый/денежныйэффектнеизмерен."
+    },
+    {
+      "id": 3,
+      "score": 10,
+      "evidence": "Сохранён существующий сюжет либо самостоятельная новая тема; это новостьtravel/nature,невыдуманныйгайд."
+    },
+    {
+      "id": 4,
+      "score": 10,
+      "evidence": "Капсула и начало дают событие/состояние; ограничение результата и следующий конкретный шаг описаны."
+    },
+    {
+      "id": 5,
+      "score": 5,
+      "evidence": "Редакционное объяснение/применимость есть, собственное полевое исследование, эксклюзивные данные и посещение не заявлены."
+    },
+    {
+      "id": 6,
+      "score": 5,
+      "evidence": "DOC22.09:план pausegates, лимит20, мост безопасенприлимите; нынешняя страница тропы не подтверждает установленную калитку. План не выдан за выполненный. Прежняя содержательная проверка переиспользована после совпадения хеша; это не новая независимая перепроверка всех исторических фактов 20 октября."
+    },
+    {
+      "id": 7,
+      "score": 10,
+      "evidence": "Значимые даты/числа и ихединицы сверены по названной фактическойоснове;неполученный текущийстатус не рассчитан и не выдуман. ДляSOURCE_RECHECK основание — точный неизменный текст и прежняя содержательнаярецензия."
+    },
+    {
+      "id": 8,
+      "score": 10,
+      "evidence": "Граница применимости, объявлено/состоялось/история и отсутствие разрешения на закрытый участок сохранены;см.factReview."
+    },
+    {
+      "id": 9,
+      "score": 5,
+      "evidence": "authoredBy и независимыйreviewer различны; выдуманного посещения нет. Публичныйbyline/SSRфинальнойверсии ещёнепроверен."
+    },
+    {
+      "id": 10,
+      "score": 10,
+      "evidence": "Полностью прочитаныtitle,tldr,body; замечания об устаревших/обрезанныхtitle и дублеYosemite исправлены до этогохеша."
+    },
+    {
+      "id": 11,
+      "score": 5,
+      "evidence": "ШтатныйclipTitle прочитан: На мосту Хукер-Вэлли поставят калитки для контроля потока. SSR/canonical/OGфинальнойсборки ожидаютCI/live."
+    },
+    {
+      "id": 12,
+      "score": 5,
+      "evidence": "Контекстнаявнутренняясвязь соответствует задаче;фактическиеHTTPответы/якоряфинальнойверсии в этомредакционномревьюнепроверены."
+    },
+    {
+      "id": 13,
+      "score": 5,
+      "evidence": "Новые4фотографии просмотреныи сопоставленыс происхождением/alt;неизменные старыефото имеют прежнююпроверку.Рендер402/1280и публичнаяатрибуциянепроверены."
+    },
+    {
+      "id": 14,
+      "score": 0,
+      "evidence": "ФинальныеCI,exactdeploy,live200,SSR,sitemap/feed,индексируемостьи измеренныйэффект ещёнеподтверждены."
+    }
+  ],
+  "limitations": [
+    "Редакционное одобрение не разрешает обход обязательныхгейтов и не подтверждает публикацию.",
+    "Источник/снимок поддерживает тольконазванный датированныйфакт; новая доступность каждойдороги/рейса/объектаизнего не следует.",
+    "Новыеphoto-rights сопоставлены с сохранённымCommonsAPI; публичная/legal/photos/ ожидаетфинальногорендера."
+  ],
+  "nextReview": "2026-10-23"
 }

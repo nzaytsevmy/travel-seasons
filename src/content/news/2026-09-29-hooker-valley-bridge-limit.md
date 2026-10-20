@@ -3,7 +3,7 @@ title: "На мосту Хукер-Вэлли поставят калитки д
 date: "2026-09-22"
 added: "2026-09-29"
 checked: "2026-10-06"
-reviewOn: "2026-10-20"
+reviewOn: "2026-10-23"
 topic: "transport"
 impact: "medium"
 score: 4
