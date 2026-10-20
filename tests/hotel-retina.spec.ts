@@ -34,6 +34,11 @@ for (const [country] of readyHotelCollections()) {
             const bitmap = await createImageBitmap(await response.blob());
             try {
               if (bitmap.width <= 0 || bitmap.height <= 0) throw new Error('Empty image bitmap');
+              // WebKit can keep the previously loaded source briefly after a
+              // resize. Completion alone does not mean the new selection is ready.
+              const frame = image.getBoundingClientRect();
+              if (bitmap.width + 1 < Math.ceil(frame.width * 2) || bitmap.height + 1 < Math.ceil(frame.height * 2))
+                throw new Error('Responsive source does not yet cover the new frame at 2×');
             } finally {
               bitmap.close();
             }

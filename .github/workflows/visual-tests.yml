@@ -336,6 +336,12 @@ jobs:
       # Весь набор, как и было: он шардирован на четверых и укладывается в 2–3 мин.
       # Отдельный прогон content-gate дублирует ОТСЮДА только контентную часть —
       # она идёт секунды, и это дешевле, чем городить деление без пересечений.
+      - name: Early hotel Retina regression in all four browsers
+        run: npx playwright test tests/hotel-retina.spec.ts --grep '2×: costa-rica-panama$' --retries=0
+        env:
+          PREVIEW_URL: http://localhost:4322
+          SKIP_PAGE_MTIME_TESTS: '1'
+
       - name: Run visual regression tests
         run: npx playwright test --shard=${{ matrix.shard }}/4
         env:
