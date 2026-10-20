@@ -16,7 +16,20 @@ test('Подборка содержит десять разных отелей �
     assert.ok(credits[h.photoCreditKey||h.id]?.source);
     assert.ok(h.caveat);
   }
-  assert.equal(publicPhotoCredits(hotels.map(h=>credits[h.photoCreditKey||h.id])).length,9);
+  const selected = hotels.map(h=>credits[h.photoCreditKey||h.id]);
+  const attributed = publicPhotoCredits(selected);
+  const required = selected.filter(credit => credit.license && credit.license !== 'Public domain');
+  const sameCredit = (a,b) => a.source === b.source && a.creator === b.creator
+    && a.license === b.license && a.licenseUrl === b.licenseUrl;
+  for (const credit of required) {
+    assert.ok(attributed.some(item=>sameCredit(item,credit)),`Потеряна обязательная атрибуция: ${credit.title}`);
+  }
+  assert.ok(attributed.every(item=>required.some(credit=>sameCredit(item,credit))), 'Публичный кредит относится к выбранному снимку');
+  for (const credit of selected.filter(credit=>!credit.license)) {
+    assert.equal(credit.rightsStatus,'NOT_STATED_IN_SOURCE');
+    assert.equal(new URL(credit.sourcePhoto).protocol,'https:');
+    assert.equal(new URL(credit.source).protocol,'https:');
+  }
 });
 test('Неизвестное направление не превращается в чужую подборку',()=>{
   assert.equal(hotelCollection('antarctica'),null);
