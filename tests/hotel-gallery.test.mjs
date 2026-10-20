@@ -49,7 +49,9 @@ test('Каждый сохранённый кадр существует, име�
       assert.ok(!identity.endsWith('undefined'),source);
       assert.ok(!sources.has(identity),`Повтор исходника: ${country}/${hotel.id}`);sources.add(identity);
       const hash=createHash('sha256'); for await(const chunk of createReadStream(file)) hash.update(chunk);
-      const digest=hash.digest('hex');assert.ok(!hashes.has(digest),`Повтор файла: ${photo.image}`);hashes.add(digest);
+      const digest=hash.digest('hex');
+      assert.equal(digest,credit.originalSha256,`Файл отличается от утверждённого оригинала: ${photo.image}`);
+      assert.ok(!hashes.has(digest),`Повтор файла: ${photo.image}`);hashes.add(digest);
       const fingerprint=await photoFingerprint(file);
       for(const previous of fingerprints)if(photoFingerprintDistance(previous.fingerprint,fingerprint)<2)
         visualDuplicates.push({hotel:`${country}/${hotel.id}`,first:previous.image,second:photo.image});

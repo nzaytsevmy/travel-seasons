@@ -24,7 +24,7 @@ export function galleryFrame(viewport, lead) {
   const padding = viewport < 768 ? 16 : Math.min(41.6, Math.max(17.6, viewport * .03));
   const inner = Math.min(1280, viewport) - 2 * padding;
   const column = lead || viewport < 768 ? inner : (inner - 32) * 1.45 / 2.45;
-  const width = lead ? Math.min(1000, column * .92) : column * .92;
+  const width = column * .92;
   return { width, height: width * (lead && viewport >= 768 ? 9 / 16 : 3 / 4) };
 }
 export function photoManifest() {

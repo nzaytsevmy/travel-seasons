@@ -12,6 +12,12 @@ test('checks cropped height as well as image width', () => {
   assert.ok(coverDensity(1600, 900, 650, 487.5) < 2);
   assert.ok(coverDensity(1920, 1440, 650, 487.5) >= 2);
 });
+test('preserves the published 92% lead width and rejects a 2048px source at Retina', () => {
+  const frame = galleryFrame(1280, true);
+  assert.ok(Math.abs(frame.width - (1280 - 2 * (1280 * .03)) * .92) < .001);
+  assert.ok(coverDensity(2048, 1365, frame.width, frame.height) < 2);
+  assert.ok(coverDensity(2600, 1733, frame.width, frame.height) >= 2);
+});
 test('covers the wider single-column frame immediately before the tablet breakpoint', () => {
   const edge = galleryFrame(767, false);
   const desktop = galleryFrame(1280, false);
