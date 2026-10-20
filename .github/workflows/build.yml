@@ -57,8 +57,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules/.astro
-          key: astro-assets-${{ runner.os }}-${{ hashFiles('src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.png') }}
-          restore-keys: astro-assets-${{ runner.os }}-
+          key: astro-assets-v2-${{ runner.os }}-${{ hashFiles('src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.png', 'src/**/*.webp', 'src/**/*.astro', 'package-lock.json', 'astro.config.mjs') }}
+          restore-keys: |
+            astro-assets-v2-${{ runner.os }}-
+            astro-assets-${{ runner.os }}-
 
       - run: npm run build
         if: steps.scope.outputs.mode != 'accounting'

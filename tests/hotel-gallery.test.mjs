@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync, createReadStream } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { photoSourceIdentity } from '../scripts/hotel-native-source.mjs';
+import { photoFingerprint, photoFingerprintDistance } from '../scripts/hotel-photo-distinctness.mjs';
 import { hotelGallery, collectionHasCompleteGalleries, HOTEL_COLLECTIONS, hotelCollection, readyHotelCollections } from '../src/data/hotels.js';
 const credits = JSON.parse(readFileSync(new URL('../src/data/hotel-photo-credits.json',import.meta.url)));
 
@@ -31,9 +33,9 @@ test('У всех десяти отелей Сингапура есть полн
 });
 
 test('Каждый сохранённый кадр существует, имеет источник и не подменяет фотографии другого отеля', async () => {
-  const hotelByDigest=new Map();
+  const hotelByDigest=new Map(),visualDuplicates=[];
   for(const [country,collection] of Object.entries(HOTEL_COLLECTIONS)) for(const hotel of collection.hotels) {
-    const hashes=new Set(), sources=new Set();
+    const hashes=new Set(), sources=new Set(), fingerprints=[];
     for(const photo of hotelGallery(country,hotel)) {
       const file=new URL(`../src/assets/hotels/${photo.image}`,import.meta.url);
       assert.ok(existsSync(file),photo.image);
@@ -43,14 +45,21 @@ test('Каждый сохранённый кадр существует, име�
       const source=credits[photo.creditKey]?.source;
       assert.equal(new URL(source).protocol,'https:',photo.creditKey);
       const sourceUrl=new URL(source);
-      const identity=sourceUrl.hostname==='www.flickr.com' ? `flickr:${sourceUrl.pathname.match(/\/photos\/[^/]+\/(\d+)/)?.[1]}` : sourceUrl.hostname==='commons.wikimedia.org' ? `commons:${decodeURIComponent(sourceUrl.pathname).replaceAll('_',' ').normalize('NFC')}` : credit.sourcePhoto;
+      const identity=sourceUrl.hostname==='www.flickr.com' ? `flickr:${sourceUrl.pathname.match(/\/photos\/[^/]+\/(\d+)/)?.[1]}` : sourceUrl.hostname==='commons.wikimedia.org' ? `commons:${decodeURIComponent(sourceUrl.pathname).replaceAll('_',' ').normalize('NFC')}` : photoSourceIdentity(credit.sourcePhoto);
       assert.ok(!identity.endsWith('undefined'),source);
       assert.ok(!sources.has(identity),`Повтор исходника: ${country}/${hotel.id}`);sources.add(identity);
       const hash=createHash('sha256'); for await(const chunk of createReadStream(file)) hash.update(chunk);
-      const digest=hash.digest('hex');assert.ok(!hashes.has(digest),`Повтор файла: ${photo.image}`);hashes.add(digest);
+      const digest=hash.digest('hex');
+      assert.equal(digest,credit.originalSha256,`Файл отличается от утверждённого оригинала: ${photo.image}`);
+      assert.ok(!hashes.has(digest),`Повтор файла: ${photo.image}`);hashes.add(digest);
+      const fingerprint=await photoFingerprint(file);
+      for(const previous of fingerprints)if(photoFingerprintDistance(previous.fingerprint,fingerprint)<2)
+        visualDuplicates.push({hotel:`${country}/${hotel.id}`,first:previous.image,second:photo.image});
+      fingerprints.push({image:photo.image,fingerprint});
       assert.ok(!hotelByDigest.has(digest),`Одинаковое фото у ${hotelByDigest.get(digest)} и ${country}/${hotel.id}`);hotelByDigest.set(digest,`${country}/${hotel.id}`);
     }
   }
+  assert.deepEqual(visualDuplicates,[], 'Один визуальный кадр в разных файлах; проверены все галереи');
 });
 
 test('У всех десяти отелей Гонконга есть полная галерея', () => {

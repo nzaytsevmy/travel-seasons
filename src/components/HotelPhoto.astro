@@ -1,0 +1,60 @@
+---
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  sizes: string;
+  wide?: boolean;
+  lead?: boolean;
+  loading?: 'lazy' | 'eager';
+}
+const { src, alt, sizes, wide = false, lead = false, loading = 'lazy' } = Astro.props;
+async function candidates(aspect: number, maximum: number) {
+  // Read dimensions from getImage's resolved metadata. Reading the imported
+  // image proxy directly tells Astro to publish its untouched JPEG as well.
+  const seed = await getImage({ src, width: 400, height: Math.round(400 / aspect),
+    fit: 'cover', format: 'webp', quality: 88 });
+  const native = seed.options.src as ImageMetadata;
+  // A crop must fit both native dimensions. Width-only checks admit blurry crops.
+  const limit = Math.floor(Math.min(maximum, native.width, native.height * aspect));
+  if (limit < 400) throw new Error('Hotel photo cannot cover the smallest native candidate');
+  const widths = [...new Set([400, 800, 1200, 1600, 2000, 2400, limit].filter(width => width <= limit))].sort((a, b) => a - b);
+  const variants = await Promise.all(widths.map(width => width === 400 ? seed : getImage({ src, width,
+    height: Math.round(width / aspect), fit: 'cover', format: 'webp', quality: 88 })));
+  return { srcset: variants.map((image, i) => `${image.src} ${widths[i]}w`).join(', '),
+    largest: variants.at(-1)!, width: limit, height: Math.round(limit / aspect) };
+}
+const desktop = await candidates(wide ? 16 / 9 : 4 / 3, lead ? 2400 : 1600);
+const mobile = wide ? await candidates(4 / 3, 1600) : desktop;
+---
+<picture data-hotel-photo style={`--hotel-photo-ratio:${wide ? '16 / 9' : '4 / 3'}`}>
+  {wide && <source media="(max-width: 767px)" srcset={mobile.srcset} sizes={sizes} type="image/webp" />}
+  <img src={desktop.largest.src} srcset={desktop.srcset} sizes={sizes}
+    width={desktop.width} height={desktop.height} alt={alt} loading={loading}
+    decoding="async" fetchpriority={loading === 'eager' ? 'high' : 'auto'} />
+</picture>
+<script>
+  // Keep the declarative sizes fallback for the initial request and no-JS visits.
+  // Safari can retain the initial calc() source size after a viewport resize.
+  // Observing the actual box also covers grid changes without a window resize.
+  const photos = new ResizeObserver(entries => {
+    for (const { target, contentRect } of entries) {
+      if (contentRect.width <= 0) continue;
+      const sizes = `${Math.ceil(contentRect.width)}px`;
+      for (const image of target.querySelectorAll('img, source')) {
+        if (image.getAttribute('sizes') !== sizes) image.setAttribute('sizes', sizes);
+      }
+    }
+  });
+  document.querySelectorAll('[data-hotel-photo]').forEach(photo => photos.observe(photo));
+  window.addEventListener('pagehide', event => {
+    // A page restored from the back/forward cache still needs resize updates.
+    if (!event.persisted) photos.disconnect();
+  });
+</script>
+<style>
+  picture { display:block; width:100%; }
+  img { display:block; width:100%; height:auto; aspect-ratio:var(--hotel-photo-ratio); object-fit:cover; }
+  @media(max-width:767px) { img { aspect-ratio:4 / 3; } }
+</style>

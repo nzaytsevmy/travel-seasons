@@ -33,6 +33,10 @@ on:
       - '**/*.md'
   workflow_dispatch:
     inputs:
+      hotel_materials:
+        description: 'Подготовить фото без увеличения; полный CI и публикация выполняются отдельно'
+        type: boolean
+        default: false
       gen_linux:
         description: 'Снять linux-эталоны и проверить их стабильность (одноразово)'
         type: boolean
@@ -63,7 +67,34 @@ permissions:
   contents: read
 
 jobs:
+  hotel-materials:
+    if: github.event_name == 'workflow_dispatch' && inputs.hotel_materials
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Source photo density baseline
+        run: |
+          mkdir -p artifacts/hotel-materials
+          node scripts/hotel-photo-quality.mjs artifacts/hotel-materials/baseline.json --baseline
+      - name: Fetch original hotel photographs
+        if: success() || failure()
+        run: node scripts/hotel-photo-recovery.mjs
+      - name: Preserve original diagnostic results and photographs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hotel-materials-${{ github.sha }}
+          path: artifacts/hotel-materials/
+          if-no-files-found: error
+          retention-days: 7
   prepare:
+    if: github.event_name != 'workflow_dispatch' || !inputs.hotel_materials
     uses: ./.github/workflows/site-artifact.yml
     with:
       skip_html_min: ${{ inputs.gen_linux && '0' || '1' }}
@@ -305,18 +336,26 @@ jobs:
       # Весь набор, как и было: он шардирован на четверых и укладывается в 2–3 мин.
       # Отдельный прогон content-gate дублирует ОТСЮДА только контентную часть —
       # она идёт секунды, и это дешевле, чем городить деление без пересечений.
-      - name: Run visual regression tests
-        run: npx playwright test --shard=${{ matrix.shard }}/4
+      - name: Early hotel Retina regression in all four browsers
+        run: |
+          npx playwright test tests/hotel-retina.spec.ts --grep '2×: costa-rica-panama$' --retries=0
         env:
           PREVIEW_URL: http://localhost:4322
           SKIP_PAGE_MTIME_TESTS: '1'
 
-      - name: Upload diff artifacts on failure
-        if: failure()
+      - name: Run visual regression tests
+        run: node scripts/run-balanced-browser-shard.mjs ${{ matrix.shard }}
+        env:
+          PREVIEW_URL: http://localhost:4322
+          SKIP_PAGE_MTIME_TESTS: '1'
+
+      - name: Upload complete browser reports and failure artifacts
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-${{ matrix.shard }}
           path: |
             tests/.html-report/
             test-results/
+          include-hidden-files: true
           retention-days: 14
