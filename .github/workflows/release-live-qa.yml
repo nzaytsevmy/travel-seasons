@@ -69,13 +69,16 @@ jobs:
     timeout-minutes: 40
     strategy:
       fail-fast: false
+      max-parallel: 4
       matrix:
         project: [chromium-desktop, webkit-desktop, chromium-tablet, webkit-mobile]
+        shard: [1, 2, 3, 4]
     env:
       QA_EXPECTED_COMMIT: ${{ inputs.expected_commit }}
       HOTEL_PROJECT: ${{ matrix.project }}
       PREVIEW_URL: https://traveltribe.ru
-      PLAYWRIGHT_JSON_OUTPUT_NAME: artifacts/hotel-guides-live-${{ matrix.project }}/tests.json
+      PLAYWRIGHT_JSON_OUTPUT_NAME: artifacts/hotel-guides-live-${{ matrix.project }}-${{ matrix.shard }}/tests.json
+      HOTEL_SHARD: ${{ matrix.shard }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -104,13 +107,13 @@ jobs:
           assert.equal(r.status, 200);
           const value = await r.json();
           assert.equal(value.commit, process.env.QA_EXPECTED_COMMIT);
-          const dir = `artifacts/hotel-guides-live-${process.env.HOTEL_PROJECT}`;
+          const dir = `artifacts/hotel-guides-live-${process.env.HOTEL_PROJECT}-${process.env.HOTEL_SHARD}`;
           await fs.mkdir(dir, { recursive: true });
           await fs.writeFile(`${dir}/identity-before.json`, JSON.stringify(value));
           console.log(JSON.stringify(value));
           JS
       - name: Check every hotel gallery, booking target and country journey
-        run: npx playwright test tests/hotel-guides.spec.ts tests/hotel-retina.spec.ts tests/hotel-referral-browser.spec.ts --project="$HOTEL_PROJECT" --reporter=line,json
+        run: npx playwright test tests/hotel-guides.spec.ts tests/hotel-retina.spec.ts tests/hotel-referral-browser.spec.ts --project="$HOTEL_PROJECT" --shard="$HOTEL_SHARD/4" --reporter=line,json
       - name: Verify published build did not change during hotel journeys
         if: always()
         run: |
@@ -121,7 +124,7 @@ jobs:
           assert.equal(r.status, 200);
           const value = await r.json();
           assert.equal(value.commit, process.env.QA_EXPECTED_COMMIT);
-          const dir = `artifacts/hotel-guides-live-${process.env.HOTEL_PROJECT}`;
+          const dir = `artifacts/hotel-guides-live-${process.env.HOTEL_PROJECT}-${process.env.HOTEL_SHARD}`;
           const before = JSON.parse(await fs.readFile(`${dir}/identity-before.json`, 'utf8'));
           assert.deepEqual(value, before);
           await fs.writeFile(`${dir}/identity-after.json`, JSON.stringify(value));
@@ -131,9 +134,9 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: hotel-guides-live-${{ matrix.project }}
+          name: hotel-guides-live-${{ matrix.project }}-${{ matrix.shard }}
           path: |
-            artifacts/hotel-guides-live-${{ matrix.project }}/
+            artifacts/hotel-guides-live-${{ matrix.project }}-${{ matrix.shard }}/
             test-results/
           if-no-files-found: error
           retention-days: 7

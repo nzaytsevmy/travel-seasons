@@ -23,9 +23,9 @@ for (const [country] of readyHotelCollections()) {
       });
       await expect.poll(async () => {
         const result = await images.evaluateAll(async (nodes, cachedDimensions) => {
-          // Responsive elements can retain a rejected decode promise after a
-          // source change. Decode the selected bytes independently, then verify
-          // that the displayed element has finished loading that same source.
+          // Decode one immutable URL on a fresh, single-source image. It cannot
+          // inherit a responsive element's stale decode promise after resizing.
+          // The independent HTTP/Sharp check below still verifies encoded pixels.
           const pending: string[] = [];
           // Decode each immutable, hashed URL once. Geometry and displayed-source
           // readiness are still checked at every width and on every poll.
@@ -37,16 +37,12 @@ for (const [country] of readyHotelCollections()) {
             try {
               let actual = decoded.get(selected);
               if (!actual) {
-                const response = await fetch(selected);
-                if (!response.ok) throw new Error(`Image HTTP ${response.status}`);
-                const bitmap = await createImageBitmap(await response.blob());
-                try {
-                  if (bitmap.width <= 0 || bitmap.height <= 0) throw new Error('Empty image bitmap');
-                  actual = { width: bitmap.width, height: bitmap.height };
-                  decoded.set(selected, actual);
-                } finally {
-                  bitmap.close();
-                }
+                const probe = new Image();
+                probe.src = selected;
+                await probe.decode();
+                if (probe.naturalWidth <= 0 || probe.naturalHeight <= 0) throw new Error('Empty decoded image');
+                actual = { width: probe.naturalWidth, height: probe.naturalHeight };
+                decoded.set(selected, actual);
               }
               // WebKit can keep the previously loaded source briefly after a
               // resize. Completion alone does not mean the new selection is ready.
