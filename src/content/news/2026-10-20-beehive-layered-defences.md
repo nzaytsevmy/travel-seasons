@@ -1,8 +1,8 @@
 ---
 title: "Улей оказался многоуровневой защитой пчелиной семьи"
 date: "2026-10-20"
-added: "2026-10-20"
-checked: "2026-10-20"
+added: "2026-10-21"
+checked: "2026-10-21"
 topic: nature
 impact: medium
 score: 4
