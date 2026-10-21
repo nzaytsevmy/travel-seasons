@@ -3,7 +3,7 @@ title: "Коминато: автобусная остановка меняетс
 date: "2026-10-09"
 added: "2026-10-11"
 checked: "2026-10-16"
-reviewOn: "2026-10-19"
+reviewOn: "2026-10-23"
 topic: transport
 impact: high
 score: 4

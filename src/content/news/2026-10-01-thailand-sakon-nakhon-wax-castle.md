@@ -3,7 +3,7 @@ title: "В Саконнакхоне с 20 октября пройдёт шест
 date: "2026-09-29"
 added: "2026-10-01"
 checked: "2026-10-01"
-reviewOn: "2026-10-20"
+reviewOn: "2026-10-27"
 topic: "transport"
 impact: "medium"
 score: 3

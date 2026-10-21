@@ -3,7 +3,7 @@ title: "Тиба: Коминато меняет остановку замеща�
 date: "2026-09-23"
 added: "2026-09-23"
 checked: "2026-10-16"
-reviewOn: "2026-10-19"
+reviewOn: "2026-10-23"
 topic: transport
 impact: high
 score: 4

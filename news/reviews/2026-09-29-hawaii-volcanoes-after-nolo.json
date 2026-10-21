@@ -1,67 +1,157 @@
 {
   "schemaVersion": 1,
   "slug": "2026-09-29-hawaii-volcanoes-after-nolo",
+  "reviewer": "Codex (editorial_review_20261020)",
+  "reviewerTask": "/root/editorial_review_20261020",
+  "authoredBy": "Codex (tt-author-20261020)",
+  "reviewedAt": "2026-10-20",
+  "checkedAt": "2026-10-20",
   "score": 4,
-  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
-  "reviewedAt": "2026-10-06",
-  "sha256": "7e839adbbed222f1947713d9ccd655d63bbe4e92f2c14e57dd8483f7f4ed9e35",
-  "rationale": "Оценка 4: исходный NPS релиз 27 сентября верно описывает открытие большей части парка после Ноло, а обновление отделяет его от действующих адресных ограничений. Актуальные предупреждения NPS дают Hilina Pali Road как ограничение для машин только пн–чт 06:00–16:30, Mauna Loa Road как полное закрытие от второй решётки до lookout до 29 октября, и продолжающиеся закрытия Kīpukapuaulu Trail и Sulphur Banks Bridge. Исчезновение арки Hōlei датировано NPS без необоснованной причины.",
-  "risks": [
-    "Динамические предупреждения могут меняться; перед поездкой необходимо проверить текущие alerts NPS.",
-    "Hilina Pali Road открыта вне плановых часов работ лишь при отсутствии нового временного ограничения."
-  ],
-  "blockingIssues": [],
-  "evidence": [
+  "approved": true,
+  "approvalScope": "EDITORIAL_CONTENT_ONLY",
+  "classification": "UPDATE",
+  "baseCommit": "707f7c57b591d3769d740b30de9024fecd0bede2",
+  "rationale": "Адресные закрытия меняют выбор дороги и тропы при открытой большей части парка;4. Исправлена существенная граница первого cattle guard.",
+  "factReview": "Независимо прочитаны Chrome livealerts NPS20.10: FIRST cattle guard→MaunaLoaLookout through29Oct all use; HilinaPali beyondMaunaiki Mon–Thu06–16:30 through19Nov motorized only; Kipukapuaulu closed; SulphurBanksbridge closed/boardwalkwestopen. СтатическийHTML не содержит этих alerts; June8 — дата шаблона.",
+  "sourceChecks": [
     {
       "url": "https://www.nps.gov/havo/learn/news/20260927_post_nolo.htm",
-      "publishedOn": "2026-09-27",
-      "finding": "NPS: большая часть парка после Ноло открылась, ряд участков оставался закрыт; исторический срез 27 сентября.",
-      "checkedOn": "2026-10-06"
+      "status": "RELEVANT_FACTS_READ_WITH_DECLARED_LIMITS",
+      "artifact": ".run/source-check-20261020/0c4eccf0ab1fb5d8.txt",
+      "artifactSha256": "7a51df5a52c47ed5981977d869c9be36bece5e57b696c9c445f3c97d97449270",
+      "observedHttpStatus": 200,
+      "reviewedAt": "2026-10-20",
+      "scope": "Независимо прочитаны Chrome livealerts NPS20.10: FIRST cattle guard→MaunaLoaLookout through29Oct all use; HilinaPali beyondMaunaiki Mon–Thu06–16:30 through19Nov motorized only; Kipukapuaulu closed; SulphurBanksbridge closed/boardwalkwestopen. СтатическийHTML не содержит этих alerts; June8 — дата шаблона."
     },
     {
-      "url": "https://www.nps.gov/planyourvisit/alerts.htm?t=Closure&v=1",
-      "finding": "Активные предупреждения NPS: Hilina Pali Road закрыта моторному транспорту пн–чт 06:00–16:30 на работы до 19.11; Mauna Loa Road закрыта для всех от второй решётки до lookout до 29.10; Kīpukapuaulu Trail и Sulphur Banks Bridge закрыты.",
-      "checkedOn": "2026-10-06"
+      "url": "https://www.nps.gov/havo/planyourvisit/conditions.htm",
+      "status": "RELEVANT_FACTS_READ_WITH_DECLARED_LIMITS",
+      "artifact": ".run/source-check-20261020/df286e2f77afefde.txt",
+      "artifactSha256": "6fdb829ee4ddecfecfff9f059c5465568c3800500a4138d91e20617d2aee2abf",
+      "observedHttpStatus": 200,
+      "reviewedAt": "2026-10-20",
+      "scope": "Независимо прочитаны Chrome livealerts NPS20.10: FIRST cattle guard→MaunaLoaLookout through29Oct all use; HilinaPali beyondMaunaiki Mon–Thu06–16:30 through19Nov motorized only; Kipukapuaulu closed; SulphurBanksbridge closed/boardwalkwestopen. СтатическийHTML не содержит этих alerts; June8 — дата шаблона."
     },
     {
       "url": "https://www.nps.gov/havo/learn/news/20261001-nr-holei-sea-arch_collapses.htm",
-      "publishedOn": "2026-10-01",
-      "finding": "NPS: Hōlei Sea Arch ещё стояла 23 сентября и уже обрушилась к вечеру 27 сентября; точный момент/причина не установлены.",
-      "checkedOn": "2026-10-06"
+      "status": "RELEVANT_FACTS_READ_WITH_DECLARED_LIMITS",
+      "artifact": ".run/source-check-20261020/95f815be3f89d2c6.txt",
+      "artifactSha256": "f750dfef1242c243ae3f44926538b23c1ba0c4e273a5af04ae5964a2b5d4fd82",
+      "observedHttpStatus": 200,
+      "reviewedAt": "2026-10-20",
+      "scope": "Независимо прочитаны Chrome livealerts NPS20.10: FIRST cattle guard→MaunaLoaLookout through29Oct all use; HilinaPali beyondMaunaiki Mon–Thu06–16:30 through19Nov motorized only; Kipukapuaulu closed; SulphurBanksbridge closed/boardwalkwestopen. СтатическийHTML не содержит этих alerts; June8 — дата шаблона."
+    },
+    {
+      "url": "https://www.nps.gov/planyourvisit/alerts.htm?t=Closure&v=1",
+      "status": "RELEVANT_FACTS_READ_WITH_DECLARED_LIMITS",
+      "artifact": ".run/source-check-20261020/014a180f9787a007.txt",
+      "artifactSha256": "84f0466396f11cbe2f469a595e96d140a7795a09d688a3951917a172dced3751",
+      "observedHttpStatus": 200,
+      "reviewedAt": "2026-10-20",
+      "scope": "Независимо прочитаны Chrome livealerts NPS20.10: FIRST cattle guard→MaunaLoaLookout through29Oct all use; HilinaPali beyondMaunaiki Mon–Thu06–16:30 through19Nov motorized only; Kipukapuaulu closed; SulphurBanksbridge closed/boardwalkwestopen. СтатическийHTML не содержит этих alerts; June8 — дата шаблона."
     }
   ],
-  "lifecycle": {
-    "reviewOn": "2026-10-20",
-    "reason": "Сверить оперативные NPS alerts по каждой дороге, тропе и мосту; плановые даты окончания работ не гарантируют немедленного открытия."
-  },
-  "checks": {
-    "capsuleWords": 59,
-    "bodyWords": 275,
-    "titleChars": 51,
-    "clipTitle": "Гавайи: парк вулканов частично открыт после урагана",
-    "internalLink": "/usa/",
-    "internalLinkStatus": 200,
-    "photoViewedToday": false,
-    "mediaScope": "Фото в этих адресных lifecycle-правках не менялось; повторный осмотр локального JPEG не проводился.",
-    "publicationDate": "2026-09-27",
-    "added": "2026-09-29",
-    "scope": "Независимая сверка финальных текстов, дат и первоисточников; без браузерных тестов, сборки, CI и live-проверки обновлённых страниц."
-  },
-  "contentHash": "8a0d8d5b72cf4106900f172fbc028abdcbcf446c996a58db71096f3fdb48f3dc",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256Scope": "full Markdown file bytes",
-  "priorReview": {
-    "reviewer": "Codex GPT-6 (news_review_20261002)",
-    "reviewedAt": "2026-10-02",
+  "contentHash": "486f52cbbd99064b7c6a849e9ca42e2782c8030d7baeab0a70e80f9a98a6eb18",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote.",
+  "sourceSha256": "22765016528ccfe2503a31cf0b32d106052cfa0c1083346e030121ade95e595e",
+  "sourceSha256Scope": "SHA-256 полного исходного UTF-8 Markdown, включая frontmatter.",
+  "nativeClipTitle": "Гавайи: парк вулканов частично открыт после урагана",
+  "clipTitleCodeSha256": "61aeac8ec0e88ff9175d1ebefe66fd9be9b17f211a045a943312de9f6fdc1b0f",
+  "previousReview": {
+    "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+    "reviewedAt": "2026-10-06",
     "score": 4,
-    "contentHash": "d984ac79299018bfb447494554e77b4b2b3ab99fe478f0a6e1bf3fa0525bdda5",
-    "sha256": "1cca36cf15824638abab96d9eb7ade859852ce1353b107d135b698e1576d8479",
-    "previous": {
-      "reviewer": "codex-gpt-6-independent-news-review-20260930-news_review_0930",
-      "reviewedAt": "2026-09-30",
-      "score": 4,
-      "contentHash": "fc41471ecf8265e8723df213484ce7dc09ae805296a957e7747510ecf97547db",
-      "sha256": "2e3105cdaba1e87a669f5a0e6f4ab9720b3b01be6f8c8da3e6e5e52bc39a4165"
+    "rationale": "Оценка 4: исходный NPS релиз 27 сентября верно описывает открытие большей части парка после Ноло, а обновление отделяет его от действующих адресных ограничений. Актуальные предупреждения NPS дают Hilina Pali Road как ограничение для машин только пн–чт 06:00–16:30, Mauna Loa Road как полное закрытие от второй решётки до lookout до 29 октября, и продолжающиеся закрытия Kīpukapuaulu Trail и Sulphur Banks Bridge. Исчезновение арки Hōlei датировано NPS без необоснованной причины.",
+    "contentHash": "8a0d8d5b72cf4106900f172fbc028abdcbcf446c996a58db71096f3fdb48f3dc"
+  },
+  "photo": {
+    "image": "./_images/2026-09-29-hawaii-volcanoes-after-nolo.jpg",
+    "imageSha256": "2e44c4d3e33b2e2dc27ffcd10ff45c45a510c151ac8f47ce7ae8b55abcdaa9f2",
+    "creator": "Ken Lund from Reno, Nevada, USA",
+    "license": "CC BY-SA",
+    "licenseURL": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/w/index.php?curid=54889910",
+    "title": "Архивный снимок указателя у входа в Hawaiʻi Volcanoes. Это не снимок последствий урагана Ноло.",
+    "alt": "Указатель у входа в национальный парк Hawaiʻi Volcanoes",
+    "visualReview": "Финальный локальный кадр самостоятельно просмотрен20Oct; архивный/иллюстративный смысл соответствуетalt,нефото события/эксперимента.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+  },
+  "criteria14": [
+    {
+      "id": 1,
+      "score": 10,
+      "evidence": "Один вопрос читателя следует из title/tldr: Гавайи: парк вулканов частично открыт после урагана. Полный текст прочитан."
+    },
+    {
+      "id": 2,
+      "score": 10,
+      "evidence": "Адресные закрытия меняют выбор дороги и тропы при открытой большей части парка;4. Исправлена существенная граница первого cattle guard."
+    },
+    {
+      "id": 3,
+      "score": 10,
+      "evidence": "Сохранён существующий сюжет либо самостоятельная новая тема; это новостьtravel/nature,невыдуманныйгайд."
+    },
+    {
+      "id": 4,
+      "score": 10,
+      "evidence": "Капсула и начало дают событие/состояние; ограничение результата и следующий конкретный шаг описаны."
+    },
+    {
+      "id": 5,
+      "score": 5,
+      "evidence": "Редакционное объяснение/применимость есть, собственное полевое исследование, эксклюзивные данные и посещение не заявлены."
+    },
+    {
+      "id": 6,
+      "score": 10,
+      "evidence": "Независимо прочитаны Chrome livealerts NPS20.10: FIRST cattle guard→MaunaLoaLookout through29Oct all use; HilinaPali beyondMaunaiki Mon–Thu06–16:30 through19Nov motorized only; Kipukapuaulu closed; SulphurBanksbridge closed/boardwalkwestopen. СтатическийHTML не содержит этих alerts; June8 — дата шаблона."
+    },
+    {
+      "id": 7,
+      "score": 10,
+      "evidence": "Значимые даты/числа и ихединицы сверены по названной фактическойоснове;неполученный текущийстатус не рассчитан и не выдуман. ДляSOURCE_RECHECK основание — точный неизменный текст и прежняя содержательнаярецензия."
+    },
+    {
+      "id": 8,
+      "score": 10,
+      "evidence": "Граница применимости, объявлено/состоялось/история и отсутствие разрешения на закрытый участок сохранены;см.factReview."
+    },
+    {
+      "id": 9,
+      "score": 5,
+      "evidence": "authoredBy и независимыйreviewer различны; выдуманного посещения нет. Публичныйbyline/SSRфинальнойверсии ещёнепроверен."
+    },
+    {
+      "id": 10,
+      "score": 10,
+      "evidence": "Полностью прочитаныtitle,tldr,body; замечания об устаревших/обрезанныхtitle и дублеYosemite исправлены до этогохеша."
+    },
+    {
+      "id": 11,
+      "score": 5,
+      "evidence": "ШтатныйclipTitle прочитан: Гавайи: парк вулканов частично открыт после урагана. SSR/canonical/OGфинальнойсборки ожидаютCI/live."
+    },
+    {
+      "id": 12,
+      "score": 5,
+      "evidence": "Контекстнаявнутренняясвязь соответствует задаче;фактическиеHTTPответы/якоряфинальнойверсии в этомредакционномревьюнепроверены."
+    },
+    {
+      "id": 13,
+      "score": 5,
+      "evidence": "Новые4фотографии просмотреныи сопоставленыс происхождением/alt;неизменные старыефото имеют прежнююпроверку.Рендер402/1280и публичнаяатрибуциянепроверены."
+    },
+    {
+      "id": 14,
+      "score": 0,
+      "evidence": "ФинальныеCI,exactdeploy,live200,SSR,sitemap/feed,индексируемостьи измеренныйэффект ещёнеподтверждены."
     }
-  }
+  ],
+  "limitations": [
+    "Редакционное одобрение не разрешает обход обязательныхгейтов и не подтверждает публикацию.",
+    "Источник/снимок поддерживает тольконазванный датированныйфакт; новая доступность каждойдороги/рейса/объектаизнего не следует.",
+    "Новыеphoto-rights сопоставлены с сохранённымCommonsAPI; публичная/legal/photos/ ожидаетфинальногорендера."
+  ],
+  "nextReview": "2026-10-23"
 }

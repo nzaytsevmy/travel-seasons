@@ -3,7 +3,7 @@ title: "На Ломбоке восстановили 40 домов деревн�
 date: "2026-10-12"
 added: "2026-10-12"
 checked: "2026-10-12"
-reviewOn: "2026-10-19"
+reviewOn: "2026-10-23"
 topic: transport
 impact: medium
 score: 4

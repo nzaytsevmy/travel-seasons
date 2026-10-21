@@ -25,7 +25,7 @@ imageCredit: "Sam kawah ijen"
 imageLicense: "CC BY-SA"
 imageLicenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
 imageSource: "https://commons.wikimedia.org/w/index.php?curid=123743150"
-reviewOn: "2026-10-18"
+reviewOn: "2026-10-23"
 ---
 
 **У Бромо снова произошёл пожар.** По сообщению ANTARA от **16 октября**, накануне при тушении погибли четыре человека, ещё двое получили ожоги. Это новое происшествие: сентябрьское открытие туристической зоны не подтверждает доступ к каждому участку после октябрьского пожара.
