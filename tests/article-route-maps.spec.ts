@@ -24,7 +24,10 @@ for (const [slug, points] of maps) {
       const point = await page.locator('#map-data').evaluate(el => JSON.parse(el.textContent || '{}').pois[0]);
       await view.selectOption(point.key);
       await expect(page.locator('.leaflet-popup-content')).toContainText(point.name);
-      await expect(page.locator('.leaflet-popup-content a')).toHaveAttribute('href', `https://www.google.com/maps/dir/?api=1&destination=${point.lat},${point.lon}`);
+      const navigation = new URL('https://www.google.com/maps/dir/');
+      navigation.searchParams.set('api', '1');
+      navigation.searchParams.set('destination', `${point.lat},${point.lon}`);
+      await expect(page.locator('.leaflet-popup-content a')).toHaveAttribute('href', navigation.href);
       await page.getByRole('button', { name: 'Обзор', exact: true }).click();
       await expect(view).toHaveValue('main');
       await expect(page.locator('.leaflet-popup')).toHaveCount(0);
