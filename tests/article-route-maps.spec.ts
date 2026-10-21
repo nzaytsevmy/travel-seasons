@@ -35,3 +35,26 @@ for (const [slug, points] of maps) {
     });
   }
 }
+
+test('route map treats modified DOM marker labels as text', async ({ page }) => {
+  const payload = '<img src=x onerror="window.__mapLabelXss=true">';
+  await page.route('https://tile.openstreetmap.org/**', route => route.abort());
+  await page.route('**/maps/sigiriya/', async route => {
+    const response = await route.fetch();
+    const body = (await response.text()).replace(
+      /(<script\b[^>]*\bid="map-data"[^>]*>)([\s\S]*?)(<\/script>)/,
+      (_match, opening, raw, closing) => {
+        const data = JSON.parse(raw);
+        data.pois[0].number = payload;
+        return opening + JSON.stringify(data) + closing;
+      },
+    );
+    await route.fulfill({ response, body });
+  });
+  await page.goto('/maps/sigiriya/');
+  const markers = page.locator('.leaflet-marker-icon');
+  await expect(markers).toHaveCount(8);
+  await expect(markers.first()).toContainText(payload);
+  await expect(markers.locator('img')).toHaveCount(0);
+  expect(await page.evaluate(() => Boolean((window as any).__mapLabelXss))).toBe(false);
+});
