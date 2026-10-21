@@ -70,7 +70,8 @@ for (const [country] of readyHotelCollections()) {
       const missingUrls = [...new Set(rows.map(row => row.url))].filter(url => !dimensions.has(url));
       for (let offset = 0; offset < missingUrls.length; offset += 4) {
         await Promise.all(missingUrls.slice(offset, offset + 4).map(async url => {
-          const response = await request.get(url);
+          // One retry for ECONNRESET only; HTTP and pixel failures still fail.
+          const response = await request.get(url, { maxRetries: 1 });
           expect(response.status()).toBe(200);
           const metadata = await sharp(await response.body()).metadata();
           dimensions.set(url, { width: metadata.width!, height: metadata.height! });
