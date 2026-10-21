@@ -48,6 +48,7 @@ export const RELATED_POSTS = {
     { slug: 'uae-guide-2026', title: 'Дубай 2026 для россиян: безвиз 90 дней, цены, сезон', kind: 'guide' },
     { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
     { slug: 'novyy-god-2027-kuda-poehat', title: 'Куда поехать на Новый год 2027: цены и крайние сроки', kind: 'season' },
+    { slug: 'luvr-abu-dabi', title: "Лувр Абу-Даби: стоит ли идти и какой билет выбрать", kind: 'practical' },
   ],
   'georgia': [
     { slug: 'georgia-guide-2026', title: 'Грузия 2026: виза 365 дней, страховка, цены, маршрут', kind: 'guide' },
@@ -60,6 +61,7 @@ export const RELATED_POSTS = {
     { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
     { slug: 'esim-zagranicey-2026', title: 'Связь за границей 2026: eSIM и SIM', kind: 'guide' },
     { slug: 'cappadocia-2026', title: 'Каппадокия 2026: полёт на шаре, цена, как добраться', kind: 'guide' },
+    { slug: 'paromy-stambula', title: "Паромы Стамбула: маршруты по Босфору и оплата", kind: 'practical' },
   ],
   'uganda': [
     { slug: 'uganda-safari-2026', title: 'Уганда 2026: гориллы Бвинди и сафари', kind: 'guide' },
@@ -134,9 +136,11 @@ export const RELATED_POSTS = {
   ],
   'morocco': [
     { slug: 'morocco-guide-2026', title: 'Марокко 2026: безвиз 90 дней, маршрут, цены', kind: 'guide' },
+    { slug: 'marrakesh-za-odin-den', title: "Марракеш за один день: маршрут по медине и вариант с Мажорелем", kind: 'practical' },
   ],
   'kenya': [
     { slug: 'kenya-guide-2026', title: 'Кения 2026: сафари, виза eTA, бюджет', kind: 'guide' },
+    { slug: 'diani-kenya', title: "Диани после сафари: где остановиться и как добраться", kind: 'practical' },
   ],
   'armenia': [
     { slug: 'armenia-guide-2026', title: 'Армения 2026 для россиян: безвиз, внутренний паспорт, цены', kind: 'guide' },
@@ -146,9 +150,11 @@ export const RELATED_POSTS = {
   ],
   'sri-lanka': [
     { slug: 'sri-lanka-guide-2026', title: 'Шри-Ланка 2026 для россиян: виза бесплатно, сезоны, цены', kind: 'guide' },
+    { slug: 'sigiriya', title: "Сигирия: как спланировать подъём и посещение", kind: 'practical' },
   ],
   'south-africa': [
     { slug: 'south-africa-guide-2026', title: 'ЮАР 2026 для россиян: безвиз, декларация, Кейптаун и Крюгер', kind: 'guide' },
+    { slug: 'kirstenbosh', title: "Кирстенбош: что посмотреть и сколько времени оставить", kind: 'practical' },
   ],
   'tanzania': [
     { slug: 'zanzibar-2026', title: 'Занзибар 2026: прямые рейсы, обязательная страховка, сезоны', kind: 'guide' },
@@ -161,5 +167,17 @@ export const RELATED_POSTS = {
   ],
   'nepal': [
     { slug: 'nepal-everest-trek-2026', title: 'Базовый лагерь Эвереста и Гокио 2026: сезоны, пермиты, бюджет', kind: 'guide' },
+  ],
+  'singapore': [
+    { slug: 'gardens-by-the-bay', title: "Gardens by the Bay: бесплатные зоны и платные павильоны", kind: 'practical' },
+  ],
+  'oman': [
+    { slug: 'maskat-za-odin-den', title: "Маскат за один день: маршрут от мечети до Матраха", kind: 'practical' },
+  ],
+  'croatia': [
+    { slug: 'plitvitskie-ozyora', title: "Плитвицкие озёра: как выбрать маршрут на один день", kind: 'practical' },
+  ],
+  'uzbekistan': [
+    { slug: 'samarkand-za-dva-dnya', title: "Самарканд за два дня: маршрут без лишних переездов", kind: 'practical' },
   ],
 };
