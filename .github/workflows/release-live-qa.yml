@@ -1,29 +1,25 @@
 name: Release live browser QA
-
 on:
   workflow_dispatch:
     inputs:
       paths:
-        description: 'JSON-массив опубликованных путей, максимум 100'
+        description: JSON-массив опубликованных путей, максимум 100
         required: true
         type: string
       expected_commit:
-        description: 'Точный commit из build-version.json после выкладки'
+        description: Точный commit из build-version.json после выкладки
         required: true
         type: string
-
       capture:
-        description: 'Сохранить изображения выбранных страниц на 402 и 1280 px'
+        description: Сохранить изображения выбранных страниц на 402 и 1280 px
         type: boolean
         default: false
       hotel_guides:
-        description: 'Дополнительно проверить все галереи отелей в четырёх браузерных проектах'
+        description: Дополнительно проверить все галереи отелей в четырёх браузерных проектах
         type: boolean
         default: false
-
 permissions:
   contents: read
-
 jobs:
   live:
     runs-on: ubuntu-latest
@@ -31,7 +27,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4]
+        shard:
+          - 1
+          - 2
+          - 3
+          - 4
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -52,7 +52,7 @@ jobs:
           QA_PATHS: ${{ inputs.paths }}
           QA_EXPECTED_COMMIT: ${{ inputs.expected_commit }}
           QA_SHARD: ${{ matrix.shard }}
-          QA_SHARDS: '4'
+          QA_SHARDS: "4"
           QA_CAPTURE: ${{ inputs.capture && '1' || '0' }}
       - name: Сохранить полный результат
         if: always()
@@ -62,7 +62,6 @@ jobs:
           path: artifacts/release-browser-qa/
           if-no-files-found: error
           retention-days: 7
-
   hotel-guides-live:
     if: inputs.hotel_guides
     runs-on: ubuntu-latest
@@ -71,8 +70,16 @@ jobs:
       fail-fast: false
       max-parallel: 4
       matrix:
-        project: [chromium-desktop, webkit-desktop, chromium-tablet, webkit-mobile]
-        shard: [1, 2, 3, 4]
+        project:
+          - chromium-desktop
+          - webkit-desktop
+          - chromium-tablet
+          - webkit-mobile
+        shard:
+          - 1
+          - 2
+          - 3
+          - 4
     env:
       QA_EXPECTED_COMMIT: ${{ inputs.expected_commit }}
       HOTEL_PROJECT: ${{ matrix.project }}
@@ -140,3 +147,195 @@ jobs:
             test-results/
           if-no-files-found: error
           retention-days: 7
+  article-production-probe:
+    if: github.event_name == 'workflow_dispatch' && startsWith(github.ref, 'refs/heads/tt-publish/2026-10-21-live-probe')
+    name: Production article maps and metadata
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      PREVIEW_URL: https://traveltribe.ru
+      QA_EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+      QA_PATHS: ${{ inputs.paths }}
+      PLAYWRIGHT_JSON_OUTPUT_FILE: artifacts/article-production-verification/maps-tests.json
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 1aa9d3b9ae06cd8ee4515a8354bf4fa87f059b30
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-chromium-${{ hashFiles('package-lock.json') }}
+      - name: Install Chromium
+        timeout-minutes: 10
+        run: npx playwright install --with-deps chromium
+      - name: Verify original production HTML and identity
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';import{createHash}from'node:crypto';import{execFileSync}from'node:child_process';import{parse}from'parse5';import{parse as yaml}from'yaml';import{unshieldHtml}from'./scripts/affiliate-shield.mjs';import{classifyPartner}from'./src/data/monetization.js';
+          const origin='https://traveltribe.ru',expected='1aa9d3b9ae06cd8ee4515a8354bf4fa87f059b30',deploy='39597002398',out='artifacts/article-production-verification';fs.mkdirSync(out,{recursive:true});
+          const sha=b=>createHash('sha256').update(b).digest('hex'),source=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();assert.equal(source,expected);assert.equal(process.env.QA_EXPECTED_COMMIT,expected);
+          const paths=JSON.parse(process.env.QA_PATHS);assert.equal(paths.length,11);assert.equal(new Set(paths).size,11);for(const p of paths)assert.match(p,/^\/blog\/[a-z0-9-]+\/$/);const approvedSlugs=['park-retiro-madrid','sigiriya','plitvitskie-ozyora','gardens-by-the-bay','kirstenbosh','luvr-abu-dabi','maskat-za-odin-den','samarkand-za-dva-dnya','marrakesh-za-odin-den','paromy-stambula','diani-kenya'];assert.deepEqual([...paths].sort(),approvedSlugs.map(s=>'/blog/'+s+'/').sort(),'Exact approved article set');
+          const proof={startedAt:new Date().toISOString(),workflowSha:process.env.GITHUB_WORKFLOW_SHA||process.env.GITHUB_SHA,dispatchSha:process.env.GITHUB_SHA,workflowRef:process.env.GITHUB_WORKFLOW_REF,scope:'METADATA_ONLY',testedSource:source,testSha256:sha(fs.readFileSync('tests/article-route-maps.spec.ts')),deployRun:deploy,rows:[],responses:[],passed:false};const save=()=>fs.writeFileSync(out+'/metadata-proof.json',JSON.stringify(proof,null,2)+'\n');save();
+          async function fetchRaw(url,name){assert.equal(new URL(url).origin,origin);const u=new URL(url);u.searchParams.set('release_probe',Date.now()+'-'+proof.responses.length);const r=await fetch(u,{signal:AbortSignal.timeout(30000),redirect:'error',headers:{'Cache-Control':'no-cache'}});const body=Buffer.from(await r.arrayBuffer());const filename=out+'/'+name;fs.mkdirSync(path.dirname(filename),{recursive:true});fs.writeFileSync(filename,body);proof.responses.push({url:u.href,finalUrl:r.url,status:r.status,file:filename,bytes:body.length,sha256:sha(body),contentType:r.headers.get('content-type')});save();assert.equal(r.status,200,url);return body;}
+          async function identity(name){const v=JSON.parse(await fetchRaw(origin+'/build-version.json',name));assert.equal(v.commit,expected);assert.equal(String(v.run),deploy);return v;}
+          function nodes(root){const a=[];function walk(n){a.push(n);for(const c of n.childNodes||[])walk(c);}walk(root);return a;}
+          function text(n){return n.nodeName==='#text'?n.value:(n.childNodes||[]).map(text).join('');}
+          const attr=(n,k)=>n.attrs?.find(a=>a.name===k)?.value;const norm=s=>String(s).replace(/\s+/gu,' ').trim();
+          function schemas(v){if(!v||typeof v!=='object')return[];return[...(Array.isArray(v)?[]:[v]),...Object.values(v).flatMap(schemas)];}
+          proof.identityBefore=await identity('identity-before.json');save();const registry=JSON.parse(fs.readFileSync('reviews/trip-service-coverage.json')).articles;
+          for(const p of paths){const slug=p.split('/')[2];let f='src/content/blog/'+slug+'.mdx';if(!fs.existsSync(f))f=f.replace(/x$/,'');const rawSource=fs.readFileSync(f,'utf8'),meta=yaml(rawSource.match(/^---\r?\n([\s\S]*?)\r?\n---/)[1]);const body=await fetchRaw(origin+p,'html/'+slug+'.html'),tree=nodes(parse(body.toString())),head=tree.find(n=>n.tagName==='head'),hn=nodes(head);const metadata={};for(const n of hn.filter(n=>n.tagName==='meta'))metadata[attr(n,'name')||attr(n,'property')]=attr(n,'content');
+           assert.deepEqual(tree.filter(n=>n.tagName==='h1').map(n=>norm(text(n))),[norm(meta.title)],slug+' H1');assert.equal(norm(text(hn.find(n=>n.tagName==='title'))),norm(meta.title),slug+' title');assert.deepEqual(hn.filter(n=>n.tagName==='link'&&attr(n,'rel')==='canonical').map(n=>attr(n,'href')),[origin+p]);
+           for(const[k,v]of Object.entries({'description':meta.description,'og:title':meta.title,'og:description':meta.description,'og:url':origin+p,'og:image':origin+'/og/'+slug+'.png'}))assert.equal(norm(metadata[k]),norm(v),slug+' '+k);assert(!/noindex/i.test(metadata.robots||''),slug+' noindex');
+           const ld=tree.filter(n=>n.tagName==='script'&&attr(n,'type')==='application/ld+json').flatMap(n=>schemas(JSON.parse(text(n)))).filter(x=>x['@type']==='BlogPosting');assert.equal(ld.length,1);assert.equal(ld[0].author['@id'],origin+'/about/#person');assert.equal(norm(ld[0].headline),norm(meta.title));for(const k of['datePublished','dateModified'])assert.equal(ld[0][k].slice(0,10),'2026-10-21',slug+' '+k);
+           const authors=tree.filter(n=>n.tagName==='a'&&(attr(n,'class')||'').split(/\s+/).includes('author-link'));assert.equal(authors.length,1);assert.equal(attr(authors[0],'href'),'/about/');assert.equal(norm(text(authors[0])),meta.author);
+           const og=await fetchRaw(origin+'/og/'+slug+'.png','og/'+slug+'.png');assert.equal(og.subarray(0,8).toString('hex'),'89504e470d0a1a0a');assert.equal(og.readUInt32BE(16),1200);assert.equal(og.readUInt32BE(20),630);
+           const ctx=nodes(parse(unshieldHtml(body.toString()))).filter(n=>n.tagName==='aside'&&attr(n,'data-trip-context')!==undefined),rule=registry[slug];if(rule){assert.deepEqual(ctx.map(n=>attr(n,'data-trip-context')),rule.sections.map(s=>s.heading));for(const c of ctx){const links=nodes(c).filter(n=>n.tagName==='a');assert.equal(links.length,1);const u=new URL(attr(links[0],'href'));assert.equal(classifyPartner(u.href)?.offer,'stay');assert(u.searchParams.get('erid'));assert.equal(u.searchParams.get('sub_id'),attr(links[0],'data-cta-id'));}}
+           proof.rows.push({slug,url:origin+p,sourceSha256:sha(Buffer.from(rawSource)),h1:meta.title,canonical:origin+p,schema:'BlogPosting',publicationDate:ld[0].datePublished,modifiedDate:ld[0].dateModified,authorProfile:'/about/',og:{width:1200,height:630},contextualStayBlocks:ctx.length,passed:true});save();}
+          const xml=await fetchRaw(origin+'/sitemap-index.xml','sitemap-index.xml');const urls=nodes(parse(xml.toString())).filter(n=>n.tagName==='loc').map(n=>text(n));assert(urls.length>0);const locations=[];for(let i=0;i<urls.length;i++){assert.equal(new URL(urls[i]).origin,origin);const data=await fetchRaw(urls[i],'sitemap-'+i+'.xml');locations.push(...nodes(parse(data.toString())).filter(n=>n.tagName==='loc').map(text));}for(const p of paths)assert(locations.includes(origin+p),'Missing sitemap '+p);proof.sitemap={childSitemaps:urls.length,all11ArticlesPresent:true};
+          proof.textExports=[];for(const f of['llms.txt','llms-full.txt']){const data=await fetchRaw(origin+'/'+f,f);for(const p of paths)assert(data.toString().includes(origin+p),f+' missing '+p);proof.textExports.push({path:'/'+f,bytes:data.length,sha256:sha(data),all11ArticlesPresent:true});}
+          await fetchRaw(origin+'/about/','about.html');proof.identityAfterMetadata=await identity('identity-after-metadata.json');assert.deepEqual(proof.identityAfterMetadata,proof.identityBefore);assert.equal(proof.rows.length,11);assert.equal(proof.rows.filter(x=>x.contextualStayBlocks>0&&x.slug!=='park-retiro-madrid').length,5);proof.passed=true;proof.finishedAt=new Date().toISOString();save();console.log(JSON.stringify({passed:true,articles:11,newArticles:10,contextualStayBlocks:5,og:11,sitemap:true,textExports:2,source,workflowSha:process.env.GITHUB_SHA}));
+
+          JS
+      - name: Execute unchanged production route-map controls
+        run: npx playwright test tests/article-route-maps.spec.ts --project=chromium-desktop --reporter=line,json --output=artifacts/article-production-verification/map-test-results
+      - name: Capture exact production article sections and raster body photos
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import assert from 'node:assert/strict';
+          import { createHash } from 'node:crypto';
+          import { execFileSync } from 'node:child_process';
+          import { chromium } from 'playwright';
+          
+          const origin = 'https://traveltribe.ru';
+          const expected = '1aa9d3b9ae06cd8ee4515a8354bf4fa87f059b30';
+          const deploy = '39597002398';
+          const out = 'artifacts/article-production-verification';
+          const slugs = ['sigiriya', 'plitvitskie-ozyora', 'gardens-by-the-bay', 'kirstenbosh', 'luvr-abu-dabi', 'maskat-za-odin-den', 'samarkand-za-dva-dnya', 'marrakesh-za-odin-den', 'paromy-stambula', 'diani-kenya'];
+          assert.equal(execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), expected);
+          assert.equal(process.env.QA_EXPECTED_COMMIT, expected);
+          assert.equal(process.env.PREVIEW_URL, origin);
+          fs.mkdirSync(`${out}/sections`, { recursive: true });
+          const proof = {
+            scope: 'SECTION_SCREENSHOT_CAPTURE_ONLY',
+            workflowSha: process.env.GITHUB_WORKFLOW_SHA || process.env.GITHUB_SHA,
+            dispatchSha: process.env.GITHUB_SHA,
+            workflowRef: process.env.GITHUB_WORKFLOW_REF,
+            testedSource: expected,
+            startedAt: new Date().toISOString(),
+            expected: 40,
+            rows: [],
+            passed: false,
+          };
+          const save = () => fs.writeFileSync(`${out}/sections-proof.json`, JSON.stringify(proof, null, 2));
+          async function identity() {
+            const response = await fetch(`${origin}/build-version.json?section_qa=${Date.now()}`, {
+              signal: AbortSignal.timeout(30000), redirect: 'error', headers: { 'Cache-Control': 'no-cache' },
+            });
+            assert.equal(response.status, 200);
+            const value = await response.json();
+            assert.equal(value.commit, expected);
+            assert.equal(String(value.run), deploy);
+            return value;
+          }
+          let browser;
+          save();
+          try {
+            proof.identityBefore = await identity();
+            save();
+            browser = await chromium.launch();
+            for (const slug of slugs) {
+              for (const width of [402, 1280]) {
+                const context = await browser.newContext({ viewport: { width, height: 1000 }, deviceScaleFactor: 1,
+                  serviceWorkers: 'block', extraHTTPHeaders: { 'X-Playwright': '1' } });
+                try {
+                  const before = await identity();
+                  assert.deepEqual(before, proof.identityBefore);
+                  const page = await context.newPage();
+                  const url = `${origin}/blog/${slug}/`;
+                  const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+                  assert.equal(response?.status(), 200);
+                  assert.equal(page.url(), url);
+                  await page.evaluate(async () => {
+                    await document.fonts.ready;
+                    for (const image of document.images) image.loading = 'eager';
+                  });
+                  const selections = await page.locator('article.post-content .prose').evaluate(article => {
+                    const images = [...article.querySelectorAll('img')];
+                    const index = images.findIndex(image => /(?:^|\/)map(?:-city)?[._-]/i.test(new URL(image.currentSrc || image.src).pathname));
+                    let section;
+                    if (index >= 0) section = { selector: `article.post-content .prose img >> nth=${index}`, kind: 'first-geographic-map', label: images[index].alt };
+                    else {
+                      const headings = [...article.querySelectorAll('h2')];
+                      if (!headings.length) throw new Error('No meaningful article section');
+                      const middle = Math.floor(headings.length / 2);
+                      section = { selector: `article.post-content .prose h2 >> nth=${middle}`, kind: 'middle-section-heading', label: headings[middle].textContent?.trim() };
+                    }
+                    const photoIndex = images.findIndex(image => /\.(?:webp|jpe?g|png)$/i.test(new URL(image.currentSrc || image.src).pathname));
+                    if (photoIndex < 0) throw new Error('No real raster body photo; hero and SVG excluded');
+                    const photo = { selector: `article.post-content .prose img >> nth=${photoIndex}`, kind: 'raster-body-photo', label: images[photoIndex].alt };
+                    return [section, photo];
+                  });
+                  for (const selection of selections) {
+                  const target = page.locator(selection.selector);
+                  await target.scrollIntoViewIfNeeded();
+                  if (selection.kind !== 'middle-section-heading') {
+                    await target.evaluate(async image => { await image.decode(); if (!image.naturalWidth) throw new Error('Broken map image'); });
+                  }
+                  await target.evaluate(element => { element.scrollIntoView({ block: 'start', behavior: 'instant' }); window.scrollBy(0, -96); });
+                  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+                  const box = await target.boundingBox();
+                  assert(box && box.width > 0 && box.height > 0 && box.y >= 0 && box.y < 1000, 'Target section must be visible');
+                  const overlay = await page.locator('#cookie-consent').evaluate(element => {
+                    const r = element.getBoundingClientRect(), style = getComputedStyle(element);
+                    return { visible: !element.hidden && style.display !== 'none' && r.width > 0 && r.height > 0,
+                      box: { x: r.x, y: r.y, width: r.width, height: r.height } };
+                  });
+                  const imageSource = selection.kind === 'middle-section-heading' ? null : await target.evaluate(image => image.currentSrc || image.src);
+                  const file = `${out}/sections/${slug}-${width}-${selection.kind === 'raster-body-photo' ? 'photo' : 'section'}.png`;
+                  const bytes = await page.screenshot({ path: file, fullPage: false, animations: 'disabled' });
+                  const after = await identity();
+                  assert.deepEqual(after, before);
+                  proof.rows.push({ slug, path: `/blog/${slug}/`, url, width, height: 1000, ...selection,
+                    targetBox: box, imageSource, cookieConsentObservation: overlay, scrollY: await page.evaluate(() => window.scrollY), file,
+                    bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex'),
+                    productionIdentityBefore: before, productionIdentityAfter: after, captured: true });
+                  save();
+                  }
+                } finally { await context.close(); }
+              }
+            }
+            proof.identityAfter = await identity();
+            assert.deepEqual(proof.identityAfter, proof.identityBefore);
+            assert.equal(proof.rows.length, 40);
+            proof.passed = true;
+          } catch (error) {
+            proof.error = { name: error.name, message: error.message };
+            throw error;
+          } finally {
+            try { await browser?.close(); }
+            finally { proof.finishedAt = new Date().toISOString(); save(); }
+          }
+          console.log(JSON.stringify({ captured: proof.rows.length, passed: proof.passed, testedSource: expected, scope: proof.scope }));
+          JS
+      - name: Verify production identity after controls
+        run: |
+          node --input-type=module <<'JS'
+          import fs from'node:fs';import assert from'node:assert/strict';const b=JSON.parse(fs.readFileSync('artifacts/article-production-verification/identity-before.json'));const r=await fetch('https://traveltribe.ru/build-version.json?final_map_qa='+Date.now(),{signal:AbortSignal.timeout(30000),headers:{'Cache-Control':'no-cache'}});assert.equal(r.status,200);const a=await r.json();assert.deepEqual(a,b);fs.writeFileSync('artifacts/article-production-verification/identity-after.json',JSON.stringify(a,null,2));
+          JS
+      - name: Preserve exact original verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: article-production-verification-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/article-production-verification/
+          if-no-files-found: error
+          retention-days: 14
