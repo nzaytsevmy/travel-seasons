@@ -180,7 +180,7 @@ jobs:
         run: |
           node --input-type=module <<'JS'
           import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';import{createHash}from'node:crypto';import{execFileSync}from'node:child_process';import{parse}from'parse5';import{parse as yaml}from'yaml';import{unshieldHtml}from'./scripts/affiliate-shield.mjs';import{classifyPartner}from'./src/data/monetization.js';
-          const origin='https://traveltribe.ru',expected='1aa9d3b9ae06cd8ee4515a8354bf4fa87f059b30',deploy='39597002398',out='artifacts/article-production-verification';fs.mkdirSync(out,{recursive:true});
+          const origin='https://traveltribe.ru',expected='1aa9d3b9ae06cd8ee4515a8354bf4fa87f059b30',deploy='39597478519',out='artifacts/article-production-verification';fs.mkdirSync(out,{recursive:true});
           const sha=b=>createHash('sha256').update(b).digest('hex'),source=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();assert.equal(source,expected);assert.equal(process.env.QA_EXPECTED_COMMIT,expected);
           const paths=JSON.parse(process.env.QA_PATHS);assert.equal(paths.length,11);assert.equal(new Set(paths).size,11);for(const p of paths)assert.match(p,/^\/blog\/[a-z0-9-]+\/$/);const approvedSlugs=['park-retiro-madrid','sigiriya','plitvitskie-ozyora','gardens-by-the-bay','kirstenbosh','luvr-abu-dabi','maskat-za-odin-den','samarkand-za-dva-dnya','marrakesh-za-odin-den','paromy-stambula','diani-kenya'];assert.deepEqual([...paths].sort(),approvedSlugs.map(s=>'/blog/'+s+'/').sort(),'Exact approved article set');
           const proof={startedAt:new Date().toISOString(),workflowSha:process.env.GITHUB_WORKFLOW_SHA||process.env.GITHUB_SHA,dispatchSha:process.env.GITHUB_SHA,workflowRef:process.env.GITHUB_WORKFLOW_REF,scope:'METADATA_ONLY',testedSource:source,testSha256:sha(fs.readFileSync('tests/article-route-maps.spec.ts')),deployRun:deploy,rows:[],responses:[],passed:false};const save=()=>fs.writeFileSync(out+'/metadata-proof.json',JSON.stringify(proof,null,2)+'\n');save();
@@ -217,7 +217,7 @@ jobs:
           
           const origin = 'https://traveltribe.ru';
           const expected = '1aa9d3b9ae06cd8ee4515a8354bf4fa87f059b30';
-          const deploy = '39597002398';
+          const deploy = '39597478519';
           const out = 'artifacts/article-production-verification';
           const slugs = ['sigiriya', 'plitvitskie-ozyora', 'gardens-by-the-bay', 'kirstenbosh', 'luvr-abu-dabi', 'maskat-za-odin-den', 'samarkand-za-dva-dnya', 'marrakesh-za-odin-den', 'paromy-stambula', 'diani-kenya'];
           assert.equal(execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), expected);
