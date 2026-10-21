@@ -34,6 +34,13 @@ for (const [country] of readyHotelCollections()) {
           await Promise.all(nodes.slice(offset, offset + 4).map(async node => {
             const image = node as HTMLImageElement;
             const selected = image.currentSrc;
+            // A responsive request can still be replaced after resizing. Wait
+            // for the displayed image before probing the same URL: otherwise
+            // its in-flight request and the probe race in the image loader.
+            if (!selected || !image.complete || image.naturalWidth <= 0) {
+              pending.push(`${selected || image.src}: displayed source is not ready`);
+              return;
+            }
             try {
               let actual = decoded.get(selected);
               if (!actual) {
