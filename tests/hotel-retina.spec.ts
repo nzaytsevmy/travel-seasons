@@ -7,13 +7,13 @@ test.use({ deviceScaleFactor: 2 });
 const widths = [402, 767, 768, 1024, 1280, 1440, 1920];
 
 for (const [country] of readyHotelCollections()) {
-  test(`фотографии отелей сохраняют детализацию 2×: ${country}`, async ({ page, request }) => {
+  test(`фотографии отелей сохраняют детализацию 2×: ${country}`, async ({ context, request }) => {
     test.setTimeout(180_000);
     const dimensions = new Map<string, { width: number; height: number }>();
     const decodedImages = new Map<string, { width: number; height: number }>();
     for (const path of [`/hotels/${country}/`, ...hotelGuideHubs(country).map(hub => `/${hub.slug}/`)]) {
     for (const width of widths) {
-      await inspectHotelViewport(page, path, width, async images => {
+      await inspectHotelViewport(context.browser(), path, width, async images => {
       await images.evaluateAll(async nodes => {
         nodes.forEach(node => { (node as HTMLImageElement).loading = 'eager'; });
         // Let the freshly selected source reach a rendered frame before decoding.
