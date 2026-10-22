@@ -1,190 +1,45 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "slug": "2026-10-13-firefly-seletar-haze-cancellations",
-  "reviewer": "Codex (editorial_review_20261020)",
-  "reviewerTask": "/root/editorial_review_20261020",
-  "authoredBy": "Codex (tt-author-20261020)",
-  "reviewedAt": "2026-10-20",
-  "checkedAt": "2026-10-20",
   "score": 4,
+  "reviewer": "Codex (news_review_20261022)",
+  "reviewerTask": "/root/news_review_20261022",
+  "authoredBy": "Codex (tt-author-20261022)",
+  "reviewedAt": "2026-10-22T09:12:42.676Z",
+  "checkedAt": "2026-10-22",
   "approved": true,
-  "approvalScope": "EDITORIAL_CONTENT_ONLY",
+  "approvalScope": "EDITORIAL_ONLY",
+  "editorialVerdict": "PASS",
+  "releaseApproved": false,
+  "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
   "classification": "UPDATE",
-  "baseCommit": "707f7c57b591d3769d740b30de9024fecd0bede2",
-  "rationale": "Сокращённое расписание до21и план22 меняют связку аэропортов и возврат;4. Исправлен устаревший title по18октября.",
-  "factReview": "Независимо прочитана текущая страницаFirefly:reducedSZB–XSPuntil21Oct/fullresumptionplanned22subjectconditions;alternativeKUL–SINMalaysiaAirlinesavailability;fullrefundoriginalmethodwithin30workingdays. План не выдан за выполненные рейсы.",
+  "baseCommit": "345145808e9d32aeffadd70fe4a2d5a52fb0c652",
+  "rationale": "План восстановления дошёл до своей даты; пассажиру нужно проверить конкретный рейс и смену аэропортов. Неподтверждённое фактическое восстановление не объявлено.",
+  "ownAddition": "Показывает практическую смену пары аэропортов Субанг–Селетар на KLIA–Чанги и необходимость изменить трансфер, не обещая вылет.",
+  "factReview": "Firefly: сокращённое расписание SZB–XSP до 21 октября; полное восстановление планировалось 22 октября при операционных условиях. Альтернатива Malaysia Airlines KUL–SIN при наличии мест; полный возврат на исходный способ оплаты до 30 рабочих дней. Manage My Booking для контактов/уведомлений.",
   "sourceChecks": [
     {
       "url": "https://www.fireflyz.com.my/my/en/media-centre/important-for-you/xsp-flight-update.html",
-      "status": "RELEVANT_FACTS_READ_WITH_DECLARED_LIMITS",
-      "artifact": ".run/source-check-20261020/63243433aab192a4.txt",
-      "artifactSha256": "6dc11a33c7491906ffcb27287ffb278ae489ebbf7d1bb03c976e200acf05b7ed",
-      "observedHttpStatus": 200,
-      "reviewedAt": "2026-10-20",
-      "scope": "Независимо прочитана текущая страницаFirefly:reducedSZB–XSPuntil21Oct/fullresumptionplanned22subjectconditions;alternativeKUL–SINMalaysiaAirlinesavailability;fullrefundoriginalmethodwithin30workingdays. План не выдан за выполненные рейсы."
+      "reviewedAt": "2026-10-22T09:12:42.676Z",
+      "method": "Официальный Firefly: substantive текст обновления прочитан; заголовок search-title со старой датой не принят за содержание",
+      "finding": "Firefly: сокращённое расписание SZB–XSP до 21 октября; полное восстановление планировалось 22 октября при операционных условиях. Альтернатива Malaysia Airlines KUL–SIN при наличии мест; полный возврат на исходный способ оплаты до 30 рабочих дней. Manage My Booking для контактов/уведомлений.",
+      "status": "SUBSTANTIVE_TEXT_CHECKED"
     },
     {
       "url": "https://www.aljazeera.com/news/2026/10/13/malaysias-firefly-cancels-flights-to-singapore-over-transboundary-haze",
-      "status": "RELEVANT_FACTS_READ_WITH_DECLARED_LIMITS",
-      "artifact": ".run/source-check-20261020/9377bc493226aa78.txt",
-      "artifactSha256": "588a5129182cc37cbf7eb453d87835921f79068860d0a1a8e6da6e036616cbcf",
-      "observedHttpStatus": 200,
-      "reviewedAt": "2026-10-20",
-      "scope": "Независимо прочитана текущая страницаFirefly:reducedSZB–XSPuntil21Oct/fullresumptionplanned22subjectconditions;alternativeKUL–SINMalaysiaAirlinesavailability;fullrefundoriginalmethodwithin30workingdays. План не выдан за выполненные рейсы."
+      "reviewedAt": "2026-10-22T09:12:42.676Z",
+      "method": "Дополнительный исторический источник не использован для текущих условий",
+      "finding": "Текущий план и возврат подтверждены официальным Firefly; повторная независимая полная проверка Al Jazeera не заявлена.",
+      "status": "NOT_REATTESTED_SUPPLEMENTAL"
     }
   ],
-  "contentHash": "40f1a564443ca4ca3f528e2b7fdae11f37d7932dbe9f8a9151c7856cf6a7c02a",
-  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote.",
-  "sourceSha256": "5d9d883110adc3c2fdb1b5a4f490e1c9a7ff39c629078fa29d4f4a75e81ec16c",
-  "sourceSha256Scope": "SHA-256 полного исходного UTF-8 Markdown, включая frontmatter.",
-  "nativeClipTitle": "Firefly сохраняет сокращённые рейсы в Селетар до 21 октября",
+  "contentHash": "a5de42da47eb3ef7229f3c7f16eeb81d0aa635820752bf3b302b2661bb778554",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из актуального штатного parseNote.",
+  "sourceSha256": "48512289775247837c1dffd3664627f02aaddbcad98f17e91acc3486691b4425",
+  "sourceSha256Scope": "SHA-256 полного Markdown включая frontmatter, точные финальные bytes.",
+  "nativeClipTitle": "Firefly: восстановление рейсов в Селетар нужно проверять",
   "clipTitleCodeSha256": "61aeac8ec0e88ff9175d1ebefe66fd9be9b17f211a045a943312de9f6fdc1b0f",
-  "previousReview": {
-    "reviewer": "Codex (tt_news_review_20261016)",
-    "reviewedAt": "2026-10-16T14:03:09.172Z",
-    "score": 4,
-    "rationale": "Транспортная новость прямо меняет конкретную связку аэропортов и бюджет ожидания возврата. Использовано обновление перевозчика по 18 октября, а не старый медийный срок.",
-    "contentHash": "7f4126f874adb205be2d12c6f0886c4adde15ec560d19491347d06eecdefa52e",
-    "sourceSha256": "3b8c68f15ee21a68a6ab24b27e655d7e746bc50cc01a38d3323eac40685ca4ff",
-    "sourceChecks": [
-      {
-        "url": "https://www.fireflyz.com.my/my/en/media-centre/important-for-you/xsp-flight-update.html",
-        "artifact": ".run/tt-20261016/extra/63243433aab192a4.txt",
-        "artifactSha256": "23627c6a9d90dfcf0b14769b11ba4ab4d79fafbf38d7ff007662fbcea97bd8f2",
-        "rawArtifact": ".run/tt-20261016/extra/63243433aab192a4.html",
-        "rawSha256": "f0e12e1d69259eeb788e670974417b7f194d02b7013449e5317224736820ffb7",
-        "observedAt": "2026-10-16T13:19:24.810Z",
-        "reviewedAt": "2026-10-16T14:03:09.172Z",
-        "status": "READ_WITH_DECLARED_LIMITS",
-        "scope": "Сохранённый оригинал и читаемая текстовая производная; прочитаны разделы, необходимые утверждениям заметки."
-      },
-      {
-        "url": "https://www.aljazeera.com/news/2026/10/13/malaysias-firefly-cancels-flights-to-singapore-over-transboundary-haze",
-        "artifact": ".run/tt-20261016/sources/9377bc493226aa78.full.txt",
-        "artifactSha256": "8ef7d7200a98d843ce12d1118ef37821ae67bee009c29196d497bffed6cefa94",
-        "rawArtifact": ".run/tt-20261016/sources/9377bc493226aa78.html",
-        "rawSha256": "921050ab76a024f9e3555a5095f59edf2609e5d0db5d468fd168ce044844f0da",
-        "observedAt": "2026-10-16T13:05:32.433648+00:00",
-        "reviewedAt": "2026-10-16T14:03:09.172Z",
-        "status": "READ_WITH_DECLARED_LIMITS",
-        "scope": "Сохранённый оригинал и читаемая текстовая производная; прочитаны разделы, необходимые утверждениям заметки."
-      }
-    ],
-    "photo": {
-      "image": "./_images/2026-10-13-firefly-seletar-haze-cancellations.jpg",
-      "imageSha256": "5b04041bb61ebb6da7f250bdad5d1482130387744b7dfc35347ed5f7298671f9",
-      "creator": "The Bangsawan",
-      "license": "CC BY-SA",
-      "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "source": "https://commons.wikimedia.org/w/index.php?curid=123908165",
-      "title": null,
-      "alt": "Турбовинтовые самолёты Firefly на перроне; архивный кадр, не отменённый рейс 13 октября",
-      "changes": null,
-      "visualReview": "Кадр самостоятельно просмотрен в текущем файле. Смысл подписи и архивность/иллюстративность сверены; это не доказательство события, доступа или браузерной загрузки.",
-      "provenanceEvidence": {
-        "apiURL": "https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo&iiprop=url%7Cextmetadata&pageids=195776898%7C118265384%7C9998689%7C123743150%7C63394488%7C5704066%7C90056045%7C171000743%7C87531265%7C104893227%7C16120927%7C21022788%7C103042248%7C40845121%7C31646018%7C62482418%7C123908165%7C45307740%7C61772770%7C119638709%7C78730822",
-        "observedAt": "2026-10-16T13:50:55.692Z",
-        "pageid": 123908165,
-        "title": "File:Firefly Subang.jpg",
-        "description": "Firefly ATR72 aircrafts in Subang Airport",
-        "creator": "The Bangsawan",
-        "license": "CC BY-SA 4.0",
-        "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0",
-        "date": "2019-05-06 16:16:01",
-        "credit": "Own work",
-        "source": "https://commons.wikimedia.org/wiki/File:Firefly_Subang.jpg"
-      },
-      "provenanceEvidenceSha256": "5007fd8f54853dccfdce0598be8c7b22cf8caa9754798906964d02e9f7230a1d",
-      "provenanceHashScope": "SHA-256 JSON.stringify(photo.provenanceEvidence); выбранные поля настоящего Commons API сохранены внутри этого reviewJSON.",
-      "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
-    },
-    "criteria14": [
-      {
-        "id": 1,
-        "criterion": "Задача читателя",
-        "score": 10,
-        "evidence": "Проверить замену Firefly и исправить наземный трансфер. Один основной вопрос и граница результата видны из title/tldr/body."
-      },
-      {
-        "id": 2,
-        "criterion": "Обоснование темы",
-        "score": 10,
-        "evidence": "Адресное сопровождение существующего URL, заданное сегодняшним сроком/изменением. Это UPDATE, не новый материал. Соответствует аудиторииTravelTribe; прогноз трафика и денег не присвоен."
-      },
-      {
-        "id": 3,
-        "criterion": "Место в проекте",
-        "score": 5,
-        "evidence": "Выбран прежний/отдельный URL и релевантная связь: /malaysia/. Дубли NEW проверены адресно; полная входящая структура и canonical итоговой сборки ещё не проверены. "
-      },
-      {
-        "id": 4,
-        "criterion": "Полнота и прямой ответ",
-        "score": 10,
-        "evidence": "Капсула сразу отвечает в заявленных пределах; дальше разобраны существенные условия и понятное продолжение. Это редакторский проход, не тест реальным читателем."
-      },
-      {
-        "id": 5,
-        "criterion": "Собственный вклад",
-        "score": 10,
-        "evidence": "КодыSZB/XSPиKUL/SINпереведены в необходимость другого трансфера; наличиерейса неравно закреплённомуместу,30 рабочихднейнеравномгновеннымденьгам. Вклад — конкретное сопоставление или сценарий на прочитанных фактах, без присвоения чужого исследования."
-      },
-      {
-        "id": 6,
-        "criterion": "Факты и источники",
-        "score": 10,
-        "evidence": "Fireflyprimary:planthrough 18 Oct,MalaysiaAirlinesKUL–SINsubjecttoseats,fullrefundtooriginalpaymentwithin 30 workingdays. AlJazeera 13 Oct — только прежний контекст. Прослеживаемость дана в sourceChecks; это не воспроизведение исходных исследований/индивидуального туристического сценария."
-      },
-      {
-        "id": 7,
-        "criterion": "Числа и примеры",
-        "score": 10,
-        "evidence": "Числа и даты в финальном тексте сопоставлены с указанными оригиналами. Диапазоны, единицы, план/состоявшееся и момент наблюдения не подменены; отсутствующий знаменатель или будущий результат не рассчитан. См. factReview и sourceChecks."
-      },
-      {
-        "id": 8,
-        "criterion": "Исключения и применимость",
-        "score": 10,
-        "evidence": "Применимость и ограничения названы в тексте: Статус каждого билета и отдельного дальнейшего перелёта неизвестен; актуальное уведомление перевозчика обязательно. Архивное/иллюстративное изображение не доказывает текущий доступ или событие."
-      },
-      {
-        "id": 9,
-        "criterion": "Авторство и доверие",
-        "score": 5,
-        "evidence": "Авторство в данных: codex-traveltribe-author-20261016. Независимый Codex reviewer другой и текст не писал; личный опыт/человеческий тест не присвоены. Публичный byline, профиль и SSR финального выпуска ещё не проверены."
-      },
-      {
-        "id": 10,
-        "criterion": "Редактура и естественный язык",
-        "score": 10,
-        "evidence": "Проведены отдельные фактический и смысловой проходы финального текста; исправленные места перечитаны. Обычный русский, одна задача, без технического мусора. Человеческий reader-test не проводился."
-      },
-      {
-        "id": 11,
-        "criterion": "SEO-обещание и метаданные",
-        "score": 5,
-        "evidence": "Штатный clipTitle прочитан отдельно: «Firefly продлил план отмен в Селетар по 18 октября». Он сохраняет законченную мысль, даты/капсула согласованы. Canonical, OG, SSR и schema финальной сборки ещё не проверены."
-      },
-      {
-        "id": 12,
-        "criterion": "Ссылки и навигация",
-        "score": 5,
-        "evidence": "Смысловые внутренние переходы прочитаны: /malaysia/. Буквальная допустимость проверялась ранним preflight автора; HTTP/входящие связи финальных URL и публичная навигация ещё не проверены мной."
-      },
-      {
-        "id": 13,
-        "criterion": "Оформление и доступность",
-        "score": 5,
-        "evidence": "Все используемые изображения просмотрены отдельно; сопоставлены alt/title, автор, лицензия и первичныйCommonsAPI. Это не рендер 402/1280, проверка загрузки вбраузере или доступности. Публичная атрибуция ожидает сборку/live."
-      },
-      {
-        "id": 14,
-        "criterion": "Готовность выпуска",
-        "score": 0,
-        "evidence": "Финальные обязательные hook/CI/build/SEO/браузеры/deploy/live/учёт не выполнены в этом ревью. Наличие текста/источника/схемы не засчитывает выпуск; releaseApproved=false."
-      }
-    ]
-  },
+  "clipTitleCodeHashScope": "Полный src/data/news.js; вычисление clipTitle из неизменённого блока штатного кода.",
   "photo": {
     "image": "./_images/2026-10-13-firefly-seletar-haze-cancellations.jpg",
     "imageSha256": "5b04041bb61ebb6da7f250bdad5d1482130387744b7dfc35347ed5f7298671f9",
@@ -195,8 +50,10 @@
     "title": null,
     "alt": "Турбовинтовые самолёты Firefly на перроне; архивный кадр, не отменённый рейс 13 октября",
     "changes": null,
-    "visualReview": "Кадр самостоятельно просмотрен в текущем файле. Смысл подписи и архивность/иллюстративность сверены; это не доказательство события, доступа или браузерной загрузки.",
-    "provenanceEvidence": {
+    "viewedByThisReviewer": true,
+    "visualReview": "Финальный локальный JPEG самостоятельно просмотрен. Архивность не скрыта; кадр не выдан за доказательство события, состояния воздуха, дорожных работ или научного трекинга.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
+    "previousProvenanceEvidence": {
       "apiURL": "https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo&iiprop=url%7Cextmetadata&pageids=195776898%7C118265384%7C9998689%7C123743150%7C63394488%7C5704066%7C90056045%7C171000743%7C87531265%7C104893227%7C16120927%7C21022788%7C103042248%7C40845121%7C31646018%7C62482418%7C123908165%7C45307740%7C61772770%7C119638709%7C78730822",
       "observedAt": "2026-10-16T13:50:55.692Z",
       "pageid": 123908165,
@@ -209,86 +66,132 @@
       "credit": "Own work",
       "source": "https://commons.wikimedia.org/wiki/File:Firefly_Subang.jpg"
     },
-    "provenanceEvidenceSha256": "5007fd8f54853dccfdce0598be8c7b22cf8caa9754798906964d02e9f7230a1d",
-    "provenanceHashScope": "SHA-256 JSON.stringify(photo.provenanceEvidence); выбранные поля настоящего Commons API сохранены внутри этого reviewJSON.",
-    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+    "provenanceMethod": "Commons description/licensing page самостоятельно открыта web; автор, лицензия и архивный объект сопоставлены с текущими полями. Изображение просмотрено локально."
+  },
+  "photoProof": {
+    "image": "./_images/2026-10-13-firefly-seletar-haze-cancellations.jpg",
+    "imageSha256": "5b04041bb61ebb6da7f250bdad5d1482130387744b7dfc35347ed5f7298671f9",
+    "creator": "The Bangsawan",
+    "license": "CC BY-SA",
+    "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "source": "https://commons.wikimedia.org/w/index.php?curid=123908165",
+    "title": null,
+    "alt": "Турбовинтовые самолёты Firefly на перроне; архивный кадр, не отменённый рейс 13 октября",
+    "changes": null,
+    "viewedByThisReviewer": true,
+    "visualReview": "Финальный локальный JPEG самостоятельно просмотрен. Архивность не скрыта; кадр не выдан за доказательство события, состояния воздуха, дорожных работ или научного трекинга.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
+    "previousProvenanceEvidence": {
+      "apiURL": "https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo&iiprop=url%7Cextmetadata&pageids=195776898%7C118265384%7C9998689%7C123743150%7C63394488%7C5704066%7C90056045%7C171000743%7C87531265%7C104893227%7C16120927%7C21022788%7C103042248%7C40845121%7C31646018%7C62482418%7C123908165%7C45307740%7C61772770%7C119638709%7C78730822",
+      "observedAt": "2026-10-16T13:50:55.692Z",
+      "pageid": 123908165,
+      "title": "File:Firefly Subang.jpg",
+      "description": "Firefly ATR72 aircrafts in Subang Airport",
+      "creator": "The Bangsawan",
+      "license": "CC BY-SA 4.0",
+      "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0",
+      "date": "2019-05-06 16:16:01",
+      "credit": "Own work",
+      "source": "https://commons.wikimedia.org/wiki/File:Firefly_Subang.jpg"
+    },
+    "provenanceMethod": "Commons description/licensing page самостоятельно открыта web; автор, лицензия и архивный объект сопоставлены с текущими полями. Изображение просмотрено локально."
   },
   "criteria14": [
     {
       "id": 1,
+      "criterion": "Задача читателя",
       "score": 10,
-      "evidence": "Один вопрос читателя следует из title/tldr: Firefly сохраняет сокращённые рейсы в Селетар до 21 октября. Полный текст прочитан."
+      "evidence": "Title/TLDR/body: Firefly: восстановление рейсов в Селетар нужно проверять. Показывает практическую смену пары аэропортов Субанг–Селетар на KLIA–Чанги и необходимость изменить трансфер, не обещая вылет."
     },
     {
       "id": 2,
+      "criterion": "Обоснование темы",
       "score": 10,
-      "evidence": "Сокращённое расписание до21и план22 меняют связку аэропортов и возврат;4. Исправлен устаревший title по18октября."
+      "evidence": "Редакционная новость/сопровождение, а не SEO-прогноз: План восстановления дошёл до своей даты; пассажиру нужно проверить конкретный рейс и смену аэропортов. Неподтверждённое фактическое восстановление не объявлено. Спрос и рост трафика не присвоены."
     },
     {
       "id": 3,
-      "score": 10,
-      "evidence": "Сохранён существующий сюжет либо самостоятельная новая тема; это новостьtravel/nature,невыдуманныйгайд."
+      "criterion": "Место в проекте",
+      "score": 5,
+      "evidence": "Сохранён правильный существующий URL; для двух NEW поиск близких сюжетов в src/content/news не нашёл дубля. Связь /singapore/ есть. Входящие связи и отсутствие всех видов каннибализации на уровне финальной сборки ещё не проверены."
     },
     {
       "id": 4,
+      "criterion": "Полнота и прямой ответ",
       "score": 10,
-      "evidence": "Капсула и начало дают событие/состояние; ограничение результата и следующий конкретный шаг описаны."
+      "evidence": "Капсула 54 слов, body 161; событие/ограничение даны прямо, собственная добавка: Показывает практическую смену пары аэропортов Субанг–Селетар на KLIA–Чанги и необходимость изменить трансфер, не обещая вылет."
     },
     {
       "id": 5,
+      "criterion": "Собственный вклад",
       "score": 5,
-      "evidence": "Редакционное объяснение/применимость есть, собственное полевое исследование, эксклюзивные данные и посещение не заявлены."
+      "evidence": "Проверяемая редакционная добавка: Показывает практическую смену пары аэропортов Субанг–Селетар на KLIA–Чанги и необходимость изменить трансфер, не обещая вылет. Оригинального полевого наблюдения, набора данных редакции или читательского теста нет."
     },
     {
       "id": 6,
+      "criterion": "Факты и источники",
       "score": 10,
-      "evidence": "Независимо прочитана текущая страницаFirefly:reducedSZB–XSPuntil21Oct/fullresumptionplanned22subjectconditions;alternativeKUL–SINMalaysiaAirlinesavailability;fullrefundoriginalmethodwithin30workingdays. План не выдан за выполненные рейсы."
+      "evidence": "Firefly: сокращённое расписание SZB–XSP до 21 октября; полное восстановление планировалось 22 октября при операционных условиях. Альтернатива Malaysia Airlines KUL–SIN при наличии мест; полный возврат на исходный способ оплаты до 30 рабочих дней. Manage My Booking для контактов/уведомлений. Подтверждение: https://www.fireflyz.com.my/my/en/media-centre/important-for-you/xsp-flight-update.html. Метод: Официальный Firefly: substantive текст обновления прочитан; заголовок search-title со старой датой не принят за содержание."
     },
     {
       "id": 7,
+      "criterion": "Числа и примеры",
       "score": 10,
-      "evidence": "Значимые даты/числа и ихединицы сверены по названной фактическойоснове;неполученный текущийстатус не рассчитан и не выдуман. ДляSOURCE_RECHECK основание — точный неизменный текст и прежняя содержательнаярецензия."
+      "evidence": "Числа/даты и относящиеся к ним единицы сверены: Firefly: сокращённое расписание SZB–XSP до 21 октября; полное восстановление планировалось 22 октября при операционных условиях. Альтернатива Malaysia Airlines KUL–SIN при наличии мест; полный возврат на исходный способ оплаты до 30 рабочих дней. Manage My Booking для контактов/уведомлений. Новых денежных расчётов нет."
     },
     {
       "id": 8,
+      "criterion": "Исключения и применимость",
       "score": 10,
-      "evidence": "Граница применимости, объявлено/состоялось/история и отсутствие разрешения на закрытый участок сохранены;см.factReview."
+      "evidence": "Показывает практическую смену пары аэропортов Субанг–Селетар на KLIA–Чанги и необходимость изменить трансфер, не обещая вылет. План, состоявшееся событие, условный научный сценарий и текущий статус не смешаны."
     },
     {
       "id": 9,
+      "criterion": "Авторство и доверие",
       "score": 5,
-      "evidence": "authoredBy и независимыйreviewer различны; выдуманного посещения нет. Публичныйbyline/SSRфинальнойверсии ещёнепроверен."
+      "evidence": "authoredBy=Codex (tt-author-20261022); отдельный reviewer /root/news_review_20261022 текст не писал. Личного присутствия и человеческого тестирования не заявлено. Публичный byline/профиль/SSR этой версии пока не проверены."
     },
     {
       "id": 10,
+      "criterion": "Редактура и естественный язык",
       "score": 10,
-      "evidence": "Полностью прочитаныtitle,tldr,body; замечания об устаревших/обрезанныхtitle и дублеYosemite исправлены до этогохеша."
+      "evidence": "Полный финальный title/TLDR/body прочитан как связный текст; смысловые зависимости и оговорки сверены с фактами. Проверены голос, конкретика, отсутствие выдуманного опыта и технического мусора. Ошибка срока повторного наблюдения мант снята; устаревший прогноз Singapore датирован исторически."
     },
     {
       "id": 11,
+      "criterion": "SEO-обещание и метаданные",
       "score": 5,
-      "evidence": "ШтатныйclipTitle прочитан: Firefly сохраняет сокращённые рейсы в Селетар до 21 октября. SSR/canonical/OGфинальнойсборки ожидаютCI/live."
+      "evidence": "Штатный clipTitle: «Firefly: восстановление рейсов в Селетар нужно проверять»; смысл сохраняется. Метаданные date/added/checked/reviewOn прочитаны, но canonical/OG/SSR/schema финальной сборки ещё не проверены."
     },
     {
       "id": 12,
+      "criterion": "Ссылки и навигация",
       "score": 5,
-      "evidence": "Контекстнаявнутренняясвязь соответствует задаче;фактическиеHTTPответы/якоряфинальнойверсии в этомредакционномревьюнепроверены."
+      "evidence": "Анкор /singapore/ продолжает тему; целевая страница отдельно открыта web, её содержание соответствует направлению. Это retrieval существующего хаба, не проверка всех входящих ссылок и не live изменённой новости."
     },
     {
       "id": 13,
+      "criterion": "Оформление и доступность",
       "score": 5,
-      "evidence": "Новые4фотографии просмотреныи сопоставленыс происхождением/alt;неизменные старыефото имеют прежнююпроверку.Рендер402/1280и публичнаяатрибуциянепроверены."
+      "evidence": "Точный JPEG просмотрен глазами, alt/подпись соответствуют архивной иллюстрации. SHA-256 5b04041bb61ebb6da7f250bdad5d1482130387744b7dfc35347ed5f7298671f9. Финальный рендер 402/1280, доступность и вывод атрибуции /legal/photos/ ожидают CI/live владельца."
     },
     {
       "id": 14,
+      "criterion": "Готовность выпуска",
       "score": 0,
-      "evidence": "ФинальныеCI,exactdeploy,live200,SSR,sitemap/feed,индексируемостьи измеренныйэффект ещёнеподтверждены."
+      "evidence": "Не выполнено в scope reviewer: финальные обязательные гейты, CI, deploy точного HEAD, public 200, SSR, sitemap/feed и live. Выпуск не одобрен этим артефактом."
     }
   ],
+  "minimumFiveVerifiedTens": true,
+  "blockingIssues": [],
   "limitations": [
-    "Редакционное одобрение не разрешает обход обязательныхгейтов и не подтверждает публикацию.",
-    "Источник/снимок поддерживает тольконазванный датированныйфакт; новая доступность каждойдороги/рейса/объектаизнего не следует.",
-    "Новыеphoto-rights сопоставлены с сохранённымCommonsAPI; публичная/legal/photos/ ожидаетфинальногорендера."
+    "Независимое редакционное ревью модели, не проверка реальным читателем и не экспертная научная рецензия.",
+    "Полные CI/build, browser CLI и публикация не запускались; текущая готовность выпуска HOLD.",
+    "Свежий спрос, индексирование, трафик и денежный эффект этим ревью не измерены.",
+    "Существующие хабы открыты web; ответы не заменяют live-проверку финальных новостей и HTTP-матрицу владельца."
   ],
-  "nextReview": "2026-10-22"
+  "nextReview": {
+    "reviewOn": "2026-10-23",
+    "purpose": "Сверить статус и новый первичный источник; календарная дата не доказывает наступление события."
+  }
 }

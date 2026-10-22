@@ -1,179 +1,45 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "slug": "2026-10-10-singapore-haze",
-  "reviewer": "Codex (editorial_review_20261020)",
-  "reviewerTask": "/root/editorial_review_20261020",
-  "authoredBy": "Codex (tt-author-20261020)",
-  "reviewedAt": "2026-10-20",
-  "checkedAt": "2026-10-20",
   "score": 4,
+  "reviewer": "Codex (news_review_20261022)",
+  "reviewerTask": "/root/news_review_20261022",
+  "authoredBy": "Codex (tt-author-20261022)",
+  "reviewedAt": "2026-10-22T09:12:42.676Z",
+  "checkedAt": "2026-10-22",
   "approved": true,
-  "approvalScope": "EDITORIAL_CONTENT_ONLY",
+  "approvalScope": "EDITORIAL_ONLY",
+  "editorialVerdict": "PASS",
+  "releaseApproved": false,
+  "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
   "classification": "UPDATE",
-  "baseCommit": "707f7c57b591d3769d740b30de9024fecd0bede2",
-  "rationale": "4/5. Адресное повторное ревью после числового гейта: полностью прочитаны нынешние title,капсула и тело. Старый числовойдиапазон удалён;90–160 однозначно относитсяк прогнозу20Oct изсводки19Oct. СуточныйпрогнозотделёнотчасовогоPM2.5,которыйнужендлянемедленного выхода. Новых медицинских выводов и гарантиивоздуханет. Остальные источники/фото/проверки не повторялись.",
-  "factReview": "Независимо прочитан MSS19.10:forecast20OctPSI90–160Moderate–Unhealthy;nextdayplanning отдельноот immediate1hPM2.5. Улучшение19Oct связано с ветром/дождями; возможен новый переносизКалимантана. Медицинское лечение не советуется.",
+  "baseCommit": "345145808e9d32aeffadd70fe4a2d5a52fb0c652",
+  "rationale": "Сопровождение предупреждения о дымке: устаревший суточный прогноз явно отозван как основание для сегодняшней прогулки. Это исправление существующего ответа, а не новая сводка воздуха.",
+  "ownAddition": "Разделяет суточный прогноз и часовой замер, ограничивает старое сообщение и направляет к официальному обновлению.",
+  "factReview": "MSS 19 октября даёт PSI на 20 октября, для ближайшего выхода рекомендует часовую PM2.5 и personal guide. Улучшение 19 октября и возможный перенос дыма с вечера 20 до четверга 22 октября относятся к той старой сводке. Новое текущее показание текст не заявляет.",
   "sourceChecks": [
     {
       "url": "https://www.weather.gov.sg/haze-situation-update-19-october-2026/",
-      "status": "RELEVANT_FACTS_READ_WITH_DECLARED_LIMITS",
-      "observedHttpStatus": null,
-      "reviewedAt": "2026-10-20",
-      "scope": "Независимо прочитан MSS19.10:forecast20OctPSI90–160Moderate–Unhealthy;nextdayplanning отдельноот immediate1hPM2.5. Улучшение19Oct связано с ветром/дождями; возможен новый переносизКалимантана. Медицинское лечение не советуется.",
-      "limitation": "См. factReview: независимый web/native просмотр либо указанное ограничение; отсутствиеHTTPартефакта не превращено в200."
+      "reviewedAt": "2026-10-22T09:12:42.676Z",
+      "method": "Meteorological Service Singapore, датированная сводка 19.10.2026 открыта целиком",
+      "finding": "MSS 19 октября даёт PSI на 20 октября, для ближайшего выхода рекомендует часовую PM2.5 и personal guide. Улучшение 19 октября и возможный перенос дыма с вечера 20 до четверга 22 октября относятся к той старой сводке. Новое текущее показание текст не заявляет.",
+      "status": "SUBSTANTIVE_TEXT_CHECKED"
+    },
+    {
+      "url": "https://www.haze.gov.sg/",
+      "reviewedAt": "2026-10-22T09:13:13.912Z",
+      "method": "Независимый web open официального NEA microsite",
+      "finding": "Открыта структура 1-hr PM2.5 и 24-hr PSI, разные шкалы/health advisories. Региональный outlook имеет метку22октября, но пустые динамические поля конкретного текущего показания не подтверждают воздух в Сингапуре; числа текущего часа не цитируются. Прямая ссылка в body корректна.",
+      "status": "SUBSTANTIVE_GUIDANCE_CHECKED_CURRENT_READING_NOT_CLAIMED"
     }
   ],
-  "contentHash": "e1ef4f234ef84241cad70d3917d0ed555036289665000fa208755bdf474c709b",
-  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote.",
-  "sourceSha256": "2187f87b83b2693997af794c5a6189df9cdc8ff160f48013f0c43b6cc476eb63",
-  "sourceSha256Scope": "SHA-256 полного исходного UTF-8 Markdown, включая frontmatter.",
+  "contentHash": "ffc220ae2c9deac6f9103c8d81195b6ff612025a00d70e9e7eec4d368c6506f4",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из актуального штатного parseNote.",
+  "sourceSha256": "aad95edafd70ec9721ca33b3dd243519823511edb768912f6457a656d4ff7e69",
+  "sourceSha256Scope": "SHA-256 полного Markdown включая frontmatter, точные финальные bytes.",
   "nativeClipTitle": "Сингапур: перед прогулкой проверяйте дымку",
   "clipTitleCodeSha256": "61aeac8ec0e88ff9175d1ebefe66fd9be9b17f211a045a943312de9f6fdc1b0f",
-  "previousReview": {
-    "reviewer": "Codex (tt_news_review_20261017)",
-    "reviewedAt": "2026-10-17T08:29:37.294Z",
-    "score": 4,
-    "rationale": "4/5: сохраняется редакционная ценность исходного сюжета. Содержательно обновлён изменившийся ответ читателю. Выбрать длительность уличного маршрута по прогнозу 17 октября и текущей часовой PM2.5.",
-    "contentHash": "6f6eeb1275a01f587144e088502311d85129407cc9ad94c165e5ef5ac469dc86",
-    "sourceSha256": "67020d1a710dc5feb5f79acd3d70c6ab759f106b083a62530d8bb0d5743b3bac",
-    "sourceChecks": [
-      {
-        "url": "https://www.nea.gov.sg/media/news/advisories/index/haze-situation-update-16-october-2026",
-        "artifact": "work/tt-20261017/nea-16oct-browser.ax.txt",
-        "artifactSha256": "2b7937667d3951be73db48739fd25a7c086acdc3294dfc1d68b7462eadae2fe1",
-        "status": "READ_CURRENT_CUA_CAPTURE",
-        "scope": "Прочитан полный сохранённый текст живого Chrome/AX автора. Это чтение предоставленного доказательства, личный просмотр исходной страницы рецензентом не заявлен."
-      },
-      {
-        "url": "https://www.nea.gov.sg/media/news/advisories/index/haze-situation-update-10-october-2026",
-        "artifact": ".run/tt-20261016/nea-native-source-check.json",
-        "artifactSha256": null,
-        "status": "HISTORICAL_EVIDENCE_UNCHANGED",
-        "scope": "Текстовая серверная выгрузка пуста из-за JS. Неизменные исторические тезисы не названы свежими замерами; нынешний прогноз опирается на отдельный текст NEA от 16 октября из живого Chrome."
-      },
-      {
-        "url": "https://www.nea.gov.sg/corporate-functions/weather/regional-haze-situation",
-        "artifact": ".run/tt-20261016/nea-native-source-check.json",
-        "artifactSha256": null,
-        "status": "HISTORICAL_EVIDENCE_UNCHANGED",
-        "scope": "Текстовая серверная выгрузка пуста из-за JS. Неизменные исторические тезисы не названы свежими замерами; нынешний прогноз опирается на отдельный текст NEA от 16 октября из живого Chrome."
-      }
-    ],
-    "photo": {
-      "image": "../blog/_images/hub-singapore/gardens-by-the-bay.jpg",
-      "imageSha256": "c24de237c5d233a9f8b0b530244cb4d79005137a27d1757181c456d340cacd26",
-      "creator": "Dietmar Rabich",
-      "license": "CC BY-SA",
-      "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "source": "https://commons.wikimedia.org/wiki/File:Singapore_(SG),_Gardens_By_The_Bay_--_2019_--_4755.jpg",
-      "title": "Gardens by the Bay, ноябрь 2019 года. Фотография не показывает дымку октября 2026 года.",
-      "alt": "Gardens by the Bay и городской пейзаж Сингапура; архивное фото, не состояние воздуха 10 октября",
-      "changes": null,
-      "visualReview": "Фото неизменно с предыдущей оценки; новый личный визуальный просмотр не заявлен.",
-      "provenanceEvidence": {
-        "apiURL": "https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo&iiprop=url%7Cextmetadata&titles=File%3AGiant_Cuttlefish-sepia_apama_%2811258129224%29.jpg%7CFile%3ASingapore_%28SG%29%2C_Gardens_By_The_Bay_--_2019_--_4755.jpg%7CFile%3AGran_Santiago_Tower%2C_Views_from_San_Crit%C3%B3bal_Hill_-_Santiago_-_Chile_02.jpg%7CFile%3AAeroporto_Fiumicino_-_Torre_ENAV_ristrutturata_2015.jpeg%7CFile%3AThwaites_Glacier.jpg",
-        "observedAt": "2026-10-16T13:50:56.050Z",
-        "pageid": 85563664,
-        "title": "File:Singapore (SG), Gardens By The Bay -- 2019 -- 4755.jpg",
-        "description": "Gardens By The Bay , Singapore",
-        "creator": "Dietmar Rabich",
-        "license": "CC BY-SA 4.0",
-        "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0",
-        "date": "Taken on 6 November 2019, 15:47",
-        "credit": "Own work",
-        "source": "https://commons.wikimedia.org/wiki/File:Singapore_(SG),_Gardens_By_The_Bay_--_2019_--_4755.jpg"
-      },
-      "provenanceEvidenceSha256": "62136cd39b9b47122f731b772335fb2f67ee2a658ff0f848b9ca332fb934972a",
-      "provenanceHashScope": "SHA-256 JSON.stringify(photo.provenanceEvidence); выбранные поля настоящего Commons API сохранены внутри этого reviewJSON.",
-      "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
-    },
-    "criteria14": [
-      {
-        "id": 1,
-        "criterion": "Задача читателя",
-        "score": 10,
-        "evidence": "Выбрать длительность уличного маршрута по прогнозу 17 октября и текущей часовой PM2.5."
-      },
-      {
-        "id": 2,
-        "criterion": "Обоснование темы",
-        "score": 10,
-        "evidence": "Наступивший reviewOn — основание обязательной ревизии. Проверка не названа самостоятельным новым инфоповодом и не доказывает новый спрос."
-      },
-      {
-        "id": 3,
-        "criterion": "Место в проекте",
-        "score": 5,
-        "evidence": "Использован прежний URL того же сюжета. Смысловые связи: /singapore/, /novosti/2026-10-13-firefly-seletar-haze-cancellations/. Входящая структура и canonical финальной сборки ещё не проверены."
-      },
-      {
-        "id": 4,
-        "criterion": "Полнота и прямой ответ",
-        "score": 10,
-        "evidence": "Капсула 40слов; ответ и ограничения прочитаны вместе с телом. "
-      },
-      {
-        "id": 5,
-        "criterion": "Собственный вклад",
-        "score": 10,
-        "evidence": "Суточный PSI не подменяет часовые измерения; конкретный маршрут Firefly не объявлен ограничением всех аэропортов Сингапура."
-      },
-      {
-        "id": 6,
-        "criterion": "Факты и источники",
-        "score": 10,
-        "evidence": "Прочитан сохранённый текст NEA от 16 октября из живого Chrome: прогноз на 17 октября PSI 150–230. Здоровым людям рекомендовано избегать продолжительной или интенсивной нагрузки; детям, пожилым и беременным — свести уличную активность к минимуму; при хронических болезнях лёгких/сердца — избегать её. Суточный прогноз и часовая PM2.5 разделены."
-      },
-      {
-        "id": 7,
-        "criterion": "Числа и примеры",
-        "score": 10,
-        "evidence": "Числа, единицы, периоды и даты сопоставлены с перечисленными оригиналами. Объявленный план не принят за состоявшееся событие. Новое состояние доступа из старой страницы не рассчитано."
-      },
-      {
-        "id": 8,
-        "criterion": "Исключения и применимость",
-        "score": 10,
-        "evidence": "Территория, период и граница вывода обозначены в тексте. Неизвестный нынешний доступ остаётся неизвестным; архивный снимок не доказывает состояние места."
-      },
-      {
-        "id": 9,
-        "criterion": "Авторство и доверие",
-        "score": 5,
-        "evidence": "В данных указан codex-traveltribe-author-20261016; независимый рецензент текст не писал. Личный опыт и человеческий тест не выдуманы. Byline, профиль и SSR финального выпуска ожидают проверки."
-      },
-      {
-        "id": 10,
-        "criterion": "Редактура и естественный язык",
-        "score": 10,
-        "evidence": "Проведены отдельные фактический и смысловой проходы; исправленные места прочитаны заново. Одна основная задача, обычный русский, без служебных токенов. Реального читательского теста не было."
-      },
-      {
-        "id": 11,
-        "criterion": "SEO-обещание и метаданные",
-        "score": 5,
-        "evidence": "Штатный clipTitle сохраняет заголовок «Сингапур: перед прогулкой проверяйте дымку»: он короче 60 знаков и выражает законченную мысль. Смысл, даты и капсула сопоставлены; canonical, OG и schema финальной сборки ещё не проверены."
-      },
-      {
-        "id": 12,
-        "criterion": "Ссылки и навигация",
-        "score": 5,
-        "evidence": "Внутренние переходы продолжают вопрос заметки: /singapore/, /novosti/2026-10-13-firefly-seletar-haze-cancellations/. Ранний preflight автора проверяет буквальные ссылки; полные HTTP, входящие связи и отрендеренная навигация ожидают финальных гейтов."
-      },
-      {
-        "id": 13,
-        "criterion": "Оформление и доступность",
-        "score": 5,
-        "evidence": "Фото в этом заходе неизменно, прежняя атрибуция сохранена. Новый личный визуальный просмотр старого кадра не присвоен. Рендер 402/1280, доступность и итоговая публичная атрибуция ожидают проверки."
-      },
-      {
-        "id": 14,
-        "criterion": "Готовность выпуска",
-        "score": 0,
-        "evidence": "В этом ревью не выполнялись build, CI, deploy и live. Редакторское согласование не подтверждает готовность выпуска; releaseApproved=false."
-      }
-    ]
-  },
+  "clipTitleCodeHashScope": "Полный src/data/news.js; вычисление clipTitle из неизменённого блока штатного кода.",
   "photo": {
     "image": "../blog/_images/hub-singapore/gardens-by-the-bay.jpg",
     "imageSha256": "c24de237c5d233a9f8b0b530244cb4d79005137a27d1757181c456d340cacd26",
@@ -184,8 +50,10 @@
     "title": "Gardens by the Bay, ноябрь 2019 года. Фотография не показывает дымку октября 2026 года.",
     "alt": "Gardens by the Bay и городской пейзаж Сингапура; архивное фото, не состояние воздуха 10 октября",
     "changes": null,
-    "visualReview": "Фото неизменно с предыдущей оценки; новый личный визуальный просмотр не заявлен.",
-    "provenanceEvidence": {
+    "viewedByThisReviewer": true,
+    "visualReview": "Финальный локальный JPEG самостоятельно просмотрен. Архивность не скрыта; кадр не выдан за доказательство события, состояния воздуха, дорожных работ или научного трекинга.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
+    "previousProvenanceEvidence": {
       "apiURL": "https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo&iiprop=url%7Cextmetadata&titles=File%3AGiant_Cuttlefish-sepia_apama_%2811258129224%29.jpg%7CFile%3ASingapore_%28SG%29%2C_Gardens_By_The_Bay_--_2019_--_4755.jpg%7CFile%3AGran_Santiago_Tower%2C_Views_from_San_Crit%C3%B3bal_Hill_-_Santiago_-_Chile_02.jpg%7CFile%3AAeroporto_Fiumicino_-_Torre_ENAV_ristrutturata_2015.jpeg%7CFile%3AThwaites_Glacier.jpg",
       "observedAt": "2026-10-16T13:50:56.050Z",
       "pageid": 85563664,
@@ -198,95 +66,133 @@
       "credit": "Own work",
       "source": "https://commons.wikimedia.org/wiki/File:Singapore_(SG),_Gardens_By_The_Bay_--_2019_--_4755.jpg"
     },
-    "provenanceEvidenceSha256": "62136cd39b9b47122f731b772335fb2f67ee2a658ff0f848b9ca332fb934972a",
-    "provenanceHashScope": "SHA-256 JSON.stringify(photo.provenanceEvidence); выбранные поля настоящего Commons API сохранены внутри этого reviewJSON.",
-    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+    "provenanceMethod": "Commons description/licensing page самостоятельно открыта web; автор, лицензия и архивный объект сопоставлены с текущими полями. Изображение просмотрено локально."
+  },
+  "photoProof": {
+    "image": "../blog/_images/hub-singapore/gardens-by-the-bay.jpg",
+    "imageSha256": "c24de237c5d233a9f8b0b530244cb4d79005137a27d1757181c456d340cacd26",
+    "creator": "Dietmar Rabich",
+    "license": "CC BY-SA",
+    "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Singapore_(SG),_Gardens_By_The_Bay_--_2019_--_4755.jpg",
+    "title": "Gardens by the Bay, ноябрь 2019 года. Фотография не показывает дымку октября 2026 года.",
+    "alt": "Gardens by the Bay и городской пейзаж Сингапура; архивное фото, не состояние воздуха 10 октября",
+    "changes": null,
+    "viewedByThisReviewer": true,
+    "visualReview": "Финальный локальный JPEG самостоятельно просмотрен. Архивность не скрыта; кадр не выдан за доказательство события, состояния воздуха, дорожных работ или научного трекинга.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
+    "previousProvenanceEvidence": {
+      "apiURL": "https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo&iiprop=url%7Cextmetadata&titles=File%3AGiant_Cuttlefish-sepia_apama_%2811258129224%29.jpg%7CFile%3ASingapore_%28SG%29%2C_Gardens_By_The_Bay_--_2019_--_4755.jpg%7CFile%3AGran_Santiago_Tower%2C_Views_from_San_Crit%C3%B3bal_Hill_-_Santiago_-_Chile_02.jpg%7CFile%3AAeroporto_Fiumicino_-_Torre_ENAV_ristrutturata_2015.jpeg%7CFile%3AThwaites_Glacier.jpg",
+      "observedAt": "2026-10-16T13:50:56.050Z",
+      "pageid": 85563664,
+      "title": "File:Singapore (SG), Gardens By The Bay -- 2019 -- 4755.jpg",
+      "description": "Gardens By The Bay , Singapore",
+      "creator": "Dietmar Rabich",
+      "license": "CC BY-SA 4.0",
+      "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0",
+      "date": "Taken on 6 November 2019, 15:47",
+      "credit": "Own work",
+      "source": "https://commons.wikimedia.org/wiki/File:Singapore_(SG),_Gardens_By_The_Bay_--_2019_--_4755.jpg"
+    },
+    "provenanceMethod": "Commons description/licensing page самостоятельно открыта web; автор, лицензия и архивный объект сопоставлены с текущими полями. Изображение просмотрено локально."
   },
   "criteria14": [
     {
       "id": 1,
+      "criterion": "Задача читателя",
       "score": 10,
-      "evidence": "Один вопрос читателя следует из title/tldr: Сингапур: перед прогулкой проверяйте дымку. Полный текст прочитан."
+      "evidence": "Title/TLDR/body: Сингапур: перед прогулкой проверяйте дымку. Разделяет суточный прогноз и часовой замер, ограничивает старое сообщение и направляет к официальному обновлению."
     },
     {
       "id": 2,
+      "criterion": "Обоснование темы",
       "score": 10,
-      "evidence": "Прогноз20октября заменяет устаревший17октября и помогает выбрать уличныйплан;4. Это не обещание качествавоздуха на отпуск."
+      "evidence": "Редакционная новость/сопровождение, а не SEO-прогноз: Сопровождение предупреждения о дымке: устаревший суточный прогноз явно отозван как основание для сегодняшней прогулки. Это исправление существующего ответа, а не новая сводка воздуха. Спрос и рост трафика не присвоены."
     },
     {
       "id": 3,
-      "score": 10,
-      "evidence": "Сохранён существующий сюжет либо самостоятельная новая тема; это новостьtravel/nature,невыдуманныйгайд."
+      "criterion": "Место в проекте",
+      "score": 5,
+      "evidence": "Сохранён правильный существующий URL; для двух NEW поиск близких сюжетов в src/content/news не нашёл дубля. Связь /singapore/ есть. Входящие связи и отсутствие всех видов каннибализации на уровне финальной сборки ещё не проверены."
     },
     {
       "id": 4,
+      "criterion": "Полнота и прямой ответ",
       "score": 10,
-      "evidence": "Капсула и начало дают событие/состояние; ограничение результата и следующий конкретный шаг описаны."
+      "evidence": "Капсула 45 слов, body 155; событие/ограничение даны прямо, собственная добавка: Разделяет суточный прогноз и часовой замер, ограничивает старое сообщение и направляет к официальному обновлению."
     },
     {
       "id": 5,
+      "criterion": "Собственный вклад",
       "score": 5,
-      "evidence": "Редакционное объяснение/применимость есть, собственное полевое исследование, эксклюзивные данные и посещение не заявлены."
+      "evidence": "Проверяемая редакционная добавка: Разделяет суточный прогноз и часовой замер, ограничивает старое сообщение и направляет к официальному обновлению. Оригинального полевого наблюдения, набора данных редакции или читательского теста нет."
     },
     {
       "id": 6,
+      "criterion": "Факты и источники",
       "score": 10,
-      "evidence": "MSS19Oct независимо прочитан ранее;90–160forecast20Oct,1hPM2.5forimmediateactivity. В адреснойправке удалён неподтверждаемый нынешним источником старый диапазон150–230. Новых фактов нет."
+      "evidence": "MSS 19 октября даёт PSI на 20 октября, для ближайшего выхода рекомендует часовую PM2.5 и personal guide. Улучшение 19 октября и возможный перенос дыма с вечера 20 до четверга 22 октября относятся к той старой сводке. Новое текущее показание текст не заявляет. Подтверждение: https://www.weather.gov.sg/haze-situation-update-19-october-2026/. Метод: Meteorological Service Singapore, датированная сводка 19.10.2026 открыта целиком."
     },
     {
       "id": 7,
+      "criterion": "Числа и примеры",
       "score": 10,
-      "evidence": "Значимые даты/числа и ихединицы сверены по названной фактическойоснове;неполученный текущийстатус не рассчитан и не выдуман. ДляSOURCE_RECHECK основание — точный неизменный текст и прежняя содержательнаярецензия."
+      "evidence": "Числа/даты и относящиеся к ним единицы сверены: MSS 19 октября даёт PSI на 20 октября, для ближайшего выхода рекомендует часовую PM2.5 и personal guide. Улучшение 19 октября и возможный перенос дыма с вечера 20 до четверга 22 октября относятся к той старой сводке. Новое текущее показание текст не заявляет. Новых денежных расчётов нет."
     },
     {
       "id": 8,
+      "criterion": "Исключения и применимость",
       "score": 10,
-      "evidence": "Граница применимости, объявлено/состоялось/история и отсутствие разрешения на закрытый участок сохранены;см.factReview."
+      "evidence": "Разделяет суточный прогноз и часовой замер, ограничивает старое сообщение и направляет к официальному обновлению. План, состоявшееся событие, условный научный сценарий и текущий статус не смешаны."
     },
     {
       "id": 9,
+      "criterion": "Авторство и доверие",
       "score": 5,
-      "evidence": "authoredBy и независимыйreviewer различны; выдуманного посещения нет. Публичныйbyline/SSRфинальнойверсии ещёнепроверен."
+      "evidence": "authoredBy=Codex (tt-author-20261022); отдельный reviewer /root/news_review_20261022 текст не писал. Личного присутствия и человеческого тестирования не заявлено. Публичный byline/профиль/SSR этой версии пока не проверены."
     },
     {
       "id": 10,
+      "criterion": "Редактура и естественный язык",
       "score": 10,
-      "evidence": "Полностью прочитаныtitle,tldr,body; замечания об устаревших/обрезанныхtitle и дублеYosemite исправлены до этогохеша."
+      "evidence": "Полный финальный title/TLDR/body прочитан как связный текст; смысловые зависимости и оговорки сверены с фактами. Проверены голос, конкретика, отсутствие выдуманного опыта и технического мусора. Ошибка срока повторного наблюдения мант снята; устаревший прогноз Singapore датирован исторически."
     },
     {
       "id": 11,
+      "criterion": "SEO-обещание и метаданные",
       "score": 5,
-      "evidence": "ШтатныйclipTitle прочитан: Сингапур: перед прогулкой проверяйте дымку. SSR/canonical/OGфинальнойсборки ожидаютCI/live."
+      "evidence": "Штатный clipTitle: «Сингапур: перед прогулкой проверяйте дымку»; смысл сохраняется. Метаданные date/added/checked/reviewOn прочитаны, но canonical/OG/SSR/schema финальной сборки ещё не проверены."
     },
     {
       "id": 12,
+      "criterion": "Ссылки и навигация",
       "score": 5,
-      "evidence": "Контекстнаявнутренняясвязь соответствует задаче;фактическиеHTTPответы/якоряфинальнойверсии в этомредакционномревьюнепроверены."
+      "evidence": "Анкор /singapore/ продолжает тему; целевая страница отдельно открыта web, её содержание соответствует направлению. Это retrieval существующего хаба, не проверка всех входящих ссылок и не live изменённой новости."
     },
     {
       "id": 13,
+      "criterion": "Оформление и доступность",
       "score": 5,
-      "evidence": "Новые4фотографии просмотреныи сопоставленыс происхождением/alt;неизменные старыефото имеют прежнююпроверку.Рендер402/1280и публичнаяатрибуциянепроверены."
+      "evidence": "Точный JPEG просмотрен глазами, alt/подпись соответствуют архивной иллюстрации. SHA-256 c24de237c5d233a9f8b0b530244cb4d79005137a27d1757181c456d340cacd26. Финальный рендер 402/1280, доступность и вывод атрибуции /legal/photos/ ожидают CI/live владельца."
     },
     {
       "id": 14,
+      "criterion": "Готовность выпуска",
       "score": 0,
-      "evidence": "ФинальныеCI,exactdeploy,live200,SSR,sitemap/feed,индексируемостьи измеренныйэффект ещёнеподтверждены."
+      "evidence": "Не выполнено в scope reviewer: финальные обязательные гейты, CI, deploy точного HEAD, public 200, SSR, sitemap/feed и live. Выпуск не одобрен этим артефактом."
     }
   ],
+  "minimumFiveVerifiedTens": true,
+  "blockingIssues": [],
   "limitations": [
-    "Редакционное одобрение не разрешает обход обязательныхгейтов и не подтверждает публикацию.",
-    "Источник/снимок поддерживает тольконазванный датированныйфакт; новая доступность каждойдороги/рейса/объектаизнего не следует.",
-    "Новыеphoto-rights сопоставлены с сохранённымCommonsAPI; публичная/legal/photos/ ожидаетфинальногорендера."
+    "Независимое редакционное ревью модели, не проверка реальным читателем и не экспертная научная рецензия.",
+    "Полные CI/build, browser CLI и публикация не запускались; текущая готовность выпуска HOLD.",
+    "Свежий спрос, индексирование, трафик и денежный эффект этим ревью не измерены.",
+    "Существующие хабы открыты web; ответы не заменяют live-проверку финальных новостей и HTTP-матрицу владельца.",
+    "Singapore: текущая часовая концентрация и новый Singapore-specific суточный бюллетень не подтверждены; общий региональный outlook22октября не выдан за них."
   ],
-  "nextReview": "2026-10-21",
-  "followupReview": {
-    "reviewedAt": "2026-10-20",
-    "scope": "TARGETED_TITLE_TLDR_BODY_AFTER_SOURCE_NUMBER_GATE",
-    "previousContentHash": "73f638cd7382a3961334ece85507d09bbfbe1e1a15efd673b3600857c1178817",
-    "previousSourceSha256": "bd2c40df9057a740a30501d3debc2cbbb305f297882ba8e608353a6e2aa684d5",
-    "change": "Из tldr и первого абзаца удалён прежний диапазон150–230, которого нет в указанной текущей сводкеMSS19Oct. Остальные числа и факты не изменялись.",
-    "result": "APPROVED_EDITORIAL_CONTENT_ONLY",
-    "sourceBasis": "Независимо ранее прочитан MSS19Oct:прогноз20OctPSI90–160;nextdayforecast отдельноот immediate1hPM2.5. Историческая дата17Oct отсылает к прежней версии,не выдаёт старый прогнозза текущий."
+  "nextReview": {
+    "reviewOn": "2026-10-23",
+    "purpose": "Сверить статус и новый первичный источник; календарная дата не доказывает наступление события."
   }
 }
