@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { inspectHotelViewport } from './hotel-retina-loading.mjs';
+import { inspectHotelViewport } from '../scripts/hotel-retina-loading.mjs';
 import { test, expect } from './browser-fixture';
 import { readyHotelCollections, hotelGuideHubs } from '../src/data/hotels.js';
 

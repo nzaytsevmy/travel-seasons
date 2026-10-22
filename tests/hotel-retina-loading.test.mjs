@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { inspectHotelViewport } from './hotel-retina-loading.mjs';
+import { inspectHotelViewport } from '../scripts/hotel-retina-loading.mjs';
 
 function fixture(count) {
   const events = [];
