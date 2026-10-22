@@ -301,7 +301,11 @@ jobs:
       # а не съедает бюджет всей задачи, как это было 19.08.2026.
       - name: Системные библиотеки для WebKit
         timeout-minutes: 10
-        run: npx playwright install-deps webkit
+        run: |
+          # Azure mirror stalled twice before tests on PR778. Keep Ubuntu's
+          # suites, components and signing key; use its canonical archive.
+          sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|http://archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources
+          npx playwright install-deps webkit
 
       - uses: actions/download-artifact@v4
         with:
