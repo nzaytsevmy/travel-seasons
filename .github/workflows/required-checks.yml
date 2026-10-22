@@ -27,6 +27,8 @@ jobs:
           persist-credentials: false
       - uses: actions/github-script@v7
         with:
+          retries: 1
+          retry-exempt-status-codes: 400,401,403,404,422
           script: |
             const { pathToFileURL } = require('node:url');
             const root = process.env.GITHUB_WORKSPACE;

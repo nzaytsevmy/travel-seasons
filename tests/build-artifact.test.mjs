@@ -77,3 +77,17 @@ test('every build consumer uses producer name/attempt while retaining the digest
  }
  assert.equal(consumers,4);
 });
+
+test('production identity accepts the retained producer on a deploy-only retry and rejects another source', async () => {
+ const {parse}=await import('yaml');const {spawnSync}=await import('node:child_process');
+ const workflow=parse(readFileSync('.github/workflows/deploy.yml','utf8'));
+ const step=workflow.jobs.deploy.steps.find(s=>s.name==='Verify published build identity');
+ const code=step.run.match(/node -e '([\s\S]*)'\s*$/)[1];
+ const value={commit:'a'.repeat(40),run:'125',attempt:'1'};
+ const env={...process.env,GITHUB_SHA:value.commit,GITHUB_RUN_ID:value.run,GITHUB_RUN_ATTEMPT:'2',ARTIFACT_PRODUCER_ATTEMPT:'1'};
+ const good=spawnSync(process.execPath,['-e',code],{input:JSON.stringify(value),env,encoding:'utf8'});
+ assert.equal(good.status,0,good.stderr);
+ const bad=spawnSync(process.execPath,['-e',code],{input:JSON.stringify({...value,commit:'b'.repeat(40)}),env,encoding:'utf8'});
+ assert.notEqual(bad.status,0);
+ assert.equal(step.env.ARTIFACT_PRODUCER_ATTEMPT,'${{ needs.prepare.outputs.producer_attempt }}');
+});

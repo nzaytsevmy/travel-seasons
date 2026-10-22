@@ -49,3 +49,16 @@ test('outer CI deadlines cover setup, graceful test shutdown and report upload',
  assert(wait>=producer+outer+10,'Required aggregate must cover the producer+consumer critical path');
  assert(job>=wait+5,'Aggregate cleanup needs reserve');
 });
+
+test('GitHub API retries are bounded and never retry access or input rejection', async()=>{
+ const {parse}=await import('yaml');
+ for(const filename of ['auto-merge.yml','required-checks.yml']) {
+  const workflow=parse(fs.readFileSync(`.github/workflows/${filename}`,'utf8'));
+  const steps=Object.values(workflow.jobs).flatMap(job=>job.steps||[]).filter(step=>step.uses==='actions/github-script@v7');
+  assert.equal(steps.length,1);
+  assert.equal(steps[0].with.retries,1);
+  const excluded=String(steps[0].with['retry-exempt-status-codes']).split(',').map(Number);
+  for(const code of [400,401,403,404,422])assert(excluded.includes(code));
+  assert(!excluded.includes(503));
+ }
+});
