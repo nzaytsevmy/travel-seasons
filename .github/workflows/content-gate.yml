@@ -51,8 +51,10 @@ jobs:
     runs-on: ubuntu-latest
     # The 70 hotel collections add complete gallery and booking journeys.
     # Native run 39109102041 reached the 15-minute job deadline mid-suite.
-    # Keep the full checks; allow bounded time for build plus browser journeys.
-    timeout-minutes: 30
+    # Native run 39759289195 reached 30 minutes after 451 successful cases,
+    # with the last hotel collections still pending. Keep the complete suite
+    # and its per-test limits; allow build plus the full seven-width audit.
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
