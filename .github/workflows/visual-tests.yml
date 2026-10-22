@@ -169,12 +169,13 @@ jobs:
         run: npx playwright install-deps webkit
       - uses: actions/download-artifact@v4
         with:
-          name: site-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: ${{ needs.prepare.outputs.artifact_name }}
           path: .build-artifact/
       - name: Verify and unpack exact build
         run: node scripts/build-artifact.mjs unpack
         env:
           ARTIFACT_DIGEST: ${{ needs.prepare.outputs.digest }}
+          ARTIFACT_PRODUCER_ATTEMPT: ${{ needs.prepare.outputs.producer_attempt }}
       - run: npm run check:mtimes
 
       - name: Start preview server
@@ -233,7 +234,8 @@ jobs:
     needs: prepare
     runs-on: ubuntu-latest
     # Без лимита job наследовал дефолтные 6 ч — зависший прогон крутился часами.
-    timeout-minutes: 40
+    # Measured setup8–10m + complete suite34m + reporting reserve; inner suite budget40m.
+    timeout-minutes: 60
     # Прогон скриншотов делится на четыре части, каждая на своём раннере: было
     # 10,4 минуты подряд, стало примерно три параллельно. Playwright сам режет
     # набор по --shard и не требует, чтобы части были равными.
@@ -315,12 +317,13 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: site-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: ${{ needs.prepare.outputs.artifact_name }}
           path: .build-artifact/
       - name: Verify and unpack exact build
         run: node scripts/build-artifact.mjs unpack
         env:
           ARTIFACT_DIGEST: ${{ needs.prepare.outputs.digest }}
+          ARTIFACT_PRODUCER_ATTEMPT: ${{ needs.prepare.outputs.producer_attempt }}
       - run: npm run check:mtimes
 
       - name: Start preview server
@@ -343,7 +346,7 @@ jobs:
       # gen-linux-baselines — расхождений нет). Playwright сам берёт *-linux.png на
       # ubuntu по суффиксу платформы. Раньше здесь стоял --grep-invert "— visual" —
       # скриншоты в CI не сравнивались вообще, потому что linux-эталонов не было.
-      # Весь набор, как и было: он шардирован на четверых и укладывается в 2–3 мин.
+      # Полный набор на четырёх машинах; время берём из native receipts, не из старой оценки2–3мин.
       # Отдельный прогон content-gate дублирует ОТСЮДА только контентную часть —
       # она идёт секунды, и это дешевле, чем городить деление без пересечений.
       - name: Early hotel Retina regression in all four browsers
@@ -360,7 +363,7 @@ jobs:
           SKIP_PAGE_MTIME_TESTS: '1'
 
       - name: Upload complete browser reports and failure artifacts
-        if: ${{ !cancelled() }}
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-${{ matrix.shard }}

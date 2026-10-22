@@ -36,3 +36,44 @@ test('чистый получатель получает данные Astro prev
   assert.equal(existsSync(join(consumer,'dist','preview-runtime.json')),false);
  } finally {rmSync(root,{recursive:true,force:true});}
 });
+
+test('consumer retry reuses only the exact successful producer identity', async () => {
+ const api = await import('../scripts/build-artifact.mjs');
+ const root=mkdtempSync(join(tmpdir(),'artifact-retry-')), source=join(root,'source'), archive=join(root,'artifact');
+ const version={sha:'a'.repeat(40),run:'125',attempt:'1'};
+ const env={GITHUB_SHA:version.sha,GITHUB_RUN_ID:version.run,GITHUB_RUN_ATTEMPT:'2',ARTIFACT_PRODUCER_ATTEMPT:'1'};
+ try {
+  mkdirSync(source);writeFileSync(join(source,'index.html'),'same qualified source');
+  const digest=packArtifact(source,archive,version);
+  // The fallback reproduces the old CLI: consumer attempt2 incorrectly expects a newly produced archive.
+  const expected=api.unpackVersion ? api.unpackVersion(env) : {...version,attempt:env.GITHUB_RUN_ATTEMPT};
+  unpackArtifact(archive,join(root,'unpacked'),expected,digest);
+  assert.deepEqual(JSON.parse(readFileSync(join(root,'unpacked/build-version.json'),'utf8')),{commit:version.sha,run:version.run,attempt:'1'});
+  assert.throws(()=>unpackArtifact(archive,join(root,'wrong-attempt'),{...expected,attempt:'2'},digest),/version mismatch: attempt/);
+  assert.throws(()=>api.unpackVersion({...env,ARTIFACT_PRODUCER_ATTEMPT:'3'}),/producer artifact attempt/);
+  assert.throws(()=>api.unpackVersion({...env,ARTIFACT_PRODUCER_ATTEMPT:''}),/producer artifact attempt/);
+ } finally {rmSync(root,{recursive:true,force:true});}
+});
+
+test('every build consumer uses producer name/attempt while retaining the digest gate', async () => {
+ const {parse}=await import('yaml');
+ const producer=parse(readFileSync('.github/workflows/site-artifact.yml','utf8'));
+ for(const key of ['artifact_name','producer_attempt']) {
+  assert.equal(producer.on.workflow_call.outputs[key].value,`\u0024{{ jobs.artifact.outputs.${key} }}`);
+  assert.equal(producer.jobs.artifact.outputs[key],`\u0024{{ steps.pack.outputs.${key} }}`);
+ }
+ let consumers=0;
+ for(const filename of ['visual-tests.yml','lighthouse.yml','deploy.yml']) {
+  const workflow=parse(readFileSync(`.github/workflows/${filename}`,'utf8'));
+  for(const job of Object.values(workflow.jobs))for(const step of job.steps||[]) {
+   if(step.uses?.startsWith('actions/download-artifact@') && step.with?.path==='.build-artifact/') {
+    consumers++;assert.equal(step.with.name,'${{ needs.prepare.outputs.artifact_name }}');
+   }
+   if(step.run==='node scripts/build-artifact.mjs unpack') {
+    assert.equal(step.env.ARTIFACT_DIGEST,'${{ needs.prepare.outputs.digest }}');
+    assert.equal(step.env.ARTIFACT_PRODUCER_ATTEMPT,'${{ needs.prepare.outputs.producer_attempt }}');
+   }
+  }
+ }
+ assert.equal(consumers,4);
+});
