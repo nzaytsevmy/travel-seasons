@@ -13,6 +13,8 @@ for (const [country] of readyHotelCollections()) {
     const decodedImages = new Map<string, { width: number; height: number }>();
     for (const path of [`/hotels/${country}/`, ...hotelGuideHubs(country).map(hub => `/${hub.slug}/`)]) {
     for (const width of widths) {
+      // A new context must perform its own decode, even for a previously seen URL.
+      decodedImages.clear();
       await inspectHotelViewport(context.browser(), path, width, async images => {
       await images.evaluateAll(async nodes => {
         nodes.forEach(node => { (node as HTMLImageElement).loading = 'eager'; });
