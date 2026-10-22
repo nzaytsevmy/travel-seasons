@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+export const BROWSER_SUITE_BUDGET_MS = 40 * 60 * 1000;
 export const browserProjects = ['chromium-desktop', 'webkit-desktop', 'chromium-tablet', 'webkit-mobile'];
 export function browserParts(index) {
   assert(Number.isInteger(index) && index >= 1 && index <= 4);
@@ -28,35 +29,49 @@ export function caseKeys(report) {
   assert.equal(keys.length, new Set(keys).size, 'Duplicate test identities');
   return keys.sort();
 }
-function run(index) {
+export function run(index, { command = spawnSync, now = Date.now, outputRoot = process.cwd() } = {}) {
+  const startedAt = now(), deadline = startedAt + BROWSER_SUITE_BUDGET_MS;
+  const reportRoot = path.resolve(outputRoot, 'tests/.html-report');
   const cli = 'node_modules/@playwright/test/cli.js';
-  fs.mkdirSync('tests/.html-report', { recursive: true });
+  fs.mkdirSync(reportRoot, { recursive: true });
   function inventory(args = [], filename = 'full-inventory.json') {
-    const result = spawnSync(process.execPath, [cli, 'test', ...args, '--list', '--reporter=json'],
+    const result = command(process.execPath, [cli, 'test', ...args, '--list', '--reporter=json'],
       { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, env: process.env });
     assert.equal(result.status, 0, result.stderr || 'Playwright inventory failed');
-    fs.writeFileSync(path.join('tests/.html-report', filename), result.stdout);
+    fs.writeFileSync(path.join(reportRoot, filename), result.stdout);
     return JSON.parse(result.stdout);
   }
   const full = inventory();
   assert.deepEqual(full.config.projects.map(p => p.name).sort(), [...browserProjects].sort());
   const globalCaseKeys = caseKeys(full), parts = [];
   let passed = true;
+  function save() {
+    const proof = { shard: index, source: process.env.GITHUB_SHA || null, globalCaseKeys,
+      globalCaseKeysSha256: createHash('sha256').update(JSON.stringify(globalCaseKeys)).digest('hex'),
+      plannedParts: browserParts(index), budgetMs: BROWSER_SUITE_BUDGET_MS,
+      startedAt: new Date(startedAt).toISOString(), elapsedMs: now() - startedAt, parts,
+      passed: parts.length === browserProjects.length && parts.every(part => part.passed) };
+    fs.writeFileSync(path.join(reportRoot, 'balanced-shard.json'), JSON.stringify(proof, null, 2));
+    return proof;
+  }
+  save();
   for (const part of browserParts(index)) {
     const args = [`--project=${part.project}`, `--shard=${part.shard}`];
     const expected = caseKeys(inventory(args, `${part.project}-inventory.json`));
     assert(expected.length > 0 && expected.every(key => globalCaseKeys.includes(key)));
-    const directory = path.resolve('tests/.html-report', part.project);
+    const directory = path.resolve(reportRoot, part.project);
     fs.mkdirSync(directory, { recursive: true });
-    const jsonFile = path.resolve('test-results', part.project, 'tests.json');
-    console.log(JSON.stringify({ fullBrowserMatrixPart: part, expectedCases: expected.length }));
-    const result = spawnSync(process.execPath, [cli, 'test', ...args,
-      `--output=test-results/${part.project}`, '--reporter=list,html,json'],
+    const jsonFile = path.resolve(outputRoot, 'test-results', part.project, 'tests.json');
+    const remainingMs = Math.max(0, deadline - now());
+    console.log(JSON.stringify({ fullBrowserMatrixPart: part, expectedCases: expected.length, remainingMs }));
+    const result = remainingMs > 0 ? command(process.execPath, [cli, 'test', ...args,
+      `--global-timeout=${remainingMs}`, `--output=${path.resolve(outputRoot, 'test-results', part.project)}`, '--reporter=list,html,json'],
     { stdio: 'inherit', env: { ...process.env, PLAYWRIGHT_HTML_OUTPUT_DIR: directory,
-      PLAYWRIGHT_JSON_OUTPUT_FILE: jsonFile, PLAYWRIGHT_HTML_OPEN: 'never' } });
+      PLAYWRIGHT_JSON_OUTPUT_FILE: jsonFile, PLAYWRIGHT_HTML_OPEN: 'never' } }) : { status: null, signal: null };
     const receipt = { ...part, expectedCaseKeys: expected, reportFile: `test-results/${part.project}/tests.json`,
-      exitCode: result.status, passed: false };
+      exitCode: result.status, signal: result.signal || null, remainingMs, passed: false };
     try {
+      assert(remainingMs > 0, 'Browser suite budget exhausted before this part; coverage incomplete');
       const actual = JSON.parse(fs.readFileSync(jsonFile, 'utf8'));
       assert.deepEqual(caseKeys(actual), expected, 'Executed cases differ from the native inventory');
       assert.equal(actual.stats.unexpected, 0); assert.equal(actual.stats.flaky, 0);
@@ -64,16 +79,15 @@ function run(index) {
       receipt.passed = true;
     } catch (error) { receipt.error = error.message; passed = false; }
     parts.push(receipt);
-    // Continue after a failed part so every browser still gets its full coverage.
+    save();
+    // Attempt every remaining part; exhausted budget or partial coverage always fails.
   }
-  const proof = { shard: index, globalCaseKeys, globalCaseKeysSha256:
-    createHash('sha256').update(JSON.stringify(globalCaseKeys)).digest('hex'), parts, passed };
-  fs.writeFileSync('tests/.html-report/balanced-shard.json', JSON.stringify(proof, null, 2));
-  fs.writeFileSync('tests/.html-report/index.html', `<!doctype html><meta charset="utf-8">
+  const proof = save();
+  fs.writeFileSync(path.join(reportRoot, 'index.html'), `<!doctype html><meta charset="utf-8">
     <title>Complete browser matrix: shard ${index}/4</title>
     <h1>Complete browser matrix: shard ${index}/4</h1><p>${passed ? 'Passed' : 'Failed'}</p>
     <ul>${parts.map(p => `<li><a href="${p.project}/index.html">${p.project}, part ${p.shard}</a></li>`).join('')}</ul>
     <a href="balanced-shard.json">Exact coverage and exit codes</a>`);
-  process.exitCode = passed ? 0 : 1;
+  return proof;
 }
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) run(Number(process.argv[2]));
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) process.exitCode = run(Number(process.argv[2])).passed ? 0 : 1;

@@ -61,12 +61,13 @@ jobs:
         run: node scripts/check-workflows.mjs
       - uses: actions/download-artifact@v4
         with:
-          name: site-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: ${{ needs.prepare.outputs.artifact_name }}
           path: .build-artifact/
       - name: Verify and unpack exact build
         run: node scripts/build-artifact.mjs unpack
         env:
           ARTIFACT_DIGEST: ${{ needs.prepare.outputs.digest }}
+          ARTIFACT_PRODUCER_ATTEMPT: ${{ needs.prepare.outputs.producer_attempt }}
       - run: npm run check:mtimes
 
       # ⛔ Аудиты на том дереве, которое уезжает на сервер. До 12.09.2026 выкладка
@@ -137,16 +138,18 @@ jobs:
           echo "✔ прод отвечает 200 на ключевых маршрутах"
 
       - name: Verify published build identity
+        env:
+          ARTIFACT_PRODUCER_ATTEMPT: ${{ needs.prepare.outputs.producer_attempt }}
         run: |
           set -euo pipefail
           curl -fsS --retry 2 --max-time 20 "https://traveltribe.ru/build-version.json?run=${GITHUB_RUN_ID}" | node -e '
             let body=""; process.stdin.on("data",chunk=>body+=chunk);
             process.stdin.on("end",()=>{
               const value=JSON.parse(body);
-              for(const [key,want] of Object.entries({commit:process.env.GITHUB_SHA,run:process.env.GITHUB_RUN_ID,attempt:process.env.GITHUB_RUN_ATTEMPT})) {
+              for(const [key,want] of Object.entries({commit:process.env.GITHUB_SHA,run:process.env.GITHUB_RUN_ID,attempt:process.env.ARTIFACT_PRODUCER_ATTEMPT})) {
                 if(value[key]!==want) throw new Error("На сайте другая сборка: "+key);
               }
-              console.log("На сайте проверенная сборка текущего запуска");
+              console.log("На сайте проверенный артефакт сборки");
             });'
 
       - name: Проверить, что картинки на проде не битые

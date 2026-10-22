@@ -4,6 +4,21 @@ import {mkdirSync,readFileSync,writeFileSync,appendFileSync,existsSync,openSync,
 import {resolve,join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 
+// A failed consumer can be rerun while its successful producer is retained.
+// Bind to that producer's attempt, but never accept another commit/run or a future attempt.
+export function unpackVersion(env) {
+  const version={sha:env.GITHUB_SHA,run:env.GITHUB_RUN_ID,attempt:env.GITHUB_RUN_ATTEMPT};
+  if (!/^[a-f0-9]{40}$/.test(version.sha || '') ||
+      !/^[1-9]\d*$/.test(version.run || '') || !/^[1-9]\d*$/.test(version.attempt || '')) {
+    throw new Error('Invalid consumer artifact identity');
+  }
+  const producer=env.ARTIFACT_PRODUCER_ATTEMPT ?? version.attempt;
+  if (!/^[1-9]\d*$/.test(producer) || BigInt(producer)>BigInt(version.attempt)) {
+    throw new Error('Invalid producer artifact attempt');
+  }
+  return {...version,attempt:producer};
+}
+
 const checksum = file => {
   const digest=createHash('sha256'), buffer=Buffer.alloc(1024*1024), fd=openSync(file,'r');
   try {
@@ -63,10 +78,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     if (execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim() !== version.sha) throw new Error('Checkout version mismatch');
     if (process.argv[2] === 'pack') {
       const digest=packArtifact('dist','.build-artifact',version,process.cwd());
-      if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT,`digest=${digest}\n`);
+      if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT,`digest=${digest}\nartifact_name=site-${version.sha}-${version.run}-${version.attempt}\nproducer_attempt=${version.attempt}\n`);
       console.log(`Artifact: ${version.sha}, sha256=${digest}`);
     } else if (process.argv[2] === 'unpack') {
-      unpackArtifact('.build-artifact','dist',version,process.env.ARTIFACT_DIGEST,process.cwd());
+      unpackArtifact('.build-artifact','dist',unpackVersion(process.env),process.env.ARTIFACT_DIGEST,process.cwd());
     } else throw new Error('Usage: build-artifact.mjs pack|unpack');
   } catch (error) {console.error(error.message);process.exitCode=1;}
 }

@@ -9,6 +9,10 @@ on:
     outputs:
       digest:
         value: ${{ jobs.artifact.outputs.digest }}
+      artifact_name:
+        value: ${{ jobs.artifact.outputs.artifact_name }}
+      producer_attempt:
+        value: ${{ jobs.artifact.outputs.producer_attempt }}
 
 permissions:
   contents: read
@@ -22,6 +26,8 @@ jobs:
     timeout-minutes: 40
     outputs:
       digest: ${{ steps.pack.outputs.digest }}
+      artifact_name: ${{ steps.pack.outputs.artifact_name }}
+      producer_attempt: ${{ steps.pack.outputs.producer_attempt }}
     steps:
       - uses: actions/checkout@v4
         with:

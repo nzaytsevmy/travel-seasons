@@ -88,12 +88,13 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: site-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: ${{ needs.prepare.outputs.artifact_name }}
           path: .build-artifact/
       - name: Verify and unpack exact build
         run: node scripts/build-artifact.mjs unpack
         env:
           ARTIFACT_DIGEST: ${{ needs.prepare.outputs.digest }}
+          ARTIFACT_PRODUCER_ATTEMPT: ${{ needs.prepare.outputs.producer_attempt }}
       - run: npm run check:mtimes
 
       - name: Run Lighthouse (${{ matrix.preset }}, часть ${{ matrix.shard }})
