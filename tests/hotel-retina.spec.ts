@@ -1,4 +1,5 @@
 import sharp from 'sharp';
+import { inspectHotelViewport } from './hotel-retina-loading.mjs';
 import { test, expect } from './browser-fixture';
 import { readyHotelCollections, hotelGuideHubs } from '../src/data/hotels.js';
 
@@ -11,14 +12,11 @@ for (const [country] of readyHotelCollections()) {
     const dimensions = new Map<string, { width: number; height: number }>();
     const decodedImages = new Map<string, { width: number; height: number }>();
     for (const path of [`/hotels/${country}/`, ...hotelGuideHubs(country).map(hub => `/${hub.slug}/`)]) {
-    await page.goto(path);
-    const images = page.locator('.hotel-gallery img, .best-hotels img');
     for (const width of widths) {
-      await page.setViewportSize({ width, height: 900 });
+      await inspectHotelViewport(page, path, width, async images => {
       await images.evaluateAll(async nodes => {
         nodes.forEach(node => { (node as HTMLImageElement).loading = 'eager'; });
-        // Resizing can replace a picture's selected source. Let that selection
-        // reach a rendered frame before decoding the new responsive images.
+        // Let the freshly selected source reach a rendered frame before decoding.
         await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
       });
       await expect.poll(async () => {
@@ -90,6 +88,7 @@ for (const [country] of readyHotelCollections()) {
         expect(actual.width + 1, `${country} ${width}px ${row.alt}: horizontal 2× pixels`).toBeGreaterThanOrEqual(Math.ceil(row.width * 2));
         expect(actual.height + 1, `${country} ${width}px ${row.alt}: vertical 2× pixels`).toBeGreaterThanOrEqual(Math.ceil(row.height * 2));
       }
+      });
     }
     }
   });
