@@ -45,7 +45,17 @@ jobs:
           key: playwright-${{ runner.os }}-chromium-${{ hashFiles('package-lock.json') }}
       - name: Install Chromium
         timeout-minutes: 10
-        run: npx playwright install --with-deps chromium
+        run: |
+          # Hosted runners use an indirect mirror list. Resolve it as well as
+          # direct Azure URIs; leave Ubuntu suites, components and trust intact.
+          sudo sed -i 's|mirror+file:/etc/apt/apt-mirrors[.]txt|https://archive.ubuntu.com/ubuntu/|g; s|http://azure[.]archive[.]ubuntu[.]com/ubuntu|https://archive.ubuntu.com/ubuntu|g; s|https://azure[.]archive[.]ubuntu[.]com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources
+          grep -Eq '^URIs:[[:space:]]+https://archive[.]ubuntu[.]com/ubuntu/?([[:space:]]|$)' /etc/apt/sources.list.d/ubuntu.sources
+          if grep -Eq '^URIs:.*(mirror[+]file:|azure[.]archive[.]ubuntu[.]com)' /etc/apt/sources.list.d/ubuntu.sources; then
+            echo 'Ubuntu mirror replacement did not take effect' >&2
+            exit 1
+          fi
+          grep -E '^(URIs|Suites|Components|Signed-By):' /etc/apt/sources.list.d/ubuntu.sources
+          npx playwright install --with-deps chromium
       - name: Проверить страницы опубликованной версии
         run: node scripts/release-browser-qa.mjs
         env:
@@ -95,7 +105,17 @@ jobs:
         run: npx playwright install chromium webkit
       - name: Install WebKit system libraries
         timeout-minutes: 10
-        run: npx playwright install-deps webkit
+        run: |
+          # Hosted runners use an indirect mirror list. Resolve it as well as
+          # direct Azure URIs; leave Ubuntu suites, components and trust intact.
+          sudo sed -i 's|mirror+file:/etc/apt/apt-mirrors[.]txt|https://archive.ubuntu.com/ubuntu/|g; s|http://azure[.]archive[.]ubuntu[.]com/ubuntu|https://archive.ubuntu.com/ubuntu|g; s|https://azure[.]archive[.]ubuntu[.]com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources
+          grep -Eq '^URIs:[[:space:]]+https://archive[.]ubuntu[.]com/ubuntu/?([[:space:]]|$)' /etc/apt/sources.list.d/ubuntu.sources
+          if grep -Eq '^URIs:.*(mirror[+]file:|azure[.]archive[.]ubuntu[.]com)' /etc/apt/sources.list.d/ubuntu.sources; then
+            echo 'Ubuntu mirror replacement did not take effect' >&2
+            exit 1
+          fi
+          grep -E '^(URIs|Suites|Components|Signed-By):' /etc/apt/sources.list.d/ubuntu.sources
+          npx playwright install-deps webkit
       - name: Verify exact published build before hotel journeys
         run: |
           node --input-type=module <<'JS'
