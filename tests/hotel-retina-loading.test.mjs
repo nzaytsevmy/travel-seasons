@@ -34,7 +34,7 @@ test('Retina visits at the requested viewport and inspects every photo with at m
     await new Promise(resolve => setImmediate(resolve));
     active--;
   });
-  assert.deepEqual(events, [['context', 1, { viewport: { width: 1024, height: 900 } }], ['page', 1], ['visit', 1, '/hotels/uae/'], ['close', 1]]);
+  assert.deepEqual(events, [['context', 1, { viewport: { width: 1024, height: 900 }, screen: { width: 1024, height: 900 } }], ['page', 1], ['visit', 1, '/hotels/uae/'], ['close', 1]]);
   assert.equal(peak, 4); assert.equal(active, 0);
   assert.deepEqual(seen, Array.from({ length: 11 }, (_, index) => index));
 });

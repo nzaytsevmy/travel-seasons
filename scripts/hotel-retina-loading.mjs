@@ -3,10 +3,11 @@ import assert from 'node:assert/strict';
 // Each viewport is a fresh visit in a disposable context. Rapid repeated full
 // navigations in one WebKit page left pending image loads and navigation errors.
 // Playwright Test applies the project's device, headers, baseURL and test.use()
-// options to explicit newContext() calls; only the viewport is overridden here.
+// options to explicit newContext() calls. Match setViewportSize() by overriding
+// the viewport and screen together; retain all other device and test options.
 export async function inspectHotelViewport(browser, path, width, inspect) {
   assert(browser, 'Hotel viewport needs its test browser');
-  const context = await browser.newContext({ viewport: { width, height: 900 } });
+  const context = await browser.newContext({ viewport: { width, height: 900 }, screen: { width, height: 900 } });
   try {
     const page = await context.newPage();
     await page.goto(path);
