@@ -10,6 +10,18 @@ export async function inspectHotelViewport(browser, path, width, inspect) {
   const context = await browser.newContext({ viewport: { width, height: 900 }, screen: { width, height: 900 } });
   try {
     const page = await context.newPage();
+    // Read the bytes delivered to this browser instead of issuing a second
+    // request for an image that has already passed the real decode checks.
+    const responses = new Map();
+    page.on('response', response => {
+      if (response.request().resourceType() === 'image') responses.set(response.url(), response);
+    });
+    const readBody = async url => {
+      const response = responses.get(url);
+      assert(response, `No observed browser image response: ${url}`);
+      assert.equal(response.status(), 200, `Hotel image HTTP ${response.status()}: ${url}`);
+      return response.body();
+    };
     await page.goto(path);
     const images = page.locator('.hotel-gallery img, .best-hotels img');
     const count = await images.count();
@@ -20,7 +32,7 @@ export async function inspectHotelViewport(browser, path, width, inspect) {
       // for the same bounded batch, while retaining every real image assertion.
       let group = images.nth(offset);
       for (let index = 1; index < Math.min(4, count - offset); index++) group = group.or(images.nth(offset + index));
-      await inspect(group);
+      await inspect(group, readBody);
     }
   } finally {
     await context.close();
