@@ -7,6 +7,20 @@ import { pathToFileURL } from 'node:url';
 
 export const BROWSER_SUITE_BUDGET_MS = 40 * 60 * 1000;
 export const browserProjects = ['chromium-desktop', 'webkit-desktop', 'chromium-tablet', 'webkit-mobile'];
+const hotelFiles = new Set(['hotel-guides.spec.ts', 'hotel-retina.spec.ts', 'hotel-referral-browser.spec.ts']);
+export const isHotelCase = key => hotelFiles.has(JSON.parse(key)[1]);
+export function testListEntry(key) {
+  const [project, file, fileSuite, ...titles] = JSON.parse(key);
+  assert.equal(titles.pop(), 0, 'Test-list selection requires repeatEach=1');
+  assert.equal(fileSuite, file, 'Unexpected native file suite');
+  assert([project, file, ...titles].every(value => !/[\r\n›]/.test(value)), 'Ambiguous test-list entry');
+  return `[${project}] › ${file} › ${titles.join(' › ')}`;
+}
+export function selectedPartKeys(globalKeys, stockKeys, part) {
+  const quarter = Number(part.shard.split('/')[0]);
+  const hotels = globalKeys.filter(key => JSON.parse(key)[0] === part.project && isHotelCase(key));
+  return [...stockKeys.filter(key => !isHotelCase(key)), ...hotels.filter((_, i) => i % 4 === quarter - 1)].sort();
+}
 export function browserParts(index) {
   assert(Number.isInteger(index) && index >= 1 && index <= 4);
   // Rotate the quarters: assigning the same quarter in every project would
@@ -56,9 +70,15 @@ export function run(index, { command = spawnSync, now = Date.now, outputRoot = p
   }
   save();
   for (const part of browserParts(index)) {
-    const args = [`--project=${part.project}`, `--shard=${part.shard}`];
-    const expected = caseKeys(inventory(args, `${part.project}-inventory.json`));
+    const stockArgs = [`--project=${part.project}`, `--shard=${part.shard}`];
+    const stockKeys = caseKeys(inventory(stockArgs, `${part.project}-stock-inventory.json`));
+    const expected = selectedPartKeys(globalCaseKeys, stockKeys, part);
     assert(expected.length > 0 && expected.every(key => globalCaseKeys.includes(key)));
+    const listFile = path.join(reportRoot, `${part.project}-test-list.txt`);
+    fs.writeFileSync(listFile, expected.map(testListEntry).join('\n') + '\n');
+    const args = [`--project=${part.project}`, `--test-list=${listFile}`];
+    assert.deepEqual(caseKeys(inventory(args, `${part.project}-inventory.json`)), expected,
+      'Native test-list selection must exactly preserve the planned identities');
     const directory = path.resolve(reportRoot, part.project);
     fs.mkdirSync(directory, { recursive: true });
     const jsonFile = path.resolve(outputRoot, 'test-results', part.project, 'tests.json');
@@ -68,7 +88,9 @@ export function run(index, { command = spawnSync, now = Date.now, outputRoot = p
       `--global-timeout=${remainingMs}`, `--output=${path.resolve(outputRoot, 'test-results', part.project)}`, '--reporter=list,html,json'],
     { stdio: 'inherit', env: { ...process.env, PLAYWRIGHT_HTML_OUTPUT_DIR: directory,
       PLAYWRIGHT_JSON_OUTPUT_FILE: jsonFile, PLAYWRIGHT_HTML_OPEN: 'never' } }) : { status: null, signal: null };
-    const receipt = { ...part, expectedCaseKeys: expected, reportFile: `test-results/${part.project}/tests.json`,
+    const receipt = { ...part, selectionMethod: 'native-nonhotel-quarter-and-interleaved-hotels',
+      stockCaseKeys: stockKeys, expectedCaseKeys: expected, testListFile: `${part.project}-test-list.txt`,
+      reportFile: `test-results/${part.project}/tests.json`,
       exitCode: result.status, signal: result.signal || null, remainingMs, passed: false };
     try {
       assert(remainingMs > 0, 'Browser suite budget exhausted before this part; coverage incomplete');

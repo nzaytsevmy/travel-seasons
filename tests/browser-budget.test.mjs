@@ -9,10 +9,15 @@ test('a shared deadline retains diagnostics and fails incomplete browser coverag
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'browser-budget-'));
  let clock=0; const commands=[];
  const report=(projects)=>({config:{rootDir:'/fixture',projects:projects.map(name=>({name}))},stats:{unexpected:0,flaky:0},
-  suites:projects.map(project=>({title:'fixture',specs:[{file:'fixture.spec.ts',title:'required case',tests:[{projectName:project,repeatEachIndex:0}]}]}))});
+  suites:projects.map(project=>({title:'fixture.spec.ts',specs:Array.from({length:4},(_,i)=>({file:'fixture.spec.ts',title:`required case ${i}`,tests:[{projectName:project,repeatEachIndex:0}]}))}))});
  const command=(_binary,args,options)=>{
   const project=args.find(a=>a.startsWith('--project='))?.slice('--project='.length);
   const value=report(project ? [project] : browserProjects);
+  const shard=args.find(a=>a.startsWith('--shard='));
+  const list=args.find(a=>a.startsWith('--test-list='));
+  if(shard)for(const suite of value.suites)suite.specs=[suite.specs[Number(shard.split('=')[1].split('/')[0])-1]];
+  if(list){const entries=new Set(fs.readFileSync(list.slice('--test-list='.length),'utf8').trim().split('\n'));
+   for(const suite of value.suites)suite.specs=suite.specs.filter(spec=>entries.has(`[${project}] › ${spec.file} › ${spec.title}`));}
   if(args.includes('--list'))return {status:0,stdout:JSON.stringify(value),stderr:''};
   commands.push({project,timeout:Number(args.find(a=>a.startsWith('--global-timeout=')).split('=')[1])});
   const target=options.env.PLAYWRIGHT_JSON_OUTPUT_FILE;fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value));
@@ -26,7 +31,7 @@ test('a shared deadline retains diagnostics and fails incomplete browser coverag
   assert.equal(proof.parts.filter(part=>part.passed).length,3);
   assert.match(proof.parts[3].error,/budget exhausted.*coverage incomplete/);
   assert.deepEqual(commands.map(c=>c.timeout),[40,16,8].map(m=>m*60_000));
-  assert.equal(proof.globalCaseKeys.length,4);
+  assert.equal(proof.globalCaseKeys.length,16);
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'tests/.html-report/balanced-shard.json'))),proof);
  } finally {fs.rmSync(root,{recursive:true,force:true});}
 });
@@ -61,4 +66,51 @@ test('GitHub API retries are bounded and never retry access or input rejection',
   for(const code of [400,401,403,404,422])assert(excluded.includes(code));
   assert(!excluded.includes(503));
  }
+});
+
+test('hotel scenarios are interleaved while every native non-hotel quarter remains unchanged', () => {
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'browser-interleave-'));
+ const hotelFiles=[['hotel-guides.spec.ts',147],['hotel-referral-browser.spec.ts',70],['hotel-retina.spec.ts',70]];
+ const rows=browserProjects.flatMap(project=>[
+  ...hotelFiles.flatMap(([file,count])=>Array.from({length:count},(_,i)=>({project,file,title:`${file} country ${String(i).padStart(3,'0')}`}))),
+  ...Array.from({length:588},(_,i)=>({project,file:'other.spec.ts',title:`other ${String(i).padStart(3,'0')} [literal].* > <code>`})),
+ ]);
+ const key=row=>JSON.stringify([row.project,row.file,row.file,row.title,0]);
+ const entry=row=>`[${row.project}] › ${row.file} › ${row.title}`;
+ const stock=(project,quarter)=>{
+  const all=rows.filter(row=>row.project===project),base=Math.floor(all.length/4),extra=all.length%4;
+  const from=(quarter-1)*base+Math.min(quarter-1,extra);
+  return all.slice(from,from+base+(quarter<=extra?1:0));
+ };
+ const report=selected=>({config:{rootDir:'/fixture',projects:browserProjects.map(name=>({name}))},stats:{unexpected:0,flaky:0},
+  suites:selected.map(row=>({title:row.file,specs:[{file:row.file,title:row.title,tests:[{projectName:row.project,repeatEachIndex:0}]}]}))});
+ const command=(_binary,args,options)=>{
+  const project=args.find(a=>a.startsWith('--project='))?.slice('--project='.length);
+  const shard=args.find(a=>a.startsWith('--shard='))?.slice('--shard='.length);
+  const list=args.find(a=>a.startsWith('--test-list='))?.slice('--test-list='.length);
+  let selected=project?rows.filter(row=>row.project===project):rows;
+  if(shard)selected=stock(project,Number(shard.split('/')[0]));
+  if(list){const requested=new Set(fs.readFileSync(list,'utf8').trim().split('\n'));selected=selected.filter(row=>requested.has(entry(row)));}
+  const value=report(selected);
+  if(args.includes('--list'))return {status:0,stdout:JSON.stringify(value),stderr:''};
+  const file=options.env.PLAYWRIGHT_JSON_OUTPUT_FILE;fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value));
+  return {status:0,signal:null};
+ };
+ try {
+  const proofs=[1,2,3,4].map(index=>run(index,{command,now:()=>0,outputRoot:root}));
+  assert(proofs.every(proof=>proof.passed));
+  const all=[];
+  for(const proof of proofs)for(const part of proof.parts){
+   const quarter=Number(part.shard.split('/')[0]);
+   const retina=part.expectedCaseKeys.filter(k=>JSON.parse(k)[1]==='hotel-retina.spec.ts');
+   assert(retina.length>=17&&retina.length<=18,`Heavy Retina cases must be17–18 per part, got ${retina.length}`);
+   const hotels=part.expectedCaseKeys.filter(k=>hotelFiles.some(([file])=>JSON.parse(k)[1]===file));
+   assert(hotels.length>=71&&hotels.length<=72);
+   const nonHotels=part.expectedCaseKeys.filter(k=>JSON.parse(k)[1]==='other.spec.ts');
+   assert.deepEqual(nonHotels,stock(part.project,quarter).filter(row=>row.file==='other.spec.ts').map(key).sort());
+   all.push(...part.expectedCaseKeys);
+  }
+  assert.equal(all.length,3500);assert.equal(new Set(all).size,3500);
+  assert.deepEqual([...all].sort(),rows.map(key).sort());
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
