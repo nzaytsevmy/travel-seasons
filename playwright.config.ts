@@ -25,7 +25,9 @@ export default defineConfig({
     baseURL: process.env.PREVIEW_URL || `http://localhost:${PORT}`,
     screenshot: 'only-on-failure',
     video: 'off',
-    trace: 'retain-on-failure',
+    // Не записывать DOM/network каждого успешного теста. Первый повтор сохраняет
+    // trace; исходная ошибка остаётся в отчёте, а failOnFlakyTests запрещает выпуск.
+    trace: 'on-first-retry',
     // Доп. защита: блокируем сторонние трекеры даже если попали в HTML
     extraHTTPHeaders: { 'X-Playwright': '1' },
   },
