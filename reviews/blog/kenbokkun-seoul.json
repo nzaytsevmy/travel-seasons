@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 1,
+  "slug": "kenbokkun-seoul",
+  "reviewer": "Codex (tt-review-20261023)",
+  "reviewerTask": "/root/review_20261023",
+  "reviewedAt": "2026-10-23T10:15:43.841Z",
+  "status": "PASS_EDITORIAL",
+  "approvalScope": "EDITORIAL_ONLY",
+  "releaseApproved": false,
+  "releaseStatus": "HOLD_PENDING_REQUIRED_GATES",
+  "qualityScore": {
+    "topic": 8,
+    "facts": 9,
+    "visuals": 8,
+    "experience": 5,
+    "internalLinks": 8,
+    "legal": 9,
+    "overall": 8,
+    "ceiling": "Потолок 8,0/10: проверенный редакционный обзор с двумя вариантами прогулки, бесплатной альтернативой платному туру и архивными фотографиями, без подтверждённого посещения автора. Датированные показатели Яндекса разрешены только для этой статьи; маршрут не испытан, оплата, полный рендер, CI, публичная атрибуция, deploy/live и эффект не подтверждены."
+  },
+  "rationale": "Независимый рецензент прочитал полную статью и исследование, сопоставил ключевые условия с оператором и нативной формой Sputnik. Обнаружены и автором исправлены пропуск бесплатного Culture Day28октября, группового тарифа и рублёвого эквивалента в lead; служебные сведения о механике конвертации перенесены в checks. Повторно проверены именно исправленные фрагменты. Четыре фото и схема просмотрены; поздний необязательный CTA обоснован и не выдаёт городскую экскурсию за билет именно во дворец. Редакционный потолок8/10; выпуск не одобрен без обязательных гейтов и live.",
+  "risks": [
+    "Датированная модель спроса разрешена только для этой статьи; повторный независимый UI-съём Wordstat/Wordcraft не выполнен.",
+    "Нет подтверждённого посещения Никиты, испытания маршрута и теста с читателем.",
+    "Слот24Oct/цена/терраса/freeperiod изменчивы; перед будущим выпуском пересверить volatileFacts.",
+    "Городской оффер не гарантирует именноКёнбоккун; достижимость всехпунктов за2ч требует согласования, статьянеобещаетеё.",
+    "Оплата, зрелая атрибуция, доход, полныйрендер402/1280/публичнаяатрибуция/CI/deploy/liveнепроверены."
+  ],
+  "blockingIssues": [],
+  "proseHash": "b3aceefd27667759",
+  "sourceSha256AtReview": "2429fbf9ee4090ab889157ae0b4eed2a0a16e3e3a5a3db8523afc7078a104a36",
+  "sourceSha256Scope": "Полные MDXbytes перед переносом оценокавтором; контракт финальной прозы—штатныйproseHash.",
+  "qualityCriteria": [
+    {
+      "criterion": 1,
+      "score": 10,
+      "evidence": "Первый визит во дворец: стоит ли идти, сколько времени и денег нужно, какие зоны/программы доступны. Lead и разделы отвечают одному объектному интенту."
+    },
+    {
+      "criterion": 2,
+      "score": 5,
+      "evidence": "PL04NEW и датированное исследование прочитаны. Wordstat/Wordcraft задержаны; разовое разрешение Никиты только для этой статьи. Свежий GSC смежныхURL прочитан, это не спрос объекта. Повторный самостоятельный UI-съём спроса не выполнен; трафик/бронь не прогнозируются."
+    },
+    {
+      "criterion": 3,
+      "score": 5,
+      "evidence": "Локальный поиск Кёнбок/Gyeongbok вcontent/pages/data не выявил самостоятельного старого обзора. Хаб/виза/packing — другие интенты. Свежие чужие PR рецензент независимо не перечитывал; базовая каннибализация проверена наAFE."
+    },
+    {
+      "criterion": 4,
+      "score": 10,
+      "evidence": "Полный title/description/lead/body прочитан. Исправлены CultureDay28Oct и group10+2400KRW; даны дни, последний вход, входы метро, караул, маршрут, бесплатный гид и условия русского тура."
+    },
+    {
+      "criterion": 5,
+      "score": 10,
+      "evidence": "Редакционное сопоставление платного/бесплатного посещения, разные глубины прогулки и собственная читаемая схема. География и границы доступа опираются на оператора; 1ч/2–3ч — честная планировочная оценка, не полевой замер."
+    },
+    {
+      "criterion": 6,
+      "score": 10,
+      "evidence": "Ключевые факты независимо сверены по официальным страницам, Chrome Admission и визуальной официальной таблице. Служебные конвертации убраны; противоречияCultureDay/часовJongno разрешены в пользуоператора. SourceChecks содержат методы."
+    },
+    {
+      "criterion": 7,
+      "score": 10,
+      "evidence": "Даты/возрастные границы≤18/19–64/65+/группа10+ сверены. CultureDay28Oct — последняя среда. BigInt:183.6111→180,146.88888→150,16225.10→16200. ФормаSputnik24Oct09 показывает1–4за$200; не5и нецена на человека."
+    },
+    {
+      "criterion": 8,
+      "score": 10,
+      "evidence": "Не обещаны вход в каждый павильон, открытие террасы1Nov, караулвлюбуюпогоду, покупкаименноКёнбоккунавгородскомтуре, российскаяоплатаилибезбарьерностьвсейпрогулки. VolatileFacts назначены."
+    },
+    {
+      "criterion": 9,
+      "score": 5,
+      "evidence": "authoredByCodex(tt-author-20261023) и другой reviewer; sourceTypecompilation/sourceNote честно исключают подтверждённыйвизитНикиты. Reader-test/публичныйSSRbyline не проверены."
+    },
+    {
+      "criterion": 10,
+      "score": 10,
+      "evidence": "Фактический и смысловой проходы выполнены; после исправлений повторно прочитаны изменённые абзацы/lead и финальныйhash. Нет выдуманного опыта; много осторожных оговорок ограничивает живость и потолок, но содержательные условия полезны."
+    },
+    {
+      "criterion": 11,
+      "score": 5,
+      "evidence": "Обещания title/description/lead согласованы, дата и reviewAfter реальные. Canonical/OG/SSR/TOC/schema финальной сборки не проверены."
+    },
+    {
+      "criterion": 12,
+      "score": 5,
+      "evidence": "Входящие подготовлены из RELATED_POSTSsouth-korea и визовой статьи; диффпрочитан, это ещё не отрендеренные связи. Выходящие страны/packing/visa соответствуют задаче;packingHTTP200 самостоятельно подтверждён. Полная матрица ссылок финальногоHTMLнепроверена."
+    },
+    {
+      "criterion": 13,
+      "score": 5,
+      "evidence": "4точныхJPEG,credits и SVG/PNG402 просмотрены независимо, лицензииCommons4страниц сверены. Архивныйсезон открытонеобещаетнынешний. Отдельнаясхемачитаема; страница402/1280/доступность/публичныеcreditsожидаютCI/live."
+    },
+    {
+      "criterion": 14,
+      "score": 0,
+      "evidence": "ТолькоPREP_ONLY/EDITORIAL_ONLY. Сборка, полныегейты, CI, push/PR/deploy/liveнепроводились. ОтсутствиеэтихдоказательствнеN/Aи неPASSвыпуска."
+    }
+  ],
+  "minimumFiveVerifiedTens": true,
+  "verification": {
+    "method": "Независимыеweb/HTTP+нативныйChrome;безCI/build/push/публикации",
+    "sourceChecks": [
+      {
+        "url": "https://royal.khs.go.kr/ENG/contents/E702000000.do",
+        "checkedAt": "2026-10-23T10:15:43.841Z",
+        "method": "Независимое полное чтение нативного Chrome AX после неполного HTTP/web",
+        "finding": "3000KRW19–64;2400группа10+;free≤18/65+/hanbok/lastWednesday. Часы09–17/18/18:30 по сезонам, входза1ч;Tueclosed,holiday перенос; English11/13:30/15:30Wed–Mon,1–1.5ч,30участников,10+бронь,Heungnyemun."
+      },
+      {
+        "url": "https://royal.khs.go.kr/ENG/contents/E701000000.do",
+        "checkedAt": "2026-10-23T10:15:43.841Z",
+        "method": "Независимое HTTP200+полный текстBeautifulSoup",
+        "finding": "Hanbokjeogori+skirt/pants;накидкаиличастичныйкостюмнеподходят."
+      },
+      {
+        "url": "https://royal.khs.go.kr/ENG/contents/E101010000.do",
+        "checkedAt": "2026-10-23T10:15:43.841Z",
+        "method": "Независимое HTTP200+полный текстBeautifulSoup",
+        "finding": "1395основание,1592разрушение,1867восстановление,реставрациис1990х."
+      },
+      {
+        "url": "https://royal.khs.go.kr/ROYAL/contents/R403000000.do?id=20260930093346212667&schBcid=notice01&schM=view",
+        "checkedAt": "2026-10-23T10:15:43.841Z",
+        "method": "Независимый web notice плюс визуальное чтение точного официального JPG в Chrome",
+        "finding": "Таблица30Sep2026:KoreaGrandFestival29Oct–15Novfree;обычныевыходныесохраняются,ChangdeokgungSecretGardenисключён."
+      },
+      {
+        "url": "https://royal.khs.go.kr/ROYAL/contents/R403000000.do?id=20260830151817711582&schBdcode=gbg&schM=view",
+        "checkedAt": "2026-10-23T10:15:43.841Z",
+        "method": "Независимыйwebopen",
+        "finding": "Geunjeongjeonwoldae2Sep–31Oct2026ограничен;весьдворецнеобъявлензакрытым."
+      },
+      {
+        "url": "https://m.korea.kr/briefing/pressReleaseView.do?newsId=156775249&pWise=mSub&pWiseSub=C5",
+        "checkedAt": "2026-10-23T10:15:43.841Z",
+        "method": "Независимыйweb+HTTP200полныйтекст",
+        "finding": "Спецпавильоны2Sep–30OctWed/Fri10/14,25мест,бронь9–3днядо;геометрияHyangwonjeongнаострове,Geoncheonggungпередпрудом; обычный вход не гарантирует эту программу."
+      },
+      {
+        "url": "https://www.kh.or.kr/cms/content/view/824",
+        "checkedAt": "2026-10-23T10:15:43.841Z",
+        "method": "Независимыйwebopen/find;HTTPtimeoutневыданзапроверку",
+        "finding": "Changing10/14по20min;guardduty11/13по10min."
+      },
+      {
+        "url": "https://www.jongno.go.kr/English.do?menuId=6033&menuNo=6033",
+        "checkedAt": "2026-10-23T10:15:43.841Z",
+        "method": "Независимыйwebopen,сверкаприоритетаоператора",
+        "finding": "Line3exit5+5min;Line5exit2+10min. ОшибочныеJongnoSep/Octlast15:00неперенесены."
+      },
+      {
+        "url": "https://www.sputnik8.com/ru/seoul/activities/88525-seul-epohi-koroley-i-chosona",
+        "checkedAt": "2026-10-23T10:15:43.841Z",
+        "method": "НезависимыйwebиChrome,«Проверитьдаты»безначалаброни",
+        "finding": "2чрусский,одиниз5дворцов,входы/проездучастниковигидаотдельно;24Oct09:00,форма1–4чел$200,полнаяоплатагиду. Витринадо5неприсвоенаформе1–4. Никакогозаказа/персональныхданных/платежа."
+      },
+      {
+        "url": "https://www.cbr.ru/currency_base/daily/?UniDbQuery.Posted=True&UniDbQuery.To=23.10.2026",
+        "checkedAt": "2026-10-23T10:15:43.841Z",
+        "method": "Независимыйwebофициальнойтаблицы,точныйBigIntпересчёт",
+        "finding": "1000KRW61.2037RUB/USD81.1255RUB.3000KRW183.6111→180;2400KRW146.88888→150;200USD16225.10→16200."
+      },
+      {
+        "url": "https://www.reddit.com/r/koreatravel/comments/1x5p17n/first_time_in_korea_is_gyeongbokgung_bukchon/",
+        "checkedAt": "2026-10-23T10:15:43.841Z",
+        "method": "Независимыйwebopen",
+        "finding": "Естьконкретныйкомментарийотонкойтканиарендногокостюма,нечастотность/неусловиевсехпрокатов."
+      },
+      {
+        "url": "https://www.reddit.com/r/seoul/comments/1wyyckt/where_do_you_take_friends_or_family_on_their/",
+        "checkedAt": "2026-10-23T10:15:43.841Z",
+        "method": "Независимыйwebopen",
+        "finding": "Непредставительноеобсуждениепервоговизита;положительноепрогулочноеотношениекдворцунепревращеновнорму/личныйопыт."
+      }
+    ],
+    "moneyCalculation": {
+      "engine": "JSBigInt",
+      "rateDate": "2026-10-23",
+      "examples": [
+        [
+          "3000KRW",
+          "183.6111RUB",
+          "180RUB"
+        ],
+        [
+          "2400KRW",
+          "146.88888RUB",
+          "150RUB"
+        ],
+        [
+          "200USD",
+          "16225.10RUB",
+          "16200RUB"
+        ]
+      ]
+    },
+    "demandEvidence": "research/semantics-evidence-2026-10-23.md;.run/20261023/gsc-korea-baseline.json;PL04;повторныйUIсъёмнеclaim",
+    "readerTest": false,
+    "buildCiLive": false
+  },
+  "photoEvidence": [
+    {
+      "id": "cover",
+      "path": "src/content/blog/_images/kenbokkun-seoul/cover.jpg",
+      "sha256": "be00af61d511f85245375a38f278b7ee09574dfa10df53110f161c0731c3ca4b",
+      "creator": "Ethan Doyle White",
+      "license": "CC BY-SA",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Geunjeongjeon_Hall.jpg",
+      "title": "Geunjeongjeon Hall",
+      "changes": "Уменьшение и JPEG-сжатие; архивная фотография.",
+      "checkedAt": "2026-10-23",
+      "viewedByThisReviewer": true,
+      "provenanceMethod": "Commonsdescription/licensingсамостоятельнооткрытыweb;автор/лицензия/объектсопоставлены,точныйлокальныйJPEGпросмотрен.",
+      "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+    },
+    {
+      "id": "gyeonghoeru",
+      "path": "src/content/blog/_images/kenbokkun-seoul/gyeonghoeru.jpg",
+      "sha256": "b5010380a9e2d8cf0eb499cbac2bd1053bc62377f070743b26e0ace40b104302",
+      "creator": "Kim Dae Jeung",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "source": "https://commons.wikimedia.org/wiki/File:Gyeonghoeru_1.jpg",
+      "title": "Gyeonghoeru 1",
+      "changes": "Уменьшение и JPEG-сжатие; архивная фотография.",
+      "checkedAt": "2026-10-23",
+      "viewedByThisReviewer": true,
+      "provenanceMethod": "Commonsdescription/licensingсамостоятельнооткрытыweb;автор/лицензия/объектсопоставлены,точныйлокальныйJPEGпросмотрен.",
+      "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+    },
+    {
+      "id": "hyangwonjeong",
+      "path": "src/content/blog/_images/kenbokkun-seoul/hyangwonjeong.jpg",
+      "sha256": "ac943aea83132d1cf7a1dd32e9252d2d6532f9ad524642951cfbfc4ae702a022",
+      "creator": "Kim Dae Jeung",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "source": "https://commons.wikimedia.org/wiki/File:Hyangwonjeong_1.jpg",
+      "title": "Hyangwonjeong 1",
+      "changes": "Уменьшение и JPEG-сжатие; архивная фотография.",
+      "checkedAt": "2026-10-23",
+      "viewedByThisReviewer": true,
+      "provenanceMethod": "Commonsdescription/licensingсамостоятельнооткрытыweb;автор/лицензия/объектсопоставлены,точныйлокальныйJPEGпросмотрен.",
+      "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+    },
+    {
+      "id": "roof",
+      "path": "src/content/blog/_images/kenbokkun-seoul/roof.jpg",
+      "sha256": "6b7142db437e16a6eeb40a7cd4a813a53d04b479359d8ede7b4806eef6affb81",
+      "creator": "Epicgenius",
+      "license": "CC BY-SA",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Gyeongbokgung_Mar_2025_72.jpg",
+      "title": "Gyeongbokgung Mar 2025 72",
+      "changes": "Уменьшение и JPEG-сжатие; архивная фотография.",
+      "checkedAt": "2026-10-23",
+      "viewedByThisReviewer": true,
+      "provenanceMethod": "Commonsdescription/licensingсамостоятельнооткрытыweb;автор/лицензия/объектсопоставлены,точныйлокальныйJPEGпросмотрен.",
+      "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+    }
+  ],
+  "diagram": {
+    "path": "src/content/blog/_images/kenbokkun-seoul/route.svg",
+    "sha256": "6245bc809ff2644f23bd580409d4484ce0840970a2a60d0e608ba20d622c98df",
+    "preview": "work/kenbokkun-route-402.png",
+    "previewViewed": true,
+    "finding": "Южныеворота/Heungnyemun/тронныйдвор,павильонкзападу,пруднасевере;пунктир—порядок,немасштабинеточныедорожки.402pxчитаемо."
+  },
+  "affiliateCoverageReview": {
+    "registry": "reviews/trip-service-coverage.json",
+    "section": "Нужна ли экскурсия или ханбок?",
+    "target": "https://www.sputnik8.com/ru/seoul/activities/88525-seul-epohi-koroley-i-chosona",
+    "helper": "tpkDeep('sputnik8',exactURL,'kenbokkun_history')",
+    "rel": "sponsored noopener",
+    "lateFirstCtaExceptionApprovedEditorially": true,
+    "reason": "Сначалаполныйответосамостоятельномпосещенииибесплатныйанглийскийгид;платныйгородскойтурнеобязателени не гарантируетвыбранныйдворец. РаннийCTAсоздавалбывпечатлениеобязательногобилета. Конкретная причина вcoverageReasonпрочитана.",
+    "browserProduct": "Exactproductнезависимопрочитаннативно;форма24Oct09/1–4/$200безначалабронирования. Партнёрскийredirectпроверенавтором,рецензентнеделалдополнительныйтестовыйпартнёрскийклик.",
+    "revenueV2": "PENDING_REQUIRED_GATES",
+    "payment": "NOT_TESTED_NO_ORDER"
+  },
+  "incomingLinks": [
+    {
+      "source": "src/data/related-posts.js",
+      "destination": "/blog/kenbokkun-seoul/",
+      "context": "south-korea",
+      "status": "SOURCE_PREPARED_PENDING_RENDER"
+    },
+    {
+      "source": "src/content/blog/south-korea-visa-2026.mdx",
+      "destination": "/blog/kenbokkun-seoul/",
+      "context": "Первая прогулка по столице после подготовки документов",
+      "status": "SOURCE_PREPARED_PENDING_RENDER"
+    }
+  ]
+}

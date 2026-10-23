@@ -26,6 +26,7 @@ export const RELATED_POSTS = {
     { slug: 'japan-golden-week-2026', title: 'Золотая неделя в Японии 2026', kind: 'season' },
   ],
   'south-korea': [
+    { slug: 'kenbokkun-seoul', title: 'Кёнбоккун: билеты, караул и маршрут по дворцу', kind: 'guide' },
     { slug: 'south-korea-visa-2026', title: 'Виза в Южную Корею 2026: K-ETA, сроки, что спросят на границе', kind: 'visa' },
   ],
   'antarctica': [
