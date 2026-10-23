@@ -1,10 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { auditArticlePlacement } from '../scripts/article-affiliate-placement.mjs';
 import { auditMonetization } from '../scripts/monetization-site-audit.mjs';
+import { classifyPage } from '../src/data/monetization.js';
+
+test('every commercial source article is registered before an expensive build', () => {
+  const coverage = JSON.parse(readFileSync(new URL('../reviews/article-affiliate-coverage.json', import.meta.url))).articles;
+  const files = readdirSync(new URL('../src/content/blog/', import.meta.url)).filter(file => /\.mdx?$/.test(file));
+  for (const file of files) {
+    const slug = file.replace(/\.mdx?$/, '');
+    if (classifyPage(`/blog/${slug}/`).intent === 'none') continue;
+    assert.ok(Object.hasOwn(coverage, slug), `${slug}: missing article-affiliate coverage; trip-service coverage is a different registry`);
+  }
+});
 const aff = '<a href="https://ostrovok.tpk.mx/example?erid=test&sub_id=test" rel="sponsored">Отели</a>';
 test('общий финал и sticky не скрывают отсутствие ссылки в тексте', () => {
   const r = auditArticlePlacement(`<div class="prose"><p>Выбираем жильё.</p></div><p class="post-end-money">${aff}</p><aside>${aff}</aside>`);
