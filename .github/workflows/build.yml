@@ -62,6 +62,11 @@ jobs:
             astro-assets-v2-${{ runner.os }}-
             astro-assets-${{ runner.os }}-
 
+      # Only image assets are reusable: restored rendered content can retain an old rehype result.
+      - name: Recompile content with the current article plugins
+        if: steps.scope.outputs.mode != 'accounting'
+        run: rm -f node_modules/.astro/data-store.json
+
       - run: npm run build
         if: steps.scope.outputs.mode != 'accounting'
         env:
