@@ -15,11 +15,12 @@ export async function inspectHotelViewport(browser, path, width, inspect) {
     const count = await images.count();
     assert(count > 0, `No hotel photographs at ${path}`);
     for (let offset = 0; offset < count; offset += 4) {
-      const results = await Promise.allSettled(
-        Array.from({ length: Math.min(4, count - offset) }, (_, index) => inspect(images.nth(offset + index))),
-      );
-      const failure = results.find(result => result.status === 'rejected');
-      if (failure) throw failure.reason;
+      // The inspector already bounds actual decodes/HTTP probes to four images.
+      // One locator group avoids four separate browser RPC/snapshot sequences
+      // for the same bounded batch, while retaining every real image assertion.
+      let group = images.nth(offset);
+      for (let index = 1; index < Math.min(4, count - offset); index++) group = group.or(images.nth(offset + index));
+      await inspect(group);
     }
   } finally {
     await context.close();
