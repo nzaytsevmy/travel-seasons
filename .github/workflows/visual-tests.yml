@@ -234,11 +234,11 @@ jobs:
     needs: prepare
     runs-on: ubuntu-latest
     # Без лимита job наследовал дефолтные 6 ч — зависший прогон крутился часами.
-    # Measured setup8–10m + complete suite34m + reporting reserve; inner suite budget40m.
-    timeout-minutes: 60
-    # Прогон скриншотов делится на четыре части, каждая на своём раннере: было
-    # 10,4 минуты подряд, стало примерно три параллельно. Playwright сам режет
-    # набор по --shard и не требует, чтобы части были равными.
+    # Balanced native work projects about47m. Keep60m inside Playwright and
+    # another15m for setup, exact build transfer, teardown and original reports.
+    timeout-minutes: 75
+    # Four runners retain the complete matrix. Native non-hotel quarters keep
+    # their grouping; interleaved hotel cases avoid concentrating Retina work.
     strategy:
       fail-fast: false
       matrix:

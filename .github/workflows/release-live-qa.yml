@@ -133,7 +133,7 @@ jobs:
           console.log(JSON.stringify(value));
           JS
       - name: Check every hotel gallery, booking target and country journey
-        run: npx playwright test tests/hotel-guides.spec.ts tests/hotel-retina.spec.ts tests/hotel-referral-browser.spec.ts --project="$HOTEL_PROJECT" --shard="$HOTEL_SHARD/4" --reporter=line,json
+        run: node scripts/run-hotel-live-shard.mjs "$HOTEL_SHARD"
       - name: Verify published build did not change during hotel journeys
         if: always()
         run: |
