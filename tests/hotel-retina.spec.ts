@@ -7,7 +7,7 @@ test.use({ deviceScaleFactor: 2 });
 const widths = [402, 767, 768, 1024, 1280, 1440, 1920];
 
 for (const [country] of readyHotelCollections()) {
-  test(`фотографии отелей сохраняют детализацию 2×: ${country}`, async ({ context, request }) => {
+  test(`фотографии отелей сохраняют детализацию 2×: ${country}`, async ({ context }) => {
     test.setTimeout(180_000);
     const dimensions = new Map<string, { width: number; height: number }>();
     const decodedImages = new Map<string, { width: number; height: number }>();
@@ -15,7 +15,7 @@ for (const [country] of readyHotelCollections()) {
     for (const width of widths) {
       // A new context must perform its own decode, even for a previously seen URL.
       decodedImages.clear();
-      await inspectHotelViewport(context.browser(), path, width, async images => {
+      await inspectHotelViewport(context.browser(), path, width, async (images, readBody) => {
       await images.evaluateAll(async nodes => {
         nodes.forEach(node => { (node as HTMLImageElement).loading = 'eager'; });
         // Let the freshly selected source reach a rendered frame before decoding.
@@ -77,10 +77,9 @@ for (const [country] of readyHotelCollections()) {
       const missingUrls = [...new Set(rows.map(row => row.url))].filter(url => !dimensions.has(url));
       for (let offset = 0; offset < missingUrls.length; offset += 4) {
         const fetched = await Promise.allSettled(missingUrls.slice(offset, offset + 4).map(async url => {
-          // One retry for ECONNRESET only; HTTP and pixel failures still fail.
-          const response = await request.get(url, { maxRetries: 1 });
-          expect(response.status()).toBe(200);
-          const metadata = await sharp(await response.body()).metadata();
+          // The real displayed source has decoded above. Validate the exact
+          // delivered file bytes; do not download that same URL a second time.
+          const metadata = await sharp(await readBody(url)).metadata();
           dimensions.set(url, { width: metadata.width!, height: metadata.height! });
         }));
         const failed = fetched.find(result => result.status === 'rejected');

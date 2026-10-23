@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { inspectHotelViewport } from '../scripts/hotel-retina-loading.mjs';
 
-function fixture(count, navigationError) {
+function fixture(count, navigationError, responses = []) {
   const events = [];
   let contexts = 0;
   const locator = indices => ({ indices, or(other) { return locator([...new Set([...indices, ...other.indices])]); } });
@@ -15,8 +15,10 @@ function fixture(count, navigationError) {
         return {
           async newPage() {
             events.push(['page', id]);
+            let responseListener;
             return {
-              async goto(path) { events.push(['visit', id, path]); if (navigationError) throw navigationError; },
+              on(event, listener) { assert.equal(event, 'response'); responseListener = listener; },
+              async goto(path) { events.push(['visit', id, path]); if (navigationError) throw navigationError; for (const response of responses) responseListener?.(response); },
               locator() { return { async count() { return count; }, nth(index) { return locator([index]); } }; },
             };
           },
@@ -87,4 +89,44 @@ test('Retina inspects four-photo locator groups without repeating one-image brow
   });
   assert.equal(calls, 3, 'Eleven photos need three bounded locator groups, not eleven separate inspection RPC sequences');
   assert.deepEqual(seen, Array.from({ length: 11 }, (_, index) => index));
+});
+
+const imageResponse = (status, body) => ({
+  url: () => 'https://traveltribe.ru/_astro/actual-hotel.webp',
+  request: () => ({ resourceType: () => 'image' }),
+  status: () => status,
+  body,
+});
+
+test('Retina inspects the exact image response observed before navigation without another HTTP request', async () => {
+  const bytes = Buffer.from([0x52, 0x49, 0x46, 0x46]);
+  let reads = 0;
+  const { browser } = fixture(1, undefined, [imageResponse(200, async () => { reads++; return bytes; })]);
+  await inspectHotelViewport(browser, '/hotels/chile/', 1920, async (_group, readBody) => {
+    assert.strictEqual(await readBody('https://traveltribe.ru/_astro/actual-hotel.webp'), bytes);
+  });
+  assert.equal(reads, 1);
+});
+
+test('Retina refuses a selected source without an observed browser response', async () => {
+  const { browser } = fixture(1);
+  await assert.rejects(inspectHotelViewport(browser, '/hotels/chile/', 1920, async (_group, readBody) => {
+    await readBody('https://traveltribe.ru/_astro/missing.webp');
+  }), /No observed browser image response/);
+});
+
+test('Retina refuses a non-200 browser image response before reading its bytes', async () => {
+  const { browser } = fixture(1, undefined, [imageResponse(404, () => assert.fail('Do not decode HTTP errors'))]);
+  await assert.rejects(inspectHotelViewport(browser, '/hotels/chile/', 1920, async (_group, readBody) => {
+    await readBody('https://traveltribe.ru/_astro/actual-hotel.webp');
+  }), /HTTP 404/);
+});
+
+test('Retina preserves a failed browser image body and closes its context', async () => {
+  const failure = new Error('Image response body incomplete');
+  const { browser, events } = fixture(1, undefined, [imageResponse(200, async () => { throw failure; })]);
+  await assert.rejects(inspectHotelViewport(browser, '/hotels/chile/', 1920, async (_group, readBody) => {
+    await readBody('https://traveltribe.ru/_astro/actual-hotel.webp');
+  }), error => error === failure);
+  assert.deepEqual(events.at(-1), ['close', 1]);
 });
