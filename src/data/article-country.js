@@ -1,36 +1,11 @@
-// Связка «статья блога → направление» по меткам статьи.
-//
-// Метки писались людьми и не совпадают с именами направлений буквально:
-// направление зовётся «Бали & Lombok», а метка — «Бали»; «Индия (Гоа)» против
-// метки «Гоа». Поэтому у каждого направления берём набор ключей: полное имя,
-// его слова и слаг. Совпадение по любому ключу считается попаданием.
-//
-// Замер 13.08.2026: по полному имени совпадала 51 статья из 66, по ключам — 53;
-// остальные 13 — либо кросс-страновые темы (шенген, страховка, платежи, сборы
-// на море), либо страны, для которых у нас нет своей страницы (Азербайджан,
-// Черногория, Уганда). Для них страна не подставляется, и это правильно:
-// выдумывать ссылку на несуществующий раздел нельзя.
+// Compatibility helpers for article country navigation. The shared editorial
+// geography resolver owns the decision; tag order is never a country priority.
 
-import { DIRECTIONS } from './directions.js';
+import { blogGeography } from './editorial-geography.js';
 
-const KEYS = DIRECTIONS.map((d) => {
-  const words = d.region
-    .toLowerCase()
-    .split(/[&(),—-]+/)
-    .map((w) => w.trim())
-    .filter((w) => w.length > 2);
-  return { d, keys: new Set([d.region.toLowerCase(), d.slug, ...words]) };
-});
-
-/** Направление по меткам статьи или null. Первое совпадение по порядку меток. */
+/** Compatibility helper: ambiguous tags never choose the first country. */
 export function directionForTags(tags = []) {
-  for (const raw of tags) {
-    const t = String(raw).toLowerCase().trim();
-    for (const { d, keys } of KEYS) {
-      if (keys.has(t)) return d;
-    }
-  }
-  return null;
+  return blogGeography({slug:'',data:{tags}}).primaryDirection;
 }
 
 /**
