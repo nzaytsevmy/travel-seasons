@@ -19,7 +19,7 @@ jobs:
   required:
     name: Обязательные проверки
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 130
     steps:
       - uses: actions/checkout@v4
         with:
@@ -50,7 +50,7 @@ jobs:
             if (!files.length || files.length >= 3000) throw new Error('Incomplete PR file coverage');
             if (pr.user.login !== owner && !await validateBotPr(github, owner, repo, pr, files)) throw new Error('Untrusted PR origin');
             const names = requiredChecks(files.map((file) => file.filename));
-            const deadline = Date.now() + 115 * 60 * 1000;
+            const deadline = Date.now() + 125 * 60 * 1000;
             let previous;
             for (;;) {
               await getPr();

@@ -21,7 +21,7 @@ test('a shared deadline retains diagnostics and fails incomplete browser coverag
   if(args.includes('--list'))return {status:0,stdout:JSON.stringify(value),stderr:''};
   commands.push({project,timeout:Number(args.find(a=>a.startsWith('--global-timeout=')).split('=')[1])});
   const target=options.env.PLAYWRIGHT_JSON_OUTPUT_FILE;fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value));
-  clock += [24,8,8][commands.length-1]*60_000;
+  clock += [36,12,12][commands.length-1]*60_000;
   return {status:0,signal:null};
  };
  try {
@@ -30,7 +30,7 @@ test('a shared deadline retains diagnostics and fails incomplete browser coverag
   assert.equal(proof.parts.length,4);
   assert.equal(proof.parts.filter(part=>part.passed).length,3);
   assert.match(proof.parts[3].error,/budget exhausted.*coverage incomplete/);
-  assert.deepEqual(commands.map(c=>c.timeout),[40,16,8].map(m=>m*60_000));
+  assert.deepEqual(commands.map(c=>c.timeout),[60,24,12].map(m=>m*60_000));
   assert.equal(proof.globalCaseKeys.length,16);
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'tests/.html-report/balanced-shard.json'))),proof);
  } finally {fs.rmSync(root,{recursive:true,force:true});}

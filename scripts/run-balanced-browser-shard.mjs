@@ -5,7 +5,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-export const BROWSER_SUITE_BUDGET_MS = 40 * 60 * 1000;
+// Native balanced source a77f32ca completed every selected hotel case, but
+// forty minutes cut off the remaining site checks. Measured p90 hotel work
+// plus unchanged site cases projects about47minutes; retain a finite reserve.
+export const BROWSER_SUITE_BUDGET_MS = 60 * 60 * 1000;
 export const browserProjects = ['chromium-desktop', 'webkit-desktop', 'chromium-tablet', 'webkit-mobile'];
 const hotelFiles = new Set(['hotel-guides.spec.ts', 'hotel-retina.spec.ts', 'hotel-referral-browser.spec.ts']);
 export const isHotelCase = key => hotelFiles.has(JSON.parse(key)[1]);
