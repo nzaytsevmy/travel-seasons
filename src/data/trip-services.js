@@ -1,5 +1,6 @@
 import { bySlug } from './directions.js';
 import { classifyPage, buildCtaId } from './monetization.js';
+import { blogGeography } from './editorial-geography.js';
 import { aviasalesRoute, aviasalesUrl, cherehapaCountry, cherehapaTravel, ostrovokCountry, ostrovokCity, ostrovokSearch } from './affiliate.js';
 
 const MONTHS = ['january','february','march','april','may','june','july','august','september','october','november','december'];
@@ -11,7 +12,6 @@ const CITY_POSTS = {
   'chto-posmotret-v-gonkonge': { destination:'hong-kong', country:'china', city:'hong_kong', iata:'HKG', loc:'в Гонконге', route:'Гонконг' },
   'hanoi-one-day': { destination:'vietnam', country:'vietnam', city:'hanoi', iata:'HAN', loc:'в Ханое', route:'Ханой' },
 };
-const ARTICLE_DESTINATIONS={'hainan-guide-2026':'hainan'};
 const MULTI_COUNTRY=new Set(['guatemala-belize','costa-rica-panama']);
 const REGIONAL_STAY_CATALOG={
   'australia-east':'Австралии','australia-north':'Австралии',
@@ -29,13 +29,17 @@ export function planningEligible(pathname = '/') {
   return PAGE_TYPES.has(classifyPage(path).type);
 }
 
-export function tripServices({ pathname='/', destination, placement='planning' } = {}) {
+export function tripServices({ pathname='/', destination, placement='planning', geography } = {}) {
   const path = String(pathname).split(/[?#]/)[0];
   const slug = /^\/blog\/([^/]+)\//.exec(path)?.[1];
-  const city = CITY_POSTS[slug];
+  const cityProfile = CITY_POSTS[slug];
   const inferred = path.startsWith('/trips/') ? path.split('/')[3]
     : /^\/(?:packing|seasons|visa)\//.test(path) ? path.split('/')[2] : classifyPage(path).destination;
-  const dir = bySlug(city?.destination || ARTICLE_DESTINATIONS[slug] || (destination === undefined ? inferred : destination));
+  const article = geography || (slug ? blogGeography({slug}) : null);
+  const selected = article && article.source !== 'unclassified' ? article.monetizationDestination
+    : destination === undefined ? inferred : destination;
+  const city = cityProfile && (!article || article.source === 'unclassified' || cityProfile.destination === selected) ? cityProfile : null;
+  const dir = bySlug(city?.destination || selected);
   const known = Boolean(dir);
   const dest = dir?.slug || '';
   const loc = city?.loc || dir?.cases?.loc || '';

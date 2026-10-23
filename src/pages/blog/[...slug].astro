@@ -10,8 +10,7 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Footer from '../../components/Footer.astro';
 import TableOfContents from '../../components/post/TableOfContents.astro';
 import authorPhoto from '../../assets/author/nikita.jpg';
-import { DIRECTIONS } from '../../data/directions.js';
-import { directionForTags } from '../../data/article-country.js';
+import { blogGeography } from '../../data/editorial-geography.js';
 import { classifyPage, EXPENSIVE_DESTINATIONS } from '../../data/monetization.js';
 import { TP_LINKS, aviasalesRoute, youtravelCountry, cherehapaCountry, cherehapaTravel, ostrovokCountry, otelloStay } from '../../data/affiliate.js';
 import TripServices from '../../components/TripServices.astro';
@@ -111,46 +110,10 @@ function extractFAQs(body: string): Array<{ q: string; a: string }> {
 
 const faqs = extractFAQs(post.body);
 
-// «Куда дальше» — ведёт читателя из поста в конвертящие узлы (packing-чеклист,
-// калькулятор) и связывает pillar↔visa↔хаб → глубина/dwell (вес Яндекса).
-// Страну поста выводим из RELATED_POSTS. Раньше условие было «пост стоит ПЕРВЫМ
-// в списке кластера», и 13 статей, стоящих вторыми и ниже, получали общий блок
-// вместо своего, а заодно теряли список соседей по теме (он строится из того же
-// направления). У страницы про загранпаспорт в Абхазию из-за этого было 15
-// внутренних ссылок против 27 у соседней статьи того же кластера — замер 04.08.2026.
-//
-// ⛔ Бланкетно «любой пост из списка» чинить нельзя: 9 статей (оплата за границей,
-// eSIM, «сколько стоит неделя») входят сразу в несколько кластеров, и страновой
-// блок был бы для них враньём — им общий блок положен по делу.
-// Правило: сначала кластер, где пост стоит первым (его «дом»), иначе — кластер,
-// если он ровно один. Пост из нескольких кластеров остаётся с общим блоком.
-const ownDirs = DIRECTIONS.filter(d => d.relatedPosts?.some(p => p.slug === post.slug));
-// Третьим заходом — метки статьи. Замер 13.08.2026: по кластерам направление
-// находилось у 42 статей из 66, остальные 24 получали общий блок «Куда дальше»
-// со ссылкой на список стран вместо своей страны (в том числе Гагра, Рица,
-// пещера — где страна очевидна). По меткам добирается 10 из этих 24.
-const primaryDir = DIRECTIONS.find(d => d.relatedPosts?.[0]?.slug === post.slug)
-  ?? (ownDirs.length === 1 ? ownDirs[0] : null)
-  ?? directionForTags(post.data.tags || []);
-// У этих материалов намеренно несколько стран или весь рынок. Подставлять в
-// партнёрскую форму одну страну из навигационного кластера было бы скрытой
-// подменой обещания CTA, поэтому денежный контекст оставляем без destination.
-const MULTI_DESTINATION_POSTS = new Set([
-  // ⛔ 08.09.2026: у статьи про Кубу направление определяется по метке и даёт
-  // «Жильё на Кубе», хотя сама статья объясняет, что прямых рейсов нет с
-  // 12 февраля 2026 года. Кнопка спорила с текстом на живой странице. Материал
-  // и по сути сравнивает три страны — Кубу, Доминикану и Мексику.
-  'kuba-tury-2027',
-  'luchshie-goroda-dlya-molodyh-2026',
-  'novyy-god-2027-kuda-poehat',
-  'patagonia-2026',
-  'safari-afrika-2026',
-  'schengen-insurance-2026',
-  'schengen-visa-2026',
-  'skolko-stoit-nedelya-v-rossii-2026',
-  'travelata-2026',
-]);
-const monetizationDestination = MULTI_DESTINATION_POSTS.has(post.slug) ? '' : primaryDir?.slug;
+// One editorial context drives breadcrumbs, country navigation and travel services.
+const geography = blogGeography(post);
+const primaryDir = geography.primaryDirection;
+const monetizationDestination = geography.monetizationDestination;
 
 // Дорогие направления: первой денежной точкой идёт дорога или готовый тур, а не полис.
 // Решение Никиты 04.09.2026 по замеру 06.08–02.09: такие страницы доводят до партнёра
@@ -191,7 +154,7 @@ function главныйОффер() {
   }
   if (monetizationDestination) {
     const дом = RU_STAY_POSTS.has(monetizationDestination);
-    const stay = tripServices({pathname:`/blog/${post.slug}/`,destination:monetizationDestination,placement:'sticky'}).find(item=>item.offer==='stay')!;
+    const stay = tripServices({pathname:`/blog/${post.slug}/`,destination:monetizationDestination,geography,placement:'sticky'}).find(item=>item.offer==='stay')!;
     const href = дом ? otelloStay(метка) : stay.href;
     const label = stay.label.replace(/^Выбрать жильё/, 'Жильё');
     return { href, панель: label, финал: stay.label };
@@ -233,6 +196,8 @@ const crumbs = primaryDir
   ? [{ label: 'Блог', href: '/blog/' },
      { label: primaryDir.region.split(/[&(,—-]/)[0].trim(), href: `/${primaryDir.slug}/` },
      { label: themeLabel }]
+  : geography.places.length === 1 && geography.places[0].href
+  ? [{ label: 'Блог', href: '/blog/' }, { label: geography.places[0].label, href: geography.places[0].href }, { label: themeLabel }]
   : [{ label: 'Блог', href: '/blog/' }, { label: post.data.title }];
 
 const planVP = primaryDir ? (primaryDir.cases?.vP || primaryDir.cases?.acc || primaryDir.cases?.nom) : null;
@@ -399,7 +364,7 @@ if (faqs.length >= 2) {
         </p>
       )}
 
-      <TripServices destination={monetizationDestination || ''} heading={/vozvrat|perseidy/.test(post.slug) ? 'Подготовить следующую поездку' : 'Подготовить поездку'} />
+      <TripServices destination={monetizationDestination || ''} geography={geography} heading={/vozvrat|perseidy/.test(post.slug) ? 'Подготовить следующую поездку' : 'Подготовить поездку'} />
 
       <aside class="tg-sub">
         <p class="tg-sub-text">
@@ -423,6 +388,9 @@ if (faqs.length >= 2) {
           <>
             <h2 class="post-next-title">Куда дальше</h2>
             <ul class="post-next-grid">
+              {geography.places.filter(place => place.href).map(place => (
+                <li><a href={place.href}><b>{place.label}</b><span>Статьи и планирование поездки</span></a></li>
+              ))}
               <li><a href="/countries/"><b>Подобрать направление</b><span>Фильтр по визе, бюджету и сезону</span></a></li>
               <li><a href="/calculator/"><b>Рассчитать бюджет поездки</b><span>Перелёт, жильё и еда</span></a></li>
               <li><a href="/packing/"><b>Чек-листы вещей по странам</b><span>Что взять под погоду месяца</span></a></li>

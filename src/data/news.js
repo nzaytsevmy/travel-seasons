@@ -3,6 +3,7 @@
 // и тестами — иначе разъедется и появятся заметки, не видимые нигде.
 
 import { slugOrder } from './freshness.js';
+import { newsCountryIds, countryIds, geographyMatches } from './editorial-geography.js';
 
 export const TOPIC_LABEL = {
   visa: 'Визы и въезд',
@@ -132,7 +133,7 @@ export function clipDescription(s, max = 155, min = 100) {
  */
 export function newsForCountry(entries, slug, limit = 3) {
   return entries
-    .filter((e) => !e.data.archived && (e.data.countries ?? []).includes(slug))
+    .filter((e) => !e.data.archived && geographyMatches(newsCountryIds(e), slug))
     .sort(byDateDesc)
     .slice(0, limit);
 }
@@ -174,12 +175,12 @@ export function frontPageEntries(entries, limit = FEED_SIZE, now = new Date()) {
 // Same destination first, then the same question within it. A chronological
 // neighbour from an unrelated country must never masquerade as related news.
 export function relatedNews(entries, current, limit = 3, now = new Date()) {
-  const countries = new Set(current.data.countries ?? []);
+  const countries = new Set(countryIds(newsCountryIds(current)));
   const time = new Date(now).valueOf();
   if (!Number.isFinite(time)) throw new TypeError('Expected a valid news selection date.');
   return entries.filter(e => e.slug !== current.slug && !e.data.archived &&
     Number.isFinite(addedAt(e)) && addedAt(e) <= time &&
-    (e.data.countries ?? []).some(country => countries.has(country)))
+    countryIds(newsCountryIds(e)).some(country => countries.has(country)))
     .sort((a, b) => Number(b.data.topic === current.data.topic) - Number(a.data.topic === current.data.topic) ||
       byDateDesc(a, b)).slice(0, limit);
 }

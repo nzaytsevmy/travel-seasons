@@ -5,6 +5,21 @@
 // Тот же приём, что для affiliate.js (трекинг-плумбинг, не датированная фактура).
 
 export const RELATED_POSTS = {
+  'jordan': [
+    { slug: 'petra-iordaniya', title: 'Петра в Иордании: маршрут на день и второй заход', kind: 'practical' },
+  ],
+  'mexico': [
+    { slug: 'chichen-itsa', title: 'Чичен-Ица: что посмотреть, билет и утренний маршрут', kind: 'practical' },
+  ],
+  'kazakhstan': [
+    { slug: 'charynskiy-kanon', title: 'Чарынский каньон: день из Алматы и Долина замков', kind: 'practical' },
+  ],
+  'cambodia': [
+    { slug: 'angkor-vat', title: 'Ангкор-Ват: как осмотреть храм, галереи и Бакан', kind: 'practical' },
+  ],
+  'malaysia': [
+    { slug: 'bashni-petronas', title: 'Башни Петронас: билеты, подъём и прогулка по KLCC', kind: 'practical' },
+  ],
   'australia-east': [
     { slug: 'taronga-zoo-sydney', title: 'Таронга в Сиднее: что посмотреть и какой вход выбрать', kind: 'guide' },
   ],
@@ -26,6 +41,7 @@ export const RELATED_POSTS = {
     { slug: 'japan-golden-week-2026', title: 'Золотая неделя в Японии 2026', kind: 'season' },
   ],
   'south-korea': [
+    { slug: 'kenbokkun-seoul', title: 'Кёнбоккун: билеты, караул и маршрут по дворцу', kind: 'guide' },
     { slug: 'south-korea-visa-2026', title: 'Виза в Южную Корею 2026: K-ETA, сроки, что спросят на границе', kind: 'visa' },
   ],
   'antarctica': [

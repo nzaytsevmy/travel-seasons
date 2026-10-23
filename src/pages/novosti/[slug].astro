@@ -21,7 +21,7 @@ import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu, addedAt, newsUrl, feedEntries, relatedNews, clipTitle, clipDescription } from '../../data/news.js';
 import { pickNewsImage, newsImageNote } from '../../data/news-images.js';
-import { bySlug } from '../../data/directions.js';
+import { newsGeography } from '../../data/editorial-geography.js';
 import { NEWS_TOPICS, newsTopicUrl } from '../../data/news-topics.js';
 
 export async function getStaticPaths() {
@@ -47,7 +47,8 @@ const iso = (x) => new Date(x).toISOString().slice(0, 10);
 
 // Направления сайта, о которых эта заметка. Страна у заметки стоит всегда, но
 // направлением сайта она быть не обязана — ссылку даём только на существующие.
-const dirs = (d.countries ?? []).map((s) => bySlug(s)).filter(Boolean);
+const geography = newsGeography(entry);
+const dirs = geography.directions;
 const guides = dirs.flatMap((dir) => (dir.relatedPosts ?? []).slice(0, 2).map((p) => ({ ...p, dir })));
 
 const cover = pickNewsImage(d, entry.slug, 0);
@@ -125,10 +126,13 @@ const ldJson = {
       <div class="nvp-body"><Content /></div>
     </article>
 
-    {dirs.length > 0 && (
+    {geography.places.length > 0 && (
       <section class="nvp-section">
-        <h2>Если собираетесь {dirs[0].cases.vP}</h2>
+        <h2>{geography.places.length === 1 ? geography.places[0].label : 'Направления из новости'}</h2>
         <ul class="nvp-links">
+          {geography.places.filter(place => !place.direction).map(place => (
+            <li>{place.href ? <a href={place.href}>{place.label}: статьи и маршруты</a> : place.label}</li>
+          ))}
           {dirs.map((dir) => (
             <li><a href={`/${dir.slug}/`}>{dir.cases.nom}: сезоны, виза и бюджет</a></li>
           ))}
@@ -154,7 +158,7 @@ const ldJson = {
       </ul>
     </section>
 
-    <TripServices destination={dirs.length === 1 ? dirs[0].slug : ''} />
+    <TripServices destination={geography.monetizationDestination} geography={geography} />
   </main>
 
   <Footer planning={false} />

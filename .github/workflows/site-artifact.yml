@@ -47,6 +47,10 @@ jobs:
           restore-keys: |
             astro-assets-v2-${{ runner.os }}-
             astro-assets-${{ runner.os }}-
+      # Only image assets are reusable: restored rendered content can retain an old rehype result.
+      - name: Recompile content with the current article plugins
+        run: rm -f node_modules/.astro/data-store.json
+
       - run: npm run build
         env:
           SKIP_HTML_MIN: ${{ inputs.skip_html_min }}

@@ -1,4 +1,5 @@
-import { directionForTags, countryLinks } from '../src/data/article-country.js';
+import { countryLinks } from '../src/data/article-country.js';
+import { blogGeography } from '../src/data/editorial-geography.js';
 
 /**
  * Строка «ещё по стране» сразу под капсулой-ответом «Если коротко».
@@ -26,7 +27,10 @@ export default function rehypeCountryRow() {
     if (!/src\/content\/blog\//.test(path)) return;
 
     const fm = file.data?.astro?.frontmatter || {};
-    const direction = directionForTags(fm.tags || []);
+    const slug = path.split('/').pop().replace(/\.mdx?$/, '');
+    // The same reviewed article context drives this early row and the footer.
+    // Tags alone lose a region when both country and region are present.
+    const direction = blogGeography({ slug, data: fm }).primaryDirection;
     if (!direction) return;
 
     const children = tree.children || [];
@@ -54,7 +58,6 @@ export default function rehypeCountryRow() {
     };
     walk(children[capsuleAt]);
 
-    const slug = path.split('/').pop().replace(/\.mdx?$/, '');
     // Статья сама про визу — не предлагать ей визовую страницу того же
     // направления: это то же намерение, читатель уже здесь.
     const tags = (fm.tags || []).map((t) => String(t).toLowerCase().trim());

@@ -1,8 +1,8 @@
 ---
 import { tripServices } from '../data/trip-services.js';
-interface Props { destination?: string; heading?: string; pathname?: string; }
-const { destination, heading='Подготовить поездку', pathname=Astro.url.pathname } = Astro.props;
-const items = tripServices({pathname,destination});
+interface Props { destination?: string; heading?: string; pathname?: string; geography?: { source: string; monetizationDestination: string }; }
+const { destination, geography, heading='Подготовить поездку', pathname=Astro.url.pathname } = Astro.props;
+const items = tripServices({pathname,destination,geography});
 ---
 <section class="trip-services" data-trip-planning aria-labelledby="trip-services-title">
   <h2 id="trip-services-title">{heading}</h2>
