@@ -29,6 +29,13 @@ for (const destination of DIRECTIONS.map(d => d.slug)) {
       expect(href.searchParams.get(tour.partner === 'youtravel' ? 'sub1' : 'sub_id')).toContain('tour');
       await expect(card.locator('img')).toHaveAttribute('loading', 'lazy');
       await expect.poll(() => card.locator('img').evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+      const pixels = await card.locator('img').evaluate(async (img: HTMLImageElement) => {
+        const probe = new Image();
+        probe.src = img.currentSrc;
+        await probe.decode();
+        return { encodedWidth:probe.naturalWidth, requiredWidth:Math.ceil(img.getBoundingClientRect().width * devicePixelRatio) };
+      });
+      expect(pixels.encodedWidth + 1, `${tour.id}: photo resolution at device pixel ratio`).toBeGreaterThanOrEqual(pixels.requiredWidth);
       expect(await link.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
