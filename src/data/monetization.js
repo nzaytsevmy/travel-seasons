@@ -248,7 +248,7 @@ export function isGenericAffiliateUrl(href, partnerName) {
   if (partnerName === 'aviasales') return !targetUrl || !targetUrl.pathname.includes('/search/');
   if (partnerName === 'cherehapa') return !targetUrl || !(targetUrl.searchParams.get('countries[0]') || targetUrl.searchParams.get('countryGroups[0]'));
   if (partnerName === 'ostrovok') return !targetUrl || path === '' || path === '/hotel';
-  if (partnerName === 'youtravel') return !targetUrl || !/\/tours\/(?:country|region)\//.test(path);
+  if (partnerName === 'youtravel') return !targetUrl || !/\/tours\/(?:country\/|region\/|\d+\/)/.test(path);
   return false;
 }
 

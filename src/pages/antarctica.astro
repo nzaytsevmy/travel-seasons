@@ -1,12 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import TourPicks from '../components/TourPicks.astro';
 import ClimateChart from '../components/ClimateChart.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Footer from '../components/Footer.astro';
 import PricingCards from '../components/post/PricingCards.astro';
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 // Свои кадры из поездки в декабре 2024 — те же, что в статье про круиз (в описи происхождения — own).
 import фотоАйсберг from '../content/blog/_images/antarctica/iceberg-blue.jpg';
+const ANTARCTICA_HERO_WIDTHS = [640, 672, 768, 1024, 1280, 1520];
+const ANTARCTICA_HERO_SIZES = '(max-width: 800px) calc(100vw - 32px), 696px';
+const heroPreload = await getImage({src:фотоАйсберг, widths:ANTARCTICA_HERO_WIDTHS, sizes:ANTARCTICA_HERO_SIZES, format:'webp', quality:66});
 import фотоПингвин from '../content/blog/_images/antarctica-gentoo.jpg';
 import фотоЛёд from '../content/blog/_images/antarctica-blue-ice.jpg';
 import фотоПингвинБотинки from '../content/blog/_images/antarctica-penguin-close.jpg';
@@ -125,6 +129,9 @@ const ldJson = {
 
 ---
 <Layout
+  destinationFontProfile="year"
+  preloadImageSrcset={heroPreload.srcSet.attribute}
+  preloadImageSizes={ANTARCTICA_HERO_SIZES}
   title="Антарктида 2026: круиз из Москвы, цены, виза, сезоны"
   description="Путешествие в Антарктиду из России в 2026: круиз от 750 000 ₽, маршрут через Буэнос-Айрес и Ушуайю, виза в Аргентину не нужна, сезон с ноября по март."
   canonical={url}
@@ -143,7 +150,7 @@ const ldJson = {
     </header>
 
     <figure class="hub-hero">
-      <Image src={фотоАйсберг} alt="Голубой айсберг в антарктических водах" widths={[640, 1024, 1520]} sizes="(max-width: 800px) 100vw, 900px" formats={['webp']} quality={74} loading="eager" fetchpriority="high" />
+      <Image src={фотоАйсберг} alt="Голубой айсберг в антарктических водах" widths={ANTARCTICA_HERO_WIDTHS} sizes={ANTARCTICA_HERO_SIZES} format="webp" quality={66} loading="eager" fetchpriority="high" />
     </figure>
 
     <section class="hub-tldr">
@@ -197,6 +204,8 @@ const ldJson = {
       ]} />
       <p class="hub-note">Все варианты «тур в Антарктиду цена дешево» дешевле 700k ₽ — это либо непонимание что покупают, либо мошенники. <a href="/blog/antarctica-cruise-2026/#сколько-стоит-круиз-в-антарктиду-из-москвы-в-2026">Детальная разбивка бюджета по статьям</a></p>
     </section>
+
+    <TourPicks destination="antarctica" />
 
     <section class="hub-section">
       <h2>Когда ехать — расклад по месяцам</h2>

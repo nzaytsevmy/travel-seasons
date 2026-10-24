@@ -1,0 +1,70 @@
+---
+import { Image } from 'astro:assets';
+import { TOUR_PHOTOS } from '../data/tour-photos.js';
+import { tourCollection, tourAffiliateUrl, tourPrice, tourRatingLabel, TOUR_PARTNERS } from '../data/tour-picks.js';
+interface Props { destination: string; }
+const { destination } = Astro.props;
+const tours = tourCollection(destination);
+const groups = [
+  { id: 'day', heading: 'Экскурсии и билеты', tours: tours.filter(t => t.kind !== 'multiday') },
+  { id: 'multiday', heading: 'Авторские туры на несколько дней', tours: tours.filter(t => t.kind === 'multiday') },
+].filter(group => group.tours.length);
+---
+{tours.length >= 3 && <section class="tour-picks" id="ekskursii" aria-labelledby="tour-picks-title" data-tour-picks data-volatile>
+  <h2 id="tour-picks-title">Экскурсии и впечатления</h2>
+  <p class="tour-intro">Выбрали по программе и отзывам путешественников. Даты, состав группы и окончательную стоимость проверьте перед бронированием.</p>
+  {groups.map(group => <div class="tour-group">
+    <h3 id={`tour-group-${group.id}`}>{group.heading}</h3>
+    <ul class:list={['tour-list', {'tour-list-single':group.tours.length === 1, 'tour-list-pair':group.tours.length === 2}]} aria-labelledby={`tour-group-${group.id}`} tabindex="0">
+      {group.tours.map(tour => {
+        const link = tourAffiliateUrl(tour, Astro.url.pathname);
+        const actionLabel = tour.kind === 'multiday' ? 'Посмотреть тур' : tour.kind === 'ticket' ? 'Выбрать билет' : 'Посмотреть экскурсию';
+        const photo = TOUR_PHOTOS[tour.image];
+        if (!photo) throw new Error(`Missing tour editorial photo: ${tour.id}`);
+        return <li class="tour-card" data-tour-id={tour.id}>
+          <figure class="tour-figure"><Image src={photo} alt={tour.imageAlt} width={600} height={400} widths={[320, 600, 960, 1200, 1280]} sizes={group.tours.length < 3 ? '(max-width: 767px) 90vw, 50vw' : '(max-width: 767px) 82vw, (max-width: 1000px) 50vw, 33vw'} fit="cover" position={tour.imagePosition || 'centre'} format="webp" loading="lazy" class="tour-photo" /><figcaption>{tour.imageAlt}</figcaption></figure>
+          <div class="tour-copy">
+            <p class="tour-location">{tour.city} · {TOUR_PARTNERS[tour.partner].name}</p>
+            <h4>{tour.title}</h4>
+            <p class="tour-reason">{tour.reason}</p>
+            <p class="tour-details">{tour.duration} · {tour.language}</p>
+            {tour.includes && <p class="tour-includes">Включено: {tour.includes}</p>}
+            <p class="tour-rating" data-rating-scope={tour.ratingScope} aria-label={`${tourRatingLabel(tour)}: оценка ${tour.rating} из 5, отзывов: ${tour.reviewCount}`}>{tour.ratingScope !== 'tour' && <span>{tourRatingLabel(tour)}: </span>}{String(tour.rating).replace('.', ',')} / 5 <span>· Отзывов: {tour.reviewCount}</span></p>
+            {tour.ratingScope === 'organizer' && <p class="tour-details">{tour.tourReviewCount ? `Отзывов об этом туре: ${tour.tourReviewCount}.` : 'Об этом туре отзывов пока нет.'}{tour.quality?.organizerReviewCount < 10 && ' Оценка организатора — по небольшой выборке.'}</p>}
+            {tour.ratingScope === 'tour' && tour.quality?.mode === 'combined' && tour.quality.organizerReviewCount < 10 && <p class="tour-details">Небольшая выборка: учитывали также программу и историю организатора.</p>}
+            <div class="tour-action">
+              <p class="tour-price">{tourPrice(tour)}</p>
+              <a href={link.href} rel="sponsored noopener" target="_blank" data-cta-id={link.ctaId} data-placement="tour_picks" data-destination={destination} data-tour-id={tour.id} data-deep-link="offer" aria-label={`${actionLabel}: ${tour.title} (откроется в новой вкладке)`}>{actionLabel}</a>
+            </div>
+          </div>
+        </li>;
+      })}
+    </ul>
+  </div>)}
+</section>}
+<style>
+  .tour-picks { padding-top:40px; min-width:0; }
+  .tour-picks h2 { margin:0; padding-top:24px; border-top:2px solid var(--text); font-family:var(--ff-display); font-weight:400; font-size:clamp(1.8rem,3.4vw,2.9rem); line-height:1.15; scroll-margin-top:80px; }
+  .tour-intro { max-width:65ch; margin:12px 0 24px; color:var(--text-dim); line-height:1.6; }
+  .tour-group + .tour-group { margin-top:32px; }
+  .tour-group h3 { margin:0 0 16px; font-family:var(--ff-display); font-size:1.3rem; font-weight:400; line-height:1.25; }
+  .tour-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:24px; padding:0; margin:0; list-style:none; }
+  .tour-list-pair { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .tour-list-single { grid-template-columns:1fr; }
+  .tour-list-single .tour-card { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+  .tour-card { min-width:0; display:flex; flex-direction:column; border:1px solid var(--line); }
+  .tour-photo { display:block; width:100%; height:auto; aspect-ratio:3/2; object-fit:cover; }
+  .tour-figure { margin:0; }
+  .tour-figure figcaption { padding:8px 16px 0; font-size:.75rem; line-height:1.4; color:var(--text-dim); }
+  .tour-copy { display:flex; flex-direction:column; padding:16px; flex:1; }
+  .tour-location,.tour-details,.tour-includes { color:var(--text-dim); font-size:.85rem; line-height:1.5; margin:0 0 12px; }
+  .tour-copy h4 { font-family:var(--ff-display); font-size:clamp(1.35rem,2vw,1.75rem); font-weight:400; line-height:1.15; margin:0 0 12px; overflow-wrap:anywhere; }
+  .tour-reason { margin:0 0 16px; line-height:1.55; font-size:.95rem; }
+  .tour-rating { margin:auto 0 16px; font-family:var(--ff-mono); font-size:.9rem; }
+  .tour-rating span { color:var(--text-dim); }
+  .tour-price { font-family:var(--ff-mono); font-size:.9rem; margin:0 0 12px; }
+  .tour-action a { display:flex; align-items:center; justify-content:center; min-height:44px; padding:10px 12px; background:var(--gold); color:#fff; font-family:var(--ff-body); font-weight:600; font-size:.9rem; text-decoration:none; }
+  .tour-action a:hover { text-decoration:underline; }
+  .tour-picks :focus-visible { outline:2px solid var(--gold); outline-offset:4px; }
+  @media(max-width:767px) { .tour-list { display:flex; gap:16px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:12px; } .tour-card { flex:0 0 84%; scroll-snap-align:start; } .tour-list-single .tour-card { display:flex; flex-basis:100%; } .tour-picks { padding-top:32px; } }
+</style>

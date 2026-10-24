@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Footer from '../components/Footer.astro';
 import BestHotels from '../components/BestHotels.astro';
+import TourPicks from '../components/TourPicks.astro';
 import EssentialsCard from '../components/EssentialsCard.astro';
 import MonthlyEvents from '../components/MonthlyEvents.astro';
 import ClimateChart from '../components/ClimateChart.astro';
@@ -108,7 +109,7 @@ const ldJson = {
 
 ---
 <Layout
-  preloadJournalFonts
+  destinationFontProfile="full"
   title="Япония 2026: гайд, виза, сезоны, бюджет для россиян"
   description="Поездка в Японию из России в 2026: виза бесплатна, бюджет от 50 долларов в день, лучшие сезоны — октябрь и ноябрь ради клёнов, конец марта ради сакуры."
   canonical={url}
@@ -259,6 +260,7 @@ const ldJson = {
 
     {/* КАК ДОБРАТЬСЯ И ГДЕ ЖИТЬ — из гайда автора (поездка в ноябре 2023), цены и время в пути сверены в его журнале */}
     <BestHotels destination="japan" />
+    <TourPicks destination="japan" />
 
     <section class="jp-section">
       <div class="jp-shead"><h2>Как добраться и где жить</h2></div>

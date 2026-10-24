@@ -13,6 +13,7 @@ import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
 import BestHotels from '../components/BestHotels.astro';
+import TourPicks from '../components/TourPicks.astro';
 import { hotelCollection } from '../data/hotels.js';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { Image, getImage } from 'astro:assets';
@@ -417,6 +418,7 @@ if (guide?.itinerary?.length) {
 }
 ---
 <Layout
+  destinationFontProfile="full"
   title={hubTitle}
   description={hubDesc}
   canonical={url}
@@ -649,6 +651,8 @@ if (guide?.itinerary?.length) {
         <p class="om-body om-linkline"><a href={экскурсии} rel="sponsored noopener" target="_blank">Экскурсии {d.cases.loc} с местными гидами</a> <span class="om-dim">расписание, отзывы и цена видны до оплаты</span></p>
       </section>
     )}
+
+    <TourPicks destination={d.slug} />
 
     <section class="om-sec" id="dengi">
       <h2>Сколько стоит поездка {d.cases.vP}</h2>

@@ -262,6 +262,20 @@ export const ostrovokSearch = (subId) =>
 export const youtravelSub = (subId) =>
   TP_LINKS.youtravel + (subId ? `&sub1=${cleanSubId(subId)}` : '');
 
+// Affise's redirect replaces the configured advertiser URL, including tracking.
+// Keep its observed partner/sid/click_id parameters. Macros must remain literal
+// inside the target before encoding the complete redirect once: otherwise Affise
+// forwards %7Bclickid%7D instead of generating the merchant's real click ID.
+// Verified against the default offer and concrete tour redirects, 24.10.2026.
+export function youtravelDeep(targetUrl, subId) {
+  const target = new URL(targetUrl);
+  if (target.protocol !== 'https:' || target.hostname !== 'youtravel.me' || target.username || target.password || target.port || target.search || target.hash || !target.pathname.startsWith('/tours/')) throw new Error('Invalid YouTravel target');
+  const pid = new URL(TP_LINKS.youtravel).searchParams.get('pid');
+  const trackedTarget = `${target.origin}${target.pathname}?partner=affise&click_id={clickid}&sid=${pid}&utm_medium=cpa&utm_source=${pid}&utm_campaign=affise&utm_content={sub1}`;
+  return `${youtravelSub(subId)}&redirect=${encodeURIComponent(trackedTarget)}`;
+}
+
+
 // YouTravel: SEO-каталоги стран и регионов из официальных sitemap, сверено
 // 30.08.2026. Affise принимает `redirect` как deep-link назначения; живой клик
 // проверен на Грузии. Значения здесь — не придуманные слаги: каждая страница
@@ -349,7 +363,7 @@ const YOUTRAVEL_DESTINATION = {
 export const youtravelCountry = (countrySlug, subId) => {
   const destination = YOUTRAVEL_DESTINATION[countrySlug];
   if (!destination) return youtravelSub(subId);
-  return youtravelSub(subId) + '&redirect=' + encodeURIComponent(`https://youtravel.me/tours/${destination}`);
+  return youtravelDeep(`https://youtravel.me/tours/${destination}`, subId);
 };
 
 
