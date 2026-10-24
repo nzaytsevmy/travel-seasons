@@ -1,48 +1,197 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "slug": "2026-09-22-titus-canyon-year-closure",
   "score": 4,
-  "reviewer": "Codex GPT-6 (news_lifecycle_review_20261006)",
-  "reviewedAt": "2026-10-06",
-  "sha256": "cc2e99ad2e7e110433a28c721844e7ec3da9a44fc3ddb448d8e575302184e5ec",
-  "rationale": "Оценка 4 сохранена после независимой проверки окончательного текста 6 октября. Текущая сводка NPS прямо обозначает односторонний участок Titus Canyon Road как закрытый на ремонт и ожидает открытия в мае 2027 года. Западный двухсторонний подъезд от North Highway до Fall Canyon Trailhead выделен отдельно: его закрытие запланировано с 27 октября до конца декабря. Заметка различает подъезды и не обещает точной даты возобновления; это важно для проезда через каньон и доступа к пешему маршруту. Формулировка «до конца декабря» передаёт NPS «through December» точнее, чем прежнее «до декабря».",
-  "risks": [
-    "NPS предупреждает, что состояние дорог может быстро меняться; открытость западного участка нужно сверять перед каждой поездкой.",
-    "С 27 октября планируется новое закрытие западного подъезда; reviewOn=27.10 отмечен в заметке, но status «действует» не заставляет scripts/news-lifecycle.mjs выполнить эту проверку."
-  ],
-  "blockingIssues": [],
-  "evidence": [
+  "reviewer": "Codex (news_review_20261024)",
+  "reviewerTask": "/root/news_review_20261024",
+  "authoredBy": "Codex (tt-author-20261024)",
+  "reviewedAt": "2026-10-24T07:40:08.034Z",
+  "checkedAt": "2026-10-24",
+  "approved": true,
+  "approvalScope": "EDITORIAL_ONLY",
+  "editorialVerdict": "PASS",
+  "releaseApproved": false,
+  "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
+  "classification": "UPDATE",
+  "baseCommit": "68d20b27117f48158eaa111f0d1e4523597c3c5f",
+  "rationale": "Убирает опасную старую возможность ехать к западному подъезду до27Oct. Актуальная строка закрывает всю Titus Canyon Road и прямо исключает пешую/велосипедную замену; май2027оставлен прогнозом.",
+  "ownAddition": "Адресное исключение каньона сопоставлено с общей строкой NPS, разрешающей велосипеды на части закрытых грунтовых дорог: общий допуск сюда не перенесён.",
+  "factReview": "NPS, Road Status 23 октября, 08:16 PT: Titus Canyon Road закрыта на ремонт паводковых повреждений, ожидаемое открытие в мае 2027 года; запрещены велосипеды и пеший проход. Разделения западной и односторонней частей в текущей записи нет.",
+  "sourceChecks": [
     {
-      "url": "https://home.nps.gov/deva/planyourvisit/conditions.htm",
-      "publishedOn": "2026-10-02",
-      "checkedOn": "2026-10-06",
-      "method": "Прямое чтение раздела Road Status на официальной странице NPS",
-      "finding": "One-way section closed for repairs; anticipated reopening May 2027. Western two-way section from North Highway to Fall Canyon Trailhead will close October 27, 2026 through December. Страница Last updated 02.10.2026."
-    },
-    {
-      "url": "https://www.nps.gov/deva/learn/news/titus-canyon-closing-oct-2-2026.htm",
-      "publishedOn": "2026-09-28",
-      "checkedOn": "2026-10-06",
-      "method": "Прямое чтение официального пресс-релиза NPS",
-      "finding": "Работы по ремонту и укреплению дороги были запланированы с 02.10.2026 по май 2027; фактическое закрытие устанавливает более свежая текущая сводка."
+      "url": "https://www.nps.gov/deva/planyourvisit/conditions.htm",
+      "name": "NPS — дорожная сводка 23 октября, прочитана 24 октября 2026",
+      "method": "Независимое чтение сохранённого основного текста; наличие файла или HTTP200 само по себе проверкой не считалось.",
+      "archive": ".run/20261024/sources/78ab7df125d2.txt",
+      "archiveSha256": "b921ff432fa8eb8846a03d68db6804892ef1cd38828f8d432911c124bcf4b568",
+      "status": "SUBSTANTIVE_TEXT_CHECKED",
+      "finding": "NPS, Road Status 23 октября, 08:16 PT: Titus Canyon Road закрыта на ремонт паводковых повреждений, ожидаемое открытие в мае 2027 года; запрещены велосипеды и пеший проход. Разделения западной и односторонней частей в текущей записи нет."
     }
   ],
-  "lifecycle": {
-    "reviewOn": "2026-10-27",
-    "reason": "В день планового закрытия западного подъезда проверить фактический статус по текущей сводке NPS; ручная проверка нужна, поскольку lifecycle-гейт status «действует» пропускает."
+  "contentHash": "d7008ddd91dd4201da15d78a3b933041e16ad871ab9238d61555311215d315ee",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из актуального штатного parseNote.",
+  "sourceSha256": "0654c2fa54d15a80dccb695c6fb6cdc09b02d3556eb4ab7b4ecdbe12716ee384",
+  "sourceSha256Scope": "SHA-256 полного Markdown включая frontmatter, точные bytes.",
+  "nativeClipTitle": "Тайтус-Каньон закрыт также для пеших и велосипедистов",
+  "clipTitleCodeSha256": "5ed6e7f7f14da11ff29d5fd9d3ae13bd8fa9b073b4f01a73a88bf00effde2ebd",
+  "clipTitleCodeHashScope": "Полный src/data/news.js; вызвана неизменённая штатная clipTitle.",
+  "photo": {
+    "image": "./_images/2026-09-22-titus-canyon-year-closure.jpg",
+    "imageSha256": "c9a282afd2a1130ded71a26b52a04e0dba9145be87b2775868348df4e0c1caab",
+    "creator": "Fabio Achilli from Milano, Italy",
+    "license": "CC BY",
+    "licenseURL": "https://creativecommons.org/licenses/by/2.0/",
+    "source": "https://commons.wikimedia.org/w/index.php?curid=109976752",
+    "title": "Лидфилд на маршруте через Тайтус-Каньон. Архивный снимок, не подтверждение нынешней доступности дороги.",
+    "alt": "Табличка посёлка Лидфилд среди сухих гор вдоль маршрута Тайтус-Каньон",
+    "changes": null,
+    "viewedByThisReviewer": true,
+    "visualReview": "Табличка Leadfield на фоне сухих гор; соответствует месту. Подпись прямо называет архивность и не обещает проезда.",
+    "provenanceMethod": "Рецензент прочитал первичную Commons-страницу в сохранённом full AX обычного Chrome; финальный JPEG независимо просмотрен.",
+    "provenanceArchive": ".run/20261024/photo-109976752.ax.txt",
+    "provenanceArchiveSha256": "18b13ac361ea92c352f510a3578f546d0fd9d7654aa0ff88178fdba3bc845bba",
+    "provenanceEvidence": null,
+    "provenanceEvidenceSha256": null,
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
   },
-  "checks": {
-    "capsuleWords": 51,
-    "bodyWords": 178,
-    "titleChars": 48,
-    "internalLink": "/usa/",
-    "internalLinkStatus": 200,
-    "photoViewedToday": false,
-    "photoSha256": "c9a282afd2a1130ded71a26b52a04e0dba9145be87b2775868348df4e0c1caab",
-    "mediaScope": "Фото не изменено; SHA-256 совпадает с прежней визуальной рецензией, повторного просмотра кадра не было.",
-    "scope": "Независимая адресная проверка изменённого текста, статуса, дат и первичных страниц NPS 06.10; без сборки, CI, публикации и live-проверки."
+  "photoProof": {
+    "image": "./_images/2026-09-22-titus-canyon-year-closure.jpg",
+    "imageSha256": "c9a282afd2a1130ded71a26b52a04e0dba9145be87b2775868348df4e0c1caab",
+    "creator": "Fabio Achilli from Milano, Italy",
+    "license": "CC BY",
+    "licenseURL": "https://creativecommons.org/licenses/by/2.0/",
+    "source": "https://commons.wikimedia.org/w/index.php?curid=109976752",
+    "title": "Лидфилд на маршруте через Тайтус-Каньон. Архивный снимок, не подтверждение нынешней доступности дороги.",
+    "alt": "Табличка посёлка Лидфилд среди сухих гор вдоль маршрута Тайтус-Каньон",
+    "changes": null,
+    "viewedByThisReviewer": true,
+    "visualReview": "Табличка Leadfield на фоне сухих гор; соответствует месту. Подпись прямо называет архивность и не обещает проезда.",
+    "provenanceMethod": "Рецензент прочитал первичную Commons-страницу в сохранённом full AX обычного Chrome; финальный JPEG независимо просмотрен.",
+    "provenanceArchive": ".run/20261024/photo-109976752.ax.txt",
+    "provenanceArchiveSha256": "18b13ac361ea92c352f510a3578f546d0fd9d7654aa0ff88178fdba3bc845bba",
+    "provenanceEvidence": null,
+    "provenanceEvidenceSha256": null,
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
   },
-  "contentHash": "ac2ffb2fb6da2e6c5e24b2bda456e154ef80dc63962756af817246e283d1743a",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256Scope": "full Markdown file bytes"
+  "research": {
+    "artifact": "work/google-news-20261024.md",
+    "artifactSha256": "3b9328206ffc47f65f8043d28ce25b76e62de5346e55061b401ee34eefcd12e8",
+    "mainTextsReadBy": "Указан в матрице: root и независимый Codex рецензент. Рецензент прочитал всю матрицу; лично перечитал primary факты и новые substantive deltas.",
+    "sequencingDefect": "Первичные черновики появились до обязательного Google-исследования. После обнаружения одобрение отложено, исследование выполнено, финальная редактура сопоставлена с матрицами. Дефект исходного порядка раскрыт.",
+    "snippetsOrAIAnswersCountedAsMainText": false
+  },
+  "internalLinkChecks": [
+    {
+      "url": "/novosti/2026-10-24-death-valley-flood-roads/",
+      "status": 404,
+      "final": "https://traveltribe.ru/novosti/2026-10-24-death-valley-flood-roads/",
+      "h1": "404 Not Found",
+      "localNew": true,
+      "interpretation": "Новый URL этого батча: 404 до выпуска, локальный Markdown существует; финальные build/deploy/live обязательны."
+    },
+    {
+      "url": "/usa/",
+      "status": 200,
+      "final": "https://traveltribe.ru/usa/",
+      "h1": "США 2026",
+      "localNew": false,
+      "interpretation": "Существующая страница, HTTP200 и соответствующий H1 проверены. Финальная изменённая версия ещё не опубликована."
+    }
+  ],
+  "criteria14": [
+    {
+      "id": 1,
+      "criterion": "Задача читателя",
+      "score": 10,
+      "evidence": "Один центральный ответ: Тайтус-Каньон закрыт также для пеших и велосипедистов. Открытие в мае 2027 года ожидается, точного дня нет. Закрытие всей Долины Смерти не заявлено; новая ссылка Death Valley должна выйти в том же пакете."
+    },
+    {
+      "id": 2,
+      "criterion": "Обоснование темы",
+      "score": 5,
+      "evidence": "Убирает опасную старую возможность ехать к западному подъезду до27Oct. Актуальная строка закрывает всю Titus Canyon Road и прямо исключает пешую/велосипедную замену; май2027оставлен прогнозом. Google-матрица work/google-news-20261024.md прочитана до финального одобрения; первоначальные черновики появились до обязательного исследования. Этот дефект последовательности не объявлен выполненным требованием."
+    },
+    {
+      "id": 3,
+      "criterion": "Место в проекте",
+      "score": 5,
+      "evidence": "Новые темы ведут на существующие тематические страницы; обновления сохраняют исторические URL и различают происшествия. Всесторонний аудит входящих связей/каннибализации финальной сборки не выполнялся."
+    },
+    {
+      "id": 4,
+      "criterion": "Полнота и прямой ответ",
+      "score": 10,
+      "evidence": "Весь title/TLDR/body прочитан, штатный checkTldr PASS. Открытие в мае 2027 года ожидается, точного дня нет. Закрытие всей Долины Смерти не заявлено; новая ссылка Death Valley должна выйти в том же пакете."
+    },
+    {
+      "id": 5,
+      "criterion": "Собственный вклад",
+      "score": 10,
+      "evidence": "Адресное исключение каньона сопоставлено с общей строкой NPS, разрешающей велосипеды на части закрытых грунтовых дорог: общий допуск сюда не перенесён."
+    },
+    {
+      "id": 6,
+      "criterion": "Факты и источники",
+      "score": 10,
+      "evidence": "NPS, Road Status 23 октября, 08:16 PT: Titus Canyon Road закрыта на ремонт паводковых повреждений, ожидаемое открытие в мае 2027 года; запрещены велосипеды и пеший проход. Разделения западной и односторонней частей в текущей записи нет."
+    },
+    {
+      "id": 7,
+      "criterion": "Числа и примеры",
+      "score": 10,
+      "evidence": "NPS, Road Status 23 октября, 08:16 PT: Titus Canyon Road закрыта на ремонт паводковых повреждений, ожидаемое открытие в мае 2027 года; запрещены велосипеды и пеший проход. Разделения западной и односторонней частей в текущей записи нет. Денежных расчётов или выдуманных количественных примеров нет."
+    },
+    {
+      "id": 8,
+      "criterion": "Исключения и применимость",
+      "score": 10,
+      "evidence": "Открытие в мае 2027 года ожидается, точного дня нет. Закрытие всей Долины Смерти не заявлено; новая ссылка Death Valley должна выйти в том же пакете. Пересмотр 2026-10-26."
+    },
+    {
+      "id": 9,
+      "criterion": "Авторство и доверие",
+      "score": 5,
+      "evidence": "Автор Codex (tt-author-20261024); рецензент другой. Личный опыт не заявлен. Модельное ревью не названо человеческим/читательским тестом; публичный byline финальной версии ожидает проверки."
+    },
+    {
+      "id": 10,
+      "criterion": "Редактура и естественный язык",
+      "score": 10,
+      "evidence": "Фактический и смысловой проходы полного текста выполнены. После конкретных замечаний перечитаны исправленные участки и зависимости. При первоначальном исследовательском пробеле одобрение было отложено; читательского теста не было."
+    },
+    {
+      "id": 11,
+      "criterion": "SEO-обещание и метаданные",
+      "score": 5,
+      "evidence": "Реальный штатный clipTitle: «Тайтус-Каньон закрыт также для пеших и велосипедистов» — смысл сохраняется. Даты события и добавления разведены. Canonical, H1/OG/description и SSR финальной сборки ещё не проверены."
+    },
+    {
+      "id": 12,
+      "criterion": "Ссылки и навигация",
+      "score": 5,
+      "evidence": "Все буквальные внутренние ссылки независимо проверены: .run/20261024/reviewer-links.json. Новый Death Valley имеет ожидаемый404 до выпуска и локальный исходник. Входящие связи и финальные URL/рендер требуют build/deploy/live."
+    },
+    {
+      "id": 13,
+      "criterion": "Оформление и доступность",
+      "score": 5,
+      "evidence": "Табличка Leadfield на фоне сухих гор; соответствует месту. Подпись прямо называет архивность и не обещает проезда. Лицензия/происхождение сопоставлены с данными; финальный JPEG просмотрен. Адаптив402/1280 и публичная /legal/photos/ ещё не проверены."
+    },
+    {
+      "id": 14,
+      "criterion": "Готовность выпуска",
+      "score": 0,
+      "evidence": "Обязательные build/CI/deploy/live, SSR/sitemap/feed и окончательная публичная атрибуция не выполнялись рецензентом. Выпуск HOLD; текстовая оценка не подтверждает production или измеренный эффект."
+    }
+  ],
+  "minimumFiveVerifiedTens": true,
+  "blockingIssues": [],
+  "limitations": [
+    "Только независимое модельное редакционное ревью; теста с реальным читателем не было.",
+    "Начальная последовательность research-before-draft нарушена; матрицы завершены перед финальным редактированием и одобрением.",
+    "Реестр111кандидатов содержит HEADLINE_TRIAGE; не все111основныхтекстов прочитаны, идеальность отбора не доказана.",
+    "Полный CI/build/deploy/live и публичная атрибуция ожидают выпуска владельцем.",
+    "Индексирование, поисковой спрос, клики, читательский успех и доход не измерены."
+  ],
+  "nextReview": "2026-10-26"
 }
