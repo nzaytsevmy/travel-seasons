@@ -27,6 +27,7 @@ for (const tour of TOUR_PICKS) {
   ids.add(tour.id);
   if (!known.has(tour.destination)) errors.push(`Unknown destination: ${tour.destination}`);
   if (tour.status !== 'approved') continue;
+  if (known.has(tour.city)) errors.push(`${tour.id}: destination ID leaked into the visible location`);
   errors.push(...tourErrors(tour).map(error => `${tour.id}: ${error}`));
   if (!tour.image || !existsSync(fileURLToPath(new URL(`../src/content/blog/_images/${tour.image}`, import.meta.url)))) errors.push(`${tour.id}: missing editorial photo`);
   if (tour.image && !hasPhotoRights(tour.image)) errors.push(`${tour.id}: photo rights are not documented for ${tour.image}`);
