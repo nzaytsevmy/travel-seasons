@@ -190,6 +190,9 @@ import photo187 from '../content/blog/_images/tour-picks/zagreb.jpg';
 import photo188 from '../content/blog/_images/tour-picks/zurich.jpg';
 import photo189 from '../content/blog/_images/zanzibar-2026/doors.jpg';
 import photo190 from '../content/blog/_images/zanzibar-2026/paje.jpg';
+import photo191 from '../content/blog/_images/tour-picks/riyadh-skyline.jpg';
+import photo192 from '../content/blog/_images/tour-picks/osorno-petrohue.jpg';
+
 export const TOUR_PHOTOS = {
   'altai-own/katun.jpg': photo0,
   'antarctica/iceberg-blue.jpg': photo1,
@@ -382,4 +385,6 @@ export const TOUR_PHOTOS = {
   'tour-picks/zurich.jpg': photo188,
   'zanzibar-2026/doors.jpg': photo189,
   'zanzibar-2026/paje.jpg': photo190,
+  'tour-picks/riyadh-skyline.jpg': photo191,
+  'tour-picks/osorno-petrohue.jpg': photo192,
 };
