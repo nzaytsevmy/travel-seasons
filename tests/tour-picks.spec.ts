@@ -19,7 +19,13 @@ for (const destination of DIRECTIONS.map(d => d.slug)) {
       await expect(link).toHaveAttribute('rel', /sponsored/);
       const href = new URL(await link.getAttribute('href') as string);
       const target = new URL(href.searchParams.get(tour.partner === 'youtravel' ? 'redirect' : 'u') as string);
-      expect(target.href).toBe(new URL(tour.url).href);
+      const expected = new URL(tour.url);
+      expect(target.origin + target.pathname).toBe(expected.origin + expected.pathname);
+      if (tour.partner === 'youtravel') {
+        expect(target.searchParams.get('partner')).toBe('affise');
+        expect(target.searchParams.get('sid')).toBe(href.searchParams.get('pid'));
+        expect(target.searchParams.get('click_id')).toBe('{clickid}');
+      } else expect(target.search).toBe('');
       expect(href.searchParams.get(tour.partner === 'youtravel' ? 'sub1' : 'sub_id')).toContain('tour');
       await expect(card.locator('img')).toHaveAttribute('loading', 'lazy');
       await expect.poll(() => card.locator('img').evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);

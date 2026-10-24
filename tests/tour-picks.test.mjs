@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { tourErrors, tourCollection, tourAffiliateUrl, tourPrice, tourRatingLabel, TOUR_PICKS } from '../src/data/tour-picks.js';
+import { youtravelDeep, youtravelCountry } from '../src/data/affiliate.js';
 import { isGenericAffiliateUrl, addCtaAttribution } from '../src/data/monetization.js';
 import { prepareAffiliateLinks, monetizationPayload } from '../src/scripts/monetization-tracking.js';
 
@@ -86,4 +87,21 @@ test('small samples need documented history or verified identity and disclose th
   const futureEvidence=structuredClone(record);
   futureEvidence.quality.sources[0].checkedAt='2026-10-25';
   assert.ok(tourErrors(futureEvidence).includes('quality-sources'));
+});
+
+
+test('Affise product and country deep links preserve merchant attribution and unescaped macros', () => {
+  for (const href of [youtravelDeep('https://youtravel.me/tours/34004/example','tour_probe'),youtravelCountry('japan','tour_probe')]) {
+    const affiliate=new URL(href);
+    const redirect=affiliate.searchParams.get('redirect');
+    const target=new URL(redirect);
+    assert.equal(target.searchParams.get('partner'),'affise');
+    assert.equal(target.searchParams.get('sid'),affiliate.searchParams.get('pid'));
+    assert.equal(target.searchParams.get('utm_campaign'),'affise');
+    assert.equal(target.searchParams.get('click_id'),'{clickid}');
+    assert.match(redirect,/click_id=\{clickid\}/);
+    assert.match(redirect,/utm_content=\{sub1\}/);
+    assert.equal(affiliate.searchParams.get('sub1'),'tour_probe');
+  }
+  for (const target of ['https://evil.test/tours/1/','https://youtravel.me@evil.test/tours/1/','https://youtravel.me/tours/1/?click_id=fake']) assert.throws(()=>youtravelDeep(target,'probe'));
 });

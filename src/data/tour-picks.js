@@ -1,5 +1,5 @@
 import picks from './tour-picks.json' with { type: 'json' };
-import { tpkDeep, youtravelSub } from './affiliate.js';
+import { tpkDeep, youtravelDeep } from './affiliate.js';
 import { buildCtaId } from './monetization.js';
 
 export const TOUR_PARTNERS = Object.freeze({
@@ -96,7 +96,7 @@ export function tourAffiliateUrl(tour, pathname) {
   if (!isTourTarget(tour.partner, tour.url)) throw new Error('Invalid tour target');
   const ctaId = buildCtaId(pathname, tour.partner, `tour_${tour.id}`);
   const href = tour.partner === 'youtravel'
-    ? `${youtravelSub(ctaId)}&redirect=${encodeURIComponent(tour.url)}`
+    ? youtravelDeep(tour.url, ctaId)
     : tpkDeep(tour.partner, tour.url, ctaId);
   return { href, ctaId };
 }
