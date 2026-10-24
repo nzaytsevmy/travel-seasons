@@ -17,6 +17,8 @@ for (const destination of DIRECTIONS.map(d => d.slug)) {
       await expect(link).toHaveAttribute('data-cta-prepared', '1');
       await expect(link).toHaveAttribute('data-destination', destination);
       await expect(link).toHaveAttribute('rel', /sponsored/);
+      const visibleLabel = (await link.innerText()).trim().split(/\s+/).join('\\s+');
+      await expect(link).toHaveAccessibleName(new RegExp(visibleLabel));
       const href = new URL(await link.getAttribute('href') as string);
       const target = new URL(href.searchParams.get(tour.partner === 'youtravel' ? 'redirect' : 'u') as string);
       const expected = new URL(tour.url);
