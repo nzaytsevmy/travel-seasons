@@ -237,5 +237,20 @@
     "qualityScoreUnchanged": true,
     "scope": "Единственная новая фраза в конце раздела Пика: ссылка /blog/pik-viktoriya/ с обещанием полного круга, билетов и облачности. Сверены соседний абзац и фактическое содержание новой статьи; обещание выполнено. Интент трёхдневного маршрута сохранён. Новых цен, правил, фото и личного опыта нет. Баллы и потолок прежней полной оценки не меняются.",
     "limitations": "Ссылка должна получить200 после публикации нового URL; CI/deploy/live и исторические факты всего материала этим дельта-ревью не подтверждаются."
+  },
+  "sourceRegressionDelta20261024": {
+    "reviewer": "Codex (peak_review_20261024)",
+    "reviewedAt": "2026-10-24",
+    "proseHash": "43ffe2171a69ff9a",
+    "verdict": "PASS_SCOPED_DELTA",
+    "qualityScoreUnchanged": true,
+    "scope": "Проверены только новый minor checks24Oct для уже оценённой ссылки и расписания, checkedAt24Oct/reviewAfter31Oct факта hong-kong-symphony-timetable. updatedDate11Oct и видимая проза сохранены. Причина просрочки: min(periodicDue,volatileDeadline), срок18Oct, а не общий365-дневный цикл.",
+    "evidence": [
+      "Рецензент независимо прочитал https://www.avenueofstars.com.hk/en/a-symphony-of-lights/:20:00 и погодные отмены.",
+      "Прочитан полный нативный AXснимок .run/20261024/article-symphony-special24.txt: There is no special announcement at the moment; отмены при No3+ или Red/BlackRainstorm в15:00 илипозднее. Нативное получение выполнено основным исполнителем; независимые webopen рецензента дважды timeout, успешное собственное нативное посещение не заявлено.",
+      "Снимок .run/20261024/article-symphony-primary24.txt подтверждает20:00/отмены; checks честен,7дневный цикл сохранён.",
+      "Протокол work/article-source-regression24.json: три исходных source-tests PASS без правок тестов/порогов."
+    ],
+    "limitations": "Другие тарифы, въезд и часы не перепроверялись в этом дельта-круге; их срок10Nov не истёк. Старые scores/ceiling без повышения. ПолныйCI/deploy/live этой версии ещё ожидаются."
   }
 }

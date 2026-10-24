@@ -22,7 +22,7 @@
     "CC BY-SA3.0/1.0: Mk2010/Mutante, URL и изменения обязаны появиться на /legal/photos/; исходники сохранены, финальный публичный вывод ещё не проверен.",
     "Результат не означает завершённых CI,публикации,индексации или роста трафика/дохода."
   ],
-  "proseHash": "eb3a486f6e64626d",
+  "proseHash": "4de0d6076b530a9c",
   "status": "editorial_review_with_limits_pending_release_checks",
   "qualityCriteria": [
     {
@@ -93,7 +93,7 @@
     {
       "criterion": 14,
       "score": 0,
-      "evidence": "CI/deploy/live этой финальной версии не выполнены; earlypreflight и редакционный JSON не заменяют обязательные гейты, точный deploy, SSR, sitemap/фид и живые страницы."
+      "evidence": "Первый Content Gate40084982151 выявил реальные дефекты языка/журнала/срока. Четыре фразы исправлены; три исходных source-tests PASS в протоколе work/article-source-regression24.json. Полный обязательный CI исправленногоHEAD,deploy/live иSSR ещё не подтверждены."
     }
   ],
   "confirmedTens": 9,
@@ -116,5 +116,15 @@
   "releaseHolds": [
     "Точный CI/deploy/live и финальный рендер ещё не выполнены."
   ],
-  "reviewReport": "work/article-quality14-20261024.md"
+  "reviewReport": "work/article-quality14-20261024.md",
+  "sourceRegressionDelta20261024": {
+    "reviewer": "Codex (peak_review_20261024)",
+    "reviewedAt": "2026-10-24",
+    "previousProseHash": "eb3a486f6e64626d",
+    "proseHash": "4de0d6076b530a9c",
+    "verdict": "PASS_SCOPED_DELTA",
+    "qualityScoreUnchanged": true,
+    "scope": "Перечитаны все четыре замены предложений с конструкцией а не только: проверка продукта, электронный билет, виды и зелень, запас до аэропорта. Новых фактов, цен, обещаний или ограничений нет; смысл сохранён. Прочитан work/article-source-regression24.json: три исходных упавших source-tests теперь PASS в изолированном исполнении без изменения блоков/порогов. Это не полный CI.",
+    "remaining": "Первый Content Gate40084982151 красный, его оригиналы сохраняются; исправленную версию ещё должен принять полный обязательный CI и точный deploy/live."
+  }
 }
