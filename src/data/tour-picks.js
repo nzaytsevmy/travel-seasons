@@ -74,6 +74,7 @@ export function tourErrors(tour) {
   for (const key of ['program', 'positiveReviews', 'criticalReviews', 'organizer', 'payment', 'cancellation', 'geography']) {
     if (typeof evidence?.[key] !== 'string' || !evidence[key].trim()) errors.push(`checks.${key}`);
   }
+  if (tour.destination === 'japan-hokkaido' && !/Хоккайдо|Саппоро|Отару|Нисеко|Нобори[ -]?б[еэ]цу/i.test(evidence?.program || '')) errors.push('geography-program');
   if (tour.price && (!Number.isFinite(tour.price.rub) || tour.price.rub <= 0 || !['person', 'group'].includes(tour.price.unit) || !day(tour.price.checkedAt) || !day(tour.price.reviewAfter) || tour.price.reviewAfter <= tour.price.checkedAt)) errors.push('price');
   return errors;
 }

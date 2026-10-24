@@ -1,11 +1,27 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { dirname, basename, join } from 'node:path';
 import { DIRECTIONS } from '../src/data/directions.js';
 import { TOUR_PICKS, TOUR_PARTNERS, tourCollection, tourErrors, tourRatingLabel } from '../src/data/tour-picks.js';
 
 const known = new Set(DIRECTIONS.map(d => d.slug));
 const ids = new Set();
 const errors = [];
+const imageRoot = fileURLToPath(new URL('../src/content/blog/_images/', import.meta.url));
+const provenance = JSON.parse(readFileSync(join(imageRoot, '_provenance.json'), 'utf8'));
+const creditsCache = new Map();
+function hasPhotoRights(relativePath) {
+  const path = join(imageRoot, relativePath);
+  const sidecar = join(dirname(path), '_credits.json');
+  if (existsSync(sidecar)) {
+    if (!creditsCache.has(sidecar)) creditsCache.set(sidecar, JSON.parse(readFileSync(sidecar, 'utf8')));
+    const credits = creditsCache.get(sidecar);
+    const entry = credits[basename(path).replace(/\.[^.]+$/, '')] || credits[basename(path)];
+    if (entry && ['creator','license','source'].every(key => typeof entry[key] === 'string' && entry[key].trim())) return true;
+  }
+  const entry = provenance[relativePath];
+  return entry?.status === 'own' || (entry?.status === 'licensed' && ['creator','license','source'].every(key => entry[key]));
+}
 for (const tour of TOUR_PICKS) {
   if (ids.has(tour.id)) errors.push(`Duplicate offer ID: ${tour.id}`);
   ids.add(tour.id);
@@ -13,6 +29,7 @@ for (const tour of TOUR_PICKS) {
   if (tour.status !== 'approved') continue;
   errors.push(...tourErrors(tour).map(error => `${tour.id}: ${error}`));
   if (!tour.image || !existsSync(fileURLToPath(new URL(`../src/content/blog/_images/${tour.image}`, import.meta.url)))) errors.push(`${tour.id}: missing editorial photo`);
+  if (tour.image && !hasPhotoRights(tour.image)) errors.push(`${tour.id}: photo rights are not documented for ${tour.image}`);
   if (!tour.imageAlt || !tour.imageCredit) errors.push(`${tour.id}: missing photo description or provenance`);
 }
 const discovery = JSON.parse(readFileSync(new URL('../research/tour-discovery-2026-10-24.json', import.meta.url)));

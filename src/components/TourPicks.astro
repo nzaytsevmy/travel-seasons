@@ -29,8 +29,8 @@ const groups = [
             <p class="tour-details">{tour.duration} · {tour.language}</p>
             {tour.includes && <p class="tour-includes">Включено: {tour.includes}</p>}
             <p class="tour-rating" data-rating-scope={tour.ratingScope} aria-label={`${tourRatingLabel(tour)}: оценка ${tour.rating} из 5, отзывов: ${tour.reviewCount}`}>{tour.ratingScope !== 'tour' && <span>{tourRatingLabel(tour)}: </span>}{String(tour.rating).replace('.', ',')} / 5 <span>· Отзывов: {tour.reviewCount}</span></p>
-            {tour.quality?.mode === 'combined' && tour.quality.organizerReviewCount < 10 && <p class="tour-details">Небольшая выборка отзывов. Учитывали также программу и историю организатора.</p>}
-            {tour.ratingScope === 'organizer' && <p class="tour-details">{tour.tourReviewCount ? `Отзывов об этом туре: ${tour.tourReviewCount}.` : 'У этого тура пока нет собственных отзывов.'}</p>}
+            {tour.ratingScope === 'organizer' && <p class="tour-details">{tour.tourReviewCount ? `Отзывов об этом туре: ${tour.tourReviewCount}.` : 'Об этом туре отзывов пока нет.'}{tour.quality?.organizerReviewCount < 10 && ' Оценка организатора — по небольшой выборке.'}</p>}
+            {tour.ratingScope === 'tour' && tour.quality?.mode === 'combined' && tour.quality.organizerReviewCount < 10 && <p class="tour-details">Небольшая выборка: учитывали также программу и историю организатора.</p>}
             <div class="tour-action">
               <p class="tour-price">{tourPrice(tour)}</p>
               <a href={link.href} rel="sponsored noopener" target="_blank" data-cta-id={link.ctaId} data-placement="tour_picks" data-destination={destination} data-tour-id={tour.id} data-deep-link="offer" aria-label={`${tour.kind === 'multiday' ? 'Посмотреть тур' : 'Посмотреть экскурсию'}: ${tour.title} (откроется в новой вкладке)`}>{tour.kind === 'multiday' ? 'Посмотреть тур' : tour.kind === 'ticket' ? 'Выбрать билет' : 'Посмотреть экскурсию'}</a>

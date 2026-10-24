@@ -105,3 +105,10 @@ test('Affise product and country deep links preserve merchant attribution and un
   }
   for (const target of ['https://evil.test/tours/1/','https://youtravel.me@evil.test/tours/1/','https://youtravel.me/tours/1/?click_id=fake']) assert.throws(()=>youtravelDeep(target,'probe'));
 });
+
+
+test('a regional promise in the title cannot substitute for an actual Hokkaido programme', () => {
+  const offer={...valid(),destination:'japan-hokkaido',title:'От Токио до Хоккайдо'};
+  assert.ok(tourErrors({...offer,checks:{...offer.checks,program:'Токио, Фукусима, Товада, Мацусима. Возвращение в Токио.'}}).includes('geography-program'));
+  assert.deepEqual(tourErrors({...offer,checks:{...offer.checks,program:'Прилёт в Саппоро, катание в Нисеко и канал Отару.'}}),[]);
+});
