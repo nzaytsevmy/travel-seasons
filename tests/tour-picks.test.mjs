@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
+import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { auditMonetization } from '../scripts/monetization-site-audit.mjs';
 import { tourErrors, tourCollection, tourAffiliateUrl, tourPrice, tourRatingLabel, TOUR_PICKS } from '../src/data/tour-picks.js';
 import { youtravelDeep, youtravelCountry } from '../src/data/affiliate.js';
 import { isGenericAffiliateUrl, addCtaAttribution } from '../src/data/monetization.js';
@@ -8,6 +12,17 @@ import { prepareAffiliateLinks, monetizationPayload } from '../src/scripts/monet
 
 const now = new Date('2026-10-24T12:00:00Z');
 const valid = () => ({ id:'tokyo-walk', status:'approved', partner:'tripster', destination:'japan', title:'Токио пешком', city:'Токио', duration:'4 часа', language:'Русский', reason:'Сады и кварталы', experienceKey:'tokyo-gardens', kind:'excursion', url:'https://experience.tripster.ru/experience/13237/', rating:4.9, reviewCount:40, ratingScope:'tour', checks:{ source:'https://experience.tripster.ru/experience/13237/', method:'primary-page', checkedAt:'2026-10-24', reviewAfter:'2026-11-24', program:'Программа прочитана',positiveReviews:'Прочитаны отзывы',criticalReviews:'Негативные отзывы проверены',organizer:'Организатор проверен',payment:'Условия оплаты прочитаны',cancellation:'Условия отмены прочитаны',geography:'Старт в Токио' } });
+
+test('built monetization audit recognizes a concrete YouTravel product without a catalogue fallback', () => {
+  const directory=mkdtempSync(join(tmpdir(),'tt-tour-audit-'));
+  try {
+    const product=youtravelDeep('https://youtravel.me/tours/75677/novyy_god_v_niseko/','tour_audit');
+    const catalogue=youtravelCountry('japan','tour_audit');
+    const generic=new URL(product);generic.searchParams.delete('redirect');
+    writeFileSync(join(directory,'index.html'),`<html><body>${[product,catalogue,generic.href].map(href=>`<a href="${href}" rel="sponsored">Посмотреть тур</a>`).join('')}</body></html>`);
+    assert.deepEqual(auditMonetization(directory).links.map(link=>link.generic),[false,false,true]);
+  } finally {rmSync(directory,{recursive:true,force:true});}
+});
 
 test('registry audit checks actual destination IDs and editorial photographs', () => {
   assert.match(execFileSync(process.execPath, ['scripts/tour-picks-audit.mjs'], {cwd:new URL('../',import.meta.url),encoding:'utf8'}), /0 errors/);

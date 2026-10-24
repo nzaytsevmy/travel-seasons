@@ -54,7 +54,7 @@ function isGenericBuiltHref(href, partner) {
   if (partner === 'cherehapa') return !targetUrl || !(targetUrl.searchParams.get('countries[0]') || targetUrl.searchParams.get('countryGroups[0]'));
   if (partner === 'ostrovok') return !targetUrl || path === '' || path === '/hotel';
   if (partner === 'airalo') return !targetUrl || !/\/ru\/[a-z0-9-]+-esim$/i.test(path);
-  if (partner === 'youtravel') return !targetUrl || !/\/tours\/(?:country|region)\//.test(path);
+  if (partner === 'youtravel') return !targetUrl || !/\/tours\/(?:country\/|region\/|\d+\/)/.test(path);
   return false;
 }
 
