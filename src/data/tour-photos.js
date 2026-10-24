@@ -193,6 +193,15 @@ import photo190 from '../content/blog/_images/zanzibar-2026/paje.jpg';
 import photo191 from '../content/blog/_images/tour-picks/riyadh-skyline.jpg';
 import photo192 from '../content/blog/_images/tour-picks/osorno-petrohue.jpg';
 
+import photo193 from '../content/blog/_images/tour-picks/taksim.jpg';
+import photo194 from '../content/blog/_images/tour-picks/suluada.jpg';
+import photo195 from '../content/blog/_images/tour-picks/meiji.jpg';
+import photo196 from '../content/blog/_images/tour-picks/reina-sofia.jpg';
+import photo197 from '../content/blog/_images/tour-picks/bongeunsa.jpg';
+import photo198 from '../content/blog/_images/tour-picks/nungwi.jpg';
+import photo199 from '../content/blog/_images/tour-picks/merlion.jpg';
+import photo200 from '../content/blog/_images/peresadka-v-pekine/own-forbidden-view.jpg';
+
 export const TOUR_PHOTOS = {
   'altai-own/katun.jpg': photo0,
   'antarctica/iceberg-blue.jpg': photo1,
@@ -387,4 +396,12 @@ export const TOUR_PHOTOS = {
   'zanzibar-2026/paje.jpg': photo190,
   'tour-picks/riyadh-skyline.jpg': photo191,
   'tour-picks/osorno-petrohue.jpg': photo192,
+  'tour-picks/taksim.jpg': photo193,
+  'tour-picks/suluada.jpg': photo194,
+  'tour-picks/meiji.jpg': photo195,
+  'tour-picks/reina-sofia.jpg': photo196,
+  'tour-picks/bongeunsa.jpg': photo197,
+  'tour-picks/nungwi.jpg': photo198,
+  'tour-picks/merlion.jpg': photo199,
+  'peresadka-v-pekine/own-forbidden-view.jpg': photo200,
 };
