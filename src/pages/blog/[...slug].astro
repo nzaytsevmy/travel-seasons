@@ -638,7 +638,11 @@ if (faqs.length >= 2) {
   }
   .prose :global(.table-wrap.table-wide tbody td:not(:first-child))::before {
     content: attr(data-label);
-    flex: 0 0 auto;
+    /* Full column names must wrap inside the card, including at 200% text size. */
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
     font-size: 0.62rem;
     font-weight: 500;
     text-transform: uppercase;

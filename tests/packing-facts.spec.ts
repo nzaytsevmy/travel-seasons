@@ -69,7 +69,7 @@ for (const path of months) {
 test('Страховая статья: нет прежних универсальных исключений и текущего обещания 413 рублей', () => {
   const { text } = page('blog/strahovka-dlya-puteshestviy-2026');
   assert.doesNotMatch(text, /счётчик обнуляется только выездом|ломают полис целиком|при одинаковой защите|Подобрать полис от 413|Сравнить полисы от 413|через 5–10 дней/);
-  assert.match(text, /суммарн/);
+  assert.match(text, /суммарн/i);
   assert.match(text, /365/);
   assert.match(text, /17 июля 2026/);
 });
