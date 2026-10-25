@@ -2,58 +2,37 @@
   "schemaVersion": 2,
   "slug": "2026-10-24-death-valley-flood-roads",
   "score": 4,
-  "reviewer": "Codex (news_review_20261024)",
-  "reviewerTask": "/root/news_review_20261024",
-  "authoredBy": "Codex (tt-author-20261024)",
-  "reviewedAt": "2026-10-24T07:40:08.034Z",
-  "checkedAt": "2026-10-24",
+  "reviewer": "Codex (news_final_review_20261025)",
+  "reviewerTask": "/root/news_final_review_20261025",
+  "authoredBy": "Codex (tt-author-20261025)",
+  "reviewedAt": "2026-10-25T10:26:34.719Z",
+  "checkedAt": "2026-10-25",
   "approved": true,
   "approvalScope": "EDITORIAL_ONLY",
   "editorialVerdict": "PASS",
   "releaseApproved": false,
   "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
-  "classification": "NEW",
-  "baseCommit": "68d20b27117f48158eaa111f0d1e4523597c3c5f",
-  "rationale": "Вместо минутной сводки даёт законченный ответ о трёх закрытых дорогах, отдельном предупреждении на Badwater и несостоятельности старого подъезда к Titus. Это меняет автомобильный маршрут в нишевом направлении.",
-  "ownAddition": "Объяснено, почему открытый кемпинг не подтверждает выбранный подъезд; сопоставлены конкретные открытые/закрытые лагеря и отдельное более строгое ограничение Titus.",
-  "factReview": "NPS 23 октября, 08:16 PT: North Highway и Beatty Cut-off закрыты после шторма 22 октября, Westside Road закрыта из-за паводкового ущерба той же даты. На Badwater стоит предупреждение о наносах, а не закрытие. Furnace Creek и Stovepipe Wells открыты, Emigrant закрыт на ремонт водоснабжения. Titus закрыт для машин, пеших и велосипедов; май 2027 — ожидаемый срок.",
+  "classification": "UPDATE",
+  "baseCommit": "1ba7e0ee41ff98536162f7419c97f3c54d1c8936",
+  "rationale": "4: свежие паводковые закрытия и отдельное закрытиеTitusCanyon меняют автомобильный маршрут.",
+  "ownAddition": "Разделены открытая ночёвка, путь к ней и отдельный TitusCanyon.",
+  "factReview": "Полная NPS дорожная сводка23Oct08:16PT, прочитана25Oct: NorthHighway/BeattyCutoff/Westside закрыты после22Oct. TitusCanyon отдельно no hikers/cyclists, ожидаетсяMay2027. FurnaceCreek/StovepipeWells campgrounds open; Emigrant closed waterrepairs. Проезд к ночёвке не выведен из её открытого статуса.",
   "sourceChecks": [
     {
       "url": "https://www.nps.gov/deva/planyourvisit/conditions.htm",
-      "name": "National Park Service — дорожная сводка 23 октября, прочитана 24 октября 2026",
-      "method": "Независимое чтение сохранённого основного текста; наличие файла или HTTP200 само по себе проверкой не считалось.",
-      "archive": ".run/20261024/sources/78ab7df125d2.txt",
-      "archiveSha256": "b921ff432fa8eb8846a03d68db6804892ef1cd38828f8d432911c124bcf4b568",
-      "status": "SUBSTANTIVE_TEXT_CHECKED",
-      "finding": "NPS 23 октября, 08:16 PT: North Highway и Beatty Cut-off закрыты после шторма 22 октября, Westside Road закрыта из-за паводкового ущерба той же даты. На Badwater стоит предупреждение о наносах, а не закрытие. Furnace Creek и Stovepipe Wells открыты, Emigrant закрыт на ремонт водоснабжения. Titus закрыт для машин, пеших и велосипедов; май 2027 — ожидаемый срок."
+      "name": "National Park Service — дорожная сводка 23 октября, прочитана 25 октября 2026",
+      "method": "Независимое чтение полного сохранённого текста либо live web open; HTTP200 сам по себе не считался проверкой.",
+      "archive": ".run/20261025/due-sources/78ab7df125d21d29.txt",
+      "archiveSha256": "cc1d6746703e1f694af008912b08b1a43f3c8b52d062c8634eae5f0c79280016",
+      "status": "ARCHIVE_TEXT_CHECKED_WITH_SCOPE_NOTED",
+      "finding": "Полная NPS дорожная сводка23Oct08:16PT, прочитана25Oct: NorthHighway/BeattyCutoff/Westside закрыты после22Oct. TitusCanyon отдельно no hikers/cyclists, ожидаетсяMay2027. FurnaceCreek/StovepipeWells campgrounds open; Emigrant closed waterrepairs. Проезд к ночёвке не выведен из её открытого статуса."
     }
   ],
-  "contentHash": "f7fc805cb7d93d2c8db4ef9709a275d94c88e6d6953e87028e8e8771157164e6",
-  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из актуального штатного parseNote.",
-  "sourceSha256": "a1344e33765b48e9f3f007385bad1ac087087eabb90fc12cc7fc4dac42ce10c7",
-  "sourceSha256Scope": "SHA-256 полного Markdown включая frontmatter, точные bytes.",
-  "nativeClipTitle": "Долина Смерти: паводок закрыл несколько дорог",
-  "clipTitleCodeSha256": "5ed6e7f7f14da11ff29d5fd9d3ae13bd8fa9b073b4f01a73a88bf00effde2ebd",
-  "clipTitleCodeHashScope": "Полный src/data/news.js; вызвана неизменённая штатная clipTitle.",
-  "photo": {
-    "image": "./_images/2026-10-24-death-valley-flood-roads.jpg",
-    "imageSha256": "bfe058c3cee68dcd8f93e9eefe4e9ab128420708438ea30543598557c85a9bd8",
-    "creator": "Agnieszka Kwiecień, Nova",
-    "license": "CC BY-SA",
-    "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
-    "source": "https://commons.wikimedia.org/w/index.php?curid=165157608",
-    "title": "Badwater Road Death Valley 2018-04-07 01 — архивная иллюстрация",
-    "alt": "Badwater Road среди гор и солончака Долины Смерти; архивный кадр 2018 года, не паводок октября 2026 года",
-    "changes": "Уменьшение до 1600 px и сжатие JPEG; архивный кадр.",
-    "viewedByThisReviewer": true,
-    "visualReview": "Badwater Road у солончака и сухих гор; архивный ясный кадр2018, не паводок2026. Подпись этому соответствует.",
-    "provenanceMethod": "Рецензент прочитал первичную Commons-страницу в сохранённом full AX обычного Chrome; финальный JPEG независимо просмотрен.",
-    "provenanceArchive": ".run/20261024/photo-165157608.ax.txt",
-    "provenanceArchiveSha256": "53c49b6e5fba89534a14ef441dabe11b970ee8c3bc8fa8f822ef1f0ebd6a7dcf",
-    "provenanceEvidence": null,
-    "provenanceEvidenceSha256": null,
-    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
-  },
+  "contentHash": "1d9e904c3fa7fa2d0654ffb428f06ba000a336a317f1da33edc2921cb29fd12d",
+  "contentHashScope": "SHA256 JSON.stringify({title,tldr,body:body.trim()}) штатного parseNote",
+  "sourceSha256": "89eff50529b96ba725d2d518d6f99912f480b590cab0fff98fa511a3d79b00dc",
+  "sourceSha256Scope": "Полный markdown; при изменении metadata/score перепривязать после проверки.",
+  "actualClipTitle": "Долина Смерти: паводок закрыл несколько дорог",
   "photoProof": {
     "image": "./_images/2026-10-24-death-valley-flood-roads.jpg",
     "imageSha256": "bfe058c3cee68dcd8f93e9eefe4e9ab128420708438ea30543598557c85a9bd8",
@@ -65,37 +44,28 @@
     "alt": "Badwater Road среди гор и солончака Долины Смерти; архивный кадр 2018 года, не паводок октября 2026 года",
     "changes": "Уменьшение до 1600 px и сжатие JPEG; архивный кадр.",
     "viewedByThisReviewer": true,
-    "visualReview": "Badwater Road у солончака и сухих гор; архивный ясный кадр2018, не паводок2026. Подпись этому соответствует.",
-    "provenanceMethod": "Рецензент прочитал первичную Commons-страницу в сохранённом full AX обычного Chrome; финальный JPEG независимо просмотрен.",
-    "provenanceArchive": ".run/20261024/photo-165157608.ax.txt",
-    "provenanceArchiveSha256": "53c49b6e5fba89534a14ef441dabe11b970ee8c3bc8fa8f822ef1f0ebd6a7dcf",
-    "provenanceEvidence": null,
-    "provenanceEvidenceSha256": null,
+    "visualReview": "Финальный JPEG независимо просмотрен: соответствует описательной задаче, узнаваемых посторонних лиц нет. Архивный кадр не выдаётся за событие. Метаданные автора/лицензии сохранены, публичная legal/photos и адаптив402/1280 ожидают проверки.",
+    "provenanceMethod": "Метаданные существующего лицензированного кадра сопоставлены с исходником; liveCommonsчерезcuridнедоступен. Нельзя заявлять повторную полную проверку лицензии вэтойсессии.",
     "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
   },
   "research": {
-    "artifact": "work/google-news-20261024.md",
-    "artifactSha256": "3b9328206ffc47f65f8043d28ce25b76e62de5346e55061b401ee34eefcd12e8",
-    "mainTextsReadBy": "Указан в матрице: root и независимый Codex рецензент. Рецензент прочитал всю матрицу; лично перечитал primary факты и новые substantive deltas.",
-    "sequencingDefect": "Первичные черновики появились до обязательного Google-исследования. После обнаружения одобрение отложено, исследование выполнено, финальная редактура сопоставлена с матрицами. Дефект исходного порядка раскрыт.",
+    "artifact": null,
+    "artifactSha256": null,
+    "sequencingDefect": "Первые черновики до обязательногоGoogleисследования; не считать ретроспективно выполненным порядком.",
     "snippetsOrAIAnswersCountedAsMainText": false
   },
   "internalLinkChecks": [
     {
-      "url": "/novosti/2026-09-22-titus-canyon-year-closure/",
-      "status": 200,
-      "final": "https://traveltribe.ru/novosti/2026-09-22-titus-canyon-year-closure/",
-      "h1": "Основную дорогу Тайтус-Каньона закрыли на ремонт",
-      "localNew": false,
-      "interpretation": "Существующая страница, HTTP200 и соответствующий H1 проверены. Финальная изменённая версия ещё не опубликована."
-    },
-    {
       "url": "/usa/",
       "status": 200,
       "final": "https://traveltribe.ru/usa/",
-      "h1": "США 2026",
-      "localNew": false,
-      "interpretation": "Существующая страница, HTTP200 и соответствующий H1 проверены. Финальная изменённая версия ещё не опубликована."
+      "h1": "США  2026"
+    },
+    {
+      "url": "/novosti/2026-09-22-titus-canyon-year-closure/",
+      "status": 200,
+      "final": "https://traveltribe.ru/novosti/2026-09-22-titus-canyon-year-closure/",
+      "h1": "Тайтус-Каньон закрыт также для пеших и велосипедистов"
     }
   ],
   "criteria14": [
@@ -103,95 +73,94 @@
       "id": 1,
       "criterion": "Задача читателя",
       "score": 10,
-      "evidence": "Один центральный ответ: Долина Смерти: паводок закрыл несколько дорог. Срок восстановления трёх дорог в сводке отсутствует. Открытый парк и бронь кемпинга сами по себе не разрешают проезд по закрытому участку."
+      "evidence": "Главная задача и прямой ответ читаются в title/TLDR/body: Долина Смерти: паводок закрыл несколько дорог."
     },
     {
       "id": 2,
       "criterion": "Обоснование темы",
       "score": 5,
-      "evidence": "Вместо минутной сводки даёт законченный ответ о трёх закрытых дорогах, отдельном предупреждении на Badwater и несостоятельности старого подъезда к Titus. Это меняет автомобильный маршрут в нишевом направлении. Google-матрица work/google-news-20261024.md прочитана до финального одобрения; первоначальные черновики появились до обязательного исследования. Этот дефект последовательности не объявлен выполненным требованием."
+      "evidence": "4: свежие паводковые закрытия и отдельное закрытиеTitusCanyon меняют автомобильный маршрут. Исследовательская последовательность до первых черновиков нарушена; первичные факты сверены; точное Googleисследование этого дельта-текста отдельно не подтверждено."
     },
     {
       "id": 3,
       "criterion": "Место в проекте",
       "score": 5,
-      "evidence": "Новые темы ведут на существующие тематические страницы; обновления сохраняют исторические URL и различают происшествия. Всесторонний аудит входящих связей/каннибализации финальной сборки не выполнялся."
+      "evidence": "Связи с существующим направлением есть, исторические URL обновлений сохранены. Полный аудит входящих связей и каннибализации не выполнен."
     },
     {
       "id": 4,
       "criterion": "Полнота и прямой ответ",
       "score": 10,
-      "evidence": "Весь title/TLDR/body прочитан, штатный checkTldr PASS. Срок восстановления трёх дорог в сводке отсутствует. Открытый парк и бронь кемпинга сами по себе не разрешают проезд по закрытому участку."
+      "evidence": "Весь текст прочитан. Штатный checkTldr=PASS; конкретный статус/ограничения в начале. Разделены открытая ночёвка, путь к ней и отдельный TitusCanyon."
     },
     {
       "id": 5,
       "criterion": "Собственный вклад",
-      "score": 10,
-      "evidence": "Объяснено, почему открытый кемпинг не подтверждает выбранный подъезд; сопоставлены конкретные открытые/закрытые лагеря и отдельное более строгое ограничение Titus."
+      "score": 5,
+      "evidence": "Разделены открытая ночёвка, путь к ней и отдельный TitusCanyon. Это редакционное объяснение и сопоставление; собственного полевого исследования нет."
     },
     {
       "id": 6,
       "criterion": "Факты и источники",
       "score": 10,
-      "evidence": "NPS 23 октября, 08:16 PT: North Highway и Beatty Cut-off закрыты после шторма 22 октября, Westside Road закрыта из-за паводкового ущерба той же даты. На Badwater стоит предупреждение о наносах, а не закрытие. Furnace Creek и Stovepipe Wells открыты, Emigrant закрыт на ремонт водоснабжения. Titus закрыт для машин, пеших и велосипедов; май 2027 — ожидаемый срок."
+      "evidence": "Полная NPS дорожная сводка23Oct08:16PT, прочитана25Oct: NorthHighway/BeattyCutoff/Westside закрыты после22Oct. TitusCanyon отдельно no hikers/cyclists, ожидаетсяMay2027. FurnaceCreek/StovepipeWells campgrounds open; Emigrant closed waterrepairs. Проезд к ночёвке не выведен из её открытого статуса."
     },
     {
       "id": 7,
       "criterion": "Числа и примеры",
       "score": 10,
-      "evidence": "NPS 23 октября, 08:16 PT: North Highway и Beatty Cut-off закрыты после шторма 22 октября, Westside Road закрыта из-за паводкового ущерба той же даты. На Badwater стоит предупреждение о наносах, а не закрытие. Furnace Creek и Stovepipe Wells открыты, Emigrant закрыт на ремонт водоснабжения. Titus закрыт для машин, пеших и велосипедов; май 2027 — ожидаемый срок. Денежных расчётов или выдуманных количественных примеров нет."
+      "evidence": "Полная NPS дорожная сводка23Oct08:16PT, прочитана25Oct: NorthHighway/BeattyCutoff/Westside закрыты после22Oct. TitusCanyon отдельно no hikers/cyclists, ожидаетсяMay2027. FurnaceCreek/StovepipeWells campgrounds open; Emigrant closed waterrepairs. Проезд к ночёвке не выведен из её открытого статуса. Числа сверены; денежных расчётов нет."
     },
     {
       "id": 8,
       "criterion": "Исключения и применимость",
       "score": 10,
-      "evidence": "Срок восстановления трёх дорог в сводке отсутствует. Открытый парк и бронь кемпинга сами по себе не разрешают проезд по закрытому участку. Пересмотр 2026-10-25."
+      "evidence": "Полная NPS дорожная сводка23Oct08:16PT, прочитана25Oct: NorthHighway/BeattyCutoff/Westside закрыты после22Oct. TitusCanyon отдельно no hikers/cyclists, ожидаетсяMay2027. FurnaceCreek/StovepipeWells campgrounds open; Emigrant closed waterrepairs. Проезд к ночёвке не выведен из её открытого статуса. Сфера применения/неизвестное явно ограничены."
     },
     {
       "id": 9,
       "criterion": "Авторство и доверие",
       "score": 5,
-      "evidence": "Автор Codex (tt-author-20261024); рецензент другой. Личный опыт не заявлен. Модельное ревью не названо человеческим/читательским тестом; публичный byline финальной версии ожидает проверки."
+      "evidence": "Автор Codex(tt-author-20261025), рецензент другойCodex. Вымышленного личного опыта нет. Публичный byline/JSON-LD финального рендера ожидают проверки."
     },
     {
       "id": 10,
       "criterion": "Редактура и естественный язык",
       "score": 10,
-      "evidence": "Фактический и смысловой проходы полного текста выполнены. После конкретных замечаний перечитаны исправленные участки и зависимости. При первоначальном исследовательском пробеле одобрение было отложено; читательского теста не было."
+      "evidence": "Полный фактический и смысловой проходы выполнены; финальные изменения перечитаны. Семь запрещённых употреблений «уже» исправлены и повторно проверены на всех 11 заметках. Нет вымышленного личного опыта; человеческого читательского теста не было."
     },
     {
       "id": 11,
       "criterion": "SEO-обещание и метаданные",
       "score": 5,
-      "evidence": "Реальный штатный clipTitle: «Долина Смерти: паводок закрыл несколько дорог» — смысл сохраняется. Даты события и добавления разведены. Canonical, H1/OG/description и SSR финальной сборки ещё не проверены."
+      "evidence": "Штатный clipTitle: «Долина Смерти: паводок закрыл несколько дорог». SEOобещание соответствует тексту; canonical/OG/SSR финальной версии ещё не проверены."
     },
     {
       "id": 12,
       "criterion": "Ссылки и навигация",
       "score": 5,
-      "evidence": "Все буквальные внутренние ссылки независимо проверены: .run/20261024/reviewer-links.json. Новый Death Valley имеет ожидаемый404 до выпуска и локальный исходник. Входящие связи и финальные URL/рендер требуют build/deploy/live."
+      "evidence": "Буквальные внутренние ссылки проверены HTTP в этой сессии; направленность соответствует тексту. Финальный build/deploy и входящие связи не проверены."
     },
     {
       "id": 13,
       "criterion": "Оформление и доступность",
       "score": 5,
-      "evidence": "Badwater Road у солончака и сухих гор; архивный ясный кадр2018, не паводок2026. Подпись этому соответствует. Лицензия/происхождение сопоставлены с данными; финальный JPEG просмотрен. Адаптив402/1280 и публичная /legal/photos/ ещё не проверены."
+      "evidence": "Финальный JPEG независимо просмотрен: соответствует описательной задаче, узнаваемых посторонних лиц нет. Архивный кадр не выдаётся за событие. Метаданные автора/лицензии сохранены, публичная legal/photos и адаптив402/1280 ожидают проверки."
     },
     {
       "id": 14,
       "criterion": "Готовность выпуска",
       "score": 0,
-      "evidence": "Обязательные build/CI/deploy/live, SSR/sitemap/feed и окончательная публичная атрибуция не выполнялись рецензентом. Выпуск HOLD; текстовая оценка не подтверждает production или измеренный эффект."
+      "evidence": "Обязательный CI, точный deploy, live402/1280/SSR/sitemap/feed не проверены этим редактором. ReleaseHOLD, измеренный эффект неизвестен."
     }
   ],
   "minimumFiveVerifiedTens": true,
   "blockingIssues": [],
   "limitations": [
-    "Только независимое модельное редакционное ревью; теста с реальным читателем не было.",
-    "Начальная последовательность research-before-draft нарушена; матрицы завершены перед финальным редактированием и одобрением.",
-    "Реестр111кандидатов содержит HEADLINE_TRIAGE; не все111основныхтекстов прочитаны, идеальность отбора не доказана.",
-    "Полный CI/build/deploy/live и публичная атрибуция ожидают выпуска владельцем.",
-    "Индексирование, поисковой спрос, клики, читательский успех и доход не измерены."
+    "Независимое модельное ревью; реального читательского теста нет.",
+    "Полный CI/deploy/live и публичная атрибуция ещё не приняты.",
+    "Ранжирование, трафик, дочитывание и доход не измерены.",
+    "Повторное fullCommonsprovenance для неизменных кадров не подтверждено этим редактором."
   ],
-  "nextReview": "2026-10-25"
+  "nextReview": "2026-10-27"
 }
