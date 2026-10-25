@@ -26,6 +26,7 @@ import { POIS } from '../../../data/country-pois.js';
 import { typo } from '../../../utils/typo.js';
 import PackingChecklist from '../../../components/PackingChecklist.astro';
 import { getPackingPageAdvice } from '../../../data/packing-page-advice.js';
+import { getSeasonalPageAdvice } from '../../../data/seasonal-page-advice.js';
 // «О» или «об»: «об» перед словом с гласной а, и, о, у, э в начале («об Алтае», «об июне»), иначе «о».
 const об = (w) => (/^[аиоуэ]/i.test(String(w || '')) ? 'об' : 'о');
 
@@ -53,6 +54,7 @@ const url = `https://traveltribe.ru/packing/${d.slug}/${m.slug}/`;
 
 const status = d.r[monthIdx];                             // P/G/O/B/X
 const pageAdvice = getPackingPageAdvice(d.slug, m.slug);
+const seasonalAdvice = getSeasonalPageAdvice('packing', d.slug, m.slug);
 const monthText = pageAdvice?.monthText || d.t[monthIdx];                          // авторский текст для месяца
 const bucketKey = getWeatherBucket(d.slug, monthIdx);
 const baseBucket = getBucket(bucketKey);
@@ -358,6 +360,15 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         <p class="pmu-answer">{bucket.summary}. Конкретные температуры — см. <a href="/seasons/" class="pmu-link">таблицу сезонов 70+ стран</a>.</p>
       )}
     </section>
+
+    {seasonalAdvice?.sections.map((section) => (
+      <section class="pmu-section" data-seasonal-detail>
+        <div class="pmu-shead"><h2>{section.title}</h2></div>
+        {section.paragraphs.map((paragraph) => <p class="pmu-answer">{paragraph}</p>)}
+        {section.action && <p class="pmu-cta"><a class="pmu-aff" href={section.action.href} data-cta-id={`seasonal_${d.slug}_${m.slug}_${section.action.id}`} rel="sponsored noopener" target="_blank">{section.action.label}</a></p>}
+      </section>
+    ))}
+    {seasonalAdvice && <p class="pmu-answer"><a href={seasonalAdvice.next.href} class="pmu-link">{seasonalAdvice.next.label}</a>.</p>}
 
     {/* width — размер запасного src: без него Astro отдаёт оригинал в 1920 px, как на страницах стран. */}
     {широкий && (
@@ -758,6 +769,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 }
 
 .pmu-answer { font-size: 1rem; line-height: 1.6; color: var(--text); max-width: 72ch; margin: 0; }
+.pmu-section[data-seasonal-detail] .pmu-answer + .pmu-answer { margin-top: .8rem; }
 .pmu-link { color: var(--gold); text-decoration: 1px underline var(--gold); text-underline-offset:.22em; font-weight: 600; }
 
 /* VLIST (quick facts) */

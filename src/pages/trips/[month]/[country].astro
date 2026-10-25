@@ -17,6 +17,8 @@ import { getWeatherBucket } from '../../../data/country-month-bucket.js';
 import { getBucket } from '../../../data/packing-weather-buckets.js';
 import { hasTripSnippet, tripSnippetDescription } from '../../../data/trip-snippets.js';
 import TripSaveButton from '../../../components/TripSaveButton.astro';
+import { getSeasonalPageAdvice } from '../../../data/seasonal-page-advice.js';
+import { Image } from 'astro:assets';
 // «О» или «об»: «об» перед словом с гласной а, и, о, у, э в начале («об Алтае», «об июне»), иначе «о».
 const об = (w) => (/^[аиоуэ]/i.test(String(w || '')) ? 'об' : 'о');
 
@@ -46,11 +48,19 @@ const WEATHER_REFRAME_PILOT = new Set([
 const reframe = WEATHER_REFRAME_PILOT.has(`${m.slug}/${d.slug}`);
 const yr = yearForMonth(monthIdx + 1);
 const status = d.r[monthIdx];
-const text = d.t[monthIdx];
+const seasonalAdvice = getSeasonalPageAdvice('trips', d.slug, m.slug);
+const seasonalImageFiles = import.meta.glob('../../../content/blog/_images/{hub-egypt,egypt-2026}/*.{jpg,jpeg,webp}', { import: 'default' });
+const seasonalSections = seasonalAdvice ? await Promise.all(seasonalAdvice.sections.map(async (section) => {
+  if (!section.photo) return section;
+  const load = seasonalImageFiles[`../../../content/blog/_images/${section.photo.file}`];
+  if (!load) throw new Error(`Не найден кадр сезонной страницы: ${section.photo.file}`);
+  return { ...section, image: await load() };
+})) : [];
+const text = seasonalAdvice?.intro || d.t[monthIdx];
 // Богатые данные по месяцу (погода/события/что смотреть) — есть для части стран
 // (programmatic-seasons.js, источники meteoblue/climate-data). Где есть — выводим
 // реальный уникальный контент вместо общего шаблона. Не выдумываем там, где нет.
-const rich = RICH_COUNTRIES[d.slug]?.months?.[m.slug] || null;
+const rich = seasonalAdvice ? null : RICH_COUNTRIES[d.slug]?.months?.[m.slug] || null;
 
 const STATUS_LABEL = {
   P: { tag: 'Пик сезона',      verdict: 'Лучший месяц для поездки',                cls: 'peak' },
@@ -98,7 +108,7 @@ function budgetFor(days, tier) {
   const daily = (hotelTiers[tier] || 0) + (foodTiers[tier] || 0);
   return f + daily * days;
 }
-const hasPrices = flightTiers[0] > 0;
+const hasPrices = !seasonalAdvice && flightTiers[0] > 0;
 const budgetGrid = hasPrices ? [7, 14, 21].map(d_ => ({
   days: d_,
   low: budgetFor(d_, 0),
@@ -124,7 +134,9 @@ const visaLine = ({
 }[d.visa]) || 'Виза — уточнить';
 const bestMonthsStr = лучшиеСловами || 'нет ярко выраженного пика — едут круглый год';
 const verdictForMonth = lbl.verdict + (status === 'P' || status === 'G' ? '.' : '. ' + (bestMonths.length ? 'Лучше выбрать: ' + bestMonths.slice(0, 3).map((x) => x.nom).join(', ') + '.' : ''));
-const budgetSummary = liveFlight
+const budgetSummary = seasonalAdvice
+  ? 'Сравните перелёт на свои даты, проживание в выбранном отеле и трансфер от аэропорта. Цена зависит от состава поездки, питания и условий отмены; одна сумма на весь Египет не описывает эти варианты.'
+  : liveFlight
   ? `Перелёт Москва — ${d.cases.nom} в ${m.prep}: от ${liveFlight.toLocaleString('ru-RU')} ₽ в одну сторону.`
     + (hasPrices ? ` Отель эконом от $${hotelFrom}/ночь, еда от $${foodFrom}/день.` : '')
   : (hasPrices && weekTotal
@@ -194,12 +206,16 @@ const weatherBucket = getBucket(getWeatherBucket(d.slug, monthIdx));
 // Обещание заменяется фактом из тех же климатических норм; остальные страницы
 // типа идут по формуле и служат контролем. Разбор — data/trip-snippets.js.
 const snip = hasTripSnippet(m.slug, d.slug) && monthWeather;
-const pageTitle = snip
+const pageTitle = seasonalAdvice
+  ? `Египет в ${m.prep} ${yr}: какой курорт и бухту выбрать`
+  : snip
   ? `${d.cases.nom} в ${m.prep} ${yr}: погода днём ${monthWeather.tmax} °C, цены, виза`
   : (reframe
       ? `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr}: цены и толпы`
       : `${d.cases.nom} в ${m.prep} ${yr}: погода, цены, виза`);
-const pageDescription = snip
+const pageDescription = seasonalAdvice
+  ? 'Как выбрать бухту Египта в ноябре: песчаный вход для детей, риф для снорклинга, защита от ветра, аэропорт и поездка в Луксор. Что проверить у отеля.'
+  : snip
   ? tripSnippetDescription(monthWeather, lbl.verdict)
   : `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr} — погода, цены, виза для россиян, бюджет на неделю. ${lbl.verdict}.`;
 
@@ -225,7 +241,7 @@ const pageDescription = snip
     <div class="wrap">
       <header class="hero grid">
         <h1 class="h1">{reframe ? <>Стоит ли ехать {d.cases.vP}{' '}<span class="rd">в {m.prep}</span>{' '}{yr}</> : <>{d.cases.nom}{' '}<span class="rd">в {m.prep}</span>{' '}{yr}</>}</h1>
-        <p class="sub">{lbl.verdict}. {d.region} — {d.sub}.</p>
+        <p class="sub">{seasonalAdvice ? 'Пляж, риф или экскурсии: выбор бухты и маршрута.' : `${lbl.verdict}. ${d.region} — ${d.sub}.`}</p>
         <p class="byl">
           <a href="/about/" class="byl-a">Никита Зайцев</a> ·
           <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
@@ -236,8 +252,19 @@ const pageDescription = snip
 
       <p class="lead">{text}</p>
 
+      {seasonalSections.map((section) => (
+        <section class="sec">
+          <div class="shead"><h2>{section.title}</h2></div>
+          {section.paragraphs.map((paragraph) => <p class="txt">{paragraph}</p>)}
+          {section.action && <p class="findcta"><a class="find" href={section.action.href} data-cta-id={`seasonal_${d.slug}_${m.slug}_${section.action.id}`} rel="sponsored noopener" target="_blank">{section.action.label}</a></p>}
+          {section.secondAction && <p class="findcta"><a class="find" href={section.secondAction.href} data-cta-id={`seasonal_${d.slug}_${m.slug}_${section.secondAction.id}`} rel="sponsored noopener" target="_blank">{section.secondAction.label}</a></p>}
+          {section.image && <figure class="seasonal-photo"><Image src={section.image} alt={section.photo.alt} width={Math.min(1200, section.image.width)} widths={[400, 800, 1200]} sizes="(max-width: 760px) 100vw, 960px" formats={['webp']} loading="lazy" /><figcaption>{section.photo.caption}</figcaption></figure>}
+        </section>
+      ))}
+      {seasonalAdvice && <p class="txt"><a href={seasonalAdvice.next.href}>{seasonalAdvice.next.label}</a>.</p>}
+
       <section class="sec">
-        <div class="shead"><h2>Погода {d.cases.loc} в {m.prep}</h2></div>
+        <div class="shead"><h2>{seasonalAdvice ? `Погода в Хургаде в ${m.prep}` : `Погода ${d.cases.loc} в ${m.prep}`}</h2></div>
         {monthWeather ? (
           <>
             <ul class="facts">
@@ -245,7 +272,7 @@ const pageDescription = snip
               <li><span class="fk">Осадки</span><span class="fv">{monthWeather.rain}</span></li>
               <li><span class="fk">Тип климата</span><span class="fv">{weatherBucket.label}</span></li>
             </ul>
-            <p class="wnote">Замер по городу {monthWeather.city}.</p>
+            <p class="wnote">{seasonalAdvice ? 'Это средние температуры месяца, а не прогноз на ваши даты. Для другого курорта и морской прогулки проверьте погоду отдельно.' : `Замер по городу ${monthWeather.city}.`}</p>
           </>
         ) : (
           <p class="wnote">{weatherBucket.summary}. Точные температуры по месяцам — в <a href="/seasons/">таблице сезонов</a>.</p>
@@ -256,12 +283,12 @@ const pageDescription = snip
         <div class="shead"><h2>Кратко: формат поездки</h2></div>
         <ul class="facts">
           <li><span class="fk">Виза</span><span class="fv"><a href={`/visa/${d.slug}/`}>{VISA_LABEL[d.visa]}</a></span></li>
-          <li><span class="fk">Бюджет</span><span class="fv">{BUDGET_LABEL[d.budget]}</span></li>
-          {flightFrom > 0 && <li><span class="fk">Перелёт из Москвы</span><span class="fv">от ${flightFrom} в одну сторону</span></li>}
-          {hotelFrom > 0 && <li><span class="fk">Отель эконом</span><span class="fv">от ${hotelFrom}/ночь</span></li>}
-          {weekTotal && <li><span class="fk">Неделя эконом</span><span class="fv">от ${weekTotal} на человека</span></li>}
+          <li><span class="fk">Бюджет</span><span class="fv">{seasonalAdvice ? 'Под даты, отель и состав поездки' : BUDGET_LABEL[d.budget]}</span></li>
+          {!seasonalAdvice && flightFrom > 0 && <li><span class="fk">Перелёт из Москвы</span><span class="fv">от ${flightFrom} в одну сторону</span></li>}
+          {!seasonalAdvice && hotelFrom > 0 && <li><span class="fk">Отель эконом</span><span class="fv">от ${hotelFrom}/ночь</span></li>}
+          {!seasonalAdvice && weekTotal && <li><span class="fk">Неделя эконом</span><span class="fv">от ${weekTotal} на человека</span></li>}
         </ul>
-        {flightFrom > 0 && iata && (
+        {!seasonalAdvice && flightFrom > 0 && iata && (
           <p class="findcta"><a class="find" href={aviasalesRoute('MOW', iata, `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`, monthIdx)} rel="sponsored noopener" target="_blank">Найти перелёт Москва — {d.cases.nom} от ${flightFrom}</a> </p>
         )}
       </section>
@@ -369,7 +396,7 @@ const pageDescription = snip
         </section>
       )}
 
-      {(status === 'P' || status === 'G') && !rich && (
+      {(status === 'P' || status === 'G') && !rich && !seasonalAdvice && (
         <section class="sec">
           <div class="shead"><h2>Что делать {d.cases.loc} в {m.prep}</h2></div>
           <p class="txt">{monthCap} {yr} — один из лучших месяцев для поездки {d.cases.vP}. Погода и цены сходятся в окне комфорта. Закладывайте 7–14 дней, бронировать минимум за 2 месяца до вылета — на пиковые даты места разлетаются быстро.</p>
@@ -481,6 +508,9 @@ const pageDescription = snip
 .findcta{margin-top:1rem;font-size:.95rem}
 .find{color:var(--ink);font-weight:700;text-decoration:underline 1px var(--gold);text-underline-offset:.22em}
 .find:hover{color:var(--gold)}
+.seasonal-photo{max-width:960px;margin:1.4rem 0 0}
+.seasonal-photo :global(img){display:block;width:100%;height:auto}
+.seasonal-photo figcaption{font-size:.82rem;line-height:1.5;color:var(--mid);margin-top:.5rem}
 .adm{font-size:.6rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mid)}
 .adm-row{margin-top:.55rem;font-size:.66rem;color:var(--mid)}
 
