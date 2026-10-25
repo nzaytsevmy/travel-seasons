@@ -3,12 +3,12 @@
   "slug": "armenia-guide-2026",
   "reviewer": "codex-batch10-independent-seasonal",
   "authoredBy": "codex-batch10-cuba-armenia",
-  "reviewedAt": "2026-10-25T16:39:04.344Z",
+  "reviewedAt": "2026-10-25T16:59:33.370Z",
   "status": "approved_with_limits_pending_release_checks",
   "approvalScope": "EDITORIAL_MANUSCRIPT_ONLY",
   "editorialApproved": true,
   "releaseApproved": false,
-  "proseHash": "a0e5bde4d4963e0b",
+  "proseHash": "369ebc5867e4b1bd",
   "qualityScore": {
     "topic": 9,
     "facts": 8.5,
@@ -91,7 +91,7 @@
       "criterion": 12,
       "name": "Ссылки и навигация",
       "score": 5,
-      "evidence": "Контекстные переходы используют центральные helper и относящиеся к задаче назначения; полный финальный HTML и весь граф ссылок проверит владелец выпуска."
+      "evidence": "Контекстные переходы используют центральные helper и относящиеся к задаче назначения; полный финальный HTML и весь граф ссылок проверит владелец выпуска. Исправление после RED CI798: /hotels/armenia/ подтверждён реальным src/pages/hotels/[country].astro и live GET200, canonical/title10; прежнее утверждение о существовании /armenia/best-hotels/ ошибочно. Полный итоговый CI ожидается."
     },
     {
       "criterion": 13,
@@ -177,7 +177,7 @@
       "criterion": 12,
       "name": "Ссылки и навигация",
       "score": 5,
-      "evidence": "Контекстные переходы используют центральные helper и относящиеся к задаче назначения; полный финальный HTML и весь граф ссылок проверит владелец выпуска."
+      "evidence": "Контекстные переходы используют центральные helper и относящиеся к задаче назначения; полный финальный HTML и весь граф ссылок проверит владелец выпуска. Исправление после RED CI798: /hotels/armenia/ подтверждён реальным src/pages/hotels/[country].astro и live GET200, canonical/title10; прежнее утверждение о существовании /armenia/best-hotels/ ошибочно. Полный итоговый CI ожидается."
     },
     {
       "criterion": 13,
@@ -193,5 +193,24 @@
     }
   ],
   "evidenceRef": "work/batch10/review4-seasonal.json",
-  "findings": []
+  "findings": [],
+  "deltaReviews": [
+    {
+      "at": "2026-10-25T16:59:33.370Z",
+      "beforeProseHash": "a0e5bde4d4963e0b",
+      "afterProseHash": "369ebc5867e4b1bd",
+      "scope": "Only /armenia/best-hotels/ corrected to /hotels/armenia/; reconstruction with old href matches previously reviewed prose.",
+      "result": "PASS",
+      "priorFailure": "CI798 source643c6d46 build40213651213 Full-site SEO audit broken internal link; previous reviewer source-existence claim was insufficient",
+      "route": "src/pages/hotels/[country].astro",
+      "live": {
+        "checkedAt": "2026-10-25T16:59:33.370Z",
+        "status": 200,
+        "url": "https://traveltribe.ru/hotels/armenia/",
+        "title": "Лучшие отели Армении: 10 вариантов — TravelTribe",
+        "canonical": "https://traveltribe.ru/hotels/armenia/"
+      },
+      "releaseStatus": "Full final CI not accepted; original failure retained work/context/run-iyqwujtj/stdout.log"
+    }
+  ]
 }
