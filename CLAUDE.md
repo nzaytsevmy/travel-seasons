@@ -33,6 +33,10 @@ CI выполняется на публичных стандартных ран�
 
 Все применимые пункты ниже обязательны до merge и публикации. Место выполнения для двух рутин определено следующим правилом; остальные изменения сохраняют локальный порядок.
 
+### Social preview release exception (2026-10-25)
+
+The owner explicitly authorized moving the remaining complete browser checks to GitHub Actions for branch `fix/social-preview-v3`. Local build, SEO audit, secret scan and delivery checks remain required. All 26 existing required CI checks, all browser projects, screenshot thresholds and three Lighthouse samples remain unchanged. Merge and publication require green CI, followed by verification of the exact deployed commit and the live Open Graph image.
+
 ### Homepage release exception (2026-10-11)
 
 User explicitly authorized full browser and performance checks in GitHub Actions for this release. Only branch `feat/home-photojournal-20261010` uses the existing committed-source preflight. All 26 CI checks, browsers, thresholds and three Lighthouse runs remain mandatory before merge. Browser Guard and ordinary development gates remain unchanged. Deployment requires acceptance and separate live verification.

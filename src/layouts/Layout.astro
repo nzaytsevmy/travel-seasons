@@ -65,7 +65,7 @@ const {
   ogDescription = description,
   ogType = 'website',
   ogImage,
-  ogImageAlt = 'TravelTribe — куда поехать: сезоны, визы и бюджет для 70+ направлений',
+  ogImageAlt = ogImage ? title : 'TravelTribe — куда поехать и когда: сезоны, визы и бюджет. Гергети, Грузия',
   ldJson,
   deferHomePhotos = false,
   preloadJournalFonts = false,
@@ -88,7 +88,7 @@ const monetizationContext = {
     : monetizationDestination,
 };
 
-const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-image.png?v=2';
+const OG_IMAGE = ogImage ?? 'https://traveltribe.ru/og-traveltribe-v3.png';
 
 // @font-face Golos с font-display:optional — swap не происходит, поэтому подмена
 // шрифта не двигает вёрстку (CLS 0). unicode-range сохранён из fontsource:
