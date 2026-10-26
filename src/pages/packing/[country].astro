@@ -11,7 +11,7 @@ import { getBucket } from '../../data/packing-weather-buckets.js';
 import { ACTIVITY_TAGS, ACTIVITY_LABEL, ACTIVITY_GEAR } from '../../data/country-activity-tags.js';
 import { PLUG_TYPES, plugAdvice } from '../../data/country-plug-types.js';
 import { getWeatherBucket } from '../../data/country-month-bucket.js';
-import { aviasalesRoute, cherehapaCountry, youtravelCountry } from '../../data/affiliate.js';
+import { aviasalesRoute, cherehapaCountry, preferredTourCountry } from '../../data/affiliate.js';
 import { UZBEKISTAN_PACKING_ENTRY, PACKING_INSURANCE_ADVICE, getUzbekistanPackingSeason } from '../../data/packing-page-advice.js';
 
 export async function getStaticPaths() {
@@ -65,6 +65,7 @@ const plug = PLUG_TYPES[d.slug];
 const tags = ACTIVITY_TAGS[d.slug] || [];
 const hasActivity = tags.some((t) => ACTIVITY_GEAR[t]);
 const affiliateSubId = `packing_${d.slug.replaceAll('-', '_')}`;
+const tourOffer = preferredTourCountry(d.slug, affiliateSubId);
 
 const blogSlug = Object.values(regionMeta).find((rm) => rm.slug === d.slug)?.blogSlug;
 const rich = regionsRich[d.slug];
@@ -246,7 +247,7 @@ const ldJson = {
         <li><a href="/seasons/">Сезоны по месяцам — когда ехать</a></li>
         {pillarUrl && <li><a href={pillarUrl}>Авторский гайд {d.cases.prep}</a></li>}
         <li><a href="/packing/">Все чек-листы по странам</a></li>
-        <li>Не хочется собирать маршрут самому — <a href={youtravelCountry(d.slug, affiliateSubId)} target="_blank" rel="sponsored noopener">авторские туры {d.cases.vP} с небольшой группой</a>.</li>
+        <li>{tourOffer.kind === 'excursion' ? 'Для прогулок с гидом — ' : 'Не хочется собирать маршрут самому — '}<a href={tourOffer.href} target="_blank" rel="sponsored noopener">{tourOffer.kind === 'excursion' ? `экскурсии ${d.cases.loc} на Sputnik8` : `авторские туры ${d.cases.vP} с небольшой группой`}</a>.</li>
       </ul>
     </section>
 

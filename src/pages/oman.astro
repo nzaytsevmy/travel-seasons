@@ -25,7 +25,7 @@ import { climateChart } from '../data/country-climate-chart.js';
 import { typo } from '../utils/typo.js';
 import { PLUG_TYPES, plugVerdict } from '../data/country-plug-types.js';
 import { DATA_UPDATED } from '../data/meta.js';
-import { aviasalesRoute, cherehapaCountry, ostrovokCity, youtravelCountry } from '../data/affiliate.js';
+import { aviasalesRoute, cherehapaCountry, ostrovokCity, sputnik8City } from '../data/affiliate.js';
 import livePrices from '../data/prices-cache.json';
 import { freshPrices } from '../data/price-freshness.js';
 
@@ -88,7 +88,7 @@ const полис = cherehapaCountry('oman', `${subId}_ins`);
 //    липкой панели на этой странице нет, хотя общий шаблон её даёт. Авторские туры
 //    он попросил добавить тем же днём — строкой в таблице, не кнопкой.
 // Каталог страны у партнёра сверен 30.08.2026 (см. YOUTRAVEL_DESTINATION).
-const тур = youtravelCountry('oman', `${subId}_tour`);
+const тур = sputnik8City('oman', `${subId}_tour`);
 
 const faqs = [
   {
@@ -272,7 +272,7 @@ const ldJson = {
         <div class="om-prices">
           <div class="om-prow"><span>Свой расчёт поездки</span><span><a href={priceIdx >= 0 ? `/calculator/?c=${priceIdx}` : '/calculator/'}>калькулятор</a></span></div>
           <div class="om-prow"><span>Что взять с собой</span><span><a href="/packing/oman/">сборы в Оман</a></span></div>
-          <div class="om-prow"><span>Поехать с гидом</span><span><a href={тур} rel="sponsored nofollow noopener" target="_blank">авторские туры в Оман</a></span></div>
+          <div class="om-prow"><span>Поехать с гидом</span><span><a href={тур} rel="sponsored nofollow noopener" target="_blank">экскурсии в Омане на Sputnik8</a></span></div>
         </div>
       </div>
     </section>

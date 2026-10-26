@@ -10,6 +10,7 @@ import {
   updateReaderLifecycle,
 } from '../data/monetization.js';
 import { destinationAffiliateUrl } from '../data/affiliate.js';
+import { TOUR_ROLLOUT_ID } from '../data/tour-rollout.js';
 
 const OWN_HOSTS = new Set(['t.me']);
 
@@ -143,7 +144,9 @@ export function monetizationPayload(anchor, pathname = window.location.pathname,
     variant: anchor.dataset.variant || '',
     assignment_unit: anchor.ownerDocument?.body?.dataset.assignmentUnit || '',
     click_id: clickId,
-    click_context: `${clickId}__${readerCohort}__${audienceSource}${journeySource ? `__${journeySource}` : ''}`,
+    click_context: [clickId, readerCohort, audienceSource, journeySource,
+      anchor.dataset.partner || 'unknown', anchor.dataset.ctaId || '', TOUR_ROLLOUT_ID].join('__'),
+    rollout_id: TOUR_ROLLOUT_ID,
     reader_cohort: readerCohort,
     audience_source: audienceSource,
     partner_join: classifyPartner(anchor.dataset.attributionHref || anchor.href)?.attribution === 'sub_id'

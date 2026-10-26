@@ -1,3 +1,5 @@
+import sputnikDestinations from './sputnik-destinations.json' with { type: 'json' };
+
 // Travelpayouts marker — единая точка для всех партнёрских компонентов.
 // Полный marker (с sub-id) используется в существующем calculator.astro;
 // для embed-виджетов нужен короткий marker (числовая часть).
@@ -56,7 +58,7 @@ export const TP_LINKS = {
   // интент, с которым читают гид по городу. Проверено curl 03.08.2026:
   // ведёт на experience.tripster.ru, erid доезжает.
   tripster:    'https://tripster.tpk.mx/cicJCuPT?erid=2VtzqxMZpjc',
-  // Спутник8: экскурсии и активности, второй источник предложений к Трипстеру.
+  // Спутник8: основной источник экскурсий там, где проверены подходящие предложения.
   // Проверено curl 03.08.2026: ведёт на sputnik8.com, erid доезжает.
   sputnik8:    'https://sputnik8.tpk.mx/nIkABzG2?erid=2Vtzqugsszo',
   // Tiqets: билеты в музеи/достопримечательности (загран + крупные РФ-города).
@@ -199,8 +201,20 @@ const SPUTNIK8_CITY = {
 };
 
 export const sputnik8City = (destinationSlug, subId) => {
-  const target = SPUTNIK8_CITY[destinationSlug];
+  const target = SPUTNIK8_CITY[destinationSlug] || sputnikDestinations[destinationSlug]?.url;
   return target ? tpkDeep('sputnik8', target, subId) : null;
+};
+
+export const sputnik8Explore = subId => tpkDeep('sputnik8', 'https://www.sputnik8.com/ru/countries', subId);
+
+// General destination CTAs may offer excursions instead of a ready-made trip.
+// Callers must render the returned format; concrete multi-day products keep
+// their own URLs and are never sent to a city excursion catalogue.
+export const preferredTourCountry = (destinationSlug, subId) => {
+  const sputnik = sputnik8City(destinationSlug, subId);
+  return sputnik
+    ? {href:sputnik,partner:'sputnik8',kind:'excursion'}
+    : {href:youtravelCountry(destinationSlug,subId),partner:'youtravel',kind:'multiday'};
 };
 
 // Мир Турбаз: регионы, где база отдыха — основной формат жилья. Алтая здесь нет

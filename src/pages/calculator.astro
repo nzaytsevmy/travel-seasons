@@ -20,7 +20,7 @@ import { build } from 'esbuild';
 import { resolve } from 'node:path';
 import calculatorSource from '../scripts/calculator.js?raw';
 const rates = await getBudgetRates();
-import { TP_LINKS, youtravelSub, cherehapaTravel } from '../data/affiliate.js';
+import { TP_LINKS, sputnik8Explore, cherehapaTravel } from '../data/affiliate.js';
 
 // Результат заполняется до первого кадра, как у прежнего inline-калькулятора.
 // Сборка в IIFE сохраняет общую формулу без ожидания загрузки отдельного модуля.
@@ -252,10 +252,10 @@ const ldJson = {
       </div>
     </section>
 
-    {/* Авторские туры (YouTravel) — альтернатива самостоятельному расчёту */}
+    {/* Экскурсии на месте — программы и даты у партнёра */}
     <section class="tc-section">
       <div class="tc-container">
-        <p class="tc-tourcta">Считать и планировать не хочется? <a href={youtravelSub('calculator')} rel="sponsored noopener" target="_blank"><strong>Авторский тур с экспертом</strong></a> — бюджет, маршрут и малая группа уже собраны. </p>
+        <p class="tc-tourcta">Что посмотреть на месте? <a href={sputnik8Explore('calculator')} rel="sponsored noopener" target="_blank"><strong>Экскурсии на Sputnik8</strong></a> — программы, отзывы и даты у партнёра. </p>
       </div>
     </section>
 

@@ -14,7 +14,7 @@ import { getBucket } from '../../../data/packing-weather-buckets.js';
 import { getWeatherBucket } from '../../../data/country-month-bucket.js';
 import { ACTIVITY_TAGS, ACTIVITY_LABEL, ACTIVITY_GEAR } from '../../../data/country-activity-tags.js';
 import { PLUG_TYPES, plugAdvice } from '../../../data/country-plug-types.js';
-import { aviasalesRoute, cherehapaCountry, youtravelCountry } from '../../../data/affiliate.js';
+import { aviasalesRoute, cherehapaCountry, preferredTourCountry } from '../../../data/affiliate.js';
 import { getHolidaysByMonth } from '../../../data/country-holidays.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
 import { regionsRich } from '../../../data/regions-rich.js';
@@ -118,6 +118,7 @@ const needsVisa = d.visa !== 'free';
 const plug = PLUG_TYPES[d.slug];
 const tags = ACTIVITY_TAGS[d.slug] || [];
 const affiliateSubId = `packing_${d.slug.replaceAll('-', '_')}`;
+const tourOffer = preferredTourCountry(d.slug, `${affiliateSubId}_${m.slug}`);
 
 // Пресет чек-листа (решение Никиты 05.09.2026): направление само говорит, куда
 // едут, — выбор «море / город / зима» показываем только там, где тип поездки
@@ -581,7 +582,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         <li><a href="/seasons/"><b>Таблица сезонов 70+ направлений</b></a><span>где ещё хорошо в {m.prep}</span></li>
         <li><a href="/packing/"><b>Все чек-листы по странам</b></a><span>70+ направлений</span></li>
       </ul>
-      <p class="pmu-tour">Собирать маршрут самому не всегда хочется — тогда берут место в небольшой группе: <a href={youtravelCountry(d.slug, `${affiliateSubId}_${m.slug}`)} rel="sponsored noopener" target="_blank">{pageAdvice?.tourLabel || `авторские туры ${d.cases.vP}`}</a>.</p>
+      <p class="pmu-tour">{tourOffer.kind === 'excursion' ? 'Если хотите посмотреть окрестности с гидом — ' : 'Собирать маршрут самому не всегда хочется — тогда берут место в небольшой группе: '}<a href={tourOffer.href} rel="sponsored noopener" target="_blank">{tourOffer.kind === 'excursion' ? `экскурсии ${d.cases.loc} на Sputnik8` : pageAdvice?.tourLabel || `авторские туры ${d.cases.vP}`}</a>.</p>
     </section>
 
   </main>

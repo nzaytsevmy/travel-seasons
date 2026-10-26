@@ -56,6 +56,22 @@ test('sparse-review programmes require corroborated reputation and keep statisti
   assert.ok(tourErrors({...tour,quality:undefined}).includes('tour-reviews'));
 });
 
+test('a lower bound on organizer reviews must equal distinct published tour counts',()=>{
+  const base={...valid(),partner:'sputnik8',url:'https://www.sputnik8.com/ru/tokyo/activities/12345-walk',ratingScope:'organizer',rating:4.9,reviewCount:40,reviewCountLowerBound:true,tourReviewCount:0};
+  base.checks={...base.checks,source:base.url};
+  const quality={mode:'combined',organizerRating:4.9,organizerReviewCount:40,organizerUrl:'https://www.sputnik8.com/ru/guides/123-guide',reason:'Проверены программа, отзывы туристов и история организатора на площадке.',
+    sources:[{url:base.url,kind:'programme',checkedAt:'2026-10-24',finding:'Программа и условия'},
+      {url:'https://www.sputnik8.com/ru/guides/123-guide',kind:'traveler-reviews',checkedAt:'2026-10-24',finding:'Отзывы опубликованных программ организатора'}],
+    organizerReviewCountLowerBound:true,organizerReviewEvidence:[{url:base.url,reviewCount:40}]};
+  assert.deepEqual(tourErrors({...base,quality}),[]);
+  assert.ok(tourErrors({...base,quality:{...quality,organizerReviewEvidence:[...quality.organizerReviewEvidence,...quality.organizerReviewEvidence]}}).includes('organizer-review-bound'));
+  assert.ok(tourErrors({...base,quality:{...quality,organizerReviewEvidence:[{url:base.url,reviewCount:39}]}}).includes('organizer-review-bound'));
+  assert.ok(tourErrors({...base,quality:{...quality,organizerReviewEvidence:[
+    {url:'https://www.sputnik8.com/ru/tokyo/activities/12345-old-slug',reviewCount:20},
+    {url:'https://www.sputnik8.com/ru/tokyo/activities/12345-new-slug',reviewCount:20},
+  ]}}).includes('organizer-review-bound'));
+});
+
 test('Travelpayouts links keep erid and per-offer attribution outside encoded target', () => {
   for (const [partner,url] of [['tripster',valid().url],['sputnik8','https://www.sputnik8.com/ru/istanbul/activities/12345-city-walk'],['tiqets','https://www.tiqets.com/en/tokyo-attractions-c72181/tickets-for-tower-p12345/']]) {
     const link=tourAffiliateUrl({...valid(),partner,url},'/japan/');
@@ -86,6 +102,19 @@ test('stale prices disappear without suppressing the reviewed tour', () => {
   assert.match(tourPrice(tour,now),/за группу/);
   assert.equal(tourPrice(tour,new Date('2026-10-31')),'Уточнить стоимость');
   assert.equal(tourPrice(valid(),now),'Уточнить стоимость');
+});
+
+test('partner prices retain their original currency and group unit without an invented FX rate', () => {
+  const tour={...valid(),price:{amount:110,currency:'USD',unit:'group',maxPersons:5,checkedAt:'2026-10-26',reviewAfter:'2026-11-02'}};
+  assert.deepEqual(tourErrors(tour),[]);
+  const label=tourPrice(tour,new Date('2026-10-26'));
+  assert.match(label,/110/);
+  assert.match(label,/\$|USD/);
+  assert.match(label,/за группу до 5/);
+  assert.doesNotMatch(label,/NaN|₽/);
+  assert.ok(tourErrors({...tour,price:{...tour.price,currency:'FAKE'}}).includes('price'));
+  assert.ok(tourErrors({...tour,price:{...tour.price,amount:NaN}}).includes('price'));
+  assert.equal(tourPrice(tour,new Date('2026-11-02')),'Уточнить стоимость');
 });
 
 test('small samples need documented history or verified identity and disclose the external rating source', () => {

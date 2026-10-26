@@ -25,6 +25,14 @@ export function isTourTarget(partner, target) {
 
 const validRating = (rating, minimum = 4.7) => Number.isFinite(rating) && rating >= minimum && rating <= 5;
 const positiveCount = count => Number.isInteger(count) && count > 0;
+const currencies = new Set(Intl.supportedValuesOf('currency'));
+const priceMoney = price => price?.currency
+  ? { amount:price.amount,currency:price.currency }
+  : { amount:price?.rub,currency:'RUB' };
+const validMoney = price => {
+  const {amount,currency}=priceMoney(price);
+  return Number.isFinite(amount) && amount>0 && currencies.has(currency);
+};
 const evidenceUrl = value => {
   try { return new URL(value).protocol === 'https:'; } catch { return false; }
 };
@@ -42,6 +50,15 @@ export function qualityErrors(tour) {
   if (typeof quality.reason !== 'string' || quality.reason.trim().length < 40) errors.push('quality-reason');
   if (!Array.isArray(sources) || !sources.some(s => s?.kind === 'traveler-reviews')) errors.push('independent-reviews');
   if (quality.mode === 'combined') {
+    if (quality.organizerReviewCountLowerBound === true) {
+      const evidence=quality.organizerReviewEvidence;
+      if (!Array.isArray(evidence) || !evidence.length
+        || evidence.some(row=>!isTourTarget(tour.partner,row?.url) || !positiveCount(row?.reviewCount))
+        || new Set(evidence.map(row=>tour.partner==='sputnik8' ? new URL(row.url).pathname.match(/\/activities\/(\d+)/)?.[1] : row.url)).size!==evidence.length
+        || evidence.reduce((sum,row)=>sum+row.reviewCount,0)!==quality.organizerReviewCount)
+        errors.push('organizer-review-bound');
+    }
+    if (tour.reviewCountLowerBound === true && (tour.ratingScope!=='organizer' || quality.organizerReviewCountLowerBound!==true)) errors.push('organizer-review-bound');
     const historyVerified = day(quality.organizerSince) && day(tour.checks?.checkedAt)
       && new Date(tour.checks.checkedAt) - new Date(quality.organizerSince) >= 730 * 86400000
       && Array.isArray(sources) && sources.some(s => s?.kind === 'platform-history');
@@ -75,7 +92,7 @@ export function tourErrors(tour) {
     if (typeof evidence?.[key] !== 'string' || !evidence[key].trim()) errors.push(`checks.${key}`);
   }
   if (tour.destination === 'japan-hokkaido' && !/Хоккайдо|Саппоро|Отару|Нисеко|Нобори[ -]?б[еэ]цу/i.test(evidence?.program || '')) errors.push('geography-program');
-  if (tour.price && (!Number.isFinite(tour.price.rub) || tour.price.rub <= 0 || !['person', 'group'].includes(tour.price.unit) || !day(tour.price.checkedAt) || !day(tour.price.reviewAfter) || tour.price.reviewAfter <= tour.price.checkedAt)) errors.push('price');
+  if (tour.price && (!validMoney(tour.price) || !['person', 'group'].includes(tour.price.unit) || !day(tour.price.checkedAt) || !day(tour.price.reviewAfter) || tour.price.reviewAfter <= tour.price.checkedAt)) errors.push('price');
   return errors;
 }
 
@@ -105,9 +122,13 @@ export function tourAffiliateUrl(tour, pathname) {
 export function tourPrice(tour, now = new Date()) {
   const today = now.toISOString().slice(0, 10);
   const price = tour.price;
-  if (!price || price.checkedAt > today || price.reviewAfter <= today) return 'Уточнить стоимость';
+  if (!price || !validMoney(price) || price.checkedAt > today || price.reviewAfter <= today) return 'Уточнить стоимость';
   const unit = price.unit === 'group'
     ? `за группу${Number.isInteger(price.maxPersons) && price.maxPersons > 0 ? ` до ${price.maxPersons} чел.` : ''}`
     : 'за человека';
-  return `от ${new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 }).format(price.rub)} ₽ ${unit}`;
+  const money=priceMoney(price);
+  const label=price.currency
+    ? new Intl.NumberFormat('ru-RU',{style:'currency',currency:money.currency,minimumFractionDigits:0,maximumFractionDigits:2}).format(money.amount)
+    : `${new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(money.amount)} ₽`;
+  return `от ${label} ${unit}`;
 }

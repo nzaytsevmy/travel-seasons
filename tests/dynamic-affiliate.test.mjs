@@ -43,7 +43,8 @@ test('многострановая главная сохраняет стран�
   assert.match(new URL(a.href).searchParams.get('sub_id'), /home_georgia_stay_recommendation/);
   assert.equal(monetizationPayload(a, '/', 'c123').destination, 'georgia');
   doc.body.dataset.journeySource = 'home_planner';
-  assert.equal(monetizationPayload(a, '/', 'c123').click_context, 'c123__unknown__unattributed__home_planner');
+  assert.equal(monetizationPayload(a, '/', 'c123').click_context,
+    'c123__unknown__unattributed__home_planner__ostrovok__home_georgia_stay_recommendation__sputnik_preferred_v1');
 });
 
 test('повторная подготовка не присваивает новой ссылке ID уже существующей', () => {

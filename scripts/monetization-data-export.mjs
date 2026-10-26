@@ -3,6 +3,7 @@
 import { mkdirSync, writeFileSync, renameSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { MONETIZATION_EXPERIMENT, HOME_ORGANIC_ENTRY_FILTER } from '../src/data/monetization.js';
+import { SPUTNIK_HUMAN_FILTER } from './sputnik-observation.mjs';
 
 const METRIKA_COUNTER = '95832375';
 const METRIKA_OUTBOUND_GOAL = '566338531';
@@ -58,8 +59,11 @@ export function normalizeMetrikaClickRows(apiRows) {
     let readerCohort = '';
     let audienceSource = '';
     let journeySource = '';
+    let partner = '';
+    let ctaId = '';
+    let rolloutId = '';
     if (key === 'click_context') {
-      [clickId, readerCohort = '', audienceSource = '', journeySource = ''] = String(rawValue).split('__');
+      [clickId, readerCohort = '', audienceSource = '', journeySource = '', partner = '', ctaId = '', rolloutId = ''] = String(rawValue).split('__');
     } else if (key !== 'click_id') {
       continue;
     }
@@ -75,6 +79,9 @@ export function normalizeMetrikaClickRows(apiRows) {
     if (readerCohort) current.reader_cohort = readerCohort;
     if (audienceSource) current.audience_source = audienceSource;
     if (journeySource === 'home_planner') current.journey_source = journeySource;
+    if (/^[a-z0-9_]{1,40}$/.test(partner)) current.partner = partner;
+    if (/^[a-z0-9_]{5,64}$/.test(ctaId)) current.cta_id = ctaId;
+    if (/^[a-z0-9_]{1,40}$/.test(rolloutId)) current.rollout_id = rolloutId;
     byClick.set(clickId, current);
   }
   return [...byClick.values()];
@@ -295,13 +302,14 @@ if (process.argv[1] && resolve(process.argv[1]) === new URL(import.meta.url).pat
   const metrikaToken = process.env.METRIKA_OAUTH_TOKEN || process.env.YANDEX_OAUTH_TOKEN;
   const travelpayoutsToken = process.env.TRAVELPAYOUTS_TOKEN;
   if (!metrikaToken || !travelpayoutsToken) throw new Error('Нужны METRIKA_OAUTH_TOKEN и TRAVELPAYOUTS_TOKEN.');
-  const [clickEvents, assignmentCounts, readerCohortCounts, audienceSourceCounts, actions, homeCohort] = await Promise.all([
+  const [clickEvents, assignmentCounts, readerCohortCounts, audienceSourceCounts, actions, homeCohort, sputnikClicks] = await Promise.all([
     fetchMetrikaClicks({ token: metrikaToken, dateFrom: args.dateFrom, dateTo: args.dateTo }),
     fetchAssignmentCounts({ token: metrikaToken, dateFrom: args.dateFrom, dateTo: args.dateTo, experimentId: args.experimentId }),
     fetchReaderCohortCounts({ token: metrikaToken, dateFrom: args.dateFrom, dateTo: args.dateTo }),
     fetchAudienceSourceCounts({ token: metrikaToken, dateFrom: args.dateFrom, dateTo: args.dateTo }),
     fetchTravelpayoutsActions({ token: travelpayoutsToken, dateFrom: args.dateFrom, dateTo: args.actionsThrough || args.dateTo }),
     fetchHomeCohort({ token: metrikaToken, dateFrom: args.dateFrom, dateTo: args.dateTo }),
+    fetchMetrikaClicks({ token: metrikaToken, dateFrom: args.dateFrom, dateTo: args.dateTo, visitFilter: SPUTNIK_HUMAN_FILTER }),
   ]);
   const output = resolve(args.output);
   mkdirSync(dirname(output), { recursive: true });
@@ -322,6 +330,8 @@ if (process.argv[1] && resolve(process.argv[1]) === new URL(import.meta.url).pat
     audienceSourceCounts,
     homeCohort,
     clickEvents,
+    sputnikHumanClicks: { status:'complete', filter:SPUTNIK_HUMAN_FILTER,
+      dateFrom:args.dateFrom,dateTo:args.dateTo,rows:sputnikClicks },
     actions,
   }, null, 2)}\n`, {mode:0o600});
   renameSync(temporary, output);

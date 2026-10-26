@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { видимыйТекст } from './visible-text';
+import { unshieldHtml } from '../scripts/affiliate-shield.mjs';
 
 // Проверяем готовый HTML: исправление только в данных, Schema или невидимом
 // элементе не должно сделать тест зелёным, оставив прежний совет читателю.
@@ -50,11 +51,12 @@ test('Общий список Узбекистана учитывает моро
   assert.doesNotMatch(text, /на побережье|песок на пляже|Купальник \+ парео|Днём \+8–15/);
 });
 
-test('Хайнань: погода согласована, название туров соответствует Китаю', () => {
-  const { text } = page('packing/hainan/november');
+test('Хайнань: погода согласована, экскурсии ведут на остров', () => {
+  const { text, html } = page('packing/hainan/november');
   assert.match(text, /40 мм/);
   assert.doesNotMatch(text, /58 мм|27–32|авторские туры на Хайнань/);
-  assert.match(text, /авторские туры по Китаю/);
+  assert.match(text, /экскурсии на Хайнане на Sputnik8/);
+  assert.match(unshieldHtml(html), /www\.sputnik8\.com%2Fru%2Fsanya/);
 });
 
 for (const path of months) {

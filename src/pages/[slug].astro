@@ -32,7 +32,7 @@ import ClimateChart from '../components/ClimateChart.astro';
 import CountryMap from '../components/CountryMap.astro';
 import { countryPhotos } from '../data/country-photos.js';
 import { COUNTRY_SIGHTS } from '../data/country-sights.js';
-import { TP_LINKS, aviasalesRoute, otelloStay, cherehapaCountry, ostrovokCountry, youtravelCountry, kiwitaxiRoute, sputnik8City, mirturbazRegion } from '../data/affiliate.js';
+import { TP_LINKS, aviasalesRoute, otelloStay, cherehapaCountry, ostrovokCountry, preferredTourCountry, kiwitaxiRoute, sputnik8City, mirturbazRegion } from '../data/affiliate.js';
 import livePrices from '../data/prices-cache.json';
 import { freshPrices } from '../data/price-freshness.js';
 
@@ -300,7 +300,7 @@ const виды = COUNTRY_SIGHTS[d.slug] ? await Promise.all(COUNTRY_SIGHTS[d.slu
 const билеты = d.price?.iata ? aviasalesRoute('MOW', d.price.iata, subId) : null;
 const жильё = RU_STAY.has(d.slug) ? otelloStay(`hub_${d.slug}`) : ostrovokCountry(d.slug, `hub_${d.slug}`);
 const полис = cherehapaCountry(d.slug, `hub_${d.slug}`);
-const тур = youtravelCountry(d.slug, `hub_${d.slug}`);
+const тур = preferredTourCountry(d.slug, `hub_${d.slug}`);
 const экскурсии = sputnik8City(d.slug, subId);
 const базы = mirturbazRegion(d.slug, subId);
 // Значение визы в карточке — короткое: длинные сроки вида «15/30/90 дн = €30/35/40»
@@ -702,8 +702,8 @@ if (guide?.itinerary?.length) {
     </section>
 
     <section class="om-sec" id="gid">
-      <h2>Поехать с экспертом</h2>
-      <p class="om-body om-linkline"><a href={тур} rel="sponsored noopener" target="_blank">Авторские туры {d.cases.vP}</a> <span class="om-dim">маршрут, логистика и малая группа уже собраны</span></p>
+      <h2>{тур.kind === 'excursion' ? 'Экскурсии на месте' : 'Поехать с экспертом'}</h2>
+      <p class="om-body om-linkline"><a href={тур.href} rel="sponsored noopener" target="_blank">{тур.kind === 'excursion' ? `Экскурсии ${d.cases.loc} на Sputnik8` : `Авторские туры ${d.cases.vP}`}</a> <span class="om-dim">{тур.kind === 'excursion' ? 'программы, отзывы и условия бронирования' : 'маршрут, логистика и малая группа уже собраны'}</span></p>
     </section>
 
     <section class="om-sec" id="viza">

@@ -10,7 +10,7 @@ import { DIRECTIONS, MONTHS } from '../../../data/directions.js';
 import { месяцыНаправления } from '../../../utils/best-months.js';
 import { COUNTRIES as RICH_COUNTRIES } from '../../../data/programmatic-seasons.js';
 import { NICHE_TRIPS } from '../../../data/niche-trips.js';
-import { aviasalesRoute, ostrovokCountry, cherehapaCountry, youtravelCountry, sputnik8City } from '../../../data/affiliate.js';
+import { aviasalesRoute, ostrovokCountry, cherehapaCountry, preferredTourCountry } from '../../../data/affiliate.js';
 import { DATA_UPDATED, yearForMonth } from '../../../data/meta.js';
 import { getMonthlyWeather } from '../../../data/country-monthly-weather.js';
 import { getWeatherBucket } from '../../../data/country-month-bucket.js';
@@ -219,6 +219,8 @@ const pageDescription = seasonalAdvice
   ? tripSnippetDescription(monthWeather, lbl.verdict)
   : `Стоит ли ехать ${d.cases.vP} в ${m.prep} ${yr} — погода, цены, виза для россиян, бюджет на неделю. ${lbl.verdict}.`;
 
+const tourOffer = preferredTourCountry(d.slug, `trip_${d.slug}_${m.slug}`);
+
 ---
 <Layout
   preloadJournalFonts
@@ -401,9 +403,6 @@ const pageDescription = seasonalAdvice
           <div class="shead"><h2>Что делать {d.cases.loc} в {m.prep}</h2></div>
           <p class="txt">{monthCap} {yr} — один из лучших месяцев для поездки {d.cases.vP}. Погода и цены сходятся в окне комфорта. Закладывайте 7–14 дней, бронировать минимум за 2 месяца до вылета — на пиковые даты места разлетаются быстро.</p>
           <p class="txt">Сравнить с другими месяцами можно в <a href="/seasons/">таблице сезонов</a>, посчитать точный бюджет — в <a href="/calculator/">калькуляторе поездки</a>.</p>
-          {sputnik8City(d.slug, `trips_${m.slug}_${d.slug}`) && (
-            <p class="txt findcta"><a href={sputnik8City(d.slug, `trips_${m.slug}_${d.slug}`)} class="find" rel="sponsored noopener" target="_blank">Экскурсии {d.cases.loc} с местными гидами</a> — расписание на {m.prep} и отзывы видно до оплаты.</p>
-          )}
         </section>
       )}
 
@@ -427,11 +426,11 @@ const pageDescription = seasonalAdvice
       )}
 
       <section class="sec">
-        <div class="shead"><h2>Поехать с экспертом</h2></div>
-        <a href={youtravelCountry(d.slug, `trip_${d.slug}_${m.slug}`)} class="cta-row" rel="sponsored noopener" target="_blank">
-          <span class="cta-t"><b>Авторские туры {d.cases.vP}</b><span>Готовый маршрут, логистика и малая группа с экспертом — не планировать самому</span></span>
-                  </a>
-        <p class="adm-row">YouTravel.me</p>
+        <div class="shead"><h2>{tourOffer.kind === 'excursion' ? 'Экскурсии на месте' : 'Поехать с экспертом'}</h2></div>
+        <a href={tourOffer.href} class="cta-row" rel="sponsored noopener" target="_blank">
+          <span class="cta-t"><b>{tourOffer.kind === 'excursion' ? `Экскурсии ${d.cases.loc}` : `Авторские туры ${d.cases.vP}`}</b><span>{tourOffer.kind === 'excursion' ? 'Программы, отзывы и условия бронирования' : 'Готовый маршрут, логистика и малая группа с экспертом — не планировать самому'}</span></span>
+        </a>
+        <p class="adm-row">{tourOffer.partner === 'sputnik8' ? 'Sputnik8' : 'YouTravel.me'}</p>
       </section>
 
       {d.relatedPosts.length > 0 && (

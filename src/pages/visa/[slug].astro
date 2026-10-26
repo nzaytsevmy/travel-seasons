@@ -7,7 +7,7 @@ import { Picture } from 'astro:assets';
 import { DIRECTIONS, VISITED } from '../../data/directions.js';
 import { месяцыНаправления } from '../../utils/best-months.js';
 import { getVisaDetails, VISA_DETAILS } from '../../data/visa-details.js';
-import { aviasalesRoute, cherehapaCountry, youtravelCountry } from '../../data/affiliate.js';
+import { aviasalesRoute, cherehapaCountry, preferredTourCountry } from '../../data/affiliate.js';
 import { DATA_UPDATED } from '../../data/meta.js';
 // «О» или «об»: «об» перед словом с гласной а, и, о, у, э в начале («об Алтае», «об июне»), иначе «о».
 const об = (w) => (/^[аиоуэ]/i.test(String(w || '')) ? 'об' : 'о');
@@ -57,6 +57,7 @@ const VISA_TITLE = {
 const flightFrom = d.price?.flight?.[0];
 const hotelFrom = d.price?.hotel?.[0];
 const affiliateSubId = `visa_${d.slug.replaceAll('-', '_')}`;
+const tourOffer = preferredTourCountry(d.slug, affiliateSubId);
 
 // Лучшие месяцы — сезонами подряд, как на странице страны. До 12.09.2026 здесь стояли первые три хороших
 // месяца по календарю: у Норвегии — «январь, февраль, март» при пике в июне–августе.
@@ -357,7 +358,7 @@ const ldJson = {
           </li>
         )}
         <li>
-          <strong>Готовый маршрут.</strong> Когда собирать поездку самому некогда, берут место в небольшой группе с автором маршрута: <a href={youtravelCountry(d.slug, affiliateSubId)} rel="sponsored noopener" target="_blank">авторские туры {d.cases.vP}</a>.
+          {tourOffer.kind === 'excursion' ? <><strong>Прогулки с гидом.</strong> Программы и условия бронирования: <a href={tourOffer.href} rel="sponsored noopener" target="_blank">экскурсии {d.cases.loc} на Sputnik8</a>.</> : <><strong>Готовый маршрут.</strong> Когда собирать поездку самому некогда, берут место в небольшой группе с автором маршрута: <a href={tourOffer.href} rel="sponsored noopener" target="_blank">авторские туры {d.cases.vP}</a>.</>}
         </li>
       </ul>
       

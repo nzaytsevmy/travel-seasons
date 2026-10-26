@@ -37,6 +37,13 @@ volatileFacts:
     reviewAfter: 2027-06-01
     fallback: "Убрать таблицу дня на двоих и суммы из отзывов, оставить перечень платных пунктов без чисел."
 checks:
+  - date: 2026-10-26
+    what: "Реферальная ссылка на экскурсию по Абхазии в группе до семи человек"
+    changed: "Ссылка ведёт на конкретную экскурсию Sputnik8. Проверены маршрут и размер группы; условия оплаты нужно уточнить перед бронированием. Цены и прочие факты статьи не пересматривались."
+    minor: true
+    sources:
+      - name: "Sputnik8: Абхазия на минивэне, группа до 7 человек"
+        url: "https://www.sputnik8.com/ru/gagra/activities/54430-vip-tur-po-abhazii-na-minivene-v-mini-gruppe"
   - date: 2026-09-24
     what: "Отображение сведений об авторах фотографий"
     changed: "Атрибуция вынесена на общую страницу фотографий. Описания мест, исходные кадры и записи об их происхождении сохранены. Факты статьи и даты публикации не менялись."
@@ -114,7 +121,7 @@ howto:
 ---
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
 import PricingCards from '../../components/post/PricingCards.astro';
-import { cherehapaCountry, sutochnoRegion, youtravelCountry, kiwitaxiRoute, sputnik8City } from '../../data/affiliate.js';
+import { cherehapaCountry, sutochnoRegion, youtravelCountry, kiwitaxiRoute, sputnik8City, tpkDeep } from '../../data/affiliate.js';
 
 Озеро Рица — та самая бирюзовая открытка, ради которой едут вглубь Абхазии: горное озеро на высоте 950 метров, зажатое между поросшими лесом хребтами. Сама дорога к нему — половина впечатления: серпантин вдоль реки Бзыбь, Голубое озеро у обочины и каньон с отвесными стенами. Вторая половина впечатления — не всегда приятная: платная парковка, кафе на берегу, фотографы в папахах и толпа к полудню.
 
@@ -196,7 +203,7 @@ import { cherehapaCountry, sutochnoRegion, youtravelCountry, kiwitaxiRoute, sput
 
 <a href={kiwitaxiRoute('abkhazia', 'ozero_ritsa_2026').href} class="aff-cta" rel="sponsored">Трансфер из аэропорта Сочи в Абхазию</a> — машина к рейсу, граница без пересадок. <a href={sputnik8City('abkhazia', 'ozero_ritsa_2026')} class="aff-cta" rel="sponsored">Экскурсии на Рицу из Гагры</a> — расписание и отзывы.
 
-Если не хотите сами водить и разбираться с логистикой, можно поехать по Абхазии с местным гидом в малой группе — Рица почти всегда в программе вместе с другими точками маршрута: <a href={youtravelCountry('abkhazia', 'ozero_ritsa_2026')} class="aff-cta" rel="sponsored">поехать по Абхазии с местным гидом</a> (маршрут и трансферы уже собраны, оплата картой РФ).
+Если не хотите сами водить и разбираться с логистикой, можно поехать по Абхазии с местным гидом в малой группе — Рица почти всегда в программе вместе с другими точками маршрута: <a href={tpkDeep('sputnik8', 'https://www.sputnik8.com/ru/gagra/activities/54430-vip-tur-po-abhazii-na-minivene-v-mini-gruppe', 'ozero_ritsa_2026')} class="aff-cta" rel="sponsored">поехать по Абхазии с местным гидом</a> (маршрут, трансфер и оплату уточните на Sputnik8).
 
 ![Схема дороги на Рицу: поворот с трассы, КПП, Голубое озеро, съезд к Гегскому водопаду, Юпшарский каньон, озеро на 40-м километре, дача Сталина, тропа к Малой Рице, мост на 54-м км и Ауадхара](./_images/ritsa/ritsa-route.svg)
 
