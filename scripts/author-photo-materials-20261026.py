@@ -22,7 +22,7 @@ def resource(path, **kwargs):
     return get(API+'?'+urllib.parse.urlencode(dict(public_key=KEY,path=path,**kwargs)))
 
 def prepare(job):
-    slug,name,path=job
+    slug,name,path,crop=job
     try:
         metadata=resource(path,fields=FIELDS)
         with tempfile.TemporaryDirectory(prefix='tt-own-') as temporary:
@@ -47,17 +47,24 @@ def prepare(job):
                 image.seek(0)
                 original_size=image.size; orientation=image.getexif().get(274,1)
                 with ImageOps.exif_transpose(image) as transposed:
-                    transposed.thumbnail((1920,1920),Image.Resampling.LANCZOS)
-                    rgb=transposed.convert('RGB')
+                    frame=transposed
+                    if crop:
+                        if len(crop)!=4 or not (0<=crop[0]<crop[2]<=1 and 0<=crop[1]<crop[3]<=1):
+                            raise ValueError('Invalid normalized crop')
+                        w,h=transposed.size
+                        frame=transposed.crop((round(crop[0]*w),round(crop[1]*h),round(crop[2]*w),round(crop[3]*h)))
+                    frame.thumbnail((1920,1920),Image.Resampling.LANCZOS)
+                    rgb=frame.convert('RGB')
                     target=directory/(name+'.jpg')
                     rgb.save(target,'JPEG',quality=85,optimize=True,progressive=True)
                     size=rgb.size; rgb.close()
+                    if crop: frame.close()
             return dict(slug=slug,name=name,status='PREPARED',source='disk:/Контент'+path,
                         shot=metadata.get('exif',{}).get('date_time'),size=list(size),
                         originalSha256=digest,originalBytes=length,originalSize=list(original_size),
-                        originalOrientation=orientation,originalFormat=original_format,frame=0,sha256=hashlib.sha256(target.read_bytes()).hexdigest(),
+                        originalOrientation=orientation,originalFormat=original_format,frame=0,cropNormalized=crop,sha256=hashlib.sha256(target.read_bytes()).hexdigest(),
                         bytes=target.stat().st_size,downloadErrors=errors,
-                        preparation='download API; original SHA-256 and size verified; exif_transpose; 1920px; JPEG q85')
+                        preparation='download API; original SHA-256 and size verified; exif_transpose; '+('approved crop; ' if crop else '')+'1920px; JPEG q85')
     except Exception as error:
         return dict(slug=slug,name=name,status='FAILED',source=path,error=type(error).__name__+': '+str(error))
 
@@ -79,7 +86,8 @@ def main():
     if os.environ.get('GITHUB_ACTIONS')!='true': raise RuntimeError('Existing CI only')
     start=time.monotonic(); OUT.mkdir(parents=True,exist_ok=True)
     spec=json.loads(Path('scripts/author-photo-selection-20261026.json').read_text())
-    jobs=[(slug,name,path) for slug,photos in spec.items() for name,path in photos.items()]
+    jobs=[(slug,name,value['path'] if isinstance(value,dict) else value,value.get('crop') if isinstance(value,dict) else None)
+          for slug,photos in spec.items() for name,value in photos.items()]
     workers=min(4,os.cpu_count() or 1)
     with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
         rows=list(pool.map(prepare,jobs))
@@ -93,6 +101,10 @@ def main():
     (OUT/'photo-preparation.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
     print(json.dumps(dict(images=len(rows),prepared=sum(row['status']=='PREPARED' for row in rows),
                          errors=[dict(slug=row['slug'],name=row['name'],error=row['error']) for row in rows if row['status']!='PREPARED'])),flush=True)
+    if all(job[3] for job in jobs):
+        print('Crop-only repair; full archive inventory remains preserved in run40335271823',flush=True)
+        if not report['complete']: raise SystemExit(1)
+        return
     pending=['/']; seen=set(); index=[]; details=OUT/'archive-directories'; details.mkdir(exist_ok=True)
     with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
         while pending:
