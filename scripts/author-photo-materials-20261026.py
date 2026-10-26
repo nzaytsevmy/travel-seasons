@@ -41,7 +41,10 @@ def prepare(job):
             directory=OUT/'images'/slug
             directory.mkdir(parents=True,exist_ok=True)
             with Image.open(original) as image:
-                if image.format!='JPEG': raise ValueError('Only original JPEG is expected')
+                original_format=image.format
+                if original_format not in ('JPEG','MPO'):
+                    raise ValueError('Unsupported original image format: '+str(original_format))
+                image.seek(0)
                 original_size=image.size; orientation=image.getexif().get(274,1)
                 with ImageOps.exif_transpose(image) as transposed:
                     transposed.thumbnail((1920,1920),Image.Resampling.LANCZOS)
@@ -52,7 +55,7 @@ def prepare(job):
             return dict(slug=slug,name=name,status='PREPARED',source='disk:/Контент'+path,
                         shot=metadata.get('exif',{}).get('date_time'),size=list(size),
                         originalSha256=digest,originalBytes=length,originalSize=list(original_size),
-                        originalOrientation=orientation,sha256=hashlib.sha256(target.read_bytes()).hexdigest(),
+                        originalOrientation=orientation,originalFormat=original_format,frame=0,sha256=hashlib.sha256(target.read_bytes()).hexdigest(),
                         bytes=target.stat().st_size,downloadErrors=errors,
                         preparation='download API; original SHA-256 and size verified; exif_transpose; 1920px; JPEG q85')
     except Exception as error:
