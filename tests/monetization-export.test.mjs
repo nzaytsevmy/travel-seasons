@@ -13,6 +13,18 @@ import {
 
 const dimension = (name) => ({ name });
 
+test('Sputnik rollout keeps partner and CTA in the human click denominator without changing A/A assignment', () => {
+  const [row] = normalizeMetrikaClickRows([{ dimensions: [
+    dimension('2026-10-26 12:00:00'), dimension('/bali/'), dimension('Переход к партнёру'),
+    dimension('click_context'), dimension('c00112233445566778899__new__unattributed____sputnik8__bali_sputnik8_tour_81964__sputnik_preferred_v1'),
+  ], metrics: [1] }]);
+  assert.equal(row.partner, 'sputnik8');
+  assert.equal(row.cta_id, 'bali_sputnik8_tour_81964');
+  assert.equal(row.rollout_id, 'sputnik_preferred_v1');
+  assert.equal(row.reader_cohort, 'new');
+  assert.equal(row.journey_source, undefined);
+});
+
 test('входная когорта главной фильтрует и сессии, и последующие клики по органическому старту /', async () => {
   const originalFetch = globalThis.fetch;
   const urls = [];

@@ -1,0 +1,64 @@
+name: Sputnik conversion observation
+
+on:
+  schedule:
+    - cron: '15 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sputnik-observation
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify observation contract
+        run: node --test tests/sputnik-observation.test.mjs tests/private-observation.test.mjs tests/monetization-export.test.mjs
+      - name: Export and encrypt observation
+        env:
+          METRIKA_OAUTH_TOKEN: ${{ secrets.METRIKA_OAUTH_TOKEN }}
+          YANDEX_OAUTH_TOKEN: ${{ secrets.YANDEX_OAUTH_TOKEN }}
+          TRAVELPAYOUTS_TOKEN: ${{ secrets.TRAVELPAYOUTS_TOKEN }}
+          TZ: Europe/Moscow
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p "$RUNNER_TEMP/sputnik-private"
+          node --input-type=module - <<'JS' > "$RUNNER_TEMP/sputnik-private/window.txt"
+          const yesterday=new Date(Date.now()-86400000);
+          const through=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Moscow',year:'numeric',month:'2-digit',day:'2-digit'}).format(yesterday);
+          console.log(through);
+          JS
+          THROUGH="$(cat "$RUNNER_TEMP/sputnik-private/window.txt")"
+          node scripts/monetization-data-export.mjs --date-from 2026-09-28 --date-to "$THROUGH" --actions-through "$THROUGH" --output "$RUNNER_TEMP/sputnik-private/export.json" > "$RUNNER_TEMP/sputnik-private/export.log"
+          node scripts/sputnik-observation.mjs "$RUNNER_TEMP/sputnik-private/export.json" "$RUNNER_TEMP/sputnik-private/report.json"
+          node scripts/private-observation.mjs seal "$RUNNER_TEMP/sputnik-private/report.json" measurements/sputnik-report-public.pem "$RUNNER_TEMP/sputnik-observation.encrypted.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sputnik-observation-${{ github.run_id }}
+          path: ${{ runner.temp }}/sputnik-observation.encrypted.json
+          if-no-files-found: error
+          retention-days: 90
+      - name: Remove private export
+        if: always()
+        shell: bash
+        run: |
+          node --input-type=module - <<'JS'
+          import {rmSync} from 'node:fs';
+          import {join} from 'node:path';
+          rmSync(join(process.env.RUNNER_TEMP,'sputnik-private'),{recursive:true,force:true});
+          JS

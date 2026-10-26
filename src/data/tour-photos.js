@@ -202,7 +202,14 @@ import photo198 from '../content/blog/_images/tour-picks/nungwi.jpg';
 import photo199 from '../content/blog/_images/tour-picks/merlion.jpg';
 import photo200 from '../content/blog/_images/peresadka-v-pekine/own-forbidden-view.jpg';
 
+import sputnikBaliTerraces from '../content/blog/_images/hub-bali/tegalalang.jpg';
+import sputnikBaliPalace from '../content/blog/_images/hub-bali/tirta-gangga.jpg';
+import sputnikGamsutl from '../content/blog/_images/hub-dagestan/gamsutl.jpg';
+
 export const TOUR_PHOTOS = {
+  'hub-bali/tegalalang.jpg': sputnikBaliTerraces,
+  'hub-bali/tirta-gangga.jpg': sputnikBaliPalace,
+  'hub-dagestan/gamsutl.jpg': sputnikGamsutl,
   'altai-own/katun.jpg': photo0,
   'antarctica/iceberg-blue.jpg': photo1,
   'bolivia/arbol-de-piedra.jpg': photo2,

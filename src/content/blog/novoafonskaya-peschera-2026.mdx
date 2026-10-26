@@ -35,6 +35,13 @@ volatileFacts:
     reviewAfter: 2027-05-01
     fallback: "Убрать цены пледа, туалета и парковки, оставить «мелкие расходы на входе — наличными»."
 checks:
+  - date: 2026-10-26
+    what: "Реферальная ссылка на экскурсию по Абхазии в группе до семи человек"
+    changed: "Ссылка ведёт на конкретную экскурсию Sputnik8. Проверены маршрут и размер группы; условия оплаты нужно уточнить перед бронированием. Цены и прочие факты статьи не пересматривались."
+    minor: true
+    sources:
+      - name: "Sputnik8: Абхазия на минивэне, группа до 7 человек"
+        url: "https://www.sputnik8.com/ru/gagra/activities/54430-vip-tur-po-abhazii-na-minivene-v-mini-gruppe"
   - date: 2026-09-24
     what: "Отображение сведений об авторах фотографий"
     changed: "Атрибуция вынесена на общую страницу фотографий. Описания мест, исходные кадры и записи об их происхождении сохранены. Факты статьи и даты публикации не менялись."
@@ -95,7 +102,7 @@ howto:
       text: "От станции «Входные ворота» электропоезд везёт 1,3 км по тоннелю (3–5 минут). Дальше пеший маршрут 1,4 км через шесть залов при +11…+14 °C, вся экскурсия 1 ч 15 мин — 1,5 часа."
 ---
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
-import { aviasalesRoute, cherehapaCountry, sutochnoRegion, youtravelCountry, kiwitaxiRoute, sputnik8City } from '../../data/affiliate.js';
+import { aviasalesRoute, cherehapaCountry, sutochnoRegion, youtravelCountry, kiwitaxiRoute, sputnik8City, tpkDeep } from '../../data/affiliate.js';
 
 Новоафонская пещера — это въезд в гору на маленьком подземном поезде и полтора часа среди залов размером с собор: сталактиты, подсветка, залы с такой акустикой, что в одном из них устроили концертный зал. Одна из крупнейших оборудованных пещер мира и главная «непляжная» достопримечательность Абхазии. Собрал всё, что нужно для поездки в 2026 году: сколько стоит билет, когда открыто, как добраться, как не простоять полдня в очереди — и что пишут те, кто был, в полусотне свежих отзывов.
 
@@ -231,7 +238,7 @@ import { aviasalesRoute, cherehapaCountry, sutochnoRegion, youtravelCountry, kiw
 - **Самолётом до Адлера.** Ближайший аэропорт — Сочи (Адлер): дальше граница Псоу и ~80 км по Абхазии. <a href={aviasalesRoute('MOW', 'AER', 'novoafonskaya_peschera_2026')} class="aff-cta" rel="sponsored">Найти билет Москва — Сочи</a> — сравнивает все авиакомпании, cookie 30 дней.
 - **Трансфером.** <a href={kiwitaxiRoute('abkhazia', 'novoafonskaya_peschera_2026').href} class="aff-cta" rel="sponsored">Трансфер из аэропорта Сочи в Абхазию</a> — машина к рейсу.
 - **Экскурсией.** <a href={sputnik8City('sukhum', 'novoafonskaya_peschera_2026')} class="aff-cta" rel="sponsored">Экскурсии из Сухума</a> — билет в программе.
-- **С гидом.** Самый простой вариант без своей машины — поехать по Абхазии с местным гидом в малой группе: Новый Афон обычно входит в маршрут вместе с другими точками. <a href={youtravelCountry('abkhazia', 'novoafonskaya_peschera_2026')} class="aff-cta" rel="sponsored">Поехать по Абхазии с местным гидом</a> (маршрут и трансферы собраны, оплата картой РФ).
+- **С гидом.** Самый простой вариант без своей машины — поехать по Абхазии с местным гидом в малой группе: Новый Афон обычно входит в маршрут вместе с другими точками. <a href={tpkDeep('sputnik8', 'https://www.sputnik8.com/ru/gagra/activities/54430-vip-tur-po-abhazii-na-minivene-v-mini-gruppe', 'novoafonskaya_peschera_2026')} class="aff-cta" rel="sponsored">Поехать по Абхазии с местным гидом</a> (маршрут, трансфер и оплату уточните на Sputnik8).
 
 Как добираются до Абхазии в целом — самолётом в Сухум или через Адлер и границу Псоу — подробно в [главном гайде по Абхазии](/blog/abkhazia-2026/).
 

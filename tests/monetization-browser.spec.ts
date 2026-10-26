@@ -1,4 +1,5 @@
 import { test, expect } from './browser-fixture';
+import { TOUR_ROLLOUT_ID } from '../src/data/tour-rollout.js';
 
 async function freezeInsideAaWindow(page: import('@playwright/test').Page) {
   await page.addInitScript(() => {
@@ -104,7 +105,7 @@ test('клик отправляет в Метрику полный денежн�
   expect(goal?.[3].variant).toMatch(/^[ab]$/);
   expect(goal?.[3].reader_cohort).toBe('new');
   expect(goal?.[3].audience_source).toBe('unattributed');
-  expect(goal?.[3].click_context).toBe(`${goal?.[3].click_id}__new__unattributed`);
+  expect(goal?.[3].click_context).toBe(`${goal?.[3].click_id}__new__unattributed____${goal?.[3].partner}__${goal?.[3].cta_id}__${TOUR_ROLLOUT_ID}`);
   const clickedHref = await page.locator('a[data-cta-id]').first().getAttribute('href');
   const clickedSubId = new URL(clickedHref!, 'http://127.0.0.1').searchParams.get('sub_id');
   expect(clickedSubId).toContain(`__${goal?.[3].click_id}`);
@@ -179,7 +180,7 @@ test('возвращающийся читатель попадает в 28-дн�
   });
   const goal = await page.evaluate(() => (window as any).__goals.find((args: unknown[]) => args[2] === 'outbound_link'));
   expect(goal?.[3].reader_cohort).toBe('returning_28_89');
-  expect(goal?.[3].click_context).toBe(`${goal?.[3].click_id}__returning_28_89__unattributed`);
+  expect(goal?.[3].click_context).toBe(`${goal?.[3].click_id}__returning_28_89__unattributed____${goal?.[3].partner}__${goal?.[3].cta_id}__${TOUR_ROLLOUT_ID}`);
 });
 
 test('вход из Telegram помечает партнёрский клик как assisted без персонального ID', async ({ page }) => {
@@ -198,7 +199,7 @@ test('вход из Telegram помечает партнёрский клик к
   });
   const goal = await page.evaluate(() => (window as any).__goals.find((args: unknown[]) => args[2] === 'outbound_link'));
   expect(goal?.[3].audience_source).toBe('telegram_current');
-  expect(goal?.[3].click_context).toBe(`${goal?.[3].click_id}__new__telegram_current`);
+  expect(goal?.[3].click_context).toBe(`${goal?.[3].click_id}__new__telegram_current____${goal?.[3].partner}__${goal?.[3].cta_id}__${TOUR_ROLLOUT_ID}`);
   expect(JSON.stringify(goal?.[3])).not.toMatch(/email|phone|cookie|user_id|client_id/i);
 });
 

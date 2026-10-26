@@ -37,6 +37,13 @@ volatileFacts:
     reviewAfter: 2027-06-01
     fallback: "Оставить таблицу, в подписи назвать период норм 1980–2016 и дату съёма."
 checks:
+  - date: 2026-10-26
+    what: "Реферальная ссылка на экскурсию по Абхазии в группе до семи человек"
+    changed: "Ссылка ведёт на конкретную экскурсию Sputnik8. Проверены маршрут и размер группы; условия оплаты нужно уточнить перед бронированием. Цены и прочие факты статьи не пересматривались."
+    minor: true
+    sources:
+      - name: "Sputnik8: Абхазия на минивэне, группа до 7 человек"
+        url: "https://www.sputnik8.com/ru/gagra/activities/54430-vip-tur-po-abhazii-na-minivene-v-mini-gruppe"
   - date: 2026-09-24
     what: "Отображение сведений об авторах фотографий"
     changed: "Атрибуция вынесена на общую страницу фотографий. Описания мест, исходные кадры и записи об их происхождении сохранены. Факты статьи и даты публикации не менялись."
@@ -139,7 +146,7 @@ howto:
 import PricingCards from '../../components/post/PricingCards.astro';
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
-import { TP_LINKS, ostrovokCountry, sutochnoRegion, youtravelSub, kiwitaxiRoute, sputnik8City } from '../../data/affiliate.js';
+import { TP_LINKS, ostrovokCountry, sutochnoRegion, youtravelSub, kiwitaxiRoute, sputnik8City, tpkDeep } from '../../data/affiliate.js';
 import SeasonTable from '../../components/post/SeasonTable.astro';
 import RouteDays from '../../components/post/RouteDays.astro';
 import { abkhaziaSeason, abkhaziaWeek } from '../../data/schemes/abkhazia.js';
@@ -340,7 +347,7 @@ import { abkhaziaSeason, abkhaziaWeek } from '../../data/schemes/abkhazia.js';
 - **Сухум** — Ботанический сад (один из старейших на Кавказе) и обезьяний питомник НИИ экспериментальной патологии, набережная Махаджиров.
 - **Термальные источники Кындыг** (под Очамчирой) — горячая минеральная вода и природные гидромассажные «жёлоба», вход недорогой; контраст к морю и горам.
 
-Многое реально объехать **самостоятельно на машине** — по отзывам, так дешевле и гибче. Но если не хочется водить и строить маршрут самому, проще поехать с местным гидом в малой группе: <a href={youtravelSub('abkhazia_2026')} class="aff-cta" rel="sponsored">поехать по Абхазии с местным гидом</a> — маршрут, трансферы и логистика собраны за вас, оплата картой РФ.
+Многое реально объехать **самостоятельно на машине** — по отзывам, так дешевле и гибче. Но если не хочется водить и строить маршрут самому, проще поехать с местным гидом в малой группе: <a href={tpkDeep('sputnik8', 'https://www.sputnik8.com/ru/gagra/activities/54430-vip-tur-po-abhazii-na-minivene-v-mini-gruppe', 'abkhazia_2026')} class="aff-cta" rel="sponsored">поехать по Абхазии с местным гидом</a> — маршрут, трансфер и оплату уточните на Sputnik8.
 
 ---
 
