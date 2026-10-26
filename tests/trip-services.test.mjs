@@ -76,3 +76,18 @@ test('Hainan article keeps Sanya, and Cambodian flights use the current Siem Rea
   const cambodia=tripServices({pathname:'/cambodia/'})[1];
   assert.match(new URL(cambodia.href).searchParams.get('u'),/SAI1$/);
 });
+
+test('new author routes preserve their city and entry airport', () => {
+  const sao=tripServices({pathname:'/blog/sao-paulo-two-three-days/',destination:'brazil'});
+  assert.match(new URL(sao[0].href).searchParams.get('u'),/hotel\/brazil\/sao_paulo\//);
+  assert.match(new URL(sao[1].href).searchParams.get('u'),/GRU1$/);
+  const utah=tripServices({pathname:'/blog/zion-bryce-horseshoe-bend-usa/',destination:'usa'});
+  assert.match(new URL(utah[1].href).searchParams.get('u'),/LAS1$/);
+  assert.doesNotMatch(new URL(utah[0].href).searchParams.get('u'),/undefined/);
+});
+
+test('Norway comparison does not silently choose a country airport for two distant regions', () => {
+  const flight=tripServices({pathname:'/blog/norway-trolltunga-lofoten/',destination:'norway'})[1];
+  assert.equal(flight.generic,true);
+  assert.doesNotMatch(new URL(flight.href).searchParams.get('u') || '',/OSL1$/);
+});

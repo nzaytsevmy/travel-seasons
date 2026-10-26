@@ -5,6 +5,18 @@
 // Тот же приём, что для affiliate.js (трекинг-плумбинг, не датированная фактура).
 
 export const RELATED_POSTS = {
+  'usa': [
+    { slug: 'zion-bryce-horseshoe-bend-usa', title: 'Зайон и Брайс-Каньон: маршрут с выездом к Пейджу', kind: 'practical' },
+  ],
+  'norway': [
+    { slug: 'norway-trolltunga-lofoten', title: 'Тролльтунга или Лофотены: как выбрать маршрут', kind: 'practical' },
+  ],
+  'iceland': [
+    { slug: 'iceland-five-places', title: 'Рейкьявик и Золотое кольцо: маршрут на машине', kind: 'practical' },
+  ],
+  'brazil': [
+    { slug: 'sao-paulo-two-three-days', title: 'Что посмотреть в Сан-Паулу за два–три дня', kind: 'practical' },
+  ],
   'italy-south': [
     { slug: 'kolizey-rim', title: 'Колизей в Риме: билеты, арена и маршрут на полдня', kind: 'practical' },
   ],
