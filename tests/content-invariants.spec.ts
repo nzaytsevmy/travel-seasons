@@ -1496,7 +1496,9 @@ test('Иллюстрации: тронутая статья с 8+ раздела
     // Считаем и markdown-картинки, и вставки компонентами (PhotoGrid, Image), а с 06.09.2026 —
     // и светлые схемы разметкой (SeasonTable, RouteDays): они заменили тёмные SVG один к одному.
     const md = [...src.matchAll(/^!\[([^\]]*)\]\(([^)]+)\)/gm)];
-    const comp = (src.match(/<(?:Image|Picture|PhotoGrid|SeasonTable|RouteDays)\b/g) ?? []).length;
+    // PhotoGallery rejects fewer than three photographs at build time.
+    const galleries = (src.match(/<PhotoGallery\b/g) ?? []).length * 3;
+    const comp = (src.match(/<(?:Image|Picture|PhotoGrid|SeasonTable|RouteDays)\b/g) ?? []).length + galleries;
     if (!small && md.length + comp < 4) {
       problems.push(`${rel}: ${h2} разделов, но всего ${md.length + comp} иллюстраций (нужно ≥4)`);
     }

@@ -1,0 +1,40 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  id: string;
+  label: string;
+  images: { src: ImageMetadata; alt: string; caption: string }[];
+}
+const { id, label, images } = Astro.props;
+if (images.length < 3) throw new Error(`PhotoGallery ${id} requires at least three photographs`);
+const portrait = images.filter(photo => photo.src.height > photo.src.width).length > images.length / 2;
+---
+<div class:list={['hotel-photos', 'post-gallery', { 'post-gallery--portrait': portrait }]}>
+  <div class="hotel-gallery" id={id} role="region" aria-label={label} tabindex="0">
+    {images.map((photo, index) => <figure>
+      <Image src={photo.src} alt={photo.alt} widths={[400, 800, 1400]} sizes="(max-width: 760px) calc(100vw - 48px), 676px" format="webp" quality={70} loading="lazy" />
+      <figcaption>{index + 1} / {images.length} · {photo.caption}</figcaption>
+    </figure>)}
+  </div>
+  <div class="hotel-gallery-controls" hidden>
+    <button type="button" data-photo-prev aria-controls={id} aria-label={`Предыдущее фото: ${label}`}>Назад</button>
+    <button type="button" data-photo-next aria-controls={id} aria-label={`Следующее фото: ${label}`}>Далее</button>
+  </div>
+</div>
+<script>
+  import { initHotelGalleries } from '../../scripts/hotel-gallery.js';
+  initHotelGalleries();
+</script>
+<style>
+  .post-gallery { min-width:0; margin-block:32px; }
+  .hotel-gallery { display:flex; overflow-x:auto; gap:16px; scroll-snap-type:x mandatory; min-width:0; padding-block:4px 12px; }
+  .hotel-gallery figure { flex:0 0 100%; min-width:0; margin:0; scroll-snap-align:start; }
+  .hotel-gallery img { display:block; width:100%; height:auto; max-height:none; margin:0; aspect-ratio:4 / 3; object-fit:contain; border-radius:0; background:var(--bg); }
+  .post-gallery--portrait .hotel-gallery img { aspect-ratio:2 / 3; height:min(135vw,75svh,680px); }
+  .hotel-gallery figcaption { margin-top:8px; font:inherit; font-size:.85rem; line-height:1.55; color:var(--text-dim); text-align:left; }
+  .hotel-gallery-controls:not([hidden]) { display:flex; justify-content:space-between; gap:16px; }
+  .hotel-gallery-controls button { min-width:44px; min-height:44px; padding:8px 0; border:0; background:transparent; color:var(--gold); font:inherit; cursor:pointer; text-decoration:underline; text-underline-offset:.22em; }
+  .hotel-gallery-controls button:disabled { color:var(--text-dim); cursor:default; text-decoration:none; }
+  .hotel-gallery:focus-visible, button:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
+</style>
