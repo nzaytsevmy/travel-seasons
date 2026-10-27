@@ -8,6 +8,7 @@
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { headMetadata, duplicateMetadata, destinationIdCollisions } from './lib/seo-identity.mjs';
+import { headingStructure } from './lib/heading-structure.mjs';
 
 const DIST = process.argv[2] || 'dist';
 const ORIGIN = 'https://traveltribe.ru';
@@ -99,6 +100,9 @@ for (const f of htmlFiles) {
   page.noindex = !!(robots && /noindex/i.test(robots.attrs.content || ''));
   if (page.noindex && smUrls.has(url)) findings.push(['sitemap.noindex_url', url]);
   if (isStub && smUrls.has(url)) findings.push(['sitemap.non_canonical_url', url]);
+
+  if (!isStub) for (const issue of headingStructure(html).findings)
+    findings.push([issue.kind, url, JSON.stringify(issue)]);
 
   if (!page.noindex && !isStub) {
     const h1s = (html.match(/<h1[\s>]/gi) || []).length;
