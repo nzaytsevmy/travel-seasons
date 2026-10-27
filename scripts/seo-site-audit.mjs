@@ -7,6 +7,7 @@
 // Не сеть, только файлы dist/ — секунды на 2300 страниц. Exit 1 при находках.
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { headMetadata, duplicateMetadata, destinationIdCollisions } from './lib/seo-identity.mjs';
 
 const DIST = process.argv[2] || 'dist';
 const ORIGIN = 'https://traveltribe.ru';
@@ -88,6 +89,7 @@ for (const f of htmlFiles) {
   const canons = tags(head, 'link').filter(t => (t.attrs.rel || '').toLowerCase() === 'canonical').map(t => t.attrs.href);
   page.canonical = canons[0] || null;
   const isStub = page.canonical && page.canonical !== url; // легаси-склейка
+  Object.assign(page, headMetadata(html), { url, stub: !!isStub });
   if (canons.length === 0) findings.push(['canonical.missing', url]);
   else if (canons.length > 1) findings.push(['canonical.multiple', url, canons.join(' | ')]);
 
@@ -119,12 +121,14 @@ for (const f of htmlFiles) {
     // показывает начало, Яндекс выводит до 250. Короткое описание не ошибка для
     // Google, но потерянное место в яндексовой выдаче — а Яндекс даёт нам втрое
     // больше трафика. Суть при этом держим в первых 150 знаках.
-    const titleText = (html.match(/<title>([^<]*)<\/title>/i) || [, ''])[1].trim();
+    const titleText = page.title;
+    if (!titleText) findings.push(['title.missing', url]);
     if (titleText && titleText.length > 70) {
       findings.push(['title.too_long', url, `${titleText.length} знаков`]);
     }
     const descTag = metaBy('name', 'description')[0];
     const descText = descTag?.attrs?.content?.trim() || '';
+    if (!descText) findings.push(['description.missing', url]);
     if (descText && descText.length < 100) {
       findings.push(['description.too_short', url, `${descText.length} знаков`]);
     }
@@ -171,6 +175,7 @@ for (const f of htmlFiles) {
   ].map((m) => norm(m[1]));
   const accordions = [...тело.matchAll(/<summary[^>]*>([\s\S]*?)<\/summary>/gi)].map((m) => norm(m[1]));
   const schemaQuestions = [];
+  const pageSchemas = [];
   let hasSpeakable = false;
 
   // Граница по имени тега, а не по точному «</script>»: закрывающий тег по
@@ -179,6 +184,7 @@ for (const f of htmlFiles) {
   // молча пропустила бы весь блок разметки, и аудит решил бы, что схемы нет.
   for (const [, raw] of html.matchAll(/<script\b[^>]*type=["']?application\/ld\+json["']?[^>]*>([\s\S]*?)<\/script\b[^>]*>/gi)) {
     let j; try { j = JSON.parse(raw); } catch { findings.push(['jsonld.parse_error', url]); continue; }
+    pageSchemas.push(j);
     const nodes = Array.isArray(j) ? j : (j['@graph'] || [j]);
     if (/SpeakableSpecification/.test(raw)) hasSpeakable = true;
     for (const n of nodes) {
@@ -193,6 +199,8 @@ for (const f of htmlFiles) {
       }
     }
   }
+
+  for (const collision of destinationIdCollisions(pageSchemas)) findings.push(['jsonld.destination_id_collision', url, collision]);
 
   if (!page.noindex && !isStub) {
     // 1. Вопрос объявлен, а на странице его нет — по чеклисту это спам-флаг.
@@ -246,6 +254,8 @@ for (const f of htmlFiles) {
   for (const [target, text] of podrobneje)
     if (!seenDescriptive.has(target)) findings.push(['anchor.generic_text', url, `"${text}" → ${target} (нет описательного дубля)`]);
 }
+
+findings.push(...duplicateMetadata([...pages.values()]));
 
 // Orphan: sitemap-URL без единой входящей внутренней ссылки
 const inlinks = new Map();

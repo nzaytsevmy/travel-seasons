@@ -88,8 +88,24 @@ const VISA_STAY = {
 // Страновые verified-данные (visa-details.js) — цена/срок/оформление по конкретной
 // стране, не generic по типу. Это закрывает «сколько стоит виза в X» answer-first.
 const vd = getVisaDetails(d.slug, d.visa);
+// Regional itineraries remain separate, self-canonical pages. Entry rules are
+// national; these metadata distinguish the itinerary, not a different visa.
+const routeMetadata = {
+  'japan-hokkaido': {
+    title: 'Виза в Японию для поездки на Хоккайдо в 2026',
+    description: 'Поездка в Саппоро и Нисеко: документы на японскую визу, порядок подачи, сроки и сборы. Как подготовить маршрут на Хоккайдо и брони жилья.',
+  },
+  'italy-north': {
+    title: 'Виза в Италию 2026: поездка на озёра и в Доломиты',
+    description: 'Документы на шенгенскую визу для поездки на север Италии: озёра Комо и Гарда, Доломиты и Венеция. Подача, сборы, сроки и подтверждение маршрута.',
+  },
+  'italy-south': {
+    title: 'Виза в Италию 2026: Рим, Тоскана, Сицилия и Амальфи',
+    description: 'Документы на итальянскую визу для маршрута через Рим, Тоскану, Сицилию и Амальфи. Порядок подачи, сборы, сроки, брони и подтверждение поездки.',
+  },
+}[d.slug];
 // Заголовок: полный шаблон, а если он не влезает в выдачу — короткий.
-const visaTitleFull = vd.title ?? VISA_TITLE[d.visa];
+const visaTitleFull = routeMetadata?.title ?? vd.title ?? VISA_TITLE[d.visa];
 const visaTitle = visaTitleFull.length > 60 ? (vd.title ?? VISA_TITLE_SHORT[d.visa]) : visaTitleFull;
 // Разделяем два разных факта: noVisa = визы НЕ нужно (только тег 'free'); feeFree = нет
 // консульского сбора. Кипр (evisa, pro-visa) имеет cost:'бесплатно', но виза НУЖНА —
@@ -115,7 +131,7 @@ const остаток = summary.includes('. ') ? summary.slice(summary.indexOf('.
 const безПовтора = summary.toLowerCase().startsWith(первыеСлова(visaTitle)) && остаток.length >= 80
   ? остаток
   : summary;
-const metaDesc = безПовтора.length > 203 ? безПовтора.slice(0, 200).replace(/\s+\S*$/, '') + '…' : безПовтора;
+const metaDesc = routeMetadata?.description ?? (безПовтора.length > 203 ? безПовтора.slice(0, 200).replace(/\s+\S*$/, '') + '…' : безПовтора);
 const costAnswer = noVisa
   ? (feeFree
       ? `Виза ${d.cases.vP} не нужна — въезд бесплатный, ${vd.timing}. Консульский сбор не платится.`
