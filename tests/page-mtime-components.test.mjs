@@ -7,7 +7,13 @@ import { execFileSync } from 'node:child_process';
 
 test('FlightRoutes changes invalidate only HTML using it, including pages outside sitemap', () => {
   const root = mkdtempSync(join(tmpdir(), 'tt-mtime-components-'));
-  const git = (...args) => execFileSync('git', args, { cwd: root, stdio: 'pipe' });
+  // Git hooks export GIT_DIR and other repository-local variables. A fixture
+  // must use its own repository even when invoked by the real pre-push hook.
+  const fixtureEnv = { ...process.env };
+  for (const name of execFileSync('git', ['rev-parse', '--local-env-vars'], { encoding: 'utf8' }).trim().split('\n')) {
+    delete fixtureEnv[name];
+  }
+  const git = (...args) => execFileSync('git', args, { cwd: root, env: fixtureEnv, stdio: 'pipe' });
   const put = (path, body) => {
     mkdirSync(join(root, path, '..'), { recursive: true });
     writeFileSync(join(root, path), body);
@@ -21,12 +27,12 @@ test('FlightRoutes changes invalidate only HTML using it, including pages outsid
     put('src/pages/private.astro', 'private');
     git('add', '.');
     execFileSync('git', ['commit', '-qm', 'fixture sources'], {
-      cwd: root, env: { ...process.env, GIT_AUTHOR_DATE: '2026-10-26T16:39:37Z', GIT_COMMITTER_DATE: '2026-10-26T16:39:37Z' },
+      cwd: root, env: { ...fixtureEnv, GIT_AUTHOR_DATE: '2026-10-26T16:39:37Z', GIT_COMMITTER_DATE: '2026-10-26T16:39:37Z' },
     });
     put('src/components/post/FlightRoutes.astro', '<h3>new route</h3>');
     git('add', '.');
     execFileSync('git', ['commit', '-qm', 'route change'], {
-      cwd: root, env: { ...process.env, GIT_AUTHOR_DATE: '2026-10-27T16:00:00Z', GIT_COMMITTER_DATE: '2026-10-27T16:00:00Z' },
+      cwd: root, env: { ...fixtureEnv, GIT_AUTHOR_DATE: '2026-10-27T16:00:00Z', GIT_COMMITTER_DATE: '2026-10-27T16:00:00Z' },
     });
     const xml = '<urlset><url><loc>https://traveltribe.ru/route/</loc><lastmod>2026-10-01T00:00:00Z</lastmod></url><url><loc>https://traveltribe.ru/other/</loc><lastmod>2026-10-01T00:00:00Z</lastmod></url></urlset>';
     put('dist/sitemap-0.xml', xml);
@@ -34,7 +40,7 @@ test('FlightRoutes changes invalidate only HTML using it, including pages outsid
     put('dist/private/index.html', '<section class="flight-routes"><h3>route</h3></section>');
     put('dist/other/index.html', '<h2>unaffected</h2>');
     copyFileSync(resolve('scripts/set-page-mtimes.mjs'), join(root, 'set-page-mtimes.mjs'));
-    const run = () => execFileSync(process.execPath, ['set-page-mtimes.mjs', 'dist'], { cwd: root, stdio: 'pipe' });
+    const run = () => execFileSync(process.execPath, ['set-page-mtimes.mjs', 'dist'], { cwd: root, env: fixtureEnv, stdio: 'pipe' });
     const seconds = p => Math.floor(statSync(join(root, 'dist', p, 'index.html')).mtimeMs / 1000);
     run();
     assert.equal(seconds('route'), Date.parse('2026-10-27T16:00:00Z') / 1000, 'changed route must invalidate old conditional requests');
