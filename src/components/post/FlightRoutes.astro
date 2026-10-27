@@ -39,11 +39,11 @@ const isPrice = (p?: string) => !!p && /\d/.test(p.trim().charAt(0));
 <section class="flight-routes" role="region" aria-label={caption || 'Прямые рейсы'}>
   {routes.map((r) => (
     <div class="fr-group">
-      <h4 class="fr-route">
+      <h3 class="fr-route">
         <span class="fr-city">{r.from}</span>
         <span class="fr-arrow" aria-hidden="true">→</span>
         <span class="fr-city">{r.to}</span>
-      </h4>
+      </h3>
       <ul class="fr-list">
         {r.flights.map((f) => (
           <li class="fr-row">
