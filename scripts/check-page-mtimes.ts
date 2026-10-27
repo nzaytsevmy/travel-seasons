@@ -14,6 +14,7 @@ const КОНТРАКТ = JSON.parse(readFileSync(`${КАТАЛОГ}/.page-mtime-
   sitemapPages: number;
   sourcePages: number;
   sourcePageMtimes: Record<string, number>;
+  componentPageMtimes: Record<string, number>;
 };
 const датаОболочки = КОНТРАКТ.shellMtimeSeconds * 1000;
 
@@ -30,17 +31,18 @@ function страницы(): Пара[] {
   return out;
 }
 
-test('1. время файла совпадает с более свежей из дат страницы и общей оболочки', () => {
+test('1. время файла учитывает страницу, общую оболочку и использованные компоненты', () => {
   const все = страницы();
   expect(все.length, 'страниц из карты не нашлось — сборки нет?').toBeGreaterThan(1500);
   expect(КОНТРАКТ.sitemapPages, 'manifest postbuild не совпал с картой').toBe(все.length);
   const разошлись = все.map((с) => {
     const было = Math.floor(statSync(с.файл).mtimeMs / 1000);
-    const надо = Math.floor(Math.max(new Date(с.дата).valueOf(), датаОболочки) / 1000);
+    const компонент = КОНТРАКТ.componentPageMtimes[с.файл.replace(/^dist\//, '')] || 0;
+    const надо = Math.max(Math.floor(Math.max(new Date(с.дата).valueOf(), датаОболочки) / 1000), компонент);
     return { ...с, было, надо };
   }).filter((с) => с.было !== с.надо);
   expect(разошлись.length,
-    `у ${разошлись.length} страниц время файла не равно max(карта, оболочка). ` +
+    `у ${разошлись.length} страниц время файла не равно max(карта, оболочка, компоненты). ` +
     `Первые: ${разошлись.slice(0, 3).map((с) => `${с.путь} (${с.было} вместо ${с.надо})`).join(', ')}`).toBe(0);
 });
 
@@ -67,7 +69,8 @@ test('2. изменение общей оболочки действительн
   const старшеОболочки = страницы().filter((с) => new Date(с.дата).valueOf() < датаОболочки);
   expect(старшеОболочки.length, 'нет страниц старше общей оболочки — проверять нечего').toBeGreaterThan(100);
   const неПоднялись = старшеОболочки.filter((с) =>
-    Math.floor(statSync(с.файл).mtimeMs / 1000) !== Math.floor(датаОболочки / 1000));
+    Math.floor(statSync(с.файл).mtimeMs / 1000) !== Math.max(Math.floor(датаОболочки / 1000),
+      КОНТРАКТ.componentPageMtimes[с.файл.replace(/^dist\//, '')] || 0));
   expect(неПоднялись.length,
     `${неПоднялись.length} старых страниц не получили дату общей оболочки`).toBe(0);
 });
@@ -89,7 +92,7 @@ test('3. страницы вне карты сайта тоже получили
   // Постбилд уже однозначно разрешил URL в шаблон и выставил дату. Гейт сверяет
   // готовый dist с точным контрактом этой же сборки, а не повторяет платформозависимый
   // поиск динамического Astro-шаблона.
-  expect(КОНТРАКТ.version, 'сборка создала устаревший mtime-контракт').toBe(2);
+  expect(КОНТРАКТ.version, 'сборка создала устаревший mtime-контракт').toBe(3);
   expect(КОНТРАКТ.sourcePages, 'постбилд обработал не все страницы вне карты').toBe(вне.length);
   expect(Object.keys(КОНТРАКТ.sourcePageMtimes).length,
     'mtime-контракт не содержит все обработанные страницы').toBe(вне.length);
@@ -102,6 +105,18 @@ test('3. страницы вне карты сайта тоже получили
   expect(разошлись.length,
     `у ${разошлись.length} страниц вне карты время файла не равно времени, выбранному постбилдом. ` +
     `Первые: ${разошлись.slice(0, 3).map((x) => `${x.f} (${x.было} вместо ${x.надо})`).join(', ')}`).toBe(0);
+});
+
+test('FlightRoutes HTML validators are not older than the actual component source', () => {
+  const sourceSeconds = Number(execFileSync('git', ['log', '-1', '--format=%ct', '--',
+    ':(literal)src/components/post/FlightRoutes.astro'], { encoding: 'utf8' }).trim());
+  expect(sourceSeconds).toBeGreaterThan(0);
+  const affected = страницы().filter(с => /<section\b[^>]*\bclass=["'][^"']*\bflight-routes\b[^"']*["']/i.test(readFileSync(с.файл, 'utf8')));
+  expect(affected.length, 'FlightRoutes disappeared from built articles').toBeGreaterThanOrEqual(17);
+  for (const page of affected) {
+    expect(Math.floor(statSync(page.файл).mtimeMs / 1000),
+      `${page.путь}: old mtime would keep the pre-fix H4 in conditional caches`).toBeGreaterThanOrEqual(sourceSeconds);
+  }
 });
 
 test('4. время не в будущем и не за пределами разумного', () => {
