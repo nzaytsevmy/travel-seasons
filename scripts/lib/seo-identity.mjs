@@ -35,17 +35,21 @@ export function duplicateMetadata(rows) {
   return result;
 }
 export function destinationIdCollisions(value) {
-  const names=new Map();
+  const entities=new Map();
   function visit(node) {
     if(!node || typeof node!=='object') return;
     if([].concat(node['@type']||[]).includes('TouristDestination') && node['@id'] && node.name) {
-      if(!names.has(node['@id'])) names.set(node['@id'],new Set());
-      names.get(node['@id']).add(clean(node.name));
+      if(!entities.has(node['@id'])) entities.set(node['@id'],{identifiers:new Set(),names:new Set()});
+      const entity=entities.get(node['@id']);
+      entity.names.add(clean(node.name));
+      // Different labels can name the same entity. Only distinct stable
+      // identifiers supplied by our destination model prove this conflict.
+      if(typeof node.identifier==='string') entity.identifiers.add(node.identifier);
     }
     for(const child of Object.values(node)) if(typeof child==='object') {
       if(Array.isArray(child)) child.forEach(visit); else visit(child);
     }
   }
   visit(value);
-  return [...names].filter(([,n])=>n.size>1).map(([id,n])=>`${id}: ${[...n].join(' | ')}`);
+  return [...entities].filter(([,e])=>e.identifiers.size>1).map(([id,e])=>`${id}: ${[...e.names].join(' | ')}`);
 }

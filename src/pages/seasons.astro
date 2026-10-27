@@ -113,6 +113,7 @@ const ldJson = {
         "item": {
           "@type": "TouristDestination",
           "@id": `https://traveltribe.ru/seasons/#${r.meta.slug || seasonEntitySlugs[r.region]}`,
+          "identifier": r.meta.slug || seasonEntitySlugs[r.region],
           "name": `${r.region} — ${r.sub}`,
           "description": `Лучшее время для поездки в ${r.region}: ${MONTH_NAMES[r.bestIdx]}. ${r.t[r.bestIdx]}`,
           "touristType": ["Russian travelers"],

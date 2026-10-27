@@ -17,9 +17,14 @@ test('head title ignores SVG title and normalizes entities and typography', () =
   assert.deepEqual(headMetadata('<head><title>Япония &amp; Киото</title><meta name="description" content="Поездка&#160;в Японию"></head><body><svg><title>Карта</title></svg>'), {title:'Япония & Киото',description:'Поездка в Японию'});
 });
 test('distinct destinations must not share an id; same-entity references are valid', () => {
-  const place = name => ({'@type':'TouristDestination','@id':'https://traveltribe.ru/seasons/#',name});
+  const place = name => ({'@type':'TouristDestination','@id':'https://traveltribe.ru/seasons/#',identifier:name,name});
   assert.equal(destinationIdCollisions({'@graph':[place('Камчатка'),place('Карелия')]}).length, 1);
   assert.deepEqual(destinationIdCollisions({'@graph':[place('Камчатка'),place('Камчатка'),{'@id':'https://traveltribe.ru/#author'},{'@type':'Person','@id':'https://traveltribe.ru/#author',name:'Никита'}]}), []);
+});
+test('different names of one identified destination do not prove an identity collision', () => {
+  const place = name => ({'@type':'TouristDestination','@id':'https://traveltribe.ru/seasons/#japan',identifier:'japan',name});
+  assert.deepEqual(destinationIdCollisions([place('Япония'),place('Japan')]), []);
+  assert.equal(destinationIdCollisions([place('Япония'),{...place('Карелия'),identifier:'karelia'}]).length,1);
 });
 test('Google can crawl noindex tag pages without opening system directories', () => {
   const robots=readFileSync(new URL('../public/robots.txt',import.meta.url),'utf8').split(/\n\s*\n/)[0];
