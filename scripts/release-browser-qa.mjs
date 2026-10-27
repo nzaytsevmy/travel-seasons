@@ -48,6 +48,52 @@ try {
         const row = { path, width, findings: [] };
         try {
           row.findings = await checkPageStructure(page, `${origin}${path}?release_qa=${Date.now()}`, width);
+          const galleries = page.locator('.post-gallery');
+          const articleSlug = path.match(/^\/blog\/([a-z0-9-]+)\/$/)?.[1];
+          const articleSource = articleSlug && `src/content/blog/${articleSlug}.mdx`;
+          if (articleSource && fs.existsSync(articleSource)) {
+            const expected = (fs.readFileSync(articleSource, 'utf8').match(/<PhotoGallery\b/g) || []).length;
+            assert.equal(await galleries.count(), expected, 'Published gallery count differs from source');
+          }
+          row.galleries = [];
+          for (const container of await galleries.all()) {
+            const gallery = container.locator('[role="region"]');
+            await gallery.scrollIntoViewIfNeeded();
+            const images = gallery.locator('img');
+            const count = await images.count();
+            assert.ok(count >= 3, 'Every author gallery needs at least three photographs');
+            await images.evaluateAll(nodes => nodes.forEach(node => node.loading = 'eager'));
+            await page.waitForFunction(id => [...document.getElementById(id).querySelectorAll('img')]
+              .every(image => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0), await gallery.getAttribute('id'), { timeout: 30000 });
+            await images.evaluateAll(nodes => Promise.all(nodes.map(image => Promise.race([
+              image.decode(),
+              new Promise((_, reject) => setTimeout(() => reject(new Error('Gallery image did not decode')), 30000)),
+            ]))));
+            const frames = await images.evaluateAll(nodes => nodes.map(image => ({ src: image.currentSrc, alt: image.alt, width: image.naturalWidth, height: image.naturalHeight })));
+            assert.equal(new Set(frames.map(frame => frame.src)).size, count, 'Repeated gallery photographs');
+            assert.ok(frames.every(frame => frame.alt.length >= 15), 'Missing descriptive gallery alt');
+            const previous = container.locator('[data-photo-prev]');
+            const next = container.locator('[data-photo-next]');
+            assert.ok(await previous.isDisabled(), 'Previous must start disabled');
+            const id = await gallery.getAttribute('id');
+            const prefix = `${directory}/${path.replaceAll('/', '-').replace(/^-|-$/g, '')}-${width}-${id}`;
+            if (capture && [402, 1280].includes(width)) await container.screenshot({ path: `${prefix}-first.png` });
+            for (let index = 1; index < count; index++) {
+              await next.click();
+              await page.waitForFunction(({ id, index }) => {
+                const gallery = document.getElementById(id);
+                const figures = [...gallery.querySelectorAll('figure')];
+                return Math.abs(figures[index].offsetLeft - figures[0].offsetLeft - gallery.scrollLeft) < 2;
+              }, { id, index });
+            }
+            assert.ok(await next.isDisabled(), 'Next must stop at the last photograph');
+            if (capture && [402, 1280].includes(width)) await container.screenshot({ path: `${prefix}-last.png` });
+            await previous.focus();
+            await page.keyboard.press('Enter');
+            assert.ok(await next.isEnabled(), 'Keyboard must return from the last photograph');
+            row.galleries.push({ id, photographs: count, frames, buttons: 'PASS', keyboard: 'PASS' });
+          }
+          await page.evaluate(() => window.scrollTo(0, 0));
           if (capture && [402, 1280].includes(width)) {
             const prefix = `${directory}/${path.replaceAll('/', '-').replace(/^-|-$/g, '') || 'home'}-${width}`;
             await page.evaluate(() => document.fonts.ready);
