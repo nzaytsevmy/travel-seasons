@@ -25,6 +25,15 @@ const portrait = images.filter(photo => photo.src.height > photo.src.width).leng
 <script>
   import { initHotelGalleries } from '../../scripts/hotel-gallery.js';
   initHotelGalleries();
+  document.querySelectorAll('.post-gallery').forEach(container => {
+    const gallery = container.querySelector<HTMLElement>('.hotel-gallery');
+    gallery?.addEventListener('keydown', event => {
+      if (event.target !== gallery || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+      event.preventDefault();
+      const selector = event.key === 'ArrowLeft' ? '[data-photo-prev]' : '[data-photo-next]';
+      container.querySelector<HTMLButtonElement>(selector)?.click();
+    });
+  });
 </script>
 <style>
   .post-gallery { min-width:0; margin-block:32px; }

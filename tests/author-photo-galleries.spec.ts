@@ -54,14 +54,18 @@ for (const slug of articles) {
         await page.keyboard.press('Space');
         await expect(next).toBeDisabled();
         await gallery.focus();
-        const end = await gallery.evaluate(node => node.scrollLeft);
         await page.keyboard.press('ArrowLeft');
-        await expect.poll(() => gallery.evaluate(node => node.scrollLeft)).toBeLessThan(end);
+        await expect.poll(() => gallery.evaluate((node, index) => {
+          const figures = [...node.querySelectorAll('figure')];
+          return Math.abs(figures[index].offsetLeft - figures[0].offsetLeft - node.scrollLeft);
+        }, count - 2))).toBeLessThan(2);
         await expect(gallery).toBeFocused();
         expect(await gallery.evaluate(node => getComputedStyle(node).outlineStyle)).not.toBe('none');
-        const before = await gallery.evaluate(node => node.scrollLeft);
         await page.keyboard.press('ArrowRight');
-        await expect.poll(() => gallery.evaluate(node => node.scrollLeft)).toBeGreaterThan(before);
+        await expect.poll(() => gallery.evaluate(node => {
+          const figures = [...node.querySelectorAll('figure')];
+          return Math.abs(figures.at(-1)!.offsetLeft - figures[0].offsetLeft - node.scrollLeft);
+        }))).toBeLessThan(2);
         expect(await images.first().evaluate(node => {
           const style = getComputedStyle(node);
           return [style.marginTop, style.marginBottom];
