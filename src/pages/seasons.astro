@@ -76,6 +76,12 @@ const enrichedRows = data.map(row => {
 
 // Все НЕ-group строки для TouristDestination Schema
 const destinationRows = enrichedRows.filter(r => !r.group);
+// Four Russian rows have no destination landing-page mapping. Give each entity
+// its own stable identifier without inventing a landing-page URL.
+const seasonEntitySlugs = { 'Камчатка': 'kamchatka', 'Карелия': 'karelia', 'Дагестан': 'dagestan', 'Алтай': 'altai' };
+if (destinationRows.some(r => !(r.meta.slug || seasonEntitySlugs[r.region]))) {
+  throw new Error('Season destination needs a stable entity slug');
+}
 
 // JSON-LD: WebPage + ItemList + все TouristDestination + FAQPage + Breadcrumbs
 const ldJson = {
@@ -106,7 +112,7 @@ const ldJson = {
         "position": i + 1,
         "item": {
           "@type": "TouristDestination",
-          "@id": `https://traveltribe.ru/seasons/#${r.meta.slug}`,
+          "@id": `https://traveltribe.ru/seasons/#${r.meta.slug || seasonEntitySlugs[r.region]}`,
           "name": `${r.region} — ${r.sub}`,
           "description": `Лучшее время для поездки в ${r.region}: ${MONTH_NAMES[r.bestIdx]}. ${r.t[r.bestIdx]}`,
           "touristType": ["Russian travelers"],
