@@ -19,6 +19,12 @@ for (const slug of articles) {
         const gallery = container.locator('[role="region"]');
         await gallery.scrollIntoViewIfNeeded();
         const images = gallery.locator('img');
+        if (width === 402 && await container.evaluate(node => node.classList.contains('post-gallery--portrait'))) {
+          const imageBox = await images.first().boundingBox();
+          expect(imageBox!.height).toBeGreaterThan(400);
+          expect(imageBox!.width).toBeGreaterThan(0);
+          await expect(images.first()).toHaveCSS('object-fit', 'contain');
+        }
         const count = await images.count();
         expect(count).toBeGreaterThanOrEqual(3);
         const sources = await images.evaluateAll(nodes => nodes.map(node => (node as HTMLImageElement).src));

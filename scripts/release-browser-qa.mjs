@@ -65,6 +65,10 @@ try {
             await images.evaluateAll(nodes => nodes.forEach(node => node.loading = 'eager'));
             await page.waitForFunction(id => [...document.getElementById(id).querySelectorAll('img')]
               .every(image => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0), await gallery.getAttribute('id'), { timeout: 30000 });
+            await images.evaluateAll(nodes => Promise.all(nodes.map(image => Promise.race([
+              image.decode(),
+              new Promise((_, reject) => setTimeout(() => reject(new Error('Gallery image did not decode')), 30000)),
+            ]))));
             const frames = await images.evaluateAll(nodes => nodes.map(image => ({ src: image.currentSrc, alt: image.alt, width: image.naturalWidth, height: image.naturalHeight })));
             assert.equal(new Set(frames.map(frame => frame.src)).size, count, 'Repeated gallery photographs');
             assert.ok(frames.every(frame => frame.alt.length >= 15), 'Missing descriptive gallery alt');
