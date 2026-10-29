@@ -7,6 +7,12 @@ import { parseArgs } from 'node:util';
 import { gitChanges, gitEnvironment } from './release-scope.mjs';
 import { classifyEdit } from './edit-kind.mjs';
 import { readPostMeta, proseHash, checkArticleReview } from './article-review-gate.mjs';
+import { z } from 'astro/zod';
+import { parse as parseYaml } from 'yaml';
+import { blogSchema } from '../src/content/blog-schema.mjs';
+import { articleProse } from './edit-kind.mjs';
+import { articleLanguageProblems, articleFreshnessProblems } from './article-source-rules.mjs';
+import { buildQueue } from './revision-queue.mjs';
 import { requiredChecks } from './auto-merge-policy.mjs';
 
 try {
@@ -37,13 +43,25 @@ try {
       committed(change.path);
     }
   }
+  const sourceProblems=[];
+  const queue=buildQueue();
   let articles = 0;
   const news = [];
   for (const change of scope.changes.filter(c => c.status !== 'D')) {
     if (/^src\/content\/blog\/[^/]+\.mdx?$/.test(change.path)) {
       const after = blob(scope.head, change.path).toString('utf8');
       const before = change.status === 'A' ? null : blob(scope.base, change.path).toString('utf8');
-      if (!['new', 'rework'].includes(classifyEdit(before, after).kind)) continue;
+      const edit=classifyEdit(before,after);
+      const frontmatter=after.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)?.[1];
+      try {
+        if (frontmatter===undefined) throw new Error('Missing frontmatter');
+        // The cover path is validated here as a string; actual image bytes remain mandatory in Astro/full CI.
+        const metadata=blogSchema(z,()=>z.string()).safeParse(parseYaml(frontmatter));
+        if (!metadata.success) for (const issue of metadata.error.issues) sourceProblems.push(`${change.path}: ${issue.path.join('.')} — ${issue.message}`);
+      } catch(error) { sourceProblems.push(`${change.path}: frontmatter — ${error.message}`); }
+      const prose=['new','rework'].includes(edit.kind) ? articleProse(after) : edit.addedLines.join('\n');
+      sourceProblems.push(...articleLanguageProblems({rel:change.path,prose}),...articleFreshnessProblems({rel:change.path,rows:queue}));
+      if (!['new', 'rework'].includes(edit.kind)) continue;
       const meta = readPostMeta(after);
       if (!meta.reviewed || !meta.reviewRef) throw new Error(`${change.path}: нет reviewed/reviewRef независимой оценки`);
       if (!/^reviews\/blog\/[a-z0-9][a-z0-9-]*\.json$/.test(meta.reviewRef)) throw new Error(`${change.path}: небезопасный reviewRef`);
@@ -59,6 +77,7 @@ try {
       news.push(change.path);
     }
   }
+  if (sourceProblems.length) throw new Error(sourceProblems.join('\n'));
   if (news.length) {
     committed('news/config.json');
     const run = (file, args = [], input) => execFileSync(process.execPath, [file, ...args], {
