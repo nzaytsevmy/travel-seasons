@@ -1,49 +1,246 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "slug": "2026-10-01-thailand-sakon-nakhon-wax-castle",
-  "reviewer": "Codex (editorial_review_20261020)",
-  "reviewerTask": "/root/editorial_review_20261020",
-  "authoredBy": "codex-gpt-6",
-  "reviewedAt": "2026-10-20",
-  "checkedAt": "2026-10-01",
   "score": 3,
+  "reviewer": "Codex (news_review_20261029)",
+  "reviewerTask": "/root/news_review_20261029",
+  "authoredBy": "Codex (tt-author-20261029)",
+  "reviewedAt": "2026-10-29T11:10:40.506Z",
+  "checkedAt": "2026-10-29",
   "approved": true,
-  "approvalScope": "EDITORIAL_CONTENT_ONLY",
-  "classification": "SOURCE_RECHECK",
-  "baseCommit": "707f7c57b591d3769d740b30de9024fecd0bede2",
-  "rationale": "Сохранённая оценка 3/5 относится к доказанно неизменному title/tldr/body: contentHash совпал с HEAD и прежней содержательной рецензией. Сегодня прочитан полный текст и проверена только ревизия метаданных/состояния. Открыт TAT календарь20.10:Wax Castle/LongBoat20–26.10,WatPhraThatChoengChum,SakonNakhon. Анонс/часы конкретного выступления остаются разными фактами; следующая проверка после объявленного конца26.10.",
-  "factReview": "Открыт TAT календарь20.10:Wax Castle/LongBoat20–26.10,WatPhraThatChoengChum,SakonNakhon. Анонс/часы конкретного выступления остаются разными фактами; следующая проверка после объявленного конца26.10. Прежняя содержательная проверка переиспользована после совпадения хеша; это не новая независимая перепроверка всех исторических фактов 20 октября.",
+  "approvalScope": "EDITORIAL_ONLY",
+  "editorialVerdict": "PASS",
+  "releaseApproved": false,
+  "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
+  "classification": "UPDATE_REWORK",
+  "baseCommit": "e4817ae6ccef4a65cd278bd151293f40a940abf3",
+  "rationale": "3/5:конкретный культурный сюжет получил полезное продолжение — объявленный показ до 27 ноября после дат парада. При этом анонс не подтверждает доступ выбранного храма/экспонатов, часы и плату; гарантированный готовый визит не обещан. Старый URL сохранён, даты публикации/добавления не освежены. Независимо прочитаны новый полный текст, Sakon-матрица и первичная программа.",
+  "ownAddition": "Различены прошедшие гонки/парад и объявленный последующий стационарный показ; более длинная программа сопоставлена с кратким календарём TAT.",
+  "factReview": "Thailand.go.th20Oct объявляет ExtendedExhibition26Oct–27Nov2026 у WatPhraThatChoengChumWorawihan и участвующих общинных храмов, предупреждая об изменениях. Гонки 23–24Oct,парад 25Oct. TAT29Sep указывает фестиваль 20–26Oct. В финале это планы/прошедшие даты, а не подтверждение проведения или текущей работы.",
   "sourceChecks": [
     {
+      "name": "Thailand.go.th — программа и отдельный показ 26 октября–27 ноября, опубликовано 20.10.2026; прочитано 29.10",
+      "url": "https://www.thailand.go.th/useful-information-detail/wax-castle-parade-and-longboat-racing-festival-2026-royal-cup",
+      "method": "Independent TinyFish fetch_content, JavaScript-rendered main text,29Oct. Не webcache и не nativeIABsnapshot.",
+      "observedStatus": "JS_RENDERED_MAIN_TEXT_READ",
+      "publishedAt": "2026-10-20",
+      "finding": "ExtendedExhibition26Oct–27Nov;названный храм и participatinglocalcommunitytemples;eventdetails subjecttochange. Полного графика/платы в первичке нет.",
+      "canonical": "https://www.thailand.go.th/issue-focus-detail/wax-castle-parade-and-longboat-racing-festival-2026-royal-cup",
+      "nativeBrowserSnapshotProvided": false,
+      "nativeBrowserProof": {
+        "snapshot": "news/snapshots/4cca5ea720423a6e.json",
+        "snapshotSha256": "13256da2c477352a1ca3af0142b26107fe67b8b6d09aed0ef581018c7b2a02ba",
+        "capturedBy": "Codex native IAB visible text, programme and Extended Exhibition sections;29 October2026; relevant excerpt, not whole page",
+        "capturedAt": "2026-10-29",
+        "scope": "Полный релевантный фрагмент программы/Extended Exhibition и subjecttochange, не вся страница",
+        "provenance": "Автор лично прочитал в nativeIAB; рецензент прочитал сохранённый snapshot. Это дополняет прежнее независимое JS-чтение рецензентом, не выдаётся за его личный nativeIAB."
+      }
+    },
+    {
+      "name": "Tourism Authority of Thailand — календарь событий октября 2026, 29.09.2026",
       "url": "https://www.tatnews.org/2026/09/october-event-and-calendar/",
-      "status": "AVAILABILITY_AND_METADATA_RECHECK_ONLY",
-      "observedHttpStatus": null,
-      "reviewedAt": "2026-10-20",
-      "scope": "Содержательная прежняя рецензия переиспользована по точному хешу; новая дата не означает повторное чтение всех первичек.",
-      "limitation": "См. factReview: независимый web/native просмотр либо указанное ограничение; отсутствиеHTTPартефакта не превращено в200."
+      "method": "Independentwebmaintextread29Oct",
+      "finding": "WaxCastle/LongBoat20–26Oct2026,WatPhraThatChoengChumWorawihan,SakonNakhon."
     }
   ],
-  "contentHash": "bec1c21c2bcdff5a1d5c1a009d733d4608fbb737034d7e70258ebe13a5210312",
-  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote.",
-  "sourceSha256": "def36e611ffb5a1955f035c8a5f895ce817d224ad96e9369ac59fa4073212386",
-  "sourceSha256Scope": "SHA-256 полного исходного UTF-8 Markdown, включая frontmatter.",
-  "nativeClipTitle": "В Саконнакхоне с 20 октября пройдёт шествие восковых замков",
-  "clipTitleCodeSha256": "61aeac8ec0e88ff9175d1ebefe66fd9be9b17f211a045a943312de9f6fdc1b0f",
-  "previousReview": {
-    "reviewer": "Codex GPT-6 (tt_news_review_1001)",
-    "reviewedAt": "2026-10-01",
-    "score": 3,
-    "rationale": "Календарь Управления по туризму Таиланда от 29 сентября указывает 20–26 октября 2026 года, храм Wat Phra That Choeng Chum Worawihan, шествие восковых замков и гонки длинных лодок. Заметка сохраняет статус анонса и честно говорит, что почасовая программа и точки просмотра пока не даны. Ночёвка в Саконнакхоне объяснена как возможное планирование, а не обязательное условие. Оценка 3: конкретный культурный повод для узкого маршрута с проверенной датой.",
-    "contentHash": "bec1c21c2bcdff5a1d5c1a009d733d4608fbb737034d7e70258ebe13a5210312"
+  "contentHash": "def8486a86088f10ef8c3de31b83355660f3e09cd08b25f7c146e1a0b16a7e83",
+  "contentHashScope": "SHA256 JSON.stringify({title,tldr,body:body.trim()}) штатного parseNote",
+  "sourceSha256": "118c0d36428bc755b105bf8d98933b831d82194bdd2d0be7aef83f32091bdece",
+  "sourceSha256Scope": "FullUTF8Markdown точнойпрочитаннойверсии",
+  "actualClipTitle": "В Саконнакхоне объявили показ восковых замков до 27 ноября",
+  "tldrCheck": {
+    "ok": true
   },
-  "reuseEvidence": {
-    "baseContentHash": "bec1c21c2bcdff5a1d5c1a009d733d4608fbb737034d7e70258ebe13a5210312",
-    "previousReviewContentHash": "bec1c21c2bcdff5a1d5c1a009d733d4608fbb737034d7e70258ebe13a5210312",
-    "titleTldrBodyUnchanged": true,
-    "checkedPreserved": true,
-    "currentScope": "SOURCE_RECHECK metadata/state only; previous substantive review reused"
+  "research": {
+    "artifact": "research/news-20261029/updates-google-comparison.md",
+    "artifactSha256": "1bb1aa6356cbd0c68f585950d641deb5a8825893eb100c83d3402105ea03af27",
+    "reviewerReadSakonMatrixFully": true,
+    "acceptedSites": [
+      "thailand.go.th",
+      "thailandnow.in.th",
+      "thefinestthai.com",
+      "explera.co.th",
+      "tatnews.org"
+    ],
+    "mainTextsReadBy": "Автор до окончательной переработки; рецензент полностью прочитал матрицу и самостоятельно проверил первичные факты. Чтение всех пятисайтоврецензентом не заявлено.",
+    "exclusions": "ThailandInsider перепечатка TAT;MyThai недоступен;social/video не засчитаны.",
+    "sequencing": "Первый календарный черновик был HOLD; новое полное исследование завершено до полной переработки под объявленный показ."
   },
-  "photo": {
+  "qualityCriteria": [
+    {
+      "id": 1,
+      "criterion": "Задача читателя",
+      "score": 10,
+      "evidence": "Новый конкретный ответ: объявленный стационарный показ после дат шествия. Title/TLDR/первый абзац согласованы."
+    },
+    {
+      "id": 2,
+      "criterion": "Обоснование темы",
+      "score": 5,
+      "evidence": "Прочитан новый Sakon-раздел матрицы пяти разных основных текстов до окончательной переработки по сообщению автора. Перепечатки/недоступное исключены. Предыдущий календарный черновик оставался HOLD, ранний порядок не выдан за выполненный."
+    },
+    {
+      "id": 3,
+      "criterion": "Место в проекте",
+      "score": 5,
+      "evidence": "Прежний URL сохранён для продолжения того же сюжета; тематический исходящий переход соответствует направлению. Полный аудит входящих/каннибализации не выполнен."
+    },
+    {
+      "id": 4,
+      "criterion": "Полнота и прямой ответ",
+      "score": 10,
+      "evidence": "Показ 26Oct–27Nov отделён от прошедших гонок/парада; читателю назван конкретный храм и необходимые проверки. Неизвестные часы/плата/площадки явно названы, не обещаны. checkTldrPASS."
+    },
+    {
+      "id": 5,
+      "criterion": "Собственный вклад",
+      "score": 5,
+      "evidence": "Сопоставлены короткая афиша TAT и более подробная правительственная программа: стационарный показ не повторяет парад. Это кабинетное объяснение, не своё посещение."
+    },
+    {
+      "id": 6,
+      "criterion": "Факты и источники",
+      "score": 10,
+      "evidence": "Полный основной Thailand.go.th текст независимо прочитан через JS-рендер TinyFish после webtimeout/пустой HTTP оболочки. TAT календарь самостоятельно прочитан. Даты, место и условность программы совпадают."
+    },
+    {
+      "id": 7,
+      "criterion": "Числа и примеры",
+      "score": 10,
+      "evidence": "Проверены 20Octpublication;26Oct–27Novexhibition;23–24Octraces;25Octparade;TAT20–26Octfestival. Фактическое проведение/работакаждойплощадки 29Oct не выводятся из анонса."
+    },
+    {
+      "id": 8,
+      "criterion": "Исключения и применимость",
+      "score": 10,
+      "evidence": "Нет гарантии работы всех храмов, полного набора экспонатов, свободного входа/часов/платы; программа subjecttochange. Для поездки требуется подтверждение выбранной площадки."
+    },
+    {
+      "id": 9,
+      "criterion": "Авторство и доверие",
+      "score": 5,
+      "evidence": "Codex автор и независимый Codexreviewer различны; посещение/наблюдение 2026 не присвоено. Публичный byline/JSON-LD ещё не проверен."
+    },
+    {
+      "id": 10,
+      "criterion": "Редактура и естественный язык",
+      "score": 10,
+      "evidence": "Финальный материал полностью прочитан, логика показ/шествие ясна, дата не превращена в проведение. Нет запрещённого«уже» в новой редакции и технических токенов генератора."
+    },
+    {
+      "id": 11,
+      "criterion": "SEO-обещание и метаданные",
+      "score": 5,
+      "evidence": "Штатный clipTitle прочитан отдельно и сохраняет весь смысл. Canonical/OG/SSR/финальные даты sitemap/feed не приняты."
+    },
+    {
+      "id": 12,
+      "criterion": "Ссылки и навигация",
+      "score": 5,
+      "evidence": "Прежний переход к путеводителюТаиланда релевантен; его HTTP200 проверялся в сегодняшнем контуре ранее. Финальный URL/рендер/якоря ожидают live."
+    },
+    {
+      "id": 13,
+      "criterion": "Оформление и доступность",
+      "score": 5,
+      "evidence": "Фото побайтно совпадает с прежним просмотренным кадром храма, не восковых работ. Историческая проверка происхождения сохранена. Новый просмотр Commons/402/1280 и публичная атрибуция не заявлены."
+    },
+    {
+      "id": 14,
+      "criterion": "Готовность выпуска",
+      "score": 0,
+      "evidence": "Полныефинальные hook/CI/exactdeploy/live/SSR/sitemap/feed не приняты; редакторский PASS не является выпуском."
+    }
+  ],
+  "criteria14": [
+    {
+      "id": 1,
+      "criterion": "Задача читателя",
+      "score": 10,
+      "evidence": "Новый конкретный ответ: объявленный стационарный показ после дат шествия. Title/TLDR/первый абзац согласованы."
+    },
+    {
+      "id": 2,
+      "criterion": "Обоснование темы",
+      "score": 5,
+      "evidence": "Прочитан новый Sakon-раздел матрицы пяти разных основных текстов до окончательной переработки по сообщению автора. Перепечатки/недоступное исключены. Предыдущий календарный черновик оставался HOLD, ранний порядок не выдан за выполненный."
+    },
+    {
+      "id": 3,
+      "criterion": "Место в проекте",
+      "score": 5,
+      "evidence": "Прежний URL сохранён для продолжения того же сюжета; тематический исходящий переход соответствует направлению. Полный аудит входящих/каннибализации не выполнен."
+    },
+    {
+      "id": 4,
+      "criterion": "Полнота и прямой ответ",
+      "score": 10,
+      "evidence": "Показ 26Oct–27Nov отделён от прошедших гонок/парада; читателю назван конкретный храм и необходимые проверки. Неизвестные часы/плата/площадки явно названы, не обещаны. checkTldrPASS."
+    },
+    {
+      "id": 5,
+      "criterion": "Собственный вклад",
+      "score": 5,
+      "evidence": "Сопоставлены короткая афиша TAT и более подробная правительственная программа: стационарный показ не повторяет парад. Это кабинетное объяснение, не своё посещение."
+    },
+    {
+      "id": 6,
+      "criterion": "Факты и источники",
+      "score": 10,
+      "evidence": "Полный основной Thailand.go.th текст независимо прочитан через JS-рендер TinyFish после webtimeout/пустой HTTP оболочки. TAT календарь самостоятельно прочитан. Даты, место и условность программы совпадают."
+    },
+    {
+      "id": 7,
+      "criterion": "Числа и примеры",
+      "score": 10,
+      "evidence": "Проверены 20Octpublication;26Oct–27Novexhibition;23–24Octraces;25Octparade;TAT20–26Octfestival. Фактическое проведение/работакаждойплощадки 29Oct не выводятся из анонса."
+    },
+    {
+      "id": 8,
+      "criterion": "Исключения и применимость",
+      "score": 10,
+      "evidence": "Нет гарантии работы всех храмов, полного набора экспонатов, свободного входа/часов/платы; программа subjecttochange. Для поездки требуется подтверждение выбранной площадки."
+    },
+    {
+      "id": 9,
+      "criterion": "Авторство и доверие",
+      "score": 5,
+      "evidence": "Codex автор и независимый Codexreviewer различны; посещение/наблюдение 2026 не присвоено. Публичный byline/JSON-LD ещё не проверен."
+    },
+    {
+      "id": 10,
+      "criterion": "Редактура и естественный язык",
+      "score": 10,
+      "evidence": "Финальный материал полностью прочитан, логика показ/шествие ясна, дата не превращена в проведение. Нет запрещённого«уже» в новой редакции и технических токенов генератора."
+    },
+    {
+      "id": 11,
+      "criterion": "SEO-обещание и метаданные",
+      "score": 5,
+      "evidence": "Штатный clipTitle прочитан отдельно и сохраняет весь смысл. Canonical/OG/SSR/финальные даты sitemap/feed не приняты."
+    },
+    {
+      "id": 12,
+      "criterion": "Ссылки и навигация",
+      "score": 5,
+      "evidence": "Прежний переход к путеводителюТаиланда релевантен; его HTTP200 проверялся в сегодняшнем контуре ранее. Финальный URL/рендер/якоря ожидают live."
+    },
+    {
+      "id": 13,
+      "criterion": "Оформление и доступность",
+      "score": 5,
+      "evidence": "Фото побайтно совпадает с прежним просмотренным кадром храма, не восковых работ. Историческая проверка происхождения сохранена. Новый просмотр Commons/402/1280 и публичная атрибуция не заявлены."
+    },
+    {
+      "id": 14,
+      "criterion": "Готовность выпуска",
+      "score": 0,
+      "evidence": "Полныефинальные hook/CI/exactdeploy/live/SSR/sitemap/feed не приняты; редакторский PASS не является выпуском."
+    }
+  ],
+  "minimumFiveVerifiedTens": true,
+  "verifiedTensCount": 6,
+  "photoProof": {
     "image": "./_images/2026-10-01-thailand-sakon-nakhon-wax-castle.jpg",
     "imageSha256": "eb77d91edcfbaf83a0f67d0bd8bf94fa2e199cc8041c4eac10c2efb38da9236b",
     "creator": "Chaiyathat",
@@ -52,85 +249,37 @@
     "source": "https://commons.wikimedia.org/wiki/File:Prathat_Cherng_Chum_Temple_(1).jpg",
     "title": "Храм Пхра Тхат Чонг Чум; архивный снимок места проведения, не шествия 2026 года.",
     "alt": "Храм Пхра Тхат Чонг Чум в Саконнакхоне",
-    "visualReview": "Финальный локальный кадр самостоятельно просмотрен20Oct; архивный/иллюстративный смысл соответствуетalt,нефото события/эксперимента.",
-    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+    "visualReview": "Финальный локальный кадр самостоятельно просмотрен 20Oct; архивный/иллюстративный смысл соответствует alt,нефото события/эксперимента.",
+    "publicAttribution": "PENDING_FINAL_BUILD_LIVE",
+    "viewedByThisReviewer": false,
+    "priorProofReused": true,
+    "provenanceMethod": "Точныйнеизменный JPEG и ранее проверенное происхождение наследованы по SHA. Новыйполныйпросмотр/лицензионнаясверка не заявлены."
   },
-  "criteria14": [
-    {
-      "id": 1,
-      "score": 10,
-      "evidence": "Один вопрос читателя следует из title/tldr: В Саконнакхоне с 20 октября пройдёт шествие восковых замков. Полный текст прочитан."
-    },
-    {
-      "id": 2,
-      "score": 5,
-      "evidence": "Историческая редакционная значимость сохранена, сегодняшний поисковый/денежныйэффектнеизмерен."
-    },
-    {
-      "id": 3,
-      "score": 10,
-      "evidence": "Сохранён существующий сюжет либо самостоятельная новая тема; это новостьtravel/nature,невыдуманныйгайд."
-    },
-    {
-      "id": 4,
-      "score": 10,
-      "evidence": "Капсула и начало дают событие/состояние; ограничение результата и следующий конкретный шаг описаны."
-    },
-    {
-      "id": 5,
-      "score": 5,
-      "evidence": "Редакционное объяснение/применимость есть, собственное полевое исследование, эксклюзивные данные и посещение не заявлены."
-    },
-    {
-      "id": 6,
-      "score": 5,
-      "evidence": "Открыт TAT календарь20.10:Wax Castle/LongBoat20–26.10,WatPhraThatChoengChum,SakonNakhon. Анонс/часы конкретного выступления остаются разными фактами; следующая проверка после объявленного конца26.10. Прежняя содержательная проверка переиспользована после совпадения хеша; это не новая независимая перепроверка всех исторических фактов 20 октября."
-    },
-    {
-      "id": 7,
-      "score": 10,
-      "evidence": "Значимые даты/числа и ихединицы сверены по названной фактическойоснове;неполученный текущийстатус не рассчитан и не выдуман. ДляSOURCE_RECHECK основание — точный неизменный текст и прежняя содержательнаярецензия."
-    },
-    {
-      "id": 8,
-      "score": 10,
-      "evidence": "Граница применимости, объявлено/состоялось/история и отсутствие разрешения на закрытый участок сохранены;см.factReview."
-    },
-    {
-      "id": 9,
-      "score": 5,
-      "evidence": "authoredBy и независимыйreviewer различны; выдуманного посещения нет. Публичныйbyline/SSRфинальнойверсии ещёнепроверен."
-    },
-    {
-      "id": 10,
-      "score": 10,
-      "evidence": "Полностью прочитаныtitle,tldr,body; замечания об устаревших/обрезанныхtitle и дублеYosemite исправлены до этогохеша."
-    },
-    {
-      "id": 11,
-      "score": 5,
-      "evidence": "ШтатныйclipTitle прочитан: В Саконнакхоне с 20 октября пройдёт шествие восковых замков. SSR/canonical/OGфинальнойсборки ожидаютCI/live."
-    },
-    {
-      "id": 12,
-      "score": 5,
-      "evidence": "Контекстнаявнутренняясвязь соответствует задаче;фактическиеHTTPответы/якоряфинальнойверсии в этомредакционномревьюнепроверены."
-    },
-    {
-      "id": 13,
-      "score": 5,
-      "evidence": "Новые4фотографии просмотреныи сопоставленыс происхождением/alt;неизменные старыефото имеют прежнююпроверку.Рендер402/1280и публичнаяатрибуциянепроверены."
-    },
-    {
-      "id": 14,
-      "score": 0,
-      "evidence": "ФинальныеCI,exactdeploy,live200,SSR,sitemap/feed,индексируемостьи измеренныйэффект ещёнеподтверждены."
+  "priorAssessment": {
+    "reviewer": "Codex (editorial_review_20261020)",
+    "reviewedAt": "2026-10-20",
+    "score": 3,
+    "contentHash": "bec1c21c2bcdff5a1d5c1a009d733d4608fbb737034d7e70258ebe13a5210312",
+    "sourceSha256": "def36e611ffb5a1955f035c8a5f895ce817d224ad96e9369ac59fa4073212386",
+    "artifactSha256": "6060971add9e5ccdb4700b33c046fcc60a07ca426ed36cb1b67251b39114e839",
+    "photoProof": {
+      "image": "./_images/2026-10-01-thailand-sakon-nakhon-wax-castle.jpg",
+      "imageSha256": "eb77d91edcfbaf83a0f67d0bd8bf94fa2e199cc8041c4eac10c2efb38da9236b",
+      "creator": "Chaiyathat",
+      "license": "CC BY-SA 4.0",
+      "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0",
+      "source": "https://commons.wikimedia.org/wiki/File:Prathat_Cherng_Chum_Temple_(1).jpg",
+      "title": "Храм Пхра Тхат Чонг Чум; архивный снимок места проведения, не шествия 2026 года.",
+      "alt": "Храм Пхра Тхат Чонг Чум в Саконнакхоне",
+      "visualReview": "Финальный локальный кадр самостоятельно просмотрен 20Oct; архивный/иллюстративный смысл соответствует alt,нефото события/эксперимента.",
+      "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
     }
-  ],
+  },
+  "blockingIssues": [],
   "limitations": [
-    "Редакционное одобрение не разрешает обход обязательныхгейтов и не подтверждает публикацию.",
-    "Источник/снимок поддерживает тольконазванный датированныйфакт; новая доступность каждойдороги/рейса/объектаизнего не следует.",
-    "Новыеphoto-rights сопоставлены с сохранённымCommonsAPI; публичная/legal/photos/ ожидаетфинальногорендера."
+    "Анонс не подтверждает текущую работу каждой площадки; нужны часы/условия конкретного храма.",
+    "Личного посещения/съёмкипоказа 2026 и реального читательского теста не было.",
+    "Полныегейты/публикация/live и измеренный трафик/доход не приняты."
   ],
-  "nextReview": "2026-10-27"
+  "nextReview": "2026-11-01"
 }
