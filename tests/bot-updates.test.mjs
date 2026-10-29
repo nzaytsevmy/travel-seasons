@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { BOTS, GATE_NAME, allowedBotPath, approvableRun, isBotCandidate, validateBotPr } from '../scripts/bot-update-policy.mjs';
 import { requiredChecks } from '../scripts/auto-merge-policy.mjs';
-import { handleCheckedPr } from '../scripts/checked-pr-controller.mjs';
+import { handleCheckedPr, runCheckedController } from '../scripts/checked-pr-controller.mjs';
 import { publishBot } from '../scripts/bot-publish.mjs';
 
 const BASE = 'a'.repeat(40), HEAD = 'b'.repeat(40), NEW = 'c'.repeat(40);
@@ -12,7 +12,7 @@ function fixture(bot = 'prices') {
   const config = BOTS[bot];
   const proof = { bot, source_sha: BASE, head_sha: HEAD, run_id: '123' };
   const pr = { number: 7, state: 'open', draft: false, user: { login: 'github-actions[bot]', type: 'Bot' },
-    base: { ref: 'main' }, head: { sha: HEAD, ref: config.branch, repo: { full_name: `${OWNER}/${REPO}` } },
+    base: { ref: 'main', sha: BASE }, head: { sha: HEAD, ref: config.branch, repo: { full_name: `${OWNER}/${REPO}` } },
     body: `<!-- traveltribe-bot:${JSON.stringify(proof)} -->`, mergeable: true };
   const files = config.paths.map((filename) => ({ filename, status: 'modified' }));
   const calls = [];
@@ -138,6 +138,51 @@ test('green underlying CI without the real required Actions job cannot be attest
   const result = await handleCheckedPr({ ...f, owner: OWNER, repo: REPO, number: 7, log: () => {} });
   assert.notEqual(result.status, 'merged');
   assert.equal(f.calls.some((call) => ['gateCreate', 'gateUpdate', 'merge', 'dispatch'].includes(call.kind)), false);
+});
+
+test('a transient read error retries that request without restarting a controller or any CI', async()=>{
+ const f=fixture();const original=f.github.rest.checks.listForRef;let reads=0;
+ f.github.rest.checks.listForRef=async p=>{if(++reads===1)throw Object.assign(new Error('temporary'),{status:503});return original(p);};
+ const result=await handleCheckedPr({...f,owner:OWNER,repo:REPO,number:7,log:()=>{},retrySleep:async()=>{}});
+ assert.equal(result.status,'merged');assert.equal(reads,2);
+ assert.equal(f.calls.filter(c=>c.kind==='merge').length,1);assert.equal(f.calls.filter(c=>c.kind==='dispatch').length,1);
+});
+
+test('an already-open background bot cannot move main during an owner editorial release',async()=>{
+ const f=fixture();const editorial={...f.pr,number:8,user:{login:OWNER},head:{...f.pr.head,ref:'tt-publish/active-release'}};
+ f.github.rest.pulls.list=async()=>({data:[f.pr,editorial]});
+ const result=await handleCheckedPr({...f,owner:OWNER,repo:REPO,number:7,log:()=>{}});
+ assert.equal(result.status,'deferred_for_editorial');assert.deepEqual(result.blockers,[8]);
+ assert.equal(f.calls.some(c=>c.kind==='merge'||c.kind==='dispatch'),false);
+});
+
+test('a draft or foreign editorial-looking PR cannot block an eligible background update',async()=>{
+ for(const patch of [{draft:true},{user:{login:'attacker'}},{head:{...fixture().pr.head,ref:'tt-publish/foreign',repo:{full_name:'attacker/repo'}}}]){
+  const f=fixture();const other={...f.pr,number:8,user:{login:OWNER},head:{...f.pr.head,ref:'tt-publish/other'},...patch};
+  f.github.rest.pulls.list=async()=>({data:[f.pr,other]});
+  assert.equal((await handleCheckedPr({...f,owner:OWNER,repo:REPO,number:7,log:()=>{}})).status,'merged');
+ }
+});
+
+test('workflow completion from a failed, foreign or different-head run cannot trigger a merge',async()=>{
+ for(const patch of [{conclusion:'failure'},{head_sha:NEW},{head_repository:{full_name:'attacker/repo'}},{path:'.github/workflows/other.yml'}]){
+  const f=fixture();const run={id:99,name:'Required PR checks',path:'.github/workflows/required-checks.yml',event:'pull_request',status:'completed',conclusion:'success',head_sha:HEAD,head_repository:{full_name:`${OWNER}/${REPO}`},pull_requests:[{number:7}],...patch};
+  const get=f.github.rest.actions.getWorkflowRun;f.github.rest.actions.getWorkflowRun=async p=>p.run_id===99?{data:run}:get(p);
+  await runCheckedController({github:f.github,context:{eventName:'workflow_run',repo:{owner:OWNER,repo:REPO},payload:{workflow_run:run}},core:{info(){},setFailed(){}}});
+  assert.equal(f.calls.some(c=>c.kind==='merge'||c.kind==='dispatch'),false,JSON.stringify(patch));
+ }
+});
+
+test('the native aggregate completion wakes the exact PR immediately and retains all26 checks',async()=>{
+ const f=fixture();const run={id:99,name:'Required PR checks',path:'.github/workflows/required-checks.yml',event:'pull_request',status:'completed',conclusion:'success',head_sha:HEAD,head_repository:{full_name:`${OWNER}/${REPO}`},pull_requests:[{number:7}]};
+ const get=f.github.rest.actions.getWorkflowRun;f.github.rest.actions.getWorkflowRun=async p=>p.run_id===99?{data:run}:get(p);
+ const payload={...run};delete payload.path;
+ await runCheckedController({github:f.github,context:{eventName:'workflow_run',repo:{owner:OWNER,repo:REPO},payload:{workflow_run:payload}},core:{info(){},setFailed(){}}});
+ assert.equal(f.calls.filter(c=>c.kind==='merge').length,1);assert.equal(f.calls.filter(c=>c.kind==='dispatch').length,1);
+ assert.equal(f.calls.find(c=>c.kind==='dispatch').inputs.base_sha,BASE);
+ const {parse}=await import('yaml');const workflow=parse(readFileSync('.github/workflows/auto-merge.yml','utf8'));
+ assert.deepEqual(workflow.on.workflow_run.workflows,['Required PR checks']);assert.deepEqual(workflow.on.workflow_run.types,['completed']);
+ assert.equal(workflow.concurrency['cancel-in-progress'],false,'A merge must reach its deploy dispatch without controller cancellation');
 });
 
 test('the native aggregate itself cannot be missing, skipped, red, foreign or pending', async () => {

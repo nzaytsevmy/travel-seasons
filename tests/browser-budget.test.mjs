@@ -61,10 +61,11 @@ test('GitHub API retries are bounded and never retry access or input rejection',
   const workflow=parse(fs.readFileSync(`.github/workflows/${filename}`,'utf8'));
   const steps=Object.values(workflow.jobs).flatMap(job=>job.steps||[]).filter(step=>step.uses==='actions/github-script@v7');
   assert.equal(steps.length,1);
-  assert.equal(steps[0].with.retries,1);
+  assert.equal(steps[0].with.retries,0,'A single source-owned read retry layer; no blind retries of writes');
   const excluded=String(steps[0].with['retry-exempt-status-codes']).split(',').map(Number);
   for(const code of [400,401,403,404,422])assert(excluded.includes(code));
   assert(!excluded.includes(503));
+  assert.match(filename==='auto-merge.yml'?fs.readFileSync('scripts/checked-pr-controller.mjs','utf8'):steps[0].with.script,/github-read-retry\.mjs/);
  }
 });
 

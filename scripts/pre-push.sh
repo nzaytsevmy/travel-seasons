@@ -63,9 +63,20 @@ else
   MODE="full"
 fi
 
-if ! npm run check:delivery >${LOG}_delivery.log 2>&1; then
-  echo "✖ delivery/agent-skills контракт НЕ зелёный → ${LOG}_delivery.log"
-  exit 1
+# Full delivery remains unconditional in required Build CI. Keep this growing
+# suite off a publication Mac; ordinary development retains its local checks.
+BRANCH="$(git branch --show-current)" || exit 1
+CI_PUBLICATION=0
+case "$BRANCH" in
+  tt-news/*|tt-publish/*|feat/home-photojournal-20261010|feat/country-best-hotels-20261016) CI_PUBLICATION=1 ;;
+esac
+if [ "$CI_PUBLICATION" -eq 0 ]; then
+  if ! npm run check:delivery >${LOG}_delivery.log 2>&1; then
+    echo "✖ delivery/agent-skills контракт НЕ зелёный → ${LOG}_delivery.log"
+    exit 1
+  fi
+else
+  echo "▶ публикация: полный delivery-контракт обязателен в Build CI; локально — секреты, метаданные, язык, свежесть и независимая оценка."
 fi
 
 # Исключение только для обычной правки очереди. Сравниваем ВСЮ ветку с main:
@@ -79,7 +90,7 @@ if ! node scripts/check-journal-metadata.mjs --base "$SCOPE_BASE" --head HEAD >$
   echo "✖ метаданные журнала проверок — push заблокирован до сборки"; exit 1
 fi
 if [ "$RELEASE_SCOPE" = "accounting" ]; then
-  echo "✔ изменена только DAILY-ARTICLE-QUEUE.md: секреты, delivery-контракты и диапазон ветки проверены — push разрешён."
+  echo "✔ изменена только DAILY-ARTICLE-QUEUE.md: секреты, метаданные и диапазон проверены; полный delivery-контракт обязателен в Build CI."
   exit 0
 fi
 
@@ -114,9 +125,7 @@ fi
 # Решение Никиты 10.10.2026: тяжёлые проверки публикационных рутин выполняет CI.
 # Проверяем весь отправляемый HEAD; существующая автоматика требует 6/26 зелёных
 # статусов по фактическим файлам. Обычная разработка сохраняет локальный прогон.
-BRANCH="$(git branch --show-current)" || exit 1
-case "$BRANCH" in
-  tt-news/*|tt-publish/*|feat/home-photojournal-20261010|feat/country-best-hotels-20261016)
+if [ "$CI_PUBLICATION" -eq 1 ]; then
     if ! node scripts/routine-preflight.mjs --base "$SCOPE_BASE" --head HEAD >${LOG}_routine.log 2>&1; then
       cat "${LOG}_routine.log"
       echo "✖ исходники публикационной рутины не прошли проверку — push заблокирован"; exit 1
@@ -124,8 +133,7 @@ case "$BRANCH" in
     cat "${LOG}_routine.log"
     echo "✔ локальные проверки публикации зелёные — push разрешён; полные проверки и merge выполняет CI."
     exit 0
-    ;;
-esac
+fi
 
 # Решение Никиты 10.10.2026: переработка трёх ботов без задержек на занятом Mac.
 # Узкий список workflow/scripts/tests; сайт и данные не попадают в исключение.

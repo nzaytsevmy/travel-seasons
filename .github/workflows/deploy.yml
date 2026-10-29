@@ -8,6 +8,11 @@ on:
     # /compare/ и /trips/) запечён на билд-тайме и без пересборки протух бы.
     - cron: '30 6 * * *'
   workflow_dispatch:
+    inputs:
+      base_sha:
+        description: 'Предыдущий main для проверки служебного учёта; пусто — полная ручная пересборка'
+        type: string
+        default: ''
 
 # Сериализуем деплои: при быстрых мержах рейс «кто допушил последним» затирал прод
 # промежуточным SHA. Очередь по группе, без cancel — текущий rsync доезжает, последний main деплоится последним.
@@ -19,14 +24,33 @@ permissions:
   contents: read
 
 jobs:
+  scope:
+    runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.scope.outputs.mode }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - id: scope
+        run: node scripts/deployment-scope.mjs
+        env:
+          DEPLOY_BASE_SHA: ${{ github.event.before || inputs.base_sha }}
   prepare:
+    needs: scope
+    if: needs.scope.outputs.mode != 'accounting'
     uses: ./.github/workflows/site-artifact.yml
     with:
       skip_html_min: '0'
 
   deploy:
-    needs: prepare
-    if: github.ref == 'refs/heads/main'
+    needs: [scope, prepare]
+    if: github.ref == 'refs/heads/main' && needs.scope.outputs.mode != 'accounting'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

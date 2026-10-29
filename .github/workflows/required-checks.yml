@@ -25,36 +25,43 @@ jobs:
         with:
           ref: main
           persist-credentials: false
+          sparse-checkout: scripts
       - uses: actions/github-script@v7
         with:
-          retries: 1
+          retries: 0 # Read retries are scoped below; no multiplied retry layers.
           retry-exempt-status-codes: 400,401,403,404,422
           script: |
             const { pathToFileURL } = require('node:url');
             const root = process.env.GITHUB_WORKSPACE;
             const { requiredChecks, evaluateChecks } = await import(pathToFileURL(`${root}/scripts/auto-merge-policy.mjs`).href);
             const { trustedChecks, validateBotPr } = await import(pathToFileURL(`${root}/scripts/bot-update-policy.mjs`).href);
+            // A PR introducing this helper still checks out the trusted OLD main.
+            // Its bootstrap fallback retains every gate and fails closed on an API error.
+            const retryPath = `${root}/scripts/github-read-retry.mjs`;
+            const read = require('node:fs').existsSync(retryPath)
+              ? (await import(pathToFileURL(retryPath).href)).retryGitHubRead
+              : async (operation) => operation();
             const { owner, repo } = context.repo;
             const number = context.payload.pull_request.number;
             const head = context.payload.pull_request.head.sha;
             const params = { owner, repo };
             const getPr = async () => {
-              const { data: pr } = await github.rest.pulls.get({ ...params, pull_number: number });
+              const { data: pr } = await read(()=>github.rest.pulls.get({ ...params, pull_number: number }));
               if (pr.state !== 'open' || pr.base.ref !== 'main' || pr.head.sha !== head || pr.head.repo?.full_name !== `${owner}/${repo}`) {
                 throw new Error('PR closed, foreign, or HEAD changed; no inherited gate');
               }
               return pr;
             };
             const pr = await getPr();
-            const files = await github.paginate(github.rest.pulls.listFiles, { ...params, pull_number: number, per_page: 100 });
+            const files = await read(()=>github.paginate(github.rest.pulls.listFiles, { ...params, pull_number: number, per_page: 100 }));
             if (!files.length || files.length >= 3000) throw new Error('Incomplete PR file coverage');
-            if (pr.user.login !== owner && !await validateBotPr(github, owner, repo, pr, files)) throw new Error('Untrusted PR origin');
+            if (pr.user.login !== owner && !await read(()=>validateBotPr(github, owner, repo, pr, files))) throw new Error('Untrusted PR origin');
             const names = requiredChecks(files.map((file) => file.filename));
             const deadline = Date.now() + 125 * 60 * 1000;
             let previous;
             for (;;) {
               await getPr();
-              const checks = await github.paginate(github.rest.checks.listForRef, { ...params, ref: head, filter: 'latest', per_page: 100 });
+              const checks = await read(()=>github.paginate(github.rest.checks.listForRef, { ...params, ref: head, filter: 'latest', per_page: 100 }));
               const result = evaluateChecks(names, trustedChecks(checks, head));
               if (result.failed.length) throw new Error(`Required checks failed: ${result.failed.join(', ')}`);
               if (result.ready) {
