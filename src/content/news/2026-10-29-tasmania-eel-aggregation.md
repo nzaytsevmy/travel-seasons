@@ -21,8 +21,8 @@ imageCredit: "Gary Houston"
 imageLicense: "CC0"
 imageLicenseUrl: "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
 imageSource: "https://commons.wikimedia.org/wiki/File:Coast_at_Bicheno_Tasmania_20190725-017.jpg"
-imageTitle: "Coast at Bicheno Tasmania 20190725-017 — архивный берег Тасмании, не исследованный участок дна"
-imageChanges: "Уменьшение до 1600 px и сжатие JPEG."
+imageTitle: "Берег у Бичено на Тасмании, 2019 год. Архивная иллюстрация места, без подводного скопления угрей."
+imageChanges: "Исходное название работы: Coast at Bicheno Tasmania 20190725-017.jpg. Уменьшение до 1600 px и сжатие JPEG."
 ---
 
 У подводной горы **Пейшенс**, к югу от Тасмании, скопление глубоководных угрей *Diastobranchus capensis* может насчитывать **до 2,8 миллиона особей**. Гора находится в морском парке Хьюон: её вершина скрыта на глубине 857 метров.
