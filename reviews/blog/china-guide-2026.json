@@ -6,7 +6,7 @@
   "reviewScope": "LINK_DELTA_ONLY; no fresh review of inherited old facts, prices, visa rules, experience or images",
   "status": "pass_delta",
   "proseHash": "91ad6c370a6152b8",
-  "sourceSha256": "017cb9ae897c25032157cb271f7db7d5e96d64a3ce4973136711a2dbecc9642c",
+  "sourceSha256": "90e7946d48fcce1a6fdf15ff824f76e53b7264e9f3edc0ae677caea5755d8a23",
   "baselineProseHash": "010e4744395fbdf5",
   "evidence": {
     "delta": "Добавлена одна тематическая внутренняя ссылка на /blog/peresadka-v-shankhae/; внесена minor-запись checks от 17.09.2026. Заголовок, описание, прежние числовые и визовые утверждения не изменены.",
@@ -99,5 +99,19 @@
     "inheritedScoreStatus": "No prior qualityScore, none invented",
     "preExistingHashGap": "Старый review JSON не совпадал даже с HEAD до сегодняшней вставки. Это исторический разрыв цепочки; новая дельта не объявляется проверкой всех промежуточных правок.",
     "targetDeltaNote": "Самостоятельный официальный билетный переход Мутяньюй после первой оценки прочитан адресно; назначение входящей ссылки и смысл прежнего контекста не меняются."
+  },
+  "metadataUrlCorrectionReview": {
+    "reviewer": "Codex (news_review_20261029)",
+    "reviewerTask": "/root/news_review_20261029",
+    "reviewedAt": "2026-10-29T12:58:16.349Z",
+    "baselineCommit": "be068946986eb220f429c98b0534d64f66e5dfc4",
+    "verdict": "PASS",
+    "scope": "LINK_DELTA_ONLY; checks.0.sources.0.url metadata correction only",
+    "finding": "Единственная замена relative /blog/mutyanyuy/ на абсолютный https://traveltribe.ru/blog/mutyanyuy/ соответствует z.string().url() в config.ts:81. Ровно эта замена воспроизведена сравнением полных MDX; проза, title, description, даты и оценки не менялись.",
+    "validation": "Direct z.string().url().safeParse absoluteURL PASS; fullCI not executed by reviewer.",
+    "previousSourceSha256": "017cb9ae897c25032157cb271f7db7d5e96d64a3ce4973136711a2dbecc9642c",
+    "currentSourceSha256": "90e7946d48fcce1a6fdf15ff824f76e53b7264e9f3edc0ae677caea5755d8a23",
+    "proseHashUnchanged": true,
+    "limitations": "Прежние disclosed hash gaps, LINK_DELTA_ONLY и все исторические ограничения сохранены. Не новое ревью старых фактов и не PASS CI/deploy/live."
   }
 }
