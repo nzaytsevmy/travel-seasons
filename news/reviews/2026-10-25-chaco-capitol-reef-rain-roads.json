@@ -2,46 +2,55 @@
   "schemaVersion": 2,
   "slug": "2026-10-25-chaco-capitol-reef-rain-roads",
   "score": 4,
-  "reviewer": "Codex (news_final_review_20261025)",
-  "reviewerTask": "/root/news_final_review_20261025",
-  "authoredBy": "Codex (tt-author-20261025)",
-  "reviewedAt": "2026-10-25T10:26:34.719Z",
-  "checkedAt": "2026-10-25",
+  "reviewer": "Codex (news_review_20261029)",
+  "reviewerTask": "/root/news_review_20261029",
+  "authoredBy": "Codex (tt-author-20261029)",
+  "reviewedAt": "2026-10-29T11:02:49.828Z",
+  "checkedAt": "2026-10-29",
   "approved": true,
   "approvalScope": "EDITORIAL_ONLY",
   "editorialVerdict": "PASS",
   "releaseApproved": false,
   "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
-  "classification": "NEW",
-  "baseCommit": "1ba7e0ee41ff98536162f7419c97f3c54d1c8936",
-  "rationale": "4: обе дороги вChaco непроходимы, старая южная инструкция ошибочна для текущего визита; отдельные ограниченияCapitolReef не обобщены.",
-  "ownAddition": "Сопоставлен свежий alertChaco со старой справкой и другим режимомCapitolReef.",
-  "factReview": "Полный NPS Chaco liveAX25Oct: danger alert24Oct bothroads impassable, postponevisit, more rainforecast; старый южный подъезд superseded. CapitolReef liveweb25Oct таблица24Oct: ScenicDrive доGrandWash открыта, далееclosed;GrandWash/CapitolGorgeclosed;Waterpocket/CathedralValleyunknownlikelyimpassable. Нет закрытия всех парков.",
+  "classification": "UPDATE",
+  "baseCommit": "e4817ae6ccef4a65cd278bd151293f40a940abf3",
+  "rationale": "Исправлены различающиеся состояния двух парков: опасный южный въездЧако и доступные дорогиКапитол-Риф. Это меняет решение о маршруте. После полного чтения research/news-20261029/updates-google-comparison.md и адресной проверки финальной дельты обязательное сравнение признано достаточным: пять различных основных текстов, исключения и исторический контекст раскрыты. Первоначальный HOLD исследования снят только с этой редакции. Дополнение об обычном северном подъезде через US550 не объявляет его доступным: повреждение и непроходимость подтверждены ранее лично прочитанным живым алертом и статичным контекстом NPS. Старый путеводитель не отменяет ограничение; статусы двух парков остаются раздельными.",
+  "ownAddition": "Сопоставлено динамическое предупреждение со старой справкой и отдельно с дорожной таблицей другого парка; рекомендация отложитьЧако сохранена.",
+  "factReview": "Лично прочитан IAB алертЧако 28Oct: north impassable;south extremelyslick/deepmud;highclearance4WD/опыт;postpone. NPSCapitolReef live27Oct:ScenicDrive/GrandWash2WD,CapitolGorge/PleasantCreekClosed;другиегрязь/unknown. СтатичныйЧако не использован для вывода об открытии.",
   "sourceChecks": [
     {
+      "name": "NPS — живое предупреждение Чако Road conditions 10/28/26, прочитано в браузере 29.10",
       "url": "https://www.nps.gov/chcu/planyourvisit/conditions.htm",
-      "name": "NPS — действующее предупреждение Чако от 24.10.2026, прочитано в браузере 25.10",
-      "method": "Самостоятельное чтение полного AX динамического действующего предупреждения, сохранённого корнем25Oct; не старого статичного HTTPтекста.",
-      "archive": ".run/20261025/chaco-live-alert25.txt",
-      "archiveSha256": "57d9b9d9076a5ce968e0dff64f2af59a7706caac5dc5ba5812290ec5a889606f",
-      "status": "FULL_DYNAMIC_ALERT_TEXT_CHECKED",
-      "finding": "Полный NPS Chaco liveAX25Oct: danger alert24Oct bothroads impassable, postponevisit, more rainforecast; старый южный подъезд superseded. CapitolReef liveweb25Oct таблица24Oct: ScenicDrive доGrandWash открыта, далееclosed;GrandWash/CapitolGorgeclosed;Waterpocket/CathedralValleyunknownlikelyimpassable. Нет закрытия всех парков."
+      "method": "Independent live IAB AX read29Oct;full dynamic alert28Oct",
+      "archive": ".run/due-20261029/chaco-browser.txt",
+      "archiveSha256": "939efa077b5db7dee71e65760dd7d5e0efdaaf61f4bd09354335c7dca5a18b45",
+      "status": "CHECKED"
     },
     {
+      "name": "NPS — дороги Капитол-Риф, сводка 27.10.2026, прочитана 29.10",
       "url": "https://www.nps.gov/care/planyourvisit/conditions.htm",
-      "name": "NPS — дороги Капитол-Риф, сводка 24.10.2026",
-      "method": "Независимое чтение полного сохранённого текста либо live web open; HTTP200 сам по себе не считался проверкой.",
-      "archive": null,
-      "archiveSha256": null,
-      "status": "LIVE_OR_PARENT_BROWSER_ARCHIVE_CHECKED",
-      "finding": "Полный NPS Chaco liveAX25Oct: danger alert24Oct bothroads impassable, postponevisit, more rainforecast; старый южный подъезд superseded. CapitolReef liveweb25Oct таблица24Oct: ScenicDrive доGrandWash открыта, далееclosed;GrandWash/CapitolGorgeclosed;Waterpocket/CathedralValleyunknownlikelyimpassable. Нет закрытия всех парков."
+      "method": "Independent full source text reading/live web",
+      "archive": ".run/due-20261029/444fbf915a2d6df9.txt",
+      "archiveSha256": "fd2d25d803fe362e794df89a168f238ea540632b6d84f5688d7962b85d64a42b",
+      "status": "CHECKED"
+    },
+    {
+      "name": "NPS — Directions Chaco",
+      "url": "https://www.nps.gov/chcu/planyourvisit/directions.htm",
+      "status": "PASS_INDEPENDENT_PRIMARY_READ",
+      "reviewedAt": "2026-10-29",
+      "method": "Самостоятельное web-чтение точного URL; раздел By Car/From the North",
+      "finding": "Directions прямо предупреждает о непроходимом северном въезде и повреждении CR7950; раздел From the North называет US550/CR7900. Это основание номера550, не разрешение проезда. Last updated3Oct; текущий28Octalert по-прежнему проверяется отдельно."
     }
   ],
-  "contentHash": "0d326c60da90f2a5e66248cdbc13b33d515639d25295ad8106706e6bc1346291",
+  "contentHash": "aa54dab97b0f54347153457af18929834565f7e2fe62c04159d79615a6704c02",
   "contentHashScope": "SHA256 JSON.stringify({title,tldr,body:body.trim()}) штатного parseNote",
-  "sourceSha256": "644b69abb89d0086b1587e252cc9615051a0d8ee879ce5747f6eb527c07c0df2",
-  "sourceSha256Scope": "Полный markdown; при изменении metadata/score перепривязать после проверки.",
-  "actualClipTitle": "В Чако не проехать, в Капитол-Риф закрыта часть дорог",
+  "sourceSha256": "bf6922b22768e502fa50552f763f20e517c6c35158b48f9bccde319977f9c418",
+  "sourceSha256Scope": "Полный markdown точной прочитанной версии",
+  "actualClipTitle": "Чако: сложный южный въезд; Капитол-Риф открыл Grand Wash",
+  "tldrCheck": {
+    "ok": true
+  },
   "photoProof": {
     "image": "./_images/2026-10-25-chaco-capitol-reef-rain-roads.jpg",
     "imageSha256": "44097b41d14f1c860d6a52be331f321ee1e0198ad20c4dbc419448dc58f88806",
@@ -50,26 +59,96 @@
     "licenseURL": "https://creativecommons.org/licenses/by-sa/3.0/",
     "source": "https://commons.wikimedia.org/w/index.php?curid=43114450",
     "title": "Древний комплекс в Чако-Калчер. Архивный вид памятника, не состояние дорог после дождей.",
-    "alt": "Каменные стены древнего комплекса в Чако-Калчер",
     "changes": "Подготовлена JPEG-копия шириной до 1600 px.",
-    "viewedByThisReviewer": true,
-    "visualReview": "Финальный JPEG независимо просмотрен: соответствует описательной задаче, узнаваемых посторонних лиц нет. Архивный кадр не выдаётся за событие. Метаданные автора/лицензии сохранены, публичная legal/photos и адаптив402/1280 ожидают проверки.",
-    "provenanceMethod": "Commonsprimarydescriptionпрочитанаlive:PuebloBonito,19July2005,StevenPrice,CCBYSA3;точнаявизуальнаяидентификациякомплексасомнительна,безопасныйaltрекомендован.",
-    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+    "viewedByThisReviewer": false,
+    "provenanceMethod": "Unchanged JPEG SHA256 matches prior25Oct review; prior proof reused. No new full Commons reading claimed.",
+    "priorImageHashMatched": true,
+    "publicAttribution": "PENDING_BUILD_AND_LIVE"
   },
-  "research": {
-    "artifact": "work/google-new-comparison25.md",
-    "artifactSha256": "b061a156002c80c73737b7f07d093a6c4cf6b83dbbdd31e7d0a0eaa67d62e2f3",
-    "sequencingDefect": "Первые черновики до обязательногоGoogleисследования; не считать ретроспективно выполненным порядком.",
-    "snippetsOrAIAnswersCountedAsMainText": false,
-    "mainTextsReadBy": "Матрица прочитана этим рецензентом полностью; первичные факты и финальные дельты перечитаны независимо. Автор чтений основных сравнительных текстов указан в самой матрице."
-  },
-  "internalLinkChecks": [
+  "qualityCriteria": [
     {
-      "url": "/usa/",
-      "status": 200,
-      "final": "https://traveltribe.ru/usa/",
-      "h1": "США  2026"
+      "id": 1,
+      "criterion": "Задача читателя",
+      "score": 10,
+      "evidence": "Один вопрос читается в заголовке и капсуле; текст полностью прочитан."
+    },
+    {
+      "id": 2,
+      "criterion": "Обоснование темы",
+      "score": 5,
+      "evidence": "Пять основных текстов различных сайтов до окончательной редакции представлены в research/news-20261029/updates-google-comparison.md и матрица полностью прочитана рецензентом. История первого черновика до исследования раскрыта; поэтому не выставляется 10 за безупречный процесс. Исследовательский пробел финальной редакции закрыт."
+    },
+    {
+      "id": 3,
+      "criterion": "Место в проекте",
+      "score": 5,
+      "evidence": "Существующий URL обновлений сохранён; тематическая внутренняя связь есть. Полный аудит входящих связей/дублей не выполнен."
+    },
+    {
+      "id": 4,
+      "criterion": "Полнота и прямой ответ",
+      "score": 10,
+      "evidence": "checkTldr PASS. Прямой статус, условия и ограничение ответа даны в начале; для Bogor неизвестны открываемые зоны/вход."
+    },
+    {
+      "id": 5,
+      "criterion": "Собственный вклад",
+      "score": 5,
+      "evidence": "Сопоставлено динамическое предупреждение со старой справкой и отдельно с дорожной таблицей другого парка; рекомендация отложитьЧако сохранена. Редакторское объяснение, не полевое исследование."
+    },
+    {
+      "id": 6,
+      "criterion": "Факты и источники",
+      "score": 10,
+      "evidence": "Все существенные тезисы сверены по точным источникам:см.factReview/sourceChecks. Новая адресная дельта сопоставлена с уже прочитанными первичными подтверждениями: Дополнение об обычном северном подъезде через US550 не объявляет его доступным: повреждение и непроходимость подтверждены ранее лично прочитанным живым алертом и статичным контекстом NPS. Старый путеводитель не отменяет ограничение; статусы двух парков остаются раздельными."
+    },
+    {
+      "id": 7,
+      "criterion": "Числа и примеры",
+      "score": 10,
+      "evidence": "Даты, периоды, диапазоны и единицы сверены; дляКилауэа 03:19–09:03≈5,7 ч. Денежных расчётов нет."
+    },
+    {
+      "id": 8,
+      "criterion": "Исключения и применимость",
+      "score": 10,
+      "evidence": "Прогноз/анонс не выданы за событие; нерест за доказанный факт; открытый соседний участок за доступ ко всему маршруту."
+    },
+    {
+      "id": 9,
+      "criterion": "Авторство и доверие",
+      "score": 5,
+      "evidence": "Codex-автор и независимый Codex-рецензент различны. Личного опыта не выдумано; публичный byline/JSON-LD ожидают рендера."
+    },
+    {
+      "id": 10,
+      "criterion": "Редактура и естественный язык",
+      "score": 10,
+      "evidence": "Фактический и смысловой проход выполнены. Одна мысль, конкретные ограничения, без рекламной пышности и технического мусора."
+    },
+    {
+      "id": 11,
+      "criterion": "SEO-обещание и метаданные",
+      "score": 5,
+      "evidence": "Фактический clipTitle прочитан отдельно, мысль закончена. Canonical/OG/SSR финальной версии не проверены."
+    },
+    {
+      "id": 12,
+      "criterion": "Ссылки и навигация",
+      "score": 5,
+      "evidence": "Буквальные внутренние ссылки лично проверены HTTP200/H1; содержание соответствует анкорам. Входящие связи/финальная сборка не приняты."
+    },
+    {
+      "id": 13,
+      "criterion": "Оформление и доступность",
+      "score": 5,
+      "evidence": "Новые JPEG просмотрены, лицензии сверены; неизменные фото связаны с прежними SHA256. Рендер 402/1280 и публичная атрибуция ожидают проверки."
+    },
+    {
+      "id": 14,
+      "criterion": "Готовность выпуска",
+      "score": 0,
+      "evidence": "Редакторский PASS после исследования и финальной дельты; полный финальный CI,exactdeploy/live,SSR/sitemap/feed и публичнаяатрибуция не приняты. ReleaseHOLD."
     }
   ],
   "criteria14": [
@@ -77,94 +156,151 @@
       "id": 1,
       "criterion": "Задача читателя",
       "score": 10,
-      "evidence": "Главная задача и прямой ответ читаются в title/TLDR/body: В Чако не проехать, в Капитол-Риф закрыта часть дорог."
+      "evidence": "Один вопрос читается в заголовке и капсуле; текст полностью прочитан."
     },
     {
       "id": 2,
       "criterion": "Обоснование темы",
       "score": 5,
-      "evidence": "4: обе дороги вChaco непроходимы, старая южная инструкция ошибочна для текущего визита; отдельные ограниченияCapitolReef не обобщены. Матрицаwork/google-new-comparison25.mdпрочитана до окончательного одобрения; исходная последовательность draft-before-research остаётся раскрытым дефектом."
+      "evidence": "Пять основных текстов различных сайтов до окончательной редакции представлены в research/news-20261029/updates-google-comparison.md и матрица полностью прочитана рецензентом. История первого черновика до исследования раскрыта; поэтому не выставляется 10 за безупречный процесс. Исследовательский пробел финальной редакции закрыт."
     },
     {
       "id": 3,
       "criterion": "Место в проекте",
       "score": 5,
-      "evidence": "Связи с существующим направлением есть, исторические URL обновлений сохранены. Полный аудит входящих связей и каннибализации не выполнен."
+      "evidence": "Существующий URL обновлений сохранён; тематическая внутренняя связь есть. Полный аудит входящих связей/дублей не выполнен."
     },
     {
       "id": 4,
       "criterion": "Полнота и прямой ответ",
       "score": 10,
-      "evidence": "Весь текст прочитан. Штатный checkTldr=PASS; конкретный статус/ограничения в начале. Сопоставлен свежий alertChaco со старой справкой и другим режимомCapitolReef."
+      "evidence": "checkTldr PASS. Прямой статус, условия и ограничение ответа даны в начале; для Bogor неизвестны открываемые зоны/вход."
     },
     {
       "id": 5,
       "criterion": "Собственный вклад",
       "score": 5,
-      "evidence": "Сопоставлен свежий alertChaco со старой справкой и другим режимомCapitolReef. Это редакционное объяснение и сопоставление; собственного полевого исследования нет."
+      "evidence": "Сопоставлено динамическое предупреждение со старой справкой и отдельно с дорожной таблицей другого парка; рекомендация отложитьЧако сохранена. Редакторское объяснение, не полевое исследование."
     },
     {
       "id": 6,
       "criterion": "Факты и источники",
       "score": 10,
-      "evidence": "Полный NPS Chaco liveAX25Oct: danger alert24Oct bothroads impassable, postponevisit, more rainforecast; старый южный подъезд superseded. CapitolReef liveweb25Oct таблица24Oct: ScenicDrive доGrandWash открыта, далееclosed;GrandWash/CapitolGorgeclosed;Waterpocket/CathedralValleyunknownlikelyimpassable. Нет закрытия всех парков."
+      "evidence": "Все существенные тезисы сверены по точным источникам:см.factReview/sourceChecks. Новая адресная дельта сопоставлена с уже прочитанными первичными подтверждениями: Дополнение об обычном северном подъезде через US550 не объявляет его доступным: повреждение и непроходимость подтверждены ранее лично прочитанным живым алертом и статичным контекстом NPS. Старый путеводитель не отменяет ограничение; статусы двух парков остаются раздельными."
     },
     {
       "id": 7,
       "criterion": "Числа и примеры",
       "score": 10,
-      "evidence": "Полный NPS Chaco liveAX25Oct: danger alert24Oct bothroads impassable, postponevisit, more rainforecast; старый южный подъезд superseded. CapitolReef liveweb25Oct таблица24Oct: ScenicDrive доGrandWash открыта, далееclosed;GrandWash/CapitolGorgeclosed;Waterpocket/CathedralValleyunknownlikelyimpassable. Нет закрытия всех парков. Числа сверены; денежных расчётов нет."
+      "evidence": "Даты, периоды, диапазоны и единицы сверены; дляКилауэа 03:19–09:03≈5,7 ч. Денежных расчётов нет."
     },
     {
       "id": 8,
       "criterion": "Исключения и применимость",
       "score": 10,
-      "evidence": "Полный NPS Chaco liveAX25Oct: danger alert24Oct bothroads impassable, postponevisit, more rainforecast; старый южный подъезд superseded. CapitolReef liveweb25Oct таблица24Oct: ScenicDrive доGrandWash открыта, далееclosed;GrandWash/CapitolGorgeclosed;Waterpocket/CathedralValleyunknownlikelyimpassable. Нет закрытия всех парков. Сфера применения/неизвестное явно ограничены."
+      "evidence": "Прогноз/анонс не выданы за событие; нерест за доказанный факт; открытый соседний участок за доступ ко всему маршруту."
     },
     {
       "id": 9,
       "criterion": "Авторство и доверие",
       "score": 5,
-      "evidence": "Автор Codex(tt-author-20261025), рецензент другойCodex. Вымышленного личного опыта нет. Публичный byline/JSON-LD финального рендера ожидают проверки."
+      "evidence": "Codex-автор и независимый Codex-рецензент различны. Личного опыта не выдумано; публичный byline/JSON-LD ожидают рендера."
     },
     {
       "id": 10,
       "criterion": "Редактура и естественный язык",
       "score": 10,
-      "evidence": "Полный фактический и смысловой проходы выполнены; финальные изменения перечитаны. Семь запрещённых употреблений «уже» исправлены и повторно проверены на всех 11 заметках. Нет вымышленного личного опыта; человеческого читательского теста не было."
+      "evidence": "Фактический и смысловой проход выполнены. Одна мысль, конкретные ограничения, без рекламной пышности и технического мусора."
     },
     {
       "id": 11,
       "criterion": "SEO-обещание и метаданные",
       "score": 5,
-      "evidence": "Штатный clipTitle: «В Чако не проехать, в Капитол-Риф закрыта часть дорог». SEOобещание соответствует тексту; canonical/OG/SSR финальной версии ещё не проверены."
+      "evidence": "Фактический clipTitle прочитан отдельно, мысль закончена. Canonical/OG/SSR финальной версии не проверены."
     },
     {
       "id": 12,
       "criterion": "Ссылки и навигация",
       "score": 5,
-      "evidence": "Буквальные внутренние ссылки проверены HTTP в этой сессии; направленность соответствует тексту. Финальный build/deploy и входящие связи не проверены."
+      "evidence": "Буквальные внутренние ссылки лично проверены HTTP200/H1; содержание соответствует анкорам. Входящие связи/финальная сборка не приняты."
     },
     {
       "id": 13,
       "criterion": "Оформление и доступность",
       "score": 5,
-      "evidence": "Финальный JPEG независимо просмотрен: соответствует описательной задаче, узнаваемых посторонних лиц нет. Архивный кадр не выдаётся за событие. Метаданные автора/лицензии сохранены, публичная legal/photos и адаптив402/1280 ожидают проверки."
+      "evidence": "Новые JPEG просмотрены, лицензии сверены; неизменные фото связаны с прежними SHA256. Рендер 402/1280 и публичная атрибуция ожидают проверки."
     },
     {
       "id": 14,
       "criterion": "Готовность выпуска",
       "score": 0,
-      "evidence": "Обязательный CI, точный deploy, live402/1280/SSR/sitemap/feed не проверены этим редактором. ReleaseHOLD, измеренный эффект неизвестен."
+      "evidence": "Редакторский PASS после исследования и финальной дельты; полный финальный CI,exactdeploy/live,SSR/sitemap/feed и публичнаяатрибуция не приняты. ReleaseHOLD."
     }
   ],
   "minimumFiveVerifiedTens": true,
   "blockingIssues": [],
-  "limitations": [
-    "Независимое модельное ревью; реального читательского теста нет.",
-    "Полный CI/deploy/live и публичная атрибуция ещё не приняты.",
-    "Ранжирование, трафик, дочитывание и доход не измерены.",
-    "Повторное fullCommonsprovenance для неизменных кадров не подтверждено этим редактором."
+  "processBlockingIssues": [
+    "Полные обязательные CI, exact deploy и live ещё не приняты."
   ],
-  "nextReview": "2026-10-27"
+  "limitations": [
+    "Первый черновик до обязательного Google сравнения; окончательная редакция проверена после завершения матриц.",
+    "Сравнительные тексты прочитал автор. Рецензент не выдаёт проверку матрицы за новое личное чтение всех этих сайтов.",
+    "Исторический/чужой опыт сравнительных материалов не присвоен автору и не выдан за текущие дорожные/вулканические условия.",
+    "Рендер 402/1280,полный CI/exactdeploy/live и измеренный эффект ещё не приняты."
+  ],
+  "nextReview": "2026-11-01",
+  "textVerdict": "PASS",
+  "researchApplicability": {
+    "assessedAt": "2026-10-29T10:57:34.083Z",
+    "rule": "QUALITY-2026 §12: перед написанием каждой статьи и её содержательной переработкой — пять релевантных сайтов из Google, основные тексты. CLAUDE.md различает небольшую дату/цену/опечатку и переработку.",
+    "required": true,
+    "bodyWordsAdded": 135,
+    "bodyWordsChanged": 181,
+    "titleChanged": true,
+    "tldrWordsAdded": 41,
+    "tldrWordsChanged": 42,
+    "publicProseWordsAdded": 173,
+    "articleHelperKind": "rework",
+    "helperCaveat": "edit-kind.mjs предназначен для статей и не включает news.tldr; его small сам по себе не доказывает малость всей новости.",
+    "reason": "Изменены title, капсула и большая часть тела; ответ о закрытии/доступности дорог существенно переосмыслен. Это переработка по смыслу и штатному article-helper, не небольшое фактическое исправление.",
+    "minorExceptionBoundary": "Точная замена даты/числа/опечатки без переработки ответа могла бы быть minor и не требовать пяти сравнений. Это не описание текущей дельты. Уменьшение scope ради формального PASS не выполнялось.",
+    "verdict": "SATISFIED_AFTER_RESEARCH_AND_FINAL_DELTA_REVIEW",
+    "requirementSatisfiedForFinalRevision": true,
+    "satisfactionEvidence": "research/news-20261029/updates-google-comparison.md",
+    "priorVerdict": "HOLD_UNTIL_GOOGLE_COMPARISON_AND_FINAL_TEXT_CHECK"
+  },
+  "research": {
+    "artifact": "research/news-20261029/updates-google-comparison.md",
+    "artifactSha256": "e10979e190d021e4086891b0aa6d19eacf5eb5b9c8c723bee9f1ac9f834d00a0",
+    "reviewerReadEntireMatrix": true,
+    "acceptedFiveDistinctSites": [
+      "nps.gov (both parks counted once)",
+      "okienomads.com",
+      "farmingtonnm.org",
+      "visitutah.com (MelissaFields original)",
+      "greatamericanhikes.com"
+    ],
+    "reportedMainTextsReadBy": "Автор; рецензент прочитал всю матрицу, независимо проверял первичные факты ранее и адресно оценил финальные дельты. Повторное самостоятельное чтение рецензентом всех 15 сравнительных текстов не заявлено.",
+    "googleMethod": "Исходные IABGoogle срезы, дополнительный web поиск и последующие Google уточнения с site: раскрыты отдельно; обычный web поиск не выдан за Google, доменные уточнения — за естественный топ.",
+    "exclusions": "NPS двухпарков одинсайт;AOL/KHON одинматериал;перепечатки/Recreation/видео/частичные или неоткрытые гайды не засчитаны.",
+    "sequencingDefect": "Первоначальная переработка была написана до обязательного сравнения и оставалась HOLD. Матрица завершена, затем финальный ответ адресно сопоставлен и изменён; ранняя неправильная последовательность не объявлена выполненным правилом.",
+    "finalComparison": "Дополнение об обычном северном подъезде через US550 не объявляет его доступным: повреждение и непроходимость подтверждены ранее лично прочитанным живым алертом и статичным контекстом NPS. Старый путеводитель не отменяет ограничение; статусы двух парков остаются раздельными."
+  },
+  "finalDeltaReview": {
+    "previous": {
+      "contentHash": "5b0a11c2e82648150940c6386085b501429693dcbce7cc22c356194c5535f217",
+      "sourceSha256": "4938dd73ac0b8bc8fab734ad42e7b0fd89410bc46ef090aab44e8aa8595bd4a1",
+      "editorialVerdict": "HOLD_PENDING_REQUIRED_RESEARCH"
+    },
+    "delta": "Дополнение об обычном северном подъезде через US550 не объявляет его доступным: повреждение и непроходимость подтверждены ранее лично прочитанным живым алертом и статичным контекстом NPS. Старый путеводитель не отменяет ограничение; статусы двух парков остаются раздельными.",
+    "unchangedEvidenceReused": "Ранее проверенные первички, исходные лицензии/хеши неизменных JPEG и буквальные внутренние HTTP ссылки. Новая полная визуальная или live проверка не заявлена."
+  },
+  "verifiedTensCount": 6,
+  "sourceAdditionReview": {
+    "reviewedAt": "2026-10-29T11:23:12.998Z",
+    "scope": "ADDED_PRIMARY_SOURCE_ONLY",
+    "contentHashUnchanged": true,
+    "finding": "Третья первичка обосновывает существующее US550 и повреждение северного въезда; тело/TLDR не менялись.",
+    "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE"
+  }
 }
