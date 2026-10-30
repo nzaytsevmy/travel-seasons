@@ -2,57 +2,60 @@
   "schemaVersion": 2,
   "slug": "2026-10-06-yosemite-dome-fire-access",
   "score": 4,
-  "reviewer": "Codex (news_review_20261024)",
-  "reviewerTask": "/root/news_review_20261024",
-  "authoredBy": "Codex (tt-author-20261024)",
-  "reviewedAt": "2026-10-24T07:40:08.034Z",
-  "checkedAt": "2026-10-24",
+  "reviewer": "Codex (facts_review_20261030)",
+  "reviewerTask": "/root/facts_review_20261030",
+  "authoredBy": "Codex (tt-author-20261030)",
+  "reviewedAt": "2026-10-30T09:23:13.326Z",
+  "checkedAt": "2026-10-30",
   "approved": true,
-  "approvalScope": "EDITORIAL_ONLY",
-  "editorialVerdict": "PASS",
+  "approvalScope": "EDITORIAL_CONTENT_ONLY",
+  "editorialVerdict": "ACCEPT_WITH_DECLARED_LIMITS_AND_RELEASE_GATES_PENDING",
   "releaseApproved": false,
   "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
   "classification": "UPDATE",
-  "baseCommit": "68d20b27117f48158eaa111f0d1e4523597c3c5f",
-  "rationale": "Сопровождение прежнего сюжета полезно: открытая дорога отделена от доступности троп, ночной парковки и кемпингов. Старое утверждение о продолжающемся пожаре честно снято без объявления пожара потушенным.",
-  "ownAddition": "Разведены три независимых решения: доехать к смотровой, уйти в поход и оставить машину/найти ночёвку; исчезновение дорожной строки не названо пожарной сводкой.",
-  "factReview": "NPS conditions 23 октября: Glacier Point Road открыта, ночная парковка запрещена; Lower Pines закрыт, North Pines закрывается 26 октября. Самостоятельно открытая NPS restrictions.htm, редакция 3 августа 2026: запрет с 15 октября до весеннего открытия относится к участку Badger Pass–Glacier Point. Нынешнее состояние Dome Fire не установлено.",
+  "baseCommit": "620ba356dc8fabf6935448c6cb5d31d32f68b9da",
+  "previousReview": {
+    "artifact": "news/reviews/2026-10-06-yosemite-dome-fire-access.json",
+    "sha256": "61fa186b12cf3db522ba57b60dacf4085a90ad5bb3c56520433325a664aa7fb4",
+    "scope": "Прежняя рецензия заменена после независимого чтения финальной версии; прежние проверки неизменных фото сохраняются как прошлое доказательство."
+  },
+  "rationale": "4/5: новый снег меняет доступ к двум важным дорогам. Противоречие внутри таблицы NPS раскрыто; не сделано недоказанного вывода о текущем открытии, сезонном закрытии или завершении пожара. Адресная форматная правка телефона повторно принята: +1 (209) 372-0200 сохраняет номер NPS и меню 1,1; изменены только скобки кода города. Обратная замена полностью воспроизводит хеш ранее принятого файла.",
+  "readerTask": "Не поехать по старой новости об открытой Glacier Point Road во время нового предупреждения.",
+  "ownAddition": "Разведены объявленное временное закрытие, ошибочно сохранившаяся колонка Open, ночная парковка, кемпинг и состояние пожара.",
+  "factReview": "Самостоятельно прочитана NPS conditions, обновление 29 октября: временное закрытие Tioga и Glacier Point с 18:00 29 октября из-за прогноза снега; у Glacier Point остаётся Open; Lower Pines и North Pines закрыты; телефон с последовательностью 1,1 указан на странице.",
   "sourceChecks": [
     {
-      "url": "https://www.nps.gov/yose/planyourvisit/restrictions.htm",
       "name": "NPS — сезонный запрет ночной парковки от Badger Pass до Glacier Point",
-      "method": "Самостоятельное web open; историческая пожарная сводка служит только исторической датой, не текущим статусом.",
-      "archive": null,
-      "archiveSha256": null,
-      "status": "HISTORICAL_SCOPE_ONLY",
-      "finding": "NPS conditions 23 октября: Glacier Point Road открыта, ночная парковка запрещена; Lower Pines закрыт, North Pines закрывается 26 октября. Самостоятельно открытая NPS restrictions.htm, редакция 3 августа 2026: запрет с 15 октября до весеннего открытия относится к участку Badger Pass–Glacier Point. Нынешнее состояние Dome Fire не установлено."
+      "url": "https://www.nps.gov/yose/planyourvisit/restrictions.htm",
+      "method": "Independent reading of relevant saved source text and/or live web in this reviewer task",
+      "status": "READ_WITH_DECLARED_LIMITS",
+      "scope": "Основные развивающиеся факты сверены; исторические неизменные источники не засчитываются как новый текущий доступ. См. factReview."
     },
     {
+      "name": "NPS — дорожная сводка29.10, снежное закрытие29.10в18:00; прочитана30.10.2026",
       "url": "https://www.nps.gov/yose/planyourvisit/conditions.htm",
-      "name": "NPS — дорожная сводка 23 октября, прочитана 24 октября 2026",
-      "method": "Независимое чтение сохранённого основного текста; наличие файла или HTTP200 само по себе проверкой не считалось.",
-      "archive": ".run/20261024/sources/d3c698548239.txt",
-      "archiveSha256": "6427e6dcf056e5766038446b75561958f88ba1f18f666a2bc1b328b0dfd9fed3",
-      "status": "SUBSTANTIVE_TEXT_CHECKED",
-      "finding": "NPS conditions 23 октября: Glacier Point Road открыта, ночная парковка запрещена; Lower Pines закрыт, North Pines закрывается 26 октября. Самостоятельно открытая NPS restrictions.htm, редакция 3 августа 2026: запрет с 15 октября до весеннего открытия относится к участку Badger Pass–Glacier Point. Нынешнее состояние Dome Fire не установлено."
+      "method": "Independent reading of relevant saved source text and/or live web in this reviewer task",
+      "status": "READ_WITH_DECLARED_LIMITS",
+      "scope": "Основные развивающиеся факты сверены; исторические неизменные источники не засчитываются как новый текущий доступ. См. factReview."
     },
     {
-      "url": "https://www.nps.gov/yose/learn/news/dome-fire-update-october-6-2026-morning.htm",
       "name": "NPS — утренняя сводка Dome Fire 06.10.2026; проверено 09.10.2026",
-      "method": "Независимое чтение сохранённого основного текста; наличие файла или HTTP200 само по себе проверкой не считалось.",
-      "archive": ".run/20261024/sources/e691cfad1623.txt",
-      "archiveSha256": "a77c038333128b2c6c647164f2b94d2b35538b64274f956eb63b80253e750c8e",
-      "status": "SUBSTANTIVE_TEXT_CHECKED",
-      "finding": "NPS conditions 23 октября: Glacier Point Road открыта, ночная парковка запрещена; Lower Pines закрыт, North Pines закрывается 26 октября. Самостоятельно открытая NPS restrictions.htm, редакция 3 августа 2026: запрет с 15 октября до весеннего открытия относится к участку Badger Pass–Glacier Point. Нынешнее состояние Dome Fire не установлено."
+      "url": "https://www.nps.gov/yose/learn/news/dome-fire-update-october-6-2026-morning.htm",
+      "method": "Independent reading of relevant saved source text and/or live web in this reviewer task",
+      "status": "READ_WITH_DECLARED_LIMITS",
+      "scope": "Основные развивающиеся факты сверены; исторические неизменные источники не засчитываются как новый текущий доступ. См. factReview."
     }
   ],
-  "contentHash": "b5db942e2812098b75532969deaf078d34bc6ba823da98bbc7055f03323c45cc",
-  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из актуального штатного parseNote.",
-  "sourceSha256": "df63c252f5f3046e867d877f9c101474f14eb1b96526e605e7669bdca4f70db3",
-  "sourceSha256Scope": "SHA-256 полного Markdown включая frontmatter, точные bytes.",
-  "nativeClipTitle": "Йосемити: дорога к Глейшер-Пойнт снова открыта",
+  "contentHash": "2c048407ea1e432f9a67d1a3fc29bc3f2e01df3f10096b8d360590bfbc4e2df2",
+  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) from native parseNote",
+  "sourceSha256": "6fc1fe58643058ed8498b377ce6bfdd8f2a0a19929e7152a08de4e63a27d17fb",
+  "sourceSha256Scope": "Полный markdown точной финальной версии, включая метаданные",
+  "nativeClipTitle": "Йосемити объявил снежное закрытие двух дорог",
+  "actualClipTitle": "Йосемити объявил снежное закрытие двух дорог",
   "clipTitleCodeSha256": "5ed6e7f7f14da11ff29d5fd9d3ae13bd8fa9b073b4f01a73a88bf00effde2ebd",
-  "clipTitleCodeHashScope": "Полный src/data/news.js; вызвана неизменённая штатная clipTitle.",
+  "tldrCheck": {
+    "ok": true
+  },
   "photo": {
     "image": "./_images/2026-10-06-yosemite-dome-fire-access.jpg",
     "imageSha256": "b60cc67e738e52680b919c4fa63cc82bce32f49ee2927d99b62a908cf3173123",
@@ -63,169 +66,122 @@
     "title": "Glacier Point Road в Йосемити во время другого пожара, Empire Fire 2017 года",
     "alt": "Дорога Glacier Point Road и дым пожара Empire Fire в 2017 году; не пожар октября 2026 года",
     "changes": null,
-    "viewedByThisReviewer": true,
-    "visualReview": "Glacier Point Road справа, дым над лесом; подпись точно относит фото к EmpireFire2017, неDomeFire2026.",
-    "provenanceMethod": "Переиспользована ранее сохранённая первичная Commons API metadata неизменного кадра; новый визуальный просмотр выполнен, нового обращения к Commons API не было.",
-    "provenanceArchive": null,
-    "provenanceArchiveSha256": null,
-    "provenanceEvidence": {
-      "apiURL": "https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo&iiprop=url%7Cextmetadata&pageids=195776898%7C118265384%7C9998689%7C123743150%7C63394488%7C5704066%7C90056045%7C171000743%7C87531265%7C104893227%7C16120927%7C21022788%7C103042248%7C40845121%7C31646018%7C62482418%7C123908165%7C45307740%7C61772770%7C119638709%7C78730822",
-      "observedAt": "2026-10-16T13:50:55.692Z",
-      "pageid": 62482418,
-      "title": "File:2017 09 13-14.47.46.298-CDT.jpg",
-      "description": "Empire Fire from Glacier Point Road",
-      "creator": "Yosemite National Park National Park Service",
-      "license": "Public domain",
-      "licenseURL": null,
-      "date": "2017-09-13",
-      "credit": "https://inciweb.nwcg.gov/incident/photographs/5475/",
-      "source": "https://commons.wikimedia.org/wiki/File:2017_09_13-14.47.46.298-CDT.jpg"
-    },
-    "provenanceEvidenceSha256": "ccae6886cfcfe3e1621d7cc58d271f42c340645f4d01bfc9d72a7b6e06eea16e",
+    "viewedByThisReviewer": false,
+    "visualReview": "Неизменное изображение не пересматривалось; прежнее доказательство не выдано за новое.",
+    "provenanceMethod": "Preserved existing provenance; no new photograph.",
     "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
   },
-  "photoProof": {
-    "image": "./_images/2026-10-06-yosemite-dome-fire-access.jpg",
-    "imageSha256": "b60cc67e738e52680b919c4fa63cc82bce32f49ee2927d99b62a908cf3173123",
-    "creator": "Yosemite National Park / National Park Service",
-    "license": "Public domain",
-    "licenseURL": null,
-    "source": "https://commons.wikimedia.org/w/index.php?curid=62482418",
-    "title": "Glacier Point Road в Йосемити во время другого пожара, Empire Fire 2017 года",
-    "alt": "Дорога Glacier Point Road и дым пожара Empire Fire в 2017 году; не пожар октября 2026 года",
-    "changes": null,
-    "viewedByThisReviewer": true,
-    "visualReview": "Glacier Point Road справа, дым над лесом; подпись точно относит фото к EmpireFire2017, неDomeFire2026.",
-    "provenanceMethod": "Переиспользована ранее сохранённая первичная Commons API metadata неизменного кадра; новый визуальный просмотр выполнен, нового обращения к Commons API не было.",
-    "provenanceArchive": null,
-    "provenanceArchiveSha256": null,
-    "provenanceEvidence": {
-      "apiURL": "https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo&iiprop=url%7Cextmetadata&pageids=195776898%7C118265384%7C9998689%7C123743150%7C63394488%7C5704066%7C90056045%7C171000743%7C87531265%7C104893227%7C16120927%7C21022788%7C103042248%7C40845121%7C31646018%7C62482418%7C123908165%7C45307740%7C61772770%7C119638709%7C78730822",
-      "observedAt": "2026-10-16T13:50:55.692Z",
-      "pageid": 62482418,
-      "title": "File:2017 09 13-14.47.46.298-CDT.jpg",
-      "description": "Empire Fire from Glacier Point Road",
-      "creator": "Yosemite National Park National Park Service",
-      "license": "Public domain",
-      "licenseURL": null,
-      "date": "2017-09-13",
-      "credit": "https://inciweb.nwcg.gov/incident/photographs/5475/",
-      "source": "https://commons.wikimedia.org/wiki/File:2017_09_13-14.47.46.298-CDT.jpg"
-    },
-    "provenanceEvidenceSha256": "ccae6886cfcfe3e1621d7cc58d271f42c340645f4d01bfc9d72a7b6e06eea16e",
-    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
-  },
-  "research": {
-    "artifact": "work/google-yosemite-20261024.md",
-    "artifactSha256": "439c23039891340055e84cd5e2898f09cb4295daa5886623f180244f90dce024",
-    "mainTextsReadBy": "Указан в матрице: root и независимый Codex рецензент. Рецензент прочитал всю матрицу; лично перечитал primary факты и новые substantive deltas.",
-    "sequencingDefect": "Первичные черновики появились до обязательного Google-исследования. После обнаружения одобрение отложено, исследование выполнено, финальная редактура сопоставлена с матрицами. Дефект исходного порядка раскрыт.",
-    "snippetsOrAIAnswersCountedAsMainText": false
-  },
-  "internalLinkChecks": [
-    {
-      "url": "/usa/",
-      "status": 200,
-      "final": "https://traveltribe.ru/usa/",
-      "h1": "США 2026",
-      "localNew": false,
-      "interpretation": "Существующая страница, HTTP200 и соответствующий H1 проверены. Финальная изменённая версия ещё не опубликована."
-    }
-  ],
   "criteria14": [
     {
       "id": 1,
       "criterion": "Задача читателя",
       "score": 10,
-      "evidence": "Один центральный ответ: Йосемити: дорога к Глейшер-Пойнт снова открыта. Текущая сводка не называет день открытия дороги. Старая пожарная сводка не подтверждает нынешний огонь."
+      "evidence": "Не поехать по старой новости об открытой Glacier Point Road во время нового предупреждения."
     },
     {
       "id": 2,
       "criterion": "Обоснование темы",
-      "score": 5,
-      "evidence": "Сопровождение прежнего сюжета полезно: открытая дорога отделена от доступности троп, ночной парковки и кемпингов. Старое утверждение о продолжающемся пожаре честно снято без объявления пожара потушенным. Google-матрица work/google-yosemite-20261024.md прочитана до финального одобрения; первоначальные черновики появились до обязательного исследования. Этот дефект последовательности не объявлен выполненным требованием."
+      "score": 10,
+      "evidence": "Тема соответствует новостной рубрике; состоявшийся факт или существенная новая дельта. Прогноз поиска и дохода не присвоен."
     },
     {
       "id": 3,
       "criterion": "Место в проекте",
       "score": 5,
-      "evidence": "Новые темы ведут на существующие тематические страницы; обновления сохраняют исторические URL и различают происшествия. Всесторонний аудит входящих связей/каннибализации финальной сборки не выполнялся."
+      "evidence": "Релевантные внутренние переходы прочитаны; полная входящая структура и canonical финальной сборки ожидают проверки."
     },
     {
       "id": 4,
       "criterion": "Полнота и прямой ответ",
       "score": 10,
-      "evidence": "Весь title/TLDR/body прочитан, штатный checkTldr PASS. Текущая сводка не называет день открытия дороги. Старая пожарная сводка не подтверждает нынешний огонь."
+      "evidence": "Разведены объявленное временное закрытие, ошибочно сохранившаяся колонка Open, ночная парковка, кемпинг и состояние пожара. Прямой ответ и необходимые границы даны в капсуле и начале тела."
     },
     {
       "id": 5,
       "criterion": "Собственный вклад",
-      "score": 10,
-      "evidence": "Разведены три независимых решения: доехать к смотровой, уйти в поход и оставить машину/найти ночёвку; исчезновение дорожной строки не названо пожарной сводкой."
+      "score": 5,
+      "evidence": "Разведены объявленное временное закрытие, ошибочно сохранившаяся колонка Open, ночная парковка, кемпинг и состояние пожара. Собственного полевого исследования или измерения нет."
     },
     {
       "id": 6,
       "criterion": "Факты и источники",
       "score": 10,
-      "evidence": "NPS conditions 23 октября: Glacier Point Road открыта, ночная парковка запрещена; Lower Pines закрыт, North Pines закрывается 26 октября. Самостоятельно открытая NPS restrictions.htm, редакция 3 августа 2026: запрет с 15 октября до весеннего открытия относится к участку Badger Pass–Glacier Point. Нынешнее состояние Dome Fire не установлено."
+      "evidence": "Самостоятельно прочитана NPS conditions, обновление 29 октября: временное закрытие Tioga и Glacier Point с 18:00 29 октября из-за прогноза снега; у Glacier Point остаётся Open; Lower Pines и North Pines закрыты; телефон с последовательностью 1,1 указан на странице."
     },
     {
       "id": 7,
       "criterion": "Числа и примеры",
       "score": 10,
-      "evidence": "NPS conditions 23 октября: Glacier Point Road открыта, ночная парковка запрещена; Lower Pines закрыт, North Pines закрывается 26 октября. Самостоятельно открытая NPS restrictions.htm, редакция 3 августа 2026: запрет с 15 октября до весеннего открытия относится к участку Badger Pass–Glacier Point. Нынешнее состояние Dome Fire не установлено. Денежных расчётов или выдуманных количественных примеров нет."
+      "evidence": "Самостоятельно прочитана NPS conditions, обновление 29 октября: временное закрытие Tioga и Glacier Point с 18:00 29 октября из-за прогноза снега; у Glacier Point остаётся Open; Lower Pines и North Pines закрыты; телефон с последовательностью 1,1 указан на странице. Цифры, единицы, модель/наблюдение и план/состоявшееся различены."
     },
     {
       "id": 8,
       "criterion": "Исключения и применимость",
       "score": 10,
-      "evidence": "Текущая сводка не называет день открытия дороги. Старая пожарная сводка не подтверждает нынешний огонь. Пересмотр 2026-10-26."
+      "evidence": "Разведены объявленное временное закрытие, ошибочно сохранившаяся колонка Open, ночная парковка, кемпинг и состояние пожара. Существенные исключения и неизвестное обозначены явно."
     },
     {
       "id": 9,
       "criterion": "Авторство и доверие",
       "score": 5,
-      "evidence": "Автор Codex (tt-author-20261024); рецензент другой. Личный опыт не заявлен. Модельное ревью не названо человеческим/читательским тестом; публичный byline финальной версии ожидает проверки."
+      "evidence": "Автор в данных Codex (tt-author-20261030); независимый reviewer текст не писал. Публичный byline и SSR ожидают выпуска."
     },
     {
       "id": 10,
       "criterion": "Редактура и естественный язык",
       "score": 10,
-      "evidence": "Фактический и смысловой проходы полного текста выполнены. После конкретных замечаний перечитаны исправленные участки и зависимости. При первоначальном исследовательском пробеле одобрение было отложено; читательского теста не было."
+      "evidence": "Фактический и смысловой проходы завершены. Обычный русский; реальный читательский тест не проводился."
     },
     {
       "id": 11,
       "criterion": "SEO-обещание и метаданные",
       "score": 5,
-      "evidence": "Реальный штатный clipTitle: «Йосемити: дорога к Глейшер-Пойнт снова открыта» — смысл сохраняется. Даты события и добавления разведены. Canonical, H1/OG/description и SSR финальной сборки ещё не проверены."
+      "evidence": "Штатный clipTitle: «Йосемити объявил снежное закрытие двух дорог». Смысл завершён; OG/canonical/schema финальной сборки пока не проверены."
     },
     {
       "id": 12,
       "criterion": "Ссылки и навигация",
       "score": 5,
-      "evidence": "Все буквальные внутренние ссылки независимо проверены: .run/20261024/reviewer-links.json. Новый Death Valley имеет ожидаемый404 до выпуска и локальный исходник. Входящие связи и финальные URL/рендер требуют build/deploy/live."
+      "evidence": "Смысл внутренних ссылок проверен; ранний source-only PASS автора не заменяет итоговый HTTP и навигацию."
     },
     {
       "id": 13,
       "criterion": "Оформление и доступность",
       "score": 5,
-      "evidence": "Glacier Point Road справа, дым над лесом; подпись точно относит фото к EmpireFire2017, неDomeFire2026. Лицензия/происхождение сопоставлены с данными; финальный JPEG просмотрен. Адаптив402/1280 и публичная /legal/photos/ ещё не проверены."
+      "evidence": "Изображение не заменено; прежние сведения о происхождении и визуальной проверке не выданы за новое чтение. Уточнённая архивная/иллюстративная подпись честна. Рендер и публичная атрибуция ожидают выпуска."
     },
     {
       "id": 14,
       "criterion": "Готовность выпуска",
       "score": 0,
-      "evidence": "Обязательные build/CI/deploy/live, SSR/sitemap/feed и окончательная публичная атрибуция не выполнялись рецензентом. Выпуск HOLD; текстовая оценка не подтверждает production или измеренный эффект."
+      "evidence": "Это редакционный допуск точной версии. Финальные обязательные CI/build/browser/deploy/live/учёт не выполнены этим reviewer; выпуск не разрешён этой рецензией."
     }
   ],
+  "verifiedTens": 7,
   "minimumFiveVerifiedTens": true,
-  "blockingIssues": [],
-  "limitations": [
-    "Только независимое модельное редакционное ревью; теста с реальным читателем не было.",
-    "Начальная последовательность research-before-draft нарушена; матрицы завершены перед финальным редактированием и одобрением.",
-    "Реестр111кандидатов содержит HEADLINE_TRIAGE; не все111основныхтекстов прочитаны, идеальность отбора не доказана.",
-    "Полный CI/build/deploy/live и публичная атрибуция ожидают выпуска владельцем.",
-    "Индексирование, поисковой спрос, клики, читательский успех и доход не измерены."
+  "resolvedFindings": [
+    "Адресный повтор после RED: дата и время переставлены в капсуле и первом предложении, чтобы исключить ложную склейку 0029. Обратная замена двух фрагментов точно воспроизводит SHA-256 ранее проверенной версии; смысл и остальные байты не изменены."
   ],
-  "nextReview": "2026-10-26"
+  "blockingIssues": [],
+  "risks": [
+    "Редакционный допуск не подтверждает фактический выпуск, браузерный рендер, работу всех текущих маршрутов, человеческий тест, поисковый или денежный эффект."
+  ],
+  "readerTest": "NOT_PERFORMED",
+  "followupReview": {
+    "scope": "TWO_LITERAL_DATE_TIME_REORDERINGS_ONLY",
+    "previousContentHash": "a50fa0f87e90b65dffc2375c807e911d178ec88aaccbc542905b3c49075b8b1b",
+    "previousSourceSha256": "938ffd3ee9d4ad76e2e8c91f1df45c7e7c2f98077f888650d365e6216c4f4a35",
+    "newSourceSha256": "dfac3e291eb1d1edb5fccb77d1c977444ee2f0c246254dd1f7d48d17d3d23bc2",
+    "verdict": "PASS",
+    "scoreUnchanged": 4
+  },
+  "followupReviews": [
+    {
+      "scope": "PHONE_PUNCTUATION_ONLY",
+      "previousSourceSha256": "dfac3e291eb1d1edb5fccb77d1c977444ee2f0c246254dd1f7d48d17d3d23bc2",
+      "previousContentHash": "8ad55294a70ed5a3e256e33d09589ce48cf44ed4609b48a355d6da364dffb731",
+      "evidence": "NPS conditions independently read earlier in this reviewer task gives 209/372-0200 and menu 1,1. +1 (209) 372-0200 preserves exactly the same digits as the previous reviewed international-format number.",
+      "verdict": "PASS"
+    }
+  ]
 }
