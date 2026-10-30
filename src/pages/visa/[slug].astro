@@ -364,9 +364,7 @@ const ldJson = {
       <p class="visa-prep-lead">Что оформить заранее — собрал то, чем пользуюсь сам.</p>
       <ul class="visa-prep-list">
         <li>
-          <strong>Медстраховка.</strong> {d.visa === 'required'
-            ? 'Для визы её прикладывают к пакету документов — покрытие обычно от €30 000.'
-            : 'Виза не нужна, но без страховки лечение за границей оплачиваешь из кармана.'} Цену считают по датам и стране: <a href={cherehapaCountry(d.slug, `visa_${d.slug.replaceAll('-', '_')}`)} class="aff-cta" rel="sponsored noopener" target="_blank">Подобрать полис {d.cases.vP}</a> — от 70&nbsp;₽/день, оплата картой РФ.
+          <strong>Медстраховка.</strong> Условия въезда и требования к страховке проверяйте отдельно. Покрытие, исключения и стоимость полиса зависят от страны, дат и выбранной программы: <a href={cherehapaCountry(d.slug, `visa_${d.slug.replaceAll('-', '_')}`)} class="aff-cta" rel="sponsored noopener" target="_blank">Подобрать полис {d.cases.vP}</a>.
         </li>
         {flightFrom > 0 && d.iata && (
           <li>
