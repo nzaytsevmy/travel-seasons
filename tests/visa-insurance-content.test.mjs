@@ -16,6 +16,7 @@ test('Сингапур: документы и срок пребывания не
   assert.match(visa.docs, /14A/);
   assert.match(visa.docs, /SG Arrival Card/);
   assert.match(visa.duration, /e-Pass/);
-  assert.match(visa.timing, /дольше/);
+  assert.match(visa.timing, /обычно 3 рабочих дня/);
+  assert.match(visa.apply.join(' '), /отдельные заявления рассматривают дольше/);
   assert.doesNotMatch(visa.apply.join(' '), /90 дней|\$60–100|за 3–4/);
 });
