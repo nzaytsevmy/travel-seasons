@@ -1,98 +1,250 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "slug": "2026-10-08-auckland-coromandel-harvesting-rules",
+  "reviewer": "Codex (news_review_20261101)",
+  "reviewerTask": "/root/news_review_20261101",
+  "authoredBy": "Codex (tt-author-20261101)",
+  "reviewedAt": "2026-11-01",
+  "checkedAt": "2026-10-08T00:00:00.000Z",
   "score": 4,
-  "reviewer": "codex-editorial-review-20261008",
-  "reviewedAt": "2026-10-08T15:15:34.305Z",
-  "sha256": "31886e9a3e19f963af62df246776c60faef4b2e278bb4f2975386a2fa66d6d69",
-  "sha256Scope": "full Markdown file bytes",
-  "contentHash": "7e29499bfe660db8d8a197ae1fc1e06ccb23e8ba2f3f1162d7906f0e2e32abdd",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "proseHash": "7e29499bfe660db8d8a197ae1fc1e06ccb23e8ba2f3f1162d7906f0e2e32abdd",
-  "proseHashScope": "same as contentHash",
-  "rationale": "Локальные правила меняют допустимые действия путешественника на указанных берегах, поэтому 4 по RUBRIC. Дата 01 ноября, приливная граница до 2 м, отдельные пределы для осьминогов и крабов и сохранение местных закрытий сверены с MPI. Запрет сбора не превращён в закрытие побережья; фото Хахеи не выдаётся за карту ограничений.",
-  "blockingIssues": [],
-  "risks": [
-    "Это редакторское ревью источника, смысла и фотографии; свежая проверка Commons лицензии/кредитов, CI иliveQA не заявлены."
-  ],
-  "reviewScope": "Независимо прочитана вся проза, title, description/TLDR и подписи готового батча. После исправлений перечитаны изменённые части и смысловые зависимости. Проверка редакционная; сборка, полный браузерный рендер, CI, публикация и live QA не входят в этот вывод.",
-  "evidence": {
-    "primarySource": {
+  "approved": true,
+  "approvalScope": "EDITORIAL_CONTENT_ONLY_TARGETED_UPDATE",
+  "editorialVerdict": "PASS_WITH_DOCUMENTED_LIMITS",
+  "textVerdict": "PASS",
+  "releaseApproved": false,
+  "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
+  "classification": "UPDATE",
+  "baseCommit": "ab9e41dd685ce3391d4f211d19f727e52a18e375",
+  "rationale": "Окончательное решение задаёт дату действия нормы и ограничивает сбор животных;4/5. Точная календарная поправка допустима с честным checked 08 Oct. Отсутствие последующих изменений и новая карта независимо не подтверждены.",
+  "ownAddition": "Дата окончательной нормы наступила в НовойЗеландии. Источник раскрывает старый snapshot; новая проверка текущейкарты не заявлена.",
+  "factReview": "Полный snapshotMPI 8 Oct: окончательные решения applyfrom 1 Nov, зона от MHWM до 2 мглубины, приливная граница;1 осьминог/10 крабоввсутки, местныезакрытияостаются. Текущий MPI 01 Novweb 403; новаякарта и редакция не проверены. Автор честно сохранил checked 08 Oct.",
+  "sourceChecks": [
+    {
       "url": "https://www.mpi.govt.nz/consultations/review-of-measures-for-shore-based-shellfish-harvesting-in-the-auckland-coromandel-area",
-      "method": "Own IAB primary page after web403",
-      "checkedAt": "2026-10-08T15:15:34.305Z",
-      "confirmed": [
-        "effective2026-11-01",
-        "mean high-water to2m; tidal boundary",
-        "species limits1octopus/day and10crabs/day separately",
-        "prior local restrictions remain"
-      ]
-    },
-    "photo": {
-      "viewedByThisReviewer": true,
-      "scope": "Final repositoryJPG visually inspected; location/event attribution assessed in prose and metadata."
-    },
-    "previousSourceAndImageEvidence": {
-      "reviewer": "codex-news-review-20261008",
-      "reviewedAt": "2026-10-08",
-      "evidence": [
-        {
-          "url": "https://www.mpi.govt.nz/consultations/review-of-measures-for-shore-based-shellfish-harvesting-in-the-auckland-coromandel-area",
-          "publishedOn": "2026-10-08",
-          "checkedOn": "2026-10-08",
-          "finding": "Решение министра от 8 октября вводит ограничения 1 ноября 2026 года в обозначенных прибрежных районах и на Уаихеке. Граница от среднего уровня полной воды до глубины 2 м; таблица сохраняет исключения: осьминог 1 в день, крабы 10. Ранее действовавшие локальные ограничения остаются.",
-          "method": "Независимо прочитаны раздел решения и таблица на живой официальной странице в обычном Chrome через cua_repl; отдельно прочитан сохранённый фактический DOM. JS-only серверный ответ не использован как доказательство.",
-          "artifact": "news/snapshots/8702bd622a0cb206.json",
-          "artifactSha256": "9a370234feb0069cf729cf95ae5ab9a9a3339742ba2f5c018e4a02045c7fad3a"
-        },
-        {
-          "url": "https://commons.wikimedia.org/w/index.php?curid=64475517",
-          "checkedOn": "2026-10-08",
-          "finding": "Просмотрено скалистое побережье Хахеи на Короманделе. Commons: Spectacular coast - Seakayaking from Hahei, New Zealand (7078993977), Takver from Australia, 11.04.2012, CC BY-SA 2.0. Подпись не представляет фотографию картой ограничений.",
-          "method": "Локальный финальный JPEG независимо просмотрен глазами; сведения автора, даты, названия и лицензии независимо получены запросом Commons API 08.10.2026. Метаданные открытой лицензии проверены отдельно от картинки."
-        }
+      "archive": "work/routines-20261101/due-sources/41.json",
+      "archiveSha256": "abceac78da1e8cefecd7083d04c7a4ac828ec28bb7a0011816c49ac3e51c385d",
+      "method": "Самостоятельное полное чтение сохранённого текста; дата получения не равна дате источника.",
+      "remarks": [
+        "https://www.mpi.govt.nz/consultations/review-of-measures-for-shore-based-shellfish-harvesting-in-the-auckland-coromandel-area — закрыт от робота (страница без текста), зачтён снимок браузера от 2026-10-08"
       ],
-      "checks": {
-        "capsuleWords": 50,
-        "bodyWords": 171,
-        "titleChars": 55,
-        "clipTitle": "Новая Зеландия ограничит сбор морских животных с ноября",
-        "internalLink": "/blog/new-zealand-guide-2026/",
-        "internalLinkStatus": 200,
-        "internalLinkEvidence": ".run/deep-links-2026-10-08.json",
-        "internalLinkMethod": "Прочитан свежий ответ автора с фактическим HTTP 200 от 8 октября; анкор независимо сопоставлен с целевым материалом.",
-        "photoViewed": true,
-        "photoSha256": "dd9a3a5d42b38673cbaa1336f86087b972c8b4904668d83b14201a24c1563eea",
-        "photoFinding": "Просмотрено скалистое побережье Хахеи на Короманделе. Commons: Spectacular coast - Seakayaking from Hahei, New Zealand (7078993977), Takver from Australia, 11.04.2012, CC BY-SA 2.0. Подпись не представляет фотографию картой ограничений.",
-        "publicAttribution": "Проверена реальная publicPhotoCredits с импортируемыми blog/_images/**/_credits.json и 11 финальными заметками: запись содержит автора, название, Commons, адрес лицензии и сведения о JPEG. Итоговый HTML /legal/photos/ после сборки остаётся публикационным гейтом.",
-        "editorialCriteria": {
-          "changesPlans": "Да: изъятие животных после 1 ноября требует проверки вида и места.",
-          "surprisingNature": "Нет: повод о природоохранном правиле, не о необычной популяции.",
-          "concreteAndVerifiable": "Да: решение, дата, зона и точные исключения.",
-          "lastsLongerThanWeek": "Да: продолжающееся правило с будущим вступлением."
-        },
-        "selectionKind": "NEW",
-        "languageBannedWords": [],
-        "sourcesArray": true,
-        "scope": "Независимое редакторское ревью конечного текста, дат, единиц, статуса, сроков, ссылки, финального JPEG и прав. Без local build/Playwright, CI, публикации и live-проверки нового выпуска."
-      }
+      "status": "FULL_TEXT_READ"
     }
+  ],
+  "contentHash": "b033775215141594bca9d6f2d15c218a30340791d317115e6d0756ec3b00f32c",
+  "contentHashScope": "SHA256 JSON.stringify({title,tldr,body:body.trim()}) штатногоparseNote",
+  "sourceSha256": "64f37aa2b4aa21f90cf4cda05bf219e43891e93c9ba20f32c4412911f6236d1f",
+  "sourceSha256Scope": "ПолныйMarkdownточнойфинальнойверсии",
+  "actualClipTitle": "Новая Зеландия ограничила сбор морских животных",
+  "tldrCheck": {
+    "ok": true
   },
-  "lifecycle": {
-    "decision": "NEW",
-    "status": "принято, не вступило",
-    "effectiveDate": "2026-11-01",
-    "reviewOn": "2026-11-01",
-    "reason": "В день вступления перечитать MPI и карту, затем подтвердить фактическую действующую редакцию правила."
+  "photoProof": {
+    "image": "./_images/2026-10-08-auckland-coromandel-harvesting-rules.jpg",
+    "imageSha256": "dd9a3a5d42b38673cbaa1336f86087b972c8b4904668d83b14201a24c1563eea",
+    "creator": "Takver from Australia",
+    "license": "CC BY-SA",
+    "licenseURL": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "source": "https://commons.wikimedia.org/w/index.php?curid=64475517",
+    "title": "Spectacular coast — Seakayaking from Hahei, New Zealand. Побережье Хахеи, 2012 год; не карта ограничений.",
+    "changes": "Подготовлена сжатая JPEG-копия исходной фотографии.",
+    "viewedByThisReviewer": false,
+    "priorImageHashMatched": true,
+    "provenanceMethod": "Неизменный финальный JPEG сопоставлен SHA 256 с прежней независимой рецензией. Повторное чтение Commons и новый визуальный просмотр в текущем адресном ревью не заявлены.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
   },
-  "checks": {
-    "fullProseRead": true,
-    "finalTldrRead": true,
-    "tldrWords": 43,
-    "primarySourceRead": true,
-    "photoViewed": true,
-    "independentReviewer": true,
-    "commonsLicenseRechecked": false,
-    "buildBrowserCiLive": false
+  "criteria14": [
+    {
+      "id": 1,
+      "criterion": "Задача читателя",
+      "score": 10,
+      "evidence": "Полностью прочитаны заголовок, капсула и тело; конкретный вопрос о маршруте/правиле/природном результате ясно назван."
+    },
+    {
+      "id": 2,
+      "criterion": "Обоснование темы",
+      "score": 5,
+      "evidence": "Проверяется точечная фактическая поправка уже существующей заметки; новое исследование пяти Google сайтов не заявлено. Оценка повода по RUBRIC сохранена независимо от квоты."
+    },
+    {
+      "id": 3,
+      "criterion": "Место в проекте",
+      "score": 5,
+      "evidence": "Существующий URL сохранён; полный аудит кластера/входящих связей не выполнен."
+    },
+    {
+      "id": 4,
+      "criterion": "Полнота и прямой ответ",
+      "score": 10,
+      "evidence": "Статус и практическое ограничение даны в начале; источник/дата отделены от неизвестного текущего исполнения. checkTldr выполнен."
+    },
+    {
+      "id": 5,
+      "criterion": "Собственный вклад",
+      "score": 5,
+      "evidence": "Дата окончательной нормы наступила в НовойЗеландии. Источник раскрывает старый snapshot; новая проверка текущейкарты не заявлена. Это редакторское объяснение, не собственное полевое исследование."
+    },
+    {
+      "id": 6,
+      "criterion": "Факты и источники",
+      "score": 5,
+      "evidence": "Полный snapshotMPI 8 Oct: окончательные решения applyfrom 1 Nov, зона от MHWM до 2 мглубины, приливная граница;1 осьминог/10 крабоввсутки, местныезакрытияостаются. Текущий MPI 01 Novweb 403; новаякарта и редакция не проверены. Автор честно сохранил checked 08 Oct."
+    },
+    {
+      "id": 7,
+      "criterion": "Числа и примеры",
+      "score": 10,
+      "evidence": "Даты, диапазоны и числа адресной поправки сверены; прогноз/план не округлён до гарантии. Денежных обещаний нет. Полный snapshotMPI 8 Oct: окончательные решения applyfrom 1 Nov, зона от MHWM до 2 мглубины, приливная граница;1 осьминог/10 крабоввсутки, местныезакрытияостаются. Текущий MPI 01 Novweb 403; новаякарта и редакция не проверены. Автор честно сохранил checked 08 Oct."
+    },
+    {
+      "id": 8,
+      "criterion": "Исключения и применимость",
+      "score": 10,
+      "evidence": "Дата окончательной нормы наступила в НовойЗеландии. Источник раскрывает старый snapshot; новая проверка текущейкарты не заявлена."
+    },
+    {
+      "id": 9,
+      "criterion": "Авторство и доверие",
+      "score": 5,
+      "evidence": "Автор Codex и рецензент Codex различны. Чужие наблюдения не присвоены. Публичный byline/JSON-LD ожидают рендера."
+    },
+    {
+      "id": 10,
+      "criterion": "Редактура и естественный язык",
+      "score": 10,
+      "evidence": "Вся финальная проза прочитана; исправленная временная связь ясна, гиперболы/придуманныйличныйопыт отсутствуют."
+    },
+    {
+      "id": 11,
+      "criterion": "SEO-обещание и метаданные",
+      "score": 5,
+      "evidence": "Фактический clipTitle совпадаетс заголовком: длина≤60, мысль завершена. OG/canonical/SSR не проверены."
+    },
+    {
+      "id": 12,
+      "criterion": "Ссылки и навигация",
+      "score": 5,
+      "evidence": "Буквальные ссылки и смысл анкора прочитаны в контексте; их известные цели соответствуют стране/теме. Новый HTTP проход и весь кластер не приняты."
+    },
+    {
+      "id": 13,
+      "criterion": "Оформление и доступность",
+      "score": 5,
+      "evidence": "Неизменный JPEG проверенпо SHA 256; архивная подпись и унаследованная лицензия сохранены. Новый Commons/live атрибуция и 402/1280 рендернепроверены."
+    },
+    {
+      "id": 14,
+      "criterion": "Готовность выпуска",
+      "score": 0,
+      "evidence": "Build/обязательный CI/exactdeploy/live не выполнялись; редакционный допуск только указанной версии текста."
+    }
+  ],
+  "qualityCriteria": [
+    {
+      "id": 1,
+      "criterion": "Задача читателя",
+      "score": 10,
+      "evidence": "Полностью прочитаны заголовок, капсула и тело; конкретный вопрос о маршруте/правиле/природном результате ясно назван."
+    },
+    {
+      "id": 2,
+      "criterion": "Обоснование темы",
+      "score": 5,
+      "evidence": "Проверяется точечная фактическая поправка уже существующей заметки; новое исследование пяти Google сайтов не заявлено. Оценка повода по RUBRIC сохранена независимо от квоты."
+    },
+    {
+      "id": 3,
+      "criterion": "Место в проекте",
+      "score": 5,
+      "evidence": "Существующий URL сохранён; полный аудит кластера/входящих связей не выполнен."
+    },
+    {
+      "id": 4,
+      "criterion": "Полнота и прямой ответ",
+      "score": 10,
+      "evidence": "Статус и практическое ограничение даны в начале; источник/дата отделены от неизвестного текущего исполнения. checkTldr выполнен."
+    },
+    {
+      "id": 5,
+      "criterion": "Собственный вклад",
+      "score": 5,
+      "evidence": "Дата окончательной нормы наступила в НовойЗеландии. Источник раскрывает старый snapshot; новая проверка текущейкарты не заявлена. Это редакторское объяснение, не собственное полевое исследование."
+    },
+    {
+      "id": 6,
+      "criterion": "Факты и источники",
+      "score": 5,
+      "evidence": "Полный snapshotMPI 8 Oct: окончательные решения applyfrom 1 Nov, зона от MHWM до 2 мглубины, приливная граница;1 осьминог/10 крабоввсутки, местныезакрытияостаются. Текущий MPI 01 Novweb 403; новаякарта и редакция не проверены. Автор честно сохранил checked 08 Oct."
+    },
+    {
+      "id": 7,
+      "criterion": "Числа и примеры",
+      "score": 10,
+      "evidence": "Даты, диапазоны и числа адресной поправки сверены; прогноз/план не округлён до гарантии. Денежных обещаний нет. Полный snapshotMPI 8 Oct: окончательные решения applyfrom 1 Nov, зона от MHWM до 2 мглубины, приливная граница;1 осьминог/10 крабоввсутки, местныезакрытияостаются. Текущий MPI 01 Novweb 403; новаякарта и редакция не проверены. Автор честно сохранил checked 08 Oct."
+    },
+    {
+      "id": 8,
+      "criterion": "Исключения и применимость",
+      "score": 10,
+      "evidence": "Дата окончательной нормы наступила в НовойЗеландии. Источник раскрывает старый snapshot; новая проверка текущейкарты не заявлена."
+    },
+    {
+      "id": 9,
+      "criterion": "Авторство и доверие",
+      "score": 5,
+      "evidence": "Автор Codex и рецензент Codex различны. Чужие наблюдения не присвоены. Публичный byline/JSON-LD ожидают рендера."
+    },
+    {
+      "id": 10,
+      "criterion": "Редактура и естественный язык",
+      "score": 10,
+      "evidence": "Вся финальная проза прочитана; исправленная временная связь ясна, гиперболы/придуманныйличныйопыт отсутствуют."
+    },
+    {
+      "id": 11,
+      "criterion": "SEO-обещание и метаданные",
+      "score": 5,
+      "evidence": "Фактический clipTitle совпадаетс заголовком: длина≤60, мысль завершена. OG/canonical/SSR не проверены."
+    },
+    {
+      "id": 12,
+      "criterion": "Ссылки и навигация",
+      "score": 5,
+      "evidence": "Буквальные ссылки и смысл анкора прочитаны в контексте; их известные цели соответствуют стране/теме. Новый HTTP проход и весь кластер не приняты."
+    },
+    {
+      "id": 13,
+      "criterion": "Оформление и доступность",
+      "score": 5,
+      "evidence": "Неизменный JPEG проверенпо SHA 256; архивная подпись и унаследованная лицензия сохранены. Новый Commons/live атрибуция и 402/1280 рендернепроверены."
+    },
+    {
+      "id": 14,
+      "criterion": "Готовность выпуска",
+      "score": 0,
+      "evidence": "Build/обязательный CI/exactdeploy/live не выполнялись; редакционный допуск только указанной версии текста."
+    }
+  ],
+  "minimumFiveVerifiedTens": true,
+  "verifiedTensCount": 5,
+  "blockingIssues": [],
+  "processBlockingIssues": [
+    "CI/exactdeploy/live ещёнеприняты."
+  ],
+  "limitations": [
+    "Это адресное ревью фактической поправки, не новое полное исследование Google и не releasePASS.",
+    "Неизменные фото/лицензии связаны с прежним доказательством по точному хешу; новые визуальнаяпроверка Commons/атрибуции не заявлены.",
+    "Свежий MPI 01 Nov недоступен; checked сохранёнстарым, текущаякарта/редакциянеподтверждены."
+  ],
+  "nextReview": "2026-11-03T00:00:00.000Z",
+  "previousAssessment": {
+    "reviewer": "codex-editorial-review-20261008",
+    "reviewedAt": "2026-10-08T15:15:34.305Z",
+    "sourceSha256": "31886e9a3e19f963af62df246776c60faef4b2e278bb4f2975386a2fa66d6d69",
+    "contentHash": "7e29499bfe660db8d8a197ae1fc1e06ccb23e8ba2f3f1162d7906f0e2e32abdd"
+  },
+  "researchApplicability": {
+    "kind": "TARGETED_FACTUAL_CORRECTION",
+    "requiredForThisDelta": false,
+    "reason": "Точная дата/статус/ссылка на уже описанный факт; не новый полный ответ и не содержательнаяпереработка."
   }
 }
