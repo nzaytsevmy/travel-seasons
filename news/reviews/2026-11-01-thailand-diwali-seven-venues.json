@@ -13,7 +13,7 @@
   "approvalScope": "EDITORIAL_CONTENT_ONLY",
   "editorialVerdict": "ACCEPT_WITH_DECLARED_LIMITS_AND_RELEASE_GATES_PENDING",
   "releaseApproved": false,
-  "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
+  "releaseStatus": "HOLD_PENDING_FINAL_CI_DEPLOY_LIVE_METADATA_FIX",
   "classification": "NEW",
   "baseCommit": "ab9e41dd685ce3391d4f211d19f727e52a18e375",
   "rationale": "5/5 по рубрике: точные ноябрьские даты бесплатного события меняют выбор дня и города поездки на массовом для российской аудитории направлении. Это содержательный календарь доступа, а не реклама торговой скидки; текст сохраняет границы бесплатного входа.",
@@ -33,7 +33,7 @@
   "researchSequence": "Первоначальные черновики предшествовали пятисайтовому исследованию; нарушение не скрыто. Пять материалов прочитаны до финальной переработки автора; после неё reviewer проверил точную финальную версию. См. final-after-google-rewrite.json.",
   "contentHash": "f39c5536e2f4650b799a160757590ecfa6a970887a31b06bdda8500c6ca3056e",
   "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) from native parseNote",
-  "sourceSha256": "bf337bf773140cf2da30d186d2e2d00f67e90f17da08bef06e20b6332dc3b02b",
+  "sourceSha256": "a1cf1790b6ec486d35ce3795271700aa304e245db7e775053a57cb468911e1db",
   "sourceSha256Scope": "Полный markdown точной финальной версии, включая score и метаданные",
   "nativeClipTitle": "Таиланд проведёт семь бесплатных праздников Дивали",
   "actualClipTitle": "Таиланд проведёт семь бесплатных праздников Дивали",
@@ -152,7 +152,7 @@
       "id": 11,
       "criterion": "SEO-обещание и метаданные",
       "score": 5,
-      "evidence": "Native clipTitle: «Таиланд проведёт семь бесплатных праздников Дивали». Обещание завершено и совпадает с содержанием; итоговые OG/canonical/schema ожидают сборки."
+      "evidence": "Native clipTitle: «Таиланд проведёт семь бесплатных праздников Дивали». Обещание завершено и совпадает с содержанием; итоговые OG/canonical/schema ожидают сборки. Адресно01Nov проверена только смена added на документированный observedAt live receipt; схема z.coerce.date и реальный recentNews проверены. Финальная production sitemap/schema после этого изменения ещё не приняты."
     },
     {
       "id": 12,
@@ -170,7 +170,7 @@
       "id": 14,
       "criterion": "Готовность выпуска",
       "score": 0,
-      "evidence": "Редакционное одобрение не является release PASS. Полный обязательный CI, сборка/SEO/браузеры, exact deploy/live, sitemap/feed/дистрибуция и учёт ещё не подтверждены."
+      "evidence": "Предыдущая принятая версия имеет CI/deploy и сохранённый live receipt, но sitemap-news обнаружил дефект added. Исправленная metadata-версия ещё требует финальных CI/deploy/live; release HOLD."
     }
   ],
   "verifiedTens": 7,
@@ -190,5 +190,107 @@
   "lifecycle": {
     "reviewOn": "2026-11-03",
     "scope": "Проверить начало3Nov и затем сопровождать финал программы29Nov."
-  }
+  },
+  "metadataDeltaReview": {
+    "reviewedAt": "2026-11-01",
+    "scope": "Только added; все остальные байты Markdown неизменны относительно предыдущей независимой рецензии.",
+    "previousAdded": "2026-11-01",
+    "added": "2026-10-31T23:24:41.270Z",
+    "previousSourceSha256": "bf337bf773140cf2da30d186d2e2d00f67e90f17da08bef06e20b6332dc3b02b",
+    "receipt": "work/routines-20261101/live-http.json",
+    "receiptSha256": "5a03229d5e5028f625b296b6c061a71e5d26f3efe6554f1a61ea74f272dbfa1a",
+    "receiptObservedAt": "2026-10-31T23:24:41.270Z",
+    "acceptedPublicCommit": "a611bbd4447edd389f665a84b68d0658cd4d9936",
+    "acceptedDeployRun": "41251524612",
+    "finding": "added точно совпадает с observedAt первого сохранённого live receipt этого запуска. Это время сохранённого наблюдения опубликованных страниц, не доказанный момент первого байта публикации. По Москве это1ноября02:24:41.270. Дата материала/checked и содержимое не изменены.",
+    "receiptLimitations": "Исходный live-http имеет passed:false: общий sitemap-news не включил NEW; Singapore H1-сравнение встретило U+2060. Receipt доказывает сохранённое наблюдение страницы/версии, не общий release PASS.",
+    "schemaCheck": "added соответствует z.coerce.date().optional(); текущий recentNews включает обе записи при now=receipt.observedAt. Старый date-only added=2026-11-01 давал будущую UTC-полночь.",
+    "releaseApproved": false
+  },
+  "qualityCriteria": [
+    {
+      "id": 1,
+      "criterion": "Задача читателя",
+      "score": 10,
+      "evidence": "Выбрать город и день посещения объявленной программы Дивали в Таиланде."
+    },
+    {
+      "id": 2,
+      "criterion": "Обоснование темы",
+      "score": 10,
+      "evidence": "Редакционный повод соответствует аудитории и недельному окну; спрос и прогноз дохода не выдуманы. Пять сайтов из Google прочитаны: work/routines-20261101/google-research-diwali.md"
+    },
+    {
+      "id": 3,
+      "criterion": "Место в проекте",
+      "score": 5,
+      "evidence": "Поиск по news/log.jsonl, новостям, блогу и visa-changes не обнаружил такого же сюжета. Релевантность внутренней ссылки проверена; полная входящая структура ожидает сборки."
+    },
+    {
+      "id": 4,
+      "criterion": "Полнота и прямой ответ",
+      "score": 10,
+      "evidence": "Прямой ответ в капсуле и начале; необходимые даты и действие читателя даны. src/content/news/2026-11-01-thailand-diwali-seven-venues.md"
+    },
+    {
+      "id": 5,
+      "criterion": "Собственный вклад",
+      "score": 5,
+      "evidence": "Из календаря выведен проверяемый сценарий: главный день и поздние периоды требуют разного выбора города. Это редакционное объяснение расписания, не личный визит и не эксклюзивное исследование. Собственного полевого исследования и теста с читателями нет."
+    },
+    {
+      "id": 6,
+      "criterion": "Факты и источники",
+      "score": 10,
+      "evidence": "Существенные факты независимо сверены; см. factReview, sourceChecks и work/routines-20261101/google-research-diwali.md"
+    },
+    {
+      "id": 7,
+      "criterion": "Числа и примеры",
+      "score": 10,
+      "evidence": "Проверены даты, перечисленные объекты и применимые границы; денежного расчёта нет. Native corroboration PASS; смысл чисел дополнительно проверен независимым редакторским проходом."
+    },
+    {
+      "id": 8,
+      "criterion": "Исключения и применимость",
+      "score": 10,
+      "evidence": "Ограничения и применимость названы: план не выдан за состоявшийся факт; неизвестное не превращено в обещание. См. финальный текст и factReview."
+    },
+    {
+      "id": 9,
+      "criterion": "Авторство и доверие",
+      "score": 5,
+      "evidence": "В данных указан настоящий автор Codex (tt-author-20261101), reviewer отдельный и текст не писал. Публичный byline/профиль и SSR ожидают выпуска."
+    },
+    {
+      "id": 10,
+      "criterion": "Редактура и естественный язык",
+      "score": 10,
+      "evidence": "Финальная версия прочитана целиком после исследования. Нет рекламной пышности, выдуманного опыта и служебного мусора. Реальный читательский тест не проводился."
+    },
+    {
+      "id": 11,
+      "criterion": "SEO-обещание и метаданные",
+      "score": 5,
+      "evidence": "Native clipTitle: «Таиланд проведёт семь бесплатных праздников Дивали». Обещание завершено и совпадает с содержанием; итоговые OG/canonical/schema ожидают сборки. Адресно01Nov проверена только смена added на документированный observedAt live receipt; схема z.coerce.date и реальный recentNews проверены. Финальная production sitemap/schema после этого изменения ещё не приняты."
+    },
+    {
+      "id": 12,
+      "criterion": "Ссылки и навигация",
+      "score": 5,
+      "evidence": "Внутренний URL отвечает задаче; ранний preflight автора зафиксировал HTTP 200, reviewer отдельно прочитал страницу. Навигация/якоря финального рендера ещё не проверены."
+    },
+    {
+      "id": 13,
+      "criterion": "Оформление и доступность",
+      "score": 5,
+      "evidence": "Лично просмотрен текущий JPEG: вид с ICONSIAM на Чаупхраю и площадку, без Дивали. SHA 256 совпадает с ранее независимо проверенным неизменным изображением. Точная архивная подпись соответствует кадру. publicPhotoCredits: ровно одна запись на каждый источник; оригинальное название/автор/лицензия/изменения сохранены. Рендер 402/1280 и публичная атрибуция ожидают выпуска."
+    },
+    {
+      "id": 14,
+      "criterion": "Готовность выпуска",
+      "score": 0,
+      "evidence": "Предыдущая принятая версия имеет CI/deploy и сохранённый live receipt, но sitemap-news обнаружил дефект added. Исправленная metadata-версия ещё требует финальных CI/deploy/live; release HOLD."
+    }
+  ]
 }
