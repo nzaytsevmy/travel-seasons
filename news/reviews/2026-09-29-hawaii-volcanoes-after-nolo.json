@@ -1,70 +1,49 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "slug": "2026-09-29-hawaii-volcanoes-after-nolo",
-  "reviewer": "Codex (editorial_review_20261020)",
-  "reviewerTask": "/root/editorial_review_20261020",
-  "authoredBy": "Codex (tt-author-20261020)",
-  "reviewedAt": "2026-10-20",
-  "checkedAt": "2026-10-20",
+  "reviewer": "Codex (news_review_20261101)",
+  "reviewerTask": "/root/news_review_20261101",
+  "authoredBy": "Codex (tt-author-20261101)",
+  "reviewedAt": "2026-11-01",
+  "checkedAt": "2026-11-01T00:00:00.000Z",
   "score": 4,
   "approved": true,
-  "approvalScope": "EDITORIAL_CONTENT_ONLY",
+  "approvalScope": "EDITORIAL_CONTENT_ONLY_TARGETED_UPDATE",
+  "editorialVerdict": "PASS_WITH_DOCUMENTED_LIMITS",
+  "textVerdict": "PASS",
+  "releaseApproved": false,
+  "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
   "classification": "UPDATE",
-  "baseCommit": "707f7c57b591d3769d740b30de9024fecd0bede2",
-  "rationale": "Адресные закрытия меняют выбор дороги и тропы при открытой большей части парка;4. Исправлена существенная граница первого cattle guard.",
-  "factReview": "Независимо прочитаны Chrome livealerts NPS20.10: FIRST cattle guard→MaunaLoaLookout through29Oct all use; HilinaPali beyondMaunaiki Mon–Thu06–16:30 through19Nov motorized only; Kipukapuaulu closed; SulphurBanksbridge closed/boardwalkwestopen. СтатическийHTML не содержит этих alerts; June8 — дата шаблона.",
+  "baseCommit": "ab9e41dd685ce3391d4f211d19f727e52a18e375",
+  "rationale": "Точная поправка снимает устаревшую дату и сохраняет адресный режим Hilina/троп.4/5: ограничения полезны для маршрута; свежий полный сохранённый UI прочитан самостоятельно. Собственной liveUI сессии источника у рецензента нет.",
+  "ownAddition": "Прежний 29 Oct срок MaunaLoa обозначен историческим. Финальная зависимая фраза ранее закрытый отрезок не объявляет его закрытым сегодня.",
+  "factReview": "Полностью самостоятельно прочитан сохранённый main NPSconditions с загруженными Alerts: HilinaPali beyondMaunaiki Mon–Thu 06:00–16:30, ожидаемыйконец 19 Nov; Kīpukapuaulu закрыта, SulphurBanksBridge закрыт, boardwalk/area с запада открыты. MaunaLoaRoad отсутствует, это не доказательство открытия. Собственный web ответпоказывает пустой Alerts и не принят как подтверждение.",
   "sourceChecks": [
     {
       "url": "https://www.nps.gov/havo/learn/news/20260927_post_nolo.htm",
-      "status": "RELEVANT_FACTS_READ_WITH_DECLARED_LIMITS",
-      "artifact": ".run/source-check-20261020/0c4eccf0ab1fb5d8.txt",
-      "artifactSha256": "7a51df5a52c47ed5981977d869c9be36bece5e57b696c9c445f3c97d97449270",
-      "observedHttpStatus": 200,
-      "reviewedAt": "2026-10-20",
-      "scope": "Независимо прочитаны Chrome livealerts NPS20.10: FIRST cattle guard→MaunaLoaLookout through29Oct all use; HilinaPali beyondMaunaiki Mon–Thu06–16:30 through19Nov motorized only; Kipukapuaulu closed; SulphurBanksbridge closed/boardwalkwestopen. СтатическийHTML не содержит этих alerts; June8 — дата шаблона."
+      "archive": "work/routines-20261101/due-sources/26.json",
+      "archiveSha256": "b04b6f9caf2b130cb87f9458d89cb78d020e41c4d13da384b381ba526f1e3633",
+      "method": "Самостоятельное полное чтение сохранённого текста; дата получения не равна дате источника.",
+      "remarks": [],
+      "status": "FULL_TEXT_READ"
     },
     {
       "url": "https://www.nps.gov/havo/planyourvisit/conditions.htm",
-      "status": "RELEVANT_FACTS_READ_WITH_DECLARED_LIMITS",
-      "artifact": ".run/source-check-20261020/df286e2f77afefde.txt",
-      "artifactSha256": "6fdb829ee4ddecfecfff9f059c5465568c3800500a4138d91e20617d2aee2abf",
-      "observedHttpStatus": 200,
-      "reviewedAt": "2026-10-20",
-      "scope": "Независимо прочитаны Chrome livealerts NPS20.10: FIRST cattle guard→MaunaLoaLookout through29Oct all use; HilinaPali beyondMaunaiki Mon–Thu06–16:30 through19Nov motorized only; Kipukapuaulu closed; SulphurBanksbridge closed/boardwalkwestopen. СтатическийHTML не содержит этих alerts; June8 — дата шаблона."
-    },
-    {
-      "url": "https://www.nps.gov/havo/learn/news/20261001-nr-holei-sea-arch_collapses.htm",
-      "status": "RELEVANT_FACTS_READ_WITH_DECLARED_LIMITS",
-      "artifact": ".run/source-check-20261020/95f815be3f89d2c6.txt",
-      "artifactSha256": "f750dfef1242c243ae3f44926538b23c1ba0c4e273a5af04ae5964a2b5d4fd82",
-      "observedHttpStatus": 200,
-      "reviewedAt": "2026-10-20",
-      "scope": "Независимо прочитаны Chrome livealerts NPS20.10: FIRST cattle guard→MaunaLoaLookout through29Oct all use; HilinaPali beyondMaunaiki Mon–Thu06–16:30 through19Nov motorized only; Kipukapuaulu closed; SulphurBanksbridge closed/boardwalkwestopen. СтатическийHTML не содержит этих alerts; June8 — дата шаблона."
-    },
-    {
-      "url": "https://www.nps.gov/planyourvisit/alerts.htm?t=Closure&v=1",
-      "status": "RELEVANT_FACTS_READ_WITH_DECLARED_LIMITS",
-      "artifact": ".run/source-check-20261020/014a180f9787a007.txt",
-      "artifactSha256": "84f0466396f11cbe2f469a595e96d140a7795a09d688a3951917a172dced3751",
-      "observedHttpStatus": 200,
-      "reviewedAt": "2026-10-20",
-      "scope": "Независимо прочитаны Chrome livealerts NPS20.10: FIRST cattle guard→MaunaLoaLookout through29Oct all use; HilinaPali beyondMaunaiki Mon–Thu06–16:30 through19Nov motorized only; Kipukapuaulu closed; SulphurBanksbridge closed/boardwalkwestopen. СтатическийHTML не содержит этих alerts; June8 — дата шаблона."
+      "archive": "work/routines-20261101/havo-ui-main.txt",
+      "archiveSha256": "07b57edd24b180fa6c4208f3a1b0a1dacbed70827dd45b8fd8f325f80fffa212",
+      "method": "Самостоятельно прочитан весь переданный видимый main после загрузки Alerts; собственного liveUI нет.",
+      "status": "PRESERVED_CURRENT_UI_TEXT_READ"
     }
   ],
-  "contentHash": "486f52cbbd99064b7c6a849e9ca42e2782c8030d7baeab0a70e80f9a98a6eb18",
-  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote.",
-  "sourceSha256": "22765016528ccfe2503a31cf0b32d106052cfa0c1083346e030121ade95e595e",
-  "sourceSha256Scope": "SHA-256 полного исходного UTF-8 Markdown, включая frontmatter.",
-  "nativeClipTitle": "Гавайи: парк вулканов частично открыт после урагана",
-  "clipTitleCodeSha256": "61aeac8ec0e88ff9175d1ebefe66fd9be9b17f211a045a943312de9f6fdc1b0f",
-  "previousReview": {
-    "reviewer": "Codex GPT-6 (independent news_review_20261006)",
-    "reviewedAt": "2026-10-06",
-    "score": 4,
-    "rationale": "Оценка 4: исходный NPS релиз 27 сентября верно описывает открытие большей части парка после Ноло, а обновление отделяет его от действующих адресных ограничений. Актуальные предупреждения NPS дают Hilina Pali Road как ограничение для машин только пн–чт 06:00–16:30, Mauna Loa Road как полное закрытие от второй решётки до lookout до 29 октября, и продолжающиеся закрытия Kīpukapuaulu Trail и Sulphur Banks Bridge. Исчезновение арки Hōlei датировано NPS без необоснованной причины.",
-    "contentHash": "8a0d8d5b72cf4106900f172fbc028abdcbcf446c996a58db71096f3fdb48f3dc"
+  "contentHash": "664e5f1e79fa529eecc980e4e6fd7f7093fcca2eb35f399a426505393d4eb04d",
+  "contentHashScope": "SHA256 JSON.stringify({title,tldr,body:body.trim()}) штатногоparseNote",
+  "sourceSha256": "674cfdc7f190cff2eb12c891b4ea21873dcf5eee4c6da401657220f9db7503c9",
+  "sourceSha256Scope": "ПолныйMarkdownточнойфинальнойверсии",
+  "actualClipTitle": "Гавайи: парк вулканов частично открыт после урагана",
+  "tldrCheck": {
+    "ok": true
   },
-  "photo": {
+  "photoProof": {
     "image": "./_images/2026-09-29-hawaii-volcanoes-after-nolo.jpg",
     "imageSha256": "2e44c4d3e33b2e2dc27ffcd10ff45c45a510c151ac8f47ce7ae8b55abcdaa9f2",
     "creator": "Ken Lund from Reno, Nevada, USA",
@@ -72,86 +51,205 @@
     "licenseURL": "https://creativecommons.org/licenses/by-sa/2.0",
     "source": "https://commons.wikimedia.org/w/index.php?curid=54889910",
     "title": "Архивный снимок указателя у входа в Hawaiʻi Volcanoes. Это не снимок последствий урагана Ноло.",
-    "alt": "Указатель у входа в национальный парк Hawaiʻi Volcanoes",
-    "visualReview": "Финальный локальный кадр самостоятельно просмотрен20Oct; архивный/иллюстративный смысл соответствуетalt,нефото события/эксперимента.",
+    "changes": null,
+    "viewedByThisReviewer": false,
+    "priorImageHashMatched": true,
+    "provenanceMethod": "Неизменный финальный JPEG сопоставлен SHA 256 с прежней независимой рецензией. Повторное чтение Commons и новый визуальный просмотр в текущем адресном ревью не заявлены.",
     "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
   },
   "criteria14": [
     {
       "id": 1,
+      "criterion": "Задача читателя",
       "score": 10,
-      "evidence": "Один вопрос читателя следует из title/tldr: Гавайи: парк вулканов частично открыт после урагана. Полный текст прочитан."
+      "evidence": "Полностью прочитаны заголовок, капсула и тело; конкретный вопрос о маршруте/правиле/природном результате ясно назван."
     },
     {
       "id": 2,
-      "score": 10,
-      "evidence": "Адресные закрытия меняют выбор дороги и тропы при открытой большей части парка;4. Исправлена существенная граница первого cattle guard."
+      "criterion": "Обоснование темы",
+      "score": 5,
+      "evidence": "Проверяется точечная фактическая поправка уже существующей заметки; новое исследование пяти Google сайтов не заявлено. Оценка повода по RUBRIC сохранена независимо от квоты."
     },
     {
       "id": 3,
-      "score": 10,
-      "evidence": "Сохранён существующий сюжет либо самостоятельная новая тема; это новостьtravel/nature,невыдуманныйгайд."
+      "criterion": "Место в проекте",
+      "score": 5,
+      "evidence": "Существующий URL сохранён; полный аудит кластера/входящих связей не выполнен."
     },
     {
       "id": 4,
+      "criterion": "Полнота и прямой ответ",
       "score": 10,
-      "evidence": "Капсула и начало дают событие/состояние; ограничение результата и следующий конкретный шаг описаны."
+      "evidence": "Статус и практическое ограничение даны в начале; источник/дата отделены от неизвестного текущего исполнения. checkTldr выполнен."
     },
     {
       "id": 5,
+      "criterion": "Собственный вклад",
       "score": 5,
-      "evidence": "Редакционное объяснение/применимость есть, собственное полевое исследование, эксклюзивные данные и посещение не заявлены."
+      "evidence": "Прежний 29 Oct срок MaunaLoa обозначен историческим. Финальная зависимая фраза ранее закрытый отрезок не объявляет его закрытым сегодня. Это редакторское объяснение, не собственное полевое исследование."
     },
     {
       "id": 6,
+      "criterion": "Факты и источники",
       "score": 10,
-      "evidence": "Независимо прочитаны Chrome livealerts NPS20.10: FIRST cattle guard→MaunaLoaLookout through29Oct all use; HilinaPali beyondMaunaiki Mon–Thu06–16:30 through19Nov motorized only; Kipukapuaulu closed; SulphurBanksbridge closed/boardwalkwestopen. СтатическийHTML не содержит этих alerts; June8 — дата шаблона."
+      "evidence": "Полностью самостоятельно прочитан сохранённый main NPSconditions с загруженными Alerts: HilinaPali beyondMaunaiki Mon–Thu 06:00–16:30, ожидаемыйконец 19 Nov; Kīpukapuaulu закрыта, SulphurBanksBridge закрыт, boardwalk/area с запада открыты. MaunaLoaRoad отсутствует, это не доказательство открытия. Собственный web ответпоказывает пустой Alerts и не принят как подтверждение."
     },
     {
       "id": 7,
+      "criterion": "Числа и примеры",
       "score": 10,
-      "evidence": "Значимые даты/числа и ихединицы сверены по названной фактическойоснове;неполученный текущийстатус не рассчитан и не выдуман. ДляSOURCE_RECHECK основание — точный неизменный текст и прежняя содержательнаярецензия."
+      "evidence": "Даты, диапазоны и числа адресной поправки сверены; прогноз/план не округлён до гарантии. Денежных обещаний нет. Полностью самостоятельно прочитан сохранённый main NPSconditions с загруженными Alerts: HilinaPali beyondMaunaiki Mon–Thu 06:00–16:30, ожидаемыйконец 19 Nov; Kīpukapuaulu закрыта, SulphurBanksBridge закрыт, boardwalk/area с запада открыты. MaunaLoaRoad отсутствует, это не доказательство открытия. Собственный web ответпоказывает пустой Alerts и не принят как подтверждение."
     },
     {
       "id": 8,
+      "criterion": "Исключения и применимость",
       "score": 10,
-      "evidence": "Граница применимости, объявлено/состоялось/история и отсутствие разрешения на закрытый участок сохранены;см.factReview."
+      "evidence": "Прежний 29 Oct срок MaunaLoa обозначен историческим. Финальная зависимая фраза ранее закрытый отрезок не объявляет его закрытым сегодня."
     },
     {
       "id": 9,
+      "criterion": "Авторство и доверие",
       "score": 5,
-      "evidence": "authoredBy и независимыйreviewer различны; выдуманного посещения нет. Публичныйbyline/SSRфинальнойверсии ещёнепроверен."
+      "evidence": "Автор Codex и рецензент Codex различны. Чужие наблюдения не присвоены. Публичный byline/JSON-LD ожидают рендера."
     },
     {
       "id": 10,
+      "criterion": "Редактура и естественный язык",
       "score": 10,
-      "evidence": "Полностью прочитаныtitle,tldr,body; замечания об устаревших/обрезанныхtitle и дублеYosemite исправлены до этогохеша."
+      "evidence": "Вся финальная проза прочитана; исправленная временная связь ясна, гиперболы/придуманныйличныйопыт отсутствуют."
     },
     {
       "id": 11,
+      "criterion": "SEO-обещание и метаданные",
       "score": 5,
-      "evidence": "ШтатныйclipTitle прочитан: Гавайи: парк вулканов частично открыт после урагана. SSR/canonical/OGфинальнойсборки ожидаютCI/live."
+      "evidence": "Фактический clipTitle совпадаетс заголовком: длина≤60, мысль завершена. OG/canonical/SSR не проверены."
     },
     {
       "id": 12,
+      "criterion": "Ссылки и навигация",
       "score": 5,
-      "evidence": "Контекстнаявнутренняясвязь соответствует задаче;фактическиеHTTPответы/якоряфинальнойверсии в этомредакционномревьюнепроверены."
+      "evidence": "Буквальные ссылки и смысл анкора прочитаны в контексте; их известные цели соответствуют стране/теме. Новый HTTP проход и весь кластер не приняты."
     },
     {
       "id": 13,
+      "criterion": "Оформление и доступность",
       "score": 5,
-      "evidence": "Новые4фотографии просмотреныи сопоставленыс происхождением/alt;неизменные старыефото имеют прежнююпроверку.Рендер402/1280и публичнаяатрибуциянепроверены."
+      "evidence": "Неизменный JPEG проверенпо SHA 256; архивная подпись и унаследованная лицензия сохранены. Новый Commons/live атрибуция и 402/1280 рендернепроверены."
     },
     {
       "id": 14,
+      "criterion": "Готовность выпуска",
       "score": 0,
-      "evidence": "ФинальныеCI,exactdeploy,live200,SSR,sitemap/feed,индексируемостьи измеренныйэффект ещёнеподтверждены."
+      "evidence": "Build/обязательный CI/exactdeploy/live не выполнялись; редакционный допуск только указанной версии текста."
     }
   ],
-  "limitations": [
-    "Редакционное одобрение не разрешает обход обязательныхгейтов и не подтверждает публикацию.",
-    "Источник/снимок поддерживает тольконазванный датированныйфакт; новая доступность каждойдороги/рейса/объектаизнего не следует.",
-    "Новыеphoto-rights сопоставлены с сохранённымCommonsAPI; публичная/legal/photos/ ожидаетфинальногорендера."
+  "qualityCriteria": [
+    {
+      "id": 1,
+      "criterion": "Задача читателя",
+      "score": 10,
+      "evidence": "Полностью прочитаны заголовок, капсула и тело; конкретный вопрос о маршруте/правиле/природном результате ясно назван."
+    },
+    {
+      "id": 2,
+      "criterion": "Обоснование темы",
+      "score": 5,
+      "evidence": "Проверяется точечная фактическая поправка уже существующей заметки; новое исследование пяти Google сайтов не заявлено. Оценка повода по RUBRIC сохранена независимо от квоты."
+    },
+    {
+      "id": 3,
+      "criterion": "Место в проекте",
+      "score": 5,
+      "evidence": "Существующий URL сохранён; полный аудит кластера/входящих связей не выполнен."
+    },
+    {
+      "id": 4,
+      "criterion": "Полнота и прямой ответ",
+      "score": 10,
+      "evidence": "Статус и практическое ограничение даны в начале; источник/дата отделены от неизвестного текущего исполнения. checkTldr выполнен."
+    },
+    {
+      "id": 5,
+      "criterion": "Собственный вклад",
+      "score": 5,
+      "evidence": "Прежний 29 Oct срок MaunaLoa обозначен историческим. Финальная зависимая фраза ранее закрытый отрезок не объявляет его закрытым сегодня. Это редакторское объяснение, не собственное полевое исследование."
+    },
+    {
+      "id": 6,
+      "criterion": "Факты и источники",
+      "score": 10,
+      "evidence": "Полностью самостоятельно прочитан сохранённый main NPSconditions с загруженными Alerts: HilinaPali beyondMaunaiki Mon–Thu 06:00–16:30, ожидаемыйконец 19 Nov; Kīpukapuaulu закрыта, SulphurBanksBridge закрыт, boardwalk/area с запада открыты. MaunaLoaRoad отсутствует, это не доказательство открытия. Собственный web ответпоказывает пустой Alerts и не принят как подтверждение."
+    },
+    {
+      "id": 7,
+      "criterion": "Числа и примеры",
+      "score": 10,
+      "evidence": "Даты, диапазоны и числа адресной поправки сверены; прогноз/план не округлён до гарантии. Денежных обещаний нет. Полностью самостоятельно прочитан сохранённый main NPSconditions с загруженными Alerts: HilinaPali beyondMaunaiki Mon–Thu 06:00–16:30, ожидаемыйконец 19 Nov; Kīpukapuaulu закрыта, SulphurBanksBridge закрыт, boardwalk/area с запада открыты. MaunaLoaRoad отсутствует, это не доказательство открытия. Собственный web ответпоказывает пустой Alerts и не принят как подтверждение."
+    },
+    {
+      "id": 8,
+      "criterion": "Исключения и применимость",
+      "score": 10,
+      "evidence": "Прежний 29 Oct срок MaunaLoa обозначен историческим. Финальная зависимая фраза ранее закрытый отрезок не объявляет его закрытым сегодня."
+    },
+    {
+      "id": 9,
+      "criterion": "Авторство и доверие",
+      "score": 5,
+      "evidence": "Автор Codex и рецензент Codex различны. Чужие наблюдения не присвоены. Публичный byline/JSON-LD ожидают рендера."
+    },
+    {
+      "id": 10,
+      "criterion": "Редактура и естественный язык",
+      "score": 10,
+      "evidence": "Вся финальная проза прочитана; исправленная временная связь ясна, гиперболы/придуманныйличныйопыт отсутствуют."
+    },
+    {
+      "id": 11,
+      "criterion": "SEO-обещание и метаданные",
+      "score": 5,
+      "evidence": "Фактический clipTitle совпадаетс заголовком: длина≤60, мысль завершена. OG/canonical/SSR не проверены."
+    },
+    {
+      "id": 12,
+      "criterion": "Ссылки и навигация",
+      "score": 5,
+      "evidence": "Буквальные ссылки и смысл анкора прочитаны в контексте; их известные цели соответствуют стране/теме. Новый HTTP проход и весь кластер не приняты."
+    },
+    {
+      "id": 13,
+      "criterion": "Оформление и доступность",
+      "score": 5,
+      "evidence": "Неизменный JPEG проверенпо SHA 256; архивная подпись и унаследованная лицензия сохранены. Новый Commons/live атрибуция и 402/1280 рендернепроверены."
+    },
+    {
+      "id": 14,
+      "criterion": "Готовность выпуска",
+      "score": 0,
+      "evidence": "Build/обязательный CI/exactdeploy/live не выполнялись; редакционный допуск только указанной версии текста."
+    }
   ],
-  "nextReview": "2026-10-23"
+  "minimumFiveVerifiedTens": true,
+  "verifiedTensCount": 6,
+  "blockingIssues": [],
+  "processBlockingIssues": [
+    "CI/exactdeploy/live ещёнеприняты."
+  ],
+  "limitations": [
+    "Это адресное ревью фактической поправки, не новое полное исследование Google и не releasePASS.",
+    "Неизменные фото/лицензии связаны с прежним доказательством по точному хешу; новые визуальнаяпроверка Commons/атрибуции не заявлены.",
+    "Точная транскрипция UI прочитана самостоятельно; liveUI автора недоступен в среде рецензента."
+  ],
+  "nextReview": "2026-11-03T00:00:00.000Z",
+  "previousAssessment": {
+    "reviewer": "Codex (editorial_review_20261020)",
+    "reviewedAt": "2026-10-20",
+    "sourceSha256": "22765016528ccfe2503a31cf0b32d106052cfa0c1083346e030121ade95e595e",
+    "contentHash": "486f52cbbd99064b7c6a849e9ca42e2782c8030d7baeab0a70e80f9a98a6eb18"
+  },
+  "researchApplicability": {
+    "kind": "TARGETED_FACTUAL_CORRECTION",
+    "requiredForThisDelta": false,
+    "reason": "Точная дата/статус/ссылка на уже описанный факт; не новый полный ответ и не содержательнаяпереработка."
+  }
 }
