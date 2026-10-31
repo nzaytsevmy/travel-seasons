@@ -19,6 +19,7 @@ import { DIRECTIONS, MONTHS } from './src/data/directions.js';
 import { ttAffiliateShield } from './scripts/affiliate-shield.mjs';
 import { NICHE_TRIPS } from './src/data/niche-trips.js';
 import { acquire } from './scripts/machine-lock.mjs';
+import { SEASON_COUNTRY_REDIRECTS } from './src/data/season-country-redirects.js';
 
 // Trips/packing closed (status='X' — направление недоступно в месяц) → noindex,
 // исключаем из sitemap (noindex-URL в sitemap = противоречивый сигнал).
@@ -164,6 +165,7 @@ export default defineConfig({
   // Редиректы: .htaccess на REG.RU (nginx) НЕ применяется → через Astro (генерит
   // served-стабы с meta-refresh + canonical). Легаси-URL из старой выдачи.
   redirects: {
+    ...SEASON_COUNTRY_REDIRECTS,
     '/japan_momiji': '/blog/japan-guide-2026/',
     '/japan-momiji': '/blog/japan-guide-2026/',
     '/mexico_old': '/blog/',

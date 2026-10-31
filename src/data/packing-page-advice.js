@@ -106,9 +106,43 @@ const egyptRelatedGuides = [
   },
 ];
 
+const planningGuides = {
+  egypt: egyptRelatedGuides,
+  georgia: [
+    { href: '/blog/georgia-insurance-2026/', label: 'Как выбрать страховку для Грузии', note: 'Сравните полисы по сроку поездки, франшизе, исключениям и порядку обращения за помощью.' },
+    { href: '/blog/pay-georgia-2026/', label: 'Как платить в Грузии', note: 'Выберите способ оплаты до бронирования жилья и поездок по стране.' },
+    { href: '/blog/strahovka-dlya-aktivnogo-otdyha/', label: 'Страховка для активного отдыха', note: 'Если планируете занятия вне обычной прогулки, проверьте ограничения полиса под свой маршрут.' },
+  ],
+  armenia: [
+    { href: '/blog/gde-ostanovitsya-v-erevane/', label: 'Где остановиться в Ереване на 2–3 дня', note: 'Сравните четыре зоны по расположению, подъёмам и шуму, затем проверьте оплату и отмену у выбранного жилья.' },
+    { href: '/hotels/armenia/', label: 'Отели для маршрута по Армении', note: 'Для поездки за пределы Еревана сравните размещение в разных частях страны.' },
+    { href: '/blog/armenia-guide-2026/', label: 'Как спланировать поездку по Армении', note: 'Согласуйте ночёвки с маршрутом и переездами, прежде чем оплачивать жильё.' },
+  ],
+  china: [
+    { href: '/blog/peresadka-v-pekine/', label: 'Пересадка в Пекине', note: 'Если летите через Пекин, разберитесь с аэропортом, багажом и доступным временем до выбора прогулки или ночёвки.' },
+    { href: '/blog/bilety-na-poezd-v-kitae/', label: 'Билеты на поезд в Китае', note: 'Для маршрута между городами выберите способ покупки и проверьте условия поездки.' },
+    { href: '/blog/mutyanyuy/', label: 'Мутяньюй из Пекина', note: 'Если в плане есть Великая стена, сравните самостоятельную дорогу и поездку с организатором.' },
+  ],
+  hainan: [
+    { href: '/blog/peresadka-v-pekine/', label: 'Если летите на Хайнань через Пекин', note: 'Проверьте аэропорт пересадки, багаж и возможность выйти в город под свой билет.' },
+    { href: '/blog/hainan-guide-2026/', label: 'Как спланировать отдых на Хайнане', note: 'Выберите базу для отдыха и разберитесь с оплатой и связью до бронирования.' },
+  ],
+  nepal: [
+    { href: '/blog/strahovka-dlya-trekkinga-v-nepale/', label: 'Страховка для треккинга в Непале', note: 'До покупки сопоставьте маршрут и высоту с условиями лечения, спасения и транспортировки.' },
+    { href: '/blog/strahovka-dlya-aktivnogo-otdyha/', label: 'Как проверить покрытие активного отдыха', note: 'Разберите исключения договора: название занятия в рекламе не заменяет полные правила.' },
+    { href: '/blog/nepal-everest-trek-2026/', label: 'Как спланировать треккинг в Непале', note: 'Сначала определитесь с маршрутом и подготовкой, затем выбирайте полис под условия выхода.' },
+  ],
+};
+
+export function getDestinationPlanningGuides(country) {
+  return (Object.hasOwn(planningGuides, country) ? planningGuides[country] : []).map(item => ({ ...item }));
+}
+
 export function getPackingRelatedGuides(country, month) {
-  if (country !== 'egypt' || ![undefined, 'october', 'november'].includes(month)) return [];
-  return egyptRelatedGuides.map((item) => ({ ...item }));
+  const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+  if (month !== undefined && !months.includes(month)) return [];
+  if (country === 'egypt' && ![undefined, 'october', 'november', 'december', 'january', 'february'].includes(month)) return [];
+  return getDestinationPlanningGuides(country);
 }
 
 // Общий список Узбекистана сохраняет группировку месяцев. Советы основаны на

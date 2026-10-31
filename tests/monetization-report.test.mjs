@@ -14,6 +14,22 @@ const traffic = {
   guides: { japan: { visits: 30, live: 25, partner: 2 } },
 };
 
+test('missing historical click IDs are distinguished from missing exported events', () => {
+  const report = buildReport({ trafficSnapshot: traffic, revenueRows: [
+    { action_id: 'legacy', state: 'paid', partner: 'aviasales', commission_rub: '100', sub_id: 'blog_chile_aviasales_body_1' },
+    { action_id: 'missing', state: 'paid', partner: 'aviasales', commission_rub: '100', sub_id: 'tt2__blog_chile_aviasales_body_1__baseline__na__c00112233445566778899' },
+  ] });
+  assert.match(report, /Действий без click_id: \*\*1\*\*; с click_id без найденного события: \*\*1\*\*/);
+  assert.match(report, /финансовое решение запрещено/);
+  assert.match(report, /Доход на 1 000 органических визитов: \*\*нет данных\*\*/);
+});
+
+test('an absent traffic breakdown is unknown rather than zero visits', () => {
+  const report = buildReport({ trafficSnapshot: { updated: '2026-10-31' } });
+  assert.match(report, /Органических визитов: \*\*нет данных\*\*/);
+  assert.match(report, /Человеческих переходов к партнёрам: \*\*нет данных\*\*/);
+});
+
 function homeInput() {
   const homeClick = 'c00112233445566778899';
   const otherClick = 'cffeeddccbbaa99887766';

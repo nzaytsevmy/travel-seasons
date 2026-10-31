@@ -13,6 +13,7 @@ import { MONTHS } from '../../data/directions.js';
 import { similarDestinations } from '../../data/similar.js';
 import { DATA_UPDATED } from '../../data/meta.js';
 import { cherehapaTravel, aviasalesRoute, preferredTourCountry } from '../../data/affiliate.js';
+import { getDestinationPlanningGuides } from '../../data/packing-page-advice.js';
 
 export async function getStaticPaths() {
   return COMPARE_PAIRS.map((p) => ({
@@ -28,6 +29,7 @@ const month = MONTHS[monthIdx];
 const a = buildCompareEntry(pairDef.a, monthIdx);
 const b = buildCompareEntry(pairDef.b, monthIdx);
 if (!a || !b) throw new Error(`compare pair references unknown slug: ${pairDef.a} / ${pairDef.b}`);
+const planning = [a, b].map(entry => ({ entry, guides: getDestinationPlanningGuides(entry.slug).slice(0, 2) })).filter(item => item.guides.length);
 
 const diff = compareEntries(a, b);
 const url = `https://traveltribe.ru/compare/${pairDef.a}-vs-${pairDef.b}/`;
@@ -143,6 +145,15 @@ const ldJson = {
       </ul>
       <p class="cmpg-disclaimer">Точные цифры под свои даты — в <a href="/calculator/" class="cmpg-link">калькуляторе</a>.</p>
     </section>
+
+    {planning.map(({ entry, guides }) => (
+      <section class="cmpg-section">
+        <div class="cmpg-shead"><h2>Если выбираете {entry.nom}</h2></div>
+        <ul class="cmpg-related cmpg-planning">
+          {guides.map(({ href, label, note }) => <li><a href={href}><b>{label}</b></a><span>{note}</span></li>)}
+        </ul>
+      </section>
+    ))}
 
     <section class="cmpg-section">
       <div class="cmpg-shead"><h2>Забронировать</h2></div>
@@ -270,5 +281,6 @@ const ldJson = {
 .cmpg-related a { color: var(--text); text-decoration: none; }
 .cmpg-related a b { color: var(--gold); text-decoration: underline; text-underline-offset:.22em; }
 .cmpg-related span { font-size: .82rem; color: var(--text-faint); margin-top: .15rem; }
+.cmpg-planning a { display: flex; align-items: center; min-height: 44px; }
 
 </style>

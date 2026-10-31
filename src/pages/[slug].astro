@@ -49,6 +49,7 @@ const RU_STAY = new Set(['abkhazia', 'kamchatka', 'karelia', 'dagestan', 'altai'
 import { similarDestinations } from '../data/similar.js';
 import { COMPARE_PAIRS } from '../data/compare-pairs.js';
 import { getGuide } from '../data/country-guides.js';
+import { getDestinationPlanningGuides } from '../data/packing-page-advice.js';
 import { hasEssentials } from '../data/country-essentials.js';
 import { hasCustoms } from '../data/country-customs.js';
 import { hasHolidays } from '../data/country-holidays.js';
@@ -129,6 +130,7 @@ const heroPreload = coverImage
 
 // Расширенный гайд (если заполнен в country-guides.js) — иначе базовый хаб
 const guide = getGuide(d.slug);
+const planningNotes = new Map(getDestinationPlanningGuides(d.slug).map(item => [item.href, item.note]));
 
 // Inline-фото гайда, привязанные к секции (поле after). Возвращает
 // разрешённый ассет + подпись для вставки сразу после нужного блока.
@@ -770,8 +772,8 @@ if (guide?.itinerary?.length) {
           {d.relatedPosts.map((p) => (
             <li>
               <a href={`/blog/${p.slug}/`}>{p.title}</a>
-              <span>{p.kind === 'visa' ? 'про визу пошагово' : p.kind === 'season' ? 'про конкретный сезон' : p.kind === 'insurance' ? 'про страховку и полис'
-                : (POST_SOURCE[p.slug] === 'personal' || POST_SOURCE[p.slug] === 'hybrid') ? 'личный опыт автора' : 'подробный разбор'}</span>
+              <span>{planningNotes.get(`/blog/${p.slug}/`) || (p.kind === 'visa' ? 'про визу пошагово' : p.kind === 'season' ? 'про конкретный сезон' : p.kind === 'insurance' ? 'про страховку и полис'
+                : (POST_SOURCE[p.slug] === 'personal' || POST_SOURCE[p.slug] === 'hybrid') ? 'личный опыт автора' : 'подробный разбор')}</span>
             </li>
           ))}
         </ul>

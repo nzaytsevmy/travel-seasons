@@ -5,6 +5,7 @@ import {
   fetchAssignmentCounts,
   fetchReaderCohortCounts,
   fetchHomeCohort,
+  fetchTravelpayoutsActions,
   normalizeAssignmentRows,
   normalizeMetrikaClickRows,
   normalizeReaderCohortRows,
@@ -12,6 +13,38 @@ import {
 } from '../scripts/monetization-data-export.mjs';
 
 const dimension = (name) => ({ name });
+
+test('distinct events sharing a click ID remain ambiguous instead of silently merging', () => {
+  const row = (time, key, value) => ({ dimensions: [dimension(time), dimension('/georgia/'), dimension('outbound'), dimension(key), dimension(value)], metrics: [1] });
+  const id = 'c00112233445566778899';
+  const rows = normalizeMetrikaClickRows([
+    row('2026-10-29 12:00:00', 'click_id', id),
+    row('2026-10-29 12:00:00', 'click_context', `${id}__new__unattributed`),
+    row('2026-10-29 12:01:00', 'click_id', id),
+  ]);
+  assert.equal(rows.length, 2);
+  assert.equal(rows[0].reader_cohort, 'new');
+});
+
+test('Travelpayouts export excludes another site and requires the source field', async () => {
+  const original = globalThis.fetch;
+  let requestedFields;
+  globalThis.fetch = async (url, options) => {
+    if (String(url).endsWith('get_fields_list')) return Response.json({ fields: ['action_id', 'sub_id', 'state', 'date', 'traffic_source'].map(name => ({ name })) });
+    requestedFields = JSON.parse(options.body).fields;
+    return Response.json({ results: [
+      { action_id: 'ours', sub_id: '', state: 'paid', date: '2026-10-29', traffic_source: 429330 },
+      { action_id: 'other', sub_id: '', state: 'paid', date: '2026-10-29', traffic_source: 123 },
+    ], total_rows: 2 });
+  };
+  try {
+    const rows = await fetchTravelpayoutsActions({ token: 'fixture', dateFrom: '2026-10-01', dateTo: '2026-10-29' });
+    assert.ok(requestedFields.includes('traffic_source'));
+    assert.deepEqual(rows.map(row => row.action_id), ['ours']);
+    globalThis.fetch = async () => Response.json({ fields: ['action_id', 'sub_id', 'state', 'date'].map(name => ({ name })) });
+    await assert.rejects(fetchTravelpayoutsActions({ token: 'fixture', dateFrom: '2026-10-01', dateTo: '2026-10-29' }), /traffic_source/);
+  } finally { globalThis.fetch = original; }
+});
 
 test('Sputnik rollout keeps partner and CTA in the human click denominator without changing A/A assignment', () => {
   const [row] = normalizeMetrikaClickRows([{ dimensions: [

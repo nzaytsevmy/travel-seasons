@@ -4,14 +4,15 @@ import { getPackingRelatedGuides } from '../data/packing-page-advice.js';
 interface Props {
   country: string;
   month?: string;
+  title?: string;
 }
 
-const { country, month } = Astro.props;
+const { country, month, title = 'Чемодан собран — выбираем маршрут' } = Astro.props;
 const guides = getPackingRelatedGuides(country, month);
 ---
 {guides.length > 0 && (
-  <section class="packing-next" aria-label="Выбрать маршрут по Египту">
-    <h2>Чемодан собран — выбираем маршрут</h2>
+  <section class="packing-next" aria-label={title}>
+    <h2>{title}</h2>
     <ul>
       {guides.map(({ href, label, note }) => (
         <li><a href={href}>{label}</a><p>{note}</p></li>
@@ -22,7 +23,7 @@ const guides = getPackingRelatedGuides(country, month);
 
 <style>
   .packing-next { margin-block: 32px; border-top: 1px solid var(--line, #d8dce3); padding-top: 24px; }
-  h2 { margin: 0 0 16px; font-family: var(--ff-display); font-size: clamp(24px, 3vw, 32px); font-weight: 400; line-height: 1.2; }
+  h2 { margin: 0 0 16px; scroll-margin-top: 80px; font-family: var(--ff-display); font-size: clamp(24px, 3vw, 32px); font-weight: 400; line-height: 1.2; }
   ul { list-style: none; margin: 0; padding: 0; }
   li + li { margin-top: 12px; }
   a { display: inline-flex; align-items: center; min-height: 44px; color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }

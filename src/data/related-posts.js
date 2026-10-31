@@ -66,6 +66,7 @@ export const RELATED_POSTS = {
     { slug: 'bali-guide-2026', title: 'Бали 2026: виза, цены, районы', kind: 'guide' },
   ],
   'hainan': [
+    { slug: 'peresadka-v-pekine', title: 'Пересадка в Пекине: аэропорт, багаж и выход в город', kind: 'practical' },
     { slug: 'fukuok-ili-haynan', title: 'Фукуок или Хайнань: сезон, бухта и полный бюджет', kind: 'guide' },
     { slug: 'hainan-guide-2026', title: 'Хайнань 2026: безвиз, Alipay, VPN, цены', kind: 'guide' },
   ],
@@ -73,6 +74,8 @@ export const RELATED_POSTS = {
     { slug: 'goa-guide-2026', title: 'Отдых на Гоа 2026: сезон, цены, Северный или Южный', kind: 'guide' },
   ],
   'china': [
+    { slug: 'peresadka-v-pekine', title: 'Пересадка в Пекине: аэропорт, багаж и выход в город', kind: 'practical' },
+    { slug: 'bilety-na-poezd-v-kitae', title: 'Как купить билеты на поезд в Китае', kind: 'practical' },
     { slug: 'china-guide-2026', title: 'Когда лучше ехать в Китай: месяцы и регионы', kind: 'guide' },
     { slug: 'hainan-guide-2026', title: 'Хайнань 2026 — тропический Китай', kind: 'guide' },
     { slug: 'esim-zagranicey-2026', title: 'Связь за границей: обход файрвола Китая', kind: 'guide' },
@@ -86,7 +89,8 @@ export const RELATED_POSTS = {
   ],
   'georgia': [
     { slug: 'georgia-guide-2026', title: 'Грузия 2026: виза 365 дней, страховка, цены, маршрут', kind: 'guide' },
-    { slug: 'georgia-insurance-2026', title: 'Страховка в Грузию 2026: обязательна по закону, цены, как оформить', kind: 'insurance' },
+    { slug: 'georgia-insurance-2026', title: 'Страховка в Грузию: франшиза, лимиты и условия полиса', kind: 'insurance' },
+    { slug: 'strahovka-dlya-aktivnogo-otdyha', title: 'Страховка для активного отдыха: как проверить условия', kind: 'insurance' },
     { slug: 'pay-georgia-2026', title: 'Как платить в Грузии: карты РФ не работают', kind: 'guide' },
     { slug: 'turkey-guide-2026', title: 'Турция 2026 — соседнее безвизовое направление', kind: 'guide' },
   ],
@@ -144,6 +148,7 @@ export const RELATED_POSTS = {
     { slug: 'novyy-god-2027-kuda-poehat', title: 'Куда поехать на Новый год 2027: цены и крайние сроки', kind: 'season' },
   ],
   'egypt': [
+    { slug: 'bolshoy-egipetskiy-muzey', title: 'Большой Египетский музей: билеты и план посещения', kind: 'practical' },
     { slug: 'kair-iz-hurgady', title: 'Каир из Хургады: дорога, экскурсии и полные расходы', kind: 'practical' },
     { slug: 'egypt-guide-2026', title: 'Египет 2026: виза, Хургада, Шарм, цены', kind: 'guide' },
     { slug: 'hurghada-sharm-2026', title: 'Хургада или Шарм 2026: где лучше отдыхать', kind: 'guide' },
