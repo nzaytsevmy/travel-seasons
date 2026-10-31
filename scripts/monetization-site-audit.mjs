@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
 import { unshieldHtml } from './affiliate-shield.mjs';
-import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync, writeFileSync, existsSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { classifyPage, classifyPartner, isGenericAffiliateUrl, expensiveDestinationSlug, EXPENSIVE_FIRST_OFFERS } from '../src/data/monetization.js';
 import { destinationAffiliateUrl } from '../src/data/affiliate.js';
 import { auditArticlePlacement, placementProblems } from './article-affiliate-placement.mjs';
 import { auditTripServices } from './trip-service-audit.mjs';
+import { SEASON_COUNTRY_REDIRECTS } from '../src/data/season-country-redirects.js';
+import { parse } from 'parse5';
 
 const coverage = JSON.parse(readFileSync(new URL('../reviews/article-affiliate-coverage.json', import.meta.url), 'utf8')).articles;
 
@@ -65,6 +67,22 @@ function hasAttribution(href, partner) {
   return !!queryParam(href, 'sub_id');
 }
 
+// Only the explicit legacy route map may replace a content page with a redirect.
+// A noindex/refresh tag alone never exempts a normal page from the money contract.
+function validSeasonRedirect(html, target, dist) {
+  const tags=[];
+  const walk=node=>{if(node.tagName)tags.push(node);for(const child of node.childNodes || [])walk(child);};
+  walk(parse(html));
+  const value=(node,name)=>node.attrs?.find(a=>a.name===name)?.value;
+  const metas=tags.filter(n=>n.tagName==='meta');
+  const refresh=metas.filter(n=>value(n,'http-equiv')?.toLowerCase()==='refresh');
+  const canonical=tags.filter(n=>n.tagName==='link' && value(n,'rel')==='canonical');
+  return refresh.length===1 && value(refresh[0],'content')===`0;url=${target}`
+    && canonical.length===1 && value(canonical[0],'href')===`https://traveltribe.ru${target}`
+    && metas.some(n=>value(n,'name')==='robots' && value(n,'content')?.split(/[\s,]+/).includes('noindex'))
+    && existsSync(join(dist,target.slice(1),'index.html'));
+}
+
 export function auditMonetization(dist, articleCoverage = coverage) {
   const pages = [];
   const links = [];
@@ -75,6 +93,9 @@ export function auditMonetization(dist, articleCoverage = coverage) {
     const path = pagePath(dist, file);
     const info = classifyPage(path);
     const html = unshieldHtml(readFileSync(file, 'utf8'));
+    const redirectTarget=SEASON_COUNTRY_REDIRECTS[path.replace(/\/$/, '')];
+    const isRedirect=Boolean(redirectTarget && validSeasonRedirect(html,redirectTarget,dist));
+    if (redirectTarget && !isRedirect) errors.push(`${path}: некорректная переадресация на ${redirectTarget}`);
     const body = html.match(/<body\b[^>]*>/i)?.[0] || '';
     const destination = attr(body, 'data-destination') || info.destination;
     const pageLinks = [];
@@ -140,7 +161,7 @@ export function auditMonetization(dist, articleCoverage = coverage) {
       errors.push(`${path}: дорогое направление без ссылки на дорогу или тур`);
     }
 
-    const planning=auditTripServices(html,path);
+    const planning=isRedirect ? {errors:[],eligible:false,blocks:0,redirectTarget} : auditTripServices(html,path);
     errors.push(...planning.errors.map(e=>`${path}: ${e}`));
     if (info.intent === 'none' && pageLinks.some(link=>!planning.eligible || link.placement!=='planning')) errors.push(`${path}: intent=none, но партнёрские ссылки прерывают справочный ответ`);
     if (info.intent === 'high' && !pageLinks.length) warnings.push(`${path}: высокий intent без партнёрского следующего шага`);
@@ -156,7 +177,7 @@ export function auditMonetization(dist, articleCoverage = coverage) {
       }
       errors.push(...placementProblems(placement, rule).map(problem => `${path}: ${problem}`));
     }
-    pages.push({ path, ...info, destination, affiliateLinks: pageLinks.length, planning, ...(placement ? { placement } : {}) });
+    pages.push({ path, ...info, ...(isRedirect ? {type:'redirect',intent:'none'} : {}), destination, affiliateLinks: pageLinks.length, planning, ...(placement ? { placement } : {}) });
   }
   return { pages, links, errors: [...new Set(errors)], warnings: [...new Set(warnings)] };
 }
