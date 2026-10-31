@@ -86,6 +86,31 @@ export function getPackingPageAdvice(country, month) {
   return item ? { ...item, health, insurance: item.insurance || PACKING_INSURANCE_ADVICE } : null;
 }
 
+// Related reading is independent of seasonal advice: its presence must not
+// change weather, checklist items, prices or the insurance explanation.
+const egyptRelatedGuides = [
+  {
+    href: '/blog/hurghada-sharm-2026/',
+    label: 'Хургада или Шарм-эль-Шейх',
+    note: 'Сравните курорты по пляжам, ветру и поездкам, прежде чем выбирать отель.',
+  },
+  {
+    href: '/blog/kair-iz-hurgady/',
+    label: 'Каир из Хургады',
+    note: 'Выберите автобус, самолёт или поездку с ночёвкой и учтите расходы помимо дороги.',
+  },
+  {
+    href: '/blog/bolshoy-egipetskiy-muzey/',
+    label: 'Большой Египетский музей',
+    note: 'Разберитесь с билетами и временем на посещение: музей у пирамид и музей на Тахрире — разные места.',
+  },
+];
+
+export function getPackingRelatedGuides(country, month) {
+  if (country !== 'egypt' || ![undefined, 'october', 'november'].includes(month)) return [];
+  return egyptRelatedGuides.map((item) => ({ ...item }));
+}
+
 // Общий список Узбекистана сохраняет группировку месяцев. Советы основаны на
 // нормах Самарканда 2015–2024 из country-monthly-weather.js, а не на общем
 // «пустынном» шаблоне с морским пляжем и одинаковыми зимними температурами.

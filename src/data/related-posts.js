@@ -144,6 +144,7 @@ export const RELATED_POSTS = {
     { slug: 'novyy-god-2027-kuda-poehat', title: 'Куда поехать на Новый год 2027: цены и крайние сроки', kind: 'season' },
   ],
   'egypt': [
+    { slug: 'kair-iz-hurgady', title: 'Каир из Хургады: дорога, экскурсии и полные расходы', kind: 'practical' },
     { slug: 'egypt-guide-2026', title: 'Египет 2026: виза, Хургада, Шарм, цены', kind: 'guide' },
     { slug: 'hurghada-sharm-2026', title: 'Хургада или Шарм 2026: где лучше отдыхать', kind: 'guide' },
     { slug: 'pay-abroad-2026', title: 'Как платить за границей россиянам 2026', kind: 'guide' },
@@ -177,6 +178,7 @@ export const RELATED_POSTS = {
     { slug: 'diani-kenya', title: "Диани после сафари: где остановиться и как добраться", kind: 'practical' },
   ],
   'armenia': [
+    { slug: 'gde-ostanovitsya-v-erevane', title: 'Где остановиться в Ереване на 2–3 дня', kind: 'practical' },
     { slug: 'armenia-guide-2026', title: 'Армения 2026 для россиян: безвиз, внутренний паспорт, цены', kind: 'guide' },
   ],
   'azerbaijan': [
@@ -200,6 +202,7 @@ export const RELATED_POSTS = {
     { slug: 'mauritius-2026', title: 'Маврикий 2026: когда ехать, какой берег, почём неделя', kind: 'guide' },
   ],
   'nepal': [
+    { slug: 'strahovka-dlya-trekkinga-v-nepale', title: 'Страховка для треккинга в Непале: высота и эвакуация', kind: 'insurance' },
     { slug: 'nepal-everest-trek-2026', title: 'Базовый лагерь Эвереста и Гокио 2026: сезоны, пермиты, бюджет', kind: 'guide' },
   ],
   'singapore': [

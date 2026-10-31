@@ -25,6 +25,7 @@ import { COUNTRY_SIGHTS } from '../../../data/country-sights.js';
 import { POIS } from '../../../data/country-pois.js';
 import { typo } from '../../../utils/typo.js';
 import PackingChecklist from '../../../components/PackingChecklist.astro';
+import PackingRelatedGuides from '../../../components/PackingRelatedGuides.astro';
 import { getPackingPageAdvice } from '../../../data/packing-page-advice.js';
 import { getSeasonalPageAdvice } from '../../../data/seasonal-page-advice.js';
 // «О» или «об»: «об» перед словом с гласной а, и, о, у, э в начале («об Алтае», «об июне»), иначе «о».
@@ -345,6 +346,8 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         }}
       />
     </section>
+
+    <PackingRelatedGuides country={d.slug} month={m.slug} />
 
     {/* ПОГОДА — реальные цифры для топ-15, generic для остальных */}
     <section class="pmu-section">
