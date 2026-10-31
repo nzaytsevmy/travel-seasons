@@ -53,6 +53,15 @@ for (const width of widths) {
       expect(await checkPageStructure(page, `/blog/${slug}/`, width)).toEqual([]);
       const images = page.locator('.prose img');
       expect(await images.count()).toBeGreaterThanOrEqual(4);
+      // WebKit can defer a lazy image during the structural check's rapid
+      // scroll. Exercise the reader's visible-image state before asserting
+      // every image has loaded; the final completeness requirement stays intact.
+      for (const image of await images.all()) {
+        await image.scrollIntoViewIfNeeded();
+        const src = await image.getAttribute('src');
+        await expect.poll(() => image.evaluate(node => (node as HTMLImageElement).complete && (node as HTMLImageElement).naturalWidth > 0),
+          { message: `Visible article image did not load: ${src}` }).toBe(true);
+      }
       expect(await images.evaluateAll(nodes => nodes.every(image => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0))).toBe(true);
       if (width <= 402) {
         const cells = page.locator('.table-wide td[data-label]:not(:first-child)');
