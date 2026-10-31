@@ -2,7 +2,9 @@ import { test, expect } from './browser-fixture';
 import { SEASON_COUNTRY_REDIRECTS } from '../src/data/season-country-redirects.js';
 import { getPackingRelatedGuides } from '../src/data/packing-page-advice.js';
 
-test('legacy country directories emit instant redirects and stay out of the sitemap', async ({ request }) => {
+const normalized = (text: string) => text.replace(/[\u200b\u2060]/g, '').replace(/\s+/g, ' ').trim();
+
+test('legacy country directories emit instant redirects and stay out of the sitemap', async ({ request, page }) => {
   const sitemap = await (await request.get('/sitemap-0.xml')).text();
   for (const [from, target] of Object.entries(SEASON_COUNTRY_REDIRECTS)) {
     const response = await request.get(`${from}/`);
@@ -13,6 +15,12 @@ test('legacy country directories emit instant redirects and stay out of the site
     expect(sitemap, from).not.toContain(`<loc>https://traveltribe.ru${from}/</loc>`);
     expect((await request.get(target)).ok(), target).toBeTruthy();
   }
+  for (const country of ['japan', 'georgia', 'turkey', 'bali', 'thailand']) {
+    await page.goto(`/seasons/${country}/`);
+    await expect(page).toHaveURL(`/${country}/`);
+    await expect(page.locator('h1')).toHaveCount(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://traveltribe.ru/${country}/`);
+  }
 });
 
 for (const country of ['egypt', 'georgia', 'armenia', 'china', 'hainan', 'nepal']) {
@@ -21,7 +29,8 @@ for (const country of ['egypt', 'georgia', 'armenia', 'china', 'hainan', 'nepal'
     const block = page.locator('.packing-next');
     await expect(block).toBeVisible();
     for (const guide of getPackingRelatedGuides(country, 'december')) {
-      await expect(block.locator(`a[href="${guide.href}"]`)).toHaveText(guide.label);
+      const link = block.locator(`a[href="${guide.href}"]`);
+      await expect.poll(async () => normalized(await link.innerText())).toBe(normalized(guide.label));
     }
     await expect(page.locator('h1')).toHaveCount(1);
     expect(await page.locator('link[rel="canonical"]').getAttribute('href')).toBe(`https://traveltribe.ru/packing/${country}/december/`);

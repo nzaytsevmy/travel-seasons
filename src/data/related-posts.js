@@ -209,6 +209,7 @@ export const RELATED_POSTS = {
   'nepal': [
     { slug: 'strahovka-dlya-trekkinga-v-nepale', title: 'Страховка для треккинга в Непале: высота и эвакуация', kind: 'insurance' },
     { slug: 'nepal-everest-trek-2026', title: 'Базовый лагерь Эвереста и Гокио 2026: сезоны, пермиты, бюджет', kind: 'guide' },
+    { slug: 'strahovka-dlya-aktivnogo-otdyha', title: 'Страховка для активного отдыха: как проверить условия', kind: 'insurance' },
   ],
   'singapore': [
     { slug: 'gardens-by-the-bay', title: "Gardens by the Bay: бесплатные зоны и платные павильоны", kind: 'practical' },

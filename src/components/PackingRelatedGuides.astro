@@ -9,9 +9,10 @@ interface Props {
 
 const { country, month, title = 'Чемодан собран — выбираем маршрут' } = Astro.props;
 const guides = getPackingRelatedGuides(country, month);
+const regionLabel = country === 'egypt' ? 'Выбрать маршрут по Египту' : title;
 ---
 {guides.length > 0 && (
-  <section class="packing-next" aria-label={title}>
+  <section class="packing-next" aria-label={regionLabel}>
     <h2>{title}</h2>
     <ul>
       {guides.map(({ href, label, note }) => (
