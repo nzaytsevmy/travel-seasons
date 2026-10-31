@@ -9,7 +9,7 @@ import { proseHash } from '../scripts/article-review-gate.mjs';
 import {parse} from 'yaml';
 
 const project = new URL('../', import.meta.url);
-const post = `---\ntitle: Test choice\ndescription: A grounded choice\npubDate: 2026-10-10\ncoverImage: ./fixture.jpg\nreviewed: 2026-10-10\nauthoredBy: writer\nreviewRef: reviews/blog/test-choice.json\nqualityScore:\n  topic: 9\n  facts: 9\n  visuals: 8\n  experience: 7\n  internalLinks: 9\n  legal: 9\n  overall: 8.5\n  ceiling: Honest ceiling without personal experience\n---\nA useful answer that explains the decision and its conditions.\n`;
+const post = `---\ntitle: Test choice\ndescription: A grounded choice\npubDate: 2026-10-10\ncoverImage: ./fixture.jpg\nreviewed: 2026-10-10\nauthoredBy: writer\nreviewRef: reviews/blog/test-choice.json\nchecks:\n  - date: 2026-10-10\n    what: Fixture source check\n    changed: Fixture conditions checked\n    sources:\n      - name: Fixture operator\n        url: https://example.invalid/source\nqualityScore:\n  topic: 9\n  facts: 9\n  visuals: 8\n  experience: 7\n  internalLinks: 9\n  legal: 9\n  overall: 8.5\n  ceiling: Honest ceiling without personal experience\n---\nA useful answer that explains the decision and its conditions.\n`;
 function fixture(branch, options = {}) {
   const root = mkdtempSync(join(tmpdir(), 'tt-routine-push-'));
   const env = gitEnvironment();
@@ -18,7 +18,7 @@ function fixture(branch, options = {}) {
   try {
     git(['init', '-b', 'main']);
     git(['config', 'user.name', 'Test']);git(['config', 'user.email', 'test@example.invalid']);
-    for (const file of ['pre-push.sh', 'release-scope.mjs', 'news-push-scope.mjs', 'article-review-gate.mjs', 'article-lead.mjs', 'edit-kind.mjs', 'auto-merge-policy.mjs', 'routine-preflight.mjs','article-source-rules.mjs','revision-queue.mjs']) {
+    for (const file of ['pre-push.sh', 'release-scope.mjs', 'news-push-scope.mjs', 'article-review-gate.mjs', 'article-lead.mjs', 'edit-kind.mjs', 'auto-merge-policy.mjs', 'routine-preflight.mjs','article-source-rules.mjs','article-quality-ratchet.mjs','revision-queue.mjs']) {
       const src = new URL(`scripts/${file}`, project);
       if (existsSync(src)) { mkdirSync(join(root, 'scripts'), { recursive: true }); copyFileSync(src, join(root, 'scripts', file)); }
     }
@@ -27,12 +27,13 @@ function fixture(branch, options = {}) {
     symlinkSync(new URL('node_modules/yaml', project), join(root, 'node_modules/yaml'), 'dir');
     symlinkSync(new URL('node_modules/astro', project), join(root, 'node_modules/astro'), 'dir');
     mkdirSync(join(root,'src/content'),{recursive:true});copyFileSync(new URL('src/content/blog-schema.mjs',project),join(root,'src/content/blog-schema.mjs'));
+    put('tests/quality-baseline.json',readFileSync(new URL('tests/quality-baseline.json',project),'utf8'));
     put('scripts/preview-port.mjs', 'console.log(4432);\n');
     put('scripts/secret-scan.py', 'import sys\nsys.exit(0)\n');
     put('scripts/check-journal-metadata.mjs', 'console.log("metadata fixture PASS");\n');
     put('scripts/news-gate.mjs', 'process.stdin.resume();process.stdin.on("end",()=>console.log("news source fixture PASS"));\n');
     put('scripts/news-lifecycle.mjs', 'console.log("lifecycle fixture PASS");\n');
-    git(['add', 'package.json', 'scripts','src/content/blog-schema.mjs']);git(['commit', '-m', 'test: base']);
+    git(['add', 'package.json', 'scripts','src/content/blog-schema.mjs','tests/quality-baseline.json']);git(['commit', '-m', 'test: base']);
     const base = git(['rev-parse', 'HEAD']);git(['update-ref', 'refs/remotes/origin/main', base]);
     git(['switch', '-c', branch]);
     put('src/content/blog/test-choice.md', post);

@@ -370,6 +370,14 @@ jobs:
           PREVIEW_URL: http://localhost:4322
           SKIP_PAGE_MTIME_TESTS: '1'
 
+      - name: Early paid-content WebKit lazy-image regression
+        if: matrix.shard == 2
+        run: |
+          npx playwright test tests/paid-content-package.spec.ts --project=webkit-desktop --grep 'paid package: article georgia-insurance-2026 at(360|402)$' --retries=0 --trace=on
+        env:
+          PREVIEW_URL: http://localhost:4322
+          SKIP_PAGE_MTIME_TESTS: '1'
+
       - name: Run visual regression tests
         run: node scripts/run-balanced-browser-shard.mjs ${{ matrix.shard }}
         env:
