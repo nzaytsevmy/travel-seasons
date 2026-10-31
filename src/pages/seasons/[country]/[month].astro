@@ -292,11 +292,12 @@ const otherMonths = seasonMonthKeys(country).filter(m => m !== monthKey);
 
 .seasons-facts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
   gap: 0.7rem;
   margin: 2rem 0 2.5rem;
 }
 .fact {
+  min-width: 0;
   background: var(--bg2);
   border: 1px solid var(--line);
   padding: 0.7rem 0.9rem;

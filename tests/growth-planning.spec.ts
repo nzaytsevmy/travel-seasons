@@ -68,3 +68,23 @@ for (const width of [360, 402, 768, 1024, 1280]) {
     });
   }
 }
+
+// Live RED: a nonbreaking fare/season note exceeded the old140px track.
+// Check each value as well as the document so clipping cannot mask overflow.
+for (const width of [360, 402, 768, 1024, 1280]) {
+  for (const path of ['/seasons/kamchatka/march/', '/seasons/bali/december/']) {
+    test(`season facts retain complete values at ${width}: ${path}`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(path);
+      const values = page.locator('.seasons-facts .fact-value');
+      await expect(values).toHaveCount(6);
+      for (const value of await values.all()) await expect(value).toBeVisible();
+      const longValue = values.nth(path.includes('kamchatka') ? 5 : 3);
+      const expectedText = path.includes('kamchatka') ? '$300–450 (плоский тариф)' : 'высокий (НГ-каникулы)';
+      await expect.poll(async () => normalized(await longValue.innerText())).toBe(normalized(expectedText));
+      const widths = await values.evaluateAll(nodes => nodes.map(node => ({ client: node.clientWidth, scroll: node.scrollWidth, text: node.textContent })));
+      for (const value of widths) expect(value.scroll, value.text || path).toBeLessThanOrEqual(value.client + 1);
+      expect(await page.evaluate(() => Math.max(document.body.scrollWidth, document.documentElement.scrollWidth))).toBeLessThanOrEqual(width + 1);
+    });
+  }
+}
