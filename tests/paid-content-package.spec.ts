@@ -9,7 +9,9 @@ const packingCases = [
   ['/packing/egypt/october/', true],
   ['/packing/egypt/november/', true],
   ['/packing/egypt/september/', false],
-  ['/packing/egypt/december/', false],
+  ['/packing/egypt/december/', true],
+  ['/packing/egypt/january/', true],
+  ['/packing/egypt/february/', true],
   ['/packing/armenia/', false],
   ['/packing/nepal/november/', false],
 ] as const;

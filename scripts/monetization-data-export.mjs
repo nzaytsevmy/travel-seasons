@@ -10,6 +10,7 @@ const METRIKA_OUTBOUND_GOAL = '566338531';
 const METRIKA_API = 'https://api-metrika.yandex.net/stat/v1/data';
 const TP_FIELDS_API = 'https://api.travelpayouts.com/statistics/v1/get_fields_list';
 const TP_STATS_API = 'https://api.travelpayouts.com/statistics/v1/execute_query';
+const TP_TRAFFIC_SOURCE = 429330;
 
 const PARTNER_PATTERNS = [
   [/aviasales|авиасейлс/i, 'aviasales'],
@@ -69,7 +70,10 @@ export function normalizeMetrikaClickRows(apiRows) {
     }
     if (!/^c[a-f0-9]{20}$/.test(clickId)) continue;
     const eventCount = Number(row.metrics?.[0] ?? 0);
-    const current = byClick.get(clickId) ?? {
+    // Two parameters of one event are one click. Different times or pages are
+    // separate candidates: collapsing them would manufacture an exact join.
+    const eventKey = JSON.stringify([clickId, dateTime, pagePath]);
+    const current = byClick.get(eventKey) ?? {
       click_id: clickId,
       event_time: `${dateTime.replace(' ', 'T')}+03:00`,
       page_path: pagePath,
@@ -82,7 +86,7 @@ export function normalizeMetrikaClickRows(apiRows) {
     if (/^[a-z0-9_]{1,40}$/.test(partner)) current.partner = partner;
     if (/^[a-z0-9_]{5,64}$/.test(ctaId)) current.cta_id = ctaId;
     if (/^[a-z0-9_]{1,40}$/.test(rolloutId)) current.rollout_id = rolloutId;
-    byClick.set(clickId, current);
+    byClick.set(eventKey, current);
   }
   return [...byClick.values()];
 }
@@ -245,10 +249,10 @@ export async function fetchTravelpayoutsActions({ token, dateFrom, dateTo }) {
     'action_id', 'internal_action_id', 'external_click_id', 'sub_id', 'campaign_id',
     'campaign_name_en', 'campaign_name_ru', 'campaign_name', 'state', 'date',
     'created_at', 'updated_at', 'state_updated_at', 'paid_profit_rub',
-    'processing_profit_rub', 'profit_rub',
+    'processing_profit_rub', 'profit_rub', 'traffic_source',
   ];
   const fields = desired.filter((field) => available.has(field));
-  for (const required of ['action_id', 'sub_id', 'state', 'date']) {
+  for (const required of ['action_id', 'sub_id', 'state', 'date', 'traffic_source']) {
     if (!fields.includes(required)) throw new Error(`Travelpayouts не вернул обязательное поле ${required}.`);
   }
   const rows = [];
@@ -281,7 +285,10 @@ export async function fetchTravelpayoutsActions({ token, dateFrom, dateTo }) {
     if (offset > 1000000) throw new Error('Travelpayouts: превышен предел выгрузки');
     offset += data.results.length;
   }
-  return normalizeTravelpayoutsActions(rows);
+  if (rows.some(row => !/^\d+$/.test(String(row.traffic_source ?? '')))) {
+    throw new Error('Travelpayouts: не подтверждён traffic_source; денежная выгрузка не завершена.');
+  }
+  return normalizeTravelpayoutsActions(rows.filter(row => Number(row.traffic_source) === TP_TRAFFIC_SOURCE));
 }
 
 function argsOf(argv) {
@@ -333,6 +340,15 @@ if (process.argv[1] && resolve(process.argv[1]) === new URL(import.meta.url).pat
     sputnikHumanClicks: { status:'complete', filter:SPUTNIK_HUMAN_FILTER,
       dateFrom:args.dateFrom,dateTo:args.dateTo,rows:sputnikClicks },
     actions,
+    ingestion: {
+      status: 'complete',
+      source: 'Travelpayouts statistics API',
+      trafficSource: TP_TRAFFIC_SOURCE,
+      from: args.dateFrom,
+      through: args.actionsThrough || args.dateTo,
+      rowCount: actions.length,
+      completedAt: new Date().toISOString(),
+    },
   }, null, 2)}\n`, {mode:0o600});
   renameSync(temporary, output);
   console.log(`приватный денежный экспорт: ${output}; assignments=${Object.values(assignmentCounts).reduce((a, b) => a + b, 0)}, clicks=${clickEvents.length}, actions=${actions.length}`);

@@ -83,7 +83,7 @@ const ldJson = {
       'itemListElement': [
         { '@type': 'ListItem', 'position': 1, 'name': 'Главная', 'item': 'https://traveltribe.ru/' },
         { '@type': 'ListItem', 'position': 2, 'name': 'Сезоны', 'item': 'https://traveltribe.ru/seasons/' },
-        { '@type': 'ListItem', 'position': 3, 'name': country.name, 'item': `https://traveltribe.ru/seasons/${country.slug}/` },
+        { '@type': 'ListItem', 'position': 3, 'name': country.name, 'item': `https://traveltribe.ru/${country.slug}/` },
         { '@type': 'ListItem', 'position': 4, 'name': `${country.name} в ${monthMeta.loc}`, 'item': url },
       ],
     },
@@ -105,7 +105,7 @@ const otherMonths = seasonMonthKeys(country).filter(m => m !== monthKey);
 <Layout title={title} description={description} canonical={canonicalUrl} ldJson={ldJson}>
   <Breadcrumbs crumbs={[
     { label: 'Сезоны', href: '/seasons/' },
-    { label: country.name },
+    { label: country.name, href: `/${country.slug}/` },
     { label: monthMeta.name },
   ]} />
 

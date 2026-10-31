@@ -17,6 +17,7 @@ import { getWeatherBucket } from '../../../data/country-month-bucket.js';
 import { getBucket } from '../../../data/packing-weather-buckets.js';
 import { hasTripSnippet, tripSnippetDescription } from '../../../data/trip-snippets.js';
 import TripSaveButton from '../../../components/TripSaveButton.astro';
+import PackingRelatedGuides from '../../../components/PackingRelatedGuides.astro';
 import { getSeasonalPageAdvice } from '../../../data/seasonal-page-advice.js';
 import { Image } from 'astro:assets';
 // «О» или «об»: «об» перед словом с гласной а, и, о, у, э в начале («об Алтае», «об июне»), иначе «о».
@@ -295,6 +296,8 @@ const tourOffer = preferredTourCountry(d.slug, `trip_${d.slug}_${m.slug}`);
         )}
       </section>
 
+      {status !== 'X' && <PackingRelatedGuides country={d.slug} month={m.slug} title="Что выбрать до бронирования" />}
+
       {hasPrices && (
         <section class="sec">
           <div class="shead"><h2>Сколько стоит поездка {d.cases.vP} в {m.prep}</h2></div>
@@ -314,7 +317,7 @@ const tourOffer = preferredTourCountry(d.slug, `trip_${d.slug}_${m.slug}`);
           </table>
           </div>
           <p class="tnote">Перелёт из Москвы ${flightTiers[0]}–${flightTiers[2]}, отель ${hotelTiers[0]}–${hotelTiers[2]}/ночь, еда ${foodTiers[0]}–${foodTiers[2]}/день. Точный расчёт под маршрут — в <a href="/calculator/">калькуляторе поездки</a>.</p>
-          <p class="findcta"><a class="find" href={ostrovokCountry(d.slug, `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc}</a> — оплата картой РФ, бесплатная отмена · <a class="find" href={cherehapaCountry(d.slug, `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">страховка под визу</a> </p>
+          <p class="findcta"><a class="find" href={ostrovokCountry(d.slug, `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Подобрать жильё {d.cases.loc}</a>. Условия оплаты и отмены проверьте в карточке жилья. <a class="find" href={cherehapaCountry(d.slug, `trips_${m.slug.replaceAll('-', '_')}_${d.slug.replaceAll('-', '_')}`)} rel="sponsored noopener" target="_blank">Подобрать страховку под поездку</a>.</p>
         </section>
       )}
 
@@ -438,7 +441,7 @@ const tourOffer = preferredTourCountry(d.slug, `trip_${d.slug}_${m.slug}`);
           <div class="shead"><h2>Подробные гайды {об(d.cases.prep)} {d.cases.prep}</h2></div>
           <ul class="vl wide">
             {d.relatedPosts.map((p) => (
-              <li><a href={`/blog/${p.slug}/`}>{p.title}</a><span>{p.kind === 'visa' ? 'про визу' : p.kind === 'season' ? 'про конкретный сезон' : p.kind === 'insurance' ? 'про страховку' : p.kind === 'practical' ? 'практический разбор' : 'личный опыт'}</span></li>
+              <li><a href={`/blog/${p.slug}/`}>{p.title}</a><span>{p.kind === 'visa' ? 'про визу' : p.kind === 'season' ? 'про конкретный сезон' : p.kind === 'insurance' ? 'про страховку' : 'практический разбор'}</span></li>
             ))}
           </ul>
         </section>

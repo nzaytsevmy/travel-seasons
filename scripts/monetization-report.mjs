@@ -135,6 +135,8 @@ export function buildReport({
   const traffic = flattenTraffic(trafficSnapshot);
   const joined = joinRevenueRowsToClicks(revenueRows, clickRows);
   const normalized = joined.rows;
+  const missingClickIds = normalized.filter(row => !row.clickId).length;
+  const missingClickEvents = joined.stats.missing - missingClickIds;
   const ingestionComplete = ingestion?.status === 'complete' &&
     Number.isInteger(ingestion.rowCount) && ingestion.rowCount === revenueRows.length &&
     [ingestion.from, ingestion.through, ingestion.completedAt].every(value => Number.isFinite(Date.parse(value))) &&
@@ -157,6 +159,7 @@ export function buildReport({
   const approvedOrders = decisionRows.filter((row) => row.approvedRevenue > 0).length;
   const organicSessions = traffic.reduce((sum, row) => sum + row.organic, 0);
   const clicks = traffic.reduce((sum, row) => sum + row.clicks, 0);
+  const trafficKnown = traffic.length > 0;
   const metrics = computeRevenueMetrics({ organicSessions, approvedRevenue, reversedRevenue, approvedOrders });
   const matchedMature = decisionRows.filter(row => row.metrikaClick);
   const attributedNet = matchedMature.reduce((sum,row) => sum + row.approvedRevenue - row.reversedRevenue, 0);
@@ -219,12 +222,15 @@ export function buildReport({
   return `# Монетизация TravelTribe — денежный baseline\n\n`
     + `Срез Метрики: **${dated}**. Главная метрика — одобренная комиссия после отмен на 1 000 органических визитов.\n\n`
     + `## Итог\n\n`
-    + `- Органических визитов: **${organicSessions}**\n`
-    + `- Человеческих переходов к партнёрам: **${clicks}** (${percent(clicks, organicSessions)})\n`
+    + `- Органических визитов: **${trafficKnown ? organicSessions : 'нет данных'}**\n`
+    + `- Человеческих переходов к партнёрам: **${trafficKnown ? clicks : 'нет данных'}** (${percent(clicks, organicSessions)})\n`
     + `- Заказов после сведения статусов: **${normalized.length}** (сырых строк: ${revenueRows.length})\n`
     + `- Зрелых заказов: **${mature.length} из ${normalized.length}**\n`
     + `- Покрытие CTA-level атрибуцией: **${percent(attributed, normalized.length)}**\n`
     + `- Точный action→click join: **${percent(joined.stats.matched, joined.stats.total)} (${joined.stats.matched} из ${joined.stats.total})**\n`
+    + `- Действий без click_id: **${missingClickIds}**; с click_id без найденного события: **${missingClickEvents}**\n`
+    + `- Неоднозначных связей: **${joined.stats.ambiguous}**; несовпадений контекста: **${joined.stats.mismatched}**\n`
+    + `- Ограничение атрибуции: CTA-level метка не восстанавливает отдельный исторический клик. Отсутствие события не доказывает причину потери; даты заказа и исходного клика учитываются отдельно.\n`
     + `- Одобренных действий: **${metrics.approvedOrders}**\n`
     + `- По загруженному реестру — одобренная комиссия после отмен: **${hasRegistry && knownRows.length === normalized.length ? money(registryNet) : 'нет данных'}**\n`
     + `- Чистая одобренная комиссия: **${hasRegistry && maturityConfigured ? money(metrics.netApprovedRevenue) : 'нет данных'}** (только зрелые строки, ещё без требования точного join)\n`

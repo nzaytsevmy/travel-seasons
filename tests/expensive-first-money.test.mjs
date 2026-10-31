@@ -68,3 +68,23 @@ test('список дорогих направлений узнаёт тольк
   assert.equal(expensiveDestinationSlug('/packing/kenya/september/'), '');
   assert.ok(EXPENSIVE_DESTINATION_POSTS.size >= 14);
 });
+
+const redirect = (target='/georgia/', canonical='https://traveltribe.ru/georgia/') => `<html><head><meta http-equiv="refresh" content="0;url=${target}"><meta name="robots" content="noindex"><link rel="canonical" href="${canonical}"></head><body><a href="${target}">Redirecting</a></body></html>`;
+test('legacy season redirect needs no purchase block while its destination is fully audited', () => {
+  const result=withDist({'seasons/georgia':redirect(),georgia:'<html><body><main>Country hub without planner</main></body></html>'});
+  assert.deepEqual(result.errors.filter(e=>e.startsWith('/seasons/georgia/:')),[]);
+  assert.ok(result.errors.some(e=>e.startsWith('/georgia/: блок подготовки')));
+  assert.equal(result.pages.find(p=>p.path==='/seasons/georgia/').type,'redirect');
+});
+test('legacy season redirect cannot hide a missing or wrong destination', () => {
+  for(const pages of [
+    {'seasons/georgia':redirect()},
+    {'seasons/georgia':redirect('/turkey/'),georgia:page()},
+    {'seasons/georgia':redirect('/georgia/','https://traveltribe.ru/turkey/'),georgia:page()},
+    {'seasons/georgia':redirect().replace('noindex','index'),georgia:page()},
+  ])assert.ok(withDist(pages).errors.some(e=>e.startsWith('/seasons/georgia/: некорректная переадресация')));
+});
+test('unregistered noindex pages still require their purchase block', () => {
+  const result=withDist({'seasons/not-a-country':redirect()});
+  assert.ok(result.errors.some(e=>e.includes('блок подготовки')));
+});
