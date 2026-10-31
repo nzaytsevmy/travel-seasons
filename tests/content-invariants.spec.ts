@@ -1,4 +1,5 @@
 import { PARASITES, SOFT, CLICHES, OFFICE, AD_TONE, SIGNIF, AI_VOCAB, VAGUE_SRC, WATER, SOFT_TAILS, PROPER_NAMES, безЦитатИИмён, articleLanguageProblems, articleFreshnessProblems } from '../scripts/article-source-rules.mjs';
+import { articleQualityRatchet } from '../scripts/article-quality-ratchet.mjs';
 import { test, expect } from './browser-fixture';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, statSync, readFileSync as readFileRaw } from 'node:fs';
@@ -1181,24 +1182,10 @@ test('Качество: храповик — нарушителей не ста�
   const posts = readdirSync(join(REPO, 'src/content/blog'))
     .filter((f) => f.endsWith('.md') || f.endsWith('.mdx'));
 
-  const noJournal: string[] = [];
-  const stopWords: string[] = [];
-  for (const f of posts) {
-    const raw = readFileSync(join(REPO, 'src/content/blog', f), 'utf8');
-    const m = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-    if (!m) continue;
-    const [, fm, body] = m;
-    if (!/^checks:/m.test(fm)) noJournal.push(f);
-    if (/(^|[^а-яёА-ЯЁ])(просто|очень|достаточно|уже|ведь)([^а-яё]|$)/i.test(body)) stopWords.push(f);
-  }
-
-  const grown: string[] = [];
-  if (noJournal.length > baseline.withoutJournal) {
-    grown.push(`без журнала сверок: ${noJournal.length} против ${baseline.withoutJournal} в замере ${baseline.measuredAt}`);
-  }
-  if (stopWords.length > baseline.withStopWords) {
-    grown.push(`со словами-паразитами: ${stopWords.length} против ${baseline.withStopWords} в замере ${baseline.measuredAt}`);
-  }
+  const {noJournal,stopWords,problems:grown}=articleQualityRatchet({
+    posts:posts.map(file=>({file,raw:readFileSync(join(REPO,'src/content/blog',file),'utf8')})),
+    baseline,
+  });
   expect(grown, grown.join('\n')).toEqual([]);
 
   // Стало лучше — не падаем, но говорим вслух: планку надо опустить, иначе

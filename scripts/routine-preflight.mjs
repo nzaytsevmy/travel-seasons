@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Publication source checks run locally; the existing automatic merge requires all CI checks.
 import { execFileSync } from 'node:child_process';
-import { readFileSync, lstatSync, existsSync } from 'node:fs';
+import { readFileSync, readdirSync, lstatSync, existsSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { parseArgs } from 'node:util';
 import { gitChanges, gitEnvironment } from './release-scope.mjs';
@@ -14,6 +14,7 @@ import { articleProse } from './edit-kind.mjs';
 import { articleLanguageProblems, articleFreshnessProblems } from './article-source-rules.mjs';
 import { buildQueue } from './revision-queue.mjs';
 import { requiredChecks } from './auto-merge-policy.mjs';
+import { articleQualityRatchet } from './article-quality-ratchet.mjs';
 
 try {
   const { values } = parseArgs({ options: { base: { type: 'string' }, head: { type: 'string', default: 'HEAD' } } });
@@ -43,7 +44,11 @@ try {
       committed(change.path);
     }
   }
-  const sourceProblems=[];
+  const sourceProblems=articleQualityRatchet({
+    posts:readdirSync(join(root,'src/content/blog')).filter(file=>/\.mdx?$/.test(file))
+      .map(file=>({file,raw:readFileSync(join(root,'src/content/blog',file),'utf8')})),
+    baseline:JSON.parse(readFileSync(join(root,'tests/quality-baseline.json'),'utf8')),
+  }).problems;
   const queue=buildQueue();
   let articles = 0;
   const news = [];
