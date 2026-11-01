@@ -22,7 +22,10 @@ test('личный бюджет: ночи, номера, оплаченное, �
   await expect(page.locator('.tc-hero-label')).toHaveText('Оценка поездки');
   expect(money(await page.locator('.tc-hero-amount').textContent())).toBe(32000);
   expect(money(await page.locator('[data-total=remaining]').textContent())).toBe(35200);
-  await page.locator('[data-paid=flight]').check();
+  await page.locator('[data-paid=flight]').focus();
+  await page.locator('[data-paid=flight]').press('Space');
+  await expect(page.locator('[data-paid=flight]')).toBeChecked();
+  await expect(page.locator('[data-paid=flight]')).toBeFocused();
   expect(money(await page.locator('.tc-hero-amount').textContent())).toBe(32000);
   expect(money(await page.locator('[data-total=paid]').textContent())).toBe(10000);
   expect(money(await page.locator('[data-total=remaining]').textContent())).toBe(24200);
@@ -68,8 +71,19 @@ test('сравнение хранит расходы отдельно; неиз�
   await expect(page.locator('#cost-flight')).toHaveValue('12345');
   await expect(page.locator('#personalReserve')).toHaveValue('10');
   await expect(page.locator('.tc-cmp-card').filter({ hasText: 'Грузия' }).locator('.tc-finances')).toContainText('Запас 50%');
-  await page.locator('.tc-cmp-remove').click();
-  for (const id of ['transport', 'activities', 'insurance']) await page.locator(`[data-exclude=${id}]`).check();
+  await page.locator('.tc-cmp-remove').focus();
+  await page.locator('.tc-cmp-remove').press('Enter');
+  await expect(page.locator('#addCountrySelect')).toBeFocused();
+  await page.locator('[data-reset=flight]').focus();
+  await page.locator('[data-reset=flight]').press('Enter');
+  await expect(page.locator('#cost-flight')).toBeFocused();
+  await expect(page.locator('#cost-flight')).not.toHaveValue('12345');
+  for (const id of ['transport', 'activities', 'insurance']) {
+    await page.locator(`[data-exclude=${id}]`).focus();
+    await page.locator(`[data-exclude=${id}]`).press('Space');
+    await expect(page.locator(`[data-exclude=${id}]`)).toBeChecked();
+    await expect(page.locator(`[data-exclude=${id}]`)).toBeFocused();
+  }
   await page.locator('#cost-other').fill('0');
   await expect(page.locator('.tc-hero-label')).toHaveText('Оценка поездки');
   await page.locator('#cost-other').fill('');

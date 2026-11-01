@@ -469,6 +469,7 @@ resultEl.addEventListener('click', e => {
     const pi = +rm.dataset.remove;
     compareList = compareList.filter(x => x !== pi);
     renderCalc();
+    addSelect.focus({ preventScroll: true });
     return;
   }
 });
@@ -556,19 +557,26 @@ editor?.addEventListener('change', e => {
   const input = e.target;
   if (input.matches('[data-money], [data-draft]')) return;
   const draft = normalizeDraft(drafts[key(+calcSel.value)]);
+  const action = input.dataset.paid ? 'paid' : input.dataset.exclude ? 'exclude' : null;
+  const id = action && input.dataset[action];
   if (input.dataset.paid) draft.costs[input.dataset.paid].paid = input.checked;
   else if (input.dataset.exclude) draft.costs[input.dataset.exclude].excluded = input.checked;
   else return;
   drafts[key(+calcSel.value)] = normalizeDraft(draft);
-  activeError = false; renderCalc(); changed();
+  activeError = false; renderCalc();
+  editor.querySelector(`[data-${action}="${CSS.escape(id)}"]`)?.focus({ preventScroll: true });
+  changed();
 });
 editor?.addEventListener('click', e => {
   const reset = e.target.closest('[data-reset]');
   if (!reset) return;
+  const id = reset.dataset.reset;
   const draft = normalizeDraft(drafts[key(+calcSel.value)]);
-  draft.costs[reset.dataset.reset] = { amount: null, paid: false, excluded: false };
+  draft.costs[id] = { amount: null, paid: false, excluded: false };
   drafts[key(+calcSel.value)] = draft;
-  activeError = false; renderCalc(); changed();
+  activeError = false; renderCalc();
+  document.getElementById(`cost-${id}`)?.focus({ preventScroll: true });
+  changed();
 });
 // Explicit links take precedence over a saved calculation. Only the recognised
 // calculator route is restored; stored values never cause a navigation.
