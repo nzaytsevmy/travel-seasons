@@ -9,18 +9,16 @@ const brandYear = new Date().getFullYear();
 // не устарел при добавлении направления. Вердикт 21.09.2026 и 05.10.2026.
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
-import BudgetBlock from '../components/BudgetBlock.astro';
 import { PRICES } from '../data/prices.js';
 import { DIRECTIONS } from '../data/directions.js';
 import { VISA_DETAILS } from '../data/visa-details.js';
-import realBudgets from '../data/real-budgets-2026.json';
 import { DATA_UPDATED } from '../data/meta.js';
 import { getBudgetRates } from '../utils/budget-rates.js';
 import { build } from 'esbuild';
 import { resolve } from 'node:path';
 import calculatorSource from '../scripts/calculator.js?raw';
 const rates = await getBudgetRates();
-import { TP_LINKS, sputnik8Explore, cherehapaTravel } from '../data/affiliate.js';
+import { sputnik8Explore } from '../data/affiliate.js';
 
 // Результат заполняется до первого кадра, как у прежнего inline-калькулятора.
 // Сборка в IIFE сохраняет общую формулу без ожидания загрузки отдельного модуля.
@@ -51,7 +49,6 @@ Object.keys(groups).sort((a, b) => a.localeCompare(b, 'ru')).forEach(g => {
 const priceIdxToSlug: Record<number, string> = {};
 const priceIdxToSeasons: Record<number, any> = {};
 const priceIdxToVisa: Record<number, any> = {};
-const priceIdxToBudgetSlug: Record<number, string> = {};
 
 PRICES.forEach((p, i) => {
   // Находим DIRECTIONS-запись с тем же name (в price.name внутри directions)
@@ -62,7 +59,6 @@ PRICES.forEach((p, i) => {
   if ((VISA_DETAILS as any)[dir.slug]) {
     priceIdxToVisa[i] = { ...(VISA_DETAILS as any)[dir.slug], slug: dir.slug };
   }
-  if ((realBudgets as any)[dir.slug]) priceIdxToBudgetSlug[i] = dir.slug;
 });
 
 const MONTH_NAMES = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
@@ -73,11 +69,15 @@ const MONTH_FULL  = ['январе','феврале','марте','апреле'
 // не совпадал дословно. Разметка без видимого текста — спам-флаг по чеклисту.
 const FAQS = [
   { q: 'Как считается бюджет на несколько человек?',
-    a: 'Перелёт и питание умножаются на число людей. Жильё остаётся одной общей суммой. Проверь, что выбранный вариант размещения вмещает всех путешественников.' },
+    a: 'Перелёт задаётся на всех путешественников, питание — на человека в день. Жильё считается по ночам и числу номеров. Проверь вместимость выбранного размещения.' },
   { q: 'Виза включена в итог?',
     a: 'Известные сборы за въезд входят в сумму. Если цена сборов или обязательной страховки неизвестна, калькулятор показывает известную часть бюджета и перечисляет невключённые расходы.' },
   { q: 'Что такое «лучший месяц»?',
     a: 'Это месяц с наиболее низкой оценкой перелёта среди месяцев с подходящим сезоном. Процент экономии в подсказке относится к перелёту. Жильё и питание остаются с прежними оценками.' },
+  { q: 'Что означает «Оплачено»?',
+    a: 'Расход остаётся в общей стоимости поездки, но вычитается из суммы, которую ещё предстоит оплатить. Запас считается только от оставшихся известных расходов.' },
+  { q: 'Как сохранить свой расчёт?',
+    a: 'Нажми «Сохранить в браузере», чтобы вернуться к расчёту на этом устройстве, или скопируй ссылку. В ссылку войдут выбранные условия и введённые суммы.' },
   { q: 'Учитывает ли курс рубля?',
     a: 'Да. Суммы можно смотреть в рублях или долларах — переключатель рядом с уровнем комфорта.' },
 ];
@@ -98,12 +98,12 @@ const ldJson = {
       "@type": "WebApplication",
       "name": `Калькулятор бюджета путешествия ${brandYear}`,
       "url": "https://traveltribe.ru/calculator/",
-      "description": `Интерактивный калькулятор стоимости поездки из Москвы на ${brandYear}: 70+ направлений, сравнение, сезонный коэффициент по месяцам, виза в расчёте, реальные траты по 12 источникам.`,
+      "description": `Интерактивный калькулятор стоимости поездки из Москвы на ${brandYear}: направления, сравнение, свои расходы, оплаченное и запас на поездку.`,
       "inLanguage": "ru-RU",
       "applicationCategory": "TravelApplication",
       "operatingSystem": "Any",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "RUB" },
-      "featureList": ["70+ направлений","Сравнение до 3 стран","Сезонный коэффициент по 12 месяцам","Расчёт 1–4 путешественников","Виза в разбивке","Курс ЦБ РФ","Реальные траты 2026 из 12 источников"],
+      "featureList": ["70+ направлений","Сравнение до 3 стран","Сезонный коэффициент по 12 месяцам","Расчёт 1–4 путешественников","Виза в разбивке","Свои суммы","Оплаченные расходы","Запас на поездку","Сохранение расчёта"],
       "dateModified": DATA_UPDATED,
       "author": { "@id": "https://traveltribe.ru/about/#person" },
       "publisher": { "@id": "https://traveltribe.ru/#org" }
@@ -116,7 +116,7 @@ const ldJson = {
       "step": [
         { "@type":"HowToStep", "position":1, "name":"Выбрать направление", "text":"Одна из 70+ стран. Опционально добавь ещё для сравнения." },
         { "@type":"HowToStep", "position":2, "name":"Указать месяц поездки", "text":"Калькулятор учтёт сезонный коэффициент: пик +30%, не сезон −30%." },
-        { "@type":"HowToStep", "position":3, "name":"Длительность и путешественники", "text":"От 1 до 30 дней, от 1 до 4 человек." },
+        { "@type":"HowToStep", "position":3, "name":"Длительность и путешественники", "text":"От 1 до 90 дней, от 1 до 4 человек. Уточни число ночей и номеров." },
         { "@type":"HowToStep", "position":4, "name":"Уровень комфорта", "text":"Эконом / комфорт / люкс." },
         { "@type":"HowToStep", "position":5, "name":"Скопировать в Telegram", "text":"Готовая сводка для пересылки в чат." }
       ]
@@ -140,10 +140,10 @@ const ldJson = {
 ---
 <Layout
   title={`Калькулятор путешествия ${brandYear}: ${PRICES.length} направлений, цены уже есть`}
-  description="Выбери страну и месяц — перелёт, отель, еда и виза посчитаны сами: сразу видно, во что обойдётся поездка."
+  description="Выбери страну и месяц, уточни свои расходы и оплаченное. Калькулятор покажет бюджет поездки, запас и сколько ещё осталось оплатить."
   canonical="https://traveltribe.ru/calculator/"
   ogTitle="Калькулятор бюджета — TravelTribe"
-  ogDescription="70+ направлений · сравнение · сезон · реальные траты 2026"
+  ogDescription="Сравнение направлений, свои расходы, оплаченное и запас на поездку."
   ogType="website"
   ldJson={ldJson}
   noTransitions={true}
@@ -155,7 +155,7 @@ const ldJson = {
     <section class="tc-hero">
       <div class="tc-container">
         <h1 class="tc-h1">Сколько стоит твоя поездка</h1>
-        <p class="tc-lede">Примерный бюджет из Москвы: перелёт, жильё, питание и известные сборы за въезд. 70+ направлений, от одного до четырёх путешественников и сравнение до трёх поездок.</p>
+        <p class="tc-lede">Выбери направление, уточни свои расходы и посмотри, сколько осталось оплатить. Базовая оценка перелёта — из Москвы.</p>
         <p class="tc-byline">
           <a href="/about/" class="tc-byline-author">Никита Зайцев</a> ·
           <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>
@@ -164,6 +164,8 @@ const ldJson = {
     </section>
 
     <!-- ───────────── FORM BAR (horizontal, like Google Flights) ─ -->
+    <div class="tc-workbench tc-container">
+    <div class="tc-work">
     <section class="tc-form-section">
       <div class="tc-container">
         <form class="tc-form" id="tcForm" onsubmit="return false">
@@ -245,12 +247,22 @@ const ldJson = {
       </div>
     </section>
 
+    <section class="tc-personal-section" aria-labelledby="personalCostsTitle">
+      <h2 id="personalCostsTitle">Расходы поездки</h2>
+      <div id="personalCosts" class="ym-hide-content"></div>
+    </section>
+    </div>
+
     <!-- ───────────── RESULT — full width hero panel ─────────── -->
     <section class="tc-result-section">
       <div class="tc-container">
-        <div id="calcResult" class="tc-result"></div>
+        <div id="calcResult" class="tc-result ym-hide-content"></div>
+        <div id="calcNotice" class="tc-notice ym-hide-content" role="status" aria-live="polite"></div>
       </div>
     </section>
+
+    </div>
+    <noscript><p class="tc-container">Для изменения условий и пересчёта бюджета включи JavaScript.</p></noscript>
 
     {/* Экскурсии на месте — программы и даты у партнёра */}
     <section class="tc-section">
@@ -259,74 +271,10 @@ const ldJson = {
       </div>
     </section>
 
-    <!-- ───────────── BUDGET BLOCK (real travelers data) ──────── -->
-    <section class="tc-section">
-      <div class="tc-container">
-        <div id="budgetBlocksHost" class="tc-bb-host">
-          {Object.keys(realBudgets).filter(k => k !== '_meta').map((slug) => (
-            <div class="tc-bb-wrap" data-slug={slug} hidden>
-              <BudgetBlock slug={slug} />
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <!-- ───────────── TIPS ───────────────────────────────────── -->
-    <section class="tc-section tc-tips">
-      <div class="tc-container">
-        <div class="tc-section-head">
-          <span class="tc-section-num">01</span>
-          <h2 class="tc-section-title">Полезное при планировании</h2>
-        </div>
-        <ul class="tc-tips-list">
-          <li class="tc-tip-row">
-            <h3 class="tc-tip-title">Бронируй за 60+ дней</h3>
-            <p class="tc-tip-body">Авиабилеты дешевле на 15–20%. Отели — без разницы.</p>
-          </li>
-          <li class="tc-tip-row">
-            <h3 class="tc-tip-title">Страховка не опция</h3>
-            <p class="tc-tip-body">Стоит 2 000 ₽, спасает от $20 000+ медрасходов в Европе или США. <a class="aff-cta" href={cherehapaTravel('calculator_tip')} target="_blank" rel="noopener sponsored">Полис под даты поездки — от 413 ₽</a>.</p>
-          </li>
-          <li class="tc-tip-row">
-            <h3 class="tc-tip-title">eSIM вместо роуминга</h3>
-            <p class="tc-tip-body">Airalo 1 500 ₽ за 10 ГБ против МТС 5 000 ₽ за неделю.</p>
-          </li>
-          <li class="tc-tip-row">
-            <h3 class="tc-tip-title">Семья экономит</h3>
-            <p class="tc-tip-body">Один номер на 2–4 человек. Калькулятор учитывает: перелёт × N, отель × 1.</p>
-          </li>
-          <li class="tc-tip-row">
-            <h3 class="tc-tip-title">Сезон важнее уровня</h3>
-            <p class="tc-tip-body">5* в не сезон дешевле, чем 3* в пик. Покрути месяцы первыми.</p>
-          </li>
-          <li class="tc-tip-row">
-            <h3 class="tc-tip-title">Виза не приговор</h3>
-            <p class="tc-tip-body">Шенген ~12 000 ₽. На фоне 150–200к поездки — 6–8%, не повод отказывать.</p>
-          </li>
-        </ul>
-
-        <a href="/blog/pay-abroad-2026/" class="tc-tip-callout">
-          <span class="tc-tip-callout-text">
-            <strong>Чем платить за границей в 2026</strong>
-            <span>Visa/MC РФ не работают, UnionPay из РФ массово отклоняют. Виртуальные USD/EUR-карты, UnionPay от АТБ, банки ЕАЭС, наличные — 4 рабочих способа подробно</span>
-          </span>
-        </a>
-
-        <a href="/compare/" class="tc-tip-callout">
-          <span class="tc-tip-callout-text">
-            <strong>Не можешь выбрать между двумя странами?</strong>
-            <span>Виза, бюджет в сутки, перелёт и сезон по месяцам — бок о бок для любых двух направлений</span>
-          </span>
-        </a>
-      </div>
-    </section>
-
     <!-- ───────────── FAQ ────────────────────────────────────── -->
     <section class="tc-section tc-faq">
       <div class="tc-container">
         <div class="tc-section-head">
-          <span class="tc-section-num">02</span>
           <h2 class="tc-section-title">Частые вопросы</h2>
         </div>
         <div class="tc-faq-list">
@@ -345,816 +293,136 @@ const ldJson = {
   <Footer />
 </Layout>
 
-<script id="calculatorData" type="application/json" set:html={JSON.stringify({ PRICES, MONTH_NAMES, MONTH_FULL, priceIdxToSeasons, priceIdxToVisa, priceIdxToSlug, priceIdxToBudgetSlug, rates }).replace(/</g, '\\u003c')} />
+<script id="calculatorData" type="application/json" set:html={JSON.stringify({ PRICES, MONTH_NAMES, MONTH_FULL, priceIdxToSeasons, priceIdxToVisa, priceIdxToSlug, rates }).replace(/</g, '\\u003c')} />
 <script is:inline data-astro-rerun set:html={calculatorBundle.outputFiles[0].text} />
 
 <style is:global>
-/* ═══════════════════════════════════════════════════════════════════
-   TRAVEL CALCULATOR — Modern Fintech 2026
-   Inspired by: Google Flights · Airbnb · Wise · Revolut
-   ═══════════════════════════════════════════════════════════════════ */
-
-.tc { background: var(--bg); }
-.tc-container { max-width: 1180px; margin: 0 auto; padding: 0 clamp(1rem, 3vw, 2rem); }
-
-/* ── HERO ─────────────────────────────────────────────────────── */
-.tc-hero {
-  padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(1.5rem, 3vw, 2rem);
-  text-align: center;
-}
-.tc-h1 {
-  font-family: var(--ff-display);
-  font-size: clamp(2.2rem, 5vw, 3.5rem);
-  font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: -0.025em;
-  margin: 0 0 1rem;
-  color: var(--text);
-}
-.tc-lede {
-  font-size: 1.05rem;
-  line-height: 1.55;
-  color: var(--text-dim);
-  max-width: 660px;
-  margin: 0 auto;
-}
-.tc-byline {
-  font-size: 0.76rem;
-  line-height: 1.5;
-  color: var(--text-faint);
-  max-width: 660px;
-  margin: 0.9rem auto 0;
-  letter-spacing: 0.01em;
-}
-.tc-byline a { color: var(--text-dim); text-decoration: underline; text-decoration-color: rgba(107,104,94,0.5); text-underline-offset: 2px; }
-.tc-byline a.tc-byline-author { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(29, 64, 174,0.5); text-underline-offset:.22em; }
-
-/* ── FORM SECTION (horizontal bar) ────────────────────────────── */
-.tc-form-section {
-  padding: 1rem 0 0;
-}
-.tc-form {
-  background: var(--surface, #fff);
-  border: 1px solid var(--line);
-  border-radius: 0;
-  padding: 1.4rem 1.6rem 1.2rem;
-}
-.tc-form-grid {
-  display: grid;
-  /* Минимумы: три подписи уровня («Эконом / Комфорт / Люкс») по 13.6px с полями — 240px, иначе
-     средняя режется в «Комф…»; сумма минимумов 840px + промежутки, поэтому ниже 1100px
-     сетка складывается в два столбца (см. медиазапрос) — на 902px одна строка не влезала. */
-  grid-template-columns: minmax(180px, 2fr) minmax(110px, 1fr) minmax(100px, 1fr) minmax(120px, 1fr) minmax(240px, 2.2fr) minmax(90px, 1fr);
-  gap: 1rem;
-  align-items: end;
-}
-.tc-field { display: flex; flex-direction: column; gap: 0.4rem; min-width: 0; }
-.tc-field--country { min-width: 200px; }
-.tc-field-label {
-  font-family: var(--ff-body);
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--text-faint);
-  letter-spacing: 0.02em;
-}
-
-.tc-input {
-  background: var(--bg);
-  border: 1px solid var(--line);
-  color: var(--text);
-  font-family: var(--ff-body);
-  font-size: 1rem;
-  font-weight: 500;
-  padding: 0.6rem 0.85rem;
-  border-radius: 0;
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  width: 100%;
-  min-width: 0;
-  min-height: 46px;
-}
-.tc-input:hover { border-color: var(--gold-dim, var(--gold)); }
-.tc-input:focus-visible {
-  border-color: var(--gold);
-  outline: 2px solid var(--gold); outline-offset: 2px;
-}
-.tc-input--select {
-  appearance: none; -webkit-appearance: none;
-  padding-right: 2rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.8rem center;
-  cursor: pointer;
-}
-
-/* Stepper */
-.tc-stepper {
-  display: flex; align-items: center;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 0;
-  height: 46px;
-}
-.tc-stepper-btn {
-  background: transparent; border: none;
-  font-size: 1.2rem; line-height: 1;
-  color: var(--text-dim);
-  width: 46px; height: 100%;
-  cursor: pointer;
-  transition: color 0.15s, background 0.15s;
-  border-radius: 0;
-}
-.tc-stepper-btn:hover { color: var(--gold); background: rgba(29, 64, 174,0.08); }
-.tc-stepper-val {
-  flex: 1; text-align: center;
-  font-family: var(--ff-body);
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-}
-
-/* Segmented */
-.tc-seg {
-  display: inline-flex;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 0;
-  padding: 0;
-  gap: 2px;
-  /* Высоту рамки задаёт кнопка 44px плюс две границы по 1px.
-     Фиксированная меньшая высота обрезала кнопки в старом калькуляторе. */
-}
-.tc-seg-btn {
-  flex: 1 1 0;
-  min-width: 0;
-  /* Кнопка 44px и рамка 46px совпадают со степпером и списком на всех ширинах. */
-  min-height: 44px;
-  background: transparent;
-  border: none;
-  color: var(--text-dim);
-  font-family: var(--ff-body);
-  font-size: 0.85rem;
-  font-weight: 500;
-  padding: 0 0.4rem;
-  cursor: pointer;
-  border-radius: 0;
-  transition: all 0.15s;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  text-align: center;
-}
-.tc-seg-btn:hover:not(.active) { color: var(--text); }
-.tc-seg-btn.active {
-  background: var(--text);
-  color: var(--bg);
-  font-weight: 600;
-}
-.tc-seg--small .tc-seg-btn { padding: 0 0.5rem; }
-
-.tc-form-extra {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px dashed var(--line);
-  flex-wrap: wrap; gap: 0.7rem;
-}
-.tc-add-country {
-  background: transparent;
-  border: 1px dashed var(--gold-dim, var(--gold));
-  color: var(--gold);
-  font-family: var(--ff-body);
-  font-size: 1rem;
-  font-weight: 500;
-  padding: 0.45rem 0.9rem;
-  border-radius: 0;
-  cursor: pointer;
-  min-height: 46px;
-  appearance: none; -webkit-appearance: none;
-  padding-right: 1.8rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238e6618' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 0.7rem center;
-}
-.tc-add-country:hover { background: rgba(29, 64, 174,0.06); border-style: solid; }
-.tc-rate {
-  font-family: var(--ff-mono);
-  font-size: 0.72rem;
-  color: var(--text-faint);
-}
-
-/* ── RESULT SECTION ──────────────────────────────────────────── */
-.tc-result-section {
-  padding: 1.5rem 0 0;
-}
-.tc-result { /* host */ }
-
-/* SINGLE country card */
-.tc-single {
-  background: var(--surface, #fff);
-  border: 1px solid var(--line);
-  border-radius: 0;
-  padding: clamp(1.5rem, 3vw, 2rem);
-}
-
-.tc-result-head { margin-bottom: 1.4rem; }
-.tc-result-head-meta { display: flex; flex-direction: column; gap: 0.6rem; }
-.tc-result-tag {
-  font-family: var(--ff-display);
-  font-size: clamp(1.3rem, 2.3vw, 1.7rem);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  color: var(--text);
-  line-height: 1.2;
-}
-.tc-result-pills {
-  display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center;
-}
-.tc-meta-pill {
-  font-family: var(--ff-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.02em;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  padding: 0.3rem 0.7rem;
-  border-radius: 0;
-  color: var(--text-dim);
-}
-.tc-season-pill {
-  font-family: var(--ff-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  padding: 0.3rem 0.7rem;
-  border-radius: 0;
-}
-.tc-season-pill--peak { background: rgba(27,25,20,0.1); color: #15171a; }
-.tc-season-pill--good { background: rgba(29, 64, 174,0.1); color: #1d40ae; }
-.tc-season-pill--ok   { background: rgba(107,104,94,0.1); color: #5c626b; }
-.tc-season-pill--bad  { background: rgba(168,162,148,0.1); color: #5c626b; }
-.tc-season-pill--any  { background: var(--bg); color: var(--text-faint); border: 1px dashed var(--line-strong, var(--line)); }
-
-.tc-visa-pill {
-  font-size: 0.78rem;
-  font-weight: 700;
-  background: rgba(107,104,94,0.12);
-  border: 1px solid var(--text);
-  color: var(--text);
-  padding: 0.3rem 0.7rem;
-  border-radius: 0;
-  text-decoration: none;
-  transition: background 0.15s;
-}
-.tc-visa-pill--free { background: rgba(29, 64, 174,0.08); border-color: rgba(29, 64, 174,0.2); color: #1d40ae; }
-.tc-visa-pill:hover { background: rgba(107,104,94,0.15); }
-.tc-visa-pill--free:hover { background: rgba(29, 64, 174,0.15); }
-
-/* Hero total — главное число */
-.tc-hero-total {
-  text-align: center;
-  padding: 1.5rem 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  margin: 0.5rem 0 1.5rem;
-  background: rgba(29, 64, 174, 0.02);
-}
-.tc-hero-label {
-  font-size: 13px;
-  letter-spacing: 0.01em;
-  color: var(--text-faint);
-  margin-bottom: 0.5rem;
-}
-.tc-hero-amount {
-  font-family: var(--ff-display);
-  font-size: clamp(2.8rem, 6vw, 4.5rem);
-  font-weight: 500;
-  letter-spacing: -0.035em;
-  line-height: 1;
-  color: var(--text);
-  font-variant-numeric: tabular-nums lining-nums;
-}
-.tc-hero-sub {
-  font-family: var(--ff-mono);
-  font-size: 0.82rem;
-  color: var(--text-dim);
-  margin-top: 0.7rem;
-  display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap;
-}
-.tc-sep { color: var(--text-faint); }
-
-/* Nudge */
-.tc-nudge {
-  display: flex; align-items: center; gap: 0.5rem;
-  background: rgba(29, 64, 174, 0.05);
-  border: 1px solid rgba(29, 64, 174,0.2);
-  border-radius: 0;
-  padding: 0.8rem 1rem;
-  font-size: 0.88rem;
-  color: var(--text);
-  margin-bottom: 1.2rem;
-}
-.tc-nudge--soft {
-  background: rgba(29, 64, 174, 0.04);
-  border-color: rgba(29, 64, 174,0.2);
-}
-.tc-nudge-icon { font-size: 1.05rem; flex-shrink: 0; }
-.tc-nudge strong { font-weight: 700; color: #1d40ae; }
-.tc-nudge--soft strong { color: var(--gold); }
-
-/* Category bars */
-.tc-cats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-.tc-cat {
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 0;
-  padding: 0.9rem 1rem;
-  display: flex; flex-direction: column; gap: 0.5rem;
-  transition: border-color 0.15s;
-}
-.tc-cat:hover { border-color: var(--gold-dim); }
-.tc-cat-head {
-  display: flex; justify-content: space-between; align-items: baseline;
-  gap: 0.5rem;
-}
-.tc-cat-name {
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: var(--text-dim);
-}
-.tc-cat-icon { margin-right: 0.2rem; }
-.tc-cat-val {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text);
-  font-variant-numeric: tabular-nums lining-nums;
-}
-.tc-cat-bar {
-  height: 6px;
-  background: var(--line);
-  border-radius: 0;
-  overflow: hidden;
-}
-.tc-cat-fill {
-  height: 100%;
-  width: var(--w);
-  background: var(--c);
-  border-radius: 0;
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.tc-cat-pct {
-  font-family: var(--ff-mono);
-  font-size: 0.7rem;
-  color: var(--text-faint);
-  text-align: right;
-}
-
-/* CTA Block */
-.tc-cta-block {
-  display: flex; flex-direction: column; gap: 0.6rem;
-  margin-bottom: 1rem;
-}
-.tc-cta-primary {
-  display: flex; align-items: center; justify-content: center; gap: 0.6rem;
-  background: var(--gold);
-  color: #fff;
-  padding: 1.05rem 1.5rem;
-  border-radius: 0;
-  font-family: var(--ff-body);
-  font-weight: 600;
-  font-size: 1rem;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-.tc-cta-primary:hover {
-  transform: translateY(-2px);
-}
-.tc-cta-icon { font-size: 1.1em; }
-
-.tc-cta-side-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 0.5rem;
-}
-.tc-cta-side {
-  display: flex; align-items: center; justify-content: center; gap: 0.4rem;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  color: var(--text-dim);
-  padding: 0.65rem 1rem;
-  border-radius: 0;
-  font-family: var(--ff-body);
-  font-size: 0.85rem;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all 0.15s;
-}
-.tc-cta-side:hover {
-  background: var(--surface, #fff);
-  border-color: var(--gold-dim);
-  color: var(--gold);
-  transform: translateY(-1px);
-}
-.tc-cta-side span { font-size: 1.05em; }
-
-/* Utility */
-.tc-utility {
-  display: flex; justify-content: center;
-  padding-top: 1rem;
-  border-top: 1px dashed var(--line);
-  margin-top: 0.5rem;
-}
-.tc-copy-btn {
-  min-height: 44px;
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  background: transparent;
-  border: 1px dashed var(--text);
-  color: var(--text);
-  padding: 0.55rem 1.1rem;
-  border-radius: 0;
-  font-family: var(--ff-body);
-  font-size: 0.82rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.tc-copy-btn:hover {
-  background: var(--text);
-  color: var(--bg);
-  border-style: solid;
-}
-
-/* ── COMPARISON GRID — full width cards side by side ───────── */
-.tc-compare {
-  background: var(--surface, #fff);
-  border: 1px solid var(--line);
-  border-radius: 0;
-  padding: clamp(1.5rem, 3vw, 2rem);
-}
-.tc-compare-head { text-align: center; margin-bottom: 1.5rem; }
-.tc-compare-title {
-  font-family: var(--ff-display);
-  font-size: clamp(1.4rem, 2.5vw, 1.8rem);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  margin: 0 0 0.4rem;
-  color: var(--text);
-}
-.tc-compare-sub {
-  font-family: var(--ff-mono);
-  font-size: 0.78rem;
-  color: var(--text-faint);
-  margin: 0;
-  letter-spacing: 0.02em;
-}
-
-.tc-compare-grid {
-  display: grid;
-  grid-template-columns: repeat(var(--compare-columns, 1), minmax(0, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.tc-cmp-card {
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 0;
-  padding: 1.3rem 1.2rem 1.1rem;
-  display: grid;
-  grid-template-rows: auto auto 1fr auto;
-  gap: 0.9rem;
-  position: relative;
-  transition: border-color 0.15s, transform 0.15s;
-  min-width: 0;
-}
-.tc-cmp-head {
-  min-height: 4.2rem;
-  display: flex; flex-direction: column; gap: 0.4rem;
-  padding-right: 48px;
-}
-.tc-cmp-card:hover { border-color: var(--gold-dim); }
-.tc-cmp-card--best {
-  background: rgba(29, 64, 174, 0.03);
-  border: 1.5px solid rgba(29, 64, 174,0.4);
-}
-.tc-cmp-remove {
-  position: absolute; top: 0.7rem; right: 0.7rem;
-  background: var(--surface, #fff);
-  border: 1px solid var(--line);
-  width: 44px; height: 44px;
-  border-radius: 0;
-  cursor: pointer;
-  font-size: 1rem; line-height: 1;
-  color: var(--text-faint);
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.15s;
-  z-index: 2;
-}
-.tc-cmp-remove:hover { background: var(--text); color: var(--bg); transform: rotate(90deg); }
-
-.tc-cmp-badge {
-  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-  background: #1d40ae;
-  color: #fff;
-  font-family: var(--ff-body);
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 0.25rem 0.7rem;
-  border-radius: 0;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-}
-
-.tc-cmp-name {
-  font-family: var(--ff-display);
-  font-size: 1.1rem;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
-  margin: 0;
-  color: var(--text);
-}
-
-.tc-cmp-total {
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  padding: 0.9rem 0;
-  text-align: center;
-}
-.tc-cmp-total-label {
-  font-size: 12px;
-  letter-spacing: 0.01em;
-  color: var(--text-faint);
-  margin-bottom: 0.3rem;
-}
-.tc-cmp-total-amount {
-  font-family: var(--ff-display);
-  font-size: clamp(1.6rem, 2.5vw, 2rem);
-  font-weight: 500;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  color: var(--text);
-  font-variant-numeric: tabular-nums lining-nums;
-}
-.tc-cmp-card--best .tc-cmp-total-amount { color: #1d40ae; }
-.tc-cmp-total-pp {
-  font-family: var(--ff-mono);
-  font-size: 0.72rem;
-  color: var(--text-faint);
-  margin-top: 0.3rem;
-}
-
-.tc-cmp-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex; flex-direction: column;
-  gap: 0.5rem;
-}
-.tc-cmp-list li {
-  display: flex; justify-content: space-between; align-items: baseline;
-  font-size: 0.85rem;
-  gap: 0.5rem;
-}
-.tc-cmp-key {
-  color: var(--text-dim);
-  white-space: nowrap;
-}
-.tc-cmp-val {
-  color: var(--text);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums lining-nums;
-  white-space: nowrap;
-}
-.tc-cmp-visa { font-weight: 500; }
-.tc-cmp-visa a {
-  color: var(--gold);
-  text-decoration: none;
-  margin-left: 0.2rem;
-}
-
-.tc-cmp-cta {
-  display: flex; align-items: center; justify-content: center;
-  background: var(--text);
-  color: var(--bg);
-  padding: 0.75rem 1.1rem;
-  border-radius: 0;
-  font-family: var(--ff-body);
-  font-weight: 600;
-  font-size: 0.88rem;
-  text-decoration: none;
-  margin-top: auto;
-  transition: background 0.15s, transform 0.15s;
-}
-.tc-cmp-cta:hover {
-  background: var(--gold);
-  transform: translateY(-1px);
-}
-.tc-cmp-card--best .tc-cmp-cta {
-  background: #1d40ae;
-}
-.tc-cmp-card--best .tc-cmp-cta:hover { background: #1d40ae; }
-
-.tc-cmp-partners {
-  display: flex;
-  flex-wrap: wrap;
-  column-gap: 1rem;
-  margin: 0;
-}
-.tc-cmp-partners a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  min-width: 44px;
-}
-
-.tc-compare-aux {
-  display: flex; gap: 1.2rem; flex-wrap: wrap; align-items: center;
-  padding-top: 1rem;
-  border-top: 1px dashed var(--line);
-}
-.tc-aux-label {
-  font-size: 12px;
-  letter-spacing: 0.01em;
-  color: var(--text-faint);
-}
-.tc-compare-aux a {
-  color: var(--text-dim);
-  text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 500;
-  border-bottom: 1px dashed var(--gold-dim);
-  transition: color 0.15s;
-}
-.tc-compare-aux a:hover { color: var(--gold); }
-
-/* ── SECTIONS (Tips, BudgetBlock, FAQ) ───────────────────────── */
-/* вертикальный ритм: отступ только сверху (без удвоения у соседних секций), уменьшается на мобайле */
-.tc-section { padding: clamp(2rem, 4vw, 3rem) 0 0; }
-.tc-section:last-of-type { padding-bottom: clamp(2.5rem, 5vw, 3.5rem); }
-.tc-tourcta { max-width: 680px; margin: 1.4rem auto 0; padding: 1rem 1.3rem; border: 1px solid var(--line); border-left: 3px solid var(--gold); font-size: 0.95rem; line-height: 1.6; color: var(--text-dim); }
-.tc-tourcta a { color: var(--gold); text-decoration: underline; text-underline-offset:.22em; }
-.tc-tourcta strong { color: var(--text); }
-.tc-section-head {
-  display: flex; align-items: baseline; gap: 0.8rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 0.8rem;
-}
-.tc-section-num {
-  font-family: var(--ff-mono);
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  color: var(--gold);
-}
-.tc-section-title {
-  font-family: var(--ff-display);
-  font-size: clamp(1.3rem, 2.3vw, 1.8rem);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  margin: 0;
-  color: var(--text);
-}
-
-/* Editorial tips — hairline-grid 2 cols, без pillowy cards и emoji */
-.tc-tips-list {
-  list-style: none; padding: 0; margin: 0;
-  display: grid;
-  grid-template-columns: 1fr;
-}
-.tc-tip-row {
-  padding: 1.1rem 0;
-  margin: 0;
-}
-@media (min-width: 560px) {
-  .tc-tips-list { grid-template-columns: 1fr 1fr; }
-  .tc-tip-row { padding: 1.1rem 1.4rem; }
-  .tc-tip-row:nth-child(2n+1) { padding-left: 0; }
-}
-@media (min-width: 860px) {
-  .tc-tips-list { grid-template-columns: repeat(3, 1fr); }
-  .tc-tip-row:nth-child(2n+1) { padding-left: 1.4rem; }
-  .tc-tip-row:nth-child(3n+1) { padding-left: 0; }
-}
-.tc-tip-title {
-  /* ⛔ Антиква — хвост перехода на язык дневника. */
-  font-family: var(--ff-head, var(--ff-display));
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  margin: 0 0 0.35rem;
-  color: var(--text);
-}
-.tc-tip-body {
-  font-size: 0.92rem;
-  line-height: 1.6;
-  color: var(--text-dim);
-  margin: 0;
-}
-
-/* Editorial callout (former wide-tip) — gold accent left-border */
-.tc-tip-callout {
-  display: block;
-  margin-top: 1.5rem;
-  padding: 1.2rem 1.4rem;
-  background: rgba(29, 64, 174,0.05);
-  border: 1px solid var(--line);
-  border-left: 3px solid var(--gold);
-  border-radius: 0;
-  text-decoration: none;
-  color: var(--text);
-  transition: background 0.15s, transform 0.15s;
-}
-.tc-tip-callout:hover { background: rgba(29, 64, 174,0.09); transform: translateX(2px); }
-.tc-tip-callout-text { display: flex; flex-direction: column; gap: 0.3rem; }
-.tc-tip-callout-text strong { color: var(--text); font-size: 1rem; line-height: 1.3; }
-.tc-tip-callout-text span { color: var(--text-dim); font-size: 0.88rem; line-height: 1.55; }
-
-/* Anchor scroll offset (sticky-nav overlap fix) */
-.tc-section-title { scroll-margin-top: 80px; }
-
-/* FAQ */
-.tc-faq-list { display: flex; flex-direction: column; }
-.tc-faq-item {
-  background: var(--surface, #fff);
-  border-radius: 0;
-  margin-bottom: 0.5rem;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-.tc-faq-item summary {
-  cursor: pointer;
-  font-family: var(--ff-body);
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: -0.005em;
-  color: var(--text);
-  list-style: none;
-  position: relative;
-  padding: 1.1rem 3.2rem 1.1rem 1.3rem;
-  line-height: 1.4;
-}
-.tc-faq-item summary::-webkit-details-marker { display: none; }
-.tc-faq-item summary::after {
-  content: '+';
-  position: absolute; right: 1.2rem; top: 50%;
-  transform: translateY(-50%);
-  font-family: var(--ff-display);
-  font-size: 1.5rem;
-  font-weight: 300;
-  color: var(--gold);
-  transition: transform 0.25s;
-  line-height: 1;
-}
-.tc-faq-item[open] summary::after { transform: translateY(-50%) rotate(45deg); }
-.tc-faq-item p {
-  margin: 0;
-  padding: 0 1.3rem 1.2rem;
-  color: var(--text-dim);
-  font-size: 0.94rem;
-  line-height: 1.65;
-  max-width: 760px;
-}
-
-/* ── RESPONSIVE ───────────────────────────────────────────────── */
-@media (max-width: 1100px) {
-  .tc-form-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.8rem;
-  }
-  .tc-field--country, .tc-field--level { grid-column: 1 / -1; }
-}
-@media (max-width: 640px) {
-  .tc-form { padding: 1rem; border-radius: 0; }
-  .tc-form-grid { grid-template-columns: 1fr; gap: 0.7rem; }
-  .tc-single { padding: 1.2rem 1rem; border-radius: 0; }
-  .tc-compare { padding: 1.2rem 1rem; }
-  .tc-compare-grid { grid-template-columns: 1fr; }
-  .tc-cats { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
-  .tc-cat { padding: 0.7rem 0.8rem; }
-  .tc-cta-side-row { grid-template-columns: 1fr; }
-  .tc-form-extra { flex-direction: column; align-items: stretch; }
-  .tc-add-country { width: 100%; padding-top: 0.7rem; padding-bottom: 0.7rem; }
-  .tc-result-pills { gap: 0.3rem; }
-  /* WCAG 2.2 / Apple HIG — минимум 44px тап-таргеты на тач-экранах.
-     Переключатель: кнопка 44px без внутреннего отступа → рамка 46px, как степпер. */
-  .tc-stepper { height: 46px; }
-  .tc-stepper-btn { width: 46px; }
-  .tc-seg { padding: 0; }
-  .tc-seg-btn { min-height: 44px; padding: 0 0.5rem; }
-  .tc-input { padding-top: 0.7rem; padding-bottom: 0.7rem; }
-  .tc-copy-btn { padding: 0.75rem 1.2rem; }
-}
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-}
-@media (max-width: 767px) {
-  .tc-cats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .tc-cat { min-width: 0; overflow-wrap: anywhere; }
-  .tc-cat-head { flex-wrap: wrap; gap: .25rem .5rem; }
-  .tc-seg { max-width: 100%; }
+.tc { background:var(--bg); color:var(--text); padding-bottom:32px; }
+.tc .tc-container { width:100%; max-width:1280px; margin-inline:auto; padding-inline:clamp(18px,3vw,40px); box-sizing:border-box; }
+.tc h1,.tc h2,.tc h3 { text-align:left; scroll-margin-top:100px; }
+.tc .tc-hero { padding:32px 0 24px; }
+.tc .tc-h1 { font-family:var(--ff-display); font-weight:700; font-size:clamp(30px,4vw,48px); line-height:1.08; margin:0 0 12px; }
+.tc .tc-lede { max-width:770px; font-size:16px; line-height:1.55; margin:0 0 10px; }
+.tc .tc-byline { margin:0; font-size:13px; color:var(--text-faint); }
+.tc .tc-workbench { display:grid; grid-template-columns:minmax(0,1fr) minmax(320px,.68fr); gap:32px; align-items:start; }
+.tc .tc-work,.tc .tc-result-section { min-width:0; }
+.tc .tc-workbench .tc-container { padding:0; max-width:none; }
+.tc .tc-form { padding:20px 0; border-top:2px solid var(--text); border-bottom:1px solid var(--line); }
+.tc .tc-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.tc .tc-field { min-width:0; }
+.tc .tc-field-label { display:block; font-size:14px; font-weight:600; margin-bottom:6px; }
+.tc input,.tc select,.tc button { font:inherit; }
+.tc .tc-input,.tc .tc-add-country { min-width:0; width:100%; max-width:100%; min-height:48px; font-size:16px; background:#fff; color:var(--text); border:1px solid var(--line); padding:8px 12px; border-radius:0; }
+.tc .tc-stepper { display:flex; min-height:48px; border:1px solid var(--line); align-items:center; justify-content:space-between; }
+.tc .tc-stepper-btn { width:48px; min-height:46px; background:none; border:0; cursor:pointer; font-size:20px; color:var(--text); }
+.tc .tc-stepper-val { font-family:var(--ff-mono); }
+.tc .tc-seg { display:flex; min-height:48px; border:1px solid var(--line); }
+.tc .tc-seg-btn { flex:1; min-width:44px; min-height:46px; border:0; background:transparent; cursor:pointer; padding:8px; color:var(--text); font-size:16px; }
+.tc .tc-seg-btn.active { background:var(--gold); color:#fff; }
+.tc .tc-form-extra { display:flex; gap:12px; align-items:center; margin-top:16px; }
+.tc .tc-add-country { flex:1; color:var(--gold); }
+.tc .tc-add-country[hidden],.tc button[hidden] { display:none!important; }
+.tc .tc-rate { font-size:12px; font-family:var(--ff-mono); color:var(--text-faint); flex-shrink:0; }
+.tc .tc-personal-section { padding-top:24px; }
+.tc .tc-personal-section h2 { font-family:var(--ff-display); font-size:28px; line-height:1.2; margin:0 0 18px; }
+.tc .tc-stay-settings { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.tc .tc-stay-settings label { font-size:14px; }
+.tc .tc-stay-settings input { width:100%; min-height:48px; min-width:0; border:1px solid var(--line); border-radius:0; padding:8px 10px; margin-top:6px; font-size:16px; box-sizing:border-box; background:#fff; color:var(--text); }
+.tc .tc-help { font-size:13px; color:var(--text-faint); margin:12px 0 20px; line-height:1.5; }
+.tc .tc-expense { border-top:1px solid var(--line); padding:16px 0; }
+.tc .tc-expense-main { display:grid; grid-template-columns:minmax(0,1fr) minmax(100px,155px); gap:12px; align-items:center; }
+.tc .tc-expense-main label { font-weight:600; font-size:16px; line-height:1.35; }
+.tc .tc-expense-main label span { display:block; font-weight:400; font-size:13px; color:var(--text-faint); margin-top:5px; }
+.tc .tc-expense-main > input { width:100%; min-width:0; min-height:48px; box-sizing:border-box; border:1px solid var(--line); border-radius:0; padding:10px; font-family:var(--ff-mono); font-size:16px; background:#fff; color:var(--text); }
+.tc .tc-expense-main input[aria-invalid=true] { border:2px solid #b3261e; }
+.tc .tc-expense-actions { display:flex; align-items:center; gap:8px 16px; flex-wrap:wrap; margin-top:4px; font-size:13px; }
+.tc .tc-expense-actions label { display:flex; min-height:44px; align-items:center; cursor:pointer; gap:6px; }
+.tc .tc-expense-actions input { width:20px; height:20px; accent-color:var(--gold); }
+.tc .tc-expense-actions > span { margin-left:auto; font-family:var(--ff-mono); }
+.tc .tc-expense-actions button { min-height:44px; color:var(--gold); border:0; background:transparent; text-decoration:underline; text-underline-offset:4px; cursor:pointer; padding:0; }
+.tc .tc-field-error { color:#b3261e; font-size:13px; line-height:1.4; margin:6px 0; }
+.tc .tc-field-error:empty { display:none; }
+.tc .is-excluded .tc-expense-main { opacity:.65; }
+.tc .tc-result-section { position:sticky; top:108px; border-top:2px solid var(--gold); }
+.tc .tc-single { padding:20px 0; }
+.tc .tc-result-tag { font-size:17px; font-weight:600; overflow-wrap:anywhere; }
+.tc .tc-result-pills { display:flex; gap:8px 14px; flex-wrap:wrap; margin-top:8px; font-size:13px; color:var(--text-faint); }
+.tc .tc-visa-pill { display:inline-flex; align-items:center; min-height:44px; color:var(--gold); }
+.tc .tc-hero-total { padding:18px 0; }
+.tc .tc-hero-label,.tc .tc-cmp-total-label { font-size:14px; color:var(--text-faint); margin-bottom:7px; }
+.tc .tc-hero-amount { font-family:var(--ff-mono); font-size:clamp(30px,3.3vw,42px); line-height:1.2; overflow-wrap:anywhere; }
+.tc .tc-hero-sub { font-size:14px; line-height:1.5; margin-top:8px; }
+.tc .tc-sep { padding:0 8px; }
+.tc .tc-finances { margin:0 0 18px; }
+.tc .tc-finances > div { display:flex; justify-content:space-between; align-items:baseline; gap:14px; padding:10px 0; border-bottom:1px solid var(--line); }
+.tc .tc-finances dt { font-size:14px; }
+.tc .tc-finances dd { margin:0; text-align:right; font-family:var(--ff-mono); font-size:16px; overflow-wrap:anywhere; }
+.tc .tc-finances-remaining { color:var(--gold); font-weight:600; }
+.tc .tc-incomplete { font-size:13px; line-height:1.5; color:var(--text-faint); margin:0 0 12px; }
+.tc .tc-nudge { font-size:13px; line-height:1.5; margin:12px 0; }
+.tc .tc-cats { display:grid; gap:12px; margin:20px 0; }
+.tc .tc-cat-head { display:flex; justify-content:space-between; gap:16px; font-size:14px; }
+.tc .tc-cat-val { font-family:var(--ff-mono); white-space:nowrap; }
+.tc .tc-cat-bar { height:3px; background:var(--line); margin-top:8px; }
+.tc .tc-cat-fill { width:var(--w); height:100%; background:var(--c); }
+.tc .tc-cat-pct { font-size:12px; color:var(--text-faint); text-align:right; margin-top:4px; }
+.tc .tc-cta-primary,.tc .tc-cmp-cta { display:flex; justify-content:center; align-items:center; min-height:48px; padding:10px 16px; box-sizing:border-box; background:var(--gold); color:#fff; font-size:15px; font-weight:600; text-decoration:none; }
+.tc .tc-cta-side-row,.tc .tc-cmp-partners { display:flex; flex-wrap:wrap; gap:8px 18px; font-size:14px; margin-top:8px; }
+.tc .tc-cta-side,.tc .tc-cmp-partners a { display:inline-flex; min-height:44px; min-width:44px; align-items:center; color:var(--gold); }
+.tc .tc-utility { display:flex; flex-wrap:wrap; gap:4px 18px; margin-top:16px; }
+.tc .tc-copy-btn { min-height:44px; min-width:44px; padding:6px 0; border:0; background:none; text-align:left; text-decoration:underline; text-underline-offset:4px; color:var(--gold); cursor:pointer; font-size:14px; }
+.tc .tc-notice { font-size:15px; line-height:1.5; padding-block:12px; }
+.tc .tc-notice:empty { padding:0; }
+.tc .tc-notice textarea { display:block; width:100%; min-height:120px; margin-top:12px; padding:12px; font-size:16px; box-sizing:border-box; }
+.tc .tc-compare-head { padding:20px 0; }
+.tc .tc-compare-title { font-family:var(--ff-display); font-size:28px; margin:0 0 8px; }
+.tc .tc-compare-sub { margin:0; font-size:14px; }
+.tc .tc-compare-grid { display:grid; gap:24px; }
+.tc .tc-cmp-card { position:relative; border-top:1px solid var(--line); padding-top:18px; min-width:0; }
+.tc .tc-cmp-head { padding-right:44px; }
+.tc .tc-cmp-name { font-family:var(--ff-display); font-size:24px; line-height:1.2; margin:0 0 10px; overflow-wrap:anywhere; }
+.tc .tc-cmp-remove { position:absolute; top:12px; right:0; width:44px; height:44px; border:1px solid var(--line); background:none; color:var(--gold); font-size:24px; cursor:pointer; }
+.tc .tc-cmp-total { margin-block:12px; }
+.tc .tc-cmp-total-amount { font:28px/1.2 var(--ff-mono); overflow-wrap:anywhere; }
+.tc .tc-cmp-total-pp { margin-top:6px; font-size:14px; }
+.tc .tc-cmp-list { list-style:none; padding:0; margin:18px 0; }
+.tc .tc-cmp-list li { display:flex; justify-content:space-between; gap:12px; border-bottom:1px solid var(--line); padding:10px 0; font-size:14px; }
+.tc .tc-cmp-val { text-align:right; font-family:var(--ff-mono); }
+.tc .tc-cmp-visa a { display:inline-flex; align-items:center; min-width:44px; min-height:44px; }
+.tc .tc-section { padding:28px 0; }
+.tc .tc-section-title { font-family:var(--ff-display); font-size:28px; margin:0 0 16px; }
+.tc .tc-faq-item { border-top:1px solid var(--line); }
+.tc .tc-faq-item summary { min-height:48px; padding:14px 0; box-sizing:border-box; font-weight:600; cursor:pointer; }
+.tc .tc-faq-item p,.tc .tc-tourcta { font-size:16px; line-height:1.6; max-width:780px; }
+.tc :focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
+@media(max-width:900px) {
+  .tc .tc-workbench { display:flex; flex-direction:column; gap:24px; }
+  .tc .tc-work { display:contents; }
+  .tc .tc-form-section { order:0; width:100%; }
+  .tc .tc-result-section { position:static; order:1; width:100%; }
+  .tc .tc-personal-section { order:2; width:100%; padding-top:0; }
+  .tc .tc-hero { padding:24px 0 16px; }
+  .tc .tc-form { padding:16px 0; }
+  .tc .tc-form-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+  .tc .tc-field--country { grid-column:span 2; }
+  .tc .tc-field--level { grid-column:span 2; }
+  .tc .tc-single { display:grid; grid-template-columns:1fr 1fr; gap:0 24px; }
+  .tc .tc-result-head,.tc .tc-incomplete,.tc .tc-nudge,.tc .tc-cats,.tc .tc-cta-block,.tc .tc-utility { grid-column:1/-1; }
+  .tc .tc-finances { align-self:center; }
+  .tc .tc-hero-amount { font-size:32px; }
+}
+@media(max-width:520px) {
+  .tc .tc-form-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .tc .tc-field--country { grid-column:span 2; }
+  .tc .tc-field--level { grid-column:span 2; }
+  .tc .tc-form-extra { flex-wrap:wrap; }
+  .tc .tc-rate { display:none; }
+  .tc .tc-single { display:block; }
+  .tc .tc-hero-total { padding:14px 0; }
+  .tc .tc-cats { display:none; }
+  .tc .tc-expense-main { grid-template-columns:minmax(0,1fr) 118px; }
+  .tc .tc-expense-actions { gap:4px 12px; }
+  .tc .tc-result-pills { gap:4px 12px; }
+  .tc .tc-result-pills .tc-visa-pill { min-height:30px; }
 }
 </style>
