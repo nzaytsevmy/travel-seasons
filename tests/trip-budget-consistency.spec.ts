@@ -115,7 +115,11 @@ test('одна эконом-неделя: главная, каталог и ка
 
 test('цена в фотокарточке открывает расчёт, название открывает путеводитель', async ({ page }) => {
   await page.goto('/?m=10');
+  // The requested month replaces SSR cards after planner data loads. Its visible
+  // label is updated after that replacement; scrolling the SSR node races it.
+  await expect(page.locator('[data-home-month]').first()).toHaveText('октябре');
   const rows = page.locator('#homeCheap .home-card');
+  await expect(rows).toHaveCount(6);
   const first = rows.first();
   await first.scrollIntoViewIfNeeded();
   const guide = first.locator('h3 a');
@@ -137,6 +141,7 @@ test('цена в фотокарточке открывает расчёт, на
   await expect(page.locator('#levelGroup [data-lvl="0"]')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('#monthSelect')).toHaveValue('10');
   await page.goBack();
+  await expect(page.locator('[data-home-month]').first()).toHaveText('октябре');
   await page.locator('#homeCheap .home-card h3').getByRole('link', { name, exact: true }).click();
   await expect(page).toHaveURL(new RegExp('/' + slug + '/$'));
 });

@@ -208,6 +208,7 @@ test('мобильный первый экран получает отдельн
 
 test('фотографии подборок начинают загружаться после первого показа страницы', async ({ page }) => {
   await page.goto('/?m=10');
+  await expect(page.locator('[data-home-month]').first()).toHaveText('октябре');
   await expect(page.locator('html')).not.toHaveClass(/home-photo-pending/);
   const image = page.locator('.seasonal-grid img').first();
   await image.scrollIntoViewIfNeeded();
@@ -232,20 +233,37 @@ test('включение фотографий не сдвигает и не ме
   await page.addInitScript(() => {
     addEventListener('DOMContentLoaded', () => {
       (window as any).__homePhotoBoxes = [...document.querySelectorAll('.seasonal-grid .home-card-photo')].map(e => {
-        const r = e.getBoundingClientRect(); return { top: r.top, width: r.width, height: r.height };
+        const r = e.getBoundingClientRect(); return { top: r.top, width: r.width, height: r.height,
+          destination: e.closest('.home-card')?.getAttribute('data-destination'),
+          photo: e.closest('.home-card')?.getAttribute('data-photo-file') };
       });
     }, { once: true });
   });
-  await page.goto('/?m=10');
+  // Compare photo visibility on the same SSR cards. A different requested month
+  // intentionally replaces those cards and is covered by planner navigation tests.
+  const response = await page.request.get('/');
+  expect(response.ok()).toBe(true);
+  const bootstrap = (await response.text()).match(/<script\b[^>]*\bid=["']?homeData["']?[^>]*>([\s\S]*?)<\/script>/);
+  if (!bootstrap) throw new Error('Missing homepage bootstrap');
+  const serverMonth = Number(JSON.parse(bootstrap[1]).month);
+  expect(Number.isInteger(serverMonth)).toBe(true);
+  expect(serverMonth).toBeGreaterThanOrEqual(1);
+  expect(serverMonth).toBeLessThanOrEqual(12);
+  await page.goto('/?m=' + serverMonth);
   await expect(page.locator('html')).not.toHaveClass(/home-photo-pending/);
   const sizes = await page.evaluate(() => ({
     before: (window as any).__homePhotoBoxes,
     after: [...document.querySelectorAll('.seasonal-grid .home-card-photo')].map(e => {
-      const r = e.getBoundingClientRect(); return { top: r.top, width: r.width, height: r.height };
+      const r = e.getBoundingClientRect(); return { top: r.top, width: r.width, height: r.height,
+          destination: e.closest('.home-card')?.getAttribute('data-destination'),
+          photo: e.closest('.home-card')?.getAttribute('data-photo-file') };
     }),
   }));
   expect(sizes.before).toHaveLength(6);
+  expect(sizes.after).toHaveLength(6);
   for (let i = 0; i < sizes.after.length; i++) {
+    expect(sizes.after[i].destination).toBe(sizes.before[i].destination);
+    expect(sizes.after[i].photo).toBe(sizes.before[i].photo);
     for (const key of ['top', 'width', 'height']) {
       expect(Math.abs(sizes.after[i][key] - sizes.before[i][key]), i + ':' + key).toBeLessThanOrEqual(1);
     }

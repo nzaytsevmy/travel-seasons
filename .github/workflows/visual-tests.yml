@@ -378,6 +378,14 @@ jobs:
           PREVIEW_URL: http://localhost:4322
           SKIP_PAGE_MTIME_TESTS: '1'
 
+      - name: Early monthly homepage race regressions
+        if: matrix.shard == 1
+        run: |
+          npx playwright test tests/trip-budget-consistency.spec.ts tests/home-hero.spec.ts --grep 'цена в фотокарточке открывает расчёт|включение фотографий не сдвигает|фотографии подборок начинают загружаться' --retries=0 --repeat-each=3 --trace=on
+        env:
+          PREVIEW_URL: http://localhost:4322
+          SKIP_PAGE_MTIME_TESTS: '1'
+
       - name: Run visual regression tests
         run: node scripts/run-balanced-browser-shard.mjs ${{ matrix.shard }}
         env:
