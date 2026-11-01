@@ -254,6 +254,14 @@ jobs:
           fetch-depth: 0
           filter: blob:none
 
+      # This disposable browser runner does not build Android applications.
+      # Native job124720223108 exhausted disk while unpacking the verified site.
+      - name: Release unused Android SDK disk space
+        run: |
+          df -h "$GITHUB_WORKSPACE"
+          sudo rm -rf -- /usr/local/lib/android
+          df -h "$GITHUB_WORKSPACE"
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -319,11 +327,27 @@ jobs:
         with:
           name: ${{ needs.prepare.outputs.artifact_name }}
           path: .build-artifact/
+      - name: Check disk headroom before unpacking the exact build
+        run: |
+          node --input-type=module <<'NODE'
+          import { statSync, statfsSync } from 'node:fs';
+          const archiveBytes = statSync('.build-artifact/site.tar', { bigint: true }).size;
+          const disk = statfsSync('.', { bigint: true });
+          const availableBytes = disk.bavail * disk.bsize;
+          const reserveBytes = 2n * 1024n ** 3n;
+          console.log(JSON.stringify({ archiveBytes: String(archiveBytes), availableBytes: String(availableBytes), reserveBytes: String(reserveBytes) }));
+          // site.tar is uncompressed; retain a reserve for file metadata and reports.
+          if (availableBytes < archiveBytes + reserveBytes) throw new Error('Insufficient disk for exact build extraction');
+          NODE
       - name: Verify and unpack exact build
         run: node scripts/build-artifact.mjs unpack
         env:
           ARTIFACT_DIGEST: ${{ needs.prepare.outputs.digest }}
           ARTIFACT_PRODUCER_ATTEMPT: ${{ needs.prepare.outputs.producer_attempt }}
+      - name: Remove downloaded archive after verified extraction
+        run: |
+          rm -f -- .build-artifact/site.tar
+          df -h "$GITHUB_WORKSPACE"
       - run: npm run check:mtimes
 
       - name: Start preview server
@@ -374,6 +398,14 @@ jobs:
         if: matrix.shard == 2
         run: |
           npx playwright test tests/paid-content-package.spec.ts --project=webkit-desktop --grep 'paid package: article georgia-insurance-2026 at(360|402)$' --retries=0 --trace=on
+        env:
+          PREVIEW_URL: http://localhost:4322
+          SKIP_PAGE_MTIME_TESTS: '1'
+
+      - name: Early monthly homepage race regressions
+        if: matrix.shard == 1
+        run: |
+          npx playwright test tests/trip-budget-consistency.spec.ts tests/home-hero.spec.ts tests/home-planner.spec.ts --grep 'цена в фотокарточке открывает расчёт|включение фотографий не сдвигает|фотографии подборок начинают загружаться|месяц проходит через гид в калькулятор|форматы кадров соответствуют роли|главная объясняет основу бюджета' --retries=0 --repeat-each=3 --trace=retain-on-failure
         env:
           PREVIEW_URL: http://localhost:4322
           SKIP_PAGE_MTIME_TESTS: '1'
