@@ -254,6 +254,14 @@ jobs:
           fetch-depth: 0
           filter: blob:none
 
+      # This disposable browser runner does not build Android applications.
+      # Native job124720223108 exhausted disk while unpacking the verified site.
+      - name: Release unused Android SDK disk space
+        run: |
+          df -h "$GITHUB_WORKSPACE"
+          sudo rm -rf -- /usr/local/lib/android
+          df -h "$GITHUB_WORKSPACE"
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -319,11 +327,27 @@ jobs:
         with:
           name: ${{ needs.prepare.outputs.artifact_name }}
           path: .build-artifact/
+      - name: Check disk headroom before unpacking the exact build
+        run: |
+          node --input-type=module <<'NODE'
+          import { statSync, statfsSync } from 'node:fs';
+          const archiveBytes = statSync('.build-artifact/site.tar', { bigint: true }).size;
+          const disk = statfsSync('.', { bigint: true });
+          const availableBytes = disk.bavail * disk.bsize;
+          const reserveBytes = 2n * 1024n ** 3n;
+          console.log(JSON.stringify({ archiveBytes: String(archiveBytes), availableBytes: String(availableBytes), reserveBytes: String(reserveBytes) }));
+          // site.tar is uncompressed; retain a reserve for file metadata and reports.
+          if (availableBytes < archiveBytes + reserveBytes) throw new Error('Insufficient disk for exact build extraction');
+          NODE
       - name: Verify and unpack exact build
         run: node scripts/build-artifact.mjs unpack
         env:
           ARTIFACT_DIGEST: ${{ needs.prepare.outputs.digest }}
           ARTIFACT_PRODUCER_ATTEMPT: ${{ needs.prepare.outputs.producer_attempt }}
+      - name: Remove downloaded archive after verified extraction
+        run: |
+          rm -f -- .build-artifact/site.tar
+          df -h "$GITHUB_WORKSPACE"
       - run: npm run check:mtimes
 
       - name: Start preview server
