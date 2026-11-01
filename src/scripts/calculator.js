@@ -97,8 +97,14 @@ function writeUrlParams() {
   else u.searchParams.delete('m');
   if (compareList.length > 0) u.searchParams.set('cmp', compareList.join(','));
   else u.searchParams.delete('cmp');
-  u.hash = Object.keys(selectedDrafts()).length ? `budget=${encodeBudgets(selectedDrafts())}` : '';
-  window.history.replaceState(null, '', u.toString());
+  u.hash = '';
+  window.history.replaceState({ ttCalculator: Object.keys(selectedDrafts()).length ? encodeBudgets(selectedDrafts()) : '' }, '', u.toString());
+}
+
+function shareUrl() {
+  const url = new URL(window.location.href);
+  url.hash = Object.keys(selectedDrafts()).length ? `budget=${encodeBudgets(selectedDrafts())}` : '';
+  return url;
 }
 
 function fmt(value) {
@@ -471,11 +477,11 @@ resultEl.addEventListener('click', async e => {
   if (!btn) return;
   if (activeError) { message('Проверь выделенное поле расходов.'); return; }
   if (btn.id === 'saveBudgetBtn') {
-    try { localStorage.setItem(STORAGE,JSON.stringify({ v: 1, url: location.pathname + location.search + location.hash })); message('Расчёт сохранён в этом браузере.'); event('save'); }
+    try { const url = shareUrl(); localStorage.setItem(STORAGE,JSON.stringify({ v: 1, url: url.pathname + url.search + url.hash })); message('Расчёт сохранён в этом браузере.'); event('save'); }
     catch { message('Сохранить в браузере не удалось. Можно скопировать ссылку на расчёт.'); }
     return;
   }
-  if (btn.id === 'shareBudgetBtn') { await copyText(location.href, 'Ссылка скопирована.', 'share'); return; }
+  if (btn.id === 'shareBudgetBtn') { await copyText(shareUrl().href, 'Ссылка скопирована.', 'share'); return; }
   const primary = parseInt(calcSel.value);
   const all = [primary, ...compareList.filter(x => x !== primary)].slice(0, 3);
   const days = +document.getElementById('calcDays').value;
@@ -490,7 +496,7 @@ resultEl.addEventListener('click', async e => {
     text += `  Оплачено: ${minorText(r.personal.paidMinor)}\n  Запас ${r.personal.draft.reserve}%: ${minorText(r.personal.reserveMinor)}\n  Осталось оплатить из учтённого: ${minorText(r.personal.remainingMinor)}\n`;
     text += `\n`;
   });
-  text += `${window.location.href}\ntraveltribe.ru/calculator/`;
+  text += `${shareUrl().href}\ntraveltribe.ru/calculator/`;
   await copyText(text,'Сводка скопирована.','copy');
 });
 
@@ -565,16 +571,21 @@ editor?.addEventListener('click', e => {
 });
 // Explicit links take precedence over a saved calculation. Only the recognised
 // calculator route is restored; stored values never cause a navigation.
-if (!['r','d','l','c','t','m','cmp'].some(k => new URL(location.href).searchParams.has(k)) && !location.hash) {
+let incomingFragment = typeof history.state?.ttCalculator === 'string' ? history.state.ttCalculator : '';
+if (!['r','d','l','c','t','m','cmp'].some(k => new URL(location.href).searchParams.has(k)) && !incomingFragment && !location.hash) {
   try {
     const value = localStorage.getItem(STORAGE);
     if (value && value.length < 30000) {
       const saved = JSON.parse(value), url = new URL(saved.url,location.origin);
-      if (saved.v === 1 && url.origin === location.origin && url.pathname === '/calculator/') history.replaceState(null,'',url);
+      if (saved.v === 1 && url.origin === location.origin && url.pathname === '/calculator/') {
+        incomingFragment = url.hash.startsWith('#budget=') ? url.hash.slice(8) : '';
+        url.hash = '';
+        history.replaceState({ ttCalculator: incomingFragment },'',url);
+      }
     }
   } catch { /* Storage is optional; the calculator continues without it. */ }
 }
-if (location.hash.startsWith('#budget=')) drafts = decodeBudgets(location.hash.slice(8));
+drafts = decodeBudgets(incomingFragment);
 readUrlParams();
 renderCalc();
 

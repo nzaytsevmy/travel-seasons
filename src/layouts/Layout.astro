@@ -193,6 +193,15 @@ const finalLd = {
 <html lang="ru" prefix="og: https://ogp.me/ns#">
 <head>
   <meta charset="UTF-8" />
+  {Astro.url.pathname.replace(/\/$/, '') === '/calculator' && <script is:inline id="calculatorPrivacy">
+    // Consume a shared personal budget before any analytics can read its URL.
+    (function () {
+      if (/^\/calculator(?:\/(?:index\.html)?)?$/.test(window.location.pathname) && window.location.hash.indexOf('#budget=') === 0) {
+        var fragment = window.location.hash.slice(8);
+        window.history.replaceState({ ttCalculator: fragment.length <= 24000 ? fragment : '' }, '', window.location.pathname + window.location.search);
+      }
+    })();
+  </script>}
 
   <!-- Тёмная тема убрана 2026-05-23 — сайт только светлый (брендбук Swiss). -->
 

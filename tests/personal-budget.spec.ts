@@ -1,6 +1,7 @@
 import { test, expect } from './browser-fixture';
 import { DIRECTIONS } from '../src/data/directions.js';
 import { PRICES } from '../src/data/prices.js';
+import { encodeBudgets } from '../src/utils/personal-budget.js';
 
 const index = (slug: string) => PRICES.findIndex(p => p.name === DIRECTIONS.find(d => d.slug === slug)?.price?.name);
 const money = (s: string | null) => Number((s || '').replace(/[^0-9]/g, ''));
@@ -105,11 +106,36 @@ test('расходы и итог доступны на телефоне, пла�
     await page.locator('#budgetSummaryBtn').click();
     await expect(page.locator('#calcResult')).toBeFocused();
     expect(money(await page.locator('[data-total=paid]').textContent())).toBe(25000);
-    expect(page.url()).toContain('#budget=');
+    expect(new URL(page.url()).hash).toBe('');
     await page.locator('[data-edit]').click();
     await expect(page.locator('#personalNights')).toBeFocused();
     if (info.project.name === 'chromium-desktop') {
       await page.screenshot({ path: info.outputPath(`calculator-expenses-${width}.png`) });
     }
   }
+});
+
+test('личные суммы из общей ссылки не остаются в URL для аналитики и сохраняются при перезагрузке', async ({ page }) => {
+  await page.addInitScript(() => {
+    (window as any).__analyticsAddresses = [];
+    Object.defineProperty(window, '__analyticsEnabled', { configurable: true, get: () => false, set: () => (window as any).__analyticsAddresses.push(location.href) });
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async (text: string) => { (window as any).__copied = text; } } });
+  });
+  const fragment = encodeBudgets({ dagestan: { costs: { flight: { amount: 1234567 } } } });
+  await page.goto(`/calculator/?r=${index('dagestan')}#budget=${fragment}`);
+  await expect(page.locator('#cost-flight')).toHaveValue('12345.67');
+  expect(new URL(page.url()).hash).toBe('');
+  const observed = await page.evaluate(() => (window as any).__analyticsAddresses);
+  expect(observed.length).toBeGreaterThan(0);
+  expect(observed.every((url: string) => !new URL(url).hash)).toBe(true);
+  await page.reload();
+  await expect(page.locator('#cost-flight')).toHaveValue('12345.67');
+  await page.locator('#cost-flight').fill('27182');
+  expect(new URL(page.url()).hash).toBe('');
+  await page.locator('#shareBudgetBtn').click();
+  const shared = await page.evaluate(() => (window as any).__copied);
+  expect(shared).toContain('#budget=');
+  await page.goto(shared);
+  await expect(page.locator('#cost-flight')).toHaveValue('27182');
+  expect(new URL(page.url()).hash).toBe('');
 });
