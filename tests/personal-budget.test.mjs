@@ -51,3 +51,8 @@ test('два направления не разделяют изменяемый
   a.costs.flight.amount = 500;
   assert.equal(b.costs.flight.amount, null);
 });
+test('ссылка не может исключить основную категорию, для которой нет переключателя', () => {
+  const r = personalBudget(base, { costs: { flight: { excluded: true }, hotel: { excluded: true }, food: { excluded: true }, entry: { excluded: true } } });
+  for (const id of ['flight', 'hotel', 'food', 'entry']) assert.equal(r.rows.find(row => row.id === id).excluded, false, id);
+  assert.equal(r.knownMinor, base.knownTotal * 100);
+});

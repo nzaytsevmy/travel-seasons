@@ -18,7 +18,7 @@ export function normalizeDraft(raw = {}) {
   const costs = {};
   for (const [id] of COSTS) {
     const r = raw.costs && Object.hasOwn(raw.costs, id) ? raw.costs[id] : null;
-    costs[id] = { amount: amount(r?.amount), paid: r?.paid === true, excluded: r?.excluded === true };
+    costs[id] = { amount: amount(r?.amount), paid: r?.paid === true, excluded: !['flight','hotel','food','entry'].includes(id) && r?.excluded === true };
   }
   return { nights: integer(raw.nights, 0, 90, null), rooms: integer(raw.rooms, 1, 4, 1), reserve: integer(raw.reserve, 0, 100, 10), costs };
 }
