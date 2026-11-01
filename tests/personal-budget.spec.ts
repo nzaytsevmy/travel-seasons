@@ -135,6 +135,7 @@ test('личные суммы из общей ссылки не остаются
   await page.locator('#shareBudgetBtn').click();
   const shared = await page.evaluate(() => (window as any).__copied);
   expect(shared).toContain('#budget=');
+  await page.locator('#cost-flight').fill('31415');
   await page.goto(shared);
   await expect(page.locator('#cost-flight')).toHaveValue('27182');
   expect(new URL(page.url()).hash).toBe('');

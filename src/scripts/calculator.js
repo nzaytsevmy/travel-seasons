@@ -588,6 +588,14 @@ if (!['r','d','l','c','t','m','cmp'].some(k => new URL(location.href).searchPara
 drafts = decodeBudgets(incomingFragment);
 readUrlParams();
 renderCalc();
+controller.restoreFragment = () => {
+  drafts = decodeBudgets(typeof history.state?.ttCalculator === 'string' ? history.state.ttCalculator : '');
+  compareList = [];
+  selectedMonth = 0;
+  monthSel.value = '0';
+  readUrlParams();
+  renderCalc();
+};
 
 }
 
@@ -595,6 +603,7 @@ controller.init = initCalculator;
 if (!controller.listening) {
   document.addEventListener('astro:page-load', () => controller.init());
   window.addEventListener('pageshow', () => controller.init());
+  window.addEventListener('tt:calculator-fragment', () => controller.restoreFragment?.());
   controller.listening = true;
 }
 controller.init();

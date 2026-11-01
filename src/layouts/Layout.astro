@@ -196,10 +196,18 @@ const finalLd = {
   {Astro.url.pathname.replace(/\/$/, '') === '/calculator' && <script is:inline id="calculatorPrivacy">
     // Consume a shared personal budget before any analytics can read its URL.
     (function () {
-      if (/^\/calculator(?:\/(?:index\.html)?)?$/.test(window.location.pathname) && window.location.hash.indexOf('#budget=') === 0) {
-        var fragment = window.location.hash.slice(8);
-        window.history.replaceState({ ttCalculator: fragment.length <= 24000 ? fragment : '' }, '', window.location.pathname + window.location.search);
+      function consume(restore) {
+        if (!/^\/calculator(?:\/(?:index\.html)?)?$/.test(window.location.pathname)) return;
+        var shared = window.location.hash.indexOf('#budget=') === 0;
+        if (shared) {
+          var fragment = window.location.hash.slice(8);
+          window.history.replaceState({ ttCalculator: fragment.length <= 24000 ? fragment : '' }, '', window.location.pathname + window.location.search);
+        }
+        if (shared || (restore && !window.location.hash)) window.dispatchEvent(new Event('tt:calculator-fragment'));
       }
+      consume(false);
+      window.addEventListener('hashchange', function () { consume(false); });
+      window.addEventListener('popstate', function () { consume(true); });
     })();
   </script>}
 
