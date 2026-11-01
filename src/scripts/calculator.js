@@ -503,11 +503,30 @@ async function copyText(text, success, action) {
     notice.append(area); area.focus(); area.select();
   }
 }
+function refreshPersonalResult() {
+  if (activeError) return;
+  const all = indices();
+  resultEl.innerHTML = all.length > 1 ? renderTable(all) : renderSingle(all[0]);
+  document.dispatchEvent(new CustomEvent('tt:affiliate-links-updated'));
+  for (const row of computeForPriceIndex(+calcSel.value).personal.rows) {
+    const container = editor.querySelector(`[data-money="${row.id}"]`).closest('.tc-expense');
+    container.querySelector('[data-paid]').disabled = !row.known || row.excluded;
+    container.querySelector('[data-reset]').hidden = !row.custom;
+    container.querySelector('.tc-expense-actions > span').textContent = row.known ? minorText(row.minor) : 'Не учтено';
+  }
+  message(''); writeUrlParams(); changed();
+}
 editor?.addEventListener('input', e => {
   if (e.target.matches('[data-draft]')) {
-    e.target.setAttribute('aria-invalid',String(!e.target.checkValidity() || e.target.value.trim() === ''));
+    const invalid = !e.target.checkValidity() || e.target.value.trim() === '';
+    e.target.setAttribute('aria-invalid',String(invalid));
     activeError = Boolean(editor.querySelector('[aria-invalid="true"]'));
     event('start');
+    if (invalid) { message('Проверь число ночей, номеров или запас.'); return; }
+    const draft = normalizeDraft(drafts[key(+calcSel.value)]);
+    draft[e.target.dataset.draft] = Number(e.target.value);
+    drafts[key(+calcSel.value)] = normalizeDraft(draft);
+    refreshPersonalResult();
     return;
   }
   const input = e.target.closest('[data-money]');
@@ -524,25 +543,13 @@ editor?.addEventListener('input', e => {
   const draft = normalizeDraft(drafts[key(+calcSel.value)]);
   draft.costs[id].amount = value;
   drafts[key(+calcSel.value)] = draft;
-  if (activeError) return;
-  const all = indices();
-  resultEl.innerHTML = all.length > 1 ? renderTable(all) : renderSingle(all[0]);
-  document.dispatchEvent(new CustomEvent('tt:affiliate-links-updated'));
-  const row = computeForPriceIndex(+calcSel.value).personal.rows.find(r => r.id === id);
-  const container = input.closest('.tc-expense');
-  container.querySelector('[data-paid]').disabled = !row.known || row.excluded;
-  container.querySelector('[data-reset]').hidden = !row.custom;
-  container.querySelector('.tc-expense-actions > span').textContent = row.known ? minorText(row.minor) : 'Не учтено';
-  message(''); writeUrlParams(); changed();
+  refreshPersonalResult();
 });
 editor?.addEventListener('change', e => {
   const input = e.target;
-  if (input.matches('[data-money]')) return;
+  if (input.matches('[data-money], [data-draft]')) return;
   const draft = normalizeDraft(drafts[key(+calcSel.value)]);
-  if (input.dataset.draft) {
-    if (!input.checkValidity() || input.value.trim() === '') { input.reportValidity(); return; }
-    draft[input.dataset.draft] = Number(input.value);
-  } else if (input.dataset.paid) draft.costs[input.dataset.paid].paid = input.checked;
+  if (input.dataset.paid) draft.costs[input.dataset.paid].paid = input.checked;
   else if (input.dataset.exclude) draft.costs[input.dataset.exclude].excluded = input.checked;
   else return;
   drafts[key(+calcSel.value)] = normalizeDraft(draft);
