@@ -381,7 +381,7 @@ jobs:
       - name: Early monthly homepage race regressions
         if: matrix.shard == 1
         run: |
-          npx playwright test tests/trip-budget-consistency.spec.ts tests/home-hero.spec.ts --grep 'цена в фотокарточке открывает расчёт|включение фотографий не сдвигает|фотографии подборок начинают загружаться' --retries=0 --repeat-each=3 --trace=on
+          npx playwright test tests/trip-budget-consistency.spec.ts tests/home-hero.spec.ts tests/home-planner.spec.ts --grep 'цена в фотокарточке открывает расчёт|включение фотографий не сдвигает|фотографии подборок начинают загружаться|месяц проходит через гид в калькулятор|форматы кадров соответствуют роли|главная объясняет основу бюджета' --retries=0 --repeat-each=3 --trace=retain-on-failure
         env:
           PREVIEW_URL: http://localhost:4322
           SKIP_PAGE_MTIME_TESTS: '1'

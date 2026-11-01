@@ -22,6 +22,7 @@ test('сезонные подписи обновляются вместе с м�
 
 test('главная объясняет основу бюджета и не обещает неработающий поиск в разметке', async ({ page }) => {
   await page.goto('/?m=10');
+  await expect(page.locator('[data-home-month]').first()).toHaveText('октябре');
   await expect(page.locator('.budget-basis')).toContainText('на одного человека из Москвы');
   await expect(page.locator('.home-season').first()).not.toContainText('AFL');
   const websites = await page.locator('script[type="application/ld+json"]').evaluateAll(scripts =>
@@ -36,6 +37,7 @@ test('главная объясняет основу бюджета и не об
 
 test('форматы кадров соответствуют роли и не растягиваются высотой соседних карточек', async ({ page }) => {
   await page.goto('/?m=10');
+  await expect(page.locator('[data-home-month]').first()).toHaveText('октябре');
   for (const width of [360, 402, 768, 1024, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     const mobile = width < 768;
@@ -271,18 +273,43 @@ test('главная без JavaScript сохраняет 30 фото, прям�
 });
 
 test('месяц проходит через гид в калькулятор, денежная ссылка сохраняет страну', async ({ page }) => {
-  await page.goto('/?m=10');
-  const guide = page.locator('#homeCheap h3 a').first();
-  const slug = (await guide.getAttribute('href'))!.split('/')[1];
-  await guide.click();
-  const calc = page.locator('a[href*="/calculator/?r="]').first();
-  await expect(calc).toHaveAttribute('href', /[?&]m=10/);
-  await calc.click();
-  await expect(page.locator('#calcRegion')).toHaveValue(String(priceIndex(slug)));
-  await expect(page.locator('#monthSelect')).toHaveValue('10');
-  const money = page.locator('#calcResult a[data-offer="stay"]').first();
-  await expect(money).toHaveAttribute('data-destination', slug);
-  await expect(money).toHaveAttribute('data-cta-prepared', '1');
+  const response = await page.request.get('/');
+  expect(response.ok()).toBe(true);
+  const bootstrap = (await response.text()).match(/<script\b[^>]*\bid=["']?homeData["']?[^>]*>([\s\S]*?)<\/script>/);
+  if (!bootstrap) throw new Error('Missing homepage bootstrap');
+  const serverMonth = Number(JSON.parse(bootstrap[1]).month);
+  expect(Number.isInteger(serverMonth)).toBe(true);
+  expect(serverMonth).toBeGreaterThanOrEqual(1);
+  expect(serverMonth).toBeLessThanOrEqual(12);
+  // Always exercise a different month, including when the build itself is October.
+  const month = serverMonth === 10 ? 7 : 10;
+  let releaseData!: () => void;
+  const pendingData = new Promise<void>(resolve => { releaseData = resolve; });
+  await page.route('**/home-planner-data-*.json', async route => {
+    await pendingData;
+    await route.continue();
+  });
+  try {
+    await page.goto('/?m=' + month, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-home-month]').first()).toHaveText(MONTHS_PREP[serverMonth]);
+    releaseData();
+    // Read the destination only after replacement; locators are resolved again on click.
+    await expect(page.locator('[data-home-month]').first()).toHaveText(MONTHS_PREP[month]);
+    const guide = page.locator('#homeCheap h3 a').first();
+    const slug = (await guide.getAttribute('href'))!.split('/')[1];
+    await guide.click();
+    await expect.poll(() => new URL(page.url()).pathname).toBe('/' + slug + '/');
+    const calc = page.locator('a[href*="/calculator/?r="]').first();
+    await expect(calc).toHaveAttribute('href', new RegExp('[?&]m=' + month + '(?:&|$)'));
+    await calc.click();
+    await expect(page.locator('#calcRegion')).toHaveValue(String(priceIndex(slug)));
+    await expect(page.locator('#monthSelect')).toHaveValue(String(month));
+    const money = page.locator('#calcResult a[data-offer="stay"]').first();
+    await expect(money).toHaveAttribute('data-destination', slug);
+    await expect(money).toHaveAttribute('data-cta-prepared', '1');
+  } finally {
+    releaseData();
+  }
 });
 
 test('неизвестный въезд не превращает стоимость калькулятора в ноль или самого дешёвого победителя', async ({ page }) => {
