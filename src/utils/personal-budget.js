@@ -36,8 +36,8 @@ export function personalBudget(base, raw) {
   const nights = draft.nights ?? base.days;
   const insurance = base.visa?.mandatoryCosts?.filter(c => /страхов/i.test(c.label)) || [];
   const mandatory = base.visa?.mandatoryCosts?.filter(c => !/страхов/i.test(c.label)) || [];
-  const knownMandatory = mandatory.reduce((s, c) => s + (Number.isFinite(c.rub) && c.rub >= 0 ? Math.round(c.rub * base.travelers * 100) : 0), 0);
-  const knownInsurance = insurance.reduce((s, c) => s + (Number.isFinite(c.rub) && c.rub >= 0 ? Math.round(c.rub * base.travelers * 100) : 0), 0);
+  const knownMandatory = mandatory.reduce((s, c) => s + (Number.isFinite(c.rub) && c.rub >= 0 ? Math.round(c.rub * base.travelers) * 100 : 0), 0);
+  const knownInsurance = insurance.reduce((s, c) => s + (Number.isFinite(c.rub) && c.rub >= 0 ? Math.round(c.rub * base.travelers) * 100 : 0), 0);
   const defaults = {
     flight: base.flightTotal * 100,
     hotel: Math.round(base.hotelTotal * 100 / base.days),

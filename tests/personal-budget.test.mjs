@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { personalBudget, moneyToMinor, normalizeDraft, decodeBudgets, encodeBudgets } from '../src/utils/personal-budget.js';
+import { calculateTripBudget } from '../src/utils/trip-budget.js';
+import { DIRECTIONS } from '../src/data/directions.js';
+import { PRICES } from '../src/data/prices.js';
+import { VISA_DETAILS } from '../src/data/visa-details.js';
 const base = { days: 7, travelers: 2, flightTotal: 40000, hotelTotal: 21000, foodTotal: 14000, visaTotal: 2000, mandatoryTotal: 0, knownTotal: 77000, unknownCosts: [], visa: { mandatoryCosts: [] } };
 test('оплаченное остаётся в стоимости; запас применяется только к оставшемуся', () => {
   const r = personalBudget(base, { costs: { flight: { paid: true }, transport: { amount: 300000 }, activities: { excluded: true }, insurance: { amount: 200000 }, other: { excluded: true } } });
@@ -55,4 +59,17 @@ test('ссылка не может исключить основную кате�
   const r = personalBudget(base, { costs: { flight: { excluded: true }, hotel: { excluded: true }, food: { excluded: true }, entry: { excluded: true } } });
   for (const id of ['flight', 'hotel', 'food', 'entry']) assert.equal(r.rows.find(row => row.id === id).excluded, false, id);
   assert.equal(r.knownMinor, base.knownTotal * 100);
+});
+test('стартовая известная сумма совпадает с общей моделью на всех направлениях и границах условий', () => {
+  for (const price of PRICES) {
+    const destination = DIRECTIONS.find(d => d.price?.name === price.name);
+    for (const days of [1, 7, 90]) for (const travelers of [1, 4]) for (const level of [0, 1, 2]) for (const month of [0, 1, 7, 12]) {
+      const b = calculateTripBudget(price, { rates: { USD: 84.3363, EUR: 97.7626 }, days, travelers, level, month, seasons: destination?.r, visa: VISA_DETAILS[destination?.slug] });
+      assert.equal(personalBudget(b).knownMinor, b.knownTotal * 100, `${price.name}, ${days} days, ${travelers} people, level ${level}, month ${month}`);
+    }
+  }
+});
+test('округление исходных обязательных сборов сохраняет общий контракт', () => {
+  const b = calculateTripBudget(PRICES[0], { rates: { USD: 84.3363, EUR: 97.7626 }, travelers: 4, visa: { cost: 'бесплатно', mandatoryCosts: [{ label: 'Обязательный сбор', rub: 12.34 }, { label: 'Страховка', rub: 23.45 }] } });
+  assert.equal(personalBudget(b).knownMinor, b.knownTotal * 100);
 });
