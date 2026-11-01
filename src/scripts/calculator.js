@@ -262,6 +262,7 @@ function renderSingle(pi) {
       </div>
 
       <div class="tc-utility">
+        <button class="tc-copy-btn" type="button" data-edit="${pi}">Уточнить расходы</button>
         <button class="tc-copy-btn" id="copyTgBtn" type="button">
           <span></span> Скопировать сводку для Telegram
         </button>
@@ -381,6 +382,10 @@ function renderCalc() {
 }
 
 // ─── EVENT HANDLERS ────────────────────────────────────────────
+document.getElementById('budgetSummaryBtn')?.addEventListener('click', () => {
+  resultEl.focus({ preventScroll: true });
+  resultEl.scrollIntoView({ block: 'start' });
+});
 calcSel.addEventListener('change', () => { renderCalc(); changed(); });
 monthSel.addEventListener('change', e => {
   selectedMonth = parseInt(e.target.value);

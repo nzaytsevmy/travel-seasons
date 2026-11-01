@@ -221,7 +221,7 @@ const ldJson = {
               </div>
             </div>
 
-            <div class="tc-field">
+            <div class="tc-field tc-field--currency">
               <label class="tc-field-label">Валюта</label>
               <div class="tc-seg tc-seg--small" id="currGroup" role="group" aria-label="Валюта">
                 <button class="tc-seg-btn active" data-cur="rub" aria-pressed="true">₽</button>
@@ -248,7 +248,7 @@ const ldJson = {
     </section>
 
     <section class="tc-personal-section" aria-labelledby="personalCostsTitle">
-      <h2 id="personalCostsTitle">Расходы поездки</h2>
+      <div class="tc-personal-heading"><h2 id="personalCostsTitle">Расходы поездки</h2><button type="button" class="tc-copy-btn" id="budgetSummaryBtn">К итогу</button></div>
       <div id="personalCosts" class="ym-hide-content"></div>
     </section>
     </div>
@@ -256,7 +256,7 @@ const ldJson = {
     <!-- ───────────── RESULT — full width hero panel ─────────── -->
     <section class="tc-result-section">
       <div class="tc-container">
-        <div id="calcResult" class="tc-result ym-hide-content"></div>
+        <div id="calcResult" class="tc-result ym-hide-content" tabindex="-1"></div>
         <div id="calcNotice" class="tc-notice ym-hide-content" role="status" aria-live="polite"></div>
       </div>
     </section>
@@ -325,6 +325,8 @@ const ldJson = {
 .tc .tc-rate { font-size:12px; font-family:var(--ff-mono); color:var(--text-faint); flex-shrink:0; }
 .tc .tc-personal-section { padding-top:24px; }
 .tc .tc-personal-section h2 { font-family:var(--ff-display); font-size:28px; line-height:1.2; margin:0 0 18px; }
+.tc .tc-personal-heading { display:flex; justify-content:space-between; align-items:baseline; gap:16px; }
+.tc #calcResult { scroll-margin-top:108px; }
 .tc .tc-stay-settings { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
 .tc .tc-stay-settings label { font-size:14px; }
 .tc .tc-stay-settings input { width:100%; min-height:48px; min-width:0; border:1px solid var(--line); border-radius:0; padding:8px 10px; margin-top:6px; font-size:16px; box-sizing:border-box; background:#fff; color:var(--text); }
@@ -406,6 +408,7 @@ const ldJson = {
   .tc .tc-form-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
   .tc .tc-field--country { grid-column:span 2; }
   .tc .tc-field--level { grid-column:span 2; }
+  .tc .tc-field--level { order:1; }
   .tc .tc-single { display:grid; grid-template-columns:1fr 1fr; gap:0 24px; }
   .tc .tc-result-head,.tc .tc-incomplete,.tc .tc-nudge,.tc .tc-cats,.tc .tc-cta-block,.tc .tc-utility { grid-column:1/-1; }
   .tc .tc-finances { align-self:center; }
@@ -423,6 +426,5 @@ const ldJson = {
   .tc .tc-expense-main { grid-template-columns:minmax(0,1fr) 118px; }
   .tc .tc-expense-actions { gap:4px 12px; }
   .tc .tc-result-pills { gap:4px 12px; }
-  .tc .tc-result-pills .tc-visa-pill { min-height:30px; }
 }
 </style>
