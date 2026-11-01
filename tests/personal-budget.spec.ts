@@ -85,3 +85,31 @@ test('неверная сумма блокирует сохранение; от�
   await page.locator('#shareBudgetBtn').click();
   await expect(page.getByRole('textbox', { name: 'Текст для копирования' })).toHaveValue(/#budget=/);
 });
+
+test('расходы и итог доступны на телефоне, планшете и широком экране', async ({ page }, info) => {
+  for (const width of [402, 768, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(`/calculator/?r=${index('dagestan')}`);
+    await expect(page.locator('.tc-hero-amount')).toBeVisible();
+    const layout = await page.evaluate(() => ({
+      width: document.documentElement.scrollWidth,
+      amountBottom: document.querySelector('.tc-hero-amount')!.getBoundingClientRect().bottom,
+    }));
+    expect(layout.width).toBeLessThanOrEqual(width + 1);
+    expect(layout.amountBottom).toBeLessThanOrEqual(900);
+    if (info.project.name === 'chromium-desktop') {
+      await page.screenshot({ path: info.outputPath(`calculator-${width}.png`) });
+    }
+    await page.locator('#cost-flight').fill('25000');
+    await page.locator('[data-paid=flight]').check();
+    await page.locator('#budgetSummaryBtn').click();
+    await expect(page.locator('#calcResult')).toBeFocused();
+    expect(money(await page.locator('[data-total=paid]').textContent())).toBe(25000);
+    expect(page.url()).toContain('#budget=');
+    await page.locator('[data-edit]').click();
+    await expect(page.locator('#personalNights')).toBeFocused();
+    if (info.project.name === 'chromium-desktop') {
+      await page.screenshot({ path: info.outputPath(`calculator-expenses-${width}.png`) });
+    }
+  }
+});
