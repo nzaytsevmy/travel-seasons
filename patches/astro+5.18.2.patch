@@ -1,7 +1,8 @@
 diff --git a/node_modules/astro/dist/prefetch/index.js b/node_modules/astro/dist/prefetch/index.js
+index d9c13a2..f09e313 100644
 --- a/node_modules/astro/dist/prefetch/index.js
 +++ b/node_modules/astro/dist/prefetch/index.js
-@@ -7,10 +7,27 @@
+@@ -7,10 +7,29 @@ let prefetchAll = __PREFETCH_PREFETCH_ALL__;
  let defaultStrategy = __PREFETCH_DEFAULT_STRATEGY__;
  let clientPrerender = __EXPERIMENTAL_CLIENT_PRERENDER__;
  let inited = false;
@@ -11,6 +12,8 @@ diff --git a/node_modules/astro/dist/prefetch/index.js b/node_modules/astro/dist
    if (!inBrowser) return;
    if (inited) return;
    inited = true;
++  // Reload can reject speculative fetches before pagehide or Navigation API notification.
++  window.addEventListener("beforeunload", () => { pageActive = false; });
 +  window.addEventListener("pagehide", () => { pageActive = false; });
 +  const resumePrefetch = () => {
 +    pageActive = true;
@@ -29,7 +32,7 @@ diff --git a/node_modules/astro/dist/prefetch/index.js b/node_modules/astro/dist
    debug?.(`[astro] Initializing prefetch script`);
    prefetchAll ??= defaultOpts?.prefetchAll ?? false;
    defaultStrategy ??= defaultOpts?.defaultStrategy ?? "hover";
-@@ -72,16 +89,20 @@
+@@ -72,16 +91,20 @@ function initHoverStrategy() {
  }
  function initViewportStrategy() {
    let observer;
@@ -53,7 +56,7 @@ diff --git a/node_modules/astro/dist/prefetch/index.js b/node_modules/astro/dist
  }
  function createViewportIntersectionObserver() {
    const timeouts = /* @__PURE__ */ new WeakMap();
-@@ -120,6 +141,9 @@
+@@ -120,6 +143,9 @@ function initLoadStrategy() {
    });
  }
  function prefetch(url, opts) {
@@ -63,7 +66,7 @@ diff --git a/node_modules/astro/dist/prefetch/index.js b/node_modules/astro/dist
    url = url.replace(/#.*/, "");
    const ignoreSlowConnection = opts?.ignoreSlowConnection ?? false;
    if (!canPrefetchUrl(url, ignoreSlowConnection)) return;
-@@ -139,7 +163,10 @@
+@@ -139,7 +165,10 @@ function prefetch(url, opts) {
      for (const [key, value] of Object.entries(internalFetchHeaders)) {
        headers.set(key, value);
      }
