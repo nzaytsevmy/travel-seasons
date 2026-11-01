@@ -50,14 +50,16 @@ export function personalBudget(base, raw) {
     const required = id === 'entry' || (id === 'insurance' && insurance.length > 0);
     const baseUnknown = id === 'entry' ? base.visaTotal === null || mandatory.some(c => !Number.isFinite(c.rub) || c.rub < 0)
       : id === 'insurance' && insurance.some(c => !Number.isFinite(c.rub) || c.rub < 0);
-    const inputMinor = custom.amount ?? defaults[id] ?? null;
+    const defaultMinor = defaults[id] ?? null;
+    const inputMinor = custom.amount ?? (baseUnknown ? null : defaultMinor);
     const excluded = custom.excluded && !required;
     const known = excluded || (inputMinor !== null && (custom.amount !== null || !baseUnknown));
     const multiplier = id === 'hotel' ? nights * draft.rooms : id === 'food' ? base.days * base.travelers : 1;
     // Preserve the shared model's exact rounding in the untouched default case.
     const untouched = custom.amount === null && !excluded;
     const minor = excluded ? 0 : untouched && id === 'hotel' && nights === base.days && draft.rooms === 1 ? base.hotelTotal * 100
-      : untouched && id === 'food' ? base.foodTotal * 100 : Math.round((inputMinor ?? 0) * multiplier);
+      : untouched && id === 'food' ? base.foodTotal * 100
+      : untouched && baseUnknown ? Math.round((defaultMinor ?? 0) * multiplier) : Math.round((inputMinor ?? 0) * multiplier);
     return { id, label, unit, inputMinor, minor, known, excluded, paid: custom.paid, required, custom: custom.amount !== null, multiplier };
   });
   // Known portions of a mandatory cost remain in the subtotal while its missing

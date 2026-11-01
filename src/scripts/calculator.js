@@ -139,6 +139,7 @@ function computeForPriceIndex(pi) {
 }
 
 function minorText(minor) { return fmt(minor / (calcCurrency === 'rub' ? 100 : 100 * rates.USD)); }
+function costStatus(row) { return row.known ? minorText(row.minor) : row.minor > 0 ? `Известно ${minorText(row.minor)}` : 'Не учтено'; }
 function inputText(minor) { return minor === null ? '' : (minor / (calcCurrency === 'rub' ? 100 : 100 * rates.USD)).toFixed(2).replace(/\.00$/, ''); }
 function renderEditor() {
   if (!editor) return;
@@ -155,7 +156,7 @@ function renderEditor() {
     <div class="tc-expense-actions"><label><input type="checkbox" data-paid="${row.id}" ${row.paid ? 'checked' : ''} ${!row.known || row.excluded ? 'disabled' : ''}> Оплачено</label>
     ${!row.required && !['flight','hotel','food'].includes(row.id) ? `<label><input type="checkbox" data-exclude="${row.id}" ${row.excluded ? 'checked' : ''}> Не учитывать</label>` : ''}
     <button type="button" data-reset="${row.id}" ${row.custom ? '' : 'hidden'}>Вернуть оценку</button>
-    <span>${row.known ? minorText(row.minor) : 'Не учтено'}</span></div>
+    <span>${costStatus(row)}</span></div>
   </div>`).join('')}`;
 }
 
@@ -183,7 +184,7 @@ function renderSingle(pi) {
   const perPerson = (r.grand ?? r.knownTotal) / Math.max(1, r.travelers);
   const perDay = (r.grand ?? r.knownTotal) / Math.max(1, r.days);
 
-  const categories = r.personal.rows.filter(row => row.minor > 0 && !row.excluded).map(row => ({ name: row.label, value: row.minor / (calcCurrency === 'rub' ? 100 : 100 * rates.USD), color: CAT_COLORS[row.id] || '#5c626b', icon: '' }));
+  const categories = r.personal.rows.filter(row => row.minor > 0 && !row.excluded).map(row => ({ name: row.label + (row.known ? '' : ' (известная часть)'), value: row.minor / (calcCurrency === 'rub' ? 100 : 100 * rates.USD), color: CAT_COLORS[row.id] || '#5c626b', icon: '' }));
 
   const total = r.grand ?? r.knownTotal;
 
@@ -231,7 +232,7 @@ function renderSingle(pi) {
         </div>
       </div>
 
-      ${r.grand === null ? `<p class="tc-incomplete">Не включено: ${escapeHtml(r.unknownCosts.join(', ').toLocaleLowerCase('ru'))}. Полная стоимость пока неизвестна.</p>` : ''}
+      ${r.grand === null ? `<p class="tc-incomplete">Нужно уточнить: ${escapeHtml(r.unknownCosts.join(', ').toLocaleLowerCase('ru'))}. Полная стоимость пока неизвестна.</p>` : ''}
       <dl class="tc-finances"><div><dt>Оплачено</dt><dd data-total="paid">${minorText(r.personal.paidMinor)}</dd></div><div><dt>Запас ${r.personal.draft.reserve}% на оставшееся</dt><dd data-total="reserve">${minorText(r.personal.reserveMinor)}</dd></div><div class="tc-finances-remaining"><dt>Осталось оплатить${r.personal.complete ? '' : ' из учтённого'}</dt><dd data-total="remaining">${minorText(r.personal.remainingMinor)}</dd></div></dl>
       ${r.personal.draft.costs.flight.amount === null ? nudge : ''}
 
@@ -325,23 +326,23 @@ function renderTable(piList) {
           ${seasonPill}
         </div>
 
-        <dl class="tc-finances"><div><dt>Оплачено</dt><dd>${minorText(r.personal.paidMinor)}</dd></div><div><dt>Осталось с запасом</dt><dd>${minorText(r.personal.remainingMinor)}</dd></div></dl>
+        <dl class="tc-finances"><div><dt>Оплачено</dt><dd>${minorText(r.personal.paidMinor)}</dd></div><div><dt>Запас ${r.personal.draft.reserve}% на оставшееся</dt><dd>${minorText(r.personal.reserveMinor)}</dd></div><div><dt>Осталось оплатить${r.personal.complete ? '' : ' из учтённого'}</dt><dd>${minorText(r.personal.remainingMinor)}</dd></div></dl>
         <button class="tc-copy-btn" type="button" data-edit="${pi}">Уточнить расходы</button>
 
         <div class="tc-cmp-total">
           <div class="tc-cmp-total-label">${r.grand === null ? 'Известная часть бюджета' : 'Оценка поездки'}</div>
           <div class="tc-cmp-total-amount">${fmt(r.grand ?? r.knownTotal)}</div>
-          <div class="tc-cmp-total-pp">${r.travelers > 1 ? `${fmt((r.grand ?? r.knownTotal) / r.travelers)} / чел.` : `${fmt((r.grand ?? r.knownTotal) / r.days)} / день`}</div>
+          <div class="tc-cmp-total-pp">${r.travelers > 1 ? `${fmt((r.grand ?? r.knownTotal) / r.travelers)} на человека · ` : ''}${fmt((r.grand ?? r.knownTotal) / r.days)} в день</div>
         </div>
 
         <ul class="tc-cmp-list">
-          ${r.personal.rows.filter(row => !row.excluded).map(row => `<li><span class="tc-cmp-key">${row.label}${row.id === 'hotel' ? ` · ${r.personal.nights} ноч., ${r.personal.draft.rooms} ном.` : ''}</span><span class="tc-cmp-val">${row.known ? minorText(row.minor) : 'Не учтено'}</span></li>`).join('')}
+          ${r.personal.rows.filter(row => !row.excluded).map(row => `<li><span class="tc-cmp-key">${row.label}${row.id === 'hotel' ? ` · ${r.personal.nights} ноч., ${r.personal.draft.rooms} ном.` : ''}</span><span class="tc-cmp-val">${costStatus(row)}</span></li>`).join('')}
           <li><span class="tc-cmp-key">Условия въезда</span><span class="tc-cmp-val tc-cmp-visa">${visaLink ? `<a href="${visaLink}" target="_blank" rel="noopener">${visaText}</a>` : visaText}</span></li>
         </ul>
 
         <a href="${aviUrl}" ${partnerAttrs(pi, 'flight')} target="_blank" rel="noopener sponsored" class="tc-cmp-cta">Посмотреть рейсы</a>
         <p class="tc-cmp-partners"><a href="${stayUrl(pi)}" ${partnerAttrs(pi, 'stay')} target="_blank" rel="noopener sponsored">Жильё</a><a href="${insuranceUrl(pi)}" ${partnerAttrs(pi, 'insurance')} target="_blank" rel="noopener sponsored">Страховка</a></p>
-        ${r.grand === null ? `<p class="tc-incomplete">Не включено: ${escapeHtml(r.unknownCosts.join(', ').toLocaleLowerCase('ru'))}.</p>` : ''}
+        ${r.grand === null ? `<p class="tc-incomplete">Нужно уточнить: ${escapeHtml(r.unknownCosts.join(', ').toLocaleLowerCase('ru'))}.</p>` : ''}
       </div>
     `;
   });
@@ -491,8 +492,8 @@ resultEl.addEventListener('click', async e => {
   all.forEach(pi => {
     const r = computeForPriceIndex(pi);
     text += `${r.p.name}\n  ${r.grand === null ? 'ИЗВЕСТНАЯ ЧАСТЬ БЮДЖЕТА' : 'ОЦЕНКА ПОЕЗДКИ'}: ${fmt(r.grand ?? r.knownTotal)}\n`;
-    for (const row of r.personal.rows.filter(row => row.known && !row.excluded)) text += `  ${row.label}${row.id === 'hotel' ? ` (${r.personal.nights} ноч., ${r.personal.draft.rooms} ном.)` : ''}: ${minorText(row.minor)}\n`;
-    if (r.unknownCosts.length) text += `  Не включено: ${r.unknownCosts.join(', ')}\n`;
+    for (const row of r.personal.rows.filter(row => (row.known || row.minor > 0) && !row.excluded)) text += `  ${row.label}${row.known ? '' : ' (известная часть)'}${row.id === 'hotel' ? ` (${r.personal.nights} ноч., ${r.personal.draft.rooms} ном.)` : ''}: ${minorText(row.minor)}\n`;
+    if (r.unknownCosts.length) text += `  Нужно уточнить: ${r.unknownCosts.join(', ')}\n`;
     text += `  Оплачено: ${minorText(r.personal.paidMinor)}\n  Запас ${r.personal.draft.reserve}%: ${minorText(r.personal.reserveMinor)}\n  Осталось оплатить из учтённого: ${minorText(r.personal.remainingMinor)}\n`;
     text += `\n`;
   });
@@ -518,7 +519,7 @@ function refreshPersonalResult() {
     const container = editor.querySelector(`[data-money="${row.id}"]`).closest('.tc-expense');
     container.querySelector('[data-paid]').disabled = !row.known || row.excluded;
     container.querySelector('[data-reset]').hidden = !row.custom;
-    container.querySelector('.tc-expense-actions > span').textContent = row.known ? minorText(row.minor) : 'Не учтено';
+    container.querySelector('.tc-expense-actions > span').textContent = costStatus(row);
   }
   message(''); writeUrlParams(); changed();
 }

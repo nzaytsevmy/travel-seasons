@@ -30,6 +30,7 @@ test('неизвестное не ноль, а явный ноль — изве�
 test('обязательную неизвестную страховку нельзя исключить; собственная сумма закрывает пробел', () => {
   const b = { ...base, visa: { mandatoryCosts: [{ label: 'Медицинская страховка', rub: null }] }, unknownCosts: ['Медицинская страховка'] };
   assert.equal(personalBudget(b, { costs: { insurance: { excluded: true } } }).rows.find(r => r.id === 'insurance').known, false);
+  assert.equal(personalBudget(b).rows.find(r => r.id === 'insurance').inputMinor, null);
   assert.equal(personalBudget(b, { costs: { insurance: { amount: 100000 } } }).rows.find(r => r.id === 'insurance').minor, 100000);
 });
 test('десятичный ввод, пределы и валюты проверяются до расчёта', () => {
@@ -72,4 +73,13 @@ test('стартовая известная сумма совпадает с о�
 test('округление исходных обязательных сборов сохраняет общий контракт', () => {
   const b = calculateTripBudget(PRICES[0], { rates: { USD: 84.3363, EUR: 97.7626 }, travelers: 4, visa: { cost: 'бесплатно', mandatoryCosts: [{ label: 'Обязательный сбор', rub: 12.34 }, { label: 'Страховка', rub: 23.45 }] } });
   assert.equal(personalBudget(b).knownMinor, b.knownTotal * 100);
+});
+test('неизвестный итог категории имеет пустое поле и сохраняет известную часть в сумме', () => {
+  const b = calculateTripBudget(PRICES[0], { rates: { USD: 84.3363, EUR: 97.7626 }, visa: { cost: '1000 ₽', mandatoryCosts: [{ label: 'Дополнительный сбор', rub: null }, { label: 'Страховка', rub: 200 }, { label: 'Страховка для активности', rub: null }] } });
+  const p = personalBudget(b);
+  assert.equal(p.rows.find(r => r.id === 'entry').inputMinor, null);
+  assert.equal(p.rows.find(r => r.id === 'entry').minor, 100000);
+  assert.equal(p.rows.find(r => r.id === 'insurance').inputMinor, null);
+  assert.equal(p.rows.find(r => r.id === 'insurance').minor, 20000);
+  assert.equal(p.knownMinor, b.knownTotal * 100);
 });

@@ -59,9 +59,15 @@ test('сравнение хранит расходы отдельно; неиз�
   await page.locator('#addCountrySelect').selectOption(String(index('georgia')));
   await page.locator(`[data-edit="${index('georgia')}"]`).click();
   await expect(page.locator('#cost-flight')).not.toHaveValue('12345');
+  await expect(page.locator('#cost-insurance')).toHaveValue('');
+  await page.locator('#cost-insurance').fill('0');
+  await expect(page.locator('.tc-cmp-card').filter({ hasText: 'Грузия' }).locator('.tc-incomplete')).not.toContainText('страховка');
+  await page.locator('#personalReserve').fill('50');
   await page.locator('#cost-flight').fill('23456');
   await page.locator(`[data-edit="${index('dagestan')}"]`).click();
   await expect(page.locator('#cost-flight')).toHaveValue('12345');
+  await expect(page.locator('#personalReserve')).toHaveValue('10');
+  await expect(page.locator('.tc-cmp-card').filter({ hasText: 'Грузия' }).locator('.tc-finances')).toContainText('Запас 50%');
   await page.locator('.tc-cmp-remove').click();
   for (const id of ['transport', 'activities', 'insurance']) await page.locator(`[data-exclude=${id}]`).check();
   await page.locator('#cost-other').fill('0');
