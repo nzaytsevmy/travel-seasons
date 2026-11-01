@@ -83,7 +83,7 @@ function readUrlParams() {
     selectedMonth = +m;
     monthSel.value = String(selectedMonth);
   }
-  if (cmp) compareList = [...new Set(cmp.split(',').map(x => Number(x)).filter(x => Number.isInteger(x) && PRICES[x]))].slice(0, 2);
+  if (cmp) compareList = [...new Set(cmp.split(',').filter(x => x.trim()).map(x => Number(x)).filter(x => Number.isInteger(x) && PRICES[x]))].slice(0, 2);
 }
 
 function writeUrlParams() {
@@ -358,7 +358,8 @@ function renderCalc() {
   activeError = false;
   message('');
   const primary = parseInt(calcSel.value);
-  const all = [primary, ...compareList.filter(x => x !== primary)].slice(0, 3);
+  compareList = [...new Set(compareList)].filter(x => x !== primary && PRICES[x]).slice(0, 2);
+  const all = [primary, ...compareList];
   const isCompare = all.length > 1;
 
   resultEl.innerHTML = isCompare ? renderTable(all) : renderSingle(all[0]);
