@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import { expect } from '@playwright/test';
 import { readFileSync, statSync, existsSync, readdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { parse } from 'parse5';
 
 // Готовые HTML должны сохранять дату реального изменения, а не время сборки.
 // Иначе Last-Modified не даёт 304, и поисковые роботы перекачивают старые страницы.
@@ -62,6 +63,45 @@ test('главная обновляет sitemap и Last-Modified после пр
   expect(датаУказателя, 'указатель sitemap без даты').toBeTruthy();
   expect(new Date(датаУказателя!).valueOf(), 'указатель sitemap старше обновлённой главной')
     .toBeGreaterThanOrEqual(new Date(главная!.дата).valueOf());
+});
+
+test('калькулятор обновляет sitemap и Last-Modified после изменения своей страницы', () => {
+  const датаИсходника = Number(execFileSync('git', ['log', '-1', '--format=%ct', '--',
+    'src/pages/calculator.astro', 'src/scripts/calculator.js', 'src/utils/calculator-examples.js', 'src/utils/calculator-source-navigation.js',
+    'src/data/calculator-price-provenance.json', 'src/utils/personal-budget.js',
+    'src/utils/trip-budget.js', 'src/utils/budget-rates.js', 'src/data/budget-rates.json',
+    'scripts/calculator-freshness.mjs',
+  ], { encoding: 'utf8' }).trim());
+  expect(датаИсходника, 'git-дата калькулятора не определилась').toBeGreaterThan(0);
+  const страница = страницы().find((с) => с.путь === '/calculator/');
+  expect(страница, 'калькулятор отсутствует в sitemap').toBeTruthy();
+  const датаКарты = new Date(страница!.дата).valueOf() / 1000;
+  expect(датаКарты, 'sitemap калькулятора старше его исходника').toBeGreaterThanOrEqual(датаИсходника);
+  expect(Math.floor(statSync(страница!.файл).mtimeMs / 1000),
+    'Last-Modified калькулятора старше его исходника — возможен ложный 304').toBeGreaterThanOrEqual(датаИсходника);
+  const html = readFileSync(страница!.файл, 'utf8');
+  const датаКурса = html.match(/\bdata-budget-rate-date\s*=\s*["']?(\d{4}-\d{2}-\d{2})/)?.[1];
+  expect(датаКурса, 'дата показанного курса не найдена').toBeTruthy();
+  expect(датаКарты, 'sitemap калькулятора старше показанного курса').toBeGreaterThanOrEqual(Date.parse(`${датаКурса}T00:00:00Z`) / 1000);
+  const указатель = readFileSync(`${КАТАЛОГ}/sitemap-index.xml`, 'utf8');
+  const датаУказателя = указатель.match(/<lastmod>([^<]*)<\/lastmod>/)?.[1];
+  expect(датаУказателя, 'указатель sitemap без даты').toBeTruthy();
+  expect(Date.parse(датаУказателя!), 'указатель sitemap старше обновлённого калькулятора').toBeGreaterThanOrEqual(датаКарты * 1000);
+});
+
+test('дата калькулятора в разметке не старше его последнего изменения', () => {
+  const html = readFileSync(`${КАТАЛОГ}/calculator/index.html`, 'utf8');
+  const узлы: any[] = [];
+  const обход = (узел: any) => { узлы.push(узел); for (const ребёнок of узел.childNodes || []) обход(ребёнок); };
+  обход(parse(html));
+  const скрипты = узлы.filter(узел => узел.tagName === 'script' && узел.attrs?.some((a: any) => a.name === 'type' && a.value === 'application/ld+json'));
+  const документы = скрипты.map(узел => JSON.parse((узел.childNodes || []).map((x: any) => x.value || '').join('')));
+  const калькулятор = документы.flatMap(д => д['@graph'] || [д]).find(д => д['@type'] === 'WebApplication');
+  expect(калькулятор?.dateModified, 'дата изменения калькулятора в разметке не найдена').toBeTruthy();
+  const исходник = Number(execFileSync('git', ['log', '-1', '--format=%ct', '--', 'src/pages/calculator.astro'], { encoding:'utf8' }).trim());
+  expect(Date.parse(калькулятор.dateModified) / 1000, 'разметка старше изменённого калькулятора').toBeGreaterThanOrEqual(исходник);
+  const вКарте = страницы().find(с => с.путь === '/calculator/');
+  expect(Date.parse(калькулятор.dateModified), 'разметка и карта показывают разные даты калькулятора').toBe(Date.parse(вКарте!.дата));
 });
 
 test('2. изменение общей оболочки действительно поднимает дату старых страниц', () => {

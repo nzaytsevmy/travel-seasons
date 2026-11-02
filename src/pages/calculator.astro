@@ -14,10 +14,21 @@ import { DIRECTIONS } from '../data/directions.js';
 import { VISA_DETAILS } from '../data/visa-details.js';
 import { DATA_UPDATED } from '../data/meta.js';
 import { getBudgetRates } from '../utils/budget-rates.js';
+import { buildCalculatorExamples, priceRecordDate } from '../utils/calculator-examples.js';
+import { calculatorLastModified, calculatorSourceDate } from '../../scripts/calculator-freshness.mjs';
 import { build } from 'esbuild';
 import { resolve } from 'node:path';
 import calculatorSource from '../scripts/calculator.js?raw';
 const rates = await getBudgetRates();
+const calculatorModified = calculatorLastModified(DATA_UPDATED, rates.date, calculatorSourceDate());
+const examples = buildCalculatorExamples({ prices: PRICES, directions: DIRECTIONS, visas: VISA_DETAILS, rates });
+const commonUnknown = examples[0].unknown.filter((cost: string) => examples.every(example => example.unknown.includes(cost)));
+const undocumentedExamples = examples.filter(example => example.recordedAt === '2026-04-30').map(example => example.name);
+const dateRu = (value: string) => new Intl.DateTimeFormat('ru-RU', {
+  day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
+}).format(new Date(`${value}T00:00:00Z`)).replace(/\s*г\.$/u, '');
+const rub = (minor: number) => `${Math.round(minor / 100).toLocaleString('ru-RU')} ₽`;
+const rateText = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 4 }).format(rates.USD);
 import { sputnik8Explore } from '../data/affiliate.js';
 
 // Результат заполняется до первого кадра, как у прежнего inline-калькулятора.
@@ -49,6 +60,7 @@ Object.keys(groups).sort((a, b) => a.localeCompare(b, 'ru')).forEach(g => {
 const priceIdxToSlug: Record<number, string> = {};
 const priceIdxToSeasons: Record<number, any> = {};
 const priceIdxToVisa: Record<number, any> = {};
+const priceIdxToRecorded = Object.fromEntries(PRICES.map((price, i) => [i, priceRecordDate(price)]));
 
 PRICES.forEach((p, i) => {
   // Находим DIRECTIONS-запись с тем же name (в price.name внутри directions)
@@ -104,7 +116,7 @@ const ldJson = {
       "operatingSystem": "Any",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "RUB" },
       "featureList": ["70+ направлений","Сравнение до 3 стран","Сезонный коэффициент по 12 месяцам","Расчёт 1–4 путешественников","Виза в разбивке","Свои суммы","Оплаченные расходы","Запас на поездку","Сохранение расчёта"],
-      "dateModified": DATA_UPDATED,
+      "dateModified": calculatorModified?.toISOString(),
       "author": { "@id": "https://traveltribe.ru/about/#person" },
       "publisher": { "@id": "https://traveltribe.ru/#org" }
     },
@@ -139,8 +151,8 @@ const ldJson = {
 };
 ---
 <Layout
-  title={`Калькулятор путешествия ${brandYear}: ${PRICES.length} направлений, цены уже есть`}
-  description="Выбери страну и месяц, уточни свои расходы и оплаченное. Калькулятор покажет бюджет поездки, запас и сколько ещё осталось оплатить."
+  title={`Калькулятор бюджета поездки ${brandYear}: ${PRICES.length} направлений`}
+  description="Рассчитай бюджет поездки с перелётом из Москвы: жильё, питание и въезд. Уточни свои расходы, сравни страны и сохрани расчёт."
   canonical="https://traveltribe.ru/calculator/"
   ogTitle="Калькулятор бюджета — TravelTribe"
   ogDescription="Сравнение направлений, свои расходы, оплаченное и запас на поездку."
@@ -154,7 +166,7 @@ const ldJson = {
     <!-- ───────────── HERO ──────────────────────────────────── -->
     <section class="tc-hero">
       <div class="tc-container">
-        <h1 class="tc-h1">Сколько стоит твоя поездка</h1>
+        <h1 class="tc-h1">Калькулятор бюджета поездки</h1>
         <p class="tc-lede">Выбери направление и уточни свои расходы. Перелёт в базовой оценке — из Москвы.</p>
         <p class="tc-byline">
           <a href="/about/" class="tc-byline-author">Никита Зайцев</a> ·
@@ -264,6 +276,40 @@ const ldJson = {
     </div>
     <noscript><p class="tc-container">Для изменения условий и пересчёта бюджета включи JavaScript.</p></noscript>
 
+    <section class="tc-section tc-examples" id="budget-examples" aria-labelledby="examples-title">
+      <div class="tc-container">
+        <h2 class="tc-section-title" id="examples-title">Сколько стоит поездка: примеры расходов</h2>
+        <p class="tc-examples-intro">Поездка из Москвы на 7 дней: один путешественник с паспортом РФ, 7 ночей, один номер, уровень «Эконом», месяц не выбран. Это известная часть бюджета без запаса.</p>
+        <div class="tc-example-grid">
+          {examples.map(example => (
+            <section class="tc-example" data-example={example.slug} data-price-index={example.index} aria-labelledby={`example-${example.slug}`}>
+              <h3 id={`example-${example.slug}`}><a href={`/${example.slug}/`}>{example.name}</a></h3>
+              <dl>
+                {example.rows.filter(row => row.known || row.minor > 0).map(row => (
+                  <div><dt>{row.label}{!row.known && ' — известная часть'}</dt><dd data-cost={row.id}>{rub(row.minor)}</dd></div>
+                ))}
+              </dl>
+              <p class="tc-example-total">Учтённые расходы <strong data-example-total>{rub(example.totalMinor)}</strong></p>
+              {example.unknown.some(cost => !commonUnknown.includes(cost)) && <p class="tc-example-date">Дополнительно нужно уточнить: {example.unknown.filter(cost => !commonUnknown.includes(cost)).map(cost => cost.toLocaleLowerCase('ru')).join(', ')}.</p>}
+              <p class="tc-example-date">{example.recordedAt ? <>Запись оценок перелёта, жилья и питания изменялась <time datetime={example.recordedAt}>{dateRu(example.recordedAt)}</time>.</> : 'Дата записи оценок перелёта, жилья и питания не указана.'}</p>
+            </section>
+          ))}
+        </div>
+        <p class="tc-examples-note">{commonUnknown.length > 0 && <>Не учтены {commonUnknown.map((cost: string) => cost.toLocaleLowerCase('ru')).join(', ')}. </>}Запас по умолчанию добавляется отдельно к оставшейся сумме; стоимость зависит от дат, места и ваших условий.</p>
+      </div>
+    </section>
+
+    <section class="tc-section tc-sources" aria-labelledby="sources-title">
+      <div class="tc-container">
+        <h2 class="tc-section-title" id="sources-title" tabindex="-1">Откуда берутся суммы</h2>
+        <p>Перелёт, жильё и питание — справочные оценки <a href="https://github.com/nzaytsevmy/travel-seasons/blob/main/src/data/prices.js">TravelTribe</a>, а не предложения на конкретные даты. {undocumentedExamples.length > 0 && <>Первоначальные внешние источники оценок для направлений {undocumentedExamples.join(', ')} в справочнике не указаны. </>}Дата изменения записи не означает, что цены в этот день проверили на рынке.</p>
+        <p>Для перевода использован <a href={rates.source}>курс Банка России</a> на <time datetime={rates.date} data-budget-rate-date={rates.date}>{dateRu(rates.date)}</time>: 1 $ = {rateText} ₽. При обновлении сайта запрашивается курс ЦБ; если он недоступен, используется сохранённый курс с его фактической датой.</p>
+        <p>В примерах для обычного паспорта РФ на 7 дней визовый сбор в Турции и Таиланде не нужен: условия у <a href="https://www.mfa.gov.tr/consular-info.ru.mfa">МИД Турции</a> и <a href="https://moscow.thaiembassy.org/en/publicservice/revision-of-thailand-s-visa-exemption-and-visa-on-arrival-schemes?cate=5d843b6a15e39c1abc005152&amp;menu=5d843dbb15e39c1abc00583c">посольства Таиланда</a>. Однократная электронная туристическая виза Египта — $30 по данным <a href="https://www.visa2egypt.gov.eg/eVisa/FAQ">визового портала Египта</a>. Условия проверены <time datetime="2026-11-02">2 ноября 2026 года</time>; они зависят от гражданства и могут измениться.</p>
+        <h3>Для сравнения: расходы на месте</h3>
+        <p>По данным Budget Your Trip, средние траты путешественника — около $115 в день в <a href="https://www.budgetyourtrip.com/turkey">Турции</a> и $95 в день в <a href="https://www.budgetyourtrip.com/thailand">Таиланде</a>. Они включают долю двухместного номера, питание, транспорт на месте и развлечения, без перелёта. Это другая выборка и состав расходов, а не исходные цены калькулятора. Страницы просмотрены <time datetime="2026-11-02">2 ноября 2026 года</time>.</p>
+      </div>
+    </section>
+
     {/* Экскурсии на месте — программы и даты у партнёра */}
     <section class="tc-section">
       <div class="tc-container">
@@ -293,7 +339,7 @@ const ldJson = {
   <Footer />
 </Layout>
 
-<script id="calculatorData" type="application/json" set:html={JSON.stringify({ PRICES, MONTH_NAMES, MONTH_FULL, priceIdxToSeasons, priceIdxToVisa, priceIdxToSlug, rates }).replace(/</g, '\\u003c')} />
+<script id="calculatorData" type="application/json" set:html={JSON.stringify({ PRICES, MONTH_NAMES, MONTH_FULL, priceIdxToSeasons, priceIdxToVisa, priceIdxToSlug, priceIdxToRecorded, rates }).replace(/</g, '\\u003c')} />
 <script is:inline data-astro-rerun set:html={calculatorBundle.outputFiles[0].text} />
 
 <style is:global>
@@ -350,6 +396,8 @@ const ldJson = {
 .tc .tc-result-section { position:sticky; top:108px; border-top:2px solid var(--gold); }
 .tc .tc-single { padding:20px 0; }
 .tc .tc-result-tag { font-size:17px; font-weight:600; overflow-wrap:anywhere; }
+.tc .tc-source-date { margin:6px 0 0; color:var(--text-faint); font-size:13px; line-height:1.5; }
+.tc .tc-source-date a { color:var(--gold); display:inline-flex; align-items:center; min-height:44px; text-underline-offset:3px; }
 .tc .tc-result-pills { display:flex; gap:8px 14px; flex-wrap:wrap; margin-top:8px; font-size:13px; color:var(--text-faint); }
 .tc .tc-visa-pill { display:inline-flex; align-items:center; min-height:44px; color:var(--gold); }
 .tc .tc-hero-total { padding:18px 0; }
@@ -395,11 +443,29 @@ const ldJson = {
 .tc .tc-cmp-visa a { display:inline-flex; align-items:center; min-width:44px; min-height:44px; }
 .tc .tc-section { padding:28px 0; }
 .tc .tc-section-title { font-family:var(--ff-display); font-size:28px; margin:0 0 16px; }
+.tc .tc-examples-intro,.tc .tc-examples-note,.tc .tc-sources p { max-width:900px; font-size:16px; line-height:1.6; }
+.tc .tc-sources p { margin:0 0 14px; }
+.tc .tc-sources h3 { font-family:var(--ff-display); font-size:22px; margin:24px 0 10px; }
+.tc #sources-title { scroll-margin-top:120px; }
+.tc .tc-example-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; margin:24px 0; }
+.tc .tc-example { min-width:0; border-top:2px solid var(--text); padding-top:16px; }
+.tc .tc-example h3 { font-family:var(--ff-display); font-size:24px; margin:0 0 12px; }
+.tc .tc-example h3 a,.tc .tc-sources a { color:var(--gold); text-underline-offset:3px; }
+.tc .tc-example h3 a { display:inline-flex; align-items:center; min-height:44px; }
+.tc .tc-example dl { margin:0; }
+.tc .tc-example dl > div { display:flex; justify-content:space-between; gap:12px; border-bottom:1px solid var(--line); padding:9px 0; }
+.tc .tc-example dt { min-width:0; }
+.tc .tc-example dd { margin:0; text-align:right; white-space:nowrap; font-family:var(--ff-mono); }
+.tc .tc-example-total { display:flex; justify-content:space-between; gap:12px; margin:12px 0 4px; font-size:15px; }
+.tc .tc-example-total strong { text-align:right; font-family:var(--ff-mono); white-space:nowrap; }
+.tc .tc-example-date,.tc .tc-examples-note { color:var(--text-faint); font-size:14px; line-height:1.5; }
+.tc .tc-example-date { margin:4px 0 0; }
 .tc .tc-faq-item { border-top:1px solid var(--line); }
 .tc .tc-faq-item summary { min-height:48px; padding:14px 0; box-sizing:border-box; font-weight:600; cursor:pointer; }
 .tc .tc-faq-item p,.tc .tc-tourcta { font-size:16px; line-height:1.6; max-width:780px; }
 .tc :focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
 @media(max-width:900px) {
+  .tc .tc-example-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .tc .tc-workbench { display:flex; flex-direction:column; gap:24px; }
   .tc .tc-work { display:contents; }
   .tc .tc-form-section { order:0; width:100%; }
@@ -412,12 +478,13 @@ const ldJson = {
   .tc .tc-field--level { grid-column:span 2; }
   .tc .tc-field--level { order:1; }
   .tc .tc-single { display:grid; grid-template-columns:1fr 1fr; gap:0 24px; }
-  .tc .tc-result-head,.tc .tc-incomplete,.tc .tc-nudge,.tc .tc-cats,.tc .tc-cta-block,.tc .tc-utility { grid-column:1/-1; }
+  .tc .tc-result-head,.tc .tc-source-date,.tc .tc-incomplete,.tc .tc-nudge,.tc .tc-cats,.tc .tc-cta-block,.tc .tc-utility { grid-column:1/-1; }
   .tc .tc-finances { align-self:center; }
   .tc .tc-single > .tc-finances { grid-column:2; grid-row:2; }
   .tc .tc-hero-amount { font-size:32px; }
 }
 @media(max-width:520px) {
+  .tc .tc-example-grid { grid-template-columns:1fr; gap:20px; }
   .tc .tc-hero { padding:20px 0 12px; }
   .tc .tc-h1 { margin-bottom:8px; }
   .tc .tc-form-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
