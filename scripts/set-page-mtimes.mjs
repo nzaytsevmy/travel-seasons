@@ -26,6 +26,7 @@
 import { readFileSync, writeFileSync, utimesSync, existsSync, readdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join, relative, sep } from 'node:path';
+import { calculatorLastModified, calculatorSourceDate } from './calculator-freshness.mjs';
 
 /** Все собранные страницы каталога. */
 function все_страницы(корень) {
@@ -125,6 +126,32 @@ if (записьГлавной) {
   const новая = new Date(Math.max(старая.valueOf(), началоМесяца.valueOf(), исходник?.valueOf() || 0));
   if (новая > старая) {
     xml = xml.replace(главнаяВКарте, (_, начало, _дата, конец) => `${начало}${новая.toISOString()}${конец}`);
+    writeFileSync(КАРТА, xml);
+    const картаКарт = join(КАТАЛОГ, 'sitemap-index.xml');
+    if (existsSync(картаКарт)) {
+      let указатель = readFileSync(картаКарт, 'utf8');
+      const записьКарты = /(<loc>https:\/\/traveltribe\.ru\/sitemap-0\.xml<\/loc><lastmod>)([^<]+)(<\/lastmod>)/;
+      const найдено = указатель.match(записьКарты);
+      if (найдено && новая > new Date(найдено[2])) {
+        указатель = указатель.replace(записьКарты, (_, начало, _дата, конец) => `${начало}${новая.toISOString()}${конец}`);
+        writeFileSync(картаКарт, указатель);
+      }
+    }
+  }
+}
+
+// У калькулятора своя фактура и курс, показанный в самом HTML. Дата общих
+// справочников не должна оставлять изменённую страницу со старым Last-Modified.
+const калькуляторВКарте = /(<loc>https:\/\/traveltribe\.ru\/calculator\/<\/loc><lastmod>)([^<]+)(<\/lastmod>)/;
+const записьКалькулятора = xml.match(калькуляторВКарте);
+const файлКалькулятора = join(КАТАЛОГ, 'calculator/index.html');
+if (записьКалькулятора && existsSync(файлКалькулятора)) {
+  const старая = new Date(записьКалькулятора[2]);
+  const html = readFileSync(файлКалькулятора, 'utf8');
+  const строкаКурса = html.match(/\bdata-budget-rate-date\s*=\s*["']?(\d{4}-\d{2}-\d{2})/)?.[1];
+  const новая = calculatorLastModified(старая, строкаКурса, calculatorSourceDate());
+  if (новая > старая) {
+    xml = xml.replace(калькуляторВКарте, (_, начало, _дата, конец) => `${начало}${новая.toISOString()}${конец}`);
     writeFileSync(КАРТА, xml);
     const картаКарт = join(КАТАЛОГ, 'sitemap-index.xml');
     if (existsSync(картаКарт)) {

@@ -2,6 +2,7 @@ import { calculateTripBudget, SEASON_MULT, tripInteger } from '../utils/trip-bud
 import { aviasalesRoute, cherehapaCountry } from '../data/affiliate.js';
 import { destinationStay } from '../utils/destination-stay.js';
 import { personalBudget, normalizeDraft, moneyToMinor, encodeBudgets, decodeBudgets } from '../utils/personal-budget.js';
+import { openCalculatorSources } from '../utils/calculator-source-navigation.js';
 
 // Inline-код может выполниться повторно после перехода Astro. На новой форме
 // нужны обработчики, на уже инициализированной (включая bfcache) — только один набор.
@@ -13,7 +14,7 @@ function initCalculator() {
   const form = document.getElementById('tcForm');
   if (!host || !form || initialized.has(form)) return;
   initialized.add(form);
-  const { PRICES, MONTH_FULL, priceIdxToSeasons, priceIdxToVisa, priceIdxToSlug, rates } = JSON.parse(host.textContent);
+  const { PRICES, MONTH_FULL, priceIdxToSeasons, priceIdxToVisa, priceIdxToSlug, priceIdxToRecorded = {}, rates } = JSON.parse(host.textContent);
 let calcLevel = 0, calcCurrency = 'rub';
 let travelers = 1, selectedMonth = 0;
 let compareList = [];
@@ -177,6 +178,13 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+function sourceDate(pi) {
+  const date = priceIdxToRecorded[pi];
+  const valid = typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date);
+  const shown = valid ? new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00Z`)).replace(/\s*г\.$/u, '') : '';
+  return `<p class="tc-source-date">${valid ? `Запись справочных оценок изменялась <time datetime="${escapeHtml(date)}">${escapeHtml(shown)}</time>.` : 'Дата записи справочных оценок не подтверждена.'} Это не дата проверки рыночных цен. <a href="#sources-title">Об оценках</a></p>`;
+}
+
 // ─── Render single-country result with category bars ───────────
 function renderSingle(pi) {
   const r = computeForPriceIndex(pi);
@@ -222,7 +230,6 @@ function renderSingle(pi) {
           </div>
         </div>
       </header>
-
       <div class="tc-hero-total">
         <div class="tc-hero-label">${r.grand === null ? 'Известная часть бюджета' : 'Оценка поездки'}</div>
         <div class="tc-hero-amount">${fmt(total)}</div>
@@ -231,6 +238,7 @@ function renderSingle(pi) {
           <span>${fmt(perDay)} в день</span>
         </div>
       </div>
+      ${sourceDate(pi)}
 
       ${r.grand === null ? `<p class="tc-incomplete">Нужно уточнить: ${escapeHtml(r.unknownCosts.join(', ').toLocaleLowerCase('ru'))}. Полная стоимость пока неизвестна.</p>` : ''}
       <dl class="tc-finances"><div><dt>Оплачено</dt><dd data-total="paid">${minorText(r.personal.paidMinor)}</dd></div><div><dt>Запас ${r.personal.draft.reserve}% на оставшееся</dt><dd data-total="reserve">${minorText(r.personal.reserveMinor)}</dd></div><div class="tc-finances-remaining"><dt>Осталось оплатить${r.personal.complete ? '' : ' из учтённого'}</dt><dd data-total="remaining">${minorText(r.personal.remainingMinor)}</dd></div></dl>
@@ -325,6 +333,7 @@ function renderTable(piList) {
           <h3 class="tc-cmp-name">${escapeHtml(r.p.name.split('(')[0].trim())}</h3>
           ${seasonPill}
         </div>
+        ${sourceDate(pi)}
 
         <dl class="tc-finances"><div><dt>Оплачено</dt><dd>${minorText(r.personal.paidMinor)}</dd></div><div><dt>Запас ${r.personal.draft.reserve}% на оставшееся</dt><dd>${minorText(r.personal.reserveMinor)}</dd></div><div><dt>Осталось оплатить${r.personal.complete ? '' : ' из учтённого'}</dt><dd>${minorText(r.personal.remainingMinor)}</dd></div></dl>
         <button class="tc-copy-btn" type="button" data-edit="${pi}">Уточнить расходы</button>
@@ -455,6 +464,7 @@ addSelect.addEventListener('change', e => {
 });
 
 resultEl.addEventListener('click', e => {
+  if (openCalculatorSources(e)) return;
   const edit = e.target.closest('[data-edit]');
   if (edit) {
     const all = indices(), pi = +edit.dataset.edit;

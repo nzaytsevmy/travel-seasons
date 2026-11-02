@@ -40,6 +40,7 @@ test('FlightRoutes changes invalidate only HTML using it, including pages outsid
     put('dist/private/index.html', '<section class="flight-routes"><h3>route</h3></section>');
     put('dist/other/index.html', '<h2>unaffected</h2>');
     copyFileSync(resolve('scripts/set-page-mtimes.mjs'), join(root, 'set-page-mtimes.mjs'));
+    copyFileSync(resolve('scripts/calculator-freshness.mjs'), join(root, 'calculator-freshness.mjs'));
     const run = () => execFileSync(process.execPath, ['set-page-mtimes.mjs', 'dist'], { cwd: root, env: fixtureEnv, stdio: 'pipe' });
     const seconds = p => Math.floor(statSync(join(root, 'dist', p, 'index.html')).mtimeMs / 1000);
     run();
