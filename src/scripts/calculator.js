@@ -1,6 +1,7 @@
 import { calculateTripBudget, SEASON_MULT, tripInteger } from '../utils/trip-budget.js';
 import { aviasalesRoute, cherehapaCountry } from '../data/affiliate.js';
 import { destinationStay } from '../utils/destination-stay.js';
+import { personalBudget, normalizeDraft, moneyToMinor, encodeBudgets, decodeBudgets } from '../utils/personal-budget.js';
 
 // Inline-код может выполниться повторно после перехода Astro. На новой форме
 // нужны обработчики, на уже инициализированной (включая bfcache) — только один набор.
@@ -12,10 +13,28 @@ function initCalculator() {
   const form = document.getElementById('tcForm');
   if (!host || !form || initialized.has(form)) return;
   initialized.add(form);
-  const { PRICES, MONTH_NAMES, MONTH_FULL, priceIdxToSeasons, priceIdxToVisa, priceIdxToSlug, priceIdxToBudgetSlug, rates } = JSON.parse(host.textContent);
+  const { PRICES, MONTH_FULL, priceIdxToSeasons, priceIdxToVisa, priceIdxToSlug, rates } = JSON.parse(host.textContent);
 let calcLevel = 0, calcCurrency = 'rub';
 let travelers = 1, selectedMonth = 0;
 let compareList = [];
+let drafts = {};
+let activeError = false;
+const seenEvents = new Set();
+const editor = document.getElementById('personalCosts');
+const notice = document.getElementById('calcNotice');
+const STORAGE = 'tt_calculator_personal_v1';
+function indices() { return [parseInt(calcSel.value), ...compareList.filter(x => x !== +calcSel.value)].slice(0,3); }
+function key(pi) { return priceIdxToSlug[pi] || `destination-${pi}`; }
+function selectedDrafts() { return Object.fromEntries(indices().filter(pi => drafts[key(pi)]).map(pi => [key(pi),drafts[key(pi)]])); }
+function event(action) {
+  if (['start','result'].includes(action) && seenEvents.has(action)) return;
+  seenEvents.add(action);
+  const payload = { action, version: 'personal_v1', destination: key(+calcSel.value), mode: indices().length > 1 ? 'compare' : 'single' };
+  document.dispatchEvent(new CustomEvent('tt:calculator-event', { detail: payload }));
+  if (window.__analyticsEnabled && typeof window.ym === 'function') window.ym(95832375,'reachGoal',`calculator_${action}`,payload);
+}
+function changed() { event('start'); if (!activeError) event('result'); }
+function message(text) { notice.textContent = text; }
 
 const SEASON_LABEL = { P:'Пик', G:'Хорошо', O:'Норма', B:'Не сезон' };
 const SEASON_CLASS = { P:'peak', G:'good', O:'ok', B:'bad' };
@@ -64,7 +83,7 @@ function readUrlParams() {
     selectedMonth = +m;
     monthSel.value = String(selectedMonth);
   }
-  if (cmp) compareList = cmp.split(',').map(x => parseInt(x)).filter(x => !isNaN(x) && PRICES[x]).slice(0, 3);
+  if (cmp) compareList = [...new Set(cmp.split(',').filter(x => x.trim()).map(x => Number(x)).filter(x => Number.isInteger(x) && PRICES[x]))].slice(0, 2);
 }
 
 function writeUrlParams() {
@@ -78,7 +97,14 @@ function writeUrlParams() {
   else u.searchParams.delete('m');
   if (compareList.length > 0) u.searchParams.set('cmp', compareList.join(','));
   else u.searchParams.delete('cmp');
-  window.history.replaceState(null, '', u.toString());
+  u.hash = '';
+  window.history.replaceState({ ttCalculator: Object.keys(selectedDrafts()).length ? encodeBudgets(selectedDrafts()) : '' }, '', u.toString());
+}
+
+function shareUrl() {
+  const url = new URL(window.location.href);
+  url.hash = Object.keys(selectedDrafts()).length ? `budget=${encodeBudgets(selectedDrafts())}` : '';
+  return url;
 }
 
 function fmt(value) {
@@ -99,11 +125,39 @@ function insuranceUrl(pi) { return cherehapaCountry(priceIdxToSlug[pi], `calc_${
 function computeForPriceIndex(pi) {
   const result = calculateTripBudget(PRICES[pi], {
     rates, days: document.getElementById('calcDays').value,
-    travelers, level: calcLevel, month: selectedMonth, currency: calcCurrency,
+    travelers, level: calcLevel, month: selectedMonth, currency: 'rub',
     seasons: priceIdxToSeasons[pi], visa: priceIdxToVisa[pi],
   });
   const rating = selectedMonth ? priceIdxToSeasons[pi]?.[selectedMonth - 1] : null;
-  return { ...result, seasonLabel: SEASON_LABEL[rating] || '', seasonClass: SEASON_CLASS[rating] || '' };
+  const personal = personalBudget(result, drafts[key(pi)]);
+  const scale = calcCurrency === 'rub' ? 100 : 100 * rates.USD;
+  const category = id => personal.rows.find(r => r.id === id).minor / scale;
+  const unknownCosts = personal.rows.filter(r => !r.known).map(r => r.id === 'insurance' && result.unknownCosts.some(c => /страхов/i.test(c)) ? 'Медицинская страховка' : r.label);
+  return { ...result, personal, flightTotal: category('flight'), hotelTotal: category('hotel'), foodTotal: category('food'), visaTotal: category('entry'), mandatoryTotal: 0,
+    knownTotal: personal.knownMinor / scale, grand: personal.complete ? personal.knownMinor / scale : null, unknownCosts,
+    seasonLabel: SEASON_LABEL[rating] || '', seasonClass: SEASON_CLASS[rating] || '' };
+}
+
+function minorText(minor) { return fmt(minor / (calcCurrency === 'rub' ? 100 : 100 * rates.USD)); }
+function costStatus(row) { return row.known ? minorText(row.minor) : row.minor > 0 ? `Известно ${minorText(row.minor)}` : 'Не учтено'; }
+function inputText(minor) { return minor === null ? '' : (minor / (calcCurrency === 'rub' ? 100 : 100 * rates.USD)).toFixed(2).replace(/\.00$/, ''); }
+function renderEditor() {
+  if (!editor) return;
+  const r = computeForPriceIndex(+calcSel.value), p = r.personal;
+  editor.innerHTML = `<div class="tc-stay-settings">
+    <label>Ночей<input id="personalNights" data-draft="nights" type="number" min="0" max="90" step="1" value="${p.nights}"></label>
+    <label>Номеров<input id="personalRooms" data-draft="rooms" type="number" min="1" max="4" step="1" value="${p.draft.rooms}"></label>
+    <label>Запас, %<input id="personalReserve" data-draft="reserve" type="number" min="0" max="100" step="1" value="${p.draft.reserve}"></label>
+  </div><p class="tc-help">Проверь вместимость номера. Суммы можно заменить своими.</p>
+  ${p.rows.map(row => `<div class="tc-expense ${row.excluded ? 'is-excluded' : ''}">
+    <div class="tc-expense-main"><label for="cost-${row.id}">${row.label}<span>${row.unit} · ${calcCurrency === 'rub' ? '₽' : '$'}</span></label>
+    <input id="cost-${row.id}" data-money="${row.id}" class="ym-disable-keys" type="text" inputmode="decimal" autocomplete="off" aria-describedby="error-${row.id}" value="${inputText(row.inputMinor)}" placeholder="Укажи сумму" ${row.excluded ? 'disabled' : ''}></div>
+    <p class="tc-field-error" id="error-${row.id}"></p>
+    <div class="tc-expense-actions"><label><input type="checkbox" data-paid="${row.id}" ${row.paid ? 'checked' : ''} ${!row.known || row.excluded ? 'disabled' : ''}> Оплачено</label>
+    ${!row.required && !['flight','hotel','food'].includes(row.id) ? `<label><input type="checkbox" data-exclude="${row.id}" ${row.excluded ? 'checked' : ''}> Не учитывать</label>` : ''}
+    <button type="button" data-reset="${row.id}" ${row.custom ? '' : 'hidden'}>Вернуть оценку</button>
+    <span>${costStatus(row)}</span></div>
+  </div>`).join('')}`;
 }
 
 function findBestMonth(pi) {
@@ -126,18 +180,11 @@ function escapeHtml(s) {
 // ─── Render single-country result with category bars ───────────
 function renderSingle(pi) {
   const r = computeForPriceIndex(pi);
-  const piIdx = pi;
   const aviUrl = flightUrl(pi);
   const perPerson = (r.grand ?? r.knownTotal) / Math.max(1, r.travelers);
   const perDay = (r.grand ?? r.knownTotal) / Math.max(1, r.days);
 
-  const categories = [
-    { name: 'Перелёт', value: r.flightTotal, color: CAT_COLORS.flight, icon: '' },
-    { name: 'Отель', value: r.hotelTotal, color: CAT_COLORS.hotel, icon: '' },
-    { name: 'Питание', value: r.foodTotal, color: CAT_COLORS.food, icon: '' },
-  ];
-  if (r.visa && r.visaTotal > 0) categories.push({ name: 'Виза', value: r.visaTotal, color: CAT_COLORS.visa, icon: '' });
-  if (r.mandatoryTotal > 0) categories.push({ name: 'Обязательные расходы', value: r.mandatoryTotal, color: CAT_COLORS.visa, icon: '' });
+  const categories = r.personal.rows.filter(row => row.minor > 0 && !row.excluded).map(row => ({ name: row.label + (row.known ? '' : ' (известная часть)'), value: row.minor / (calcCurrency === 'rub' ? 100 : 100 * rates.USD), color: CAT_COLORS[row.id] || '#5c626b', icon: '' }));
 
   const total = r.grand ?? r.knownTotal;
 
@@ -148,7 +195,7 @@ function renderSingle(pi) {
     const saving = Math.round((1 - best.mult / r.seasonMult) * 100);
     if (saving > 5) nudge = `<div class="tc-nudge"><span class="tc-nudge-icon">↘</span> В <strong>${escapeHtml(best.monthName)}</strong> на <strong>${saving}%</strong> дешевле по модели перелёта</div>`;
   } else if (best && selectedMonth === 0) {
-    nudge = `<div class="tc-nudge tc-nudge--soft"><span class="tc-nudge-icon"></span> Перелёт по модели дешевле в <strong>${escapeHtml(best.monthName)}</strong></div>`;
+    nudge = `<div class="tc-nudge tc-nudge--soft">Перелёт по модели дешевле в <strong>${escapeHtml(best.monthName)}</strong></div>`;
   }
 
   // Visa info
@@ -185,8 +232,9 @@ function renderSingle(pi) {
         </div>
       </div>
 
-      ${r.grand === null ? `<p class="tc-incomplete">Не включено: ${escapeHtml(r.unknownCosts.join(', ').toLocaleLowerCase('ru'))}. Полная стоимость пока неизвестна.</p>` : ''}
-      ${nudge}
+      ${r.grand === null ? `<p class="tc-incomplete">Нужно уточнить: ${escapeHtml(r.unknownCosts.join(', ').toLocaleLowerCase('ru'))}. Полная стоимость пока неизвестна.</p>` : ''}
+      <dl class="tc-finances"><div><dt>Оплачено</dt><dd data-total="paid">${minorText(r.personal.paidMinor)}</dd></div><div><dt>Запас ${r.personal.draft.reserve}% на оставшееся</dt><dd data-total="reserve">${minorText(r.personal.reserveMinor)}</dd></div><div class="tc-finances-remaining"><dt>Осталось оплатить${r.personal.complete ? '' : ' из учтённого'}</dt><dd data-total="remaining">${minorText(r.personal.remainingMinor)}</dd></div></dl>
+      ${r.personal.draft.costs.flight.amount === null ? nudge : ''}
 
       <div class="tc-cats">
         ${categories.map(c => {
@@ -221,9 +269,12 @@ function renderSingle(pi) {
       </div>
 
       <div class="tc-utility">
+        <button class="tc-copy-btn" type="button" data-edit="${pi}">Уточнить расходы</button>
         <button class="tc-copy-btn" id="copyTgBtn" type="button">
           <span></span> Скопировать сводку для Telegram
         </button>
+        <button class="tc-copy-btn" id="saveBudgetBtn" type="button">Сохранить в браузере</button>
+        <button class="tc-copy-btn" id="shareBudgetBtn" type="button">Скопировать ссылку</button>
       </div>
     </div>
   `;
@@ -233,7 +284,6 @@ function renderSingle(pi) {
 function renderTable(piList) {
   const rows = piList.map(pi => computeForPriceIndex(pi));
   const cols = rows.length;
-  const minTotal = rows.every(r => r.grand !== null) ? Math.min(...rows.map(r => r.grand)) : null;
 
   let html = `<div class="tc-compare">
     <div class="tc-compare-head">
@@ -244,7 +294,6 @@ function renderTable(piList) {
 
   rows.forEach((r, idx) => {
     const pi = piList[idx];
-    const isMin = minTotal !== null && r.grand === minTotal;
     const aviUrl = flightUrl(pi);
 
     // Сезон-бейдж: всегда показываем (placeholder для равной высоты)
@@ -269,32 +318,31 @@ function renderTable(piList) {
     }
 
     html += `
-      <div class="tc-cmp-card ${isMin ? 'tc-cmp-card--best' : ''}">
+      <div class="tc-cmp-card">
         ${idx > 0 ? `<button class="tc-cmp-remove" data-remove="${pi}" type="button" aria-label="Убрать">×</button>` : ''}
-        ${isMin ? '<div class="tc-cmp-badge">Самое дешёвое</div>' : ''}
 
         <div class="tc-cmp-head">
           <h3 class="tc-cmp-name">${escapeHtml(r.p.name.split('(')[0].trim())}</h3>
           ${seasonPill}
         </div>
 
+        <dl class="tc-finances"><div><dt>Оплачено</dt><dd>${minorText(r.personal.paidMinor)}</dd></div><div><dt>Запас ${r.personal.draft.reserve}% на оставшееся</dt><dd>${minorText(r.personal.reserveMinor)}</dd></div><div><dt>Осталось оплатить${r.personal.complete ? '' : ' из учтённого'}</dt><dd>${minorText(r.personal.remainingMinor)}</dd></div></dl>
+        <button class="tc-copy-btn" type="button" data-edit="${pi}">Уточнить расходы</button>
+
         <div class="tc-cmp-total">
           <div class="tc-cmp-total-label">${r.grand === null ? 'Известная часть бюджета' : 'Оценка поездки'}</div>
           <div class="tc-cmp-total-amount">${fmt(r.grand ?? r.knownTotal)}</div>
-          <div class="tc-cmp-total-pp">${r.travelers > 1 ? `${fmt((r.grand ?? r.knownTotal) / r.travelers)} / чел.` : `${fmt((r.grand ?? r.knownTotal) / r.days)} / день`}</div>
+          <div class="tc-cmp-total-pp">${r.travelers > 1 ? `${fmt((r.grand ?? r.knownTotal) / r.travelers)} на человека · ` : ''}${fmt((r.grand ?? r.knownTotal) / r.days)} в день</div>
         </div>
 
         <ul class="tc-cmp-list">
-          <li><span class="tc-cmp-key">Перелёт</span><span class="tc-cmp-val">${fmt(r.flightTotal)}</span></li>
-          <li><span class="tc-cmp-key">Отель × ${r.days}</span><span class="tc-cmp-val">${fmt(r.hotelTotal)}</span></li>
-          <li><span class="tc-cmp-key">Питание</span><span class="tc-cmp-val">${fmt(r.foodTotal)}</span></li>
-          <li><span class="tc-cmp-key">Виза</span><span class="tc-cmp-val tc-cmp-visa">${visaLink ? `<a href="${visaLink}" target="_blank" rel="noopener">${visaText}</a>` : visaText}</span></li>
-          ${r.mandatoryTotal > 0 ? `<li><span class="tc-cmp-key">Обязательные расходы</span><span class="tc-cmp-val">${fmt(r.mandatoryTotal)}</span></li>` : ''}
+          ${r.personal.rows.filter(row => !row.excluded).map(row => `<li><span class="tc-cmp-key">${row.label}${row.id === 'hotel' ? ` · ${r.personal.nights} ноч., ${r.personal.draft.rooms} ном.` : ''}</span><span class="tc-cmp-val">${costStatus(row)}</span></li>`).join('')}
+          <li><span class="tc-cmp-key">Условия въезда</span><span class="tc-cmp-val tc-cmp-visa">${visaLink ? `<a href="${visaLink}" target="_blank" rel="noopener">${visaText}</a>` : visaText}</span></li>
         </ul>
 
         <a href="${aviUrl}" ${partnerAttrs(pi, 'flight')} target="_blank" rel="noopener sponsored" class="tc-cmp-cta">Посмотреть рейсы</a>
         <p class="tc-cmp-partners"><a href="${stayUrl(pi)}" ${partnerAttrs(pi, 'stay')} target="_blank" rel="noopener sponsored">Жильё</a><a href="${insuranceUrl(pi)}" ${partnerAttrs(pi, 'insurance')} target="_blank" rel="noopener sponsored">Страховка</a></p>
-        ${r.grand === null ? `<p class="tc-incomplete">Не включено: ${escapeHtml(r.unknownCosts.join(', ').toLocaleLowerCase('ru'))}.</p>` : ''}
+        ${r.grand === null ? `<p class="tc-incomplete">Нужно уточнить: ${escapeHtml(r.unknownCosts.join(', ').toLocaleLowerCase('ru'))}.</p>` : ''}
       </div>
     `;
   });
@@ -306,17 +354,23 @@ function renderTable(piList) {
     <button class="tc-copy-btn" id="copyTgBtn" type="button">
       <span></span> Скопировать сводку
     </button>
+    <button class="tc-copy-btn" id="saveBudgetBtn" type="button">Сохранить в браузере</button>
+    <button class="tc-copy-btn" id="shareBudgetBtn" type="button">Скопировать ссылку</button>
   </div>`;
 
   return html;
 }
 
 function renderCalc() {
+  activeError = false;
+  message('');
   const primary = parseInt(calcSel.value);
-  const all = [primary, ...compareList.filter(x => x !== primary)].slice(0, 3);
+  compareList = [...new Set(compareList)].filter(x => x !== primary && PRICES[x]).slice(0, 2);
+  const all = [primary, ...compareList];
   const isCompare = all.length > 1;
 
   resultEl.innerHTML = isCompare ? renderTable(all) : renderSingle(all[0]);
+  renderEditor();
   document.dispatchEvent(new CustomEvent('tt:affiliate-links-updated'));
 
   // Add country select state
@@ -333,22 +387,18 @@ function renderCalc() {
   }
 
   writeUrlParams();
-  showBudgetBlock();
-}
-
-function showBudgetBlock() {
-  const primary = parseInt(calcSel.value);
-  const slug = priceIdxToBudgetSlug[primary];
-  document.querySelectorAll('.tc-bb-wrap').forEach(el => {
-    el.hidden = el.dataset.slug !== slug;
-  });
 }
 
 // ─── EVENT HANDLERS ────────────────────────────────────────────
-calcSel.addEventListener('change', renderCalc);
+document.getElementById('budgetSummaryBtn')?.addEventListener('click', () => {
+  resultEl.focus({ preventScroll: true });
+  resultEl.scrollIntoView({ block: 'start' });
+});
+calcSel.addEventListener('change', () => { renderCalc(); changed(); });
 monthSel.addEventListener('change', e => {
   selectedMonth = parseInt(e.target.value);
   renderCalc();
+  changed();
 });
 
 function setDays(n) {
@@ -356,6 +406,7 @@ function setDays(n) {
   document.getElementById('calcDays').value = n;
   document.getElementById('calcDaysDisplay').textContent = n;
   renderCalc();
+  changed();
 }
 document.getElementById('daysDown').addEventListener('click', () => setDays(parseInt(document.getElementById('calcDays').value) - 1));
 document.getElementById('daysUp').addEventListener('click', () => setDays(parseInt(document.getElementById('calcDays').value) + 1));
@@ -364,6 +415,7 @@ function setTravelers(n) {
   travelers = Math.min(4, Math.max(1, n));
   document.getElementById('travelersDisplay').textContent = travelers;
   renderCalc();
+  changed();
 }
 document.getElementById('travDown').addEventListener('click', () => setTravelers(travelers - 1));
 document.getElementById('travUp').addEventListener('click', () => setTravelers(travelers + 1));
@@ -377,6 +429,7 @@ document.getElementById('levelGroup').addEventListener('click', e => {
     b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
   });
   renderCalc();
+  changed();
 });
 
 document.getElementById('currGroup').addEventListener('click', e => {
@@ -388,6 +441,7 @@ document.getElementById('currGroup').addEventListener('click', e => {
     b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
   });
   renderCalc();
+  changed();
 });
 
 addSelect.addEventListener('change', e => {
@@ -397,21 +451,39 @@ addSelect.addEventListener('change', e => {
   if (v === primary || compareList.includes(v) || compareList.length >= 2) return;
   compareList.push(v);
   renderCalc();
+  changed();
 });
 
 resultEl.addEventListener('click', e => {
+  const edit = e.target.closest('[data-edit]');
+  if (edit) {
+    const all = indices(), pi = +edit.dataset.edit;
+    calcSel.value = String(pi);
+    compareList = all.filter(x => x !== pi);
+    renderCalc();
+    editor.querySelector('input')?.focus();
+    return;
+  }
   const rm = e.target.closest('[data-remove]');
   if (rm) {
     const pi = +rm.dataset.remove;
     compareList = compareList.filter(x => x !== pi);
     renderCalc();
+    addSelect.focus({ preventScroll: true });
     return;
   }
 });
 
 resultEl.addEventListener('click', async e => {
-  const btn = e.target.closest('#copyTgBtn');
+  const btn = e.target.closest('#copyTgBtn, #saveBudgetBtn, #shareBudgetBtn');
   if (!btn) return;
+  if (activeError) { message('Проверь выделенное поле расходов.'); return; }
+  if (btn.id === 'saveBudgetBtn') {
+    try { const url = shareUrl(); localStorage.setItem(STORAGE,JSON.stringify({ v: 1, url: url.pathname + url.search + url.hash })); message('Расчёт сохранён в этом браузере.'); event('save'); }
+    catch { message('Сохранить в браузере не удалось. Можно скопировать ссылку на расчёт.'); }
+    return;
+  }
+  if (btn.id === 'shareBudgetBtn') { await copyText(shareUrl().href, 'Ссылка скопирована.', 'share'); return; }
   const primary = parseInt(calcSel.value);
   const all = [primary, ...compareList.filter(x => x !== primary)].slice(0, 3);
   const days = +document.getElementById('calcDays').value;
@@ -420,24 +492,119 @@ resultEl.addEventListener('click', async e => {
   let text = `Бюджет поездки${monthLine}\n${days} дн · ${travelers} чел · ${lvlNames[calcLevel]}\n─────\n`;
   all.forEach(pi => {
     const r = computeForPriceIndex(pi);
-    text += `${r.p.name}\n  ${r.grand === null ? 'ИЗВЕСТНАЯ ЧАСТЬ БЮДЖЕТА' : 'ОЦЕНКА ПОЕЗДКИ'}: ${fmt(r.grand ?? r.knownTotal)}\n  Перелёт: ${fmt(r.flightTotal)}\n  Отель × ${days}: ${fmt(r.hotelTotal)}\n  Еда × ${days}: ${fmt(r.foodTotal)}\n`;
-    if (r.unknownCosts.length) text += `  Не включено: ${r.unknownCosts.join(', ')}\n`;
-    if (r.visa && r.visaTotal > 0) text += `  Виза: ${fmt(r.visaTotal)} (${r.visa.cost})\n`;
-    if (r.mandatoryTotal > 0) text += `  Обязательные расходы: ${fmt(r.mandatoryTotal)}\n`;
+    text += `${r.p.name}\n  ${r.grand === null ? 'ИЗВЕСТНАЯ ЧАСТЬ БЮДЖЕТА' : 'ОЦЕНКА ПОЕЗДКИ'}: ${fmt(r.grand ?? r.knownTotal)}\n`;
+    for (const row of r.personal.rows.filter(row => (row.known || row.minor > 0) && !row.excluded)) text += `  ${row.label}${row.known ? '' : ' (известная часть)'}${row.id === 'hotel' ? ` (${r.personal.nights} ноч., ${r.personal.draft.rooms} ном.)` : ''}: ${minorText(row.minor)}\n`;
+    if (r.unknownCosts.length) text += `  Нужно уточнить: ${r.unknownCosts.join(', ')}\n`;
+    text += `  Оплачено: ${minorText(r.personal.paidMinor)}\n  Запас ${r.personal.draft.reserve}%: ${minorText(r.personal.reserveMinor)}\n  Осталось оплатить из учтённого: ${minorText(r.personal.remainingMinor)}\n`;
     text += `\n`;
   });
-  text += `${window.location.href}\ntraveltribe.ru/calculator/`;
-  try {
-    await navigator.clipboard.writeText(text);
-    const span = btn.querySelector('span:nth-child(2)') || btn.lastChild;
-    const orig = btn.innerHTML;
-    btn.innerHTML = '<span></span> Скопировано';
-    setTimeout(() => { btn.innerHTML = orig; }, 1800);
-  } catch (err) { alert('Не удалось'); }
+  text += `${shareUrl().href}\ntraveltribe.ru/calculator/`;
+  await copyText(text,'Сводка скопирована.','copy');
 });
 
+async function copyText(text, success, action) {
+  try { await navigator.clipboard.writeText(text); message(success); event(action); }
+  catch {
+    message('Автоматически скопировать не удалось. Скопируй текст из поля ниже.');
+    const area = document.createElement('textarea');
+    area.className = 'ym-disable-keys'; area.readOnly = true; area.value = text; area.setAttribute('aria-label','Текст для копирования');
+    notice.append(area); area.focus(); area.select();
+  }
+}
+function refreshPersonalResult() {
+  if (activeError) return;
+  const all = indices();
+  resultEl.innerHTML = all.length > 1 ? renderTable(all) : renderSingle(all[0]);
+  document.dispatchEvent(new CustomEvent('tt:affiliate-links-updated'));
+  for (const row of computeForPriceIndex(+calcSel.value).personal.rows) {
+    const container = editor.querySelector(`[data-money="${row.id}"]`).closest('.tc-expense');
+    container.querySelector('[data-paid]').disabled = !row.known || row.excluded;
+    container.querySelector('[data-reset]').hidden = !row.custom;
+    container.querySelector('.tc-expense-actions > span').textContent = costStatus(row);
+  }
+  message(''); writeUrlParams(); changed();
+}
+editor?.addEventListener('input', e => {
+  if (e.target.matches('[data-draft]')) {
+    const invalid = !e.target.checkValidity() || e.target.value.trim() === '';
+    e.target.setAttribute('aria-invalid',String(invalid));
+    activeError = Boolean(editor.querySelector('[aria-invalid="true"]'));
+    event('start');
+    if (invalid) { message('Проверь число ночей, номеров или запас.'); return; }
+    const draft = normalizeDraft(drafts[key(+calcSel.value)]);
+    draft[e.target.dataset.draft] = Number(e.target.value);
+    drafts[key(+calcSel.value)] = normalizeDraft(draft);
+    refreshPersonalResult();
+    return;
+  }
+  const input = e.target.closest('[data-money]');
+  if (!input) return;
+  const id = input.dataset.money;
+  const value = input.value.trim() ? moneyToMinor(input.value,calcCurrency,rates) : null;
+  const invalid = input.value.trim() !== '' && value === null;
+  input.setCustomValidity(invalid ? 'Введи положительную сумму или ноль, до двух знаков после запятой.' : '');
+  input.setAttribute('aria-invalid',String(invalid));
+  document.getElementById(`error-${id}`).textContent = input.validationMessage;
+  activeError = Boolean(editor.querySelector('[aria-invalid="true"]'));
+  event('start');
+  if (invalid) { message('Проверь выделенное поле расходов.'); return; }
+  const draft = normalizeDraft(drafts[key(+calcSel.value)]);
+  draft.costs[id].amount = value;
+  drafts[key(+calcSel.value)] = draft;
+  refreshPersonalResult();
+});
+editor?.addEventListener('change', e => {
+  const input = e.target;
+  if (input.matches('[data-money], [data-draft]')) return;
+  const draft = normalizeDraft(drafts[key(+calcSel.value)]);
+  const action = input.dataset.paid ? 'paid' : input.dataset.exclude ? 'exclude' : null;
+  const id = action && input.dataset[action];
+  if (input.dataset.paid) draft.costs[input.dataset.paid].paid = input.checked;
+  else if (input.dataset.exclude) draft.costs[input.dataset.exclude].excluded = input.checked;
+  else return;
+  drafts[key(+calcSel.value)] = normalizeDraft(draft);
+  activeError = false; renderCalc();
+  editor.querySelector(`[data-${action}="${CSS.escape(id)}"]`)?.focus({ preventScroll: true });
+  changed();
+});
+editor?.addEventListener('click', e => {
+  const reset = e.target.closest('[data-reset]');
+  if (!reset) return;
+  const id = reset.dataset.reset;
+  const draft = normalizeDraft(drafts[key(+calcSel.value)]);
+  draft.costs[id] = { amount: null, paid: false, excluded: false };
+  drafts[key(+calcSel.value)] = draft;
+  activeError = false; renderCalc();
+  document.getElementById(`cost-${id}`)?.focus({ preventScroll: true });
+  changed();
+});
+// Explicit links take precedence over a saved calculation. Only the recognised
+// calculator route is restored; stored values never cause a navigation.
+let incomingFragment = typeof history.state?.ttCalculator === 'string' ? history.state.ttCalculator : '';
+if (!['r','d','l','c','t','m','cmp'].some(k => new URL(location.href).searchParams.has(k)) && !incomingFragment && !location.hash) {
+  try {
+    const value = localStorage.getItem(STORAGE);
+    if (value && value.length < 30000) {
+      const saved = JSON.parse(value), url = new URL(saved.url,location.origin);
+      if (saved.v === 1 && url.origin === location.origin && url.pathname === '/calculator/') {
+        incomingFragment = url.hash.startsWith('#budget=') ? url.hash.slice(8) : '';
+        url.hash = '';
+        history.replaceState({ ttCalculator: incomingFragment },'',url);
+      }
+    }
+  } catch { /* Storage is optional; the calculator continues without it. */ }
+}
+drafts = decodeBudgets(incomingFragment);
 readUrlParams();
 renderCalc();
+controller.restoreFragment = () => {
+  drafts = decodeBudgets(typeof history.state?.ttCalculator === 'string' ? history.state.ttCalculator : '');
+  compareList = [];
+  selectedMonth = 0;
+  monthSel.value = '0';
+  readUrlParams();
+  renderCalc();
+};
 
 }
 
@@ -445,6 +612,7 @@ controller.init = initCalculator;
 if (!controller.listening) {
   document.addEventListener('astro:page-load', () => controller.init());
   window.addEventListener('pageshow', () => controller.init());
+  window.addEventListener('tt:calculator-fragment', () => controller.restoreFragment?.());
   controller.listening = true;
 }
 controller.init();
