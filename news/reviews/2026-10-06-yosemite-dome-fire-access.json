@@ -4,7 +4,7 @@
   "reviewer": "Codex (due_news_review_20261103)",
   "reviewerTask": "/root/due_news_review",
   "authoredBy": "Codex (tt-author-20261103)",
-  "reviewedAt": "2026-11-03T08:37:54Z",
+  "reviewedAt": "2026-11-03T09:38:43Z",
   "checkedAt": "2026-11-03",
   "score": 4,
   "archived": false,
@@ -17,22 +17,31 @@
   "classification": "UPDATE_EXISTING_PUBLISHED",
   "baseCommit": "c99cf77db31a13af911743d70f87b0db5c996b42",
   "previousReview": {
-    "sha256": "66de8c05d0a868ea0746c310ac756781be7be10ac7cfb786f3e5a2dd56bddcf2",
-    "reviewedAt": "2026-10-30T09:23:13.326Z",
-    "reviewer": "Codex (facts_review_20261030)",
-    "baseCommit": "620ba356dc8fabf6935448c6cb5d31d32f68b9da",
-    "sourceSha256": "6fc1fe58643058ed8498b377ce6bfdd8f2a0a19929e7152a08de4e63a27d17fb",
-    "contentHash": "2c048407ea1e432f9a67d1a3fc29bc3f2e01df3f10096b8d360590bfbc4e2df2",
-    "legacySha256": null,
-    "legacySha256Scope": null
+    "sha256": "1a07a301151cfa647f3127a60c6483e7ce38c468d3de04cb03698afbbb758dad",
+    "reviewedAt": "2026-11-03T08:37:54Z",
+    "reviewer": "Codex (due_news_review_20261103)",
+    "baseCommit": "c99cf77db31a13af911743d70f87b0db5c996b42",
+    "sourceSha256": "169e55eed280896012c9d895b70955a8dbcbac883c6dd9b34fdf11bed7a02d1c",
+    "contentHash": "f9f04647896bd6dbc1c3a8a661290a10f084d1b0845c1c3fb4404db1846557e6",
+    "previousReview": {
+      "sha256": "66de8c05d0a868ea0746c310ac756781be7be10ac7cfb786f3e5a2dd56bddcf2",
+      "reviewedAt": "2026-10-30T09:23:13.326Z",
+      "reviewer": "Codex (facts_review_20261030)",
+      "baseCommit": "620ba356dc8fabf6935448c6cb5d31d32f68b9da",
+      "sourceSha256": "6fc1fe58643058ed8498b377ce6bfdd8f2a0a19929e7152a08de4e63a27d17fb",
+      "contentHash": "2c048407ea1e432f9a67d1a3fc29bc3f2e01df3f10096b8d360590bfbc4e2df2",
+      "legacySha256": null,
+      "legacySha256Scope": null
+    }
   },
-  "rationale": "Повторно прочитанная NPS Current Conditions перечисляет Tioga и Glacier Point как временно закрытые из-за снега, без даты открытия. Финал не называет это окончанием сезона; пожар 6 октября и кемпинги отделены от текущего режима дорог. Новый JPEG лично просмотрен и сопоставлен с Commons по SHA-1, размеру, году и лицензии. Телефонная сводка и режим каждого шлагбаума не проверены; NPS сама указывает телефон как наиболее свежий канал. Отображение атрибуции на сайте ожидает сборки/live.",
+"rationale": "Узкий повторный просмотр после оптимизации JPEG: финальная картинка лично просмотрена, существенных дефектов различимости или вводящего в заблуждение кадрирования не найдено. imageChanges точно описывает уменьшение и сжатие. title/tldr/body имеют неизменный contentHash; прежнее фактическое решение переиспользовано от 2026-11-03T08:37:54Z. Сюжет остаётся архивной иллюстрацией 2008 года, а не съёмкой нынешнего закрытия дорог. Размер и хеш финальной копии проверены; CI/deploy/live не приняты как пройденные.",
   "readerTask": "Не строить маршрут через временно закрытые снежные дороги Йосемити.",
-  "factReview": "Повторно прочитанная NPS Current Conditions перечисляет Tioga и Glacier Point как временно закрытые из-за снега, без даты открытия. Финал не называет это окончанием сезона; пожар 6 октября и кемпинги отделены от текущего режима дорог. Новый JPEG лично просмотрен и сопоставлен с Commons по SHA-1, размеру, году и лицензии.",
+  "factReview": "Фактическая проверка NPS из предыдущей независимой рецензии 2026-11-03T08:37:54Z переиспользована: title/tldr/body не менялись (совпадение contentHash). В текущем узком проходе заново проверены только JPEG и metadata imageChanges; нового чтения NPS не заявлено.",
   "limitations": [
     "Телефонная сводка и режим каждого шлагбаума не проверены; NPS сама указывает телефон как наиболее свежий канал. Отображение атрибуции на сайте ожидает сборки/live.",
     "Все ограничения исследования и источников сохранены в .run/due-news-independent-review-20261103.json; это не полная текущая первичная проверка всех 64.",
-    "Содержание источника при просмотре не доказывает дату введения режима; планы не считаются выполнением."
+    "Содержание источника при просмотре не доказывает дату введения режима; планы не считаются выполнением.",
+    "Текущий повторный проход узкий: оптимизация JPEG и описание изменения; CI rerun, responsive render и live не пройдены рецензентом."
   ],
   "sourceChecks": [
     {
@@ -73,7 +82,7 @@
   "additionalSourceReviewRef": null,
   "contentHash": "f9f04647896bd6dbc1c3a8a661290a10f084d1b0845c1c3fb4404db1846557e6",
   "contentHashScope": "SHA256 UTF-8 JSON.stringify({title:parseNote.data.title,tldr:parseNote.data.tldr,body:parseNote.body.trim()})",
-  "sourceSha256": "169e55eed280896012c9d895b70955a8dbcbac883c6dd9b34fdf11bed7a02d1c",
+  "sourceSha256": "db512d54490f9631e37cb11ea8a4a7411efa19a3c1c58322839dc200d4203c87",
   "sourceSha256Scope": "SHA256 всех UTF-8 байтов финального Markdown, включая frontmatter и завершающий перевод строки",
   "actualClipTitle": "Йосемити объявил снежное закрытие двух дорог",
   "tldrCheck": {
@@ -83,8 +92,8 @@
   },
   "photoProof": {
     "image": "./_images/2026-10-06-yosemite-dome-fire-access.jpg",
-    "imageSha256": "26a0a65786cb03edd7059420b4be731e99118b59ba7b8bb540c6603b5d47b689",
-    "previousImageSha256": "b60cc67e738e52680b919c4fa63cc82bce32f49ee2927d99b62a908cf3173123",
+    "imageSha256": "9f362ff44697a20052fcb62061d3e1e141f36d65502289983f8321d1fb176427",
+    "previousImageSha256": "26a0a65786cb03edd7059420b4be731e99118b59ba7b8bb540c6603b5d47b689",
     "baseImageSha256": null,
     "creator": "Brocken Inaglory / Wikimedia Commons",
     "license": "CC BY-SA 4.0",
@@ -92,13 +101,33 @@
     "source": "https://commons.wikimedia.org/wiki/File:Winter_in_yosemite_3.jpg",
     "title": "Заснеженная долина Йосемити, архивный снимок 2008 года",
     "alt": "Снег на деревьях, скалы и автомобили в долине Йосемити; архивный снимок 2008 года, не закрытые дороги Tioga и Glacier Point в ноябре 2026 года",
-    "changes": "Исходный JPEG без редакторских изменений; адаптивные размеры и кадрирование при показе на сайте.",
+    "changes": "Уменьшение исходного JPEG до 1600 пикселей по ширине и сжатие; без изменения цвета и содержания. Адаптивное кадрирование при показе на сайте.",
     "viewedByThisReviewer": true,
     "priorImageHashMatched": false,
     "baseImageUnchanged": false,
-    "provenanceMethod": "Лично просмотрен локальный JPEG: снег на деревьях, скалы, автомобили и указатель Yosemite Valley. Commons текущая карточка подтверждает 2008, Own work, Brocken Inaglory, CC BY-SA 4.0. Локальный SHA-1 совпадает с Commons 8f9183ee39a07a50d6150e92edb06974fa71c0d6, размер 3506726, 2400×1600. Это архивный вид, не закрытие дорог 2026.",
+    "provenanceMethod": "Лично просмотрен новый финальный JPEG 1600×1067: деревья, снег, скала, автомобили и указатель сохранены, изображение различимо, явных блоков сжатия/полос или изменения сюжета не видно. Это уменьшенная и сжатая копия ранее проверенного Commons оригинала. Новый JPEG не обязан совпадать с SHA-1 оригинала. Авторство/лицензия/архивный 2008 год переиспользованы из предыдущей независимой проверки оригинала; заново Commons не читался.",
     "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
-    "priorProvenance": null
+    "priorProvenance": null,
+    "imageBytes": 447706,
+    "dimensions": {
+      "width": 1600,
+      "height": 1067
+    },
+    "viewedAt": "2026-11-03T09:38:43Z",
+    "originalProof": {
+      "imageSha256": "26a0a65786cb03edd7059420b4be731e99118b59ba7b8bb540c6603b5d47b689",
+      "dimensions": {
+        "width": 2400,
+        "height": 1600
+      },
+      "bytes": 3506726,
+      "commonsSha1": "8f9183ee39a07a50d6150e92edb06974fa71c0d6",
+      "recoveryCommit": "7204354643ac53cc74423f72a5e9686d306ae278",
+      "recoveryPath": "src/content/news/_images/2026-10-06-yosemite-dome-fire-access.jpg",
+      "gitOriginalSha256IndependentlyMatched": true
+    },
+    "optimizationProof": ".run/yosemite-image-optimization-20261103.json",
+    "transform": "Native news-photo transform: auto orientation, width 1600 preserving 3:2, JPEG quality82 mozjpeg; no crop or colour change"
   },
   "criteria14": [
     {
@@ -135,7 +164,7 @@
       "id": 6,
       "criterion": "Факты и источники",
       "score": 10,
-      "evidence": "Повторно прочитанная NPS Current Conditions перечисляет Tioga и Glacier Point как временно закрытые из-за снега, без даты открытия. Финал не называет это окончанием сезона; пожар 6 октября и кемпинги отделены от текущего режима дорог. Новый JPEG лично просмотрен и сопоставлен с Commons по SHA-1, размеру, году и лицензии. Проверяемые утверждения адресной поправки поддержаны перечисленными источниками; неизвестное прямо названо."
+      "evidence": "Адресная фактическая проверка NPS сохранена из независимой версии 2026-11-03T08:37:54Z: contentHash title/tldr/body полностью совпал. Текущий проход не добавляет свежести NPS. Происхождение, масштабирование, вес и визуальная пригодность новой фото-копии проверены отдельно."
     },
     {
       "id": 7,
@@ -177,13 +206,13 @@
       "id": 13,
       "criterion": "Оформление и доступность",
       "score": 5,
-      "evidence": "Лично просмотрен локальный JPEG: снег на деревьях, скалы, автомобили и указатель Yosemite Valley. Commons текущая карточка подтверждает 2008, Own work, Brocken Inaglory, CC BY-SA 4.0. Локальный SHA-1 совпадает с Commons 8f9183ee39a07a50d6150e92edb06974fa71c0d6, размер 3506726, 2400×1600. Это архивный вид, не закрытие дорог 2026. Alt и архивная применимость прочитаны. Рендер 402/1280, контраст, фактическое кадрирование и публичная атрибуция не проверены."
+      "evidence": "Лично просмотрен оптимизированный JPEG; SHA256 9f362ff44697a20052fcb62061d3e1e141f36d65502289983f8321d1fb176427, 447706 bytes, 1600×1067 совпали. Содержание и цвет визуально согласуются с ранее просмотренным оригиналом, детали различимы, явных дефектов сжатия нет; imageChanges честно описывает уменьшение/сжатие. Git-оригинал 7204354 независимо сопоставлен с прежним SHA256. Рендер страницы 402/1280, публичная атрибуция и браузерная декодировка не проверены."
     },
     {
       "id": 14,
       "criterion": "Готовность выпуска",
       "score": 0,
-      "evidence": "CI, build, exact deploy, production live и измеренный эффект не проверены. Редакторское решение не является release PASS."
+      "evidence": "Предыдущая CI-ошибка image.too_heavy сообщена владельцем выпуска. Размер локального финального файла проверен; результат обязательного повторного CI, exact deploy и live в этом ревью не проверен. Редакторский/фото-допуск не является CI или release PASS."
     }
   ],
   "verifiedTens": [
@@ -215,5 +244,14 @@
       "sourceDate": "2008 photograph; current page last edited 2025-12-01",
       "supports": "Date 2008, author Brocken Inaglory, CC BY-SA 4.0, 2400×1600, 3506726 bytes, matching SHA-1."
     }
-  ]
+  ],
+  "targetedReReview": {
+    "reason": "After reported CI image.too_heavy",
+    "scope": "Only exact optimized JPEG and changed imageChanges; complete exact Markdown reread, proseHash unchanged",
+    "reviewedAt": "2026-11-03T09:38:43Z",
+    "originalRecoveryIndependentlyVerified": true,
+    "ciRerunVerified": false,
+    "deployVerified": false,
+    "liveVerified": false
+  }
 }
