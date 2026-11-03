@@ -17,6 +17,11 @@ for (const profile of profiles) {
       for (const selector of profile.selectors) {
         const image = page.locator(selector);
         await image.scrollIntoViewIfNeeded();
+        // Lazy images can still have no currentSrc immediately after scrolling.
+        // Wait for the native request before requiring a successful decode.
+        await expect.poll(() => image.evaluate((element: HTMLImageElement) =>
+          !!element.currentSrc && element.complete && element.naturalWidth > 0,
+        ), { message: `${profile.path} ${selector} finishes loading` }).toBe(true);
         await image.evaluate(async (element: HTMLImageElement) => {
           await element.decode();
           await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
