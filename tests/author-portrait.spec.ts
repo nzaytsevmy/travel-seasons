@@ -27,6 +27,10 @@ for (const profile of profiles) {
           const naturalRatio = element.naturalWidth / element.naturalHeight;
           const boxRatio = rect.width / rect.height;
           return {
+            src: element.currentSrc,
+            natural: { width: element.naturalWidth, height: element.naturalHeight },
+            box: { width: rect.width, height: rect.height },
+            fit: style.objectFit,
             loaded: element.complete && element.naturalWidth > 0 && rect.width > 0 && rect.height > 0,
             hasNonUniformStretch: style.objectFit === 'fill' && Math.abs(boxRatio / naturalRatio - 1) > 0.01,
             accessibleName: element.alt,
@@ -35,6 +39,9 @@ for (const profile of profiles) {
         expect(rendered.loaded, `${profile.path} ${selector} is decoded and visible`).toBe(true);
         expect(rendered.hasNonUniformStretch, `${profile.path} ${selector} must crop or preserve its source ratio`).toBe(false);
         expect(rendered.accessibleName).toContain('Никита Зайцев');
+        const label = `portrait-${profile.path.replace(/\//g, '_')}-${selector.replace(/[^a-z0-9]/gi, '-')}-${width}`;
+        await test.info().attach(`${label}.json`, { body: Buffer.from(JSON.stringify(rendered)), contentType: 'application/json' });
+        await test.info().attach(`${label}.png`, { body: await page.screenshot({ fullPage: false, animations: 'disabled' }), contentType: 'image/png' });
       }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     });
