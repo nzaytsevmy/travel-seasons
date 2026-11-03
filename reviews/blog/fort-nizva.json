@@ -8,7 +8,7 @@
   "baseCommit": "c99cf77db31a13af911743d70f87b0db5c996b42",
   "proseHash": "cb51b3ddf660fd55",
   "proseHashMethod": "Exact scripts/article-review-gate.mjs algorithm: raw YAML title and description + JSON.stringify(parsed lead) + full body; whitespace collapsed; SHA256 first16 hex. Calculated in tool memory using the read native algorithm; final native gate alignment pending.",
-  "sourceSha256": "b679ca28815f9f4b02d1b49e15f03f3bf3f964e5c42cad6777d5bb6635f85aa4",
+  "sourceSha256": "5e89d77f226d1f81140a71043ebc2fe0c40b96ec34a363f195fed92eb7c49072",
   "sourceSha256Scope": "SHA256 all exact UTF-8 final Markdown/MDX bytes including matching reviewer qualityScore frontmatter and trailing newline.",
   "approved": true,
   "editorialVerdict": "PASS_WITH_DOCUMENTED_LIMITS",
@@ -418,13 +418,22 @@
   },
   "sourceHashBeforeRatingInsertion": "b317a1f0c81718784437f2e9a3407f6b4335a0235ce5fadb21ea0ba5e0d37b1c",
   "metadataAlignment": {
-    "checkedAt": "2026-11-03T11:00:12Z",
+    "checkedAt": "2026-11-03T11:02:12Z",
     "status": "PASS_SOURCE_METADATA_ALIGNMENT",
     "proseHash": "cb51b3ddf660fd55",
     "qualityScoreAllSevenAxesMatch": true,
     "ceilingMatches": true,
     "onlyChangeSinceFinalProseReview": "Insertion of exact matching qualityScore block; removing it gives identical previous raw bytes.",
     "previousReviewSha256": "dda2e773fbdf7fc708bf07d8121d7997f27ec8eeabe69900ec90d7d82a88e7a2",
-    "nativeContract": "scripts/article-review-gate.mjs readPostMeta/proseHash contract independently reproduced in tool memory; no local native CLI/CI execution claimed."
+    "nativeContract": "scripts/article-review-gate.mjs readPostMeta/proseHash contract independently reproduced in tool memory; no local native CLI/CI execution claimed.",
+    "whitespaceOnlyUpdate": {
+      "checkedAt": "2026-11-03T11:02:12Z",
+      "previousSourceSha256": "b679ca28815f9f4b02d1b49e15f03f3bf3f964e5c42cad6777d5bb6635f85aa4",
+      "sourceSha256": "5e89d77f226d1f81140a71043ebc2fe0c40b96ec34a363f195fed92eb7c49072",
+      "previousReviewSha256": "18e3d27346abe1393f5d504978cd35c674a5fbce8ab305989c92bed37ee206dc",
+      "proof": "Adding back exactly one ASCII space after «эти расходы не входят.» reconstructs the previously verified source SHA256. No other byte changed.",
+      "proseHashUnchanged": true,
+      "sourcesRechecked": false
+    }
   }
 }
