@@ -3,7 +3,7 @@ title: "Атакама зацвела после дождей: цветы смо
 date: "2026-10-07"
 added: "2026-10-07"
 checked: "2026-10-07"
-reviewOn: "2026-10-21"
+reviewOn: "2026-11-06"
 topic: nature
 impact: medium
 score: 4

@@ -3,7 +3,6 @@ title: "На паромы Stena Line между Ирландией и Уэльс
 date: "2026-09-28"
 added: "2026-09-30"
 checked: "2026-10-07"
-reviewOn: "2026-10-21"
 topic: "visa"
 status: "действует"
 impact: "high"

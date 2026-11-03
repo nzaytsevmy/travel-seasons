@@ -3,7 +3,7 @@ title: "Кафиа: проезд к горячему пляжу перекрыв
 date: "2026-10-24"
 added: "2026-10-24"
 checked: "2026-10-24"
-reviewOn: "2026-10-25"
+reviewOn: "2026-11-06"
 topic: transport
 impact: medium
 score: 4

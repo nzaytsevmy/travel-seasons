@@ -2,7 +2,7 @@
 title: "Во Фрай-Хорхе закрыт доступ к туманному лесу"
 date: 2026-09-10
 checked: "2026-10-23"
-reviewOn: "2026-10-25"
+reviewOn: "2026-11-06"
 added: 2026-09-13
 topic: transport
 impact: high

@@ -3,7 +3,6 @@ title: "В Ланине дронами засеяли лес араукарий 
 date: "2026-10-25"
 added: "2026-10-25"
 checked: "2026-10-25"
-reviewOn: "2026-11-01"
 topic: nature
 impact: medium
 score: 3

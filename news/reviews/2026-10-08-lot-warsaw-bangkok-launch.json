@@ -1,97 +1,188 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "slug": "2026-10-08-lot-warsaw-bangkok-launch",
+  "reviewer": "Codex (due_news_review_20261103)",
+  "reviewerTask": "/root/due_news_review",
+  "authoredBy": "Codex (tt-author-20261103)",
+  "reviewedAt": "2026-11-03T08:37:54Z",
+  "checkedAt": "2026-11-03",
   "score": 4,
-  "reviewer": "codex-editorial-review-20261008",
-  "reviewedAt": "2026-10-08T15:15:34.305Z",
-  "sha256": "a5840d9873f3b3cab8108827de5b5dceda0438aec3c0829ecbc9dcbc4fa8a759",
-  "sha256Scope": "full Markdown file bytes",
-  "contentHash": "5c01560b857e28bd880242a7487bc4f79aae25d08e4a74da632db9a0d78c169f",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "proseHash": "5c01560b857e28bd880242a7487bc4f79aae25d08e4a74da632db9a0d78c169f",
-  "proseHashScope": "same as contentHash",
-  "rationale": "Новая регулярная линия полезна для конкретного европейского маршрута в Таиланд, уровень 4 по RUBRIC. Сверены прибытие 08 октября, периоды трёх и пяти рейсов, дни и локальное расписание; прилёт на следующие сутки объяснён практическим последствием для гостиницы. Российские билеты, доступность пересадки или цена не обещаны. Архивный LOT787 не объявлен кадром инаугурационного рейса.",
-  "blockingIssues": [],
-  "risks": [
-    "Это редакторское ревью источника, смысла и фотографии; свежая проверка Commons лицензии/кредитов, CI иliveQA не заявлены."
+  "archived": false,
+  "approved": true,
+  "approvalScope": "EDITORIAL_CONTENT_ONLY_TARGETED_UPDATE",
+  "editorialVerdict": "PASS_WITH_DOCUMENTED_LIMITS",
+  "textVerdict": "PASS_EXACT_CONTENT_HASH",
+  "releaseApproved": false,
+  "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
+  "classification": "UPDATE_EXISTING_PUBLISHED",
+  "baseCommit": "c99cf77db31a13af911743d70f87b0db5c996b42",
+  "previousReview": {
+    "sha256": "fa19ea77d65e6a29901c38d0f4d571e44e49a25e9bd93eb9bd3b168c0fbce919",
+    "reviewedAt": "2026-10-08T15:15:34.305Z",
+    "reviewer": "codex-editorial-review-20261008",
+    "baseCommit": null,
+    "sourceSha256": null,
+    "contentHash": "5c01560b857e28bd880242a7487bc4f79aae25d08e4a74da632db9a0d78c169f",
+    "legacySha256": "a5840d9873f3b3cab8108827de5b5dceda0438aec3c0829ecbc9dcbc4fa8a759",
+    "legacySha256Scope": "full Markdown file bytes"
+  },
+  "rationale": "TAT 8 октября подтверждает первый прилёт LO65 и расписание: три рейса в неделю 7–25 октября, пять с 26 октября по март 2027. Локальное время 15:45 Варшава → 07:05 Бангкок на следующие сутки; обратное 09:05 → 15:20. Финал не выдаёт объявление за выполнение каждого ноябрьского рейса. Расписание конкретной даты, продажа места и фактические вылеты не проверены.",
+  "readerTask": "Проверить объявленное расписание LOT и переход прилёта на следующие сутки.",
+  "factReview": "TAT 8 октября подтверждает первый прилёт LO65 и расписание: три рейса в неделю 7–25 октября, пять с 26 октября по март 2027. Локальное время 15:45 Варшава → 07:05 Бангкок на следующие сутки; обратное 09:05 → 15:20. Финал не выдаёт объявление за выполнение каждого ноябрьского рейса.",
+  "limitations": [
+    "Расписание конкретной даты, продажа места и фактические вылеты не проверены.",
+    "Все ограничения исследования и источников сохранены в .run/due-news-independent-review-20261103.json; это не полная текущая первичная проверка всех 64.",
+    "Содержание источника при просмотре не доказывает дату введения режима; планы не считаются выполнением."
   ],
-  "reviewScope": "Независимо прочитана вся проза, title, description/TLDR и подписи готового батча. После исправлений перечитаны изменённые части и смысловые зависимости. Проверка редакционная; сборка, полный браузерный рендер, CI, публикация и live QA не входят в этот вывод.",
-  "evidence": {
-    "primarySource": {
+  "sourceChecks": [
+    {
       "url": "https://www.tatnews.org/2026/10/tat-welcomes-inaugural-lot-polish-airlines-warsaw-bangkok-service/",
-      "method": "Own IAB primary page",
-      "checkedAt": "2026-10-08T15:15:34.305Z",
-      "confirmed": [
-        "LO65arrivalOct8",
-        "3/weekOct7–25",
-        "5/weekOct26–Mar2027",
-        "LO65 15:45–07:05nextday",
-        "LO66 09:05–15:20"
-      ]
-    },
-    "photo": {
-      "viewedByThisReviewer": true,
-      "scope": "Final repositoryJPG visually inspected; location/event attribution assessed in prose and metadata."
-    },
-    "previousSourceAndImageEvidence": {
-      "reviewer": "codex-news-review-20261008",
-      "reviewedAt": "2026-10-08",
-      "evidence": [
-        {
-          "url": "https://www.tatnews.org/2026/10/tat-welcomes-inaugural-lot-polish-airlines-warsaw-bangkok-service/",
-          "checkedOn": "2026-10-08",
-          "finding": "TAT подтверждает первое регулярное прибытие LO65 8 октября, прежние сезонные чартеры; вылеты 7–25 октября по понедельникам, средам и субботам, с 26 октября ещё четверг и воскресенье. Местное время LO65 15:45→07:05 следующего дня, LO66 09:05→15:20.",
-          "method": "Независимо прочитан содержательный текст свежего извлечения от 08.10.2026; извлечение источника выполнил автор, редакторская проверка выполнена отдельно.",
-          "artifact": ".run/sources-2026-10-08/lot.json",
-          "artifactSha256": "f21e40d55d86a9c74ed687f72a9ee044f51b1ee5b689adc7ca5da067a3925811",
-          "publishedOn": "2026-10-08"
-        },
-        {
-          "url": "https://commons.wikimedia.org/w/index.php?curid=22686996",
-          "checkedOn": "2026-10-08",
-          "finding": "Просмотрен Boeing 787 LOT SP-LRA. Commons: SP-LRA, Esbe2510, 18.10.2012, CC BY-SA 3.0; снимок в Пейн-Филд. Подпись указывает архив и не выдаёт его за прибытие в Бангкок.",
-          "method": "Локальный финальный JPEG независимо просмотрен глазами; сведения автора, даты, названия и лицензии независимо получены запросом Commons API 08.10.2026. Метаданные открытой лицензии проверены отдельно от картинки."
-        }
-      ],
-      "checks": {
-        "capsuleWords": 47,
-        "bodyWords": 175,
-        "titleChars": 46,
-        "clipTitle": "Бангкок: LOT начал регулярные рейсы из Варшавы",
-        "internalLink": "/thailand/",
-        "internalLinkStatus": 200,
-        "internalLinkEvidence": ".run/deep-links-2026-10-08.json",
-        "internalLinkMethod": "Прочитан свежий ответ автора с фактическим HTTP 200 от 8 октября; анкор независимо сопоставлен с целевым материалом.",
-        "photoViewed": true,
-        "photoSha256": "298ad6d32318775975f1b050fe2aff0012ab871275ce0caee2836f5ed4a9515f",
-        "photoFinding": "Просмотрен Boeing 787 LOT SP-LRA. Commons: SP-LRA, Esbe2510, 18.10.2012, CC BY-SA 3.0; снимок в Пейн-Филд. Подпись указывает архив и не выдаёт его за прибытие в Бангкок.",
-        "publicAttribution": "Проверена реальная publicPhotoCredits с импортируемыми blog/_images/**/_credits.json и 11 финальными заметками: запись содержит автора, название, Commons, адрес лицензии и сведения о JPEG. Итоговый HTML /legal/photos/ после сборки остаётся публикационным гейтом.",
-        "editorialCriteria": {
-          "changesPlans": "Да: новое регулярное прямое сообщение и выбор дней поездки.",
-          "surprisingNature": "Нет: транспортный повод.",
-          "concreteAndVerifiable": "Да: фактическое прибытие, номер рейса и фазы расписания.",
-          "lastsLongerThanWeek": "Да: линия и зимнее расписание рассчитаны до марта 2027 года."
-        },
-        "selectionKind": "NEW",
-        "languageBannedWords": [],
-        "sourcesArray": true,
-        "scope": "Независимое редакторское ревью конечного текста, дат, единиц, статуса, сроков, ссылки, финального JPEG и прав. Без local build/Playwright, CI, публикации и live-проверки нового выпуска."
-      }
+      "publisher": "TAT",
+      "sourceId": "lot",
+      "sourceDate": "2026-10-08",
+      "checkedOn": "2026-11-03",
+      "status": "read",
+      "method": "addressed reuse of this reviewer's 64-note proof",
+      "supports": "Первый LO 65 прибыл 08.10; с 26.10 запланированы пять в неделю. Каждый ноябрьский рейс не проверен.",
+      "priorStatus": null
     }
+  ],
+  "independentProofRef": ".run/due-news-independent-review-20261103.json",
+  "additionalSourceReviewRef": null,
+  "contentHash": "25dcb278a25db42881211126c360eb32b804ee172a8345d49486a35408c30100",
+  "contentHashScope": "SHA256 UTF-8 JSON.stringify({title:parseNote.data.title,tldr:parseNote.data.tldr,body:parseNote.body.trim()})",
+  "sourceSha256": "ba938db0691cf2ec7a3080f15e7fb4d17c926c6be43ac635c41edd7809b6b360",
+  "sourceSha256Scope": "SHA256 всех UTF-8 байтов финального Markdown, включая frontmatter и завершающий перевод строки",
+  "actualClipTitle": "Бангкок: LOT начал регулярные рейсы из Варшавы",
+  "tldrCheck": {
+    "ok": true,
+    "wordCount": 46,
+    "method": "Штатный checkTldr: trim().split(/\\s+/).filter(Boolean).length; выполнено на точной капсуле в памяти инструмента без запуска локальной агрегации."
   },
-  "lifecycle": {
-    "decision": "NEW",
-    "reviewOn": "2026-10-26",
-    "reason": "Перепроверить переход к пяти вылетам в неделю и фактическое зимнее расписание."
+  "photoProof": {
+    "image": "./_images/2026-10-08-lot-warsaw-bangkok-launch.jpg",
+    "imageSha256": "298ad6d32318775975f1b050fe2aff0012ab871275ce0caee2836f5ed4a9515f",
+    "previousImageSha256": null,
+    "baseImageSha256": "298ad6d32318775975f1b050fe2aff0012ab871275ce0caee2836f5ed4a9515f",
+    "creator": "Esbe2510",
+    "license": "CC BY-SA",
+    "licenseURL": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "source": "https://commons.wikimedia.org/w/index.php?curid=22686996",
+    "title": "SP-LRA. Boeing 787 LOT в Пейн-Филд, 2012 год; не первый рейс в Бангкок.",
+    "alt": "Самолёт LOT Polish Airlines; иллюстрация перевозчика, не первый рейс в Бангкок 8 октября",
+    "changes": "Подготовлена сжатая JPEG-копия исходной фотографии.",
+    "viewedByThisReviewer": false,
+    "priorImageHashMatched": false,
+    "baseImageUnchanged": true,
+    "provenanceMethod": "JPEG совпадает SHA-256 с файлом в base c99cf77; в git diff изображение не менялось. Новый визуальный просмотр и новая проверка Commons не заявлены.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
+    "priorProvenance": null
   },
-  "checks": {
-    "fullProseRead": true,
-    "finalTldrRead": true,
-    "tldrWords": 46,
-    "primarySourceRead": true,
-    "photoViewed": true,
-    "independentReviewer": true,
-    "commonsLicenseRechecked": false,
-    "buildBrowserCiLive": false
+  "criteria14": [
+    {
+      "id": 1,
+      "criterion": "Задача читателя",
+      "score": 10,
+      "evidence": "Проверить объявленное расписание LOT и переход прилёта на следующие сутки. Полностью прочитаны точные title, tldr и body этой версии."
+    },
+    {
+      "id": 2,
+      "criterion": "Обоснование темы",
+      "score": 5,
+      "evidence": "Адресная фактическая корректировка уже опубликованной заметки. NEW-исследование спроса, пять сайтов Google и трафик не заявлены; оценка повода дана по NEWS-RUBRIC."
+    },
+    {
+      "id": 3,
+      "criterion": "Место в проекте",
+      "score": 5,
+      "evidence": "Сохранены существующий URL, date и added относительно base. Проверены все 64 просроченных заметки в отдельном отчёте; новый полный SEO-аудит кластера не выполнен."
+    },
+    {
+      "id": 4,
+      "criterion": "Полнота и прямой ответ",
+      "score": 10,
+      "evidence": "Капсула даёт событие и практическую границу: 46 слов, штатный диапазон 40–60. Первый абзац не обещает непроверенного открытия или завершения."
+    },
+    {
+      "id": 5,
+      "criterion": "Собственный вклад",
+      "score": 5,
+      "evidence": "Редакторский вклад — исправление временного смысла и границ применимости. Полевое исследование, новые измерения или собственный опыт не заявлены."
+    },
+    {
+      "id": 6,
+      "criterion": "Факты и источники",
+      "score": 10,
+      "evidence": "TAT 8 октября подтверждает первый прилёт LO65 и расписание: три рейса в неделю 7–25 октября, пять с 26 октября по март 2027. Локальное время 15:45 Варшава → 07:05 Бангкок на следующие сутки; обратное 09:05 → 15:20. Финал не выдаёт объявление за выполнение каждого ноябрьского рейса. Проверяемые утверждения адресной поправки поддержаны перечисленными источниками; неизвестное прямо названо."
+    },
+    {
+      "id": 7,
+      "criterion": "Числа и примеры",
+      "score": 10,
+      "evidence": "Числа и даты адресной поправки сверены с датированными источниками; прошедший срок не превращён в исполненный план. В капсуле: 8, 7, 25, 26, 2027. Денежных расчётов или гарантированных сроков нет."
+    },
+    {
+      "id": 8,
+      "criterion": "Исключения и применимость",
+      "score": 10,
+      "evidence": "Расписание конкретной даты, продажа места и фактические вылеты не проверены. Текст применяет эти границы, а не достраивает открытие по молчанию источника."
+    },
+    {
+      "id": 9,
+      "criterion": "Авторство и доверие",
+      "score": 5,
+      "evidence": "Автор Codex (tt-author-20261103); независимый рецензент Codex (due_news_review_20261103), задачу авторства новой публичной прозы не выполнял. Публичный byline/JSON-LD не рендерились."
+    },
+    {
+      "id": 10,
+      "criterion": "Редактура и естественный язык",
+      "score": 10,
+      "evidence": "Финальная публичная проза полностью прочитана. Событие, дата и неизвестное связаны ясно; неподтверждённый личный опыт и гарантии не добавлены."
+    },
+    {
+      "id": 11,
+      "criterion": "SEO-обещание и метаданные",
+      "score": 5,
+      "evidence": "Заголовок 46 знаков, короче штатного предела 60: clipTitle возвращает его без обрезки. Title/tldr соответствуют узкому фактическому обещанию; OG/canonical/SSR не проверены."
+    },
+    {
+      "id": 12,
+      "criterion": "Ссылки и навигация",
+      "score": 5,
+      "evidence": "Внутренние ссылки и смысл анкоров прочитаны в контексте. Новый HTTP-проход всех ссылок и общий аудит кластера не выполнялись."
+    },
+    {
+      "id": 13,
+      "criterion": "Оформление и доступность",
+      "score": 5,
+      "evidence": "JPEG совпадает SHA-256 с файлом в base c99cf77; в git diff изображение не менялось. Новый визуальный просмотр и новая проверка Commons не заявлены. Alt и архивная применимость прочитаны. Рендер 402/1280, контраст, фактическое кадрирование и публичная атрибуция не проверены."
+    },
+    {
+      "id": 14,
+      "criterion": "Готовность выпуска",
+      "score": 0,
+      "evidence": "CI, build, exact deploy, production live и измеренный эффект не проверены. Редакторское решение не является release PASS."
+    }
+  ],
+  "verifiedTens": [
+    1,
+    4,
+    6,
+    7,
+    8,
+    10
+  ],
+  "minimumFiveVerifiedTens": true,
+  "blockingIssues": [],
+  "dateAddedPreserved": {
+    "date": "2026-10-08",
+    "added": "2026-10-08",
+    "verifiedAgainstBase": true
+  },
+  "nextReview": {
+    "value": "2026-11-06",
+    "action": "CHECK_TRIGGER_BEFORE_CLAIMING_NEW_STATUS",
+    "trigger": "Расписание конкретной даты, продажа места и фактические вылеты не проверены.",
+    "automaticallyApplied": false
   }
 }

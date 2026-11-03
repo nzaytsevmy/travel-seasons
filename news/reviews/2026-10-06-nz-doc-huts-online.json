@@ -1,60 +1,199 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "slug": "2026-10-06-nz-doc-huts-online",
+  "reviewer": "Codex (due_news_review_20261103)",
+  "reviewerTask": "/root/due_news_review",
+  "authoredBy": "Codex (tt-author-20261103)",
+  "reviewedAt": "2026-11-03T08:37:54Z",
+  "checkedAt": "2026-11-03",
   "score": 4,
-  "reviewer": "Codex GPT-6 (independent news_review_20261006)",
-  "reviewedAt": "2026-10-06",
-  "sha256": "b72b0aea3474b19a36a78b252c7d5c1040eb6acd0ee08aa2c384138f147598cb",
-  "rationale": "DOC 1 октября описала две очереди из 32 и 30 домиков/стоянок с разными датами начала брони и ночёвок. Заметка правильно отделяет онлайн-бронь койки от будущих электронных Backcountry Hut Tickets для небронируемых мест; билет не гарантирует койку. Исправленная ссылка ведёт в каталог домиков DOC, а текст советует искать страницу конкретного объекта. Для самостоятельного похода в Новой Зеландии порядок бронирования меняет план, оценка 4.",
-  "risks": [
-    "Для каждого домика и стоянки условия следует сверять на собственной странице DOC; 62 не означает переход всех примерно 950 домиков на бронь.",
-    "Электронные билеты для небронируемых домиков заявлены с 1 ноября; reviewOn назначен на эту дату.",
-    "Mueller Hut на архивном снимке не заявлен одним из новых 62 объектов."
+  "archived": false,
+  "approved": true,
+  "approvalScope": "EDITORIAL_CONTENT_ONLY_TARGETED_UPDATE",
+  "editorialVerdict": "PASS_WITH_DOCUMENTED_LIMITS",
+  "textVerdict": "PASS_EXACT_CONTENT_HASH",
+  "releaseApproved": false,
+  "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
+  "classification": "UPDATE_EXISTING_PUBLISHED",
+  "baseCommit": "c99cf77db31a13af911743d70f87b0db5c996b42",
+  "previousReview": {
+    "sha256": "41c040ef2b5aa28aeb72d542b4456bbeb73563539b6c9206f9740b5b2b253a9f",
+    "reviewedAt": "2026-10-06",
+    "reviewer": "Codex GPT-6 (independent news_review_20261006)",
+    "baseCommit": null,
+    "sourceSha256": null,
+    "contentHash": "ceb3428c5e72a2b05fb48d0e7a69e40b5b643547be2184ea1d3e0114a5e897e6",
+    "legacySha256": "b72b0aea3474b19a36a78b252c7d5c1040eb6acd0ee08aa2c384138f147598cb",
+    "legacySha256Scope": "full Markdown file bytes"
+  },
+  "rationale": "DOC 1 октября подтверждает 62 хижины: 32 добавлены в октябре с посещением с 1 ноября, 30 — в сентябре с посещением с 1 октября. Электронный билет объявлен с 1 ноября, но не резервирует место; бумажный переход заявлен до 1 ноября 2027. Финал переносит прошедшие даты из будущего в датированное объявление. Живой checkout, оплата и доступность койки не тестировались; это прямо не обещано.",
+  "readerTask": "Различить оплату билета DOC и бронирование койки.",
+  "factReview": "DOC 1 октября подтверждает 62 хижины: 32 добавлены в октябре с посещением с 1 ноября, 30 — в сентябре с посещением с 1 октября. Электронный билет объявлен с 1 ноября, но не резервирует место; бумажный переход заявлен до 1 ноября 2027. Финал переносит прошедшие даты из будущего в датированное объявление.",
+  "limitations": [
+    "Живой checkout, оплата и доступность койки не тестировались; это прямо не обещано.",
+    "Все ограничения исследования и источников сохранены в .run/due-news-independent-review-20261103.json; это не полная текущая первичная проверка всех 64.",
+    "Содержание источника при просмотре не доказывает дату введения режима; планы не считаются выполнением."
   ],
-  "blockingIssues": [],
-  "evidence": [
+  "sourceChecks": [
     {
       "url": "https://www.doc.govt.nz/news/media-releases/2026-media-releases/more-doc-huts-go-online-as-booking-and-payment-gets-easier/",
-      "publishedOn": "2026-10-01",
-      "checkedOn": "2026-10-06",
-      "finding": "DOC: 32 объекта открыты для брони 1 октября на ночёвки с 1 ноября; 30 открыты 1 сентября на ночёвки с 1 октября. Онлайн Backcountry Hut Tickets начнутся 1 ноября и не резервируют койку; бумажные действуют до 1 ноября 2027; из примерно 950 домиков большинство небронируемые."
+      "publisher": "DOC",
+      "sourceId": "huts",
+      "sourceDate": "2026-10-01",
+      "checkedOn": "2026-11-03",
+      "status": "read",
+      "method": "addressed reuse of this reviewer's 64-note proof",
+      "supports": "62=32+30; даты 01.10/01.11; электронный билет объявлен с 01.11, бумажный переход до 01.11.2027. Наличие живой оплаты не тестировалось.",
+      "priorStatus": null
     },
     {
       "url": "https://www.doc.govt.nz/parks-and-recreation/places-to-stay/stay-in-a-hut/",
-      "checkedOn": "2026-10-06",
-      "finding": "Официальная точка входа DOC в каталог домиков, HTTP 200; описание говорит о сети из более 950 домиков. Нужна карточка конкретного объекта для брони."
-    },
-    {
-      "url": "https://www.doc.govt.nz/news/media-releases/2026-media-releases/ready-set-naturing-doc-great-walk-hut-and-campsite-bookings-open-from-12-may/",
-      "publishedOn": "2026-03-26",
-      "checkedOn": "2026-10-06",
-      "finding": "DOC до октябрьского расширения системы называла Mueller Hut среди популярных объектов, места в которых регулярно раскупаются; этот архивный кадр не иллюстрирует один из 62 впервые добавленных объектов."
-    },
-    {
-      "url": "https://commons.wikimedia.org/w/index.php?curid=86752791",
-      "publishedOn": "2020-02-08",
-      "checkedOn": "2026-10-06",
-      "finding": "Commons API: Mueller Hut, Aoraki - Mount Cook National Park, New Zealand 10, Michal Klajban, CC BY-SA 4.0; архивный кадр января 2020 года. Локальный JPEG показывает красный домик среди снега."
+      "publisher": "DOC — каталог домиков с отметкой о бронировании",
+      "sourceId": null,
+      "sourceDate": null,
+      "checkedOn": "2026-11-03",
+      "status": "HISTORICAL_EVIDENCE_ONLY",
+      "method": "retained prior review evidence; not promoted to fresh verification",
+      "supports": null,
+      "priorStatus": null
     }
   ],
-  "lifecycle": {
-    "reviewOn": "2026-11-01",
-    "reason": "Проверить фактический запуск электронных Backcountry Hut Tickets и статусы домиков DOC."
+  "independentProofRef": ".run/due-news-independent-review-20261103.json",
+  "additionalSourceReviewRef": null,
+  "contentHash": "0dd524eda6bcbb337108cf071abe4cce248cc854edb6f3d9a2215aa1909be834",
+  "contentHashScope": "SHA256 UTF-8 JSON.stringify({title:parseNote.data.title,tldr:parseNote.data.tldr,body:parseNote.body.trim()})",
+  "sourceSha256": "ffaa3e143291467952f887c76e45a13b7bfab3d8ccfe7941e945e0bb5a0f1b11",
+  "sourceSha256Scope": "SHA256 всех UTF-8 байтов финального Markdown, включая frontmatter и завершающий перевод строки",
+  "actualClipTitle": "Новая Зеландия: 62 домика и стоянки получили онлайн-бронь",
+  "tldrCheck": {
+    "ok": true,
+    "wordCount": 53,
+    "method": "Штатный checkTldr: trim().split(/\\s+/).filter(Boolean).length; выполнено на точной капсуле в памяти инструмента без запуска локальной агрегации."
   },
-  "checks": {
-    "capsuleWords": 55,
-    "bodyWords": 209,
-    "titleChars": 57,
-    "clipTitle": "Новая Зеландия: 62 домика и стоянки получили онлайн-бронь",
-    "internalLink": "/blog/new-zealand-guide-2026/",
-    "internalLinkStatus": 200,
-    "photoViewed": true,
-    "photoSha256": "55a19a865e6dfd72215f42c911938871e85bdf3d3874e3546751a3098d841d46",
-    "photoFinding": "Локальный JPEG просмотрен: красный Mueller Hut в снегу; подпись и alt прямо говорят, что кадр архивный и не показывает один из новых объектов.",
-    "publicAttribution": "Commons API подтвердил автора, оригинальное название и CC BY-SA 4.0. imageTitle и imageChanges сохранены для /legal/photos/; финальный рендер после сборки не проверялся.",
-    "scope": "Независимая сверка текста, дат, первоисточников, внутренней ссылки и локального JPEG; без сборки, CI, публикации и live-проверки новой заметки."
+  "photoProof": {
+    "image": "./_images/2026-10-06-nz-doc-huts-online.jpg",
+    "imageSha256": "55a19a865e6dfd72215f42c911938871e85bdf3d3874e3546751a3098d841d46",
+    "previousImageSha256": null,
+    "baseImageSha256": "55a19a865e6dfd72215f42c911938871e85bdf3d3874e3546751a3098d841d46",
+    "creator": "Michal Klajban",
+    "license": "CC BY-SA 4.0",
+    "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "source": "https://commons.wikimedia.org/w/index.php?curid=86752791",
+    "title": "Mueller Hut, Aoraki - Mount Cook National Park, New Zealand 10 — архивный снимок",
+    "alt": "Архивный вид домика Mueller Hut в горах Новой Зеландии; не один из 62 объектов новости",
+    "changes": "Уменьшен до ширины 1600 пикселей и перекодирован в JPEG.",
+    "viewedByThisReviewer": false,
+    "priorImageHashMatched": false,
+    "baseImageUnchanged": true,
+    "provenanceMethod": "JPEG совпадает SHA-256 с файлом в base c99cf77; в git diff изображение не менялось. Новый визуальный просмотр и новая проверка Commons не заявлены.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
+    "priorProvenance": null
   },
-  "contentHash": "ceb3428c5e72a2b05fb48d0e7a69e40b5b643547be2184ea1d3e0114a5e897e6",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body})) with body trimmed; score excluded",
-  "sha256Scope": "full Markdown file bytes"
+  "criteria14": [
+    {
+      "id": 1,
+      "criterion": "Задача читателя",
+      "score": 10,
+      "evidence": "Различить оплату билета DOC и бронирование койки. Полностью прочитаны точные title, tldr и body этой версии."
+    },
+    {
+      "id": 2,
+      "criterion": "Обоснование темы",
+      "score": 5,
+      "evidence": "Адресная фактическая корректировка уже опубликованной заметки. NEW-исследование спроса, пять сайтов Google и трафик не заявлены; оценка повода дана по NEWS-RUBRIC."
+    },
+    {
+      "id": 3,
+      "criterion": "Место в проекте",
+      "score": 5,
+      "evidence": "Сохранены существующий URL, date и added относительно base. Проверены все 64 просроченных заметки в отдельном отчёте; новый полный SEO-аудит кластера не выполнен."
+    },
+    {
+      "id": 4,
+      "criterion": "Полнота и прямой ответ",
+      "score": 10,
+      "evidence": "Капсула даёт событие и практическую границу: 53 слов, штатный диапазон 40–60. Первый абзац не обещает непроверенного открытия или завершения."
+    },
+    {
+      "id": 5,
+      "criterion": "Собственный вклад",
+      "score": 5,
+      "evidence": "Редакторский вклад — исправление временного смысла и границ применимости. Полевое исследование, новые измерения или собственный опыт не заявлены."
+    },
+    {
+      "id": 6,
+      "criterion": "Факты и источники",
+      "score": 10,
+      "evidence": "DOC 1 октября подтверждает 62 хижины: 32 добавлены в октябре с посещением с 1 ноября, 30 — в сентябре с посещением с 1 октября. Электронный билет объявлен с 1 ноября, но не резервирует место; бумажный переход заявлен до 1 ноября 2027. Финал переносит прошедшие даты из будущего в датированное объявление. Проверяемые утверждения адресной поправки поддержаны перечисленными источниками; неизвестное прямо названо."
+    },
+    {
+      "id": 7,
+      "criterion": "Числа и примеры",
+      "score": 10,
+      "evidence": "Числа и даты адресной поправки сверены с датированными источниками; прошедший срок не превращён в исполненный план. В капсуле: 62, 32, 1, 1, 30, 1. Денежных расчётов или гарантированных сроков нет."
+    },
+    {
+      "id": 8,
+      "criterion": "Исключения и применимость",
+      "score": 10,
+      "evidence": "Живой checkout, оплата и доступность койки не тестировались; это прямо не обещано. Текст применяет эти границы, а не достраивает открытие по молчанию источника."
+    },
+    {
+      "id": 9,
+      "criterion": "Авторство и доверие",
+      "score": 5,
+      "evidence": "Автор Codex (tt-author-20261103); независимый рецензент Codex (due_news_review_20261103), задачу авторства новой публичной прозы не выполнял. Публичный byline/JSON-LD не рендерились."
+    },
+    {
+      "id": 10,
+      "criterion": "Редактура и естественный язык",
+      "score": 10,
+      "evidence": "Финальная публичная проза полностью прочитана. Событие, дата и неизвестное связаны ясно; неподтверждённый личный опыт и гарантии не добавлены."
+    },
+    {
+      "id": 11,
+      "criterion": "SEO-обещание и метаданные",
+      "score": 5,
+      "evidence": "Заголовок 57 знаков, короче штатного предела 60: clipTitle возвращает его без обрезки. Title/tldr соответствуют узкому фактическому обещанию; OG/canonical/SSR не проверены."
+    },
+    {
+      "id": 12,
+      "criterion": "Ссылки и навигация",
+      "score": 5,
+      "evidence": "Внутренние ссылки и смысл анкоров прочитаны в контексте. Новый HTTP-проход всех ссылок и общий аудит кластера не выполнялись."
+    },
+    {
+      "id": 13,
+      "criterion": "Оформление и доступность",
+      "score": 5,
+      "evidence": "JPEG совпадает SHA-256 с файлом в base c99cf77; в git diff изображение не менялось. Новый визуальный просмотр и новая проверка Commons не заявлены. Alt и архивная применимость прочитаны. Рендер 402/1280, контраст, фактическое кадрирование и публичная атрибуция не проверены."
+    },
+    {
+      "id": 14,
+      "criterion": "Готовность выпуска",
+      "score": 0,
+      "evidence": "CI, build, exact deploy, production live и измеренный эффект не проверены. Редакторское решение не является release PASS."
+    }
+  ],
+  "verifiedTens": [
+    1,
+    4,
+    6,
+    7,
+    8,
+    10
+  ],
+  "minimumFiveVerifiedTens": true,
+  "blockingIssues": [],
+  "dateAddedPreserved": {
+    "date": "2026-10-01",
+    "added": "2026-10-06",
+    "verifiedAgainstBase": true
+  },
+  "nextReview": {
+    "value": "2026-11-06",
+    "action": "CHECK_TRIGGER_BEFORE_CLAIMING_NEW_STATUS",
+    "trigger": "Живой checkout, оплата и доступность койки не тестировались; это прямо не обещано.",
+    "automaticallyApplied": false
+  }
 }

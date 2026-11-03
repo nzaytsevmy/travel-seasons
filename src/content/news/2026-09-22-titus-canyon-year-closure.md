@@ -6,7 +6,7 @@ checked: "2026-10-24"
 topic: transport
 impact: high
 status: "действует"
-reviewOn: "2026-10-26"
+reviewOn: "2027-05-01"
 score: 4
 authoredBy: "Codex (tt-author-20261024)"
 reviewRef: "news/reviews/2026-09-22-titus-canyon-year-closure.json"

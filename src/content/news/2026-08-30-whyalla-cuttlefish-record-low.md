@@ -19,7 +19,6 @@ imageCredit: "Sylke Rohrlach"
 imageLicense: "CC BY-SA 2.0"
 imageLicenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/"
 imageSource: "https://commons.wikimedia.org/wiki/File:Giant_Cuttlefish-sepia_apama_(11258129224).jpg"
-reviewOn: "2026-10-23"
 authoredBy: "codex-traveltribe-author-20261016"
 reviewRef: "news/reviews/2026-08-30-whyalla-cuttlefish-record-low.json"
 ---

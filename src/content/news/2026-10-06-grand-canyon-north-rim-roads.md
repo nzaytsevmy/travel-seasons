@@ -5,7 +5,7 @@ added: "2026-10-06"
 checked: "2026-10-16"
 status: "действует"
 effectiveDate: "2026-10-15"
-reviewOn: "2026-10-23"
+reviewOn: "2026-11-04"
 topic: "transport"
 impact: "high"
 score: 4

@@ -3,7 +3,6 @@ title: "Симиланские острова открылись после се
 date: "2026-10-15"
 added: "2026-10-21"
 checked: "2026-10-21"
-reviewOn: "2026-11-03"
 topic: transport
 impact: medium
 score: 4

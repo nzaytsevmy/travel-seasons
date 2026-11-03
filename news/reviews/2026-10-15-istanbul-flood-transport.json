@@ -1,179 +1,69 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "slug": "2026-10-15-istanbul-flood-transport",
-  "reviewer": "Codex (editorial_review_20261020)",
-  "reviewerTask": "/root/editorial_review_20261020",
-  "authoredBy": "codex-traveltribe-author-20261015",
-  "reviewedAt": "2026-10-20",
-  "checkedAt": "2026-10-17",
-  "score": 5,
+  "reviewer": "Codex (due_news_review_20261103)",
+  "reviewerTask": "/root/due_news_review",
+  "authoredBy": "Codex (tt-author-20261103)",
+  "reviewedAt": "2026-11-03T08:37:54Z",
+  "checkedAt": "2026-11-03",
+  "score": 2,
+  "archived": true,
   "approved": true,
-  "approvalScope": "EDITORIAL_CONTENT_ONLY",
-  "classification": "SOURCE_RECHECK",
-  "baseCommit": "707f7c57b591d3769d740b30de9024fecd0bede2",
-  "rationale": "Сохранённая оценка 5/5 относится к доказанно неизменному title/tldr/body: contentHash совпал с HEAD и прежней содержательной рецензией. Сегодня прочитан полный текст и проверена только ревизия метаданных/состояния. AFP/AP/AlJazeera15.10:дождь/дороги/запретмото14.10доотдельногоуказания. Текущее снятиезапрета неподтверждено; не объявлять аэропортызакрытыми или все дорогиоткрытыми.",
-  "factReview": "AFP/AP/AlJazeera15.10:дождь/дороги/запретмото14.10доотдельногоуказания. Текущее снятиезапрета неподтверждено; не объявлять аэропортызакрытыми или все дорогиоткрытыми. Прежняя содержательная проверка переиспользована после совпадения хеша; это не новая независимая перепроверка всех исторических фактов 20 октября.",
+  "approvalScope": "EDITORIAL_ARCHIVE_ONLY_EXACT_VERSION",
+  "editorialVerdict": "PASS_ARCHIVE_ONLY",
+  "textVerdict": "PASS_EXACT_CONTENT_HASH",
+  "releaseApproved": false,
+  "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
+  "classification": "ARCHIVE_EXISTING_PUBLISHED",
+  "baseCommit": "c99cf77db31a13af911743d70f87b0db5c996b42",
+  "previousReview": {
+    "sha256": "cfd0c887ee3e5a888628c99aaa6b7407ef4c54b4c84e5842a0f2a966646643be",
+    "reviewedAt": "2026-10-20",
+    "reviewer": "Codex (editorial_review_20261020)",
+    "baseCommit": "707f7c57b591d3769d740b30de9024fecd0bede2",
+    "sourceSha256": "e4b8ea794d6e91151c333a3d1b499afc0288fa223acf544bfb3d258935ca162e",
+    "contentHash": "77a5f96072d26185b589c8d2babe9928f9e77cb743d131ba9c5602ad3e84e0d3",
+    "legacySha256": null,
+    "legacySha256Scope": null
+  },
+  "rationale": "Архивная история 14–15 октября отделена от нынешнего режима. Начальный запрет дополнительно подтверждён датированным официальным распоряжением; отмена или продление неизвестны. Текущие дороги, действующие распоряжения и рейсы не подтверждены. По замечанию рецензента root исправил score 5 на 2, добавил archived:true и снял reviewOn. Архивная оценка 2 допустима только уже опубликованному материалу; в активную ленту как новая срочная новость не допускается.",
+  "readerTask": "Сохранить историю паводка, не продлевая прежний запрет до настоящего времени.",
+  "factReview": "Архивная история 14–15 октября отделена от нынешнего режима. Начальный запрет дополнительно подтверждён датированным официальным распоряжением; отмена или продление неизвестны.",
+  "limitations": [
+    "Текущие дороги, действующие распоряжения и рейсы не подтверждены. По замечанию рецензента root исправил score 5 на 2, добавил archived:true и снял reviewOn.",
+    "Все ограничения исследования и источников сохранены в .run/due-news-independent-review-20261103.json; это не полная текущая первичная проверка всех 64.",
+    "Содержание источника при просмотре не доказывает дату введения режима; планы не считаются выполнением."
+  ],
   "sourceChecks": [
     {
       "url": "https://www.aljazeera.com/news/2026/10/15/teenager-dies-as-heavy-rain-floods-istanbul",
-      "status": "AVAILABILITY_AND_METADATA_RECHECK_ONLY",
-      "artifact": ".run/source-check-20261020/437d17dbeb49eb19.txt",
-      "artifactSha256": "e8f617b6899a6a5d088bf3034f446bff44115b77eaf27845e887a31f17a50727",
-      "observedHttpStatus": 200,
-      "reviewedAt": "2026-10-20",
-      "scope": "Содержательная прежняя рецензия переиспользована по точному хешу; новая дата не означает повторное чтение всех первичек."
+      "publisher": "Al Jazeera/AP — паводок и транспортные ограничения в Стамбуле, 15 октября",
+      "sourceId": null,
+      "sourceDate": null,
+      "checkedOn": "2026-11-03",
+      "status": "READ_DURING_EXACT_FINAL_REVIEW",
+      "method": "web read in exact final review",
+      "supports": null,
+      "priorStatus": "AVAILABILITY_AND_METADATA_RECHECK_ONLY"
     }
   ],
-  "contentHash": "77a5f96072d26185b589c8d2babe9928f9e77cb743d131ba9c5602ad3e84e0d3",
-  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из штатного parseNote.",
-  "sourceSha256": "e4b8ea794d6e91151c333a3d1b499afc0288fa223acf544bfb3d258935ca162e",
-  "sourceSha256Scope": "SHA-256 полного исходного UTF-8 Markdown, включая frontmatter.",
-  "nativeClipTitle": "Стамбул: ливни нарушили движение по городу",
-  "clipTitleCodeSha256": "61aeac8ec0e88ff9175d1ebefe66fd9be9b17f211a045a943312de9f6fdc1b0f",
-  "previousReview": {
-    "reviewer": "Codex (tt_news_review_20261017)",
-    "reviewedAt": "2026-10-17T08:29:37.300Z",
-    "score": 5,
-    "rationale": "5/5: сохраняется редакционная ценность исходного сюжета. Это проверка исторического содержания и его ограничений, а не новая срочная новость 17 октября. Разделить городской маршрут в паводок, действующее распоряжение и собственный перелёт.",
-    "contentHash": "77a5f96072d26185b589c8d2babe9928f9e77cb743d131ba9c5602ad3e84e0d3",
-    "sourceSha256": "5d4cf9cc49a463c072d12d1c61b002f498bffc3388de3961e92c56022a2ee690",
-    "sourceChecks": [
-      {
-        "url": "https://www.aljazeera.com/news/2026/10/15/teenager-dies-as-heavy-rain-floods-istanbul",
-        "artifact": "work/tt-20261017/sources/437d17dbeb49eb19.txt",
-        "artifactSha256": "ac7b107024dfe965c48ff0facbf05ad1b79218d23a14900a6081ba53111b8036",
-        "rawArtifact": "work/tt-20261017/sources/437d17dbeb49eb19.html",
-        "rawSha256": "b7e481cccd69f860a99c7b695b58a26f857351a2d46e92a53f2ce71f7c2b7e3b",
-        "observedAt": "2026-10-17T08:07:01.093401+00:00",
-        "status": "READ_WITH_DECLARED_LIMITS",
-        "scope": "Проверены относящиеся к тезисам разделы сохранённого полного оригинала. Дата документа отделена от даты чтения; HTTP 200 не подтверждает нынешний доступ."
-      }
-    ],
-    "photo": {
-      "image": "./_images/2026-10-15-istanbul-flood-transport.jpg",
-      "imageSha256": "9351e8e5f406afaddbfde9a8827a78d05c7487fd7158433945bc7e65f4718a81",
-      "creator": "Antoloji",
-      "license": "CC BY-SA",
-      "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "source": "https://commons.wikimedia.org/w/index.php?curid=119638709",
-      "title": "Istanbul Balat 2022 — архивная улица Балата, не наводнение октября 2026 года",
-      "alt": "Улица со ступенями и цветными домами в стамбульском Балате; архивный снимок 2022 года без паводка",
-      "changes": "Уменьшение и сжатие JPEG; архивная иллюстрация.",
-      "visualReview": "Фото неизменно с предыдущей оценки; новый личный визуальный просмотр не заявлен.",
-      "provenanceEvidence": {
-        "apiURL": "https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo&iiprop=url%7Cextmetadata&pageids=195776898%7C118265384%7C9998689%7C123743150%7C63394488%7C5704066%7C90056045%7C171000743%7C87531265%7C104893227%7C16120927%7C21022788%7C103042248%7C40845121%7C31646018%7C62482418%7C123908165%7C45307740%7C61772770%7C119638709%7C78730822",
-        "observedAt": "2026-10-16T13:50:55.692Z",
-        "pageid": 119638709,
-        "title": "File:Istanbul Balat 2022.jpg",
-        "description": "Istanbul Balat houses (Pierre Lotti Hill)",
-        "creator": "Antoloji",
-        "license": "CC BY-SA 4.0",
-        "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0",
-        "date": "2022-03-17 16:24:00",
-        "credit": "Own work",
-        "source": "https://commons.wikimedia.org/wiki/File:Istanbul_Balat_2022.jpg"
-      },
-      "provenanceEvidenceSha256": "75854f57ebb2af7aad5a70466332460f92130dbb6cb653eb5c8357e6f4918d0b",
-      "provenanceHashScope": "SHA-256 JSON.stringify(photo.provenanceEvidence); выбранные поля настоящего Commons API сохранены внутри этого reviewJSON.",
-      "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
-    },
-    "criteria14": [
-      {
-        "id": 1,
-        "criterion": "Задача читателя",
-        "score": 10,
-        "evidence": "Разделить городской маршрут в паводок, действующее распоряжение и собственный перелёт."
-      },
-      {
-        "id": 2,
-        "criterion": "Обоснование темы",
-        "score": 10,
-        "evidence": "Наступивший reviewOn — основание обязательной ревизии. Проверка не названа самостоятельным новым инфоповодом и не доказывает новый спрос."
-      },
-      {
-        "id": 3,
-        "criterion": "Место в проекте",
-        "score": 5,
-        "evidence": "Использован прежний URL того же сюжета. Смысловые связи: /blog/peresadka-v-stambule/. Входящая структура и canonical финальной сборки ещё не проверены."
-      },
-      {
-        "id": 4,
-        "criterion": "Полнота и прямой ответ",
-        "score": 10,
-        "evidence": "Капсула 51слов; ответ и ограничения прочитаны вместе с телом. "
-      },
-      {
-        "id": 5,
-        "criterion": "Собственный вклад",
-        "score": 5,
-        "evidence": "Городское ограничение не превращено в закрытие аэропортов; наземный путь и перелёт проверяются отдельно."
-      },
-      {
-        "id": 6,
-        "criterion": "Факты и источники",
-        "score": 10,
-        "evidence": "Al Jazeera/AP от 15 октября подтверждает затопление дорог и подземных проездов, запрет мотоциклов с 21:00 среды 14 октября до отдельного уведомления. Обычная работа рейсов относится к моменту репортажа. Ни сохранение всего ограничения, ни восстановление 17 октября не выведены из отсутствия новых сообщений."
-      },
-      {
-        "id": 7,
-        "criterion": "Числа и примеры",
-        "score": 10,
-        "evidence": "Числа, единицы, периоды и даты сопоставлены с перечисленными оригиналами. Объявленный план не принят за состоявшееся событие. Новое состояние доступа из старой страницы не рассчитано."
-      },
-      {
-        "id": 8,
-        "criterion": "Исключения и применимость",
-        "score": 10,
-        "evidence": "Территория, период и граница вывода обозначены в тексте. Неизвестный нынешний доступ остаётся неизвестным; архивный снимок не доказывает состояние места."
-      },
-      {
-        "id": 9,
-        "criterion": "Авторство и доверие",
-        "score": 5,
-        "evidence": "В данных указан codex-traveltribe-author-20261015; независимый рецензент текст не писал. Личный опыт и человеческий тест не выдуманы. Byline, профиль и SSR финального выпуска ожидают проверки."
-      },
-      {
-        "id": 10,
-        "criterion": "Редактура и естественный язык",
-        "score": 10,
-        "evidence": "Проведены отдельные фактический и смысловой проходы; исправленные места прочитаны заново. Одна основная задача, обычный русский, без служебных токенов. Реального читательского теста не было."
-      },
-      {
-        "id": 11,
-        "criterion": "SEO-обещание и метаданные",
-        "score": 5,
-        "evidence": "Штатный clipTitle сохраняет заголовок «Стамбул: ливни нарушили движение по городу»: он короче 60 знаков и выражает законченную мысль. Смысл, даты и капсула сопоставлены; canonical, OG и schema финальной сборки ещё не проверены."
-      },
-      {
-        "id": 12,
-        "criterion": "Ссылки и навигация",
-        "score": 5,
-        "evidence": "Внутренние переходы продолжают вопрос заметки: /blog/peresadka-v-stambule/. Ранний preflight автора проверяет буквальные ссылки; полные HTTP, входящие связи и отрендеренная навигация ожидают финальных гейтов."
-      },
-      {
-        "id": 13,
-        "criterion": "Оформление и доступность",
-        "score": 5,
-        "evidence": "Фото в этом заходе неизменно, прежняя атрибуция сохранена. Новый личный визуальный просмотр старого кадра не присвоен. Рендер 402/1280, доступность и итоговая публичная атрибуция ожидают проверки."
-      },
-      {
-        "id": 14,
-        "criterion": "Готовность выпуска",
-        "score": 0,
-        "evidence": "В этом ревью не выполнялись build, CI, deploy и live. Редакторское согласование не подтверждает готовность выпуска; releaseApproved=false."
-      }
-    ]
+  "independentProofRef": ".run/due-news-independent-review-20261103.json",
+  "additionalSourceReviewRef": null,
+  "contentHash": "c29a53f463252860d84c8d17fe5f254f95d8aed2be2fb80b8224c5f27f5b5b31",
+  "contentHashScope": "SHA256 UTF-8 JSON.stringify({title:parseNote.data.title,tldr:parseNote.data.tldr,body:parseNote.body.trim()})",
+  "sourceSha256": "fe577b51dcbb1647ad05788c4c71e5ca763b0df64d6c1ff71b52c821772209a5",
+  "sourceSha256Scope": "SHA256 всех UTF-8 байтов финального Markdown, включая frontmatter и завершающий перевод строки",
+  "actualClipTitle": "Стамбул: ливни 14–15 октября нарушили движение",
+  "tldrCheck": {
+    "ok": true,
+    "wordCount": 54,
+    "method": "Штатный checkTldr: trim().split(/\\s+/).filter(Boolean).length; выполнено на точной капсуле в памяти инструмента без запуска локальной агрегации."
   },
-  "reuseEvidence": {
-    "baseContentHash": "77a5f96072d26185b589c8d2babe9928f9e77cb743d131ba9c5602ad3e84e0d3",
-    "previousReviewContentHash": "77a5f96072d26185b589c8d2babe9928f9e77cb743d131ba9c5602ad3e84e0d3",
-    "titleTldrBodyUnchanged": true,
-    "checkedPreserved": true,
-    "currentScope": "SOURCE_RECHECK metadata/state only; previous substantive review reused"
-  },
-  "photo": {
+  "photoProof": {
     "image": "./_images/2026-10-15-istanbul-flood-transport.jpg",
     "imageSha256": "9351e8e5f406afaddbfde9a8827a78d05c7487fd7158433945bc7e65f4718a81",
+    "previousImageSha256": "9351e8e5f406afaddbfde9a8827a78d05c7487fd7158433945bc7e65f4718a81",
+    "baseImageSha256": null,
     "creator": "Antoloji",
     "license": "CC BY-SA",
     "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
@@ -181,8 +71,12 @@
     "title": "Istanbul Balat 2022 — архивная улица Балата, не наводнение октября 2026 года",
     "alt": "Улица со ступенями и цветными домами в стамбульском Балате; архивный снимок 2022 года без паводка",
     "changes": "Уменьшение и сжатие JPEG; архивная иллюстрация.",
-    "visualReview": "Фото неизменно с предыдущей оценки; новый личный визуальный просмотр не заявлен.",
-    "provenanceEvidence": {
+    "viewedByThisReviewer": false,
+    "priorImageHashMatched": true,
+    "baseImageUnchanged": false,
+    "provenanceMethod": "Неизменный JPEG сопоставлен SHA-256 с сохранённой предыдущей независимой рецензией. Новый визуальный просмотр и новое чтение лицензии этой фотографии не заявлены.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
+    "priorProvenance": {
       "apiURL": "https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo&iiprop=url%7Cextmetadata&pageids=195776898%7C118265384%7C9998689%7C123743150%7C63394488%7C5704066%7C90056045%7C171000743%7C87531265%7C104893227%7C16120927%7C21022788%7C103042248%7C40845121%7C31646018%7C62482418%7C123908165%7C45307740%7C61772770%7C119638709%7C78730822",
       "observedAt": "2026-10-16T13:50:55.692Z",
       "pageid": 119638709,
@@ -194,87 +88,127 @@
       "date": "2022-03-17 16:24:00",
       "credit": "Own work",
       "source": "https://commons.wikimedia.org/wiki/File:Istanbul_Balat_2022.jpg"
-    },
-    "provenanceEvidenceSha256": "75854f57ebb2af7aad5a70466332460f92130dbb6cb653eb5c8357e6f4918d0b",
-    "provenanceHashScope": "SHA-256 JSON.stringify(photo.provenanceEvidence); выбранные поля настоящего Commons API сохранены внутри этого reviewJSON.",
-    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+    }
   },
   "criteria14": [
     {
       "id": 1,
+      "criterion": "Задача читателя",
       "score": 10,
-      "evidence": "Один вопрос читателя следует из title/tldr: Стамбул: ливни нарушили движение по городу. Полный текст прочитан."
+      "evidence": "Сохранить историю паводка, не продлевая прежний запрет до настоящего времени. Полностью прочитаны точные title, tldr и body этой версии."
     },
     {
       "id": 2,
+      "criterion": "Обоснование темы",
       "score": 5,
-      "evidence": "Историческая редакционная значимость сохранена, сегодняшний поисковый/денежныйэффектнеизмерен."
+      "evidence": "Адресная фактическая корректировка уже опубликованной заметки. NEW-исследование спроса, пять сайтов Google и трафик не заявлены; оценка повода дана по NEWS-RUBRIC."
     },
     {
       "id": 3,
-      "score": 10,
-      "evidence": "Сохранён существующий сюжет либо самостоятельная новая тема; это новостьtravel/nature,невыдуманныйгайд."
+      "criterion": "Место в проекте",
+      "score": 5,
+      "evidence": "Сохранены существующий URL, date и added относительно base. Проверены все 64 просроченных заметки в отдельном отчёте; новый полный SEO-аудит кластера не выполнен."
     },
     {
       "id": 4,
+      "criterion": "Полнота и прямой ответ",
       "score": 10,
-      "evidence": "Капсула и начало дают событие/состояние; ограничение результата и следующий конкретный шаг описаны."
+      "evidence": "Капсула даёт событие и практическую границу: 54 слов, штатный диапазон 40–60. Первый абзац не обещает непроверенного открытия или завершения."
     },
     {
       "id": 5,
+      "criterion": "Собственный вклад",
       "score": 5,
-      "evidence": "Редакционное объяснение/применимость есть, собственное полевое исследование, эксклюзивные данные и посещение не заявлены."
+      "evidence": "Редакторский вклад — исправление временного смысла и границ применимости. Полевое исследование, новые измерения или собственный опыт не заявлены."
     },
     {
       "id": 6,
-      "score": 5,
-      "evidence": "AFP/AP/AlJazeera15.10:дождь/дороги/запретмото14.10доотдельногоуказания. Текущее снятиезапрета неподтверждено; не объявлять аэропортызакрытыми или все дорогиоткрытыми. Прежняя содержательная проверка переиспользована после совпадения хеша; это не новая независимая перепроверка всех исторических фактов 20 октября."
+      "criterion": "Факты и источники",
+      "score": 10,
+      "evidence": "Архивная история 14–15 октября отделена от нынешнего режима. Начальный запрет дополнительно подтверждён датированным официальным распоряжением; отмена или продление неизвестны. Проверяемые утверждения адресной поправки поддержаны перечисленными источниками; неизвестное прямо названо."
     },
     {
       "id": 7,
+      "criterion": "Числа и примеры",
       "score": 10,
-      "evidence": "Значимые даты/числа и ихединицы сверены по названной фактическойоснове;неполученный текущийстатус не рассчитан и не выдуман. ДляSOURCE_RECHECK основание — точный неизменный текст и прежняя содержательнаярецензия."
+      "evidence": "Числа и даты адресной поправки сверены с датированными источниками; прошедший срок не превращён в исполненный план. В капсуле: 14–15. Денежных расчётов или гарантированных сроков нет."
     },
     {
       "id": 8,
+      "criterion": "Исключения и применимость",
       "score": 10,
-      "evidence": "Граница применимости, объявлено/состоялось/история и отсутствие разрешения на закрытый участок сохранены;см.factReview."
+      "evidence": "Текущие дороги, действующие распоряжения и рейсы не подтверждены. По замечанию рецензента root исправил score 5 на 2, добавил archived:true и снял reviewOn. Текст применяет эти границы, а не достраивает открытие по молчанию источника."
     },
     {
       "id": 9,
+      "criterion": "Авторство и доверие",
       "score": 5,
-      "evidence": "authoredBy и независимыйreviewer различны; выдуманного посещения нет. Публичныйbyline/SSRфинальнойверсии ещёнепроверен."
+      "evidence": "Автор Codex (tt-author-20261103); независимый рецензент Codex (due_news_review_20261103), задачу авторства новой публичной прозы не выполнял. Публичный byline/JSON-LD не рендерились."
     },
     {
       "id": 10,
+      "criterion": "Редактура и естественный язык",
       "score": 10,
-      "evidence": "Полностью прочитаныtitle,tldr,body; замечания об устаревших/обрезанныхtitle и дублеYosemite исправлены до этогохеша."
+      "evidence": "Финальная публичная проза полностью прочитана. Событие, дата и неизвестное связаны ясно; неподтверждённый личный опыт и гарантии не добавлены."
     },
     {
       "id": 11,
+      "criterion": "SEO-обещание и метаданные",
       "score": 5,
-      "evidence": "ШтатныйclipTitle прочитан: Стамбул: ливни нарушили движение по городу. SSR/canonical/OGфинальнойсборки ожидаютCI/live."
+      "evidence": "Заголовок 46 знаков, короче штатного предела 60: clipTitle возвращает его без обрезки. Title/tldr соответствуют узкому фактическому обещанию; OG/canonical/SSR не проверены."
     },
     {
       "id": 12,
+      "criterion": "Ссылки и навигация",
       "score": 5,
-      "evidence": "Контекстнаявнутренняясвязь соответствует задаче;фактическиеHTTPответы/якоряфинальнойверсии в этомредакционномревьюнепроверены."
+      "evidence": "Внутренние ссылки и смысл анкоров прочитаны в контексте. Новый HTTP-проход всех ссылок и общий аудит кластера не выполнялись."
     },
     {
       "id": 13,
+      "criterion": "Оформление и доступность",
       "score": 5,
-      "evidence": "Новые4фотографии просмотреныи сопоставленыс происхождением/alt;неизменные старыефото имеют прежнююпроверку.Рендер402/1280и публичнаяатрибуциянепроверены."
+      "evidence": "Неизменный JPEG сопоставлен SHA-256 с сохранённой предыдущей независимой рецензией. Новый визуальный просмотр и новое чтение лицензии этой фотографии не заявлены. Alt и архивная применимость прочитаны. Рендер 402/1280, контраст, фактическое кадрирование и публичная атрибуция не проверены."
     },
     {
       "id": 14,
+      "criterion": "Готовность выпуска",
       "score": 0,
-      "evidence": "ФинальныеCI,exactdeploy,live200,SSR,sitemap/feed,индексируемостьи измеренныйэффект ещёнеподтверждены."
+      "evidence": "CI, build, exact deploy, production live и измеренный эффект не проверены. Редакторское решение не является release PASS."
     }
   ],
-  "limitations": [
-    "Редакционное одобрение не разрешает обход обязательныхгейтов и не подтверждает публикацию.",
-    "Источник/снимок поддерживает тольконазванный датированныйфакт; новая доступность каждойдороги/рейса/объектаизнего не следует.",
-    "Новыеphoto-rights сопоставлены с сохранённымCommonsAPI; публичная/legal/photos/ ожидаетфинальногорендера."
+  "verifiedTens": [
+    1,
+    4,
+    6,
+    7,
+    8,
+    10
   ],
-  "nextReview": "2026-10-21"
+  "minimumFiveVerifiedTens": true,
+  "blockingIssues": [],
+  "dateAddedPreserved": {
+    "date": "2026-10-15",
+    "added": "2026-10-15",
+    "verifiedAgainstBase": true
+  },
+  "nextReview": {
+    "value": null,
+    "action": "NO_CALENDAR_REVIEW_FOR_ARCHIVE",
+    "trigger": "Текущие дороги, действующие распоряжения и рейсы не подтверждены. По замечанию рецензента root исправил score 5 на 2, добавил archived:true и снял reviewOn.",
+    "automaticallyApplied": false
+  },
+  "corroboratingSourceChecks": [
+    {
+      "url": "https://istanbul.meb.gov.tr/www/basin-aciklamasi/icerik/6453/tr",
+      "publisher": "Istanbul Provincial Education Directorate publishing Governor statement",
+      "kind": "primary_government",
+      "sourceDate": "2026-10-14T19:57",
+      "checkedOn": "2026-11-03",
+      "state": "read",
+      "quote": "14.10.2026 Çarşamba Günü saat 21.00'dan itibaren, ikinci bir talimata kadar yasaklanmıştır.",
+      "supports": "Начальный запрет двухколёсных до отдельного распоряжения подтверждён; отмена/продление на 03.11 не найдены.",
+      "releaseDomainAllowed": false,
+      "method": "independent 64-note review reused; source outside current release allowlist, not added to public note"
+    }
+  ]
 }

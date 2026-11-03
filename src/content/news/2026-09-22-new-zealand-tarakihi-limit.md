@@ -5,7 +5,7 @@ added: "2026-09-22"
 checked: "2026-10-29"
 topic: nature
 impact: medium
-reviewOn: "2026-11-03"
+reviewOn: "2026-11-06"
 score: 4
 authoredBy: "Codex (tt-author-20261101)"
 reviewRef: news/reviews/2026-09-22-new-zealand-tarakihi-limit.json

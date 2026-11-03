@@ -5,10 +5,10 @@ title: "Селевой поток повредил квартал на вост�
 date: "2026-10-09"
 added: "2026-10-12"
 checked: "2026-10-16"
-reviewOn: "2026-10-23"
 topic: nature
 impact: medium
 score: 3
+archived: true
 authoredBy: "Codex (root)"
 reviewRef: "news/reviews/2026-10-12-chile-santiago-mudslide.json"
 photoQuery: "Santiago Chile skyline Providencia"

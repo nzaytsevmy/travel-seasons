@@ -3,10 +3,10 @@ title: "Накхонпханом: к светящимся лодкам доба�
 date: "2026-10-15"
 added: "2026-10-15"
 checked: "2026-10-29"
-reviewOn: "2026-11-01"
 topic: transport
 impact: medium
 score: 3
+archived: true
 authoredBy: "Codex (tt-author-20261029)"
 reviewRef: "news/reviews/2026-10-15-nakhon-phanom-illuminated-boats.json"
 photoQuery: "Nakhon Phanom Mekong"
