@@ -218,6 +218,7 @@ export const RELATED_POSTS = {
     { slug: 'gardens-by-the-bay', title: "Gardens by the Bay: бесплатные зоны и платные павильоны", kind: 'practical' },
   ],
   'oman': [
+    { slug: 'fort-nizva', title: 'Форт Низва: билеты, часы работы и осмотр', kind: 'practical' },
     { slug: 'maskat-za-odin-den', title: "Маскат за один день: маршрут от мечети до Матраха", kind: 'practical' },
   ],
   'croatia': [
