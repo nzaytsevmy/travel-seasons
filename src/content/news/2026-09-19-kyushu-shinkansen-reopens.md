@@ -3,10 +3,10 @@ title: "Кюсю: три туристических поезда отменен�
 date: 2026-09-18
 added: 2026-09-19
 checked: "2026-10-25"
+reviewOn: "2026-10-26"
 topic: transport
 impact: high
 score: 4
-archived: true
 authoredBy: "Codex (tt-author-20261025)"
 reviewRef: "news/reviews/2026-09-19-kyushu-shinkansen-reopens.json"
 photoQuery: "Kyushu Shinkansen 800 train"

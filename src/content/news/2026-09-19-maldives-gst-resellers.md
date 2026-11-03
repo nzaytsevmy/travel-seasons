@@ -4,6 +4,7 @@ date: 2026-09-11
 added: 2026-09-19
 checked: "2026-10-15"
 effectiveDate: 2026-10-01
+reviewOn: "2026-10-22"
 status: "действует"
 topic: visa
 impact: high
