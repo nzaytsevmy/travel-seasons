@@ -4,12 +4,12 @@
   "reviewer": "Codex (nizwa-independent-review-20261103)",
   "reviewerTask": "/root/due_news_review",
   "authoredBy": "Codex (tt-author-20261103)",
-  "reviewedAt": "2026-11-03T10:58:29Z",
+  "reviewedAt": "2026-11-03T11:58:17Z",
   "baseCommit": "c99cf77db31a13af911743d70f87b0db5c996b42",
-  "proseHash": "cb51b3ddf660fd55",
+  "proseHash": "83be699687e2f0c5",
   "proseHashMethod": "Exact scripts/article-review-gate.mjs algorithm: raw YAML title and description + JSON.stringify(parsed lead) + full body; whitespace collapsed; SHA256 first16 hex. Calculated in tool memory using the read native algorithm; final native gate alignment pending.",
-  "sourceSha256": "5e89d77f226d1f81140a71043ebc2fe0c40b96ec34a363f195fed92eb7c49072",
-  "sourceSha256Scope": "SHA256 all exact UTF-8 final Markdown/MDX bytes including matching reviewer qualityScore frontmatter and trailing newline.",
+  "sourceSha256": "05d1b75c1dc4ffc700da9796bf939cabf13057c1bbdab7d40801d00c997c68fd",
+  "sourceSha256Scope": "SHA256 all exact UTF-8 final MDX bytes, including fifth image/caption and matching qualityScore frontmatter.",
   "approved": true,
   "editorialVerdict": "PASS_WITH_DOCUMENTED_LIMITS",
   "approvalScope": "EXACT_ARTICLE_TEXT_AND_CONTEXTUAL_CTA_SOURCE_REVIEW_ONLY",
@@ -29,7 +29,7 @@
     "experience": "Personal travel experience of this article's author, per CLAUDE.md E-E-A-T. Zero means no confirmed visit or field measurement; it does not rate reader UX or arithmetic.",
     "overall": "Holistic editorial ceiling, not an arithmetic mean or release approval."
   },
-  "rationale": "Точный дополненный финал проверен адресно: публичный блок двух чужих текстов теперь имеет источники, периоды/неизвестное и явную непредставительность. Форумный эпизод о центре и рынке не присвоен как собственная поездка или второе посещение внутри форта; найденный обязательный пробел устранён. FAQ согласован с первичкой и не обещает повторного входа. Прежние факты, расчёты, изображения и source-карта CTA переиспользованы без затронутых изменений. Редакторский допуск относится только к указанному proseHash; личный experience0, общий потолок8/10, выпускные проверки pending.",
+  "rationale": "Адресно проверено пятое изображение после CI-находки: реальный архивный вход в форт, корректные подпись/alt/лицензия, видимых существенных дефектов оптимизации нет. Удаление только нового Markdown-изображения и подписи восстанавливает предыдущий побайтно проверенный исходник, поэтому прежние факты/visitor-блок/FAQ/CTA не исследовались повторно. По точному source-правилу теперь четыре изображения в теле при восьми H2, плюс обложка; полный повторный CI и рендер остаются pending. Личный experience0 и общий редакционный потолок8/10 сохранены.",
   "criteria14": [
     {
       "id": 1,
@@ -101,19 +101,19 @@
       "id": 12,
       "criterion": "Ссылки и навигация",
       "score": 5,
-      "evidence": "Карта CTA проверена по всем восьми H2: два перехода к одному продукту, ранний примерно на13.4% оценочного видимого текста; финальная .prose ещё не измерена. Реестр двух обязательных коммерческих H2 сохранён, причина отдельно исключает visitor/FAQ из выбора новых платных услуг. Три внутренние цели в обновлённом раннем preflight имеют200; общий Оман не переаттестован. Редиректы/трекинг в браузере pending."
+      "evidence": "Карта CTA проверена по всем восьми H2: два перехода к одному продукту, ранний примерно на13.3% оценочного видимого текста; финальная .prose ещё не измерена. Реестр двух обязательных коммерческих H2 сохранён, причина отдельно исключает visitor/FAQ из выбора новых платных услуг. Три внутренние цели в обновлённом раннем preflight имеют200; общий Оман не переаттестован. Редиректы/трекинг в браузере pending."
     },
     {
       "id": 13,
       "criterion": "Оформление и доступность",
       "score": 5,
-      "evidence": "Лично просмотрены четыре точных финальных JPEG; SHA256 совпали, все 1600 px по ширине, сюжет/архивные подписи соответствуют. Источники авторства/лицензий прочитаны; CC BY-SA 2.0 панорамы разобрана отдельно от EXIF 4.0. Ранний cover-файл и буквальные ссылки проверены по сохранённым отчётам; рендер 402/1280 и /legal/photos/ ещё не проверены."
+      "evidence": "Пятый финальный JPEG входа лично просмотрен:1600×1200/195582bytes, exactSHA256 подтверждён; оригинальный SHA1 совпал с прочитанной Commons-карточкой. Все пять источников/подписи архивные и честные, первые четыре JPEG и их credits неизменны. Точное source-правило tests/content-invariants.spec.ts:1359 теперь даёт4body при8H2, cover отдельно. Рендер402/1280, публичная атрибуция и полный повторныйCI не приняты."
     },
     {
       "id": 14,
       "criterion": "Готовность выпуска",
       "score": 0,
-      "evidence": "Содержательный блокер visitor-report устранён и exact proseHash обновлён. Новая статья/данные и oman.astro всё равно требуют все26 обязательных CI-статусов. Header ratings должны совпасть с reviewer; CI, deploy identity, live402/1280, SSR, sitemap/feed и эффект не приняты этим ревью."
+      "evidence": "После реального CI RED добавлено изображение по неизменному порогу; подтверждена только source-коррекция и новый exactproseHash. Все26CI должны пройти повторно. Незавершённый/прерванный CI не PASS; deploy/live/SSR/sitemap/effect по-прежнему не приняты."
     }
   ],
   "verifiedTens": [
@@ -140,6 +140,11 @@
       "code": "MISSING_PUBLIC_VISITOR_REPORT_BLOCK",
       "status": "RESOLVED_IN_EXACT_NEW_PROSE",
       "proof": "Public H2 «Что пишут те, кто был?» is penultimate before FAQ; two actual sources with period/unknown-visit-date and explicit non-representative sample frame. Independent targeted source check found no material mismatch."
+    },
+    {
+      "code": "BODY_IMAGE_COUNT_BELOW_FOUR_WITH_EIGHT_H2",
+      "status": "FIXED_IN_SOURCE_CI_RETEST_PENDING",
+      "proof": "Native source counter independently reproduced:4body Markdown images,0components,8H2; cover is separate and not counted. New entrance alt/caption/license reviewed; tests and thresholds not weakened."
     }
   ],
   "sourceChecks": [
@@ -276,8 +281,8 @@
       "subId": "tt_nizwa_guide_early",
       "sourceVisibleWordEstimate": {
         "before": 167,
-        "total": 1242,
-        "fraction": 0.13446054750402575
+        "total": 1256,
+        "fraction": 0.13296178343949044
       },
       "method": "Approximate source-visible text excluding imports/HTML/image markup; actual built .prose measurement pending."
     },
@@ -307,7 +312,7 @@
   },
   "photoProof": {
     "creditsFile": "src/content/blog/_images/fort-nizva/_credits.json",
-    "creditsSha256": "e54affe2547b95fffe906cb8bec32d77e0ba67ded070d4939aaebc194aee1309",
+    "creditsSha256": "f83b73e7193bbada996880705efecef26549a995358898669c2ccc2f0d5c2339",
     "images": [
       {
         "key": "cover",
@@ -376,10 +381,47 @@
         "taken": "2019-01-04",
         "changes": "Уменьшение оригинала до1600пикселей по ширине и сжатиеJPEG; без изменения цвета и содержания. Адаптивные варианты и кадрирование создаёт сайт.",
         "assessment": "A goat beside pottery in a market gallery; not an auction. Caption/alt match."
+      },
+      {
+        "key": "entrance",
+        "file": "src/content/blog/_images/fort-nizva/entrance.jpg",
+        "imageSha256": "d19390571184085f7f84959e5bfd83bb5d03f081180ce3d958b4e3aa591303a2",
+        "imageBytes": 195582,
+        "originalSha256": "38952440997831255b11d0bb6e30573637700ae6f5ca26020030d7abbef0554e",
+        "originalSha1": "07816c1196b8d27fe4b825867d6a1edad7664145",
+        "originalSha1IndependentlyMatchedCommons": true,
+        "originalHashMatchedManifest": true,
+        "width": 1600,
+        "height": 1200,
+        "viewedByThisReviewer": true,
+        "viewedAt": "2026-11-03T11:58:17Z",
+        "source": "https://commons.wikimedia.org/wiki/File:Front_View_of_Nizwa_Fort_Entrance.jpg",
+        "creator": "Taha Al-Hayali",
+        "license": "CC BY-SA 4.0",
+        "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "taken": "2023-07-11",
+        "changes": "Уменьшение оригинала до 1600 пикселей по ширине и сжатие JPEG; без изменения цвета и содержания. Адаптивные варианты и кадрирование создаёт сайт.",
+        "assessment": "Personally viewed exact optimized JPEG: readable arched entry, wooden doors/sign and two cannons match alt/caption. Archived July2023 image; no current opening hours inferred from visible plaques.",
+        "sourceVerification": "Connected search_service web tool: exact Commons description/date/author/license and structured originalSHA1/bytes independently read; local original hashes independently matched.",
+        "proof": "work/nizwa-research/entrance-photo-proof.json"
       }
     ],
     "publicAttribution": "PENDING_BUILT_LEGAL_PHOTOS_AND_LIVE",
-    "coverEarlyCheck": "Saved early960px cover artifact35416bytes/34.59KiB, not a full responsive page check."
+    "coverEarlyCheck": "Saved early960px cover artifact35416bytes/34.59KiB, not a full responsive page check.",
+    "imageCounts": {
+      "H2": 8,
+      "bodyMarkdown": 4,
+      "bodyComponents": 0,
+      "bodyTotal": 4,
+      "cover": 1,
+      "totalPhysicalPhotographs": 5,
+      "coverCountedTowardBodyThreshold": false,
+      "bodyMinimumAtEightH2": 4,
+      "allBodyAltAtLeast15Characters": true,
+      "sourceCountConditionSatisfied": true,
+      "nativeCIRerunVerified": false
+    },
+    "previousFourImagesAndCreditsUnchanged": true
   },
   "internalLinks": {
     "literalTargets": [
@@ -399,12 +441,20 @@
     "Only this review artifact was authored by this reviewer; public article prose and site code not edited."
   ],
   "previousReview": {
-    "sha256": "7f9e5ef290f1ffaa8b4361c569575e0d9158f6ae128411450eb434746a1c4e23",
-    "reviewedAt": "2026-11-03T10:53:56Z",
-    "proseHash": "9d7948a9747376af",
-    "sourceSha256": "24e3d32b72210a71b4ea1ef9379008e83234d8222c7068e3fd7c56604c4a9685",
-    "approved": false,
-    "editorialVerdict": "HOLD_REQUIRED_PUBLIC_VISITOR_REPORT_BLOCK"
+    "sha256": "93aa7bed248010b485e73bbb7a0b3f76ef153438434a0b7699fdff28f04ae951",
+    "reviewedAt": "2026-11-03T10:58:29Z",
+    "proseHash": "cb51b3ddf660fd55",
+    "sourceSha256": "5e89d77f226d1f81140a71043ebc2fe0c40b96ec34a363f195fed92eb7c49072",
+    "approved": true,
+    "editorialVerdict": "PASS_WITH_DOCUMENTED_LIMITS",
+    "previousReview": {
+      "sha256": "7f9e5ef290f1ffaa8b4361c569575e0d9158f6ae128411450eb434746a1c4e23",
+      "reviewedAt": "2026-11-03T10:53:56Z",
+      "proseHash": "9d7948a9747376af",
+      "sourceSha256": "24e3d32b72210a71b4ea1ef9379008e83234d8222c7068e3fd7c56604c4a9685",
+      "approved": false,
+      "editorialVerdict": "HOLD_REQUIRED_PUBLIC_VISITOR_REPORT_BLOCK"
+    }
   },
   "visitorReportReview": {
     "verdict": "PASS_EXACT_ADDITION",
@@ -418,22 +468,39 @@
   },
   "sourceHashBeforeRatingInsertion": "b317a1f0c81718784437f2e9a3407f6b4335a0235ce5fadb21ea0ba5e0d37b1c",
   "metadataAlignment": {
-    "checkedAt": "2026-11-03T11:02:12Z",
+    "checkedAt": "2026-11-03T11:58:17Z",
     "status": "PASS_SOURCE_METADATA_ALIGNMENT",
-    "proseHash": "cb51b3ddf660fd55",
+    "proseHash": "83be699687e2f0c5",
     "qualityScoreAllSevenAxesMatch": true,
     "ceilingMatches": true,
-    "onlyChangeSinceFinalProseReview": "Insertion of exact matching qualityScore block; removing it gives identical previous raw bytes.",
-    "previousReviewSha256": "dda2e773fbdf7fc708bf07d8121d7997f27ec8eeabe69900ec90d7d82a88e7a2",
-    "nativeContract": "scripts/article-review-gate.mjs readPostMeta/proseHash contract independently reproduced in tool memory; no local native CLI/CI execution claimed.",
-    "whitespaceOnlyUpdate": {
+    "onlyChangeSincePreviousSourceReview": "Removing exactly entrance Markdown image plus its caption restores previously verified rawSHA5e89d77f226d1f81140a71043ebc2fe0c40b96ec34a363f195fed92eb7c49072; all other source bytes unchanged.",
+    "previousReviewSha256": "93aa7bed248010b485e73bbb7a0b3f76ef153438434a0b7699fdff28f04ae951",
+    "priorAlignment": {
       "checkedAt": "2026-11-03T11:02:12Z",
-      "previousSourceSha256": "b679ca28815f9f4b02d1b49e15f03f3bf3f964e5c42cad6777d5bb6635f85aa4",
-      "sourceSha256": "5e89d77f226d1f81140a71043ebc2fe0c40b96ec34a363f195fed92eb7c49072",
-      "previousReviewSha256": "18e3d27346abe1393f5d504978cd35c674a5fbce8ab305989c92bed37ee206dc",
-      "proof": "Adding back exactly one ASCII space after «эти расходы не входят.» reconstructs the previously verified source SHA256. No other byte changed.",
-      "proseHashUnchanged": true,
-      "sourcesRechecked": false
-    }
+      "status": "PASS_SOURCE_METADATA_ALIGNMENT",
+      "proseHash": "cb51b3ddf660fd55",
+      "qualityScoreAllSevenAxesMatch": true,
+      "ceilingMatches": true,
+      "onlyChangeSinceFinalProseReview": "Insertion of exact matching qualityScore block; removing it gives identical previous raw bytes.",
+      "previousReviewSha256": "dda2e773fbdf7fc708bf07d8121d7997f27ec8eeabe69900ec90d7d82a88e7a2",
+      "nativeContract": "scripts/article-review-gate.mjs readPostMeta/proseHash contract independently reproduced in tool memory; no local native CLI/CI execution claimed.",
+      "whitespaceOnlyUpdate": {
+        "checkedAt": "2026-11-03T11:02:12Z",
+        "previousSourceSha256": "b679ca28815f9f4b02d1b49e15f03f3bf3f964e5c42cad6777d5bb6635f85aa4",
+        "sourceSha256": "5e89d77f226d1f81140a71043ebc2fe0c40b96ec34a363f195fed92eb7c49072",
+        "previousReviewSha256": "18e3d27346abe1393f5d504978cd35c674a5fbce8ab305989c92bed37ee206dc",
+        "proof": "Adding back exactly one ASCII space after «эти расходы не входят.» reconstructs the previously verified source SHA256. No other byte changed.",
+        "proseHashUnchanged": true,
+        "sourcesRechecked": false
+      }
+    },
+    "nativeContract": "Exact readPostMeta/proseHash and source image-count conditions reproduced in tool memory; no native CLI/CI pass claimed."
+  },
+  "targetedPhotoReReview": {
+    "reviewedAt": "2026-11-03T11:58:17Z",
+    "scope": "Only entrance photo/caption/provenance, exact source diff and hashes; prior content/facts reused.",
+    "approvedEditorialPhoto": true,
+    "nativeCIRerunPassClaimed": false,
+    "allPriorQualityRatingsPreserved": true
   }
 }
