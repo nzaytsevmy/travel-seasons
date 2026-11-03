@@ -36,7 +36,7 @@ import canyon from '../content/blog/_images/oman-v2/canyon.jpg';
 import nizwa from '../content/blog/_images/oman-v2/nizwa.jpg';
 import wahiba from '../content/blog/_images/oman-v2/wahiba.jpg';
 import mosque from '../content/blog/_images/oman-v2/mosque.jpg';
-import author from '../assets/author/nikita.jpg';
+import author from '../assets/author/nikita.webp';
 
 const url = 'https://traveltribe.ru/oman/';
 // Главный кадр — LCP страницы. Lighthouse 09.09.2026 (телефон, живой сайт): LCP 3,0 с при
@@ -191,7 +191,7 @@ const ldJson = {
         <a class="om-btn" href={билеты} rel="sponsored nofollow noopener" target="_blank">Билеты Москва — Маскат от ${flightFrom}</a>
       </div>
       <div class="om-byline">
-        <Image src={author} alt="Никита Зайцев" width={52} height={64} format="webp" quality={80} />
+        <Image src={author} fit="cover" alt="Никита Зайцев" width={52} height={64} format="webp" quality={80} />
         <p><a href="/about/">Никита Зайцев</a>, автор traveltribe.ru{visited ? '. Был в Омане сам' : ''}.</p>
       </div>
     </header>
@@ -323,7 +323,7 @@ const ldJson = {
 
 
     <div class="om-foot">
-      <Image src={author} alt="Никита Зайцев" width={60} height={74} format="webp" quality={80} />
+      <Image src={author} fit="cover" alt="Никита Зайцев" width={60} height={74} format="webp" quality={80} />
       <div>
         <p><a href="/about/">Никита Зайцев</a>, автор traveltribe.ru · <a href="https://t.me/traveltriberu" rel="noopener" target="_blank">@traveltriberu</a></p>
         <p class="om-dim">{visited ? 'Был в Омане сам.' : ''}</p>

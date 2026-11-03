@@ -54,7 +54,10 @@ jobs:
     # Native run 39759289195 reached 30 minutes after 451 successful cases,
     # with the last hotel collections still pending. Keep the complete suite
     # and its per-test limits; allow build plus the full seven-width audit.
-    timeout-minutes: 40
+    # Run 41699564881 spent 22 minutes preparing the build and reached only
+    # case 563/1168 at the 40-minute job deadline. Allow the complete current
+    # suite to finish without changing its cases, workers or per-test limits.
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
         with:

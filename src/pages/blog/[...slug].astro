@@ -9,7 +9,7 @@ import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Footer from '../../components/Footer.astro';
 import TableOfContents from '../../components/post/TableOfContents.astro';
-import authorPhoto from '../../assets/author/nikita.jpg';
+import authorPhoto from '../../assets/author/nikita.webp';
 import { blogGeography } from '../../data/editorial-geography.js';
 import { classifyPage, EXPENSIVE_DESTINATIONS } from '../../data/monetization.js';
 import { TP_LINKS, aviasalesRoute, youtravelCountry, cherehapaCountry, cherehapaTravel, ostrovokCountry, otelloStay } from '../../data/affiliate.js';
@@ -292,7 +292,7 @@ if (faqs.length >= 2) {
       <h1>{splitCompounds(post.data.title).map((p) => (p.nobr ? <span class="nobr">{p.t}</span> : p.t))}</h1>
       <p class="post-author">
         <a href="/about/" class="author-link">
-          <Image src={authorPhoto} alt="Никита Зайцев" width={28} height={28} format="webp" quality={75} class="author-mini" />
+          <Image src={authorPhoto} fit="cover" alt="Никита Зайцев" width={28} height={28} format="webp" quality={75} class="author-mini" />
           <span>Никита Зайцев</span>
         </a>
         · <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>
@@ -408,7 +408,7 @@ if (faqs.length >= 2) {
       </nav>
 
       <aside class="author-bio" aria-label="Об авторе">
-        <Image src={authorPhoto} alt="Никита Зайцев — автор TravelTribe" width={96} height={96} format="webp" quality={80} class="bio-avatar-img" />
+        <Image src={authorPhoto} fit="cover" alt="Никита Зайцев — автор TravelTribe" width={96} height={96} format="webp" quality={80} class="bio-avatar-img" />
         <div class="bio-text">
           <strong>Никита Зайцев</strong> — был на всех 7 континентах, включая Антарктиду, посетил 60+ стран. В блоге — реальные цены 2026, личный опыт поездок и без воды. Рассказываю про путешествия в <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram-канале @traveltriberu</a>. <a href="/about/">Подробнее об авторе</a>
         </div>

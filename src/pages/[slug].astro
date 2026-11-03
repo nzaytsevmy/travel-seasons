@@ -57,7 +57,7 @@ import { hasPois, getPois } from '../data/country-pois.js';
 import { typo } from '../utils/typo.js';
 import { climateChart } from '../data/country-climate-chart.js';
 import { PLUG_TYPES, plugVerdict } from '../data/country-plug-types.js';
-import author from '../assets/author/nikita.jpg';
+import author from '../assets/author/nikita.webp';
 // «О» или «об»: «об» перед словом с гласной а, и, о, у, э в начале («об Алтае», «об июне»), иначе «о».
 const об = (w) => (/^[аиоуэ]/i.test(String(w || '')) ? 'об' : 'о');
 
@@ -459,7 +459,7 @@ if (guide?.itinerary?.length) {
         )}
       </div>
       <div class="om-byline">
-        <Image src={author} alt="Никита Зайцев" width={52} height={64} format="webp" quality={80} />
+        <Image src={author} fit="cover" alt="Никита Зайцев" width={52} height={64} format="webp" quality={80} />
         <p><a href="/about/">Никита Зайцев</a>, автор traveltribe.ru{visited ? '. Был здесь сам' : ''}.</p>
       </div>
     </header>
@@ -821,7 +821,7 @@ if (guide?.itinerary?.length) {
     </section>
 
     <div class="om-foot">
-      <Image src={author} alt="Никита Зайцев" width={60} height={74} format="webp" quality={80} />
+      <Image src={author} fit="cover" alt="Никита Зайцев" width={60} height={74} format="webp" quality={80} />
       <div>
         <p><a href="/about/">Никита Зайцев</a>, автор traveltribe.ru · <a href="https://t.me/traveltriberu" rel="noopener" target="_blank">@traveltriberu</a></p>
         {visited && <p class="om-dim">{`Был ${d.cases.loc} сам.`}</p>}
