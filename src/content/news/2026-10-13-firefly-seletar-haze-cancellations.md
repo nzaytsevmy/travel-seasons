@@ -3,7 +3,7 @@ title: "Firefly: восстановление рейсов в Селетар н�
 date: "2026-10-13"
 added: "2026-10-13"
 checked: "2026-10-22"
-reviewOn: "2026-10-23"
+reviewOn: "2026-11-06"
 topic: transport
 impact: high
 score: 4

@@ -3,7 +3,7 @@ title: "Гавайи: парк вулканов частично открыт п
 date: "2026-09-27"
 added: "2026-09-29"
 checked: "2026-11-01"
-reviewOn: "2026-11-03"
+reviewOn: "2026-11-06"
 topic: "transport"
 impact: "medium"
 score: 4

@@ -10,7 +10,7 @@ authoredBy: "Codex (tt-author-20261029)"
 reviewRef: "news/reviews/2026-10-10-bangkok-royal-barges-november-20261022.json"
 photoQuery: "Wat Arun Chao Phraya Bangkok"
 tldr: "В Бангкоке королевская процессия из 52 барж назначена на 6 ноября 2026 года. Она пройдёт по Чаупхрае от причала Васукри к Ват-Аруну. Последнюю генеральную репетицию объявляли на 28 октября; дата прошла, фактическое проведение здесь не подтверждено. Регистрация на официальные зрительские места закончилась в сентябре."
-reviewOn: "2026-11-01"
+reviewOn: "2026-11-06"
 countries: [thailand]
 sources:
   - name: "Tourism Authority of Thailand — Gilded barges on the River of Kings, 07.10.2026"

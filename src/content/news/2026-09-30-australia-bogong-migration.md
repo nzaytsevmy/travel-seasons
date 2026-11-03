@@ -3,7 +3,6 @@ title: "В Австралии началась весенняя миграция
 date: "2026-09-30"
 added: "2026-09-30"
 checked: "2026-09-30"
-reviewOn: "2026-10-21"
 topic: "nature"
 impact: "medium"
 score: 3

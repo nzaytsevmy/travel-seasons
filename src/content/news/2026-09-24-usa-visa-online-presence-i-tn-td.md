@@ -3,7 +3,6 @@ title: "США расширили проверку соцсетей для ви�
 date: "2026-09-18"
 added: "2026-09-24"
 checked: "2026-10-09"
-reviewOn: "2026-11-01"
 topic: "visa"
 impact: "high"
 score: 4

@@ -1,187 +1,257 @@
 {
   "schemaVersion": 2,
   "slug": "2026-10-06-yosemite-dome-fire-access",
+  "reviewer": "Codex (due_news_review_20261103)",
+  "reviewerTask": "/root/due_news_review",
+  "authoredBy": "Codex (tt-author-20261103)",
+  "reviewedAt": "2026-11-03T09:38:43Z",
+  "checkedAt": "2026-11-03",
   "score": 4,
-  "reviewer": "Codex (facts_review_20261030)",
-  "reviewerTask": "/root/facts_review_20261030",
-  "authoredBy": "Codex (tt-author-20261030)",
-  "reviewedAt": "2026-10-30T09:23:13.326Z",
-  "checkedAt": "2026-10-30",
+  "archived": false,
   "approved": true,
-  "approvalScope": "EDITORIAL_CONTENT_ONLY",
-  "editorialVerdict": "ACCEPT_WITH_DECLARED_LIMITS_AND_RELEASE_GATES_PENDING",
+  "approvalScope": "EDITORIAL_CONTENT_ONLY_TARGETED_UPDATE",
+  "editorialVerdict": "PASS_WITH_DOCUMENTED_LIMITS",
+  "textVerdict": "PASS_EXACT_CONTENT_HASH",
   "releaseApproved": false,
   "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
-  "classification": "UPDATE",
-  "baseCommit": "620ba356dc8fabf6935448c6cb5d31d32f68b9da",
+  "classification": "UPDATE_EXISTING_PUBLISHED",
+  "baseCommit": "c99cf77db31a13af911743d70f87b0db5c996b42",
   "previousReview": {
-    "artifact": "news/reviews/2026-10-06-yosemite-dome-fire-access.json",
-    "sha256": "61fa186b12cf3db522ba57b60dacf4085a90ad5bb3c56520433325a664aa7fb4",
-    "scope": "Прежняя рецензия заменена после независимого чтения финальной версии; прежние проверки неизменных фото сохраняются как прошлое доказательство."
+    "sha256": "1a07a301151cfa647f3127a60c6483e7ce38c468d3de04cb03698afbbb758dad",
+    "reviewedAt": "2026-11-03T08:37:54Z",
+    "reviewer": "Codex (due_news_review_20261103)",
+    "baseCommit": "c99cf77db31a13af911743d70f87b0db5c996b42",
+    "sourceSha256": "169e55eed280896012c9d895b70955a8dbcbac883c6dd9b34fdf11bed7a02d1c",
+    "contentHash": "f9f04647896bd6dbc1c3a8a661290a10f084d1b0845c1c3fb4404db1846557e6",
+    "previousReview": {
+      "sha256": "66de8c05d0a868ea0746c310ac756781be7be10ac7cfb786f3e5a2dd56bddcf2",
+      "reviewedAt": "2026-10-30T09:23:13.326Z",
+      "reviewer": "Codex (facts_review_20261030)",
+      "baseCommit": "620ba356dc8fabf6935448c6cb5d31d32f68b9da",
+      "sourceSha256": "6fc1fe58643058ed8498b377ce6bfdd8f2a0a19929e7152a08de4e63a27d17fb",
+      "contentHash": "2c048407ea1e432f9a67d1a3fc29bc3f2e01df3f10096b8d360590bfbc4e2df2",
+      "legacySha256": null,
+      "legacySha256Scope": null
+    }
   },
-  "rationale": "4/5: новый снег меняет доступ к двум важным дорогам. Противоречие внутри таблицы NPS раскрыто; не сделано недоказанного вывода о текущем открытии, сезонном закрытии или завершении пожара. Адресная форматная правка телефона повторно принята: +1 (209) 372-0200 сохраняет номер NPS и меню 1,1; изменены только скобки кода города. Обратная замена полностью воспроизводит хеш ранее принятого файла.",
-  "readerTask": "Не поехать по старой новости об открытой Glacier Point Road во время нового предупреждения.",
-  "ownAddition": "Разведены объявленное временное закрытие, ошибочно сохранившаяся колонка Open, ночная парковка, кемпинг и состояние пожара.",
-  "factReview": "Самостоятельно прочитана NPS conditions, обновление 29 октября: временное закрытие Tioga и Glacier Point с 18:00 29 октября из-за прогноза снега; у Glacier Point остаётся Open; Lower Pines и North Pines закрыты; телефон с последовательностью 1,1 указан на странице.",
+"rationale": "Узкий повторный просмотр после оптимизации JPEG: финальная картинка лично просмотрена, существенных дефектов различимости или вводящего в заблуждение кадрирования не найдено. imageChanges точно описывает уменьшение и сжатие. title/tldr/body имеют неизменный contentHash; прежнее фактическое решение переиспользовано от 2026-11-03T08:37:54Z. Сюжет остаётся архивной иллюстрацией 2008 года, а не съёмкой нынешнего закрытия дорог. Размер и хеш финальной копии проверены; CI/deploy/live не приняты как пройденные.",
+  "readerTask": "Не строить маршрут через временно закрытые снежные дороги Йосемити.",
+  "factReview": "Фактическая проверка NPS из предыдущей независимой рецензии 2026-11-03T08:37:54Z переиспользована: title/tldr/body не менялись (совпадение contentHash). В текущем узком проходе заново проверены только JPEG и metadata imageChanges; нового чтения NPS не заявлено.",
+  "limitations": [
+    "Телефонная сводка и режим каждого шлагбаума не проверены; NPS сама указывает телефон как наиболее свежий канал. Отображение атрибуции на сайте ожидает сборки/live.",
+    "Все ограничения исследования и источников сохранены в .run/due-news-independent-review-20261103.json; это не полная текущая первичная проверка всех 64.",
+    "Содержание источника при просмотре не доказывает дату введения режима; планы не считаются выполнением.",
+    "Текущий повторный проход узкий: оптимизация JPEG и описание изменения; CI rerun, responsive render и live не пройдены рецензентом."
+  ],
   "sourceChecks": [
     {
-      "name": "NPS — сезонный запрет ночной парковки от Badger Pass до Glacier Point",
       "url": "https://www.nps.gov/yose/planyourvisit/restrictions.htm",
-      "method": "Independent reading of relevant saved source text and/or live web in this reviewer task",
-      "status": "READ_WITH_DECLARED_LIMITS",
-      "scope": "Основные развивающиеся факты сверены; исторические неизменные источники не засчитываются как новый текущий доступ. См. factReview."
+      "publisher": "NPS — сезонный запрет ночной парковки от Badger Pass до Glacier Point",
+      "sourceId": null,
+      "sourceDate": null,
+      "checkedOn": "2026-11-03",
+      "status": "HISTORICAL_EVIDENCE_ONLY",
+      "method": "retained prior review evidence; not promoted to fresh verification",
+      "supports": null,
+      "priorStatus": "READ_WITH_DECLARED_LIMITS"
     },
     {
-      "name": "NPS — дорожная сводка29.10, снежное закрытие29.10в18:00; прочитана30.10.2026",
       "url": "https://www.nps.gov/yose/planyourvisit/conditions.htm",
-      "method": "Independent reading of relevant saved source text and/or live web in this reviewer task",
-      "status": "READ_WITH_DECLARED_LIMITS",
-      "scope": "Основные развивающиеся факты сверены; исторические неизменные источники не засчитываются как новый текущий доступ. См. factReview."
+      "publisher": "NPS",
+      "sourceId": "yosemite",
+      "sourceDate": "дата свежей таблицы не извлечена",
+      "checkedOn": "2026-11-03",
+      "status": "READ_DURING_EXACT_FINAL_REVIEW",
+      "method": "web read in exact final review",
+      "supports": "И Tioga, и Glacier Point теперь Closed; прежней противоречивой Open нет. Lower/North Pines закрыты.",
+      "priorStatus": "READ_WITH_DECLARED_LIMITS"
     },
     {
-      "name": "NPS — утренняя сводка Dome Fire 06.10.2026; проверено 09.10.2026",
       "url": "https://www.nps.gov/yose/learn/news/dome-fire-update-october-6-2026-morning.htm",
-      "method": "Independent reading of relevant saved source text and/or live web in this reviewer task",
-      "status": "READ_WITH_DECLARED_LIMITS",
-      "scope": "Основные развивающиеся факты сверены; исторические неизменные источники не засчитываются как новый текущий доступ. См. factReview."
+      "publisher": "NPS — утренняя сводка Dome Fire 06.10.2026; проверено 09.10.2026",
+      "sourceId": null,
+      "sourceDate": null,
+      "checkedOn": "2026-11-03",
+      "status": "HISTORICAL_EVIDENCE_ONLY",
+      "method": "retained prior review evidence; not promoted to fresh verification",
+      "supports": null,
+      "priorStatus": "READ_WITH_DECLARED_LIMITS"
     }
   ],
-  "contentHash": "2c048407ea1e432f9a67d1a3fc29bc3f2e01df3f10096b8d360590bfbc4e2df2",
-  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) from native parseNote",
-  "sourceSha256": "6fc1fe58643058ed8498b377ce6bfdd8f2a0a19929e7152a08de4e63a27d17fb",
-  "sourceSha256Scope": "Полный markdown точной финальной версии, включая метаданные",
-  "nativeClipTitle": "Йосемити объявил снежное закрытие двух дорог",
+  "independentProofRef": ".run/due-news-independent-review-20261103.json",
+  "additionalSourceReviewRef": null,
+  "contentHash": "f9f04647896bd6dbc1c3a8a661290a10f084d1b0845c1c3fb4404db1846557e6",
+  "contentHashScope": "SHA256 UTF-8 JSON.stringify({title:parseNote.data.title,tldr:parseNote.data.tldr,body:parseNote.body.trim()})",
+  "sourceSha256": "db512d54490f9631e37cb11ea8a4a7411efa19a3c1c58322839dc200d4203c87",
+  "sourceSha256Scope": "SHA256 всех UTF-8 байтов финального Markdown, включая frontmatter и завершающий перевод строки",
   "actualClipTitle": "Йосемити объявил снежное закрытие двух дорог",
-  "clipTitleCodeSha256": "5ed6e7f7f14da11ff29d5fd9d3ae13bd8fa9b073b4f01a73a88bf00effde2ebd",
   "tldrCheck": {
-    "ok": true
+    "ok": true,
+    "wordCount": 51,
+    "method": "Штатный checkTldr: trim().split(/\\s+/).filter(Boolean).length; выполнено на точной капсуле в памяти инструмента без запуска локальной агрегации."
   },
-  "photo": {
+  "photoProof": {
     "image": "./_images/2026-10-06-yosemite-dome-fire-access.jpg",
-    "imageSha256": "b60cc67e738e52680b919c4fa63cc82bce32f49ee2927d99b62a908cf3173123",
-    "creator": "Yosemite National Park / National Park Service",
-    "license": "Public domain",
-    "licenseURL": null,
-    "source": "https://commons.wikimedia.org/w/index.php?curid=62482418",
-    "title": "Glacier Point Road в Йосемити во время другого пожара, Empire Fire 2017 года",
-    "alt": "Дорога Glacier Point Road и дым пожара Empire Fire в 2017 году; не пожар октября 2026 года",
-    "changes": null,
-    "viewedByThisReviewer": false,
-    "visualReview": "Неизменное изображение не пересматривалось; прежнее доказательство не выдано за новое.",
-    "provenanceMethod": "Preserved existing provenance; no new photograph.",
-    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+    "imageSha256": "9f362ff44697a20052fcb62061d3e1e141f36d65502289983f8321d1fb176427",
+    "previousImageSha256": "26a0a65786cb03edd7059420b4be731e99118b59ba7b8bb540c6603b5d47b689",
+    "baseImageSha256": null,
+    "creator": "Brocken Inaglory / Wikimedia Commons",
+    "license": "CC BY-SA 4.0",
+    "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Winter_in_yosemite_3.jpg",
+    "title": "Заснеженная долина Йосемити, архивный снимок 2008 года",
+    "alt": "Снег на деревьях, скалы и автомобили в долине Йосемити; архивный снимок 2008 года, не закрытые дороги Tioga и Glacier Point в ноябре 2026 года",
+    "changes": "Уменьшение исходного JPEG до 1600 пикселей по ширине и сжатие; без изменения цвета и содержания. Адаптивное кадрирование при показе на сайте.",
+    "viewedByThisReviewer": true,
+    "priorImageHashMatched": false,
+    "baseImageUnchanged": false,
+    "provenanceMethod": "Лично просмотрен новый финальный JPEG 1600×1067: деревья, снег, скала, автомобили и указатель сохранены, изображение различимо, явных блоков сжатия/полос или изменения сюжета не видно. Это уменьшенная и сжатая копия ранее проверенного Commons оригинала. Новый JPEG не обязан совпадать с SHA-1 оригинала. Авторство/лицензия/архивный 2008 год переиспользованы из предыдущей независимой проверки оригинала; заново Commons не читался.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
+    "priorProvenance": null,
+    "imageBytes": 447706,
+    "dimensions": {
+      "width": 1600,
+      "height": 1067
+    },
+    "viewedAt": "2026-11-03T09:38:43Z",
+    "originalProof": {
+      "imageSha256": "26a0a65786cb03edd7059420b4be731e99118b59ba7b8bb540c6603b5d47b689",
+      "dimensions": {
+        "width": 2400,
+        "height": 1600
+      },
+      "bytes": 3506726,
+      "commonsSha1": "8f9183ee39a07a50d6150e92edb06974fa71c0d6",
+      "recoveryCommit": "7204354643ac53cc74423f72a5e9686d306ae278",
+      "recoveryPath": "src/content/news/_images/2026-10-06-yosemite-dome-fire-access.jpg",
+      "gitOriginalSha256IndependentlyMatched": true
+    },
+    "optimizationProof": ".run/yosemite-image-optimization-20261103.json",
+    "transform": "Native news-photo transform: auto orientation, width 1600 preserving 3:2, JPEG quality82 mozjpeg; no crop or colour change"
   },
   "criteria14": [
     {
       "id": 1,
       "criterion": "Задача читателя",
       "score": 10,
-      "evidence": "Не поехать по старой новости об открытой Glacier Point Road во время нового предупреждения."
+      "evidence": "Не строить маршрут через временно закрытые снежные дороги Йосемити. Полностью прочитаны точные title, tldr и body этой версии."
     },
     {
       "id": 2,
       "criterion": "Обоснование темы",
-      "score": 10,
-      "evidence": "Тема соответствует новостной рубрике; состоявшийся факт или существенная новая дельта. Прогноз поиска и дохода не присвоен."
+      "score": 5,
+      "evidence": "Адресная фактическая корректировка уже опубликованной заметки. NEW-исследование спроса, пять сайтов Google и трафик не заявлены; оценка повода дана по NEWS-RUBRIC."
     },
     {
       "id": 3,
       "criterion": "Место в проекте",
       "score": 5,
-      "evidence": "Релевантные внутренние переходы прочитаны; полная входящая структура и canonical финальной сборки ожидают проверки."
+      "evidence": "Сохранены существующий URL, date и added относительно base. Проверены все 64 просроченных заметки в отдельном отчёте; новый полный SEO-аудит кластера не выполнен."
     },
     {
       "id": 4,
       "criterion": "Полнота и прямой ответ",
       "score": 10,
-      "evidence": "Разведены объявленное временное закрытие, ошибочно сохранившаяся колонка Open, ночная парковка, кемпинг и состояние пожара. Прямой ответ и необходимые границы даны в капсуле и начале тела."
+      "evidence": "Капсула даёт событие и практическую границу: 51 слов, штатный диапазон 40–60. Первый абзац не обещает непроверенного открытия или завершения."
     },
     {
       "id": 5,
       "criterion": "Собственный вклад",
       "score": 5,
-      "evidence": "Разведены объявленное временное закрытие, ошибочно сохранившаяся колонка Open, ночная парковка, кемпинг и состояние пожара. Собственного полевого исследования или измерения нет."
+      "evidence": "Редакторский вклад — исправление временного смысла и границ применимости. Полевое исследование, новые измерения или собственный опыт не заявлены."
     },
     {
       "id": 6,
       "criterion": "Факты и источники",
       "score": 10,
-      "evidence": "Самостоятельно прочитана NPS conditions, обновление 29 октября: временное закрытие Tioga и Glacier Point с 18:00 29 октября из-за прогноза снега; у Glacier Point остаётся Open; Lower Pines и North Pines закрыты; телефон с последовательностью 1,1 указан на странице."
+      "evidence": "Адресная фактическая проверка NPS сохранена из независимой версии 2026-11-03T08:37:54Z: contentHash title/tldr/body полностью совпал. Текущий проход не добавляет свежести NPS. Происхождение, масштабирование, вес и визуальная пригодность новой фото-копии проверены отдельно."
     },
     {
       "id": 7,
       "criterion": "Числа и примеры",
       "score": 10,
-      "evidence": "Самостоятельно прочитана NPS conditions, обновление 29 октября: временное закрытие Tioga и Glacier Point с 18:00 29 октября из-за прогноза снега; у Glacier Point остаётся Open; Lower Pines и North Pines закрыты; телефон с последовательностью 1,1 указан на странице. Цифры, единицы, модель/наблюдение и план/состоявшееся различены."
+      "evidence": "Числа и даты адресной поправки сверены с датированными источниками; прошедший срок не превращён в исполненный план. В капсуле: . Денежных расчётов или гарантированных сроков нет."
     },
     {
       "id": 8,
       "criterion": "Исключения и применимость",
       "score": 10,
-      "evidence": "Разведены объявленное временное закрытие, ошибочно сохранившаяся колонка Open, ночная парковка, кемпинг и состояние пожара. Существенные исключения и неизвестное обозначены явно."
+      "evidence": "Телефонная сводка и режим каждого шлагбаума не проверены; NPS сама указывает телефон как наиболее свежий канал. Отображение атрибуции на сайте ожидает сборки/live. Текст применяет эти границы, а не достраивает открытие по молчанию источника."
     },
     {
       "id": 9,
       "criterion": "Авторство и доверие",
       "score": 5,
-      "evidence": "Автор в данных Codex (tt-author-20261030); независимый reviewer текст не писал. Публичный byline и SSR ожидают выпуска."
+      "evidence": "Автор Codex (tt-author-20261103); независимый рецензент Codex (due_news_review_20261103), задачу авторства новой публичной прозы не выполнял. Публичный byline/JSON-LD не рендерились."
     },
     {
       "id": 10,
       "criterion": "Редактура и естественный язык",
       "score": 10,
-      "evidence": "Фактический и смысловой проходы завершены. Обычный русский; реальный читательский тест не проводился."
+      "evidence": "Финальная публичная проза полностью прочитана. Событие, дата и неизвестное связаны ясно; неподтверждённый личный опыт и гарантии не добавлены."
     },
     {
       "id": 11,
       "criterion": "SEO-обещание и метаданные",
       "score": 5,
-      "evidence": "Штатный clipTitle: «Йосемити объявил снежное закрытие двух дорог». Смысл завершён; OG/canonical/schema финальной сборки пока не проверены."
+      "evidence": "Заголовок 44 знаков, короче штатного предела 60: clipTitle возвращает его без обрезки. Title/tldr соответствуют узкому фактическому обещанию; OG/canonical/SSR не проверены."
     },
     {
       "id": 12,
       "criterion": "Ссылки и навигация",
       "score": 5,
-      "evidence": "Смысл внутренних ссылок проверен; ранний source-only PASS автора не заменяет итоговый HTTP и навигацию."
+      "evidence": "Внутренние ссылки и смысл анкоров прочитаны в контексте. Новый HTTP-проход всех ссылок и общий аудит кластера не выполнялись."
     },
     {
       "id": 13,
       "criterion": "Оформление и доступность",
       "score": 5,
-      "evidence": "Изображение не заменено; прежние сведения о происхождении и визуальной проверке не выданы за новое чтение. Уточнённая архивная/иллюстративная подпись честна. Рендер и публичная атрибуция ожидают выпуска."
+      "evidence": "Лично просмотрен оптимизированный JPEG; SHA256 9f362ff44697a20052fcb62061d3e1e141f36d65502289983f8321d1fb176427, 447706 bytes, 1600×1067 совпали. Содержание и цвет визуально согласуются с ранее просмотренным оригиналом, детали различимы, явных дефектов сжатия нет; imageChanges честно описывает уменьшение/сжатие. Git-оригинал 7204354 независимо сопоставлен с прежним SHA256. Рендер страницы 402/1280, публичная атрибуция и браузерная декодировка не проверены."
     },
     {
       "id": 14,
       "criterion": "Готовность выпуска",
       "score": 0,
-      "evidence": "Это редакционный допуск точной версии. Финальные обязательные CI/build/browser/deploy/live/учёт не выполнены этим reviewer; выпуск не разрешён этой рецензией."
+      "evidence": "Предыдущая CI-ошибка image.too_heavy сообщена владельцем выпуска. Размер локального финального файла проверен; результат обязательного повторного CI, exact deploy и live в этом ревью не проверен. Редакторский/фото-допуск не является CI или release PASS."
     }
   ],
-  "verifiedTens": 7,
+  "verifiedTens": [
+    1,
+    4,
+    6,
+    7,
+    8,
+    10
+  ],
   "minimumFiveVerifiedTens": true,
-  "resolvedFindings": [
-    "Адресный повтор после RED: дата и время переставлены в капсуле и первом предложении, чтобы исключить ложную склейку 0029. Обратная замена двух фрагментов точно воспроизводит SHA-256 ранее проверенной версии; смысл и остальные байты не изменены."
-  ],
   "blockingIssues": [],
-  "risks": [
-    "Редакционный допуск не подтверждает фактический выпуск, браузерный рендер, работу всех текущих маршрутов, человеческий тест, поисковый или денежный эффект."
-  ],
-  "readerTest": "NOT_PERFORMED",
-  "followupReview": {
-    "scope": "TWO_LITERAL_DATE_TIME_REORDERINGS_ONLY",
-    "previousContentHash": "a50fa0f87e90b65dffc2375c807e911d178ec88aaccbc542905b3c49075b8b1b",
-    "previousSourceSha256": "938ffd3ee9d4ad76e2e8c91f1df45c7e7c2f98077f888650d365e6216c4f4a35",
-    "newSourceSha256": "dfac3e291eb1d1edb5fccb77d1c977444ee2f0c246254dd1f7d48d17d3d23bc2",
-    "verdict": "PASS",
-    "scoreUnchanged": 4
+  "dateAddedPreserved": {
+    "date": "2026-10-05",
+    "added": "2026-10-06",
+    "verifiedAgainstBase": true
   },
-  "followupReviews": [
+  "nextReview": {
+    "value": "2026-11-06",
+    "action": "CHECK_TRIGGER_BEFORE_CLAIMING_NEW_STATUS",
+    "trigger": "Телефонная сводка и режим каждого шлагбаума не проверены; NPS сама указывает телефон как наиболее свежий канал. Отображение атрибуции на сайте ожидает сборки/live.",
+    "automaticallyApplied": false
+  },
+  "corroboratingSourceChecks": [
     {
-      "scope": "PHONE_PUNCTUATION_ONLY",
-      "previousSourceSha256": "dfac3e291eb1d1edb5fccb77d1c977444ee2f0c246254dd1f7d48d17d3d23bc2",
-      "previousContentHash": "8ad55294a70ed5a3e256e33d09589ce48cf44ed4609b48a355d6da364dffb731",
-      "evidence": "NPS conditions independently read earlier in this reviewer task gives 209/372-0200 and menu 1,1. +1 (209) 372-0200 preserves exactly the same digits as the previous reviewed international-format number.",
-      "verdict": "PASS"
+      "url": "https://commons.wikimedia.org/wiki/File:Winter_in_yosemite_3.jpg",
+      "checkedOn": "2026-11-03",
+      "status": "READ_AND_MATCHED_LOCAL_IMAGE",
+      "sourceDate": "2008 photograph; current page last edited 2025-12-01",
+      "supports": "Date 2008, author Brocken Inaglory, CC BY-SA 4.0, 2400×1600, 3506726 bytes, matching SHA-1."
     }
-  ]
+  ],
+  "targetedReReview": {
+    "reason": "After reported CI image.too_heavy",
+    "scope": "Only exact optimized JPEG and changed imageChanges; complete exact Markdown reread, proseHash unchanged",
+    "reviewedAt": "2026-11-03T09:38:43Z",
+    "originalRecoveryIndependentlyVerified": true,
+    "ciRerunVerified": false,
+    "deployVerified": false,
+    "liveVerified": false
+  }
 }

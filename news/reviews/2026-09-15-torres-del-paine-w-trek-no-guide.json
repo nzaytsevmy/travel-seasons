@@ -1,50 +1,188 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "slug": "2026-09-15-torres-del-paine-w-trek-no-guide",
+  "reviewer": "Codex (due_news_review_20261103)",
+  "reviewerTask": "/root/due_news_review",
+  "authoredBy": "Codex (tt-author-20261103)",
+  "reviewedAt": "2026-11-03T08:37:54Z",
+  "checkedAt": "2026-11-03",
   "score": 4,
-  "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
-  "reviewedAt": "2026-09-23",
-  "sha256": "e499d15ef6449a00035914ba16307f2dff3afe680fd4635eb3d551ef3600fcf8",
-  "rationale": "KEEP правила, без аттестации всех троп. CONAF подтверждает отмену обязательного аккредитованного гида на Base Torres и W с 16 сентября, при этом микрокошки или палки могут требоваться по условиям. Macizo Paine/O и John Garner остаются закрыты; календарная дата не гарантирует их открытие. Текст сохраняет это разграничение. Оценка 4 сохранена.",
-  "risks": [
-    "Отмена обязательного гида не означает открытие каждой тропы.",
-    "Macizo Paine/O и John Garner закрыты; их открытие зависит от оценки погоды и безопасности.",
-    "Требования к микрокошкам или палкам могут меняться по условиям."
+  "archived": false,
+  "approved": true,
+  "approvalScope": "EDITORIAL_CONTENT_ONLY_TARGETED_UPDATE",
+  "editorialVerdict": "PASS_WITH_DOCUMENTED_LIMITS",
+  "textVerdict": "PASS_EXACT_CONTENT_HASH",
+  "releaseApproved": false,
+  "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
+  "classification": "UPDATE_EXISTING_PUBLISHED",
+  "baseCommit": "c99cf77db31a13af911743d70f87b0db5c996b42",
+  "previousReview": {
+    "sha256": "d6dd8d7bb9415bad693979c9877a74f6f22dfdeffc8c6114d3debfbd5f1657e2",
+    "reviewedAt": "2026-09-23",
+    "reviewer": "Codex (news_lifecycle_review), finalized by Codex GPT-6 (news_review_20260919)",
+    "baseCommit": null,
+    "sourceSha256": null,
+    "contentHash": null,
+    "legacySha256": "e499d15ef6449a00035914ba16307f2dff3afe680fd4635eb3d551ef3600fcf8",
+    "legacySha256Scope": null
+  },
+  "rationale": "CONAF 14 сентября подтверждает отмену обязательного гида с 16 сентября и прежний план O на 1 ноября после оценки. Финал явно оставляет ноябрьский фактический проход, перевал John Garner и участок Guardas отдельно неподтверждёнными; сентябрьские требования к снаряжению датированы. Содержимое нового сообщения CONAF о ноябрьском открытии полностью не получено. Текущий проход по O и отдельным участкам не принят как проверенный.",
+  "readerTask": "Не переносить отмену гида на W на автоматический доступ к O.",
+  "factReview": "CONAF 14 сентября подтверждает отмену обязательного гида с 16 сентября и прежний план O на 1 ноября после оценки. Финал явно оставляет ноябрьский фактический проход, перевал John Garner и участок Guardas отдельно неподтверждёнными; сентябрьские требования к снаряжению датированы.",
+  "limitations": [
+    "Содержимое нового сообщения CONAF о ноябрьском открытии полностью не получено. Текущий проход по O и отдельным участкам не принят как проверенный.",
+    "Все ограничения исследования и источников сохранены в .run/due-news-independent-review-20261103.json; это не полная текущая первичная проверка всех 64.",
+    "Содержание источника при просмотре не доказывает дату введения режима; планы не считаются выполнением."
   ],
-  "blockingIssues": [],
-  "evidence": [
+  "sourceChecks": [
     {
       "url": "https://www.conaf.cl/conaf-no-exigira-guia-a-partir-del-16-de-septiembre-y-mantiene-medidas-de-seguridad-en-senderos/",
-      "publishedOn": "2026-09-14",
-      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
-      "finding": "Подтверждены отмена обязательного гида с 16 сентября, условные требования снаряжения и закрытия O и John Garner.",
-      "checkedOn": "2026-09-23"
-    },
-    {
-      "url": "https://www.conaf.cl/parque_nacionales/parque-nacional-torres-del-paine/",
-      "publishedOn": null,
-      "capture": ".run/2026-09-23/lifecycle-sources/web-evidence.json",
-      "finding": "Текущая страница сохраняет предупреждение о зимних трудностях и закрытии O; это не новый гарантированный срок открытия.",
-      "checkedOn": "2026-09-23"
+      "publisher": "CONAF",
+      "sourceId": "paine_old",
+      "sourceDate": "2026-09-14",
+      "checkedOn": "2026-11-03",
+      "status": "read",
+      "method": "addressed reuse of this reviewer's 64-note proof",
+      "supports": "Гидна W/BaseTorres отменён 16.09; Oзакрытдо 1 ноября, открытиепослеоценки. Не доказываетпроходсейчас.",
+      "priorStatus": null
     }
   ],
-  "lifecycle": {
-    "reviewOn": "2026-09-25",
-    "reason": "Отмена обязательного гида не означает открытие каждой тропы.",
-    "decision": "KEEP_RULE_NOT_TRAIL_GUARANTEE"
+  "independentProofRef": ".run/due-news-independent-review-20261103.json",
+  "additionalSourceReviewRef": null,
+  "contentHash": "928d344f01e2411e24ddc7b37d87d051440663ec16c4049f3d52187083274a94",
+  "contentHashScope": "SHA256 UTF-8 JSON.stringify({title:parseNote.data.title,tldr:parseNote.data.tldr,body:parseNote.body.trim()})",
+  "sourceSha256": "e18bcb68691cb1fe58136a8aa2e9d4639e1edaf8033bc515d3d03ac89078a2db",
+  "sourceSha256Scope": "SHA256 всех UTF-8 байтов финального Markdown, включая frontmatter и завершающий перевод строки",
+  "actualClipTitle": "Торрес-дель-Пайне: с 16 сентября на тропу W можно без гида",
+  "tldrCheck": {
+    "ok": true,
+    "wordCount": 52,
+    "method": "Штатный checkTldr: trim().split(/\\s+/).filter(Boolean).length; выполнено на точной капсуле в памяти инструмента без запуска локальной агрегации."
   },
-  "checks": {
-    "metadataOnlyConfirmed": true,
-    "priorSourceSha256": "3af6180553620826a537eb6939eaf394106e8c4ea54221b940e614de54e70fd4",
-    "titleUnchangedByClip": true,
-    "clippedTitle": "Торрес-дель-Пайне: с 16 сентября на тропу W можно без гида",
-    "tldrGate": {
-      "ok": true
+  "photoProof": {
+    "image": "./_images/2026-09-15-torres-del-paine-w-trek-no-guide.jpg",
+    "imageSha256": "febc25d5d79c4407a153fc67c366ff4c22ce2cab5753579367942747d832420a",
+    "previousImageSha256": null,
+    "baseImageSha256": "febc25d5d79c4407a153fc67c366ff4c22ce2cab5753579367942747d832420a",
+    "creator": "Diego Delso",
+    "license": "CC BY-SA",
+    "licenseURL": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Cuernos_del_Paine,_Parque_Nacional_Torres_del_Paine,_Chile1.jpg",
+    "title": null,
+    "alt": "Пики Куэрнос-дель-Пайне в облаках над цветущим склоном; архивный кадр Торрес-дель-Пайне",
+    "changes": null,
+    "viewedByThisReviewer": false,
+    "priorImageHashMatched": false,
+    "baseImageUnchanged": true,
+    "provenanceMethod": "JPEG совпадает SHA-256 с файлом в base c99cf77; в git diff изображение не менялось. Новый визуальный просмотр и новая проверка Commons не заявлены.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
+    "priorProvenance": null
+  },
+  "criteria14": [
+    {
+      "id": 1,
+      "criterion": "Задача читателя",
+      "score": 10,
+      "evidence": "Не переносить отмену гида на W на автоматический доступ к O. Полностью прочитаны точные title, tldr и body этой версии."
     },
-    "scope": "Ограниченный lifecycle-review 23.09: перечитан изменчивый статус, проза и прежняя фотоаттестация не исследовались заново; обновлены checked, reviewOn и SHA; без сборки и публикации.",
-    "capsuleWords": 56,
-    "bodyWords": 178,
-    "titleChars": 58
+    {
+      "id": 2,
+      "criterion": "Обоснование темы",
+      "score": 5,
+      "evidence": "Адресная фактическая корректировка уже опубликованной заметки. NEW-исследование спроса, пять сайтов Google и трафик не заявлены; оценка повода дана по NEWS-RUBRIC."
+    },
+    {
+      "id": 3,
+      "criterion": "Место в проекте",
+      "score": 5,
+      "evidence": "Сохранены существующий URL, date и added относительно base. Проверены все 64 просроченных заметки в отдельном отчёте; новый полный SEO-аудит кластера не выполнен."
+    },
+    {
+      "id": 4,
+      "criterion": "Полнота и прямой ответ",
+      "score": 10,
+      "evidence": "Капсула даёт событие и практическую границу: 52 слов, штатный диапазон 40–60. Первый абзац не обещает непроверенного открытия или завершения."
+    },
+    {
+      "id": 5,
+      "criterion": "Собственный вклад",
+      "score": 5,
+      "evidence": "Редакторский вклад — исправление временного смысла и границ применимости. Полевое исследование, новые измерения или собственный опыт не заявлены."
+    },
+    {
+      "id": 6,
+      "criterion": "Факты и источники",
+      "score": 10,
+      "evidence": "CONAF 14 сентября подтверждает отмену обязательного гида с 16 сентября и прежний план O на 1 ноября после оценки. Финал явно оставляет ноябрьский фактический проход, перевал John Garner и участок Guardas отдельно неподтверждёнными; сентябрьские требования к снаряжению датированы. Проверяемые утверждения адресной поправки поддержаны перечисленными источниками; неизвестное прямо названо."
+    },
+    {
+      "id": 7,
+      "criterion": "Числа и примеры",
+      "score": 10,
+      "evidence": "Числа и даты адресной поправки сверены с датированными источниками; прошедший срок не превращён в исполненный план. В капсуле: 16, 2026, 1. Денежных расчётов или гарантированных сроков нет."
+    },
+    {
+      "id": 8,
+      "criterion": "Исключения и применимость",
+      "score": 10,
+      "evidence": "Содержимое нового сообщения CONAF о ноябрьском открытии полностью не получено. Текущий проход по O и отдельным участкам не принят как проверенный. Текст применяет эти границы, а не достраивает открытие по молчанию источника."
+    },
+    {
+      "id": 9,
+      "criterion": "Авторство и доверие",
+      "score": 5,
+      "evidence": "Автор Codex (tt-author-20261103); независимый рецензент Codex (due_news_review_20261103), задачу авторства новой публичной прозы не выполнял. Публичный byline/JSON-LD не рендерились."
+    },
+    {
+      "id": 10,
+      "criterion": "Редактура и естественный язык",
+      "score": 10,
+      "evidence": "Финальная публичная проза полностью прочитана. Событие, дата и неизвестное связаны ясно; неподтверждённый личный опыт и гарантии не добавлены."
+    },
+    {
+      "id": 11,
+      "criterion": "SEO-обещание и метаданные",
+      "score": 5,
+      "evidence": "Заголовок 58 знаков, короче штатного предела 60: clipTitle возвращает его без обрезки. Title/tldr соответствуют узкому фактическому обещанию; OG/canonical/SSR не проверены."
+    },
+    {
+      "id": 12,
+      "criterion": "Ссылки и навигация",
+      "score": 5,
+      "evidence": "Внутренние ссылки и смысл анкоров прочитаны в контексте. Новый HTTP-проход всех ссылок и общий аудит кластера не выполнялись."
+    },
+    {
+      "id": 13,
+      "criterion": "Оформление и доступность",
+      "score": 5,
+      "evidence": "JPEG совпадает SHA-256 с файлом в base c99cf77; в git diff изображение не менялось. Новый визуальный просмотр и новая проверка Commons не заявлены. Alt и архивная применимость прочитаны. Рендер 402/1280, контраст, фактическое кадрирование и публичная атрибуция не проверены."
+    },
+    {
+      "id": 14,
+      "criterion": "Готовность выпуска",
+      "score": 0,
+      "evidence": "CI, build, exact deploy, production live и измеренный эффект не проверены. Редакторское решение не является release PASS."
+    }
+  ],
+  "verifiedTens": [
+    1,
+    4,
+    6,
+    7,
+    8,
+    10
+  ],
+  "minimumFiveVerifiedTens": true,
+  "blockingIssues": [],
+  "dateAddedPreserved": {
+    "date": "2026-09-14",
+    "added": "2026-09-15",
+    "verifiedAgainstBase": true
   },
-  "evidenceReport": ".run/2026-09-18/lifecycle-review/review.json"
+  "nextReview": {
+    "value": "2026-11-04",
+    "action": "CHECK_TRIGGER_BEFORE_CLAIMING_NEW_STATUS",
+    "trigger": "Содержимое нового сообщения CONAF о ноябрьском открытии полностью не получено. Текущий проход по O и отдельным участкам не принят как проверенный.",
+    "automaticallyApplied": false
+  }
 }

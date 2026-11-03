@@ -2,7 +2,6 @@
 title: "Рим: галерея терм Траяна принимает посетителей по записи"
 date: 2026-09-08
 checked: "2026-10-16"
-reviewOn: "2026-10-30"
 added: 2026-09-12
 topic: transport
 impact: high

@@ -2,7 +2,6 @@
 title: "Будери: после находки H5 следите за режимом парка"
 date: 2026-09-11
 checked: "2026-10-16"
-reviewOn: "2026-10-23"
 added: 2026-09-13
 topic: nature
 impact: high

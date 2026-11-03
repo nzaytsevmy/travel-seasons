@@ -3,7 +3,6 @@ title: "В Южной Австралии цветение убило тысяч�
 date: "2026-10-16"
 added: "2026-10-16"
 checked: "2026-10-16"
-reviewOn: "2026-10-23"
 topic: nature
 impact: high
 score: 4
