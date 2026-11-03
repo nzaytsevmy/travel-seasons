@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
-import authorPhoto from '../assets/author/nikita.jpg';
+import authorPhoto from '../assets/author/nikita.webp';
 import { DATA_UPDATED } from '../data/meta.js';
 
 const ldJson = {
@@ -68,15 +68,10 @@ const ldJson = {
     <header class="about-header">
       <div class="hero-tag">Об авторе</div>
       <div class="author-hero">
-        {/* Показывается в 220px (на телефоне 160px), а файл был ровно 220px —
-            на экранах с двойной плотностью выходило мыло. Даём 440px: стиль
-            всё равно ужимает до 220, кадр не меняется — меняется только резкость.
-            Набор размеров здесь СПЕЦИАЛЬНО не используем: кадр по лицу задан
-            и обрезкой при сборке, и правилом object-position, а при переходе на
-            набор размеров пропало бы первое и лицо сместилось. */}
+        {/* 440px сохраняют чёткость портрета в круге 220px на экранах с двойной плотностью. */}
         <Image
-          src={authorPhoto}
-          alt="Никита Зайцев в Фусими, Япония, ноябрь 2023"
+          src={authorPhoto} fit="cover"
+          alt="Никита Зайцев у воды на закате"
           width={440}
           height={440}
           format="webp"
