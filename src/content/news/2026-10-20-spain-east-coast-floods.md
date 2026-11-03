@@ -3,10 +3,10 @@ title: "Паводок нарушил поездки по восточному �
 date: "2026-10-19"
 added: "2026-10-21"
 checked: "2026-10-21"
-reviewOn: "2026-10-21"
 topic: transport
 impact: high
 score: 4
+archived: true
 authoredBy: "Codex (tt-author-20261020)"
 reviewRef: "news/reviews/2026-10-20-spain-east-coast-floods.json"
 photoQuery: "Oliva Valencia Spain"

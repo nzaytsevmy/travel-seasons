@@ -3,7 +3,7 @@ title: "В ботсаду Будери строят доступную доро�
 date: "2026-09-29"
 added: "2026-10-02"
 checked: "2026-10-09"
-reviewOn: "2026-10-23"
+reviewOn: "2026-11-06"
 topic: "transport"
 impact: "medium"
 score: 3

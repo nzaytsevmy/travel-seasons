@@ -3,7 +3,7 @@ title: "Туры Siam Wings в Таиланд заявлены из трёх г�
 date: "2026-09-30"
 added: "2026-10-01"
 checked: "2026-10-20"
-reviewOn: "2026-10-23"
+reviewOn: "2026-11-06"
 topic: "transport"
 impact: "high"
 score: 4

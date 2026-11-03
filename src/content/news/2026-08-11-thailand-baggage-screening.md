@@ -9,7 +9,6 @@ topic: transport
 impact: high
 status: "действует"
 effectiveDate: 2026-10-16
-reviewOn: "2026-10-21"
 score: 5
 countries:
   - thailand

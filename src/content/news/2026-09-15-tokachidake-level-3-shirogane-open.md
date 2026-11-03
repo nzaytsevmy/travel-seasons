@@ -2,7 +2,7 @@
 title: "Токатидакэ: опасность снизили, кратер остаётся закрытым"
 date: "2026-09-12"
 checked: "2026-10-20"
-reviewOn: "2026-10-23"
+reviewOn: "2026-11-06"
 added: "2026-09-15"
 topic: transport
 impact: medium

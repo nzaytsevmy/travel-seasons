@@ -23,7 +23,7 @@ imageCredit: "Sam kawah ijen"
 imageLicense: "CC BY-SA"
 imageLicenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
 imageSource: "https://commons.wikimedia.org/w/index.php?curid=123743150"
-reviewOn: "2026-10-28"
+reviewOn: "2026-11-06"
 ---
 
 У Бромо появилось новое подтверждение доступа после октябрьского пожара. Администрация национального парка открыла с **23 октября** район Пенанджакан через въезды со стороны Пасуруана. По сообщению ANTARA, полевые проверки не обнаружили активных очагов. Это отдельное решение, а не продолжение сентябрьского анонса.

@@ -1,247 +1,188 @@
 {
   "schemaVersion": 2,
   "slug": "2026-10-24-death-valley-flood-roads",
-  "reviewer": "Codex (news_review_20261101)",
-  "reviewerTask": "/root/news_review_20261101",
-  "authoredBy": "Codex (tt-author-20261101)",
-  "reviewedAt": "2026-11-01",
-  "checkedAt": "2026-11-01T00:00:00.000Z",
+  "reviewer": "Codex (due_news_review_20261103)",
+  "reviewerTask": "/root/due_news_review",
+  "authoredBy": "Codex (tt-author-20261103)",
+  "reviewedAt": "2026-11-03T08:37:54Z",
+  "checkedAt": "2026-11-03",
   "score": 4,
+  "archived": false,
   "approved": true,
   "approvalScope": "EDITORIAL_CONTENT_ONLY_TARGETED_UPDATE",
   "editorialVerdict": "PASS_WITH_DOCUMENTED_LIMITS",
-  "textVerdict": "PASS",
+  "textVerdict": "PASS_EXACT_CONTENT_HASH",
   "releaseApproved": false,
   "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
-  "classification": "UPDATE",
-  "baseCommit": "ab9e41dd685ce3391d4f211d19f727e52a18e375",
-  "rationale": "Новая дорожная сводка меняет знание об ограничениях маршрута.4/5: текст не превращает исчезновение названия в открытие и не предлагает закрытый Titus какобъезд. Проверка actualroadmap остаётся передпоездкой и releaseHOLD.",
-  "ownAddition": "Удалено текущее утверждение о закрытой BeattyCut-off; отсутствие строк корректно отделеноот проезда. TitusMay 2027 уже было верно и сохранено.",
-  "factReview": "Полный NPSconditions 30 Oct 11:25 Pacific:BeattyCut-off отсутствуетвзакрытомсписке; это не доказывает открытие. TitusCanyonclosed доожидаемого May 2027, без hikers/cyclists. Старый 25 OctBeatty закрыт — историческая сводка прежней независимой рецензии, не текущийстатус.",
+  "classification": "UPDATE_EXISTING_PUBLISHED",
+  "baseCommit": "c99cf77db31a13af911743d70f87b0db5c996b42",
+  "previousReview": {
+    "sha256": "b417e8ef6d7f7d1e68769b0f5456ef233cae9cba83c02488bd63db2a6d35ad95",
+    "reviewedAt": "2026-11-01",
+    "reviewer": "Codex (news_review_20261101)",
+    "baseCommit": "ab9e41dd685ce3391d4f211d19f727e52a18e375",
+    "sourceSha256": "971d84ac9e1ad0afe60ad5e536b6d0a1a934b4eae881d5a88e85ba69d9a78484",
+    "contentHash": "2e12a0100e8f5e26bb2f680a8e3f23ef928f80ee81604cad68c53d23609ee20e",
+    "legacySha256": null,
+    "legacySha256Scope": null
+  },
+  "rationale": "Повторно прочитана NPS со сводкой 1 ноября 15:33 Pacific: Beatty Cut Off и Cottonwood/Marble закрыты после паводка 1 ноября; North Highway имеет CAUTION. Titus закрыт также для пешеходов/велосипедистов, ожидаемое открытие май 2027. Финал верно различает CAUTION, закрытие и прогноз ремонта. Новый день без ливня не доказывает расчистку; состояние отдельных сегментов после последней таблицы не подтверждено.",
+  "readerTask": "Исключить закрытые дороги из маршрута по Долине Смерти.",
+  "factReview": "Повторно прочитана NPS со сводкой 1 ноября 15:33 Pacific: Beatty Cut Off и Cottonwood/Marble закрыты после паводка 1 ноября; North Highway имеет CAUTION. Titus закрыт также для пешеходов/велосипедистов, ожидаемое открытие май 2027. Финал верно различает CAUTION, закрытие и прогноз ремонта.",
+  "limitations": [
+    "Новый день без ливня не доказывает расчистку; состояние отдельных сегментов после последней таблицы не подтверждено.",
+    "Все ограничения исследования и источников сохранены в .run/due-news-independent-review-20261103.json; это не полная текущая первичная проверка всех 64.",
+    "Содержание источника при просмотре не доказывает дату введения режима; планы не считаются выполнением."
+  ],
   "sourceChecks": [
     {
       "url": "https://www.nps.gov/deva/planyourvisit/conditions.htm",
-      "archive": "work/routines-20261101/due-sources/21.json",
-      "archiveSha256": "5687d4bf0a7eb0c6f8e7836f8724c7c925faa0fb402bb2a6c496bac4e99e3d59",
-      "method": "Самостоятельное полное чтение сохранённого текста; дата получения не равна дате источника.",
-      "remarks": [],
-      "status": "FULL_TEXT_READ"
+      "publisher": "NPS",
+      "sourceId": "deathvalley",
+      "sourceDate": "2026-11-01T15:33:00-08:00; page updated2026-11-02",
+      "checkedOn": "2026-11-03",
+      "status": "READ_DURING_EXACT_FINAL_REVIEW",
+      "method": "web read in exact final review",
+      "supports": "Beatty Cut Off и Cottonwood/Marble снова закрыты; North Highway осторожно из-за наносов. Titus закрыт для пеших и велосипедов, ожидаемый май 2027.",
+      "priorStatus": "FULL_TEXT_READ"
     }
   ],
-  "contentHash": "2e12a0100e8f5e26bb2f680a8e3f23ef928f80ee81604cad68c53d23609ee20e",
-  "contentHashScope": "SHA256 JSON.stringify({title,tldr,body:body.trim()}) штатногоparseNote",
-  "sourceSha256": "971d84ac9e1ad0afe60ad5e536b6d0a1a934b4eae881d5a88e85ba69d9a78484",
-  "sourceSha256Scope": "ПолныйMarkdownточнойфинальнойверсии",
-  "actualClipTitle": "Долина Смерти: новая дорожная сводка после ливня",
+  "independentProofRef": ".run/due-news-independent-review-20261103.json",
+  "additionalSourceReviewRef": null,
+  "contentHash": "4357cd609c38f9e26a8788a419eaddb1b26db6ebda73ee771e68f9ead6b6244f",
+  "contentHashScope": "SHA256 UTF-8 JSON.stringify({title:parseNote.data.title,tldr:parseNote.data.tldr,body:parseNote.body.trim()})",
+  "sourceSha256": "f6594d58fc7dc88cd7d3822b01407466e1d63e8247cf6dd072de69682f554c6a",
+  "sourceSha256Scope": "SHA256 всех UTF-8 байтов финального Markdown, включая frontmatter и завершающий перевод строки",
+  "actualClipTitle": "Долина Смерти: Beatty Cut Off снова закрыта после паводка",
   "tldrCheck": {
-    "ok": true
+    "ok": true,
+    "wordCount": 49,
+    "method": "Штатный checkTldr: trim().split(/\\s+/).filter(Boolean).length; выполнено на точной капсуле в памяти инструмента без запуска локальной агрегации."
   },
   "photoProof": {
     "image": "./_images/2026-10-24-death-valley-flood-roads.jpg",
     "imageSha256": "bfe058c3cee68dcd8f93e9eefe4e9ab128420708438ea30543598557c85a9bd8",
+    "previousImageSha256": "bfe058c3cee68dcd8f93e9eefe4e9ab128420708438ea30543598557c85a9bd8",
+    "baseImageSha256": null,
     "creator": "Agnieszka Kwiecień, Nova",
     "license": "CC BY-SA",
     "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
     "source": "https://commons.wikimedia.org/w/index.php?curid=165157608",
     "title": "Badwater Road Death Valley 2018-04-07 01 — архивная иллюстрация",
+    "alt": "Badwater Road среди гор и солончака Долины Смерти; архивный кадр 2018 года, не паводок октября 2026 года",
     "changes": "Уменьшение до 1600 px и сжатие JPEG; архивный кадр.",
     "viewedByThisReviewer": false,
     "priorImageHashMatched": true,
-    "provenanceMethod": "Неизменный финальный JPEG сопоставлен SHA 256 с прежней независимой рецензией. Повторное чтение Commons и новый визуальный просмотр в текущем адресном ревью не заявлены.",
-    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+    "baseImageUnchanged": false,
+    "provenanceMethod": "Неизменный JPEG сопоставлен SHA-256 с сохранённой предыдущей независимой рецензией. Новый визуальный просмотр и новое чтение лицензии этой фотографии не заявлены.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
+    "priorProvenance": null
   },
   "criteria14": [
     {
       "id": 1,
       "criterion": "Задача читателя",
       "score": 10,
-      "evidence": "Полностью прочитаны заголовок, капсула и тело; конкретный вопрос о маршруте/правиле/природном результате ясно назван."
+      "evidence": "Исключить закрытые дороги из маршрута по Долине Смерти. Полностью прочитаны точные title, tldr и body этой версии."
     },
     {
       "id": 2,
       "criterion": "Обоснование темы",
       "score": 5,
-      "evidence": "Проверяется точечная фактическая поправка уже существующей заметки; новое исследование пяти Google сайтов не заявлено. Оценка повода по RUBRIC сохранена независимо от квоты."
+      "evidence": "Адресная фактическая корректировка уже опубликованной заметки. NEW-исследование спроса, пять сайтов Google и трафик не заявлены; оценка повода дана по NEWS-RUBRIC."
     },
     {
       "id": 3,
       "criterion": "Место в проекте",
       "score": 5,
-      "evidence": "Существующий URL сохранён; полный аудит кластера/входящих связей не выполнен."
+      "evidence": "Сохранены существующий URL, date и added относительно base. Проверены все 64 просроченных заметки в отдельном отчёте; новый полный SEO-аудит кластера не выполнен."
     },
     {
       "id": 4,
       "criterion": "Полнота и прямой ответ",
       "score": 10,
-      "evidence": "Статус и практическое ограничение даны в начале; источник/дата отделены от неизвестного текущего исполнения. checkTldr выполнен."
+      "evidence": "Капсула даёт событие и практическую границу: 49 слов, штатный диапазон 40–60. Первый абзац не обещает непроверенного открытия или завершения."
     },
     {
       "id": 5,
       "criterion": "Собственный вклад",
       "score": 5,
-      "evidence": "Удалено текущее утверждение о закрытой BeattyCut-off; отсутствие строк корректно отделеноот проезда. TitusMay 2027 уже было верно и сохранено. Это редакторское объяснение, не собственное полевое исследование."
+      "evidence": "Редакторский вклад — исправление временного смысла и границ применимости. Полевое исследование, новые измерения или собственный опыт не заявлены."
     },
     {
       "id": 6,
       "criterion": "Факты и источники",
       "score": 10,
-      "evidence": "Полный NPSconditions 30 Oct 11:25 Pacific:BeattyCut-off отсутствуетвзакрытомсписке; это не доказывает открытие. TitusCanyonclosed доожидаемого May 2027, без hikers/cyclists. Старый 25 OctBeatty закрыт — историческая сводка прежней независимой рецензии, не текущийстатус."
+      "evidence": "Повторно прочитана NPS со сводкой 1 ноября 15:33 Pacific: Beatty Cut Off и Cottonwood/Marble закрыты после паводка 1 ноября; North Highway имеет CAUTION. Titus закрыт также для пешеходов/велосипедистов, ожидаемое открытие май 2027. Финал верно различает CAUTION, закрытие и прогноз ремонта. Проверяемые утверждения адресной поправки поддержаны перечисленными источниками; неизвестное прямо названо."
     },
     {
       "id": 7,
       "criterion": "Числа и примеры",
       "score": 10,
-      "evidence": "Даты, диапазоны и числа адресной поправки сверены; прогноз/план не округлён до гарантии. Денежных обещаний нет. Полный NPSconditions 30 Oct 11:25 Pacific:BeattyCut-off отсутствуетвзакрытомсписке; это не доказывает открытие. TitusCanyonclosed доожидаемого May 2027, без hikers/cyclists. Старый 25 OctBeatty закрыт — историческая сводка прежней независимой рецензии, не текущийстатус."
+      "evidence": "Числа и даты адресной поправки сверены с датированными источниками; прошедший срок не превращён в исполненный план. В капсуле: 1, 2027. Денежных расчётов или гарантированных сроков нет."
     },
     {
       "id": 8,
       "criterion": "Исключения и применимость",
       "score": 10,
-      "evidence": "Удалено текущее утверждение о закрытой BeattyCut-off; отсутствие строк корректно отделеноот проезда. TitusMay 2027 уже было верно и сохранено."
+      "evidence": "Новый день без ливня не доказывает расчистку; состояние отдельных сегментов после последней таблицы не подтверждено. Текст применяет эти границы, а не достраивает открытие по молчанию источника."
     },
     {
       "id": 9,
       "criterion": "Авторство и доверие",
       "score": 5,
-      "evidence": "Автор Codex и рецензент Codex различны. Чужие наблюдения не присвоены. Публичный byline/JSON-LD ожидают рендера."
+      "evidence": "Автор Codex (tt-author-20261103); независимый рецензент Codex (due_news_review_20261103), задачу авторства новой публичной прозы не выполнял. Публичный byline/JSON-LD не рендерились."
     },
     {
       "id": 10,
       "criterion": "Редактура и естественный язык",
       "score": 10,
-      "evidence": "Вся финальная проза прочитана; исправленная временная связь ясна, гиперболы/придуманныйличныйопыт отсутствуют."
+      "evidence": "Финальная публичная проза полностью прочитана. Событие, дата и неизвестное связаны ясно; неподтверждённый личный опыт и гарантии не добавлены."
     },
     {
       "id": 11,
       "criterion": "SEO-обещание и метаданные",
       "score": 5,
-      "evidence": "Фактический clipTitle совпадаетс заголовком: длина≤60, мысль завершена. OG/canonical/SSR не проверены."
+      "evidence": "Заголовок 57 знаков, короче штатного предела 60: clipTitle возвращает его без обрезки. Title/tldr соответствуют узкому фактическому обещанию; OG/canonical/SSR не проверены."
     },
     {
       "id": 12,
       "criterion": "Ссылки и навигация",
       "score": 5,
-      "evidence": "Буквальные ссылки и смысл анкора прочитаны в контексте; их известные цели соответствуют стране/теме. Новый HTTP проход и весь кластер не приняты."
+      "evidence": "Внутренние ссылки и смысл анкоров прочитаны в контексте. Новый HTTP-проход всех ссылок и общий аудит кластера не выполнялись."
     },
     {
       "id": 13,
       "criterion": "Оформление и доступность",
       "score": 5,
-      "evidence": "Неизменный JPEG проверенпо SHA 256; архивная подпись и унаследованная лицензия сохранены. Новый Commons/live атрибуция и 402/1280 рендернепроверены."
+      "evidence": "Неизменный JPEG сопоставлен SHA-256 с сохранённой предыдущей независимой рецензией. Новый визуальный просмотр и новое чтение лицензии этой фотографии не заявлены. Alt и архивная применимость прочитаны. Рендер 402/1280, контраст, фактическое кадрирование и публичная атрибуция не проверены."
     },
     {
       "id": 14,
       "criterion": "Готовность выпуска",
       "score": 0,
-      "evidence": "Build/обязательный CI/exactdeploy/live не выполнялись; редакционный допуск только указанной версии текста."
+      "evidence": "CI, build, exact deploy, production live и измеренный эффект не проверены. Редакторское решение не является release PASS."
     }
   ],
-  "qualityCriteria": [
-    {
-      "id": 1,
-      "criterion": "Задача читателя",
-      "score": 10,
-      "evidence": "Полностью прочитаны заголовок, капсула и тело; конкретный вопрос о маршруте/правиле/природном результате ясно назван."
-    },
-    {
-      "id": 2,
-      "criterion": "Обоснование темы",
-      "score": 5,
-      "evidence": "Проверяется точечная фактическая поправка уже существующей заметки; новое исследование пяти Google сайтов не заявлено. Оценка повода по RUBRIC сохранена независимо от квоты."
-    },
-    {
-      "id": 3,
-      "criterion": "Место в проекте",
-      "score": 5,
-      "evidence": "Существующий URL сохранён; полный аудит кластера/входящих связей не выполнен."
-    },
-    {
-      "id": 4,
-      "criterion": "Полнота и прямой ответ",
-      "score": 10,
-      "evidence": "Статус и практическое ограничение даны в начале; источник/дата отделены от неизвестного текущего исполнения. checkTldr выполнен."
-    },
-    {
-      "id": 5,
-      "criterion": "Собственный вклад",
-      "score": 5,
-      "evidence": "Удалено текущее утверждение о закрытой BeattyCut-off; отсутствие строк корректно отделеноот проезда. TitusMay 2027 уже было верно и сохранено. Это редакторское объяснение, не собственное полевое исследование."
-    },
-    {
-      "id": 6,
-      "criterion": "Факты и источники",
-      "score": 10,
-      "evidence": "Полный NPSconditions 30 Oct 11:25 Pacific:BeattyCut-off отсутствуетвзакрытомсписке; это не доказывает открытие. TitusCanyonclosed доожидаемого May 2027, без hikers/cyclists. Старый 25 OctBeatty закрыт — историческая сводка прежней независимой рецензии, не текущийстатус."
-    },
-    {
-      "id": 7,
-      "criterion": "Числа и примеры",
-      "score": 10,
-      "evidence": "Даты, диапазоны и числа адресной поправки сверены; прогноз/план не округлён до гарантии. Денежных обещаний нет. Полный NPSconditions 30 Oct 11:25 Pacific:BeattyCut-off отсутствуетвзакрытомсписке; это не доказывает открытие. TitusCanyonclosed доожидаемого May 2027, без hikers/cyclists. Старый 25 OctBeatty закрыт — историческая сводка прежней независимой рецензии, не текущийстатус."
-    },
-    {
-      "id": 8,
-      "criterion": "Исключения и применимость",
-      "score": 10,
-      "evidence": "Удалено текущее утверждение о закрытой BeattyCut-off; отсутствие строк корректно отделеноот проезда. TitusMay 2027 уже было верно и сохранено."
-    },
-    {
-      "id": 9,
-      "criterion": "Авторство и доверие",
-      "score": 5,
-      "evidence": "Автор Codex и рецензент Codex различны. Чужие наблюдения не присвоены. Публичный byline/JSON-LD ожидают рендера."
-    },
-    {
-      "id": 10,
-      "criterion": "Редактура и естественный язык",
-      "score": 10,
-      "evidence": "Вся финальная проза прочитана; исправленная временная связь ясна, гиперболы/придуманныйличныйопыт отсутствуют."
-    },
-    {
-      "id": 11,
-      "criterion": "SEO-обещание и метаданные",
-      "score": 5,
-      "evidence": "Фактический clipTitle совпадаетс заголовком: длина≤60, мысль завершена. OG/canonical/SSR не проверены."
-    },
-    {
-      "id": 12,
-      "criterion": "Ссылки и навигация",
-      "score": 5,
-      "evidence": "Буквальные ссылки и смысл анкора прочитаны в контексте; их известные цели соответствуют стране/теме. Новый HTTP проход и весь кластер не приняты."
-    },
-    {
-      "id": 13,
-      "criterion": "Оформление и доступность",
-      "score": 5,
-      "evidence": "Неизменный JPEG проверенпо SHA 256; архивная подпись и унаследованная лицензия сохранены. Новый Commons/live атрибуция и 402/1280 рендернепроверены."
-    },
-    {
-      "id": 14,
-      "criterion": "Готовность выпуска",
-      "score": 0,
-      "evidence": "Build/обязательный CI/exactdeploy/live не выполнялись; редакционный допуск только указанной версии текста."
-    }
+  "verifiedTens": [
+    1,
+    4,
+    6,
+    7,
+    8,
+    10
   ],
   "minimumFiveVerifiedTens": true,
-  "verifiedTensCount": 6,
   "blockingIssues": [],
-  "processBlockingIssues": [
-    "CI/exactdeploy/live ещёнеприняты."
-  ],
-  "limitations": [
-    "Это адресное ревью фактической поправки, не новое полное исследование Google и не releasePASS.",
-    "Неизменные фото/лицензии связаны с прежним доказательством по точному хешу; новые визуальнаяпроверка Commons/атрибуции не заявлены."
-  ],
-  "nextReview": "2026-11-03T00:00:00.000Z",
-  "previousAssessment": {
-    "reviewer": "Codex (news_review_20261029)",
-    "reviewedAt": "2026-10-29T11:02:49.827Z",
-    "sourceSha256": "a53d52b3a31d9c87d20e4e8c15bc07940eae0097f722924bbc8dcbf8d9b4a011",
-    "contentHash": "ef779d28a83026a3c855de0a78b748240329e5cf428b80b75f587efe698078a5"
+  "dateAddedPreserved": {
+    "date": "2026-10-22",
+    "added": "2026-10-24",
+    "verifiedAgainstBase": true
   },
-  "researchApplicability": {
-    "kind": "TARGETED_FACTUAL_CORRECTION",
-    "requiredForThisDelta": false,
-    "reason": "Точная дата/статус/ссылка на уже описанный факт; не новый полный ответ и не содержательнаяпереработка."
+  "nextReview": {
+    "value": "2026-11-06",
+    "action": "CHECK_TRIGGER_BEFORE_CLAIMING_NEW_STATUS",
+    "trigger": "Новый день без ливня не доказывает расчистку; состояние отдельных сегментов после последней таблицы не подтверждено.",
+    "automaticallyApplied": false
   }
 }

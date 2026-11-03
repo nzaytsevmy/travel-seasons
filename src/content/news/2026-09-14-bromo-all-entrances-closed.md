@@ -2,7 +2,7 @@
 title: "Бромо: Пенанджакан снова доступен через Пасуруан"
 date: 2026-09-12
 checked: "2026-10-25"
-reviewOn: "2026-10-28"
+reviewOn: "2026-11-06"
 added: 2026-09-14
 topic: transport
 impact: high

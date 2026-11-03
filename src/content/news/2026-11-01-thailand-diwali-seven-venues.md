@@ -3,7 +3,7 @@ title: "Таиланд проведёт семь бесплатных празд
 date: "2026-11-01"
 added: "2026-10-31T23:24:41.270Z"
 checked: "2026-11-01"
-reviewOn: "2026-11-03"
+reviewOn: "2026-11-05"
 topic: "transport"
 impact: "medium"
 score: 5

@@ -6,11 +6,11 @@ checked: "2026-10-22"
 topic: transport
 impact: high
 score: 4
+archived: true
 authoredBy: "Codex (tt-author-20261022)"
 reviewRef: "news/reviews/2026-10-10-singapore-haze.json"
 photoQuery: "Singapore Gardens by the Bay skyline"
 tldr: "Прогноз метеослужбы Сингапура из сводки 19 октября относился к 20 октября и больше не подходит для планирования сегодняшнего дня. Новая сводка здесь не подтверждена. Перед прогулкой проверьте официальный суточный прогноз и часовую PM2.5: это разные показатели. Одна прежняя сводка не описывает воздух на весь отпуск."
-reviewOn: "2026-10-23"
 countries: [singapore]
 sources:
   - name: "NEA — официальный сайт текущих показаний и рекомендаций; данные конкретного часа не цитируются"

@@ -3,7 +3,6 @@ title: "На побережье Англии открыли заповедник
 date: "2026-09-25"
 added: "2026-10-01"
 checked: "2026-10-15"
-reviewOn: "2026-10-22"
 topic: "nature"
 impact: "medium"
 score: 4

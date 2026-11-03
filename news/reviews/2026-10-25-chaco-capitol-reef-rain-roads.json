@@ -1,255 +1,209 @@
 {
   "schemaVersion": 2,
   "slug": "2026-10-25-chaco-capitol-reef-rain-roads",
-  "reviewer": "Codex (news_review_20261101)",
-  "reviewerTask": "/root/news_review_20261101",
-  "authoredBy": "Codex (tt-author-20261101)",
-  "reviewedAt": "2026-11-01",
-  "checkedAt": "2026-11-01T00:00:00.000Z",
+  "reviewer": "Codex (due_news_review_20261103)",
+  "reviewerTask": "/root/due_news_review",
+  "authoredBy": "Codex (tt-author-20261103)",
+  "reviewedAt": "2026-11-03T08:37:54Z",
+  "checkedAt": "2026-11-03",
   "score": 4,
+  "archived": false,
   "approved": true,
   "approvalScope": "EDITORIAL_CONTENT_ONLY_TARGETED_UPDATE",
   "editorialVerdict": "PASS_WITH_DOCUMENTED_LIMITS",
-  "textVerdict": "PASS",
+  "textVerdict": "PASS_EXACT_CONTENT_HASH",
   "releaseApproved": false,
   "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
-  "classification": "UPDATE",
-  "baseCommit": "ab9e41dd685ce3391d4f211d19f727e52a18e375",
-  "rationale": "Дождь и риск паводка определяют доступность парка;4/5. Адресная дорожная поправка совпадает с полными релевантными UIalert/table разделами, не обещает безопасный проезд и сохраняет погодную оговорку.",
-  "ownAddition": "Roadconditions 28 Oct заменены 31 Oct; PleasantCreekclosed исправлено на HC 2 WD, дата Fruita 29 Oct отделена от summary 30 Oct. Безопасныйпроезд 4 WD не обещан.",
-  "factReview": "Самостоятельно прочитаны целиком точные UI разделы: Chaco 31 Oct northimpassable/southextremelyslick,mudthroughout, postpone и floodwatchSunday 1 Nov, возможнаянепроходимостьнесколькодней. Вся Fruita таблица 7 строк 29 Oct: ScenicDrive/GrandWash 2 WD,CapitolGorgeClosed,PleasantCreekHC 2 WD. Общаядата 30 Oct. Релевантные разделы не выданы за полнуюстраницу.",
+  "classification": "UPDATE_EXISTING_PUBLISHED",
+  "baseCommit": "c99cf77db31a13af911743d70f87b0db5c996b42",
+  "previousReview": {
+    "sha256": "ef77813aba94e434880194b8f8ad5131c544eef4408ca8c8427e52e803619f50",
+    "reviewedAt": "2026-11-01",
+    "reviewer": "Codex (news_review_20261101)",
+    "baseCommit": "ab9e41dd685ce3391d4f211d19f727e52a18e375",
+    "sourceSha256": "6428a4027b42a230d95d067efa1c2ecb4b130371505f8e3d791f947ecb9e0b65",
+    "contentHash": "c94e00417b18de54a5cc13583395ce4f765254c098aaa34be3fdcdd38d7ebeea",
+    "legacySha256": null,
+    "legacySha256Scope": null
+  },
+  "rationale": "Повторно прочитаны NPS Capitol Reef: таблица 1 ноября закрывает Grand Wash, Capitol Gorge и Pleasant Creek, Scenic Drive = 2WD. NPS Chaco Directions сохраняет северный въезд непроходимым. Предупреждение 31 октября / 1 ноября в финале дано как прошедшая история, южный доступ не объявлен открытым. Динамическое предупреждение Чако 31 октября заново не извлечено; его история опирается на прежнюю рецензию 1 ноября. Нового подтверждения проезда с юга нет.",
+  "readerTask": "Проверять подъезды Чако отдельно от дорог Капитол-Риф.",
+  "factReview": "Повторно прочитаны NPS Capitol Reef: таблица 1 ноября закрывает Grand Wash, Capitol Gorge и Pleasant Creek, Scenic Drive = 2WD. NPS Chaco Directions сохраняет северный въезд непроходимым. Предупреждение 31 октября / 1 ноября в финале дано как прошедшая история, южный доступ не объявлен открытым.",
+  "limitations": [
+    "Динамическое предупреждение Чако 31 октября заново не извлечено; его история опирается на прежнюю рецензию 1 ноября. Нового подтверждения проезда с юга нет.",
+    "Все ограничения исследования и источников сохранены в .run/due-news-independent-review-20261103.json; это не полная текущая первичная проверка всех 64.",
+    "Содержание источника при просмотре не доказывает дату введения режима; планы не считаются выполнением."
+  ],
   "sourceChecks": [
     {
       "url": "https://www.nps.gov/chcu/planyourvisit/conditions.htm",
-      "archive": "work/routines-20261101/due-sources/56.json",
-      "archiveSha256": "8c09130c7935b473cc6886c082a5d0319a5e1d81689dd3f18cad5135bfec9b56",
-      "method": "Самостоятельное полное чтение сохранённого текста; дата получения не равна дате источника.",
-      "remarks": [],
-      "status": "FULL_TEXT_READ"
+      "publisher": "NPS",
+      "sourceId": "chaco",
+      "sourceDate": "staticupdated2026-10-03",
+      "checkedOn": "2026-11-03",
+      "status": "read_static_dynamic_alert_missing",
+      "method": "addressed reuse of this reviewer's 64-note proof",
+      "supports": "Северныйвъезднепроходим;южныйможетстатьнепроходимымотводы. Предупреждение 31.10/паводок 1.11 динамическинеизвлечено — не считаю отменённым.",
+      "priorStatus": "FULL_TEXT_READ"
     },
     {
-      "url": "https://www.nps.gov/chcu/planyourvisit/conditions.htm",
-      "archive": "work/routines-20261101/chaco-capitol-ui.json",
-      "archiveSha256": "6bf3a4c96a07e09e6eb70ed1ec8dad7273d3829a161d64e5eb95cc4eda5bb349",
-      "method": "Самостоятельно прочитаны весь переданный alertChaco и все 7 строк Fruita; это релевантныеразделы, не полнаястраница.",
-      "status": "PRESERVED_CURRENT_UI_TEXT_READ"
+      "url": "https://www.nps.gov/care/planyourvisit/conditions.htm",
+      "publisher": "NPS",
+      "sourceId": "capitol",
+      "sourceDate": "2026-11-01",
+      "checkedOn": "2026-11-03",
+      "status": "READ_DURING_EXACT_FINAL_REVIEW",
+      "method": "web read in exact final review",
+      "supports": "GrandWash/CapitolGorge/PleasantCreek закрыты;ScenicDrive 2 WD. Это существенно меняет советизтаблицы 29.10.",
+      "priorStatus": null
+    },
+    {
+      "url": "https://www.nps.gov/chcu/planyourvisit/directions.htm",
+      "publisher": "NPS — подъезды Чако и повреждённый северный маршрут от US 550; прочитано 29.10",
+      "sourceId": null,
+      "sourceDate": null,
+      "checkedOn": "2026-11-03",
+      "status": "READ_DURING_EXACT_FINAL_REVIEW",
+      "method": "web read in exact final review",
+      "supports": null,
+      "priorStatus": null
     }
   ],
-  "contentHash": "c94e00417b18de54a5cc13583395ce4f765254c098aaa34be3fdcdd38d7ebeea",
-  "contentHashScope": "SHA256 JSON.stringify({title,tldr,body:body.trim()}) штатногоparseNote",
-  "sourceSha256": "6428a4027b42a230d95d067efa1c2ecb4b130371505f8e3d791f947ecb9e0b65",
-  "sourceSha256Scope": "ПолныйMarkdownточнойфинальнойверсии",
-  "actualClipTitle": "Чако: сложный южный въезд; Капитол-Риф открыл Grand Wash",
+  "independentProofRef": ".run/due-news-independent-review-20261103.json",
+  "additionalSourceReviewRef": ".run/due-extra-sources-20261103.md",
+  "contentHash": "73edc33a3c5ec9e3b39e6c8700d0d05dd0f49ea28b1d4e4be3442c737b2769cf",
+  "contentHashScope": "SHA256 UTF-8 JSON.stringify({title:parseNote.data.title,tldr:parseNote.data.tldr,body:parseNote.body.trim()})",
+  "sourceSha256": "6fc357e337d3538e5918103b1dd8f5352c27dac221c9fadddf10a55b07661cdb",
+  "sourceSha256Scope": "SHA256 всех UTF-8 байтов финального Markdown, включая frontmatter и завершающий перевод строки",
+  "actualClipTitle": "Чако и Капитол-Риф: закрытые дороги после дождей",
   "tldrCheck": {
-    "ok": true
+    "ok": true,
+    "wordCount": 52,
+    "method": "Штатный checkTldr: trim().split(/\\s+/).filter(Boolean).length; выполнено на точной капсуле в памяти инструмента без запуска локальной агрегации."
   },
   "photoProof": {
     "image": "./_images/2026-10-25-chaco-capitol-reef-rain-roads.jpg",
     "imageSha256": "44097b41d14f1c860d6a52be331f321ee1e0198ad20c4dbc419448dc58f88806",
+    "previousImageSha256": "44097b41d14f1c860d6a52be331f321ee1e0198ad20c4dbc419448dc58f88806",
+    "baseImageSha256": null,
     "creator": "Steven C. Price",
     "license": "CC BY-SA",
     "licenseURL": "https://creativecommons.org/licenses/by-sa/3.0/",
     "source": "https://commons.wikimedia.org/w/index.php?curid=43114450",
     "title": "Древний комплекс в Чако-Калчер. Архивный вид памятника, не состояние дорог после дождей.",
+    "alt": "Каменные стены древнего комплекса в Чако-Калчер",
     "changes": "Подготовлена JPEG-копия шириной до 1600 px.",
     "viewedByThisReviewer": false,
     "priorImageHashMatched": true,
-    "provenanceMethod": "Неизменный финальный JPEG сопоставлен SHA 256 с прежней независимой рецензией. Повторное чтение Commons и новый визуальный просмотр в текущем адресном ревью не заявлены.",
-    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+    "baseImageUnchanged": false,
+    "provenanceMethod": "Неизменный JPEG сопоставлен SHA-256 с сохранённой предыдущей независимой рецензией. Новый визуальный просмотр и новое чтение лицензии этой фотографии не заявлены.",
+    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
+    "priorProvenance": null
   },
   "criteria14": [
     {
       "id": 1,
       "criterion": "Задача читателя",
       "score": 10,
-      "evidence": "Полностью прочитаны заголовок, капсула и тело; конкретный вопрос о маршруте/правиле/природном результате ясно назван."
+      "evidence": "Проверять подъезды Чако отдельно от дорог Капитол-Риф. Полностью прочитаны точные title, tldr и body этой версии."
     },
     {
       "id": 2,
       "criterion": "Обоснование темы",
       "score": 5,
-      "evidence": "Проверяется точечная фактическая поправка уже существующей заметки; новое исследование пяти Google сайтов не заявлено. Оценка повода по RUBRIC сохранена независимо от квоты."
+      "evidence": "Адресная фактическая корректировка уже опубликованной заметки. NEW-исследование спроса, пять сайтов Google и трафик не заявлены; оценка повода дана по NEWS-RUBRIC."
     },
     {
       "id": 3,
       "criterion": "Место в проекте",
       "score": 5,
-      "evidence": "Существующий URL сохранён; полный аудит кластера/входящих связей не выполнен."
+      "evidence": "Сохранены существующий URL, date и added относительно base. Проверены все 64 просроченных заметки в отдельном отчёте; новый полный SEO-аудит кластера не выполнен."
     },
     {
       "id": 4,
       "criterion": "Полнота и прямой ответ",
       "score": 10,
-      "evidence": "Статус и практическое ограничение даны в начале; источник/дата отделены от неизвестного текущего исполнения. checkTldr выполнен."
+      "evidence": "Капсула даёт событие и практическую границу: 52 слов, штатный диапазон 40–60. Первый абзац не обещает непроверенного открытия или завершения."
     },
     {
       "id": 5,
       "criterion": "Собственный вклад",
       "score": 5,
-      "evidence": "Roadconditions 28 Oct заменены 31 Oct; PleasantCreekclosed исправлено на HC 2 WD, дата Fruita 29 Oct отделена от summary 30 Oct. Безопасныйпроезд 4 WD не обещан. Это редакторское объяснение, не собственное полевое исследование."
+      "evidence": "Редакторский вклад — исправление временного смысла и границ применимости. Полевое исследование, новые измерения или собственный опыт не заявлены."
     },
     {
       "id": 6,
       "criterion": "Факты и источники",
-      "score": 10,
-      "evidence": "Самостоятельно прочитаны целиком точные UI разделы: Chaco 31 Oct northimpassable/southextremelyslick,mudthroughout, postpone и floodwatchSunday 1 Nov, возможнаянепроходимостьнесколькодней. Вся Fruita таблица 7 строк 29 Oct: ScenicDrive/GrandWash 2 WD,CapitolGorgeClosed,PleasantCreekHC 2 WD. Общаядата 30 Oct. Релевантные разделы не выданы за полнуюстраницу."
+      "score": 5,
+      "evidence": "Повторно прочитаны NPS Capitol Reef: таблица 1 ноября закрывает Grand Wash, Capitol Gorge и Pleasant Creek, Scenic Drive = 2WD. NPS Chaco Directions сохраняет северный въезд непроходимым. Предупреждение 31 октября / 1 ноября в финале дано как прошедшая история, южный доступ не объявлен открытым. Оценка 5: текущая полнота внешнего подтверждения ограничена; допуск относится к узкой исторической прозе, а не закрытию пробела."
     },
     {
       "id": 7,
       "criterion": "Числа и примеры",
       "score": 10,
-      "evidence": "Даты, диапазоны и числа адресной поправки сверены; прогноз/план не округлён до гарантии. Денежных обещаний нет. Самостоятельно прочитаны целиком точные UI разделы: Chaco 31 Oct northimpassable/southextremelyslick,mudthroughout, postpone и floodwatchSunday 1 Nov, возможнаянепроходимостьнесколькодней. Вся Fruita таблица 7 строк 29 Oct: ScenicDrive/GrandWash 2 WD,CapitolGorgeClosed,PleasantCreekHC 2 WD. Общаядата 30 Oct. Релевантные разделы не выданы за полнуюстраницу."
+      "evidence": "Числа и даты адресной поправки сверены с датированными источниками; прошедший срок не превращён в исполненный план. В капсуле: 1, 31, 1. Денежных расчётов или гарантированных сроков нет."
     },
     {
       "id": 8,
       "criterion": "Исключения и применимость",
       "score": 10,
-      "evidence": "Roadconditions 28 Oct заменены 31 Oct; PleasantCreekclosed исправлено на HC 2 WD, дата Fruita 29 Oct отделена от summary 30 Oct. Безопасныйпроезд 4 WD не обещан."
+      "evidence": "Динамическое предупреждение Чако 31 октября заново не извлечено; его история опирается на прежнюю рецензию 1 ноября. Нового подтверждения проезда с юга нет. Текст применяет эти границы, а не достраивает открытие по молчанию источника."
     },
     {
       "id": 9,
       "criterion": "Авторство и доверие",
       "score": 5,
-      "evidence": "Автор Codex и рецензент Codex различны. Чужие наблюдения не присвоены. Публичный byline/JSON-LD ожидают рендера."
+      "evidence": "Автор Codex (tt-author-20261103); независимый рецензент Codex (due_news_review_20261103), задачу авторства новой публичной прозы не выполнял. Публичный byline/JSON-LD не рендерились."
     },
     {
       "id": 10,
       "criterion": "Редактура и естественный язык",
       "score": 10,
-      "evidence": "Вся финальная проза прочитана; исправленная временная связь ясна, гиперболы/придуманныйличныйопыт отсутствуют."
+      "evidence": "Финальная публичная проза полностью прочитана. Событие, дата и неизвестное связаны ясно; неподтверждённый личный опыт и гарантии не добавлены."
     },
     {
       "id": 11,
       "criterion": "SEO-обещание и метаданные",
       "score": 5,
-      "evidence": "Фактический clipTitle совпадаетс заголовком: длина≤60, мысль завершена. OG/canonical/SSR не проверены."
+      "evidence": "Заголовок 48 знаков, короче штатного предела 60: clipTitle возвращает его без обрезки. Title/tldr соответствуют узкому фактическому обещанию; OG/canonical/SSR не проверены."
     },
     {
       "id": 12,
       "criterion": "Ссылки и навигация",
       "score": 5,
-      "evidence": "Буквальные ссылки и смысл анкора прочитаны в контексте; их известные цели соответствуют стране/теме. Новый HTTP проход и весь кластер не приняты."
+      "evidence": "Внутренние ссылки и смысл анкоров прочитаны в контексте. Новый HTTP-проход всех ссылок и общий аудит кластера не выполнялись."
     },
     {
       "id": 13,
       "criterion": "Оформление и доступность",
       "score": 5,
-      "evidence": "Неизменный JPEG проверенпо SHA 256; архивная подпись и унаследованная лицензия сохранены. Новый Commons/live атрибуция и 402/1280 рендернепроверены."
+      "evidence": "Неизменный JPEG сопоставлен SHA-256 с сохранённой предыдущей независимой рецензией. Новый визуальный просмотр и новое чтение лицензии этой фотографии не заявлены. Alt и архивная применимость прочитаны. Рендер 402/1280, контраст, фактическое кадрирование и публичная атрибуция не проверены."
     },
     {
       "id": 14,
       "criterion": "Готовность выпуска",
       "score": 0,
-      "evidence": "Build/обязательный CI/exactdeploy/live не выполнялись; редакционный допуск только указанной версии текста."
+      "evidence": "CI, build, exact deploy, production live и измеренный эффект не проверены. Редакторское решение не является release PASS."
     }
   ],
-  "qualityCriteria": [
-    {
-      "id": 1,
-      "criterion": "Задача читателя",
-      "score": 10,
-      "evidence": "Полностью прочитаны заголовок, капсула и тело; конкретный вопрос о маршруте/правиле/природном результате ясно назван."
-    },
-    {
-      "id": 2,
-      "criterion": "Обоснование темы",
-      "score": 5,
-      "evidence": "Проверяется точечная фактическая поправка уже существующей заметки; новое исследование пяти Google сайтов не заявлено. Оценка повода по RUBRIC сохранена независимо от квоты."
-    },
-    {
-      "id": 3,
-      "criterion": "Место в проекте",
-      "score": 5,
-      "evidence": "Существующий URL сохранён; полный аудит кластера/входящих связей не выполнен."
-    },
-    {
-      "id": 4,
-      "criterion": "Полнота и прямой ответ",
-      "score": 10,
-      "evidence": "Статус и практическое ограничение даны в начале; источник/дата отделены от неизвестного текущего исполнения. checkTldr выполнен."
-    },
-    {
-      "id": 5,
-      "criterion": "Собственный вклад",
-      "score": 5,
-      "evidence": "Roadconditions 28 Oct заменены 31 Oct; PleasantCreekclosed исправлено на HC 2 WD, дата Fruita 29 Oct отделена от summary 30 Oct. Безопасныйпроезд 4 WD не обещан. Это редакторское объяснение, не собственное полевое исследование."
-    },
-    {
-      "id": 6,
-      "criterion": "Факты и источники",
-      "score": 10,
-      "evidence": "Самостоятельно прочитаны целиком точные UI разделы: Chaco 31 Oct northimpassable/southextremelyslick,mudthroughout, postpone и floodwatchSunday 1 Nov, возможнаянепроходимостьнесколькодней. Вся Fruita таблица 7 строк 29 Oct: ScenicDrive/GrandWash 2 WD,CapitolGorgeClosed,PleasantCreekHC 2 WD. Общаядата 30 Oct. Релевантные разделы не выданы за полнуюстраницу."
-    },
-    {
-      "id": 7,
-      "criterion": "Числа и примеры",
-      "score": 10,
-      "evidence": "Даты, диапазоны и числа адресной поправки сверены; прогноз/план не округлён до гарантии. Денежных обещаний нет. Самостоятельно прочитаны целиком точные UI разделы: Chaco 31 Oct northimpassable/southextremelyslick,mudthroughout, postpone и floodwatchSunday 1 Nov, возможнаянепроходимостьнесколькодней. Вся Fruita таблица 7 строк 29 Oct: ScenicDrive/GrandWash 2 WD,CapitolGorgeClosed,PleasantCreekHC 2 WD. Общаядата 30 Oct. Релевантные разделы не выданы за полнуюстраницу."
-    },
-    {
-      "id": 8,
-      "criterion": "Исключения и применимость",
-      "score": 10,
-      "evidence": "Roadconditions 28 Oct заменены 31 Oct; PleasantCreekclosed исправлено на HC 2 WD, дата Fruita 29 Oct отделена от summary 30 Oct. Безопасныйпроезд 4 WD не обещан."
-    },
-    {
-      "id": 9,
-      "criterion": "Авторство и доверие",
-      "score": 5,
-      "evidence": "Автор Codex и рецензент Codex различны. Чужие наблюдения не присвоены. Публичный byline/JSON-LD ожидают рендера."
-    },
-    {
-      "id": 10,
-      "criterion": "Редактура и естественный язык",
-      "score": 10,
-      "evidence": "Вся финальная проза прочитана; исправленная временная связь ясна, гиперболы/придуманныйличныйопыт отсутствуют."
-    },
-    {
-      "id": 11,
-      "criterion": "SEO-обещание и метаданные",
-      "score": 5,
-      "evidence": "Фактический clipTitle совпадаетс заголовком: длина≤60, мысль завершена. OG/canonical/SSR не проверены."
-    },
-    {
-      "id": 12,
-      "criterion": "Ссылки и навигация",
-      "score": 5,
-      "evidence": "Буквальные ссылки и смысл анкора прочитаны в контексте; их известные цели соответствуют стране/теме. Новый HTTP проход и весь кластер не приняты."
-    },
-    {
-      "id": 13,
-      "criterion": "Оформление и доступность",
-      "score": 5,
-      "evidence": "Неизменный JPEG проверенпо SHA 256; архивная подпись и унаследованная лицензия сохранены. Новый Commons/live атрибуция и 402/1280 рендернепроверены."
-    },
-    {
-      "id": 14,
-      "criterion": "Готовность выпуска",
-      "score": 0,
-      "evidence": "Build/обязательный CI/exactdeploy/live не выполнялись; редакционный допуск только указанной версии текста."
-    }
+  "verifiedTens": [
+    1,
+    4,
+    7,
+    8,
+    10
   ],
   "minimumFiveVerifiedTens": true,
-  "verifiedTensCount": 6,
   "blockingIssues": [],
-  "processBlockingIssues": [
-    "CI/exactdeploy/live ещёнеприняты."
-  ],
-  "limitations": [
-    "Это адресное ревью фактической поправки, не новое полное исследование Google и не releasePASS.",
-    "Неизменные фото/лицензии связаны с прежним доказательством по точному хешу; новые визуальнаяпроверка Commons/атрибуции не заявлены.",
-    "Точная транскрипция UI прочитана самостоятельно; liveUI автора недоступен в среде рецензента."
-  ],
-  "nextReview": "2026-11-02T00:00:00.000Z",
-  "previousAssessment": {
-    "reviewer": "Codex (news_review_20261029)",
-    "reviewedAt": "2026-10-29T11:02:49.828Z",
-    "sourceSha256": "bf6922b22768e502fa50552f763f20e517c6c35158b48f9bccde319977f9c418",
-    "contentHash": "aa54dab97b0f54347153457af18929834565f7e2fe62c04159d79615a6704c02"
+  "dateAddedPreserved": {
+    "date": "2026-10-25",
+    "added": "2026-10-25",
+    "verifiedAgainstBase": true
   },
-  "researchApplicability": {
-    "kind": "TARGETED_FACTUAL_CORRECTION",
-    "requiredForThisDelta": false,
-    "reason": "Точная дата/статус/ссылка на уже описанный факт; не новый полный ответ и не содержательнаяпереработка."
+  "nextReview": {
+    "value": "2026-11-06",
+    "action": "CHECK_TRIGGER_BEFORE_CLAIMING_NEW_STATUS",
+    "trigger": "Динамическое предупреждение Чако 31 октября заново не извлечено; его история опирается на прежнюю рецензию 1 ноября. Нового подтверждения проезда с юга нет.",
+    "automaticallyApplied": false
   }
 }

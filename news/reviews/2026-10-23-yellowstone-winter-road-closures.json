@@ -1,56 +1,69 @@
 {
   "schemaVersion": 2,
   "slug": "2026-10-23-yellowstone-winter-road-closures",
+  "reviewer": "Codex (due_news_review_20261103)",
+  "reviewerTask": "/root/due_news_review",
+  "authoredBy": "Codex (tt-author-20261103)",
+  "reviewedAt": "2026-11-03T08:37:54Z",
+  "checkedAt": "2026-11-03",
   "score": 4,
-  "reviewer": "Codex (tt-review-20261023)",
-  "reviewerTask": "/root/review_20261023",
-  "authoredBy": "Codex (tt-author-20261023)",
-  "reviewedAt": "2026-10-23T10:06:34.301Z",
-  "checkedAt": "2026-10-23",
+  "archived": false,
   "approved": true,
-  "approvalScope": "EDITORIAL_ONLY",
-  "editorialVerdict": "PASS",
+  "approvalScope": "EDITORIAL_CONTENT_ONLY_TARGETED_UPDATE",
+  "editorialVerdict": "PASS_WITH_DOCUMENTED_LIMITS",
+  "textVerdict": "PASS_EXACT_CONTENT_HASH",
   "releaseApproved": false,
   "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
-  "classification": "NEW",
-  "baseCommit": "afe8fdd7ded3a9192b637b8131a97e830a50fd93",
-  "rationale": "Меняет зимний автомобильный маршрут по нишевому для российской аудитории направлению. Конкретные ворота и даты делают новость полезной; обещания доступности всего парка нет.",
-  "ownAddition": "Разводит закрытие летней сети, оставшийся северный автомобильный коридор и отдельный зимний транспорт; поясняет риск ночёвок у разных ворот.",
-  "factReview": "NPS21.10: закрытие большинства дорог и West/South/East1.11; последний день31.10; северный коридор Gardiner–Cooke City/Silver Gate через Mammoth/Tower/Lamar; snowmobile/snowcoach15.12. Все возможности обусловлены погодой.",
+  "classification": "UPDATE_EXISTING_PUBLISHED",
+  "baseCommit": "c99cf77db31a13af911743d70f87b0db5c996b42",
+  "previousReview": {
+    "sha256": "9a7fe2758899e6e44291d0b480106397acfb27a2dc2cf70905551968b2c7b2ff",
+    "reviewedAt": "2026-10-23T10:06:34.301Z",
+    "reviewer": "Codex (tt-review-20261023)",
+    "baseCommit": "afe8fdd7ded3a9192b637b8131a97e830a50fd93",
+    "sourceSha256": "b3a085270594e1165669c5ded7dba9190720c47434ce5a711b930aa170600544",
+    "contentHash": "689a5c66ce193c19a1f8b38a5263ef8a9657c42da08ee49b4b85d86c4d1bd7af",
+    "legacySha256": null,
+    "legacySha256Scope": null
+  },
+  "rationale": "Повторно прочитан NPS 21 октября: календарное закрытие большинства дорог и трёх въездов с 1 ноября, последний день 31 октября, северный коридор круглый год с оговоркой по погоде, снежный транспорт заявлен с 15 декабря. Финал явно говорит о календаре, а не о лично проверенном положении шлагбаумов. Динамическая карта всех ворот и кратковременные погодные ограничения не проверены.",
+  "readerTask": "Не планировать летний автомобильный транзит через Йеллоустон зимой.",
+  "factReview": "Повторно прочитан NPS 21 октября: календарное закрытие большинства дорог и трёх въездов с 1 ноября, последний день 31 октября, северный коридор круглый год с оговоркой по погоде, снежный транспорт заявлен с 15 декабря. Финал явно говорит о календаре, а не о лично проверенном положении шлагбаумов.",
+  "limitations": [
+    "Динамическая карта всех ворот и кратковременные погодные ограничения не проверены.",
+    "Все ограничения исследования и источников сохранены в .run/due-news-independent-review-20261103.json; это не полная текущая первичная проверка всех 64.",
+    "Содержание источника при просмотре не доказывает дату введения режима; планы не считаются выполнением."
+  ],
   "sourceChecks": [
     {
       "url": "https://www.nps.gov/yell/learn/news/26026.htm",
-      "method": "Самостоятельное чтение сохранённого полного текста источника; fetch receiptHTTP200 в .run/20261023/source-fetches.json",
-      "archive": ".run/20261023/sources/1eb957ff2313d5d4.txt",
-      "finding": "NPS21.10: закрытие большинства дорог и West/South/East1.11; последний день31.10; северный коридор Gardiner–Cooke City/Silver Gate через Mammoth/Tower/Lamar; snowmobile/snowcoach15.12. Все возможности обусловлены погодой.",
-      "status": "SUBSTANTIVE_TEXT_CHECKED"
+      "publisher": "NPS",
+      "sourceId": "yellowstone_notice",
+      "sourceDate": "2026-10-21",
+      "checkedOn": "2026-11-03",
+      "status": "READ_DURING_EXACT_FINAL_REVIEW",
+      "method": "web read in exact final review",
+      "supports": "Анонс 1 ноября/последнийдень 31 октября; oversnow с 15 декабря, не частныеавтомобили.",
+      "priorStatus": "SUBSTANTIVE_TEXT_CHECKED"
     }
   ],
-  "contentHash": "689a5c66ce193c19a1f8b38a5263ef8a9657c42da08ee49b4b85d86c4d1bd7af",
-  "contentHashScope": "SHA-256 JSON.stringify({title,tldr,body:body.trim()}) из актуального штатного parseNote.",
-  "sourceSha256": "b3a085270594e1165669c5ded7dba9190720c47434ce5a711b930aa170600544",
-  "sourceSha256Scope": "SHA-256 полного Markdown включая frontmatter, точные bytes.",
-  "nativeClipTitle": "Йеллоустон закроет большинство дорог с 1 ноября",
-  "clipTitleCodeSha256": "61aeac8ec0e88ff9175d1ebefe66fd9be9b17f211a045a943312de9f6fdc1b0f",
-  "clipTitleCodeHashScope": "Полный src/data/news.js; вычисление неизменённого штатного clipTitle в VM.",
-  "photo": {
-    "image": "./_images/2026-10-23-yellowstone-winter-road-closures.jpg",
-    "imageSha256": "763456324c440b427c39d9376cd9d026f47e2fb871b4a3dded6f6f6db21d4c9b",
-    "creator": "NPS / Jacob W. Frank",
-    "license": "общественное достояние",
-    "licenseURL": "https://creativecommons.org/publicdomain/mark/1.0/",
-    "source": "https://www.nps.gov/yell/learn/news/26026.htm",
-    "title": "A winter sunset at the North Entrance in Gardiner, Montana.",
-    "alt": "Северный вход в Йеллоустон; архивная иллюстрация, не состояние дорог 23 октября",
-    "changes": "Уменьшение до 1600 px и JPEG-сжатие; архивный зимний кадр. No claim to original U.S. Government works.",
-    "viewedByThisReviewer": true,
-    "visualReview": "Финальный локальный JPEG просмотрен независимо; объект соответствует описанию. Иллюстрация не выдана за нынешнее событие.",
-    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
-    "provenanceMethod": "Commons description/licensing самостоятельно открыта web или HTTP200+BeautifulSoup; NPS кадр/автор сопоставлены с релизом в source archive."
+  "independentProofRef": ".run/due-news-independent-review-20261103.json",
+  "additionalSourceReviewRef": null,
+  "contentHash": "3313a921682156e646d4014df79e1f42a4a1ce45c1bf39edae0d12e354695a73",
+  "contentHashScope": "SHA256 UTF-8 JSON.stringify({title:parseNote.data.title,tldr:parseNote.data.tldr,body:parseNote.body.trim()})",
+  "sourceSha256": "88f232c087143f2d23e6431d2c500b0c2d986b74c5749a71631b7127e112ee4f",
+  "sourceSha256Scope": "SHA256 всех UTF-8 байтов финального Markdown, включая frontmatter и завершающий перевод строки",
+  "actualClipTitle": "Йеллоустон: с 1 ноября действует зимний календарь дорог",
+  "tldrCheck": {
+    "ok": true,
+    "wordCount": 53,
+    "method": "Штатный checkTldr: trim().split(/\\s+/).filter(Boolean).length; выполнено на точной капсуле в памяти инструмента без запуска локальной агрегации."
   },
   "photoProof": {
     "image": "./_images/2026-10-23-yellowstone-winter-road-closures.jpg",
     "imageSha256": "763456324c440b427c39d9376cd9d026f47e2fb871b4a3dded6f6f6db21d4c9b",
+    "previousImageSha256": "763456324c440b427c39d9376cd9d026f47e2fb871b4a3dded6f6f6db21d4c9b",
+    "baseImageSha256": null,
     "creator": "NPS / Jacob W. Frank",
     "license": "общественное достояние",
     "licenseURL": "https://creativecommons.org/publicdomain/mark/1.0/",
@@ -58,104 +71,118 @@
     "title": "A winter sunset at the North Entrance in Gardiner, Montana.",
     "alt": "Северный вход в Йеллоустон; архивная иллюстрация, не состояние дорог 23 октября",
     "changes": "Уменьшение до 1600 px и JPEG-сжатие; архивный зимний кадр. No claim to original U.S. Government works.",
-    "viewedByThisReviewer": true,
-    "visualReview": "Финальный локальный JPEG просмотрен независимо; объект соответствует описанию. Иллюстрация не выдана за нынешнее событие.",
+    "viewedByThisReviewer": false,
+    "priorImageHashMatched": true,
+    "baseImageUnchanged": false,
+    "provenanceMethod": "Неизменный JPEG сопоставлен SHA-256 с сохранённой предыдущей независимой рецензией. Новый визуальный просмотр и новое чтение лицензии этой фотографии не заявлены.",
     "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE",
-    "provenanceMethod": "Commons description/licensing самостоятельно открыта web или HTTP200+BeautifulSoup; NPS кадр/автор сопоставлены с релизом в source archive."
+    "priorProvenance": null
   },
   "criteria14": [
     {
       "id": 1,
       "criterion": "Задача читателя",
       "score": 10,
-      "evidence": "Один вопрос и прямой ответ: Йеллоустон закроет большинство дорог с 1 ноября."
+      "evidence": "Не планировать летний автомобильный транзит через Йеллоустон зимой. Полностью прочитаны точные title, tldr и body этой версии."
     },
     {
       "id": 2,
       "criterion": "Обоснование темы",
-      "score": 10,
-      "evidence": "Меняет зимний автомобильный маршрут по нишевому для российской аудитории направлению. Конкретные ворота и даты делают новость полезной; обещания доступности всего парка нет."
+      "score": 5,
+      "evidence": "Адресная фактическая корректировка уже опубликованной заметки. NEW-исследование спроса, пять сайтов Google и трафик не заявлены; оценка повода дана по NEWS-RUBRIC."
     },
     {
       "id": 3,
       "criterion": "Место в проекте",
       "score": 5,
-      "evidence": "NEW/UPDATE соответствует событию и прежнему URL; внутренние связи по теме. Полная каннибализация и входящие связи финальной сборки ещё не проверены."
+      "evidence": "Сохранены существующий URL, date и added относительно base. Проверены все 64 просроченных заметки в отдельном отчёте; новый полный SEO-аудит кластера не выполнен."
     },
     {
       "id": 4,
       "criterion": "Полнота и прямой ответ",
       "score": 10,
-      "evidence": "Прочитаны весь текст и капсула; капсула46слов, body169; ключевые условия даны до контекста."
+      "evidence": "Капсула даёт событие и практическую границу: 53 слов, штатный диапазон 40–60. Первый абзац не обещает непроверенного открытия или завершения."
     },
     {
       "id": 5,
       "criterion": "Собственный вклад",
-      "score": 10,
-      "evidence": "Разводит закрытие летней сети, оставшийся северный автомобильный коридор и отдельный зимний транспорт; поясняет риск ночёвок у разных ворот."
+      "score": 5,
+      "evidence": "Редакторский вклад — исправление временного смысла и границ применимости. Полевое исследование, новые измерения или собственный опыт не заявлены."
     },
     {
       "id": 6,
       "criterion": "Факты и источники",
       "score": 10,
-      "evidence": "NPS21.10: закрытие большинства дорог и West/South/East1.11; последний день31.10; северный коридор Gardiner–Cooke City/Silver Gate через Mammoth/Tower/Lamar; snowmobile/snowcoach15.12. Все возможности обусловлены погодой."
+      "evidence": "Повторно прочитан NPS 21 октября: календарное закрытие большинства дорог и трёх въездов с 1 ноября, последний день 31 октября, северный коридор круглый год с оговоркой по погоде, снежный транспорт заявлен с 15 декабря. Финал явно говорит о календаре, а не о лично проверенном положении шлагбаумов. Проверяемые утверждения адресной поправки поддержаны перечисленными источниками; неизвестное прямо названо."
     },
     {
       "id": 7,
       "criterion": "Числа и примеры",
       "score": 10,
-      "evidence": "NPS21.10: закрытие большинства дорог и West/South/East1.11; последний день31.10; северный коридор Gardiner–Cooke City/Silver Gate через Mammoth/Tower/Lamar; snowmobile/snowcoach15.12. Все возможности обусловлены погодой."
+      "evidence": "Числа и даты адресной поправки сверены с датированными источниками; прошедший срок не превращён в исполненный план. В капсуле: 1. Денежных расчётов или гарантированных сроков нет."
     },
     {
       "id": 8,
       "criterion": "Исключения и применимость",
       "score": 10,
-      "evidence": "Оговорки применимости прямо указаны; reviewOn=2026-11-01."
+      "evidence": "Динамическая карта всех ворот и кратковременные погодные ограничения не проверены. Текст применяет эти границы, а не достраивает открытие по молчанию источника."
     },
     {
       "id": 9,
       "criterion": "Авторство и доверие",
       "score": 5,
-      "evidence": "АвторCodex (tt-author-20261023); независимый reviewer другой. Личный опыт не заявлен; публичный byline текущей версии не проверен."
+      "evidence": "Автор Codex (tt-author-20261103); независимый рецензент Codex (due_news_review_20261103), задачу авторства новой публичной прозы не выполнял. Публичный byline/JSON-LD не рендерились."
     },
     {
       "id": 10,
       "criterion": "Редактура и естественный язык",
       "score": 10,
-      "evidence": "Фактический и смысловой проходы полного title/TLDR/body выполнены. Текст конкретен, без выдуманного опыта; модельная проверка не является тестом с читателем."
+      "evidence": "Финальная публичная проза полностью прочитана. Событие, дата и неизвестное связаны ясно; неподтверждённый личный опыт и гарантии не добавлены."
     },
     {
       "id": 11,
       "criterion": "SEO-обещание и метаданные",
       "score": 5,
-      "evidence": "Штатный clipTitle: «Йеллоустон закроет большинство дорог с 1 ноября» — сохраняет объект и результат. SSR/canonical/OG финальной сборки ожидают проверки."
+      "evidence": "Заголовок 55 знаков, короче штатного предела 60: clipTitle возвращает его без обрезки. Title/tldr соответствуют узкому фактическому обещанию; OG/canonical/SSR не проверены."
     },
     {
       "id": 12,
       "criterion": "Ссылки и навигация",
       "score": 5,
-      "evidence": "Все буквальные внутренние URL самостоятельно открыты HTTP200; H1/H2 целевых страниц соответствуют анкорам. Входящие связи и финальный рендер не проверены."
+      "evidence": "Внутренние ссылки и смысл анкоров прочитаны в контексте. Новый HTTP-проход всех ссылок и общий аудит кластера не выполнялись."
     },
     {
       "id": 13,
       "criterion": "Оформление и доступность",
       "score": 5,
-      "evidence": "Финальный локальный JPEG просмотрен независимо; объект соответствует описанию. Иллюстрация не выдана за нынешнее событие. Проверка402/1280и /legal/photos/ финальной версии не выполнена."
+      "evidence": "Неизменный JPEG сопоставлен SHA-256 с сохранённой предыдущей независимой рецензией. Новый визуальный просмотр и новое чтение лицензии этой фотографии не заявлены. Alt и архивная применимость прочитаны. Рендер 402/1280, контраст, фактическое кадрирование и публичная атрибуция не проверены."
     },
     {
       "id": 14,
       "criterion": "Готовность выпуска",
       "score": 0,
-      "evidence": "Scope только локальное редакционное ревью. Обязательные CI/build/deploy/live, SSR/sitemap/feed не выполнялись; готовность выпуска HOLD."
+      "evidence": "CI, build, exact deploy, production live и измеренный эффект не проверены. Редакторское решение не является release PASS."
     }
+  ],
+  "verifiedTens": [
+    1,
+    4,
+    6,
+    7,
+    8,
+    10
   ],
   "minimumFiveVerifiedTens": true,
   "blockingIssues": [],
-  "limitations": [
-    "Модельное независимое редакционное ревью; читательского теста не было.",
-    "Сборки, CI, публикации и live изменённых заметок не выполнялись.",
-    "Поисковой спрос, индексирование, клики и доход не измерены.",
-    "Авторские/лицензионные данные сверены; публичная атрибуция требует финального build/live."
-  ],
-  "nextReview": "2026-11-01"
+  "dateAddedPreserved": {
+    "date": "2026-10-23",
+    "added": "2026-10-23",
+    "verifiedAgainstBase": true
+  },
+  "nextReview": {
+    "value": "2026-11-06",
+    "action": "CHECK_TRIGGER_BEFORE_CLAIMING_NEW_STATUS",
+    "trigger": "Динамическая карта всех ворот и кратковременные погодные ограничения не проверены.",
+    "automaticallyApplied": false
+  }
 }
