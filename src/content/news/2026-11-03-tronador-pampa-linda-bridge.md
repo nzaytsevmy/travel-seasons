@@ -3,7 +3,7 @@ title: "Тронадор: готовят мост без даты открыти
 date: "2026-10-31"
 added: "2026-11-03"
 checked: "2026-11-03"
-reviewOn: "2026-11-04"
+reviewOn: "2026-11-06"
 topic: "transport"
 impact: "high"
 score: 4

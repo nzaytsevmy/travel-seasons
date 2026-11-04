@@ -1,55 +1,187 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "slug": "2026-10-10-tokyo-autumn-meteorite",
-  "reviewer": "Codex (tt_final_review)",
-  "reviewerTask": "/root/tt_final_review",
-  "authoredBy": "codex-news-author-20261012",
-  "reviewedAt": "2026-10-12",
-  "checkedAt": "2026-10-12",
+  "reviewer": "Codex (tt-independent-review-20261104)",
+  "reviewerTask": "/root/due_news_review",
+  "authoredBy": "Codex (tt-author-20261104)",
+  "reviewedAt": "2026-11-04T10:32:20Z",
+  "checkedAt": "2026-11-04",
   "score": 4,
-  "rationale": "Действующий фестиваль с англоязычной частью программы даёт полезный выбор посетителю нишевого культурного события: 4. Официальный календарь подтверждает 9 октября — 3 ноября и площадки Tokyo Metropolitan Theatre / GLOBAL RING. Blue Moon Over Memphis 10–11 октября уже закончился; его нельзя продавать читателю как предстоящее представление.",
-  "facts": [
-    "Официальный календарь: 09 октября — 03 ноября 2026, Tokyo Metropolitan Theatre и GLOBAL RING THEATRE.",
-    "Blue Moon Over Memphis прошёл 10–11 октября; английский язык постановки не распространяется на всю фестивальную программу."
-  ],
+  "approved": true,
+  "approvalScope": "EDITORIAL_CONTENT_ONLY_EXACT_VERSION",
+  "editorialVerdict": "PASS_WITH_DOCUMENTED_LIMITS",
+  "textVerdict": "PASS_EXACT_CONTENT_HASH",
+  "releaseApproved": false,
+  "releaseStatus": "PENDING_REQUIRED_SOURCE_BUILD_CI_DEPLOY_LIVE",
+  "classification": "TARGETED_FACTUAL_OR_ARCHIVE_UPDATE",
+  "baseCommit": "a71efdd810679fd562973785081d8d92412cbcdc",
+  "previousReview": {
+    "path": "news/reviews/2026-10-10-tokyo-autumn-meteorite.json",
+    "gitObject": "a71efdd810679fd562973785081d8d92412cbcdc:news/reviews/2026-10-10-tokyo-autumn-meteorite.json",
+    "artifactSha256": "74f1e1a32038d596ab773aa52ecd7a0dce8ab72d7781499771c6017a56962668",
+    "schemaVersion": 1,
+    "reviewer": "Codex (tt_final_review)",
+    "reviewedAt": "2026-10-12",
+    "score": 4,
+    "contentHash": "c20d6426d0849862376bd775845f67dd4d24fb077d5d54083fbe6c76fc7ce477",
+    "sourceSha256": null,
+    "earlierProvenance": null,
+    "previousResearchEvidence": null
+  },
+  "rationale": "Сохраняется историческая оценка 4 события, не оценка нового срочного повода. Исправленный финал описывает объявленный календарь, не утверждает проведение всех представлений и не предлагает оставшиеся события прошедшей программы. archived:true и отсутствие reviewOn согласованы; новый сезон не обещан.",
   "sourceChecks": [
     {
+      "publisher": "Organiser",
       "url": "https://autumnmeteorite.jp/en",
-      "checkedAt": "2026-10-12",
-      "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
-      "artifact": ".run/source-text/d081f984c4982a69.txt",
-      "artifactSha256": "78415c6e5899532f2c379a67651f853da15c3c238891a89f2d85b2a380b84006"
+      "sourceDate": null,
+      "observedOn": "2026-11-04",
+      "method": "INDEPENDENT_LIVE_WEB_MAIN_READ_IN_TODAYS_DUE_STAGE_REUSED",
+      "result": "Announced Oct9–Nov3 programme; page update date unspecified",
+      "proof": ".run/due-news-review-20261104.md",
+      "currentlyExecutedAccessVerified": false
     },
     {
+      "publisher": "Organiser",
       "url": "https://autumnmeteorite.jp/en/2026/program/blue_moon_memphis",
-      "checkedAt": "2026-10-12",
-      "method": "Рецензент прочитал полный сохранённый публичный текст; существенные факты сверены с текущей прозой.",
-      "artifact": ".run/source-text/3064a260454b1177.txt",
-      "artifactSha256": "7ec91ce7a5ab16bd41428cb6e2db32dd63925b1eef3e2488a5aa88f621e0b991"
+      "sourceDate": "2026-10-09",
+      "observedOn": "2026-11-04",
+      "method": "INDEPENDENT_LIVE_WEB_MAIN_READ_IN_TODAYS_DUE_STAGE_REUSED",
+      "result": "Announced Oct10–11 programme; not performance completion receipt",
+      "proof": ".run/due-news-review-20261104.md",
+      "currentlyExecutedAccessVerified": false
     }
   ],
-  "contentHash": "c20d6426d0849862376bd775845f67dd4d24fb077d5d54083fbe6c76fc7ce477",
-  "proseHash": "c20d6426d0849862376bd775845f67dd4d24fb077d5d54083fbe6c76fc7ce477",
-  "contentHashScope": "sha256(JSON.stringify({title,tldr,body:body.trim()})); score and provenance metadata excluded",
-  "sha256": "66c241addf721eb96f41adea9480f6f9f205f296e93fc96dcc65287b13942217",
-  "sha256Scope": "Полный окончательный Markdown после синхронизации score и даты checked, на момент этого ревью.",
-  "photo": {
-    "source": "https://pixabay.com/photos/japan-urban-architecture-building-9826320/",
+  "contentHash": "785d42cc23ef355551f36e897acfb7ad6ad8e1576be7d7510d2b3cac3184982f",
+  "contentHashScope": "SHA256 UTF-8 JSON.stringify({title:parseNote.data.title,tldr:parseNote.data.tldr,body:parseNote.body.trim()}); same parseNote scalar unquoting as scripts/news-gate.mjs",
+  "sourceSha256": "a05be2d05158ed48df9f6506deba6c7381b04f6eac6d20f0d484781161f733ee",
+  "sourceSha256Scope": "SHA256 exact final Markdown UTF-8 bytes including frontmatter and trailing newline; independently matched native shasum",
+  "reviewedFiles": {
+    "markdown": "src/content/news/2026-10-10-tokyo-autumn-meteorite.md",
+    "image": "src/content/blog/_images/tur-v-yaponiyu-2027/tokyo.jpg"
+  },
+  "unchangedProseFromPreviousReview": false,
+  "tldrCheck": {
+    "ok": true,
+    "wordCount": 51
+  },
+  "bodyWordCount": 189,
+  "photoProof": {
+    "image": "../blog/_images/tur-v-yaponiyu-2027/tokyo.jpg",
+    "imageSha256": "f3e067eed47727955f3c82cc61a1ee3f5e1f90435b3e94eb8fe00d391a96acbb",
     "creator": "strohmi",
     "license": "Pixabay",
-    "licenseUrl": "https://pixabay.com/service/license-summary/",
-    "rightsMethod": "Сохранён неизменный кадр и его прежняя атрибуция. Новые права на старый кадр этим проходом не заявляются; публичный реестр проверяется гейтами выпуска."
+    "licenseURL": "https://pixabay.com/service/license-summary/",
+    "source": "https://pixabay.com/photos/japan-urban-architecture-building-9826320/",
+    "title": "Панорама района Сибуя в Токио. Это не площадка фестиваля и не снимок спектакля.",
+    "alt": "Высотные здания Токио в районе Сибуя; иллюстрация города, не театр в Икебукуро",
+    "changes": null,
+    "gitImageUnchangedFromBase": true,
+    "previousImageSha256": null,
+    "previousImageHashMatched": null,
+    "viewedByThisReviewerThisPass": false,
+    "viewedAt": null,
+    "provenanceMethod": "Unchanged image and existing attribution retained; prior review provenance and git HEAD remain recoverable. No new live license verification or new visual inspection claimed.",
+    "publicAttribution": "PENDING_FINAL_RENDER_AND_LIVE"
   },
-  "risks": [
-    "На выбранную дату надо сверять конкретную постановку, язык, субтитры и наличие места.",
-    "Редакционная оценка не подтверждает CI, публикацию, публичную страницу, SSR, sitemap/фид или индексацию. Обязательные гейты финальной версии остаются незавершёнными."
+  "criteria14": [
+    {
+      "id": 1,
+      "criterion": "Задача читателя",
+      "score": 10,
+      "evidence": "Проверен один интент title/tldr/body: какое решение о доступе/поездке действительно подтверждает датированный источник."
+    },
+    {
+      "id": 2,
+      "criterion": "Обоснование темы",
+      "score": 10,
+      "evidence": "Заданная адресная коррекция либо контроль существующего URL по наступившему reviewOn. Это не NEW и не содержательная переработка всей темы; новое исследование спроса/пять Google-текстов не имитировались."
+    },
+    {
+      "id": 3,
+      "criterion": "Место в проекте",
+      "score": 5,
+      "evidence": "Сохраняется существующий URL и отдельная задача заметки. Общий аудит каннибализации/кластера и утверждённые 2–3 эталона формата в этом адресном scope не проверялись."
+    },
+    {
+      "id": 4,
+      "criterion": "Полнота и прямой ответ",
+      "score": 10,
+      "evidence": "Точная капсула 51 слов (норма 40–60), тело 189 слов (норма 150–350). Ответ дан сразу; границы известного и следующий адресный шаг названы. Финал полностью прочитан либо неизменность уже прочитанной прозы доказана contentHash."
+    },
+    {
+      "id": 5,
+      "criterion": "Собственный вклад",
+      "score": 5,
+      "evidence": "Вклад — адресное различение плана, исполнения и неизвестного; собственного полевого опыта или нового исследования не заявлено."
+    },
+    {
+      "id": 6,
+      "criterion": "Факты и источники",
+      "score": 10,
+      "evidence": "Существенные тезисы сопоставлены с прочитанными подходящими источниками, датами и ограничениями sourceChecks; сегодняшние неизвестные не выданы за доступ/открытие. 9 октября–3 ноября и 10–11 октября — объявленные даты; архивирование не отчёт о проведении каждого события."
+    },
+    {
+      "id": 7,
+      "criterion": "Числа и примеры",
+      "score": 10,
+      "evidence": "9 октября–3 ноября и 10–11 октября — объявленные даты; архивирование не отчёт о проведении каждого события. Даты публикации/проверки не смешаны с датой события; выдуманного расчёта нет."
+    },
+    {
+      "id": 8,
+      "criterion": "Исключения и применимость",
+      "score": 10,
+      "evidence": "Историческое объявление, прогноз и нынешнее состояние разведены. Территория/участок не расширены до всего направления; окончание срока не объявлено автоматическим разрешением."
+    },
+    {
+      "id": 9,
+      "criterion": "Авторство и доверие",
+      "score": 5,
+      "evidence": "В исходнике автор Codex (tt-author-20261104); reviewer отличается. Нет выдуманного личного опыта или обращения к Claude. Публичные byline/profile/schema до точного рендера не подтверждены."
+    },
+    {
+      "id": 10,
+      "criterion": "Редактура и естественный язык",
+      "score": 10,
+      "evidence": "Отдельный фактический и смысловой проходы выполнены на точном финале; нет найденной смысловой подмены или оставшегося срочного ложного совета. Датировки и конкретные оговорки читаются связно; новый материал не копирует композицию или чужой опыт."
+    },
+    {
+      "id": 11,
+      "criterion": "SEO-обещание и метаданные",
+      "score": 5,
+      "evidence": "Title/tldr соответствуют содержанию; date/added сохранены у прежних заметок, checked не освежён у четырёх KEEP. Новые даты не обещают исполнение. Canonical, OG, H 1/SSR и итоговый clip/render ещё ожидают проверки."
+    },
+    {
+      "id": 12,
+      "criterion": "Ссылки и навигация",
+      "score": 5,
+      "evidence": "Осмысленные внутренние ссылки проверены по source и прочитанной ранней квитанции .run/early-news-20261104.json; существующие цели получили HTTP 200, два взаимных news URL отмечены только PLANNED_SOURCE_PRESENT. Это не финальная проверка построенных ссылок/якорей и входящих связей."
+    },
+    {
+      "id": 13,
+      "criterion": "Оформление и доступность",
+      "score": 5,
+      "evidence": "Медиа не изменены; текущие SHA сверены с прежними доказательствами/неизменностью файлов в HEAD. Повторного просмотра или новой проверки лицензии старых фото не заявлено. Рендер 402/1280, публичная атрибуция и доступность pending."
+    },
+    {
+      "id": 14,
+      "criterion": "Готовность выпуска",
+      "score": 0,
+      "evidence": "Только editorial exact-source review. Полный source/build gate, все применимые CI, deploy identity, live HTTP/SSR/SEO/feed/sitemap и 402/1280 render в этом ревью не выполнены. releaseApproved=false."
+    }
   ],
-  "blockingIssues": [],
-  "editorialVerdict": "ACCEPT_WITH_RELEASE_GATES_PENDING",
-  "releaseStatus": {
-    "ci": "NOT_REVIEWED",
-    "deploy": "NOT_REVIEWED",
-    "live": "NOT_REVIEWED"
-  },
-  "reviewScope": "Независимый рецензент не писал прозу. Прочитаны окончательные title, TLDR и body, применимый канон, существенные источники и изменение жизненного цикла. Старые оценки не переносились автоматически. Число score определено по RUBRIC; source/source date/checked и фото рассмотрены отдельно от свежести события."
+  "criteria14TenCount": 7,
+  "evidence": [
+    ".run/due-news-review-20261104.md",
+    ".run/early-news-20261104.json"
+  ],
+  "limitations": [
+    "Editorial assessment does not measure traffic, income or human reader outcomes.",
+    "No real target-reader test or own trip/observation claimed.",
+    "Release, final public rendering and deployed source identity remain pending."
+  ],
+  "reviewOnRecommendation": {
+    "value": null,
+    "archived": true,
+    "meaning": "Editorial control date only; no proof of opening or event execution."
+  }
 }

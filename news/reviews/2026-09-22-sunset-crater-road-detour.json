@@ -1,41 +1,70 @@
 {
   "schemaVersion": 2,
   "slug": "2026-09-22-sunset-crater-road-detour",
-  "reviewer": "Codex (news_review_20261101)",
-  "reviewerTask": "/root/news_review_20261101",
-  "authoredBy": "Codex (tt-author-20261101)",
-  "reviewedAt": "2026-11-01",
-  "checkedAt": "2026-11-01T00:00:00.000Z",
+  "reviewer": "Codex (tt-independent-review-20261104)",
+  "reviewerTask": "/root/due_news_review",
+  "authoredBy": "Codex (tt-author-20261104)",
+  "reviewedAt": "2026-11-04T10:32:20Z",
+  "checkedAt": "2026-11-04",
   "score": 4,
   "approved": true,
-  "approvalScope": "EDITORIAL_CONTENT_ONLY_TARGETED_UPDATE",
+  "approvalScope": "EDITORIAL_CONTENT_ONLY_EXACT_VERSION",
   "editorialVerdict": "PASS_WITH_DOCUMENTED_LIMITS",
-  "textVerdict": "PASS",
+  "textVerdict": "PASS_EXACT_CONTENT_HASH",
   "releaseApproved": false,
-  "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
-  "classification": "UPDATE",
-  "baseCommit": "ab9e41dd685ce3391d4f211d19f727e52a18e375",
-  "rationale": "Продлённый объезд требует сохранять другой подъезд и меняет маршрут. Точная дата/время/условность сверены самостоятельно с обновлённой первичкой.4/5; редакционный допуск этой поправки отделён от готовности выпуска.",
-  "ownAddition": "Ожидаемая дата перенесена 30 Oct→3 Nov 16:00; анонс 29 Oct отделён от общей conditions без срока. Ожидание открытия не объявлено состоявшимся событием.",
-  "factReview": "Обновлённый NPS release 29 Oct ожидает открытие FR 545 3 Nov к 16:00, возможна задержка из-за погоды. Wupatki остаётся подъездом;19 миль/30 мин относятся междувизитцентрами. FR 776 грунтовая, высокийклиренс, без RV/прицепов. Строка старого 30 Oct ниже не отменяет новый верхний notice.",
+  "releaseStatus": "PENDING_REQUIRED_SOURCE_BUILD_CI_DEPLOY_LIVE",
+  "classification": "TARGETED_FACTUAL_OR_ARCHIVE_UPDATE",
+  "baseCommit": "a71efdd810679fd562973785081d8d92412cbcdc",
+  "previousReview": {
+    "path": "news/reviews/2026-09-22-sunset-crater-road-detour.json",
+    "gitObject": "a71efdd810679fd562973785081d8d92412cbcdc:news/reviews/2026-09-22-sunset-crater-road-detour.json",
+    "artifactSha256": "5c1a859b51884ddf9989bf024b76a448a2b599bd626a8c492dc5ee894208299b",
+    "schemaVersion": 2,
+    "reviewer": "Codex (news_review_20261101)",
+    "reviewedAt": "2026-11-01",
+    "score": 4,
+    "contentHash": "ad76135879ac4457601a6938a3cf6c68fd9a8f9999fefc8f47ab23ef96f1b7fc",
+    "sourceSha256": "da171ab5d02febd62f85ebf23155ce5d22d5b8be135d31f2b3d16958ace6ef13",
+    "earlierProvenance": null,
+    "previousResearchEvidence": null
+  },
+  "rationale": "Оценка 4: дорожная схема меняет поездку к конкретному парку. Финал устранил неподтверждённую нынешнюю необходимость объезда и относит схему к анонсу NPS от 29 октября. Истёкшее ожидание открытия не превращено ни в открытие, ни в продление; следующий контроль 5 ноября оправдан неустановленным исполнением.",
   "sourceChecks": [
     {
+      "publisher": "NPS",
       "url": "https://www.nps.gov/sucr/learn/news/2026-08-24-fs-545-road-closure.htm",
-      "archive": "work/routines-20261101/due-sources/20.json",
-      "archiveSha256": "5c43a27385b150d8d9858ffb24d5a35432bc76cb3773a63d9e616bef6cd836c6",
-      "method": "Самостоятельное полное чтение сохранённого текста; дата получения не равна дате источника.",
-      "remarks": [],
-      "status": "FULL_TEXT_READ"
+      "sourceDate": "2026-10-29",
+      "observedOn": "2026-11-04",
+      "method": "INDEPENDENT_LIVE_WEB_MAIN_READ_IN_TODAYS_DUE_STAGE_REUSED",
+      "result": "Expected Nov3 16:00, weather delay possible; execution unknown",
+      "proof": ".run/due-news-review-20261104.md",
+      "currentlyExecutedAccessVerified": false
+    },
+    {
+      "publisher": "NPS",
+      "url": "https://www.nps.gov/sucr/planyourvisit/conditions.htm",
+      "sourceDate": "2025-08-27",
+      "observedOn": "2026-11-04",
+      "method": "INDEPENDENT_LIVE_WEB_MAIN_READ_IN_TODAYS_DUE_STAGE_REUSED",
+      "result": "Dynamic alerts not extracted; no inference from blank block",
+      "proof": ".run/due-news-review-20261104.md",
+      "currentlyExecutedAccessVerified": false
     }
   ],
-  "contentHash": "ad76135879ac4457601a6938a3cf6c68fd9a8f9999fefc8f47ab23ef96f1b7fc",
-  "contentHashScope": "SHA256 JSON.stringify({title,tldr,body:body.trim()}) штатногоparseNote",
-  "sourceSha256": "da171ab5d02febd62f85ebf23155ce5d22d5b8be135d31f2b3d16958ace6ef13",
-  "sourceSha256Scope": "ПолныйMarkdownточнойфинальнойверсии",
-  "actualClipTitle": "Сансет-Крейтер: объезд продлили до 3 ноября",
-  "tldrCheck": {
-    "ok": true
+  "contentHash": "d5068892ad9e8e7fe10ed06f3b78d37f7d6aa365052efae978f177ed6ab09f3d",
+  "contentHashScope": "SHA256 UTF-8 JSON.stringify({title:parseNote.data.title,tldr:parseNote.data.tldr,body:parseNote.body.trim()}); same parseNote scalar unquoting as scripts/news-gate.mjs",
+  "sourceSha256": "06f2f8b4f55ab2cb16937697ac14698f8ce89db00f0b7b0110a73911b3ac86ea",
+  "sourceSha256Scope": "SHA256 exact final Markdown UTF-8 bytes including frontmatter and trailing newline; independently matched native shasum",
+  "reviewedFiles": {
+    "markdown": "src/content/news/2026-09-22-sunset-crater-road-detour.md",
+    "image": "src/content/news/_images/2026-09-22-sunset-crater-road-detour.jpg"
   },
+  "unchangedProseFromPreviousReview": false,
+  "tldrCheck": {
+    "ok": true,
+    "wordCount": 49
+  },
+  "bodyWordCount": 185,
   "photoProof": {
     "image": "./_images/2026-09-22-sunset-crater-road-detour.jpg",
     "imageSha256": "212fc5ca130604f93e964c8f200bc3b2b06ef2b441268c258d6cc72c4be669e6",
@@ -44,218 +73,115 @@
     "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
     "source": "https://commons.wikimedia.org/w/index.php?curid=63612536",
     "title": "Млечный Путь над тропой Lava Flow у Сансет-Крейтера. Архивный вид парка, не дорожных работ 2026 года.",
+    "alt": "Деревянный мостик на тропе у Сансет-Крейтера под звёздным небом",
     "changes": null,
-    "viewedByThisReviewer": false,
-    "priorImageHashMatched": true,
-    "provenanceMethod": "Неизменный финальный JPEG сопоставлен SHA 256 с прежней независимой рецензией. Повторное чтение Commons и новый визуальный просмотр в текущем адресном ревью не заявлены.",
-    "publicAttribution": "PENDING_FINAL_BUILD_AND_LIVE"
+    "gitImageUnchangedFromBase": true,
+    "previousImageSha256": "212fc5ca130604f93e964c8f200bc3b2b06ef2b441268c258d6cc72c4be669e6",
+    "previousImageHashMatched": true,
+    "viewedByThisReviewerThisPass": false,
+    "viewedAt": null,
+    "provenanceMethod": "Unchanged image and existing attribution retained; prior review provenance and git HEAD remain recoverable. No new live license verification or new visual inspection claimed.",
+    "publicAttribution": "PENDING_FINAL_RENDER_AND_LIVE"
   },
   "criteria14": [
     {
       "id": 1,
       "criterion": "Задача читателя",
       "score": 10,
-      "evidence": "Полностью прочитаны заголовок, капсула и тело; конкретный вопрос о маршруте/правиле/природном результате ясно назван."
+      "evidence": "Проверен один интент title/tldr/body: какое решение о доступе/поездке действительно подтверждает датированный источник."
     },
     {
       "id": 2,
       "criterion": "Обоснование темы",
-      "score": 5,
-      "evidence": "Проверяется точечная фактическая поправка уже существующей заметки; новое исследование пяти Google сайтов не заявлено. Оценка повода по RUBRIC сохранена независимо от квоты."
+      "score": 10,
+      "evidence": "Заданная адресная коррекция либо контроль существующего URL по наступившему reviewOn. Это не NEW и не содержательная переработка всей темы; новое исследование спроса/пять Google-текстов не имитировались."
     },
     {
       "id": 3,
       "criterion": "Место в проекте",
       "score": 5,
-      "evidence": "Существующий URL сохранён; полный аудит кластера/входящих связей не выполнен."
+      "evidence": "Сохраняется существующий URL и отдельная задача заметки. Общий аудит каннибализации/кластера и утверждённые 2–3 эталона формата в этом адресном scope не проверялись."
     },
     {
       "id": 4,
       "criterion": "Полнота и прямой ответ",
       "score": 10,
-      "evidence": "Статус и практическое ограничение даны в начале; источник/дата отделены от неизвестного текущего исполнения. checkTldr выполнен."
+      "evidence": "Точная капсула 49 слов (норма 40–60), тело 185 слов (норма 150–350). Ответ дан сразу; границы известного и следующий адресный шаг названы. Финал полностью прочитан либо неизменность уже прочитанной прозы доказана contentHash."
     },
     {
       "id": 5,
       "criterion": "Собственный вклад",
       "score": 5,
-      "evidence": "Ожидаемая дата перенесена 30 Oct→3 Nov 16:00; анонс 29 Oct отделён от общей conditions без срока. Ожидание открытия не объявлено состоявшимся событием. Это редакторское объяснение, не собственное полевое исследование."
+      "evidence": "Вклад — адресное различение плана, исполнения и неизвестного; собственного полевого опыта или нового исследования не заявлено."
     },
     {
       "id": 6,
       "criterion": "Факты и источники",
       "score": 10,
-      "evidence": "Обновлённый NPS release 29 Oct ожидает открытие FR 545 3 Nov к 16:00, возможна задержка из-за погоды. Wupatki остаётся подъездом;19 миль/30 мин относятся междувизитцентрами. FR 776 грунтовая, высокийклиренс, без RV/прицепов. Строка старого 30 Oct ниже не отменяет новый верхний notice."
+      "evidence": "Существенные тезисы сопоставлены с прочитанными подходящими источниками, датами и ограничениями sourceChecks; сегодняшние неизвестные не выданы за доступ/открытие. Дата 3 ноября 16:00 — ожидание старого анонса; 19 миль/30 мин — между визит-центрами, не универсальная прибавка."
     },
     {
       "id": 7,
       "criterion": "Числа и примеры",
       "score": 10,
-      "evidence": "Даты, диапазоны и числа адресной поправки сверены; прогноз/план не округлён до гарантии. Денежных обещаний нет. Обновлённый NPS release 29 Oct ожидает открытие FR 545 3 Nov к 16:00, возможна задержка из-за погоды. Wupatki остаётся подъездом;19 миль/30 мин относятся междувизитцентрами. FR 776 грунтовая, высокийклиренс, без RV/прицепов. Строка старого 30 Oct ниже не отменяет новый верхний notice."
+      "evidence": "Дата 3 ноября 16:00 — ожидание старого анонса; 19 миль/30 мин — между визит-центрами, не универсальная прибавка. Даты публикации/проверки не смешаны с датой события; выдуманного расчёта нет."
     },
     {
       "id": 8,
       "criterion": "Исключения и применимость",
       "score": 10,
-      "evidence": "Ожидаемая дата перенесена 30 Oct→3 Nov 16:00; анонс 29 Oct отделён от общей conditions без срока. Ожидание открытия не объявлено состоявшимся событием."
+      "evidence": "Историческое объявление, прогноз и нынешнее состояние разведены. Территория/участок не расширены до всего направления; окончание срока не объявлено автоматическим разрешением."
     },
     {
       "id": 9,
       "criterion": "Авторство и доверие",
       "score": 5,
-      "evidence": "Автор Codex и рецензент Codex различны. Чужие наблюдения не присвоены. Публичный byline/JSON-LD ожидают рендера."
+      "evidence": "В исходнике автор Codex (tt-author-20261104); reviewer отличается. Нет выдуманного личного опыта или обращения к Claude. Публичные byline/profile/schema до точного рендера не подтверждены."
     },
     {
       "id": 10,
       "criterion": "Редактура и естественный язык",
       "score": 10,
-      "evidence": "Вся финальная проза прочитана; исправленная временная связь ясна, гиперболы/придуманныйличныйопыт отсутствуют."
+      "evidence": "Отдельный фактический и смысловой проходы выполнены на точном финале; нет найденной смысловой подмены или оставшегося срочного ложного совета. Датировки и конкретные оговорки читаются связно; новый материал не копирует композицию или чужой опыт."
     },
     {
       "id": 11,
       "criterion": "SEO-обещание и метаданные",
       "score": 5,
-      "evidence": "Фактический clipTitle совпадаетс заголовком: длина≤60, мысль завершена. OG/canonical/SSR не проверены."
+      "evidence": "Title/tldr соответствуют содержанию; date/added сохранены у прежних заметок, checked не освежён у четырёх KEEP. Новые даты не обещают исполнение. Canonical, OG, H 1/SSR и итоговый clip/render ещё ожидают проверки."
     },
     {
       "id": 12,
       "criterion": "Ссылки и навигация",
       "score": 5,
-      "evidence": "Буквальные ссылки и смысл анкора прочитаны в контексте; их известные цели соответствуют стране/теме. Новый HTTP проход и весь кластер не приняты."
+      "evidence": "Осмысленные внутренние ссылки проверены по source и прочитанной ранней квитанции .run/early-news-20261104.json; существующие цели получили HTTP 200, два взаимных news URL отмечены только PLANNED_SOURCE_PRESENT. Это не финальная проверка построенных ссылок/якорей и входящих связей."
     },
     {
       "id": 13,
       "criterion": "Оформление и доступность",
       "score": 5,
-      "evidence": "Неизменный JPEG проверенпо SHA 256; архивная подпись и унаследованная лицензия сохранены. Новый Commons/live атрибуция и 402/1280 рендернепроверены."
+      "evidence": "Медиа не изменены; текущие SHA сверены с прежними доказательствами/неизменностью файлов в HEAD. Повторного просмотра или новой проверки лицензии старых фото не заявлено. Рендер 402/1280, публичная атрибуция и доступность pending."
     },
     {
       "id": 14,
       "criterion": "Готовность выпуска",
       "score": 0,
-      "evidence": "Build/обязательный CI/exactdeploy/live не выполнялись; редакционный допуск только указанной версии текста."
+      "evidence": "Только editorial exact-source review. Полный source/build gate, все применимые CI, deploy identity, live HTTP/SSR/SEO/feed/sitemap и 402/1280 render в этом ревью не выполнены. releaseApproved=false."
     }
   ],
-  "qualityCriteria": [
-    {
-      "id": 1,
-      "criterion": "Задача читателя",
-      "score": 10,
-      "evidence": "Полностью прочитаны заголовок, капсула и тело; конкретный вопрос о маршруте/правиле/природном результате ясно назван."
-    },
-    {
-      "id": 2,
-      "criterion": "Обоснование темы",
-      "score": 5,
-      "evidence": "Проверяется точечная фактическая поправка уже существующей заметки; новое исследование пяти Google сайтов не заявлено. Оценка повода по RUBRIC сохранена независимо от квоты."
-    },
-    {
-      "id": 3,
-      "criterion": "Место в проекте",
-      "score": 5,
-      "evidence": "Существующий URL сохранён; полный аудит кластера/входящих связей не выполнен."
-    },
-    {
-      "id": 4,
-      "criterion": "Полнота и прямой ответ",
-      "score": 10,
-      "evidence": "Статус и практическое ограничение даны в начале; источник/дата отделены от неизвестного текущего исполнения. checkTldr выполнен."
-    },
-    {
-      "id": 5,
-      "criterion": "Собственный вклад",
-      "score": 5,
-      "evidence": "Ожидаемая дата перенесена 30 Oct→3 Nov 16:00; анонс 29 Oct отделён от общей conditions без срока. Ожидание открытия не объявлено состоявшимся событием. Это редакторское объяснение, не собственное полевое исследование."
-    },
-    {
-      "id": 6,
-      "criterion": "Факты и источники",
-      "score": 10,
-      "evidence": "Обновлённый NPS release 29 Oct ожидает открытие FR 545 3 Nov к 16:00, возможна задержка из-за погоды. Wupatki остаётся подъездом;19 миль/30 мин относятся междувизитцентрами. FR 776 грунтовая, высокийклиренс, без RV/прицепов. Строка старого 30 Oct ниже не отменяет новый верхний notice."
-    },
-    {
-      "id": 7,
-      "criterion": "Числа и примеры",
-      "score": 10,
-      "evidence": "Даты, диапазоны и числа адресной поправки сверены; прогноз/план не округлён до гарантии. Денежных обещаний нет. Обновлённый NPS release 29 Oct ожидает открытие FR 545 3 Nov к 16:00, возможна задержка из-за погоды. Wupatki остаётся подъездом;19 миль/30 мин относятся междувизитцентрами. FR 776 грунтовая, высокийклиренс, без RV/прицепов. Строка старого 30 Oct ниже не отменяет новый верхний notice."
-    },
-    {
-      "id": 8,
-      "criterion": "Исключения и применимость",
-      "score": 10,
-      "evidence": "Ожидаемая дата перенесена 30 Oct→3 Nov 16:00; анонс 29 Oct отделён от общей conditions без срока. Ожидание открытия не объявлено состоявшимся событием."
-    },
-    {
-      "id": 9,
-      "criterion": "Авторство и доверие",
-      "score": 5,
-      "evidence": "Автор Codex и рецензент Codex различны. Чужие наблюдения не присвоены. Публичный byline/JSON-LD ожидают рендера."
-    },
-    {
-      "id": 10,
-      "criterion": "Редактура и естественный язык",
-      "score": 10,
-      "evidence": "Вся финальная проза прочитана; исправленная временная связь ясна, гиперболы/придуманныйличныйопыт отсутствуют."
-    },
-    {
-      "id": 11,
-      "criterion": "SEO-обещание и метаданные",
-      "score": 5,
-      "evidence": "Фактический clipTitle совпадаетс заголовком: длина≤60, мысль завершена. OG/canonical/SSR не проверены."
-    },
-    {
-      "id": 12,
-      "criterion": "Ссылки и навигация",
-      "score": 5,
-      "evidence": "Буквальные ссылки и смысл анкора прочитаны в контексте; их известные цели соответствуют стране/теме. Новый HTTP проход и весь кластер не приняты."
-    },
-    {
-      "id": 13,
-      "criterion": "Оформление и доступность",
-      "score": 5,
-      "evidence": "Неизменный JPEG проверенпо SHA 256; архивная подпись и унаследованная лицензия сохранены. Новый Commons/live атрибуция и 402/1280 рендернепроверены."
-    },
-    {
-      "id": 14,
-      "criterion": "Готовность выпуска",
-      "score": 0,
-      "evidence": "Build/обязательный CI/exactdeploy/live не выполнялись; редакционный допуск только указанной версии текста."
-    }
-  ],
-  "minimumFiveVerifiedTens": true,
-  "verifiedTensCount": 6,
-  "blockingIssues": [],
-  "processBlockingIssues": [
-    "CI/exactdeploy/live ещёнеприняты."
+  "criteria14TenCount": 7,
+  "evidence": [
+    ".run/due-news-review-20261104.md",
+    ".run/early-news-20261104.json"
   ],
   "limitations": [
-    "Это адресное ревью фактической поправки, не новое полное исследование Google и не releasePASS.",
-    "Неизменные фото/лицензии связаны с прежним доказательством по точному хешу; новые визуальнаяпроверка Commons/атрибуции не заявлены."
+    "Editorial assessment does not measure traffic, income or human reader outcomes.",
+    "No real target-reader test or own trip/observation claimed.",
+    "Release, final public rendering and deployed source identity remain pending."
   ],
-  "nextReview": "2026-11-03T00:00:00.000Z",
-  "previousAssessment": {
-    "reviewer": "Codex (news_final_review_20261025)",
-    "reviewedAt": "2026-10-25T10:26:34.718Z",
-    "sourceSha256": "513e0dcc14cc6d2d65ef22fbe8dbaf5cf24dd2851ae2570a033d7001f57b0613",
-    "contentHash": "4e6786ec2ca8f00933743544fee8cfe9064f4d50695ad364e007025ca67d3196"
-  },
-  "researchApplicability": {
-    "kind": "TARGETED_FACTUAL_CORRECTION",
-    "requiredForThisDelta": false,
-    "reason": "Точная дата/статус/ссылка на уже описанный факт; не новый полный ответ и не содержательнаяпереработка."
-  },
-  "finalDeltaReview": {
-    "previousSourceSha256": "64357680f936772e1af692b02ce893cbfb698cd7a6a9c6d0daed6934ab84b5c7",
-    "previousContentHash": "b0d210d0532e6213d353bcee61328a314173b7dc5cfffc4df898454e61c04ebc",
-    "reviewedAt": "2026-11-01",
-    "scope": "Только перестановка даты и времени в капсуле и первом абзаце; остальные слова, числа и условия неизменны.",
-    "finding": "Самостоятельно перечитан весь финальный текст. «3 ноября к16:00» сохраняет значение by4pm3Nov, погодную оговорку и отсутствие гарантии открытия. Числа не удалены и gate не изменён.",
-    "red": {
-      "ok": false,
-      "reason": "числа 003 нет на странице источника"
-    },
-    "green": {
-      "ok": true
-    }
+  "reviewOnRecommendation": {
+    "value": "2026-11-05",
+    "archived": false,
+    "meaning": "Editorial control date only; no proof of opening or event execution."
   }
 }
