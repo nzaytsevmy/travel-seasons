@@ -4,15 +4,15 @@
   "reviewer": "Codex (article_review_20261104)",
   "reviewerTask": "/root/article_review_20261104",
   "authoredBy": "Codex (tt-author-20261104)",
-  "reviewedAt": "2026-11-04T11:32:05.098Z",
+  "reviewedAt": "2026-11-04T12:23:30.189Z",
   "approvalScope": "EDITORIAL_ONLY",
   "approved": true,
   "editorialApproved": true,
   "editorialVerdict": "PASS",
   "releaseApproved": false,
-  "releaseStatus": "HOLD_PENDING_REQUIRED_CI_DEPLOY_LIVE",
-  "proseHash": "c80573abfe47caa1",
-  "sourceSha256": "d402d78a4d5c63d2b297a749daa69e9f710039a0a6ee8de0712ea607a7cb0d8d",
+  "releaseStatus": "HOLD_PENDING_NEW_COMMIT_FULL_CI_DEPLOY_LIVE",
+  "proseHash": "9df948c5b383e245",
+  "sourceSha256": "79582b0a7840236e166a310c0ed5c2dbe659dea05cda3e18211de46efbfc1e59",
   "qualityScore": {
     "topic": 9,
     "facts": 9,
@@ -101,7 +101,7 @@
       "id": 13,
       "criterion": "Оформление и доступность",
       "score": 5,
-      "evidence": "Все4кадра лично просмотрены,alt исправлены; Commonsmetadata и _credits подтверждают авторов/лицензии/обработку. Теперь3снимка PhotoGallery соответствуют guard>=3. Публичная атрибуция,402/1280 и доступность финальной версии не проверены."
+      "evidence": "Все4кадра лично просмотрены,alt исправлены; Commonsmetadata и _credits подтверждают авторов/лицензии/обработку. Теперь3снимка PhotoGallery соответствуют guard>=3. Публичная атрибуция,402/1280 и доступность финальной версии не проверены. Дополнительно лично просмотрен пятый кадр, GaryTodd/CC0/22Jan2008 независимо сверены по живойCommonsстранице; новыйfigure соответствует подписи и даёт4bodyфото по неизменённому текущему тесту. Полный повторныйCI ещё не выполнен."
     },
     {
       "id": 14,
@@ -116,16 +116,21 @@
       "cover.jpg",
       "gardens.jpg",
       "lotus.jpg",
-      "flowers.jpg"
+      "flowers.jpg",
+      "src/content/blog/_images/fukuok-ili-haynan/nanshan.jpg"
     ],
     "credits": "src/content/blog/_images/nanshan-hainan/_credits.json",
     "licenses": [
       "CC BY 4.0",
       "CC0",
       "CC BY-SA 3.0",
+      "CC0",
       "CC0"
     ],
-    "publicAttribution": "PENDING_BUILD_LIVE"
+    "publicAttribution": "PENDING_BUILD_LIVE",
+    "additionalCredits": "src/content/blog/_images/fukuok-ili-haynan/_credits.json:nanshan",
+    "totalIncludingCover": 5,
+    "bodyPhotographs": 4
   },
   "monetizationReview": {
     "verdict": "EDITORIAL_COVERAGE_APPROVED_PENDING_RENDER",
@@ -151,20 +156,63 @@
       "commit": "c675fac2fdedb3bb976d43c55d5a501902ca0fb9",
       "archive": "work/routines-20261104/nanshan-review.json",
       "scope": "Prior complete editorial approval, preserved in local ancestor commit and archive"
+    },
+    {
+      "reviewedAt": "2026-11-04T11:32:05.098Z",
+      "proseHash": "c80573abfe47caa1",
+      "sourceSha256": "d402d78a4d5c63d2b297a749daa69e9f710039a0a6ee8de0712ea607a7cb0d8d",
+      "commit": "278f09e8b21ef66ad5097c9e70584f772e1a4425",
+      "scope": "Previous exact two-sentence editorial approval; complete review preserved in ancestor commit"
     }
   ],
   "deltaReview": {
     "reviewer": "Codex (article_review_20261104)",
-    "reviewedAt": "2026-11-04T11:32:05.098Z",
-    "scope": "EXACT_TWO_REPLACEMENTS_EDITORIAL_ONLY",
-    "baselineCommit": "c675fac2fdedb3bb976d43c55d5a501902ca0fb9",
-    "previousProseHash": "829d1ecad20f03e0",
-    "currentProseHash": "c80573abfe47caa1",
-    "previousSourceSha256": "d1bc0bb03496992f04f9e697592693ef33478f2cfa8650fedb74eac0a323ab79",
-    "currentSourceSha256": "d402d78a4d5c63d2b297a749daa69e9f710039a0a6ee8de0712ea607a7cb0d8d",
+    "reviewedAt": "2026-11-04T12:23:30.189Z",
+    "scope": "ONE_ADDITIONAL_BODY_PHOTO_AND_CHECK_COUNT_ONLY",
+    "baselineCommit": "278f09e8b21ef66ad5097c9e70584f772e1a4425",
     "verdict": "PASS",
-    "evidence": "Exact full-file comparison confirmed only two replacements: gardens caption now describes visible palms/gate positively, preserving January2008 archive date; first review sentence now separates product terms from ratings/stories. Adjacent context and original four photographed scenes were already reviewed; no facts,price,passport terms,offer,license,metadata or quality axes changed.",
-    "trigger": "Native pre-push rejected three occurrences of «не только» at unchanged limit2. This review does not itself claim the subsequent source-preflight passed.",
+    "previousProseHash": "c80573abfe47caa1",
+    "currentProseHash": "9df948c5b383e245",
+    "currentSourceSha256": "79582b0a7840236e166a310c0ed5c2dbe659dea05cda3e18211de46efbfc1e59",
+    "sourceComparison": "Full-file exact comparison confirmed only Image/statueWide imports, one figure after statue section and checks count4→5; all other prose/offer/prices/passport/metadata unchanged.",
+    "photoEvidence": {
+      "file": "src/content/blog/_images/fukuok-ili-haynan/nanshan.jpg",
+      "sha256": "451c166491c122f39f14a4aefb3f44c2438e04dd2faf79f6202f2f940b19e39a",
+      "viewedByThisReviewer": true,
+      "visualFinding": "Guanyin on full marine platform; sea and shore foreground, bridge to left, grey sky. Alt and January2008 archival caption match; not passed as current or personal image.",
+      "metadata": "src/content/blog/_images/fukuok-ili-haynan/_credits.json:nanshan",
+      "primarySource": "https://commons.wikimedia.org/wiki/File:Bodhisattva_Guanyin_Statue,_Nanshan_Guanyin_Park_(10098563726).jpg",
+      "primaryPageIndependentlyRead": true,
+      "creator": "Gary Todd from Xinzheng, China",
+      "license": "CC0 1.0",
+      "taken": "2008-01-22 12:57"
+    },
+    "gateEvidence": {
+      "originalFailure": "work/routines-20261104/article-content-ci-failure.log",
+      "test": "tests/content-invariants.spec.ts:1359",
+      "h2": 8,
+      "bodyIllustrations": 4,
+      "coverCounted": false,
+      "sourceAssertion": "PASS_CURRENT_UNCHANGED_COUNTING_LOGIC",
+      "fullCi": "PENDING_NEW_COMMIT_REQUIRED"
+    },
+    "qualityAxesUnchanged": true,
     "releaseApproved": false
-  }
+  },
+  "deltaReviews": [
+    {
+      "reviewer": "Codex (article_review_20261104)",
+      "reviewedAt": "2026-11-04T11:32:05.098Z",
+      "scope": "EXACT_TWO_REPLACEMENTS_EDITORIAL_ONLY",
+      "baselineCommit": "c675fac2fdedb3bb976d43c55d5a501902ca0fb9",
+      "previousProseHash": "829d1ecad20f03e0",
+      "currentProseHash": "c80573abfe47caa1",
+      "previousSourceSha256": "d1bc0bb03496992f04f9e697592693ef33478f2cfa8650fedb74eac0a323ab79",
+      "currentSourceSha256": "d402d78a4d5c63d2b297a749daa69e9f710039a0a6ee8de0712ea607a7cb0d8d",
+      "verdict": "PASS",
+      "evidence": "Exact full-file comparison confirmed only two replacements: gardens caption now describes visible palms/gate positively, preserving January2008 archive date; first review sentence now separates product terms from ratings/stories. Adjacent context and original four photographed scenes were already reviewed; no facts,price,passport terms,offer,license,metadata or quality axes changed.",
+      "trigger": "Native pre-push rejected three occurrences of «не только» at unchanged limit2. This review does not itself claim the subsequent source-preflight passed.",
+      "releaseApproved": false
+    }
+  ]
 }
