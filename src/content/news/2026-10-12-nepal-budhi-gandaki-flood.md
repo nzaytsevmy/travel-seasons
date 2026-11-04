@@ -9,7 +9,7 @@ title: "Буди-Гандаки: ремонт троп не подтвержда
 date: "2026-10-11"
 added: "2026-10-12"
 checked: "2026-11-03"
-reviewOn: "2026-11-04"
+reviewOn: "2026-11-06"
 topic: nature
 impact: high
 score: 4
