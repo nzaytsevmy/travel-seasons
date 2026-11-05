@@ -5,7 +5,7 @@ added: 2026-09-22
 checked: "2026-11-04"
 topic: transport
 impact: medium
-reviewOn: "2026-11-05"
+reviewOn: "2026-11-06"
 score: 4
 authoredBy: "Codex (tt-author-20261104)"
 reviewRef: "news/reviews/2026-09-22-sunset-crater-road-detour.json"
