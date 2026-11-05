@@ -47,7 +47,7 @@ try {
       for (const width of WIDTHS) {
         const row = { path, width, findings: [] };
         try {
-          row.findings = await checkPageStructure(page, `${origin}${path}?release_qa=${Date.now()}`, width);
+          row.findings = await checkPageStructure(page, `${origin}${path}?release_qa=${Date.now()}`, width, { live: !preview });
           const galleries = page.locator('.post-gallery');
           const articleSlug = path.match(/^\/blog\/([a-z0-9-]+)\/$/)?.[1];
           const articleSource = articleSlug && `src/content/blog/${articleSlug}.mdx`;

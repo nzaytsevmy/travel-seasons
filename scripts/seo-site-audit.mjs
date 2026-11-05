@@ -9,6 +9,9 @@ import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { headMetadata, duplicateMetadata, destinationIdCollisions } from './lib/seo-identity.mjs';
 import { headingStructure } from './lib/heading-structure.mjs';
+import { googlebotAllowed, hasNoindex } from './lib/search-indexability.mjs';
+import { DIRECTIONS, MONTHS } from '../src/data/directions.js';
+import { NICHE_TRIPS } from '../src/data/niche-trips.js';
 
 const DIST = process.argv[2] || 'dist';
 const ORIGIN = 'https://traveltribe.ru';
@@ -53,26 +56,39 @@ const urlOf = (f) => {
   return ORIGIN + '/' + rel;
 };
 
+const findings = [];
+const locations = xml => [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1].trim());
+
 function sitemapUrls() {
   const urls = new Set();
-  const idx = join(DIST, 'sitemap-index.xml');
-  const files = [];
-  if (existsSync(idx)) {
-    for (const l of readFileSync(idx, 'utf8').match(/<loc>([^<]+)<\/loc>/g) || [])
-      files.push(l.replace(/<\/?loc>/g, '').replace(ORIGIN + '/', ''));
+  const index = join(DIST, 'sitemap-index.xml');
+  const xml = existsSync(index) ? readFileSync(index, 'utf8') : '';
+  const children = locations(xml);
+  if (!/<sitemapindex(?:\s|>)/.test(xml) || !/<\/sitemapindex>\s*$/.test(xml) || !children.length) {
+    findings.push(['sitemap.invalid_or_empty_index', index]);
+    return urls;
   }
-  for (const f of files) {
-    const p = join(DIST, f);
-    if (!existsSync(p)) { console.log(`FAIL sitemap-index → нет файла ${f}`); continue; }
-    if (f.includes('images')) continue; // image-sitemap — другие правила
-    for (const l of readFileSync(p, 'utf8').match(/<loc>([^<]+)<\/loc>/g) || [])
-      urls.add(l.replace(/<\/?loc>/g, ''));
+  for (const url of children) {
+    const parsed = URL.parse(url);
+    const child = parsed?.origin === ORIGIN && !parsed.search && !parsed.hash
+      && parsed.pathname.match(/^\/([\w.-]+\.xml)$/)?.[1];
+    if (!child) { findings.push(['sitemap.invalid_child', url]); continue; }
+    const file = join(DIST, child);
+    if (!existsSync(file)) { findings.push(['sitemap.missing_child', url]); continue; }
+    if (child === 'sitemap-images.xml') continue;
+    const xml = readFileSync(file, 'utf8');
+    const entries = locations(xml);
+    if (!/<urlset(?:\s|>)/.test(xml) || !/<\/urlset>\s*$/.test(xml) || !entries.length) {
+      findings.push(['sitemap.invalid_or_empty_child', url]);
+      continue;
+    }
+    for (const entry of entries) urls.add(entry);
   }
   return urls;
 }
 const smUrls = sitemapUrls();
-
-const findings = [];
+const robotsPath = join(DIST, 'robots.txt');
+const canCrawl = googlebotAllowed(existsSync(robotsPath) ? readFileSync(robotsPath, 'utf8') : '');
 const pages = new Map();
 const GENERIC = /^(тут|здесь|сюда|читать(\s+(далее|дальше|ещё|еще))?|ссылка|click here|read more|learn more|далее)[\s.…]*$/i;
 // «Подробнее» допустимо ТОЛЬКО как вторичная ссылка при наличии в том же блоке
@@ -91,13 +107,14 @@ for (const f of htmlFiles) {
   page.canonical = canons[0] || null;
   const isStub = page.canonical && page.canonical !== url; // легаси-склейка
   Object.assign(page, headMetadata(html), { url, stub: !!isStub });
-  if (canons.length === 0) findings.push(['canonical.missing', url]);
+  if (canons.length === 0 || !page.canonical) findings.push(['canonical.missing', url]);
   else if (canons.length > 1) findings.push(['canonical.multiple', url, canons.join(' | ')]);
 
   const metas = tags(head, 'meta');
   const metaBy = (key, val) => metas.filter(t => (t.attrs[key] || '').toLowerCase() === val);
-  const robots = metaBy('name', 'robots')[0];
-  page.noindex = !!(robots && /noindex/i.test(robots.attrs.content || ''));
+  page.noindex = ['robots', 'googlebot'].some(name =>
+    metaBy('name', name).some(tag => hasNoindex(tag.attrs.content)));
+  if (smUrls.has(url) && !canCrawl(url)) findings.push(['sitemap.robots_blocked', url]);
   if (page.noindex && smUrls.has(url)) findings.push(['sitemap.noindex_url', url]);
   if (isStub && smUrls.has(url)) findings.push(['sitemap.non_canonical_url', url]);
 
@@ -257,6 +274,29 @@ for (const f of htmlFiles) {
   }
   for (const [target, text] of podrobneje)
     if (!seenDescriptive.has(target)) findings.push(['anchor.generic_text', url, `"${text}" → ${target} (нет описательного дубля)`]);
+}
+
+// The legacy country/month pages consolidate into the trip catalogue, including
+// intentionally excluded trips. Only the corresponding catalogue route qualifies.
+function excludedLegacyTrip(url, target) {
+  const match = new URL(url).pathname.match(/^\/seasons\/([^/]+)\/([^/]+)\/$/);
+  if (!match) return false;
+  const [, slug, month] = match;
+  if (target !== `${ORIGIN}/trips/${month}/${slug}/`) return false;
+  const monthIndex = MONTHS.findIndex(entry => entry.slug === month);
+  const direction = DIRECTIONS.find(entry => entry.slug === slug);
+  return monthIndex >= 0 && !!direction && (direction.r[monthIndex] === 'X' || NICHE_TRIPS.has(slug));
+}
+
+const canonicalTargets = new Map([...pages].map(([url, page]) => [new URL(url).href, page]));
+for (const [url, page] of pages) {
+  if (!page.canonical || page.canonical === url) continue;
+  const target = URL.parse(page.canonical);
+  const destination = target && canonicalTargets.get(target.href);
+  if (!destination || (destination.noindex && !excludedLegacyTrip(url, target.href)) || !canCrawl(target.href)
+    || URL.parse(destination.canonical || '')?.href !== target.href) {
+    findings.push(['canonical.invalid_target', url, page.canonical]);
+  }
 }
 
 findings.push(...duplicateMetadata([...pages.values()]));

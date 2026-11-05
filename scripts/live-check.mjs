@@ -28,7 +28,7 @@ try {
     const page = await context.newPage();
     for (const width of widths) {
       const bust = url + (url.includes('?') ? '&' : '?') + 'v=' + Math.random().toString(36).slice(2);
-      const findings = await checkPageStructure(page, bust, width);
+      const findings = await checkPageStructure(page, bust, width, { live: true });
       total += findings.length;
       console.log(`${findings.length ? '✖' : '✔'} ${url} @${width}px${findings.length ? '\n    ' + findings.join('\n    ') : ''}`);
     }

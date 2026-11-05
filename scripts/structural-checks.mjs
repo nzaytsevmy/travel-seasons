@@ -3,6 +3,8 @@
 // для теста в Content Gate (изменённые страницы на preview) и для живой проверки после
 // выкладки (scripts/live-check.mjs). К текущей дате не обращается: ожидаемый месяц берётся
 // из адреса страницы — иначе проверка повторит ту самую ошибку, которую должна ловить.
+import { hasHeaderNoindex, hasNoindex } from './lib/search-indexability.mjs';
+
 export const WIDTHS = [402, 768, 1024, 1280];
 // Потолок страниц за прогон: слияние тегов в полусотне статей не должно превращать гейт в часовой прогон.
 export const MAX_PAGES = 12;
@@ -39,13 +41,25 @@ export function monthCodesInLinks(hrefs) {
   return [...codes];
 }
 
-export async function checkPageStructure(page, url, width) {
+export async function checkPageStructure(page, url, width, { live = false } = {}) {
   const findings = [];
   await page.setViewportSize({ width, height: 900 });
   const response = await page.goto(url, { waitUntil: 'networkidle', timeout: 60000 });
   if (!response || response.status() >= 400) {
     findings.push(`HTTP ${response ? response.status() : 'нет ответа'}`);
     return findings;
+  }
+  if (live) {
+    const headers = await response.headersArray();
+    const type = headers.find(header => header.name.toLowerCase() === 'content-type')?.value;
+    if (response.status() !== 200) findings.push(`Expected HTTP 200, got ${response.status()}`);
+    if (!/^text\/html(?:\s*;|$)/i.test(type || '')) findings.push(`Expected HTML, got ${type || 'no Content-Type'}`);
+    if (hasHeaderNoindex(headers)) {
+      const directives = await page.locator('head meta[name="robots" i], head meta[name="googlebot" i]')
+        .evaluateAll(tags => tags.map(tag => tag.content));
+      if (!directives.some(hasNoindex)) findings.push('Unexpected X-Robots-Tag noindex for Googlebot');
+    }
+    if (findings.length) return findings;
   }
   // Прокрутка до низа: ленивые картинки должны загрузиться, иначе битую не отличить от неначатой.
   await page.evaluate(async () => {
