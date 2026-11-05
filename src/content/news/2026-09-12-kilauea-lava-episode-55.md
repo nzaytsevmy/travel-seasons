@@ -2,7 +2,7 @@
 title: "Килауэа: перед фонтанированием начались переливы лавы"
 date: '2026-09-11'
 checked: "2026-11-04"
-reviewOn: "2026-11-05"
+reviewOn: "2026-11-06"
 added: '2026-09-12'
 topic: nature
 impact: medium
