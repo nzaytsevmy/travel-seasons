@@ -18,12 +18,13 @@ test('domestic visa and packing pages use domestic documents throughout', () => 
     const visa = builtPage(visaPath);
     expect(visa.text, visaPath).toMatch(/загранпаспорт не нужен|документы для поездки по России/iu);
     expect(visa.text, visaPath).not.toMatch(/страница для штампа|за въезд берут сбор|безвизовый режим обычно|консульства (Дагестан|Карелия|Алтай|Камчатка)/iu);
+    expect(visa.html, visaPath).toContain('AdministrativeArea');
     expect(visa.html, visaPath).not.toMatch(/6 месяцев и пустой страницей|виза не нужна, но за въезд берут/iu);
     for (const suffix of ['', ...MONTHS.map((month) => `/${month.slug}`)]) {
       const path = `packing/${direction.slug}${suffix}`;
       const { text } = builtPage(path);
       expect(text, path).toMatch(/паспорт РФ|документ, на который оформлен билет/iu);
-      expect(text, path).not.toMatch(/штамп на границе|виза не нужна.{0,55}безвизовый въезд|виза не нужна.{0,32}весь год/iu);
+      expect(text, path).not.toMatch(/штамп на границе|виза не нужна.{0,55}безвизовый въезд|виза не нужна.{0,32}весь год|при потере загранпаспорта для возврата|пригодится на границе и при заселении|для визы — нужна|паспорта и виз в облаке/iu);
     }
   }
 });

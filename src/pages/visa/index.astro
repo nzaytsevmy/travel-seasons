@@ -198,10 +198,10 @@ const ldJson = {
   {/* ⛔ Ключ в НАЧАЛЕ заголовка выдачи — канон проекта. «Визовый реестр» это
       наше внутреннее имя, спроса у него нет, а стояло оно первым словом. */}
   title="Виза для россиян 2026: куда пускают без визы и сколько стоит поездка"
-  description={`Визы для россиян в 2026: ${byVisa.free.length} ${NOUN.country(byVisa.free.length)} без визы, ${byVisa.evisa.length} с eVisa онлайн, ${byVisa.required.length} требуют визу. Стоимость, сроки и документы по 70+ направлениям.`}
+  description="Визы для россиян и документы для поездок по России. Найдите своё направление, проверенные правила и порядок уточнения условий въезда."
   canonical={url}
   ogTitle="Виза для россиян 2026: куда без визы и сколько стоит · TravelTribe"
-  ogDescription={`${byVisa.free.length} без визы · ${byVisa.evisa.length} eVisa · ${byVisa.required.length} требуют визу`}
+  ogDescription="Каталог направлений, документы и проверенные условия въезда."
   ldJson={ldJson}
 >
   <Breadcrumbs crumbs={[{ label: 'Визы' }]} />
@@ -289,7 +289,7 @@ const ldJson = {
         {cheapest && <div class="va-n"><b>≈ {fmtRub(cheapest.цена)} ₽</b><span>неделя с перелётом — {cheapest.nom}</span></div>}
       </section>
       </div>
-      <p class="va-next">Ниже — сам реестр. Он перестраивается отбором выше.</p>
+      <p class="va-next">Сводка показывает направления с проверенными правилами. Остальные доступны в группе «Уточнить правила».</p>
 
       <div class="va-cta-row">
         <a class="va-cta va-cta--primary" href="https://t.me/traveltriberu?utm_source=traveltribe&utm_medium=visa-hero" target="_blank" rel="noopener">

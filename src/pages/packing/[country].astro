@@ -156,8 +156,8 @@ const ldJson = {
         {d.docsMode === 'ru'
           ? (<li><strong>Полис ОМС</strong> — по России работает, за границей не действует. Отдельная туристическая страховка нужна не всем: её берут под эвакуацию из труднодоступных мест и под активности вроде треккинга и рафтинга. Цену считают по датам и активностям: <a href={cherehapaCountry(d.slug, `packing_${d.slug.replaceAll('-', '_')}`)} class="aff-cta" target="_blank" rel="sponsored noopener">Подобрать полис {d.cases.vP}</a> — оплата картой РФ, полис приходит в PDF.</li>)
           : (<li><strong>Страховка</strong> {d.slug === 'uzbekistan' ? '— для медицинских расходов в поездке' : needsVisa ? '— без полиса не примут документы на визу' : '— медпомощь платная, счёт за вечер в больнице бывает больше стоимости поездки'}. Цену считают по датам и стране: <a href={cherehapaCountry(d.slug, `packing_${d.slug.replaceAll('-', '_')}`)} class="aff-cta" target="_blank" rel="sponsored noopener">Подобрать полис {d.cases.vP}</a> — оплата картой РФ, полис приходит в PDF.</li>)}
-        <li><strong>Обратный билет</strong> или бронь выезда — часто проверяют на регистрации. Цены на ближайшие даты: <a href={aviasalesRoute('MOW', d.iata, affiliateSubId)} target="_blank" rel="sponsored noopener">посмотреть рейсы {d.cases.vP}</a>.</li>
-        <li><strong>Копии</strong> паспорта и виз в облаке + бумажные отдельно от оригиналов.</li>
+        <li>{d.domestic ? <><strong>Билет</strong> — сохраните номер брони и документ, на который оформлена поездка.</> : <><strong>Обратный билет</strong> или бронь выезда — проверьте требования к своему маршруту.</>} Цены на ближайшие даты: <a href={aviasalesRoute('MOW', d.iata, affiliateSubId)} target="_blank" rel="sponsored noopener">посмотреть рейсы {d.cases.vP}</a>.</li>
+        <li><strong>Копии документов</strong> — храните отдельно от оригиналов.</li>
       </ul>
     </section>
 

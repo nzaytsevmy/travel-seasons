@@ -3,7 +3,7 @@
 // SSR применяет дефолтный фильтр сразу → на загрузке CLS 0 (JS только меняет hidden).
 // Состояние галочек — в localStorage (ключ на preset). Schema ItemList + HowTo (опц.).
 import {
-  ITEMS, CATEGORIES, TRIP_TYPES, DURATIONS, WHO, KID_AGES, TRANSPORT, PRESETS, itemsForTrip,
+  ITEMS, CATEGORIES, TRIP_TYPES, DURATIONS, WHO, KID_AGES, TRANSPORT, PRESETS, DOMESTIC_ITEM_NOTES, itemsForTrip,
 } from '../data/packing-checklist.js';
 
 interface Item {
@@ -37,7 +37,10 @@ const uid = storageKey || `pck-${preset}`;
 // Без режима (общий чек-лист вне страницы направления) список остаётся полным.
 const allItems: Item[] = [...ITEMS, ...extraItems].filter(
   (it) => !it.docs?.length || !docsMode || it.docs.includes(docsMode),
-).map((it) => itemNotes[it.id] ? { ...it, note: itemNotes[it.id] } : it);
+).map((it) => {
+  const note = itemNotes[it.id] ?? (docsMode === 'ru' ? DOMESTIC_ITEM_NOTES[it.id] : undefined);
+  return note === undefined ? it : { ...it, note };
+});
 
 // Дефолты для SSR (совпадают с тем, что JS посчитает на загрузке — отсюда CLS 0).
 const DEF = { trip: lockedTrip || 'sea', duration: 'week', who: 'adult', kid: 'preschool', transport: 'plane' };
