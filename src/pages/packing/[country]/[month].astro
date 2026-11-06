@@ -115,7 +115,7 @@ const RANK = {
 const rank = RANK[status] || RANK.O;
 
 const visa = VISA_DETAILS[d.slug];
-const needsVisa = d.visa !== 'free';
+const needsVisa = !d.domestic && d.visa !== 'free';
 const plug = PLUG_TYPES[d.slug];
 const tags = ACTIVITY_TAGS[d.slug] || [];
 const affiliateSubId = `packing_${d.slug.replaceAll('-', '_')}`;
@@ -322,7 +322,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       <div class="pmu-vlist">
         <div class="pmu-vi"><span>Погода</span><div>{bucket.label}</div></div>
         {flightLow && <div class="pmu-vi"><span>{pageAdvice ? 'Перелёт' : 'Перелёт от'}</span><div>{pageAdvice ? 'Цена под даты' : `$${flightMonth || flightLow}`}</div></div>}
-        <div class="pmu-vi"><span>Виза</span><div>{needsVisa ? (visa?.cost || 'Нужна') : 'Не нужна'}</div></div>
+        <div class="pmu-vi"><span>{d.domestic ? 'Документы' : 'Виза'}</span><div>{d.domestic ? 'Паспорт РФ' : needsVisa ? (visa?.cost || 'Нужна') : 'Не нужна'}</div></div>
       </div>
     </section>
 
@@ -470,7 +470,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         {d.docsMode === 'id' && (<li><b>Внутренний паспорт РФ</b> — взрослому хватит его одного. Ребёнку до 14 лет нужен загранпаспорт: свидетельство о рождении для выезда не принимают с 20 января 2026 года{d.slug === 'abkhazia' ? ', и Абхазия — единственное исключение, там его принимают до конца 2027 года' : ''}.</li>)}
         {d.docsMode === 'abroad' && (<li><b>Загранпаспорт</b> — {pageAdvice?.passportNote || 'срок действия 6+ месяцев на момент въезда'}.</li>)}
         {needsVisa && visa && (<li><b>Виза:</b> {visa.duration}, {visa.cost}, {visa.timing}. <a href={`/visa/${d.slug}/`} class="pmu-link">детали визы</a></li>)}
-        {!needsVisa && (pageAdvice?.entry ? <li><b>Въезд и регистрация.</b> {pageAdvice.entry}</li> : <li><b>Виза не нужна</b> — {visa?.duration || 'безвизовый въезд'}.</li>)}
+        {!d.domestic && !needsVisa && (pageAdvice?.entry ? <li><b>Въезд и регистрация.</b> {pageAdvice.entry}</li> : <li><b>Виза не нужна</b> — {visa?.duration || 'безвизовый въезд'}.</li>)}
         {d.docsMode === 'ru'
           ? (<li><b>Карты:</b> российские карты работают как дома, наличные нужны в глухих местах и на рынках.</li>)
           : (<li><b>Карты:</b> Visa/MC российских банков не работают. UnionPay / МИР / иностранные — <a href="/cards/" class="pmu-link">карта платёжных систем</a>.</li>)}
