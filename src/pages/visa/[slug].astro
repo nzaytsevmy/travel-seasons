@@ -136,7 +136,9 @@ const остаток = summary.includes('. ') ? summary.slice(summary.indexOf('.
 const безПовтора = summary.toLowerCase().startsWith(первыеСлова(visaTitle)) && остаток.length >= 80
   ? остаток
   : summary;
-const metaDesc = routeMetadata?.description ?? (безПовтора.length > 203 ? безПовтора.slice(0, 200).replace(/\s+\S*$/, '') + '…' : безПовтора);
+const metaDesc = d.domestic
+  ? `Какие документы взять ${d.cases.vP} взрослому и ребёнку. Когда уточнить требования перевозчика и правила для пограничной зоны.`
+  : routeMetadata?.description ?? (безПовтора.length > 203 ? безПовтора.slice(0, 200).replace(/\s+\S*$/, '') + '…' : безПовтора);
 const costAnswer = noVisa
   ? (feeFree
       ? `Виза ${d.cases.vP} не нужна — въезд бесплатный, ${vd.timing}. Консульский сбор не платится.`
