@@ -31,13 +31,10 @@ const дешевейший = (список) => список
   .filter((d) => d.price?.flight && d.price?.hotel && d.price?.food)
   .map((d) => ({ slug: d.slug, nom: d.cases.nom, цена: tripCost(d.price) }))
   .sort((a, b) => a.цена - b.цена)[0] || null;
-const ОТВЕТ = [
-  // ⛔ Российские регионы из примера исключены: на визовой странице «дешевле
-  //    всех без визы — Дагестан» читается насмешкой, визы туда не бывает вовсе.
-  { код: 'без визы',   n: byVisa.free.length,     дёшево: дешевейший(byVisa.free.filter((d) => !d.domestic)) },
-  { код: 'виза онлайн', n: byVisa.evisa.length,    дёшево: дешевейший(byVisa.evisa) },
-  { код: 'консульство', n: byVisa.required.length, дёшево: дешевейший(byVisa.required) },
-].filter((x) => x.дёшево);
+const cheapest = дешевейший(DIRECTIONS.filter((d) => {
+  const { mode } = entries.get(d.slug);
+  return mode !== 'domestic' && mode !== 'unknown';
+}));
 
 // ⛔ Начальные счётчики кнопок считаются ПРИ СБОРКЕ, а не скриптом после
 //    загрузки. Скрипт вписывал их в разметку уже отрисованной страницы, и два
@@ -289,7 +286,7 @@ const ldJson = {
         <div class="va-n"><b>{byVisa.free.length}</b><span>без визы</span></div>
         <div class="va-n"><b>{byVisa.evisa.length}</b><span>виза онлайн</span></div>
         <div class="va-n"><b>{byVisa.required.length}</b><span>консульство</span></div>
-        <div class="va-n"><b>{fmtRub(ОТВЕТ[0].дёшево.цена)} ₽</b><span>дешевле всех — {ОТВЕТ[0].дёшево.nom}</span></div>
+        {cheapest && <div class="va-n"><b>≈ {fmtRub(cheapest.цена)} ₽</b><span>неделя с перелётом — {cheapest.nom}</span></div>}
       </section>
       </div>
       <p class="va-next">Ниже — сам реестр. Он перестраивается отбором выше.</p>
