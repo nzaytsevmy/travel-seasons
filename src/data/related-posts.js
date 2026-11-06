@@ -25,6 +25,7 @@ export const RELATED_POSTS = {
   ],
   'jordan': [
     { slug: 'petra-iordaniya', title: 'Петра в Иордании: маршрут на день и второй заход', kind: 'practical' },
+    { slug: 'wadi-rum-iz-akaby', title: 'Вади-Рам из Акабы: вход, джип-тур и маршрут на один день', kind: 'practical' },
   ],
   'mexico': [
     { slug: 'chichen-itsa', title: 'Чичен-Ица: что посмотреть, билет и утренний маршрут', kind: 'practical' },
