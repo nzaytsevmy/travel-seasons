@@ -1,7 +1,7 @@
 // One editorial record per entry regime. An expired or missing fact is unknown.
 const CHECKED = '2026-11-06';
 const REVIEW = '2026-12-06';
-const CONSULAR = 'https://www.kdmid.ru/';
+const CONSULAR = 'https://www.kdmid.ru/info-for-traveling-abroad/reference-information-for-traveling-abroad/list-of-countries-with-simplified-entry/';
 const AIR_DOCUMENTS = 'https://www.aeroflot.ru/info/booking-rules/';
 const EGYPT_VISA = 'https://www.visa2egypt.gov.eg/eVisa/FAQ';
 const THAI_VISA = 'https://moscow.thaiembassy.org/en/publicservice/revision-of-thailand-s-visa-exemption-and-visa-on-arrival-schemes';
