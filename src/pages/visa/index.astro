@@ -132,7 +132,15 @@ const ldJson = {
         <li><a href="/blog/turkey-guide-2026/">Путеводитель по Турции</a></li>
       </ul>
     </nav>
-    <footer class="va-foot"><p>Для работы, учёбы и транзита действуют отдельные правила. Условия туристической поездки и исключения указаны на странице страны.</p><p>Автор — <a href="/about/">Никита Зайцев</a></p></footer>
+    <footer class="va-foot">
+      <p>Для работы, учёбы и транзита действуют отдельные правила. Условия туристической поездки и исключения указаны на странице страны.</p>
+      <p>Автор — <a href="/about/">Никита Зайцев</a></p>
+      <div class="va-reader-actions">
+        <a href="https://t.me/traveltriberu?utm_source=traveltribe&utm_medium=visa-hero" target="_blank" rel="noopener">Дневник в Telegram</a>
+        <button type="button" id="visaShareBtn">Поделиться</button>
+      </div>
+      <p id="visaShareStatus" role="status" hidden></p>
+    </footer>
   </main>
   <Footer />
 </Layout>
@@ -188,6 +196,17 @@ const ldJson = {
     clear.addEventListener('click', () => { search.value = ''; filter(); search.focus(); });
     filter();
   }
+  document.querySelector('#visaShareBtn')?.addEventListener('click', async () => {
+    const status = document.querySelector<HTMLElement>('#visaShareStatus')!;
+    if (navigator.share) {
+      try { await navigator.share({ title: 'Визы и правила въезда — TravelTribe', url: location.href }); }
+      catch (error) { if (error instanceof Error && error.name !== 'AbortError') { status.hidden = false; status.textContent = 'Поделиться не удалось. Скопируйте адрес страницы из браузера.'; } }
+    } else {
+      status.hidden = false;
+      try { await navigator.clipboard.writeText(location.href); status.textContent = 'Ссылка скопирована.'; }
+      catch { status.textContent = 'Скопируйте адрес страницы из браузера.'; }
+    }
+  });
 </script>
 <style>
   .visa-archive { max-width: 1200px; margin: 0 auto; padding: 1.4rem clamp(1.1rem, 3vw, 2.6rem) 3rem; color: #15171a; }
@@ -204,7 +223,7 @@ const ldJson = {
   #visaSearch { min-width: 0; width: 100%; min-height: 48px; border: 0; background: transparent; padding: .4rem 0; font-size: 1.1rem; }
   #visaSearch::placeholder { color: #5c626b; font-style: normal; }
   #visaSearchClear { width: 44px; flex-shrink: 0; border: 0; background: transparent; font-size: 1.4rem; }
-  select { width: 100%; min-height: 48px; margin-top: .1rem; border: 1px solid #d9dbde; background: #fbfbfa; padding: .45rem .65rem; }
+  select { appearance: none; width: 100%; height: 48px; min-height: 48px; margin-top: .1rem; border: 1px solid #d9dbde; background: #fbfbfa url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%2315171a' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right .65rem center; padding: .45rem 2rem .45rem .65rem; }
   .va-extra { grid-column: 1 / -1; }
   .va-extra summary { width: fit-content; min-height: 44px; align-content: center; color: #1d40ae; cursor: pointer; }
   .va-extra-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: .4rem 0; }
@@ -228,6 +247,9 @@ const ldJson = {
   .va-faq summary { min-height: 44px; align-content: center; padding: .65rem 0; font-weight: 600; cursor: pointer; }
   .va-related ul { padding-left: 1.2rem; margin: .6rem 0 0; }
   .va-related a { display: inline-flex; align-items: center; min-height: 44px; }
+  .va-reader-actions { display: flex; flex-wrap: wrap; gap: 0 1.5rem; }
+  .va-reader-actions a, .va-reader-actions button { display: inline-flex; align-items: center; min-height: 44px; }
+  .va-reader-actions button { padding: 0; border: 0; background: transparent; color: #1d40ae; text-decoration: underline; cursor: pointer; }
   a { text-underline-offset: .2em; }
   :is(a, button, input, select, summary):focus-visible { outline: 2px solid #1d40ae; outline-offset: 4px; }
   [hidden] { display: none !important; }
