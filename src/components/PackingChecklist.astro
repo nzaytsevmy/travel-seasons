@@ -18,6 +18,7 @@ interface Props {
   itemNotes?: Record<string, string>;
   heading?: string;
   schema?: boolean;
+  editorial?: boolean;
   storageKey?: string;
   /** Режим документов направления: 'ru' | 'id' | 'abroad'. Не задан — список общий. */
   docsMode?: 'ru' | 'id' | 'abroad';
@@ -27,7 +28,7 @@ interface Props {
 
 const {
   preset = 'any', extraItems = [], heading, schema = true, storageKey,
-  docsMode, insuranceCta = null, itemNotes = {},
+  docsMode, insuranceCta = null, itemNotes = {}, editorial = false,
 } = Astro.props as Props;
 const presetCfg = PRESETS[preset] || PRESETS.any;
 const lockedTrip = presetCfg.trip;            // null для 'any'
@@ -78,11 +79,16 @@ const ld = schema
   : null;
 
 const title = heading || presetCfg.title;
+const Settings = editorial ? 'details' : 'div';
+const defaultCount = editorial ? allItems.filter(visibleDefault).length : 0;
 ---
-<section class="pck" data-uid={uid} data-locked-trip={lockedTrip || ''} aria-label={title}>
+<section class:list={['pck', { 'pck--editorial': editorial }]} data-editorial={editorial ? '1' : undefined} data-uid={uid} data-locked-trip={lockedTrip || ''} aria-label={title}>
   {ld && <script type="application/ld+json" set:html={JSON.stringify(ld)} />}
+  {editorial && <p class="pck-print-title">{title}</p>}
 
-  <div class="pck-filters">
+  <Settings class:list={[{ 'pck-settings': editorial }]}>
+    {editorial && <summary>Настроить список</summary>}
+    <div class="pck-filters">
     {showTripFilter && (
       <fieldset class="pck-fset">
         <legend>Тип поездки</legend>
@@ -144,11 +150,12 @@ const title = heading || presetCfg.title;
         ))}
       </div>
     </fieldset>
-  </div>
+    </div>
+  </Settings>
 
   <div class="pck-bar">
     <div class="pck-progress">
-      <span class="pck-progress-txt" aria-live="polite">Собрано 0 из 0</span>
+      <span class="pck-progress-txt" aria-live="polite">Собрано 0 из {defaultCount}</span>
       <div class="pck-progress-bar"><i></i></div>
     </div>
     <div class="pck-actions">
@@ -158,6 +165,14 @@ const title = heading || presetCfg.title;
       <button type="button" class="pck-btn" data-act="copy">Скопировать список</button>
     </div>
   </div>
+
+  {editorial && (
+    <div class="pck-copy-fallback" hidden>
+      <label>Скопируйте список вручную
+        <textarea readonly rows="5"></textarea>
+      </label>
+    </div>
+  )}
 
   <div class="pck-cats">
     {byCat.map((c) => (
@@ -195,8 +210,15 @@ const title = heading || presetCfg.title;
 </section>
 
 <script>
+  import { recordPrepInteraction } from '../scripts/prep-interactions.js';
+
   // Vanilla island: фильтрация по осям + localStorage + экспорт. Скоупится на каждый .pck.
   function initPck(root: HTMLElement) {
+    const editorial = root.dataset.editorial === '1';
+    let started = false;
+    function recordStart() {
+      if (editorial && !started) started = recordPrepInteraction('packing_start');
+    }
     const uid = root.dataset.uid || 'pck';
     const lockedTrip = root.dataset.lockedTrip || '';
     const items = Array.from(root.querySelectorAll<HTMLLIElement>('.pck-item'));
@@ -301,6 +323,7 @@ const title = heading || presetCfg.title;
       const id = cb.dataset.item || '';
       try { if (localStorage.getItem(lsKey(id)) === '1') cb.checked = true; } catch {}
       cb.addEventListener('change', () => {
+        if (cb.checked) recordStart();
         try { localStorage.setItem(lsKey(id), cb.checked ? '1' : '0'); } catch {}
         updateProgress();
       });
@@ -315,6 +338,7 @@ const title = heading || presetCfg.title;
         const act = btn.dataset.act;
         if (act === 'all' || act === 'none') {
           const on = act === 'all';
+          if (on) recordStart();
           for (const li of items) {
             if (li.hidden) continue;
             const cb = li.querySelector<HTMLInputElement>('.pck-cb');
@@ -324,6 +348,7 @@ const title = heading || presetCfg.title;
           }
           updateProgress();
         } else if (act === 'print') {
+          if (editorial) recordPrepInteraction('packing_print');
           window.print();
         } else if (act === 'copy') {
           const lines: string[] = [];
@@ -339,13 +364,26 @@ const title = heading || presetCfg.title;
             }
           }
           const text = lines.join('\n').trim();
+          const fallback = root.querySelector<HTMLElement>('.pck-copy-fallback');
           const done = () => {
+            if (fallback) fallback.hidden = true;
+            if (editorial) recordPrepInteraction('packing_copy');
             const old = btn.textContent;
             btn.textContent = 'Скопировано';
             setTimeout(() => { btn.textContent = old; }, 1500);
           };
+          const manualCopy = () => {
+            const field = fallback?.querySelector('textarea');
+            if (!fallback || !field) return;
+            fallback.hidden = false;
+            field.value = text;
+            field.focus();
+            field.select();
+          };
           if (navigator.clipboard?.writeText) {
-            navigator.clipboard.writeText(text).then(done).catch(() => {});
+            navigator.clipboard.writeText(text).then(done).catch(manualCopy);
+          } else {
+            manualCopy();
           }
         }
       }),
@@ -514,9 +552,28 @@ const title = heading || presetCfg.title;
     .pck-progress { flex: 0 0 auto; }
   }
 
+  .pck-settings { border-top: 1px solid #d9dbde; }
+  .pck-settings summary { min-height: 44px; align-content: center; cursor: pointer; color: #1d40ae; font-weight: 650; }
+  .pck--editorial .pck-chip, .pck--editorial .pck-btn {
+    min-height: 44px;
+    border-radius: 0;
+    background: transparent;
+  }
+  .pck--editorial .pck-chip:has(input:checked) { color: #1d40ae; text-decoration: underline; text-underline-offset: .2em; }
+  .pck--editorial .pck-lbl { min-height: 44px; }
+  .pck-copy-fallback { margin: .75rem 0; }
+  .pck-copy-fallback textarea { display: block; width: 100%; max-width: 60ch; margin-top: .35rem; font: inherit; }
+  .pck-print-title { display: none; }
+
   /* Печать: только чистый список без управления */
   @media print {
-    .pck-filters, .pck-bar, .pck-liq, .pck-foot { display: none !important; }
+    .pck-filters, .pck-bar, .pck-liq, .pck-foot, .pck-settings, .pck-copy-fallback { display: none !important; }
+    :global(body:has([data-prep-checklist]) > :not(main)),
+    :global(main:has([data-prep-checklist]) > :not([data-prep-checklist])),
+    :global([data-prep-checklist] > :not(.pck)),
+    .pck--editorial .pck-cta { display: none !important; }
+    .pck--editorial { --text: #15171a; --text-dim: #26282d; --text-faint: #5c626b; --line: #d9dbde; }
+    .pck-print-title { display: block; margin: 0 0 .8rem; font: 700 20pt/1.2 var(--ff-display); }
     .pck-item { break-inside: avoid; }
     .pck-cb { -webkit-appearance: checkbox; appearance: checkbox; }
   }

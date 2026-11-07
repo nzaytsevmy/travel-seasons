@@ -1,0 +1,103 @@
+---
+import type { ImageMetadata } from 'astro';
+import TravelPrepOpening from './TravelPrepOpening.astro';
+
+interface Props {
+  title: string;
+  direction: { slug: string; domestic?: boolean; cases: { vP: string; nom: string } };
+  entry: {
+    mode: string; label: string; summary: string | null; documents: string | null; stay: string | null;
+    fee: string | null; processing: string | null; exception: string | null;
+    official: string; arrivalCard: string | null; application: string | null;
+  };
+  photo?: ImageMetadata;
+  caption?: string;
+  faqs: { q: string; a: string }[];
+}
+
+const { title, direction, entry, photo, caption, faqs } = Astro.props;
+const domestic = direction.domestic;
+const passportScope = domestic ? 'Поездка по России без пересечения границы' : 'Туризм · обычный загранпаспорт РФ';
+const lead = entry.summary ?? 'Уточните действующие условия въезда для вашего паспорта, маршрута и дат.';
+const missing = domestic ? 'Уточните документы для вашего маршрута у перевозчика.' : 'Проверьте требования для своего маршрута на официальном сайте.';
+---
+<main id="main" class="entry-guide" data-prep-entry>
+  <TravelPrepOpening
+    title={title}
+    lead={lead}
+    scope={passportScope}
+    photo={photo}
+    caption={caption}
+    action={{ href: '#entry-requirements', label: 'Что подготовить' }}
+  >
+    <dl class="entry-facts" id="entry-requirements">
+      <div><dt>Режим</dt><dd>{entry.label}</dd></div>
+      {!domestic && <div><dt>Пребывание</dt><dd>{entry.stay ?? 'Уточнить для своей поездки'}</dd></div>}
+      <div><dt>Документы</dt><dd>{entry.documents ?? missing}</dd></div>
+    </dl>
+    {entry.mode === 'unknown' && <a class="entry-confirm" href={entry.official} data-prep-official>Уточнить условия у ведомства</a>}
+  </TravelPrepOpening>
+
+  <div class="entry-body">
+    <section aria-labelledby="entry-steps-title">
+      <h2 id="entry-steps-title">{domestic ? 'Документы для вашего маршрута' : 'Оформление и исключения'}</h2>
+
+      {entry.exception && <p>{entry.exception}</p>}
+      {domestic && <p>Если маршрут проходит по пограничной зоне, уточните в пограничном управлении ФСБ, нужен ли пропуск.</p>}
+      {!domestic && (
+        <dl class="entry-facts">
+          <div><dt>Оформление</dt><dd>{entry.processing ?? 'Сверьте порядок для вашей цели и способа въезда.'}</dd></div>
+          <div><dt>Сборы</dt><dd>{entry.fee ?? 'Уточните сбор для нужного вида визы у ведомства.'}</dd></div>
+        </dl>
+      )}
+      <p class="entry-actions">
+        <a href={entry.official} data-prep-official>{domestic ? 'Проверить документы у перевозчика' : 'Открыть официальные требования'}</a>
+        {entry.application && <a href={entry.application} data-prep-official>{entry.arrivalCard ? 'Подать на визу при необходимости' : 'Перейти к официальной подаче'}</a>}
+        {entry.arrivalCard && <a href={entry.arrivalCard} data-prep-official>Заполнить карту прибытия</a>}
+      </p>
+    </section>
+
+    <section id="faq" aria-labelledby="entry-faq-title">
+      <h2 id="entry-faq-title">Частые вопросы</h2>
+      {faqs.map(({q, a}) => <details><summary>{q}</summary><p>{a}</p></details>)}
+    </section>
+
+    <nav aria-label="Подготовка к поездке">
+      <a href={`/packing/${direction.slug}/`}>Что взять {direction.cases.vP}</a>
+      <a href={`/${direction.slug}/`}>Гид по направлению</a>
+      <a href="/visa/">Сравнить правила для другой страны</a>
+    </nav>
+    <slot />
+  </div>
+</main>
+
+<script>
+  import { recordPrepInteraction } from '../scripts/prep-interactions.js';
+
+  document.addEventListener('click', (event) => {
+    if (event.target instanceof Element && event.target.closest('a[data-prep-official]')) {
+      recordPrepInteraction('visa_official_open');
+    }
+  });
+</script>
+
+<style>
+  .entry-guide { color: #15171a; }
+  .entry-facts { margin: .7rem 0 0; }
+  .entry-facts > div { display: grid; grid-template-columns: minmax(8ch, 1fr) minmax(0, 3fr); gap: 1rem; padding: .6rem 0; border-top: 1px solid #d9dbde; }
+  .entry-facts dt { color: #5c626b; }
+  .entry-facts dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+  .entry-body { max-width: 1280px; margin: 0 auto; padding: 0 clamp(1.1rem, 3vw, 2.6rem) 2rem; }
+  .entry-body > section { padding: 1.6rem 0; border-bottom: 1px solid #d9dbde; }
+  .entry-body p { max-width: 66ch; line-height: 1.6; }
+  .entry-body h2 { margin: 0 0 .8rem; font: 700 clamp(1.5rem, 3vw, 2.2rem) / 1.15 "Old Standard TT", Georgia, serif; }
+  #entry-requirements, #faq { scroll-margin-top: 6rem; }
+  .entry-body details { max-width: 64ch; border-top: 1px solid #d9dbde; }
+  .entry-body summary { min-height: 44px; align-content: center; padding: .55rem 0; cursor: pointer; font-weight: 600; }
+  .entry-actions, .entry-body nav { display: flex; flex-wrap: wrap; gap: .25rem 1.35rem; }
+  .entry-actions a, .entry-body nav a, .entry-confirm { display: inline-flex; align-items: center; min-height: 44px; color: #1d40ae; text-decoration: underline; text-underline-offset: .2em; }
+  .entry-body nav { padding-top: 1rem; }
+  @media (max-width: 420px) {
+    .entry-facts > div { grid-template-columns: 1fr; gap: .15rem; }
+  }
+</style>

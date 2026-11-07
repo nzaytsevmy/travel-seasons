@@ -2,10 +2,11 @@
 import Layout from '../../layouts/Layout.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
-import { DIRECTIONS } from '../../data/directions.js';
+import { DIRECTIONS, MONTHS } from '../../data/directions.js';
 import { getWeatherBucket } from '../../data/country-month-bucket.js';
 import { WEATHER_BUCKETS } from '../../data/packing-weather-buckets.js';
 import { PLUG_TYPES, plugFit } from '../../data/country-plug-types.js';
+import { getEntryRequirements } from '../../data/entry-requirements.js';
 
 const url = 'https://traveltribe.ru/packing/';
 const title = 'Что взять в поездку 2026 — чек-листы по 70+ странам';
@@ -31,13 +32,8 @@ const BUCKET_TAG = {
   'mountain-altitude':'Высокогорье',
 };
 
-const VISA_LABEL = {
-  'free':     'Без визы',
-  'evisa':    'E-виза',
-  'arrival':  'По прилёте',
-  'required': 'Виза',
-};
 const BUDGET_LABEL = { 'low': '₽', 'mid': '₽₽', 'high': '₽₽₽' };
+const WEATHER_KEYS = Object.keys(BUCKET_TAG);
 
 // Для страны — primary bucket (по peak/good месяцу). Если ничего нет — июль.
 function getPrimaryBucket(d) {
@@ -89,12 +85,15 @@ const top10 = TOP_SLUGS
 const allCountries = DIRECTIONS
   .map(d => {
     const { key } = getPrimaryBucket(d);
+    const entry = getEntryRequirements(d);
     return {
       slug: d.slug,
       name: d.cases?.nom || d.region,
-      visa: d.visa || '',
+      entry,
       budget: d.budget || '',
       tag: BUCKET_TAG[key] || '',
+      monthlyWeather: MONTHS.map((_, monthIndex) => WEATHER_KEYS.indexOf(getWeatherBucket(d.slug, monthIndex))).join(','),
+      closedMonths: MONTHS.filter((_, i) => d.r[i] === 'X').map(({ slug }) => slug).join(','),
       bucketKey: key,
     };
   })
@@ -137,15 +136,65 @@ const ldJson = {
 <Layout title={title} description={description} canonical={url} ldJson={ldJson}>
   <Breadcrumbs crumbs={[{ label: 'Чек-листы' }]} />
 
-  <main id="main" class="pl-wrap">
+  <main id="main" class="pl-wrap prep-packing-catalog" data-prep-catalog="packing">
     <header class="pl-hero">
       <h1 class="pl-h1">Что взять в поездку</h1>
       <p class="pl-deck">
-        Готовые чек-листы упаковки по <strong>{totalCountries} направлениям</strong>:
-        одежда под климат конкретного месяца, документы, аптечка, техника.
-        Собирал из своих маршрутов — что реально доставал из чемодана, что осталось лежать.
+        Найдите страну и месяц поездки. Откройте готовый список вещей и подстройте его под свой маршрут.
       </p>
     </header>
+
+    <section class="pl-section pl-all" aria-labelledby="pl-finder-title">
+      <header class="pl-section-head">
+        <h2 class="pl-section-title editorial-h2" id="pl-finder-title">Найти список вещей</h2>
+      </header>
+
+      <div class="pl-finder-controls">
+      <label class="pl-search" for="pl-search-input">
+        <svg class="pl-search-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+          <circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <line x1="11" y1="11" x2="15" y2="15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input
+          id="pl-search-input"
+          type="search"
+          class="pl-search-input"
+          placeholder="Найти страну: Япония, Бали, Грузия…"
+          aria-label="Поиск страны"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </label>
+      <label class="pl-month" for="pl-month">
+        <span>Месяц поездки</span>
+        <select id="pl-month">
+          <option value="">Любой месяц</option>
+          {MONTHS.map(({ slug, nom }) => <option value={slug}>{nom[0].toUpperCase() + nom.slice(1)}</option>)}
+        </select>
+      </label>
+      <button class="pl-reset" id="pl-reset" type="button">Сбросить</button>
+      </div>
+      <noscript><style>.pl-finder-controls { display: none !important; }</style></noscript>
+      <p class="pl-result-count" id="pl-search-count" role="status" aria-live="polite">Все {allCountries.length} направлений</p>
+
+      <ul class="pl-all-list" id="pl-all-list">
+        {allCountries.map(c => (
+          <li class="pl-all-item" data-name={c.name.toLowerCase().replace(/ё/g, 'е')} data-slug={c.slug} data-closed={c.closedMonths} data-weather={c.monthlyWeather} data-tag={c.tag}>
+            <a href={`/packing/${c.slug}/`} class="pl-all-link">
+              <span class="pl-all-name">{c.name}</span>
+              <span class="pl-all-tag">{c.tag}</span>
+              <span class="pl-all-badges">
+                {c.entry.mode !== 'unknown' && <span class={`pl-badge pl-badge-visa pl-badge-visa-${c.entry.mode}`}>{c.entry.label}</span>}
+                {c.budget && BUDGET_LABEL[c.budget] && <span class="pl-badge pl-badge-budget">{BUDGET_LABEL[c.budget]}</span>}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="pl-empty" id="pl-empty" hidden>
+        Подходящих направлений нет. Попробуйте другой месяц, измените запрос или сбросьте фильтры.
+      </p>
+    </section>
 
     <nav class="pl-crosslinks" aria-label="Смежные задачи">
       <a href="/seasons/" class="pl-crosslink">
@@ -196,49 +245,6 @@ const ldJson = {
       <span>Калькулятор считает перелёт, жильё, страховку и визу по 70+ направлениям.</span>
     </a>
 
-    <section class="pl-section pl-all">
-      <header class="pl-section-head">
-        <h2 class="pl-section-title editorial-h2">Все {totalCountries} направлений</h2>
-        <p class="pl-section-meta">По алфавиту, с поиском</p>
-      </header>
-
-      <label class="pl-search" for="pl-search-input">
-        <svg class="pl-search-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
-          <circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-          <line x1="11" y1="11" x2="15" y2="15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        <input
-          id="pl-search-input"
-          type="search"
-          class="pl-search-input"
-          placeholder="Найти страну: Япония, Бали, Грузия…"
-          aria-label="Поиск страны"
-          autocomplete="off"
-          spellcheck="false"
-        />
-        <span class="pl-search-count" id="pl-search-count">{allCountries.length} стран</span>
-      </label>
-
-      <ul class="pl-all-list" id="pl-all-list">
-        {allCountries.map(c => (
-          <li class="pl-all-item" data-name={c.name.toLowerCase().replace(/ё/g, 'е')}>
-            <a href={`/packing/${c.slug}/`} class="pl-all-link">
-              <span class="pl-all-name">{c.name}</span>
-              <span class="pl-all-tag">{c.tag}</span>
-              <span class="pl-all-badges">
-                {c.visa && <span class={`pl-badge pl-badge-visa pl-badge-visa-${c.visa}`}>{VISA_LABEL[c.visa] || c.visa}</span>}
-                {c.budget && BUDGET_LABEL[c.budget] && <span class="pl-badge pl-badge-budget">{BUDGET_LABEL[c.budget]}</span>}
-              </span>
-            </a>
-          </li>
-        ))}
-      </ul>
-      <p class="pl-empty" id="pl-empty" hidden>
-        Не нашёл подходящего. Проверь раскладку или короче запрос.
-        Если страны нет — напиши в <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>.
-      </p>
-    </section>
-
     <aside class="pl-footnote">
       <p>
         Один лист = одна страна + конкретный месяц поездки —
@@ -247,7 +253,7 @@ const ldJson = {
     </aside>
   </main>
 
-  <script is:inline>
+  <script is:inline define:vars={{ weatherLabels: Object.values(BUCKET_TAG) }}>
     // Идемпотентная инициализация + astro:page-load — иначе после SPA-перехода
     // ClientRouter (навигация внутри сайта) listener'ы не вешались и поиск был мёртв.
     function _initPackingSearch() {
@@ -255,7 +261,9 @@ const ldJson = {
       const list  = document.getElementById('pl-all-list');
       const count = document.getElementById('pl-search-count');
       const empty = document.getElementById('pl-empty');
-      if (!input || !list || !count || !empty || input._plReady) return;
+      const month = document.getElementById('pl-month');
+      const reset = document.getElementById('pl-reset');
+      if (!input || !list || !count || !empty || !month || !reset || input._plReady) return;
       input._plReady = true;
       const items = Array.from(list.querySelectorAll('.pl-all-item'));
       const total = items.length;
@@ -264,17 +272,41 @@ const ldJson = {
 
       function applyFilter() {
         const q = normalize(input.value);
+        const monthSlug = month.value;
+        const monthIndex = month.selectedIndex - 1;
         let visible = 0;
         for (const item of items) {
-          const match = !q || item.dataset.name.includes(q);
+          const match = (!q || item.dataset.name.includes(q)) &&
+            (!monthSlug || !item.dataset.closed.split(',').includes(monthSlug));
           item.hidden = !match;
+          const link = item.querySelector('a');
+          if (link) {
+            const path = `/packing/${item.dataset.slug}/`;
+            link.setAttribute('href', monthSlug ? `${path}${monthSlug}/` : path);
+          }
+          const weather = item.querySelector('.pl-all-tag');
+          if (weather) {
+            const tagIndex = Number(item.dataset.weather.split(',')[monthIndex]);
+            weather.textContent = monthIndex < 0 ? item.dataset.tag : weatherLabels[tagIndex] || '';
+          }
           if (match) visible++;
         }
-        count.textContent = visible === total ? `${total} стран` : `${visible} из ${total}`;
+        const applied = [input.value.trim(), monthSlug ? month.selectedOptions[0].textContent : ''].filter(Boolean).join(' · ');
+        count.textContent = applied ? `Найдено ${visible} из ${total} · ${applied}` : `Все ${total} направлений`;
         empty.hidden = visible > 0;
       }
 
       input.addEventListener('input', applyFilter);
+      month.addEventListener('change', applyFilter);
+      reset.addEventListener('click', () => {
+        input.value = '';
+        month.value = '';
+        applyFilter();
+        input.focus();
+      });
+      const linkedMonth = new URLSearchParams(location.search).get('month');
+      if (Array.from(month.options).some((option) => option.value === linkedMonth)) month.value = linkedMonth;
+      applyFilter();
       input.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') { input.value = ''; applyFilter(); input.blur(); }
       });
@@ -646,4 +678,21 @@ html.dark-theme .pl-badge-visa-required { background: rgba(245, 158, 11, 0.18); 
   .pl-all-link { grid-template-columns: minmax(0, 1fr) auto; min-width: 0; }
   .pl-top-name, .pl-all-name, .pl-top-preview-item { overflow-wrap: anywhere; min-width: 0; }
 }
+
+  .prep-packing-catalog .pl-hero { margin-bottom: 0; padding-bottom: .85rem; }
+  .prep-packing-catalog .pl-h1 { text-wrap: balance; }
+  .prep-packing-catalog .pl-all { margin-top: .5rem; }
+  .pl-finder-controls { display: grid; grid-template-columns: minmax(0, 1fr); align-items: end; gap: .7rem; }
+  .pl-finder-controls .pl-search { min-width: 0; margin: 0; min-height: 44px; }
+  .pl-finder-controls .pl-search-input { min-width: 0; min-height: 44px; }
+  .pl-month { display: grid; gap: .3rem; color: #15171a; }
+  .pl-month span { font-size: .875rem; }
+  .pl-month select { min-height: 44px; width: 100%; padding: .35rem .7rem; border: 1px solid #5c626b; border-radius: 0; background: #fbfbfa; color: #15171a; font: inherit; }
+  .pl-reset { justify-self: start; min-height: 44px; padding: 0 .4rem; background: none; border: 0; color: #1d40ae; text-decoration: underline; font: inherit; cursor: pointer; }
+  .pl-result-count { margin: .6rem 0; color: #5c626b; overflow-wrap: anywhere; }
+  .prep-packing-catalog .pl-all-item[hidden] { display: none; }
+  .prep-packing-catalog .pl-all-link { min-height: 44px; }
+  @media (min-width: 768px) {
+    .pl-finder-controls { grid-template-columns: minmax(0, 2fr) minmax(11rem, 1fr) auto; }
+  }
 </style>

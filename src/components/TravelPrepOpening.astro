@@ -1,0 +1,89 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  title: string;
+  lead: string;
+  action?: { href: string; label: string };
+  photo?: ImageMetadata;
+  caption?: string;
+  scope?: string;
+}
+
+const { title, lead, action, photo, caption, scope } = Astro.props;
+---
+<header class:list={['prep-opening', { 'prep-opening--photo': photo && caption }]} data-prep-opening>
+  <div class="prep-copy">
+    <h1>{title}</h1>
+    {scope && <p class="prep-scope">{scope}</p>}
+    <p class="prep-lead">{lead}</p>
+    {action && <a class="prep-action" href={action.href}>{action.label}</a>}
+    <slot />
+    <p class="prep-author">
+      <a href="/about/">Никита Зайцев</a> · <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>
+    </p>
+  </div>
+  {photo && caption && (
+    <figure class="prep-photo">
+      <Image src={photo} alt={caption} widths={[400, 800, 1200]} sizes="(min-width: 960px) 42vw, 92vw" formats={['webp']} quality={72} loading="lazy" />
+      <figcaption>{caption}</figcaption>
+    </figure>
+  )}
+</header>
+
+<style>
+  .prep-opening {
+    --prep-ink: #15171a;
+    --prep-mid: #5c626b;
+    --prep-line: #d9dbde;
+    --prep-accent: #1d40ae;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(1.1rem, 3vw, 2.6rem);
+    color: var(--prep-ink);
+    border-bottom: 1px solid var(--prep-line);
+  }
+
+  .prep-copy { min-width: 0; }
+  .prep-opening h1 {
+    max-width: 20ch;
+    margin: 0 0 1rem;
+    font: 700 clamp(2.1rem, 4.7vw, 4.5rem) / 1.04 "Old Standard TT", Georgia, serif;
+    text-wrap: balance;
+  }
+
+  .prep-scope {
+    margin: 0 0 .55rem;
+    color: var(--prep-mid);
+    font-size: .875rem;
+  }
+
+  .prep-lead {
+    max-width: 61ch;
+    margin: 0;
+    font-size: clamp(1rem, 1.7vw, 1.15rem);
+    line-height: 1.58;
+  }
+
+  .prep-action {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: .6rem;
+    color: var(--prep-accent);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: .22em;
+  }
+
+  .prep-author { margin: 1rem 0 0; color: var(--prep-mid); font-size: .875rem; }
+  .prep-photo { min-width: 0; margin: 1.25rem 0 0; align-self: end; }
+  .prep-photo img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
+  .prep-photo figcaption { margin-top: .45rem; color: var(--prep-mid); font-size: .8rem; }
+
+  @media (min-width: 960px) {
+    .prep-opening--photo { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: start; gap: clamp(1.5rem, 4vw, 4rem); }
+    .prep-photo { margin-top: 0; }
+  }
+</style>

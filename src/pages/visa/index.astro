@@ -197,25 +197,24 @@ const ldJson = {
 <Layout
   {/* ⛔ Ключ в НАЧАЛЕ заголовка выдачи — канон проекта. «Визовый реестр» это
       наше внутреннее имя, спроса у него нет, а стояло оно первым словом. */}
-  title="Виза для россиян 2026: куда пускают без визы и сколько стоит поездка"
+  title="Визы для россиян — правила въезда и документы"
   description="Визы для россиян и документы для поездок по России. Найдите своё направление, проверенные правила и порядок уточнения условий въезда."
   canonical={url}
-  ogTitle="Виза для россиян 2026: куда без визы и сколько стоит · TravelTribe"
+  ogTitle="Визы и документы для поездки — TravelTribe"
   ogDescription="Каталог направлений, документы и проверенные условия въезда."
   ldJson={ldJson}
 >
   <Breadcrumbs crumbs={[{ label: 'Визы' }]} />
 
-  <main id="main" class="visa-archive">
+  <main id="main" class="visa-archive prep-visa-catalog" data-prep-catalog="visa">
 
     {/* ─── DOCUMENT HEADER ─── */}
     <header class="va-doc-head" data-reveal>
       {/* ⛔ Заголовок говорит, ЧТО СТРАНИЦА ДЕЛАЕТ, а не как называется —
           требование GOV.UK. Было «Визовый реестр для гражданина РФ»: имя
           раздела, по которому не понять, на что здесь ответят. */}
-      <h1 class="va-title">Нужна ли виза и сколько стоит поездка?</h1>
-      <p class="va-lead">Отберите режим и бюджет — список ниже перестроится.
-      Цена недели считается с перелётом из Москвы, жильём, едой и транспортом.</p>
+      <h1 class="va-title">Нужна ли виза для поездки</h1>
+      <p class="va-lead">Выберите страну и проверьте порядок въезда для туриста с обычным российским паспортом.</p>
 
 
       {/* ⛔ ЕДИНАЯ РАМКА ИНСТРУМЕНТА, как в макете Б: подпись, поиск, кнопки
@@ -227,7 +226,7 @@ const ldJson = {
     {/* ─── SEARCH — filing tray style ─── */}
       <section class="va-search-wrap" aria-label="Поиск страны">
         <label class="va-search-label" for="visaSearch">
-          <span class="va-search-prefix">Запрос</span>
+          <span class="va-search-prefix">Страна или регион</span>
         </label>
         <div class="va-search-field">
           <input type="search" id="visaSearch" placeholder="Япония, Турция, Грузия…" autocomplete="off" aria-label="Поиск страны" />
@@ -252,9 +251,14 @@ const ldJson = {
           <div class="va-filters-chips" role="group" aria-label="Выбор визового режима и условий">
             <button type="button" class="va-chip va-chip--active" data-filter="all" aria-pressed="true">Все<b class="va-chip-n">{СЧЁТ.all}</b></button>
             <button type="button" class="va-chip" data-filter="free" aria-pressed="false">Без визы<b class="va-chip-n">{СЧЁТ.free}</b></button>
-            <button type="button" class="va-chip" data-filter="evisa" aria-pressed="false">eVisa<b class="va-chip-n">{СЧЁТ.evisa}</b></button>
+            <button type="button" class="va-chip" data-filter="evisa" aria-pressed="false">Онлайн<b class="va-chip-n">{СЧЁТ.evisa}</b></button>
             <button type="button" class="va-chip" data-filter="domestic" aria-pressed="false">По России<b class="va-chip-n">{byVisa.domestic.length}</b></button>
             <button type="button" class="va-chip" data-filter="required" aria-pressed="false">Виза<b class="va-chip-n">{СЧЁТ.required}</b></button>
+            <button type="button" class="va-chip" id="visaReset">Сбросить</button>
+          </div>
+          <details class="va-extra">
+            <summary>Срок и бюджет</summary>
+            <div class="va-filters-chips" role="group" aria-label="Фильтры срока и стоимости">
             <span class="va-chip-divider" aria-hidden="true">·</span>
             <button type="button" class="va-chip" data-cost="free" aria-pressed="false">Бесплатно<b class="va-chip-n">{СЧЁТ.costFree}</b></button>
             <button type="button" class="va-chip" data-cost="cheap" aria-pressed="false">До $50<b class="va-chip-n">{СЧЁТ.costCheap}</b></button>
@@ -269,11 +273,13 @@ const ldJson = {
             <button type="button" class="va-chip" data-trip="low" aria-pressed="false">Поездка до 100 тыс.<b class="va-chip-n">{СЧЁТ.tripLow}</b></button>
             <button type="button" class="va-chip" data-trip="mid" aria-pressed="false">100–200 тыс.<b class="va-chip-n">{СЧЁТ.tripMid}</b></button>
             <button type="button" class="va-chip" data-sort="trip" aria-pressed="false">Сначала дешёвая поездка<b class="va-chip-n"></b></button>
-            <button type="button" class="va-chip" id="visaReset">Сбросить</button>
-          </div>
-          <p class="va-filter-count" id="visaFilterCount" aria-live="polite" aria-atomic="true">Показано: <strong>{DIRECTIONS.length}</strong> из {DIRECTIONS.length} направлений</p>
+            </div>
+          </details>
+
+          <p class="va-filter-count" id="visaFilterCount" aria-live="polite" aria-atomic="true">Показано: <strong>{DIRECTIONS.length}</strong> из {DIRECTIONS.length} направлений<span class="va-filter-selection"></span></p>
           <noscript>
-            <p class="va-noscript">⚠️ Фильтры работают с включённым JavaScript. Список всех 70+ стран ниже доступен полностью.</p>
+            <style>.va-search-wrap, .va-filters-chips, .va-extra, .va-filters-label { display: none !important; }</style>
+            <p class="va-noscript">Список всех направлений доступен ниже. Для поиска и фильтров включите JavaScript.</p>
           </noscript>
         </section>
 
@@ -282,29 +288,6 @@ const ldJson = {
             на 4675 пикселе десктопа и 7156 телефона. Человек приходит сюда с одним
             вопросом «нужна ли виза» — сначала ответ и список, потом объяснения. */}
 
-      <section class="va-answer" aria-label="Сводка по визовым режимам">
-        <div class="va-n"><b>{byVisa.free.length}</b><span>без визы</span></div>
-        <div class="va-n"><b>{byVisa.evisa.length}</b><span>виза онлайн</span></div>
-        <div class="va-n"><b>{byVisa.required.length}</b><span>виза заранее</span></div>
-        {cheapest && <div class="va-n"><b>≈ {fmtRub(cheapest.цена)} ₽</b><span>неделя с перелётом — {cheapest.nom}</span></div>}
-      </section>
-      </div>
-      <p class="va-next">Сводка показывает направления с проверенными правилами. Остальные доступны в группе «Уточнить правила».</p>
-
-      <div class="va-cta-row">
-        <a class="va-cta va-cta--primary" href="https://t.me/traveltriberu?utm_source=traveltribe&utm_medium=visa-hero" target="_blank" rel="noopener">
-          <span class="va-cta-label">Telegram-канал</span>
-        </a>
-        <button type="button" class="va-cta va-cta--share" id="visaShareBtn" aria-label="Поделиться реестром">
-          <span class="va-cta-label">Поделиться</span>
-        </button>
-      </div>
-
-
-      <div class="va-divider" aria-hidden="true">
-        <span class="va-divider-line"></span>
-        <span class="va-divider-glyph">✦</span>
-        <span class="va-divider-line"></span>
       </div>
     </header>
 
@@ -322,13 +305,8 @@ const ldJson = {
     {Object.keys(byVisa).filter((vt) => byVisa[vt].length > 0).map((vt, vti) => (
       <section class={`va-section va-section--${vt}`} data-section={vt} data-reveal>
         <header class="va-section-head">
-          <div class="va-section-stamp" aria-hidden="true">
-            <span class="vss-roman">{VISA_META[vt].section}</span>
-            <span class="vss-code">{VISA_META[vt].code}</span>
-            <span class="vss-count">{byVisa[vt].length}</span>
-          </div>
+          <span class="va-section-count" aria-label="Количество направлений">{byVisa[vt].length}</span>
           <div class="va-section-meta">
-            <div class="va-section-iso">{VISA_META[vt].iso}</div>
             <h2 class="va-section-title">{VISA_META[vt].title}</h2>
             <p class="va-section-desc">{VISA_META[vt].desc}</p>
           </div>
@@ -404,6 +382,27 @@ const ldJson = {
         </div>
       </section>
     ))}
+
+    <aside class="va-secondary" aria-label="Сводка и способы поделиться каталогом">
+      <section class="va-answer" aria-label="Сводка по визовым режимам">
+        <div class="va-n"><b>{byVisa.free.length}</b><span>без визы</span></div>
+        <div class="va-n"><b>{byVisa.evisa.length}</b><span>виза онлайн</span></div>
+        <div class="va-n"><b>{byVisa.required.length}</b><span>виза заранее</span></div>
+        {cheapest && <div class="va-n"><b>≈ {fmtRub(cheapest.цена)} ₽</b><span>неделя с перелётом — {cheapest.nom}</span></div>}
+      </section>
+      <p class="va-next">Сводка показывает направления с проверенными правилами. Остальные доступны в группе «Уточнить правила».</p>
+
+      <div class="va-cta-row">
+        <a class="va-cta va-cta--primary" href="https://t.me/traveltriberu?utm_source=traveltribe&utm_medium=visa-hero" target="_blank" rel="noopener">
+          <span class="va-cta-label">Telegram-канал</span>
+        </a>
+        <button type="button" class="va-cta va-cta--share" id="visaShareBtn" aria-label="Поделиться реестром">
+          <span class="va-cta-label">Поделиться</span>
+        </button>
+      </div>
+
+
+    </aside>
 
     <section class="va-intro">
       <h2 class="va-intro-title">Как проверить условия въезда</h2>
@@ -594,6 +593,13 @@ const ldJson = {
     if (countLabel) {
       const strong = countLabel.querySelector('strong');
       if (strong) strong.textContent = String(visible);
+      const selected = countLabel.querySelector('.va-filter-selection');
+      const filters = Array.from(document.querySelectorAll('.va-chip[aria-pressed="true"]:not([data-filter="all"])'))
+        .map((chip) => chip.firstChild?.textContent?.trim()).filter(Boolean);
+      const extraMode = { arrival: 'По прибытии', unknown: 'Уточнить правила' }[filterState.visa];
+      const extraCost = filterState.cost === 'premium' ? 'Сбор свыше $50' : '';
+      const labels = [search?.value.trim(), ...filters, extraMode, extraCost].filter(Boolean);
+      if (selected) selected.textContent = labels.length ? ` · ${labels.join(' · ')}` : '';
     }
     обновитьСчётчики();
 
@@ -621,6 +627,8 @@ const ldJson = {
     if (visa && ['free', 'evisa', 'arrival', 'required', 'domestic', 'unknown'].includes(visa)) filterState.visa = visa;
     if (cost && ['free', 'cheap', 'premium'].includes(cost)) filterState.cost = cost;
     if (dur === 'long') filterState.durationLong = true;
+    const advanced = document.querySelector<HTMLDetailsElement>('.va-extra');
+    if (advanced && (filterState.cost || filterState.durationLong)) advanced.open = true;
     // Update chip UI
     document.querySelectorAll<HTMLElement>('.va-chip').forEach((c) => {
       const isActive = (c.dataset.filter === filterState.visa)
@@ -2048,6 +2056,41 @@ const ldJson = {
   .va-card-trip-sum { max-width: 100%; overflow-wrap: anywhere; }
   .va-search-field, .va-search-field input { min-width: 0; }
 }
+
+  .prep-visa-catalog .va-doc-head { padding-top: clamp(1.5rem, 4vw, 3rem); }
+  .prep-visa-catalog .va-title {
+    max-width: 22ch;
+    margin-inline: 0;
+    text-align: left;
+    font: 700 clamp(2.2rem, 5.4vw, 4.7rem) / 1.04 "Old Standard TT", Georgia, serif;
+    text-wrap: balance;
+  }
+  .prep-visa-catalog .va-lead { max-width: 58ch; text-align: left; margin-inline: 0; }
+  .prep-visa-catalog .va-tool { border: 0; padding-inline: 0; }
+  .prep-visa-catalog .va-search-field { min-height: 44px; }
+  .prep-visa-catalog .va-chip { min-height: 44px; border-radius: 0; background: transparent; }
+  .prep-visa-catalog .va-chip--active { color: #1d40ae; text-decoration: underline; text-underline-offset: .2em; }
+  .prep-visa-catalog .va-section-head { border-top: 1px solid #15171a; padding-top: 1rem; }
+  .prep-visa-catalog .va-section-count { color: #5c626b; font-family: "PT Mono", monospace; }
+  .prep-visa-catalog .va-card { box-shadow: none; border-radius: 0; }
+  .prep-visa-catalog .va-card-stamp, .prep-visa-catalog .va-card-iso, .prep-visa-catalog .va-card-num { display: none; }
+  .prep-visa-catalog .va-card-photo { border-radius: 0; }
+  .prep-visa-catalog [data-reveal] { opacity: 1; transform: none; transition: none; }
+  .prep-visa-catalog .va-card[hidden], .prep-visa-catalog .va-section[hidden],
+  .prep-visa-catalog .va-search-clear[hidden], .prep-visa-catalog .va-empty[hidden] { display: none !important; }
+  .prep-visa-catalog .va-search-clear { width: 44px; height: 44px; }
+
+  .prep-visa-catalog .va-filters-chips { flex-wrap: wrap; overflow: visible; padding: 0; }
+  .prep-visa-catalog #visaSearch { min-height: 44px; min-width: 0; }
+  .prep-visa-catalog .va-search-prefix,
+  .prep-visa-catalog .va-tool-title { text-transform: none; letter-spacing: normal; }
+  .va-extra { margin-top: .55rem; }
+  .va-extra summary { min-height: 44px; align-content: center; color: #1d40ae; cursor: pointer; font-weight: 650; }
+  .va-secondary { margin-block: 1.5rem; border-top: 1px solid #d9dbde; }
+  @media (max-width: 600px) {
+    .prep-visa-catalog .va-search-wrap { display: block; }
+    .prep-visa-catalog .va-search-label { display: block; margin-bottom: .25rem; }
+  }
   .va-reference-links { display: flex; flex-wrap: wrap; gap: 0 .9rem; }
   .va-reference-links a { display: inline-flex; align-items: center; min-height: 44px; }
 </style>
