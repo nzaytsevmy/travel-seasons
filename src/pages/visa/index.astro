@@ -8,6 +8,7 @@ import { getEntryRequirements, visaCatalogFact } from '../../data/entry-requirem
 
 const destPhotos = import.meta.glob('../../assets/destinations/*.jpg', { eager: true, import: 'default' });
 const entries = new Map(DIRECTIONS.map((d) => [d.slug, getEntryRequirements(d)]));
+const costBucket = (e) => e.feeUsd === null ? '' : e.feeUsd === 0 ? 'free' : e.feeUsd <= 50 ? 'cheap' : 'premium';
 const groups = [
   { mode: 'free', title: 'Без визы', description: 'Паспорт, срок поездки и дополнительные условия въезда.' },
   { mode: 'evisa', title: 'Оформление онлайн', description: 'Электронные визы и разрешения, которые получают до вылета.' },
@@ -95,7 +96,7 @@ const ldJson = {
             {g.directions.map((d, i) => {
               const photo = destPhotos[`../../assets/destinations/${d.slug}.jpg`];
               const e = entries.get(d.slug);
-              const cost = e.feeUsd === null ? '' : e.feeUsd === 0 ? 'free' : e.feeUsd <= 50 ? 'cheap' : 'premium';
+              const cost = costBucket(e);
               return (<a class="va-card" href={`/visa/${d.slug}/`} data-name={d.cases.nom.toLocaleLowerCase('ru')} data-visa={e.mode}
                 data-cost={cost} data-duration-long={e.stayDays !== null && e.stayDays >= 60 ? '1' : '0'}>
                 {photo && <Image src={photo} alt={d.cases.nom} widths={[160, 320, 480]} sizes="(max-width: 600px) 100px, 180px" formats={['webp']} quality={75} loading={groupIndex === 0 && i < 2 ? 'eager' : 'lazy'} />}
