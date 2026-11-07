@@ -111,3 +111,24 @@ test('visa catalogue keeps deep-link filters and a useful no-JS response', async
     await context.close();
   }
 });
+
+test('visa catalogue prioritises country search without decorative counters', async ({ page }) => {
+  await page.goto('/visa/');
+  await expect(page.locator('#visaFilterCount')).toBeHidden();
+  await expect(page.locator('.va-section-count, .va-card-num, .va-chip-n, .va-related-num')).toHaveCount(0);
+  await expect(page.locator('main')).not.toContainText('Уточнить правила');
+  const search = page.getByRole('searchbox', { name: 'Поиск страны' });
+  await search.fill('Япония');
+  await expect(page.locator('.va-card:visible')).toHaveCount(2);
+  await expect(page.locator('#visaFilterCount')).toContainText('Япония');
+  await page.getByRole('button', { name: 'Сбросить', exact: true }).click();
+  await expect(search).toHaveValue('');
+  await expect(page.locator('.va-card:visible')).toHaveCount(77);
+  await page.getByLabel('Условия въезда', { exact: true }).selectOption('domestic');
+  await expect(page.locator('.va-card:visible')).toHaveCount(4);
+  await search.fill('несуществующая страна');
+  await expect(page.locator('#visaEmpty')).toBeVisible();
+  await expect(page.locator('.va-card:visible')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Сбросить', exact: true }).click();
+  await expect(page.locator('.va-card:visible')).toHaveCount(77);
+});
