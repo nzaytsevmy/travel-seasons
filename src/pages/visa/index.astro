@@ -96,7 +96,7 @@ const ldJson = {
               const photo = destPhotos[`../../assets/destinations/${d.slug}.jpg`];
               const e = entries.get(d.slug);
               const cost = e.feeUsd === null ? '' : e.feeUsd === 0 ? 'free' : e.feeUsd <= 50 ? 'cheap' : 'premium';
-              return <a class="va-card" href={`/visa/${d.slug}/`} data-name={d.cases.nom.toLocaleLowerCase('ru')} data-visa={e.mode}
+              return (<a class="va-card" href={`/visa/${d.slug}/`} data-name={d.cases.nom.toLocaleLowerCase('ru')} data-visa={e.mode}
                 data-cost={cost} data-duration-long={e.stayDays !== null && e.stayDays >= 60 ? '1' : '0'}>
                 {photo && <Image src={photo} alt={d.cases.nom} widths={[160, 320, 480]} sizes="(max-width: 600px) 100px, 180px" formats={['webp']} quality={75} loading={groupIndex === 0 && i < 2 ? 'eager' : 'lazy'} />}
                 <div class="va-card-body"><h3>{d.cases.nom}</h3>
@@ -104,7 +104,7 @@ const ldJson = {
                   {e.stay && <p class="va-card-stay">{e.stay}</p>}
                   <span class="va-card-link">{d.domestic ? 'Документы для поездки' : 'Документы и условия въезда'}</span>
                 </div>
-              </a>;
+              </a>);
             })}
           </div>
         </section>
