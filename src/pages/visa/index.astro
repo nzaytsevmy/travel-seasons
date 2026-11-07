@@ -157,6 +157,7 @@ const ldJson = {
     const empty = document.querySelector<HTMLElement>('#visaEmpty')!;
     const cards = [...document.querySelectorAll<HTMLElement>('.va-card')];
     const sections = [...document.querySelectorAll<HTMLElement>('.va-section')];
+    const money = document.querySelector<HTMLElement>('.va-money-row')!;
     function filter() {
       const q = search.value.trim().toLocaleLowerCase('ru');
       const active = !!(q || mode.value !== 'all' || cost.value || duration.value);
@@ -168,6 +169,9 @@ const ldJson = {
         if (!c.hidden) visible++;
       }
       for (const s of sections) s.hidden = ![...s.querySelectorAll<HTMLElement>('.va-card')].some((c) => !c.hidden);
+      const firstResult = sections.find((s) => !s.hidden);
+      money.hidden = !firstResult;
+      if (firstResult) firstResult.after(money);
       count.hidden = !active;
       const selected = [search.value.trim(), mode.value !== 'all' ? mode.selectedOptions[0]?.text : '', cost.value ? cost.selectedOptions[0]?.text : '', duration.value ? '60+ дней' : ''].filter(Boolean);
       count.textContent = `Найдено: ${visible}${selected.length ? ` · ${selected.join(' · ')}` : ''}`;

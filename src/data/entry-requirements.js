@@ -126,7 +126,7 @@ export function getEntryRequirements(direction, today = dateFormat.format(new Da
     const label = ({ antarctica: 'Документы для экспедиции', 'guatemala-belize': 'Правила для двух стран',
       finland: 'Туристический въезд ограничен', norway: 'Туристический въезд ограничен',
     })[direction.slug] ?? LABELS[mode];
-    return { mode, label, summary: existing.summary ?? null, documents: existing.docs ?? null,
+    return { mode, label, summary: null, documents: existing.docs ?? null,
       stay: null, stayDays: null, fee: null, feeUsd: null, processing: null,
       exception: null, arrivalCard: null, application: null, documentList: null,
       official: CONSULAR, legacy: true, reviewAfter: LEGACY_REVIEW_AFTER };
@@ -135,6 +135,14 @@ export function getEntryRequirements(direction, today = dateFormat.format(new Da
   const keys = ['summary', 'documents', 'documentList', 'stay', 'stayDays', 'fee', 'feeUsd', 'processing', 'exception', 'arrivalCard', 'application'];
   const facts = Object.fromEntries(keys.map((key) => [key, readFact(rule?.[key], today)]));
   return { mode, label: LABELS[mode], official: rule?.official || CONSULAR, ...facts };
+}
+
+export function entryAnswerFaqs(direction, entry, domesticHeading) {
+  return [
+    { q: direction.domestic ? domesticHeading : `Нужна ли виза ${direction.cases.vP} для россиян?`, a: entry.summary },
+    { q: `Какие документы подготовить ${direction.cases.vP}?`, a: entry.documents },
+    ...(!direction.domestic ? [{ q: `Сколько можно находиться ${direction.cases.loc}?`, a: entry.stay }] : []),
+  ].filter(({ q, a }) => typeof q === 'string' && q.trim() && typeof a === 'string' && a.trim());
 }
 
 const CATALOG_FACTS = {

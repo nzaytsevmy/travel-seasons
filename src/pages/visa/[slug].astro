@@ -7,7 +7,7 @@ import { Picture } from 'astro:assets';
 import { DIRECTIONS, VISITED } from '../../data/directions.js';
 import { месяцыНаправления } from '../../utils/best-months.js';
 import { getVisaDetails, VISA_DETAILS } from '../../data/visa-details.js';
-import { getEntryRequirements } from '../../data/entry-requirements.js';
+import { getEntryRequirements, entryAnswerFaqs } from '../../data/entry-requirements.js';
 import { isTravelPrepPilot, TRAVEL_PREP_UPDATED_AT } from '../../data/travel-prep-pilot.js';
 import TravelEntryGuide from '../../components/TravelEntryGuide.astro';
 import { aviasalesRoute, cherehapaCountry, preferredTourCountry } from '../../data/affiliate.js';
@@ -157,11 +157,7 @@ const stayAnswer = `Разрешённое пребывание ${d.cases.loc} �
 const termAnswer = `${vd.timing}.${skipGenericTail ? '' : ' ' + VISA_TERM[d.visa]}`;
 
 // FAQ — генерируется из данных направления (YMYL: прямые ответы с цифрами)
-const faqs = prep ? [
-  { q: d.domestic ? vd.h1 : `Нужна ли виза ${d.cases.vP} для россиян?`, a: summary },
-  ...(entry.documents ? [{ q: `Какие документы подготовить ${d.cases.vP}?`, a: entry.documents }] : []),
-  ...(!d.domestic && entry.stay ? [{ q: `Сколько можно находиться ${d.cases.loc}?`, a: entry.stay }] : []),
-] : d.domestic ? [
+const faqs = prep ? entryAnswerFaqs(d, entry, vd.h1) : d.domestic ? [
   { q: vd.h1, a: summary },
   { q: `Какие документы нужны для поездки ${d.cases.vP}?`, a: entry.documents ?? documentHelp },
 ] : [
@@ -205,7 +201,7 @@ const ldJson = {
       "@id": `${url}#page`,
       "url": url,
       "name": prep ? visaTitle : d.domestic ? vd.h1 : `Виза ${d.cases.vP} для россиян 2026: документы, цена, сроки`,
-      "description": summary,
+      "description": summary || metaDesc,
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "about": { "@type": d.domestic ? "AdministrativeArea" : "Country", "name": d.cases.nom },
@@ -214,7 +210,7 @@ const ldJson = {
       "author": { "@id": "https://traveltribe.ru/about/#person" },
       "publisher": { "@id": "https://traveltribe.ru/#org" },
       "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", prep ? ".prep-lead" : d.domestic ? ".visa-sub" : ".quick-tldr"] },
-      "mainEntity": { "@id": `${url}#faq` }
+      ...(faqs.length ? { "mainEntity": { "@id": `${url}#faq` } } : {}),
     },
     {
       "@type": "BreadcrumbList",
@@ -224,7 +220,7 @@ const ldJson = {
         { "@type": "ListItem", "position": 3, "name": d.cases.nom, "item": url },
       ]
     },
-    {
+    ...(faqs.length ? [{
       "@type": "FAQPage",
       "@id": `${url}#faq`,
       "mainEntity": faqs.map(f => ({
@@ -232,7 +228,7 @@ const ldJson = {
         "name": f.q,
         "acceptedAnswer": { "@type": "Answer", "text": f.a }
       }))
-    }
+    }] : []),
   ]
 };
 ---

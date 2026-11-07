@@ -2,11 +2,27 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { DIRECTIONS } from '../src/data/directions.js';
-import { getEntryRequirements } from '../src/data/entry-requirements.js';
+import { getEntryRequirements, entryAnswerFaqs } from '../src/data/entry-requirements.js';
 
 test('every existing country record reaches the catalogue instead of an unknown placeholder', () => {
   const missing = DIRECTIONS.filter((d) => getEntryRequirements(d, '2026-11-07').mode === 'unknown');
   assert.deepEqual(missing.map((d) => d.slug), []);
+});
+
+test('restoring legacy classifications cannot leak old summaries into structured catalogue data', () => {
+  const legacy = DIRECTIONS.map((d) => getEntryRequirements(d, '2026-11-07')).filter((e) => e.legacy);
+  assert.ok(legacy.length > 0);
+  assert.equal(legacy.filter((e) => e.summary !== null).length, 0);
+});
+
+test('entry FAQs contain current answers and disappear when their facts expire', () => {
+  for (const slug of ['egypt', 'japan', 'thailand']) {
+    const direction = DIRECTIONS.find((d) => d.slug === slug);
+    const fresh = entryAnswerFaqs(direction, getEntryRequirements(direction, '2026-11-07'));
+    assert.equal(fresh.length, 3);
+    assert.ok(fresh.every(({ q, a }) => q.trim() && a.trim()));
+    assert.deepEqual(entryAnswerFaqs(direction, getEntryRequirements(direction, '2026-12-06')), []);
+  }
 });
 
 test('restored guides do not invent generic facts or bypass expired verified records', () => {

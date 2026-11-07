@@ -18,6 +18,7 @@ interface Props {
 
 const { title, direction, entry, photo, caption, faqs } = Astro.props;
 const domestic = direction.domestic;
+const known = entry.mode !== 'unknown';
 const passportScope = domestic ? 'Поездка по России без пересечения границы' : 'Туризм · обычный загранпаспорт РФ';
 const lead = entry.summary ?? '';
 ---
@@ -28,13 +29,13 @@ const lead = entry.summary ?? '';
     scope={passportScope}
     photo={photo}
     caption={caption}
-    action={{ href: '#entry-requirements', label: 'Что подготовить' }}
+    action={known ? { href: '#entry-requirements', label: 'Что подготовить' } : { href: entry.official, label: 'Официальные требования' }}
   >
-    <dl class="entry-facts" id="entry-requirements">
+    {known && <dl class="entry-facts" id="entry-requirements">
       <div><dt>Режим</dt><dd>{entry.label}</dd></div>
       {!domestic && entry.stay && <div><dt>Пребывание</dt><dd>{entry.stay}</dd></div>}
       {entry.documents && <div><dt>Документы</dt><dd>{entry.documents}</dd></div>}
-    </dl>
+    </dl>}
   </TravelPrepOpening>
 
   <div class="entry-body">
@@ -60,10 +61,10 @@ const lead = entry.summary ?? '';
       </p>
     </section>
 
-    <section id="faq" aria-labelledby="entry-faq-title">
+    {faqs.length > 0 && <section id="faq" aria-labelledby="entry-faq-title">
       <h2 id="entry-faq-title">Частые вопросы</h2>
       {faqs.map(({q, a}) => <details><summary>{q}</summary><p>{a}</p></details>)}
-    </section>
+    </section>}
 
     <nav aria-label="Подготовка к поездке">
       <a href={`/packing/${direction.slug}/`}>Что взять {direction.cases.vP}</a>

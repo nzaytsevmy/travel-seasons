@@ -120,6 +120,8 @@ test('visa catalogue prioritises country search without decorative counters', as
   const search = page.getByRole('searchbox', { name: 'Поиск страны' });
   await search.fill('Япония');
   await expect(page.locator('.va-card:visible')).toHaveCount(2);
+  expect(await page.locator('.va-card:visible').last().evaluate((card) =>
+    card.getBoundingClientRect().bottom <= document.querySelector('.va-money-row')!.getBoundingClientRect().top)).toBe(true);
   await expect(page.locator('#visaFilterCount')).toContainText('Япония');
   await page.getByRole('button', { name: 'Сбросить', exact: true }).click();
   await expect(search).toHaveValue('');
@@ -128,6 +130,7 @@ test('visa catalogue prioritises country search without decorative counters', as
   await expect(page.locator('.va-card:visible')).toHaveCount(4);
   await search.fill('несуществующая страна');
   await expect(page.locator('#visaEmpty')).toBeVisible();
+  await expect(page.locator('.va-money-row')).toBeHidden();
   await expect(page.locator('.va-card:visible')).toHaveCount(0);
   await page.getByRole('button', { name: 'Сбросить', exact: true }).click();
   await expect(page.locator('.va-card:visible')).toHaveCount(77);
