@@ -16,6 +16,7 @@ import ttTypography from './tools/typo-dist.mjs';
 import { DATA_UPDATED } from './src/data/meta.js';
 import ДАТЫ_НАПРАВЛЕНИЙ from './src/data/page-lastmod.generated.json' with { type: 'json' };
 import { DIRECTIONS, MONTHS } from './src/data/directions.js';
+import { isTravelPrepPilot, TRAVEL_PREP_UPDATED_AT } from './src/data/travel-prep-pilot.js';
 import { ttAffiliateShield } from './scripts/affiliate-shield.mjs';
 import { NICHE_TRIPS } from './src/data/niche-trips.js';
 import { acquire } from './scripts/machine-lock.mjs';
@@ -124,6 +125,8 @@ const датаНаправления = (slug, группа) => {
 
 /** Направление, о котором страница: /packing/<страна>/…, /trips/<месяц>/<страна>/, /visa/<страна>/, /<страна>/ */
 const КЛЮЧИ_НАПРАВЛЕНИЙ = new Set(DIRECTIONS.map((d) => d.slug));
+const DOMESTIC_SLUGS = new Set(DIRECTIONS.filter((d) => d.domestic).map((d) => d.slug));
+const TRAVEL_PREP_DATE = new Date(TRAVEL_PREP_UPDATED_AT + 'T00:00:00Z');
 const ТИПЫ_АДРЕСОВ = [
   [/^\/packing\/([a-z0-9-]+)\//, 'packing'],
   [/^\/visa\/([a-z0-9-]+)\/$/, 'visa'],
@@ -152,6 +155,7 @@ const датаСравнения = (путь) => {
 // Если оставить дату справочных данных, указатель будет отставать от карты.
 const SITEMAP_INDEX_DATE = [
   DATA_DATE,
+  TRAVEL_PREP_DATE,
   ...Object.values(blogLastmod),
   ...(newsFeedLastmod ? [newsFeedLastmod] : []),
   ...Object.values(newsMonthLastmod),
@@ -279,8 +283,11 @@ export default defineConfig({
       serialize(item) {
         const url = item.url;
         const свой = направлениеИз(url);
-        item = { ...item, lastmod: blogLastmod[url] || newsItemLastmod[url] || датаСравнения(url)
-          || (свой ? датаНаправления(свой.slug, свой.группа) : DATA_DATE) };
+        const lastmod = blogLastmod[url] || newsItemLastmod[url] || датаСравнения(url)
+          || (свой ? датаНаправления(свой.slug, свой.группа) : DATA_DATE);
+        const domesticDocuments = свой && DOMESTIC_SLUGS.has(свой.slug) && ['visa', 'packing'].includes(свой.группа);
+        const prepChanged = domesticDocuments || isTravelPrepPilot(url);
+        item = { ...item, lastmod: prepChanged && TRAVEL_PREP_DATE > lastmod ? TRAVEL_PREP_DATE : lastmod };
         // Лента новостей обновляется ежедневно; месяц — пока он идёт, потом уже никогда.
         if (url === 'https://traveltribe.ru/novosti/') {
           return { ...item, lastmod: newsFeedLastmod || item.lastmod, priority: 0.8, changefreq: 'daily' };

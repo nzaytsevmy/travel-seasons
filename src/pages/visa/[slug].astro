@@ -8,6 +8,8 @@ import { DIRECTIONS, VISITED } from '../../data/directions.js';
 import { месяцыНаправления } from '../../utils/best-months.js';
 import { getVisaDetails, VISA_DETAILS } from '../../data/visa-details.js';
 import { getEntryRequirements } from '../../data/entry-requirements.js';
+import { isTravelPrepPilot, TRAVEL_PREP_UPDATED_AT } from '../../data/travel-prep-pilot.js';
+import TravelEntryGuide from '../../components/TravelEntryGuide.astro';
 import { aviasalesRoute, cherehapaCountry, preferredTourCountry } from '../../data/affiliate.js';
 import { DATA_UPDATED } from '../../data/meta.js';
 // «О» или «об»: «об» перед словом с гласной а, и, о, у, э в начале («об Алтае», «об июне»), иначе «о».
@@ -25,6 +27,7 @@ export async function getStaticPaths() {
 
 const { d } = Astro.props;
 const url = `https://traveltribe.ru/visa/${d.slug}/`;
+const prep = isTravelPrepPilot(url);
 const photo = destPhotos[`../../assets/destinations/${d.slug}.jpg`];
 
 const VISA_LABELS = {
@@ -108,7 +111,9 @@ const routeMetadata = {
   },
 }[d.slug];
 // Заголовок: полный шаблон, а если он не влезает в выдачу — короткий.
-const visaTitleFull = routeMetadata?.title ?? vd.title ?? VISA_TITLE[d.visa];
+const visaTitleFull = prep && !d.domestic
+  ? `Виза ${d.cases.vP} для россиян — правила въезда`
+  : routeMetadata?.title ?? vd.title ?? VISA_TITLE[d.visa];
 const visaTitle = visaTitleFull.length > 60 ? (vd.title ?? VISA_TITLE_SHORT[d.visa]) : visaTitleFull;
 // Разделяем два разных факта: noVisa = визы НЕ нужно (только тег 'free'); feeFree = нет
 // консульского сбора. Кипр (evisa, pro-visa) имеет cost:'бесплатно', но виза НУЖНА —
@@ -122,7 +127,9 @@ const skipGenericTail = hasSpecific || !!vd.summary;
 // metaDesc — чистый обрез по границе слова (без середины слова в description).
 const summary = d.domestic
   ? entry.summary ?? 'Документы для поездки по России зависят от маршрута и перевозчика.'
-  : vd.summary ?? visaSummary[d.visa];
+  : prep
+    ? entry.summary ?? 'Уточните действующие условия въезда для своего паспорта, маршрута и дат.'
+    : vd.summary ?? visaSummary[d.visa];
 // ⛔ Описание не должно начинаться словами заголовка — прямое требование
 // справки Яндекса. Страновые summary написаны как ответ («Виза в Турцию
 // россиянам не нужна…») и повторяли заголовок у 17 карточек. Видимый текст
@@ -138,7 +145,9 @@ const безПовтора = summary.toLowerCase().startsWith(первыеСло
   : summary;
 const metaDesc = d.domestic
   ? `Какие документы взять ${d.cases.vP} взрослому и ребёнку. Когда уточнить требования перевозчика и правила для пограничной зоны.`
-  : routeMetadata?.description ?? (безПовтора.length > 203 ? безПовтора.slice(0, 200).replace(/\s+\S*$/, '') + '…' : безПовтора);
+  : prep
+    ? `Въезд ${d.cases.vP} для туристов с обычным российским паспортом. Документы, условия пребывания и официальный порядок оформления.`
+    : routeMetadata?.description ?? (безПовтора.length > 203 ? безПовтора.slice(0, 200).replace(/\s+\S*$/, '') + '…' : безПовтора);
 const costAnswer = noVisa
   ? (feeFree
       ? `Виза ${d.cases.vP} не нужна — въезд бесплатный, ${vd.timing}. Консульский сбор не платится.`
@@ -148,7 +157,11 @@ const stayAnswer = `Разрешённое пребывание ${d.cases.loc} �
 const termAnswer = `${vd.timing}.${skipGenericTail ? '' : ' ' + VISA_TERM[d.visa]}`;
 
 // FAQ — генерируется из данных направления (YMYL: прямые ответы с цифрами)
-const faqs = d.domestic ? [
+const faqs = prep ? [
+  { q: d.domestic ? vd.h1 : `Нужна ли виза ${d.cases.vP} для россиян?`, a: summary },
+  { q: `Какие документы подготовить ${d.cases.vP}?`, a: entry.documents ?? (d.domestic ? documentHelp : 'Сверьте список документов на официальном сайте для вашего маршрута.') },
+  ...(!d.domestic && entry.stay ? [{ q: `Сколько можно находиться ${d.cases.loc}?`, a: entry.stay }] : []),
+] : d.domestic ? [
   { q: vd.h1, a: summary },
   { q: `Какие документы нужны для поездки ${d.cases.vP}?`, a: entry.documents ?? documentHelp },
 ] : [
@@ -166,7 +179,7 @@ const faqs = d.domestic ? [
       : `Сезоны ${d.cases.loc} переменчивы — смотрите помесячный календарь ниже и таблицу сезонов.`,
   },
 ];
-if (d.relatedPosts.length > 0) {
+if (!prep && d.relatedPosts.length > 0) {
   // ⛔ «Да, личный опыт» — только для стран из списка «был лично» (VISITED в справочнике
   //    направлений). 12.09.2026 вопрос «Есть личный опыт поездки в Кении?» получал ответ
   //    «Да, …» на КАЖДОЙ визовой странице со связанными статьями, включая страны, где автор
@@ -191,16 +204,16 @@ const ldJson = {
       "@type": "WebPage",
       "@id": `${url}#page`,
       "url": url,
-      "name": d.domestic ? vd.h1 : `Виза ${d.cases.vP} для россиян 2026: документы, цена, сроки`,
+      "name": prep ? visaTitle : d.domestic ? vd.h1 : `Виза ${d.cases.vP} для россиян 2026: документы, цена, сроки`,
       "description": summary,
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "about": { "@type": d.domestic ? "AdministrativeArea" : "Country", "name": d.cases.nom },
       "datePublished": "2026-04-30",
-      "dateModified": DATA_UPDATED,
+      "dateModified": prep || d.domestic ? TRAVEL_PREP_UPDATED_AT : DATA_UPDATED,
       "author": { "@id": "https://traveltribe.ru/about/#person" },
       "publisher": { "@id": "https://traveltribe.ru/#org" },
-      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", d.domestic ? ".visa-sub" : ".quick-tldr"] },
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", prep ? ".prep-lead" : d.domestic ? ".visa-sub" : ".quick-tldr"] },
       "mainEntity": { "@id": `${url}#faq` }
     },
     {
@@ -234,6 +247,33 @@ const ldJson = {
 >
   <Breadcrumbs crumbs={[{ label: 'Визы', href: '/visa/' }, { label: d.cases.nom }]} />
 
+  {prep ? (
+    <TravelEntryGuide
+      title={d.domestic ? vd.h1 : `Виза ${d.cases.vP} для россиян`}
+      direction={d}
+      entry={entry}
+      faqs={faqs}
+      photo={photo}
+      caption={{
+        dagestan: 'Каньон в Дагестане',
+        egypt: 'Пирамиды Гизы',
+        japan: 'Фудзи и пагода Тюрейто',
+        thailand: 'Лодки у берега Таиланда и известняковые скалы',
+      }[d.slug] || d.cases.nom}
+    >
+      <section class="entry-related" aria-labelledby="entry-related-title">
+        <h2 id="entry-related-title">Подготовка к поездке</h2>
+        <ul class="entry-resource-list">
+          <li><a href="/calculator/">Рассчитать бюджет поездки</a></li>
+          <li><a href="/seasons/">Сравнить сезоны</a></li>
+          {d.relatedPosts.map((post) => <li><a href={`/blog/${post.slug}/`}>{post.title}</a></li>)}
+          <li><a href={cherehapaCountry(d.slug, affiliateSubId)} class="aff-cta" rel="sponsored noopener" target="_blank">Подобрать страховку</a></li>
+          {flightFrom > 0 && d.iata && <li><a href={aviasalesRoute('MOW', d.iata, affiliateSubId)} rel="sponsored noopener" target="_blank">Посмотреть цены на перелёт</a></li>}
+          <li><a href={tourOffer.href} rel="sponsored noopener" target="_blank">{tourOffer.kind === 'excursion' ? 'Посмотреть экскурсии' : 'Посмотреть авторские туры'}</a></li>
+        </ul>
+      </section>
+    </TravelEntryGuide>
+  ) : (
   <main id="main" class="visa-wrap">
     <div class="dest-hero" style={`--g1:${d.visual.g1}; --g2:${d.visual.g2};`}>
       {photo ? (
@@ -425,6 +465,7 @@ const ldJson = {
       {!d.domestic && (<p class="visa-disclaimer">Визовые правила меняются — перед поездкой обязательно проверьте актуальные требования на сайте посольства или консульства {d.cases.nom}.</p>)}
     </section>
   </main>
+  )}
 
   <Footer />
 </Layout>
@@ -533,6 +574,11 @@ const ldJson = {
 .visa-prep-list li strong { color: var(--text); }
 .visa-prep-list a { color: var(--gold); text-decoration: underline; text-decoration-color: rgba(29,64,174,0.5); text-underline-offset:.22em; }
 .visa-prep-list a:hover { text-decoration-color: var(--gold); }
+
+.entry-related { padding: 1.6rem 0; border-top: 1px solid var(--line); }
+.entry-related h2 { margin: 0 0 .65rem; font: 700 clamp(1.5rem, 3vw, 2.2rem) / 1.15 "Old Standard TT", Georgia, serif; }
+.entry-resource-list { margin: 0; padding-left: 1.35rem; }
+.entry-resource-list a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; text-underline-offset: .2em; }
 
 .visa-months {
   list-style: none; padding: 0;

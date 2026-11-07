@@ -25,6 +25,10 @@ import { COUNTRY_SIGHTS } from '../../../data/country-sights.js';
 import { POIS } from '../../../data/country-pois.js';
 import { typo } from '../../../utils/typo.js';
 import PackingChecklist from '../../../components/PackingChecklist.astro';
+import PackingSeasonNotes from '../../../components/PackingSeasonNotes.astro';
+import TravelPrepOpening from '../../../components/TravelPrepOpening.astro';
+import { getEntryRequirements } from '../../../data/entry-requirements.js';
+import { isTravelPrepPilot, PACKING_EDITORIAL, TRAVEL_PREP_UPDATED_AT } from '../../../data/travel-prep-pilot.js';
 import PackingRelatedGuides from '../../../components/PackingRelatedGuides.astro';
 import { getPackingPageAdvice } from '../../../data/packing-page-advice.js';
 import { getSeasonalPageAdvice } from '../../../data/seasonal-page-advice.js';
@@ -52,6 +56,8 @@ export async function getStaticPaths() {
 
 const { d, m, monthIdx } = Astro.props;
 const url = `https://traveltribe.ru/packing/${d.slug}/${m.slug}/`;
+const prep = isTravelPrepPilot(url) ? PACKING_EDITORIAL[d.slug] : null;
+const entry = prep ? getEntryRequirements(d) : null;
 
 const status = d.r[monthIdx];                             // P/G/O/B/X
 const pageAdvice = getPackingPageAdvice(d.slug, m.slug);
@@ -202,7 +208,8 @@ const FAQS = [
   },
   {
     q: `Нужна ли страховка ${d.cases.vP}?`,
-    a: pageAdvice?.insurance || (needsVisa
+    a: prep ? 'Для медицинских расходов в поездке подберите полис с учётом дат, маршрута и занятий. Визовые требования к страховке уточните у компетентного ведомства.'
+      : pageAdvice?.insurance || (needsVisa
       ? `Да, обязательна для визы ${d.cases.prep} (минимум €30 000). Без полиса визу не дадут.`
       : `Не обязательна, но настоятельно рекомендую: медпомощь иностранцам ${d.cases.loc} платная, полис на 14 дней ≈ 1 500 ₽.`),
   },
@@ -230,8 +237,8 @@ const ldJson = {
       "about": { "@type": "Country", "name": d.cases.nom },
       ...(imageNode ? { "image": imageNode, "primaryImageOfPage": imageNode[0] } : {}),
       "datePublished": "2026-05-27",
-      "dateModified": "2026-05-27",
-      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".pmu-tldr"] },
+      "dateModified": prep || d.domestic ? TRAVEL_PREP_UPDATED_AT : "2026-05-27",
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", prep ? ".prep-lead" : ".pmu-tldr"] },
     },
     // ItemList: одежда из bucket — AEO любит структурированные списки для long-tail
     {
@@ -275,7 +282,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
   canonical={url}
   ldJson={ldJson}
   noindex={noindex}
-  preloadImageSrcset={heroPreload?.srcSet?.attribute}
+  preloadImageSrcset={prep ? undefined : heroPreload?.srcSet?.attribute}
   preloadImageSizes="100vw"
 >
   <Breadcrumbs crumbs={[
@@ -285,6 +292,16 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
   ]} />
 
   <main id="main" class="pmu">
+    {prep && (
+      <TravelPrepOpening
+        title={`Что взять ${d.cases.vP} в ${m.prep}`}
+        lead={prep.december}
+        photo={coverImage}
+        caption={prep.caption}
+        action={{ href: '#packing-checklist', label: 'Открыть чек-лист' }}
+      />
+    )}
+    {!prep && (<>
     {/* COVER PHOTO — Swiss-канон: full-bleed, лёгкий filter, без overlay */}
     {coverImage && (
       <section class="pmu-cover">
@@ -326,8 +343,10 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       </div>
     </section>
 
-    {/* ИНТЕРАКТИВНЫЙ ЧЕК-ЛИСТ — отметить, что собрано */}
-    <section class="pmu-section">
+    </>)}
+
+    {prep && <div class="pmu-section"><PackingSeasonNotes notes={prep.notes} monthly={true} /></div>}
+    <section class="pmu-section" id={prep ? 'packing-checklist' : undefined} data-prep-checklist={prep ? '' : undefined}>
       <div class="pmu-shead"><h2>Собрать чемодан: чек-лист с галочками</h2></div>
       <p class="pmu-answer">
         Отметьте, что уже сложили — список подстраивается под длительность, кто едет и транспорт,
@@ -335,11 +354,13 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
         {checklistPreset === 'sea' && <> Полный разбор по категориям — в гайде <a href="/blog/chto-vzyat-na-more-2026/" class="pmu-link">что взять на море</a>.</>}
       </p>
       <PackingChecklist
-        preset={checklistPreset}
+        preset={prep ? "any" : checklistPreset}
+        heading={prep ? `Сборы ${d.cases.vP} в ${m.prep}` : undefined}
         schema={false}
         storageKey={`pmu-${d.slug}-${m.slug}`}
         docsMode={d.docsMode}
-        itemNotes={pageAdvice ? { ...(pageAdvice.passportNote ? { 'passport-int': pageAdvice.passportNote } : {}), insurance: 'под страну, даты и занятия; визовые требования проверьте отдельно' } : {}}
+        editorial={Boolean(prep)}
+        itemNotes={prep ? { 'passport-int': entry?.documents ?? 'проверьте требования к паспорту для вашего маршрута', insurance: 'проверьте покрытие для маршрута и занятий; условия въезда уточните отдельно' } : pageAdvice ? { ...(pageAdvice.passportNote ? { 'passport-int': pageAdvice.passportNote } : {}), insurance: 'под страну, даты и занятия; визовые требования проверьте отдельно' } : {}}
         insuranceCta={{
           href: cherehapaCountry(d.slug, `${affiliateSubId}_list`),
           label: d.docsMode === 'ru' ? 'Подобрать полис для поездки по России' : `Подобрать полис ${d.cases.vP}`,
@@ -468,9 +489,10 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       <ul class="pmu-list">
         {d.docsMode === 'ru' && (<li><b>Паспорт РФ</b> — загранпаспорт не нужен, это поездка по России.</li>)}
         {d.docsMode === 'id' && (<li><b>Внутренний паспорт РФ</b> — взрослому хватит его одного. Ребёнку до 14 лет нужен загранпаспорт: свидетельство о рождении для выезда не принимают с 20 января 2026 года{d.slug === 'abkhazia' ? ', и Абхазия — единственное исключение, там его принимают до конца 2027 года' : ''}.</li>)}
-        {d.docsMode === 'abroad' && (<li><b>Загранпаспорт</b> — {pageAdvice?.passportNote || 'срок действия 6+ месяцев на момент въезда'}.</li>)}
-        {needsVisa && visa && (<li><b>Виза:</b> {visa.duration}, {visa.cost}, {visa.timing}. <a href={`/visa/${d.slug}/`} class="pmu-link">детали визы</a></li>)}
-        {!d.domestic && !needsVisa && (pageAdvice?.entry ? <li><b>Въезд и регистрация.</b> {pageAdvice.entry}</li> : <li><b>Виза не нужна</b> — {visa?.duration || 'безвизовый въезд'}.</li>)}
+        {prep && entry && (<li><b>Правила въезда.</b> {entry.summary || 'Уточните условия для своего маршрута.'} {entry.fee ?? 'Сбор уточните для вашей цели и способа въезда.'} <a href={`/visa/${d.slug}/`} class="pmu-link">Документы и виза</a></li>)}
+        {!prep && d.docsMode === 'abroad' && (<li><b>Загранпаспорт</b> — {pageAdvice?.passportNote || 'срок действия 6+ месяцев на момент въезда'}.</li>)}
+        {!prep && needsVisa && visa && (<li><b>Виза:</b> {visa.duration}, {visa.cost}, {visa.timing}. <a href={`/visa/${d.slug}/`} class="pmu-link">детали визы</a></li>)}
+        {!prep && !d.domestic && !needsVisa && (pageAdvice?.entry ? <li><b>Въезд и регистрация.</b> {pageAdvice.entry}</li> : <li><b>Виза не нужна</b> — {visa?.duration || 'безвизовый въезд'}.</li>)}
         {d.docsMode === 'ru'
           ? (<li><b>Карты:</b> российские карты работают как дома, наличные нужны в глухих местах и на рынках.</li>)
           : (<li><b>Карты:</b> Visa/MC российских банков не работают. UnionPay / МИР / иностранные — <a href="/cards/" class="pmu-link">карта платёжных систем</a>.</li>)}
@@ -478,7 +500,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       </ul>
       {flightLow && d.price?.iata && (
         <p class="pmu-cta">
-          <a class="pmu-aff" href={aviasalesRoute('MOW', d.price.iata, `packing_${d.slug.replaceAll('-', '_')}_docs`, monthIdx)} rel="sponsored noopener" target="_blank">{pageAdvice ? 'Посмотреть цены на перелёт' : `Посмотреть цены на эти даты — от $${flightMonth || flightLow}`}</a>
+          <a class="pmu-aff" href={aviasalesRoute('MOW', d.price.iata, `packing_${d.slug.replaceAll('-', '_')}_docs`, monthIdx)} rel="sponsored noopener" target="_blank">{prep || pageAdvice ? 'Посмотреть цены на перелёт' : `Посмотреть цены на эти даты — от $${flightMonth || flightLow}`}</a>
           
           <span class="pmu-trust">оплата картами РФ</span>
         </p>
@@ -599,6 +621,8 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
 </Layout>
 
 <style>
+  #packing-checklist { scroll-margin-top: 6rem; }
+
 .pmu {
   overflow-wrap: anywhere;
   --line-strong: var(--line);

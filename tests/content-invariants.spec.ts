@@ -17,6 +17,8 @@ import { buildQueue } from '../scripts/revision-queue.mjs';
 import { checkArticleReview, readPostMeta, proseHash, REVIEW_REQUIRED_FROM } from '../scripts/article-review-gate.mjs';
 import { articleProse, classifyEdit, baseVersion } from '../scripts/edit-kind.mjs';
 import { journalMetadataProblems } from '../scripts/check-journal-metadata.mjs';
+import { getEntryRequirements } from '../src/data/entry-requirements.js';
+import { isTravelPrepPilot } from '../src/data/travel-prep-pilot.js';
 
 // Инвариант-гейт по СБОРКЕ (dist/): ловит КЛАССЫ багов на ЛЮБОМ посте, в т.ч. вне
 // PAGES-списка скриншот-гейта. Без baseline — чистые assert'ы.
@@ -1649,7 +1651,9 @@ test('Снимки: у каждой страницы сборов показан
   const без: string[] = [];
   for (const s of стр) {
     const h = readFileSync(join(DIST, 'packing', s, 'index.html'), 'utf8');
-    const герой = h.match(/<div class="pack-hero"[^>]*>([\s\S]*?)<\/div>/);
+    const герой = isTravelPrepPilot(`/packing/${s}/`)
+      ? h.match(/<figure class="prep-photo"[^>]*>([\s\S]*?)<\/figure>/)
+      : h.match(/<div class="pack-hero"[^>]*>([\s\S]*?)<\/div>/);
     if (!герой) { без.push(`${s}: блока снимка нет вовсе`); continue; }
     if (!/<img|<picture/.test(герой[1])) без.push(`${s}: пустая коробка вместо снимка`);
   }
@@ -1700,17 +1704,24 @@ test('Факты: тариф eVisa Египта не расходится на �
     'blog/egypt-guide-2026/index.html',
     'visa/egypt/index.html',
     'packing/egypt/index.html',
+    'packing/egypt/december/index.html',
   ];
+  const feeIsCurrent = getEntryRequirements({ slug: 'egypt' }).fee !== null;
   const bad: string[] = [];
   for (const path of paths) {
     const html = readFileSync(join(DIST, path), 'utf8');
-    if (!html.includes('$30')) bad.push(`${path}: нет актуального однократного тарифа $30`);
+    const text = видимыйТекст(html, '');
+    if (path.startsWith('blog/')) {
+      if (!text.includes('$30')) bad.push(`${path}: нет однократного тарифа $30`);
+    } else if (feeIsCurrent) {
+      if (!/однократная eVisa\s*—\s*\$30, многократная\s*—\s*\$65/iu.test(text)) bad.push(`${path}: нет однократного и многократного тарифов $30/$65`);
+    } else if (!/уточните сбор|сбор уточните/iu.test(text) || /однократная eVisa\s*—\s*\$30/iu.test(text)) {
+      bad.push(`${path}: просроченный тариф должен уступить ссылке на уточнение`);
+    }
     if (/\$25 eVisa|e-?Visa \(\$25|\$60 многократ/i.test(html)) {
       bad.push(`${path}: остался прежний тариф $25/$60`);
     }
   }
-  const visa = readFileSync(join(DIST, 'visa/egypt/index.html'), 'utf8');
-  if (!visa.includes('$65 многократная')) bad.push('visa/egypt: нет актуального многократного тарифа $65');
   expect(bad, bad.join('\n')).toEqual([]);
 });
 
