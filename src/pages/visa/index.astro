@@ -5,12 +5,20 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { Image } from 'astro:assets';
 import { DIRECTIONS, VISITED } from '../../data/directions.js';
 import { NOUN } from '../../data/plural.js';
-import { getVisaDetails } from '../../data/visa-details.js';
+import { getEntryRequirements, visaCatalogFact } from '../../data/entry-requirements.js';
 
 const destPhotos = import.meta.glob('../../assets/destinations/*.jpg', { eager: true, import: 'default' });
 
-const byVisa = { free: [], evisa: [], required: [] };
-for (const d of DIRECTIONS) byVisa[d.visa].push(d);
+const byVisa = { free: [], evisa: [], arrival: [], required: [], domestic: [], unknown: [] };
+const entries = new Map(DIRECTIONS.map((d) => [d.slug, getEntryRequirements(d)]));
+for (const d of DIRECTIONS) byVisa[entries.get(d.slug).mode].push(d);
+
+function costBucket(entry) {
+  if (entry.feeUsd === null) return '';
+  if (entry.feeUsd === 0) return 'free';
+  return entry.feeUsd <= 50 ? 'cheap' : 'premium';
+}
+const isLongDuration = (entry) => entry.stayDays !== null && entry.stayDays >= 60;
 
 // Ответ первого экрана: сколько куда пускают и во что обходится самая дешёвая
 // поездка в каждой из трёх групп. Цена считается ровно как на главной и в
@@ -23,59 +31,58 @@ const дешевейший = (список) => список
   .filter((d) => d.price?.flight && d.price?.hotel && d.price?.food)
   .map((d) => ({ slug: d.slug, nom: d.cases.nom, цена: tripCost(d.price) }))
   .sort((a, b) => a.цена - b.цена)[0] || null;
-const ОТВЕТ = [
-  // ⛔ Российские регионы из примера исключены: на визовой странице «дешевле
-  //    всех без визы — Дагестан» читается насмешкой, визы туда не бывает вовсе.
-  { код: 'без визы',   n: byVisa.free.length,     дёшево: дешевейший(byVisa.free.filter((d) => !d.domestic)) },
-  { код: 'виза онлайн', n: byVisa.evisa.length,    дёшево: дешевейший(byVisa.evisa) },
-  { код: 'консульство', n: byVisa.required.length, дёшево: дешевейший(byVisa.required) },
-].filter((x) => x.дёшево);
+const cheapest = дешевейший(DIRECTIONS.filter((d) => {
+  const { mode } = entries.get(d.slug);
+  return mode !== 'domestic' && mode !== 'unknown';
+}));
 
 // ⛔ Начальные счётчики кнопок считаются ПРИ СБОРКЕ, а не скриптом после
 //    загрузки. Скрипт вписывал их в разметку уже отрисованной страницы, и два
 //    снимка подряд на одной машине выходили разными — облачный прогон дважды
 //    объявил страницу нестабильной. Заодно числа теперь видны без JavaScript.
-const стоимостьВизы = (d) => {
-  const c = (getVisaDetails(d.slug)?.cost || '').toLowerCase();
-  if (/бесплат/.test(c)) return 'free';
-  const n = Number((c.match(/\d+/) || [999])[0]);
-  return n <= 50 ? 'cheap' : '';
-};
-const долгий = (d) => {
-  const t = getVisaDetails(d.slug)?.duration || '';
-  return /(6[0-9]|[7-9][0-9]|[1-9]\d{2,})\s*(дн|дней)/i.test(t) || /год|мес/i.test(t);
-};
 const цена = (d) => (d.price?.flight && d.price?.hotel && d.price?.food ? tripCost(d.price) : 0);
 const СЧЁТ = {
   all: DIRECTIONS.length,
   free: byVisa.free.length, evisa: byVisa.evisa.length, required: byVisa.required.length,
-  costFree: DIRECTIONS.filter((d) => стоимостьВизы(d) === 'free').length,
-  costCheap: DIRECTIONS.filter((d) => стоимостьВизы(d) === 'cheap').length,
-  durLong: DIRECTIONS.filter(долгий).length,
+  costFree: DIRECTIONS.filter((d) => costBucket(entries.get(d.slug)) === 'free').length,
+  costCheap: DIRECTIONS.filter((d) => costBucket(entries.get(d.slug)) === 'cheap').length,
+  durLong: DIRECTIONS.filter((d) => isLongDuration(entries.get(d.slug))).length,
   tripLow: DIRECTIONS.filter((d) => { const c = цена(d); return c > 0 && c < 100000; }).length,
   tripMid: DIRECTIONS.filter((d) => { const c = цена(d); return c > 0 && c <= 200000; }).length,
 };
 
 const VISA_META = {
+  domestic: {
+    title: 'По России', code: 'РФ', iso: 'РОССИЯ',
+    desc: 'Документы для поездок внутри страны.', section: '',
+  },
+  unknown: {
+    title: 'Уточнить правила', code: '', iso: '',
+    desc: 'Выберите направление, чтобы перейти к справке и официальным требованиям.', section: '',
+  },
+  arrival: {
+    title: 'Виза по прибытии', code: 'VOA', iso: '',
+    desc: 'Условия зависят от пункта въезда.', section: '',
+  },
   free: {
     title: 'Без визы',
     code: 'БВ',
     iso: 'VISA-FREE',
-    desc: 'Загранпаспорт от 6 месяцев. Штамп на границе. Никаких документов и оплат заранее.',
+    desc: 'Откройте страну, чтобы посмотреть срок и условия поездки.',
     section: 'I',
   },
   evisa: {
     title: 'Электронная виза',
     code: 'EV',
     iso: 'eVISA',
-    desc: 'Оформляется онлайн до вылета через сайт миграционной службы. $20–80 · 1–3 дня.',
+    desc: 'Условия онлайн-подачи зависят от страны.',
     section: 'II',
   },
   required: {
     title: 'Виза обязательна',
     code: 'ВЗ',
     iso: 'CONSULAR',
-    desc: 'Через консульство или визовый центр. Биометрия, документы, $35–200+ · до 30 дней.',
+    desc: 'Место подачи и комплект документов указаны на странице направления.',
     section: 'III',
   },
 };
@@ -86,64 +93,31 @@ const VISA_META = {
 //    «Был здесь сам» стоит на хабе, галочки не было. Нашёл внешний рецензент. Один список на
 //    сайт: заявка о личном опыте автора не может зависеть от того, какую страницу открыли.
 
-// FAQ — 12 главных вопросов о визах
 const FAQ_ITEMS = [
   {
-    q: 'Куда россиянину можно без визы в 2026?',
-    a: `Сейчас ${byVisa.free.length} ${NOUN.direction(byVisa.free.length)} ${NOUN.accept(byVisa.free.length)} по загранпаспорту: Турция (60 дней), Грузия (1 год), Армения (180 дней), ОАЭ (90 дней), Таиланд (до 14 сентября — 60 дней, с 15 сентября — 30), Китай (30 дней до 31.12.2027), Куба, Доминикана, Сербия, Аргентина, Бразилия, Мексика (180 дней) и другие. Полный список — в разделе I выше.`,
+    q: 'Как найти правила для своей поездки?',
+    a: 'Выберите страну в каталоге. При сверке документов учитывайте паспорт, цель поездки, даты, способ въезда и пересадки.',
   },
   {
-    q: 'Что такое eVisa и чем отличается от обычной визы?',
-    a: `eVisa оформляется онлайн через сайт миграционной службы за 1–3 дня. Не нужно посольство, биометрия, фото на паспорт. Стоит $20–80. ${byVisa.evisa.length} ${NOUN.country(byVisa.evisa.length)} ${NOUN.give(byVisa.evisa.length)} россиянам eVisa: Индия, Шри-Ланка, Кения, Камбоджа, Мадагаскар и другие. Обычная виза — через консульство, биометрия, до 30 дней, $35–200+.`,
+    q: 'Что такое электронная виза?',
+    a: visaCatalogFact('electronic') ?? 'Порядок онлайн-подачи уточните на официальном портале страны назначения.',
   },
   {
-    q: 'Где взять визу быстро и дёшево в 2026?',
-    a: 'Быстрые eVisa: Шри-Ланка (24 часа, $35), Камбоджа (24–72 часа, $36), Индия (3 дня, $25), Кения (2–7 дней, $51). Без визы и бесплатно: Грузия (1 год), Армения (180 дней), Узбекистан (90 дней), Турция (60 дней), Сербия (30 дней).',
+    q: 'Чем срок действия визы отличается от срока пребывания?',
+    a: 'Срок действия определяет, когда можно использовать визу. Срок пребывания определяет, как долго можно находиться в стране. Проверяйте оба условия и число въездов.',
   },
   {
-    q: 'Какие страны больше всего отказывают россиянам?',
-    a: 'Шенген (особенно Скандинавия, Польша, Прибалтика) — высокий процент отказов с 2022. США — стандартные процедуры, сильно зависит от истории поездок. Канада — проверки через консульства третьих стран (Варшава, Стамбул). UK — частые отказы. Япония — сейчас стабильно, требуется туроператор или поручительство.',
+    q: 'Входят ли Болгария и Румыния в Шенген?',
+    a: visaCatalogFact('schengen') ?? 'Сверьте состав Шенгенской зоны на сайте Совета ЕС.',
   },
   {
-    q: 'Какие документы нужны для визы в 2026?',
-    a: 'Минимум для большинства виз: загранпаспорт от 6 месяцев действия, фото 35×45 мм, анкета, подтверждение брони отеля и обратного билета, банковская справка из расчёта $50–100 на день. Для шенгена дополнительно — медстраховка от €30 000, справка с работы, выписка по счёту за 3 месяца.',
+    q: 'Куда подавать на туристическую визу в Японию?',
+    a: visaCatalogFact('japan') ?? 'Проверьте порядок подачи на сайте Посольства Японии.',
   },
   {
-    q: 'Сколько действует виза и можно ли продлить?',
-    a: 'eVisa обычно 30–90 дней без права продления — нужно выехать и въехать заново (если разрешён повторный въезд). Обычная виза: туристическая 30–180 дней, бизнес/учёба 1–5 лет. Продление — через миграционную службу страны пребывания, $20–100 за 30–60 дней.',
+    q: 'Где проверить условия после отказа?',
+    a: 'Посмотрите порядок обжалования или повторной подачи в уведомлении об отказе и на сайте органа, который принял решение.',
   },
-  {
-    q: 'Можно ли по российскому загранпаспорту в США в 2026?',
-    a: 'Технически да — США выдают визы B1/B2 россиянам, но только через консульства в третьих странах (Варшава, Стамбул, Алматы, Белград). Сроки ожидания — 6–12 месяцев. Стоимость $185 + сбор третьей страны. Альтернатива — Канада (CA$100, 2–3 месяца через Варшаву) или Мексика (180 дней безвиз) с дальнейшим планом.',
-  },
-  {
-    q: 'Какие визы дают мультивизу на 5 лет?',
-    a: 'США B1/B2 — стандартно 5 лет (multi-entry), реально 10. Канада eTA — 5 лет (но short-stay). Япония — до 3 лет при повторных поездках. Шенген — после 3 коротких виз можно претендовать на 1–5 лет. ОАЭ — 5-летняя multi-entry для регулярных туристов. Конкретные сроки зависят от истории поездок и страны выдачи.',
-  },
-  {
-    q: 'Что с EES и ETIAS — Шенгенским системой 2026?',
-    a: 'EES (Entry/Exit System) — биометрическая регистрация на границе Шенгена. Запущена в октябре 2025. Заменяет штампы в паспорте: при первом въезде снимают отпечатки пальцев и фото лица, хранятся 3 года. ETIAS (Travel Authorization) — не для россиян; для граждан безвизовых стран. Россияне продолжают оформлять обычную шенгенскую визу.',
-  },
-  {
-    q: 'Стоит ли оформлять Кипр или Болгарию вместо Шенгена?',
-    a: 'Кипр — не Шенген, оформляется онлайн pro-visa бесплатно за 1 день. 90 дней пребывания. Болгария и Румыния с марта 2024 в Шенгене только частично (только воздух/море, не сухопутно). По кипрской pro-visa нельзя въехать в страны Шенгена — это отдельная зона.',
-  },
-  {
-    q: 'Нужна ли биометрия на визу в 2026?',
-    a: 'Шенген — да, обязательно при подаче (отпечатки + фото). Действует 5 лет. Великобритания — да, в визовых центрах. США — да, на интервью. Япония — нет для туристической визы. eVisa (Индия, Шри-Ланка, Камбоджа, Кения, Мадагаскар) — биометрия не нужна, только онлайн-анкета и сканы паспорта.',
-  },
-  {
-    q: 'Что делать если отказали в визе?',
-    a: 'Шенген: подать апелляцию в течение 15–30 дней или переоформить через другую страну (Италия, Греция чаще одобряют). США: повторно подавать через 1 месяц с улучшенным комплектом. Япония: исправить ошибку и попробовать через того же туроператора. Учти: в анкете честно указывать прошлые отказы — скрывать = автоматический отказ.',
-  },
-];
-
-// Популярные направления для конверсии — Aviasales deep-link
-const POPULAR_DESTS = [
-  { name: 'Турция',  iata: 'AYT', visa: 'без визы' },
-  { name: 'Япония',  iata: 'TYO', visa: 'через турагентство' },
-  { name: 'Грузия',  iata: 'TBS', visa: 'без визы' },
-  { name: 'Китай',   iata: 'PEK', visa: 'без визы до 31.12.2027' },
 ];
 
 // ISO 3166-1 alpha-3 для маленького кода под названием страны (визовый стиль)
@@ -164,32 +138,7 @@ const ISO_CODE = {
   'argentina': 'ARG', 'ecuador': 'ECU', 'brazil': 'BRA', 'antarctica': 'ATA', 'iceland': 'ISL', 'norway': 'NOR',
 };
 
-const VISA_TYPE_LABEL = { free: 'Без визы', evisa: 'eVisa', required: 'Виза обязательна' };
-const VERIFIED_AT = '2026-08-29'; // дата последней массовой сверки реестра
-
-// Helper-функции для filter-buckets — выполняются в frontmatter (regex здесь работает)
-function costBucket(cost) {
-  const lower = cost.toLowerCase();
-  if (lower.indexOf('беспл') >= 0) return 'free';
-  const digits = cost.replace(/[^\d]/g, ' ').trim().split(/\s+/)[0] || '0';
-  const num = parseInt(digits, 10) || 0;
-  return num > 0 && num <= 50 ? 'cheap' : 'premium';
-}
-function costUsd(cost) {
-  const lower = cost.toLowerCase();
-  if (lower.indexOf('беспл') >= 0) return 0;
-  const num = parseInt(cost.replace(/[^\d]/g, ' ').trim().split(/\s+/)[0] || '0', 10) || 0;
-  if (cost.indexOf('\u20ac') >= 0) return Math.round(num * 1.08);   // EUR -> USD
-  if (cost.indexOf('\u20bd') >= 0 || /руб/i.test(cost)) return Math.round(num / 90); // RUB -> USD
-  return num; // $ или без символа -> USD
-}
-function isLongDuration(dur) {
-  const lower = dur.toLowerCase();
-  if (lower.indexOf('год') >= 0 || lower.indexOf('без срока') >= 0) return true;
-  const digits = dur.replace(/[^\d]/g, ' ').trim().split(/\s+/)[0] || '0';
-  const num = parseInt(digits, 10) || 0;
-  return num >= 60;
-}
+const UPDATED_AT = '2026-11-06';
 const url = 'https://traveltribe.ru/visa/';
 const ldJson = {
   "@context": "https://schema.org",
@@ -204,7 +153,7 @@ const ldJson = {
       "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".va-intro-lede"] },
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
       "mainEntity": { "@id": `${url}#itemlist` },
-      "dateModified": `${VERIFIED_AT}T12:00:00+03:00`,
+      "dateModified": `${UPDATED_AT}T12:00:00+03:00`,
       "datePublished": "2025-09-15T00:00:00+03:00",
       "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://traveltribe.ru/about/" },
       "publisher": { "@type": "Organization", "name": "TravelTribe", "url": "https://traveltribe.ru/" },
@@ -222,8 +171,8 @@ const ldJson = {
           "@id": `https://traveltribe.ru/visa/${d.slug}/#destination`,
           "name": d.cases.nom,
           "url": `https://traveltribe.ru/visa/${d.slug}/`,
-          "description": `Виза в ${d.cases.acc} для россиян 2026: ${VISA_TYPE_LABEL[d.visa]}.`,
-          "touristType": VISA_TYPE_LABEL[d.visa],
+          "description": `Правила поездки ${d.cases.vP}: ${entries.get(d.slug).label}.`,
+          "touristType": entries.get(d.slug).label,
         },
       })),
     },
@@ -249,10 +198,10 @@ const ldJson = {
   {/* ⛔ Ключ в НАЧАЛЕ заголовка выдачи — канон проекта. «Визовый реестр» это
       наше внутреннее имя, спроса у него нет, а стояло оно первым словом. */}
   title="Виза для россиян 2026: куда пускают без визы и сколько стоит поездка"
-  description={`Визы для россиян в 2026: ${byVisa.free.length} ${NOUN.country(byVisa.free.length)} без визы, ${byVisa.evisa.length} с eVisa онлайн, ${byVisa.required.length} требуют визу. Стоимость, сроки и документы по 70+ направлениям.`}
+  description="Визы для россиян и документы для поездок по России. Найдите своё направление, проверенные правила и порядок уточнения условий въезда."
   canonical={url}
   ogTitle="Виза для россиян 2026: куда без визы и сколько стоит · TravelTribe"
-  ogDescription={`${byVisa.free.length} без визы · ${byVisa.evisa.length} eVisa · ${byVisa.required.length} требуют визу`}
+  ogDescription="Каталог направлений, документы и проверенные условия въезда."
   ldJson={ldJson}
 >
   <Breadcrumbs crumbs={[{ label: 'Визы' }]} />
@@ -304,6 +253,7 @@ const ldJson = {
             <button type="button" class="va-chip va-chip--active" data-filter="all" aria-pressed="true">Все<b class="va-chip-n">{СЧЁТ.all}</b></button>
             <button type="button" class="va-chip" data-filter="free" aria-pressed="false">Без визы<b class="va-chip-n">{СЧЁТ.free}</b></button>
             <button type="button" class="va-chip" data-filter="evisa" aria-pressed="false">eVisa<b class="va-chip-n">{СЧЁТ.evisa}</b></button>
+            <button type="button" class="va-chip" data-filter="domestic" aria-pressed="false">По России<b class="va-chip-n">{byVisa.domestic.length}</b></button>
             <button type="button" class="va-chip" data-filter="required" aria-pressed="false">Виза<b class="va-chip-n">{СЧЁТ.required}</b></button>
             <span class="va-chip-divider" aria-hidden="true">·</span>
             <button type="button" class="va-chip" data-cost="free" aria-pressed="false">Бесплатно<b class="va-chip-n">{СЧЁТ.costFree}</b></button>
@@ -335,11 +285,11 @@ const ldJson = {
       <section class="va-answer" aria-label="Сводка по визовым режимам">
         <div class="va-n"><b>{byVisa.free.length}</b><span>без визы</span></div>
         <div class="va-n"><b>{byVisa.evisa.length}</b><span>виза онлайн</span></div>
-        <div class="va-n"><b>{byVisa.required.length}</b><span>консульство</span></div>
-        <div class="va-n"><b>{fmtRub(ОТВЕТ[0].дёшево.цена)} ₽</b><span>дешевле всех — {ОТВЕТ[0].дёшево.nom}</span></div>
+        <div class="va-n"><b>{byVisa.required.length}</b><span>виза заранее</span></div>
+        {cheapest && <div class="va-n"><b>≈ {fmtRub(cheapest.цена)} ₽</b><span>неделя с перелётом — {cheapest.nom}</span></div>}
       </section>
       </div>
-      <p class="va-next">Ниже — сам реестр. Он перестраивается отбором выше.</p>
+      <p class="va-next">Сводка показывает направления с проверенными правилами. Остальные доступны в группе «Уточнить правила».</p>
 
       <div class="va-cta-row">
         <a class="va-cta va-cta--primary" href="https://t.me/traveltriberu?utm_source=traveltribe&utm_medium=visa-hero" target="_blank" rel="noopener">
@@ -362,14 +312,14 @@ const ldJson = {
         навигацию, а не как денежную точку страницы. Предмет — в первых словах
         (NN/g «First 2 Words»), имя партнёра из подписи убрано. */}
     <p class="va-money-row">
-      <a class="aff-cta" href="https://cherehapa.tpk.mx/fkM7suze?erid=2VtzquZTwb5&sub_id=visa_index&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F" target="_blank" rel="nofollow noopener sponsored">Страховка для визы и въезда — от 70 ₽ в день</a>
+      <a class="aff-cta" href="https://cherehapa.tpk.mx/fkM7suze?erid=2VtzquZTwb5&sub_id=visa_index&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F" target="_blank" rel="nofollow noopener sponsored">Сравнить страховки для поездки</a>
       <span class="va-money-sep" aria-hidden="true">·</span>
       <a class="aff-cta" href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=visa_index&u=https%3A%2F%2Fwww.aviasales.ru%2F" target="_blank" rel="nofollow noopener sponsored">Билеты по 77 направлениям реестра</a>
     </p>
 
 
     {/* ─── CLASSIFIED SECTIONS — три картотеки ─── */}
-    {['free', 'evisa', 'required'].map((vt, vti) => (
+    {Object.keys(byVisa).filter((vt) => byVisa[vt].length > 0).map((vt, vti) => (
       <section class={`va-section va-section--${vt}`} data-section={vt} data-reveal>
         <header class="va-section-head">
           <div class="va-section-stamp" aria-hidden="true">
@@ -390,21 +340,21 @@ const ldJson = {
             const iso = ISO_CODE[d.slug] || 'XXX';
             const num = String(idx + 1).padStart(3, '0');
             const visited = VISITED.has(d.slug);
-            const details = getVisaDetails(d.slug, d.visa);
+            const details = entries.get(d.slug);
             // Eager только для первых карточек ПЕРВОЙ группы (above-fold на мобайле,
             // 2-кол сетка → ~2 ряда). idx сбрасывается в каждой группе, поэтому без vti===0
             // получалось 9 eager × fetchpriority — приоритетный шторм убивал LCP.
             const isAboveFold = vti === 0 && idx < 4;
-            const cb = costBucket(details.cost);
-            const isLong = isLongDuration(details.duration);
-            const altText = d.cases.nom + ' — ' + d.sub + ', виза для россиян 2026';
+            const cb = costBucket(details);
+            const isLong = isLongDuration(details);
+            const altText = d.cases.nom;
             return (
               <a href={`/visa/${d.slug}/`}
                  class={`va-card ${visited ? 'va-card--visited' : ''}`}
                  data-name={d.cases.nom.toLowerCase()}
-                 data-visa={d.visa}
+                 data-visa={vt}
                  data-cost={cb}
-                 data-cost-usd={costUsd(details.cost)}
+                 data-cost-usd={details.feeUsd ?? ''}
                  data-ord={idx}
                  data-duration-long={isLong ? '1' : '0'}
                  data-trip={d.price?.flight && d.price?.hotel && d.price?.food ? tripCost(d.price) : ''}>
@@ -443,24 +393,9 @@ const ldJson = {
                   )}
                   <div class="va-card-iso">{iso}</div>
                   <dl class="va-card-facts">
-                    <div class="va-fact">
-                      <dt>Срок</dt>
-                      <dd>{details.duration}</dd>
-                    </div>
-                    {/* «Цена» рядом с ценой недели читалась двусмысленно: это цена
-                        ВИЗЫ, а не поездки. Названо прямо. */}
-                    <div class="va-fact">
-                      <dt>Виза</dt>
-                      <dd>{details.cost}</dd>
-                    </div>
-                    <div class="va-fact">
-                      <dt>Оформление</dt>
-                      <dd>{details.timing}</dd>
-                    </div>
-                    {/* ⛔ Цена поездки — по правилу главной: каждый пример несёт свою
-                        цену. Без неё читатель узнаёт «виза не нужна» и уходит считать
-                        в другое место. Считается так же, как на главной и в
-                        калькуляторе: перелёт из Москвы плюс неделя на месте. */}
+                    <div class="va-fact"><dt>Режим</dt><dd>{details.label}</dd></div>
+                    {details.stay && <div class="va-fact"><dt>Пребывание</dt><dd>{details.stay}</dd></div>}
+                    {details.fee && <div class="va-fact"><dt>Сборы</dt><dd>{details.fee}</dd></div>}
                   </dl>
                 </div>
               </a>
@@ -470,133 +405,22 @@ const ldJson = {
       </section>
     ))}
 
-    {/* ─── HUB INTRO — вступительная статья ─── */}
-    <section class="va-intro" data-reveal>
-      <div class="va-intro-meta">
-        <span class="va-intro-tag">ОБЗОР · ВИЗОВАЯ ОБСТАНОВКА · МАЙ 2026</span>
-      </div>
-      <h2 class="va-intro-title">Что изменилось за полгода?</h2>
-
+    <section class="va-intro">
+      <h2 class="va-intro-title">Как проверить условия въезда</h2>
       <div class="va-intro-body">
-        <p class="va-intro-lede">
-          С 2022 года визовая карта мира перерисовывается каждые 3–6 месяцев: страны
-          открываются и закрываются быстрее, чем успевают устареть путеводители.
-          Ниже — что изменилось за полгода и что нужно на въезде в каждую из них.
-        </p>
-
-        <p>
-          {/* ⛔ Без жирного ярлыка в начале: пять таких абзацев подряд — примета
-              машинного текста из документа Википедии. Жирным выделен ОДИН факт
-              абзаца, как принято на сайте, а не подпись-заголовок. */}
-          Китай пустил россиян без визы на <strong>30 дней</strong> с 15 сентября 2025,
-          а в мае 2026 продлил режим до 31 декабря 2027 — такого не было с 1999 года.
-          Гонконг как специальный административный район даёт 14 дней, Хайнань — 30
-          по общему китайскому режиму. Таиланд с 2024 давал 60 дней вместо классических
-          30. Министерские объявления опубликовали в Royal Gazette 31 августа 2026 года:
-          с 15 сентября россиянам дадут до 30 дней по двустороннему соглашению, а срок
-          въехавших раньше не сократят.
-        </p>
-
-        <p>
-          Шенген подорожал и замедлился: подача стоит <strong>€90</strong> против €80
-          до июня 2024. В Польше, Прибалтике и Скандинавии ждут 30–60 дней и отказывают
-          в 12–25% случаев. Италия, Греция, Испания и Венгрия отказывают реже и активным
-          путешественникам выдают мультивизы на 6 месяцев и дольше. С октября 2025 на
-          границе работает EES — биометрия вместо штампа, первое прохождение занимает
-          5–10 минут.
-        </p>
-
-        <p>
-          Консульства США в России не работают с 2022 года. Визу B1/B2 подают в Варшаве,
-          Стамбуле, Алматы или Белграде: интервью ждут <strong>6–12 месяцев</strong>,
-          платят $185 плюс сборы третьей страны. Канада дешевле — CA$100 и 2–3 месяца
-          через Варшаву, — но требует доказать связи с Россией и регулярные поездки.
-          Кто хочет в Северную Америку быстро, летит в Мексику: 180 дней без визы и
-          наземная граница с США и Канадой.
-        </p>
-
-        <p>
-          Для любой визы просят один и тот же набор: загранпаспорт от 6 месяцев с двумя
-          пустыми страницами, цветное фото 35×45 мм, обратные билеты, бронь отеля и
-          банковскую справку из расчёта <strong>$50–100 на день поездки</strong>. Бронь
-          берите с бесплатной отменой — её дают Booking и Agoda. Шенген и Япония просят
-          сверх этого медстраховку от €30 000, справку с работы на бланке и выписку по
-          счёту за три месяца. США и Канада — выписку за полгода, налоговую декларацию
-          и документы о собственности.
-        </p>
-
-        <p>
-          Каждая карточка ниже показывает три факта: <em>срок пребывания</em> ·
-          <em>стоимость</em> · <em>срок оформления</em>. Данные — для туристической визы,
-          не для рабочей, учебной или деловой. Галочка <span class="va-intro-check">✓</span>
-          на карточке значит, что я проходил это сам и могу подтвердить процесс.
-          Цены — на май 2026, в той валюте, в которой их берут.
+        <p class="va-intro-lede">Каталог предназначен для туристических поездок с обычным российским паспортом. Для пересадки, работы или учёбы проверьте правила отдельно.</p>
+        <p>Откройте страницу страны и проверьте срок пребывания, документы и способ подачи. Если условия зависят от маршрута, обратитесь в консульство перед покупкой билета.</p>
+        <p class="va-reference-links">
+          <a href="https://www.kdmid.ru/info-for-traveling-abroad/reference-information-for-traveling-abroad/list-of-countries-with-simplified-entry/">Консульский справочник МИД</a>
+          <a href="/izmeneniya/">Изменения правил въезда</a>
         </p>
       </div>
-    </section>
-
-    {/* ─── CHANGES FEED — что изменилось за последние 6 месяцев ─── */}
-    <section class="va-changes" data-reveal>
-      <header class="va-changes-head">
-        <span class="va-changes-tag">ИЗМЕНЕНИЯ · ПОСЛЕДНИЕ 6 МЕСЯЦЕВ</span>
-        <h2 class="va-changes-title">Когда и что поменяли?</h2>
-      </header>
-      <ol class="va-changes-list">
-        <li class="va-change-item">
-          <time class="va-change-date">2 сентября 2026</time>
-          <div class="va-change-text"><strong>Таиланд назначил дату.</strong> При въезде до 14 сентября включительно россиянам дают до 60 дней, с 15 сентября — до 30 по двустороннему соглашению. Штампы, выданные до перехода, сохраняют полный срок.</div>
-        </li>
-        <li class="va-change-item">
-          <time class="va-change-date">7 мая 2026</time>
-          <div class="va-change-text"><strong>Шри-Ланка</strong> расширила бесплатную ETA для россиян: теперь в списке 40 стран. Оформляется онлайн за 24–72 часа.</div>
-        </li>
-        <li class="va-change-item">
-          <time class="va-change-date">10 апреля 2026</time>
-          <div class="va-change-text"><strong>EES полностью операционен в Шенгене.</strong> Биометрия (отпечатки + фото) на всех внешних границах. Первый проход добавляет 5–10 минут к очереди.</div>
-        </li>
-        <li class="va-change-item">
-          <time class="va-change-date">16 февраля 2026</time>
-          <div class="va-change-text"><strong>Мадагаскар eVisa подорожал в 3 раза:</strong> 15 дней с €10 до €30, 30 дней €35, 60 дней €40. Цены теперь только в евро.</div>
-        </li>
-        <li class="va-change-item">
-          <time class="va-change-date">12 февраля 2026</time>
-          <div class="va-change-text"><strong>Япония — подача только через JVAC.</strong> Консульский сбор обнулён, сервисный сбор JVAC 970₽ в Москве/СПб. Регионы — через турагентство (~7000₽).</div>
-        </li>
-        <li class="va-change-item">
-          <time class="va-change-date">28 января 2026</time>
-          <div class="va-change-text"><strong>Канада прекратила вклейку визы в РФ.</strong> После одобрения паспорт надо везти в VAC за рубежом (Алматы, Стамбул, Дубай).</div>
-        </li>
-        <li class="va-change-item">
-          <time class="va-change-date">1 января 2026</time>
-          <div class="va-change-text"><strong>Индия — eVisa для россиян стала бесплатной.</strong> 30 дней double-entry, оформление до 30 дней онлайн. Раньше было $25.<br /><strong>Грузия:</strong> обязательная медстраховка для всех иностранцев на весь срок.</div>
-        </li>
-        <li class="va-change-item">
-          <time class="va-change-date">7 ноября 2025</time>
-          <div class="va-change-text"><strong>Шенген — мультивизы для россиян отменены</strong> (рекомендация Еврокомиссии). Большинство стран выдаёт только single-entry под даты. Исключения: Италия, Испания, Греция, Венгрия, Франция — иногда дают мульти.</div>
-        </li>
-        <li class="va-change-item">
-          <time class="va-change-date">12 октября 2025</time>
-          <div class="va-change-text"><strong>EES запущен в Шенгене.</strong> Биометрия на границе вместо штампов. Данные хранятся 3 года.</div>
-        </li>
-        <li class="va-change-item">
-          <time class="va-change-date">14 сентября 2025</time>
-          <div class="va-change-text"><strong>Китай открыл безвиз на 30 дней.</strong> Первый раз с 1999 года. Режим продлён Пекином до 31 декабря 2027, Россия ответила взаимностью.</div>
-        </li>
-        <li class="va-change-item">
-          <time class="va-change-date">6 сентября 2025</time>
-          <div class="va-change-text"><strong>США — россияне только в Варшаве или Астане.</strong> Прочие консульства (Стамбул, Белград, Ереван) больше не принимают резидентов РФ в первую очередь.</div>
-        </li>
-        <li class="va-change-item">
-          <time class="va-change-date">20 августа 2025</time>
-          <div class="va-change-text"><strong>Иордания — безвиз с РФ.</strong> Действует с 13.12.2025: 30 дней за въезд, до 90 дней в году, бесплатно.</div>
-        </li>
-      </ol>
     </section>
 
     {/* ─── FAQ — Часто спрашивают ─── */}
     <section class="va-faq" aria-label="Часто спрашивают" data-reveal>
       <header class="va-faq-head">
-        <span class="va-faq-tag">FAQ · АРХИВНАЯ СПРАВКА</span>
+        <span class="va-faq-tag">Документы и въезд</span>
         <h2 class="va-faq-title">Часто спрашивают</h2>
       </header>
       <div class="va-faq-list">
@@ -625,7 +449,7 @@ const ldJson = {
           <a href="/blog/china-guide-2026/">
             <span class="va-related-num">01</span>
             <span class="va-related-meta">
-              <span class="va-related-name">Китай 2026 — безвиз 30 дней</span>
+              <span class="va-related-name">Путеводитель по Китаю</span>
               <span class="va-related-desc">Полный гайд: маршрут, бюджет, оплата без карт</span>
             </span>
           </a>
@@ -635,7 +459,7 @@ const ldJson = {
             <span class="va-related-num">02</span>
             <span class="va-related-meta">
               <span class="va-related-name">Шенген 2026 для россиян</span>
-              <span class="va-related-desc">Какая страна одобряет, документы, EES</span>
+              <span class="va-related-desc">Порядок подачи, документы и EES</span>
             </span>
           </a>
         </li>
@@ -644,7 +468,7 @@ const ldJson = {
             <span class="va-related-num">03</span>
             <span class="va-related-meta">
               <span class="va-related-name">Виза в Японию 2026</span>
-              <span class="va-related-desc">Туристическая через турагентство, документы, сроки</span>
+              <span class="va-related-desc">Туристическая виза, документы и порядок подачи</span>
             </span>
           </a>
         </li>
@@ -794,7 +618,7 @@ const ldJson = {
     const visa = params.get('visa');
     const cost = params.get('cost');
     const dur = params.get('dur');
-    if (visa && ['free', 'evisa', 'required'].includes(visa)) filterState.visa = visa;
+    if (visa && ['free', 'evisa', 'arrival', 'required', 'domestic', 'unknown'].includes(visa)) filterState.visa = visa;
     if (cost && ['free', 'cheap', 'premium'].includes(cost)) filterState.cost = cost;
     if (dur === 'long') filterState.durationLong = true;
     // Update chip UI
@@ -819,6 +643,8 @@ const ldJson = {
   }
 
   // Сортировка карточек ВНУТРИ каждой секции (группировка по режиму визы сохраняется)
+  const costOrder = (card: HTMLElement) => card.dataset.costUsd === '' ? Infinity : Number(card.dataset.costUsd);
+
   function applySort() {
     document.querySelectorAll<HTMLElement>('.va-section').forEach((sec) => {
       const cards = Array.from(sec.querySelectorAll<HTMLElement>('.va-card'));
@@ -826,7 +652,7 @@ const ldJson = {
       cards.sort((a, b) => sortState.byTrip
         ? (Number(a.dataset.trip) || Infinity) - (Number(b.dataset.trip) || Infinity)
         : sortState.byCost
-          ? (Number(a.dataset.costUsd) || 0) - (Number(b.dataset.costUsd) || 0)
+          ? costOrder(a) - costOrder(b)
           : (Number(a.dataset.ord) || 0) - (Number(b.dataset.ord) || 0));
       const parent = cards[0].parentElement;
       if (parent) cards.forEach((c) => parent.appendChild(c));
@@ -2222,4 +2048,6 @@ const ldJson = {
   .va-card-trip-sum { max-width: 100%; overflow-wrap: anywhere; }
   .va-search-field, .va-search-field input { min-width: 0; }
 }
+  .va-reference-links { display: flex; flex-wrap: wrap; gap: 0 .9rem; }
+  .va-reference-links a { display: inline-flex; align-items: center; min-height: 44px; }
 </style>

@@ -7,6 +7,7 @@ import { Picture } from 'astro:assets';
 import { DIRECTIONS, VISITED } from '../../data/directions.js';
 import { месяцыНаправления } from '../../utils/best-months.js';
 import { getVisaDetails, VISA_DETAILS } from '../../data/visa-details.js';
+import { getEntryRequirements } from '../../data/entry-requirements.js';
 import { aviasalesRoute, cherehapaCountry, preferredTourCountry } from '../../data/affiliate.js';
 import { DATA_UPDATED } from '../../data/meta.js';
 // «О» или «об»: «об» перед словом с гласной а, и, о, у, э в начале («об Алтае», «об июне»), иначе «о».
@@ -88,6 +89,8 @@ const VISA_STAY = {
 // Страновые verified-данные (visa-details.js) — цена/срок/оформление по конкретной
 // стране, не generic по типу. Это закрывает «сколько стоит виза в X» answer-first.
 const vd = getVisaDetails(d.slug, d.visa);
+const entry = getEntryRequirements(d);
+const documentHelp = 'Проверьте список документов для вашего маршрута у перевозчика.';
 // Regional itineraries remain separate, self-canonical pages. Entry rules are
 // national; these metadata distinguish the itinerary, not a different visa.
 const routeMetadata = {
@@ -117,7 +120,9 @@ const feeFree = /бесплатн/i.test(vd.cost);
 const skipGenericTail = hasSpecific || !!vd.summary;
 // Страновой summary (visa-details.js) переопределяет generic-по-типу, если задан.
 // metaDesc — чистый обрез по границе слова (без середины слова в description).
-const summary = vd.summary ?? visaSummary[d.visa];
+const summary = d.domestic
+  ? entry.summary ?? 'Документы для поездки по России зависят от маршрута и перевозчика.'
+  : vd.summary ?? visaSummary[d.visa];
 // ⛔ Описание не должно начинаться словами заголовка — прямое требование
 // справки Яндекса. Страновые summary написаны как ответ («Виза в Турцию
 // россиянам не нужна…») и повторяли заголовок у 17 карточек. Видимый текст
@@ -131,7 +136,9 @@ const остаток = summary.includes('. ') ? summary.slice(summary.indexOf('.
 const безПовтора = summary.toLowerCase().startsWith(первыеСлова(visaTitle)) && остаток.length >= 80
   ? остаток
   : summary;
-const metaDesc = routeMetadata?.description ?? (безПовтора.length > 203 ? безПовтора.slice(0, 200).replace(/\s+\S*$/, '') + '…' : безПовтора);
+const metaDesc = d.domestic
+  ? `Какие документы взять ${d.cases.vP} взрослому и ребёнку. Когда уточнить требования перевозчика и правила для пограничной зоны.`
+  : routeMetadata?.description ?? (безПовтора.length > 203 ? безПовтора.slice(0, 200).replace(/\s+\S*$/, '') + '…' : безПовтора);
 const costAnswer = noVisa
   ? (feeFree
       ? `Виза ${d.cases.vP} не нужна — въезд бесплатный, ${vd.timing}. Консульский сбор не платится.`
@@ -141,7 +148,10 @@ const stayAnswer = `Разрешённое пребывание ${d.cases.loc} �
 const termAnswer = `${vd.timing}.${skipGenericTail ? '' : ' ' + VISA_TERM[d.visa]}`;
 
 // FAQ — генерируется из данных направления (YMYL: прямые ответы с цифрами)
-const faqs = [
+const faqs = d.domestic ? [
+  { q: vd.h1, a: summary },
+  { q: `Какие документы нужны для поездки ${d.cases.vP}?`, a: entry.documents ?? documentHelp },
+] : [
   { q: `Нужна ли виза ${d.cases.vP} для россиян в 2026?`, a: summary },
   // Своё поле страны важнее общей заготовки: для стран, куда пускают по
   // внутреннему паспорту, заготовка про «загранпаспорт от 6 месяцев» лжёт.
@@ -172,7 +182,7 @@ if (d.relatedPosts.length > 0) {
 
 const monthsTail = bestMonths.length ? ` Лучшие месяцы — ${лучшиеСловами}.` : '';
 // Если есть страновой summary (уже включает цену/срок) — не дублируем costAnswer/stayAnswer.
-const tldr = vd.summary ? `${summary}${monthsTail}` : `${summary} ${costAnswer} ${stayAnswer}${monthsTail}`;
+const tldr = d.domestic || vd.summary ? `${summary}${monthsTail}` : `${summary} ${costAnswer} ${stayAnswer}${monthsTail}`;
 
 const ldJson = {
   "@context": "https://schema.org",
@@ -181,16 +191,16 @@ const ldJson = {
       "@type": "WebPage",
       "@id": `${url}#page`,
       "url": url,
-      "name": `Виза ${d.cases.vP} для россиян 2026: документы, цена, сроки`,
+      "name": d.domestic ? vd.h1 : `Виза ${d.cases.vP} для россиян 2026: документы, цена, сроки`,
       "description": summary,
       "inLanguage": "ru-RU",
       "isPartOf": { "@id": "https://traveltribe.ru/#website" },
-      "about": { "@type": "Country", "name": d.cases.nom },
+      "about": { "@type": d.domestic ? "AdministrativeArea" : "Country", "name": d.cases.nom },
       "datePublished": "2026-04-30",
       "dateModified": DATA_UPDATED,
       "author": { "@id": "https://traveltribe.ru/about/#person" },
       "publisher": { "@id": "https://traveltribe.ru/#org" },
-      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".quick-tldr"] },
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", d.domestic ? ".visa-sub" : ".quick-tldr"] },
       "mainEntity": { "@id": `${url}#faq` }
     },
     {
@@ -246,7 +256,7 @@ const ldJson = {
       </div>
     </div>
     <header class="visa-header">
-      <div class={`visa-tag visa-tag--${d.visa}`}>{VISA_LABELS[d.visa]}</div>
+      <div class={`visa-tag visa-tag--${d.visa}`}>{d.domestic ? entry.label : VISA_LABELS[d.visa]}</div>
       <h1>{vd.h1 ?? <>Виза <em>{d.cases.vP}</em> в 2026 году</>}</h1>
       <p class="visa-sub">{summary}</p>
       <p class="visa-byline">
@@ -255,6 +265,15 @@ const ldJson = {
       </p>
     </header>
 
+    {d.domestic ? (
+      <section class="visa-block">
+        <h2>Какие документы взять</h2>
+        <p>{entry.documents ?? documentHelp}</p>
+        <p>Если маршрут проходит по пограничной зоне, уточните в пограничном управлении ФСБ, нужен ли пропуск.</p>
+        <p><a href={entry.official}>Проверить документы для перелёта</a></p>
+      </section>
+    ) : (
+    <>
     <section class="quick-tldr" aria-label="Кратко">
       <strong>Если коротко:</strong> {tldr}
     </section>
@@ -327,6 +346,9 @@ const ldJson = {
       </section>
     )}
 
+    </>
+    )}
+
     <section class="visa-block">
       <h2>Когда лучше ехать</h2>
       <p>Лучшие месяцы {d.cases.vP} — когда совпадают хорошая погода, доступные цены и комфорт без толп.</p>
@@ -379,7 +401,7 @@ const ldJson = {
     </section>
 
     <section class="visa-block" id="faq">
-      <h2>FAQ — виза {d.cases.vP}</h2>
+      <h2>{d.domestic ? 'Вопросы о документах' : `FAQ — виза ${d.cases.vP}`}</h2>
       <div class="faq-block">
         {faqs.map(f => (
           <details class="faq-item">
@@ -400,7 +422,7 @@ const ldJson = {
         <li><a href="/blog/">Блог</a> — личные отчёты по странам</li>
         <li><a href="https://www.kdmid.ru/" target="_blank" rel="noopener nofollow">Консульский департамент МИД РФ</a> — официальные визовые требования и предупреждения, проверяйте перед поездкой</li>
       </ul>
-      <p class="visa-disclaimer">Визовые правила меняются — перед поездкой обязательно проверьте актуальные требования на сайте посольства или консульства {d.cases.nom}.</p>
+      {!d.domestic && (<p class="visa-disclaimer">Визовые правила меняются — перед поездкой обязательно проверьте актуальные требования на сайте посольства или консульства {d.cases.nom}.</p>)}
     </section>
   </main>
 
