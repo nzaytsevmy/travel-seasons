@@ -14,14 +14,14 @@ test('a confirmed mode does not fill in missing or expired facts', () => {
   const egypt = { slug: 'egypt', visa: 'evisa' };
   const fresh = getEntryRequirements(egypt, '2026-11-06');
   assert.equal(fresh.mode, 'evisa');
-  assert.equal(fresh.stay, null);
+  assert.equal(fresh.stay, null); // this fixture predates the 7 November stay check
   assert.match(fresh.documents, /распечатанную визу/);
   const expired = getEntryRequirements(egypt, '2026-12-06');
   assert.equal(expired.mode, 'unknown');
   assert.equal(expired.documents, null);
   assert.equal(expired.fee, null);
   assert.equal(expired.official, fresh.official);
-  assert.equal(getEntryRequirements({ slug: 'mexico', visa: 'free' }, '2026-11-06').mode, 'unknown');
+  assert.equal(getEntryRequirements({ slug: 'not-a-country', visa: 'free' }, '2026-11-06').mode, 'unknown');
 });
 
 test('catalogue answers share the checked facts and stop showing them at review time', () => {

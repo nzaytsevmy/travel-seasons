@@ -33,6 +33,10 @@ CI выполняется на публичных стандартных ран�
 
 Все применимые пункты ниже обязательны до merge и публикации. Место выполнения для двух рутин определено следующим правилом; остальные изменения сохраняют локальный порядок.
 
+### Visa catalogue release exception (2026-11-07)
+
+For this release only, the owner authorized completing the full browser and performance checks in existing GitHub Actions for branch `fix/visa-expert-catalog-20261107`. This includes its native Linux baseline commit. Local build, SEO audit, secret scan and complete delivery checks remain required; completed local results and interrupted originals must be preserved honestly. Only this branch uses the existing committed-source preflight. All 26 required CI checks, all four browser projects, screenshot thresholds and three Lighthouse samples remain unchanged. No partial local result is a full local PASS. Protected merge and publication require green exact-head CI, followed by exact deployment identity and live verification. Browser Guard, budgets and ordinary development gates remain unchanged.
+
 ### Social preview release exception (2026-10-25)
 
 The owner explicitly authorized moving the remaining complete browser checks to GitHub Actions for branch `fix/social-preview-v3`. Local build, SEO audit, secret scan and delivery checks remain required. All 26 existing required CI checks, all browser projects, screenshot thresholds and three Lighthouse samples remain unchanged. Merge and publication require green CI, followed by verification of the exact deployed commit and the live Open Graph image.

@@ -9,6 +9,7 @@ interface Props {
     mode: string; label: string; summary: string | null; documents: string | null; stay: string | null;
     fee: string | null; processing: string | null; exception: string | null;
     official: string; arrivalCard: string | null; application: string | null;
+    documentList?: string[] | null;
   };
   photo?: ImageMetadata;
   caption?: string;
@@ -17,9 +18,9 @@ interface Props {
 
 const { title, direction, entry, photo, caption, faqs } = Astro.props;
 const domestic = direction.domestic;
+const known = entry.mode !== 'unknown';
 const passportScope = domestic ? 'Поездка по России без пересечения границы' : 'Туризм · обычный загранпаспорт РФ';
-const lead = entry.summary ?? 'Уточните действующие условия въезда для вашего паспорта, маршрута и дат.';
-const missing = domestic ? 'Уточните документы для вашего маршрута у перевозчика.' : 'Проверьте требования для своего маршрута на официальном сайте.';
+const lead = entry.summary ?? '';
 ---
 <main id="main" class="entry-guide" data-prep-entry>
   <TravelPrepOpening
@@ -28,17 +29,20 @@ const missing = domestic ? 'Уточните документы для ваше�
     scope={passportScope}
     photo={photo}
     caption={caption}
-    action={{ href: '#entry-requirements', label: 'Что подготовить' }}
+    action={known ? { href: '#entry-requirements', label: 'Что подготовить' } : { href: entry.official, label: 'Официальные требования' }}
   >
-    <dl class="entry-facts" id="entry-requirements">
+    {known && <dl class="entry-facts" id="entry-requirements">
       <div><dt>Режим</dt><dd>{entry.label}</dd></div>
-      {!domestic && <div><dt>Пребывание</dt><dd>{entry.stay ?? 'Уточнить для своей поездки'}</dd></div>}
-      <div><dt>Документы</dt><dd>{entry.documents ?? missing}</dd></div>
-    </dl>
-    {entry.mode === 'unknown' && <a class="entry-confirm" href={entry.official} data-prep-official>Уточнить условия у ведомства</a>}
+      {!domestic && entry.stay && <div><dt>Пребывание</dt><dd>{entry.stay}</dd></div>}
+      {entry.documents && <div><dt>Документы</dt><dd>{entry.documents}</dd></div>}
+    </dl>}
   </TravelPrepOpening>
 
   <div class="entry-body">
+    {entry.documentList?.length && <section aria-labelledby="entry-documents-title">
+      <h2 id="entry-documents-title">Что входит в комплект документов</h2>
+      <ul class="entry-document-list">{entry.documentList.map((item) => <li>{item}</li>)}</ul>
+    </section>}
     <section aria-labelledby="entry-steps-title">
       <h2 id="entry-steps-title">{domestic ? 'Документы для вашего маршрута' : 'Оформление и исключения'}</h2>
 
@@ -46,8 +50,8 @@ const missing = domestic ? 'Уточните документы для ваше�
       {domestic && <p>Если маршрут проходит по пограничной зоне, уточните в пограничном управлении ФСБ, нужен ли пропуск.</p>}
       {!domestic && (
         <dl class="entry-facts">
-          <div><dt>Оформление</dt><dd>{entry.processing ?? 'Сверьте порядок для вашей цели и способа въезда.'}</dd></div>
-          <div><dt>Сборы</dt><dd>{entry.fee ?? 'Уточните сбор для нужного вида визы у ведомства.'}</dd></div>
+          {entry.processing && <div><dt>Оформление</dt><dd>{entry.processing}</dd></div>}
+          {entry.fee && <div><dt>Сборы</dt><dd>{entry.fee}</dd></div>}
         </dl>
       )}
       <p class="entry-actions">
@@ -57,10 +61,10 @@ const missing = domestic ? 'Уточните документы для ваше�
       </p>
     </section>
 
-    <section id="faq" aria-labelledby="entry-faq-title">
+    {faqs.length > 0 && <section id="faq" aria-labelledby="entry-faq-title">
       <h2 id="entry-faq-title">Частые вопросы</h2>
       {faqs.map(({q, a}) => <details><summary>{q}</summary><p>{a}</p></details>)}
-    </section>
+    </section>}
 
     <nav aria-label="Подготовка к поездке">
       <a href={`/packing/${direction.slug}/`}>Что взять {direction.cases.vP}</a>
@@ -90,6 +94,8 @@ const missing = domestic ? 'Уточните документы для ваше�
   .entry-body { max-width: 1280px; margin: 0 auto; padding: 0 clamp(1.1rem, 3vw, 2.6rem) 2rem; }
   .entry-body > section { padding: 1.6rem 0; border-bottom: 1px solid #d9dbde; }
   .entry-body p { max-width: 66ch; line-height: 1.6; }
+  .entry-document-list { max-width: 66ch; padding-left: 1.3rem; line-height: 1.65; }
+  .entry-document-list li + li { margin-top: .7rem; }
   .entry-body h2 { margin: 0 0 .8rem; font: 700 clamp(1.5rem, 3vw, 2.2rem) / 1.15 "Old Standard TT", Georgia, serif; }
   #entry-requirements, #faq { scroll-margin-top: 6rem; }
   .entry-body details { max-width: 64ch; border-top: 1px solid #d9dbde; }

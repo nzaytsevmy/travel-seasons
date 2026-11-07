@@ -68,7 +68,7 @@ fi
 BRANCH="$(git branch --show-current)" || exit 1
 CI_PUBLICATION=0
 case "$BRANCH" in
-  tt-news/*|tt-publish/*|feat/home-photojournal-20261010|feat/country-best-hotels-20261016) CI_PUBLICATION=1 ;;
+  tt-news/*|tt-publish/*|feat/home-photojournal-20261010|feat/country-best-hotels-20261016|fix/visa-expert-catalog-20261107) CI_PUBLICATION=1 ;;
 esac
 if [ "$CI_PUBLICATION" -eq 0 ]; then
   if ! npm run check:delivery >${LOG}_delivery.log 2>&1; then

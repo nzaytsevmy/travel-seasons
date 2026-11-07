@@ -1,6 +1,14 @@
-// One editorial record per entry regime. An expired or missing fact is unknown.
+import { VISA_DETAILS } from './visa-details.js';
+
+// The dated records below override the existing country guide. A country that
+// has not migrated to the new format must keep its specific published data;
+// the generic defaults in getVisaDetails() are deliberately never imported.
+// Expired migrated records must not fall back to older, undated values.
 const CHECKED = '2026-11-06';
 const REVIEW = '2026-12-06';
+// Restoration of the existing country guides is not a fresh verification of
+// every legacy fee. It has a review deadline, and never uses generic defaults.
+const LEGACY_REVIEW_AFTER = '2026-12-06';
 const CONSULAR = 'https://www.kdmid.ru/info-for-traveling-abroad/reference-information-for-traveling-abroad/list-of-countries-with-simplified-entry/';
 const AIR_DOCUMENTS = 'https://www.aeroflot.ru/info/booking-rules/';
 const EGYPT_VISA = 'https://www.visa2egypt.gov.eg/eVisa/FAQ';
@@ -13,6 +21,7 @@ const TURKEY_VISA = 'https://www.mfa.gov.tr/consular-info.ru.mfa';
 const JAPAN_VISA = 'https://www.ru.emb-japan.go.jp/itpr_ja/visashinsei.html';
 const JAPAN_TOURISM = 'https://www.ru.emb-japan.go.jp/itpr_ja/tourism2022.html';
 const JAPAN_SHORT_STAY = 'https://www.ru.emb-japan.go.jp/itpr_ru/documents.html';
+const JAPAN_CENTRE = 'https://visa.vfsglobal.com/rus/ru/jpn/attend-centre/moscow';
 const SCHENGEN = 'https://www.consilium.europa.eu/en/policies/schengen-area/';
 
 function fact(value, source, reviewAfter = REVIEW) {
@@ -33,8 +42,10 @@ const RULES = {
     documents: fact('Для въезда по eVisa подготовьте загранпаспорт со сроком действия от 6 месяцев на дату прибытия, распечатанную визу, маршрут и подтверждение проживания.', EGYPT_VISA),
     feeUsd: fact(30, EGYPT_VISA),
     fee: fact('Однократная eVisa — $30, многократная — $65.', EGYPT_VISA),
-    processing: fact('Подайте заявление на eVisa не позднее чем за 7 дней до вылета. При оформлении в аэропорту уточните порядок для вашего пункта въезда.', EGYPT_APPLICATION),
-    exception: fact('При прямом въезде в Южный Синай через Шарм-эш-Шейх, Нувейбу или Табу для короткой поездки по региону может подойти бесплатный синайский штамп. Уточните разрешённый срок для своего пункта въезда. Для поездок за пределы Южного Синая нужна виза.', EGYPT_ENTRY),
+    stay: { ...fact('До 30 дней по туристической визе.', EGYPT_CONSULAR), checkedAt: '2026-11-07' },
+    stayDays: { ...fact(30, EGYPT_CONSULAR), checkedAt: '2026-11-07' },
+    processing: { ...fact('Подайте заявление на eVisa не позднее чем за 7 дней до вылета. В аэропорту визу приобретают до паспортного контроля; подготовьте наличные доллары для банковской стойки.', EGYPT_APPLICATION), additionalSources: [EGYPT_ENTRY], checkedAt: '2026-11-07' },
+    exception: { ...fact('При прямом въезде через Шарм-эш-Шейх, Нувейбу или Табу на срок до 15 дней действует бесплатный синайский штамп. Он позволяет путешествовать по Южному Синаю, включая Дахаб. Для поездки в Каир, Луксор, Хургаду или за пределы региона, а также для более долгого отдыха нужна виза.', EGYPT_ENTRY), checkedAt: '2026-11-07' },
     application: fact(EGYPT_APPLICATION, EGYPT_APPLICATION),
     official: EGYPT_VISA,
   },
@@ -63,10 +74,21 @@ const RULES = {
   japan: {
     mode: fact('required', JAPAN_VISA),
     summary: fact('Для туристической поездки в Японию с обычным российским загранпаспортом нужна виза заранее.', JAPAN_VISA),
-    documents: fact('Для туристической визы подготовьте загранпаспорт, анкеты с фото, программу пребывания и подтверждения поездки и средств. Сверьте полный комплект у ведомства, куда подаёте документы.', JAPAN_TOURISM),
+    documents: { ...fact('Загранпаспорт; два экземпляра анкеты с фото 35 × 45 мм; копии внутреннего паспорта; оригинал банковской выписки, документы о занятости, программа пребывания и бронь авиабилетов.', JAPAN_TOURISM), checkedAt: '2026-11-07' },
+    documentList: { ...fact([
+      'Загранпаспорт без обложки.',
+      'Два экземпляра анкеты на английском или японском языке. На каждый наклейте фото 35 × 45 мм, поставьте подпись и дату.',
+      'Копии страниц внутреннего паспорта с фотографией и регистрацией; если сняты с учёта — также следующий пустой разворот.',
+      'Оригинал справки или выписки о собственных средствах из российского банка с печатью и подписью сотрудника. Распечатка из личного кабинета и справка по кредитному счёту не подходят.',
+      'Подтверждение занятости: работающим — оригинал справки с должностью, стажем и зарплатой; при отсутствии зарплаты в справке — также 2-НДФЛ. По договору ГПХ — договор и 2-НДФЛ.',
+      'ИП — выписка из ЕГРИП и подтверждение налоговых доходов; самозанятым — справки о постановке на учёт и доходах НПД; студентам — справка из учебного заведения; пенсионерам — копия пенсионного свидетельства.',
+      'Программа пребывания на английском или японском языке: даты въезда и выезда, рейсы, план поездки, названия, адреса и телефоны отелей.',
+      'Подтверждение бронирования авиабилетов. При совместной семейной поездке — копии свидетельств о браке и рождении детей.',
+      'Для несовершеннолетнего — спонсорское письмо, подтверждение родства, оригиналы справок о работе и средствах спонсора. Для многократной визы — письмо о необходимости повторных поездок и подтверждение дохода.',
+    ], JAPAN_TOURISM), checkedAt: '2026-11-07' },
     stay: fact('Краткосрочная категория — до 90 дней. Разрешённый срок конкретной поездки проверяйте по выданной визе и отметке о въезде.', JAPAN_SHORT_STAY),
     processing: fact('В Москве принимают заявления в Визовом центре Японии. Минимальный срок рассмотрения полного комплекта — 4 рабочих дня.', JAPAN_VISA),
-    fee: fact('Консульский сбор для граждан РФ не взимается. Сервисный сбор уточните при записи.', JAPAN_VISA),
+    fee: { ...fact('Консульский сбор для граждан РФ — 0 ₽. Сервисный сбор визового центра в Москве — 970 ₽.', JAPAN_VISA), additionalSources: [JAPAN_CENTRE], checkedAt: '2026-11-07' },
     application: fact('https://visa.vfsglobal.com/rus/ru/jpn/apply-visa', JAPAN_VISA),
     official: JAPAN_VISA,
   },
@@ -78,7 +100,7 @@ const LABELS = {
   evisa: 'Онлайн',
   arrival: 'По прибытии',
   required: 'Виза заранее',
-  unknown: 'Уточнить правила',
+  unknown: 'Правила въезда',
 };
 
 const dateFormat = new Intl.DateTimeFormat('sv-SE', {
@@ -92,10 +114,35 @@ function readFact(record, today) {
 export function getEntryRequirements(direction, today = dateFormat.format(new Date())) {
   const slug = direction.slug === 'japan-hokkaido' ? 'japan' : direction.slug;
   const rule = direction.domestic ? DOMESTIC : RULES[slug];
+  if (!rule && VISA_DETAILS[direction.slug] && today < LEGACY_REVIEW_AFTER) {
+    const existing = VISA_DETAILS[direction.slug];
+    const mode = ({ jordan: 'free', 'saudi-arabia': 'free', singapore: 'required', mexico: 'evisa',
+      nepal: 'arrival', madagascar: 'arrival', bali: 'arrival', 'sumatra-kalimantan': 'arrival', 'raja-ampat': 'arrival',
+      antarctica: 'route', 'guatemala-belize': 'route',
+    })[direction.slug] ?? direction.visa;
+    // Restore the country classification without representing every old fee
+    // and registration deadline as a newly verified catalogue fact. The full
+    // existing country guide remains available at /visa/<slug>/.
+    const label = ({ antarctica: 'Документы для экспедиции', 'guatemala-belize': 'Правила для двух стран',
+      finland: 'Туристический въезд ограничен', norway: 'Туристический въезд ограничен',
+    })[direction.slug] ?? LABELS[mode];
+    return { mode, label, summary: null, documents: existing.docs ?? null,
+      stay: null, stayDays: null, fee: null, feeUsd: null, processing: null,
+      exception: null, arrivalCard: null, application: null, documentList: null,
+      official: CONSULAR, legacy: true, reviewAfter: LEGACY_REVIEW_AFTER };
+  }
   const mode = direction.domestic ? 'domestic' : readFact(rule?.mode, today) || 'unknown';
-  const keys = ['summary', 'documents', 'stay', 'stayDays', 'fee', 'feeUsd', 'processing', 'exception', 'arrivalCard', 'application'];
+  const keys = ['summary', 'documents', 'documentList', 'stay', 'stayDays', 'fee', 'feeUsd', 'processing', 'exception', 'arrivalCard', 'application'];
   const facts = Object.fromEntries(keys.map((key) => [key, readFact(rule?.[key], today)]));
   return { mode, label: LABELS[mode], official: rule?.official || CONSULAR, ...facts };
+}
+
+export function entryAnswerFaqs(direction, entry, domesticHeading) {
+  return [
+    { q: direction.domestic ? domesticHeading : `Нужна ли виза ${direction.cases.vP} для россиян?`, a: entry.summary },
+    { q: `Какие документы подготовить ${direction.cases.vP}?`, a: entry.documents },
+    ...(!direction.domestic ? [{ q: `Сколько можно находиться ${direction.cases.loc}?`, a: entry.stay }] : []),
+  ].filter(({ q, a }) => typeof q === 'string' && q.trim() && typeof a === 'string' && a.trim());
 }
 
 const CATALOG_FACTS = {

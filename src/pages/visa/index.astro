@@ -3,2094 +3,267 @@ import Layout from '../../layouts/Layout.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { Image } from 'astro:assets';
-import { DIRECTIONS, VISITED } from '../../data/directions.js';
-import { NOUN } from '../../data/plural.js';
+import { DIRECTIONS } from '../../data/directions.js';
 import { getEntryRequirements, visaCatalogFact } from '../../data/entry-requirements.js';
 
 const destPhotos = import.meta.glob('../../assets/destinations/*.jpg', { eager: true, import: 'default' });
-
-const byVisa = { free: [], evisa: [], arrival: [], required: [], domestic: [], unknown: [] };
 const entries = new Map(DIRECTIONS.map((d) => [d.slug, getEntryRequirements(d)]));
-for (const d of DIRECTIONS) byVisa[entries.get(d.slug).mode].push(d);
-
-function costBucket(entry) {
-  if (entry.feeUsd === null) return '';
-  if (entry.feeUsd === 0) return 'free';
-  return entry.feeUsd <= 50 ? 'cheap' : 'premium';
-}
-const isLongDuration = (entry) => entry.stayDays !== null && entry.stayDays >= 60;
-
-// Ответ первого экрана: сколько куда пускают и во что обходится самая дешёвая
-// поездка в каждой из трёх групп. Цена считается ровно как на главной и в
-// калькуляторе — перелёт из Москвы плюс неделя проживания с едой, на одного.
-const USD_RUB = 90, NIGHTS = 7;               // курс ≈ЦБ; неделя на месте
-const roundK = (n) => Math.round(n / 1000) * 1000;
-const tripCost = (p) => roundK(p.flight[1] * USD_RUB) + roundK((p.hotel[1] + p.food[1]) * NIGHTS * USD_RUB);
-const fmtRub = (n) => n.toLocaleString('ru-RU');
-const дешевейший = (список) => список
-  .filter((d) => d.price?.flight && d.price?.hotel && d.price?.food)
-  .map((d) => ({ slug: d.slug, nom: d.cases.nom, цена: tripCost(d.price) }))
-  .sort((a, b) => a.цена - b.цена)[0] || null;
-const cheapest = дешевейший(DIRECTIONS.filter((d) => {
-  const { mode } = entries.get(d.slug);
-  return mode !== 'domestic' && mode !== 'unknown';
-}));
-
-// ⛔ Начальные счётчики кнопок считаются ПРИ СБОРКЕ, а не скриптом после
-//    загрузки. Скрипт вписывал их в разметку уже отрисованной страницы, и два
-//    снимка подряд на одной машине выходили разными — облачный прогон дважды
-//    объявил страницу нестабильной. Заодно числа теперь видны без JavaScript.
-const цена = (d) => (d.price?.flight && d.price?.hotel && d.price?.food ? tripCost(d.price) : 0);
-const СЧЁТ = {
-  all: DIRECTIONS.length,
-  free: byVisa.free.length, evisa: byVisa.evisa.length, required: byVisa.required.length,
-  costFree: DIRECTIONS.filter((d) => costBucket(entries.get(d.slug)) === 'free').length,
-  costCheap: DIRECTIONS.filter((d) => costBucket(entries.get(d.slug)) === 'cheap').length,
-  durLong: DIRECTIONS.filter((d) => isLongDuration(entries.get(d.slug))).length,
-  tripLow: DIRECTIONS.filter((d) => { const c = цена(d); return c > 0 && c < 100000; }).length,
-  tripMid: DIRECTIONS.filter((d) => { const c = цена(d); return c > 0 && c <= 200000; }).length,
-};
-
-const VISA_META = {
-  domestic: {
-    title: 'По России', code: 'РФ', iso: 'РОССИЯ',
-    desc: 'Документы для поездок внутри страны.', section: '',
-  },
-  unknown: {
-    title: 'Уточнить правила', code: '', iso: '',
-    desc: 'Выберите направление, чтобы перейти к справке и официальным требованиям.', section: '',
-  },
-  arrival: {
-    title: 'Виза по прибытии', code: 'VOA', iso: '',
-    desc: 'Условия зависят от пункта въезда.', section: '',
-  },
-  free: {
-    title: 'Без визы',
-    code: 'БВ',
-    iso: 'VISA-FREE',
-    desc: 'Откройте страну, чтобы посмотреть срок и условия поездки.',
-    section: 'I',
-  },
-  evisa: {
-    title: 'Электронная виза',
-    code: 'EV',
-    iso: 'eVISA',
-    desc: 'Условия онлайн-подачи зависят от страны.',
-    section: 'II',
-  },
-  required: {
-    title: 'Виза обязательна',
-    code: 'ВЗ',
-    iso: 'CONSULAR',
-    desc: 'Место подачи и комплект документов указаны на странице направления.',
-    section: 'III',
-  },
-};
-
-// ⛔ Список «был лично» — только канонический (src/data/directions.js). 12.09.2026 у реестра
-//    был свой из 14 стран, и он спорил с хабами в ОБЕ стороны: семи странам опыт приписывался
-//    (Кения, Танзания, север Австралии, Хоккайдо, Грузия, Армения, ОАЭ), а у Марокко, где
-//    «Был здесь сам» стоит на хабе, галочки не было. Нашёл внешний рецензент. Один список на
-//    сайт: заявка о личном опыте автора не может зависеть от того, какую страницу открыли.
-
+const costBucket = (e) => e.feeUsd === null ? '' : e.feeUsd === 0 ? 'free' : e.feeUsd <= 50 ? 'cheap' : 'premium';
+const groups = [
+  { mode: 'free', title: 'Без визы', description: 'Паспорт, срок поездки и дополнительные условия въезда.' },
+  { mode: 'evisa', title: 'Оформление онлайн', description: 'Электронные визы и разрешения, которые получают до вылета.' },
+  { mode: 'arrival', title: 'Виза по прибытии', description: 'Документы и оформление на границе.' },
+  { mode: 'required', title: 'Виза заранее', description: 'Комплект документов, порядок подачи и ограничения.' },
+  { mode: 'route', title: 'Особые маршруты', description: 'Поездки через несколько стран и экспедиции: документы зависят от маршрута.' },
+  { mode: 'domestic', title: 'По России', description: 'Документы для перелёта и поездки внутри страны.' },
+  { mode: 'unknown', title: 'Правила въезда', description: 'Официальные требования для вашего направления.' },
+].map((g) => ({ ...g, directions: DIRECTIONS.filter((d) => entries.get(d.slug).mode === g.mode) }));
+const popular = ['turkey', 'thailand', 'georgia', 'armenia', 'vietnam', 'egypt', 'japan'];
+for (const group of groups) group.directions.sort((a, b) => {
+  const rank = (slug) => popular.includes(slug) ? popular.indexOf(slug) : popular.length;
+  return rank(a.slug) - rank(b.slug) || a.cases.nom.localeCompare(b.cases.nom, 'ru');
+});
 const FAQ_ITEMS = [
-  {
-    q: 'Как найти правила для своей поездки?',
-    a: 'Выберите страну в каталоге. При сверке документов учитывайте паспорт, цель поездки, даты, способ въезда и пересадки.',
-  },
-  {
-    q: 'Что такое электронная виза?',
-    a: visaCatalogFact('electronic') ?? 'Порядок онлайн-подачи уточните на официальном портале страны назначения.',
-  },
-  {
-    q: 'Чем срок действия визы отличается от срока пребывания?',
-    a: 'Срок действия определяет, когда можно использовать визу. Срок пребывания определяет, как долго можно находиться в стране. Проверяйте оба условия и число въездов.',
-  },
-  {
-    q: 'Входят ли Болгария и Румыния в Шенген?',
-    a: visaCatalogFact('schengen') ?? 'Сверьте состав Шенгенской зоны на сайте Совета ЕС.',
-  },
-  {
-    q: 'Куда подавать на туристическую визу в Японию?',
-    a: visaCatalogFact('japan') ?? 'Проверьте порядок подачи на сайте Посольства Японии.',
-  },
-  {
-    q: 'Где проверить условия после отказа?',
-    a: 'Посмотрите порядок обжалования или повторной подачи в уведомлении об отказе и на сайте органа, который принял решение.',
-  },
-];
-
-// ISO 3166-1 alpha-3 для маленького кода под названием страны (визовый стиль)
-const ISO_CODE = {
-  'australia-east': 'AUS', 'australia-north': 'AUS', 'bali': 'IDN', 'sumatra-kalimantan': 'IDN', 'raja-ampat': 'IDN',
-  'new-zealand': 'NZL', 'kenya': 'KEN', 'south-africa': 'ZAF', 'uae': 'ARE', 'saudi-arabia': 'SAU', 'oman': 'OMN', 'qatar': 'QAT', 'turkey': 'TUR', 'egypt': 'EGY',
-  'morocco': 'MAR', 'tanzania': 'TZA', 'madagascar': 'MDG', 'mauritius': 'MUS', 'seychelles': 'SYC',
-  'iran': 'IRN', 'jordan': 'JOR', 'israel': 'ISR', 'japan': 'JPN', 'japan-hokkaido': 'JPN', 'south-korea': 'KOR',
-  'thailand': 'THA', 'vietnam': 'VNM', 'india-goa': 'IND', 'sri-lanka': 'LKA', 'maldives': 'MDV',
-  'georgia': 'GEO', 'armenia': 'ARM', 'kyrgyzstan': 'KGZ', 'uzbekistan': 'UZB', 'tajikistan': 'TJK',
-  'kazakhstan': 'KAZ', 'abkhazia': 'ABH', 'china': 'CHN', 'hainan': 'CHN', 'hong-kong': 'HKG',
-  'malaysia': 'MYS', 'philippines': 'PHL', 'cambodia': 'KHM', 'singapore': 'SGP', 'nepal': 'NPL',
-  'switzerland': 'CHE', 'italy-north': 'ITA', 'italy-south': 'ITA', 'spain': 'ESP', 'greece': 'GRC',
-  'croatia': 'HRV', 'serbia': 'SRB', 'finland': 'FIN', 'cyprus': 'CYP',
-  'canada-rockies': 'CAN', 'canada-east': 'CAN', 'usa': 'USA',
-  'mexico': 'MEX', 'cuba': 'CUB', 'dominican-republic': 'DOM', 'guatemala-belize': 'GTM', 'costa-rica-panama': 'CRI',
-  'chile-patagonia': 'CHL', 'chile-fjords': 'CHL', 'peru': 'PER', 'bolivia': 'BOL', 'chile': 'CHL',
-  'argentina': 'ARG', 'ecuador': 'ECU', 'brazil': 'BRA', 'antarctica': 'ATA', 'iceland': 'ISL', 'norway': 'NOR',
-};
-
-const UPDATED_AT = '2026-11-06';
+  { q: 'Как найти документы для своей поездки?', a: 'Введите название страны и откройте её страницу. Там собраны условия для туристов с обычным российским паспортом: документы, срок пребывания и порядок оформления.' },
+  { q: 'Что такое электронная виза?', a: visaCatalogFact('electronic') },
+  { q: 'Чем срок действия визы отличается от срока пребывания?', a: 'Срок действия определяет, когда можно использовать визу. Срок пребывания определяет, как долго можно находиться в стране. Учитывайте оба условия и число въездов.' },
+  { q: 'Входят ли Болгария и Румыния в Шенген?', a: visaCatalogFact('schengen') },
+  { q: 'Куда подавать на туристическую визу в Японию?', a: visaCatalogFact('japan') },
+].filter((f) => f.a);
 const url = 'https://traveltribe.ru/visa/';
 const ldJson = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "CollectionPage",
-      "@id": `${url}#page`,
-      "url": url,
-      "name": "Визы для россиян 2026 — все направления TravelTribe",
-      "description": `Визовый реестр 2026: ${DIRECTIONS.length} ${NOUN.direction(DIRECTIONS.length)}. ${byVisa.free.length} без визы · ${byVisa.evisa.length} eVisa · ${byVisa.required.length} требуют визу. Документы, цены, сроки.`,
-      "inLanguage": "ru-RU",
-      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".va-intro-lede"] },
-      "isPartOf": { "@id": "https://traveltribe.ru/#website" },
-      "mainEntity": { "@id": `${url}#itemlist` },
-      "dateModified": `${UPDATED_AT}T12:00:00+03:00`,
-      "datePublished": "2025-09-15T00:00:00+03:00",
-      "author": { "@type": "Person", "name": "Никита Зайцев", "url": "https://traveltribe.ru/about/" },
-      "publisher": { "@type": "Organization", "name": "TravelTribe", "url": "https://traveltribe.ru/" },
-    },
-    {
-      "@type": "ItemList",
-      "@id": `${url}#itemlist`,
-      "name": `Визовый реестр TravelTribe 2026 — ${DIRECTIONS.length} ${NOUN.direction(DIRECTIONS.length)}`,
-      "numberOfItems": DIRECTIONS.length,
-      "itemListElement": DIRECTIONS.map((d, i) => ({
-        "@type": "ListItem",
-        "position": i + 1,
-        "item": {
-          "@type": ["TouristDestination", "Place"],
-          "@id": `https://traveltribe.ru/visa/${d.slug}/#destination`,
-          "name": d.cases.nom,
-          "url": `https://traveltribe.ru/visa/${d.slug}/`,
-          "description": `Правила поездки ${d.cases.vP}: ${entries.get(d.slug).label}.`,
-          "touristType": entries.get(d.slug).label,
-        },
-      })),
-    },
-    {
-      "@type": "FAQPage",
-      "mainEntity": FAQ_ITEMS.map((f) => ({
-        "@type": "Question",
-        "name": f.q,
-        "acceptedAnswer": { "@type": "Answer", "text": f.a },
-      })),
-    },
-    {
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Главная", "item": "https://traveltribe.ru/" },
-        { "@type": "ListItem", "position": 2, "name": "Визы", "item": url },
-      ]
-    }
-  ]
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'CollectionPage', '@id': `${url}#page`, url,
+      name: 'Визы для россиян — правила въезда и документы',
+      description: 'Документы и условия туристической поездки по странам. Визы, электронные разрешения, безвизовый въезд и поездки по России.',
+      inLanguage: 'ru-RU', datePublished: '2025-09-15', dateModified: '2026-11-07',
+      isPartOf: { '@id': 'https://traveltribe.ru/#website' }, mainEntity: { '@id': `${url}#itemlist` },
+      author: { '@type': 'Person', name: 'Никита Зайцев', url: 'https://traveltribe.ru/about/' },
+      publisher: { '@type': 'Organization', name: 'TravelTribe', url: 'https://traveltribe.ru/' } },
+    { '@type': 'ItemList', '@id': `${url}#itemlist`, name: 'Визы и документы по направлениям', numberOfItems: DIRECTIONS.length,
+      itemListElement: groups.flatMap((g) => g.directions).map((d, i) => ({ '@type': 'ListItem', position: i + 1,
+        item: { '@type': ['TouristDestination', 'Place'], name: d.cases.nom, url: `${url}${d.slug}/`,
+          description: entries.get(d.slug).summary ?? entries.get(d.slug).label } })) },
+    { '@type': 'FAQPage', mainEntity: FAQ_ITEMS.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
+    { '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://traveltribe.ru/' },
+      { '@type': 'ListItem', position: 2, name: 'Визы', item: url } ] },
+  ],
 };
 ---
-<Layout
-  {/* ⛔ Ключ в НАЧАЛЕ заголовка выдачи — канон проекта. «Визовый реестр» это
-      наше внутреннее имя, спроса у него нет, а стояло оно первым словом. */}
-  title="Визы для россиян — правила въезда и документы"
-  description="Визы для россиян и документы для поездок по России. Найдите своё направление, проверенные правила и порядок уточнения условий въезда."
-  canonical={url}
-  ogTitle="Визы и документы для поездки — TravelTribe"
-  ogDescription="Каталог направлений, документы и проверенные условия въезда."
-  ldJson={ldJson}
->
+<Layout title="Визы для россиян — правила въезда и документы"
+  description="Документы для туристической поездки: безвизовые страны, электронные разрешения, визы заранее и поездки по России. Сроки пребывания и условия по странам."
+  canonical={url} ogTitle="Визы и документы для поездки — TravelTribe" ogDescription="Найдите свою страну: документы, срок пребывания и порядок въезда." ldJson={ldJson}>
   <Breadcrumbs crumbs={[{ label: 'Визы' }]} />
-
   <main id="main" class="visa-archive prep-visa-catalog" data-prep-catalog="visa">
-
-    {/* ─── DOCUMENT HEADER ─── */}
-    <header class="va-doc-head" data-reveal>
-      {/* ⛔ Заголовок говорит, ЧТО СТРАНИЦА ДЕЛАЕТ, а не как называется —
-          требование GOV.UK. Было «Визовый реестр для гражданина РФ»: имя
-          раздела, по которому не понять, на что здесь ответят. */}
-      <h1 class="va-title">Нужна ли виза для поездки</h1>
-      <p class="va-lead">Выберите страну и проверьте порядок въезда для туриста с обычным российским паспортом.</p>
-
-
-      {/* ⛔ ЕДИНАЯ РАМКА ИНСТРУМЕНТА, как в макете Б: подпись, поиск, кнопки
-          отбора и сводка числами — один блок, а не четыре подряд. Инструмент
-          раздела обязан быть главным содержимым страницы (Baymard по 15
-          тревел-сайтам: у 25% сайтов это не так). */}
-      <div class="va-tool">
-        <div class="va-tool-title">Подбор по {DIRECTIONS.length} {NOUN.directionDat(DIRECTIONS.length)}</div>
-    {/* ─── SEARCH — filing tray style ─── */}
-      <section class="va-search-wrap" aria-label="Поиск страны">
-        <label class="va-search-label" for="visaSearch">
-          <span class="va-search-prefix">Страна или регион</span>
-        </label>
-        <div class="va-search-field">
-          <input type="search" id="visaSearch" placeholder="Япония, Турция, Грузия…" autocomplete="off" aria-label="Поиск страны" />
-          <button type="button" class="va-search-clear" id="visaSearchClear" aria-label="Очистить" hidden>×</button>
-        </div>
-        <p class="va-empty" id="visaEmpty" hidden>В реестре не значится. Попробуй другое название.</p>
-      </section>
-
-      {/* ⛔ Ответ строкой чисел, а не тремя оттисками. В макете Б это четыре
-          показателя в одну линию: сколько куда пускают и во что обходится самая
-          дешёвая поездка. Оттиски занимали втрое больше высоты и повторяли то,
-          что уже сказано счётчиками на кнопках. */}
-    {/* ⛔ ИНСТРУМЕНТ СТОИТ ДО СПРАВКИ. Он лежал на 4559 пикселе — за пятью
-            экранами от начала. NN/g: больше половины людей на сайте «поисковые» и
-            идут прямо в строку поиска; под сгибом они её не находят. Baymard по 15
-            тревел-сайтам: поиск обязан быть главным содержимым страницы, у 25%
-            сайтов это не так. Порядок теперь: ответ числом → инструмент → реестр →
-            справка. Подробнее — research/section-page-format.md. */}
-        {/* ─── QUICK-FILTER CHIPS — фильтры по визовому режиму, бюджету и сроку ─── */}
-        <section class="va-filters" aria-label="Фильтры по реестру" data-reveal>
-          <div class="va-filters-label">Фильтры</div>
-          <div class="va-filters-chips" role="group" aria-label="Выбор визового режима и условий">
-            <button type="button" class="va-chip va-chip--active" data-filter="all" aria-pressed="true">Все<b class="va-chip-n">{СЧЁТ.all}</b></button>
-            <button type="button" class="va-chip" data-filter="free" aria-pressed="false">Без визы<b class="va-chip-n">{СЧЁТ.free}</b></button>
-            <button type="button" class="va-chip" data-filter="evisa" aria-pressed="false">Онлайн<b class="va-chip-n">{СЧЁТ.evisa}</b></button>
-            <button type="button" class="va-chip" data-filter="domestic" aria-pressed="false">По России<b class="va-chip-n">{byVisa.domestic.length}</b></button>
-            <button type="button" class="va-chip" data-filter="required" aria-pressed="false">Виза<b class="va-chip-n">{СЧЁТ.required}</b></button>
-            <button type="button" class="va-chip" id="visaReset">Сбросить</button>
+    <header class="va-doc-head">
+      <h1>Визы и правила въезда</h1>
+      <p class="va-lead">Что подготовить туристу с российским паспортом: от поездки без визы до подачи документов в консульство.</p>
+      <form class="va-tool" role="search" aria-label="Поиск правил въезда">
+        <div class="va-search-wrap">
+          <label for="visaSearch">Страна или регион</label>
+          <div class="va-search-field">
+            <input type="search" id="visaSearch" name="q" placeholder="Япония, Турция, Грузия…" autocomplete="off" aria-label="Поиск страны" />
+            <button type="button" id="visaSearchClear" aria-label="Очистить поиск" hidden>×</button>
           </div>
-          <details class="va-extra">
-            <summary>Срок и бюджет</summary>
-            <div class="va-filters-chips" role="group" aria-label="Фильтры срока и стоимости">
-            <span class="va-chip-divider" aria-hidden="true">·</span>
-            <button type="button" class="va-chip" data-cost="free" aria-pressed="false">Бесплатно<b class="va-chip-n">{СЧЁТ.costFree}</b></button>
-            <button type="button" class="va-chip" data-cost="cheap" aria-pressed="false">До $50<b class="va-chip-n">{СЧЁТ.costCheap}</b></button>
-            <button type="button" class="va-chip" data-duration="long" aria-pressed="false">60+ дней<b class="va-chip-n">{СЧЁТ.durLong}</b></button>
-            <span class="va-chip-divider" aria-hidden="true">·</span>
-            <button type="button" class="va-chip" data-sort="cost" aria-pressed="false">Дешёвая виза<b class="va-chip-n"></b></button>
-            {/* ⛔ Фильтр и сортировка по цене ПОЕЗДКИ добавлены вместе с ценой в
-                карточке. Baymard (200 000+ часов наблюдений): у 38% сайтов нет
-                фильтра по данным, которые они же показывают в карточке, и это
-                прямая причина ухода — человек видит число, но не может им
-                распорядиться. */}
-            <button type="button" class="va-chip" data-trip="low" aria-pressed="false">Поездка до 100 тыс.<b class="va-chip-n">{СЧЁТ.tripLow}</b></button>
-            <button type="button" class="va-chip" data-trip="mid" aria-pressed="false">100–200 тыс.<b class="va-chip-n">{СЧЁТ.tripMid}</b></button>
-            <button type="button" class="va-chip" data-sort="trip" aria-pressed="false">Сначала дешёвая поездка<b class="va-chip-n"></b></button>
-            </div>
-          </details>
-
-          <p class="va-filter-count" id="visaFilterCount" aria-live="polite" aria-atomic="true">Показано: <strong>{DIRECTIONS.length}</strong> из {DIRECTIONS.length} направлений<span class="va-filter-selection"></span></p>
-          <noscript>
-            <style>.va-search-wrap, .va-filters-chips, .va-extra, .va-filters-label { display: none !important; }</style>
-            <p class="va-noscript">Список всех направлений доступен ниже. Для поиска и фильтров включите JavaScript.</p>
-          </noscript>
-        </section>
-
-        {/* ⛔ РЕЕСТР ИДЁТ СРАЗУ ЗА ИНСТРУМЕНТОМ, справка — после него. Он лежал
-            за вступительной статьёй, перечнем изменений и двенадцатью вопросами:
-            на 4675 пикселе десктопа и 7156 телефона. Человек приходит сюда с одним
-            вопросом «нужна ли виза» — сначала ответ и список, потом объяснения. */}
-
-      </div>
+        </div>
+        <div class="va-mode">
+          <label for="visaMode">Условия въезда</label>
+          <select id="visaMode" name="visa">
+            <option value="all">Все направления</option>
+            {groups.filter((g) => g.directions.length && g.mode !== 'unknown').map((g) => <option value={g.mode}>{g.title}</option>)}
+          </select>
+        </div>
+        <details class="va-extra">
+          <summary>Срок и стоимость визы</summary>
+          <div class="va-extra-fields">
+            <label>Визовый сбор<select id="visaCost"><option value="">Любой</option><option value="free">Бесплатно</option><option value="cheap">До $50</option><option value="premium">Свыше $50</option></select></label>
+            <label>Срок пребывания<select id="visaDuration"><option value="">Любой</option><option value="long">60+ дней</option></select></label>
+          </div>
+        </details>
+        <button type="reset" id="visaReset" hidden>Сбросить</button>
+        <p id="visaFilterCount" aria-live="polite" aria-atomic="true" hidden></p>
+      </form>
+      <noscript><style>.va-tool { display: none !important; }</style><p>Все направления и документы доступны ниже.</p></noscript>
     </header>
-
-    {/* Денежные строки вынесены ИЗ шапки: внутри <header> трекинг размечал их как
-        навигацию, а не как денежную точку страницы. Предмет — в первых словах
-        (NN/g «First 2 Words»), имя партнёра из подписи убрано. */}
-    <p class="va-money-row">
-      <a class="aff-cta" href="https://cherehapa.tpk.mx/fkM7suze?erid=2VtzquZTwb5&sub_id=visa_index&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F" target="_blank" rel="nofollow noopener sponsored">Сравнить страховки для поездки</a>
-      <span class="va-money-sep" aria-hidden="true">·</span>
-      <a class="aff-cta" href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=visa_index&u=https%3A%2F%2Fwww.aviasales.ru%2F" target="_blank" rel="nofollow noopener sponsored">Билеты по 77 направлениям реестра</a>
-    </p>
-
-
-    {/* ─── CLASSIFIED SECTIONS — три картотеки ─── */}
-    {Object.keys(byVisa).filter((vt) => byVisa[vt].length > 0).map((vt, vti) => (
-      <section class={`va-section va-section--${vt}`} data-section={vt} data-reveal>
-        <header class="va-section-head">
-          <span class="va-section-count" aria-label="Количество направлений">{byVisa[vt].length}</span>
-          <div class="va-section-meta">
-            <h2 class="va-section-title">{VISA_META[vt].title}</h2>
-            <p class="va-section-desc">{VISA_META[vt].desc}</p>
+    <p class="va-empty" id="visaEmpty" hidden>Страна не найдена. Проверьте название или сбросьте фильтры.</p>
+    {groups.filter((g) => g.directions.length).map((g, groupIndex) => (
+      <>
+        <section class="va-section" data-section={g.mode} aria-labelledby={`visa-${g.mode}`}>
+          <header class="va-section-head"><h2 id={`visa-${g.mode}`}>{g.title}</h2><p>{g.description}</p></header>
+          <div class="va-grid">
+            {g.directions.map((d, i) => {
+              const photo = destPhotos[`../../assets/destinations/${d.slug}.jpg`];
+              const e = entries.get(d.slug);
+              const cost = costBucket(e);
+              return (<a class="va-card" href={`/visa/${d.slug}/`} data-name={[d.cases.nom, d.region, d.sub].join(' ').toLocaleLowerCase('ru')} data-visa={e.mode}
+                data-cost={cost} data-duration-long={e.stayDays !== null && e.stayDays >= 60 ? '1' : '0'}>
+                {photo && <Image src={photo} alt={d.cases.nom} widths={[160, 320, 480]} sizes="(max-width: 600px) 100px, 180px" formats={['webp']} quality={75} loading={groupIndex === 0 && i < 2 ? 'eager' : 'lazy'} />}
+                <div class="va-card-body"><h3>{d.cases.nom}</h3>
+                  <p class="va-card-mode">{e.label}</p>
+                  {e.stay && <p class="va-card-stay">{e.stay}</p>}
+                  <span class="va-card-link">{d.domestic ? 'Документы для поездки' : 'Документы и условия въезда'}</span>
+                </div>
+              </a>);
+            })}
           </div>
-        </header>
-
-        <div class="va-grid">
-          {byVisa[vt].map((d, idx) => {
-            const photo = destPhotos[`../../assets/destinations/${d.slug}.jpg`];
-            const iso = ISO_CODE[d.slug] || 'XXX';
-            const num = String(idx + 1).padStart(3, '0');
-            const visited = VISITED.has(d.slug);
-            const details = entries.get(d.slug);
-            // Eager только для первых карточек ПЕРВОЙ группы (above-fold на мобайле,
-            // 2-кол сетка → ~2 ряда). idx сбрасывается в каждой группе, поэтому без vti===0
-            // получалось 9 eager × fetchpriority — приоритетный шторм убивал LCP.
-            const isAboveFold = vti === 0 && idx < 4;
-            const cb = costBucket(details);
-            const isLong = isLongDuration(details);
-            const altText = d.cases.nom;
-            return (
-              <a href={`/visa/${d.slug}/`}
-                 class={`va-card ${visited ? 'va-card--visited' : ''}`}
-                 data-name={d.cases.nom.toLowerCase()}
-                 data-visa={vt}
-                 data-cost={cb}
-                 data-cost-usd={details.feeUsd ?? ''}
-                 data-ord={idx}
-                 data-duration-long={isLong ? '1' : '0'}
-                 data-trip={d.price?.flight && d.price?.hotel && d.price?.food ? tripCost(d.price) : ''}>
-                <div class="va-card-num">
-                  <span aria-label={`Карточка ${num} из ${byVisa[vt].length}`}>№ {num}</span>
-                  {visited && <span class="va-card-visited" title="Никита был лично" aria-label="Автор был в этой стране лично">✓</span>}
-                </div>
-                <div class="va-card-photo">
-                  {photo ? (
-                    <Image
-                      src={photo}
-                      alt={altText}
-                      widths={[280, 560]}
-                      sizes="(max-width: 700px) 50vw, 25vw"
-                      formats={['webp']}
-                      quality={70}
-                      loading={isAboveFold ? 'eager' : 'lazy'}
-                    />
-                  ) : (
-                    <div class="va-card-fallback" style={`background: ${d.visual.g1}`}>
-                    </div>
-                  )}
-                  <div class="va-card-stamp" aria-hidden="true">{VISA_META[vt].code}</div>
-                </div>
-                <div class="va-card-body">
-                  <h3 class="va-card-name">{d.cases.nom}</h3>
-                  {/* ⛔ Цена стоит СРАЗУ под именем, а не последней строкой.
-                      Замеры зон интереса на тревел-страницах: дольше и чаще
-                      всего смотрят на связку «имя — цена». Раньше она была
-                      четвёртым фактом, под сроком и стоимостью визы. */}
-                  {d.price?.flight && d.price?.hotel && d.price?.food && (
-                    <div class="va-card-trip">
-                      <span class="va-card-trip-sum">≈ {fmtRub(tripCost(d.price))} ₽</span>
-                      <span class="va-card-trip-per">неделя с перелётом</span>
-                    </div>
-                  )}
-                  <div class="va-card-iso">{iso}</div>
-                  <dl class="va-card-facts">
-                    <div class="va-fact"><dt>Режим</dt><dd>{details.label}</dd></div>
-                    {details.stay && <div class="va-fact"><dt>Пребывание</dt><dd>{details.stay}</dd></div>}
-                    {details.fee && <div class="va-fact"><dt>Сборы</dt><dd>{details.fee}</dd></div>}
-                  </dl>
-                </div>
-              </a>
-            );
-          })}
-        </div>
-      </section>
+        </section>
+        {groupIndex === 0 && <aside class="va-money-row" aria-label="Подготовка к поездке">
+          <h2>Подготовка к поездке</h2>
+          <p>Сохраните документы и подберите страховку под маршрут.</p>
+          <a class="aff-cta" href="https://cherehapa.tpk.mx/fkM7suze?erid=2VtzquZTwb5&sub_id=visa_index&u=https%3A%2F%2Fcherehapa.ru%2Ftravel%2F" target="_blank" rel="nofollow noopener sponsored">Сравнить страховки для поездки</a>
+          <a class="aff-cta" href="https://aviasales.tpk.mx/JCSPlC17?erid=2Vtzqxkn4LF&sub_id=visa_index&u=https%3A%2F%2Fwww.aviasales.ru%2F" target="_blank" rel="nofollow noopener sponsored">Посмотреть билеты</a>
+        </aside>}
+      </>
     ))}
-
-    <aside class="va-secondary" aria-label="Сводка и способы поделиться каталогом">
-      <section class="va-answer" aria-label="Сводка по визовым режимам">
-        <div class="va-n"><b>{byVisa.free.length}</b><span>без визы</span></div>
-        <div class="va-n"><b>{byVisa.evisa.length}</b><span>виза онлайн</span></div>
-        <div class="va-n"><b>{byVisa.required.length}</b><span>виза заранее</span></div>
-        {cheapest && <div class="va-n"><b>≈ {fmtRub(cheapest.цена)} ₽</b><span>неделя с перелётом — {cheapest.nom}</span></div>}
-      </section>
-      <p class="va-next">Сводка показывает направления с проверенными правилами. Остальные доступны в группе «Уточнить правила».</p>
-
-      <div class="va-cta-row">
-        <a class="va-cta va-cta--primary" href="https://t.me/traveltriberu?utm_source=traveltribe&utm_medium=visa-hero" target="_blank" rel="noopener">
-          <span class="va-cta-label">Telegram-канал</span>
-        </a>
-        <button type="button" class="va-cta va-cta--share" id="visaShareBtn" aria-label="Поделиться реестром">
-          <span class="va-cta-label">Поделиться</span>
-        </button>
-      </div>
-
-
-    </aside>
-
-    <section class="va-intro">
-      <h2 class="va-intro-title">Как проверить условия въезда</h2>
-      <div class="va-intro-body">
-        <p class="va-intro-lede">Каталог предназначен для туристических поездок с обычным российским паспортом. Для пересадки, работы или учёбы проверьте правила отдельно.</p>
-        <p>Откройте страницу страны и проверьте срок пребывания, документы и способ подачи. Если условия зависят от маршрута, обратитесь в консульство перед покупкой билета.</p>
-        <p class="va-reference-links">
-          <a href="https://www.kdmid.ru/info-for-traveling-abroad/reference-information-for-traveling-abroad/list-of-countries-with-simplified-entry/">Консульский справочник МИД</a>
-          <a href="/izmeneniya/">Изменения правил въезда</a>
-        </p>
-      </div>
+    <section class="va-faq" aria-labelledby="visa-faq-title">
+      <h2 id="visa-faq-title">Частые вопросы</h2>
+      {FAQ_ITEMS.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
     </section>
-
-    {/* ─── FAQ — Часто спрашивают ─── */}
-    <section class="va-faq" aria-label="Часто спрашивают" data-reveal>
-      <header class="va-faq-head">
-        <span class="va-faq-tag">Документы и въезд</span>
-        <h2 class="va-faq-title">Часто спрашивают</h2>
-      </header>
-      <div class="va-faq-list">
-        {/* ⛔ Без нумерации 01–12: вопросы не последовательность, и номер ничего
-            не кодирует — это приём типовых машинных вёрсток, а не смысл. */}
-        {FAQ_ITEMS.map((item, idx) => (
-          <details class="va-faq-item" open={idx === 0}>
-            <summary class="va-faq-q">
-              <span class="va-faq-q-text">{item.q}</span>
-              <span class="va-faq-q-mark" aria-hidden="true">+</span>
-            </summary>
-            <div class="va-faq-a">{item.a}</div>
-          </details>
-        ))}
-      </div>
-    </section>
-
-    {/* ─── RELATED PILLARS — глубокие гайды по визам ─── */}
-    <section class="va-related" data-reveal>
-      <header class="va-related-head">
-        <span class="va-related-tag">СВЯЗАННЫЕ ГАЙДЫ</span>
-        <h2 class="va-related-title">Что почитать дальше</h2>
-      </header>
-      <ul class="va-related-list">
-        <li class="va-related-item">
-          <a href="/blog/china-guide-2026/">
-            <span class="va-related-num">01</span>
-            <span class="va-related-meta">
-              <span class="va-related-name">Путеводитель по Китаю</span>
-              <span class="va-related-desc">Полный гайд: маршрут, бюджет, оплата без карт</span>
-            </span>
-          </a>
-        </li>
-        <li class="va-related-item">
-          <a href="/blog/schengen-visa-2026/">
-            <span class="va-related-num">02</span>
-            <span class="va-related-meta">
-              <span class="va-related-name">Шенген 2026 для россиян</span>
-              <span class="va-related-desc">Порядок подачи, документы и EES</span>
-            </span>
-          </a>
-        </li>
-        <li class="va-related-item">
-          <a href="/blog/japan-visa-2026/">
-            <span class="va-related-num">03</span>
-            <span class="va-related-meta">
-              <span class="va-related-name">Виза в Японию 2026</span>
-              <span class="va-related-desc">Туристическая виза, документы и порядок подачи</span>
-            </span>
-          </a>
-        </li>
-        <li class="va-related-item">
-          <a href="/blog/ees-shengen-2026/">
-            <span class="va-related-num">04</span>
-            <span class="va-related-meta">
-              <span class="va-related-name">EES — биометрия на границе</span>
-              <span class="va-related-desc">Что изменилось с октября 2025, как проходить</span>
-            </span>
-          </a>
-        </li>
-        <li class="va-related-item">
-          <a href="/blog/pay-abroad-2026/">
-            <span class="va-related-num">05</span>
-            <span class="va-related-meta">
-              <span class="va-related-name">Как платить за границей в 2026</span>
-              <span class="va-related-desc">UnionPay, Alipay, виртуальные карты, наличные</span>
-            </span>
-          </a>
-        </li>
-        <li class="va-related-item">
-          <a href="/blog/turkey-guide-2026/">
-            <span class="va-related-num">06</span>
-            <span class="va-related-meta">
-              <span class="va-related-name">Турция 2026 — безвиз 60 дней</span>
-              <span class="va-related-desc">Регионы, бюджет all-inclusive, перелёт из Москвы</span>
-            </span>
-          </a>
-        </li>
+    <nav class="va-related" aria-label="Подробные гайды">
+      <h2>Что почитать дальше</h2>
+      <ul>
+        <li><a href="/blog/schengen-visa-2026/">Шенген: документы и порядок подачи</a></li>
+        <li><a href="/blog/japan-visa-2026/">Как оформить визу в Японию</a></li>
+        <li><a href="/blog/china-guide-2026/">Путеводитель по Китаю</a></li>
+        <li><a href="/blog/ees-shengen-2026/">Как проходить биометрию EES на границе</a></li>
+        <li><a href="/blog/pay-abroad-2026/">Как платить за границей</a></li>
+        <li><a href="/blog/turkey-guide-2026/">Путеводитель по Турции</a></li>
       </ul>
-    </section>
-
-    {/* ─── FOOTER NOTE ─── */}
+    </nav>
     <footer class="va-foot">
-      <div class="va-divider" aria-hidden="true">
-        <span class="va-divider-line"></span>
-        <span class="va-divider-glyph">✦</span>
-        <span class="va-divider-line"></span>
+      <p>Для работы, учёбы и транзита действуют отдельные правила. Условия туристической поездки и исключения указаны на странице страны.</p>
+      <p>Автор — <a href="/about/">Никита Зайцев</a></p>
+      <div class="va-reader-actions">
+        <a href="https://t.me/traveltriberu?utm_source=traveltribe&utm_medium=visa-hero" target="_blank" rel="noopener">Дневник в Telegram</a>
+        <button type="button" id="visaShareBtn">Поделиться</button>
       </div>
-      <p class="va-foot-text">
-        Правила въезда меняются — перед поездкой сверьте их на сайте посольства или через <a href="https://www.kdmid.ru" target="_blank" rel="noopener">МИД РФ</a>.
-      </p>
-      <p class="va-foot-sig">Составитель — <a href="/about/">Никита Зайцев</a>, TravelTribe</p>
+      <p id="visaShareStatus" role="status" hidden></p>
     </footer>
   </main>
-
   <Footer />
 </Layout>
-
 <script>
-  // Active filter state — комбинируется с поиском
-  let filterState = { visa: 'all', cost: null as string | null, durationLong: false, trip: null as string | null };
-  let sortState = { byCost: false, byTrip: false };
-
-  /** Подходит ли карточка при отборе с точечной подменой одного условия. */
-  function подходитЛи(card: HTMLElement, o: Record<string, unknown>) {
-    const q = 'q' in o ? String(o.q) : (document.getElementById('visaSearch') as HTMLInputElement | null)?.value.trim().toLowerCase() || '';
-    const visa = 'visa' in o ? o.visa : filterState.visa;
-    const cost = 'cost' in o ? o.cost : filterState.cost;
-    const dur = 'dur' in o ? o.dur : filterState.durationLong;
-    const trip = 'trip' in o ? o.trip : filterState.trip;
-    const tr = Number(card.dataset.trip) || 0;
-    return (!q || (card.dataset.name || '').includes(q))
-      && (visa === 'all' || card.dataset.visa === visa)
-      && (!cost || card.dataset.cost === cost)
-      && (!dur || card.dataset.durationLong === '1')
-      && (!trip || (tr > 0 && (trip === 'low' ? tr < 100000 : tr <= 200000)));
-  }
-
-  function обновитьСчётчики() {
-    const cards = Array.from(document.querySelectorAll<HTMLElement>('.va-card'));
-    document.querySelectorAll<HTMLElement>('.va-chip').forEach((chip) => {
-      const место = chip.querySelector('.va-chip-n');
-      if (!место) return;
-      const o: Record<string, unknown> = {};
-      if (chip.dataset.filter) o.visa = chip.dataset.filter;
-      else if (chip.dataset.cost) o.cost = filterState.cost === chip.dataset.cost ? null : chip.dataset.cost;
-      else if (chip.dataset.duration) o.dur = !filterState.durationLong;
-      else if (chip.dataset.trip) o.trip = filterState.trip === chip.dataset.trip ? null : chip.dataset.trip;
-      else return;
-      const n = cards.filter((c) => подходитЛи(c, o)).length;
-      место.textContent = String(n);
-      (chip as HTMLButtonElement).disabled = n === 0 && chip.getAttribute('aria-pressed') !== 'true';
-    });
-  }
-
-  function applyVisaFilters() {
-    const cards = document.querySelectorAll<HTMLElement>('.va-card');
-    const sections = document.querySelectorAll<HTMLElement>('.va-section');
-    const search = document.getElementById('visaSearch') as HTMLInputElement | null;
-    const clearBtn = document.getElementById('visaSearchClear');
-    const emptyState = document.getElementById('visaEmpty');
-    const countLabel = document.getElementById('visaFilterCount');
-    if (!cards.length) return;
-
-    const q = (search?.value || '').trim().toLowerCase();
-    let visible = 0;
-    cards.forEach((card) => {
-      const name = card.dataset.name || '';
-      const visa = card.dataset.visa || '';
-      const cost = card.dataset.cost || '';
-      const isLong = card.dataset.durationLong === '1';
-      const showSearch = !q || name.includes(q);
-      const showVisa = filterState.visa === 'all' || visa === filterState.visa;
-      const showCost = !filterState.cost || cost === filterState.cost;
-      const showDuration = !filterState.durationLong || isLong;
-      // Цена ПОЕЗДКИ: пороги те же, что на главной и в калькуляторе —
-      // до 100 тыс. и до 200 тыс. рублей за неделю с перелётом.
-      const trip = Number(card.dataset.trip) || 0;
-      const showTrip = !filterState.trip || (trip > 0 && (
-        filterState.trip === 'low' ? trip < 100000 : trip <= 200000));
-      const show = showSearch && showVisa && showCost && showDuration && showTrip;
-      card.hidden = !show;
-      if (show) visible++;
-    });
-    sections.forEach((g) => {
-      const any = Array.from(g.querySelectorAll<HTMLElement>('.va-card')).some((c) => !c.hidden);
-      g.hidden = !any;
-    });
-    if (emptyState) (emptyState as HTMLElement).hidden = visible > 0;
-    if (clearBtn) (clearBtn as HTMLElement).hidden = q.length === 0;
-    if (countLabel) {
-      const strong = countLabel.querySelector('strong');
-      if (strong) strong.textContent = String(visible);
-      const selected = countLabel.querySelector('.va-filter-selection');
-      const filters = Array.from(document.querySelectorAll('.va-chip[aria-pressed="true"]:not([data-filter="all"])'))
-        .map((chip) => chip.firstChild?.textContent?.trim()).filter(Boolean);
-      const extraMode = { arrival: 'По прибытии', unknown: 'Уточнить правила' }[filterState.visa];
-      const extraCost = filterState.cost === 'premium' ? 'Сбор свыше $50' : '';
-      const labels = [search?.value.trim(), ...filters, extraMode, extraCost].filter(Boolean);
-      if (selected) selected.textContent = labels.length ? ` · ${labels.join(' · ')}` : '';
+  const form = document.querySelector<HTMLFormElement>('.va-tool');
+  if (form) {
+    const search = document.querySelector<HTMLInputElement>('#visaSearch')!;
+    const mode = document.querySelector<HTMLSelectElement>('#visaMode')!;
+    const cost = document.querySelector<HTMLSelectElement>('#visaCost')!;
+    const duration = document.querySelector<HTMLSelectElement>('#visaDuration')!;
+    const reset = document.querySelector<HTMLButtonElement>('#visaReset')!;
+    const clear = document.querySelector<HTMLButtonElement>('#visaSearchClear')!;
+    const count = document.querySelector<HTMLElement>('#visaFilterCount')!;
+    const empty = document.querySelector<HTMLElement>('#visaEmpty')!;
+    const cards = [...document.querySelectorAll<HTMLElement>('.va-card')];
+    const sections = [...document.querySelectorAll<HTMLElement>('.va-section')];
+    const money = document.querySelector<HTMLElement>('.va-money-row')!;
+    function filter() {
+      const q = search.value.trim().toLocaleLowerCase('ru');
+      const active = !!(q || mode.value !== 'all' || cost.value || duration.value);
+      let visible = 0;
+      for (const c of cards) {
+        c.hidden = !!(q && !c.dataset.name?.includes(q)) || (mode.value !== 'all' && c.dataset.visa !== mode.value)
+          || !!(cost.value && c.dataset.cost !== cost.value && !(cost.value === 'cheap' && c.dataset.cost === 'free'))
+          || !!(duration.value && c.dataset.durationLong !== '1');
+        if (!c.hidden) visible++;
+      }
+      for (const s of sections) s.hidden = ![...s.querySelectorAll<HTMLElement>('.va-card')].some((c) => !c.hidden);
+      const firstResult = sections.find((s) => !s.hidden);
+      money.hidden = !firstResult;
+      if (firstResult) firstResult.after(money);
+      count.hidden = !active;
+      const selected = [search.value.trim(), mode.value !== 'all' ? mode.selectedOptions[0]?.text : '', cost.value ? cost.selectedOptions[0]?.text : '', duration.value ? '60+ дней' : ''].filter(Boolean);
+      count.textContent = `Найдено: ${visible}${selected.length ? ` · ${selected.join(' · ')}` : ''}`;
+      empty.hidden = visible > 0;
+      reset.hidden = !active;
+      clear.hidden = !q;
+      const params = new URLSearchParams();
+      if (q) params.set('q', search.value.trim());
+      if (mode.value !== 'all') params.set('visa', mode.value);
+      if (cost.value) params.set('cost', cost.value);
+      if (duration.value) params.set('dur', duration.value);
+      const qs = params.toString();
+      history.replaceState(null, '', `${location.pathname}${qs ? `?${qs}` : ''}${location.hash}`);
     }
-    обновитьСчётчики();
-
-    // Sync URL — bookmarkable filter state (resilience)
-    updateUrlFromFilterState();
+    const params = new URLSearchParams(location.search);
+    const choose = (el: HTMLSelectElement, value: string | null) => { if ([...el.options].some((o) => o.value === value)) el.value = value!; };
+    search.value = params.get('q') ?? '';
+    choose(mode, params.get('visa'));
+    choose(cost, params.get('cost'));
+    choose(duration, params.get('dur'));
+    if (cost.value || duration.value) document.querySelector<HTMLDetailsElement>('.va-extra')!.open = true;
+    form.addEventListener('input', filter);
+    form.addEventListener('change', filter);
+    form.addEventListener('submit', (e) => { e.preventDefault(); filter(); });
+    form.addEventListener('reset', () => { search.value = ''; mode.value = 'all'; cost.value = ''; duration.value = ''; filter(); });
+    clear.addEventListener('click', () => { search.value = ''; filter(); search.focus(); });
+    filter();
   }
-
-  function updateUrlFromFilterState() {
-    const params = new URLSearchParams();
-    if (filterState.visa !== 'all') params.set('visa', filterState.visa);
-    if (filterState.cost) params.set('cost', filterState.cost);
-    if (filterState.durationLong) params.set('dur', 'long');
-    const qstr = params.toString();
-    const newUrl = qstr ? `?${qstr}` : window.location.pathname;
-    if (window.location.search !== `?${qstr}` && !(qstr === '' && window.location.search === '')) {
-      window.history.replaceState({}, '', newUrl);
+  document.querySelector('#visaShareBtn')?.addEventListener('click', async () => {
+    const status = document.querySelector<HTMLElement>('#visaShareStatus')!;
+    if (navigator.share) {
+      try { await navigator.share({ title: 'Визы и правила въезда — TravelTribe', url: location.href }); }
+      catch (error) { if (error instanceof Error && error.name !== 'AbortError') { status.hidden = false; status.textContent = 'Поделиться не удалось. Скопируйте адрес страницы из браузера.'; } }
+    } else {
+      status.hidden = false;
+      try { await navigator.clipboard.writeText(location.href); status.textContent = 'Ссылка скопирована.'; }
+      catch { status.textContent = 'Скопируйте адрес страницы из браузера.'; }
     }
-  }
-
-  function applyFilterStateFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    const visa = params.get('visa');
-    const cost = params.get('cost');
-    const dur = params.get('dur');
-    if (visa && ['free', 'evisa', 'arrival', 'required', 'domestic', 'unknown'].includes(visa)) filterState.visa = visa;
-    if (cost && ['free', 'cheap', 'premium'].includes(cost)) filterState.cost = cost;
-    if (dur === 'long') filterState.durationLong = true;
-    const advanced = document.querySelector<HTMLDetailsElement>('.va-extra');
-    if (advanced && (filterState.cost || filterState.durationLong)) advanced.open = true;
-    // Update chip UI
-    document.querySelectorAll<HTMLElement>('.va-chip').forEach((c) => {
-      const isActive = (c.dataset.filter === filterState.visa)
-        || (c.dataset.cost && c.dataset.cost === filterState.cost)
-        || (c.dataset.duration === 'long' && filterState.durationLong);
-      c.classList.toggle('va-chip--active', !!isActive);
-      c.setAttribute('aria-pressed', String(!!isActive));
-    });
-    applyVisaFilters();
-  }
-
-  function initVisaSearch() {
-    const cards = document.querySelectorAll('.va-card');
-    const search = document.getElementById('visaSearch') as HTMLInputElement | null;
-    const clearBtn = document.getElementById('visaSearchClear');
-    if (!cards.length || !search) return;
-
-    search.addEventListener('input', applyVisaFilters);
-    if (clearBtn) clearBtn.addEventListener('click', () => { search.value = ''; applyVisaFilters(); search.focus(); });
-  }
-
-  // Сортировка карточек ВНУТРИ каждой секции (группировка по режиму визы сохраняется)
-  const costOrder = (card: HTMLElement) => card.dataset.costUsd === '' ? Infinity : Number(card.dataset.costUsd);
-
-  function applySort() {
-    document.querySelectorAll<HTMLElement>('.va-section').forEach((sec) => {
-      const cards = Array.from(sec.querySelectorAll<HTMLElement>('.va-card'));
-      if (!cards.length) return;
-      cards.sort((a, b) => sortState.byTrip
-        ? (Number(a.dataset.trip) || Infinity) - (Number(b.dataset.trip) || Infinity)
-        : sortState.byCost
-          ? costOrder(a) - costOrder(b)
-          : (Number(a.dataset.ord) || 0) - (Number(b.dataset.ord) || 0));
-      const parent = cards[0].parentElement;
-      if (parent) cards.forEach((c) => parent.appendChild(c));
-    });
-  }
-
-  // Event-delegation на document — robust против timing issues и SPA-навигации
-  function initVisaFilters() {
-    // ⛔ Начальные счётчики уже стоят в разметке — считаются при сборке.
-    //    Пересчёт скриптом на загрузке делал страницу нестабильной: два снимка
-    //    подряд на одной машине выходили разными. Скрипт трогает счётчики
-    //    только после нажатия.
-    if ((window as any).__vaFiltersBound) return;
-    (window as any).__vaFiltersBound = true;
-
-    document.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
-      const chip = target.closest('.va-chip') as HTMLElement | null;
-      if (!chip) return;
-
-      const fVisa = chip.dataset.filter;
-      const fCost = chip.dataset.cost;
-      const fDur = chip.dataset.duration;
-      const allChips = document.querySelectorAll<HTMLElement>('.va-chip');
-
-      if (fVisa) {
-        allChips.forEach((c) => {
-          if (c.dataset.filter) { c.classList.remove('va-chip--active'); c.setAttribute('aria-pressed', 'false'); }
-        });
-        chip.classList.add('va-chip--active');
-        chip.setAttribute('aria-pressed', 'true');
-        filterState.visa = fVisa;
-      }
-      if (fCost) {
-        if (filterState.cost === fCost) {
-          filterState.cost = null;
-          chip.classList.remove('va-chip--active');
-          chip.setAttribute('aria-pressed', 'false');
-        } else {
-          allChips.forEach((c) => {
-            if (c.dataset.cost) { c.classList.remove('va-chip--active'); c.setAttribute('aria-pressed', 'false'); }
-          });
-          chip.classList.add('va-chip--active');
-          chip.setAttribute('aria-pressed', 'true');
-          filterState.cost = fCost;
-        }
-      }
-      if (fDur === 'long') {
-        filterState.durationLong = !filterState.durationLong;
-        chip.classList.toggle('va-chip--active', filterState.durationLong);
-        chip.setAttribute('aria-pressed', String(filterState.durationLong));
-      }
-      // Цена ПОЕЗДКИ — отдельная от цены визы. Baymard: у 38% сайтов нет фильтра
-      // по данным, которые они же показывают в карточке; мы показали цену недели,
-      // значит обязаны дать по ней отбор и сортировку.
-      const fTrip = chip.dataset.trip;
-      if (fTrip) {
-        const был = chip.getAttribute('aria-pressed') === 'true';
-        filterState.trip = был ? null : fTrip;
-        allChips.forEach((c) => {
-          if (c.dataset.trip) {
-            c.classList.toggle('va-chip--active', !был && c === chip);
-            c.setAttribute('aria-pressed', String(!был && c === chip));
-          }
-        });
-      }
-      if (chip.dataset.sort === 'cost') {
-        sortState.byCost = !sortState.byCost;
-        sortState.byTrip = false;
-        chip.classList.toggle('va-chip--active', sortState.byCost);
-        chip.setAttribute('aria-pressed', String(sortState.byCost));
-        const др = document.querySelector<HTMLElement>('[data-sort="trip"]');
-        if (др) { др.classList.remove('va-chip--active'); др.setAttribute('aria-pressed', 'false'); }
-        applySort();
-      }
-      if (chip.dataset.sort === 'trip') {
-        sortState.byTrip = !sortState.byTrip;
-        sortState.byCost = false;
-        chip.classList.toggle('va-chip--active', sortState.byTrip);
-        chip.setAttribute('aria-pressed', String(sortState.byTrip));
-        const др = document.querySelector<HTMLElement>('[data-sort="cost"]');
-        if (др) { др.classList.remove('va-chip--active'); др.setAttribute('aria-pressed', 'false'); }
-        applySort();
-      }
-      // ⛔ Сброс одним движением: без него человек, загнавший себя в пустой
-      //    отбор, не знает, как вернуться.
-      if (chip.id === 'visaReset') {
-        filterState = { visa: 'all', cost: null, durationLong: false, trip: null };
-        sortState = { byCost: false, byTrip: false };
-        allChips.forEach((c) => {
-          const исход = c.dataset.filter === 'all';
-          c.classList.toggle('va-chip--active', исход);
-          c.setAttribute('aria-pressed', String(исход));
-        });
-        const поле = document.getElementById('visaSearch') as HTMLInputElement | null;
-        if (поле) поле.value = '';
-        applySort();
-      }
-
-      applyVisaFilters();
-    });
-  }
-
-  // Share API — поделиться текущим состоянием реестра (mobile-first)
-  function initShareBtn() {
-    const btn = document.getElementById('visaShareBtn') as HTMLButtonElement | null;
-    if (!btn) return;
-    btn.addEventListener('click', async () => {
-      const url = window.location.href;
-      const title = 'Визовый реестр 2026 · TravelTribe';
-      const text = 'Актуальная сводка визовых правил для россиян по 70+ направлениям.';
-      if (navigator.share) {
-        try { await navigator.share({ title, text, url }); } catch (e) { /* user cancelled */ }
-      } else if (navigator.clipboard) {
-        try {
-          await navigator.clipboard.writeText(url);
-          const orig = btn.querySelector('.va-cta-label');
-          if (orig) { const txt = orig.textContent; orig.textContent = 'Скопировано'; setTimeout(() => { orig.textContent = txt; }, 1800); }
-        } catch (e) { /* clipboard not available */ }
-      }
-    });
-  }
-
-  initVisaSearch();
-  initVisaFilters();
-  initShareBtn();
-  // Apply URL-state filters на initial load (bookmarkable filters)
-  if (window.location.search) applyFilterStateFromUrl();
-  document.addEventListener('astro:page-load', () => { initVisaSearch(); initVisaFilters(); initShareBtn(); });
-
-  // Scroll-reveal через IntersectionObserver — staggered появление секций и cards
-  function initReveal() {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const targets = document.querySelectorAll('[data-reveal]');
-    if (!targets.length) return;
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          (e.target as HTMLElement).classList.add('is-revealed');
-          io.unobserve(e.target);
-        }
-      });
-    }, { rootMargin: '-40px 0px', threshold: 0.06 });
-    targets.forEach((el) => io.observe(el));
-
-    // Cards staggered — каждая card получает свою задержку по индексу в grid'е
-    document.querySelectorAll<HTMLElement>('.va-grid').forEach((grid) => {
-      grid.querySelectorAll<HTMLElement>('.va-card').forEach((card, i) => {
-        if (!card.hasAttribute('data-reveal')) card.setAttribute('data-reveal', '');
-        card.style.setProperty('--reveal-delay', `${Math.min(i * 0.04, 0.6)}s`);
-        io.observe(card);
-      });
-    });
-  }
-
-  // Card 3D tilt + glare — mouse-tracking через RAF, only on hover-capable
-  function initTilt() {
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    document.querySelectorAll<HTMLElement>('.va-card').forEach((card) => {
-      let rafId: number | null = null;
-      const onMove = (e: MouseEvent) => {
-        if (rafId !== null) cancelAnimationFrame(rafId);
-        rafId = requestAnimationFrame(() => {
-          const r = card.getBoundingClientRect();
-          const x = (e.clientX - r.left) / r.width;   // 0..1
-          const y = (e.clientY - r.top) / r.height;
-          const tiltX = (0.5 - y) * 6;  // ±3deg
-          const tiltY = (x - 0.5) * 6;
-          card.style.setProperty('--tilt-x', `${tiltX}deg`);
-          card.style.setProperty('--tilt-y', `${tiltY}deg`);
-          card.style.setProperty('--glare-x', `${x * 100}%`);
-          card.style.setProperty('--glare-y', `${y * 100}%`);
-        });
-      };
-      card.addEventListener('mouseenter', () => {
-        card.classList.add('is-tilting');
-        card.addEventListener('mousemove', onMove);
-      });
-      card.addEventListener('mouseleave', () => {
-        card.removeEventListener('mousemove', onMove);
-        card.classList.remove('is-tilting');
-        card.style.setProperty('--tilt-x', '0deg');
-        card.style.setProperty('--tilt-y', '0deg');
-      });
-    });
-  }
-
-  initReveal();
-  initTilt();
-  document.addEventListener('astro:page-load', () => { initReveal(); initTilt(); });
+  });
 </script>
-
 <style>
-  /* ═══════════════════════════════════════════════════════════════
-     VISA ARCHIVE — Documentary / Passport Office aesthetic
-     Type pairing: Newsreader (variable serif italic) + Onest (cyrillic-optimized sans) + JetBrains Mono
-     Palette: paper cream + ink + visa-stamp red + customs blue
-     ═══════════════════════════════════════════════════════════════ */
-
-  /* ──────────────── A11Y — focus-visible на всех interactive ──────────────── */
-  .visa-archive :focus-visible {
-    outline: 2px solid var(--stamp-red);
-    outline-offset: 3px;
-    border-radius: 2px;
-  }
-  .va-chip:focus-visible,
-  .va-cta:focus-visible {
-    outline: 2px solid var(--stamp-red);
-    outline-offset: 3px;
-  }
-  .va-card:focus-visible {
-    outline: 2px solid var(--stamp-red);
-    outline-offset: -2px;
-    background: rgba(29, 64, 174, 0.06);
-  }
-  .va-faq-q:focus-visible {
-    outline: 2px solid var(--stamp-red);
-    outline-offset: -2px;
-  }
-  .va-search-field input:focus-visible {
-    outline: none;
-    border-bottom-color: var(--stamp-red);
-  }
-
-  /* Dark theme только при ручном toggle через .dark-theme — НЕ через
-     prefers-color-scheme: dark. Auto-mode конфликтовал с manual toggle
-     и игнорировал выбор юзера. Site-wide theme handling в Layout.astro. */
-
-  /* Filter count + noscript fallback */
-  /* Живой счётчик на кнопке: сколько останется, если нажать именно её при
-     нынешнем остальном отборе. NN/g: состояние отбора сообщается счётчиками в
-     реальном времени. Пустой отбор гасит кнопку — не тыкать в заведомое
-     «ничего не найдено». */
-  .va-chip-n { font-family: var(--ff-mono); font-weight: 400; font-size: 0.82em;
-    opacity: 0.65; padding-left: 0.35rem; }
-  .va-chip:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  .va-filter-count {
-    margin: 0.6rem 0 0;
-    font-family: var(--ff-mono);
-    font-size: 0.72rem;
-    color: var(--sepia);
-    letter-spacing: 0.04em;
-  }
-  .va-filter-count strong { color: var(--ink); font-weight: 600; }
-  .va-noscript {
-    margin: 0.8rem 0 0;
-    padding: 0.6rem 0.8rem;
-    background: var(--stamp-red-soft);
-    border-left: 3px solid var(--stamp-red);
-    font-family: var(--ff-mono);
-    font-size: 0.72rem;
-    color: var(--ink);
-  }
-
-  /* Share button — Mobile-first */
-  .va-cta--share {
-    color: var(--sepia);
-    cursor: pointer;
-    font-family: var(--ff-mono);
-  }
-  .va-cta--share:hover { background: var(--sepia); color: var(--paper); transform: translateY(-1px); }
-
-  /* ──────────────── SCROLL REVEAL (IntersectionObserver) ──────────────── */
-  [data-reveal] {
-    opacity: 0;
-    transform: translateY(28px);
-    transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-    transition-delay: var(--reveal-delay, 0s);
-  }
-  [data-reveal].is-revealed {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    [data-reveal] { opacity: 1; transform: none; transition: none; }
-  }
-
-  .visa-archive {
-    /* ⛔ ПАЛИТРА САЙТА, а не своя. У страницы был собственный цветовой мир —
-       пергамент #f4ede0, сепия и ржаво-красный #a3372a, — оставшийся от старого
-       «реестра». Переезд на язык дневника её не тронул, и страница жила
-       по-своему: 83 элемента ржавого цвета при том, что брендбук называет
-       единственным акцентом чернильный синий. Имена токенов оставлены прежними,
-       чтобы не переписывать 47 мест, но значения — сайтовые. */
-    --paper: #fbfbfa;
-    --paper-dark: #f2f2f0;
-    --ink: #15171a;
-    --ink-soft: #3a3f47;
-    --sepia: #5c626b;
-    --stamp-red: #1d40ae;
-    --stamp-red-soft: rgba(29, 64, 174, 0.10);
-    --customs-blue: #1d40ae;
-    --customs-blue-soft: rgba(29, 64, 174, 0.10);
-    --line-doc: #d9dbde;
-    --line-doc-faint: rgba(21, 23, 26, 0.08);
-    --ff-mono: 'PT Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-
-    /* ⛔ Своего фона у раздела НЕТ. Он лежит на фоне сайта, как все остальные
-       страницы. Прежде здесь стоял `background: var(--paper)` плюс два слоя во
-       всю площадь — шумовая плитка через ::before с mix-blend-mode: multiply и
-       краевой градиент через ::after. Цвет фона совпадал с сайтовым, но
-       множащий слой затемнял его до заметного серого и обрывался ровными
-       краями: раздел выглядел наклейкой поверх сайта. `overflow: hidden`
-       держал эти слои и ушёл вместе с ними. */
-    position: relative;
-    max-width: 1240px;
-    margin: 0 auto;
-    padding: 2rem clamp(1rem, 4vw, 3rem) 4rem;
-    color: var(--ink);
-  }
-
-  /* ⛔ Декоративный штамп исключён намеренно. Это правило поднимает содержимое
-     над фоном, но у него тот же вес, что у `.va-stamp-bg`, и оно идёт позже —
-     штамп терял `position:absolute`, вставал в поток и занимал 217 пикселей
-     пустоты сверху, уводя ответ страницы за первый экран (замер 28.08.2026). */
-  .visa-archive > *:not(.va-stamp-bg) { position: relative; z-index: 1; }
-
-
-  /* ──────────────── DOCUMENT HEADER ──────────────── */
-  .va-doc-head {
-    padding: 1.2rem 0 1rem;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line-doc);
-    margin-bottom: 2.5rem;
-    position: relative;
-    z-index: 1;
-  }
-  .va-meta-line {
-    font-family: var(--ff-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.04em;
-    color: var(--ink-soft);
-    margin-bottom: 1.4rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-  .va-meta-dot { color: var(--sepia); opacity: 0.6; }
-
-  .va-title {
-    font-family: var(--ff-display); /* антиква дневника */
-    /* ⛔ Размер как в макете Б: 1,9–2,9rem. Было 2,8–5,2rem — заголовок занимал
-       170 пикселей против 50 у макета и отодвигал инструмент вниз. Крупная
-       антиква уместна на главной, где под ней кадр; здесь под ней работа. */
-    font-size: clamp(1.9rem, 4vw, 2.9rem);
-    line-height: 1.08;
-    margin: 0 0 0.4rem;
-    color: var(--ink);
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    cursor: default;
-  }
-  /* Variable font morph при hover — opsz и SOFT axes плавно меняются. Wow-moment. */
-  .va-title-line {
-    display: block;
-    padding-bottom: 0.08em; /* запас под descenders */
-    transition: font-variation-settings 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  .va-title:hover .va-title-line {
-  }
-  .va-title-line--italic {
-    font-style: italic;
-    color: var(--stamp-red);
-    padding-bottom: 0.2em; /* italic descenders длиннее */
-  }
-  .va-title:hover .va-title-line--italic {
-  }
-  .va-title-line--small {
-    font-family: var(--ff-mono);
-    font-size: 0.82rem;
-    font-style: normal;
-    color: var(--sepia);
-    margin-top: 1.4rem;
-    padding-bottom: 0;
-    line-height: 1.2;
-    transition: color 0.7s ease;
-  }
-  .va-title:hover .va-title-line--small {
-    color: var(--stamp-red);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .va-title-line, .va-title-line--small { transition: none; }
-  }
-
-  /* Блок-ответ первого экрана — тот же приём, что на главной: вопрос,
-     ответ числом, три примера с ценой, ссылка на полный список. Штампы
-     повёрнуты на доли градуса — это оттиск в паспорте, а не карточка. */
-  .va-answer { display: flex; gap: 2rem; flex-wrap: wrap; margin: 1.1rem 0 0;
-    padding-top: 1rem; border-top: 1px dotted var(--line-doc, #d9dbde); }
-  .va-n b { display: block; font-family: var(--ff-mono); font-size: 2rem; font-weight: 700;
-    line-height: 1; color: var(--ink); }
-  .va-n span { display: block; font-size: 0.78rem; color: var(--text-dim, #5c626b);
-    letter-spacing: 0.04em; text-transform: uppercase; padding-top: 0.25rem; }
-  .va-tool { border: 1px solid var(--line); background: #fff; padding: 1.1rem; margin-bottom: 1rem; }
-  /* ⛔ Внутри рамки инструмента — БЕЗ вложенных рамок и фонов. «Карточка в
-     карточке» стоит в нашем чек-листе примет машинной вёрстки (критерий 53), и
-     на телефоне эти вложения уводили сводку за первый экран: 1211 при 844. */
-  .va-tool .va-search-wrap,
-  .va-tool .va-filters { border: 0; background: none; padding: 0; margin: 0 0 0.8rem; box-shadow: none; }
-  .va-tool .va-filters-label { margin-bottom: 0.5rem; }
-  @media (max-width: 640px) {
-    .va-tool { padding: 0.8rem; }
-    .va-answer { gap: 0.9rem 1.4rem; }
-    .va-n b { font-size: 1.5rem; }
-    .va-n span { font-size: 0.68rem; }
-  }
-  .va-tool-title { font-family: var(--ff-mono); font-size: 0.72rem; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--text-dim, #5c626b); margin-bottom: 0.7rem; }
-  .va-next { font-size: 0.84rem; color: var(--text-dim, #5c626b); margin: 0 0 1.4rem; }
-
-  /* Денежная строка под шапкой реестра: тот же тон, что у служебных подписей;
-     цель клика по вертикали не меньше 44 px (канон сайта строже WCAG AA). */
-  .va-money-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.7rem;
-    font-size: 0.9rem; margin: 0 0 1.6rem; }
-  .va-money-row .aff-cta { display: inline-flex; align-items: center; min-height: 44px; }
-  .va-money-sep { color: var(--text-dim, #5c626b); }
-  @media (max-width: 520px) { .va-money-sep { display: none; }
-    .va-money-row { flex-direction: column; align-items: flex-start; gap: 0.1rem; } }
-
-  .va-lead { color: var(--text-dim, #5c626b); max-width: 56ch; margin: 0.6rem 0 1.2rem; }
-  .va-q { font-size: clamp(1.7rem, 3.2vw, 2.4rem); line-height: 1.05; font-weight: 700;
-    letter-spacing: -0.01em; text-wrap: balance; margin: 0; color: var(--ink); }
-  .va-q em { font-style: italic; }
-  .va-q-lead { margin: 0.7rem 0 1rem; font-size: 1rem; color: var(--ink); max-width: 46ch; }
-  .va-q-lead b { font-weight: 600; }
-  .va-stamps { display: flex; flex-wrap: wrap; gap: 1.1rem; align-content: flex-start; }
-  .va-stamp { display: block; border: 2px solid var(--gold); color: var(--gold);
-    padding: 0.7rem 1rem; border-radius: 3px; transform: rotate(-1.6deg); text-decoration: none; }
-  .va-stamp:nth-child(2) { transform: rotate(1.2deg); }
-  .va-stamp:nth-child(3) { transform: rotate(-0.5deg); }
-  .va-stamp b { display: block; font-weight: 700; font-size: 0.95rem;
-    text-transform: uppercase; letter-spacing: 0.08em; }
-  .va-stamp span { display: block; font-size: 0.78rem; }
-  .va-stamp-sum { font-family: var(--ff-mono); padding-top: 0.15rem; }
-  .va-stamp:hover, .va-stamp:focus-visible { background: rgba(29, 64, 174, 0.06); }
-  .va-q-more { display: inline-block; margin-top: 0.9rem; padding: 0.4rem 0; min-height: 24px;
-    color: var(--ink); font-size: 0.95rem; text-decoration: underline;
-    text-decoration-thickness: 1px; text-underline-offset: 0.22em; }
-  .va-q-more:hover, .va-q-more:focus-visible { color: var(--gold); text-decoration-color: var(--gold); }
-  @media (max-width: 640px) {
-    /* На телефоне штампы в ряд с прокруткой: столбиком они уводили ответ за
-       первый экран (944 при экране 844, замер 28.08.2026). */
-    .va-stamps { gap: 0.55rem; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.3rem;
-      -webkit-overflow-scrolling: touch; }
-    .va-stamp { flex: 0 0 auto; }
-    /* Поворот на телефоне НЕ сбрасываем: он читается как оттиск и места не
-       занимает. Сброс здесь был бы мёртвой строкой — .va-stamp весит меньше,
-       чем .va-stamp:nth-child(2), и проиграл бы ему. */
-  }
-
-  .va-subtitle {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: clamp(1rem, 1.4vw, 1.18rem);
-    color: var(--ink-soft);
-    line-height: 1.55;
-    max-width: 540px;
-    margin: 0 0 1.6rem;
-    font-style: italic;
-  }
-
-  .va-divider {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin: 1.4rem 0 0;
-  }
-  .va-divider-line {
-    flex: 1;
-    height: 1px;
-    background: var(--line-doc);
-  }
-  .va-divider-glyph {
-    color: var(--stamp-red);
-    font-size: 0.9rem;
-    opacity: 0.8;
-  }
-
-  /* ──────────────── HUB INTRO + CHANGES + FILTERS + RELATED — новые секции ──────────────── */
-  .va-intro {
-    margin: 3rem auto 2rem;
-    max-width: 760px;
-  }
-  .va-intro-meta { margin-bottom: 0.8rem; }
-  .va-intro-tag {
-    display: inline-block;
-    font-family: var(--ff-mono);
-    font-size: 0.66rem;
-    letter-spacing: 0.18em;
-    color: var(--stamp-red);
-    padding: 0.25rem 0.7rem;
-    border: 1px solid var(--stamp-red);
-    background: var(--stamp-red-soft);
-  }
-  .va-intro-title {
-    /* ⛔ Антиква — хвост перехода на язык дневника. */
-    font-family: var(--ff-head, var(--ff-display));
-    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
-    font-weight: 500;
-    margin: 0.6rem 0 1.3rem;
-    color: var(--ink);
-    line-height: 1.1;
-    letter-spacing: -0.015em;
-  }
-  /* ⛔ Ширина строки 45–85 знаков (Брингхерст, цель 65). Замер 28.08.2026 дал
-     86 у двух абзацев справки — на волосок за потолком, но правило есть
-     правило, и оно из открытых источников, а не из вкуса. */
-  .va-intro-body { max-width: 68ch; }
-  .va-intro-body {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: 1.04rem;
-    line-height: 1.7;
-    color: var(--ink-soft);
-  }
-  .va-intro-body p {
-    margin: 0 0 1.1rem;
-  }
-  .va-intro-lede {
-    font-size: 1.14rem !important;
-    color: var(--ink) !important;
-    line-height: 1.6 !important;
-  }
-  .va-intro-body strong {
-    color: var(--ink);
-    font-weight: 600;
-  }
-  .va-intro-check {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 14px;
-    height: 14px;
-    border: 1px solid var(--stamp-red);
-    border-radius: 50%;
-    color: var(--stamp-red);
-    font-size: 0.62rem;
-    font-weight: 600;
-    vertical-align: 1px;
-    transform: rotate(-6deg);
-    background: var(--paper);
-  }
-
-  /* Changes feed */
-  .va-changes {
-    margin: 3rem auto 2rem;
-    max-width: 760px;
-    padding: 1.5rem 0 1rem;
-    border-top: 1px solid var(--line);
-  }
-  .va-changes-head { margin-bottom: 1.3rem; }
-  .va-changes-tag {
-    display: inline-block;
-    font-family: var(--ff-mono);
-    font-size: 0.66rem;
-    letter-spacing: 0.18em;
-    color: var(--customs-blue);
-    padding: 0.25rem 0.7rem;
-    border: 1px solid var(--customs-blue);
-    background: var(--customs-blue-soft);
-  }
-  .va-changes-title {
-    font-family: var(--ff-head, var(--ff-display));
-    font-size: clamp(1.5rem, 2.8vw, 2rem);
-    font-style: italic;
-    font-weight: 500;
-    margin: 0.5rem 0 0;
-    color: var(--ink);
-    line-height: 1.1;
-  }
-  .va-changes-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    counter-reset: change;
-  }
-  .va-change-item {
-    display: grid;
-    grid-template-columns: 130px 1fr;
-    gap: 1.2rem;
-    padding: 0.85rem 0;
-    align-items: baseline;
-  }
-  .va-change-date {
-    font-family: var(--ff-mono);
-    font-size: 0.78rem;
-    color: var(--stamp-red);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-  .va-change-text {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: 0.98rem;
-    line-height: 1.6;
-    color: var(--ink-soft);
-  }
-  .va-change-text strong { color: var(--ink); font-weight: 600; }
-
-  /* Quick-filter chips */
-  .va-filters {
-    margin: 2rem 0 1rem;
-    padding: 0.9rem 1rem;
-    background: var(--paper-dark);
-    border: 1px solid var(--line-doc);
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  .va-filters-label {
-    font-family: var(--ff-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    color: var(--stamp-red);
-    text-transform: uppercase;
-    flex: 0 0 auto;
-  }
-  .va-filters-chips {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    flex-wrap: wrap;
-  }
-  .va-chip {
-    /* ⛔ Как в макете Б: обычный текст, не прописные моноширинным. Прописные
-       делают кнопку вдвое шире при том же смысле — на телефоне одиннадцать
-       кнопок в три ряда против одного. */
-    font-family: var(--ff);
-    font-size: 0.82rem;
-    letter-spacing: 0;
-    padding: 0.55rem 0.9rem;
-    min-height: 36px;
-    background: var(--paper);
-    border: 1px solid var(--line-doc);
-    color: var(--ink-soft);
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  .va-chip:hover {
-    border-color: var(--ink);
-    color: var(--ink);
-  }
-  .va-chip.va-chip--active {
-    background: var(--ink);
-    color: var(--paper);
-    border-color: var(--ink);
-  }
-  .va-chip-divider {
-    color: var(--sepia);
-    opacity: 0.5;
-    margin: 0 0.2rem;
-  }
-
-
-  /* Related pillars */
-  .va-related {
-    margin: 4rem auto 2rem;
-    max-width: 880px;
-    padding-top: 2rem;
-    border-top: 1px solid var(--line);
-  }
-  .va-related-head { margin-bottom: 1.3rem; }
-  .va-related-tag {
-    display: inline-block;
-    font-family: var(--ff-mono);
-    font-size: 0.66rem;
-    letter-spacing: 0.18em;
-    color: var(--sepia);
-    padding: 0.25rem 0.7rem;
-    border: 1px solid var(--sepia);
-  }
-  .va-related-title {
-    font-family: var(--ff-head, var(--ff-display));
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
-    font-style: italic;
-    font-weight: 500;
-    margin: 0.5rem 0 0;
-    color: var(--ink);
-    line-height: 1.1;
-  }
-  .va-related-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .va-related-item a {
-    display: grid;
-    grid-template-columns: 44px 1fr auto;
-    gap: 1.2rem;
-    padding: 1rem 0.5rem;
-    align-items: baseline;
-    text-decoration: none;
-    color: inherit;
-    transition: background 0.2s, color 0.2s;
-  }
-  .va-related-item a:hover {
-    background: rgba(29, 64, 174, 0.04);
-  }
-  .va-related-item a:hover .va-related-name {
-    color: var(--stamp-red);
-  }
-  .va-related-num {
-    font-family: var(--ff-mono);
-    font-size: 0.78rem;
-    color: var(--sepia);
-    letter-spacing: 0.06em;
-  }
-  .va-related-meta { min-width: 0; }
-  .va-related-name {
-    display: block;
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: var(--ink);
-    line-height: 1.3;
-    transition: color 0.2s;
-  }
-  .va-related-desc {
-    display: block;
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: 0.92rem;
-    color: var(--ink-soft);
-    margin-top: 0.2rem;
-    line-height: 1.4;
-    font-style: italic;
-  }
-
-  /* ──────────────── CTA ROW — Telegram + Aviasales ──────────────── */
-  .va-cta-row {
-    display: flex;
-    gap: 0.8rem;
-    margin: 1.5rem 0 0;
-    flex-wrap: wrap;
-  }
-  .va-cta {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.55rem;
-    padding: 0.7rem 1.1rem;
-    text-decoration: none;
-    border: 1.5px solid currentColor;
-    background: var(--paper);
-    font-family: var(--ff-mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    transition: background 0.2s, color 0.2s, transform 0.2s;
-  }
-  .va-cta--primary { color: var(--stamp-red); }
-  .va-cta--primary:hover { background: var(--stamp-red); color: var(--paper); transform: translateY(-1px); }
-  .va-cta--secondary { color: var(--customs-blue); }
-  .va-cta--secondary:hover { background: var(--customs-blue); color: var(--paper); transform: translateY(-1px); }
-  .va-cta-label { font-weight: 500; }
-  .va-cta-meta {
-    font-size: 0.7em;
-    opacity: 0.7;
-    letter-spacing: 0.04em;
-    text-transform: none;
-    font-style: italic;
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-  }
-
-  /* ──────────────── STATS — три карточки реестра ──────────────── */
-  .va-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px 24px;
-    margin-bottom: 3rem;
-  }
-  .va-stat {
-    background: var(--paper);
-    padding: 1.6rem 1.4rem 1.4rem;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-  }
-  .va-stat-mark {
-    position: absolute;
-    top: 0.9rem;
-    right: 0.9rem;
-    font-family: var(--ff-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    padding: 0.25rem 0.55rem;
-    border: 1.5px solid currentColor;
-    border-radius: 50%;
-    width: 32px; height: 32px;
-    display: flex; align-items: center; justify-content: center;
-    transform: rotate(-6deg);
-  }
-  .va-stat--free .va-stat-mark { color: var(--customs-blue); }
-  .va-stat--evisa .va-stat-mark { color: var(--sepia); }
-  .va-stat--required .va-stat-mark { color: var(--stamp-red); }
-
-  .va-stat-num {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: clamp(3rem, 6vw, 4.4rem);
-    line-height: 1;
-    font-weight: 500;
-    color: var(--ink);
-    margin-top: 0.6rem;
-  }
-  .va-stat-label {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-style: italic;
-    font-size: 1.1rem;
-    color: var(--ink-soft);
-    margin-top: 0.2rem;
-  }
-  .va-stat-note {
-    font-family: var(--ff-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.05em;
-    color: var(--sepia);
-    margin-top: 0.55rem;
-    text-transform: uppercase;
-  }
-
-  /* ──────────────── FAQ — Архивная справка ──────────────── */
-  .va-faq {
-    margin: 3rem 0;
-    padding: 2rem 0 1.5rem;
-    border-top: 1px solid var(--line);
-    position: relative;
-  }
-  .va-faq::before {
-    content: "";
-    position: absolute;
-    top: 4px;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: var(--ink);
-    opacity: 0.4;
-  }
-  .va-faq-head {
-    text-align: center;
-    margin-bottom: 1.8rem;
-  }
-  .va-faq-tag {
-    display: inline-block;
-    font-family: var(--ff-mono);
-    font-size: 0.66rem;
-    letter-spacing: 0.18em;
-    color: var(--stamp-red);
-    padding: 0.25rem 0.7rem;
-    border: 1px solid var(--stamp-red);
-    background: var(--stamp-red-soft);
-    margin-bottom: 0.9rem;
-  }
-  .va-faq-title {
-    font-family: var(--ff-head, var(--ff-display));
-    font-size: clamp(1.8rem, 3.5vw, 2.4rem);
-    font-style: italic;
-    font-weight: 500;
-    color: var(--ink);
-    margin: 0;
-    line-height: 1;
-    letter-spacing: -0.01em;
-  }
-
-  .va-faq-list {
-    max-width: 820px;
-    margin: 0 auto;
-  }
-  .va-faq-item {
-    padding: 0;
-  }
-  .va-faq-item[open] {
-    background: rgba(29, 64, 174, 0.02);
-  }
-
-  .va-faq-q {
-    list-style: none;
-    cursor: pointer;
-    padding: 1.1rem 1rem 1rem 0.5rem;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 1rem;
-    align-items: baseline;
-    transition: background 0.2s;
-  }
-  .va-faq-q::-webkit-details-marker { display: none; }
-  .va-faq-q:hover {
-    background: rgba(29, 64, 174, 0.04);
-  }
-
-  .va-faq-num {
-    font-family: var(--ff-mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.06em;
-    color: var(--sepia);
-    flex: 0 0 auto;
-  }
-  .va-faq-q-text {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: clamp(1rem, 1.5vw, 1.18rem);
-    font-weight: 500;
-    color: var(--ink);
-    line-height: 1.3;
-    letter-spacing: -0.005em;
-  }
-  .va-faq-q-mark {
-    font-family: var(--ff-mono);
-    font-size: 1.2rem;
-    color: var(--stamp-red);
-    transition: transform 0.25s ease;
-    flex: 0 0 auto;
-    line-height: 1;
-  }
-  .va-faq-item[open] .va-faq-q-mark {
-    transform: rotate(45deg);
-  }
-
-  .va-faq-a {
-    padding: 0 1rem 1.3rem calc(0.5rem + 2.8rem);
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: 1rem;
-    line-height: 1.65;
-    color: var(--ink-soft);
-    max-width: 720px;
-  }
-
-  /* ──────────────── SEARCH — filing tray ──────────────── */
-  .va-search-wrap {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 3rem;
-    padding: 0.8rem 1rem;
-    background: var(--paper-dark);
-    border: 1px solid var(--line-doc);
-    flex-wrap: wrap;
-  }
-  .va-search-label {
-    flex: 0 0 auto;
-  }
-  .va-search-prefix {
-    font-family: var(--ff-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    color: var(--stamp-red);
-    text-transform: uppercase;
-  }
-  .va-search-field {
-    flex: 1;
-    min-width: 200px;
-    display: flex;
-    align-items: center;
-    position: relative;
-  }
-  .va-search-field input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px dashed var(--line-doc);
-    color: var(--ink);
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: 1.05rem;
-    padding: 0.4rem 1.6rem 0.4rem 0;
-    outline: none;
-    font-style: italic;
-  }
-  .va-search-field input::placeholder {
-    color: var(--sepia);
-    opacity: 0.6;
-  }
-  .va-search-field input:focus {
-    border-bottom-color: var(--stamp-red);
-  }
-  .va-search-clear {
-    position: absolute;
-    right: 0;
-    background: none;
-    border: none;
-    color: var(--sepia);
-    cursor: pointer;
-    font-size: 1.2rem;
-    width: 28px; height: 28px;
-    display: flex; align-items: center; justify-content: center;
-    border-radius: 50%;
-  }
-  .va-search-clear:hover { color: var(--stamp-red); background: var(--stamp-red-soft); }
-  .va-empty {
-    width: 100%;
-    font-family: var(--ff-mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.04em;
-    color: var(--stamp-red);
-    margin: 0.5rem 0 0;
-  }
-
-  /* ──────────────── CLASSIFIED SECTIONS ──────────────── */
-  .va-section { margin-bottom: 3.5rem; }
-  .va-section[hidden] { display: none; }
-
-  .va-section-head {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 1.4rem 1.6rem;
-    align-items: start;
-    padding-bottom: 1.3rem;
-    border-bottom: 1px solid var(--line);
-    margin-bottom: 1.8rem;
-  }
-
-  /* Circular stamp for section number */
-  .va-section-stamp {
-    flex: 0 0 auto;
-    width: clamp(86px, 12vw, 110px);
-    height: clamp(86px, 12vw, 110px);
-    border-radius: 50%;
-    border: 2.5px solid currentColor;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    transform: rotate(-4deg);
-    font-family: var(--ff-mono);
-  }
-  .va-section-stamp::after {
-    content: "";
-    position: absolute;
-    inset: 6px;
-    border: 1px dashed currentColor;
-    border-radius: 50%;
-    opacity: 0.6;
-  }
-  .vss-roman {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: 1.5rem;
-    font-style: italic;
-    line-height: 1;
-  }
-  .vss-code {
-    font-family: var(--ff-mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.12em;
-    margin-top: 0.2rem;
-  }
-  .vss-count {
-    font-family: var(--ff-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.06em;
-    opacity: 0.7;
-    margin-top: 0.1rem;
-  }
-  .vss-count::before { content: "· "; }
-  .vss-count::after { content: " ·"; }
-
-  .va-section--free .va-section-stamp { color: var(--customs-blue); }
-  .va-section--evisa .va-section-stamp { color: var(--sepia); }
-  .va-section--required .va-section-stamp { color: var(--stamp-red); }
-
-  .va-section-meta { min-width: 0; }
-  .va-section-iso {
-    font-family: var(--ff-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.16em;
-    color: var(--sepia);
-    margin-bottom: 0.4rem;
-    text-transform: uppercase;
-  }
-  .va-section-title {
-    font-family: var(--ff-display); /* антиква дневника */
-    font-size: clamp(2rem, 4.5vw, 2.8rem);
-    margin: 0 0 0.6rem;
-    color: var(--ink);
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: -0.02em;
-  }
-  .va-section-desc {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: clamp(0.95rem, 1.2vw, 1.06rem);
-    line-height: 1.55;
-    color: var(--ink-soft);
-    margin: 0;
-    max-width: 640px;
-  }
-
-  /* ──────────────── GRID OF CARDS ──────────────── */
-  .va-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-    gap: 0;
-  }
-  .va-card {
-    display: flex;
-    flex-direction: column;
-    text-decoration: none;
-    color: inherit;
-    position: relative;
-    padding: 1rem 1rem 1.1rem;
-    background: transparent;
-    transition: background 0.25s ease, transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
-    transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
-    transform-style: preserve-3d;
-    will-change: transform;
-  }
-  .va-card.is-tilting { transition: background 0.25s ease, transform 0s; }
-  .va-card[hidden] { display: none; }
-  .va-card:hover {
-    background: rgba(29, 64, 174, 0.04);
-  }
-  /* Glare layer — пятно света следит за курсором */
-  .va-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 50%), rgba(255, 220, 180, 0.18), transparent 45%);
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.35s ease;
-    z-index: 3;
-    mix-blend-mode: lighten;
-  }
-  .va-card:hover::after { opacity: 1; }
-  .va-card:hover .va-card-stamp {
-    opacity: 1;
-    transform: rotate(-6deg) scale(1.05);
-  }
-  /* ⛔ Свой курсор-печать убран. В нём жили сразу три беды: ржавый цвет старого
-     реестра, ДЕКОРАТИВНАЯ СТРЕЛКА «→» — она запрещена каноном, но гейт её не
-     видел, потому что она внутри картинки курсора, а не в тексте ссылки, — и
-     подмена обычного указателя, которую человек не просил. В макете Б своего
-     курсора нет. */
-  @media (prefers-reduced-motion: reduce) {
-    .va-card { transition: background 0.25s; transform: none; }
-    .va-card::after { display: none; }
-  }
-
-  .va-card-num {
-    font-family: var(--ff-mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.08em;
-    color: var(--sepia);
-    margin-bottom: 0.6rem;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-  /* EEAT — checkmark «был лично» */
-  .va-card-visited {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 14px;
-    height: 14px;
-    border: 1px solid var(--stamp-red);
-    border-radius: 50%;
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: 0.62rem;
-    font-weight: 600;
-    color: var(--stamp-red);
-    background: var(--paper);
-    line-height: 1;
-    font-style: normal;
-    transform: rotate(-6deg);
-  }
-  .va-card--visited .va-card-name::after {
-    content: "·";
-    color: var(--stamp-red);
-    margin-left: 0.25rem;
-    font-weight: 400;
-  }
-  .va-card-photo {
-    position: relative;
-    aspect-ratio: 4 / 5;
-    overflow: hidden;
-    margin-bottom: 0.7rem;
-    background: var(--paper-dark);
-  }
-  .va-card-photo img,
-  .va-card-photo picture {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: filter 0.4s ease, transform 0.5s ease;
-  }
-  /* Sepia tint только на hover — на mobile тач = no filter, не тормозит INP */
-  @media (hover: hover) {
-    .va-card:hover .va-card-photo img { transform: scale(1.04); filter: sepia(0.12) saturate(0.95); }
-  }
-  .va-card-fallback {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    transition: filter 0.4s ease;
-  }
-  
-  /* Маленький штамп на карточке — индикатор визового кода */
-  .va-card-stamp {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1.5px solid currentColor;
-    font-family: var(--ff-mono);
-    font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(244, 237, 224, 0.92);
-    backdrop-filter: blur(2px);
-    transform: rotate(-6deg);
-    opacity: 0.92;
-    transition: opacity 0.25s, transform 0.25s ease;
-    z-index: 2;
-  }
-  .va-section--free .va-card-stamp { color: var(--customs-blue); }
-  .va-section--evisa .va-card-stamp { color: var(--sepia); }
-  .va-section--required .va-card-stamp { color: var(--stamp-red); }
-
-  .va-card-body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-  }
-  .va-card-name {
-    font-family: var(--ff-head, var(--ff-display));
-    font-size: 1.08rem;
-    font-weight: 500;
-    color: var(--ink);
-    margin: 0;
-    line-height: 1.18;
-    letter-spacing: -0.005em;
-    text-wrap: balance;
-  }
-  .va-card-trip { display: flex; align-items: baseline; gap: 0.4rem; flex-wrap: wrap; margin: 0.15rem 0 0.1rem; }
-  .va-card-trip-sum { font-family: var(--ff-mono); font-weight: 600; font-size: 1rem; color: var(--ink); }
-  .va-card-trip-per { font-size: 0.7rem; color: var(--text-dim, #5c626b); }
-
-  .va-card-iso {
-    font-family: var(--ff-mono);
-    font-size: 0.66rem;
-    letter-spacing: 0.14em;
-    color: var(--sepia);
-    margin-top: 0.2rem;
-  }
-
-  /* Per-card facts: чистый stack без labels — три строки только с данными.
-     Порядок известен из контекста: срок · цена · оформление.
-     Labels убраны визуально (sr-only) — карточки выглядят как короткие
-     факт-строки в editorial-материале, не как форма с подписями. */
-  .va-card-facts {
-    margin: 0.6rem 0 0;
-    padding: 0.55rem 0 0;
-    border-top: 1px dashed var(--line-doc);
-    display: flex;
-    flex-direction: column;
-    gap: 0.18rem;
-  }
-  .va-fact {
-    display: block;
-    line-height: 1.35;
-    margin: 0;
-  }
-  .va-fact dt {
-    /* sr-only — скрываем visually, оставляем для screen reader */
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-  .va-fact dt::after { content: none; }
-  .va-fact dd {
-    display: block;
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: 0.86rem;
-    color: var(--ink);
-    margin: 0;
-    line-height: 1.3;
-  }
-  /* ⛔ Стоит ПОСЛЕ `.va-fact dd` намеренно: вес у них одинаковый, и правило,
-     поставленное раньше, молча проигрывает. Цена поездки — моноширинным, как
-     все числа на сайте. */
-  .va-fact--money dd { font-family: var(--ff-mono); font-weight: 600; color: var(--ink); }
-  .va-fact--money .va-per { font-size: 0.82em; color: var(--ink-dim, #5c626b); }
-  /* Первая строка (срок) — слегка выделена */
-  .va-fact:first-child dd {
-    font-weight: 500;
-    color: var(--ink);
-  }
-  /* Вторая (цена) — обычная */
-  .va-fact:nth-child(2) dd {
-    color: var(--ink-soft);
-  }
-  /* Третья (оформление) — тише, italic */
-  .va-fact:nth-child(3) dd {
-    color: var(--sepia);
-    font-style: italic;
-    font-size: 0.8rem;
-  }
-  .va-card:hover .va-card-name { color: var(--stamp-red); }
-
-  /* ──────────────── FOOTER NOTE ──────────────── */
-  .va-foot {
-    margin-top: 4rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--line);
-    /* ⛔ Строка про дату сверки — не по центру. Длинный текст по центру стоит в
-       чек-листе примет машинной вёрстки (критерий 58): глазу негде зацепиться,
-       каждая строка начинается в новом месте. Подпись составителя короткая, ей
-       центр не мешает, но правило проще держать одно на весь подвал. */
-    text-align: left;
-  }
-  .va-foot .va-divider { margin: 0 0 1.5rem; }
-  .va-foot-text {
-    font-family: 'Golos Text Variable', Helvetica, Arial, sans-serif;
-    font-size: 0.95rem;
-    color: var(--ink-soft);
-    margin: 0 0 0.4rem;
-    font-style: italic;
-  }
-  .va-foot-text strong { color: var(--stamp-red); font-style: normal; font-weight: 600; }
-  .va-foot-sig {
-    font-family: var(--ff-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    color: var(--sepia);
-    margin: 0;
-    text-transform: uppercase;
-  }
-  .va-foot-sig a { color: var(--stamp-red); border-bottom: 1px dashed currentColor; }
-
-  /* ──────────────── DARK THEME ──────────────── */
-  :global(.dark-theme) .visa-archive {
-    --paper: #1a1612;
-    --paper-dark: #221c16;
-    --ink: #f0e8d8;
-    --ink-soft: #c4b7a0;
-    --sepia: #8a7a64;
-    --line-doc: rgba(240, 232, 216, 0.16);
-    --line-doc-faint: rgba(240, 232, 216, 0.08);
-  }
-  :global(.dark-theme) .va-card-photo img { filter: sepia(0.18) saturate(0.85) brightness(0.95); }
-  :global(.dark-theme) .va-card-stamp { background: rgba(34, 28, 22, 0.92); }
-
-  /* ──────────────── MOBILE ──────────────── */
-  @media (max-width: 720px) {
-    .va-change-item { grid-template-columns: minmax(0, 1fr); gap: 0.3rem; }
-    .va-change-text { min-width: 0; overflow-wrap: anywhere; }
-    .va-cta-row { flex-direction: column; gap: 0.5rem; }
-    .va-cta { width: 100%; justify-content: center; }
-    .va-faq { padding: 1.5rem 0 1rem; margin: 2rem 0; }
-    .va-faq-q { grid-template-columns: auto 1fr auto; gap: 0.7rem; padding: 0.9rem 0.5rem; }
-    .va-faq-q-text { font-size: 0.98rem; }
-    .va-faq-a { padding: 0 0.5rem 1rem 2.5rem; font-size: 0.95rem; }
-    /* ⛔ Мои мобильные правила стоят ЗДЕСЬ, а не выше: одноимённые правила
-       ниже по файлу перебивали их при равном весе. */
-    /* ⛔ Заголовок и подводка ужаты, кнопки отбора — в прокручиваемый ряд.
-       В три ряда одиннадцать кнопок занимали 296 пикселей и уводили сводку за
-       первый экран: 956 при экране 844. */
-    .va-title { font-size: clamp(1.5rem, 6.5vw, 2rem); }
-    .va-lead { margin: 0.5rem 0 0.9rem; font-size: 0.92rem; }
-    .va-filters-chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.35rem;
-      -webkit-overflow-scrolling: touch; }
-    .va-filters-chips > * { flex: 0 0 auto; }
-    .va-title-line--small { font-size: 0.7rem; }
-    .va-stats { grid-template-columns: 1fr; }
-    .va-stats { border: 1px solid var(--line); gap: 0; }
-    .va-stat { border-bottom: 1px solid var(--line); }
-    .va-stat:last-child { border-bottom: none; }
-    .va-section-head { grid-template-columns: 1fr; }
-    .va-section-stamp { width: 76px; height: 76px; }
-    .vss-roman { font-size: 1.2rem; }
-    .vss-code { font-size: 0.66rem; }
-    /* ⛔ minmax(0, 1fr), а не 1fr: у 1fr нижняя граница — самое длинное слово карточки, и ширина
-       колонок гуляла вслед за шрифтом, который дозагружается не сразу. 13.09.2026 это давало
-       ±1,7 px фото в пяти рядах раздела виз — снимок страницы на телефоне скакал на 8 px и ронял
-       ветки, которые реестр не трогали. Колонки делятся поровну независимо от текста. */
-    .va-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .va-card-photo { aspect-ratio: 1 / 1; }
-    .va-card-num { font-size: 0.55rem; }
-    .va-card-name { font-size: 0.98rem; }
-    .va-search-wrap { padding: 0.7rem 0.9rem; }
-    .va-search-field input { font-size: 1rem; }
-  }
-@media (max-width: 767px) {
-  .va-card, .va-card-body, .va-fact, .va-fact dd { min-width: 0; overflow-wrap: anywhere; }
-  .va-card-trip-sum { max-width: 100%; overflow-wrap: anywhere; }
-  .va-search-field, .va-search-field input { min-width: 0; }
-}
-
-  .prep-visa-catalog .va-doc-head { padding-top: clamp(1.5rem, 4vw, 3rem); }
-  .prep-visa-catalog .va-title {
-    max-width: 22ch;
-    margin-inline: 0;
-    text-align: left;
-    font: 700 clamp(2.2rem, 5.4vw, 4.7rem) / 1.04 "Old Standard TT", Georgia, serif;
-    text-wrap: balance;
-  }
-  .prep-visa-catalog .va-lead { max-width: 58ch; text-align: left; margin-inline: 0; }
-  .prep-visa-catalog .va-tool { border: 0; padding-inline: 0; }
-  .prep-visa-catalog .va-search-field { min-height: 44px; }
-  .prep-visa-catalog .va-chip { min-height: 44px; border-radius: 0; background: transparent; }
-  .prep-visa-catalog .va-chip--active { color: #1d40ae; text-decoration: underline; text-underline-offset: .2em; }
-  .prep-visa-catalog .va-section-head { border-top: 1px solid #15171a; padding-top: 1rem; }
-  .prep-visa-catalog .va-section-count { color: #5c626b; font-family: "PT Mono", monospace; }
-  .prep-visa-catalog .va-card { box-shadow: none; border-radius: 0; }
-  .prep-visa-catalog .va-card-stamp, .prep-visa-catalog .va-card-iso, .prep-visa-catalog .va-card-num { display: none; }
-  .prep-visa-catalog .va-card-photo { border-radius: 0; }
-  .prep-visa-catalog [data-reveal] { opacity: 1; transform: none; transition: none; }
-  .prep-visa-catalog .va-card[hidden], .prep-visa-catalog .va-section[hidden],
-  .prep-visa-catalog .va-search-clear[hidden], .prep-visa-catalog .va-empty[hidden] { display: none !important; }
-  .prep-visa-catalog .va-search-clear { width: 44px; height: 44px; }
-
-  .prep-visa-catalog .va-filters-chips { flex-wrap: wrap; overflow: visible; padding: 0; }
-  .prep-visa-catalog #visaSearch { min-height: 44px; min-width: 0; }
-  .prep-visa-catalog .va-search-prefix,
-  .prep-visa-catalog .va-tool-title { text-transform: none; letter-spacing: normal; }
-  .va-extra { margin-top: .55rem; }
-  .va-extra summary { min-height: 44px; align-content: center; color: #1d40ae; cursor: pointer; font-weight: 650; }
-  .va-secondary { margin-block: 1.5rem; border-top: 1px solid #d9dbde; }
+  .visa-archive { max-width: 1200px; margin: 0 auto; padding: 1.4rem var(--page-edge) 3rem; color: #15171a; }
+  h1, h2, h3 { font-family: 'Old Standard TT', Georgia, serif; text-align: left; text-transform: none; letter-spacing: normal; }
+  h1 { font-size: clamp(2.1rem, 4.5vw, 3.7rem); line-height: 1.08; margin: 0 0 .7rem; }
+  h2 { font-size: clamp(1.65rem, 3vw, 2.35rem); line-height: 1.15; margin: 0 0 .45rem; }
+  h3 { font-size: clamp(1.35rem, 2.3vw, 1.8rem); line-height: 1.15; margin: 0 0 .35rem; }
+  p { line-height: 1.55; }
+  .va-lead { max-width: 64ch; margin: 0 0 1.25rem; color: #5c626b; }
+  .va-tool { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: .6rem 1rem; padding-bottom: 1rem; }
+  .va-tool label { display: block; font: 500 .9rem / 1.4 'Golos Text', sans-serif; }
+  .va-search-field { display: flex; border-bottom: 1px solid #15171a; }
+  input, select, button { font: inherit; color: #15171a; border-radius: 0; }
+  #visaSearch { min-width: 0; width: 100%; min-height: 48px; border: 0; background: transparent; padding: .4rem 0; font-size: 1.1rem; }
+  #visaSearch::placeholder { color: #5c626b; font-style: normal; }
+  #visaSearchClear { width: 44px; flex-shrink: 0; border: 0; background: transparent; font-size: 1.4rem; }
+  select { appearance: none; width: 100%; height: 48px; min-height: 48px; margin-top: .1rem; border: 1px solid #d9dbde; background: #fbfbfa url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%2315171a' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right .65rem center; padding: .45rem 2rem .45rem .65rem; }
+  .va-extra { grid-column: 1 / -1; }
+  .va-extra summary { width: fit-content; min-height: 44px; align-content: center; color: #1d40ae; cursor: pointer; }
+  .va-extra-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: .4rem 0; }
+  #visaReset { justify-self: start; border: 0; border-bottom: 1px solid #1d40ae; color: #1d40ae; background: transparent; padding: 0; min-height: 44px; cursor: pointer; }
+  #visaFilterCount { grid-column: 1 / -1; margin: 0; color: #5c626b; font-size: .9rem; }
+  .va-section, .va-money-row, .va-faq, .va-related, .va-foot { border-top: 1px solid #d9dbde; padding: 1.5rem 0; }
+  .va-section-head { margin-bottom: 1.15rem; }
+  .va-section-head p { color: #5c626b; margin: 0; }
+  .va-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 2rem; }
+  .va-card { display: grid; grid-template-columns: 34% minmax(0, 1fr); gap: 1.1rem; padding: 1rem 0; border-bottom: 1px solid #d9dbde; color: inherit; text-decoration: none; align-items: start; min-width: 0; }
+  .va-card img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; }
+  .va-card-body { min-width: 0; }
+  .va-card-mode { color: #1d40ae; font-size: .9rem; margin: 0 0 .25rem; }
+  .va-card-stay { font-size: .95rem; margin: 0 0 .7rem; }
+  .va-card-link { display: inline-block; font-size: .85rem; text-decoration: underline; text-underline-offset: .2em; }
+  .va-card:hover h3 { color: #1d40ae; }
+  .va-money-row p, .va-foot p { max-width: 64ch; color: #5c626b; }
+  .va-money-row a { display: inline-flex; align-items: center; min-height: 44px; margin-right: 1.5rem; }
+  .va-faq { max-width: 70ch; }
+  .va-faq details { border-bottom: 1px solid #d9dbde; }
+  .va-faq summary { min-height: 44px; align-content: center; padding: .65rem 0; font-weight: 600; cursor: pointer; }
+  .va-related ul { padding-left: 1.2rem; margin: .6rem 0 0; }
+  .va-related a { display: inline-flex; align-items: center; min-height: 44px; }
+  .va-reader-actions { display: flex; flex-wrap: wrap; gap: 0 1.5rem; }
+  .va-reader-actions a, .va-reader-actions button { display: inline-flex; align-items: center; min-height: 44px; }
+  .va-reader-actions button { padding: 0; border: 0; background: transparent; color: #1d40ae; text-decoration: underline; cursor: pointer; }
+  a { text-underline-offset: .2em; }
+  :is(a, button, input, select, summary):focus-visible { outline: 2px solid #1d40ae; outline-offset: 4px; }
+  [hidden] { display: none !important; }
+  @media (max-width: 767px) { .va-grid { grid-template-columns: 1fr; } }
   @media (max-width: 600px) {
-    .prep-visa-catalog .va-search-wrap { display: block; }
-    .prep-visa-catalog .va-search-label { display: block; margin-bottom: .25rem; }
+    .va-tool { grid-template-columns: 1fr; gap: .4rem; }
+    .va-mode { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: .7rem; }
+    .va-card { grid-template-columns: 100px minmax(0, 1fr); gap: 1rem; }
+    .va-card img { aspect-ratio: 1 / 1; }
+    .va-section, .va-money-row, .va-faq, .va-related { padding-block: 1.1rem; }
   }
-  .va-reference-links { display: flex; flex-wrap: wrap; gap: 0 .9rem; }
-  .va-reference-links a { display: inline-flex; align-items: center; min-height: 44px; }
+  @media (max-width: 380px) { .va-extra-fields { grid-template-columns: 1fr; } }
 </style>
