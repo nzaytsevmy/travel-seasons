@@ -89,14 +89,14 @@ const ldJson = {
       <nav class="tag-filter" aria-label="Темы блога">
         <span class="tf-label">Темы</span>
         {topTags.map(tag => (
-          <a href={`/blog/tag/${tag}/`} class="tf-link">{tag}</a>
+          <a href={`/blog/tag/${tag}/`} class="tf-link" data-astro-prefetch="hover">{tag}</a>
         ))}
         {restTags.length > 0 && (
           <details class="tf-more">
             <summary>Ещё {restTags.length}</summary>
             <div class="tf-rest">
               {restTags.map(tag => (
-                <a href={`/blog/tag/${tag}/`} class="tf-link">{tag}</a>
+                <a href={`/blog/tag/${tag}/`} class="tf-link" data-astro-prefetch="hover">{tag}</a>
               ))}
             </div>
           </details>
@@ -107,7 +107,7 @@ const ldJson = {
     {featured && (
       <section class="featured-section">
         <div class="section-label">Свежее</div>
-        <a href={`/blog/${featured.slug}/`} class="featured-card">
+        <a href={`/blog/${featured.slug}/`} class="featured-card" data-astro-prefetch="hover">
           <div class="featured-img">
             <Image
               src={featured.data.coverImage}
@@ -115,7 +115,7 @@ const ldJson = {
               widths={[400, 600, 720, 860]}
               sizes="(max-width: 680px) calc(100vw - 2rem - 2px), 480px"
               format="webp"
-              quality={82}
+              quality={72}
               loading="eager"
               fetchpriority="high"
               style={`object-position: ${featured.data.coverPositionCard || featured.data.coverPosition || 'center'};`}
@@ -146,7 +146,7 @@ const ldJson = {
         <div class="section-label">Ещё статьи</div>
         <div class="posts-grid" data-count={rest.length + (rest.length % 2 === 0 ? 0 : 1)}>
           {rest.map(post => (
-            <a href={`/blog/${post.slug}/`} class="post-card">
+            <a href={`/blog/${post.slug}/`} class="post-card" data-astro-prefetch="hover">
               <div class="post-thumb">
                 <Image
                   src={post.data.coverImage}

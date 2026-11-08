@@ -8,6 +8,10 @@ for (const width of [402, 1280]) {
   test(`каталог блога: изображения и переход с клавиатуры на ${width}px`, async ({ page, browserName }) => {
     await page.setViewportSize({ width, height: 900 });
     expect((await page.goto('/blog/'))?.status()).toBe(200);
+    // Avoid prefetching the many visible topics/cards until the reader shows intent.
+    const deferredLinks = page.locator('.tag-filter a, .featured-card, .posts-grid > a.post-card:not(.promo-card)');
+    expect(await deferredLinks.count()).toBeGreaterThan(20);
+    await expect(page.locator('.tag-filter a:not([data-astro-prefetch="hover"]), .featured-card:not([data-astro-prefetch="hover"]), .posts-grid > a.post-card:not(.promo-card):not([data-astro-prefetch="hover"])')).toHaveCount(0);
 
     const cover = page.locator('.featured-img img');
     await expect.poll(() => cover.evaluate((node: HTMLImageElement) =>
