@@ -10,7 +10,7 @@ import { monthKey, FEED_SIZE, frontPageEntries } from './src/data/news.js';
 import { inactiveNewsTopicPaths } from './src/data/news-topics.js';
 import { newsFrontmatter } from './src/data/news-frontmatter.js';
 import { topicLastmodFromGit } from './scripts/news-topic-freshness.mjs';
-import { latestFeedCheck } from './src/data/news-discovery.js';
+import { latestFeedModified, checkedCalendarDay } from './src/data/news-discovery.js';
 import rehypeTableWrap from './tools/rehype-table-wrap.mjs';
 import rehypeFaqAccordion from './tools/rehype-faq-accordion.mjs';
 import rehypeCountryRow from './tools/rehype-country-row.mjs';
@@ -76,6 +76,9 @@ for (const f of readdirSync(NEWS_DIR)) {
   if (!/\.mdx?$/.test(f)) continue;
   const fm = newsFrontmatter(readFileSync(new URL(f, NEWS_DIR), 'utf8'));
   const { date, checked, added } = fm;
+  // Validate the raw value before the collection coerces it to Date, so a
+  // precise timestamp cannot be silently mistaken for a Moscow calendar day.
+  checkedCalendarDay(checked);
   if (date && checked) newsChecked.push({
     date: new Date(date), checked: new Date(checked),
     // Дата выпуска — тот же ключ, по которому лента сортирует и режется.
@@ -92,18 +95,16 @@ for (const f of readdirSync(NEWS_DIR)) {
 //    все 70 заметок переписаны заново.
 const newsItemLastmod = {};
 for (const e of newsChecked) if (e.slug) newsItemLastmod[`https://traveltribe.ru/novosti/${e.slug}/`] = e.checked;
-const maxChecked = (list) => latestFeedCheck(list.map(data => ({ data })));
 const newsTopicEntries = newsChecked.map(data => ({ slug: data.slug, data }));
 const inactiveNewsTopicUrls = new Set(inactiveNewsTopicPaths(newsTopicEntries)
   .map(path => `https://traveltribe.ru${path}`));
 const topicDates = await topicLastmodFromGit({ root: fileURLToPath(new URL('.', import.meta.url)), entries: newsTopicEntries });
 const newsTopicLastmod = Object.fromEntries(Object.entries(topicDates)
   .map(([path, value]) => [`https://traveltribe.ru${path}`, new Date(value)]));
-// Лента показывает FEED_SIZE самых свежих — её дата обновления берётся ровно с
-// них. Считать максимум по ВСЕМ заметкам нельзя: пересверка старой заметки,
-// которой на ленте нет, объявила бы ленту обновлённой без единой правки на ней.
-const newsFeedLastmod = maxChecked(
-  frontPageEntries(newsChecked.map(data => ({ slug: data.slug, data })), FEED_SIZE).map(entry => entry.data),
+// Учитываем только заметки, показанные в ленте, и датированную содержательную
+// правку самой ленты. Скрытые старые заметки не должны двигать её lastmod.
+const newsFeedLastmod = latestFeedModified(
+  frontPageEntries(newsChecked.map(data => ({ slug: data.slug, data })), FEED_SIZE),
 );
 // Страница есть у каждого месяца с заметками, включая текущий: её дата — самая
 // поздняя сверка внутри месяца.

@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import { Image, getImage } from 'astro:assets';
+import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Footer from '../../components/Footer.astro';
@@ -12,14 +12,6 @@ const allPosts = (await getCollection('blog')).sort(byFreshness);
 
 const featured = allPosts[0];
 const rest = allPosts.slice(1);
-const FEATURED_WIDTHS = [400, 600, 720, 860];
-const FEATURED_SIZES = '(max-width: 680px) calc(100vw - 2rem - 2px), 480px';
-const FEATURED_QUALITY = 72;
-// Use the exact same responsive candidates as the visible image so the browser
-// can discover its selected resource early and reuse it for the card.
-const featuredPreload = featured && typeof featured.data.coverImage !== 'string'
-  ? await getImage({ src: featured.data.coverImage, widths: FEATURED_WIDTHS, format: 'webp', quality: FEATURED_QUALITY })
-  : undefined;
 
 function readingTime(body: string) {
   return Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
@@ -83,8 +75,6 @@ const ldJson = {
   canonical="https://traveltribe.ru/blog/"
   ldJson={ldJson}
   structuredDataAtEnd={true}
-  preloadImageSrcset={featuredPreload?.srcSet.attribute}
-  preloadImageSizes={FEATURED_SIZES}
 >
   <script is:inline>document.body.classList.add('blog-index')</script>
   <Breadcrumbs crumbs={[{ label: 'Блог' }]} />
@@ -122,10 +112,10 @@ const ldJson = {
             <Image
               src={featured.data.coverImage}
               alt={featured.data.title}
-              widths={FEATURED_WIDTHS}
-              sizes={FEATURED_SIZES}
+              widths={[400, 600, 720, 860]}
+              sizes="(max-width: 680px) calc(100vw - 2rem - 2px), 480px"
               format="webp"
-              quality={FEATURED_QUALITY}
+              quality={72}
               loading="eager"
               fetchpriority="high"
               style={`object-position: ${featured.data.coverPositionCard || featured.data.coverPosition || 'center'};`}
@@ -133,11 +123,7 @@ const ldJson = {
             <div class="featured-overlay"></div>
           </div>
           <div class="featured-body">
-            <div class="post-tags">
-              {cardTags(featured.data.tags).map(t => (
-                <span class="ptag">{t}</span>
-              ))}
-            </div>
+            <div class="post-tags">{cardTags(featured.data.tags).length > 0 && <span class="ptag">{cardTags(featured.data.tags).join('\u00a0· ')}</span>}</div>
             <h2 class="featured-title">{featured.data.title}</h2>
             <p class="featured-desc">{featured.data.description}</p>
             <div class="post-meta">
@@ -170,9 +156,7 @@ const ldJson = {
                 />
               </div>
               <div class="post-body">
-                <div class="post-tags">
-                  {cardTags(post.data.tags).map(t => <span class="ptag">{t}</span>)}
-                </div>
+                <div class="post-tags">{cardTags(post.data.tags).length > 0 && <span class="ptag">{cardTags(post.data.tags).join('\u00a0· ')}</span>}</div>
                 <h3 class="post-title">{post.data.title}</h3>
                 <p class="post-desc">{post.data.description}</p>
                 <div class="post-meta">
@@ -337,13 +321,11 @@ const ldJson = {
 /* ── Shared ── */
 /* Теги карточки — подпись, а не кнопки: брендбук §4 запрещает рамки и скругления,
    плотность держим разделителем, а не коробочками. */
-.post-tags { display: block; }   /* не flex: разделитель должен переноситься вместе с тегом */
+.post-tags { display: block; }
 .ptag {
   font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--gold-dim);
 }
-/* точка приклеена к предыдущему тегу — иначе на узком экране уезжает в начало строки */
-.ptag:not(:last-child)::after { content: ' · '; color: var(--line); }
 .post-title { font-family: var(--ff-display); font-size: 1.15rem; font-weight: 400; line-height: 1.25; }
 .post-desc { color: var(--text-dim); font-size: 0.8rem; line-height: 1.6; flex: 1; }
 .post-meta {

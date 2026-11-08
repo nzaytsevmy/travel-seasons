@@ -28,7 +28,7 @@ import { getCollection } from 'astro:content';
 import { frontPageEntries, monthKeys, entriesOfMonth, monthTitleRu, newsUrl,
          FULL_ON_FEED, FEED_SIZE } from '../../data/news.js';
 import { plural } from '../../data/plural.js';
-import { latestFeedCheck } from '../../data/news-discovery.js';
+import { latestFeedModified, feedModifiedMoscowDay } from '../../data/news-discovery.js';
 import { activeNewsTopics, newsTopicUrl } from '../../data/news-topics.js';
 
 const all = await getCollection('news');
@@ -41,9 +41,9 @@ const rest = fresh.slice(FULL_ON_FEED);
 
 const url = 'https://traveltribe.ru/novosti/';
 const title = 'Новости путешествий 2026: визы, перелёты, события';
-const description = 'Новые правила въезда, перелёты, фестивали и природа: что изменилось, где и когда.';
+const description = 'Новости путешествий: правила въезда и визы, перелёты и транспорт, фестивали, выставки и природа. Что изменилось и когда.';
 
-const lastChecked = latestFeedCheck(fresh);
+const lastModified = latestFeedModified(fresh);
 
 const ldJson = {
   "@context": "https://schema.org",
@@ -55,7 +55,7 @@ const ldJson = {
       "name": title,
       "description": description,
       "inLanguage": "ru-RU",
-      ...(lastChecked ? { "dateModified": lastChecked.toISOString().slice(0, 10) } : {}),
+      "dateModified": feedModifiedMoscowDay(lastModified),
       "author": { "@id": "https://traveltribe.ru/about/#person" },
       // Капсула-ответ у каждой заметки — то, что зачитывает голосовой ответ и
       // из чего собирается цитата в ИИ-выдаче. Паттерн тот же, что на одиннадцати
