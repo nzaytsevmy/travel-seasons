@@ -45,6 +45,7 @@ interface Props {
   ogImage?: string;
   ogImageAlt?: string;
   ldJson?: object;
+  structuredDataAtEnd?: boolean;
   deferHomePhotos?: boolean;
   preloadJournalFonts?: boolean;
   destinationFontProfile?: 'full' | 'year';
@@ -67,6 +68,7 @@ const {
   ogImage,
   ogImageAlt = ogImage ? title : 'TravelTribe — куда поехать и когда: сезоны, визы и бюджет. Гергети, Грузия',
   ldJson,
+  structuredDataAtEnd = false,
   deferHomePhotos = false,
   preloadJournalFonts = false,
   destinationFontProfile,
@@ -306,7 +308,7 @@ const finalLd = {
     <link rel="preload" as="font" type="font/woff2" href={href} crossorigin="anonymous" />)}
   <style set:html={golosFontFace + journalFontFace + homeFontFace + destinationFontFace}></style>
 
-  <script type="application/ld+json" set:html={JSON.stringify(finalLd)} />
+  {!structuredDataAtEnd && <script type="application/ld+json" set:html={JSON.stringify(finalLd)} />}
 
   {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
   {/* ⛔ href обязателен и при imagesrcset. Стандарт разрешает тег без него, но
@@ -445,6 +447,8 @@ const finalLd = {
   <SwissHeader />
 
   <slot />
+
+  {structuredDataAtEnd && <script type="application/ld+json" set:html={JSON.stringify(finalLd)} />}
 
   <!-- Реферальные/партнёрские ссылки (rel=sponsored / .aff-cta) открываем в новой
        вкладке + noopener — чтобы клик по партнёру не уводил человека с сайта.

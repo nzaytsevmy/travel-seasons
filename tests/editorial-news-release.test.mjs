@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readdirSync, readFileSync } from 'node:fs';
 import { buildEditorialInventory, validateEditorialConfig } from '../scripts/news-cap.mjs';
-import { latestFeedCheck } from '../src/data/news-discovery.js';
+import { latestFeedCheck, latestFeedModified, feedModifiedMoscowDay, checkedCalendarDay } from '../src/data/news-discovery.js';
+import { newsFrontmatter } from '../src/data/news-frontmatter.js';
 const config = { selectionMode: 'editorial', targetPerDay: null, maxPerDay: null, minScore: 3, paused: false };
 const day = '2026-10-14';
 const note = (i, score = 4, added = day) => ({ file: `src/content/news/story-${String(i).padStart(2, '0')}.md`, note: { data: { score, added, checked: day, topic: 'nature' } } });
@@ -68,3 +70,38 @@ test('feed check is independent of order', () => {
 test('empty feed invents no date', () => assert.equal(latestFeedCheck([]), null));
 test('invalid or missing dates are skipped', () => assert.equal(latestFeedCheck([{}, { data: { checked: 'invalid' } }, { data: { checked: null } }]), null));
 test('returned date does not alias input', () => { const original = new Date(day); const result = latestFeedCheck([{ data: { checked: original } }]); result.setUTCFullYear(2000); assert.equal(original.getUTCFullYear(), 2026); });
+test('a real editorial change to the feed is reflected even when its stories were checked earlier', () => {
+  const date = latestFeedModified([{ data: { checked: '2026-11-08' } }], '2026-11-08T21:30:00Z');
+  assert.equal(date.toISOString(), '2026-11-08T21:00:00.000Z');
+  assert.equal(feedModifiedMoscowDay(date), '2026-11-09');
+});
+test('a later checked story can move the feed date, and rebuilding unchanged input cannot', () => {
+  const entries = [{ data: { checked: '2026-11-10' } }];
+  const first = latestFeedModified(entries, '2026-11-11T12:00:00Z');
+  assert.equal(first.toISOString(), '2026-11-09T21:00:00.000Z');
+  assert.equal(latestFeedModified(entries, '2026-11-12T12:00:00Z').toISOString(), first.toISOString());
+});
+test('a feed editorial date in the future is rejected', () => {
+  assert.throws(() => latestFeedModified([], '2026-11-08T20:59:59Z'), /future/i);
+  assert.throws(() => latestFeedModified([{ data: { checked: '2026-11-10' } }], '2026-11-09T12:00:00Z'), /future/i);
+  assert.throws(() => latestFeedModified([{ data: { checked: '2026-11-09T02:00:00Z' } }], '2026-11-08T22:00:00Z'), /calendar day/i);
+  assert.throws(() => checkedCalendarDay('2026-11-09T00:00:00.000Z'), /calendar day/i);
+});
+test('a same-day Moscow check is not future between midnight Moscow and midnight UTC', () => {
+  const date = latestFeedModified([{ data: { checked: '2026-11-09' } }], '2026-11-08T22:00:00Z');
+  assert.equal(date.toISOString(), '2026-11-08T21:00:00.000Z');
+  assert.equal(feedModifiedMoscowDay(date), '2026-11-09');
+  assert.equal(latestFeedModified([{ data: { checked: new Date('2026-11-09T00:00:00Z') } }], '2026-11-09T00:10:00Z').toISOString(), date.toISOString());
+});
+test('news source checked values are valid calendar days before Astro coerces them', () => {
+  const directory = new URL('../src/content/news/', import.meta.url);
+  const files = readdirSync(directory).filter(name => /\.mdx?$/.test(name));
+  assert(files.length > 0);
+  for (const file of files) {
+    const checked = newsFrontmatter(readFileSync(new URL(file, directory), 'utf8')).checked;
+    assert.equal(typeof checked, 'string', file);
+    assert.equal(checkedCalendarDay(checked), checked, file);
+  }
+  assert.throws(() => checkedCalendarDay('2026-02-29'), /Invalid/i);
+  assert.throws(() => checkedCalendarDay('2026-11-09T00:00:00Z'), /calendar day/i);
+});

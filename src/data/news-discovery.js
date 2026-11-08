@@ -11,6 +11,38 @@ export function latestFeedCheck(entries) {
   const dates = entries.map(e => validDate(e?.data?.checked)).filter(Boolean);
   return dates.length ? new Date(Math.max(...dates.map(d => d.valueOf()))) : null;
 }
+// The news index received a substantive editorial/navigation change on 9 Nov
+// 2026 Moscow time. This is a day-level source marker, not a deployment time.
+// Change it only when the visible feed or its structured data actually changes.
+export const NEWS_FEED_EDITORIAL_CHANGED_AT = '2026-11-08T21:00:00.000Z';
+// News checked values are calendar dates, not timestamps. Astro coerces those
+// dates to UTC-midnight Date objects; the source is validated before coercion.
+export function checkedCalendarDay(value) {
+  let day;
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) day = value;
+  else if (value instanceof Date && Number.isFinite(value.valueOf()) && value.toISOString().endsWith('T00:00:00.000Z')) day = value.toISOString().slice(0, 10);
+  else throw new TypeError('News checked must be a calendar day, not a timestamp.');
+  const parsed = new Date(`${day}T00:00:00.000Z`);
+  if (!Number.isFinite(parsed.valueOf()) || parsed.toISOString().slice(0, 10) !== day) throw new TypeError('Invalid news checked calendar day.');
+  return day;
+}
+export function latestFeedModified(entries, now = new Date()) {
+  const current = validDate(now);
+  const editorial = validDate(NEWS_FEED_EDITORIAL_CHANGED_AT);
+  if (!current || !editorial || editorial > current) throw new TypeError('Invalid or future news feed editorial date.');
+  const dates = entries.map(entry => {
+    const day = checkedCalendarDay(entry?.data?.checked);
+    const checked = new Date(`${day}T00:00:00+03:00`);
+    if (checked > current) throw new TypeError('Future news feed checked date.');
+    return checked.valueOf();
+  });
+  return new Date(Math.max(editorial.valueOf(), ...dates));
+}
+export function feedModifiedMoscowDay(date) {
+  const value = validDate(date);
+  if (!value) throw new TypeError('A valid news feed modification date is required.');
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow', year: 'numeric', month: '2-digit', day: '2-digit' }).format(value);
+}
 export function recentNews(entries, now = new Date()) {
   const time = validDate(now);
   if (!time) throw new TypeError('A valid build date is required.');

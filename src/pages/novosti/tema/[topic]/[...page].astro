@@ -5,25 +5,27 @@ import Breadcrumbs from '../../../../components/Breadcrumbs.astro';
 import Footer from '../../../../components/Footer.astro';
 import NewsCompact from '../../../../components/NewsCompact.astro';
 import { newsUrl } from '../../../../data/news.js';
-import { NEWS_TOPICS, newsTopicPages, newsTopicUrl } from '../../../../data/news-topics.js';
+import { activeNewsTopics, newsTopicRoutes, newsTopicUrl } from '../../../../data/news-topics.js';
 
 export async function getStaticPaths() {
-  return newsTopicPages(await getCollection('news')).map(props => ({
-    params: { topic: props.topic.slug, page: props.page === 1 ? undefined : String(props.page) }, props,
+  const all = await getCollection('news');
+  const topics = activeNewsTopics(all);
+  return newsTopicRoutes(all).map(props => ({
+    params: { topic: props.topic.slug, page: props.page === 1 ? undefined : String(props.page) }, props: { ...props, topics },
   }));
 }
-const { topic, page, totalPages, items } = Astro.props;
+const { topic, page, totalPages, items, topics, retired = false } = Astro.props;
 const title = `${topic.title}${page > 1 ? ` — страница ${page}` : ''}`;
 const url = `https://traveltribe.ru${newsTopicUrl(topic.slug, page)}`;
 const ldJson = { '@context': 'https://schema.org', '@graph': [
   { '@type': 'CollectionPage', '@id': `${url}#page`, url, name: title,
     description: topic.description, inLanguage: 'ru-RU',
     author: { '@id': 'https://traveltribe.ru/about/#person' },
-    mainEntity: { '@id': `${url}#list` } },
-  { '@type': 'ItemList', '@id': `${url}#list`, itemListElement: items.map((entry, i) => ({
+    ...(!retired ? { mainEntity: { '@id': `${url}#list` } } : {}) },
+  ...(!retired ? [{ '@type': 'ItemList', '@id': `${url}#list`, itemListElement: items.map((entry, i) => ({
     '@type': 'ListItem', position: i + 1, name: entry.data.title,
     url: `https://traveltribe.ru${newsUrl(entry)}`,
-  })) },
+  })) }] : []),
   { '@type': 'BreadcrumbList', itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://traveltribe.ru/' },
     { '@type': 'ListItem', position: 2, name: 'Новости', item: 'https://traveltribe.ru/novosti/' },
@@ -31,7 +33,7 @@ const ldJson = { '@context': 'https://schema.org', '@graph': [
   ] },
 ] };
 ---
-<Layout title={title} description={topic.description} canonical={url} ldJson={ldJson}>
+<Layout title={title} description={topic.description} canonical={url} ldJson={ldJson} noindex={retired}>
   <Breadcrumbs crumbs={[{ label: 'Новости', href: '/novosti/' }, { label: title }]} />
   <main id="main" class="nvt">
     <header>
@@ -41,9 +43,11 @@ const ldJson = { '@context': 'https://schema.org', '@graph': [
     </header>
     <nav aria-label="Темы новостей" class="nvt-nav">
       <a href="/novosti/">Все новости</a>
-      {NEWS_TOPICS.map(item => <a href={newsTopicUrl(item.slug)} aria-current={item.slug === topic.slug && page === 1 ? 'page' : undefined}>{item.title}</a>)}
+      {topics.map(item => <a href={newsTopicUrl(item.slug)} aria-current={item.slug === topic.slug && page === 1 ? 'page' : undefined}>{item.title}</a>)}
     </nav>
-    <ol class="nvt-list">{items.map(entry => <NewsCompact entry={entry} />)}</ol>
+    {retired
+      ? <p>Сейчас в этой рубрике нет актуальных новостей. Другие материалы собраны в <a href="/novosti/">ленте путешествий</a>.</p>
+      : <ol class="nvt-list">{items.map(entry => <NewsCompact entry={entry} />)}</ol>}
     {totalPages > 1 && <nav aria-label="Страницы новостей" class="nvt-nav">
       {page > 1 && <a href={newsTopicUrl(topic.slug, page - 1)} rel="prev">Предыдущая страница</a>}
       <span>Страница {page} из {totalPages}</span>

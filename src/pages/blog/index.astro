@@ -74,6 +74,7 @@ const ldJson = {
   description="Личный опыт поездок: Япония, Африка, Бали, Новая Зеландия. Цены, маршруты, лайфхаки для путешественников из России."
   canonical="https://traveltribe.ru/blog/"
   ldJson={ldJson}
+  structuredDataAtEnd={true}
 >
   <script is:inline>document.body.classList.add('blog-index')</script>
   <Breadcrumbs crumbs={[{ label: 'Блог' }]} />
@@ -88,14 +89,14 @@ const ldJson = {
       <nav class="tag-filter" aria-label="Темы блога">
         <span class="tf-label">Темы</span>
         {topTags.map(tag => (
-          <a href={`/blog/tag/${tag}/`} class="tf-link">{tag}</a>
+          <a href={`/blog/tag/${tag}/`} class="tf-link" data-astro-prefetch="hover">{tag}</a>
         ))}
         {restTags.length > 0 && (
           <details class="tf-more">
             <summary>Ещё {restTags.length}</summary>
             <div class="tf-rest">
               {restTags.map(tag => (
-                <a href={`/blog/tag/${tag}/`} class="tf-link">{tag}</a>
+                <a href={`/blog/tag/${tag}/`} class="tf-link" data-astro-prefetch="hover">{tag}</a>
               ))}
             </div>
           </details>
@@ -106,15 +107,15 @@ const ldJson = {
     {featured && (
       <section class="featured-section">
         <div class="section-label">Свежее</div>
-        <a href={`/blog/${featured.slug}/`} class="featured-card">
+        <a href={`/blog/${featured.slug}/`} class="featured-card" data-astro-prefetch="hover">
           <div class="featured-img">
             <Image
               src={featured.data.coverImage}
               alt={featured.data.title}
-              widths={[400, 600, 860]}
-              sizes="(max-width: 680px) 100vw, 480px"
+              widths={[400, 600, 720, 860]}
+              sizes="(max-width: 680px) calc(100vw - 2rem - 2px), 480px"
               format="webp"
-              quality={82}
+              quality={72}
               loading="eager"
               fetchpriority="high"
               style={`object-position: ${featured.data.coverPositionCard || featured.data.coverPosition || 'center'};`}
@@ -122,11 +123,7 @@ const ldJson = {
             <div class="featured-overlay"></div>
           </div>
           <div class="featured-body">
-            <div class="post-tags">
-              {cardTags(featured.data.tags).map(t => (
-                <span class="ptag">{t}</span>
-              ))}
-            </div>
+            <div class="post-tags">{cardTags(featured.data.tags).length > 0 && <span class="ptag">{cardTags(featured.data.tags).join('\u00a0· ')}</span>}</div>
             <h2 class="featured-title">{featured.data.title}</h2>
             <p class="featured-desc">{featured.data.description}</p>
             <div class="post-meta">
@@ -145,7 +142,7 @@ const ldJson = {
         <div class="section-label">Ещё статьи</div>
         <div class="posts-grid" data-count={rest.length + (rest.length % 2 === 0 ? 0 : 1)}>
           {rest.map(post => (
-            <a href={`/blog/${post.slug}/`} class="post-card">
+            <a href={`/blog/${post.slug}/`} class="post-card" data-astro-prefetch="hover">
               <div class="post-thumb">
                 <Image
                   src={post.data.coverImage}
@@ -159,15 +156,13 @@ const ldJson = {
                 />
               </div>
               <div class="post-body">
-                <div class="post-tags">
-                  {cardTags(post.data.tags).map(t => <span class="ptag">{t}</span>)}
-                </div>
+                <div class="post-tags">{cardTags(post.data.tags).length > 0 && <span class="ptag">{cardTags(post.data.tags).join('\u00a0· ')}</span>}</div>
                 <h3 class="post-title">{post.data.title}</h3>
                 <p class="post-desc">{post.data.description}</p>
                 <div class="post-meta">
-                  <span>{freshDate(post.data).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                  {freshDate(post.data).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
                   <span class="meta-sep">·</span>
-                  <span>{readingTime(post.body)} мин</span>
+                  {readingTime(post.body)} мин
                 </div>
               </div>
             </a>
@@ -326,13 +321,11 @@ const ldJson = {
 /* ── Shared ── */
 /* Теги карточки — подпись, а не кнопки: брендбук §4 запрещает рамки и скругления,
    плотность держим разделителем, а не коробочками. */
-.post-tags { display: block; }   /* не flex: разделитель должен переноситься вместе с тегом */
+.post-tags { display: block; }
 .ptag {
   font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--gold-dim);
 }
-/* точка приклеена к предыдущему тегу — иначе на узком экране уезжает в начало строки */
-.ptag:not(:last-child)::after { content: ' · '; color: var(--line); }
 .post-title { font-family: var(--ff-display); font-size: 1.15rem; font-weight: 400; line-height: 1.25; }
 .post-desc { color: var(--text-dim); font-size: 0.8rem; line-height: 1.6; flex: 1; }
 .post-meta {

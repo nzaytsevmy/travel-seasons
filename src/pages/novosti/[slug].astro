@@ -22,22 +22,23 @@ import { getCollection } from 'astro:content';
 import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu, addedAt, newsUrl, feedEntries, relatedNews, clipTitle, clipDescription } from '../../data/news.js';
 import { pickNewsImage, newsImageNote } from '../../data/news-images.js';
 import { newsGeography } from '../../data/editorial-geography.js';
-import { NEWS_TOPICS, newsTopicUrl } from '../../data/news-topics.js';
+import { activeNewsTopics, newsTopicUrl } from '../../data/news-topics.js';
 
 export async function getStaticPaths() {
   const all = await getCollection('news');
+  const topics = activeNewsTopics(all);
   // Порядок тот же, что в ленте: он же задаёт «предыдущую / следующую».
   // Архивная заметка сохраняет прежний адрес и соседей в месячном архиве.
   const sorted = feedEntries(all, undefined, { includeArchived: true });
   return sorted.map((entry, i) => ({
     params: { slug: entry.slug },
-    props: { entry, related: relatedNews(all, entry), around: [sorted[i - 1], sorted[i + 1]].filter(Boolean) },
+    props: { entry, related: relatedNews(all, entry), around: [sorted[i - 1], sorted[i + 1]].filter(Boolean), topics },
   }));
 }
 
-const { entry, related, around } = Astro.props;
+const { entry, related, around, topics } = Astro.props;
 const d = entry.data;
-const topicPage = NEWS_TOPICS.find(item => item.topic === d.topic);
+const topicPage = topics.find(item => item.topic === d.topic);
 const { Content } = await entry.render();
 
 const url = `https://traveltribe.ru${newsUrl(entry)}`;
@@ -53,6 +54,13 @@ const guides = dirs.flatMap((dir) => (dir.relatedPosts ?? []).slice(0, 2).map((p
 
 const cover = pickNewsImage(d, entry.slug, 0);
 const coverNote = newsPhotoCaption(d, newsImageNote(d));
+const coverWidths = [480, 700, 800, 1200];
+const coverSizes = '(max-width: 780px) calc(100vw - 2rem), calc(780px - 2rem)';
+const coverQuality = 55;
+// The preload and image use the same variants, sizes, format and quality.
+const coverPreload = cover ? await getImage({
+  src: cover, widths: coverWidths, format: 'webp', quality: coverQuality,
+}) : null;
 
 // Крупный дериват — для карточки в соцсетях и для поиска, в страницу не идёт.
 const wide = cover ? await getImage({ src: cover, width: 1600, format: 'webp' }) : null;
@@ -93,7 +101,8 @@ const ldJson = {
 };
 ---
 <Layout title={title} description={description} canonical={url} ldJson={ldJson}
-        ogType="article" ogImage={wideUrl} ogImageAlt={d.imageAlt ?? d.title}>
+        ogType="article" ogImage={wideUrl} ogImageAlt={d.imageAlt ?? d.title}
+        preloadImageSrcset={coverPreload?.srcSet.attribute} preloadImageSizes={coverSizes}>
   <Breadcrumbs crumbs={[{ label: 'Новости', href: '/novosti/' }, { label: d.title }]} />
   <main id="main" class="nvp">
 
@@ -112,9 +121,9 @@ const ldJson = {
 
       {cover && (
         <figure class="nvp-fig">
-          <Image src={cover} alt={d.imageAlt ?? d.title} widths={[480, 800, 1200]}
-                 sizes="(max-width: 700px) 100vw, 700px" loading="eager" fetchpriority="high"
-                 formats={['webp']} />
+          <Image src={cover} alt={d.imageAlt ?? d.title} widths={coverWidths}
+                 sizes={coverSizes} loading="eager" fetchpriority="high"
+                 format="webp" quality={coverQuality} />
           {coverNote && (
             <figcaption>
               {coverNote}
