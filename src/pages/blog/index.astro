@@ -111,8 +111,8 @@ const ldJson = {
             <Image
               src={featured.data.coverImage}
               alt={featured.data.title}
-              widths={[400, 600, 860]}
-              sizes="(max-width: 680px) 100vw, 480px"
+              widths={[400, 600, 720, 860]}
+              sizes="(max-width: 680px) calc(100vw - 2rem - 2px), 480px"
               format="webp"
               quality={82}
               loading="eager"
@@ -165,9 +165,9 @@ const ldJson = {
                 <h3 class="post-title">{post.data.title}</h3>
                 <p class="post-desc">{post.data.description}</p>
                 <div class="post-meta">
-                  <span>{freshDate(post.data).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                  {freshDate(post.data).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
                   <span class="meta-sep">·</span>
-                  <span>{readingTime(post.body)} мин</span>
+                  {readingTime(post.body)} мин
                 </div>
               </div>
             </a>
