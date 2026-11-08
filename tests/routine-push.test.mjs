@@ -7,7 +7,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { gitEnvironment } from '../scripts/release-scope.mjs';
 import { proseHash } from '../scripts/article-review-gate.mjs';
 import {parse} from 'yaml';
-import { installTopicPreflightFixture } from './fixtures/topic-preflight-fixture.mjs';
+import { installTopicPreflightFixture } from './test-helpers.mjs';
 
 const project = new URL('../', import.meta.url);
 const post = `---\ntitle: Test choice\ndescription: A grounded choice\npubDate: 2026-10-10\ncoverImage: ./fixture.jpg\nreviewed: 2026-10-10\nauthoredBy: writer\nreviewRef: reviews/blog/test-choice.json\nchecks:\n  - date: 2026-10-10\n    what: Fixture source check\n    changed: Fixture conditions checked\n    sources:\n      - name: Fixture operator\n        url: https://example.invalid/source\nqualityScore:\n  topic: 9\n  facts: 9\n  visuals: 8\n  experience: 7\n  internalLinks: 9\n  legal: 9\n  overall: 8.5\n  ceiling: Honest ceiling without personal experience\n---\nA useful answer that explains the decision and its conditions.\n`;

@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync,execFileSync} from 'node:child_process';
 import {gitEnvironment} from '../scripts/release-scope.mjs';
-import {installTopicPreflightFixture} from './fixtures/topic-preflight-fixture.mjs';
+import {installTopicPreflightFixture} from './test-helpers.mjs';
 
 const day=offset=>new Date(Date.now()+offset*864e5).toISOString().slice(0,10);
 function candidate({body='Путь начинается у станции.',url='https://example.org/source',expired=false}={}){
