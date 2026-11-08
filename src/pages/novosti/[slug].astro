@@ -54,8 +54,13 @@ const guides = dirs.flatMap((dir) => (dir.relatedPosts ?? []).slice(0, 2).map((p
 
 const cover = pickNewsImage(d, entry.slug, 0);
 const coverNote = newsPhotoCaption(d, newsImageNote(d));
-const coverWidths = [480, 700, 800, 1200];
-const coverSizes = '(max-width: 780px) calc(100vw - 2rem), calc(780px - 2rem)';
+const coverMeta = cover && typeof cover !== 'string' ? cover : null;
+const coverWidths = coverMeta ? [480, 700, 800, 1200] : [480, 800, 1200];
+// Wide originals need extra pixels for the horizontal crop in the 16:9 frame.
+const coverCropFactor = coverMeta ? Math.max(1, Math.ceil((coverMeta.width / coverMeta.height / (16 / 9)) * 1000) / 1000) : 1;
+const scaleUp = (value: number) => Math.ceil(value * coverCropFactor * 1000) / 1000;
+const scaleDown = (value: number) => Math.floor(value * coverCropFactor * 1000) / 1000;
+const coverSizes = `(max-width: 780px) calc(${scaleUp(100)}vw - ${scaleDown(2)}rem), calc(${scaleUp(780)}px - ${scaleDown(2)}rem)`;
 const coverQuality = 55;
 // The preload and image use the same variants, sizes, format and quality.
 const coverPreload = cover ? await getImage({
@@ -102,7 +107,8 @@ const ldJson = {
 ---
 <Layout title={title} description={description} canonical={url} ldJson={ldJson}
         ogType="article" ogImage={wideUrl} ogImageAlt={d.imageAlt ?? d.title}
-        preloadImageSrcset={coverPreload?.srcSet.attribute} preloadImageSizes={coverSizes}>
+        preloadImageSrcset={coverPreload?.srcSet.attribute} preloadImageSizes={coverSizes}
+        destinationFontProfile="full">
   <Breadcrumbs crumbs={[{ label: 'Новости', href: '/novosti/' }, { label: d.title }]} />
   <main id="main" class="nvp">
 

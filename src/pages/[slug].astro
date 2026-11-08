@@ -116,8 +116,11 @@ const coverImage = destPhotos[coverPath];
 // 402 точки при плотности 3: без этого страница Турции тянула 2 271 КБ картинок. Условие плотности внутри sizes
 // проверено в Chromium и WebKit: при 2,625 и 3 оба берут файл 828 вместо 1080 и 1280, при 1,75 и 2 выбор прежний.
 const телефон = (cond, w) => `${cond} and (min-resolution: 2.9dppx) calc((${w}) * 0.67), ${cond} and (min-resolution: 2.3dppx) calc((${w}) * 0.76), ${cond} calc(${w})`;
-const HERO_WIDTHS = [640, 828, 1080, 1280, 1600];
-const HERO_SIZES = `${телефон('(max-width: 768px)', '100vw - 32px')}, (max-width: 1280px) calc(100vw - 48px), 1232px`;
+// Bali's 3:2 image can use a smaller intermediate file, provided the 240px
+// minimum hero height is accounted for on narrow high-density screens.
+const HERO_WIDTHS = d.slug === 'bali' ? [640, 700, 828, 1080, 1280, 1600] : [640, 828, 1080, 1280, 1600];
+const baliNarrowHero = d.slug === 'bali' ? `${телефон('(max-width: 392px)', '360px')}, ` : '';
+const HERO_SIZES = `${baliNarrowHero}${телефон('(max-width: 768px)', '100vw - 32px')}, (max-width: 1280px) calc(100vw - 48px), 1232px`;
 // Фото в половину колонки (пары, практика, виды): 380 на телефоне, 736 на 768 (одна колонка до 900), 476 на 1024, 604 шире.
 // Ширины файлов — под телефон при плотности 1,75 и 2 и под компьютер при плотности 1 и 2.
 const HALF_WIDTHS = [400, 680, 780, 1000, 1200];

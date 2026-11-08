@@ -55,6 +55,12 @@ for (const entry of pages) {
 
       for (const [index, selector] of entry.focus.entries()) {
         const target = page.locator(selector).first();
+        if (entry.path === '/blog/bali-guide-2026/' && selector === 'p:has-text("Медицинскую страховку рекомендуем.")') {
+          const faq = target.locator('xpath=ancestor::details[1]');
+          await expect(faq).toHaveCount(1);
+          await expect(faq.locator('summary')).toContainText('Нужна ли страховка на Бали?');
+          await faq.locator('summary').click();
+        }
         await expect(target).toBeVisible();
         await target.scrollIntoViewIfNeeded();
         const images = target.locator('img');

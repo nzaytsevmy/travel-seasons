@@ -67,6 +67,8 @@ checks:
 ---
 
 import PhotoGallery from '../../components/post/PhotoGallery.astro';
+import { Image } from 'astro:assets';
+import entrance from './_images/hram-uluvatu-bali/entrance.jpg';
 import temple from './_images/hram-uluvatu-bali/temple.jpg';
 import fire from './_images/hram-uluvatu-bali/fire.jpg';
 import monkeys from './_images/hram-uluvatu-bali/monkeys.jpg';
@@ -100,7 +102,7 @@ export const uluwatuTour = tpkDeep('sputnik8', 'https://www.sputnik8.com/ru/bali
 
 Введите в навигатор **Pura Luhur Uluwatu**, деревня Печату, район Южная Кута. Не путайте храм с районом Улувату и его пляжами: они находятся на одном полуострове, но не в одной точке.
 
-![Ворота храма Улувату со скульптурами на фоне океана](./_images/hram-uluvatu-bali/entrance.jpg)
+<p><Image src={entrance} alt="Ворота храма Улувату со скульптурами на фоне океана" widths={[480, 780, 960, 1280, 1600]} sizes="(max-width: 720px) calc(100vw - 2rem), (max-width: 767px) calc(720px - 2rem), calc(720px - 2.8rem)" format="webp" quality={80} loading="lazy" /></p>
 
 *Ворота храма с видом на океан. Архивный снимок.*
 
