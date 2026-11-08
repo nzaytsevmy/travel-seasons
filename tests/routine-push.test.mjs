@@ -1,12 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, copyFileSync, existsSync, rmSync, symlinkSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, copyFileSync, existsSync, rmSync, symlinkSync, realpathSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { gitEnvironment } from '../scripts/release-scope.mjs';
 import { proseHash } from '../scripts/article-review-gate.mjs';
 import {parse} from 'yaml';
+import { installTopicPreflightFixture } from './fixtures/topic-preflight-fixture.mjs';
 
 const project = new URL('../', import.meta.url);
 const post = `---\ntitle: Test choice\ndescription: A grounded choice\npubDate: 2026-10-10\ncoverImage: ./fixture.jpg\nreviewed: 2026-10-10\nauthoredBy: writer\nreviewRef: reviews/blog/test-choice.json\nchecks:\n  - date: 2026-10-10\n    what: Fixture source check\n    changed: Fixture conditions checked\n    sources:\n      - name: Fixture operator\n        url: https://example.invalid/source\nqualityScore:\n  topic: 9\n  facts: 9\n  visuals: 8\n  experience: 7\n  internalLinks: 9\n  legal: 9\n  overall: 8.5\n  ceiling: Honest ceiling without personal experience\n---\nA useful answer that explains the decision and its conditions.\n`;
@@ -33,7 +34,8 @@ function fixture(branch, options = {}) {
     put('scripts/check-journal-metadata.mjs', 'console.log("metadata fixture PASS");\n');
     put('scripts/news-gate.mjs', 'process.stdin.resume();process.stdin.on("end",()=>console.log("news source fixture PASS"));\n');
     put('scripts/news-lifecycle.mjs', 'console.log("lifecycle fixture PASS");\n');
-    git(['add', 'package.json', 'scripts','src/content/blog-schema.mjs','tests/quality-baseline.json']);git(['commit', '-m', 'test: base']);
+    installTopicPreflightFixture(put);
+    git(['add', 'package.json', 'scripts', 'src', 'tests/quality-baseline.json']);git(['commit', '-m', 'test: base']);
     const base = git(['rev-parse', 'HEAD']);git(['update-ref', 'refs/remotes/origin/main', base]);
     git(['switch', '-c', branch]);
     put('src/content/blog/test-choice.md', post);
@@ -43,11 +45,17 @@ function fixture(branch, options = {}) {
     git(['add', 'src/content/blog/test-choice.md', 'src/data/country-guides.js']);
     if (!options.missingReview) git(['add', 'reviews/blog/test-choice.json']);
     git(['commit', '-m', 'test: article and country data']);
+    const head = git(['rev-parse', 'HEAD']);
     if (options.draft) put('src/content/blog/test-choice.md', post + 'An unreviewed change.\n');
+    if (options.dirtyTopic) put('src/data/news-topics.js', '// uncommitted topic change\n');
     put('fake-bin/npm', '#!/bin/sh\ncase "$*" in "run check:delivery") echo called >delivery-called.txt; exit 0;; "run build") echo LOCAL_BUILD_STARTED >&2; exit 42;; *) exit 0;; esac\n', 0o755);
     put('fake-bin/npx', '#!/bin/sh\necho LOCAL_BROWSER_STARTED >&2\nexit 43\n', 0o755);
-    const result = spawnSync('bash', ['scripts/pre-push.sh'], { cwd: root, env: { ...env, PATH: join(root, 'fake-bin') + ':' + env.PATH }, encoding: 'utf8', input: '', timeout: 20000 });
-    return { ...result, output: result.stdout + result.stderr, deliveryInvoked:existsSync(join(root,'delivery-called.txt')) };
+    const result = spawnSync('bash', ['scripts/pre-push.sh'], { cwd: root, env: { ...env, PATH: join(root, 'fake-bin') + ':' + env.PATH,
+      TT_FIXTURE_FRESHNESS_FAILURE: options.freshnessFailure ? '1' : '0' }, encoding: 'utf8', input: '', timeout: 20000 });
+    const freshnessFile = join(root, 'freshness-called.txt');
+    const freshness = existsSync(freshnessFile) ? JSON.parse(readFileSync(freshnessFile, 'utf8')) : null;
+    return { ...result, output: result.stdout + result.stderr, deliveryInvoked:existsSync(join(root,'delivery-called.txt')),
+      freshnessInvoked: !!freshness, freshnessMatchesScope: !!freshness && freshness.root === realpathSync(root) && freshness.head === head && freshness.base === base };
   } finally { rmSync(root, { recursive: true, force: true }); }
 }
 
@@ -57,6 +65,16 @@ test('normal publication push forwards the complete code scope to required CI wi
   assert.match(r.output, /26.*CI|CI.*26/);
   assert.doesNotMatch(r.output, /LOCAL_BUILD_STARTED|LOCAL_BROWSER_STARTED/);
   assert.equal(r.deliveryInvoked,false,'Full delivery is already required in Build CI');
+  assert.equal(r.freshnessInvoked,true,'Topic freshness must be checked before publication');
+  assert.equal(r.freshnessMatchesScope,true,'Topic freshness must receive the exact release scope');
+});
+test('publication preflight blocks a failed topic freshness check', () => {
+  const r = fixture('tt-publish/2026-10-10', { freshnessFailure: true });
+  assert.notEqual(r.status, 0);assert.equal(r.freshnessInvoked, true);assert.match(r.output, /fixture freshness rejected/);
+});
+test('publication preflight rejects uncommitted topic data', () => {
+  const r = fixture('tt-publish/2026-10-10', { dirtyTopic: true });
+  assert.notEqual(r.status, 0);assert.equal(r.freshnessInvoked, false);assert.match(r.output, /news-topics\.js.*отличается/);
 });
 test('the complete recursive delivery suite stays unconditional in required Build CI before Astro',()=>{
  const workflow=parse(readFileSync(new URL('.github/workflows/build.yml',project),'utf8'));
