@@ -70,8 +70,6 @@ tags: ["Бали", "Индонезия", "Виза", "Гайд", "2026"]
 sourceType: "compilation"
 ---
 import { aviasalesRoute, cherehapaCountry } from '../../data/affiliate.js';
-import { Image } from 'astro:assets';
-import baliGuidePhoto from '../../assets/blog/bali-guide.jpg';
 
 import FlightRoutes from '../../components/post/FlightRoutes.astro';
 import AffiliateNote from '../../components/post/AffiliateNote.astro';
@@ -81,7 +79,7 @@ import CountryMap from '../../components/CountryMap.astro';
 
 Это не личный отчёт — честный ответ на главные вопросы: какой район для вашей поездки, как не попасть на пик дождей, как платить если карты не работают, какие минусы реальные а какие — из брошюр.
 
-<p><Image src={baliGuidePhoto} alt="Рисовые террасы Тегаллаланг, центральный Бали" widths={[480, 780, 960, 1280, 1600]} sizes="(max-width: 720px) calc(100vw - 2rem), (max-width: 767px) calc(720px - 2rem), calc(720px - 2.8rem)" format="webp" quality={80} loading="lazy" /></p>
+![Рисовые террасы Тегаллаланг, центральный Бали](../../assets/blog/bali-guide.jpg)
 
 > **Если коротко:** виза по прибытии **~$32 (500k IDR)** ([Imigrasi RI](https://evisa.imigrasi.go.id/front/info/evoa)) **+ $10 туристический налог** ([lovebali.baliprov.go.id](https://lovebali.baliprov.go.id/)). **Прямой рейс Аэрофлота Москва — Денпасар** (~12 ч, A350, 2–3 раза в неделю с 17.09.2024) или с пересадкой через Дубай/Стамбул (14–18 ч). Сухой сезон **апрель–октябрь**, дождливый пик декабрь–январь. Бюджет 14 дней без перелёта — от **$610** (эконом) до **$2750** (комфорт). Главный выбор — район: Чангу для удалёнщиков, Семиньяк для пар, Санур для семей. Байк, море и клиники для иностранцев — три причины не ехать без полиса — <a href={cherehapaCountry('bali', 'bali_guide_2026_tldr')} class="aff-cta" rel="sponsored">подобрать страховку на Бали</a>. Перелёт удобнее всего ловить здесь: <a href={aviasalesRoute('MOW','DPS','bali_guide_2026')} class="aff-cta" rel="sponsored">Найти билет Москва — Денпасар от 45 000 ₽</a> — стыковки через Эмираты, Катар и Китай.
 
