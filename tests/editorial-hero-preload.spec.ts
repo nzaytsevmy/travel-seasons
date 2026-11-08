@@ -26,7 +26,7 @@ async function measureCrop(page: Page, selector: string, capped: boolean) {
 }
 
 for (const entry of pages) {
-  test(`responsive cover is fetched once ${entry.path}`, async ({ page }) => {
+  test(`responsive cover is fetched once ${entry.path}`, async ({ page }, info) => {
     const requests: string[] = [];
     const responses: Response[] = [];
     page.on('request', request => requests.push(request.url()));
@@ -61,8 +61,25 @@ for (const entry of pages) {
     const response = responses.find(item => item.url() === attrs.currentSrc);
     expect(response?.status()).toBe(200);
     expect((await response!.body()).byteLength).toBeGreaterThan(0);
+    if (entry.path === '/bali/') {
+      const countryCrumb = page.locator('.breadcrumbs a[href="/countries/"]');
+      await expect(countryCrumb).toHaveAttribute('data-astro-prefetch', 'hover');
+      expect(requests.filter(url => new URL(url).pathname === '/countries/')).toHaveLength(0);
+      if (info.project.name === 'chromium-desktop') {
+        await countryCrumb.focus();
+        await expect.poll(() => requests.filter(url => new URL(url).pathname === '/countries/').length).toBeGreaterThan(0);
+        await Promise.all([page.waitForURL('**/countries/'), countryCrumb.press('Enter')]);
+        await expect(page.locator('main h1')).toBeVisible();
+      }
+    }
   });
 }
+
+test('other destinations keep their existing breadcrumb prefetch', async ({ page }, info) => {
+  test.skip(info.project.name !== 'chromium-desktop', 'One comparison is sufficient');
+  expect((await page.goto('/georgia/'))?.status()).toBe(200);
+  await expect(page.locator('.breadcrumbs a[href="/countries/"]')).not.toHaveAttribute('data-astro-prefetch');
+});
 
 for (const scale of [1.75, 2.625, 3]) {
   test.describe(`cover crops at DPR ${scale}`, () => {

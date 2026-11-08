@@ -436,7 +436,7 @@ if (guide?.itinerary?.length) {
   monetizationDestination={d.slug}
 >
   <main id="main" class="om">
-    <Breadcrumbs crumbs={[{ label: 'Страны', href: '/countries/' }, { label: d.cases.nom }]} />
+    <Breadcrumbs crumbs={[{ label: 'Страны', href: '/countries/' }, { label: d.cases.nom }]} prefetch={d.slug === 'bali' ? 'hover' : undefined} />
 
     {coverImage && (
       <figure class="om-hero">
