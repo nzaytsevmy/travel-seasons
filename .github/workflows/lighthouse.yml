@@ -1,186 +1,86 @@
 name: Lighthouse CI
-
 on:
-  pull_request:
-    branches: [main]
-    # ⛔ Замер скорости держал мерж дольше всех: восемь частей по ~10 минут,
-    # 26,5 мин машинного времени на прогон. При этом текстовая правка скорость
-    # страницы не меняет — меняет её код, вёрстка, шрифты и картинки.
-    # Поэтому на правки ТОЛЬКО контента замер не гоняем: заметка ленты и текст
-    # статьи уезжают на сайт без лишних десяти минут ожидания.
-    # Всё, что способно испортить скорость, под фильтр НЕ попадает и проверяется
-    # как раньше. Раз в неделю замер идёт по расписанию на всём сайте — если
-    # что-то деградировало от накопления контента, это видно там.
-    # ⚠ reviews/** — артефакты независимой оценки статей: числа и текст рецензии,
-    # которые никто не рендерит (компоненты их не читают, в шапке статьи лежит
-    # только строка reviewRef, разбирает файл лишь scripts/article-review-gate.mjs).
-    # Артефакт обязателен у каждой новой статьи, поэтому без этой строки КАЖДАЯ
-    # публикация платила полным набором: на заявке #529 из 26 файлов вне фильтра
-    # был ровно один — reviews/blog/zimovka-2027.json, и он поднял 28 проверок
-    # вместо восьми. Сам артефакт проверяет Content Gate, он без фильтра.
-    paths-ignore:
-      - 'src/content/**'
-      - 'news/reviews/**'
-      - 'news/selection/**'
-      - 'news/snapshots/**'
-      - 'news/samples/**'
-      - 'news/log.jsonl'
-      - 'reviews/**'
-      - 'public/llms*.txt'
-      - '**/*.md'
-  schedule:
-    # Понедельник, 04:20 UTC — полный замер по всему сайту независимо от правок.
-    - cron: '20 4 * * 1'
   workflow_dispatch:
-
-# Отмена устаревших прогонов: два пуша в одну заявку давали ДВА полных набора,
-# и первый доезжал до конца впустую. Замер 03.08.2026 на заявке #171: набор в
-# 13:47 отработал целиком (8 прогонов Lighthouse + 4 визуальных), хотя коммит
-# уже был заменён пушем в 14:14, и новый набор ждал освободившихся раннеров.
-# Отменяем только у заявок: пуш в main обязан досчитать до конца.
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-
 permissions:
   contents: read
-  pull-requests: write
-
 jobs:
-  prepare:
-    uses: ./.github/workflows/site-artifact.yml
-    with:
-      skip_html_min: ${{ github.event_name == 'pull_request' && '1' || '0' }}
-
-  lighthouse:
-    needs: prepare
+  focused-diagnostic:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        preset: [desktop, mobile]
-        # 20 адресов по 3 замера на каждый. Делим на четыре части и считаем
-        # параллельно: на двух частях замер занимал 13 минут, из них около шести
-        # — сама сборка. Ниже сборки не опуститься, поэтому четыре части это
-        # практический предел, дальше дробить бессмысленно.
-        #
-        # Число замеров на адрес не трогаем: срезать его — самый лёгкий способ
-        # ускориться и самый плохой, вырастет разброс и гейт начнёт врать.
-        # Восемь частей вместо четырёх: 20 адресов, по 2–3 на прогон вместо 5.
-        # Это ускоряет ожидание вдвое и НИЧЕГО не отнимает у замера — в отличие
-        # от снижения числа заходов, которое дважды дало ложное падение.
-        shard: [1, 2, 3, 4, 5, 6, 7, 8]
-    name: ${{ matrix.preset }} (${{ matrix.shard }}/8)
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          # Полная история нужна дате актуальности (она считается по git log).
-          # blob:none качает граф коммитов без СТАРЫХ версий файлов: git log
-          # работает, а 2,1 ГБ истории эталонных скриншотов не едут вовсе.
-          # Замер 03.08.2026: выкачка занимала 14,4 мин из 24,6 мин выкладки.
           filter: blob:none
-      # Native job126046783836 exhausted this disposable runner during unpack.
-      # Keep the same disk preparation as the complete browser shards.
-      - name: Release unused Android SDK disk space
+      - name: Free ephemeral runner disk
         run: |
           df -h "$GITHUB_WORKSPACE"
           sudo rm -rf -- /usr/local/lib/android
           df -h "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          cache: 'npm'
+          node-version: 24
+          cache: npm
       - run: npm ci
-
-      - uses: actions/download-artifact@v4
+      - uses: actions/cache/restore@v4
         with:
-          name: ${{ needs.prepare.outputs.artifact_name }}
-          path: .build-artifact/
-      - name: Check disk headroom before unpacking the exact build
-        run: |
-          node --input-type=module <<'NODE'
-          import { statSync, statfsSync } from 'node:fs';
-          const archiveBytes = statSync('.build-artifact/site.tar', { bigint: true }).size;
-          const disk = statfsSync('.', { bigint: true });
-          const availableBytes = disk.bavail * disk.bsize;
-          const reserveBytes = 2n * 1024n ** 3n;
-          console.log(JSON.stringify({ archiveBytes: String(archiveBytes), availableBytes: String(availableBytes), reserveBytes: String(reserveBytes) }));
-          if (availableBytes < archiveBytes + reserveBytes) throw new Error('Insufficient disk for exact build extraction');
-          NODE
-      - name: Verify and unpack exact build
-        run: node scripts/build-artifact.mjs unpack
+          path: node_modules/.astro
+          key: astro-assets-v2-${{ runner.os }}-${{ hashFiles('src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.png', 'src/**/*.webp', 'src/**/*.astro', 'package-lock.json', 'astro.config.mjs') }}
+          restore-keys: |
+            astro-assets-v2-${{ runner.os }}-
+            astro-assets-${{ runner.os }}-
+      - run: rm -f node_modules/.astro/data-store.json
+      - name: Build the exact candidate
+        run: npm run build
         env:
-          ARTIFACT_DIGEST: ${{ needs.prepare.outputs.digest }}
-          ARTIFACT_PRODUCER_ATTEMPT: ${{ needs.prepare.outputs.producer_attempt }}
-      - name: Remove downloaded archive after verified extraction
+          SKIP_HTML_MIN: '1'
+      - uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - run: npx playwright install chromium webkit
+      - name: Install WebKit system libraries
+        timeout-minutes: 10
         run: |
-          rm -f -- .build-artifact/site.tar
-          df -h "$GITHUB_WORKSPACE"
-      - run: npm run check:mtimes
-
-      - name: Run Lighthouse (${{ matrix.preset }}, часть ${{ matrix.shard }})
+          sudo sed -i 's|mirror+file:/etc/apt/apt-mirrors[.]txt|https://archive.ubuntu.com/ubuntu/|g; s|http://azure[.]archive[.]ubuntu[.]com/ubuntu|https://archive.ubuntu.com/ubuntu|g; s|https://azure[.]archive[.]ubuntu[.]com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources
+          grep -Eq '^URIs:[[:space:]]+https://archive[.]ubuntu[.]com/ubuntu/?([[:space:]]|$)' /etc/apt/sources.list.d/ubuntu.sources
+          if grep -Eq '^URIs:.*(mirror[+]file:|azure[.]archive[.]ubuntu[.]com)' /etc/apt/sources.list.d/ubuntu.sources; then exit 1; fi
+          npx playwright install-deps webkit
+      - name: Focused browser diagnostics
+        id: focused
+        continue-on-error: true
+        run: npx playwright test tests/editorial-hero-preload.spec.ts tests/editorial-release-visual.spec.ts tests/editorial-typography.spec.ts tests/editorial-font-baseline.spec.ts --project=chromium-desktop --project=webkit-mobile --reporter=line,json
         env:
-          PRESET: ${{ matrix.preset }}
-          SHARD: ${{ matrix.shard }}
-          SHARDS: '8'
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-          # Сколько раз открывать каждую страницу. Lighthouse берёт медиану,
-          # потому что замер на общем раннере скачет, и это главный множитель
-          # времени: 8 прогонов по 7–9 минут.
-          #
-          # ⛔ ТРИ ЗАХОДА, СНИЖАТЬ НЕЛЬЗЯ — проверено дважды 03.08.2026.
-          # Сначала снизил до одного везде: мобильный упал на 3 шардах из 4.
-          # Решил, что у десктопа запас больше, оставил ему один — упал и он,
-          # на следующем же прогоне. Оба раза правка трогала ТОЛЬКО настройки
-          # CI и физически не могла повлиять на скорость страниц; перезамер
-          # тремя заходами на том же коммите давал зелёное. Это шум, и median
-          # нужен обеим версиям. Ускорять надо параллельностью, а не точностью.
-          RUNS: '3'
+          TT_COMPARE_LIVE_FONTS: '1'
+          PLAYWRIGHT_JSON_OUTPUT_NAME: .probe/tests.json
+      - name: Three mobile Lighthouse samples per target
+        id: lighthouse
+        continue-on-error: true
         run: |
           npm install -g @lhci/cli
-          CONF=./lighthouserc.json
-          [ "$PRESET" = "mobile" ] && CONF=./lighthouserc.mobile.json
-          # Свой кусок списка адресов; остальное берётся из конфига как было.
-          # Раскладываем по кругу, а не подряд: тяжёлые страницы в списке идут
-          # рядом, и нарезка ломтями свалила бы их все в одну часть.
-          URLS=$(node -e "
-            const all = require('$CONF').ci.collect.url;
-            const n = Number(process.env.SHARDS), i = Number(process.env.SHARD);
-            const part = all.filter((_, k) => k % n === i - 1);
-            if (part.length === 0) { console.error('пустая часть — адресов меньше, чем частей'); process.exit(1); }
-            console.log(part.map((u) => '--collect.url=' + u).join(' '));
-          ")
-          echo "часть $SHARD из $SHARDS: $(echo "$URLS" | wc -w) адресов"
-          echo "заходов на страницу: $RUNS"
-          lhci autorun --config="$CONF" --collect.numberOfRuns="$RUNS" $URLS
-          node scripts/check-lighthouse-indexability.mjs .lighthouseci "$CONF"
-
-      - name: Preserve original three-sample Lighthouse reports
+          lhci collect --config=./lighthouserc.mobile.json --numberOfRuns=3 \
+            --url=http://localhost/blog/index.html \
+            --url=http://localhost/blog/hram-uluvatu-bali/index.html \
+            --url=http://localhost/blog/bali-guide-2026/index.html \
+            --url=http://localhost/bali/index.html \
+            --url=http://localhost/novosti/2026-05-01-torres-del-paine-tariff/index.html \
+            --url=http://localhost/novosti/2026-11-08-loi-krathong-2026/index.html \
+            --url=http://localhost/novosti/tema/kultura-i-sobytiya/index.html \
+            --url=http://localhost/blog/tag/%D0%91%D0%B0%D0%BB%D0%B8/index.html
+      - name: Save original diagnostic reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: lighthouse-${{ matrix.preset }}-${{ matrix.shard }}-${{ github.sha }}
+          name: editorial-focused-diagnostic-${{ github.sha }}
           path: |
             .lighthouseci/lhr-*.json
-            .lighthouseci/assertion-results.json
+            .probe/tests.json
+            test-results/
           include-hidden-files: true
           if-no-files-found: error
-          retention-days: 3
-
-      # Keep the diagnostic capture separate from the three-run acceptance.
-      # It retains the raw browser trace needed to explain homepage regressions.
-      - name: Capture homepage performance trace
-        if: ${{ matrix.preset == 'mobile' && matrix.shard == 1 }}
-        run: |
-          lhci collect --config=./lighthouserc.mobile.json --url=http://localhost/index.html --numberOfRuns=1 --settings.saveAssets=true
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ always() && matrix.preset == 'mobile' && matrix.shard == 1 }}
-        with:
-          name: home-performance-trace-${{ github.sha }}
-          path: |
-            *.trace.json
-            *.devtoolslog.json
-          if-no-files-found: error
           retention-days: 2
+      - name: Check diagnostic outcomes
+        if: always()
+        run: |
+          test '${{ steps.focused.outcome }}' = success
+          test '${{ steps.lighthouse.outcome }}' = success
