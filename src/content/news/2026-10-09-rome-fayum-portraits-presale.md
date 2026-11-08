@@ -4,7 +4,7 @@ date: "2026-10-06"
 added: "2026-10-09"
 checked: "2026-11-08"
 reviewOn: "2026-12-24"
-topic: nature
+topic: culture
 impact: medium
 score: 4
 authoredBy: "Codex (tt-author-20261108)"

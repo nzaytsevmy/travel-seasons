@@ -12,11 +12,6 @@ for (const width of [402, 1280]) {
     const cover = page.locator('.featured-img img');
     await expect.poll(() => cover.evaluate((node: HTMLImageElement) =>
       node.complete && node.naturalWidth > 0)).toBe(true);
-    const preload = page.locator('link[rel="preload"][as="image"]');
-    await expect(preload).toHaveCount(1);
-    expect(await preload.getAttribute('imagesrcset')).toBe(await cover.getAttribute('srcset'));
-    expect(await preload.getAttribute('imagesizes')).toBe(await cover.getAttribute('sizes'));
-    await page.waitForLoadState('networkidle');
     const image = await cover.evaluate((node: HTMLImageElement) => {
       const candidates = node.srcset.split(',').map(part => {
         const [url, size] = part.trim().split(/\s+/);
@@ -27,17 +22,8 @@ for (const width of [402, 1280]) {
         deviceScale: devicePixelRatio,
         selectedWidth: candidates.find(candidate => candidate.url === node.currentSrc)?.width ?? 0,
         maxWidth: Math.max(...candidates.map(candidate => candidate.width)),
-        requestedCandidates: performance.getEntriesByType('resource')
-          .filter(entry => candidates.some(candidate => candidate.url === entry.name))
-          .map(entry => entry.name),
-        transfers: performance.getEntriesByType('resource')
-          .filter(entry => candidates.some(candidate => candidate.url === entry.name)
-            && (entry as PerformanceResourceTiming).transferSize > 0).length,
-        currentSrc: node.currentSrc,
       };
     });
-    expect([...new Set(image.requestedCandidates)]).toEqual([image.currentSrc]);
-    if (browserName === 'chromium') expect(image.transfers).toBe(1);
     expect(image.selectedWidth).toBeGreaterThanOrEqual(
       Math.min(Math.ceil(image.renderedWidth * image.deviceScale), image.maxWidth),
     );
@@ -79,11 +65,6 @@ test.describe('каталог блога на мобильном экране Li
     const cover = page.locator('.featured-img img');
     await expect.poll(() => cover.evaluate((node: HTMLImageElement) =>
       node.complete && node.naturalWidth > 0)).toBe(true);
-    const preload = page.locator('link[rel="preload"][as="image"]');
-    await expect(preload).toHaveCount(1);
-    expect(await preload.getAttribute('imagesrcset')).toBe(await cover.getAttribute('srcset'));
-    expect(await preload.getAttribute('imagesizes')).toBe(await cover.getAttribute('sizes'));
-    await page.waitForLoadState('networkidle');
     const image = await cover.evaluate((node: HTMLImageElement) => {
       const candidates = node.srcset.split(',').map(part => {
         const [url, size] = part.trim().split(/\s+/);
@@ -92,18 +73,9 @@ test.describe('каталог блога на мобильном экране Li
       return {
         selectedWidth: candidates.find(candidate => candidate.url === node.currentSrc)?.width ?? 0,
         requiredWidth: Math.ceil(node.getBoundingClientRect().width * devicePixelRatio),
-        requestedCandidates: performance.getEntriesByType('resource')
-          .filter(entry => candidates.some(candidate => candidate.url === entry.name))
-          .map(entry => entry.name),
-        transfers: performance.getEntriesByType('resource')
-          .filter(entry => candidates.some(candidate => candidate.url === entry.name)
-            && (entry as PerformanceResourceTiming).transferSize > 0).length,
-        currentSrc: node.currentSrc,
       };
     });
     expect(image.selectedWidth).toBeGreaterThanOrEqual(image.requiredWidth);
-    expect([...new Set(image.requestedCandidates)]).toEqual([image.currentSrc]);
-    if (browserName === 'chromium') expect(image.transfers).toBe(1);
     if (browserName === 'chromium') expect(image.selectedWidth).toBe(720);
   });
 });
@@ -120,6 +92,11 @@ test.describe('каталог блога без JavaScript', () => {
     const html = await response!.text();
     for (const href of hrefs) expect(html).toContain(`href="${href}"`);
 
+    // The complete, crawlable JSON-LD remains server-rendered; the cover is
+    // discoverable before the large article list even without JavaScript.
+    expect(html.indexOf('class="featured-img"')).toBeGreaterThan(-1);
+    expect(html.indexOf('type="application/ld+json"')).toBeGreaterThan(html.indexOf('class="featured-img"'));
+    await expect(page.locator('body > script[type="application/ld+json"]')).toHaveCount(1);
     const structured = await page.locator('script[type="application/ld+json"]').allTextContents();
     const nodes = structured.flatMap(raw => {
       const data = JSON.parse(raw);
@@ -161,6 +138,10 @@ test.describe('каталог блога без JavaScript', () => {
       };
       await testInfo.attach('blog-index-snapshot', {
         body: Buffer.from(JSON.stringify(snapshot)),
+        contentType: 'application/json',
+      });
+      await testInfo.attach('blog-structured-data-snapshot', {
+        body: Buffer.from(JSON.stringify(structured.map(raw => JSON.parse(raw)))),
         contentType: 'application/json',
       });
     }

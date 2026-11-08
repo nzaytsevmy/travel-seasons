@@ -22,22 +22,23 @@ import { getCollection } from 'astro:content';
 import { TOPIC_LABEL, IMPACT_LABEL, formatDateRu, addedAt, newsUrl, feedEntries, relatedNews, clipTitle, clipDescription } from '../../data/news.js';
 import { pickNewsImage, newsImageNote } from '../../data/news-images.js';
 import { newsGeography } from '../../data/editorial-geography.js';
-import { NEWS_TOPICS, newsTopicUrl } from '../../data/news-topics.js';
+import { activeNewsTopics, newsTopicUrl } from '../../data/news-topics.js';
 
 export async function getStaticPaths() {
   const all = await getCollection('news');
+  const topics = activeNewsTopics(all);
   // Порядок тот же, что в ленте: он же задаёт «предыдущую / следующую».
   // Архивная заметка сохраняет прежний адрес и соседей в месячном архиве.
   const sorted = feedEntries(all, undefined, { includeArchived: true });
   return sorted.map((entry, i) => ({
     params: { slug: entry.slug },
-    props: { entry, related: relatedNews(all, entry), around: [sorted[i - 1], sorted[i + 1]].filter(Boolean) },
+    props: { entry, related: relatedNews(all, entry), around: [sorted[i - 1], sorted[i + 1]].filter(Boolean), topics },
   }));
 }
 
-const { entry, related, around } = Astro.props;
+const { entry, related, around, topics } = Astro.props;
 const d = entry.data;
-const topicPage = NEWS_TOPICS.find(item => item.topic === d.topic);
+const topicPage = topics.find(item => item.topic === d.topic);
 const { Content } = await entry.render();
 
 const url = `https://traveltribe.ru${newsUrl(entry)}`;

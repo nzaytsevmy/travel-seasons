@@ -29,9 +29,10 @@ import { frontPageEntries, monthKeys, entriesOfMonth, monthTitleRu, newsUrl,
          FULL_ON_FEED, FEED_SIZE } from '../../data/news.js';
 import { plural } from '../../data/plural.js';
 import { latestFeedCheck } from '../../data/news-discovery.js';
-import { NEWS_TOPICS, newsTopicUrl } from '../../data/news-topics.js';
+import { activeNewsTopics, newsTopicUrl } from '../../data/news-topics.js';
 
 const all = await getCollection('news');
+const topics = activeNewsTopics(all);
 const fresh = frontPageEntries(all, FEED_SIZE);
 const months = monthKeys(all).map((k) => ({ key: k, count: entriesOfMonth(all, k).length }));
 
@@ -39,8 +40,8 @@ const full = fresh.slice(0, FULL_ON_FEED);
 const rest = fresh.slice(FULL_ON_FEED);
 
 const url = 'https://traveltribe.ru/novosti/';
-const title = 'Новости путешествий 2026: визы, природа, транспорт';
-const description = 'Что произошло за последние дни: изменения въездных правил, новости нацпарков и перелёты — коротко и с датами.';
+const title = 'Новости путешествий 2026: визы, перелёты, события';
+const description = 'Новые правила въезда, перелёты, фестивали и природа: что изменилось, где и когда.';
 
 const lastChecked = latestFeedCheck(fresh);
 
@@ -90,16 +91,15 @@ const ldJson = {
     <header class="nv-head">
       <h1 class="nv-h1">Новости путешествий</h1>
       <p class="nv-lead">
-        Короткие заметки о том, что меняется прямо сейчас: въездные правила, доступ
-        к местам и перелёты, а ещё находки о дикой природе, ради которых, собственно,
-        и едут.
+        Въездные правила и транспорт, выставки и фестивали, новости природы —
+        коротко и по делу.
       </p>
       <p class="nv-byline">
         Ведёт <a href="/about/">Никита Зайцев</a> ·
         <a href="/novosti/rss.xml">RSS</a>
       </p>
       <nav class="nv-topics" aria-label="Темы новостей">
-        {NEWS_TOPICS.map(item => <a href={newsTopicUrl(item.slug)}>{item.title}</a>)}
+        {topics.map(item => <a href={newsTopicUrl(item.slug)}>{item.title}</a>)}
       </nav>
     </header>
 
