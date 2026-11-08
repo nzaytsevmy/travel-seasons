@@ -12,6 +12,11 @@ for (const width of [402, 1280]) {
     const cover = page.locator('.featured-img img');
     await expect.poll(() => cover.evaluate((node: HTMLImageElement) =>
       node.complete && node.naturalWidth > 0)).toBe(true);
+    const preload = page.locator('link[rel="preload"][as="image"]');
+    await expect(preload).toHaveCount(1);
+    expect(await preload.getAttribute('imagesrcset')).toBe(await cover.getAttribute('srcset'));
+    expect(await preload.getAttribute('imagesizes')).toBe(await cover.getAttribute('sizes'));
+    await page.waitForLoadState('networkidle');
     const image = await cover.evaluate((node: HTMLImageElement) => {
       const candidates = node.srcset.split(',').map(part => {
         const [url, size] = part.trim().split(/\s+/);
@@ -22,8 +27,17 @@ for (const width of [402, 1280]) {
         deviceScale: devicePixelRatio,
         selectedWidth: candidates.find(candidate => candidate.url === node.currentSrc)?.width ?? 0,
         maxWidth: Math.max(...candidates.map(candidate => candidate.width)),
+        requestedCandidates: performance.getEntriesByType('resource')
+          .filter(entry => candidates.some(candidate => candidate.url === entry.name))
+          .map(entry => entry.name),
+        transfers: performance.getEntriesByType('resource')
+          .filter(entry => candidates.some(candidate => candidate.url === entry.name)
+            && (entry as PerformanceResourceTiming).transferSize > 0).length,
+        currentSrc: node.currentSrc,
       };
     });
+    expect([...new Set(image.requestedCandidates)]).toEqual([image.currentSrc]);
+    if (browserName === 'chromium') expect(image.transfers).toBe(1);
     expect(image.selectedWidth).toBeGreaterThanOrEqual(
       Math.min(Math.ceil(image.renderedWidth * image.deviceScale), image.maxWidth),
     );
@@ -65,6 +79,11 @@ test.describe('каталог блога на мобильном экране Li
     const cover = page.locator('.featured-img img');
     await expect.poll(() => cover.evaluate((node: HTMLImageElement) =>
       node.complete && node.naturalWidth > 0)).toBe(true);
+    const preload = page.locator('link[rel="preload"][as="image"]');
+    await expect(preload).toHaveCount(1);
+    expect(await preload.getAttribute('imagesrcset')).toBe(await cover.getAttribute('srcset'));
+    expect(await preload.getAttribute('imagesizes')).toBe(await cover.getAttribute('sizes'));
+    await page.waitForLoadState('networkidle');
     const image = await cover.evaluate((node: HTMLImageElement) => {
       const candidates = node.srcset.split(',').map(part => {
         const [url, size] = part.trim().split(/\s+/);
@@ -73,9 +92,18 @@ test.describe('каталог блога на мобильном экране Li
       return {
         selectedWidth: candidates.find(candidate => candidate.url === node.currentSrc)?.width ?? 0,
         requiredWidth: Math.ceil(node.getBoundingClientRect().width * devicePixelRatio),
+        requestedCandidates: performance.getEntriesByType('resource')
+          .filter(entry => candidates.some(candidate => candidate.url === entry.name))
+          .map(entry => entry.name),
+        transfers: performance.getEntriesByType('resource')
+          .filter(entry => candidates.some(candidate => candidate.url === entry.name)
+            && (entry as PerformanceResourceTiming).transferSize > 0).length,
+        currentSrc: node.currentSrc,
       };
     });
     expect(image.selectedWidth).toBeGreaterThanOrEqual(image.requiredWidth);
+    expect([...new Set(image.requestedCandidates)]).toEqual([image.currentSrc]);
+    if (browserName === 'chromium') expect(image.transfers).toBe(1);
     if (browserName === 'chromium') expect(image.selectedWidth).toBe(720);
   });
 });
@@ -137,7 +165,16 @@ test.describe('каталог блога без JavaScript', () => {
       });
     }
 
-    await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
+    // page.addStyleTag can wait indefinitely when page JavaScript is disabled.
+    // Playwright's automation context can still set CSS directly without
+    // enabling the page's scripts; assert the resulting scale, not just the style.
+    const zoom = await page.evaluate(() => {
+      const root = document.documentElement;
+      const before = Number.parseFloat(getComputedStyle(root).fontSize);
+      root.style.setProperty('font-size', '200%', 'important');
+      return { before, after: Number.parseFloat(getComputedStyle(root).fontSize) };
+    });
+    expect(zoom.after).toBeGreaterThanOrEqual(zoom.before * 1.9);
     const card = cards.nth(12);
     await card.scrollIntoViewIfNeeded();
     await expect(card.locator('.post-title')).toBeVisible();

@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Footer from '../../components/Footer.astro';
@@ -12,6 +12,12 @@ const allPosts = (await getCollection('blog')).sort(byFreshness);
 
 const featured = allPosts[0];
 const rest = allPosts.slice(1);
+const FEATURED_WIDTHS = [400, 600, 720, 860];
+const FEATURED_SIZES = '(max-width: 680px) calc(100vw - 2rem - 2px), 480px';
+// Предзагрузка использует те же варианты и размеры, что видимое изображение.
+const featuredPreload = featured && typeof featured.data.coverImage !== 'string'
+  ? await getImage({ src: featured.data.coverImage, widths: FEATURED_WIDTHS, format: 'webp', quality: 82 })
+  : undefined;
 
 function readingTime(body: string) {
   return Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 200));
@@ -74,6 +80,8 @@ const ldJson = {
   description="Личный опыт поездок: Япония, Африка, Бали, Новая Зеландия. Цены, маршруты, лайфхаки для путешественников из России."
   canonical="https://traveltribe.ru/blog/"
   ldJson={ldJson}
+  preloadImageSrcset={featuredPreload?.srcSet.attribute}
+  preloadImageSizes={FEATURED_SIZES}
 >
   <script is:inline>document.body.classList.add('blog-index')</script>
   <Breadcrumbs crumbs={[{ label: 'Блог' }]} />
@@ -111,8 +119,8 @@ const ldJson = {
             <Image
               src={featured.data.coverImage}
               alt={featured.data.title}
-              widths={[400, 600, 720, 860]}
-              sizes="(max-width: 680px) calc(100vw - 2rem - 2px), 480px"
+              widths={FEATURED_WIDTHS}
+              sizes={FEATURED_SIZES}
               format="webp"
               quality={82}
               loading="eager"
