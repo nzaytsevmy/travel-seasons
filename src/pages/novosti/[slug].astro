@@ -54,6 +54,13 @@ const guides = dirs.flatMap((dir) => (dir.relatedPosts ?? []).slice(0, 2).map((p
 
 const cover = pickNewsImage(d, entry.slug, 0);
 const coverNote = newsPhotoCaption(d, newsImageNote(d));
+const coverWidths = [480, 700, 800, 1200];
+const coverSizes = '(max-width: 780px) calc(100vw - 2rem), calc(780px - 2rem)';
+const coverQuality = 55;
+// The preload and image use the same variants, sizes, format and quality.
+const coverPreload = cover ? await getImage({
+  src: cover, widths: coverWidths, format: 'webp', quality: coverQuality,
+}) : null;
 
 // Крупный дериват — для карточки в соцсетях и для поиска, в страницу не идёт.
 const wide = cover ? await getImage({ src: cover, width: 1600, format: 'webp' }) : null;
@@ -94,7 +101,8 @@ const ldJson = {
 };
 ---
 <Layout title={title} description={description} canonical={url} ldJson={ldJson}
-        ogType="article" ogImage={wideUrl} ogImageAlt={d.imageAlt ?? d.title}>
+        ogType="article" ogImage={wideUrl} ogImageAlt={d.imageAlt ?? d.title}
+        preloadImageSrcset={coverPreload?.srcSet.attribute} preloadImageSizes={coverSizes}>
   <Breadcrumbs crumbs={[{ label: 'Новости', href: '/novosti/' }, { label: d.title }]} />
   <main id="main" class="nvp">
 
@@ -113,9 +121,9 @@ const ldJson = {
 
       {cover && (
         <figure class="nvp-fig">
-          <Image src={cover} alt={d.imageAlt ?? d.title} widths={[480, 800, 1200]}
-                 sizes="(max-width: 700px) 100vw, 700px" loading="eager" fetchpriority="high"
-                 formats={['webp']} />
+          <Image src={cover} alt={d.imageAlt ?? d.title} widths={coverWidths}
+                 sizes={coverSizes} loading="eager" fetchpriority="high"
+                 format="webp" quality={coverQuality} />
           {coverNote && (
             <figcaption>
               {coverNote}
