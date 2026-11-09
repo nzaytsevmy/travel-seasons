@@ -42,7 +42,7 @@ function fixture(branch, options = {}) {
     put('src/content/blog/test-choice.md', post);
     put('src/data/country-guides.js', 'export const countries={peru:{answer:"Choose the route"}};\n');
     put('reviews/blog/test-choice.json', JSON.stringify({ schemaVersion: 1, slug: 'test-choice', reviewer: 'independent', reviewedAt: '2026-10-10', qualityScore: { topic:9, facts:9, visuals:8, experience:7, internalLinks:9, legal:9, overall:8.5, ceiling:'Honest ceiling without personal experience' }, rationale:'Independent review of the useful answer and all its conditions.', proseHash: options.staleReview ? '0000000000000000' : proseHash(post) }));
-    if (options.changedTest) { put('tests/new-contract.test.mjs', '// changed test fixture\n'); git(['add', 'tests/new-contract.test.mjs']); }
+    if (options.changedTest) { const name = options.changedTestName || 'tests/new-contract.test.mjs'; put(name, '// changed test fixture\n'); git(['add', name]); }
     if (options.missingReview) rmSync(join(root, 'reviews/blog/test-choice.json'));
     git(['add', 'src/content/blog/test-choice.md', 'src/data/country-guides.js']);
     if (!options.missingReview) git(['add', 'reviews/blog/test-choice.json']);
@@ -56,7 +56,8 @@ function fixture(branch, options = {}) {
       TT_FIXTURE_FRESHNESS_FAILURE: options.freshnessFailure ? '1' : '0', TT_FIXTURE_TEST_OWNERSHIP_FAILURE: options.ownershipFailure ? '1' : '0' };
     // The hook starts its own node:test process; do not let the parent test
     // runner mark that process as recursive and silently skip its files.
-    delete fixtureEnv.NODE_TEST_CONTEXT;
+    if (options.parentNodeTestContext) fixtureEnv.NODE_TEST_CONTEXT = 'child-v8';
+    else delete fixtureEnv.NODE_TEST_CONTEXT;
     const result = spawnSync('bash', ['scripts/pre-push.sh'], { cwd: root, env: fixtureEnv, encoding: 'utf8', input: '', timeout: 20000 });
     const freshnessFile = join(root, 'freshness-called.txt');
     const freshness = existsSync(freshnessFile) ? JSON.parse(readFileSync(freshnessFile, 'utf8')) : null;
@@ -85,6 +86,14 @@ test('a publication with changed tests runs the ownership guard before CI', () =
 test('a failed test ownership guard blocks the publication push', () => {
   const r = fixture('tt-publish/2026-10-10', { changedTest: true, ownershipFailure: true });
   assert.notEqual(r.status, 0); assert.equal(r.ownershipInvoked, true); assert.match(r.output, /fixture ownership rejected/);
+});
+test('an inherited node test context cannot cause the ownership guard to be skipped', () => {
+  const r = fixture('tt-publish/2026-10-10', { changedTest: true, ownershipFailure: true, parentNodeTestContext: true });
+  assert.notEqual(r.status, 0, r.output); assert.equal(r.ownershipInvoked, true); assert.match(r.output, /fixture ownership rejected/);
+});
+test('a changed test with a non-ASCII name still runs the ownership guard', () => {
+  const r = fixture('tt-publish/2026-10-10', { changedTest: true, changedTestName: 'tests/проверка.test.mjs', ownershipFailure: true });
+  assert.notEqual(r.status, 0, r.output); assert.equal(r.ownershipInvoked, true); assert.match(r.output, /fixture ownership rejected/);
 });
 test('publication preflight rejects uncommitted topic data', () => {
   const r = fixture('tt-publish/2026-10-10', { dirtyTopic: true });
