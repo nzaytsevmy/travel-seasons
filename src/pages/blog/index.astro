@@ -56,7 +56,9 @@ const ldJson = {
         "headline": p.data.title,
         "url": `https://traveltribe.ru/blog/${p.slug}/`,
         "datePublished": p.data.pubDate.toISOString(),
-        "author": { "@type": "Person", "name": p.data.author }
+        "author": p.data.author === 'Редакция TravelTribe'
+          ? { "@type": "Organization", "@id": "https://traveltribe.ru/#org", "name": "TravelTribe" }
+          : { "@type": "Person", "name": p.data.author }
       }))
     },
     {

@@ -114,6 +114,7 @@ const faqs = extractFAQs(post.body);
 const geography = blogGeography(post);
 const primaryDir = geography.primaryDirection;
 const monetizationDestination = geography.monetizationDestination;
+const editorialAuthor = post.data.author === 'Редакция TravelTribe';
 
 // Дорогие направления: первой денежной точкой идёт дорога или готовый тур, а не полис.
 // Решение Никиты 04.09.2026 по замеру 06.08–02.09: такие страницы доводят до партнёра
@@ -213,7 +214,7 @@ const ldJson: any = {
       "headline": post.data.title,
       "description": post.data.description,
       "image": coverUrl,
-      "author": { "@id": "https://traveltribe.ru/about/#person" },
+      "author": { "@id": editorialAuthor ? "https://traveltribe.ru/#org" : "https://traveltribe.ru/about/#person" },
       "datePublished": post.data.pubDate.toISOString(),
       "dateModified": (shownUpdated ?? post.data.pubDate).toISOString(),
       "publisher": { "@id": "https://traveltribe.ru/#org" },
@@ -291,10 +292,11 @@ if (faqs.length >= 2) {
 
       <h1>{splitCompounds(post.data.title).map((p) => (p.nobr ? <span class="nobr">{p.t}</span> : p.t))}</h1>
       <p class="post-author">
-        <a href="/about/" class="author-link">
-          <Image src={authorPhoto} fit="cover" alt="Никита Зайцев" width={28} height={28} format="webp" quality={75} class="author-mini" />
-          <span>Никита Зайцев</span>
+        <a href={editorialAuthor ? '/' : '/about/'} class="author-link">
+          {!editorialAuthor && <Image src={authorPhoto} fit="cover" alt="Никита Зайцев" width={28} height={28} format="webp" quality={75} class="author-mini" />}
+          <span>{editorialAuthor ? 'Редакция TravelTribe' : 'Никита Зайцев'}</span>
         </a>
+        {editorialAuthor && <span> · подготовлено с помощью ИИ</span>}
         · <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>
       </p>
 
@@ -407,12 +409,12 @@ if (faqs.length >= 2) {
         )}
       </nav>
 
-      <aside class="author-bio" aria-label="Об авторе">
+      {!editorialAuthor && <aside class="author-bio" aria-label="Об авторе">
         <Image src={authorPhoto} fit="cover" alt="Никита Зайцев — автор TravelTribe" width={96} height={96} format="webp" quality={80} class="bio-avatar-img" />
         <div class="bio-text">
           <strong>Никита Зайцев</strong> — был на всех 7 континентах, включая Антарктиду, посетил 60+ стран. В блоге — реальные цены 2026, личный опыт поездок и без воды. Рассказываю про путешествия в <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram-канале @traveltriberu</a>. <a href="/about/">Подробнее об авторе</a>
         </div>
-      </aside>
+      </aside>}
 
       <div class="post-footer">
         <a href="/blog/" class="back-link">← Все статьи</a>

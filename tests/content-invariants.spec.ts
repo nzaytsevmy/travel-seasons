@@ -86,6 +86,69 @@ const blogSources = () =>
     .filter((n) => /\.mdx?$/.test(n))
     .map((n) => join(BLOG_SRC, n));
 
+test('Редакционные праздничные гиды честно показывают автора и поиск перелёта', async ({ page }) => {
+  for (const slug of ['novyy-god-tailand-2027', 'novyy-god-vietnam-2027']) {
+    await page.goto(`/blog/${slug}/`, { waitUntil: 'domcontentloaded' });
+    const byline = page.locator('.post-author');
+    await expect(byline).toContainText('Редакция TravelTribe');
+    await expect(byline).toContainText('подготовлено с помощью ИИ');
+    await expect(byline).not.toContainText('Никита Зайцев');
+    await expect(byline.locator('.author-link')).toHaveAttribute('href', '/');
+    await expect(page.locator('.author-bio')).toHaveCount(0);
+    const data = await page.locator('script[type="application/ld+json"]').allTextContents();
+    const nodes = data.flatMap(raw => {
+      const json = JSON.parse(raw);
+      return Array.isArray(json['@graph']) ? json['@graph'] : [json];
+    });
+    const article = nodes.find(node => node['@type'] === 'BlogPosting');
+    expect(article?.author?.['@id']).toBe('https://traveltribe.ru/#org');
+    for (const scope of [page.locator('.trip-context').first(), page.locator('[data-trip-planning]')]) {
+      await expect(scope.getByText('Найти авиабилеты')).toBeVisible();
+      await expect(scope).toContainText('Выберите город вылета, направление и свои даты');
+    }
+  }
+
+  await page.goto('/blog/', { waitUntil: 'domcontentloaded' });
+  const indexData = await page.locator('script[type="application/ld+json"]').allTextContents();
+  const indexNodes = indexData.flatMap(raw => {
+    const json = JSON.parse(raw);
+    return Array.isArray(json['@graph']) ? json['@graph'] : [json];
+  });
+  const blog = indexNodes.find(node => node['@type'] === 'Blog');
+  for (const slug of ['novyy-god-tailand-2027', 'novyy-god-vietnam-2027']) {
+    const item = blog?.blogPost?.find((entry: any) => entry.url === `https://traveltribe.ru/blog/${slug}/`);
+    expect(item?.author?.['@type']).toBe('Organization');
+    expect(item?.author?.['@id']).toBe('https://traveltribe.ru/#org');
+  }
+  const personal = blog?.blogPost?.find((entry: any) => entry.url === 'https://traveltribe.ru/blog/thailand-guide-2026/');
+  expect(personal?.author).toEqual({ '@type': 'Person', name: 'Никита Зайцев' });
+
+  for (const [from, to] of [
+    ['thailand-guide-2026', 'novyy-god-tailand-2027'],
+    ['phuket-samui-2026', 'novyy-god-tailand-2027'],
+    ['fukuok-ili-haynan', 'novyy-god-vietnam-2027'],
+    ['nyachang-fukuok-2026', 'novyy-god-vietnam-2027'],
+  ]) {
+    await page.goto(`/blog/${from}/`, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator(`.prose a[href="/blog/${to}/"]`)).toBeVisible();
+  }
+
+  const credits = readFileSync(join(DIST, 'legal/photos/index.html'), 'utf8');
+  for (const value of ['PEAK99', 'Vivu Vietnam', 'Fireworks in Bangkok Thailand 2019 01.jpg', 'Kiss of the Sea fireworks show Sunset Town Sun World Phu Quoc night Vietnam.jpg']) {
+    expect(credits).toContain(value);
+  }
+
+  const dzenFeed = readFileSync(join(DIST, 'dzen-rss.xml'), 'utf8');
+  const siteFeed = readFileSync(join(DIST, 'rss.xml'), 'utf8');
+  for (const slug of ['novyy-god-tailand-2027', 'novyy-god-vietnam-2027']) {
+    expect(dzenFeed).not.toContain(`/blog/${slug}/`);
+    expect(siteFeed).toContain(`https://traveltribe.ru/blog/${slug}/`);
+  }
+  for (const slug of ['thailand-guide-2026', 'phuket-samui-2026', 'fukuok-ili-haynan', 'nyachang-fukuok-2026']) {
+    expect(dzenFeed).toContain(`<guid isPermaLink="true">https://traveltribe.ru/blog/${slug}/</guid>`);
+  }
+});
+
 // Какие статьи тронуты в этом заходе — общая мерка для всех проверок текста ниже.
 //
 // ⛔ «Тронута» — это изменился ТЕКСТ или факты, а не любой байт файла.

@@ -3,6 +3,7 @@ import { getImage } from 'astro:assets';
 import { pickNewsImage } from '../data/news-images.js';
 import { newsUrl, feedEntries, publishedAt } from '../data/news.js';
 import { byPubDate } from '../data/freshness.js';
+import { siteOnlySlugs, withoutSiteOnlyLinks } from '../data/site-only-feed.js';
 
 // Дзен-совместимый RSS feed (Native, не Турбо/Новости).
 // Документация: https://dzen.ru/help/ru/website/site-to-channel.html
@@ -90,7 +91,7 @@ function mdToHtml(md) {
 }
 
 export async function GET() {
-  const posts = (await getCollection('blog')).sort(byPubDate);
+  const posts = (await getCollection('blog')).filter(post => !siteOnlySlugs.includes(post.slug)).sort(byPubDate);
 
   // Заметки ленты идут сюда наравне со статьями: у Дзена свой отбор, и короткий
   // датированный материал с картинкой ему подходит. Ссылка ведёт на страницу
@@ -147,7 +148,7 @@ export async function GET() {
       coverUrl = `${SITE}${optimized.src}`;
     }
 
-    const html = mdToHtml(post.body);
+    const html = mdToHtml(withoutSiteOnlyLinks(post.body));
     const ctaHtml = `<p><a href="${link}">Читать полностью на TravelTribe →</a></p>`;
     const fullHtml = html + '\n' + ctaHtml;
 
