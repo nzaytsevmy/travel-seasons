@@ -130,7 +130,10 @@ test('Редакционные праздничные гиды честно по
     ['nyachang-fukuok-2026', 'novyy-god-vietnam-2027'],
   ]) {
     await page.goto(`/blog/${from}/`, { waitUntil: 'domcontentloaded' });
-    await expect(page.locator(`.prose a[href="/blog/${to}/"]`)).toBeVisible();
+    const link = page.locator(`.prose a[href="/blog/${to}/"]`);
+    const closedFaq = link.locator('xpath=ancestor::details[not(@open)][1]');
+    if (await closedFaq.count()) await closedFaq.locator('summary').first().click();
+    await expect(link).toBeVisible();
   }
 
   const credits = readFileSync(join(DIST, 'legal/photos/index.html'), 'utf8');
