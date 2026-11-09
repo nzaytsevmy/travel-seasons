@@ -185,6 +185,7 @@ jobs:
           fi
           node --test tests/hero-size-contract.test.mjs
           npx playwright test tests/content-invariants.spec.ts --project=chromium-desktop --grep 'hero-обложка: вес' --retries=0
+          npx playwright test tests/content-invariants.spec.ts --project=chromium-desktop --grep 'Редакционные статьи честно' --retries=0
           npx playwright test tests/blog-index-rendering.spec.ts tests/blog-hero-preload.spec.ts tests/blog-card-scroll.spec.ts tests/blog-tag-reflow.spec.ts --project=chromium-desktop --retries=0
         env:
           PREVIEW_URL: http://localhost:4322

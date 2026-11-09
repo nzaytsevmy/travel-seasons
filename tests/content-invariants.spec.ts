@@ -128,16 +128,16 @@ test('Редакционные статьи честно показывают а
     expect(personal?.author).toEqual({ '@type': 'Person', name: 'Никита Зайцев' });
   }
 
-  for (const [from, to] of [
-    ['thailand-guide-2026', 'novyy-god-tailand-2027'],
-    ['phuket-samui-2026', 'novyy-god-tailand-2027'],
-    ['fukuok-ili-haynan', 'novyy-god-vietnam-2027'],
-    ['nyachang-fukuok-2026', 'novyy-god-vietnam-2027'],
-    ['bali-guide-2026', 'hram-uluvatu-bali'],
-    ['chto-vzyat-na-more-2026', 'hram-uluvatu-bali'],
+  for (const [from, to, anchor] of [
+    ['thailand-guide-2026', 'novyy-god-tailand-2027', /Новый\s+год\s+2027\s+в\s+Таиланде/],
+    ['phuket-samui-2026', 'novyy-god-tailand-2027', /Новый\s+год\s+2027\s+в\s+Таиланде/],
+    ['fukuok-ili-haynan', 'novyy-god-vietnam-2027', /Новый\s+год\s+2027\s+во\s+Вьетнаме/],
+    ['nyachang-fukuok-2026', 'novyy-god-vietnam-2027', /Новый\s+год\s+2027\s+во\s+Вьетнаме/],
+    ['bali-guide-2026', 'hram-uluvatu-bali', /Храм\s+Улувату\s*\(Pura/],
+    ['chto-vzyat-na-more-2026', 'hram-uluvatu-bali', /Храм\s+Улувату\s+на\s+Бали/],
   ]) {
     await page.goto(`/blog/${from}/`, { waitUntil: 'domcontentloaded' });
-    const link = page.locator(`.prose a[href="/blog/${to}/"]`);
+    const link = page.locator(`.prose a[href="/blog/${to}/"]`).filter({ hasText: anchor });
     const closedFaq = link.locator('xpath=ancestor::details[not(@open)][1]');
     if (await closedFaq.count()) await closedFaq.locator('summary').first().click();
     await expect(link).toBeVisible();
