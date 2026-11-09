@@ -84,6 +84,21 @@ fi
 SCOPE_BASE="$(git merge-base HEAD origin/main 2>/dev/null)" || {
   echo "✖ не найдена база origin/main — обнови ссылки git и повтори push"; exit 1;
 }
+# A changed test suite must pass its cheap ownership guard before a release
+# starts CI. The complete recursive delivery suite still runs in Build CI.
+if [ "$CI_PUBLICATION" -eq 1 ]; then
+  if git diff --quiet "$SCOPE_BASE" HEAD -- tests; then
+    : # No changed files in tests.
+  else
+    DIFF_STATUS=$?
+    if [ "$DIFF_STATUS" -ne 1 ]; then echo "✖ не определены изменения тестов"; exit 1; fi
+    # A parent node:test process otherwise makes a nested --test silently skip.
+    if ! (unset NODE_TEST_CONTEXT; node --test tests/test-files-are-executed.test.mjs) >"${LOG}_test_ownership.log" 2>&1; then
+      cat "${LOG}_test_ownership.log"
+      echo "✖ проверка запускаемых тестов не пройдена — push заблокирован"; exit 1
+    fi
+  fi
+fi
 RELEASE_SCOPE="$(node scripts/release-scope.mjs --base "$SCOPE_BASE" --head HEAD --mode-only)" || exit 1
 if ! node scripts/check-journal-metadata.mjs --base "$SCOPE_BASE" --head HEAD >${LOG}_preflight.log 2>&1; then
   cat "${LOG}_preflight.log"

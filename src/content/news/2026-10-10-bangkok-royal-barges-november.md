@@ -3,7 +3,7 @@ title: "В Бангкоке прошла процессия королевски
 date: "2026-10-07"
 added: "2026-10-10"
 checked: "2026-11-08"
-topic: transport
+topic: culture
 impact: medium
 score: 4
 authoredBy: "Codex (tt-author-20261108)"

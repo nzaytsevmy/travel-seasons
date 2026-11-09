@@ -7,6 +7,7 @@ export const blogSchema = (z, img) => z.object({
     updatedDate: z.coerce.date().optional(),
     coverImage: img(),
     coverQuality: z.number().int().min(50).max(75).default(65),
+    coverAvifQuality: z.number().int().min(40).max(60).optional(),
     coverAlt: z.string().min(15).optional(),
     coverCaption: z.string().optional(),
     author: z.string().default('Никита Зайцев'),

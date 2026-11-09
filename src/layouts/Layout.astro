@@ -45,13 +45,16 @@ interface Props {
   ogImage?: string;
   ogImageAlt?: string;
   ldJson?: object;
+  structuredDataAtEnd?: boolean;
   deferHomePhotos?: boolean;
   preloadJournalFonts?: boolean;
   destinationFontProfile?: 'full' | 'year';
+  deprioritizeSecondaryFonts?: boolean;
   preloadImage?: string;
   preloadImageMedia?: string;
   preloadImageSrcset?: string;
   preloadImageSizes?: string;
+  preloadImageType?: string;
   noindex?: boolean;
   noTransitions?: boolean;
   monetizationDestination?: string;
@@ -67,13 +70,16 @@ const {
   ogImage,
   ogImageAlt = ogImage ? title : 'TravelTribe — куда поехать и когда: сезоны, визы и бюджет. Гергети, Грузия',
   ldJson,
+  structuredDataAtEnd = false,
   deferHomePhotos = false,
   preloadJournalFonts = false,
   destinationFontProfile,
+  deprioritizeSecondaryFonts = false,
   preloadImageMedia,
   preloadImage,
   preloadImageSrcset,
   preloadImageSizes = '100vw',
+  preloadImageType,
   noindex = false,
   noTransitions = false,
   monetizationDestination,
@@ -261,7 +267,7 @@ const finalLd = {
   <link rel="dns-prefetch" href="https://analytics.ahrefs.com" />
 
   {/* Start the homepage image before the font preload queue. */}
-  {useJournalFonts && preloadImageSrcset && <link media={preloadImageMedia} rel="preload" as="image" href={preloadImageSrcset.split(' ')[0]} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
+  {useJournalFonts && preloadImageSrcset && <link media={preloadImageMedia} rel="preload" as="image" type={preloadImageType} href={preloadImageSrcset.split(' ')[0]} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
   {destinationFontProfile && [homeOst, destinationFontProfile === 'year' ? destinationYear : destinationItalic, destinationRuble].map(href =>
     <link rel="preload" as="font" type="font/woff2" href={href} crossorigin="anonymous" />)}
 
@@ -303,10 +309,10 @@ const finalLd = {
   </script>}
   {/* Discover the three combined journal fonts before the first layout. */}
   {useJournalFonts && (destinationFontProfile === 'year' ? [] : destinationFontProfile ? [homeOstB, homeMono] : [homeOstB, homeOst, homeMono]).map(href =>
-    <link rel="preload" as="font" type="font/woff2" href={href} crossorigin="anonymous" />)}
+    <link rel="preload" as="font" type="font/woff2" href={href} crossorigin="anonymous" fetchpriority={deprioritizeSecondaryFonts ? 'low' : undefined} />)}
   <style set:html={golosFontFace + journalFontFace + homeFontFace + destinationFontFace}></style>
 
-  <script type="application/ld+json" set:html={JSON.stringify(finalLd)} />
+  {!structuredDataAtEnd && <script type="application/ld+json" set:html={JSON.stringify(finalLd)} />}
 
   {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
   {/* ⛔ href обязателен и при imagesrcset. Стандарт разрешает тег без него, но
@@ -316,7 +322,7 @@ const finalLd = {
       Браузеры с поддержкой imagesrcset (все современные) href игнорируют и
       берут вариант из набора, так что двойной загрузки нет; href — самый
       лёгкий вариант, запас для странного клиента. */}
-  {!useJournalFonts && preloadImageSrcset && <link media={preloadImageMedia} rel="preload" as="image" href={preloadImageSrcset.split(' ')[0]} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
+  {!useJournalFonts && preloadImageSrcset && <link media={preloadImageMedia} rel="preload" as="image" type={preloadImageType} href={preloadImageSrcset.split(' ')[0]} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
 
   <!-- Аналитика: базовая Яндекс.Метрика (обезличенная статистика + ПФ) и Ahrefs (cookieless)
        грузятся на production-домене для работы/улучшения Сайта (тот же законный интерес, что
@@ -445,6 +451,8 @@ const finalLd = {
   <SwissHeader />
 
   <slot />
+
+  {structuredDataAtEnd && <script type="application/ld+json" set:html={JSON.stringify(finalLd)} />}
 
   <!-- Реферальные/партнёрские ссылки (rel=sponsored / .aff-cta) открываем в новой
        вкладке + noopener — чтобы клик по партнёру не уводил человека с сайта.

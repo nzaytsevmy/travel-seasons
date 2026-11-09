@@ -5,16 +5,17 @@ interface Crumb {
 }
 interface Props {
   crumbs: Crumb[];
+  prefetch?: 'hover';
 }
-const { crumbs } = Astro.props;
+const { crumbs, prefetch } = Astro.props;
 ---
 <nav class="breadcrumbs" aria-label="Breadcrumb">
   <ol>
-    <li><a href="/">Главная</a></li>
+    <li><a href="/" data-astro-prefetch={prefetch}>Главная</a></li>
     {crumbs.map((c, i) => (
       <li>
         {i < crumbs.length - 1 && c.href
-          ? <a href={c.href}>{c.label}</a>
+          ? <a href={c.href} data-astro-prefetch={prefetch}>{c.label}</a>
           : <span aria-current="page">{c.label}</span>
         }
       </li>

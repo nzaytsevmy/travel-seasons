@@ -91,3 +91,18 @@ test('Norway comparison does not silently choose a country airport for two dista
   assert.equal(flight.generic,true);
   assert.doesNotMatch(new URL(flight.href).searchParams.get('u') || '',/OSL1$/);
 });
+
+test('holiday guides leave the arrival airport to the reader in both placements', () => {
+  for (const [slug, destination] of [['novyy-god-tailand-2027','thailand'], ['novyy-god-vietnam-2027','vietnam']]) {
+    for (const placement of ['section_1','planning']) {
+      const items=tripServices({pathname:`/blog/${slug}/`,destination,placement});
+      const flight=items.find(item=>item.offer==='flight');
+      assert.equal(flight.generic,true);
+      assert.equal(flight.label,'Найти авиабилеты');
+      assert.match(flight.note,/направление/);
+      assert.doesNotMatch(new URL(flight.href).searchParams.get('u') || '',/BKK1|SGN1/);
+      assert.equal(items.find(item=>item.offer==='stay').destination,destination);
+      assert.equal(items.find(item=>item.offer==='insurance').destination,destination);
+    }
+  }
+});

@@ -26,6 +26,22 @@ const { Content, headings } = await post.render();
 const url = `https://traveltribe.ru/blog/${post.slug}/`;
 const coverUrl = typeof post.data.coverImage === 'string' ? post.data.coverImage : `https://traveltribe.ru${post.data.coverImage.src}`;
 const coverQuality = post.data.coverQuality;
+const coverMeta = typeof post.data.coverImage === 'string' ? null : post.data.coverImage;
+// object-fit:cover can need more source pixels than the visible box width.
+const cropFactor = (frameAspect: number) => coverMeta
+  ? Math.max(1, Math.ceil((coverMeta.width / coverMeta.height / frameAspect) * 1000) / 1000) : 1;
+const mobileCoverFactor = cropFactor(4 / 3);
+const desktopCoverFactor = cropFactor(16 / 9);
+const scaleUp = (value: number, factor: number) => Math.ceil(value * factor * 1000) / 1000;
+const scaleDown = (value: number, factor: number) => Math.floor(value * factor * 1000) / 1000;
+// Avoid downloading a much larger 1280px image when the cropped mobile frame
+// at DPR 2 only needs just over 960px. Keep 1280px for larger screens.
+const mobileAt2x = Math.ceil((412 * scaleUp(100, mobileCoverFactor) / 100 - 16 * scaleDown(2, mobileCoverFactor)) * 2);
+const use1024 = coverMeta && coverMeta.width >= 1024 && mobileAt2x > 960 && mobileAt2x <= 1024;
+const coverWidths = coverMeta ? [640, 780, 960, ...(use1024 ? [1024] : []), 1280] : [640, 960, 1280];
+const coverSizes = coverMeta
+  ? `(max-width: 720px) calc(${scaleUp(100, mobileCoverFactor)}vw - ${scaleDown(2, mobileCoverFactor)}rem), (max-width: 767px) calc(${scaleUp(720, mobileCoverFactor)}px - ${scaleDown(2, mobileCoverFactor)}rem), calc(${scaleUp(720, desktopCoverFactor)}px - ${scaleDown(2.8, desktopCoverFactor)}rem)`
+  : '(max-width: 720px) calc(100vw - 2.8rem), 675px';
 
 // Preload hero cover для LCP <2.5s: АДАПТИВНЫЙ srcset, точно совпадающий с <Picture>
 // ниже (те же widths/sizes/format/quality), чтобы preload попал ровно в тот вариант,
@@ -33,12 +49,21 @@ const coverQuality = post.data.coverQuality;
 // предположению «Picture возьмёт 640 на mobile» — но на mobile-эмуляции Lighthouse
 // (высокий DPR, 100vw) браузер берёт 960/1280, а preload грузил 640 → мимо кэша,
 // LCP-картинка качалась отдельным поздним запросом (japan-guide держался на грани 0.85).
-const heroPreload = typeof post.data.coverImage === 'string' ? null : await getImage({
+const heroWebp = typeof post.data.coverImage === 'string' ? null : await getImage({
   src: post.data.coverImage,
-  widths: [640, 960, 1280],
+  widths: coverWidths,
   format: 'webp',
   quality: coverQuality,
 });
+// AVIF is opt-in after visual review of an individual image. WebP/JPEG remain
+// available to browsers without AVIF; only the supported format is preloaded.
+const heroAvif = coverMeta && post.data.coverAvifQuality ? await getImage({
+  src: coverMeta, widths: coverWidths, format: 'avif', quality: post.data.coverAvifQuality,
+}) : null;
+const heroJpeg = heroAvif && coverMeta ? await getImage({
+  src: coverMeta, widths: coverWidths, format: 'jpg', quality: coverQuality,
+}) : null;
+const heroPreload = heroAvif ?? heroWebp;
 const ogImageUrl = `https://traveltribe.ru/og/${post.slug}.png`;
 const wordCount = [post.data.lead, post.body].filter(Boolean).join(' ').trim().split(/\s+/).length;
 
@@ -114,6 +139,10 @@ const faqs = extractFAQs(post.body);
 const geography = blogGeography(post);
 const primaryDir = geography.primaryDirection;
 const monetizationDestination = geography.monetizationDestination;
+const editorialAuthor = post.data.author === 'Редакция TravelTribe';
+// Limit the new font subset to the measured article pilot. Older articles keep
+// their original font metrics until their layouts have also been reviewed.
+const optimizedArticleFonts = editorialAuthor || ['chile-guide-2026', 'bali-guide-2026', 'hram-uluvatu-bali'].includes(post.slug);
 
 // Дорогие направления: первой денежной точкой идёт дорога или готовый тур, а не полис.
 // Решение Никиты 04.09.2026 по замеру 06.08–02.09: такие страницы доводят до партнёра
@@ -213,7 +242,7 @@ const ldJson: any = {
       "headline": post.data.title,
       "description": post.data.description,
       "image": coverUrl,
-      "author": { "@id": "https://traveltribe.ru/about/#person" },
+      "author": { "@id": editorialAuthor ? "https://traveltribe.ru/#org" : "https://traveltribe.ru/about/#person" },
       "datePublished": post.data.pubDate.toISOString(),
       "dateModified": (shownUpdated ?? post.data.pubDate).toISOString(),
       "publisher": { "@id": "https://traveltribe.ru/#org" },
@@ -267,12 +296,15 @@ if (faqs.length >= 2) {
   ogImage={ogImageUrl}
   ogImageAlt={post.data.coverAlt ?? post.data.title}
   ldJson={ldJson}
+  destinationFontProfile={optimizedArticleFonts ? 'full' : undefined}
+  deprioritizeSecondaryFonts={optimizedArticleFonts}
   preloadImageSrcset={heroPreload?.srcSet.attribute}
-  preloadImageSizes="(max-width: 720px) calc(100vw - 2.8rem), 675px"
+  preloadImageSizes={coverSizes}
+  preloadImageType={heroAvif ? 'image/avif' : undefined}
   monetizationDestination={monetizationDestination}
 >
   <script is:inline>document.body.classList.add('post-page')</script>
-  <Breadcrumbs crumbs={crumbs} />
+  <Breadcrumbs crumbs={crumbs} prefetch="hover" />
   <main id="main" class="post-page">
 
     <article class="post-content">
@@ -291,10 +323,11 @@ if (faqs.length >= 2) {
 
       <h1>{splitCompounds(post.data.title).map((p) => (p.nobr ? <span class="nobr">{p.t}</span> : p.t))}</h1>
       <p class="post-author">
-        <a href="/about/" class="author-link">
-          <Image src={authorPhoto} fit="cover" alt="Никита Зайцев" width={28} height={28} format="webp" quality={75} class="author-mini" />
-          <span>Никита Зайцев</span>
+        <a href={editorialAuthor ? '/' : '/about/'} class="author-link">
+          {!editorialAuthor && <Image src={authorPhoto} fit="cover" alt="Никита Зайцев" width={28} height={28} format="webp" quality={75} class="author-mini" />}
+          <span>{editorialAuthor ? 'Редакция TravelTribe' : 'Никита Зайцев'}</span>
         </a>
+        {editorialAuthor && <span> · подготовлено с помощью ИИ</span>}
         · <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>
       </p>
 
@@ -308,11 +341,17 @@ if (faqs.length >= 2) {
       {post.data.lead && <p class="post-lead">{post.data.lead}</p>}
 
     <figure class="post-cover">
-      <Picture
+      {heroAvif && heroWebp && heroJpeg && coverMeta ? <picture style="display:block;">
+        <source type="image/avif" srcset={heroAvif.srcSet.attribute} sizes={coverSizes} />
+        <source type="image/webp" srcset={heroWebp.srcSet.attribute} sizes={coverSizes} />
+        <img src={heroJpeg.src} srcset={heroJpeg.srcSet.attribute} sizes={coverSizes}
+          alt={post.data.coverAlt ?? post.data.title} width={coverMeta.width} height={coverMeta.height}
+          loading="eager" fetchpriority="high" decoding="async" style={`object-position: ${post.data.coverPosition};`} />
+      </picture> : <Picture
         src={post.data.coverImage}
         alt={post.data.coverAlt ?? post.data.title}
-        widths={[640, 960, 1280]}
-        sizes="(max-width: 720px) calc(100vw - 2.8rem), 675px"
+        widths={coverWidths}
+        sizes={coverSizes}
         formats={['webp']}
         fallbackFormat="jpg"
         quality={coverQuality}
@@ -320,7 +359,7 @@ if (faqs.length >= 2) {
         fetchpriority="high"
         pictureAttributes={{ style: `display:block;` }}
         style={`object-position: ${post.data.coverPosition};`}
-      />
+      />}
       {post.data.coverCaption && <figcaption class="post-cover-caption">{post.data.coverCaption}</figcaption>}
     </figure>
 
@@ -407,12 +446,12 @@ if (faqs.length >= 2) {
         )}
       </nav>
 
-      <aside class="author-bio" aria-label="Об авторе">
+      {!editorialAuthor && <aside class="author-bio" aria-label="Об авторе">
         <Image src={authorPhoto} fit="cover" alt="Никита Зайцев — автор TravelTribe" width={96} height={96} format="webp" quality={80} class="bio-avatar-img" />
         <div class="bio-text">
           <strong>Никита Зайцев</strong> — был на всех 7 континентах, включая Антарктиду, посетил 60+ стран. В блоге — реальные цены 2026, личный опыт поездок и без воды. Рассказываю про путешествия в <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">Telegram-канале @traveltriberu</a>. <a href="/about/">Подробнее об авторе</a>
         </div>
-      </aside>
+      </aside>}
 
       <div class="post-footer">
         <a href="/blog/" class="back-link">← Все статьи</a>
@@ -669,6 +708,7 @@ if (faqs.length >= 2) {
    читался одной меткой; перенос ровный — последняя метка не остаётся одна на строке. */
 .post-tags { max-width: 100%; text-align: left; text-wrap: balance; }
 .ptag { display: inline-block; margin: 0 0.6em; font-size: 0.6rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--gold); white-space: nowrap; }
+@media (max-width: 767px) { .ptag { max-width: calc(100% - 1.2em); white-space: normal; overflow-wrap: anywhere; } }
 .ptag:hover { color: var(--gold-dim); text-decoration: underline; text-underline-offset: 3px; }
 .post-date { font-size: 0.7rem; color: var(--text-faint); letter-spacing: 0.04em; }
 .post-dates { white-space: nowrap; }

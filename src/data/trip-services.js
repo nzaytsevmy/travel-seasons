@@ -14,6 +14,9 @@ const CITY_POSTS = {
   'madrid-gde-ostanovitsya': { destination:'spain', country:'spain', city:'madrid', iata:'MAD', loc:'в Мадриде', route:'Мадрид' },
   'chto-posmotret-v-gonkonge': { destination:'hong-kong', country:'china', city:'hong_kong', iata:'HKG', loc:'в Гонконге', route:'Гонконг' },
   'hanoi-one-day': { destination:'vietnam', country:'vietnam', city:'hanoi', iata:'HAN', loc:'в Ханое', route:'Ханой' },
+  // Эти статьи сравнивают несколько курортов: не подставлять один городской аэропорт.
+  'novyy-god-tailand-2027': { destination:'thailand', iata:null },
+  'novyy-god-vietnam-2027': { destination:'vietnam', iata:null },
 };
 const MULTI_COUNTRY=new Set(['guatemala-belize','costa-rica-panama']);
 const REGIONAL_STAY_CATALOG={

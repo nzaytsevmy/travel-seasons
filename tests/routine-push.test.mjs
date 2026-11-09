@@ -1,12 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, copyFileSync, existsSync, rmSync, symlinkSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, copyFileSync, existsSync, rmSync, symlinkSync, realpathSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { gitEnvironment } from '../scripts/release-scope.mjs';
 import { proseHash } from '../scripts/article-review-gate.mjs';
 import {parse} from 'yaml';
+import { installTopicPreflightFixture } from './test-helpers.mjs';
 
 const project = new URL('../', import.meta.url);
 const post = `---\ntitle: Test choice\ndescription: A grounded choice\npubDate: 2026-10-10\ncoverImage: ./fixture.jpg\nreviewed: 2026-10-10\nauthoredBy: writer\nreviewRef: reviews/blog/test-choice.json\nchecks:\n  - date: 2026-10-10\n    what: Fixture source check\n    changed: Fixture conditions checked\n    sources:\n      - name: Fixture operator\n        url: https://example.invalid/source\nqualityScore:\n  topic: 9\n  facts: 9\n  visuals: 8\n  experience: 7\n  internalLinks: 9\n  legal: 9\n  overall: 8.5\n  ceiling: Honest ceiling without personal experience\n---\nA useful answer that explains the decision and its conditions.\n`;
@@ -28,26 +29,40 @@ function fixture(branch, options = {}) {
     symlinkSync(new URL('node_modules/astro', project), join(root, 'node_modules/astro'), 'dir');
     mkdirSync(join(root,'src/content'),{recursive:true});copyFileSync(new URL('src/content/blog-schema.mjs',project),join(root,'src/content/blog-schema.mjs'));
     put('tests/quality-baseline.json',readFileSync(new URL('tests/quality-baseline.json',project),'utf8'));
+    put('tests/test-files-are-executed.test.mjs', `import { test } from 'node:test';\nimport { writeFileSync } from 'node:fs';\ntest('fixture ownership guard', () => { writeFileSync('ownership-called.txt','yes'); if (process.env.TT_FIXTURE_TEST_OWNERSHIP_FAILURE === '1') throw new Error('fixture ownership rejected'); });\n`);
     put('scripts/preview-port.mjs', 'console.log(4432);\n');
     put('scripts/secret-scan.py', 'import sys\nsys.exit(0)\n');
     put('scripts/check-journal-metadata.mjs', 'console.log("metadata fixture PASS");\n');
     put('scripts/news-gate.mjs', 'process.stdin.resume();process.stdin.on("end",()=>console.log("news source fixture PASS"));\n');
     put('scripts/news-lifecycle.mjs', 'console.log("lifecycle fixture PASS");\n');
-    git(['add', 'package.json', 'scripts','src/content/blog-schema.mjs','tests/quality-baseline.json']);git(['commit', '-m', 'test: base']);
+    installTopicPreflightFixture(put);
+    git(['add', 'package.json', 'scripts', 'src', 'tests']);git(['commit', '-m', 'test: base']);
     const base = git(['rev-parse', 'HEAD']);git(['update-ref', 'refs/remotes/origin/main', base]);
     git(['switch', '-c', branch]);
     put('src/content/blog/test-choice.md', post);
     put('src/data/country-guides.js', 'export const countries={peru:{answer:"Choose the route"}};\n');
     put('reviews/blog/test-choice.json', JSON.stringify({ schemaVersion: 1, slug: 'test-choice', reviewer: 'independent', reviewedAt: '2026-10-10', qualityScore: { topic:9, facts:9, visuals:8, experience:7, internalLinks:9, legal:9, overall:8.5, ceiling:'Honest ceiling without personal experience' }, rationale:'Independent review of the useful answer and all its conditions.', proseHash: options.staleReview ? '0000000000000000' : proseHash(post) }));
+    if (options.changedTest) { const name = options.changedTestName || 'tests/new-contract.test.mjs'; put(name, '// changed test fixture\n'); git(['add', name]); }
     if (options.missingReview) rmSync(join(root, 'reviews/blog/test-choice.json'));
     git(['add', 'src/content/blog/test-choice.md', 'src/data/country-guides.js']);
     if (!options.missingReview) git(['add', 'reviews/blog/test-choice.json']);
     git(['commit', '-m', 'test: article and country data']);
+    const head = git(['rev-parse', 'HEAD']);
     if (options.draft) put('src/content/blog/test-choice.md', post + 'An unreviewed change.\n');
+    if (options.dirtyTopic) put('src/data/news-topics.js', '// uncommitted topic change\n');
     put('fake-bin/npm', '#!/bin/sh\ncase "$*" in "run check:delivery") echo called >delivery-called.txt; exit 0;; "run build") echo LOCAL_BUILD_STARTED >&2; exit 42;; *) exit 0;; esac\n', 0o755);
     put('fake-bin/npx', '#!/bin/sh\necho LOCAL_BROWSER_STARTED >&2\nexit 43\n', 0o755);
-    const result = spawnSync('bash', ['scripts/pre-push.sh'], { cwd: root, env: { ...env, PATH: join(root, 'fake-bin') + ':' + env.PATH }, encoding: 'utf8', input: '', timeout: 20000 });
-    return { ...result, output: result.stdout + result.stderr, deliveryInvoked:existsSync(join(root,'delivery-called.txt')) };
+    const fixtureEnv = { ...env, PATH: join(root, 'fake-bin') + ':' + env.PATH,
+      TT_FIXTURE_FRESHNESS_FAILURE: options.freshnessFailure ? '1' : '0', TT_FIXTURE_TEST_OWNERSHIP_FAILURE: options.ownershipFailure ? '1' : '0' };
+    // The hook starts its own node:test process; do not let the parent test
+    // runner mark that process as recursive and silently skip its files.
+    if (options.parentNodeTestContext) fixtureEnv.NODE_TEST_CONTEXT = 'child-v8';
+    else delete fixtureEnv.NODE_TEST_CONTEXT;
+    const result = spawnSync('bash', ['scripts/pre-push.sh'], { cwd: root, env: fixtureEnv, encoding: 'utf8', input: '', timeout: 20000 });
+    const freshnessFile = join(root, 'freshness-called.txt');
+    const freshness = existsSync(freshnessFile) ? JSON.parse(readFileSync(freshnessFile, 'utf8')) : null;
+    return { ...result, output: result.stdout + result.stderr, deliveryInvoked:existsSync(join(root,'delivery-called.txt')), ownershipInvoked:existsSync(join(root,'ownership-called.txt')),
+      freshnessInvoked: !!freshness, freshnessMatchesScope: !!freshness && freshness.root === realpathSync(root) && freshness.head === head && freshness.base === base };
   } finally { rmSync(root, { recursive: true, force: true }); }
 }
 
@@ -57,6 +72,32 @@ test('normal publication push forwards the complete code scope to required CI wi
   assert.match(r.output, /26.*CI|CI.*26/);
   assert.doesNotMatch(r.output, /LOCAL_BUILD_STARTED|LOCAL_BROWSER_STARTED/);
   assert.equal(r.deliveryInvoked,false,'Full delivery is already required in Build CI');
+  assert.equal(r.freshnessInvoked,true,'Topic freshness must be checked before publication');
+  assert.equal(r.freshnessMatchesScope,true,'Topic freshness must receive the exact release scope');
+});
+test('publication preflight blocks a failed topic freshness check', () => {
+  const r = fixture('tt-publish/2026-10-10', { freshnessFailure: true });
+  assert.notEqual(r.status, 0);assert.equal(r.freshnessInvoked, true);assert.match(r.output, /fixture freshness rejected/);
+});
+test('a publication with changed tests runs the ownership guard before CI', () => {
+  const r = fixture('tt-publish/2026-10-10', { changedTest: true });
+  assert.equal(r.status, 0, r.output); assert.equal(r.ownershipInvoked, true, r.output);
+});
+test('a failed test ownership guard blocks the publication push', () => {
+  const r = fixture('tt-publish/2026-10-10', { changedTest: true, ownershipFailure: true });
+  assert.notEqual(r.status, 0); assert.equal(r.ownershipInvoked, true); assert.match(r.output, /fixture ownership rejected/);
+});
+test('an inherited node test context cannot cause the ownership guard to be skipped', () => {
+  const r = fixture('tt-publish/2026-10-10', { changedTest: true, ownershipFailure: true, parentNodeTestContext: true });
+  assert.notEqual(r.status, 0, r.output); assert.equal(r.ownershipInvoked, true); assert.match(r.output, /fixture ownership rejected/);
+});
+test('a changed test with a non-ASCII name still runs the ownership guard', () => {
+  const r = fixture('tt-publish/2026-10-10', { changedTest: true, changedTestName: 'tests/проверка.test.mjs', ownershipFailure: true });
+  assert.notEqual(r.status, 0, r.output); assert.equal(r.ownershipInvoked, true); assert.match(r.output, /fixture ownership rejected/);
+});
+test('publication preflight rejects uncommitted topic data', () => {
+  const r = fixture('tt-publish/2026-10-10', { dirtyTopic: true });
+  assert.notEqual(r.status, 0);assert.equal(r.freshnessInvoked, false);assert.match(r.output, /news-topics\.js.*отличается/);
 });
 test('the complete recursive delivery suite stays unconditional in required Build CI before Astro',()=>{
  const workflow=parse(readFileSync(new URL('.github/workflows/build.yml',project),'utf8'));

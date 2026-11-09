@@ -9,6 +9,7 @@ export const TOPIC_LABEL = {
   visa: 'Визы и въезд',
   nature: 'Природа',
   transport: 'Транспорт и доступ',
+  culture: 'Культура и события',
 };
 
 export const IMPACT_LABEL = {
@@ -24,6 +25,12 @@ const MONTHS_NOM = ['Январь', 'Февраль', 'Март', 'Апрель'
 export function formatDateRu(d) {
   const dt = d instanceof Date ? d : new Date(d);
   return `${dt.getUTCDate()} ${MONTHS_GEN[dt.getUTCMonth()]} ${dt.getUTCFullYear()}`;
+}
+
+/** The short sentence shown in each news archive row. */
+export function newsCompactGist(tldr = '') {
+  const first = tldr.split(/(?<=\.)\s/)[0];
+  return first.length <= 130 ? first : first.slice(0, 127).replace(/[\s,;:—-]+\S*$/, '') + '…';
 }
 
 export function monthKey(d) {
