@@ -68,6 +68,7 @@ export const RELATED_POSTS = {
   ],
   'bali': [
     { slug: 'bali-guide-2026', title: 'Бали 2026: виза, цены, районы', kind: 'guide' },
+    { slug: 'hram-uluvatu-bali', title: 'Храм Улувату: билеты, кечак и как добраться', kind: 'practical' },
   ],
   'hainan': [
     { slug: 'peresadka-v-pekine', title: 'Пересадка в Пекине: аэропорт, багаж и выход в город', kind: 'practical' },

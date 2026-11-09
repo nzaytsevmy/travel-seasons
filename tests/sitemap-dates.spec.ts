@@ -1,5 +1,6 @@
 import { test, expect } from './browser-fixture';
 import { readFileSync } from 'node:fs';
+import { NEWS_FEED_EDITORIAL_CHANGED_AT, feedModifiedMoscowDay } from '../src/data/news-discovery.js';
 
 // Даты в карте сайта.
 //
@@ -100,4 +101,19 @@ test('5. заметки новостей не сидят на общей спр�
   const крупнейшая = Math.max(...счёт.values());
   expect(крупнейшая / заметки.length,
     'все заметки с одной датой — значит взята общая, а не дата сверки каждой').toBeLessThan(0.9);
+});
+
+test('6. дата новостной ленты совпадает в sitemap и CollectionPage', async ({ page }) => {
+  const xml = readFileSync(КАРТА, 'utf8');
+  const match = xml.match(/<loc>https:\/\/traveltribe\.ru\/novosti\/<\/loc><lastmod>([^<]+)<\/lastmod>/);
+  expect(match, 'новостной ленты нет в карте сайта').toBeTruthy();
+  const lastmod = new Date(match![1]);
+  expect(lastmod.valueOf()).toBeGreaterThanOrEqual(new Date(NEWS_FEED_EDITORIAL_CHANGED_AT).valueOf());
+  expect(lastmod.valueOf()).toBeLessThanOrEqual(Date.now());
+  expect((await page.goto('/novosti/'))?.status()).toBe(200);
+  const scripts = await page.locator('script[type="application/ld+json"]').allTextContents();
+  const nodes = scripts.flatMap(raw => { const data = JSON.parse(raw); return Array.isArray(data['@graph']) ? data['@graph'] : [data]; });
+  const feed = nodes.find(node => node['@type'] === 'CollectionPage');
+  expect(feed).toBeTruthy();
+  expect(feed.dateModified).toBe(feedModifiedMoscowDay(lastmod));
 });

@@ -4,9 +4,13 @@ import mdx from '@astrojs/mdx';
 import compress from 'astro-compress';
 import brokenLinks from 'astro-broken-links-checker';
 import { readFileSync, readdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import remarkNumerals from './tools/remark-numerals.mjs';
 import { monthKey, FEED_SIZE, frontPageEntries } from './src/data/news.js';
-import { latestFeedCheck } from './src/data/news-discovery.js';
+import { inactiveNewsTopicPaths } from './src/data/news-topics.js';
+import { newsFrontmatter } from './src/data/news-frontmatter.js';
+import { topicLastmodFromGit } from './scripts/news-topic-freshness.mjs';
+import { latestFeedModified, checkedCalendarDay } from './src/data/news-discovery.js';
 import rehypeTableWrap from './tools/rehype-table-wrap.mjs';
 import rehypeFaqAccordion from './tools/rehype-faq-accordion.mjs';
 import rehypeCountryRow from './tools/rehype-country-row.mjs';
@@ -70,17 +74,20 @@ const NEWS_DIR = new URL('./src/content/news/', import.meta.url);
 const newsChecked = [];
 for (const f of readdirSync(NEWS_DIR)) {
   if (!/\.mdx?$/.test(f)) continue;
-  const fm = (readFileSync(new URL(f, NEWS_DIR), 'utf8').split(/^---\s*$/m)[1]) || '';
-  const date = (fm.match(/^date:\s*(.+)$/m)?.[1] || '').replace(/['"]/g, '').trim();
-  const checked = (fm.match(/^checked:\s*(.+)$/m)?.[1] || '').replace(/['"]/g, '').trim();
-  const added = (fm.match(/^added:\s*(.+)$/m)?.[1] || '').replace(/['"]/g, '').trim();
+  const fm = newsFrontmatter(readFileSync(new URL(f, NEWS_DIR), 'utf8'));
+  const { date, checked, added } = fm;
+  // Validate the raw value before the collection coerces it to Date, so a
+  // precise timestamp cannot be silently mistaken for a Moscow calendar day.
+  checkedCalendarDay(checked);
   if (date && checked) newsChecked.push({
     date: new Date(date), checked: new Date(checked),
     // Дата выпуска — тот же ключ, по которому лента сортирует и режется.
     added: new Date(added || checked), slug: f.replace(/\.mdx?$/, ''),
-    archived: /^archived:\s*true\s*$/m.test(fm),
-    score: Number(fm.match(/^score:\s*(\d+)/m)?.[1] ?? 0),
-    impact: (fm.match(/^impact:\s*(.+)$/m)?.[1] || '').replace(/['"]/g, '').trim(),
+    archived: fm.archived === true,
+    topic: fm.topic || '',
+    title: fm.title || '', tldr: fm.tldr || '',
+    score: Number(fm.score ?? 0),
+    impact: fm.impact || '',
   });
 }
 // ⛔ У самой заметки даты не было: лента и архив месяца её получали, а страница
@@ -88,12 +95,16 @@ for (const f of readdirSync(NEWS_DIR)) {
 //    все 70 заметок переписаны заново.
 const newsItemLastmod = {};
 for (const e of newsChecked) if (e.slug) newsItemLastmod[`https://traveltribe.ru/novosti/${e.slug}/`] = e.checked;
-const maxChecked = (list) => latestFeedCheck(list.map(data => ({ data })));
-// Лента показывает FEED_SIZE самых свежих — её дата обновления берётся ровно с
-// них. Считать максимум по ВСЕМ заметкам нельзя: пересверка старой заметки,
-// которой на ленте нет, объявила бы ленту обновлённой без единой правки на ней.
-const newsFeedLastmod = maxChecked(
-  frontPageEntries(newsChecked.map(data => ({ slug: data.slug, data })), FEED_SIZE).map(entry => entry.data),
+const newsTopicEntries = newsChecked.map(data => ({ slug: data.slug, data }));
+const inactiveNewsTopicUrls = new Set(inactiveNewsTopicPaths(newsTopicEntries)
+  .map(path => `https://traveltribe.ru${path}`));
+const topicDates = await topicLastmodFromGit({ root: fileURLToPath(new URL('.', import.meta.url)), entries: newsTopicEntries });
+const newsTopicLastmod = Object.fromEntries(Object.entries(topicDates)
+  .map(([path, value]) => [`https://traveltribe.ru${path}`, new Date(value)]));
+// Учитываем только заметки, показанные в ленте, и датированную содержательную
+// правку самой ленты. Скрытые старые заметки не должны двигать её lastmod.
+const newsFeedLastmod = latestFeedModified(
+  frontPageEntries(newsChecked.map(data => ({ slug: data.slug, data })), FEED_SIZE),
 );
 // Страница есть у каждого месяца с заметками, включая текущий: её дата — самая
 // поздняя сверка внутри месяца.
@@ -159,6 +170,7 @@ const SITEMAP_INDEX_DATE = [
   ...Object.values(blogLastmod),
   ...(newsFeedLastmod ? [newsFeedLastmod] : []),
   ...Object.values(newsMonthLastmod),
+  ...Object.values(newsTopicLastmod),
 ].reduce((a, b) => (b && b > a ? b : a), DATA_DATE);
 
 let buildLockRelease = null;
@@ -269,7 +281,9 @@ export default defineConfig({
         // /seasons/[c]/[m]/ — дубль /trips/[m]/[c]/; canonical ведёт на trips,
         // поэтому из sitemap исключаем (только canonical+200). Хаб /seasons/ остаётся.
         && !/\/seasons\/[^/]+\/[^/]+\//.test(page)
-        && !CLOSED_TRIPS.has(page),
+        && !CLOSED_TRIPS.has(page)
+        // A retired news-topic URL stays reachable but is explicitly noindex.
+        && !inactiveNewsTopicUrls.has(page),
       changefreq: 'weekly',
       priority: 0.7,
       // ⛔ Эта дата попадает НЕ на страницы, а в sitemap-index.xml — файл, с
@@ -283,7 +297,7 @@ export default defineConfig({
       serialize(item) {
         const url = item.url;
         const свой = направлениеИз(url);
-        const lastmod = blogLastmod[url] || newsItemLastmod[url] || датаСравнения(url)
+        const lastmod = blogLastmod[url] || newsItemLastmod[url] || newsTopicLastmod[url] || датаСравнения(url)
           || (свой ? датаНаправления(свой.slug, свой.группа) : DATA_DATE);
         const domesticDocuments = свой && DOMESTIC_SLUGS.has(свой.slug) && ['visa', 'packing'].includes(свой.группа);
         const prepChanged = domesticDocuments || isTravelPrepPilot(url);

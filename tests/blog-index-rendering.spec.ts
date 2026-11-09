@@ -159,7 +159,8 @@ for (const scale of [1.75, 2]) {
         await image.evaluate((node: HTMLImageElement, values) => { node.srcset = values.srcset; node.sizes = values.sizes; },
           { srcset: otherWidths.map(width => `/__qa-wide-cover-2/${width}.webp ${width}w`).join(', '), sizes: featuredImageSizes(other) });
         await expect.poll(async () => image.evaluate((node: HTMLImageElement) => {
-          const current = new URL(node.currentSrc).pathname;
+          if (!node.currentSrc) return 0; // selection is asynchronous after changing srcset
+          const current = new URL(node.currentSrc, location.href).pathname;
           return current.includes('/__qa-wide-cover-2/') ? Number.parseInt(current.split('/').pop() || '0', 10) : 0;
         })).toBe(1600);
       }

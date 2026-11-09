@@ -15,6 +15,7 @@ import { articleLanguageProblems, articleFreshnessProblems } from './article-sou
 import { buildQueue } from './revision-queue.mjs';
 import { requiredChecks } from './auto-merge-policy.mjs';
 import { articleQualityRatchet } from './article-quality-ratchet.mjs';
+import { topicLastmodFromGit } from './news-topic-freshness.mjs';
 
 try {
   const { values } = parseArgs({ options: { base: { type: 'string' }, head: { type: 'string', default: 'HEAD' } } });
@@ -83,6 +84,12 @@ try {
     }
   }
   if (sourceProblems.length) throw new Error(sourceProblems.join('\n'));
+  // Compare the committed tree, not unrelated worktree edits, before expensive CI.
+  for (const file of ['scripts/news-topic-freshness.mjs', 'src/data/news-frontmatter.js',
+    'src/data/news-topics.js', 'src/data/news.js', 'src/data/freshness.js', 'src/pages/novosti/tema/[topic]/[...page].astro',
+    'src/components/NewsCompact.astro']) committed(file);
+  const topicDates = await topicLastmodFromGit({ root, head: scope.head, base: scope.base });
+  console.log(`✔ даты ${Object.keys(topicDates).length} тематических страниц соответствуют истории содержимого`);
   if (news.length) {
     committed('news/config.json');
     const run = (file, args = [], input) => execFileSync(process.execPath, [file, ...args], {

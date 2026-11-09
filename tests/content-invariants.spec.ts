@@ -19,6 +19,7 @@ import { articleProse, classifyEdit, baseVersion } from '../scripts/edit-kind.mj
 import { journalMetadataProblems } from '../scripts/check-journal-metadata.mjs';
 import { getEntryRequirements } from '../src/data/entry-requirements.js';
 import { isTravelPrepPilot } from '../src/data/travel-prep-pilot.js';
+import { extractHeroFigure, mobileHeroRequiredWidth, inspectMobileHeroVariant } from './hero-size-contract.mjs';
 
 // Инвариант-гейт по СБОРКЕ (dist/): ловит КЛАССЫ багов на ЛЮБОМ посте, в т.ч. вне
 // PAGES-списка скриншот-гейта. Без baseline — чистые assert'ы.
@@ -86,8 +87,8 @@ const blogSources = () =>
     .filter((n) => /\.mdx?$/.test(n))
     .map((n) => join(BLOG_SRC, n));
 
-test('Редакционные праздничные гиды честно показывают автора и поиск перелёта', async ({ page }) => {
-  for (const slug of ['novyy-god-tailand-2027', 'novyy-god-vietnam-2027']) {
+test('Редакционные статьи честно показывают автора и поиск перелёта', async ({ page }) => {
+  for (const slug of ['novyy-god-tailand-2027', 'novyy-god-vietnam-2027', 'hram-uluvatu-bali']) {
     await page.goto(`/blog/${slug}/`, { waitUntil: 'domcontentloaded' });
     const byline = page.locator('.post-author');
     await expect(byline).toContainText('Редакция TravelTribe');
@@ -102,9 +103,11 @@ test('Редакционные праздничные гиды честно по
     });
     const article = nodes.find(node => node['@type'] === 'BlogPosting');
     expect(article?.author?.['@id']).toBe('https://traveltribe.ru/#org');
-    for (const scope of [page.locator('.trip-context').first(), page.locator('[data-trip-planning]')]) {
-      await expect(scope.getByText('Найти авиабилеты')).toBeVisible();
-      await expect(scope).toContainText('Выберите город вылета, направление и свои даты');
+    if (slug !== 'hram-uluvatu-bali') {
+      for (const scope of [page.locator('.trip-context').first(), page.locator('[data-trip-planning]')]) {
+        await expect(scope.getByText('Найти авиабилеты')).toBeVisible();
+        await expect(scope).toContainText('Выберите город вылета, направление и свои даты');
+      }
     }
   }
 
@@ -115,19 +118,23 @@ test('Редакционные праздничные гиды честно по
     return Array.isArray(json['@graph']) ? json['@graph'] : [json];
   });
   const blog = indexNodes.find(node => node['@type'] === 'Blog');
-  for (const slug of ['novyy-god-tailand-2027', 'novyy-god-vietnam-2027']) {
+  for (const slug of ['novyy-god-tailand-2027', 'novyy-god-vietnam-2027', 'hram-uluvatu-bali']) {
     const item = blog?.blogPost?.find((entry: any) => entry.url === `https://traveltribe.ru/blog/${slug}/`);
     expect(item?.author?.['@type']).toBe('Organization');
     expect(item?.author?.['@id']).toBe('https://traveltribe.ru/#org');
   }
-  const personal = blog?.blogPost?.find((entry: any) => entry.url === 'https://traveltribe.ru/blog/thailand-guide-2026/');
-  expect(personal?.author).toEqual({ '@type': 'Person', name: 'Никита Зайцев' });
+  for (const slug of ['thailand-guide-2026']) {
+    const personal = blog?.blogPost?.find((entry: any) => entry.url === `https://traveltribe.ru/blog/${slug}/`);
+    expect(personal?.author).toEqual({ '@type': 'Person', name: 'Никита Зайцев' });
+  }
 
   for (const [from, to] of [
     ['thailand-guide-2026', 'novyy-god-tailand-2027'],
     ['phuket-samui-2026', 'novyy-god-tailand-2027'],
     ['fukuok-ili-haynan', 'novyy-god-vietnam-2027'],
     ['nyachang-fukuok-2026', 'novyy-god-vietnam-2027'],
+    ['bali-guide-2026', 'hram-uluvatu-bali'],
+    ['chto-vzyat-na-more-2026', 'hram-uluvatu-bali'],
   ]) {
     await page.goto(`/blog/${from}/`, { waitUntil: 'domcontentloaded' });
     const link = page.locator(`.prose a[href="/blog/${to}/"]`);
@@ -143,13 +150,17 @@ test('Редакционные праздничные гиды честно по
 
   const dzenFeed = readFileSync(join(DIST, 'dzen-rss.xml'), 'utf8');
   const siteFeed = readFileSync(join(DIST, 'rss.xml'), 'utf8');
-  for (const slug of ['novyy-god-tailand-2027', 'novyy-god-vietnam-2027']) {
+  for (const slug of ['novyy-god-tailand-2027', 'novyy-god-vietnam-2027', 'hram-uluvatu-bali']) {
     expect(dzenFeed).not.toContain(`/blog/${slug}/`);
     expect(siteFeed).toContain(`https://traveltribe.ru/blog/${slug}/`);
   }
-  for (const slug of ['thailand-guide-2026', 'phuket-samui-2026', 'fukuok-ili-haynan', 'nyachang-fukuok-2026']) {
+  for (const slug of ['thailand-guide-2026', 'phuket-samui-2026', 'fukuok-ili-haynan', 'nyachang-fukuok-2026', 'bali-guide-2026', 'chto-vzyat-na-more-2026']) {
     expect(dzenFeed).toContain(`<guid isPermaLink="true">https://traveltribe.ru/blog/${slug}/</guid>`);
   }
+  const baliItem = dzenFeed.split('<item>').find(item => item.includes('<guid isPermaLink="true">https://traveltribe.ru/blog/bali-guide-2026/</guid>'));
+  expect(baliItem).toBeTruthy();
+  expect(baliItem).toContain('Храм Улувату');
+  expect(baliItem).not.toContain('/blog/hram-uluvatu-bali/');
 });
 
 // Какие статьи тронуты в этом заходе — общая мерка для всех проверок текста ниже.
@@ -690,13 +701,11 @@ test('llms-full.txt: нет внутренних идентификаторов 
 // Зачем гейт: japan-guide падал в CI и ронял чужие PR, а vietnam-guide (0.82) не
 // входит в lighthouserc.mobile.json — то есть просто не проходил планку молча.
 test('hero-обложка: вес варианта под мобайл не выше 150 КБ (LCP)', () => {
-  const MAX_KB = 150;
   // Какой вариант берёт браузер — не смоделировано, а СВЕРЕНО с Lighthouse 17.07.2026:
   // bolivia 960w=100КБ (намерено 101), vietnam 960w=277 (277), peru 960w=67 (67),
   // bali 960w=168 (168). То есть при sizes=100vw и вьюпорте 412 выбирается наименьший
   // вариант >= ~824px, а не >= 412*2.625. У japan варианта >=824 просто не было
   // (срcset «640w, 900w») → браузер брал весь портрет 900px = 188 КБ. Отсюда правило.
-  const NEED_W = 412 * 2;
   const heavy: { page: string; kb: number; file: string; width: number }[] = [];
   const broken: { page: string; why: string }[] = [];
   for (const f of files) {
@@ -707,37 +716,42 @@ test('hero-обложка: вес варианта под мобайл не вы
     // когда-нибудь выше обложки появится другой <picture>, гейт не должен молча
     // начать мерить чужую картинку. Сейчас (проверено по 51 странице) source один
     // и всегда в post-cover.
-    const coverAt = html.indexOf('post-cover');
-    if (coverAt < 0) continue; // страницы без hero (не пост) — не наш случай
+    const cover = extractHeroFigure(html);
+    if (!cover) { broken.push({ page: f.replace(DIST, ''), why: 'нет разбираемой обложки post-cover' }); continue; }
     // HTML части страниц не минифицирован (astro-compress), поэтому кавычки у type
     // опциональны. У srcset кавычки есть всегда: значение содержит пробелы и запятые,
     // минификатор их убрать не может (проверено: 0 из 51 без кавычек).
-    const src = html.slice(coverAt).match(/<source[^>]*type=["']?image\/webp["']?[^>]*>/i);
-    if (!src) { broken.push({ page: f.replace(DIST, ''), why: 'у post-cover нет <source webp>' }); continue; }
-    // Новая обложка ограничена колонкой 675px и уже 100vw на телефоне.
-    // Сохраняем прежний консервативный NEED_W=824: он проверяет не меньший
-    // вариант, чем прежняя мобильная калибровка, и тот же лимит 150 КБ.
-    // Любой другой sizes требует отдельной проверки выбора ресурса браузером.
-    const sizes = src[0].match(/\bsizes=(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
-    const value = sizes?.[1] ?? sizes?.[2] ?? sizes?.[3];
-    if (value !== '100vw' && value !== '(max-width: 720px) calc(100vw - 2.8rem), 675px') {
-      broken.push({ page: f.replace(DIST, ''), why: 'неизвестный sizes у hero — проверь выбор мобильного ресурса' }); continue;
-    }
-    const ss = src[0].match(/srcset=["']([^"']+)["']/i);
-    if (!ss) { broken.push({ page: f.replace(DIST, ''), why: 'у hero-source нет srcset' }); continue; }
-    // Берём только w-дескрипторы: случайный "2x" при parseInt дал бы width=2 и
-    // сломал бы выбор варианта.
-    const variants = [...ss[1].matchAll(/([^\s,]+)\s+(\d+)w/g)]
-      .map((m) => ({ url: m[1], width: parseInt(m[2], 10) }))
-      .sort((a, b) => a.width - b.width);
-    if (!variants.length) { broken.push({ page: f.replace(DIST, ''), why: 'в srcset нет w-вариантов' }); continue; }
-    const picked = variants.find((v) => v.width >= NEED_W) || variants[variants.length - 1];
-    const asset = join(DIST, picked.url.replace(/^\//, ''));
-    // Битый путь = LCP-ресурса нет. Это провал гейта, а не повод молча пропустить.
-    if (!existsSync(asset)) { broken.push({ page: f.replace(DIST, ''), why: `файл из srcset не существует: ${picked.url}` }); continue; }
-    const kb = statSync(asset).size / 1024;
-    if (kb > MAX_KB) {
-      heavy.push({ page: f.replace(DIST, ''), kb: Math.round(kb), file: picked.url.split('/').pop()!, width: picked.width });
+    const sourceTags = cover.match(/<source\b[^>]*>/gi) ?? [];
+    const webp = sourceTags.find(tag => /\btype=["']?image\/webp(?:["'\s>]|$)/i.test(tag));
+    const avif = sourceTags.find(tag => /\btype=["']?image\/avif(?:["'\s>]|$)/i.test(tag));
+    const avifPreload = /<link\b(?=[^>]*\brel=["']?preload(?:["'\s>]|$))(?=[^>]*\bas=["']?image(?:["'\s>]|$))(?=[^>]*\btype=["']?image\/avif(?:["'\s>]|$))[^>]*>/i.test(html);
+    if (!webp) { broken.push({ page: f.replace(DIST, ''), why: 'у post-cover нет <source webp>' }); continue; }
+    if (Boolean(avif) !== avifPreload) { broken.push({ page: f.replace(DIST, ''), why: 'AVIF source и preload не совпадают' }); continue; }
+    // Сохраняем прежний консервативный минимум 824px и тот же лимит 150 КБ.
+    // Для широкого кадра object-fit может требовать более крупный вариант;
+    // формулу проверяем отдельно и неизвестный sizes отклоняем.
+    const image = cover.match(/<img\b[^>]*>/i)?.[0] ?? '';
+    const dimension = (name: string) => {
+      const match = image.match(new RegExp(`\\b${name}=(?:"(\\d+)"|'(\\d+)'|(\\d+))`, 'i'));
+      return Number(match?.[1] ?? match?.[2] ?? match?.[3]);
+    };
+    for (const src of [webp, ...(avif ? [avif] : [])]) {
+      const sizes = src.match(/\bsizes=(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
+      const value = sizes?.[1] ?? sizes?.[2] ?? sizes?.[3];
+      let requiredWidth: number;
+      try { requiredWidth = mobileHeroRequiredWidth(value, dimension('width'), dimension('height')); } catch {
+        broken.push({ page: f.replace(DIST, ''), why: 'неизвестный sizes у hero — проверь выбор мобильного ресурса' }); continue;
+      }
+      const ss = src.match(/srcset=["']([^"']+)["']/i);
+      const result = inspectMobileHeroVariant(ss?.[1], requiredWidth, (url: string) => {
+        const asset = join(DIST, url.replace(/^\//, ''));
+        return existsSync(asset) ? statSync(asset).size : undefined;
+      });
+      if (result.problem === 'oversized') {
+        heavy.push({ page: f.replace(DIST, ''), kb: Math.round(result.bytes / 1024), file: result.url.split('/').pop()!, width: result.width });
+      } else if (result.problem) {
+        broken.push({ page: f.replace(DIST, ''), why: `hero-source: ${result.problem} ${result.url ?? ''}` });
+      }
     }
   }
   expect(broken, JSON.stringify(broken, null, 2)).toEqual([]);

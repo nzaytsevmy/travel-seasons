@@ -54,6 +54,7 @@ interface Props {
   preloadImageMedia?: string;
   preloadImageSrcset?: string;
   preloadImageSizes?: string;
+  preloadImageType?: string;
   noindex?: boolean;
   noTransitions?: boolean;
   monetizationDestination?: string;
@@ -78,6 +79,7 @@ const {
   preloadImage,
   preloadImageSrcset,
   preloadImageSizes = '100vw',
+  preloadImageType,
   noindex = false,
   noTransitions = false,
   monetizationDestination,
@@ -265,7 +267,7 @@ const finalLd = {
   <link rel="dns-prefetch" href="https://analytics.ahrefs.com" />
 
   {/* Start the homepage image before the font preload queue. */}
-  {useJournalFonts && preloadImageSrcset && <link media={preloadImageMedia} rel="preload" as="image" href={preloadImageSrcset.split(' ')[0]} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
+  {useJournalFonts && preloadImageSrcset && <link media={preloadImageMedia} rel="preload" as="image" type={preloadImageType} href={preloadImageSrcset.split(' ')[0]} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
   {destinationFontProfile && [homeOst, destinationFontProfile === 'year' ? destinationYear : destinationItalic, destinationRuble].map(href =>
     <link rel="preload" as="font" type="font/woff2" href={href} crossorigin="anonymous" />)}
 
@@ -320,7 +322,7 @@ const finalLd = {
       Браузеры с поддержкой imagesrcset (все современные) href игнорируют и
       берут вариант из набора, так что двойной загрузки нет; href — самый
       лёгкий вариант, запас для странного клиента. */}
-  {!useJournalFonts && preloadImageSrcset && <link media={preloadImageMedia} rel="preload" as="image" href={preloadImageSrcset.split(' ')[0]} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
+  {!useJournalFonts && preloadImageSrcset && <link media={preloadImageMedia} rel="preload" as="image" type={preloadImageType} href={preloadImageSrcset.split(' ')[0]} imagesrcset={preloadImageSrcset} imagesizes={preloadImageSizes} fetchpriority="high" />}
 
   <!-- Аналитика: базовая Яндекс.Метрика (обезличенная статистика + ПФ) и Ahrefs (cookieless)
        грузятся на production-домене для работы/улучшения Сайта (тот же законный интерес, что
