@@ -19,7 +19,7 @@ import { articleProse, classifyEdit, baseVersion } from '../scripts/edit-kind.mj
 import { journalMetadataProblems } from '../scripts/check-journal-metadata.mjs';
 import { getEntryRequirements } from '../src/data/entry-requirements.js';
 import { isTravelPrepPilot } from '../src/data/travel-prep-pilot.js';
-import { extractHeroFigure, mobileHeroRequiredWidth, inspectMobileHeroVariant } from './hero-size-contract.mjs';
+import { extractHeroFigure, mobileHeroRequiredWidth, inspectMobileHeroVariant } from '../scripts/hero-size-contract.mjs';
 
 // Инвариант-гейт по СБОРКЕ (dist/): ловит КЛАССЫ багов на ЛЮБОМ посте, в т.ч. вне
 // PAGES-списка скриншот-гейта. Без baseline — чистые assert'ы.

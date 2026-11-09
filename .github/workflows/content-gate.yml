@@ -179,7 +179,7 @@ jobs:
       - name: Ранние проверки блога и обложек
         if: steps.scope.outputs.mode != 'accounting'
         run: |
-          if git diff --quiet "origin/${{ github.base_ref || 'main' }}" HEAD -- src/content/blog src/content/blog-schema.mjs src/pages/blog src/components/Breadcrumbs.astro src/layouts/Layout.astro src/data/featured-image-sizing.js tests/blog-index-rendering.spec.ts tests/blog-hero-preload.spec.ts tests/blog-card-scroll.spec.ts tests/blog-tag-reflow.spec.ts tests/content-invariants.spec.ts tests/hero-size-contract.mjs tests/hero-size-contract.test.mjs .github/workflows/content-gate.yml; then
+          if git diff --quiet "origin/${{ github.base_ref || 'main' }}" HEAD -- src/content/blog src/content/blog-schema.mjs src/pages/blog src/components/Breadcrumbs.astro src/layouts/Layout.astro src/data/featured-image-sizing.js tests/blog-index-rendering.spec.ts tests/blog-hero-preload.spec.ts tests/blog-card-scroll.spec.ts tests/blog-tag-reflow.spec.ts tests/content-invariants.spec.ts scripts/hero-size-contract.mjs tests/hero-size-contract.test.mjs .github/workflows/content-gate.yml; then
             echo 'Изменений блога и его общих шаблонов нет.'
             exit 0
           fi

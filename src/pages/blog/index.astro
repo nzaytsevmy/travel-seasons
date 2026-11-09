@@ -323,15 +323,6 @@ const ldJson = {
 
 .post-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.45rem; flex: 1; }
 
-/* Keep every link in server HTML, but defer laying out text far below the fold.
-   The card and its focus outline remain outside the contained subtree. */
-@supports (content-visibility: auto) {
-  .post-card:nth-child(n+5) .post-body {
-    content-visibility: auto;
-    contain-intrinsic-block-size: auto 8rem;
-  }
-}
-
 /* ── Shared ── */
 /* Теги карточки — подпись, а не кнопки: брендбук §4 запрещает рамки и скругления,
    плотность держим разделителем, а не коробочками. */

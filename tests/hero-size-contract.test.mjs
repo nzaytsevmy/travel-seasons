@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { extractHeroFigure, mobileHeroRequiredWidth, inspectMobileHeroVariant } from './hero-size-contract.mjs';
+import { extractHeroFigure, mobileHeroRequiredWidth, inspectMobileHeroVariant } from '../scripts/hero-size-contract.mjs';
 
 test('finds the real hero figure and rejects a missing or unclosed figure', () => {
   const figure = '<figure class = "wide post-cover"><img src="hero.webp"></figure>';
