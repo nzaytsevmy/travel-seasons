@@ -87,7 +87,7 @@ const blogSources = () =>
     .filter((n) => /\.mdx?$/.test(n))
     .map((n) => join(BLOG_SRC, n));
 
-test('Редакционные статьи показывают редакцию без сведений об ИИ и сохраняют поиск перелёта', async ({ page }) => {
+test('Редакционные статьи честно показывают автора и поиск перелёта', async ({ page }) => {
   const editorialSlugs = ['novyy-god-tailand-2027', 'novyy-god-vietnam-2027', 'hram-uluvatu-bali',
     'fish-and-chips-london', 'pochemu-v-ispanii-tseluyutsya', 'shamarel-mavrikiy', 'novyy-god-2027-kuda-poehat'];
   for (const slug of editorialSlugs) {
