@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "slug": "park-retiro-madrid",
-  "reviewer": "Codex (editorial_review_20261020)",
-  "reviewerTask": "/root/editorial_review_20261020",
-  "reviewedAt": "2026-10-20",
+  "reviewer": "Codex (routine_review_20261110)",
+  "reviewerTask": "/root/routine_review_20261110",
+  "reviewedAt": "2026-11-10",
   "status": "approved_with_limits_pending_release_checks",
-  "approvalScope": "EDITORIAL_CONTENT_ONLY",
+  "approvalScope": "BOUNDED_EDITORIAL_DELTA_WITH_REUSED_SCORES",
   "qualityScore": {
     "topic": 8,
     "facts": 9,
@@ -16,7 +16,7 @@
     "overall": 8.2,
     "ceiling": "Потолок 8,2/10: полезный редакционный маршрут с корректными ограничениями доступа и цены, без подтверждённого посещения автора. Собственный вклад — сценарий прогулки и схема, не полевое исследование; спрос мал и частично устаревший. Рендер402/1280, полныйCI, публичнаяатрибуция, exactdeploy/live и эффект ещёнепроверены."
   },
-  "rationale": "Полный финальный title,description,lead и MDX прочитаны отдельнымрецензентом. Обнаружены и исправленыстоп-слова,отсутствующаягеометрическаясхема,скруглениепрудаи двусмысленнаяподписьобходаограждений. Текущийтекстразделяетбесплатныйпарк,платногогида,лодкуизакрытыйCrystal;нефабрикуетпосещение. Официальныепарк/галереи/лодкии офферсверенынезависимо;границыдоступакдвумдругимстраницампрямоназваны. По7осямпотолок8,2,поQUALITY6подтверждённыхдесяток;выпуск/визуал/деньгиотдельнонеподтверждены.",
+  "rationale": "Новая тематическая ссылка следует после прямого ответа о самостоятельной прогулке. Удаление вставки возвращает94db807187c27b34 — HEAD и прежний reviewhash. Старые оценки и ограничения сохранены без повторной проверки неизменного основного текста.",
   "risks": [
     "CrystalиLaRosaledaвwebэтогорецензентанеоткрылись;журналавторавключаетихпросмотр,независимыйпросмотрэтих2страницневыдуман.",
     "Личногоопытаавторанет;1семейныйотчётRedditнерепрезентативен,нетчитательскоготеста.",
@@ -26,7 +26,7 @@
     "ПубличнаяCCатрибуция/полныйCI/402и1280/exactdeploy/live/зрелаяатрибуциязаказовещёневыполнены."
   ],
   "blockingIssues": [],
-  "proseHash": "94db807187c27b34",
+  "proseHash": "4d7f895ac2a03ea6",
   "qualityCriteria": [
     {
       "criterion": 1,
@@ -134,5 +134,45 @@
       ]
     },
     "limitation": "Провереныисходныйтекст/картаразделов,нефинальный.proseилиclick_id/orderатрибуция."
+  },
+  "previousEditorialReview": {
+    "reviewer": "Codex (editorial_review_20261020)",
+    "reviewedAt": "2026-10-20",
+    "proseHash": "94db807187c27b34",
+    "sourceSha256": null,
+    "retainedScores": true
+  },
+  "deltaReview20261110": {
+    "scope": "new context link only; NY also inherited photo/alt delta verified against edec1332",
+    "rationale": "Новая тематическая ссылка следует после прямого ответа о самостоятельной прогулке. Удаление вставки возвращает94db807187c27b34 — HEAD и прежний reviewhash. Старые оценки и ограничения сохранены без повторной проверки неизменного основного текста.",
+    "quality14DeltaAssessment": [
+      10,
+      5,
+      10,
+      10,
+      5,
+      5,
+      10,
+      10,
+      5,
+      10,
+      5,
+      5,
+      5,
+      0
+    ]
+  },
+  "approved": true,
+  "editorialApproved": true,
+  "editorialVerdict": "PASS",
+  "releaseApproved": false,
+  "releaseStatus": "PENDING_REQUIRED_CI_DEPLOY_LIVE",
+  "sourceSha256": "8245b113788bc99a142336ef82d27f883afd6d8909ccbc9aa16cc30ee9ec3114",
+  "expiredFactReview20261110": {
+    "reviewer": "Codex (routine_review_20261110)",
+    "verdict": "PASS_DELTA_ONLY",
+    "evidence": ".run/20261110/madrid-expired-native.json",
+    "scope": "EMT/Aena night203/T1/T2/T4/Cibeles; Sputnik120EUR/2h/Russian/8persons/guide only; RUB11087.328 rounded11100. Other facts not rechecked; prior scores retained.",
+    "proseHash": "4d7f895ac2a03ea6"
   }
 }

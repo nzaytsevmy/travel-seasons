@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "slug": "madrid-gde-ostanovitsya",
-  "reviewer": "Codex (editorial_review_20261020)",
-  "reviewedAt": "2026-10-20",
+  "reviewer": "Codex (routine_review_20261110)",
+  "reviewedAt": "2026-11-10",
   "status": "approved_with_limits_pending_release_checks",
   "qualityScore": {
     "topic": 8,
@@ -14,7 +14,7 @@
     "overall": 8.4,
     "ceiling": "Потолок 8,4/10: подтверждены 10 из 14 критериев QUALITY. Собственный вклад усилен матрицей 18 путей метро; проживание и свойства номеров не проверены, свежий спрос не измерен. Публичный слой авторства частичный; ссылки, адаптив, полный gate, CI, deploy/live и читательский тест ещё не закрыты."
   },
-  "rationale": "Адресное ревью20.10: прочитан весь абзац разделаРетиро и соседнийконтекст. Единственноеизменениепроверяемойпрозы—релевантныйвходящийлинкнаотдельныймаршрутРетиро;оннеподменяетвыборжильяинедобавляетпроживанияавтора. Обратноеудалениеэтоготочного предложениядало прежнийproseHash b0ba1a93a8ac6b59,совпавшийсHEADипредыдущейрецензией. Неизменныестарыефакты/оценки/потолокпереиспользованы,неперепроверены20.10;новыегейтыфинальноговыпускаещёнепройдены.",
+  "rationale": "Проверены новая ссылка на испанские приветствия и соседний контекст. Удаление только вставки возвращает bde95a0b4329d5b5 — HEAD и прежний reviewhash. Остальная оценка переиспользована; свежая проверка неизменных фактов не заявлена.",
   "blockingIssues": [],
   "risks": [
     "Wordstat пропущен по прямому разовому разрешению Никиты; Wordcraft и свежий срез аналитики темы отсутствуют. Не делать из этого нулевой спрос или прогноз посещений.",
@@ -26,7 +26,7 @@
     "Прямой destination Островка проверен автором в обычном Chrome; рецензент не имитировал партнёрский клик и не совершал покупку. Статус сайта или наличие CTA не подтверждает бронь либо доход.",
     "Производственные гейты, рендер402/1280, реальный читательский тест и deploy/live финальной версии ещё не выполнены."
   ],
-  "proseHash": "bde95a0b4329d5b5",
+  "proseHash": "cea977bd131360e8",
   "verification": {
     "fullFinalProseRead": false,
     "leadIncludedInHash": true,
@@ -125,8 +125,8 @@
     "ciDeployLive": false,
     "readerTest": false
   },
-  "reviewerTask": "/root/editorial_review_20261020",
-  "approvalScope": "EDITORIAL_CONTENT_ONLY",
+  "reviewerTask": "/root/routine_review_20261110",
+  "approvalScope": "BOUNDED_EDITORIAL_DELTA_WITH_REUSED_SCORES",
   "scope": "TARGETED_INCOMING_LINK_ONLY",
   "reuseEvidence": {
     "baseProseHash": "b0ba1a93a8ac6b59",
@@ -140,5 +140,45 @@
     "reviewedAt": "2026-10-11",
     "proseHash": "b0ba1a93a8ac6b59",
     "rationale": "Весь финальный MDX, title, description и lead прочитаны отдельно от автора. Полная официальная схема метро декабря2025 просмотрена, проверены реальные пересадки и18 последовательностей, ограничение обычной сети сохранено. Оплата и ночной Airport Express сопоставлены с первичками. Семь фото просмотрены; Пласа-Майор не названа Соль. Матрица маршрутов добавляет воспроизводимый вклад, но не опыт проживания. Повторные FAQ убраны. HTTP preview200 подтвердил title/H1/description/OG/canonical и единственный lead. Это допуск текста к обязательным гейтам с10 подтверждёнными критериями, не доказанный выпуск. Адресное повторное ревью11.10.2026 после языкового гейта: единственная фраза «а не только оставлять чемодан» заменена на «а не оставлять чемодан до вечера». Прочитан весь соседний абзац и начало таблицы; смысл рекомендации сохранён, новых фактов нет. Обратная подстановка дала предыдущий proseHash, поэтому неизменная проза не оценивалась заново. Оценки и ограничения выпуска сохранены."
+  },
+  "previousEditorialReview": {
+    "reviewer": "Codex (editorial_review_20261020)",
+    "reviewedAt": "2026-10-20",
+    "proseHash": "bde95a0b4329d5b5",
+    "sourceSha256": null,
+    "retainedScores": true
+  },
+  "deltaReview20261110": {
+    "scope": "new context link only; NY also inherited photo/alt delta verified against edec1332",
+    "rationale": "Проверены новая ссылка на испанские приветствия и соседний контекст. Удаление только вставки возвращает bde95a0b4329d5b5 — HEAD и прежний reviewhash. Остальная оценка переиспользована; свежая проверка неизменных фактов не заявлена.",
+    "quality14DeltaAssessment": [
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      5,
+      10,
+      10,
+      5,
+      5,
+      0
+    ]
+  },
+  "approved": true,
+  "editorialApproved": true,
+  "editorialVerdict": "PASS",
+  "releaseApproved": false,
+  "releaseStatus": "PENDING_REQUIRED_CI_DEPLOY_LIVE",
+  "sourceSha256": "8107b92ed3d6ff4f3051976f2b46a0f572ac9fbbadbb6ad4b5303ff88a58dee1",
+  "expiredFactReview20261110": {
+    "reviewer": "Codex (routine_review_20261110)",
+    "verdict": "PASS_DELTA_ONLY",
+    "evidence": ".run/20261110/madrid-expired-native.json",
+    "scope": "EMT/Aena night203/T1/T2/T4/Cibeles; Sputnik120EUR/2h/Russian/8persons/guide only; RUB11087.328 rounded11100. Other facts not rechecked; prior scores retained.",
+    "proseHash": "cea977bd131360e8"
   }
 }
