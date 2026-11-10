@@ -87,12 +87,14 @@ const blogSources = () =>
     .filter((n) => /\.mdx?$/.test(n))
     .map((n) => join(BLOG_SRC, n));
 
-test('Редакционные статьи честно показывают автора и поиск перелёта', async ({ page }) => {
-  for (const slug of ['novyy-god-tailand-2027', 'novyy-god-vietnam-2027', 'hram-uluvatu-bali']) {
+test('Редакционные статьи показывают редакцию без сведений об ИИ и сохраняют поиск перелёта', async ({ page }) => {
+  const editorialSlugs = ['novyy-god-tailand-2027', 'novyy-god-vietnam-2027', 'hram-uluvatu-bali',
+    'fish-and-chips-london', 'pochemu-v-ispanii-tseluyutsya', 'shamarel-mavrikiy', 'novyy-god-2027-kuda-poehat'];
+  for (const slug of editorialSlugs) {
     await page.goto(`/blog/${slug}/`, { waitUntil: 'domcontentloaded' });
     const byline = page.locator('.post-author');
     await expect(byline).toContainText('Редакция TravelTribe');
-    await expect(byline).toContainText('подготовлено с помощью ИИ');
+    await expect(page.locator('body')).not.toContainText(/подготовлено с помощью ИИ|создано с помощью ИИ|AI-generated|AI-assisted/i);
     await expect(byline).not.toContainText('Никита Зайцев');
     await expect(byline.locator('.author-link')).toHaveAttribute('href', '/');
     await expect(page.locator('.author-bio')).toHaveCount(0);
@@ -103,7 +105,7 @@ test('Редакционные статьи честно показывают а
     });
     const article = nodes.find(node => node['@type'] === 'BlogPosting');
     expect(article?.author?.['@id']).toBe('https://traveltribe.ru/#org');
-    if (slug !== 'hram-uluvatu-bali') {
+    if (['novyy-god-tailand-2027', 'novyy-god-vietnam-2027'].includes(slug)) {
       for (const scope of [page.locator('.trip-context').first(), page.locator('[data-trip-planning]')]) {
         await expect(scope.getByText('Найти авиабилеты')).toBeVisible();
         await expect(scope).toContainText('Выберите город вылета, направление и свои даты');
@@ -118,7 +120,7 @@ test('Редакционные статьи честно показывают а
     return Array.isArray(json['@graph']) ? json['@graph'] : [json];
   });
   const blog = indexNodes.find(node => node['@type'] === 'Blog');
-  for (const slug of ['novyy-god-tailand-2027', 'novyy-god-vietnam-2027', 'hram-uluvatu-bali']) {
+  for (const slug of editorialSlugs) {
     const item = blog?.blogPost?.find((entry: any) => entry.url === `https://traveltribe.ru/blog/${slug}/`);
     expect(item?.author?.['@type']).toBe('Organization');
     expect(item?.author?.['@id']).toBe('https://traveltribe.ru/#org');
