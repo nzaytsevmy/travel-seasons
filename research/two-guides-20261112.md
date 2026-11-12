@@ -39,3 +39,7 @@ Queue entries were added after independent working drafts; no false claim of reg
 ## Remaining publication preparation (not claimed PASS)
 
 Google method resolution; exact integrated source independent review/artifacts; full unchanged source preflight and nativeCI; exactdeploy; allchangedliveURLs4widths/photo/manual/SSR/schema/feeds/offers; feedback/accounting; originalretention/cleanup. Publication is not claimed.
+
+## Owner release instruction, 12 November 2026
+
+After the explicit final question about the Google-only comparison blocker, the owner instructed: «Требую публиковать и доводить до конца». Proceed with the prepared five-domain comparison through available sources; no claim that Google was completed. The separate demand waiver remains in force. Exact source review and all technical CI/deploy/live gates remain required. This supersedes the earlier pending-method state above, not the research observations.
