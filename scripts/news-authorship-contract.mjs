@@ -26,9 +26,9 @@ export function newsAuthorshipProblems(html) {
     const text = textContent(byline).replace(/\s+/g, ' ');
     const links = descendants(byline).filter(node => node.tagName === 'a').map(node => attribute(node, 'href'));
     if (!text.includes('\u0420\u0435\u0434\u0430\u043a\u0446\u0438\u044f TravelTribe')) problems.push('Editorial byline missing');
-    if (links.includes('/about/') || text.includes('\u041d\u0438\u043a\u0438\u0442\u0430 \u0417\u0430\u0439\u0446\u0435\u0432')) problems.push('Personal attribution in editorial byline');
-    if (!links.includes('/')) problems.push('Editorial byline must link to site');
-    if (!links.includes('https://t.me/traveltriberu') || !text.includes('@traveltriberu')) problems.push('Editorial byline must include the channel link');
+    if (links.some(href => href === '/about/') || text.includes('\u041d\u0438\u043a\u0438\u0442\u0430 \u0417\u0430\u0439\u0446\u0435\u0432')) problems.push('Personal attribution in editorial byline');
+    if (!links.some(href => href === '/')) problems.push('Editorial byline must link to site');
+    if (!links.some(href => href === 'https://t.me/traveltriberu') || !text.includes('@traveltriberu')) problems.push('Editorial byline must include the channel link');
   }
   return problems;
 }

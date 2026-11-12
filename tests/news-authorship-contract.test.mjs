@@ -34,3 +34,9 @@ test('A byline-looking string in a script cannot stand in for an editorial signa
   const html = page('NewsArticle', 'https://traveltribe.ru/#org', '<script>const signature = "<p class=nvp-byline>Редакция TravelTribe</p>";</script>');
   assert.ok(newsAuthorshipProblems(html).some(problem => problem.includes('visible editorial byline')));
 });
+test('Channel addresses require exact equality, including scheme, host and path', () => {
+  for (const url of ['https://example.invalid/https://t.me/traveltriberu', 'https://t.me/traveltriberu.extra', 'http://t.me/traveltriberu']) {
+    const html = page('CollectionPage', 'https://traveltribe.ru/#org', `<p class="nv-byline"><a href="/">Редакция TravelTribe</a> · <a href="${url}">@traveltriberu</a></p>`);
+    assert.ok(newsAuthorshipProblems(html).some(problem => problem.includes('channel link')), url);
+  }
+});
