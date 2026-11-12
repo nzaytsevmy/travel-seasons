@@ -88,7 +88,7 @@ const ldJson = {
       "datePublished": addedIso,
       "dateModified": iso(d.checked),
       "inLanguage": "ru-RU",
-      "author": { "@id": "https://traveltribe.ru/about/#person" },
+      "author": { "@id": "https://traveltribe.ru/#org" },
       "publisher": { "@id": "https://traveltribe.ru/#org" },
       "isAccessibleForFree": true,
       "citation": d.sources.map((x) => x.url),
@@ -122,6 +122,11 @@ const ldJson = {
       </div>
 
       <h1 class="nvp-h1">{d.title}</h1>
+
+      <p class="nvp-byline">
+        <a href="/">Редакция TravelTribe</a> ·
+        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>
+      </p>
 
       {d.tldr && <p class="nv-tldr">{d.tldr}</p>}
 
@@ -189,6 +194,8 @@ const ldJson = {
   .nvp-status { color: var(--text-dim); font-size: .8rem; }
 
   .nvp-h1 { font-size: clamp(1.6rem, 4vw, 2.3rem); line-height: 1.15; margin: 0 0 .9rem; }
+  .nvp-byline { font-size: .85rem; line-height: 1.6; color: var(--text-dim); margin: 0 0 1rem; }
+  .nvp-byline a { color: inherit; text-decoration: underline 1px; text-underline-offset: .22em; }
 
   /* Класс тот же, что в ленте: на него ссылается speakable во всех шаблонах
      раздела, и голосовой ответ зачитывает именно капсулу. */

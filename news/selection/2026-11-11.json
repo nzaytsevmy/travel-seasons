@@ -279,8 +279,8 @@
       "type": "NEW",
       "role": "reading-and-sharing",
       "sourceLevel": "permitted AlJazeera/AP dated11Nov full report",
-      "outcome": "DEFER",
-      "reason": "Editorial4/5pass, but actual newsGeography throws Unknown editorial geography:portugal. Mandatory canonical country catalogue dependency requires separate26-check source release; keep ready ordinary news separate. No false empty geography or weakened gate. Stage2prepared.",
+      "outcome": "ACCEPT",
+      "reason": "Editorial4/5 approved; Portugal country label dependency applied in separate critical source with all26CI required. Current12Nov source recheck preserved; historical11Nov airport pauses are not a continuing closure claim.",
       "fourQuestions": {
         "memorableDetail": "More300cancelled flights,4internationalairports paused,120km/h gusts",
         "readerValue": "Separates an individual flight status from ground access after flooding; no false continuing blanket closure",
@@ -806,15 +806,15 @@
   ],
   "counts": {
     "found": 41,
-    "ACCEPT": 2,
+    "ACCEPT": 3,
     "REJECT": 22,
-    "DEFER": 17,
-    "acceptedCandidateNEW": 1,
+    "DEFER": 16,
+    "acceptedCandidateNEW": 2,
     "acceptedCandidateUPDATE": 1,
     "dueReviewUPDATE": 1,
-    "NEW_planned": 1,
+    "NEW_planned": 2,
     "UPDATE_planned": 2,
-    "totalPlanned": 3
+    "totalPlanned": 4
   },
   "attention": {
     "provider": "publicGoogleTrendsRSS",
@@ -1906,8 +1906,8 @@
     "NEW": 0,
     "UPDATE": 0,
     "requiredChecks": "native content scope and aggregate mandatory; no claim until exact deploy/live",
-    "stage": "READY_ORDINARY_NEWS_FIRST",
-    "stage2": "Portugal critical geography dependency separately requires26CI; manuscript/photo/review preserved privately",
+    "stage": "CRITICAL_PORTUGAL_AND_EDITORIAL_AUTHORSHIP",
+    "stage2": "Portugal country dependency and news template authorship correction require full26CI, exactdeploy and fresh live proof.",
     "resume": {
       "checkedOn": "2026-11-12",
       "reason": "No firstlive on11Nov; native CodeQL startup failure and allother workflows stayedqueued. Explicit user continuation12Nov.",
@@ -1915,7 +1915,15 @@
       "newAddedField": "Corrected to expected firstlive12Nov, not date of private preparation",
       "sourceRecheck": "Allthree notes actual fresh200 source/body delta verification12Nov; no prose changes",
       "CI": "Fresh native exactsource checks pending; no security/workflow/gate changes",
-      "publicationConfirmed": false
+      "publicationConfirmed": false,
+      "stage1ActualPublication": {
+        "day": "2026-11-12",
+        "commit": "b947d98b01c29f2e651e6f5f3aecb72c93779ff5",
+        "deployRun": "43190974969",
+        "NEW": 1,
+        "UPDATE": 2,
+        "status": "CONTENT_ACCESSIBLE_AUTHORSHIP_DEFECT_PENDING_CORRECTION"
+      }
     }
   },
   "monetization": "No contextual ads in informational news answer; standard existing TripServices after answer. Revenue effect not measured.",

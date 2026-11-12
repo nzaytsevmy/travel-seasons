@@ -20,7 +20,11 @@ export const TOPIC_BASE_DATES = Object.freeze({});
 // rendered page changed. Hold such a release for page-by-page reconciliation
 // instead of automatically advancing every lastmod. Plain news edits and
 // literal topic titles/descriptions are handled by the content projection.
-export const TOPIC_PROJECTION_HASH = '82e7a926173bfd958a4567aea6df1f1e4c6a367827f46f23bad6271fa5e5d522';
+export const TOPIC_PROJECTION_HASH = '643f0c27fa3a71c6fc7978b40b9fcf5937372ccd819bdbed61cc2f6c33ab1d83';
+// Exact published b947d98 projection, retained only to verify the one-way
+// personal -> editorial authorship migration. Unknown versions still fail.
+export const TOPIC_LEGACY_PERSON_PROJECTION_HASH = '82e7a926173bfd958a4567aea6df1f1e4c6a367827f46f23bad6271fa5e5d522';
+const knownProjection = hash => hash === TOPIC_PROJECTION_HASH || hash === TOPIC_LEGACY_PERSON_PROJECTION_HASH;
 const TEMPLATES = ['src/pages/novosti/tema/[topic]/[...page].astro', 'src/components/NewsCompact.astro'];
 const HELPERS = ['src/data/news.js', 'src/data/news-topics.js', 'src/data/freshness.js', 'src/data/news-frontmatter.js'];
 const SELF = 'scripts/news-topic-freshness.mjs', LOCK = 'package-lock.json';
@@ -217,7 +221,10 @@ export async function topicLayoutHashFromWorktree(root = '.') {
 }
 
 // Only content actually rendered in topic lists and their structured data.
-export function topicFingerprints(entries, _layoutHash, definitions = { topics: NEWS_TOPICS, pageSize: NEWS_TOPIC_PAGE_SIZE }) {
+export function topicFingerprints(entries, layoutHash, definitions = { topics: NEWS_TOPICS, pageSize: NEWS_TOPIC_PAGE_SIZE }) {
+  const authorship = layoutHash === TOPIC_PROJECTION_HASH
+    ? { author: 'https://traveltribe.ru/#org', byline: 'Редакция TravelTribe', channel: 'https://t.me/traveltriberu' }
+    : { author: 'https://traveltribe.ru/about/#person', byline: 'Ведёт Никита Зайцев', channel: null };
   const all = feedEntries(entries), active = new Set(all.map(entry => entry.data.topic));
   const nav = definitions.topics.filter(topic => active.has(topic.topic))
     .map(topic => ({ title: topic.title, url: newsTopicUrl(topic.slug) }));
@@ -230,7 +237,7 @@ export function topicFingerprints(entries, _layoutHash, definitions = { topics: 
   });
   return Object.fromEntries(pages.map(page => {
     const url = newsTopicUrl(page.topic.slug, page.page);
-    const visible = { nav, title: page.topic.title,
+    const visible = { nav, authorship, title: page.topic.title,
       description: page.topic.description, page: page.page, totalPages: page.totalPages,
       items: page.items.map(entry => {
         const date = new Date(addedAt(entry));
@@ -288,7 +295,7 @@ export async function topicLastmodFromGit({ root = '.', head = 'HEAD', base, anc
 
   const remaining = new Set(Object.keys(headProjection)), dates = {};
   const anchorHash = await topicLayoutHashFromTree(anchor, root);
-  let reachedInitialProjection = anchorHash === TOPIC_PROJECTION_HASH;
+  let reachedInitialProjection = knownProjection(anchorHash);
   let snapshots = new Map(currentEntries.map(entry => [entry.slug, entry]));
   let layoutHash = headHash, definitions = headDefinitions, current = headProjection;
   let latestAllowed = Date.now();
@@ -298,7 +305,7 @@ export async function topicLastmodFromGit({ root = '.', head = 'HEAD', base, anc
     if (candidate.valueOf() > latestAllowed) throw new Error('Future commit time in topic history');
     latestAllowed = candidate.valueOf();
     const baseHash = await topicLayoutHashFromTree(base, root);
-    if (baseHash !== TOPIC_PROJECTION_HASH) {
+    if (!knownProjection(baseHash)) {
       if (baseHash !== anchorHash || changes(root, anchor, base).length !== 0)
         throw new Error('Unknown base topic rendering code: reconcile actual rendered page dates before release');
       reachedInitialProjection = true;
@@ -326,7 +333,12 @@ export async function topicLastmodFromGit({ root = '.', head = 'HEAD', base, anc
   for (const commit of prepared) {
     if (!commit.changes.some(change => !change.news)) continue;
     const previousHash = await topicLayoutHashFromTree(commit.before, root);
-    if (previousHash === TOPIC_PROJECTION_HASH) continue;
+    const nextHash = await topicLayoutHashFromTree(commit.after, root);
+    if (!knownProjection(nextHash))
+      throw new Error('Historical topic rendering code changed: reconcile actual rendered page dates before release');
+    if (previousHash === TOPIC_PROJECTION_HASH && nextHash === TOPIC_LEGACY_PERSON_PROJECTION_HASH)
+      throw new Error('Historical editorial projection reverted to legacy personal authorship');
+    if (knownProjection(previousHash)) continue;
     if (previousHash === anchorHash && changes(root, anchor, commit.before).length === 0) {
       reachedInitialProjection = true;
       continue;

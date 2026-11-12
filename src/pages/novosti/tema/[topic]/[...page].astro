@@ -20,7 +20,7 @@ const url = `https://traveltribe.ru${newsTopicUrl(topic.slug, page)}`;
 const ldJson = { '@context': 'https://schema.org', '@graph': [
   { '@type': 'CollectionPage', '@id': `${url}#page`, url, name: title,
     description: topic.description, inLanguage: 'ru-RU',
-    author: { '@id': 'https://traveltribe.ru/about/#person' },
+    author: { '@id': 'https://traveltribe.ru/#org' },
     ...(!retired ? { mainEntity: { '@id': `${url}#list` } } : {}) },
   ...(!retired ? [{ '@type': 'ItemList', '@id': `${url}#list`, itemListElement: items.map((entry, i) => ({
     '@type': 'ListItem', position: i + 1, name: entry.data.title,
@@ -39,7 +39,10 @@ const ldJson = { '@context': 'https://schema.org', '@graph': [
     <header>
       <h1>{title}</h1>
       <p>{topic.description}</p>
-      <p class="nvt-byline">Ведёт <a href="/about/">Никита Зайцев</a></p>
+      <p class="nvt-byline">
+        <a href="/">Редакция TravelTribe</a> ·
+        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a>
+      </p>
     </header>
     <nav aria-label="Темы новостей" class="nvt-nav">
       <a href="/novosti/">Все новости</a>
