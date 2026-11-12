@@ -33,6 +33,7 @@ const COUNTRIES = {
   guatemala:{label:'Гватемала'}, belize:{label:'Белиз'},
   'costa-rica':{label:'Коста-Рика'}, panama:{label:'Панама'},
   poland:{label:'Польша'}, france:{label:'Франция'}, germany:{label:'Германия'},
+  portugal:{label:'Португалия'},
   venezuela:{label:'Венесуэла'}, colombia:{label:'Колумбия'},
   'united-kingdom':{label:'Великобритания'}, ireland:{label:'Ирландия'},
   'french-polynesia':{label:'Французская Полинезия'},

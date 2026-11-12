@@ -20,6 +20,7 @@ import { journalMetadataProblems } from '../scripts/check-journal-metadata.mjs';
 import { getEntryRequirements } from '../src/data/entry-requirements.js';
 import { isTravelPrepPilot } from '../src/data/travel-prep-pilot.js';
 import { extractHeroFigure, mobileHeroRequiredWidth, inspectMobileHeroVariant } from '../scripts/hero-size-contract.mjs';
+import { newsAuthorshipProblems } from '../scripts/news-authorship-contract.mjs';
 
 // Инвариант-гейт по СБОРКЕ (dist/): ловит КЛАССЫ багов на ЛЮБОМ посте, в т.ч. вне
 // PAGES-списка скриншот-гейта. Без baseline — чистые assert'ы.
@@ -40,6 +41,14 @@ function allHtml(dir: string): string[] {
 }
 
 const files = allHtml(DIST);
+
+test('All news materials and collections identify the editorial author', () => {
+  const newsPages = files.filter(file => file.startsWith(join(DIST, 'novosti') + sep));
+  expect(newsPages.length).toBeGreaterThan(0);
+  for (const file of newsPages) {
+    expect(newsAuthorshipProblems(readFileSync(file, 'utf8')), file).toEqual([]);
+  }
+});
 
 /** Открывающие теги <a>, содержащие фрагмент адреса.
  *

@@ -56,7 +56,7 @@ const ldJson = {
       "description": description,
       "inLanguage": "ru-RU",
       ...(lastChecked ? { "dateModified": lastChecked.toISOString().slice(0, 10) } : {}),
-      "author": { "@id": "https://traveltribe.ru/about/#person" },
+      "author": { "@id": "https://traveltribe.ru/#org" },
       "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".nv-tldr"] },
     },
     {
@@ -90,7 +90,8 @@ const ldJson = {
         Свежее целиком — в <a href="/novosti/">ленте новостей</a>.
       </p>
       <p class="nv-byline">
-        Ведёт <a href="/about/">Никита Зайцев</a> ·
+        <a href="/">Редакция TravelTribe</a> ·
+        <a href="https://t.me/traveltriberu" target="_blank" rel="noopener">@traveltriberu</a> ·
         <a href="/novosti/rss.xml">RSS</a>
       </p>
     </header>
