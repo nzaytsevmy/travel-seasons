@@ -4,7 +4,7 @@ description: "Фусими Инари в Киото: бесплатный вхо
 pubDate: 2026-11-12
 format: guide
 author: "Редакция TravelTribe"
-destinations: ["japan-honshu"]
+destinations: ["japan"]
 tags: ["Япония", "Киото", "Маршруты"]
 coverImage: "./_images/fushimi-inari-kyoto/cover.jpg"
 coverAlt: "Два коридора красных ворот Сэнбон-тории"
