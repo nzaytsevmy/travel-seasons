@@ -63,7 +63,7 @@ test('template comments are ignored, visible copy remains significant', async ()
   assert.notEqual(await normalizeAstro(source.replace('Привет', 'Здравствуйте'), 'topic.astro'), normalized);
 });
 
-function fixture(t, { nature = false, stagedOrdering = false, timedOrder = false, explicitActive = false, crossTopics = false, oldProjection = false } = {}) {
+function fixture(t, { nature = false, stagedOrdering = false, timedOrder = false, explicitActive = false, crossTopics = false, oldProjection = false, legacyAuthorship = false } = {}) {
   const root = mkdtempSync(path.join(tmpdir(), 'tt-topic-history-'));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   const git = (args, stamp) => execFileSync('git', args, { cwd: root, encoding: 'utf8',
@@ -71,9 +71,13 @@ function fixture(t, { nature = false, stagedOrdering = false, timedOrder = false
       GIT_COMMITTER_DATE: stamp.includes('T') ? stamp : `${stamp}T09:00:00Z` } : {}) } }).trim();
   git(['init', '-q']); git(['config', 'user.name', 'Test']); git(['config', 'user.email', 'test@example.invalid']);
   const put = (file, value) => { const target = path.join(root, file); mkdirSync(path.dirname(target), { recursive: true }); writeFileSync(target, value); };
-  for (const file of ['src/pages/novosti/tema/[topic]/[...page].astro', 'src/components/NewsCompact.astro',
+  const projectionFiles = ['src/pages/novosti/tema/[topic]/[...page].astro', 'src/components/NewsCompact.astro',
     'src/data/news.js', 'src/data/news-topics.js', 'src/data/freshness.js', 'src/data/news-frontmatter.js',
-    'scripts/news-topic-freshness.mjs', 'package-lock.json']) put(file, readFileSync(file));
+    'scripts/news-topic-freshness.mjs', 'package-lock.json'];
+  const upgrade = () => { for (const file of projectionFiles) put(file, readFileSync(file)); };
+  const downgrade = () => { for (const file of projectionFiles) put(file,
+    execFileSync('git', ['show', `b947d98b01c29f2e651e6f5f3aecb72c93779ff5:${file}`])); };
+  if (legacyAuthorship) downgrade(); else upgrade();
   if (oldProjection) {
     const file = 'src/data/news.js', source = readFileSync(path.join(root, file), 'utf8');
     put(file, source.replace('first.length <= 130', 'first.length <= 131'));
@@ -98,8 +102,27 @@ function fixture(t, { nature = false, stagedOrdering = false, timedOrder = false
   const scanInstant = (head, base) => topicLastmodFromGit({ root, head, base, anchor, baseDates });
   const scan = async (head, base) => Object.fromEntries(Object.entries(await scanInstant(head, base))
     .map(([url, value]) => [url, value.slice(0, 10)]));
-  return { root, git, put, note, file, commit, anchor, scan, scanInstant };
+  return { root, git, put, note, file, commit, anchor, scan, scanInstant, upgrade, downgrade };
 }
+
+test('verified personal-to-editorial migration dates every topic, then preserves invisible edits', async t => {
+  const f = fixture(t, { nature: true, legacyAuthorship: true });
+  f.upgrade(); const migrated = f.commit('2026-11-02');
+  const dates = await f.scan(migrated, migrated);
+  assert.equal(Object.keys(dates).length, 2);
+  assert.ok(Object.values(dates).every(value => value === '2026-11-02'));
+  f.put(f.file, f.note('Festival', 'culture', 'A body-only revision.'));
+  const later = f.commit('2026-11-03');
+  assert.deepEqual(await f.scan(later, later), dates);
+});
+
+test('a known legacy revert after editorial publication cannot be hidden by returning to editorial', async t => {
+  const f = fixture(t, { nature: true, legacyAuthorship: true });
+  f.upgrade(); f.commit('2026-11-02');
+  f.downgrade(); f.commit('2026-11-03');
+  f.upgrade(); const head = f.commit('2026-11-04');
+  await assert.rejects(f.scan(head, head), /editorial projection reverted to legacy/);
+});
 
 test('editing one topic description does not redate other topics', async t => {
   const f = fixture(t, { nature: true });
