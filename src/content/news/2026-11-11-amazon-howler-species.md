@@ -1,8 +1,8 @@
 ---
 title: "В Амазонии описали два новых вида ревунов"
 date: "2026-11-11"
-added: "2026-11-11"
-checked: "2026-11-11"
+added: "2026-11-12"
+checked: "2026-11-12"
 topic: nature
 impact: medium
 score: 4

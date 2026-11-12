@@ -2,7 +2,7 @@
 title: "Девять поссумов Ледбитера переселили в новый лес"
 date: "2026-11-10"
 added: "2026-11-10"
-checked: "2026-11-11"
+checked: "2026-11-12"
 reviewOn: "2026-11-18"
 topic: nature
 impact: medium

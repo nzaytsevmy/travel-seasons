@@ -2,7 +2,7 @@
 title: "Дом Вудсона в Вашингтоне принимает экскурсии"
 date: "2026-11-05"
 added: "2026-11-05"
-checked: "2026-11-11"
+checked: "2026-11-12"
 reviewOn: "2026-11-18"
 topic: transport
 impact: medium
