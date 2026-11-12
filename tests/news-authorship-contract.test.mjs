@@ -26,3 +26,11 @@ test('Editorial signature includes the public channel', () => {
   const html = page('CollectionPage', 'https://traveltribe.ru/#org', '<p class="nv-byline"><a href="/">Редакция TravelTribe</a></p>');
   assert.ok(newsAuthorshipProblems(html).some(problem => problem.includes('channel link')));
 });
+test('HTML parsing accepts nested labels, character references and unquoted attributes', () => {
+  const html = page('CollectionPage', 'https://traveltribe.ru/#org', '<P class=nv-byline><a href=/><span>Редакция&nbsp;TravelTribe</span></a> · <a href=https://t.me/traveltriberu>@traveltriberu</a></P>');
+  assert.deepEqual(newsAuthorshipProblems(html), []);
+});
+test('A byline-looking string in a script cannot stand in for an editorial signature', () => {
+  const html = page('NewsArticle', 'https://traveltribe.ru/#org', '<script>const signature = "<p class=nvp-byline>Редакция TravelTribe</p>";</script>');
+  assert.ok(newsAuthorshipProblems(html).some(problem => problem.includes('visible editorial byline')));
+});
