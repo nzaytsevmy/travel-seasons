@@ -65,6 +65,11 @@ jobs:
           # Замер 03.08.2026: выкачка занимала 14,4 мин из 24,6 мин выкладки.
           filter: blob:none
 
+      - name: Release unused Android SDK disk space
+        run: |
+          df -h "$GITHUB_WORKSPACE"
+          sudo rm -rf -- /usr/local/lib/android
+          df -h "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -87,11 +92,24 @@ jobs:
         with:
           name: ${{ needs.prepare.outputs.artifact_name }}
           path: .build-artifact/
+      - name: Check disk headroom before unpacking the exact build
+        run: |
+          node --input-type=module <<'NODE'
+          import { statSync, statfsSync } from 'node:fs';
+          const archiveBytes = statSync('.build-artifact/site.tar', { bigint: true }).size;
+          const disk = statfsSync('.', { bigint: true });
+          const availableBytes = disk.bavail * disk.bsize;
+          const reserveBytes = 2n * 1024n ** 3n;
+          console.log(JSON.stringify({ archiveBytes: String(archiveBytes), availableBytes: String(availableBytes), reserveBytes: String(reserveBytes) }));
+          if (availableBytes < archiveBytes + reserveBytes) throw new Error('Insufficient disk for exact build extraction');
+          NODE
       - name: Verify and unpack exact build
         run: node scripts/build-artifact.mjs unpack
         env:
           ARTIFACT_DIGEST: ${{ needs.prepare.outputs.digest }}
           ARTIFACT_PRODUCER_ATTEMPT: ${{ needs.prepare.outputs.producer_attempt }}
+      - name: Remove downloaded archive after verified extraction
+        run: rm -f -- .build-artifact/site.tar
       - run: npm run check:mtimes
 
       # ⛔ Аудиты на том дереве, которое уезжает на сервер. До 12.09.2026 выкладка
