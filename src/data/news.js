@@ -163,17 +163,14 @@ export function feedEntries(entries, limit, { includeArchived = false } = {}) {
   return typeof limit === 'number' ? sorted.slice(0, limit) : sorted;
 }
 
-// Editorial prominence is not a claim about measured popularity. RSS keeps its
-// chronological order; old stories cannot stay pinned merely for a high score.
+// The front page follows publication dates, like RSS. Editorial score and impact
+// describe a story; they must not move older stories above newer publications.
 export function frontPageEntries(entries, limit = FEED_SIZE, now = new Date()) {
   const time = new Date(now).valueOf();
   if (!Number.isFinite(time)) throw new TypeError('Expected a valid news selection date.');
   const eligible = feedEntries(entries).filter(e => Number.isFinite(addedAt(e)) && addedAt(e) <= time);
-  const priority = eligible.filter(e => time - addedAt(e) < 7 * 86400000 && e.data.score >= 4)
-    .sort((a, b) => Number(b.data.impact === 'high') - Number(a.data.impact === 'high') ||
-      b.data.score - a.data.score || byDateDesc(a, b));
   const seen = new Set();
-  return [...priority, ...eligible].filter(e => {
+  return eligible.filter(e => {
     if (seen.has(e.slug)) return false;
     seen.add(e.slug); return true;
   }).slice(0, limit);
