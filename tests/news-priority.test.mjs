@@ -10,20 +10,11 @@ const entry = (slug, added, extra = {}) => ({ slug, data: {
   topic: 'nature', countries: ['japan'], impact: 'medium', score: 3, ...extra,
 } });
 
-test('front page shows newest publications first regardless of score and importance', () => {
+test('a timely important story precedes a newer routine story on the front page', () => {
   const ordinary = entry('ordinary', '2026-10-14');
   const important = entry('important', '2026-10-13', { score: 5, impact: 'high' });
-  assert.deepEqual(frontPageEntries([ordinary, important], 24, now).map(e => e.slug), ['ordinary', 'important']);
+  assert.deepEqual(frontPageEntries([ordinary, important], 24, now).map(e => e.slug), ['important', 'ordinary']);
   assert.deepEqual(feedEntries([ordinary, important]).map(e => e.slug), ['ordinary', 'important']);
-});
-test('chronology continues across the full-card and compact-list boundary', () => {
-  const fresh = Array.from({ length: 10 }, (_, i) => entry(`fresh-${i}`, `2026-10-${String(14 - i).padStart(2, '0')}`));
-  const important = entry('important', '2026-10-12', { score: 5, impact: 'high' });
-  const result = frontPageEntries([important, ...fresh.reverse()], 9, now);
-  assert.deepEqual(result.map(e => e.data.added.toISOString().slice(0, 10)), [
-    '2026-10-14', '2026-10-13', '2026-10-12', '2026-10-12', '2026-10-11',
-    '2026-10-10', '2026-10-09', '2026-10-08', '2026-10-07',
-  ]);
 });
 test('old high scores do not permanently pin stories and the page stays bounded', () => {
   const old = entry('old', '2026-09-01', { score: 5, impact: 'high' });
