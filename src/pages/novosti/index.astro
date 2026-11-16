@@ -25,7 +25,7 @@ import Footer from '../../components/Footer.astro';
 import NewsItem from '../../components/NewsItem.astro';
 import NewsCompact from '../../components/NewsCompact.astro';
 import { getCollection } from 'astro:content';
-import { frontPageEntries, monthKeys, entriesOfMonth, monthTitleRu, newsUrl,
+import { feedEntries, addedAt, monthKeys, entriesOfMonth, monthTitleRu, newsUrl,
          FULL_ON_FEED, FEED_SIZE } from '../../data/news.js';
 import { plural } from '../../data/plural.js';
 import { latestFeedModified, feedModifiedMoscowDay } from '../../data/news-discovery.js';
@@ -33,7 +33,11 @@ import { activeNewsTopics, newsTopicUrl } from '../../data/news-topics.js';
 
 const all = await getCollection('news');
 const topics = activeNewsTopics(all);
-const fresh = frontPageEntries(all, FEED_SIZE);
+// Keep the main feed strictly chronological, including the compact rows.
+const now = Date.now();
+const fresh = feedEntries(all)
+  .filter(entry => Number.isFinite(addedAt(entry)) && addedAt(entry) <= now)
+  .slice(0, FEED_SIZE);
 const months = monthKeys(all).map((k) => ({ key: k, count: entriesOfMonth(all, k).length }));
 
 const full = fresh.slice(0, FULL_ON_FEED);

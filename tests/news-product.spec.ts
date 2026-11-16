@@ -32,6 +32,17 @@ const archiveUrls = existsSync(newsRoot) ? readdirSync(newsRoot, { withFileTypes
   .filter(entry => entry.isDirectory() && /^\d{4}-\d{2}$/.test(entry.name))
   .map(entry => `/novosti/${entry.name}/`) : [];
 test.beforeEach(({}, info) => test.skip(info.project.name !== 'chromium-desktop'));
+test('news front page stays newest-first across cards and compact rows', async ({ page }) => {
+  expect((await page.goto('/novosti/'))?.status()).toBe(200);
+  const rows = await page.locator('main .nv-list > li, main .nv-compact > li').evaluateAll(nodes =>
+    nodes.map(node => ({ date: node.querySelector('time')?.getAttribute('datetime'),
+      href: node.querySelector('a[href^="/novosti/"]')?.getAttribute('href') })));
+  expect(rows.length).toBeGreaterThan(8);
+  expect(rows.length).toBeLessThanOrEqual(24);
+  expect(rows.every(row => /^\d{4}-\d{2}-\d{2}$/.test(row.date || ''))).toBe(true);
+  expect(new Set(rows.map(row => row.href)).size).toBe(rows.length);
+  expect(rows.map(row => row.date)).toEqual(rows.map(row => row.date).sort().reverse());
+});
 test('each news topic has a real built landing page', () => {
   for (const slug of ['vizy-i-vezd', 'transport-i-dostup', 'priroda'])
     expect(urls).toContain(`/novosti/tema/${slug}/`);
