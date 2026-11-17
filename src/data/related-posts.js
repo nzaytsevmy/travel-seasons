@@ -84,7 +84,7 @@ export const RELATED_POSTS = {
     { slug: 'china-guide-2026', title: 'Когда лучше ехать в Китай: месяцы и регионы', kind: 'guide' },
     { slug: 'hainan-guide-2026', title: 'Хайнань 2026 — тропический Китай', kind: 'guide' },
     { slug: 'esim-zagranicey-2026', title: 'Связь за границей: обход файрвола Китая', kind: 'guide' },
-    { slug: 'pay-abroad-2026', title: 'Как платить за границей: Alipay для Китая', kind: 'guide' },
+    { slug: 'pay-abroad-2026', title: 'Карты и наличные за границей: ограничения и комиссии', kind: 'guide' },
   ],
   'uae': [
     { slug: 'uae-guide-2026', title: 'Дубай 2026 для россиян: безвиз 90 дней, цены, сезон', kind: 'guide' },
