@@ -118,7 +118,7 @@ const RANK = {
   B: { label: 'Не лучший месяц', tone: 'bad',   tldr: 'есть нюансы — внутри подсказки как обойти',     price: 'Цены минимальные за год — низкий сезон.' },
   X: { label: 'Закрыто',        tone: 'closed', tldr: 'лучше выбрать другой месяц', price: 'Туристическая инфраструктура частично закрыта.' },
 };
-const rank = RANK[status] || RANK.O;
+const rank = { ...(RANK[status] || RANK.O), ...pageAdvice?.rank };
 
 const visa = VISA_DETAILS[d.slug];
 const needsVisa = !d.domestic && d.visa !== 'free';
@@ -544,7 +544,7 @@ const TAG_LABEL = { closed: 'выходные', fest: 'фестиваль', cult
       <section class="pmu-section">
         <div class="pmu-shead"><h2>Под местные занятия</h2></div>
         {tags.map((tag) => {
-          const gear = ACTIVITY_GEAR[tag];
+          const gear = pageAdvice?.activityGear?.[tag] || ACTIVITY_GEAR[tag];
           if (!gear) return null;
           return (
             <div class="pmu-activity">

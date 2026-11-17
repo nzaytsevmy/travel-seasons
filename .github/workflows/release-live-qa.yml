@@ -26,7 +26,7 @@ permissions:
 
 jobs:
   live:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 40
     strategy:
       fail-fast: false
@@ -75,7 +75,7 @@ jobs:
 
   hotel-guides-live:
     if: inputs.hotel_guides
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 40
     strategy:
       fail-fast: false
