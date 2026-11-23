@@ -201,6 +201,7 @@ import photo197 from '../content/blog/_images/tour-picks/bongeunsa.jpg';
 import photo198 from '../content/blog/_images/tour-picks/nungwi.jpg';
 import photo199 from '../content/blog/_images/tour-picks/merlion.jpg';
 import photo200 from '../content/blog/_images/peresadka-v-pekine/own-forbidden-view.jpg';
+import zanzibarDhow from '../content/blog/_images/zanzibar-2026/dhow.jpg';
 
 import sputnikBaliTerraces from '../content/blog/_images/hub-bali/tegalalang.jpg';
 import sputnikBaliPalace from '../content/blog/_images/hub-bali/tirta-gangga.jpg';
@@ -399,6 +400,7 @@ export const TOUR_PHOTOS = {
   'tour-picks/thoddoo.jpg': photo186,
   'tour-picks/zagreb.jpg': photo187,
   'tour-picks/zurich.jpg': photo188,
+  'zanzibar-2026/dhow.jpg': zanzibarDhow,
   'zanzibar-2026/doors.jpg': photo189,
   'zanzibar-2026/paje.jpg': photo190,
   'tour-picks/riyadh-skyline.jpg': photo191,

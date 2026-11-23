@@ -257,6 +257,7 @@ const ldJson = {
 .featured-card {
   display: grid;
   grid-template-columns: 1.1fr 1fr;
+  grid-template-rows: minmax(0, 1fr);
   border: 1px solid var(--line);
   border-radius: 0;
   overflow: hidden;
@@ -375,7 +376,7 @@ const ldJson = {
   .blog-wrap { padding-inline: var(--page-edge); overflow-wrap: anywhere; }
 }
 @media (max-width: 680px) {
-  .featured-card { grid-template-columns: 1fr; max-height: none; }
+  .featured-card { grid-template-columns: 1fr; grid-template-rows: auto auto; max-height: none; }
   .featured-img { aspect-ratio: 16/10; }
   .featured-overlay { background: linear-gradient(to bottom, transparent 70%, var(--bg) 100%); }
   .featured-body { padding: 1.5rem; }
