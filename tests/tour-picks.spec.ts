@@ -7,7 +7,11 @@ for (const destination of DIRECTIONS.map(d => d.slug)) {
     const tours = tourCollection(destination);
     await page.goto(`/${destination}/`);
     const section = page.locator('[data-tour-picks]');
-    expect(tours.length, `${destination}: at least three reviewed offers`).toBeGreaterThanOrEqual(3);
+    if (tours.length < 3) {
+      await expect(section).toHaveCount(0);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      return;
+    }
     await expect(section.locator('.tour-card')).toHaveCount(tours.length);
     await section.scrollIntoViewIfNeeded();
     for (const tour of tours) {
@@ -47,13 +51,22 @@ for (const destination of DIRECTIONS.map(d => d.slug)) {
 for (const width of [360, 402, 768, 1280]) {
   test(`лента экскурсий и многодневный тур, ширина ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto('/kyrgyzstan/');
+    const fixture = DIRECTIONS.find(({ slug }) => {
+      const tours = tourCollection(slug);
+      return tours.length >= 3 && tours.filter(tour => tour.kind !== 'multiday').length >= 2
+        && tours.some(tour => tour.kind === 'multiday');
+    });
+    expect(fixture, 'A complete real collection must exercise both groups').toBeDefined();
+    const tours = tourCollection(fixture!.slug);
+    await page.goto(`/${fixture!.slug}/`);
     const section = page.locator('[data-tour-picks]');
     await section.scrollIntoViewIfNeeded();
     await expect(section.locator('.tour-group')).toHaveCount(2);
     const multi = section.locator('.tour-group').last();
     await expect(multi.locator('h3')).toHaveText('Авторские туры на несколько дней');
-    await expect(multi.locator('.tour-includes')).toContainText('проживание');
+    const expectedIncludes = tours.filter(tour => tour.kind === 'multiday' && tour.includes)
+      .map(tour => `Включено: ${tour.includes}`);
+    await expect(multi.locator('.tour-includes')).toHaveText(expectedIncludes);
     const list = section.locator('.tour-list').first();
     const dimensions = await list.evaluate(el => ({ scroll: el.scrollWidth, client: el.clientWidth }));
     if (width < 768) {

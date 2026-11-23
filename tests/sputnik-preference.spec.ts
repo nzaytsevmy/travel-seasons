@@ -1,4 +1,5 @@
 import {test,expect} from './browser-fixture';
+import { tourCollection } from '../src/data/tour-picks.js';
 
 for(const path of ['/bali/','/japan/','/oman/','/packing/turkey/','/packing/turkey/september/',
   '/visa/japan/','/trips/july/','/trips/july/georgia/','/compare/turkey-vs-egypt/','/calculator/','/events/july/',
@@ -26,7 +27,18 @@ for(const path of ['/bali/','/japan/','/oman/','/packing/turkey/','/packing/turk
 
 test('an expedition fallback still opens a multi-day product, not a city walk',async({page})=>{
   await page.goto('/antarctica/');
-  const product=page.locator('[data-tour-picks] a[data-partner="youtravel"]').first();
+  const expeditionTours = tourCollection('antarctica');
+  const section = page.locator('[data-tour-picks]');
+  if (expeditionTours.length < 3) {
+    await expect(section).toHaveCount(0);
+    const fallback = page.getByRole('link', { name: 'авторские экспедиции с организатором' });
+    await expect(fallback).toHaveAttribute('data-cta-prepared', '1');
+    const href = new URL(await fallback.getAttribute('href') as string);
+    const target = new URL(href.searchParams.get('redirect') as string);
+    expect(target.origin + target.pathname).toBe('https://youtravel.me/tours/country/antarctica');
+    return;
+  }
+  const product = section.locator('a[data-partner="youtravel"]').first();
   await expect(product).toHaveAttribute('data-cta-prepared','1');
   const target=new URL(new URL(await product.getAttribute('href') as string).searchParams.get('redirect') as string);
   expect(target.hostname).toBe('youtravel.me');
