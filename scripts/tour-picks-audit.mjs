@@ -10,6 +10,8 @@ const errors = [];
 const imageRoot = fileURLToPath(new URL('../src/content/blog/_images/', import.meta.url));
 const provenance = JSON.parse(readFileSync(join(imageRoot, '_provenance.json'), 'utf8'));
 const creditsCache = new Map();
+const photoRegistry = readFileSync(new URL('../src/data/tour-photos.js', import.meta.url), 'utf8');
+const registeredPhotos = new Set(Array.from(photoRegistry.matchAll(/^  '([^']+)': \w+,/gm), match => match[1]));
 function hasPhotoRights(relativePath) {
   const path = join(imageRoot, relativePath);
   const sidecar = join(dirname(path), '_credits.json');
@@ -30,6 +32,7 @@ for (const tour of TOUR_PICKS) {
   if (known.has(tour.city)) errors.push(`${tour.id}: destination ID leaked into the visible location`);
   errors.push(...tourErrors(tour).map(error => `${tour.id}: ${error}`));
   if (!tour.image || !existsSync(fileURLToPath(new URL(`../src/content/blog/_images/${tour.image}`, import.meta.url)))) errors.push(`${tour.id}: missing editorial photo`);
+  if (tour.image && !registeredPhotos.has(tour.image)) errors.push(`${tour.id}: editorial photo is not registered: ${tour.image}`);
   if (tour.image && !hasPhotoRights(tour.image)) errors.push(`${tour.id}: photo rights are not documented for ${tour.image}`);
   if (!tour.imageAlt || !tour.imageCredit) errors.push(`${tour.id}: missing photo description or provenance`);
 }
