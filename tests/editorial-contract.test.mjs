@@ -8,37 +8,6 @@ async function read(relativePath) {
   return readFile(new URL(relativePath, root), 'utf8');
 }
 
-test('недельный контролёр задаёт безопасный режим для каждого контура', async () => {
-  const control = await read('GROWTH-CONTROL.md');
-
-  assert.match(control, /publication_gate/i);
-  assert.match(control, /monetization_decision_gate/i);
-  assert.match(control, /news/i);
-  assert.match(control, /article/i);
-  assert.match(control, /brand/i);
-  assert.match(control, /guide_route/i);
-  assert.match(control, /RUN[\s\S]{0,120}HOLD/i);
-  assert.match(control, /28[\s/]56/i);
-  assert.match(control, /approved net revenue/i);
-  assert.match(control, /не меняет расписан/i);
-});
-
-test('все редакционные промты читают недельное решение до выбора темы', async () => {
-  const files = [
-    'NEWS-SELECTION-PROMPT.md',
-    'DAILY-ARTICLE-PROMPT.md',
-    'BRAND-ARTICLE-PROMPT.md',
-    'GUIDES-ROUTES-PROMPT.md',
-  ];
-
-  for (const file of files) {
-    const prompt = await read(file);
-    assert.match(prompt, /GROWTH-CONTROL\.md/, file);
-    assert.match(prompt, /HOLD/i, file);
-    assert.match(prompt, /до (?:выбора|поиска|начала)/i, file);
-  }
-});
-
 test('поисковая выдача не блокирует интересную новость', async () => {
   const [prompt, rubric, projectRules, seoRules] = await Promise.all([
     read('NEWS-SELECTION-PROMPT.md'),
@@ -57,17 +26,15 @@ test('поисковая выдача не блокирует интересну
 });
 
 test('редакционный режим согласован, квота отменена без ослабления качества', async () => {
-  const [prompt, rubric, projectRules, configRaw, cap, control] = await Promise.all([
+  const [prompt, rubric, projectRules, configRaw, cap] = await Promise.all([
     read('NEWS-SELECTION-PROMPT.md'), read('news/RUBRIC.md'), read('CLAUDE.md'),
-    read('news/config.json'), read('scripts/news-cap.mjs'), read('GROWTH-CONTROL.md'),
+    read('news/config.json'), read('scripts/news-cap.mjs'),
   ]);
   const config = JSON.parse(configRaw);
   assert.equal(config.selectionMode, 'editorial');
   assert.equal(config.targetPerDay, null);
   assert.equal(config.maxPerDay, null);
   assert.equal(config.minScore, 3);
-  assert.match(control, /`news_quota`:\s*\*\*null\*\*/);
-  assert.match(control, /`news_selection_mode`:\s*\*\*editorial\*\*/);
   for (const text of [prompt, rubric, projectRules]) {
     assert.match(text, /14\.10\.2026/);
     assert.match(text, /news_quota/);
@@ -98,14 +65,11 @@ test('очередь гайдов отделена от ежедневных с�
 });
 
 test('пустая очередь гайдов запускает восстановление без тихих пропусков', async () => {
-  const [control, prompt, queue] = await Promise.all([
-    read('GROWTH-CONTROL.md'),
+  const [prompt, queue] = await Promise.all([
     read('GUIDES-ROUTES-PROMPT.md'),
     read('GUIDES-ROUTES-QUEUE.md'),
   ]);
 
-  assert.match(control, /пустая очередь[^\n]+не[^\n]+основани[^\n]+HOLD/i);
-  assert.match(control, /QUEUE_RECOVERY/);
   assert.match(prompt, /QUEUE_RECOVERY/);
   assert.match(prompt, /SEMANTIC-CORE\.md[\s\S]{0,100}(?:радар|RADAR)/i);
   assert.match(prompt, /принят[\s\S]{0,80}отклон[\s\S]{0,80}отлож/i);
@@ -115,7 +79,7 @@ test('пустая очередь гайдов запускает восстан
   assert.match(queue, /пустая очередь[^\n]+не[^\n]+HOLD/i);
 });
 
-test('основной денежный гейт включает контракт недельного управления', async () => {
+test('основной денежный гейт включает редакционные контракты', async () => {
   const pkg = JSON.parse(await read('package.json'));
-  assert.match(pkg.scripts['check:monetization'], /growth-control-contract\.test\.mjs/);
+  assert.match(pkg.scripts['check:monetization'], /editorial-contract\.test\.mjs/);
 });
