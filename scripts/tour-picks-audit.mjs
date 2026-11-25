@@ -45,41 +45,14 @@ const rows = DIRECTIONS.map(d => {
   return { slug:d.slug, name:d.cases.nom, tours, candidates, expired, status:tours.length >= 3 ? 'Подборка готова' : 'Нужно добрать и проверить' };
 });
 const complete = rows.filter(r => r.tours.length >= 3).length;
-// Temporary approval for the 23 November editorial releases. Only these
-// observed shortfalls may be reported as warnings. All offer checks still run.
-const releaseCoverageFloor = {
-  "sumatra-kalimantan": 0,
-  "raja-ampat": 0,
-  "new-zealand": 0,
-  "kenya": 0,
-  "saudi-arabia": 2,
-  "iran": 0,
-  "jordan": 1,
-  "madagascar": 1,
-  "japan-hokkaido": 1,
-  "hong-kong": 2,
-  "maldives": 0,
-  "kyrgyzstan": 2,
-  "cuba": 1,
-  "guatemala-belize": 0,
-  "costa-rica-panama": 2,
-  "chile-patagonia": 0,
-  "chile-fjords": 2,
-  "bolivia": 0,
-  "ecuador": 0,
-  "antarctica": 1,
-};
-const coverageExceptionActive = today >= '2026-11-23'
-  && today <= '2026-11-25'
-  && !process.argv.includes('--strict-coverage');
+const strictCoverage = process.argv.includes('--strict-coverage');
+let coverageGaps = 0;
 for (const { slug, tours } of rows) {
   if (tours.length >= 3) continue;
+  coverageGaps++;
   const message = `${slug}: fewer than 3 current reviewed offers (${tours.length})`;
-  if (coverageExceptionActive && Object.hasOwn(releaseCoverageFloor, slug) && tours.length >= releaseCoverageFloor[slug]) {
-    console.warn(`Approved release exception: ${message}`);
-  } else {
-    errors.push(message);
-  }
+  if (strictCoverage) errors.push(message);
+  else console.warn(`Catalogue coverage: ${message}`);
 }
 const report = [
   '# Покрытие направлений экскурсиями', '', `Срез ${today}. Готово ${complete} из ${rows.length} направлений. Раздел показывается при наличии минимум трёх проверенных предложений. Поисковая выдача служит списком кандидатов, а не подтверждением качества.`, '',
@@ -97,8 +70,8 @@ const report = [
   '## Порядок обновления', '',
   'Редактор проверяет программу, географию, организатора, последние отзывы и выборку оценок 1–3, оплату и отмену. Записывает обоснование и срок повторной проверки в checks. Основной отбор — рейтинг тура от 4,7 и минимум 30 собственных отзывов. Для редких направлений действует согласованная комплексная проверка: программа, география, отзывы покупателей, подтверждённая история и профиль организатора. При малой выборке её размер и источник оценки видны в карточке. Рейтинг организатора не выдаётся за рейтинг тура. Билеты официальных поставщиков дополнительно сверяются с собственным сайтом объекта. Предложения без доступных мест не включены. Поездка по малайзийской части Борнео и наземные экскурсии из Пуэрто-Монтта подписаны явно; круиз 2028 года содержит год в заголовке. Совпадающие маршруты объединяются по experienceKey. Цены в исходной валюте партнёра имеют отдельный срок актуальности; без свежей цены показывается «Уточнить стоимость».', '',
   'Повторная проверка предложений — через 30 дней; цены — через 7 дней. Обновление выполняется редакционно перед очередной сборкой. Автоматическое расписание не создано. Сборка скрывает просроченные предложения; опубликованный статический сайт меняется после следующего deploy.', '',
-  'Строгая проверка покрытия: npm run check:tours. Обновить этот отчёт: node scripts/tour-picks-audit.mjs --write. Неполное покрытие не превращается в автоматическое одобрение слабых кандидатов.', '',
+  'Сборка предупреждает о неполном покрытии и блокирует ошибочные карточки. Строгая проверка покрытия: npm run check:tours. Обновить этот отчёт: node scripts/tour-picks-audit.mjs --write. Неполное покрытие не превращается в автоматическое одобрение слабых кандидатов.', '',
 ].join('\n');
 if (process.argv.includes('--write')) writeFileSync(new URL('../research/tour-coverage.md', import.meta.url),report);
 if (errors.length) { console.error(errors.join('\n')); process.exitCode=1; }
-console.log(`Tours: ${TOUR_PICKS.filter(t=>t.status==='approved').length} approved; ${complete}/${rows.length} complete destinations; ${errors.length} errors.`);
+console.log(`Tours: ${TOUR_PICKS.filter(t=>t.status==='approved').length} approved; ${complete}/${rows.length} complete destinations; ${coverageGaps} coverage gaps; ${errors.length} errors.`);

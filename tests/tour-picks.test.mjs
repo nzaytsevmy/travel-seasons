@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -26,6 +26,21 @@ test('built monetization audit recognizes a concrete YouTravel product without a
 
 test('registry audit checks actual destination IDs and editorial photographs', () => {
   assert.match(execFileSync(process.execPath, ['scripts/tour-picks-audit.mjs'], {cwd:new URL('../',import.meta.url),encoding:'utf8'}), /0 errors/);
+});
+
+test('coverage gaps are warnings in the build and errors in the strict inventory audit', () => {
+  const command = ['scripts/tour-picks-audit.mjs'];
+  const options = { cwd:new URL('../',import.meta.url), encoding:'utf8' };
+  const build = spawnSync(process.execPath, command, options);
+  assert.ifError(build.error);
+  assert.equal(build.status, 0, build.stderr);
+  const summary = build.stdout.match(/(\d+) coverage gaps; 0 errors\./);
+  assert.ok(summary, build.stdout);
+  const gaps = Number(summary[1]);
+  const strict = spawnSync(process.execPath, [...command, '--strict-coverage'], options);
+  assert.ifError(strict.error);
+  assert.equal(strict.status, gaps === 0 ? 0 : 1, strict.stderr);
+  assert.match(strict.stdout, new RegExp(`; ${gaps} errors\\.`));
 });
 
 test('approved offers require primary evidence, tour-specific reviews and correct target', () => {

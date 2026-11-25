@@ -119,6 +119,10 @@ jobs:
           df -h "$GITHUB_WORKSPACE"
       - run: npm run check:mtimes
 
+      # Keep all shards on the same CLI and dependency versions.
+      - name: Install locked Lighthouse CLI
+        run: npm ci --prefix .github/lighthouse
+
       - name: Run Lighthouse (${{ matrix.preset }}, часть ${{ matrix.shard }})
         env:
           PRESET: ${{ matrix.preset }}
@@ -138,7 +142,6 @@ jobs:
           # нужен обеим версиям. Ускорять надо параллельностью, а не точностью.
           RUNS: '3'
         run: |
-          npm install -g @lhci/cli
           CONF=./lighthouserc.json
           [ "$PRESET" = "mobile" ] && CONF=./lighthouserc.mobile.json
           # Свой кусок списка адресов; остальное берётся из конфига как было.
@@ -153,7 +156,7 @@ jobs:
           ")
           echo "часть $SHARD из $SHARDS: $(echo "$URLS" | wc -w) адресов"
           echo "заходов на страницу: $RUNS"
-          lhci autorun --config="$CONF" --collect.numberOfRuns="$RUNS" $URLS
+          .github/lighthouse/node_modules/.bin/lhci autorun --config="$CONF" --collect.numberOfRuns="$RUNS" $URLS
           node scripts/check-lighthouse-indexability.mjs .lighthouseci "$CONF"
 
       - name: Preserve original three-sample Lighthouse reports
@@ -173,7 +176,7 @@ jobs:
       - name: Capture homepage performance trace
         if: ${{ matrix.preset == 'mobile' && matrix.shard == 1 }}
         run: |
-          lhci collect --config=./lighthouserc.mobile.json --url=http://localhost/index.html --numberOfRuns=1 --settings.saveAssets=true
+          .github/lighthouse/node_modules/.bin/lhci collect --config=./lighthouserc.mobile.json --url=http://localhost/index.html --numberOfRuns=1 --settings.saveAssets=true
 
       - uses: actions/upload-artifact@v4
         if: ${{ always() && matrix.preset == 'mobile' && matrix.shard == 1 }}
