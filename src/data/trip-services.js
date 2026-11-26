@@ -12,6 +12,7 @@ const CITY_POSTS = {
   'zion-bryce-horseshoe-bend-usa': { destination:'usa', iata:'LAS', route:'Лас-Вегас' },
   'norway-trolltunga-lofoten': { destination:'norway', iata:null },
   'madrid-gde-ostanovitsya': { destination:'spain', country:'spain', city:'madrid', iata:'MAD', loc:'в Мадриде', route:'Мадрид' },
+  'dom-balo-barselona': { destination:'spain', country:'spain', city:'barcelona', iata:'BCN', loc:'в Барселоне', route:'Барселона' },
   'chto-posmotret-v-gonkonge': { destination:'hong-kong', country:'china', city:'hong_kong', iata:'HKG', loc:'в Гонконге', route:'Гонконг' },
   'hanoi-one-day': { destination:'vietnam', country:'vietnam', city:'hanoi', iata:'HAN', loc:'в Ханое', route:'Ханой' },
   // Эти статьи сравнивают несколько курортов: не подставлять один городской аэропорт.
