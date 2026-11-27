@@ -33,6 +33,11 @@ jobs:
         with:
           fetch-depth: 0
           filter: blob:none
+      - name: Release unused Android SDK disk space
+        run: |
+          df -h "$GITHUB_WORKSPACE"
+          sudo rm -rf -- /usr/local/lib/android
+          df -h "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
