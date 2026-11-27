@@ -21,6 +21,7 @@ export const RELATED_POSTS = {
     { slug: 'sao-paulo-two-three-days', title: 'Что посмотреть в Сан-Паулу за два–три дня', kind: 'practical' },
   ],
   'italy-south': [
+    { slug: 'pompei-iz-neapolya', title: 'Помпеи из Неаполя: поезд, билеты и маршрут по руинам', kind: 'practical' },
     { slug: 'kolizey-rim', title: 'Колизей в Риме: билеты, арена и маршрут на полдня', kind: 'practical' },
   ],
   'jordan': [
