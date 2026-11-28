@@ -33,6 +33,7 @@ export const RELATED_POSTS = {
   ],
   'kazakhstan': [
     { slug: 'charynskiy-kanon', title: 'Чарынский каньон: день из Алматы и Долина замков', kind: 'practical' },
+    { slug: 'shymbulak-iz-almaty', title: 'Шымбулак из Алматы без лыж: канатка, билеты и спуск', kind: 'practical' },
   ],
   'cambodia': [
     { slug: 'angkor-vat', title: 'Ангкор-Ват: как осмотреть храм, галереи и Бакан', kind: 'practical' },
